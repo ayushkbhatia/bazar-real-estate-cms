@@ -1,0 +1,42 @@
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import { env, isSupabaseConfigured } from "@/lib/env";
+
+export async function createSupabaseServerClient() {
+  if (!isSupabaseConfigured) {
+    throw new Error(
+      "Supabase env vars are not set. Configure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local",
+    );
+  }
+  const cookieStore = await cookies();
+
+  return createServerClient(
+    env.NEXT_PUBLIC_SUPABASE_URL!,
+    env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options);
+            });
+          } catch {
+            // Server Components can't set cookies; ignore — middleware refreshes the session.
+          }
+        },
+      },
+    },
+  );
+}
+
+export async function getSessionUser() {
+  if (!isSupabaseConfigured) return null;
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user;
+}

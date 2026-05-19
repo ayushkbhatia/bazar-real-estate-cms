@@ -1,26 +1,198 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Bazar Real Estate — design tokens ─────────────────────────────
+   OKLCH palette. Source: design-references/styles.css in the handoff.
+   Variables prefixed --bz-* are the canonical Bazar tokens.
+   shadcn semantic tokens are mapped to them below. */
 
 @theme inline {
+  /* Map shadcn semantic tokens to Bazar palette */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Bazar surface ramps (also usable as Tailwind bg-* utilities) */
+  --color-bz-bg: var(--bz-bg);
+  --color-bz-ink: var(--bz-ink);
+  --color-bz-ink-2: var(--bz-ink-2);
+  --color-bz-muted: var(--bz-muted);
+  --color-bz-muted-2: var(--bz-muted-2);
+  --color-bz-surface: var(--bz-surface);
+  --color-bz-surface-2: var(--bz-surface-2);
+  --color-bz-surface-3: var(--bz-surface-3);
+  --color-bz-border: var(--bz-border);
+  --color-bz-border-strong: var(--bz-border-strong);
+  --color-bz-accent: var(--bz-accent);
+  --color-bz-accent-hover: var(--bz-accent-hover);
+  --color-bz-accent-soft: var(--bz-accent-soft);
+  --color-bz-accent-fg: var(--bz-accent-fg);
+  --color-bz-success: var(--bz-success);
+  --color-bz-warning: var(--bz-warning);
+  --color-bz-danger: var(--bz-danger);
+  --color-bz-info: var(--bz-info);
+
+  /* Fonts (loaded via next/font/google in app/layout.tsx) */
+  --font-sans: var(--bz-font-sans);
+  --font-serif: var(--bz-font-serif);
+  --font-mono: var(--bz-font-mono);
+
+  /* Radius scale derived from Bazar */
+  --radius-sm: var(--bz-radius-sm);
+  --radius: var(--bz-radius);
+  --radius-lg: var(--bz-radius-lg);
+  --radius-xl: var(--bz-radius-xl);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* ── Bazar tokens (Moss accent — default) */
+  --bz-bg: oklch(0.98 0.004 85);
+  --bz-surface: #ffffff;
+  --bz-surface-2: oklch(0.95 0.005 85);
+  --bz-surface-3: oklch(0.92 0.006 85);
+  --bz-border: oklch(0.9 0.006 85);
+  --bz-border-strong: oklch(0.82 0.008 85);
+  --bz-ink: oklch(0.18 0.005 80);
+  --bz-ink-2: oklch(0.32 0.006 80);
+  --bz-muted: oklch(0.55 0.005 80);
+  --bz-muted-2: oklch(0.68 0.005 80);
+  --bz-accent: oklch(0.42 0.045 155);
+  --bz-accent-hover: oklch(0.36 0.045 155);
+  --bz-accent-soft: oklch(0.93 0.015 155);
+  --bz-accent-fg: #ffffff;
+  --bz-success: oklch(0.55 0.12 145);
+  --bz-warning: oklch(0.72 0.13 75);
+  --bz-danger: oklch(0.55 0.18 28);
+  --bz-info: oklch(0.55 0.1 240);
+
+  /* Font stacks (used by next/font/google css variables overrides) */
+  --bz-font-sans: var(--font-geist), "Söhne", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bz-font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --bz-font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Density (1 = regular, 0.88 = compact, 1.08 = comfy) */
+  --bz-density: 1;
+  --bz-radius-sm: 4px;
+  --bz-radius: 6px;
+  --bz-radius-lg: 10px;
+  --bz-radius-xl: 16px;
+
+  /* Spacing scale (density-aware) */
+  --bz-1: calc(4px * var(--bz-density));
+  --bz-2: calc(8px * var(--bz-density));
+  --bz-3: calc(12px * var(--bz-density));
+  --bz-4: calc(16px * var(--bz-density));
+  --bz-5: calc(20px * var(--bz-density));
+  --bz-6: calc(24px * var(--bz-density));
+  --bz-8: calc(32px * var(--bz-density));
+  --bz-10: calc(40px * var(--bz-density));
+  --bz-12: calc(48px * var(--bz-density));
+  --bz-16: calc(64px * var(--bz-density));
+  --bz-20: calc(80px * var(--bz-density));
+
+  /* shadcn semantic tokens — mapped to Bazar palette */
+  --background: var(--bz-bg);
+  --foreground: var(--bz-ink);
+  --card: var(--bz-surface);
+  --card-foreground: var(--bz-ink);
+  --popover: var(--bz-surface);
+  --popover-foreground: var(--bz-ink);
+  --primary: var(--bz-accent);
+  --primary-foreground: var(--bz-accent-fg);
+  --secondary: var(--bz-surface-2);
+  --secondary-foreground: var(--bz-ink-2);
+  --muted: var(--bz-surface-2);
+  --muted-foreground: var(--bz-muted);
+  --accent: var(--bz-surface-2);
+  --accent-foreground: var(--bz-ink-2);
+  --destructive: var(--bz-danger);
+  --border: var(--bz-border);
+  --input: var(--bz-border);
+  --ring: var(--bz-ink-2);
+}
+
+.dark {
+  --bz-bg: oklch(0.16 0.005 80);
+  --bz-surface: oklch(0.2 0.005 80);
+  --bz-surface-2: oklch(0.23 0.006 80);
+  --bz-surface-3: oklch(0.27 0.006 80);
+  --bz-border: oklch(0.3 0.008 80);
+  --bz-border-strong: oklch(0.38 0.01 80);
+  --bz-ink: oklch(0.96 0.005 80);
+  --bz-ink-2: oklch(0.86 0.006 80);
+  --bz-muted: oklch(0.65 0.006 80);
+  --bz-muted-2: oklch(0.52 0.006 80);
+  --bz-accent: oklch(0.62 0.07 155);
+  --bz-accent-hover: oklch(0.7 0.08 155);
+  --bz-accent-soft: oklch(0.28 0.03 155);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "cv11";
+    letter-spacing: -0.005em;
+  }
+  html {
+    font-family: var(--bz-font-sans);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── Bazar utility classes ─────────────────────────────────────── */
+@layer components {
+  .eyebrow {
+    @apply text-[11px] font-medium uppercase text-bz-muted;
+    letter-spacing: 0.12em;
+  }
+  .serif {
+    font-family: var(--bz-font-serif);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .mono {
+    font-family: var(--bz-font-mono);
+    letter-spacing: 0;
+  }
+  .bz-shadow-1 {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.04);
+  }
+  .bz-shadow-2 {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 16px 48px rgba(0, 0, 0, 0.08);
+  }
+  /* Striped placeholder image (used until real photography lands) */
+  .bz-img {
+    background: repeating-linear-gradient(
+      135deg,
+      oklch(0.93 0.005 85) 0 1px,
+      oklch(0.95 0.005 85) 1px 8px
+    );
+  }
+  .bz-img-dark {
+    background: repeating-linear-gradient(
+      135deg,
+      oklch(0.28 0.006 85) 0 1px,
+      oklch(0.32 0.006 85) 1px 8px
+    );
+  }
 }
