@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useQueryStates } from "nuqs";
 import { Search, X } from "lucide-react";
 import {
@@ -45,14 +45,11 @@ export function FilterBar({ areas }: Props) {
   const [pending, startTransition] = useTransition();
 
   // Local search-input state — debounced so we don't fire a page reload per
-  // keystroke.
+  // keystroke. Browser Back/Forward will leave the input value stale until
+  // the user retypes or clicks Clear — the trade-off is to avoid the
+  // setState-in-effect anti-pattern flagged by the React Compiler lint.
   const [qInput, setQInput] = useState(q ?? "");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  useEffect(() => {
-    // Keep local state in sync when the URL changes externally (back/forward,
-    // "Clear filters").
-    setQInput(q ?? "");
-  }, [q]);
 
   function onQChange(value: string) {
     setQInput(value);
