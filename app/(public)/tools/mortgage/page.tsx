@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, Calendar } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { Button } from "@/components/ui/button";
 import { MortgageCalculator } from "./mortgage-calculator";
 
 export const metadata: Metadata = {
@@ -31,39 +28,6 @@ export default function MortgagePage() {
       </section>
 
       <MortgageCalculator />
-
-      <section className="px-12 pb-24">
-        <div className="bg-bz-accent-soft rounded-xl p-8 flex flex-wrap items-center justify-between gap-6">
-          <div>
-            <Eyebrow className="text-bz-accent">
-              Ready to make it real?
-            </Eyebrow>
-            <h2
-              className="serif text-[26px] mt-1.5"
-              style={{ letterSpacing: "-0.015em" }}
-            >
-              Get pre-approved with our preferred lenders.
-            </h2>
-            <p className="text-[13.5px] text-bz-ink-2 mt-1.5">
-              Soft credit pull · 24-hour response · 5 partner banks
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button asChild variant="outline">
-              <Link href="/contact">
-                <Calendar size={14} strokeWidth={1.6} />
-                Talk to advisor
-              </Link>
-            </Button>
-            <Button asChild>
-              <Link href="/contact?source=mortgage">
-                Start pre-approval
-                <ArrowRight size={14} strokeWidth={1.6} />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

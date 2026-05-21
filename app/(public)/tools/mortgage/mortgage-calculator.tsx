@@ -1,11 +1,19 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { CheckCircle2, Download } from "lucide-react";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Calendar,
+  CheckCircle2,
+  Download,
+  MessageCircle,
+} from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { buildMortgageWhatsAppLink } from "@/lib/whatsapp";
 import {
   Select,
   SelectContent,
@@ -131,8 +139,22 @@ export function MortgageCalculator() {
     termYears,
   ]);
 
+  // Pre-fill the WhatsApp handoff with the user's current scenario so the
+  // mortgage team opens the chat already knowing what to quote.
+  const waMessage = [
+    `Hi Bazar — I'd like to start a mortgage pre-approval.`,
+    ``,
+    `Property price: ${formatAed(price)}`,
+    `Down payment: ${formatPct(downPct)} (${formatAed(Math.round(price * downPct))})`,
+    `Term: ${termYears} years`,
+    `Rate target: ${annualRatePct}%`,
+    `Monthly: ${formatAed(summary.monthlyPaymentAed)}`,
+  ].join("\n");
+  const waLink = buildMortgageWhatsAppLink(waMessage);
+
   return (
-    <section className="px-12 pb-24 grid lg:grid-cols-[440px_1fr] gap-10 items-start">
+    <>
+    <section className="px-12 pb-12 grid lg:grid-cols-[440px_1fr] gap-10 items-start">
       {/* ── LEFT: inputs ───────────────────────────────────────── */}
       <div className="border border-bz-border bg-bz-surface rounded-lg p-7 lg:sticky lg:top-6">
         <Eyebrow>Scenario</Eyebrow>
@@ -474,6 +496,49 @@ export function MortgageCalculator() {
         </div>
       </div>
     </section>
+
+    {/* ── Pre-approval CTA — wa.me deep link with the current scenario ── */}
+    <section className="px-12 pb-24">
+      <div className="bg-bz-accent-soft rounded-xl p-8 flex flex-wrap items-center justify-between gap-6">
+        <div>
+          <Eyebrow className="text-bz-accent">Ready to make it real?</Eyebrow>
+          <h2
+            className="serif text-[26px] mt-1.5"
+            style={{ letterSpacing: "-0.015em" }}
+          >
+            Get pre-approved with our preferred lenders.
+          </h2>
+          <p className="text-[13.5px] text-bz-ink-2 mt-1.5">
+            Soft credit pull · 24-hour response · 5 partner banks
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link href="/contact">
+              <Calendar size={14} strokeWidth={1.6} />
+              Talk to advisor
+            </Link>
+          </Button>
+          {waLink ? (
+            <Button asChild data-testid="pre-approval-cta">
+              <a href={waLink} target="_blank" rel="noopener noreferrer">
+                <MessageCircle size={14} strokeWidth={1.6} />
+                Pre-approval via WhatsApp
+                <ArrowRight size={14} strokeWidth={1.6} />
+              </a>
+            </Button>
+          ) : (
+            <Button asChild data-testid="pre-approval-cta">
+              <Link href="/contact?source=mortgage">
+                Start pre-approval
+                <ArrowRight size={14} strokeWidth={1.6} />
+              </Link>
+            </Button>
+          )}
+        </div>
+      </div>
+    </section>
+    </>
   );
 }
 

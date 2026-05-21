@@ -37,6 +37,25 @@ test("monthly payment falls when the user shortens the term", async ({ page }) =
   expect(monthlyAfter).not.toBe(monthlyBefore);
 });
 
+test("pre-approval CTA points at wa.me with the current scenario", async ({
+  page,
+}) => {
+  await page.goto("/tools/mortgage");
+  const cta = page.getByTestId("pre-approval-cta");
+  await expect(cta).toBeVisible();
+  const href = await cta.getAttribute("href");
+  expect(href).not.toBeNull();
+  // wa.me URL with the prefilled text=… querystring.
+  expect(href!.startsWith("https://wa.me/")).toBe(true);
+  expect(href!).toContain("?text=");
+  // Default scenario references that should be encoded in the message:
+  //   AED 4,200,000 · 25% down · 25 years.
+  const decoded = decodeURIComponent(href!.split("?text=")[1] ?? "");
+  expect(decoded).toContain("AED 4,200,000");
+  expect(decoded).toContain("25%");
+  expect(decoded).toContain("25 years");
+});
+
 test("affordability badge flips when income drops below the 50% DBR cap", async ({
   page,
 }) => {
