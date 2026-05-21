@@ -1,11 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import {
-  ArrowDownToLine,
-  Archive,
-  X,
-} from "lucide-react";
+import { Archive, X } from "lucide-react";
 import { toast } from "sonner";
 import { parseAsString, useQueryState } from "nuqs";
 import { Button } from "@/components/ui/button";
@@ -21,15 +17,15 @@ import {
   BulkReassignDialog,
   type AgentOption,
 } from "./_bulk-reassign-dialog";
+import { BulkOffMarketDialog } from "./_bulk-offmarket-dialog";
 
 const selectedParser = parseAsString.withDefault("");
 
 const COMING_SOON_TOASTS: Record<BulkAction, string> = {
-  off_market: "Bulk off-market lands in PR I6.",
   archive: "Bulk archive lands in PR I7.",
 };
 
-type BulkAction = "off_market" | "archive";
+type BulkAction = "archive";
 
 export type ToolbarRow = { id: string; reference: string };
 
@@ -69,6 +65,10 @@ export function BulkToolbar({
   }
 
   function onReassignComplete(remaining: string[]) {
+    void setRawSelected(serializeSelection(remaining));
+  }
+
+  function onOffMarketComplete(remaining: string[]) {
     void setRawSelected(serializeSelection(remaining));
   }
 
@@ -114,16 +114,11 @@ export function BulkToolbar({
           onComplete={onPublishComplete}
           references={references}
         />
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => onAction("off_market")}
-          data-action="off_market"
-        >
-          <ArrowDownToLine size={12} strokeWidth={1.8} />
-          Move off-market
-        </Button>
+        <BulkOffMarketDialog
+          ids={ids}
+          references={references}
+          onComplete={onOffMarketComplete}
+        />
         <BulkReassignDialog
           ids={ids}
           references={references}
