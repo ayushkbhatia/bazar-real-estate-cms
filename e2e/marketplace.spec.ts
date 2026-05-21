@@ -52,6 +52,6 @@ test("filter bar narrows the result set via URL state", async ({ page }) => {
   await expect(page.locator("a[href^='/p/']").first()).toBeVisible();
 
   // Clear filters returns us to base state
-  await page.getByRole("button", { name: /clear 1 filter/i }).click();
+  await page.getByRole("button", { name: /^clear 1$/i }).click();
   await expect(page).not.toHaveURL(/beds=3/);
 });

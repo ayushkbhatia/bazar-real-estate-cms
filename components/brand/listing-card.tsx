@@ -2,6 +2,7 @@ import Image from "next/image";
 import { BedDouble, Bath, Maximize2, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PlaceholderImage } from "./placeholder-image";
+import { SaveButton } from "./save-button";
 
 export type ListingCardVariant = "default" | "editorial" | "row";
 
@@ -20,6 +21,12 @@ export type ListingCardProps = {
   heroSrc?: string | null;
   /** Alt text for the hero image (filename, alt_text, or human label). */
   heroAlt?: string;
+  /** When provided, renders a functional SaveButton instead of a static heart. */
+  propertyId?: string;
+  /** Whether the current user has saved this property (for SaveButton). */
+  initialSaved?: boolean;
+  /** Whether the current user is signed in (for SaveButton). */
+  isAuthed?: boolean;
   variant?: ListingCardVariant;
   href?: string;
   className?: string;
@@ -41,6 +48,9 @@ function Media({
   aspect,
   heroSrc,
   heroAlt,
+  propertyId,
+  initialSaved,
+  isAuthed,
 }: {
   imgLabel?: string;
   mediaDark?: boolean;
@@ -49,6 +59,9 @@ function Media({
   aspect: "4/3" | "5/4" | "auto";
   heroSrc?: string | null;
   heroAlt?: string;
+  propertyId?: string;
+  initialSaved?: boolean;
+  isAuthed?: boolean;
 }) {
   const aspectClass = cn(
     "w-full",
@@ -71,13 +84,20 @@ function Media({
           </span>
         </div>
       ) : null}
-      <button
-        type="button"
-        aria-label="Save"
-        className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/92 flex items-center justify-center text-bz-ink-2 hover:text-bz-accent transition-colors"
-      >
-        <Heart size={16} strokeWidth={1.6} />
-      </button>
+      {propertyId ? (
+        <SaveButton
+          propertyId={propertyId}
+          initialSaved={initialSaved ?? false}
+          isAuthed={isAuthed ?? false}
+        />
+      ) : (
+        <span
+          aria-hidden
+          className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/92 flex items-center justify-center text-bz-ink-2"
+        >
+          <Heart size={16} strokeWidth={1.6} />
+        </span>
+      )}
     </>
   );
 
@@ -120,6 +140,9 @@ export function ListingCard({
   mediaDark,
   heroSrc,
   heroAlt,
+  propertyId,
+  initialSaved,
+  isAuthed,
   variant = "default",
   className,
 }: ListingCardProps) {
@@ -135,6 +158,9 @@ export function ListingCard({
             aspect="5/4"
             heroSrc={heroSrc}
             heroAlt={heroAlt}
+            propertyId={propertyId}
+            initialSaved={initialSaved}
+            isAuthed={isAuthed}
           />
         </div>
         <div className="py-3.5 flex flex-col gap-1.5">
@@ -174,6 +200,9 @@ export function ListingCard({
             aspect="auto"
             heroSrc={heroSrc}
             heroAlt={heroAlt}
+            propertyId={propertyId}
+            initialSaved={initialSaved}
+            isAuthed={isAuthed}
           />
         </div>
         <div className="flex flex-col gap-2 px-[22px] py-[18px] flex-1">
@@ -217,6 +246,9 @@ export function ListingCard({
         aspect="4/3"
         heroSrc={heroSrc}
         heroAlt={heroAlt}
+        propertyId={propertyId}
+        initialSaved={initialSaved}
+        isAuthed={isAuthed}
       />
       <div className="p-4 flex flex-col gap-2 flex-1">
         <div className="text-[19px] font-medium tracking-tight">{price}</div>

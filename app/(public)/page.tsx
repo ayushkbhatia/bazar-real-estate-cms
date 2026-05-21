@@ -4,13 +4,15 @@ import { ListingCard } from "@/components/brand/listing-card";
 import { Button } from "@/components/ui/button";
 import {
   formatPriceAED,
+  getSavedPropertyIds,
   listPublishedProperties,
   propertyUrl,
   type ListingRow,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
+import { getSessionUser } from "@/lib/supabase/server";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 function badgeFor(row: ListingRow):
   | { label: string; kind: "ink" | "accent" }
@@ -22,10 +24,12 @@ function badgeFor(row: ListingRow):
 }
 
 export default async function HomePage() {
-  const { rows: featured } = await listPublishedProperties({
-    mode: "buy",
-    limit: 3,
-  });
+  const [{ rows: featured }, user] = await Promise.all([
+    listPublishedProperties({ mode: "buy", limit: 3 }),
+    getSessionUser(),
+  ]);
+  const savedSet = await getSavedPropertyIds(featured.map((r) => r.id));
+  const isAuthed = user !== null;
 
   return (
     <div className="bg-bz-bg">
@@ -101,6 +105,9 @@ export default async function HomePage() {
                       row.hero ? mediaPublicUrl(row.hero.storage_key) : null
                     }
                     heroAlt={row.hero?.alt_text ?? row.title}
+                    propertyId={row.id}
+                    initialSaved={savedSet.has(row.id)}
+                    isAuthed={isAuthed}
                   />
                 </Link>
               );

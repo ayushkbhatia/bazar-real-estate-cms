@@ -595,6 +595,68 @@ export type Database = {
           },
         ]
       }
+      saved_properties: {
+        Row: {
+          created_at: string
+          property_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          property_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          property_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_searches: {
+        Row: {
+          alert_frequency: Database["public"]["Enums"]["alert_frequency"]
+          created_at: string
+          id: string
+          last_alert_at: string | null
+          mode: Database["public"]["Enums"]["property_mode"] | null
+          name: string
+          query: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_frequency?: Database["public"]["Enums"]["alert_frequency"]
+          created_at?: string
+          id?: string
+          last_alert_at?: string | null
+          mode?: Database["public"]["Enums"]["property_mode"] | null
+          name: string
+          query: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_frequency?: Database["public"]["Enums"]["alert_frequency"]
+          created_at?: string
+          id?: string
+          last_alert_at?: string | null
+          mode?: Database["public"]["Enums"]["property_mode"] | null
+          name?: string
+          query?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       staff: {
         Row: {
           bio: string | null
@@ -665,6 +727,7 @@ export type Database = {
       account_kyc_status: "unverified" | "pending" | "verified" | "rejected"
       account_language: "en" | "ar"
       account_residency_status: "uae_resident" | "non_resident" | "gcc_national"
+      alert_frequency: "off" | "instant" | "daily" | "weekly"
       area_kind: "emirate" | "area" | "sub_community" | "building"
       audit_actor_kind: "user" | "system" | "integration"
       development_status: "pre_launch" | "on_sale" | "sold_out" | "handed_over"
@@ -829,6 +892,7 @@ export const Constants = {
         "non_resident",
         "gcc_national",
       ],
+      alert_frequency: ["off", "instant", "daily", "weekly"],
       area_kind: ["emirate", "area", "sub_community", "building"],
       audit_actor_kind: ["user", "system", "integration"],
       development_status: ["pre_launch", "on_sale", "sold_out", "handed_over"],
