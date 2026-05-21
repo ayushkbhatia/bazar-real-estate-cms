@@ -8,7 +8,15 @@ import {
   type ListingRow,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
+import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { isSupabaseConfigured } from "@/lib/env";
+import {
+  countActiveFilters,
+  describeFilters,
+  type PropertyFilters,
+} from "@/lib/filters/property";
 import type { Database } from "@/db/types";
+import { FilterBar, type AreaOption } from "./filter-bar";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
 
@@ -47,9 +55,37 @@ function badgeFor(row: ListingRow):
   return undefined;
 }
 
-export async function SearchList({ mode }: { mode: Mode }) {
-  const { rows, total } = await listPublishedProperties({ mode, limit: 24 });
+async function fetchAreas(): Promise<AreaOption[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = createSupabasePublicClient();
+  const { data, error } = await supabase
+    .from("areas")
+    .select("slug, name, kind")
+    .in("kind", ["area", "sub_community"])
+    .order("name", { ascending: true });
+  if (error || !data) return [];
+  return data.map((d) => ({ slug: d.slug, name: d.name }));
+}
+
+export async function SearchList({
+  mode,
+  filters,
+}: {
+  mode: Mode;
+  filters: PropertyFilters;
+}) {
+  const [{ rows, total }, areas] = await Promise.all([
+    listPublishedProperties({ mode, filters, limit: 24 }),
+    fetchAreas(),
+  ]);
   const copy = MODE_COPY[mode];
+
+  const selectedArea =
+    filters.area && areas.length
+      ? (areas.find((a) => a.slug === filters.area)?.name ?? filters.area)
+      : undefined;
+  const activeCount = countActiveFilters(filters);
+  const filterSummary = describeFilters(filters, selectedArea);
 
   return (
     <div>
@@ -66,10 +102,18 @@ export async function SearchList({ mode }: { mode: Mode }) {
         </p>
       </section>
 
+      <FilterBar mode={mode} areas={areas} />
+
       <section className="px-12 py-10">
-        <div className="flex items-baseline justify-between mb-6">
+        <div className="flex items-baseline justify-between mb-6 gap-4 flex-wrap">
           <div className="text-[13px] text-bz-muted">
             {total} {total === 1 ? "property" : "properties"}
+            {filterSummary ? (
+              <>
+                {" · "}
+                <span className="text-bz-ink-2">{filterSummary}</span>
+              </>
+            ) : null}
           </div>
           <div className="text-[13px] text-bz-muted">
             Sort: <span className="text-bz-ink">Recently listed</span>
@@ -78,8 +122,9 @@ export async function SearchList({ mode }: { mode: Mode }) {
 
         {rows.length === 0 ? (
           <div className="py-20 text-center text-bz-muted">
-            No properties to show yet — Phase 1 search and filters arrive next
-            sprint.
+            {activeCount > 0
+              ? "No properties match those filters. Try widening the price range or clearing a filter."
+              : "No properties to show yet — Phase 1 search and filters arrive next sprint."}
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-6">
