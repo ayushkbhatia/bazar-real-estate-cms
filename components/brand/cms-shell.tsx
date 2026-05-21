@@ -15,6 +15,7 @@ import {
   Search,
   MoreVertical,
   ClipboardCheck,
+  Handshake,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Wordmark } from "./wordmark";
@@ -51,6 +52,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
         href: "/admin/valuations",
         icon: ClipboardCheck,
       },
+      { label: "Deals", href: "/admin/deals", icon: Handshake },
     ],
   },
   {
