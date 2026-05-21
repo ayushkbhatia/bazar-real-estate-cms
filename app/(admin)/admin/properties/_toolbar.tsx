@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import {
-  Send,
   ArrowDownToLine,
   UserRoundCog,
   Archive,
@@ -16,20 +15,23 @@ import {
   BULK_SELECTION_CAP,
   BULK_SELECTION_PARAM,
   parseSelectedParam,
+  serializeSelection,
 } from "@/lib/bulk/selection";
+import { BulkPublishDialog } from "./_bulk-publish-dialog";
 
 const selectedParser = parseAsString.withDefault("");
 
 const COMING_SOON_TOASTS: Record<BulkAction, string> = {
-  publish: "Bulk publish lands in PR I4.",
   off_market: "Bulk off-market lands in PR I6.",
   reassign: "Bulk reassign lands in PR I5.",
   archive: "Bulk archive lands in PR I7.",
 };
 
-type BulkAction = "publish" | "off_market" | "reassign" | "archive";
+type BulkAction = "off_market" | "reassign" | "archive";
 
-export function BulkToolbar() {
+export type ToolbarRow = { id: string; reference: string };
+
+export function BulkToolbar({ rows }: { rows: ToolbarRow[] }) {
   const [rawSelected, setRawSelected] = useQueryState(
     BULK_SELECTION_PARAM,
     selectedParser,
@@ -37,6 +39,12 @@ export function BulkToolbar() {
 
   const ids = useMemo(() => parseSelectedParam(rawSelected), [rawSelected]);
   const count = ids.length;
+
+  const references = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const r of rows) m.set(r.id, r.reference);
+    return m;
+  }, [rows]);
 
   if (count === 0) return null;
 
@@ -46,6 +54,10 @@ export function BulkToolbar() {
 
   function onAction(action: BulkAction) {
     toast.info(COMING_SOON_TOASTS[action]);
+  }
+
+  function onPublishComplete(remaining: string[]) {
+    void setRawSelected(serializeSelection(remaining));
   }
 
   const atCap = count >= BULK_SELECTION_CAP;
@@ -85,16 +97,11 @@ export function BulkToolbar() {
       </div>
 
       <div className="flex items-center gap-2 ml-auto">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => onAction("publish")}
-          data-action="publish"
-        >
-          <Send size={12} strokeWidth={1.8} />
-          Publish
-        </Button>
+        <BulkPublishDialog
+          ids={ids}
+          onComplete={onPublishComplete}
+          references={references}
+        />
         <Button
           type="button"
           variant="outline"

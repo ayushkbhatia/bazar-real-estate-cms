@@ -33,7 +33,9 @@ export default async function AdminPropertiesPage() {
       }
     >
       <div className="flex flex-col gap-6">
-        <BulkToolbar />
+        <BulkToolbar
+          rows={rows.map((r) => ({ id: r.id, reference: r.reference }))}
+        />
         <div className="flex items-baseline justify-between">
           <div className="text-[13px] text-bz-muted">
             {total} {total === 1 ? "property" : "properties"}
