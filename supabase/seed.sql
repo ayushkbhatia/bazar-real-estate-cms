@@ -45,7 +45,9 @@ insert into public.properties (
   mode, status, type, area_id, sub_community_id,
   beds, baths, built_up_ft2, year_built,
   tenure, furnishing, view, price_aed, service_charge_per_ft2,
-  amenities, flags, published_at, created_at
+  amenities, flags,
+  listing_permit_no, listing_permit_expires_at, compliance,
+  published_at, created_at
 ) values
   ('44444444-0000-0000-0000-000000000001',
    'BAZ-AD-04891', 'mamsha-3-bed-beachfront-apartment',
@@ -58,6 +60,8 @@ insert into public.properties (
    'freehold', 'fully', 'Sea view', 4200000, 18.5,
    array['Beach access','Concierge','Pool','Gym','Sauna','Covered parking'],
    '{"exclusive": true, "vacant_on_transfer": true, "mortgage_eligible": true}'::jsonb,
+   'ORN-28041-AD', current_date + interval '1 year',
+   '{"form_a": true, "title_deed": true, "noc": true, "power_of_attorney": true}'::jsonb,
    now() - interval '2 days', now() - interval '2 days'),
 
   ('44444444-0000-0000-0000-000000000002',
@@ -71,6 +75,8 @@ insert into public.properties (
    'freehold', 'fully', 'Beach view', 12500000, 14.2,
    array['Private pool','Garden','Beach access','Maid''s room','Driver''s room','Smart home'],
    '{"vacant_on_transfer": true, "mortgage_eligible": true}'::jsonb,
+   'ORN-28041-AD', current_date + interval '1 year',
+   '{"form_a": true, "title_deed": true, "noc": true, "power_of_attorney": true}'::jsonb,
    now() - interval '5 days', now() - interval '5 days'),
 
   ('44444444-0000-0000-0000-000000000003',
@@ -84,6 +90,8 @@ insert into public.properties (
    'freehold', 'semi', 'Skyline view', 2800000, 16.0,
    array['Pool','Gym','Concierge','Covered parking','Storage'],
    '{"mortgage_eligible": true}'::jsonb,
+   'ORN-28041-AD', current_date + interval '1 year',
+   '{"form_a": true, "title_deed": true, "noc": true, "power_of_attorney": true}'::jsonb,
    now() - interval '1 day', now() - interval '1 day'),
 
   ('44444444-0000-0000-0000-000000000004',
@@ -97,6 +105,8 @@ insert into public.properties (
    'freehold', 'fully', 'Marina view', 1850000, 17.5,
    array['Pool','Gym','Beach club access','Covered parking'],
    '{"mortgage_eligible": true}'::jsonb,
+   'ORN-28041-AD', current_date + interval '1 year',
+   '{"form_a": true, "title_deed": true, "noc": true, "power_of_attorney": true}'::jsonb,
    now() - interval '3 days', now() - interval '3 days'),
 
   ('44444444-0000-0000-0000-000000000005',
@@ -110,6 +120,8 @@ insert into public.properties (
    'freehold', 'unfurnished', 'Garden view', 2950000, 9.4,
    array['Private garden','Maid''s room','Community pool','Tennis court'],
    '{"mortgage_eligible": true}'::jsonb,
+   'ORN-28041-AD', current_date + interval '1 year',
+   '{"form_a": true, "title_deed": true, "noc": true, "power_of_attorney": true}'::jsonb,
    now() - interval '7 days', now() - interval '7 days'),
 
   ('44444444-0000-0000-0000-000000000006',
@@ -123,5 +135,7 @@ insert into public.properties (
    'leasehold', 'fully', 'Sea view', 160000, null,
    array['Pool','Gym','Concierge','Covered parking','Chiller-free'],
    '{}'::jsonb,
+   'ORN-28041-AD', current_date + interval '1 year',
+   '{"form_a": true, "title_deed": true, "noc": true, "power_of_attorney": true}'::jsonb,
    now() - interval '4 days', now() - interval '4 days')
 on conflict (reference) do nothing;
