@@ -67,9 +67,11 @@ export default async function AdminPropertiesPage() {
       title="Properties"
       breadcrumbs="Catalogue"
       primary={
-        <Button disabled title="New property arrives in Phase 1.1c">
-          <Plus size={14} strokeWidth={1.8} />
-          New property
+        <Button asChild>
+          <Link href="/admin/properties/new">
+            <Plus size={14} strokeWidth={1.8} />
+            New property
+          </Link>
         </Button>
       }
     >

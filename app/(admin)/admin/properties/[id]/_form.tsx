@@ -1,16 +1,19 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Save } from "lucide-react";
+import { Save, X } from "lucide-react";
 import { toast } from "sonner";
 import {
   propertyEditSchema,
   type PropertyEditInput,
   PROPERTY_MODES,
   PROPERTY_TYPES,
+  TENURES,
+  FURNISHINGS,
 } from "@/lib/schemas/property";
+import { slugify } from "@/lib/slug";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,12 +25,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { updateProperty } from "./_actions";
+
+export type AreaOption = { id: string; name: string; kind: string };
 
 type Props = {
   propertyId: string;
   initial: PropertyEditInput;
   reference: string;
+  areas: AreaOption[];
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -54,7 +61,26 @@ const MODE_LABELS: Record<(typeof PROPERTY_MODES)[number], string> = {
   commercial: "Commercial",
 };
 
-export function PropertyEditForm({ propertyId, initial, reference }: Props) {
+const TENURE_LABELS: Record<(typeof TENURES)[number], string> = {
+  freehold: "Freehold",
+  leasehold: "Leasehold",
+  usufruct: "Usufruct",
+};
+
+const FURNISHING_LABELS: Record<(typeof FURNISHINGS)[number], string> = {
+  unfurnished: "Unfurnished",
+  semi: "Semi-furnished",
+  fully: "Fully furnished",
+};
+
+const UNSET = "__unset__";
+
+export function PropertyEditForm({
+  propertyId,
+  initial,
+  reference,
+  areas,
+}: Props) {
   const [pending, startTransition] = useTransition();
   const [serverFieldErrors, setServerFieldErrors] = useState<
     Record<string, string>
@@ -73,6 +99,51 @@ export function PropertyEditForm({ propertyId, initial, reference }: Props) {
 
   const type = watch("type");
   const mode = watch("mode");
+  const tenure = watch("tenure") ?? null;
+  const furnishing = watch("furnishing") ?? null;
+  const areaId = watch("area_id") ?? null;
+  const amenities = watch("amenities") ?? [];
+  const slug = watch("slug");
+  const title = watch("title");
+
+  // Suggest a slug when the user opens the SEO tab on a property whose slug
+  // looks empty/default. Auto-fill on change of title if the slug field is
+  // currently empty. Don't override a user-set slug.
+  useEffect(() => {
+    if ((slug === "" || slug == null) && title && title.length >= 3) {
+      setValue("slug", slugify(title), { shouldDirty: true });
+    }
+  }, [title, slug, setValue]);
+
+  const [amenityDraft, setAmenityDraft] = useState("");
+
+  const addAmenity = () => {
+    const next = amenityDraft.trim();
+    if (!next) return;
+    if (amenities.includes(next)) {
+      setAmenityDraft("");
+      return;
+    }
+    setValue("amenities", [...amenities, next], { shouldDirty: true });
+    setAmenityDraft("");
+  };
+
+  const removeAmenity = (a: string) => {
+    setValue(
+      "amenities",
+      amenities.filter((x) => x !== a),
+      { shouldDirty: true },
+    );
+  };
+
+  const sortedAreas = useMemo(
+    () =>
+      [...areas].sort((a, b) => {
+        if (a.kind !== b.kind) return a.kind.localeCompare(b.kind);
+        return a.name.localeCompare(b.name);
+      }),
+    [areas],
+  );
 
   const onSubmit = (values: PropertyEditInput) => {
     setServerFieldErrors({});
@@ -87,24 +158,19 @@ export function PropertyEditForm({ propertyId, initial, reference }: Props) {
     });
   };
 
+  const fieldClass =
+    "border border-bz-border rounded p-2 text-[14px] bg-bz-surface focus:border-bz-ink-2 outline-none";
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       <Tabs defaultValue="overview" className="w-full">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="pricing">Pricing</TabsTrigger>
-          <TabsTrigger value="details" disabled>
-            Details
-          </TabsTrigger>
-          <TabsTrigger value="location" disabled>
-            Location
-          </TabsTrigger>
-          <TabsTrigger value="amenities" disabled>
-            Amenities
-          </TabsTrigger>
-          <TabsTrigger value="seo" disabled>
-            SEO
-          </TabsTrigger>
+          <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsTrigger value="location">Location</TabsTrigger>
+          <TabsTrigger value="amenities">Amenities</TabsTrigger>
+          <TabsTrigger value="seo">SEO</TabsTrigger>
         </TabsList>
 
         {/* OVERVIEW */}
@@ -126,7 +192,7 @@ export function PropertyEditForm({ propertyId, initial, reference }: Props) {
               id="short_description"
               {...register("short_description")}
               rows={3}
-              className="border border-bz-border rounded p-2 text-[14px] resize-y bg-bz-surface focus:border-bz-ink-2 outline-none"
+              className={cn(fieldClass, "resize-y")}
             />
             <span className="text-[11.5px] text-bz-muted">
               Used on cards and search results. Keep it under 320 characters.
@@ -223,7 +289,8 @@ export function PropertyEditForm({ propertyId, initial, reference }: Props) {
                 type="number"
                 step="0.1"
                 {...register("service_charge_per_ft2", {
-                  setValueAs: (v) => (v === "" || v === null ? null : Number(v)),
+                  setValueAs: (v) =>
+                    v === "" || v === null ? null : Number(v),
                 })}
               />
               <FieldError
@@ -267,7 +334,8 @@ export function PropertyEditForm({ propertyId, initial, reference }: Props) {
                 type="number"
                 step="1"
                 {...register("built_up_ft2", {
-                  setValueAs: (v) => (v === "" || v === null ? null : Number(v)),
+                  setValueAs: (v) =>
+                    v === "" || v === null ? null : Number(v),
                 })}
               />
               <FieldError
@@ -283,7 +351,8 @@ export function PropertyEditForm({ propertyId, initial, reference }: Props) {
                 type="number"
                 step="1"
                 {...register("plot_ft2", {
-                  setValueAs: (v) => (v === "" || v === null ? null : Number(v)),
+                  setValueAs: (v) =>
+                    v === "" || v === null ? null : Number(v),
                 })}
               />
               <FieldError
@@ -292,6 +361,322 @@ export function PropertyEditForm({ propertyId, initial, reference }: Props) {
                 }
               />
             </div>
+          </div>
+        </TabsContent>
+
+        {/* DETAILS */}
+        <TabsContent
+          value="details"
+          className="bg-bz-surface border border-bz-border rounded-lg p-6 mt-6 flex flex-col gap-5"
+        >
+          <div className="grid grid-cols-3 gap-5">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="year_built">Year built</Label>
+              <Input
+                id="year_built"
+                type="number"
+                step="1"
+                {...register("year_built", {
+                  setValueAs: (v) =>
+                    v === "" || v === null ? null : Number(v),
+                })}
+              />
+              <FieldError
+                message={
+                  errors.year_built?.message ?? serverFieldErrors.year_built
+                }
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="floor">Floor</Label>
+              <Input
+                id="floor"
+                type="number"
+                step="1"
+                {...register("floor", {
+                  setValueAs: (v) =>
+                    v === "" || v === null ? null : Number(v),
+                })}
+              />
+              <FieldError
+                message={errors.floor?.message ?? serverFieldErrors.floor}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="parking_bays">Parking bays</Label>
+              <Input
+                id="parking_bays"
+                type="number"
+                step="1"
+                {...register("parking_bays", {
+                  setValueAs: (v) =>
+                    v === "" || v === null ? null : Number(v),
+                })}
+              />
+              <FieldError
+                message={
+                  errors.parking_bays?.message ?? serverFieldErrors.parking_bays
+                }
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-5">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="tenure">Tenure</Label>
+              <Select
+                value={tenure ?? UNSET}
+                onValueChange={(v) =>
+                  setValue(
+                    "tenure",
+                    v === UNSET ? null : (v as PropertyEditInput["tenure"]),
+                    { shouldDirty: true },
+                  )
+                }
+              >
+                <SelectTrigger id="tenure">
+                  <SelectValue placeholder="Unset" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={UNSET}>Unset</SelectItem>
+                  {TENURES.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {TENURE_LABELS[t]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="furnishing">Furnishing</Label>
+              <Select
+                value={furnishing ?? UNSET}
+                onValueChange={(v) =>
+                  setValue(
+                    "furnishing",
+                    v === UNSET
+                      ? null
+                      : (v as PropertyEditInput["furnishing"]),
+                    { shouldDirty: true },
+                  )
+                }
+              >
+                <SelectTrigger id="furnishing">
+                  <SelectValue placeholder="Unset" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={UNSET}>Unset</SelectItem>
+                  {FURNISHINGS.map((f) => (
+                    <SelectItem key={f} value={f}>
+                      {FURNISHING_LABELS[f]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-5">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="view">View</Label>
+              <Input id="view" {...register("view")} placeholder="Sea view" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="orientation">Orientation</Label>
+              <Input
+                id="orientation"
+                {...register("orientation")}
+                placeholder="North-east"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-5">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="listing_permit_no">Listing permit no.</Label>
+              <Input
+                id="listing_permit_no"
+                {...register("listing_permit_no")}
+                placeholder="ORN-..."
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="listing_permit_expires_at">Permit expires</Label>
+              <Input
+                id="listing_permit_expires_at"
+                type="date"
+                {...register("listing_permit_expires_at")}
+              />
+              <FieldError
+                message={
+                  errors.listing_permit_expires_at?.message ??
+                  serverFieldErrors.listing_permit_expires_at
+                }
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="dld_plot_number">DLD plot no.</Label>
+              <Input
+                id="dld_plot_number"
+                {...register("dld_plot_number")}
+                placeholder="PLOT-..."
+              />
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* LOCATION */}
+        <TabsContent
+          value="location"
+          className="bg-bz-surface border border-bz-border rounded-lg p-6 mt-6 flex flex-col gap-5"
+        >
+          <div className="flex flex-col gap-1.5 max-w-md">
+            <Label htmlFor="area_id">Area</Label>
+            <Select
+              value={areaId ?? UNSET}
+              onValueChange={(v) =>
+                setValue("area_id", v === UNSET ? null : v, {
+                  shouldDirty: true,
+                })
+              }
+            >
+              <SelectTrigger id="area_id">
+                <SelectValue placeholder="Choose an area" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={UNSET}>Unset</SelectItem>
+                {sortedAreas.map((a) => (
+                  <SelectItem key={a.id} value={a.id}>
+                    {a.name}
+                    <span className="ml-2 text-[11px] text-bz-muted">
+                      · {a.kind}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-[11.5px] text-bz-muted">
+              Sub-community and building pickers come in Phase 1.1d.
+            </span>
+            <FieldError
+              message={errors.area_id?.message ?? serverFieldErrors.area_id}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="address_line">Address line</Label>
+            <Input
+              id="address_line"
+              {...register("address_line")}
+              placeholder="Mamsha Al Saadiyat, Saadiyat Island, Abu Dhabi"
+            />
+            <span className="text-[11.5px] text-bz-muted">
+              Internal — used for advisor reference. Public view shows area
+              + building only.
+            </span>
+          </div>
+        </TabsContent>
+
+        {/* AMENITIES */}
+        <TabsContent
+          value="amenities"
+          className="bg-bz-surface border border-bz-border rounded-lg p-6 mt-6 flex flex-col gap-5"
+        >
+          <div className="flex gap-2">
+            <Input
+              placeholder="Add an amenity… (press Enter or , to add)"
+              value={amenityDraft}
+              onChange={(e) => setAmenityDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === ",") {
+                  e.preventDefault();
+                  addAmenity();
+                } else if (
+                  e.key === "Backspace" &&
+                  amenityDraft === "" &&
+                  amenities.length > 0
+                ) {
+                  removeAmenity(amenities[amenities.length - 1]);
+                }
+              }}
+            />
+            <Button type="button" variant="outline" onClick={addAmenity}>
+              Add
+            </Button>
+          </div>
+          {amenities.length === 0 ? (
+            <p className="text-[12px] text-bz-muted">
+              No amenities yet — start by adding &ldquo;Pool&rdquo;,
+              &ldquo;Gym&rdquo;, &ldquo;Concierge&rdquo;, etc.
+            </p>
+          ) : (
+            <ul className="flex flex-wrap gap-2">
+              {amenities.map((a) => (
+                <li
+                  key={a}
+                  className="inline-flex items-center gap-1.5 px-2.5 h-[26px] bg-bz-surface-2 border border-bz-border rounded-full text-[12.5px]"
+                >
+                  {a}
+                  <button
+                    type="button"
+                    onClick={() => removeAmenity(a)}
+                    className="text-bz-muted hover:text-bz-ink"
+                    aria-label={`Remove ${a}`}
+                  >
+                    <X size={11} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+          <FieldError
+            message={errors.amenities?.message ?? serverFieldErrors.amenities}
+          />
+        </TabsContent>
+
+        {/* SEO */}
+        <TabsContent
+          value="seo"
+          className="bg-bz-surface border border-bz-border rounded-lg p-6 mt-6 flex flex-col gap-5"
+        >
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="slug">URL slug</Label>
+            <Input id="slug" {...register("slug")} />
+            <span className="text-[11.5px] text-bz-muted">
+              Final URL: <span className="mono text-bz-ink-2">
+                /p/{slug || "<slug>"}-{reference.toLowerCase()}
+              </span>
+              . Lowercase letters, numbers, and hyphens only.
+            </span>
+            <FieldError
+              message={errors.slug?.message ?? serverFieldErrors.slug}
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="meta_title">Meta title</Label>
+            <Input
+              id="meta_title"
+              {...register("meta_title")}
+              placeholder="Inherits the listing title if blank"
+            />
+            <span className="text-[11.5px] text-bz-muted">
+              Shown in search engines. Up to ~70 characters.
+            </span>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="meta_description">Meta description</Label>
+            <textarea
+              id="meta_description"
+              {...register("meta_description")}
+              rows={3}
+              className={cn(fieldClass, "resize-y")}
+              placeholder="Inherits the short description if blank"
+            />
+            <span className="text-[11.5px] text-bz-muted">
+              Up to ~180 characters.
+            </span>
           </div>
         </TabsContent>
       </Tabs>
