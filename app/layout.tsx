@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { PostHogProvider } from "@/lib/posthog";
@@ -51,9 +52,11 @@ export default function RootLayout({
       className={`${geist.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} h-full`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <PostHogProvider>
-          <TooltipProvider delayDuration={150}>{children}</TooltipProvider>
-        </PostHogProvider>
+        <NuqsAdapter>
+          <PostHogProvider>
+            <TooltipProvider delayDuration={150}>{children}</TooltipProvider>
+          </PostHogProvider>
+        </NuqsAdapter>
         <Toaster richColors closeButton position="bottom-right" />
         <Analytics />
       </body>

@@ -1,6 +1,7 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import type { PropertyFilters } from "@/lib/filters/property";
 import type { Database } from "@/db/types";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
@@ -80,23 +81,65 @@ function attachHero<T extends { property_media?: RawMediaJoin[] | null }>(
   return { ...rest, hero: pickHero(property_media) };
 }
 
+/** Resolve an area slug into its UUID. Returns null if not found. */
+async function resolveAreaId(
+  supabase: ReturnType<typeof createSupabasePublicClient>,
+  slug: string,
+): Promise<string | null> {
+  const { data } = await supabase
+    .from("areas")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+  return data?.id ?? null;
+}
+
 /** List published listings for the public marketplace. */
 export async function listPublishedProperties(opts: {
   mode?: Mode;
+  filters?: PropertyFilters;
   limit?: number;
   offset?: number;
 }): Promise<{ rows: ListingRow[]; total: number }> {
   if (!isSupabaseConfigured) return { rows: [], total: 0 };
   const supabase = createSupabasePublicClient();
+
   let query = supabase
     .from("properties")
     .select(LISTING_FIELDS, { count: "exact" })
     .eq("status", "published")
     .is("deleted_at", null);
+
   if (opts.mode) query = query.eq("mode", opts.mode);
+
+  const filters = opts.filters;
+  if (filters) {
+    if (filters.type) query = query.eq("type", filters.type);
+    if (filters.beds != null) {
+      // 5+ buckets — treat the value as a minimum once it hits the cap.
+      if (filters.beds >= 5) query = query.gte("beds", 5);
+      else query = query.eq("beds", filters.beds);
+    }
+    if (filters.baths != null) {
+      if (filters.baths >= 4) query = query.gte("baths", 4);
+      else query = query.eq("baths", filters.baths);
+    }
+    if (filters.price_min != null)
+      query = query.gte("price_aed", filters.price_min);
+    if (filters.price_max != null)
+      query = query.lte("price_aed", filters.price_max);
+
+    if (filters.area) {
+      const id = await resolveAreaId(supabase, filters.area);
+      if (id) query = query.eq("area_id", id);
+      else return { rows: [], total: 0 }; // bogus area slug → no results
+    }
+  }
+
   query = query
     .order("published_at", { ascending: false })
     .range(opts.offset ?? 0, (opts.offset ?? 0) + (opts.limit ?? 24) - 1);
+
   const { data, error, count } = await query;
   if (error) {
     console.error("[listPublishedProperties]", error);

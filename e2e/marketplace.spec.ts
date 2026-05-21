@@ -36,3 +36,22 @@ test("admin gating redirects anon to sign-in", async ({ page }) => {
   await page.goto("/admin");
   await expect(page).toHaveURL(/\/sign-in/);
 });
+
+test("filter bar narrows the result set via URL state", async ({ page }) => {
+  await page.goto("/buy");
+  // Beds filter — click "3 beds" (aria-label distinguishes from the baths button).
+  await page.getByRole("button", { name: "3 beds" }).click();
+
+  // URL should reflect the filter
+  await expect(page).toHaveURL(/[?&]beds=3\b/);
+
+  // Result count shows the active filter summary
+  await expect(page.getByText(/3\+ beds/i)).toBeVisible();
+
+  // At least one card still rendered (seeded data has a 3-bed match)
+  await expect(page.locator("a[href^='/p/']").first()).toBeVisible();
+
+  // Clear filters returns us to base state
+  await page.getByRole("button", { name: /clear 1 filter/i }).click();
+  await expect(page).not.toHaveURL(/beds=3/);
+});
