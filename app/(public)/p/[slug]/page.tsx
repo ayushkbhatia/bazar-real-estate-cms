@@ -18,6 +18,7 @@ import {
 import { mediaPublicUrl } from "@/lib/media";
 import { propertyJsonLd } from "@/lib/jsonld";
 import { getSessionUser } from "@/lib/supabase/server";
+import { EnquiryForm } from "../../_components/enquiry-form";
 
 export const revalidate = 60;
 
@@ -267,23 +268,16 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         <aside className="sticky top-6 self-start">
           <div className="bg-bz-surface border border-bz-border rounded-lg p-5">
             <Eyebrow>Talk to an advisor</Eyebrow>
-            <h4 className="serif text-[22px] mt-2 leading-tight">
-              Schedule a viewing or send a brief.
+            <h4 className="serif text-[22px] mt-2 leading-tight mb-4">
+              Send a brief on{" "}
+              <span className="mono text-[16px]">{property.reference}</span>.
             </h4>
-            <p className="mt-3 text-[13px] text-bz-muted leading-relaxed">
-              Our advisors respond within two hours during business hours and
-              by next morning otherwise.
-            </p>
-            <div className="mt-5 flex flex-col gap-2">
-              <Button asChild>
-                <Link href={`/contact?ref=${property.reference}`}>
-                  Send enquiry
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href="/concierge">Talk to an advisor</Link>
-              </Button>
-            </div>
+            <EnquiryForm
+              source="property_page"
+              propertyId={property.id}
+              propertyReference={property.reference}
+              compact
+            />
             <div className="mt-5 pt-4 border-t border-bz-border space-y-1.5 text-[12px] text-bz-muted">
               {property.listing_permit_no ? (
                 <div>
