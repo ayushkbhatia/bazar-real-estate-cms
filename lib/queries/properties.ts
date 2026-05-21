@@ -31,7 +31,7 @@ type Mode = Database["public"]["Enums"]["property_mode"];
 type Status = Database["public"]["Enums"]["property_status"];
 
 const LISTING_FIELDS =
-  "id, reference, slug, title, short_description, price_aed, mode, status, type, beds, baths, built_up_ft2, flags, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text))";
+  "id, reference, slug, title, short_description, price_aed, mode, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text))";
 
 const DETAIL_FIELDS =
   "id, reference, slug, title, short_description, description, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, service_charge_per_ft2, amenities, flags, dld_plot_number, listing_permit_no, address_line, floor, published_at, created_at, updated_at, areas:area_id(name, slug), developments:development_id(name, slug), property_media(role, sort_order, media:media_assets(storage_key, filename, alt_text))";
@@ -58,6 +58,8 @@ export type HeroMedia = {
   alt_text: string | null;
 } | null;
 
+export type Geo = { lat: number; lng: number } | null;
+
 export type ListingRow = {
   id: string;
   reference: string;
@@ -72,6 +74,7 @@ export type ListingRow = {
   baths: number;
   built_up_ft2: number | null;
   flags: { exclusive?: boolean; vacant_on_transfer?: boolean; mortgage_eligible?: boolean } | null;
+  geo: Geo;
   published_at: string | null;
   created_at: string;
   areas: { name: string; slug: string } | null;
@@ -285,20 +288,9 @@ export async function listAllPropertiesForAdmin(opts: {
   return { rows, total: count ?? 0 };
 }
 
-/** Format AED with K/M suffix. */
-export function formatPriceAED(aed: number): string {
-  if (aed >= 1_000_000) return `AED ${(aed / 1_000_000).toFixed(1)}M`;
-  if (aed >= 1_000) return `AED ${(aed / 1_000).toFixed(0)}K`;
-  return `AED ${aed.toLocaleString()}`;
-}
-
-/** Build canonical URL for a property: /p/<slug>-<reference-lowercased>. */
-export function propertyUrl(row: { slug: string; reference: string }): string {
-  return `/p/${row.slug}-${row.reference.toLowerCase()}`;
-}
-
-/** Reverse: given a `[slug]` param, extract the trailing BAZ-XX-NNNN reference. */
-export function extractReferenceFromSlug(slug: string): string | null {
-  const match = slug.match(/(baz-[a-z]+-\d+)$/i);
-  return match ? match[1].toUpperCase() : null;
-}
+// Re-export the pure utilities so existing imports keep working.
+export {
+  formatPriceAED,
+  propertyUrl,
+  extractReferenceFromSlug,
+} from "./property-utils";
