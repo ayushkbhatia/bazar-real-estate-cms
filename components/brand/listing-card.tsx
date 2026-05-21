@@ -27,6 +27,9 @@ export type ListingCardProps = {
   initialSaved?: boolean;
   /** Whether the current user is signed in (for SaveButton). */
   isAuthed?: boolean;
+  /** Hint Next/Image to preload this hero — pass true for the first card
+   *  on a search results / featured row to improve LCP. */
+  priority?: boolean;
   variant?: ListingCardVariant;
   href?: string;
   className?: string;
@@ -48,6 +51,7 @@ function Media({
   aspect,
   heroSrc,
   heroAlt,
+  priority,
   propertyId,
   initialSaved,
   isAuthed,
@@ -59,6 +63,7 @@ function Media({
   aspect: "4/3" | "5/4" | "auto";
   heroSrc?: string | null;
   heroAlt?: string;
+  priority?: boolean;
   propertyId?: string;
   initialSaved?: boolean;
   isAuthed?: boolean;
@@ -108,7 +113,8 @@ function Media({
           src={heroSrc}
           alt={heroAlt ?? imgLabel ?? "Property hero"}
           fill
-          sizes="(max-width: 768px) 100vw, 33vw"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          priority={priority}
           className="object-cover"
         />
         {overlays}
@@ -143,6 +149,7 @@ export function ListingCard({
   propertyId,
   initialSaved,
   isAuthed,
+  priority,
   variant = "default",
   className,
 }: ListingCardProps) {
@@ -158,6 +165,7 @@ export function ListingCard({
             aspect="5/4"
             heroSrc={heroSrc}
             heroAlt={heroAlt}
+            priority={priority}
             propertyId={propertyId}
             initialSaved={initialSaved}
             isAuthed={isAuthed}
@@ -200,6 +208,7 @@ export function ListingCard({
             aspect="auto"
             heroSrc={heroSrc}
             heroAlt={heroAlt}
+            priority={priority}
             propertyId={propertyId}
             initialSaved={initialSaved}
             isAuthed={isAuthed}
