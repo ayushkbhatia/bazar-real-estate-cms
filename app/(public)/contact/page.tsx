@@ -1,13 +1,33 @@
 import type { Metadata } from "next";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { EnquiryForm } from "../_components/enquiry-form";
+import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Contact",
   description:
     "Talk to a Bazar advisor. We respond within 2 hours during business hours and by next morning otherwise.",
 };
+
+function ContactWhatsAppLink() {
+  const waUrl = buildAdvisorWhatsAppLink("Hi Bazar, I'd like to talk.");
+  if (!waUrl) return null;
+  return (
+    <div className="mt-4 flex items-center justify-center">
+      <a
+        href={waUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-testid="contact-whatsapp-link"
+        className="inline-flex items-center gap-2 text-[13px] text-bz-ink-2 hover:text-bz-accent transition-colors"
+      >
+        <MessageCircle size={14} strokeWidth={1.6} />
+        WhatsApp us instead
+      </a>
+    </div>
+  );
+}
 
 export default function ContactPage() {
   return (
@@ -92,6 +112,7 @@ export default function ContactPage() {
             </h2>
             <EnquiryForm source="contact_page" showIntent />
           </div>
+          <ContactWhatsAppLink />
         </aside>
       </div>
     </div>
