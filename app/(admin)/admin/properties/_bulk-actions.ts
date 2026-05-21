@@ -172,3 +172,56 @@ export async function bulkPublishProperties(
     },
   };
 }
+
+export type BulkReassignResult =
+  | {
+      status: "ok";
+      succeeded: string[];
+      skipped: { id: string; reason: string }[];
+    }
+  | { status: "error"; message: string };
+
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Bulk-reassign a list of properties to an agent (or to "no agent" when
+ * `agentId === null`). Validates the agent id at the boundary; the deeper
+ * RLS gate happens inside `bulkUpdateProperties`.
+ *
+ * Per-id audit rows come from `bulkUpdateProperties` automatically — they
+ * use action='property.bulk_update' with `{ assigned_agent_id }` deltas.
+ */
+export async function bulkReassignProperties(
+  ids: string[],
+  agentId: string | null,
+): Promise<BulkReassignResult> {
+  if (!isSupabaseConfigured) {
+    return {
+      status: "error",
+      message: "Supabase env vars are not set.",
+    };
+  }
+  if (ids.length === 0) {
+    return {
+      status: "error",
+      message: "Select at least one property to reassign.",
+    };
+  }
+  if (agentId !== null && !UUID_RE.test(agentId)) {
+    return { status: "error", message: "Invalid agent id." };
+  }
+
+  const result = await bulkUpdateProperties({
+    ids,
+    patch: { assigned_agent_id: agentId },
+  });
+  if (result.status === "error") {
+    return { status: "error", message: result.message };
+  }
+  return {
+    status: "ok",
+    succeeded: result.succeeded,
+    skipped: result.skipped.map((s) => ({ id: s.id, reason: s.reason })),
+  };
+}

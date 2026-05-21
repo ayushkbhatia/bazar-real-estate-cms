@@ -3,7 +3,6 @@
 import { useMemo } from "react";
 import {
   ArrowDownToLine,
-  UserRoundCog,
   Archive,
   X,
 } from "lucide-react";
@@ -18,20 +17,29 @@ import {
   serializeSelection,
 } from "@/lib/bulk/selection";
 import { BulkPublishDialog } from "./_bulk-publish-dialog";
+import {
+  BulkReassignDialog,
+  type AgentOption,
+} from "./_bulk-reassign-dialog";
 
 const selectedParser = parseAsString.withDefault("");
 
 const COMING_SOON_TOASTS: Record<BulkAction, string> = {
   off_market: "Bulk off-market lands in PR I6.",
-  reassign: "Bulk reassign lands in PR I5.",
   archive: "Bulk archive lands in PR I7.",
 };
 
-type BulkAction = "off_market" | "reassign" | "archive";
+type BulkAction = "off_market" | "archive";
 
 export type ToolbarRow = { id: string; reference: string };
 
-export function BulkToolbar({ rows }: { rows: ToolbarRow[] }) {
+export function BulkToolbar({
+  rows,
+  agents,
+}: {
+  rows: ToolbarRow[];
+  agents: AgentOption[];
+}) {
   const [rawSelected, setRawSelected] = useQueryState(
     BULK_SELECTION_PARAM,
     selectedParser,
@@ -57,6 +65,10 @@ export function BulkToolbar({ rows }: { rows: ToolbarRow[] }) {
   }
 
   function onPublishComplete(remaining: string[]) {
+    void setRawSelected(serializeSelection(remaining));
+  }
+
+  function onReassignComplete(remaining: string[]) {
     void setRawSelected(serializeSelection(remaining));
   }
 
@@ -112,16 +124,12 @@ export function BulkToolbar({ rows }: { rows: ToolbarRow[] }) {
           <ArrowDownToLine size={12} strokeWidth={1.8} />
           Move off-market
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => onAction("reassign")}
-          data-action="reassign"
-        >
-          <UserRoundCog size={12} strokeWidth={1.8} />
-          Reassign agent
-        </Button>
+        <BulkReassignDialog
+          ids={ids}
+          references={references}
+          agents={agents}
+          onComplete={onReassignComplete}
+        />
         <Button
           type="button"
           variant="outline"

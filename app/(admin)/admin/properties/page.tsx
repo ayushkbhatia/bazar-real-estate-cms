@@ -4,13 +4,17 @@ import { CmsShell } from "@/components/brand/cms-shell";
 import { LiveDot } from "@/lib/realtime/live-dot";
 import { Button } from "@/components/ui/button";
 import { listAllPropertiesForAdmin } from "@/lib/queries/properties";
+import { listActiveAgents } from "@/lib/queries/staff-agents";
 import { PropertiesTable } from "./_table";
 import { BulkToolbar } from "./_toolbar";
 
 export const dynamic = "force-dynamic"; // auth-aware fetch
 
 export default async function AdminPropertiesPage() {
-  const { rows, total } = await listAllPropertiesForAdmin({ limit: 100 });
+  const [{ rows, total }, agents] = await Promise.all([
+    listAllPropertiesForAdmin({ limit: 100 }),
+    listActiveAgents(),
+  ]);
 
   return (
     <CmsShell
@@ -35,6 +39,11 @@ export default async function AdminPropertiesPage() {
       <div className="flex flex-col gap-6">
         <BulkToolbar
           rows={rows.map((r) => ({ id: r.id, reference: r.reference }))}
+          agents={agents.map((a) => ({
+            user_id: a.user_id,
+            display_name: a.display_name,
+            title: a.title,
+          }))}
         />
         <div className="flex items-baseline justify-between">
           <div className="text-[13px] text-bz-muted">
