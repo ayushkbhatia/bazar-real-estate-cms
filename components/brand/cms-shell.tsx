@@ -64,7 +64,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
 
 type CmsShellProps = {
   title: string;
-  breadcrumbs?: string;
+  breadcrumbs?: React.ReactNode;
   primary?: React.ReactNode;
   secondary?: React.ReactNode;
   children: React.ReactNode;
