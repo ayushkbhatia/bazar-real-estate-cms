@@ -37,8 +37,8 @@ const STATUS_STYLES: Record<Status, string> = {
   no_show: "bg-bz-surface-3 text-bz-muted",
 };
 
-async function fetchMyViewings(): Promise<Row[]> {
-  if (!isSupabaseConfigured) return [];
+async function fetchMyViewings(): Promise<{ rows: Row[]; nowMs: number }> {
+  if (!isSupabaseConfigured) return { rows: [], nowMs: Date.now() };
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("viewings")
@@ -46,7 +46,10 @@ async function fetchMyViewings(): Promise<Row[]> {
       "id, starts_at, duration_minutes, location, status, notes, property_id, properties:property_id(reference, slug, title)",
     )
     .order("starts_at", { ascending: true });
-  return (data ?? []) as unknown as Row[];
+  return {
+    rows: (data ?? []) as unknown as Row[],
+    nowMs: Date.now(),
+  };
 }
 
 function formatRange(iso: string, minutes: number): string {
@@ -62,11 +65,10 @@ function formatRange(iso: string, minutes: number): string {
 }
 
 export default async function AccountViewingsPage() {
-  const rows = await fetchMyViewings();
-  const now = Date.now();
+  const { rows, nowMs } = await fetchMyViewings();
   const upcoming = rows.filter(
     (r) =>
-      new Date(r.starts_at).getTime() >= now - 60 * 60_000 &&
+      new Date(r.starts_at).getTime() >= nowMs - 60 * 60_000 &&
       r.status !== "cancelled" &&
       r.status !== "completed" &&
       r.status !== "no_show",
