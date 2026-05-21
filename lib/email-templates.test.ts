@@ -179,3 +179,70 @@ describe("valuationReportTemplate", () => {
     expect(html).toContain("Mamsha 7 has had a strong run");
   });
 });
+
+describe("dealStageChangeTemplate", () => {
+  const baseOpts = {
+    recipientName: "Hessa",
+    propertyReference: "BAZ-AD-04891",
+    propertyTitle: "Mamsha 3-bed",
+    dealId: "deal-123",
+  };
+
+  it("buyer MoU email prompts upload of KYC documents", async () => {
+    const { dealStageChangeTemplate } = await importModule();
+    const { subject, text, html } = dealStageChangeTemplate({
+      ...baseOpts,
+      audience: "buyer",
+      stage: "mou",
+    });
+    expect(subject).toContain("BAZ-AD-04891");
+    expect(text).toMatch(/passport.+Emirates ID|Emirates ID.+passport/);
+    expect(html).toContain("/account/documents");
+  });
+
+  it("buyer DLD email mentions transfer appointment", async () => {
+    const { dealStageChangeTemplate } = await importModule();
+    const { text } = dealStageChangeTemplate({
+      ...baseOpts,
+      audience: "buyer",
+      stage: "dld_pending",
+    });
+    expect(text).toMatch(/transfer|DLD/);
+  });
+
+  it("agent email subjects are namespaced", async () => {
+    const { dealStageChangeTemplate } = await importModule();
+    const { subject, html } = dealStageChangeTemplate({
+      ...baseOpts,
+      audience: "agent",
+      stage: "noc_pending",
+    });
+    expect(subject.startsWith("[Deal ")).toBe(true);
+    expect(subject).toContain("BAZ-AD-04891");
+    // Deal-file link only present in agent emails.
+    expect(html).toContain("/admin/deals/deal-123");
+  });
+
+  it("buyer transferred email is celebratory + does not include the deal-file link", async () => {
+    const { dealStageChangeTemplate } = await importModule();
+    const { text, html } = dealStageChangeTemplate({
+      ...baseOpts,
+      audience: "buyer",
+      stage: "transferred",
+    });
+    expect(text).toMatch(/Congratulations|welcome home|Title transferred/i);
+    expect(html).not.toContain("/admin/deals/");
+  });
+
+  it("escapes recipient name to prevent HTML injection", async () => {
+    const { dealStageChangeTemplate } = await importModule();
+    const { html } = dealStageChangeTemplate({
+      ...baseOpts,
+      recipientName: "<img src=x>",
+      audience: "buyer",
+      stage: "mou",
+    });
+    expect(html).not.toContain("<img src=x>");
+    expect(html).toContain("&lt;img src=x&gt;");
+  });
+});

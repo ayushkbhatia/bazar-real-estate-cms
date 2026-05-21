@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
 import {
@@ -10,6 +11,8 @@ import {
   type DocumentKind,
 } from "@/lib/deals";
 import { createDealDocumentUpload } from "@/lib/documents-storage";
+import { sendEmail } from "@/lib/email";
+import { dealStageChangeTemplate } from "@/lib/email-templates";
 
 export type StageAdvanceResult =
   | { status: "ok"; stage: DealStage }
@@ -111,9 +114,104 @@ export async function advanceDealStage(opts: {
     after: { ...patch },
   });
 
+  // Best-effort emails to buyer + agent. Failures are logged but don't
+  // block the stage advance — the user already saw the success in the UI.
+  void sendStageEmails(opts.dealId, opts.to);
+
   revalidatePath("/admin/deals");
   revalidatePath(`/admin/deals/${opts.dealId}`);
   return { status: "ok", stage: opts.to };
+}
+
+/**
+ * Pulls the buyer + agent contacts for the deal and emails both with the
+ * stage-specific copy. Uses the service-role client so we can read
+ * auth.users (which RLS hides) for the agent's email.
+ */
+async function sendStageEmails(dealId: string, stage: DealStage) {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data: deal } = await supabase
+      .from("deals")
+      .select(
+        `id, buyer_account_id, lead_agent_id,
+         properties:property_id(reference, title),
+         agent:lead_agent_id(display_name)`,
+      )
+      .eq("id", dealId)
+      .maybeSingle();
+    if (!deal) return;
+
+    const propRow = deal.properties as
+      | { reference: string; title: string }
+      | null;
+    if (!propRow) return;
+
+    const agent = deal.agent as { display_name: string } | null;
+
+    // Buyer name from accounts via a separate lookup (FK ambiguity).
+    const { data: buyerRow } = await supabase
+      .from("accounts")
+      .select("first_name, last_name")
+      .eq("user_id", deal.buyer_account_id)
+      .maybeSingle();
+    const buyer = buyerRow as
+      | { first_name: string | null; last_name: string | null }
+      | null;
+
+    // Resolve emails via service-role.
+    const admin = createAdminClient();
+    if (!admin) return;
+
+    const recipients: {
+      audience: "buyer" | "agent";
+      email: string;
+      name: string;
+    }[] = [];
+
+    if (deal.buyer_account_id) {
+      const { data } = await admin.auth.admin.getUserById(
+        deal.buyer_account_id,
+      );
+      const email = data?.user?.email;
+      if (email) {
+        const name =
+          [buyer?.first_name, buyer?.last_name].filter(Boolean).join(" ") ||
+          "there";
+        recipients.push({ audience: "buyer", email, name });
+      }
+    }
+    if (deal.lead_agent_id) {
+      const { data } = await admin.auth.admin.getUserById(deal.lead_agent_id);
+      const email = data?.user?.email;
+      if (email) {
+        recipients.push({
+          audience: "agent",
+          email,
+          name: agent?.display_name ?? "Bazar advisor",
+        });
+      }
+    }
+
+    for (const r of recipients) {
+      const tpl = dealStageChangeTemplate({
+        recipientName: r.name,
+        audience: r.audience,
+        propertyReference: propRow.reference,
+        propertyTitle: propRow.title ?? null,
+        stage,
+        dealId,
+      });
+      await sendEmail({
+        to: r.email,
+        subject: tpl.subject,
+        text: tpl.text,
+        html: tpl.html,
+      });
+    }
+  } catch (err) {
+    console.warn("[deal.stage_change] email send failed:", (err as Error).message);
+  }
 }
 
 export type DocActionResult =
