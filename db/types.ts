@@ -397,6 +397,105 @@ export type Database = {
           },
         ]
       }
+      deals: {
+        Row: {
+          advisory_fee_aed: number
+          buyer_account_id: string
+          commission_aed: number | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          enquiry_id: string | null
+          id: string
+          lead_agent_id: string | null
+          mou_signed_at: string | null
+          noc_obtained_at: string | null
+          notes: string | null
+          price_aed: number
+          property_id: string
+          seller_account_id: string | null
+          stage: Database["public"]["Enums"]["deal_stage"]
+          transferred_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          advisory_fee_aed?: number
+          buyer_account_id: string
+          commission_aed?: number | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          enquiry_id?: string | null
+          id?: string
+          lead_agent_id?: string | null
+          mou_signed_at?: string | null
+          noc_obtained_at?: string | null
+          notes?: string | null
+          price_aed: number
+          property_id: string
+          seller_account_id?: string | null
+          stage?: Database["public"]["Enums"]["deal_stage"]
+          transferred_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          advisory_fee_aed?: number
+          buyer_account_id?: string
+          commission_aed?: number | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          enquiry_id?: string | null
+          id?: string
+          lead_agent_id?: string | null
+          mou_signed_at?: string | null
+          noc_obtained_at?: string | null
+          notes?: string | null
+          price_aed?: number
+          property_id?: string
+          seller_account_id?: string | null
+          stage?: Database["public"]["Enums"]["deal_stage"]
+          transferred_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_buyer_account_id_fkey"
+            columns: ["buyer_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "deals_enquiry_id_fkey"
+            columns: ["enquiry_id"]
+            isOneToOne: false
+            referencedRelation: "enquiries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_lead_agent_id_fkey"
+            columns: ["lead_agent_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "deals_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_seller_account_id_fkey"
+            columns: ["seller_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       developers: {
         Row: {
           created_at: string
@@ -679,6 +778,87 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "media_assets"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      documents: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          expires_at: string | null
+          filename: string | null
+          id: string
+          kind: Database["public"]["Enums"]["document_kind"]
+          media_id: string | null
+          mime_type: string | null
+          notes: string | null
+          owner_id: string
+          owner_kind: Database["public"]["Enums"]["document_owner_kind"]
+          rejected_reason: string | null
+          size_bytes: number | null
+          status: Database["public"]["Enums"]["document_status"]
+          storage_key: string | null
+          updated_at: string
+          uploaded_by: string | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          expires_at?: string | null
+          filename?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["document_kind"]
+          media_id?: string | null
+          mime_type?: string | null
+          notes?: string | null
+          owner_id: string
+          owner_kind: Database["public"]["Enums"]["document_owner_kind"]
+          rejected_reason?: string | null
+          size_bytes?: number | null
+          status?: Database["public"]["Enums"]["document_status"]
+          storage_key?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          expires_at?: string | null
+          filename?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["document_kind"]
+          media_id?: string | null
+          mime_type?: string | null
+          notes?: string | null
+          owner_id?: string
+          owner_kind?: Database["public"]["Enums"]["document_owner_kind"]
+          rejected_reason?: string | null
+          size_bytes?: number | null
+          status?: Database["public"]["Enums"]["document_status"]
+          storage_key?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_verified_by_fkey"
+            columns: ["verified_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1968,6 +2148,7 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["staff_role"]
       }
+      deal_buyer_account: { Args: { deal_id: string }; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
     }
@@ -1987,6 +2168,12 @@ export type Database = {
       article_status: "draft" | "scheduled" | "published" | "archived"
       audit_actor_kind: "user" | "system" | "integration"
       concierge_message_role: "user" | "assistant" | "system"
+      deal_stage:
+        | "mou"
+        | "deposit"
+        | "noc_pending"
+        | "dld_pending"
+        | "transferred"
       development_media_role:
         | "hero"
         | "gallery"
@@ -1996,6 +2183,29 @@ export type Database = {
         | "video"
       development_status: "pre_launch" | "on_sale" | "sold_out" | "handed_over"
       development_unit_status: "available" | "held" | "reserved" | "sold"
+      document_kind:
+        | "passport"
+        | "emirates_id"
+        | "title_deed"
+        | "form_a"
+        | "noc"
+        | "mou"
+        | "sale_contract"
+        | "power_of_attorney"
+        | "valuation_report"
+        | "mortgage_pre_approval"
+      document_owner_kind:
+        | "account"
+        | "deal"
+        | "property"
+        | "development"
+        | "enquiry"
+      document_status:
+        | "uploaded"
+        | "pending_review"
+        | "verified"
+        | "rejected"
+        | "expired"
       dsr_kind: "export" | "delete"
       dsr_status: "pending" | "fulfilled" | "expired" | "cancelled"
       enquiry_source:
@@ -2230,6 +2440,13 @@ export const Constants = {
       article_status: ["draft", "scheduled", "published", "archived"],
       audit_actor_kind: ["user", "system", "integration"],
       concierge_message_role: ["user", "assistant", "system"],
+      deal_stage: [
+        "mou",
+        "deposit",
+        "noc_pending",
+        "dld_pending",
+        "transferred",
+      ],
       development_media_role: [
         "hero",
         "gallery",
@@ -2240,6 +2457,32 @@ export const Constants = {
       ],
       development_status: ["pre_launch", "on_sale", "sold_out", "handed_over"],
       development_unit_status: ["available", "held", "reserved", "sold"],
+      document_kind: [
+        "passport",
+        "emirates_id",
+        "title_deed",
+        "form_a",
+        "noc",
+        "mou",
+        "sale_contract",
+        "power_of_attorney",
+        "valuation_report",
+        "mortgage_pre_approval",
+      ],
+      document_owner_kind: [
+        "account",
+        "deal",
+        "property",
+        "development",
+        "enquiry",
+      ],
+      document_status: [
+        "uploaded",
+        "pending_review",
+        "verified",
+        "rejected",
+        "expired",
+      ],
       dsr_kind: ["export", "delete"],
       dsr_status: ["pending", "fulfilled", "expired", "cancelled"],
       enquiry_source: [
