@@ -3,7 +3,7 @@ import {
   formatPriceAED,
   propertyUrl,
   extractReferenceFromSlug,
-} from "./properties";
+} from "./property-utils";
 
 describe("formatPriceAED", () => {
   it("formats millions with one decimal", () => {

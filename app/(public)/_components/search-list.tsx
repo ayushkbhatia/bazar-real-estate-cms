@@ -19,6 +19,8 @@ import {
 } from "@/lib/filters/property";
 import type { Database } from "@/db/types";
 import { FilterBar, type AreaOption } from "./filter-bar";
+import type { MapPin } from "./map-view";
+import { MapViewClient } from "./map-view-client";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
 
@@ -132,32 +134,62 @@ export async function SearchList({
               : "No properties to show yet — Phase 1 search and filters arrive next sprint."}
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-6">
-            {rows.map((row) => {
-              const badge = badgeFor(row);
-              return (
-                <Link key={row.reference} href={propertyUrl(row)} className="block">
-                  <ListingCard
-                    price={formatPriceAED(row.price_aed)}
-                    title={row.title}
-                    location={row.areas?.name ?? "United Arab Emirates"}
-                    beds={row.beds}
-                    baths={row.baths}
-                    area={row.built_up_ft2 ?? 0}
-                    badge={badge?.label}
-                    badgeKind={badge?.kind}
-                    imgLabel={row.reference}
-                    heroSrc={
-                      row.hero ? mediaPublicUrl(row.hero.storage_key) : null
-                    }
-                    heroAlt={row.hero?.alt_text ?? row.title}
-                    propertyId={row.id}
-                    initialSaved={savedSet.has(row.id)}
-                    isAuthed={isAuthed}
-                  />
-                </Link>
-              );
-            })}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_500px] gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-w-0">
+              {rows.map((row) => {
+                const badge = badgeFor(row);
+                return (
+                  <Link
+                    key={row.reference}
+                    href={propertyUrl(row)}
+                    className="block"
+                  >
+                    <ListingCard
+                      price={formatPriceAED(row.price_aed)}
+                      title={row.title}
+                      location={row.areas?.name ?? "United Arab Emirates"}
+                      beds={row.beds}
+                      baths={row.baths}
+                      area={row.built_up_ft2 ?? 0}
+                      badge={badge?.label}
+                      badgeKind={badge?.kind}
+                      imgLabel={row.reference}
+                      heroSrc={
+                        row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                      }
+                      heroAlt={row.hero?.alt_text ?? row.title}
+                      propertyId={row.id}
+                      initialSaved={savedSet.has(row.id)}
+                      isAuthed={isAuthed}
+                    />
+                  </Link>
+                );
+              })}
+            </div>
+            <aside className="hidden lg:block sticky top-[64px] self-start h-[calc(100vh-64px-48px)] rounded-lg overflow-hidden border border-bz-border">
+              <MapViewClient
+                pins={rows
+                  .filter(
+                    (
+                      r,
+                    ): r is typeof r & { geo: { lat: number; lng: number } } =>
+                      r.geo !== null &&
+                      typeof r.geo.lat === "number" &&
+                      typeof r.geo.lng === "number",
+                  )
+                  .map(
+                    (r): MapPin => ({
+                      id: r.id,
+                      reference: r.reference,
+                      slug: r.slug,
+                      title: r.title,
+                      price_aed: r.price_aed,
+                      geo: r.geo,
+                    }),
+                  )}
+                className="w-full h-full"
+              />
+            </aside>
           </div>
         )}
       </section>
