@@ -16,6 +16,7 @@ import {
   propertyUrl,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
+import { propertyJsonLd } from "@/lib/jsonld";
 import { getSessionUser } from "@/lib/supabase/server";
 
 export const revalidate = 60;
@@ -30,11 +31,36 @@ export async function generateMetadata({
   if (!ref) return { title: "Property not found" };
   const property = await getPublishedPropertyByReference(ref);
   if (!property) return { title: "Property not found" };
+
+  const description =
+    property.short_description ??
+    `${formatPriceAED(property.price_aed)} · ${property.beds}-bed ${property.type} in ${property.areas?.name ?? "the UAE"}`;
+
+  const canonical = propertyUrl(property);
+  const ogImage = property.hero
+    ? [{ url: mediaPublicUrl(property.hero.storage_key), alt: property.title }]
+    : undefined;
+
   return {
     title: property.title,
-    description:
-      property.short_description ??
-      `${formatPriceAED(property.price_aed)} · ${property.beds}-bed ${property.type} in ${property.areas?.name ?? "the UAE"}`,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: "website",
+      title: property.title,
+      description,
+      url: canonical,
+      images: ogImage,
+      siteName: "Bazar Real Estate",
+      locale: "en_AE",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: property.title,
+      description,
+      images: ogImage?.map((i) => i.url),
+    },
+    robots: { index: true, follow: true },
   };
 }
 
@@ -73,8 +99,17 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       ? Math.round(property.price_aed / property.built_up_ft2)
       : null;
 
+  const jsonLd = propertyJsonLd(
+    property,
+    property.hero ? mediaPublicUrl(property.hero.storage_key) : null,
+  );
+
   return (
     <article className="bg-bz-bg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Breadcrumb */}
       <div className="px-12 pt-8 pb-3 text-[12px] text-bz-muted flex items-center gap-1.5">
         <Link href="/" className="hover:text-bz-ink">Home</Link>
