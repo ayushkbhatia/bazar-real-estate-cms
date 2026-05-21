@@ -37,6 +37,32 @@ test("admin gating redirects anon to sign-in", async ({ page }) => {
   await expect(page).toHaveURL(/\/sign-in/);
 });
 
+test("sitemap + robots are served", async ({ request }) => {
+  const robots = await request.get("/robots.txt");
+  expect(robots.status()).toBe(200);
+  const robotsText = await robots.text();
+  expect(robotsText).toContain("Sitemap:");
+  expect(robotsText).toContain("Disallow: /admin");
+
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.status()).toBe(200);
+  const sitemapText = await sitemap.text();
+  expect(sitemapText).toContain("<urlset");
+  expect(sitemapText).toMatch(/<loc>[^<]+\/buy<\/loc>/);
+});
+
+test("property page emits JSON-LD with the right reference", async ({ page }) => {
+  await page.goto("/p/mamsha-3-bed-beachfront-apartment-baz-ad-04891");
+  const ld = await page
+    .locator('script[type="application/ld+json"]')
+    .first()
+    .textContent();
+  expect(ld).toBeTruthy();
+  const parsed = JSON.parse(ld!);
+  expect(parsed["@type"]).toBe("Product");
+  expect(parsed.sku).toBe("BAZ-AD-04891");
+});
+
 test("filter bar narrows the result set via URL state", async ({ page }) => {
   await page.goto("/buy");
   // Beds filter — click "3 beds" (aria-label distinguishes from the baths button).
