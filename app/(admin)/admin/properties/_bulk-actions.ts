@@ -173,6 +173,63 @@ export async function bulkPublishProperties(
   };
 }
 
+export type BulkOffMarketResult =
+  | {
+      status: "ok";
+      succeeded: string[];
+      skipped: { id: string; reason: string }[];
+    }
+  | { status: "error"; message: string };
+
+/**
+ * Bulk move-off-market. Wraps `bulkUpdateProperties` with
+ * `status='off_market'` then revalidates each succeeded property's
+ * public detail URL (the index pages /buy, /rent, / are already
+ * revalidated upstream because the patch changes `status`).
+ */
+export async function bulkMoveOffMarket(
+  ids: string[],
+): Promise<BulkOffMarketResult> {
+  if (!isSupabaseConfigured) {
+    return { status: "error", message: "Supabase env vars are not set." };
+  }
+  if (ids.length === 0) {
+    return {
+      status: "error",
+      message: "Select at least one property to move off-market.",
+    };
+  }
+  if (ids.length > BULK_SELECTION_CAP) {
+    return {
+      status: "error",
+      message: `Maximum ${BULK_SELECTION_CAP} properties per bulk action.`,
+    };
+  }
+
+  // Pre-fetch so we can revalidate the right public URLs after.
+  const rows = await listPropertiesByIdsForBulk(ids);
+  const rowById = new Map(rows.map((r) => [r.id, r]));
+
+  const result = await bulkUpdateProperties({
+    ids,
+    patch: { status: "off_market" },
+  });
+  if (result.status === "error") {
+    return { status: "error", message: result.message };
+  }
+
+  for (const id of result.succeeded) {
+    const row = rowById.get(id);
+    if (row) revalidatePath(propertyUrl(row));
+  }
+
+  return {
+    status: "ok",
+    succeeded: result.succeeded,
+    skipped: result.skipped.map((s) => ({ id: s.id, reason: s.reason })),
+  };
+}
+
 export type BulkReassignResult =
   | {
       status: "ok";
