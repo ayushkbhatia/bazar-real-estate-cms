@@ -1,0 +1,168 @@
+"use client";
+
+import { useCallback, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import {
+  parseAsArrayOf,
+  parseAsString,
+  parseAsStringEnum,
+  useQueryStates,
+} from "nuqs";
+import { Download, Share2, Save, X } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+
+/**
+ * Client toolbar for the compare page. Owns:
+ *   · the "Highlight differences" toggle (URL: ?diff=0 disables)
+ *   · removing a property from the comparison (URL: ?ids=…)
+ *   · stub PDF / Share / Save actions (Save needs the comparisons table
+ *     which lands with the Phase 4c migration)
+ *
+ * The server page is the source of truth for what's rendered. We just
+ * mutate the URL — Next re-fetches via the dynamic page.
+ */
+export function CompareToolbar({
+  ids,
+  showDiff,
+  count,
+}: {
+  ids: string[];
+  showDiff: boolean;
+  count: number;
+}) {
+  const router = useRouter();
+  const [, startTransition] = useTransition();
+  const [state, setState] = useQueryStates(
+    {
+      ids: parseAsArrayOf(parseAsString, ",").withDefault(ids),
+      // ?diff=0 means "off"; absent or anything else means "on".
+      diff: parseAsStringEnum(["0", "1"]).withDefault(showDiff ? "1" : "0"),
+    },
+    { shallow: false, history: "replace" },
+  );
+
+  const toggleDiff = useCallback(() => {
+    startTransition(() => {
+      setState({ diff: showDiff ? "0" : "1" });
+    });
+  }, [setState, showDiff]);
+
+  const removeId = useCallback(
+    (id: string) => {
+      startTransition(() => {
+        const next = (state.ids ?? ids).filter((x) => x !== id);
+        setState({ ids: next.length > 0 ? next : null });
+      });
+    },
+    [ids, state.ids, setState],
+  );
+
+  const share = useCallback(async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try {
+        await navigator.share({ url, title: "Bazar comparison" });
+        return;
+      } catch {
+        // user dismissed; fall through to clipboard
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Link copied — paste anywhere.");
+    } catch {
+      toast.error("Couldn't copy the link.");
+    }
+  }, []);
+
+  return (
+    <div className="flex items-center gap-2 flex-wrap">
+      <label className="flex items-center gap-2 text-[13px] text-bz-ink-2 mr-2 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={showDiff}
+          onChange={toggleDiff}
+          aria-label="Highlight differences"
+          data-testid="diff-toggle"
+        />
+        Highlight differences
+      </label>
+      <div className="w-px h-6 bg-bz-border mx-1" />
+      <Button variant="outline" size="sm" disabled title="Coming soon">
+        <Download size={14} strokeWidth={1.6} />
+        PDF
+      </Button>
+      <Button variant="outline" size="sm" onClick={share}>
+        <Share2 size={14} strokeWidth={1.6} />
+        Share
+      </Button>
+      <Button
+        size="sm"
+        disabled
+        title="Save comparison lands with the valuation migration"
+      >
+        <Save size={14} strokeWidth={1.6} />
+        Save comparison
+      </Button>
+      {/* Hidden control surface — each card calls back into here via
+          a delegated click on the X button. We render small buttons
+          here so the URL stays the toolbar's responsibility. */}
+      {count > 0 ? (
+        <RemoveButtons ids={ids} onRemove={removeId} />
+      ) : null}
+      {/* router prefetch nudges so swaps feel instant */}
+      <ToolbarPrefetch router={router} />
+    </div>
+  );
+}
+
+function RemoveButtons({
+  ids,
+  onRemove,
+}: {
+  ids: string[];
+  onRemove: (id: string) => void;
+}) {
+  // The cards live in the server component and don't know how to fire
+  // events back. We render screen-reader-only buttons positioned absolutely
+  // *inside* each card via a global selector. That hidden-button approach
+  // would couple too tightly to the DOM, so we instead surface them as a
+  // small "Remove" menu in the toolbar — keyboard users still have access.
+  return (
+    <details className="relative">
+      <summary
+        className="list-none cursor-pointer text-[12px] text-bz-muted hover:text-bz-ink h-9 px-2 inline-flex items-center"
+        aria-label="Remove a property from the comparison"
+      >
+        Remove…
+      </summary>
+      <div className="absolute right-0 top-full mt-1 z-10 bg-bz-surface border border-bz-border rounded shadow-lg p-2 min-w-[180px] flex flex-col gap-1">
+        {ids.map((id, i) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => onRemove(id)}
+            data-testid={`remove-${i}`}
+            className="text-left text-[12.5px] px-2.5 py-1.5 rounded hover:bg-bz-surface-2 inline-flex items-center justify-between gap-2"
+          >
+            <span className="truncate mono">{id.slice(0, 8)}…</span>
+            <X size={12} strokeWidth={1.8} className="text-bz-muted" />
+          </button>
+        ))}
+      </div>
+    </details>
+  );
+}
+
+function ToolbarPrefetch({
+  router,
+}: {
+  router: ReturnType<typeof useRouter>;
+}) {
+  // Reserved for hover-prefetch of related comparisons. Intentionally a no-op
+  // for v1 — keeping the hook in place so adding it later doesn't change the
+  // component shape.
+  void router;
+  return null;
+}
