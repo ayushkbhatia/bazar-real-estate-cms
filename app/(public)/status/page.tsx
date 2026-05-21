@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { env } from "@/lib/env";
 import { fmtMs, type HealthReport } from "@/lib/health";
+import { buildHealthReport } from "@/lib/health-probes";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -45,14 +45,11 @@ const CHECK_LABELS: Record<string, string> = {
 };
 
 async function loadHealth(): Promise<HealthReport | null> {
-  const base =
-    env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app";
+  // Build the report in-process — calling our own /api/health over HTTP
+  // would require knowing the public hostname at SSR time, which is brittle
+  // (and broken in CI's localhost run). Same probes, no round-trip.
   try {
-    const response = await fetch(`${base.replace(/\/+$/, "")}/api/health`, {
-      cache: "no-store",
-      signal: AbortSignal.timeout(8000),
-    });
-    return (await response.json()) as HealthReport;
+    return await buildHealthReport();
   } catch {
     return null;
   }
