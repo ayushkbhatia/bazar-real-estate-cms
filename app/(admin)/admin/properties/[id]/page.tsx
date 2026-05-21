@@ -5,13 +5,19 @@ import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/properties";
-import type { PropertyEditInput } from "@/lib/schemas/property";
+import {
+  type PropertyEditInput,
+  normaliseCompliance,
+  type PropertyCompliance,
+} from "@/lib/schemas/property";
+import { evaluatePublishability } from "@/lib/publishability";
 import { PropertyEditForm, type AreaOption } from "./_form";
 import {
   HeroPicker,
   type HeroState,
   type MediaOption,
 } from "./_hero-picker";
+import { PublishCard } from "./_publish-card";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +29,7 @@ async function fetchPropertyForEdit(id: string) {
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, amenities, seo",
+      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, amenities, seo, compliance",
     )
     .eq("id", id)
     .maybeSingle();
@@ -98,6 +104,9 @@ export default async function PropertyEditPage({ params }: PageProps) {
   if (!property) notFound();
 
   const seo = (property.seo as Record<string, unknown> | null) ?? {};
+  const compliance: PropertyCompliance = normaliseCompliance(
+    property.compliance as Record<string, unknown> | null,
+  );
 
   const initial: PropertyEditInput = {
     title: property.title,
@@ -133,6 +142,17 @@ export default async function PropertyEditPage({ params }: PageProps) {
 
   const isPublished = property.status === "published";
 
+  const publishability = evaluatePublishability({
+    status: property.status,
+    has_hero: heroAndMedia.hero !== null,
+    listing_permit_no: property.listing_permit_no,
+    listing_permit_expires_at: property.listing_permit_expires_at,
+    slug: property.slug,
+    title: property.title,
+    price_aed: Number(property.price_aed),
+    compliance,
+  });
+
   return (
     <CmsShell
       title={property.title}
@@ -159,18 +179,29 @@ export default async function PropertyEditPage({ params }: PageProps) {
         ) : null
       }
     >
-      <div className="flex flex-col gap-6">
-        <HeroPicker
-          propertyId={property.id}
-          initial={heroAndMedia.hero}
-          media={heroAndMedia.media}
-        />
-        <PropertyEditForm
-          propertyId={property.id}
-          initial={initial}
-          reference={property.reference}
-          areas={areas}
-        />
+      <div className="grid grid-cols-[1fr_320px] gap-6 items-start">
+        <div className="flex flex-col gap-6 min-w-0">
+          <HeroPicker
+            propertyId={property.id}
+            initial={heroAndMedia.hero}
+            media={heroAndMedia.media}
+          />
+          <PropertyEditForm
+            propertyId={property.id}
+            initial={initial}
+            reference={property.reference}
+            areas={areas}
+          />
+        </div>
+        <aside className="sticky top-6">
+          <PublishCard
+            propertyId={property.id}
+            status={property.status}
+            compliance={compliance}
+            checks={publishability.checks}
+            publishable={publishability.ok}
+          />
+        </aside>
       </div>
     </CmsShell>
   );

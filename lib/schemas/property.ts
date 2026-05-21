@@ -132,6 +132,23 @@ export const propertyAmenitiesSchema = z.object({
     .max(50, "Maximum 50 amenities"),
 });
 
+/** Compliance jsonb checkboxes. Required before publish. */
+export const propertyComplianceSchema = z.object({
+  form_a: z.boolean(),
+  title_deed: z.boolean(),
+  noc: z.boolean(),
+  power_of_attorney: z.boolean(),
+});
+
+export type PropertyCompliance = z.infer<typeof propertyComplianceSchema>;
+
+export const COMPLIANCE_LABELS: Record<keyof PropertyCompliance, string> = {
+  form_a: "Form A signed",
+  title_deed: "Title deed verified",
+  noc: "NOC obtained",
+  power_of_attorney: "Power of Attorney (if applicable)",
+};
+
 /** SEO tab — slug + meta. Slug also lives on the row top-level. */
 export const propertySeoSchema = z.object({
   slug: z
@@ -143,7 +160,10 @@ export const propertySeoSchema = z.object({
   meta_description: z.string().max(180).nullable().optional(),
 });
 
-/** Combined edit schema covering all six tabs. */
+/** Combined edit schema covering all six tabs.
+ *  Compliance lives in PublishCard with its own immediate-save UI; it is
+ *  not part of this form.
+ */
 export const propertyEditSchema = propertyOverviewSchema
   .merge(propertyPricingSchema)
   .merge(propertyDetailsSchema)
@@ -236,4 +256,17 @@ export function normaliseEditInput(raw: Record<string, unknown>): unknown {
   }
 
   return out;
+}
+
+/** Read a `compliance` jsonb blob, filling in defaults for absent flags. */
+export function normaliseCompliance(
+  raw: Record<string, unknown> | null | undefined,
+): PropertyCompliance {
+  const incoming = raw ?? {};
+  return {
+    form_a: Boolean(incoming.form_a),
+    title_deed: Boolean(incoming.title_deed),
+    noc: Boolean(incoming.noc),
+    power_of_attorney: Boolean(incoming.power_of_attorney),
+  };
 }
