@@ -195,4 +195,122 @@
       oklch(0.32 0.006 85) 1px 8px
     );
   }
+
+  /* Editorial body — used by /insights/[slug] for Tiptap-rendered HTML */
+  .bz-prose > * + * {
+    margin-top: 1.25em;
+  }
+  .bz-prose p {
+    margin: 0;
+  }
+  .bz-prose h2 {
+    font-family: var(--bz-font-serif);
+    font-weight: 400;
+    font-size: 30px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-top: 2em;
+  }
+  .bz-prose h3 {
+    font-family: var(--bz-font-serif);
+    font-weight: 400;
+    font-size: 24px;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    margin-top: 1.6em;
+  }
+  .bz-prose a {
+    color: var(--bz-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .bz-prose a:hover {
+    color: var(--bz-accent-hover);
+  }
+  .bz-prose ul,
+  .bz-prose ol {
+    padding-left: 1.5em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+  }
+  .bz-prose ul {
+    list-style: disc;
+  }
+  .bz-prose ol {
+    list-style: decimal;
+  }
+  .bz-prose blockquote {
+    border-left: 3px solid var(--bz-accent);
+    padding-left: 1.25em;
+    color: var(--bz-ink-2);
+    font-style: italic;
+  }
+  .bz-prose hr {
+    border: 0;
+    border-top: 1px solid var(--bz-border);
+    margin: 2.5em 0;
+  }
+  .bz-prose strong {
+    font-weight: 600;
+  }
+
+  /* Tiptap editor surface */
+  .tiptap p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: var(--bz-muted-2);
+    pointer-events: none;
+    float: left;
+    height: 0;
+  }
+  .tiptap h2 {
+    font-family: var(--bz-font-serif);
+    font-weight: 400;
+    font-size: 26px;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin: 1em 0 0.4em;
+  }
+  .tiptap h3 {
+    font-family: var(--bz-font-serif);
+    font-weight: 400;
+    font-size: 21px;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+    margin: 0.8em 0 0.3em;
+  }
+  .tiptap p + p,
+  .tiptap p + h2,
+  .tiptap p + h3,
+  .tiptap p + ul,
+  .tiptap p + ol,
+  .tiptap p + blockquote {
+    margin-top: 0.85em;
+  }
+  .tiptap ul,
+  .tiptap ol {
+    padding-left: 1.5em;
+  }
+  .tiptap ul {
+    list-style: disc;
+  }
+  .tiptap ol {
+    list-style: decimal;
+  }
+  .tiptap blockquote {
+    border-left: 3px solid var(--bz-accent);
+    padding-left: 1em;
+    color: var(--bz-ink-2);
+    font-style: italic;
+  }
+  .tiptap a {
+    color: var(--bz-accent);
+    text-decoration: underline;
+  }
+  .tiptap hr {
+    border: 0;
+    border-top: 1px solid var(--bz-border);
+    margin: 1.5em 0;
+  }
 }
