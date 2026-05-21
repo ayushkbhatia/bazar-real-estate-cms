@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils";
 import {
   formatPriceAED,
   propertyUrl,
-  type ListingRow,
-} from "@/lib/queries/properties";
+} from "@/lib/queries/property-utils";
+import type { ListingRow } from "@/lib/queries/properties";
 import {
   BULK_SELECTION_CAP,
   BULK_SELECTION_PARAM,
