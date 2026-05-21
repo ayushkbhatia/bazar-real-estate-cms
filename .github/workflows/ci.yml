@@ -10,11 +10,11 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Supabase env stubs so the build can resolve `lib/env.ts` and dynamic imports.
-  # The keys are public anon keys — safe to expose. Service role left blank to
-  # match prod-on-Vercel pattern (CI only exercises static/preview builds).
+  # Supabase env. The anon key is JWT-public; the service-role key is needed
+  # so anonymous-visitor flows (enquiry intake) can pass RLS.
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
   NEXT_PUBLIC_SITE_URL: https://bazar-real-estate-cms.vercel.app
 
 jobs:
@@ -68,6 +68,7 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_SITE_URL: https://bazar-real-estate-cms.vercel.app
 
       - name: Upload Playwright report on failure
