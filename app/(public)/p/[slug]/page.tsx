@@ -11,10 +11,12 @@ import {
   extractReferenceFromSlug,
   formatPriceAED,
   getPublishedPropertyByReference,
+  getSavedPropertyIds,
   getSimilarProperties,
   propertyUrl,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
+import { getSessionUser } from "@/lib/supabase/server";
 
 export const revalidate = 60;
 
@@ -51,11 +53,19 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   });
   if (`/p/${slug}` !== canonical) redirect(canonical);
 
-  const similar = await getSimilarProperties(
+  const [similar, user] = await Promise.all([
+    getSimilarProperties(
+      property.id,
+      property.areas?.slug ?? null,
+      property.mode,
+    ),
+    getSessionUser(),
+  ]);
+  const savedSet = await getSavedPropertyIds([
     property.id,
-    property.areas?.slug ?? null,
-    property.mode,
-  );
+    ...similar.map((s) => s.id),
+  ]);
+  const isAuthed = user !== null;
 
   const priceAed = formatPriceAED(property.price_aed);
   const aedPerFt =
@@ -302,6 +312,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                     row.hero ? mediaPublicUrl(row.hero.storage_key) : null
                   }
                   heroAlt={row.hero?.alt_text ?? row.title}
+                  propertyId={row.id}
+                  initialSaved={savedSet.has(row.id)}
+                  isAuthed={isAuthed}
                 />
               </Link>
             ))}

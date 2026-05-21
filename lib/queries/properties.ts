@@ -4,6 +4,29 @@ import { isSupabaseConfigured } from "@/lib/env";
 import type { PropertyFilters } from "@/lib/filters/property";
 import type { Database } from "@/db/types";
 
+/** Return a set of propertyIds that the current signed-in user has saved.
+ *  Returns an empty set for anon users or any failure. */
+export async function getSavedPropertyIds(
+  propertyIds: string[],
+): Promise<Set<string>> {
+  if (!isSupabaseConfigured || propertyIds.length === 0) return new Set();
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return new Set();
+    const { data } = await supabase
+      .from("saved_properties")
+      .select("property_id")
+      .eq("user_id", user.id)
+      .in("property_id", propertyIds);
+    return new Set((data ?? []).map((r) => r.property_id));
+  } catch {
+    return new Set();
+  }
+}
+
 type Mode = Database["public"]["Enums"]["property_mode"];
 type Status = Database["public"]["Enums"]["property_status"];
 
@@ -212,6 +235,30 @@ export async function getSimilarProperties(
   return (data ?? []).map((row) =>
     attachHero(row as unknown as { property_media: RawMediaJoin[] }),
   ) as unknown as ListingRow[];
+}
+
+/** Look up listing rows by id, preserving the order of `ids`. Used by the
+ *  saved-properties view to render in save-order. RLS still applies. */
+export async function listPropertiesByIds(
+  ids: string[],
+): Promise<ListingRow[]> {
+  if (!isSupabaseConfigured || ids.length === 0) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("properties")
+    .select(LISTING_FIELDS)
+    .in("id", ids)
+    .is("deleted_at", null);
+  if (error || !data) return [];
+
+  const rows = (data ?? []).map((row) =>
+    attachHero(row as unknown as { property_media: RawMediaJoin[] }),
+  ) as unknown as ListingRow[];
+
+  const order = new Map(ids.map((id, idx) => [id, idx]));
+  return rows.sort(
+    (a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0),
+  );
 }
 
 /** Admin: list ALL properties (any status). Uses the auth-aware server client

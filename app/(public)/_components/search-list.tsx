@@ -4,11 +4,13 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import {
   listPublishedProperties,
   formatPriceAED,
+  getSavedPropertyIds,
   propertyUrl,
   type ListingRow,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { getSessionUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import {
   countActiveFilters,
@@ -74,10 +76,13 @@ export async function SearchList({
   mode: Mode;
   filters: PropertyFilters;
 }) {
-  const [{ rows, total }, areas] = await Promise.all([
+  const [{ rows, total }, areas, user] = await Promise.all([
     listPublishedProperties({ mode, filters, limit: 24 }),
     fetchAreas(),
+    getSessionUser(),
   ]);
+  const savedSet = await getSavedPropertyIds(rows.map((r) => r.id));
+  const isAuthed = user !== null;
   const copy = MODE_COPY[mode];
 
   const selectedArea =
@@ -102,7 +107,7 @@ export async function SearchList({
         </p>
       </section>
 
-      <FilterBar mode={mode} areas={areas} />
+      <FilterBar mode={mode} areas={areas} isAuthed={isAuthed} />
 
       <section className="px-12 py-10">
         <div className="flex items-baseline justify-between mb-6 gap-4 flex-wrap">
@@ -146,6 +151,9 @@ export async function SearchList({
                       row.hero ? mediaPublicUrl(row.hero.storage_key) : null
                     }
                     heroAlt={row.hero?.alt_text ?? row.title}
+                    propertyId={row.id}
+                    initialSaved={savedSet.has(row.id)}
+                    isAuthed={isAuthed}
                   />
                 </Link>
               );

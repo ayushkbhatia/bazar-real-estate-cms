@@ -1,8 +1,10 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useQueryStates } from "nuqs";
-import { Search, X } from "lucide-react";
+import { Bookmark, Search, X } from "lucide-react";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
@@ -15,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { PROPERTY_TYPES } from "@/lib/schemas/property";
 import { filterParsers } from "@/lib/filters/property";
 import { cn } from "@/lib/utils";
+import { saveCurrentSearch } from "@/app/(account)/_actions";
 
 const TYPE_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
   apartment: "Apartment",
@@ -35,9 +38,12 @@ export type AreaOption = { slug: string; name: string };
 type Props = {
   mode: "buy" | "rent" | "off_plan" | "commercial";
   areas: AreaOption[];
+  isAuthed: boolean;
 };
 
-export function FilterBar({ areas }: Props) {
+export function FilterBar({ mode, areas, isAuthed }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
   const [{ q, beds, baths, type, price_min, price_max, area }, setState] =
     useQueryStates(filterParsers, {
       shallow: false, // re-fetch the RSC page on change
@@ -64,6 +70,31 @@ export function FilterBar({ areas }: Props) {
   const activeCount = [q, beds, baths, type, price_min, price_max, area].filter(
     (v) => v !== null && v !== undefined && v !== "",
   ).length;
+
+  function onSaveSearch() {
+    if (!isAuthed) {
+      const target = pathname ?? "/buy";
+      router.push(`/sign-in?redirect=${encodeURIComponent(target)}`);
+      return;
+    }
+    const defaultName = q
+      ? `"${q}"`
+      : `${mode === "rent" ? "Rentals" : "For sale"}${area ? ` · ${area}` : ""}`;
+    const name = window.prompt("Name this search", defaultName);
+    if (!name || !name.trim()) return;
+    startTransition(async () => {
+      const result = await saveCurrentSearch({
+        name: name.trim(),
+        mode,
+        filters: { q, beds, baths, type, price_min, price_max, area },
+      });
+      if (result.status === "ok") toast.success("Search saved.");
+      else if (result.status === "auth_required") {
+        const target = pathname ?? "/buy";
+        router.push(`/sign-in?redirect=${encodeURIComponent(target)}`);
+      } else toast.error(result.message);
+    });
+  }
 
   function commit(patch: Parameters<typeof setState>[0]) {
     startTransition(() => {
@@ -244,19 +275,32 @@ export function FilterBar({ areas }: Props) {
           />
         </div>
 
-        {/* Clear */}
-        {activeCount > 0 ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={clearAll}
-            className="ml-auto text-[12.5px] text-bz-muted hover:text-bz-ink"
-          >
-            <X size={12} strokeWidth={1.8} />
-            Clear {activeCount} filter{activeCount === 1 ? "" : "s"}
-          </Button>
-        ) : null}
+        <div className="ml-auto flex items-center gap-2">
+          {activeCount > 0 ? (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onSaveSearch}
+                className="text-[12.5px]"
+              >
+                <Bookmark size={12} strokeWidth={1.8} />
+                Save search
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={clearAll}
+                className="text-[12.5px] text-bz-muted hover:text-bz-ink"
+              >
+                <X size={12} strokeWidth={1.8} />
+                Clear {activeCount}
+              </Button>
+            </>
+          ) : null}
+        </div>
       </div>
     </div>
   );
