@@ -6,7 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/properties";
 import type { PropertyEditInput } from "@/lib/schemas/property";
-import { PropertyEditForm } from "./_form";
+import { PropertyEditForm, type AreaOption } from "./_form";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +18,7 @@ async function fetchPropertyForEdit(id: string) {
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2",
+      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, amenities, seo",
     )
     .eq("id", id)
     .maybeSingle();
@@ -26,10 +26,27 @@ async function fetchPropertyForEdit(id: string) {
   return data;
 }
 
+async function fetchAreas(): Promise<AreaOption[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("areas")
+    .select("id, name, kind")
+    .order("kind", { ascending: true })
+    .order("name", { ascending: true });
+  if (error || !data) return [];
+  return data as AreaOption[];
+}
+
 export default async function PropertyEditPage({ params }: PageProps) {
   const { id } = await params;
-  const property = await fetchPropertyForEdit(id);
+  const [property, areas] = await Promise.all([
+    fetchPropertyForEdit(id),
+    fetchAreas(),
+  ]);
   if (!property) notFound();
+
+  const seo = (property.seo as Record<string, unknown> | null) ?? {};
 
   const initial: PropertyEditInput = {
     title: property.title,
@@ -45,6 +62,22 @@ export default async function PropertyEditPage({ params }: PageProps) {
     baths: property.baths,
     built_up_ft2: property.built_up_ft2,
     plot_ft2: property.plot_ft2,
+    year_built: property.year_built,
+    tenure: property.tenure,
+    furnishing: property.furnishing,
+    view: property.view,
+    orientation: property.orientation,
+    parking_bays: property.parking_bays,
+    floor: property.floor,
+    address_line: property.address_line,
+    listing_permit_no: property.listing_permit_no,
+    listing_permit_expires_at: property.listing_permit_expires_at,
+    dld_plot_number: property.dld_plot_number,
+    area_id: property.area_id,
+    amenities: property.amenities ?? [],
+    slug: property.slug,
+    meta_title: (seo.meta_title as string | null) ?? null,
+    meta_description: (seo.meta_description as string | null) ?? null,
   };
 
   const isPublished = property.status === "published";
@@ -79,6 +112,7 @@ export default async function PropertyEditPage({ params }: PageProps) {
         propertyId={property.id}
         initial={initial}
         reference={property.reference}
+        areas={areas}
       />
     </CmsShell>
   );

@@ -35,15 +35,33 @@ export async function updateProperty(
     return { status: "error", message: "Please fix the errors below.", fieldErrors };
   }
 
+  const { meta_title, meta_description, ...rest } = parsed.data;
+
+  const updateData = {
+    ...rest,
+    seo: {
+      slug: rest.slug,
+      meta_title: meta_title ?? null,
+      meta_description: meta_description ?? null,
+    },
+  };
+
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("properties")
-    .update(parsed.data)
+    .update(updateData)
     .eq("id", id)
     .select("slug, reference, status")
     .maybeSingle();
 
   if (error) {
+    if (error.code === "23505") {
+      return {
+        status: "error",
+        message: "Slug already in use — pick a different one.",
+        fieldErrors: { slug: "Already in use" },
+      };
+    }
     return { status: "error", message: error.message };
   }
   if (!data) {
@@ -54,7 +72,6 @@ export async function updateProperty(
     };
   }
 
-  // Revalidate paths affected by this change.
   revalidatePath("/admin/properties");
   revalidatePath(`/admin/properties/${id}`);
   if (data.status === "published") {

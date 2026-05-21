@@ -31,6 +31,22 @@ const INITIAL: PropertyEditInput = {
   baths: 4,
   built_up_ft2: 2840,
   plot_ft2: null,
+  year_built: 2023,
+  tenure: "freehold",
+  furnishing: "fully",
+  view: "Sea view",
+  orientation: null,
+  parking_bays: 2,
+  floor: 7,
+  address_line: "Mamsha Al Saadiyat",
+  listing_permit_no: null,
+  listing_permit_expires_at: null,
+  dld_plot_number: null,
+  area_id: null,
+  amenities: ["Pool", "Gym"],
+  slug: "mamsha-3-bed-beachfront-apartment",
+  meta_title: null,
+  meta_description: null,
 };
 
 describe("<PropertyEditForm>", () => {
@@ -46,6 +62,7 @@ describe("<PropertyEditForm>", () => {
         propertyId="abc"
         initial={INITIAL}
         reference="BAZ-AD-04891"
+        areas={[]}
       />,
     );
     expect(screen.getByLabelText(/title/i)).toHaveValue(INITIAL.title);
@@ -61,6 +78,7 @@ describe("<PropertyEditForm>", () => {
         propertyId="abc"
         initial={INITIAL}
         reference="BAZ-AD-04891"
+        areas={[]}
       />,
     );
     expect(screen.getByRole("button", { name: /save/i })).toBeDisabled();
@@ -75,6 +93,7 @@ describe("<PropertyEditForm>", () => {
         propertyId="abc"
         initial={INITIAL}
         reference="BAZ-AD-04891"
+        areas={[]}
       />,
     );
 
@@ -108,6 +127,7 @@ describe("<PropertyEditForm>", () => {
         propertyId="abc"
         initial={INITIAL}
         reference="BAZ-AD-04891"
+        areas={[]}
       />,
     );
 
