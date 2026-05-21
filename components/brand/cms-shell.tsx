@@ -15,6 +15,7 @@ import {
   Search,
   Bell,
   MoreVertical,
+  ClipboardCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,14 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
   },
   {
     group: "Inbox",
-    items: [{ label: "Enquiries", href: "/admin/enquiries", icon: Inbox }],
+    items: [
+      { label: "Enquiries", href: "/admin/enquiries", icon: Inbox },
+      {
+        label: "Valuations",
+        href: "/admin/valuations",
+        icon: ClipboardCheck,
+      },
+    ],
   },
   {
     group: "Content",

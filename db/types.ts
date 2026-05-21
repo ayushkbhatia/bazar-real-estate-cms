@@ -233,6 +233,41 @@ export type Database = {
         }
         Relationships: []
       }
+      comparisons: {
+        Row: {
+          account_id: string
+          created_at: string
+          id: string
+          name: string | null
+          property_ids: string[]
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          id?: string
+          name?: string | null
+          property_ids: string[]
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          id?: string
+          name?: string | null
+          property_ids?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comparisons_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       concierge_messages: {
         Row: {
           content: string
@@ -911,6 +946,81 @@ export type Database = {
           },
         ]
       }
+      mortgage_inquiries: {
+        Row: {
+          account_id: string | null
+          annual_income_aed: number | null
+          applicant_email: string
+          applicant_name: string
+          applicant_phone: string | null
+          assigned_advisor_id: string | null
+          buyer_status: Database["public"]["Enums"]["mortgage_buyer_status"]
+          created_at: string
+          down_payment_aed: number
+          id: string
+          interest_rate_pct: number
+          mortgage_type: Database["public"]["Enums"]["mortgage_loan_type"]
+          notes: string | null
+          property_price_aed: number
+          status: Database["public"]["Enums"]["mortgage_inquiry_status"]
+          term_years: number
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          annual_income_aed?: number | null
+          applicant_email: string
+          applicant_name: string
+          applicant_phone?: string | null
+          assigned_advisor_id?: string | null
+          buyer_status: Database["public"]["Enums"]["mortgage_buyer_status"]
+          created_at?: string
+          down_payment_aed: number
+          id?: string
+          interest_rate_pct: number
+          mortgage_type: Database["public"]["Enums"]["mortgage_loan_type"]
+          notes?: string | null
+          property_price_aed: number
+          status?: Database["public"]["Enums"]["mortgage_inquiry_status"]
+          term_years: number
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          annual_income_aed?: number | null
+          applicant_email?: string
+          applicant_name?: string
+          applicant_phone?: string | null
+          assigned_advisor_id?: string | null
+          buyer_status?: Database["public"]["Enums"]["mortgage_buyer_status"]
+          created_at?: string
+          down_payment_aed?: number
+          id?: string
+          interest_rate_pct?: number
+          mortgage_type?: Database["public"]["Enums"]["mortgage_loan_type"]
+          notes?: string | null
+          property_price_aed?: number
+          status?: Database["public"]["Enums"]["mortgage_inquiry_status"]
+          term_years?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mortgage_inquiries_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "mortgage_inquiries_assigned_advisor_id_fkey"
+            columns: ["assigned_advisor_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       newsletter_subscribers: {
         Row: {
           account_id: string | null
@@ -1437,6 +1547,142 @@ export type Database = {
         }
         Relationships: []
       }
+      valuation_requests: {
+        Row: {
+          account_id: string | null
+          address_line: string | null
+          advisor_estimate_aed: number | null
+          advisor_notes: string | null
+          area_id: string | null
+          assigned_advisor_id: string | null
+          baths: number
+          beds: number
+          building_name: string | null
+          built_up_ft2: number | null
+          condition: Database["public"]["Enums"]["valuation_condition"] | null
+          created_at: string
+          estimate_basis: Json | null
+          estimate_high_aed: number | null
+          estimate_low_aed: number | null
+          estimate_mid_aed: number | null
+          floor: number | null
+          furnishing: Database["public"]["Enums"]["property_furnishing"] | null
+          id: string
+          marketing_opt_in: boolean
+          mortgage_state:
+            | Database["public"]["Enums"]["valuation_mortgage_state"]
+            | null
+          owner_email: string
+          owner_name: string
+          owner_phone: string | null
+          property_type: Database["public"]["Enums"]["property_type"]
+          reviewed_at: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["valuation_status"]
+          tenancy: Database["public"]["Enums"]["valuation_tenancy"] | null
+          unit_number: string | null
+          updated_at: string
+          upgrades: string[]
+          view_description: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          address_line?: string | null
+          advisor_estimate_aed?: number | null
+          advisor_notes?: string | null
+          area_id?: string | null
+          assigned_advisor_id?: string | null
+          baths: number
+          beds: number
+          building_name?: string | null
+          built_up_ft2?: number | null
+          condition?: Database["public"]["Enums"]["valuation_condition"] | null
+          created_at?: string
+          estimate_basis?: Json | null
+          estimate_high_aed?: number | null
+          estimate_low_aed?: number | null
+          estimate_mid_aed?: number | null
+          floor?: number | null
+          furnishing?: Database["public"]["Enums"]["property_furnishing"] | null
+          id?: string
+          marketing_opt_in?: boolean
+          mortgage_state?:
+            | Database["public"]["Enums"]["valuation_mortgage_state"]
+            | null
+          owner_email: string
+          owner_name: string
+          owner_phone?: string | null
+          property_type: Database["public"]["Enums"]["property_type"]
+          reviewed_at?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["valuation_status"]
+          tenancy?: Database["public"]["Enums"]["valuation_tenancy"] | null
+          unit_number?: string | null
+          updated_at?: string
+          upgrades?: string[]
+          view_description?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          address_line?: string | null
+          advisor_estimate_aed?: number | null
+          advisor_notes?: string | null
+          area_id?: string | null
+          assigned_advisor_id?: string | null
+          baths?: number
+          beds?: number
+          building_name?: string | null
+          built_up_ft2?: number | null
+          condition?: Database["public"]["Enums"]["valuation_condition"] | null
+          created_at?: string
+          estimate_basis?: Json | null
+          estimate_high_aed?: number | null
+          estimate_low_aed?: number | null
+          estimate_mid_aed?: number | null
+          floor?: number | null
+          furnishing?: Database["public"]["Enums"]["property_furnishing"] | null
+          id?: string
+          marketing_opt_in?: boolean
+          mortgage_state?:
+            | Database["public"]["Enums"]["valuation_mortgage_state"]
+            | null
+          owner_email?: string
+          owner_name?: string
+          owner_phone?: string | null
+          property_type?: Database["public"]["Enums"]["property_type"]
+          reviewed_at?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["valuation_status"]
+          tenancy?: Database["public"]["Enums"]["valuation_tenancy"] | null
+          unit_number?: string | null
+          updated_at?: string
+          upgrades?: string[]
+          view_description?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "valuation_requests_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "valuation_requests_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: false
+            referencedRelation: "areas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "valuation_requests_assigned_advisor_id_fkey"
+            columns: ["assigned_advisor_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       viewings: {
         Row: {
           account_id: string | null
@@ -1579,6 +1825,14 @@ export type Database = {
       message_author_kind: "lead" | "staff" | "system" | "ai"
       message_channel: "web" | "email" | "whatsapp" | "sms"
       message_direction: "inbound" | "outbound"
+      mortgage_buyer_status: "uae_resident" | "non_resident" | "gcc_national"
+      mortgage_inquiry_status:
+        | "new"
+        | "contacted"
+        | "in_progress"
+        | "pre_approved"
+        | "closed"
+      mortgage_loan_type: "fixed" | "variable" | "hybrid"
       newsletter_status: "pending" | "confirmed" | "unsubscribed" | "bounced"
       page_status: "draft" | "published"
       property_furnishing: "unfurnished" | "semi" | "fully"
@@ -1609,6 +1863,14 @@ export type Database = {
       review_subject_kind: "agent" | "area" | "development"
       staff_role: "admin" | "editor" | "agent" | "marketing" | "support"
       staff_status: "active" | "on_leave" | "onboarding" | "suspended"
+      valuation_condition:
+        | "original"
+        | "lightly_refreshed"
+        | "renovated"
+        | "fully_renovated"
+      valuation_mortgage_state: "no" | "yes_partial"
+      valuation_status: "pending" | "in_review" | "sent" | "archived"
+      valuation_tenancy: "vacant" | "rented_le_6mo" | "rented_gt_6mo"
       viewing_status:
         | "tentative"
         | "confirmed"
@@ -1803,6 +2065,15 @@ export const Constants = {
       message_author_kind: ["lead", "staff", "system", "ai"],
       message_channel: ["web", "email", "whatsapp", "sms"],
       message_direction: ["inbound", "outbound"],
+      mortgage_buyer_status: ["uae_resident", "non_resident", "gcc_national"],
+      mortgage_inquiry_status: [
+        "new",
+        "contacted",
+        "in_progress",
+        "pre_approved",
+        "closed",
+      ],
+      mortgage_loan_type: ["fixed", "variable", "hybrid"],
       newsletter_status: ["pending", "confirmed", "unsubscribed", "bounced"],
       page_status: ["draft", "published"],
       property_furnishing: ["unfurnished", "semi", "fully"],
@@ -1836,6 +2107,15 @@ export const Constants = {
       review_subject_kind: ["agent", "area", "development"],
       staff_role: ["admin", "editor", "agent", "marketing", "support"],
       staff_status: ["active", "on_leave", "onboarding", "suspended"],
+      valuation_condition: [
+        "original",
+        "lightly_refreshed",
+        "renovated",
+        "fully_renovated",
+      ],
+      valuation_mortgage_state: ["no", "yes_partial"],
+      valuation_status: ["pending", "in_review", "sent", "archived"],
+      valuation_tenancy: ["vacant", "rented_le_6mo", "rented_gt_6mo"],
       viewing_status: [
         "tentative",
         "confirmed",
