@@ -1,10 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Send, RefreshCw, X, Sparkles, ArrowRight } from "lucide-react";
+import {
+  Send,
+  RefreshCw,
+  X,
+  Sparkles,
+  ArrowRight,
+  MessageCircle,
+} from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import type { ConciergeBrief, BriefChip } from "@/lib/concierge/brief";
+import { formatBriefForWhatsApp } from "@/lib/concierge/handoff";
+import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
 
 type UiMessage = {
   id: string;
@@ -357,6 +366,7 @@ export function ConciergeChat() {
                 </Button>
               </div>
             </form>
+            <AdvisorWhatsAppHandoff brief={brief} />
             <div className="mt-4 flex gap-1.5 flex-wrap">
               <div className="eyebrow mr-2 mt-1">Try</div>
               {PROMPT_SUGGESTIONS.map((p) => (
@@ -619,4 +629,31 @@ function summariseResult(name: string, result: unknown): string | undefined {
     return r.count != null ? `${r.count} listings in ${r.area ?? "area"}` : undefined;
   }
   return undefined;
+}
+
+/**
+ * Below-composer secondary action: open WhatsApp with the inferred brief
+ * pre-filled as the first message. Lets the user escape the chat into a
+ * live conversation without losing the context they just built up.
+ */
+function AdvisorWhatsAppHandoff({ brief }: { brief: ConciergeBrief }) {
+  const url = useMemo(
+    () => buildAdvisorWhatsAppLink(formatBriefForWhatsApp(brief)),
+    [brief],
+  );
+  if (!url) return null;
+  return (
+    <div className="mt-3 flex justify-center">
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-testid="advisor-whatsapp-handoff"
+        className="inline-flex items-center gap-2 text-[12.5px] text-bz-muted hover:text-bz-accent"
+      >
+        <MessageCircle size={13} strokeWidth={1.6} />
+        Hand-off to advisor via WhatsApp
+      </a>
+    </div>
+  );
 }
