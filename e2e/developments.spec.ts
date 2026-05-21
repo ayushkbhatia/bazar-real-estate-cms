@@ -30,24 +30,28 @@ test("off-plan detail page renders hero + payment plan + units", async ({
   await expect(
     page.getByRole("heading", { name: /cash flow timeline/i }),
   ).toBeVisible();
-  // The percent labels appear once per milestone — 7 total milestones, with
-  // four distinct percent values: 10% (x4), 20% (x3).
   await expect(page.locator("text=Booking")).toBeVisible();
   await expect(page.locator("text=Handover").first()).toBeVisible();
 
   // Calculator picks the first available unit and shows AED math
   await expect(page.locator("text=AED 6.2M").first()).toBeVisible();
 
-  // Units table with all 8 seed units
+  // Units table with all 8 seed units. Scope to the table cells so we don't
+  // match the identical text in the <select> dropdown in the payment-plan
+  // calculator (options inside a closed select are present in the DOM but
+  // not visible).
   await expect(
     page.getByRole("heading", { name: /what's left/i }),
   ).toBeVisible();
-  await expect(page.locator("text=Villa A").first()).toBeVisible();
-  await expect(page.locator("text=Villa F").first()).toBeVisible();
-  await expect(page.locator("text=Townhouse").first()).toBeVisible();
+  const table = page.locator("table");
+  await expect(table.getByRole("cell", { name: /^Villa A$/ })).toBeVisible();
+  await expect(table.getByRole("cell", { name: /^Villa F$/ })).toBeVisible();
+  await expect(
+    table.getByRole("cell", { name: /^Townhouse$/ }).first(),
+  ).toBeVisible();
 
   // Status pills — Villa E + the first townhouse are seeded as 'held'.
-  await expect(page.locator("text=Held").first()).toBeVisible();
+  await expect(page.getByText(/^Held$/).first()).toBeVisible();
 });
 
 test("unit filter narrows the table to townhouses", async ({ page }) => {
@@ -55,8 +59,13 @@ test("unit filter narrows the table to townhouses", async ({ page }) => {
 
   // Click the "Townhouses" filter chip; expected to show 2 rows from the seed.
   await page.getByRole("button", { name: /townhouses ·/i }).click();
-  await expect(page.locator("text=Townhouse").first()).toBeVisible();
-  await expect(page.locator("text=Villa A")).toHaveCount(0);
+  const table = page.locator("table");
+  await expect(
+    table.getByRole("cell", { name: /^Townhouse$/ }).first(),
+  ).toBeVisible();
+  // Villa rows should disappear from the table (but the calculator's <select>
+  // option for Villa A may still exist — scope to the table).
+  await expect(table.getByRole("cell", { name: /^Villa A$/ })).toHaveCount(0);
 });
 
 test("unknown development slug 404s", async ({ page }) => {
