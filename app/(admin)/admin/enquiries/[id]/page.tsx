@@ -12,6 +12,7 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { getEnquiryById } from "@/lib/queries/enquiries";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { cn } from "@/lib/utils";
+import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { markConversationRead } from "../_actions";
 import { StatusPipeline, TemperatureToggle } from "./_pipeline";
 import { AssignToMeButton } from "./_assign-button";
@@ -165,14 +166,28 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                     <Phone size={13} strokeWidth={1.8} />
                     {enquiry.phone}
                   </a>
-                  <a
-                    href={`https://wa.me/${enquiry.phone.replace(/[^0-9]/g, "")}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[11.5px] text-bz-muted hover:text-bz-accent ml-5"
-                  >
-                    Open in WhatsApp →
-                  </a>
+                  {(() => {
+                    // Prefill the WhatsApp draft with the lead's first
+                    // name + the property reference so the advisor opens
+                    // the chat with context already in the composer.
+                    const firstName = enquiry.name.split(" ")[0] ?? "there";
+                    const ref = enquiry.properties?.reference;
+                    const msg = ref
+                      ? `Hi ${firstName}, this is Bazar Real Estate following up about ${ref}.`
+                      : `Hi ${firstName}, this is Bazar Real Estate following up on your enquiry.`;
+                    const waUrl = buildWhatsAppLink(enquiry.phone, msg);
+                    if (!waUrl) return null;
+                    return (
+                      <a
+                        href={waUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-[11.5px] text-bz-muted hover:text-bz-accent ml-5"
+                      >
+                        Open in WhatsApp →
+                      </a>
+                    );
+                  })()}
                 </div>
               ) : null}
               {enquiry.timeline ? (
