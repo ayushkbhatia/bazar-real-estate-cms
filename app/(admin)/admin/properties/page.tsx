@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
+import { LiveDot } from "@/lib/realtime/live-dot";
 import { Button } from "@/components/ui/button";
 import { listAllPropertiesForAdmin } from "@/lib/queries/properties";
 import { PropertiesTable } from "./_table";
@@ -22,6 +23,13 @@ export default async function AdminPropertiesPage() {
             New property
           </Link>
         </Button>
+      }
+      live={
+        <LiveDot
+          channel="public:properties:list"
+          table="properties"
+          event="UPDATE"
+        />
       }
     >
       <div className="flex flex-col gap-6">
