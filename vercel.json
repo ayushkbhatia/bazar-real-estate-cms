@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/cron/saved-search-alerts?frequency=daily",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/saved-search-alerts?frequency=weekly",
+      "schedule": "0 4 * * 1"
+    }
+  ]
+}

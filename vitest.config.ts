@@ -7,6 +7,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "."),
+      // Next.js "server-only" guard is a runtime no-op; vitest can't resolve
+      // it from node_modules so stub it.
+      "server-only": path.resolve(__dirname, "vitest.server-only-stub.ts"),
     },
   },
   test: {

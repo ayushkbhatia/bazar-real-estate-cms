@@ -7,6 +7,7 @@ const serverSchema = z.object({
   RESEND_API_KEY: z.string().min(1).optional(),
   RESEND_FROM_ADDRESS: z.string().email().optional(),
   RESEND_REPLY_TO: z.string().email().optional(),
+  CRON_SECRET: z.string().min(1).optional(),
 });
 
 const clientSchema = z.object({
@@ -36,6 +37,7 @@ const serverEnv =
         RESEND_API_KEY: process.env.RESEND_API_KEY,
         RESEND_FROM_ADDRESS: process.env.RESEND_FROM_ADDRESS,
         RESEND_REPLY_TO: process.env.RESEND_REPLY_TO,
+        CRON_SECRET: process.env.CRON_SECRET,
       })
     : ({ NODE_ENV: "development" } as z.infer<typeof serverSchema>);
 
