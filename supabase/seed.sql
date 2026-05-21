@@ -178,3 +178,47 @@ insert into public.articles (id, slug, title, excerpt, category, status, body_ht
    6,
    now() - interval '15 days', now() - interval '15 days', now() - interval '15 days')
 on conflict (slug) do nothing;
+
+-- ── Pages (Phase 3b) ────────────────────────────────────────────
+-- Sample "About Bazar" page so /pages/about renders against real
+-- block data and the E2E test has something to navigate into.
+insert into public.pages (id, slug, title, status, blocks, seo, published_at, created_at, updated_at) values
+  ('66666666-0000-0000-0000-000000000001',
+   'about',
+   'About Bazar',
+   'published',
+   '[
+     {
+       "type": "hero",
+       "eyebrow": "About",
+       "title": "Abu Dhabi, properly understood.",
+       "subtitle": "Bazar is a twelve-advisor boutique that closes fewer deals by design. We are paid by clients, not developers — and we publish what we know.",
+       "cta": { "label": "Meet the team", "href": "/agents" }
+     },
+     {
+       "type": "strip",
+       "eyebrow": "How we work",
+       "heading": "Curated, not aggregated.",
+       "body": "We do not list every property in Abu Dhabi. We list the ones we believe in and can defend with comparable evidence. Most of our briefs do not end in a transaction within ninety days — that is a feature, not a bug.",
+       "align": "left"
+     },
+     {
+       "type": "grid",
+       "heading": "What we stand for",
+       "items": [
+         { "title": "Fiduciary advisory", "body": "Paid by clients, not developers. Compensation is transparent and disclosed upfront." },
+         { "title": "Off-market access", "body": "Roughly a third of what we transact never appears on Property Finder or Bayut." },
+         { "title": "Numerically honest", "body": "Every listing is benchmarked against comparable closes — we will tell you when a listing is overpriced." }
+       ]
+     },
+     {
+       "type": "banner",
+       "title": "Tell us what you are looking for.",
+       "body": "Briefs are confidential and reviewed by a senior advisor within one business day.",
+       "cta": { "label": "Open a brief", "href": "/contact" },
+       "variant": "ink"
+     }
+   ]'::jsonb,
+   '{"meta_title":"About Bazar — Abu Dhabi, properly understood","meta_description":"Bazar is a twelve-advisor boutique real-estate firm covering Abu Dhabi. Fiduciary advisory, off-market access, and numerically honest analysis."}'::jsonb,
+   now() - interval '6 days', now() - interval '20 days', now() - interval '6 days')
+on conflict (slug) do nothing;
