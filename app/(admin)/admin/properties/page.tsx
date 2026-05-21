@@ -4,6 +4,7 @@ import { CmsShell } from "@/components/brand/cms-shell";
 import { Button } from "@/components/ui/button";
 import { listAllPropertiesForAdmin } from "@/lib/queries/properties";
 import { PropertiesTable } from "./_table";
+import { BulkToolbar } from "./_toolbar";
 
 export const dynamic = "force-dynamic"; // auth-aware fetch
 
@@ -24,6 +25,7 @@ export default async function AdminPropertiesPage() {
       }
     >
       <div className="flex flex-col gap-6">
+        <BulkToolbar />
         <div className="flex items-baseline justify-between">
           <div className="text-[13px] text-bz-muted">
             {total} {total === 1 ? "property" : "properties"}
