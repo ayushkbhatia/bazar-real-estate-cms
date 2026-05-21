@@ -97,3 +97,85 @@ describe("staffReplyTemplate", () => {
     expect(subject).toBe("Re: BAZ-AD-04891");
   });
 });
+
+describe("valuationReceivedTemplate", () => {
+  it("renders the low–high range and the midpoint", async () => {
+    const { valuationReceivedTemplate } = await importModule();
+    const { subject, text, html } = valuationReceivedTemplate({
+      name: "Ayush",
+      estimateLowAed: 3_900_000,
+      estimateMidAed: 4_200_000,
+      estimateHighAed: 4_500_000,
+      addressLine: "Mamsha · B7 · 704",
+      buildingName: null,
+    });
+    expect(subject).toBe("Your Bazar valuation is in review");
+    expect(text).toContain("AED 3.9M – AED 4.5M");
+    expect(text).toContain("midpoint AED 4.2M");
+    expect(html).toContain("AED 4.2M");
+  });
+
+  it("escapes the property line", async () => {
+    const { valuationReceivedTemplate } = await importModule();
+    const { html } = valuationReceivedTemplate({
+      name: "Ayush",
+      estimateLowAed: 3_900_000,
+      estimateMidAed: 4_200_000,
+      estimateHighAed: 4_500_000,
+      addressLine: "<b>danger</b>",
+      buildingName: null,
+    });
+    expect(html).not.toContain("<b>danger");
+    expect(html).toContain("&lt;b&gt;danger");
+  });
+});
+
+describe("valuationReportTemplate", () => {
+  it("subject leads with the final figure", async () => {
+    const { valuationReportTemplate } = await importModule();
+    const { subject } = valuationReportTemplate({
+      name: "Ayush",
+      finalEstimateAed: 4_400_000,
+      rangeLowAed: 3_900_000,
+      rangeHighAed: 4_500_000,
+      advisorName: "Mariam Al-Hashimi",
+      advisorNotes: null,
+      addressLine: "Mamsha · B7 · 704",
+      buildingName: null,
+    });
+    expect(subject).toBe("Your Bazar valuation: AED 4.4M");
+  });
+
+  it("includes the initial range note when provided", async () => {
+    const { valuationReportTemplate } = await importModule();
+    const { text } = valuationReportTemplate({
+      name: "Ayush",
+      finalEstimateAed: 4_400_000,
+      rangeLowAed: 3_900_000,
+      rangeHighAed: 4_500_000,
+      advisorName: "Mariam Al-Hashimi",
+      advisorNotes: null,
+      addressLine: null,
+      buildingName: null,
+    });
+    expect(text).toContain("Initial instant range was AED 3.9M–AED 4.5M");
+  });
+
+  it("renders advisor notes when supplied; signs with their name", async () => {
+    const { valuationReportTemplate } = await importModule();
+    const { text, html } = valuationReportTemplate({
+      name: "Ayush",
+      finalEstimateAed: 4_400_000,
+      rangeLowAed: null,
+      rangeHighAed: null,
+      advisorName: "Mariam Al-Hashimi",
+      advisorNotes:
+        "I priced this 3% above the comp set — Mamsha 7 has had a strong run.",
+      addressLine: "Mamsha · B7 · 704",
+      buildingName: null,
+    });
+    expect(text).toContain("Mariam Al-Hashimi");
+    expect(html).toContain("Mariam Al-Hashimi");
+    expect(html).toContain("Mamsha 7 has had a strong run");
+  });
+});
