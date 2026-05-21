@@ -145,3 +145,36 @@ insert into public.properties (
    '{"form_a": true, "title_deed": true, "noc": true, "power_of_attorney": true}'::jsonb,
    now() - interval '4 days', now() - interval '4 days')
 on conflict (reference) do nothing;
+
+-- ── Articles (Phase 3a) ─────────────────────────────────────────
+-- A handful of published articles so /insights renders against real data and
+-- the E2E test has something to navigate into. Idempotent on slug.
+insert into public.articles (id, slug, title, excerpt, category, status, body_html, read_minutes, published_at, created_at, updated_at) values
+  ('55555555-0000-0000-0000-000000000001',
+   'saadiyat-q1-2026',
+   'Saadiyat closed Q1 up 8.4%. Here''s what that means for the rest of 2026.',
+   'A close look at the 67 transactions on the island this quarter, the four neighborhoods that outperformed, and where the smart money is pre-positioning for Q2.',
+   'market_report',
+   'published',
+   '<p>The Saadiyat resale median crossed AED 2,000 per square foot in March for the first time. Two transactions on the Mamsha closed above 2,300. The market is sending a fairly clear signal — but it''s worth being careful about which signal.</p><h2>The headline number</h2><p>Quarterly data from the Department of Municipal Affairs shows 67 closed transactions on Saadiyat in Q1 2026, with a weighted median of AED 2,012/ft². That''s up 8.4% on the same quarter last year, and up 3.6% sequentially from Q4 2025.</p><p>But there are two things to flag immediately. First, transaction volume itself was modest — 67 closes is 12% below the trailing four-quarter average. Second, the pricing strength was heavily concentrated.</p><h2>What''s behind the 8.4%</h2><p>Three drivers, in order of contribution: <strong>Mamsha freehold scarcity</strong>, a <strong>foreign-buyer mix shift</strong>, and what we''re calling the <strong>Louvre effect</strong> finally arriving at the Cultural District.</p><blockquote>Comparable evidence is genuinely scarce — the 67 closes were spread across 23 different building combinations.</blockquote><p>Read together, this looks more like a thin-market melt-up than a structural re-rating.</p>',
+   14,
+   now() - interval '9 days', now() - interval '9 days', now() - interval '9 days'),
+  ('55555555-0000-0000-0000-000000000002',
+   'off-plan-payment-plans-decoded',
+   'Off-plan: how to read a payment plan without being fooled',
+   'An 8-minute deconstruction of post-handover plans, milestone risk, and which developer terms to walk away from.',
+   'buyers_guide',
+   'published',
+   '<p>Most Abu Dhabi off-plan brochures bury the actual financial structure under hero shots and amenity lists. Here''s what to look for instead.</p><h2>The numbers that matter</h2><p>Three figures decide whether a payment plan is buyer-friendly or developer-friendly: the <strong>at-handover percentage</strong>, the <strong>post-handover tail</strong>, and the implied <strong>interest cost</strong>.</p><ul><li>At-handover ≤ 50% is generous.</li><li>A post-handover tail ≥ 30% over 2–3 years means you''re effectively financed by the developer.</li><li>Watch for milestone definitions that drift — "70% structure complete" is not an objective standard.</li></ul><p>The most underrated red flag is the cancellation clause. Read the part nobody reads.</p>',
+   8,
+   now() - interval '12 days', now() - interval '12 days', now() - interval '12 days'),
+  ('55555555-0000-0000-0000-000000000003',
+   'freehold-zoning-q2-2026',
+   'What the new freehold zoning amendment means for non-resident buyers',
+   'A short briefing on the Q2 2026 amendments, who they help, and three counterintuitive consequences.',
+   'policy',
+   'published',
+   '<p>The Q2 2026 freehold zoning amendments expand the list of plots eligible for non-resident ownership across four sub-communities on Saadiyat and one on Yas. The headline is straightforward; the second-order effects less so.</p><h2>Who actually benefits</h2><p>GCC nationals already enjoy parity in most of the same zones, so the practical incremental impact lands on non-GCC foreign buyers — primarily UK, German, and South Asian capital.</p><h3>Three things to watch</h3><ol><li>Building-level NOC requirements remain unchanged, which means individual building boards can still gate non-resident purchases.</li><li>Trakheesi permit timelines have not been updated to match the expanded zone — expect 3–6 week lags in Q3.</li><li>Service-charge transparency rules apply on transfer, not on listing — sellers can still understate.</li></ol>',
+   6,
+   now() - interval '15 days', now() - interval '15 days', now() - interval '15 days')
+on conflict (slug) do nothing;
