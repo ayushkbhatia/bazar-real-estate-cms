@@ -6,21 +6,22 @@ export const dynamic = "force-dynamic";
 type Params = { params: Promise<{ token: string }> };
 
 /**
- * Account-deletion confirmation. We redirect to /account-deleted (a public
- * route) because the user's session has just been signed out and they
- * shouldn't bounce through /sign-in to read a confirmation message. The
- * ?reason query carries the failure mode if any.
+ * Account-deletion confirmation. We redirect to /data-deleted (a public
+ * route — note: NOT /account-deleted, because /account* is auth-gated
+ * by the proxy and the user has just been signed out) so the now-signed
+ * out user can read the confirmation. The ?reason query carries the
+ * failure mode if any.
  */
 export async function GET(_req: Request, { params }: Params) {
   const { token } = await params;
   const result = await confirmAccountDeletion(token);
 
   if (result.status === "ok") {
-    return NextResponse.redirect(new URL("/account-deleted", _req.url));
+    return NextResponse.redirect(new URL("/data-deleted", _req.url));
   }
 
   const param = encodeURIComponent(result.status);
   return NextResponse.redirect(
-    new URL(`/account-deleted?reason=${param}`, _req.url),
+    new URL(`/data-deleted?reason=${param}`, _req.url),
   );
 }
