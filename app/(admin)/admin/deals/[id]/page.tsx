@@ -5,6 +5,7 @@ import { CmsShell } from "@/components/brand/cms-shell";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { getDealById } from "@/lib/queries/deals";
 import { listDocumentsForDeal } from "@/lib/queries/documents";
+import { previewStageAdvance } from "@/lib/queries/deal-gate";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import {
   DEAL_STAGE_LABELS,
@@ -42,10 +43,17 @@ export default async function DealDetailPage({ params }: PageProps) {
   const deal = await getDealById(id);
   if (!deal) notFound();
 
-  const { dealDocs, buyerDocs } = await listDocumentsForDeal({
-    dealId: deal.id,
-    buyerAccountId: deal.buyer_account_id,
-  });
+  const [{ dealDocs, buyerDocs }, gatePreview] = await Promise.all([
+    listDocumentsForDeal({
+      dealId: deal.id,
+      buyerAccountId: deal.buyer_account_id,
+    }),
+    previewStageAdvance({
+      dealId: deal.id,
+      stage: deal.stage,
+      buyerAccountId: deal.buyer_account_id,
+    }),
+  ]);
 
   const buyerKycDocs = buyerDocs.filter((d) => isKycKind(d.kind));
 
@@ -92,6 +100,7 @@ export default async function DealDetailPage({ params }: PageProps) {
                 dld_pending: deal.noc_obtained_at,
                 transferred: deal.transferred_at,
               }}
+              gatePreview={gatePreview}
             />
           </div>
         </aside>

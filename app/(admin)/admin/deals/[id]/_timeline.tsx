@@ -23,10 +23,22 @@ import { advanceDealStage } from "./_actions";
 
 type StageStamps = Partial<Record<DealStage, string | null>>;
 
+export type StageGatePreview = {
+  next: DealStage | null;
+  canAdvance: boolean;
+  blockers: string[];
+};
+
 type Props = {
   dealId: string;
   stage: DealStage;
   stamps: StageStamps;
+  /**
+   * Server-side preview of whether the next stage can be reached. When
+   * !canAdvance the Advance button surfaces the blocker before the
+   * dialog opens, so the staff member knows what to fix.
+   */
+  gatePreview?: StageGatePreview;
 };
 
 function formatStamp(iso: string | null | undefined): string {
@@ -38,17 +50,28 @@ function formatStamp(iso: string | null | undefined): string {
   });
 }
 
-export function StageTimeline({ dealId, stage, stamps }: Props) {
+export function StageTimeline({
+  dealId,
+  stage,
+  stamps,
+  gatePreview,
+}: Props) {
   const [pending, start] = useTransition();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmTo, setConfirmTo] = useState<DealStage | null>(null);
-  const [blockers, setBlockers] = useState<string[] | null>(null);
+  const [blockers, setBlockers] = useState<string[] | null>(
+    gatePreview && gatePreview.blockers.length > 0
+      ? gatePreview.blockers
+      : null,
+  );
 
   const currentIdx = DEAL_STAGES.indexOf(stage);
   const next = nextStage(stage);
+  const previewBlockers =
+    gatePreview && !gatePreview.canAdvance ? gatePreview.blockers : null;
 
   function tryAdvance(to: DealStage) {
-    setBlockers(null);
+    setBlockers(previewBlockers);
     setConfirmTo(to);
     setConfirmOpen(true);
   }
@@ -109,16 +132,30 @@ export function StageTimeline({ dealId, stage, stamps }: Props) {
       </ol>
 
       {next ? (
-        <Button
-          type="button"
-          size="sm"
-          disabled={pending}
-          onClick={() => tryAdvance(next)}
-          className="self-start"
-        >
-          <ArrowRight size={13} strokeWidth={1.8} />
-          Advance to {DEAL_STAGE_LABELS[next]}
-        </Button>
+        <div className="flex flex-col gap-2">
+          <Button
+            type="button"
+            size="sm"
+            disabled={pending}
+            onClick={() => tryAdvance(next)}
+            className="self-start"
+          >
+            <ArrowRight size={13} strokeWidth={1.8} />
+            Advance to {DEAL_STAGE_LABELS[next]}
+          </Button>
+          {previewBlockers && previewBlockers.length > 0 ? (
+            <div className="rounded border border-[oklch(0.85_0.12_60)] bg-[oklch(0.97_0.04_60)] p-2.5">
+              <div className="text-[11px] uppercase tracking-widest text-[oklch(0.4_0.15_60)] font-medium">
+                Missing
+              </div>
+              <ul className="mt-1 text-[12px] text-[oklch(0.35_0.15_60)] list-disc pl-4 space-y-0.5">
+                {previewBlockers.map((b) => (
+                  <li key={b}>{b}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
       ) : (
         <div className="text-[12px] text-bz-muted px-1">
           Deal is closed.
