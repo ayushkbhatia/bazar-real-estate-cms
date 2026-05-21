@@ -13,13 +13,12 @@ import {
   Layers,
   Settings,
   Search,
-  Bell,
   MoreVertical,
   ClipboardCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Wordmark } from "./wordmark";
+import { NotificationsBell } from "./notifications-bell";
 
 type NavItem = {
   label: string;
@@ -75,6 +74,12 @@ type CmsShellProps = {
   breadcrumbs?: React.ReactNode;
   primary?: React.ReactNode;
   secondary?: React.ReactNode;
+  /**
+   * Optional notifications slot rendered in the topbar before `secondary`.
+   * When omitted the shell falls back to the static placeholder bell — so
+   * existing call sites stay valid. Added by Phase 6e.
+   */
+  notifications?: React.ReactNode;
   children: React.ReactNode;
 };
 
@@ -83,6 +88,7 @@ export function CmsShell({
   breadcrumbs,
   primary,
   secondary,
+  notifications,
   children,
 }: CmsShellProps) {
   const pathname = usePathname();
@@ -160,9 +166,7 @@ export function CmsShell({
               className="w-full h-10 pl-9 pr-3 bg-bz-surface border border-bz-border rounded text-[13.5px] outline-none focus:border-bz-ink-2 transition-colors"
             />
           </div>
-          <Button variant="ghost" size="icon" aria-label="Notifications">
-            <Bell size={15} strokeWidth={1.6} />
-          </Button>
+          {notifications ?? <NotificationsBell />}
           {secondary}
           {primary}
         </header>
