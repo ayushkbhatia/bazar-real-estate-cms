@@ -48,7 +48,7 @@ insert into public.properties (
   amenities, flags, published_at, created_at
 ) values
   ('44444444-0000-0000-0000-000000000001',
-   'BAZ-AD-04891', 'mamsha-3-bed-baz-ad-04891',
+   'BAZ-AD-04891', 'mamsha-3-bed-beachfront-apartment',
    'Mamsha · 3-bed beachfront apartment',
    'Three-bedroom beachfront residence with direct lagoon access on Saadiyat.',
    'A rare three-bedroom unit in the Mamsha Al Saadiyat development with uninterrupted views toward the Louvre and direct beach access via the private boardwalk. Includes maid''s room, two parking bays, and access to the residents'' clubhouse.',
@@ -61,7 +61,7 @@ insert into public.properties (
    now() - interval '2 days', now() - interval '2 days'),
 
   ('44444444-0000-0000-0000-000000000002',
-   'BAZ-AD-04864', 'nudra-5-bed-baz-ad-04864',
+   'BAZ-AD-04864', 'nudra-5-bed-villa',
    'Nudra · 5-bed villa with private pool',
    'Cantilevered Nudra villa with rooftop terrace and private pool on Saadiyat Beach.',
    'One of only 37 villas in the iconic Nudra cluster: 6,200 ft² of single-floor living with five bedrooms, a 14-metre pool, double-height majlis, and dedicated staff quarters. Walking distance to Saadiyat Beach Club.',
@@ -74,7 +74,7 @@ insert into public.properties (
    now() - interval '5 days', now() - interval '5 days'),
 
   ('44444444-0000-0000-0000-000000000003',
-   'BAZ-AD-04887', 'reflection-penthouse-baz-ad-04887',
+   'BAZ-AD-04887', 'reflection-skyline-penthouse',
    'Reflection · Skyline penthouse',
    'Two-bedroom penthouse with 270° skyline views over Al Reem.',
    'Top-floor unit in the Reflection tower with floor-to-ceiling glazing, a 32-metre private terrace, and direct lift access. Building amenities include three pools, a residents'' lounge, and 24-hour concierge.',
@@ -87,7 +87,7 @@ insert into public.properties (
    now() - interval '1 day', now() - interval '1 day'),
 
   ('44444444-0000-0000-0000-000000000004',
-   'BAZ-AD-04902', 'yas-bay-2-bed-baz-ad-04902',
+   'BAZ-AD-04902', 'yas-bay-2-bed-waterfront',
    'Yas Bay · 2-bed waterfront apartment',
    'Waterfront two-bedroom in Yas Bay with marina views.',
    'Newly handed-over two-bedroom apartment overlooking the Yas Bay marina and Etihad Arena. Includes two parking bays, full kitchen appliances, and access to the Yas Bay residents'' amenities.',
@@ -100,7 +100,7 @@ insert into public.properties (
    now() - interval '3 days', now() - interval '3 days'),
 
   ('44444444-0000-0000-0000-000000000005',
-   'BAZ-AD-04911', 'al-raha-3-bed-baz-ad-04911',
+   'BAZ-AD-04911', 'al-raha-gardens-3-bed-townhouse',
    'Al Raha Gardens · 3-bed townhouse',
    'Family townhouse in Al Raha Gardens with private garden.',
    'Three-bedroom townhouse in the Sidra cluster with a private rear garden, study, and maid''s room. Walking distance to Yasmina British Academy and Aldar Headquarters.',
@@ -113,7 +113,7 @@ insert into public.properties (
    now() - interval '7 days', now() - interval '7 days'),
 
   ('44444444-0000-0000-0000-000000000006',
-   'BAZ-AD-04920', 'corniche-rental-2-bed-baz-ad-04920',
+   'BAZ-AD-04920', 'corniche-2-bed-rental',
    'Corniche · 2-bed apartment for rent',
    'Two-bedroom rental with Corniche and skyline views.',
    'Mid-floor two-bedroom apartment on the Corniche with views toward Marina Mall and the Etihad Towers. Chiller-free building, two parking bays, and 12-month furnished lease.',
