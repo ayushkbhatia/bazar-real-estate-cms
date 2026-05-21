@@ -16,7 +16,9 @@ export type Database = {
     Tables: {
       accounts: {
         Row: {
+          anonymised_at: string | null
           created_at: string
+          deleted_at: string | null
           first_name: string | null
           kyc_status: Database["public"]["Enums"]["account_kyc_status"]
           kyc_verified_at: string | null
@@ -31,7 +33,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          anonymised_at?: string | null
           created_at?: string
+          deleted_at?: string | null
           first_name?: string | null
           kyc_status?: Database["public"]["Enums"]["account_kyc_status"]
           kyc_verified_at?: string | null
@@ -46,7 +50,9 @@ export type Database = {
           user_id: string
         }
         Update: {
+          anonymised_at?: string | null
           created_at?: string
+          deleted_at?: string | null
           first_name?: string | null
           kyc_status?: Database["public"]["Enums"]["account_kyc_status"]
           kyc_verified_at?: string | null
@@ -673,6 +679,59 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "media_assets"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      dsr_requests: {
+        Row: {
+          account_id: string
+          confirmed_at: string | null
+          created_at: string
+          email: string
+          fulfilled_at: string | null
+          id: string
+          ip: unknown
+          kind: Database["public"]["Enums"]["dsr_kind"]
+          payload: Json | null
+          status: Database["public"]["Enums"]["dsr_status"]
+          token: string
+          user_agent: string | null
+        }
+        Insert: {
+          account_id: string
+          confirmed_at?: string | null
+          created_at?: string
+          email: string
+          fulfilled_at?: string | null
+          id?: string
+          ip?: unknown
+          kind: Database["public"]["Enums"]["dsr_kind"]
+          payload?: Json | null
+          status?: Database["public"]["Enums"]["dsr_status"]
+          token: string
+          user_agent?: string | null
+        }
+        Update: {
+          account_id?: string
+          confirmed_at?: string | null
+          created_at?: string
+          email?: string
+          fulfilled_at?: string | null
+          id?: string
+          ip?: unknown
+          kind?: Database["public"]["Enums"]["dsr_kind"]
+          payload?: Json | null
+          status?: Database["public"]["Enums"]["dsr_status"]
+          token?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dsr_requests_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1904,6 +1963,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      anonymise_account: { Args: { target: string }; Returns: undefined }
       current_staff_role: {
         Args: never
         Returns: Database["public"]["Enums"]["staff_role"]
@@ -1936,6 +1996,8 @@ export type Database = {
         | "video"
       development_status: "pre_launch" | "on_sale" | "sold_out" | "handed_over"
       development_unit_status: "available" | "held" | "reserved" | "sold"
+      dsr_kind: "export" | "delete"
+      dsr_status: "pending" | "fulfilled" | "expired" | "cancelled"
       enquiry_source:
         | "property_page"
         | "contact_page"
@@ -2178,6 +2240,8 @@ export const Constants = {
       ],
       development_status: ["pre_launch", "on_sale", "sold_out", "handed_over"],
       development_unit_status: ["available", "held", "reserved", "sold"],
+      dsr_kind: ["export", "delete"],
+      dsr_status: ["pending", "fulfilled", "expired", "cancelled"],
       enquiry_source: [
         "property_page",
         "contact_page",
