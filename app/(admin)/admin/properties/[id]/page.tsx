@@ -7,6 +7,11 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/properties";
 import type { PropertyEditInput } from "@/lib/schemas/property";
 import { PropertyEditForm, type AreaOption } from "./_form";
+import {
+  HeroPicker,
+  type HeroState,
+  type MediaOption,
+} from "./_hero-picker";
 
 export const dynamic = "force-dynamic";
 
@@ -38,11 +43,57 @@ async function fetchAreas(): Promise<AreaOption[]> {
   return data as AreaOption[];
 }
 
+async function fetchHeroAndMedia(
+  propertyId: string,
+): Promise<{ hero: HeroState; media: MediaOption[] }> {
+  if (!isSupabaseConfigured) return { hero: null, media: [] };
+  const supabase = await createSupabaseServerClient();
+
+  const [{ data: heroJoin }, { data: media }] = await Promise.all([
+    supabase
+      .from("property_media")
+      .select("media_id, media_assets:media_id(id, storage_key, filename)")
+      .eq("property_id", propertyId)
+      .eq("role", "hero")
+      .maybeSingle(),
+    supabase
+      .from("media_assets")
+      .select("id, storage_key, filename, mime_type")
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(200),
+  ]);
+
+  let hero: HeroState = null;
+  const heroRow = (
+    heroJoin as
+      | {
+          media_assets:
+            | { id: string; storage_key: string; filename: string }
+            | null;
+        }
+      | null
+  )?.media_assets;
+  if (heroRow) {
+    hero = {
+      id: heroRow.id,
+      storage_key: heroRow.storage_key,
+      filename: heroRow.filename,
+    };
+  }
+
+  return {
+    hero,
+    media: (media ?? []) as MediaOption[],
+  };
+}
+
 export default async function PropertyEditPage({ params }: PageProps) {
   const { id } = await params;
-  const [property, areas] = await Promise.all([
+  const [property, areas, heroAndMedia] = await Promise.all([
     fetchPropertyForEdit(id),
     fetchAreas(),
+    fetchHeroAndMedia(id),
   ]);
   if (!property) notFound();
 
@@ -108,12 +159,19 @@ export default async function PropertyEditPage({ params }: PageProps) {
         ) : null
       }
     >
-      <PropertyEditForm
-        propertyId={property.id}
-        initial={initial}
-        reference={property.reference}
-        areas={areas}
-      />
+      <div className="flex flex-col gap-6">
+        <HeroPicker
+          propertyId={property.id}
+          initial={heroAndMedia.hero}
+          media={heroAndMedia.media}
+        />
+        <PropertyEditForm
+          propertyId={property.id}
+          initial={initial}
+          reference={property.reference}
+          areas={areas}
+        />
+      </div>
     </CmsShell>
   );
 }

@@ -9,6 +9,24 @@ import {
 } from "@/lib/schemas/property";
 import { propertyUrl } from "@/lib/queries/properties";
 
+async function revalidatePropertyPaths(propertyId: string) {
+  if (!isSupabaseConfigured) return;
+  revalidatePath("/admin/properties");
+  revalidatePath(`/admin/properties/${propertyId}`);
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("properties")
+    .select("slug, reference, status")
+    .eq("id", propertyId)
+    .maybeSingle();
+  if (data?.status === "published") {
+    revalidatePath(propertyUrl(data));
+    revalidatePath("/buy");
+    revalidatePath("/rent");
+    revalidatePath("/");
+  }
+}
+
 export type SaveResult =
   | { status: "ok"; message?: string }
   | { status: "error"; message: string; fieldErrors?: Record<string, string> };
@@ -82,4 +100,46 @@ export async function updateProperty(
   }
 
   return { status: "ok", message: "Saved." };
+}
+
+export type HeroResult =
+  | { status: "ok"; message?: string }
+  | { status: "error"; message: string };
+
+export async function setPropertyHero(
+  propertyId: string,
+  mediaId: string | null,
+): Promise<HeroResult> {
+  if (!isSupabaseConfigured)
+    return {
+      status: "error",
+      message: "Supabase env vars are not set.",
+    };
+
+  const supabase = await createSupabaseServerClient();
+
+  // Remove the existing hero (if any).
+  const delResult = await supabase
+    .from("property_media")
+    .delete()
+    .eq("property_id", propertyId)
+    .eq("role", "hero");
+  if (delResult.error) {
+    return { status: "error", message: delResult.error.message };
+  }
+
+  if (mediaId !== null) {
+    const insResult = await supabase.from("property_media").insert({
+      property_id: propertyId,
+      media_id: mediaId,
+      role: "hero",
+      sort_order: 0,
+    });
+    if (insResult.error) {
+      return { status: "error", message: insResult.error.message };
+    }
+  }
+
+  await revalidatePropertyPaths(propertyId);
+  return { status: "ok", message: mediaId ? "Hero set." : "Hero removed." };
 }

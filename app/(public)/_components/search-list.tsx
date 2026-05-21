@@ -7,6 +7,7 @@ import {
   propertyUrl,
   type ListingRow,
 } from "@/lib/queries/properties";
+import { mediaPublicUrl } from "@/lib/media";
 import type { Database } from "@/db/types";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
@@ -96,6 +97,10 @@ export async function SearchList({ mode }: { mode: Mode }) {
                     badge={badge?.label}
                     badgeKind={badge?.kind}
                     imgLabel={row.reference}
+                    heroSrc={
+                      row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                    }
+                    heroAlt={row.hero?.alt_text ?? row.title}
                   />
                 </Link>
               );
