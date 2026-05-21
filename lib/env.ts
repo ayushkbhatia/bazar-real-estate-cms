@@ -17,6 +17,11 @@ const clientSchema = z.object({
   NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1).optional(),
   NEXT_PUBLIC_POSTHOG_HOST: z.string().url().optional(),
   NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
+  // WhatsApp deep-link numbers. Free-form so we accept "+971 50 …",
+  // "(971) 50…", and digits-only; lib/whatsapp.ts normalises before
+  // building the wa.me URL. Falls back to a UAE placeholder when unset.
+  NEXT_PUBLIC_WHATSAPP_ADVISOR_NUMBER: z.string().optional(),
+  NEXT_PUBLIC_WHATSAPP_MORTGAGE_NUMBER: z.string().optional(),
 });
 
 const clientEnv = clientSchema.parse({
@@ -26,6 +31,10 @@ const clientEnv = clientSchema.parse({
   NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
   NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
   NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  NEXT_PUBLIC_WHATSAPP_ADVISOR_NUMBER:
+    process.env.NEXT_PUBLIC_WHATSAPP_ADVISOR_NUMBER,
+  NEXT_PUBLIC_WHATSAPP_MORTGAGE_NUMBER:
+    process.env.NEXT_PUBLIC_WHATSAPP_MORTGAGE_NUMBER,
 });
 
 const serverEnv =
