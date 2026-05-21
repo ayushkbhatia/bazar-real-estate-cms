@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { env, isSupabaseConfigured } from "@/lib/env";
+import type { Database } from "@/db/types";
 
 export async function createSupabaseServerClient() {
   if (!isSupabaseConfigured) {
@@ -10,7 +11,7 @@ export async function createSupabaseServerClient() {
   }
   const cookieStore = await cookies();
 
-  return createServerClient(
+  return createServerClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL!,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -24,7 +25,7 @@ export async function createSupabaseServerClient() {
               cookieStore.set(name, value, options);
             });
           } catch {
-            // Server Components can't set cookies; ignore — middleware refreshes the session.
+            // Server Components can't set cookies; ignore — proxy.ts refreshes the session.
           }
         },
       },

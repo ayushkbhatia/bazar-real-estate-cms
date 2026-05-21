@@ -1,43 +1,71 @@
+import Link from "next/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { ListingCard } from "@/components/brand/listing-card";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { isSupabaseConfigured } from "@/lib/env";
 
-const FEATURED_PLACEHOLDERS = [
-  {
-    price: "AED 4.2M",
-    title: "Mamsha · 3-bed beachfront",
-    location: "Saadiyat Island",
-    beds: 3,
-    baths: 4,
-    area: 2840,
-    badge: "Exclusive",
-    badgeKind: "ink" as const,
-  },
-  {
-    price: "AED 12.5M",
-    title: "Nudra · 5-bed villa with pool",
-    location: "Saadiyat Beach",
-    beds: 5,
-    baths: 6,
-    area: 6200,
-    badge: "Vacant on transfer",
-    badgeKind: "accent" as const,
-  },
-  {
-    price: "AED 2.8M",
-    title: "Reflection · Skyline penthouse",
-    location: "Al Reem Island",
-    beds: 2,
-    baths: 3,
-    area: 1980,
-  },
-];
+export const revalidate = 60; // 1-minute ISR for the home
 
-export default function HomePage() {
+type FeaturedListing = {
+  reference: string;
+  slug: string;
+  title: string;
+  price_aed: number;
+  beds: number;
+  baths: number;
+  built_up_ft2: number | null;
+  flags: { exclusive?: boolean; vacant_on_transfer?: boolean } | null;
+  areas: { name: string } | null;
+};
+
+async function fetchFeatured(): Promise<FeaturedListing[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data, error } = await supabase
+      .from("properties")
+      .select(
+        "reference, slug, title, price_aed, beds, baths, built_up_ft2, flags, areas:area_id(name)",
+      )
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .eq("mode", "buy")
+      .order("published_at", { ascending: false })
+      .limit(3);
+    if (error) {
+      console.error("[home] featured fetch error", error);
+      return [];
+    }
+    return (data ?? []) as unknown as FeaturedListing[];
+  } catch (err) {
+    console.error("[home] featured fetch threw", err);
+    return [];
+  }
+}
+
+function formatPrice(aed: number) {
+  if (aed >= 1_000_000) return `AED ${(aed / 1_000_000).toFixed(1)}M`;
+  if (aed >= 1_000) return `AED ${(aed / 1_000).toFixed(0)}K`;
+  return `AED ${aed.toLocaleString()}`;
+}
+
+function badgeFromFlags(flags: FeaturedListing["flags"]):
+  | { label: string; kind: "ink" | "accent" }
+  | undefined {
+  if (!flags) return undefined;
+  if (flags.exclusive) return { label: "Exclusive", kind: "ink" };
+  if (flags.vacant_on_transfer)
+    return { label: "Vacant on transfer", kind: "accent" };
+  return undefined;
+}
+
+export default async function HomePage() {
+  const featured = await fetchFeatured();
+
   return (
     <div className="bg-bz-bg">
-      {/* Hero — variant A (full-bleed placeholder) */}
+      {/* Hero — full-bleed variant A (placeholder until photography lands) */}
       <section className="relative h-[640px] bg-bz-ink overflow-hidden">
         <div className="absolute inset-0 bz-img-dark opacity-60" />
         <div className="absolute inset-0 bg-gradient-to-t from-bz-ink/95 via-bz-ink/30 to-bz-ink/40" />
@@ -69,7 +97,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured strip — placeholder content */}
+      {/* Featured strip — real data from Supabase */}
       <section className="px-12 py-20">
         <div className="flex justify-between items-end mb-10">
           <div>
@@ -85,14 +113,35 @@ export default function HomePage() {
             <Link href="/buy">View all properties</Link>
           </Button>
         </div>
-        <div className="grid grid-cols-3 gap-6">
-          {FEATURED_PLACEHOLDERS.map((p, i) => (
-            <ListingCard key={i} {...p} imgLabel={`${p.location} · ${i + 1}`} />
-          ))}
-        </div>
+        {featured.length > 0 ? (
+          <div className="grid grid-cols-3 gap-6">
+            {featured.map((p) => {
+              const badge = badgeFromFlags(p.flags);
+              return (
+                <ListingCard
+                  key={p.reference}
+                  price={formatPrice(p.price_aed)}
+                  title={p.title}
+                  location={p.areas?.name ?? "United Arab Emirates"}
+                  beds={p.beds}
+                  baths={p.baths}
+                  area={p.built_up_ft2 ?? 0}
+                  badge={badge?.label}
+                  badgeKind={badge?.kind}
+                  imgLabel={p.reference}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-bz-muted">
+            Listings coming soon. Set Supabase env vars and seed the database to
+            see real properties here.
+          </p>
+        )}
       </section>
 
-      {/* Coming-soon callout */}
+      {/* Phase callout */}
       <section className="px-12 pb-24">
         <div className="bg-bz-accent-soft rounded-xl p-10 flex items-center justify-between gap-8">
           <div>

@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:types": "bash scripts/db-types.sh",
+    "db:seed": "bash scripts/db-seed.sh"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
