@@ -1,0 +1,173 @@
+"use client";
+
+import { useTransition } from "react";
+import { toast } from "sonner";
+import { MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  STAFF_ROLES,
+  STAFF_STATUSES,
+  ROLE_LABEL,
+  STATUS_LABEL,
+  type StaffRole,
+  type StaffStatus,
+} from "@/lib/schemas/staff";
+import {
+  revokeInvitation,
+  updateStaffRole,
+  updateStaffStatus,
+} from "./_actions";
+
+export function StaffRowActions({
+  userId,
+  currentRole,
+  currentStatus,
+  isSelf,
+}: {
+  userId: string;
+  currentRole: StaffRole;
+  currentStatus: StaffStatus;
+  isSelf: boolean;
+}) {
+  const [pending, startTransition] = useTransition();
+
+  function changeRole(role: StaffRole) {
+    if (role === currentRole) return;
+    startTransition(async () => {
+      const r = await updateStaffRole({ user_id: userId, role });
+      if (r.status === "ok") toast.success(r.message ?? "Role updated.");
+      else toast.error(r.message);
+    });
+  }
+
+  function changeStatus(status: StaffStatus) {
+    if (status === currentStatus) return;
+    startTransition(async () => {
+      const r = await updateStaffStatus({ user_id: userId, status });
+      if (r.status === "ok") toast.success(r.message ?? "Status updated.");
+      else toast.error(r.message);
+    });
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className="inline-flex w-8 h-8 rounded items-center justify-center text-bz-muted hover:text-bz-ink hover:bg-bz-surface-2 transition-colors"
+        aria-label="Actions"
+        disabled={pending}
+      >
+        <MoreVertical size={14} strokeWidth={1.7} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[200px]">
+        <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-bz-muted-2">
+          Role
+        </DropdownMenuLabel>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            Change role — {ROLE_LABEL[currentRole]}
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            {STAFF_ROLES.map((r) => (
+              <DropdownMenuItem
+                key={r}
+                disabled={r === currentRole}
+                onSelect={(e) => {
+                  e.preventDefault();
+                  changeRole(r);
+                }}
+              >
+                {ROLE_LABEL[r]}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-bz-muted-2">
+          Status
+        </DropdownMenuLabel>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            Change status — {STATUS_LABEL[currentStatus]}
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            {STAFF_STATUSES.map((s) => (
+              <DropdownMenuItem
+                key={s}
+                disabled={s === currentStatus || (isSelf && s === "suspended")}
+                onSelect={(e) => {
+                  e.preventDefault();
+                  changeStatus(s);
+                }}
+              >
+                {STATUS_LABEL[s]}
+                {isSelf && s === "suspended" ? " (can't self-suspend)" : ""}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+
+        {currentStatus !== "suspended" && !isSelf ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-bz-danger"
+              onSelect={(e) => {
+                e.preventDefault();
+                changeStatus("suspended");
+              }}
+            >
+              Suspend
+            </DropdownMenuItem>
+          </>
+        ) : null}
+        {currentStatus === "suspended" ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                changeStatus("active");
+              }}
+            >
+              Restore
+            </DropdownMenuItem>
+          </>
+        ) : null}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+export function InvitationActions({ invitationId }: { invitationId: string }) {
+  const [pending, startTransition] = useTransition();
+  function revoke() {
+    if (pending) return;
+    startTransition(async () => {
+      const r = await revokeInvitation(invitationId);
+      if (r.status === "ok") toast.success(r.message ?? "Revoked.");
+      else toast.error(r.message);
+    });
+  }
+  return (
+    <button
+      type="button"
+      onClick={revoke}
+      disabled={pending}
+      className="text-[12px] text-bz-muted hover:text-bz-danger"
+    >
+      {pending ? "Revoking…" : "Revoke"}
+    </button>
+  );
+}
