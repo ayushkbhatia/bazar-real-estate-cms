@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
+import { logBulkOperation } from "@/lib/queries/bulk-operations";
 import { applyBulkUpdate, type BulkUpdateClient } from "@/lib/bulk/update";
 import {
   type BulkInput,
@@ -160,6 +161,21 @@ export async function bulkPublishProperties(
     }
   }
 
+  const allSkipped = [
+    ...notVisible,
+    ...result.skipped.map((s) => ({ id: s.id, reason: s.reason })),
+    ...blocked.map((b) => ({ id: b.id, reason: "publish_blocked" })),
+  ];
+  await logBulkOperation({
+    action: "bulk_publish",
+    target_count: ids.length,
+    succeeded: result.succeeded,
+    skipped: allSkipped,
+    payload: blocked.length
+      ? { blockers_by_id: Object.fromEntries(blocked.map((b) => [b.id, b.blockers])) }
+      : null,
+  });
+
   return {
     status: "ok",
     outcome: {
@@ -222,6 +238,13 @@ export async function bulkMoveOffMarket(
     const row = rowById.get(id);
     if (row) revalidatePath(propertyUrl(row));
   }
+
+  await logBulkOperation({
+    action: "bulk_off_market",
+    target_count: ids.length,
+    succeeded: result.succeeded,
+    skipped: result.skipped.map((s) => ({ id: s.id, reason: s.reason })),
+  });
 
   return {
     status: "ok",
@@ -333,6 +356,13 @@ export async function bulkArchiveProperties(
     }
   }
 
+  await logBulkOperation({
+    action: "bulk_archive",
+    target_count: ids.length,
+    succeeded: afterRows.map((r) => r.id),
+    skipped: [...notVisible, ...writeFailures],
+  });
+
   return {
     status: "ok",
     succeeded: afterRows.map((r) => r.id),
@@ -386,6 +416,15 @@ export async function bulkReassignProperties(
   if (result.status === "error") {
     return { status: "error", message: result.message };
   }
+
+  await logBulkOperation({
+    action: "bulk_reassign",
+    target_count: ids.length,
+    succeeded: result.succeeded,
+    skipped: result.skipped.map((s) => ({ id: s.id, reason: s.reason })),
+    payload: { agent_id: agentId },
+  });
+
   return {
     status: "ok",
     succeeded: result.succeeded,
