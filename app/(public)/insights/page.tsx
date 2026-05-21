@@ -16,6 +16,7 @@ import {
 } from "@/lib/schemas/article";
 import { mediaPublicUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
+import { NewsletterSignup } from "../_components/newsletter-signup";
 
 export const revalidate = 300;
 
@@ -169,17 +170,9 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
                 A short briefing on the week&apos;s Abu Dhabi deals, advisor
                 commentary, and one chart worth sitting with.
               </p>
-              <p
-                className="mt-5 text-[11.5px]"
-                style={{ color: "oklch(0.65 0.005 80)" }}
-              >
-                Newsletter signup arrives shortly — for now, reach us at
-                <br />
-                <a href="mailto:hello@bazar.ae" className="underline">
-                  hello@bazar.ae
-                </a>
-                .
-              </p>
+              <div className="mt-5">
+                <NewsletterSignup source="insights_header" variant="dark" />
+              </div>
             </aside>
           </div>
         </section>
