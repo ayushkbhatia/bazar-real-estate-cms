@@ -56,7 +56,7 @@ export function CookieBanner() {
     >
       <div className="pointer-events-auto bg-bz-surface border border-bz-border-strong rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.18)] max-w-[480px] ml-auto p-5 flex flex-col gap-4">
         <div>
-          <div className="text-[11px] uppercase tracking-widest text-bz-muted-2">
+          <div className="text-[11px] uppercase tracking-widest text-bz-muted">
             Cookies
           </div>
           <h2

@@ -49,11 +49,10 @@ module.exports = {
       // the production site is monitored separately via Vercel Speed Insights.
       assertions: {
         "categories:performance": ["error", { minScore: 0.7 }],
-        // Target floor is 0.9 per the Phase 7d brief; /buy currently sits at
-        // ~0.86 locally due to four unlabelled Select buttons + a contrast /
-        // heading / target-size issue. Phase 7e fixes those and raises this
-        // to 0.9 (see PR description).
-        "categories:accessibility": ["error", { minScore: 0.85 }],
+        // Tightened from 0.85 to 0.9 in Phase 7e after axe-driven fixes
+        // (Select aria-labels, eyebrow contrast on accent-soft background,
+        // banner eyebrow contrast). All three audited routes now score 0.95+.
+        "categories:accessibility": ["error", { minScore: 0.9 }],
         "categories:best-practices": ["error", { minScore: 0.9 }],
         "categories:seo": ["error", { minScore: 0.9 }],
       },
