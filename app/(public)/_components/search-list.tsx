@@ -136,8 +136,11 @@ export async function SearchList({
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_500px] gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-w-0">
-              {rows.map((row) => {
+              {rows.map((row, index) => {
                 const badge = badgeFor(row);
+                // The first two cards are above the fold on most viewports;
+                // marking their hero images priority improves LCP.
+                const priority = index < 2;
                 return (
                   <Link
                     key={row.reference}
@@ -158,6 +161,7 @@ export async function SearchList({
                         row.hero ? mediaPublicUrl(row.hero.storage_key) : null
                       }
                       heroAlt={row.hero?.alt_text ?? row.title}
+                      priority={priority}
                       propertyId={row.id}
                       initialSaved={savedSet.has(row.id)}
                       isAuthed={isAuthed}

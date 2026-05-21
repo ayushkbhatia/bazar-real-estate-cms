@@ -92,7 +92,7 @@ export default async function HomePage() {
         </div>
         {featured.length > 0 ? (
           <div className="grid grid-cols-3 gap-6">
-            {featured.map((row) => {
+            {featured.map((row, index) => {
               const badge = badgeFor(row);
               return (
                 <Link
@@ -114,6 +114,7 @@ export default async function HomePage() {
                       row.hero ? mediaPublicUrl(row.hero.storage_key) : null
                     }
                     heroAlt={row.hero?.alt_text ?? row.title}
+                    priority={index === 0}
                     propertyId={row.id}
                     initialSaved={savedSet.has(row.id)}
                     isAuthed={isAuthed}
