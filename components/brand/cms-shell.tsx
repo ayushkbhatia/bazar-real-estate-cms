@@ -20,6 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Wordmark } from "./wordmark";
 import { NotificationsBell } from "./notifications-bell";
+import { NotificationsChime } from "@/lib/realtime/notifications-chime";
 
 type NavItem = {
   label: string;
@@ -176,6 +177,7 @@ export function CmsShell({
             />
           </div>
           {live}
+          <NotificationsChime />
           {notifications ?? <NotificationsBell />}
           {secondary}
           {primary}
