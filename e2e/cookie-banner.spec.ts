@@ -65,6 +65,10 @@ test.describe("cookie banner", () => {
 
     await banner.getByRole("button", { name: /save preferences/i }).click();
 
+    // Wait for the banner to dismiss — that proves the server action ran
+    // and the Set-Cookie response landed in the browser context.
+    await expect(banner).toBeHidden();
+
     const cookies = await context.cookies();
     const consent = cookies.find((c) => c.name === "bz_consent");
     expect(consent).toBeDefined();
