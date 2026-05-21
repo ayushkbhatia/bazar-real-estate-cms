@@ -230,6 +230,116 @@ export async function bulkMoveOffMarket(
   };
 }
 
+export type BulkArchiveResult =
+  | {
+      status: "ok";
+      succeeded: string[];
+      skipped: { id: string; reason: string }[];
+    }
+  | { status: "error"; message: string };
+
+/**
+ * Bulk archive. Destructive — sets status='archived' AND deleted_at=now()
+ * in a single UPDATE so the rows fall out of every future bulk action
+ * (`bulkUpdateProperties` filters `.is("deleted_at", null)`).
+ *
+ * This bypasses `bulkUpdateProperties` because the patch schema doesn't
+ * expose `deleted_at` (a server-set timestamp, not a user input) and the
+ * audit key needs to be `property.bulk_archive`, not `property.bulk_update`.
+ */
+export async function bulkArchiveProperties(
+  ids: string[],
+): Promise<BulkArchiveResult> {
+  if (!isSupabaseConfigured) {
+    return { status: "error", message: "Supabase env vars are not set." };
+  }
+  if (ids.length === 0) {
+    return {
+      status: "error",
+      message: "Select at least one property to archive.",
+    };
+  }
+  if (ids.length > BULK_SELECTION_CAP) {
+    return {
+      status: "error",
+      message: `Maximum ${BULK_SELECTION_CAP} properties per bulk action.`,
+    };
+  }
+
+  const supabase = await createSupabaseServerClient();
+
+  // Pre-fetch for audit before/after AND to compute the revalidation URLs.
+  const { data: beforeData, error: selectError } = await supabase
+    .from("properties")
+    .select("id, status, slug, reference")
+    .in("id", ids)
+    .is("deleted_at", null);
+  if (selectError) {
+    return { status: "error", message: selectError.message };
+  }
+  const beforeRows = beforeData ?? [];
+  const beforeMap = new Map(beforeRows.map((r) => [r.id, r]));
+
+  const notVisible = ids
+    .filter((id) => !beforeMap.has(id))
+    .map((id) => ({ id, reason: "not_visible" }));
+
+  if (beforeRows.length === 0) {
+    return { status: "ok", succeeded: [], skipped: notVisible };
+  }
+
+  const nowIso = new Date().toISOString();
+  const visibleIds = beforeRows.map((r) => r.id);
+  const { data: afterData, error: updateError } = await supabase
+    .from("properties")
+    .update({ status: "archived", deleted_at: nowIso })
+    .in("id", visibleIds)
+    .is("deleted_at", null)
+    .select("id, status");
+  if (updateError) {
+    return { status: "error", message: updateError.message };
+  }
+  const afterRows = afterData ?? [];
+  const afterMap = new Map(afterRows.map((r) => [r.id, r]));
+
+  const writeFailures = visibleIds
+    .filter((id) => !afterMap.has(id))
+    .map((id) => ({ id, reason: "error" }));
+
+  // Per-id audit row, action='property.bulk_archive'.
+  await Promise.all(
+    afterRows.map((after) =>
+      logAudit({
+        action: "property.bulk_archive",
+        target_kind: "property",
+        target_id: after.id,
+        before: { status: beforeMap.get(after.id)?.status ?? null, deleted_at: null },
+        after: { status: "archived", deleted_at: nowIso },
+      }),
+    ),
+  );
+
+  // Revalidate the admin index + each archived row's public detail URL
+  // (which will now 410). The catalogue index pages drop them automatically
+  // since they filter on deleted_at IS NULL.
+  if (afterRows.length > 0) {
+    revalidatePath("/admin/properties");
+    revalidatePath("/buy");
+    revalidatePath("/rent");
+    revalidatePath("/");
+    for (const after of afterRows) {
+      const before = beforeMap.get(after.id);
+      if (before) revalidatePath(propertyUrl(before));
+    }
+  }
+
+  return {
+    status: "ok",
+    succeeded: afterRows.map((r) => r.id),
+    skipped: [...notVisible, ...writeFailures],
+  };
+}
+
 export type BulkReassignResult =
   | {
       status: "ok";

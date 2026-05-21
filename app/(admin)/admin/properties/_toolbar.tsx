@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Archive, X } from "lucide-react";
-import { toast } from "sonner";
+import { X } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,14 +17,9 @@ import {
   type AgentOption,
 } from "./_bulk-reassign-dialog";
 import { BulkOffMarketDialog } from "./_bulk-offmarket-dialog";
+import { BulkArchiveDialog } from "./_bulk-archive-dialog";
 
 const selectedParser = parseAsString.withDefault("");
-
-const COMING_SOON_TOASTS: Record<BulkAction, string> = {
-  archive: "Bulk archive lands in PR I7.",
-};
-
-type BulkAction = "archive";
 
 export type ToolbarRow = { id: string; reference: string };
 
@@ -56,10 +50,6 @@ export function BulkToolbar({
     void setRawSelected(null);
   }
 
-  function onAction(action: BulkAction) {
-    toast.info(COMING_SOON_TOASTS[action]);
-  }
-
   function onPublishComplete(remaining: string[]) {
     void setRawSelected(serializeSelection(remaining));
   }
@@ -69,6 +59,10 @@ export function BulkToolbar({
   }
 
   function onOffMarketComplete(remaining: string[]) {
+    void setRawSelected(serializeSelection(remaining));
+  }
+
+  function onArchiveComplete(remaining: string[]) {
     void setRawSelected(serializeSelection(remaining));
   }
 
@@ -125,17 +119,11 @@ export function BulkToolbar({
           agents={agents}
           onComplete={onReassignComplete}
         />
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => onAction("archive")}
-          data-action="archive"
-          className="text-[oklch(0.45_0.13_28)] hover:text-[oklch(0.4_0.15_28)]"
-        >
-          <Archive size={12} strokeWidth={1.8} />
-          Archive
-        </Button>
+        <BulkArchiveDialog
+          ids={ids}
+          references={references}
+          onComplete={onArchiveComplete}
+        />
       </div>
     </div>
   );
