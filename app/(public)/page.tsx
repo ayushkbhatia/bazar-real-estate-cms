@@ -33,9 +33,18 @@ export default async function HomePage() {
 
   return (
     <div className="bg-bz-bg">
-      {/* Hero — full-bleed variant A (placeholder until photography lands) */}
+      {/* Hero — full-bleed variant A (until photography lands). Brand
+          gradient pulls from bz-ink through a deeper moss tone to keep
+          the surface tonal but not flat; the bottom fade keeps the
+          headline legible against either end. */}
       <section className="relative h-[640px] bg-bz-ink overflow-hidden">
-        <div className="absolute inset-0 bz-img-dark opacity-60" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(135deg, var(--bz-ink) 0%, oklch(0.22 0.05 155) 55%, var(--bz-ink) 100%)",
+          }}
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-bz-ink/95 via-bz-ink/30 to-bz-ink/40" />
         <div className="relative h-full px-12 flex flex-col justify-end pb-20 text-white">
           <Eyebrow className="text-white/60 mb-4">Bazar · Abu Dhabi</Eyebrow>
