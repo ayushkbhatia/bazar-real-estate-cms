@@ -1,8 +1,8 @@
 "use client";
 
-import { useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useQueryStates } from "nuqs";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -38,13 +38,30 @@ type Props = {
 };
 
 export function FilterBar({ areas }: Props) {
-  const [{ beds, baths, type, price_min, price_max, area }, setState] =
+  const [{ q, beds, baths, type, price_min, price_max, area }, setState] =
     useQueryStates(filterParsers, {
       shallow: false, // re-fetch the RSC page on change
     });
   const [pending, startTransition] = useTransition();
 
-  const activeCount = [beds, baths, type, price_min, price_max, area].filter(
+  // Local search-input state — debounced so we don't fire a page reload per
+  // keystroke. Browser Back/Forward will leave the input value stale until
+  // the user retypes or clicks Clear — the trade-off is to avoid the
+  // setState-in-effect anti-pattern flagged by the React Compiler lint.
+  const [qInput, setQInput] = useState(q ?? "");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function onQChange(value: string) {
+    setQInput(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      startTransition(() => {
+        void setState({ q: value.trim() === "" ? null : value.trim() });
+      });
+    }, 250);
+  }
+
+  const activeCount = [q, beds, baths, type, price_min, price_max, area].filter(
     (v) => v !== null && v !== undefined && v !== "",
   ).length;
 
@@ -55,8 +72,10 @@ export function FilterBar({ areas }: Props) {
   }
 
   function clearAll() {
+    setQInput("");
     startTransition(() => {
       void setState({
+        q: null,
         beds: null,
         baths: null,
         type: null,
@@ -76,6 +95,23 @@ export function FilterBar({ areas }: Props) {
       )}
     >
       <div className="flex flex-wrap items-center gap-3">
+        {/* Free-text search */}
+        <label className="relative">
+          <span className="sr-only">Search</span>
+          <Search
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
+          />
+          <Input
+            type="search"
+            placeholder="Search Mamsha, Saadiyat, sea view…"
+            value={qInput}
+            onChange={(e) => onQChange(e.target.value)}
+            className="w-[260px] h-9 pl-8 text-[13px]"
+            aria-label="Search properties"
+          />
+        </label>
+
         {/* Beds */}
         <div className="flex items-center gap-1">
           <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
