@@ -67,7 +67,7 @@ export default async function AdminPropertiesPage() {
       title="Properties"
       breadcrumbs="Catalogue"
       primary={
-        <Button disabled title="Editing lands in Phase 1.1">
+        <Button disabled title="New property arrives in Phase 1.1c">
           <Plus size={14} strokeWidth={1.8} />
           New property
         </Button>
@@ -110,12 +110,17 @@ export default async function AdminPropertiesPage() {
                 rows.map((row) => (
                   <TableRow key={row.id}>
                     <TableCell>
-                      <div className="font-medium truncate max-w-[42ch]">
-                        {row.title}
-                      </div>
-                      <div className="mono text-[11px] text-bz-muted mt-0.5">
-                        {row.reference}
-                      </div>
+                      <Link
+                        href={`/admin/properties/${row.id}`}
+                        className="block hover:text-bz-accent transition-colors"
+                      >
+                        <div className="font-medium truncate max-w-[42ch]">
+                          {row.title}
+                        </div>
+                        <div className="mono text-[11px] text-bz-muted mt-0.5">
+                          {row.reference}
+                        </div>
+                      </Link>
                     </TableCell>
                     <TableCell>
                       <StatusPill status={row.status} />
