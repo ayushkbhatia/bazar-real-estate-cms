@@ -1071,6 +1071,42 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["notification_kind"]
+          link: string | null
+          payload: Json | null
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind: Database["public"]["Enums"]["notification_kind"]
+          link?: string | null
+          payload?: Json | null
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["notification_kind"]
+          link?: string | null
+          payload?: Json | null
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pages: {
         Row: {
           blocks: Json
@@ -1493,6 +1529,62 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          accent_token: string
+          brand_name: string
+          brand_tagline: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          email_templates: Json
+          hero_variant: string
+          id: number
+          integrations: Json
+          lead_routing: Json
+          orn: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          accent_token?: string
+          brand_name?: string
+          brand_tagline?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          email_templates?: Json
+          hero_variant?: string
+          id?: number
+          integrations?: Json
+          lead_routing?: Json
+          orn?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          accent_token?: string
+          brand_name?: string
+          brand_tagline?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          email_templates?: Json
+          hero_variant?: string
+          id?: number
+          integrations?: Json
+          lead_routing?: Json
+          orn?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       staff: {
         Row: {
           bio: string | null
@@ -1546,6 +1638,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      staff_invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          display_name: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string | null
+          role: Database["public"]["Enums"]["staff_role"]
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          display_name: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["staff_role"]
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          display_name?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["staff_role"]
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_invitations_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       valuation_requests: {
         Row: {
@@ -1834,6 +1973,11 @@ export type Database = {
         | "closed"
       mortgage_loan_type: "fixed" | "variable" | "hybrid"
       newsletter_status: "pending" | "confirmed" | "unsubscribed" | "bounced"
+      notification_kind:
+        | "new_enquiry"
+        | "viewing_reminder"
+        | "lead_reassigned"
+        | "system"
       page_status: "draft" | "published"
       property_furnishing: "unfurnished" | "semi" | "fully"
       property_media_role:
@@ -2075,6 +2219,12 @@ export const Constants = {
       ],
       mortgage_loan_type: ["fixed", "variable", "hybrid"],
       newsletter_status: ["pending", "confirmed", "unsubscribed", "bounced"],
+      notification_kind: [
+        "new_enquiry",
+        "viewing_reminder",
+        "lead_reassigned",
+        "system",
+      ],
       page_status: ["draft", "published"],
       property_furnishing: ["unfurnished", "semi", "fully"],
       property_media_role: [
