@@ -17,6 +17,7 @@ import { StatusPipeline, TemperatureToggle } from "./_pipeline";
 import { AssignToMeButton } from "./_assign-button";
 import { NotesEditor } from "./_notes";
 import { ReplyComposer } from "./_reply";
+import { ScheduleViewingButton } from "./_schedule";
 
 export const dynamic = "force-dynamic";
 
@@ -77,16 +78,19 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                   current={enquiry.temperature}
                 />
               </div>
-              {enquiry.assigned_agent_id == null ? (
-                <AssignToMeButton enquiryId={enquiry.id} />
-              ) : (
-                <span className="text-[12px] text-bz-muted">
-                  Assigned to{" "}
-                  <span className="text-bz-ink-2">
-                    {enquiry.staff?.display_name ?? "an advisor"}
+              <div className="flex items-center gap-2">
+                <ScheduleViewingButton enquiryId={enquiry.id} />
+                {enquiry.assigned_agent_id == null ? (
+                  <AssignToMeButton enquiryId={enquiry.id} />
+                ) : (
+                  <span className="text-[12px] text-bz-muted">
+                    Assigned to{" "}
+                    <span className="text-bz-ink-2">
+                      {enquiry.staff?.display_name ?? "an advisor"}
+                    </span>
                   </span>
-                </span>
-              )}
+                )}
+              </div>
             </div>
           </div>
 
