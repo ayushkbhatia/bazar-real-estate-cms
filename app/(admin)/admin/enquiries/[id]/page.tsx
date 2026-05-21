@@ -11,6 +11,7 @@ import { CmsShell } from "@/components/brand/cms-shell";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { getEnquiryById } from "@/lib/queries/enquiries";
 import { propertyUrl } from "@/lib/queries/property-utils";
+import { LiveDot } from "@/lib/realtime/live-dot";
 import { cn } from "@/lib/utils";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { markConversationRead } from "../_actions";
@@ -54,6 +55,16 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
           <ChevronRight size={11} />
           <span className="mono">{enquiry.id.slice(0, 8)}</span>
         </span>
+      }
+      live={
+        enquiry.conversation_id ? (
+          <LiveDot
+            channel={`public:messages:${enquiry.conversation_id}`}
+            table="messages"
+            filter={`conversation_id=eq.${enquiry.conversation_id}`}
+            event="INSERT"
+          />
+        ) : null
       }
     >
       <div className="grid grid-cols-[1fr_320px] gap-6 items-start">
