@@ -63,6 +63,28 @@ test("property page emits JSON-LD with the right reference", async ({ page }) =>
   expect(parsed.sku).toBe("BAZ-AD-04891");
 });
 
+test("contact form rejects when no email or phone is supplied", async ({ page }) => {
+  await page.goto("/contact");
+  await page.getByLabel(/^name$/i).fill("Playwright Tester");
+  await page.getByLabel(/tell us more/i).fill("Need help.");
+  await page.getByRole("button", { name: /send brief/i }).click();
+  await expect(
+    page.getByText(/need at least an email or a phone number/i),
+  ).toBeVisible();
+});
+
+test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
+  await page.goto("/p/mamsha-3-bed-beachfront-apartment-baz-ad-04891");
+  const ts = Date.now();
+  await page.getByLabel(/^name$/i).fill(`Playwright ${ts}`);
+  await page.getByLabel(/^email$/i).fill(`pw+${ts}@example.com`);
+  await page
+    .getByLabel(/^message$/i)
+    .fill("Automated marketplace E2E test enquiry — please disregard.");
+  await page.getByRole("button", { name: /send enquiry/i }).click();
+  await expect(page.getByText(/thank you/i)).toBeVisible({ timeout: 15_000 });
+});
+
 test("filter bar narrows the result set via URL state", async ({ page }) => {
   await page.goto("/buy");
   // Beds filter — click "3 beds" (aria-label distinguishes from the baths button).

@@ -161,6 +161,32 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          created_at: string
+          enquiry_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          enquiry_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          enquiry_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_enquiry_id_fkey"
+            columns: ["enquiry_id"]
+            isOneToOne: true
+            referencedRelation: "enquiries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       developers: {
         Row: {
           created_at: string
@@ -307,6 +333,113 @@ export type Database = {
           },
         ]
       }
+      enquiries: {
+        Row: {
+          account_id: string | null
+          assigned_agent_id: string | null
+          brief_raw: string | null
+          budget_max: number | null
+          budget_min: number | null
+          close_reason: string | null
+          closed_at: string | null
+          created_at: string
+          development_id: string | null
+          email: string | null
+          first_response_at: string | null
+          id: string
+          inferred_constraints: Json | null
+          internal_notes: string | null
+          name: string
+          phone: string | null
+          pre_approved: boolean
+          property_id: string | null
+          source: Database["public"]["Enums"]["enquiry_source"]
+          status: Database["public"]["Enums"]["enquiry_status"]
+          temperature: Database["public"]["Enums"]["enquiry_temperature"]
+          timeline: Database["public"]["Enums"]["enquiry_timeline"] | null
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          assigned_agent_id?: string | null
+          brief_raw?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          close_reason?: string | null
+          closed_at?: string | null
+          created_at?: string
+          development_id?: string | null
+          email?: string | null
+          first_response_at?: string | null
+          id?: string
+          inferred_constraints?: Json | null
+          internal_notes?: string | null
+          name: string
+          phone?: string | null
+          pre_approved?: boolean
+          property_id?: string | null
+          source: Database["public"]["Enums"]["enquiry_source"]
+          status?: Database["public"]["Enums"]["enquiry_status"]
+          temperature?: Database["public"]["Enums"]["enquiry_temperature"]
+          timeline?: Database["public"]["Enums"]["enquiry_timeline"] | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          assigned_agent_id?: string | null
+          brief_raw?: string | null
+          budget_max?: number | null
+          budget_min?: number | null
+          close_reason?: string | null
+          closed_at?: string | null
+          created_at?: string
+          development_id?: string | null
+          email?: string | null
+          first_response_at?: string | null
+          id?: string
+          inferred_constraints?: Json | null
+          internal_notes?: string | null
+          name?: string
+          phone?: string | null
+          pre_approved?: boolean
+          property_id?: string | null
+          source?: Database["public"]["Enums"]["enquiry_source"]
+          status?: Database["public"]["Enums"]["enquiry_status"]
+          temperature?: Database["public"]["Enums"]["enquiry_temperature"]
+          timeline?: Database["public"]["Enums"]["enquiry_timeline"] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enquiries_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "enquiries_assigned_agent_id_fkey"
+            columns: ["assigned_agent_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "enquiries_development_id_fkey"
+            columns: ["development_id"]
+            isOneToOne: false
+            referencedRelation: "developments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "enquiries_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       media_assets: {
         Row: {
           alt_text: string | null
@@ -363,6 +496,59 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "staff"
             referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          attachments: Json | null
+          author_id: string | null
+          author_kind: Database["public"]["Enums"]["message_author_kind"]
+          body: string
+          channel: Database["public"]["Enums"]["message_channel"]
+          conversation_id: string
+          created_at: string
+          direction: Database["public"]["Enums"]["message_direction"]
+          external_id: string | null
+          id: string
+          read_at: string | null
+          sent_at: string
+        }
+        Insert: {
+          attachments?: Json | null
+          author_id?: string | null
+          author_kind: Database["public"]["Enums"]["message_author_kind"]
+          body: string
+          channel?: Database["public"]["Enums"]["message_channel"]
+          conversation_id: string
+          created_at?: string
+          direction: Database["public"]["Enums"]["message_direction"]
+          external_id?: string | null
+          id?: string
+          read_at?: string | null
+          sent_at?: string
+        }
+        Update: {
+          attachments?: Json | null
+          author_id?: string | null
+          author_kind?: Database["public"]["Enums"]["message_author_kind"]
+          body?: string
+          channel?: Database["public"]["Enums"]["message_channel"]
+          conversation_id?: string
+          created_at?: string
+          direction?: Database["public"]["Enums"]["message_direction"]
+          external_id?: string | null
+          id?: string
+          read_at?: string | null
+          sent_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -711,6 +897,83 @@ export type Database = {
         }
         Relationships: []
       }
+      viewings: {
+        Row: {
+          account_id: string | null
+          agent_id: string | null
+          created_at: string
+          duration_minutes: number
+          enquiry_id: string | null
+          feedback: string | null
+          id: string
+          location: string | null
+          notes: string | null
+          property_id: string | null
+          starts_at: string
+          status: Database["public"]["Enums"]["viewing_status"]
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          agent_id?: string | null
+          created_at?: string
+          duration_minutes?: number
+          enquiry_id?: string | null
+          feedback?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          property_id?: string | null
+          starts_at: string
+          status?: Database["public"]["Enums"]["viewing_status"]
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          agent_id?: string | null
+          created_at?: string
+          duration_minutes?: number
+          enquiry_id?: string | null
+          feedback?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          property_id?: string | null
+          starts_at?: string
+          status?: Database["public"]["Enums"]["viewing_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "viewings_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "viewings_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "viewings_enquiry_id_fkey"
+            columns: ["enquiry_id"]
+            isOneToOne: false
+            referencedRelation: "enquiries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "viewings_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -731,7 +994,34 @@ export type Database = {
       area_kind: "emirate" | "area" | "sub_community" | "building"
       audit_actor_kind: "user" | "system" | "integration"
       development_status: "pre_launch" | "on_sale" | "sold_out" | "handed_over"
+      enquiry_source:
+        | "property_page"
+        | "contact_page"
+        | "concierge"
+        | "valuation"
+        | "mortgage"
+        | "blog_cta"
+        | "agent_page"
+        | "share_with_advisor"
+        | "whatsapp_inbound"
+      enquiry_status:
+        | "new"
+        | "qualified"
+        | "viewing_scheduled"
+        | "offer"
+        | "closed_won"
+        | "closed_lost"
+      enquiry_temperature: "cold" | "warm" | "hot"
+      enquiry_timeline:
+        | "now"
+        | "three_months"
+        | "six_months"
+        | "twelve_months"
+        | "browsing"
       media_folder: "listings" | "brand" | "blog" | "team" | "documents"
+      message_author_kind: "lead" | "staff" | "system" | "ai"
+      message_channel: "web" | "email" | "whatsapp" | "sms"
+      message_direction: "inbound" | "outbound"
       property_furnishing: "unfurnished" | "semi" | "fully"
       property_media_role:
         | "hero"
@@ -758,6 +1048,12 @@ export type Database = {
         | "hotel_apartment"
       staff_role: "admin" | "editor" | "agent" | "marketing" | "support"
       staff_status: "active" | "on_leave" | "onboarding" | "suspended"
+      viewing_status:
+        | "tentative"
+        | "confirmed"
+        | "completed"
+        | "cancelled"
+        | "no_show"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -896,7 +1192,37 @@ export const Constants = {
       area_kind: ["emirate", "area", "sub_community", "building"],
       audit_actor_kind: ["user", "system", "integration"],
       development_status: ["pre_launch", "on_sale", "sold_out", "handed_over"],
+      enquiry_source: [
+        "property_page",
+        "contact_page",
+        "concierge",
+        "valuation",
+        "mortgage",
+        "blog_cta",
+        "agent_page",
+        "share_with_advisor",
+        "whatsapp_inbound",
+      ],
+      enquiry_status: [
+        "new",
+        "qualified",
+        "viewing_scheduled",
+        "offer",
+        "closed_won",
+        "closed_lost",
+      ],
+      enquiry_temperature: ["cold", "warm", "hot"],
+      enquiry_timeline: [
+        "now",
+        "three_months",
+        "six_months",
+        "twelve_months",
+        "browsing",
+      ],
       media_folder: ["listings", "brand", "blog", "team", "documents"],
+      message_author_kind: ["lead", "staff", "system", "ai"],
+      message_channel: ["web", "email", "whatsapp", "sms"],
+      message_direction: ["inbound", "outbound"],
       property_furnishing: ["unfurnished", "semi", "fully"],
       property_media_role: [
         "hero",
@@ -926,6 +1252,13 @@ export const Constants = {
       ],
       staff_role: ["admin", "editor", "agent", "marketing", "support"],
       staff_status: ["active", "on_leave", "onboarding", "suspended"],
+      viewing_status: [
+        "tentative",
+        "confirmed",
+        "completed",
+        "cancelled",
+        "no_show",
+      ],
     },
   },
 } as const
