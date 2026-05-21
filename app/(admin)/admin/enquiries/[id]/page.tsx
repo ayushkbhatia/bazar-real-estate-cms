@@ -12,7 +12,9 @@ import { CmsShell } from "@/components/brand/cms-shell";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { getEnquiryById } from "@/lib/queries/enquiries";
 import { propertyUrl } from "@/lib/queries/property-utils";
+import { currentStaffRow } from "@/lib/queries/staff";
 import { LiveDot } from "@/lib/realtime/live-dot";
+import { PresencePile } from "@/lib/realtime/presence-pile";
 import { cn } from "@/lib/utils";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { markConversationRead } from "../_actions";
@@ -73,6 +75,10 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
     defaultPriceAed = propRow?.price_aed ?? null;
   }
 
+  // For presence — null when the viewer isn't staff (auth middleware
+  // already gated the route, but the row may briefly be missing).
+  const me = await currentStaffRow();
+
   return (
     <CmsShell
       title={enquiry.name}
@@ -86,14 +92,27 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
         </span>
       }
       live={
-        enquiry.conversation_id ? (
-          <LiveDot
-            channel={`public:messages:${enquiry.conversation_id}`}
-            table="messages"
-            filter={`conversation_id=eq.${enquiry.conversation_id}`}
-            event="INSERT"
-          />
-        ) : null
+        <>
+          {enquiry.conversation_id ? (
+            <LiveDot
+              channel={`public:messages:${enquiry.conversation_id}`}
+              table="messages"
+              filter={`conversation_id=eq.${enquiry.conversation_id}`}
+              event="INSERT"
+            />
+          ) : null}
+          {me ? (
+            <PresencePile
+              channel={`presence:enquiry:${enquiry.id}`}
+              self={{
+                user_id: me.user_id,
+                display_name: me.display_name,
+                joined_at: new Date().toISOString(),
+                photo_url: me.photo_url ?? null,
+              }}
+            />
+          ) : null}
+        </>
       }
     >
       <div className="grid grid-cols-[1fr_320px] gap-6 items-start">
