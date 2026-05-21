@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
+import { sendEmail } from "@/lib/email";
+import { staffReplyTemplate } from "@/lib/email-templates";
 import type { Database } from "@/db/types";
 
 type Status = Database["public"]["Enums"]["enquiry_status"];
@@ -207,11 +209,19 @@ export async function sendMessage(
 
   const { data: enquiry } = await ctx.supabase
     .from("enquiries")
-    .select("first_response_at")
+    .select(
+      "first_response_at, name, email, property_id, properties:property_id(reference)",
+    )
     .eq("id", enquiryId)
     .maybeSingle();
   if (!enquiry)
     return { status: "error", message: "Enquiry not found / not allowed." };
+
+  const { data: staffRow } = await ctx.supabase
+    .from("staff")
+    .select("display_name")
+    .eq("user_id", ctx.user.id)
+    .maybeSingle();
 
   const { data: conv } = await ctx.supabase
     .from("conversations")
@@ -258,6 +268,24 @@ export async function sendMessage(
     before: null,
     after: { message_id: msg.id, length: body.length, channel: "web" },
   });
+
+  // Best-effort email forward to the lead.
+  if (enquiry.email) {
+    const propRef =
+      (enquiry.properties as { reference: string } | null)?.reference ?? null;
+    const tpl = staffReplyTemplate({
+      name: enquiry.name,
+      body,
+      staffDisplayName: staffRow?.display_name ?? null,
+      propertyReference: propRef,
+    });
+    await sendEmail({
+      to: enquiry.email,
+      subject: tpl.subject,
+      text: tpl.text,
+      html: tpl.html,
+    });
+  }
 
   revalidatePath("/admin/enquiries");
   revalidatePath(`/admin/enquiries/${enquiryId}`);

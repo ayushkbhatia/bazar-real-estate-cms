@@ -4,6 +4,9 @@ const serverSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   SENTRY_DSN: z.string().url().optional(),
+  RESEND_API_KEY: z.string().min(1).optional(),
+  RESEND_FROM_ADDRESS: z.string().email().optional(),
+  RESEND_REPLY_TO: z.string().email().optional(),
 });
 
 const clientSchema = z.object({
@@ -30,6 +33,9 @@ const serverEnv =
         NODE_ENV: process.env.NODE_ENV,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         SENTRY_DSN: process.env.SENTRY_DSN,
+        RESEND_API_KEY: process.env.RESEND_API_KEY,
+        RESEND_FROM_ADDRESS: process.env.RESEND_FROM_ADDRESS,
+        RESEND_REPLY_TO: process.env.RESEND_REPLY_TO,
       })
     : ({ NODE_ENV: "development" } as z.infer<typeof serverSchema>);
 
@@ -41,3 +47,6 @@ export const env = {
 export const isSupabaseConfigured = Boolean(
   clientEnv.NEXT_PUBLIC_SUPABASE_URL && clientEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 );
+
+export const isResendConfigured =
+  typeof window === "undefined" && Boolean(env.RESEND_API_KEY);

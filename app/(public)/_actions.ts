@@ -9,6 +9,8 @@ import {
   normaliseEnquiryInput,
   type EnquiryInput,
 } from "@/lib/schemas/enquiry";
+import { sendEmail } from "@/lib/email";
+import { enquiryReceivedTemplate } from "@/lib/email-templates";
 import type { Database } from "@/db/types";
 
 export type CreateEnquiryResult =
@@ -83,6 +85,7 @@ export async function createEnquiry(
   // for INSERT — the policy applies to the `anon` role, but `auth.uid()` is
   // null. We use a service-role client purely for the INSERT call when the
   // session is anonymous; this avoids exposing service-role to the browser.
+  let insertedId: string;
   if (!user && env.SUPABASE_SERVICE_ROLE_KEY) {
     const admin = createClient<Database>(
       env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -99,20 +102,49 @@ export async function createEnquiry(
         status: "error",
         message: error?.message ?? "Failed to submit enquiry.",
       };
-    revalidatePath("/admin/enquiries");
-    return { status: "ok", id: row.id };
+    insertedId = row.id;
+  } else {
+    const { data: row, error } = await supabase
+      .from("enquiries")
+      .insert(insertPayload)
+      .select("id")
+      .maybeSingle();
+    if (error || !row)
+      return {
+        status: "error",
+        message: error?.message ?? "Failed to submit enquiry.",
+      };
+    insertedId = row.id;
   }
 
-  const { data: row, error } = await supabase
-    .from("enquiries")
-    .insert(insertPayload)
-    .select("id")
-    .maybeSingle();
-  if (error || !row)
-    return {
-      status: "error",
-      message: error?.message ?? "Failed to submit enquiry.",
-    };
   revalidatePath("/admin/enquiries");
-  return { status: "ok", id: row.id };
+
+  // Fire-and-forget auto-reply via Resend. No-op if RESEND_API_KEY is unset.
+  if (data.email) {
+    let propertyReference: string | null = null;
+    let propertyTitle: string | null = null;
+    if (data.property_id) {
+      const { data: prop } = await supabase
+        .from("properties")
+        .select("reference, title")
+        .eq("id", data.property_id)
+        .maybeSingle();
+      propertyReference = prop?.reference ?? null;
+      propertyTitle = prop?.title ?? null;
+    }
+    const tpl = enquiryReceivedTemplate({
+      name: data.name,
+      message: data.message,
+      propertyReference,
+      propertyTitle,
+    });
+    await sendEmail({
+      to: data.email,
+      subject: tpl.subject,
+      text: tpl.text,
+      html: tpl.html,
+    });
+  }
+
+  return { status: "ok", id: insertedId };
 }
