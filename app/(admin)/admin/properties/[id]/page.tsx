@@ -5,6 +5,9 @@ import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/properties";
+import { currentStaffRow } from "@/lib/queries/staff";
+import { PresenceBanner } from "@/lib/realtime/presence-banner";
+import { PresencePile } from "@/lib/realtime/presence-pile";
 import {
   type PropertyEditInput,
   normaliseCompliance,
@@ -142,6 +145,17 @@ export default async function PropertyEditPage({ params }: PageProps) {
 
   const isPublished = property.status === "published";
 
+  // Used by presence — null when the viewer isn't on the staff table.
+  const me = await currentStaffRow();
+  const presenceSelf = me
+    ? {
+        user_id: me.user_id,
+        display_name: me.display_name,
+        joined_at: new Date().toISOString(),
+        photo_url: me.photo_url ?? null,
+      }
+    : null;
+
   const publishability = evaluatePublishability({
     status: property.status,
     has_hero: heroAndMedia.hero !== null,
@@ -178,9 +192,23 @@ export default async function PropertyEditPage({ params }: PageProps) {
           </Link>
         ) : null
       }
+      live={
+        presenceSelf ? (
+          <PresencePile
+            channel={`presence:property:${property.id}`}
+            self={presenceSelf}
+          />
+        ) : null
+      }
     >
       <div className="grid grid-cols-[1fr_320px] gap-6 items-start">
         <div className="flex flex-col gap-6 min-w-0">
+          {presenceSelf ? (
+            <PresenceBanner
+              channel={`presence:property:${property.id}`}
+              self={presenceSelf}
+            />
+          ) : null}
           <HeroPicker
             propertyId={property.id}
             initial={heroAndMedia.hero}
