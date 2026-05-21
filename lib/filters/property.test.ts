@@ -9,6 +9,7 @@ describe("parseFilters", () => {
   it("returns an all-null state for an empty record", () => {
     const f = parseFilters({});
     expect(f).toEqual({
+      q: null,
       beds: null,
       baths: null,
       type: null,
@@ -20,6 +21,7 @@ describe("parseFilters", () => {
 
   it("parses common URL string values", () => {
     const f = parseFilters({
+      q: "Saadiyat sea view",
       beds: "3",
       baths: "2",
       type: "apartment",
@@ -28,6 +30,7 @@ describe("parseFilters", () => {
       area: "saadiyat-island",
     });
     expect(f).toEqual({
+      q: "Saadiyat sea view",
       beds: 3,
       baths: 2,
       type: "apartment",
@@ -35,6 +38,18 @@ describe("parseFilters", () => {
       price_max: 5_000_000,
       area: "saadiyat-island",
     });
+  });
+
+  it("trims and caps the search query", () => {
+    expect(parseFilters({ q: "   hello  " }).q).toBe("hello");
+    const long = "x".repeat(500);
+    const result = parseFilters({ q: long });
+    expect(result.q?.length).toBe(200);
+  });
+
+  it("treats whitespace-only q as null", () => {
+    expect(parseFilters({ q: "   " }).q).toBeNull();
+    expect(parseFilters({ q: "" }).q).toBeNull();
   });
 
   it("rejects an unknown type and falls back to null", () => {
@@ -61,6 +76,7 @@ describe("countActiveFilters", () => {
   it("counts only non-null fields", () => {
     expect(
       countActiveFilters({
+        q: null,
         beds: 3,
         baths: null,
         type: "apartment",
@@ -74,6 +90,7 @@ describe("countActiveFilters", () => {
   it("returns 0 for the empty state", () => {
     expect(
       countActiveFilters({
+        q: null,
         beds: null,
         baths: null,
         type: null,
@@ -83,12 +100,27 @@ describe("countActiveFilters", () => {
       }),
     ).toBe(0);
   });
+
+  it("counts q as a filter when set", () => {
+    expect(
+      countActiveFilters({
+        q: "saadiyat",
+        beds: null,
+        baths: null,
+        type: null,
+        price_min: null,
+        price_max: null,
+        area: null,
+      }),
+    ).toBe(1);
+  });
 });
 
 describe("describeFilters", () => {
   it("renders a single-line summary", () => {
     const text = describeFilters(
       {
+        q: null,
         beds: 3,
         baths: null,
         type: "apartment",
@@ -107,6 +139,7 @@ describe("describeFilters", () => {
   it("returns an empty string when no filters are active", () => {
     expect(
       describeFilters({
+        q: null,
         beds: null,
         baths: null,
         type: null,
@@ -115,5 +148,19 @@ describe("describeFilters", () => {
         area: null,
       }),
     ).toBe("");
+  });
+
+  it("quotes the search term when present", () => {
+    expect(
+      describeFilters({
+        q: "sea view",
+        beds: null,
+        baths: null,
+        type: null,
+        price_min: null,
+        price_max: null,
+        area: null,
+      }),
+    ).toBe('"sea view"');
   });
 });

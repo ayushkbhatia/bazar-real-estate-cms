@@ -12,6 +12,7 @@ import { PROPERTY_TYPES } from "@/lib/schemas/property";
  * URL ↔ state contract consistent between the two surfaces.
  */
 export const filterParsers = {
+  q: parseAsString,
   beds: parseAsInteger,
   baths: parseAsInteger,
   type: parseAsStringEnum([...PROPERTY_TYPES]),
@@ -23,6 +24,7 @@ export const filterParsers = {
 export const propertyFilterCache = createSearchParamsCache(filterParsers);
 
 export type PropertyFilters = {
+  q: string | null;
   beds: number | null;
   baths: number | null;
   type: (typeof PROPERTY_TYPES)[number] | null;
@@ -32,6 +34,7 @@ export type PropertyFilters = {
 };
 
 const EMPTY: PropertyFilters = {
+  q: null,
   beds: null,
   baths: null,
   type: null,
@@ -43,6 +46,11 @@ const EMPTY: PropertyFilters = {
 /** Coerce an unknown record (typically searchParams) to PropertyFilters. */
 export function parseFilters(input: Record<string, unknown>): PropertyFilters {
   const out: PropertyFilters = { ...EMPTY };
+
+  if (typeof input.q === "string") {
+    const trimmed = input.q.trim();
+    if (trimmed !== "") out.q = trimmed.slice(0, 200);
+  }
 
   const beds = toInt(input.beds);
   if (beds != null && beds >= 0) out.beds = clamp(beds, 0, 50);
@@ -79,6 +87,7 @@ export function countActiveFilters(f: PropertyFilters): number {
 /** A pretty single-line summary used in result-count strings. */
 export function describeFilters(f: PropertyFilters, areaName?: string): string {
   const parts: string[] = [];
+  if (f.q) parts.push(`"${f.q}"`);
   if (f.beds != null) parts.push(`${f.beds}+ beds`);
   if (f.baths != null) parts.push(`${f.baths}+ baths`);
   if (f.type) parts.push(humanType(f.type));

@@ -114,6 +114,14 @@ export async function listPublishedProperties(opts: {
 
   const filters = opts.filters;
   if (filters) {
+    if (filters.q) {
+      // Postgres full-text search. websearch syntax supports quoted phrases
+      // and "term1 OR term2" out of the box.
+      query = query.textSearch("search_text", filters.q, {
+        type: "websearch",
+        config: "english",
+      });
+    }
     if (filters.type) query = query.eq("type", filters.type);
     if (filters.beds != null) {
       // 5+ buckets — treat the value as a minimum once it hits the cap.

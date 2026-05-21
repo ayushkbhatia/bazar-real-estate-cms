@@ -399,6 +399,7 @@ export type Database = {
           price_history: Json
           published_at: string | null
           reference: string
+          search_text: unknown
           seo: Json | null
           service_charge_per_ft2: number | null
           short_description: string | null
@@ -446,6 +447,7 @@ export type Database = {
           price_history?: Json
           published_at?: string | null
           reference: string
+          search_text?: unknown
           seo?: Json | null
           service_charge_per_ft2?: number | null
           short_description?: string | null
@@ -493,6 +495,7 @@ export type Database = {
           price_history?: Json
           published_at?: string | null
           reference?: string
+          search_text?: unknown
           seo?: Json | null
           service_charge_per_ft2?: number | null
           short_description?: string | null
