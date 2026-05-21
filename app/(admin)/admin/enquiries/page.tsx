@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, KanbanSquare, ListTree } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { listEnquiries, type EnquiryListRow } from "@/lib/queries/enquiries";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/db/types";
+import { KanbanBoard } from "./_kanban";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,7 @@ type PageProps = {
     scope?: string;
     status?: string;
     temperature?: string;
+    view?: string;
   }>;
 };
 
@@ -130,16 +132,23 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
       : null
   ) as Database["public"]["Enums"]["enquiry_status"] | null;
   const temperature = raw.temperature === "hot" ? "hot" : null;
+  const view = raw.view === "kanban" ? "kanban" : "list";
 
+  // In Kanban mode the status filter is meaningless — the columns ARE
+  // the status partition — but scope + temperature still apply.
   const { rows, total } = await listEnquiries({
     scope,
-    status,
+    status: view === "kanban" ? null : status,
     temperature,
-    limit: 100,
+    limit: 200,
   });
 
   return (
-    <CmsShell title="Enquiries" breadcrumbs="Inbox">
+    <CmsShell
+      title="Enquiries"
+      breadcrumbs="Inbox"
+      primary={<ViewToggle view={view} />}
+    >
       <div className="flex flex-col gap-5">
         <div className="flex items-baseline justify-between gap-4">
           <ScopeTabs current={scope} hot={temperature === "hot"} />
@@ -148,7 +157,9 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
           </div>
         </div>
 
-        {rows.length === 0 ? (
+        {view === "kanban" ? (
+          <KanbanBoard rows={rows} />
+        ) : rows.length === 0 ? (
           <div className="bg-bz-surface border border-bz-border rounded-lg p-12 text-center text-bz-muted">
             No enquiries match this view.
           </div>
@@ -228,5 +239,36 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
         )}
       </div>
     </CmsShell>
+  );
+}
+
+function ViewToggle({ view }: { view: "list" | "kanban" }) {
+  return (
+    <div className="inline-flex items-center bg-bz-surface border border-bz-border rounded overflow-hidden h-9 text-[12.5px]">
+      <Link
+        href="/admin/enquiries"
+        className={cn(
+          "h-full px-3 inline-flex items-center gap-1.5 transition-colors",
+          view === "list"
+            ? "bg-bz-ink text-bz-bg"
+            : "text-bz-ink-2 hover:bg-bz-surface-2",
+        )}
+        aria-pressed={view === "list"}
+      >
+        <ListTree size={13} strokeWidth={1.7} /> List
+      </Link>
+      <Link
+        href="/admin/enquiries?view=kanban"
+        className={cn(
+          "h-full px-3 inline-flex items-center gap-1.5 transition-colors",
+          view === "kanban"
+            ? "bg-bz-ink text-bz-bg"
+            : "text-bz-ink-2 hover:bg-bz-surface-2",
+        )}
+        aria-pressed={view === "kanban"}
+      >
+        <KanbanSquare size={13} strokeWidth={1.7} /> Pipeline
+      </Link>
+    </div>
   );
 }
