@@ -119,6 +119,78 @@ export type Database = {
           },
         ]
       }
+      articles: {
+        Row: {
+          author_id: string | null
+          body_html: string
+          category: Database["public"]["Enums"]["article_category"]
+          created_at: string
+          deleted_at: string | null
+          excerpt: string | null
+          hero_image_id: string | null
+          id: string
+          published_at: string | null
+          read_minutes: number | null
+          scheduled_for: string | null
+          seo: Json | null
+          slug: string
+          status: Database["public"]["Enums"]["article_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id?: string | null
+          body_html?: string
+          category?: Database["public"]["Enums"]["article_category"]
+          created_at?: string
+          deleted_at?: string | null
+          excerpt?: string | null
+          hero_image_id?: string | null
+          id?: string
+          published_at?: string | null
+          read_minutes?: number | null
+          scheduled_for?: string | null
+          seo?: Json | null
+          slug: string
+          status?: Database["public"]["Enums"]["article_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string | null
+          body_html?: string
+          category?: Database["public"]["Enums"]["article_category"]
+          created_at?: string
+          deleted_at?: string | null
+          excerpt?: string | null
+          hero_image_id?: string | null
+          id?: string
+          published_at?: string | null
+          read_minutes?: number | null
+          scheduled_for?: string | null
+          seo?: Json | null
+          slug?: string
+          status?: Database["public"]["Enums"]["article_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "articles_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "articles_hero_image_id_fkey"
+            columns: ["hero_image_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action: string
@@ -160,6 +232,103 @@ export type Database = {
           user_agent?: string | null
         }
         Relationships: []
+      }
+      concierge_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          input_tokens: number | null
+          output_tokens: number | null
+          results: Json | null
+          role: Database["public"]["Enums"]["concierge_message_role"]
+          session_id: string
+          tool_use: Json | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          input_tokens?: number | null
+          output_tokens?: number | null
+          results?: Json | null
+          role: Database["public"]["Enums"]["concierge_message_role"]
+          session_id: string
+          tool_use?: Json | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          input_tokens?: number | null
+          output_tokens?: number | null
+          results?: Json | null
+          role?: Database["public"]["Enums"]["concierge_message_role"]
+          session_id?: string
+          tool_use?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concierge_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "concierge_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      concierge_sessions: {
+        Row: {
+          anon_token: string | null
+          brief: Json
+          created_at: string
+          handed_off_at: string | null
+          handed_off_to: string | null
+          id: string
+          input_tokens: number
+          output_tokens: number
+          pinned_property_ids: string[]
+          turn_count: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          anon_token?: string | null
+          brief?: Json
+          created_at?: string
+          handed_off_at?: string | null
+          handed_off_to?: string | null
+          id?: string
+          input_tokens?: number
+          output_tokens?: number
+          pinned_property_ids?: string[]
+          turn_count?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          anon_token?: string | null
+          brief?: Json
+          created_at?: string
+          handed_off_at?: string | null
+          handed_off_to?: string | null
+          id?: string
+          input_tokens?: number
+          output_tokens?: number
+          pinned_property_ids?: string[]
+          turn_count?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concierge_sessions_handed_off_to_fkey"
+            columns: ["handed_off_to"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       conversations: {
         Row: {
@@ -231,69 +400,201 @@ export type Database = {
           },
         ]
       }
+      development_media: {
+        Row: {
+          created_at: string
+          development_id: string
+          media_id: string
+          role: Database["public"]["Enums"]["development_media_role"]
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          development_id: string
+          media_id: string
+          role?: Database["public"]["Enums"]["development_media_role"]
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          development_id?: string
+          media_id?: string
+          role?: Database["public"]["Enums"]["development_media_role"]
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "development_media_development_id_fkey"
+            columns: ["development_id"]
+            isOneToOne: false
+            referencedRelation: "developments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "development_media_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      development_units: {
+        Row: {
+          beds: number | null
+          built_up_ft2: number | null
+          created_at: string
+          development_id: string
+          floor_plan_id: string | null
+          id: string
+          lagoon_access: string | null
+          orientation: string | null
+          plot_ft2: number | null
+          plot_number: string | null
+          price_aed: number | null
+          sort_order: number
+          status: Database["public"]["Enums"]["development_unit_status"]
+          unit_type: string
+          updated_at: string
+        }
+        Insert: {
+          beds?: number | null
+          built_up_ft2?: number | null
+          created_at?: string
+          development_id: string
+          floor_plan_id?: string | null
+          id?: string
+          lagoon_access?: string | null
+          orientation?: string | null
+          plot_ft2?: number | null
+          plot_number?: string | null
+          price_aed?: number | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["development_unit_status"]
+          unit_type: string
+          updated_at?: string
+        }
+        Update: {
+          beds?: number | null
+          built_up_ft2?: number | null
+          created_at?: string
+          development_id?: string
+          floor_plan_id?: string | null
+          id?: string
+          lagoon_access?: string | null
+          orientation?: string | null
+          plot_ft2?: number | null
+          plot_number?: string | null
+          price_aed?: number | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["development_unit_status"]
+          unit_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "development_units_development_id_fkey"
+            columns: ["development_id"]
+            isOneToOne: false
+            referencedRelation: "developments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "development_units_floor_plan_id_fkey"
+            columns: ["floor_plan_id"]
+            isOneToOne: false
+            referencedRelation: "floor_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       developments: {
         Row: {
           amenities: string[]
           area_id: string | null
+          bedrooms_text: string | null
           brochure_id: string | null
           created_at: string
           description: string | null
           developer_id: string
           escrow_account: string | null
+          facts: Json
           handover_date: string | null
+          hero_image_id: string | null
           id: string
           lead_advisor_id: string | null
+          master_plan: Json
           masterplan_id: string | null
           meta: Json | null
           name: string
           payment_plan: Json | null
+          published_at: string | null
+          seo: Json | null
           slug: string
           starting_price: number | null
           status: Database["public"]["Enums"]["development_status"]
+          tagline: string | null
           total_units: number | null
           updated_at: string
+          vision: string | null
         }
         Insert: {
           amenities?: string[]
           area_id?: string | null
+          bedrooms_text?: string | null
           brochure_id?: string | null
           created_at?: string
           description?: string | null
           developer_id: string
           escrow_account?: string | null
+          facts?: Json
           handover_date?: string | null
+          hero_image_id?: string | null
           id?: string
           lead_advisor_id?: string | null
+          master_plan?: Json
           masterplan_id?: string | null
           meta?: Json | null
           name: string
           payment_plan?: Json | null
+          published_at?: string | null
+          seo?: Json | null
           slug: string
           starting_price?: number | null
           status?: Database["public"]["Enums"]["development_status"]
+          tagline?: string | null
           total_units?: number | null
           updated_at?: string
+          vision?: string | null
         }
         Update: {
           amenities?: string[]
           area_id?: string | null
+          bedrooms_text?: string | null
           brochure_id?: string | null
           created_at?: string
           description?: string | null
           developer_id?: string
           escrow_account?: string | null
+          facts?: Json
           handover_date?: string | null
+          hero_image_id?: string | null
           id?: string
           lead_advisor_id?: string | null
+          master_plan?: Json
           masterplan_id?: string | null
           meta?: Json | null
           name?: string
           payment_plan?: Json | null
+          published_at?: string | null
+          seo?: Json | null
           slug?: string
           starting_price?: number | null
           status?: Database["public"]["Enums"]["development_status"]
+          tagline?: string | null
           total_units?: number | null
           updated_at?: string
+          vision?: string | null
         }
         Relationships: [
           {
@@ -315,6 +616,13 @@ export type Database = {
             columns: ["developer_id"]
             isOneToOne: false
             referencedRelation: "developers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "developments_hero_image_id_fkey"
+            columns: ["hero_image_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
             referencedColumns: ["id"]
           },
           {
@@ -440,6 +748,57 @@ export type Database = {
           },
         ]
       }
+      floor_plans: {
+        Row: {
+          area_ft2: number | null
+          beds: number | null
+          created_at: string
+          development_id: string
+          id: string
+          label: string
+          media_id: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          area_ft2?: number | null
+          beds?: number | null
+          created_at?: string
+          development_id: string
+          id?: string
+          label: string
+          media_id?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          area_ft2?: number | null
+          beds?: number | null
+          created_at?: string
+          development_id?: string
+          id?: string
+          label?: string
+          media_id?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "floor_plans_development_id_fkey"
+            columns: ["development_id"]
+            isOneToOne: false
+            referencedRelation: "developments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "floor_plans_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       media_assets: {
         Row: {
           alt_text: string | null
@@ -551,6 +910,92 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      newsletter_subscribers: {
+        Row: {
+          account_id: string | null
+          confirmation_token: string | null
+          confirmed_at: string | null
+          created_at: string
+          email: string
+          id: string
+          source: string | null
+          status: Database["public"]["Enums"]["newsletter_status"]
+          subscribed_at: string
+          unsubscribed_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          confirmation_token?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          source?: string | null
+          status?: Database["public"]["Enums"]["newsletter_status"]
+          subscribed_at?: string
+          unsubscribed_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          confirmation_token?: string | null
+          confirmed_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          source?: string | null
+          status?: Database["public"]["Enums"]["newsletter_status"]
+          subscribed_at?: string
+          unsubscribed_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newsletter_subscribers_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      pages: {
+        Row: {
+          blocks: Json
+          created_at: string
+          id: string
+          published_at: string | null
+          seo: Json | null
+          slug: string
+          status: Database["public"]["Enums"]["page_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          blocks?: Json
+          created_at?: string
+          id?: string
+          published_at?: string | null
+          seo?: Json | null
+          slug: string
+          status?: Database["public"]["Enums"]["page_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          blocks?: Json
+          created_at?: string
+          id?: string
+          published_at?: string | null
+          seo?: Json | null
+          slug?: string
+          status?: Database["public"]["Enums"]["page_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       properties: {
         Row: {
@@ -742,6 +1187,35 @@ export type Database = {
           },
         ]
       }
+      property_embeddings: {
+        Row: {
+          embedded_at: string | null
+          embedding: string | null
+          property_id: string
+          source_text: string | null
+        }
+        Insert: {
+          embedded_at?: string | null
+          embedding?: string | null
+          property_id: string
+          source_text?: string | null
+        }
+        Update: {
+          embedded_at?: string | null
+          embedding?: string | null
+          property_id?: string
+          source_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_embeddings_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: true
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       property_media: {
         Row: {
           created_at: string
@@ -778,6 +1252,72 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "properties"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          account_id: string | null
+          author_email: string | null
+          author_name: string | null
+          body: string | null
+          created_at: string
+          id: string
+          moderated_at: string | null
+          moderated_by: string | null
+          rating: number
+          status: Database["public"]["Enums"]["review_status"]
+          subject_id: string
+          subject_kind: Database["public"]["Enums"]["review_subject_kind"]
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          author_email?: string | null
+          author_name?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          rating: number
+          status?: Database["public"]["Enums"]["review_status"]
+          subject_id: string
+          subject_kind: Database["public"]["Enums"]["review_subject_kind"]
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          author_email?: string | null
+          author_name?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          moderated_at?: string | null
+          moderated_by?: string | null
+          rating?: number
+          status?: Database["public"]["Enums"]["review_status"]
+          subject_id?: string
+          subject_kind?: Database["public"]["Enums"]["review_subject_kind"]
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "reviews_moderated_by_fkey"
+            columns: ["moderated_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -992,8 +1532,25 @@ export type Database = {
       account_residency_status: "uae_resident" | "non_resident" | "gcc_national"
       alert_frequency: "off" | "instant" | "daily" | "weekly"
       area_kind: "emirate" | "area" | "sub_community" | "building"
+      article_category:
+        | "market_report"
+        | "buyers_guide"
+        | "sellers_guide"
+        | "field_note"
+        | "policy"
+        | "off_plan_watch"
+      article_status: "draft" | "scheduled" | "published" | "archived"
       audit_actor_kind: "user" | "system" | "integration"
+      concierge_message_role: "user" | "assistant" | "system"
+      development_media_role:
+        | "hero"
+        | "gallery"
+        | "render"
+        | "masterplan"
+        | "brochure"
+        | "video"
       development_status: "pre_launch" | "on_sale" | "sold_out" | "handed_over"
+      development_unit_status: "available" | "held" | "reserved" | "sold"
       enquiry_source:
         | "property_page"
         | "contact_page"
@@ -1022,6 +1579,8 @@ export type Database = {
       message_author_kind: "lead" | "staff" | "system" | "ai"
       message_channel: "web" | "email" | "whatsapp" | "sms"
       message_direction: "inbound" | "outbound"
+      newsletter_status: "pending" | "confirmed" | "unsubscribed" | "bounced"
+      page_status: "draft" | "published"
       property_furnishing: "unfurnished" | "semi" | "fully"
       property_media_role:
         | "hero"
@@ -1046,6 +1605,8 @@ export type Database = {
         | "commercial"
         | "land"
         | "hotel_apartment"
+      review_status: "pending" | "approved" | "rejected"
+      review_subject_kind: "agent" | "area" | "development"
       staff_role: "admin" | "editor" | "agent" | "marketing" | "support"
       staff_status: "active" | "on_leave" | "onboarding" | "suspended"
       viewing_status:
@@ -1190,8 +1751,27 @@ export const Constants = {
       ],
       alert_frequency: ["off", "instant", "daily", "weekly"],
       area_kind: ["emirate", "area", "sub_community", "building"],
+      article_category: [
+        "market_report",
+        "buyers_guide",
+        "sellers_guide",
+        "field_note",
+        "policy",
+        "off_plan_watch",
+      ],
+      article_status: ["draft", "scheduled", "published", "archived"],
       audit_actor_kind: ["user", "system", "integration"],
+      concierge_message_role: ["user", "assistant", "system"],
+      development_media_role: [
+        "hero",
+        "gallery",
+        "render",
+        "masterplan",
+        "brochure",
+        "video",
+      ],
       development_status: ["pre_launch", "on_sale", "sold_out", "handed_over"],
+      development_unit_status: ["available", "held", "reserved", "sold"],
       enquiry_source: [
         "property_page",
         "contact_page",
@@ -1223,6 +1803,8 @@ export const Constants = {
       message_author_kind: ["lead", "staff", "system", "ai"],
       message_channel: ["web", "email", "whatsapp", "sms"],
       message_direction: ["inbound", "outbound"],
+      newsletter_status: ["pending", "confirmed", "unsubscribed", "bounced"],
+      page_status: ["draft", "published"],
       property_furnishing: ["unfurnished", "semi", "fully"],
       property_media_role: [
         "hero",
@@ -1250,6 +1832,8 @@ export const Constants = {
         "land",
         "hotel_apartment",
       ],
+      review_status: ["pending", "approved", "rejected"],
+      review_subject_kind: ["agent", "area", "development"],
       staff_role: ["admin", "editor", "agent", "marketing", "support"],
       staff_status: ["active", "on_leave", "onboarding", "suspended"],
       viewing_status: [
