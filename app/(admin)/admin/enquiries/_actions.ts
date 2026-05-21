@@ -188,6 +188,82 @@ export async function markConversationRead(
   return { status: "ok" };
 }
 
+export type SendMessageResult =
+  | { status: "ok"; messageId: string }
+  | { status: "error"; message: string };
+
+export async function sendMessage(
+  enquiryId: string,
+  bodyRaw: string,
+): Promise<SendMessageResult> {
+  const ctx = await getStaffSupabase();
+  if (isStaffErr(ctx)) return { status: "error", message: ctx.error };
+
+  const body = bodyRaw.trim();
+  if (body.length < 2)
+    return { status: "error", message: "Write something first." };
+  if (body.length > 4000)
+    return { status: "error", message: "Trim to under 4000 characters." };
+
+  const { data: enquiry } = await ctx.supabase
+    .from("enquiries")
+    .select("first_response_at")
+    .eq("id", enquiryId)
+    .maybeSingle();
+  if (!enquiry)
+    return { status: "error", message: "Enquiry not found / not allowed." };
+
+  const { data: conv } = await ctx.supabase
+    .from("conversations")
+    .select("id")
+    .eq("enquiry_id", enquiryId)
+    .maybeSingle();
+  if (!conv)
+    return { status: "error", message: "Conversation row missing." };
+
+  const { data: msg, error: msgErr } = await ctx.supabase
+    .from("messages")
+    .insert({
+      conversation_id: conv.id,
+      direction: "outbound",
+      author_kind: "staff",
+      author_id: ctx.user.id,
+      body,
+      channel: "web",
+    })
+    .select("id")
+    .maybeSingle();
+
+  if (msgErr || !msg)
+    return {
+      status: "error",
+      message: msgErr?.message ?? "Failed to send.",
+    };
+
+  // First-response stamp + bump status from `new` → `qualified` on first reply.
+  if (!enquiry.first_response_at) {
+    await ctx.supabase
+      .from("enquiries")
+      .update({
+        first_response_at: new Date().toISOString(),
+        status: "qualified",
+      })
+      .eq("id", enquiryId);
+  }
+
+  await logAudit({
+    action: "enquiry.reply_sent",
+    target_kind: "enquiry",
+    target_id: enquiryId,
+    before: null,
+    after: { message_id: msg.id, length: body.length, channel: "web" },
+  });
+
+  revalidatePath("/admin/enquiries");
+  revalidatePath(`/admin/enquiries/${enquiryId}`);
+  return { status: "ok", messageId: msg.id };
+}
+
 export async function updateInternalNotes(
   enquiryId: string,
   notes: string,

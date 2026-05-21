@@ -16,6 +16,7 @@ import { markConversationRead } from "../_actions";
 import { StatusPipeline, TemperatureToggle } from "./_pipeline";
 import { AssignToMeButton } from "./_assign-button";
 import { NotesEditor } from "./_notes";
+import { ReplyComposer } from "./_reply";
 
 export const dynamic = "force-dynamic";
 
@@ -127,9 +128,7 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                 </li>
               ))}
             </ul>
-            <p className="mt-5 text-[12px] text-bz-muted">
-              Reply composer arrives in Phase 2.2.
-            </p>
+            <ReplyComposer enquiryId={enquiry.id} />
           </div>
         </div>
 
@@ -154,13 +153,23 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                 </a>
               ) : null}
               {enquiry.phone ? (
-                <a
-                  href={`tel:${enquiry.phone}`}
-                  className="inline-flex items-center gap-1.5 text-bz-ink-2 hover:text-bz-accent"
-                >
-                  <Phone size={13} strokeWidth={1.8} />
-                  {enquiry.phone}
-                </a>
+                <div className="flex flex-col gap-1">
+                  <a
+                    href={`tel:${enquiry.phone}`}
+                    className="inline-flex items-center gap-1.5 text-bz-ink-2 hover:text-bz-accent"
+                  >
+                    <Phone size={13} strokeWidth={1.8} />
+                    {enquiry.phone}
+                  </a>
+                  <a
+                    href={`https://wa.me/${enquiry.phone.replace(/[^0-9]/g, "")}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[11.5px] text-bz-muted hover:text-bz-accent ml-5"
+                  >
+                    Open in WhatsApp →
+                  </a>
+                </div>
               ) : null}
               {enquiry.timeline ? (
                 <div className="inline-flex items-center gap-1.5 text-bz-muted">
