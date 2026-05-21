@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronRight, KanbanSquare, ListTree } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
+import { LiveDot } from "@/lib/realtime/live-dot";
 import { listEnquiries, type EnquiryListRow } from "@/lib/queries/enquiries";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/db/types";
@@ -148,6 +149,13 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
       title="Enquiries"
       breadcrumbs="Inbox"
       primary={<ViewToggle view={view} />}
+      live={
+        <LiveDot
+          channel="public:enquiries:list"
+          table="enquiries"
+          event="*"
+        />
+      }
     >
       <div className="flex flex-col gap-5">
         <div className="flex items-baseline justify-between gap-4">

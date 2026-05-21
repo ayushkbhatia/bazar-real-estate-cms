@@ -80,6 +80,12 @@ type CmsShellProps = {
    * existing call sites stay valid. Added by Phase 6e.
    */
   notifications?: React.ReactNode;
+  /**
+   * Optional "Live" indicator rendered in the topbar before notifications.
+   * Pages that subscribe to Supabase Realtime pass <LiveDot /> here. Added
+   * by Phase H.
+   */
+  live?: React.ReactNode;
   children: React.ReactNode;
 };
 
@@ -89,6 +95,7 @@ export function CmsShell({
   primary,
   secondary,
   notifications,
+  live,
   children,
 }: CmsShellProps) {
   const pathname = usePathname();
@@ -166,6 +173,7 @@ export function CmsShell({
               className="w-full h-10 pl-9 pr-3 bg-bz-surface border border-bz-border rounded text-[13.5px] outline-none focus:border-bz-ink-2 transition-colors"
             />
           </div>
+          {live}
           {notifications ?? <NotificationsBell />}
           {secondary}
           {primary}
