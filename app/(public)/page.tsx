@@ -134,7 +134,7 @@ export default async function HomePage() {
       <section className="px-12 pb-24">
         <div className="bg-bz-accent-soft rounded-xl p-10 flex items-center justify-between gap-8">
           <div>
-            <Eyebrow>Phase 0 · Foundations</Eyebrow>
+            <Eyebrow className="text-bz-accent">Phase 0 · Foundations</Eyebrow>
             <h3
               className="serif text-[32px] mt-2 max-w-[24ch]"
               style={{ letterSpacing: "-0.02em" }}

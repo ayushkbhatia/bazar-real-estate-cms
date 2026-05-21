@@ -204,7 +204,10 @@ export function FilterBar({ mode, areas, isAuthed }: Props) {
             commit({ type: v === UNSET ? null : (v as typeof type) })
           }
         >
-          <SelectTrigger className="w-[160px] h-9 text-[13px]">
+          <SelectTrigger
+            className="w-[160px] h-9 text-[13px]"
+            aria-label="Property type"
+          >
             <SelectValue placeholder="Any type" />
           </SelectTrigger>
           <SelectContent>
@@ -225,7 +228,10 @@ export function FilterBar({ mode, areas, isAuthed }: Props) {
               commit({ area: v === UNSET ? null : v })
             }
           >
-            <SelectTrigger className="w-[200px] h-9 text-[13px]">
+            <SelectTrigger
+              className="w-[200px] h-9 text-[13px]"
+              aria-label="Area"
+            >
               <SelectValue placeholder="Any area" />
             </SelectTrigger>
             <SelectContent>
