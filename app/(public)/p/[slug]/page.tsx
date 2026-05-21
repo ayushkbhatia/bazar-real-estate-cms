@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronRight, BedDouble, Bath, Maximize2, Home, Calendar, KeyRound } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { ListingCard } from "@/components/brand/listing-card";
@@ -13,6 +14,7 @@ import {
   getSimilarProperties,
   propertyUrl,
 } from "@/lib/queries/properties";
+import { mediaPublicUrl } from "@/lib/media";
 
 export const revalidate = 60;
 
@@ -83,13 +85,26 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         <span className="mono text-bz-ink">{property.reference}</span>
       </div>
 
-      {/* Gallery (placeholder grid) */}
+      {/* Gallery — hero + placeholder slots until the full gallery picker lands */}
       <section className="px-12">
         <div className="grid grid-cols-3 grid-rows-2 gap-2 h-[480px]">
-          <PlaceholderImage
-            label={`${property.reference} · 1`}
-            className="col-span-2 row-span-2 rounded-lg"
-          />
+          {property.hero ? (
+            <div className="relative col-span-2 row-span-2 rounded-lg overflow-hidden">
+              <Image
+                src={mediaPublicUrl(property.hero.storage_key)}
+                alt={property.hero.alt_text ?? property.title}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 66vw"
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <PlaceholderImage
+              label={`${property.reference} · 1`}
+              className="col-span-2 row-span-2 rounded-lg"
+            />
+          )}
           <PlaceholderImage
             label={`${property.reference} · 2`}
             className="rounded-lg"
@@ -283,6 +298,10 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                   baths={row.baths}
                   area={row.built_up_ft2 ?? 0}
                   imgLabel={row.reference}
+                  heroSrc={
+                    row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                  }
+                  heroAlt={row.hero?.alt_text ?? row.title}
                 />
               </Link>
             ))}

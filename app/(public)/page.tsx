@@ -2,66 +2,30 @@ import Link from "next/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { ListingCard } from "@/components/brand/listing-card";
 import { Button } from "@/components/ui/button";
-import { createSupabasePublicClient } from "@/lib/supabase/public";
-import { isSupabaseConfigured } from "@/lib/env";
+import {
+  formatPriceAED,
+  listPublishedProperties,
+  propertyUrl,
+  type ListingRow,
+} from "@/lib/queries/properties";
+import { mediaPublicUrl } from "@/lib/media";
 
-export const revalidate = 60; // 1-minute ISR for the home
+export const revalidate = 60;
 
-type FeaturedListing = {
-  reference: string;
-  slug: string;
-  title: string;
-  price_aed: number;
-  beds: number;
-  baths: number;
-  built_up_ft2: number | null;
-  flags: { exclusive?: boolean; vacant_on_transfer?: boolean } | null;
-  areas: { name: string } | null;
-};
-
-async function fetchFeatured(): Promise<FeaturedListing[]> {
-  if (!isSupabaseConfigured) return [];
-  try {
-    const supabase = createSupabasePublicClient();
-    const { data, error } = await supabase
-      .from("properties")
-      .select(
-        "reference, slug, title, price_aed, beds, baths, built_up_ft2, flags, areas:area_id(name)",
-      )
-      .eq("status", "published")
-      .is("deleted_at", null)
-      .eq("mode", "buy")
-      .order("published_at", { ascending: false })
-      .limit(3);
-    if (error) {
-      console.error("[home] featured fetch error", error);
-      return [];
-    }
-    return (data ?? []) as unknown as FeaturedListing[];
-  } catch (err) {
-    console.error("[home] featured fetch threw", err);
-    return [];
-  }
-}
-
-function formatPrice(aed: number) {
-  if (aed >= 1_000_000) return `AED ${(aed / 1_000_000).toFixed(1)}M`;
-  if (aed >= 1_000) return `AED ${(aed / 1_000).toFixed(0)}K`;
-  return `AED ${aed.toLocaleString()}`;
-}
-
-function badgeFromFlags(flags: FeaturedListing["flags"]):
+function badgeFor(row: ListingRow):
   | { label: string; kind: "ink" | "accent" }
   | undefined {
-  if (!flags) return undefined;
-  if (flags.exclusive) return { label: "Exclusive", kind: "ink" };
-  if (flags.vacant_on_transfer)
+  if (row.flags?.exclusive) return { label: "Exclusive", kind: "ink" };
+  if (row.flags?.vacant_on_transfer)
     return { label: "Vacant on transfer", kind: "accent" };
   return undefined;
 }
 
 export default async function HomePage() {
-  const featured = await fetchFeatured();
+  const { rows: featured } = await listPublishedProperties({
+    mode: "buy",
+    limit: 3,
+  });
 
   return (
     <div className="bg-bz-bg">
@@ -115,28 +79,37 @@ export default async function HomePage() {
         </div>
         {featured.length > 0 ? (
           <div className="grid grid-cols-3 gap-6">
-            {featured.map((p) => {
-              const badge = badgeFromFlags(p.flags);
+            {featured.map((row) => {
+              const badge = badgeFor(row);
               return (
-                <ListingCard
-                  key={p.reference}
-                  price={formatPrice(p.price_aed)}
-                  title={p.title}
-                  location={p.areas?.name ?? "United Arab Emirates"}
-                  beds={p.beds}
-                  baths={p.baths}
-                  area={p.built_up_ft2 ?? 0}
-                  badge={badge?.label}
-                  badgeKind={badge?.kind}
-                  imgLabel={p.reference}
-                />
+                <Link
+                  key={row.reference}
+                  href={propertyUrl(row)}
+                  className="block"
+                >
+                  <ListingCard
+                    price={formatPriceAED(row.price_aed)}
+                    title={row.title}
+                    location={row.areas?.name ?? "United Arab Emirates"}
+                    beds={row.beds}
+                    baths={row.baths}
+                    area={row.built_up_ft2 ?? 0}
+                    badge={badge?.label}
+                    badgeKind={badge?.kind}
+                    imgLabel={row.reference}
+                    heroSrc={
+                      row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                    }
+                    heroAlt={row.hero?.alt_text ?? row.title}
+                  />
+                </Link>
               );
             })}
           </div>
         ) : (
           <p className="text-bz-muted">
-            Listings coming soon. Set Supabase env vars and seed the database to
-            see real properties here.
+            Listings coming soon. Set Supabase env vars and seed the database
+            to see real properties here.
           </p>
         )}
       </section>

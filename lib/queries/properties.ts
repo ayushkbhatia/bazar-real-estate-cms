@@ -7,10 +7,32 @@ type Mode = Database["public"]["Enums"]["property_mode"];
 type Status = Database["public"]["Enums"]["property_status"];
 
 const LISTING_FIELDS =
-  "id, reference, slug, title, short_description, price_aed, mode, status, type, beds, baths, built_up_ft2, flags, published_at, created_at, areas:area_id(name, slug)";
+  "id, reference, slug, title, short_description, price_aed, mode, status, type, beds, baths, built_up_ft2, flags, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text))";
 
 const DETAIL_FIELDS =
-  "id, reference, slug, title, short_description, description, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, service_charge_per_ft2, amenities, flags, dld_plot_number, listing_permit_no, address_line, floor, published_at, created_at, updated_at, areas:area_id(name, slug), developments:development_id(name, slug)";
+  "id, reference, slug, title, short_description, description, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, service_charge_per_ft2, amenities, flags, dld_plot_number, listing_permit_no, address_line, floor, published_at, created_at, updated_at, areas:area_id(name, slug), developments:development_id(name, slug), property_media(role, sort_order, media:media_assets(storage_key, filename, alt_text))";
+
+type RawMediaJoin = {
+  role: Database["public"]["Enums"]["property_media_role"];
+  sort_order?: number;
+  media: {
+    storage_key: string;
+    filename: string;
+    alt_text: string | null;
+  } | null;
+};
+
+function pickHero(joins: RawMediaJoin[] | null | undefined) {
+  if (!joins) return null;
+  const hero = joins.find((j) => j.role === "hero" && j.media);
+  return hero?.media ?? null;
+}
+
+export type HeroMedia = {
+  storage_key: string;
+  filename: string;
+  alt_text: string | null;
+} | null;
 
 export type ListingRow = {
   id: string;
@@ -29,6 +51,7 @@ export type ListingRow = {
   published_at: string | null;
   created_at: string;
   areas: { name: string; slug: string } | null;
+  hero: HeroMedia;
 };
 
 export type PropertyDetail = ListingRow & {
@@ -49,6 +72,13 @@ export type PropertyDetail = ListingRow & {
   updated_at: string;
   developments: { name: string; slug: string } | null;
 };
+
+function attachHero<T extends { property_media?: RawMediaJoin[] | null }>(
+  row: T,
+): Omit<T, "property_media"> & { hero: HeroMedia } {
+  const { property_media, ...rest } = row;
+  return { ...rest, hero: pickHero(property_media) };
+}
 
 /** List published listings for the public marketplace. */
 export async function listPublishedProperties(opts: {
@@ -72,7 +102,10 @@ export async function listPublishedProperties(opts: {
     console.error("[listPublishedProperties]", error);
     return { rows: [], total: 0 };
   }
-  return { rows: (data ?? []) as unknown as ListingRow[], total: count ?? 0 };
+  const rows = (data ?? []).map((row) =>
+    attachHero(row as unknown as { property_media: RawMediaJoin[] }),
+  ) as unknown as ListingRow[];
+  return { rows, total: count ?? 0 };
 }
 
 /** Find a single published property by reference (case-insensitive). */
@@ -92,7 +125,10 @@ export async function getPublishedPropertyByReference(
     console.error("[getPublishedPropertyByReference]", error);
     return null;
   }
-  return (data as unknown as PropertyDetail) ?? null;
+  if (!data) return null;
+  return attachHero(
+    data as unknown as { property_media: RawMediaJoin[] },
+  ) as unknown as PropertyDetail;
 }
 
 /** Find 4 similar published listings in the same area, excluding this id. */
@@ -122,7 +158,9 @@ export async function getSimilarProperties(
   }
   const { data, error } = await query;
   if (error) return [];
-  return (data ?? []) as unknown as ListingRow[];
+  return (data ?? []).map((row) =>
+    attachHero(row as unknown as { property_media: RawMediaJoin[] }),
+  ) as unknown as ListingRow[];
 }
 
 /** Admin: list ALL properties (any status). Uses the auth-aware server client
@@ -143,7 +181,10 @@ export async function listAllPropertiesForAdmin(opts: {
     console.error("[listAllPropertiesForAdmin]", error);
     return { rows: [], total: 0 };
   }
-  return { rows: (data ?? []) as unknown as ListingRow[], total: count ?? 0 };
+  const rows = (data ?? []).map((row) =>
+    attachHero(row as unknown as { property_media: RawMediaJoin[] }),
+  ) as unknown as ListingRow[];
+  return { rows, total: count ?? 0 };
 }
 
 /** Format AED with K/M suffix. */
