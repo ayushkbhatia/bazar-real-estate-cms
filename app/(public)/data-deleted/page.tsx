@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 
-export const dynamic = "force-static";
+// searchParams.reason needs to be readable per-request.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Account deleted",
