@@ -308,19 +308,27 @@ export async function listPropertiesByIds(
 }
 
 /** Admin: list ALL properties (any status). Uses the auth-aware server client
- *  so RLS gates this to staff users only. */
+ *  so RLS gates this to staff users only.
+ *
+ *  Sprint 7b: accepts an optional `status` filter so the dashboard's
+ *  `?status=published` deep-link works (was a no-op pre-Sprint 7).
+ */
 export async function listAllPropertiesForAdmin(opts: {
   limit?: number;
   offset?: number;
+  status?: Status;
 }): Promise<{ rows: ListingRow[]; total: number }> {
   if (!isSupabaseConfigured) return { rows: [], total: 0 };
   const supabase = await createSupabaseServerClient();
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("properties")
     .select(LISTING_FIELDS, { count: "exact" })
-    .is("deleted_at", null)
+    .is("deleted_at", null);
+  if (opts.status) query = query.eq("status", opts.status);
+  query = query
     .order("created_at", { ascending: false })
     .range(opts.offset ?? 0, (opts.offset ?? 0) + (opts.limit ?? 50) - 1);
+  const { data, error, count } = await query;
   if (error) {
     console.error("[listAllPropertiesForAdmin]", error);
     return { rows: [], total: 0 };
@@ -329,6 +337,36 @@ export async function listAllPropertiesForAdmin(opts: {
     attachHero(row as unknown as { property_media: RawMediaJoin[] }),
   ) as unknown as ListingRow[];
   return { rows, total: count ?? 0 };
+}
+
+/** Admin: count properties per status. Sprint 7b — for status-tab badges. */
+export async function countAdminPropertiesByStatus(): Promise<
+  Record<Status | "all", number>
+> {
+  const empty: Record<Status | "all", number> = {
+    all: 0,
+    draft: 0,
+    in_review: 0,
+    published: 0,
+    off_market: 0,
+    archived: 0,
+  };
+  if (!isSupabaseConfigured) return empty;
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("properties")
+    .select("status")
+    .is("deleted_at", null);
+  if (error || !data) {
+    if (error) console.error("[countAdminPropertiesByStatus]", error);
+    return empty;
+  }
+  const out = { ...empty };
+  for (const row of data as { status: Status }[]) {
+    out[row.status] = (out[row.status] ?? 0) + 1;
+    out.all += 1;
+  }
+  return out;
 }
 
 // Re-export the pure utilities so existing imports keep working.
