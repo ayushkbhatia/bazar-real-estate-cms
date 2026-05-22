@@ -283,9 +283,56 @@ async function handleSemanticSearch(
     return { output: { results: [], note: "Empty query." } };
   const limit = typeof input.limit === "number" ? Math.min(input.limit, 20) : 8;
 
-  // We don't populate embeddings in CI / by default. Fall back to FTS.
-  // (When embeddings exist, a follow-up could swap this for an RPC that
-  // uses pgvector cosine similarity against an embedding of `query`.)
+  // Sprint 12: try Voyage + pgvector cosine first. Falls back to FTS
+  // when either is unconfigured / empty / errored. Both paths return
+  // the same lean row shape so callers don't branch.
+  const { embed } = await import("@/lib/embeddings");
+  const { isVoyageConfigured } = await import("@/lib/env");
+  if (isVoyageConfigured) {
+    const vec = await embed(query, "query");
+    if (vec) {
+      try {
+        const { s8 } = await import("@/lib/supabase/sprint-8");
+        // Vector-similarity query — order by cosine distance ASC
+        // (smaller = closer). pgvector supports the `<=>` operator;
+        // use rpc when the index is sparse for better performance.
+        const { data: vecMatches } = await s8(supabase).rpc(
+          "match_properties",
+          { query_embedding: vec, match_limit: limit },
+        );
+        if (Array.isArray(vecMatches) && vecMatches.length > 0) {
+          const ids = (vecMatches as { property_id: string }[]).map(
+            (m) => m.property_id,
+          );
+          const { data } = await supabase
+            .from("properties")
+            .select(SEARCH_FIELDS)
+            .in("id", ids)
+            .eq("status", "published")
+            .is("deleted_at", null);
+          // preserve cosine order
+          const order = new Map(ids.map((id, i) => [id, i]));
+          const rows = (data ?? [])
+            .map((r) => rowToScorable(r as unknown as RawSearchRow))
+            .sort(
+              (a, b) =>
+                (order.get(a.id) ?? 99) - (order.get(b.id) ?? 99),
+            );
+          return {
+            output: {
+              results: rows.map(toLeanRow),
+              count: rows.length,
+              mode: "vector",
+            },
+          };
+        }
+      } catch {
+        // RPC missing or embedding column absent — fall through.
+      }
+    }
+  }
+
+  // Postgres FTS fallback.
   const { data, error } = await supabase
     .from("properties")
     .select(SEARCH_FIELDS)

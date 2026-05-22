@@ -8,6 +8,10 @@ const serverSchema = z.object({
   RESEND_FROM_ADDRESS: z.string().email().optional(),
   RESEND_REPLY_TO: z.string().email().optional(),
   CRON_SECRET: z.string().min(1).optional(),
+  // Sprint 12 integrations
+  MEILISEARCH_HOST: z.string().url().optional(),
+  MEILISEARCH_API_KEY: z.string().min(1).optional(),
+  VOYAGE_API_KEY: z.string().min(1).optional(),
 });
 
 const clientSchema = z.object({
@@ -22,6 +26,13 @@ const clientSchema = z.object({
   // building the wa.me URL. Falls back to a UAE placeholder when unset.
   NEXT_PUBLIC_WHATSAPP_ADVISOR_NUMBER: z.string().optional(),
   NEXT_PUBLIC_WHATSAPP_MORTGAGE_NUMBER: z.string().optional(),
+  // Sprint 12 — Mapbox + Meilisearch public/search key + static FX rate.
+  NEXT_PUBLIC_MAPBOX_TOKEN: z.string().min(1).optional(),
+  NEXT_PUBLIC_MEILISEARCH_SEARCH_KEY: z.string().min(1).optional(),
+  NEXT_PUBLIC_MEILISEARCH_HOST: z.string().url().optional(),
+  // Static USD-per-AED rate (placeholder until Sprint 13 wires a daily
+  // FX cron). Used to render USD equivalents on /p/[slug].
+  NEXT_PUBLIC_FX_USD_PER_AED: z.string().optional(),
 });
 
 const clientEnv = clientSchema.parse({
@@ -35,6 +46,11 @@ const clientEnv = clientSchema.parse({
     process.env.NEXT_PUBLIC_WHATSAPP_ADVISOR_NUMBER,
   NEXT_PUBLIC_WHATSAPP_MORTGAGE_NUMBER:
     process.env.NEXT_PUBLIC_WHATSAPP_MORTGAGE_NUMBER,
+  NEXT_PUBLIC_MAPBOX_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_TOKEN,
+  NEXT_PUBLIC_MEILISEARCH_SEARCH_KEY:
+    process.env.NEXT_PUBLIC_MEILISEARCH_SEARCH_KEY,
+  NEXT_PUBLIC_MEILISEARCH_HOST: process.env.NEXT_PUBLIC_MEILISEARCH_HOST,
+  NEXT_PUBLIC_FX_USD_PER_AED: process.env.NEXT_PUBLIC_FX_USD_PER_AED,
 });
 
 const serverEnv =
@@ -47,6 +63,9 @@ const serverEnv =
         RESEND_FROM_ADDRESS: process.env.RESEND_FROM_ADDRESS,
         RESEND_REPLY_TO: process.env.RESEND_REPLY_TO,
         CRON_SECRET: process.env.CRON_SECRET,
+        MEILISEARCH_HOST: process.env.MEILISEARCH_HOST,
+        MEILISEARCH_API_KEY: process.env.MEILISEARCH_API_KEY,
+        VOYAGE_API_KEY: process.env.VOYAGE_API_KEY,
       })
     : ({ NODE_ENV: "development" } as z.infer<typeof serverSchema>);
 
@@ -61,3 +80,29 @@ export const isSupabaseConfigured = Boolean(
 
 export const isResendConfigured =
   typeof window === "undefined" && Boolean(env.RESEND_API_KEY);
+
+/** Sprint 12 — feature flags for integrations. Read-only at module load.
+ *  Code paths that depend on these should degrade gracefully when false:
+ *  Meilisearch falls back to Postgres FTS, pgvector falls back to FTS,
+ *  Mapbox falls back to maplibre-gl + open tiles. */
+export const isMeilisearchConfigured =
+  typeof window === "undefined"
+    ? Boolean(env.MEILISEARCH_HOST && env.MEILISEARCH_API_KEY)
+    : Boolean(
+        clientEnv.NEXT_PUBLIC_MEILISEARCH_HOST &&
+          clientEnv.NEXT_PUBLIC_MEILISEARCH_SEARCH_KEY,
+      );
+
+export const isVoyageConfigured =
+  typeof window === "undefined" && Boolean(env.VOYAGE_API_KEY);
+
+export const isMapboxConfigured = Boolean(
+  clientEnv.NEXT_PUBLIC_MAPBOX_TOKEN,
+);
+
+/** USD per 1 AED. Defaults to 0.272 (mid-2026 spot rate) when env unset. */
+export function usdPerAed(): number {
+  const raw = clientEnv.NEXT_PUBLIC_FX_USD_PER_AED;
+  const n = raw ? Number(raw) : NaN;
+  return Number.isFinite(n) && n > 0 ? n : 0.272;
+}

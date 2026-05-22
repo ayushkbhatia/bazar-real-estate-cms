@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -9,6 +9,7 @@ import {
   Download,
   MessageCircle,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -395,10 +396,23 @@ export function MortgageCalculator() {
                 What you actually wire
               </h3>
             </div>
-            <Button variant="ghost" size="sm" disabled>
-              <Download size={14} strokeWidth={1.6} />
-              PDF summary
-            </Button>
+            <MortgagePdfDownload
+              input={{
+                property_price_aed: price,
+                down_payment_pct: Math.round(downPct * 100),
+                rate_pct: annualRatePct,
+                term_years: termYears,
+                loan_type: mortgageType,
+                buyer_status: buyerStatus,
+              }}
+              result={{
+                loan_amount_aed: summary.principalAed,
+                monthly_payment_aed: summary.monthlyPaymentAed,
+                total_interest_aed: summary.totalInterestAed,
+                total_cost_aed: summary.totalPaidAed,
+                dbr_pct: afford ? Math.round(afford.dbr * 100) : null,
+              }}
+            />
           </div>
           <table className="w-full text-[13.5px]" data-testid="cash-to-close-table">
             <tbody>
@@ -639,5 +653,67 @@ function AmortChart({
         <span>Y{termYears}</span>
       </div>
     </>
+  );
+}
+
+/** Sprint 12: PDF download for the mortgage scenario. POSTs the
+ *  computed inputs+result to /api/pdf/mortgage and saves the stream. */
+function MortgagePdfDownload({
+  input,
+  result,
+}: {
+  input: {
+    property_price_aed: number;
+    down_payment_pct: number;
+    rate_pct: number;
+    term_years: number;
+    loan_type: "fixed" | "variable" | "hybrid";
+    buyer_status: "uae_resident" | "non_resident" | "gcc_national";
+  };
+  result: {
+    loan_amount_aed: number;
+    monthly_payment_aed: number;
+    total_interest_aed: number;
+    total_cost_aed: number;
+    dbr_pct: number | null;
+  };
+}) {
+  const [pending, startTransition] = useTransition();
+
+  function handle() {
+    startTransition(async () => {
+      try {
+        const res = await fetch("/api/pdf/mortgage", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input, result }),
+        });
+        if (!res.ok) throw new Error(`PDF render failed (${res.status})`);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "bazar-mortgage-scenario.pdf";
+        a.click();
+        URL.revokeObjectURL(url);
+        toast.success("Mortgage scenario PDF downloaded.");
+      } catch (e) {
+        toast.error(
+          e instanceof Error ? e.message : "Could not generate PDF.",
+        );
+      }
+    });
+  }
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={handle}
+      disabled={pending}
+    >
+      <Download size={14} strokeWidth={1.6} />
+      {pending ? "Generating…" : "PDF summary"}
+    </Button>
   );
 }

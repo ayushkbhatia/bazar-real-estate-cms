@@ -36,6 +36,14 @@
     {
       "path": "/api/cron/permit-expiry",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/meilisearch-sync",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/embeddings-backfill",
+      "schedule": "0 3 * * *"
     }
   ]
 }

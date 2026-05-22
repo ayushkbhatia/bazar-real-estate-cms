@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Download, FileText, FileSpreadsheet } from "lucide-react";
 import {
   DropdownMenu,
@@ -10,19 +10,42 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
+type PdfSnapshot = {
+  rangeLabel: string;
+  kpis: {
+    site_visits: number;
+    property_views: number;
+    enquiry_conversion_pct: number;
+    form_completions: number;
+    closes_aed: number;
+  };
+  traffic_by_source: { label: string; visits: number; share: number }[];
+  top_searches: { query: string; count: number }[];
+  top_neighborhoods: { slug: string; name: string; views: number }[];
+  agent_leaderboard: {
+    display_name: string;
+    title: string | null;
+    closedAed: number;
+    deals: number;
+  }[];
+};
+
 /**
- * Sprint 7h (backfilled): export button on /admin/analytics.
- * CSV download is fully wired today (the parent passes the rows + filename).
- * PDF activates with Sprint 12's PDF library.
+ * Sprint 7h (backfilled): export button on /admin/analytics. Sprint 12
+ * activates the PDF branch — the parent passes the on-screen snapshot
+ * so the PDF matches what the user is looking at.
  */
 export function AnalyticsExportButton({
   csvRows,
   csvFilename = `bazar-analytics-${new Date().toISOString().slice(0, 10)}.csv`,
+  pdfSnapshot,
 }: {
   csvRows: { header: string[]; rows: (string | number)[][] };
   csvFilename?: string;
+  pdfSnapshot?: PdfSnapshot;
 }) {
   const [open, setOpen] = useState(false);
+  const [pdfPending, startPdf] = useTransition();
 
   function csv() {
     const lines = [csvRows.header.join(",")];
@@ -45,9 +68,33 @@ export function AnalyticsExportButton({
 
   function pdf() {
     setOpen(false);
-    toast.info(
-      "Branded PDF export wires Sprint 12 (@react-pdf/renderer).",
-    );
+    if (!pdfSnapshot) {
+      toast.error("No analytics snapshot available.");
+      return;
+    }
+    startPdf(async () => {
+      try {
+        const res = await fetch("/api/pdf/analytics", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(pdfSnapshot),
+        });
+        if (!res.ok) throw new Error(`PDF render failed (${res.status})`);
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `bazar-analytics-${new Date()
+          .toISOString()
+          .slice(0, 10)}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (e) {
+        toast.error(
+          e instanceof Error ? e.message : "Could not generate PDF.",
+        );
+      }
+    });
   }
 
   return (
@@ -66,9 +113,9 @@ export function AnalyticsExportButton({
           <FileSpreadsheet size={13} strokeWidth={1.7} />
           Export CSV
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={pdf}>
+        <DropdownMenuItem onSelect={pdf} disabled={pdfPending}>
           <FileText size={13} strokeWidth={1.7} />
-          Export PDF · Sprint 12
+          {pdfPending ? "Generating…" : "Export PDF"}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
