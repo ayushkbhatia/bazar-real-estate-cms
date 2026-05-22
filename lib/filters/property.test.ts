@@ -16,6 +16,17 @@ describe("parseFilters", () => {
       price_min: null,
       price_max: null,
       area: null,
+      ft2_min: null,
+      ft2_max: null,
+      year_min: null,
+      year_max: null,
+      tenure: null,
+      furnishing: null,
+      amenities: [],
+      verified: null,
+      advisor: null,
+      sort: null,
+      page: null,
     });
   });
 
@@ -37,6 +48,17 @@ describe("parseFilters", () => {
       price_min: 1_000_000,
       price_max: 5_000_000,
       area: "saadiyat-island",
+      ft2_min: null,
+      ft2_max: null,
+      year_min: null,
+      year_max: null,
+      tenure: null,
+      furnishing: null,
+      amenities: [],
+      verified: null,
+      advisor: null,
+      sort: null,
+      page: null,
     });
   });
 
@@ -72,15 +94,36 @@ describe("parseFilters", () => {
   });
 });
 
+// Sprint 4b: extended filter shape — every test object spreads EMPTY so we
+// only have to set the fields a given case cares about.
+const EMPTY = {
+  q: null,
+  beds: null,
+  baths: null,
+  type: null,
+  price_min: null,
+  price_max: null,
+  area: null,
+  ft2_min: null,
+  ft2_max: null,
+  year_min: null,
+  year_max: null,
+  tenure: null,
+  furnishing: null,
+  amenities: [] as string[],
+  verified: null,
+  advisor: null,
+  sort: null,
+  page: null,
+} as const;
+
 describe("countActiveFilters", () => {
   it("counts only non-null fields", () => {
     expect(
       countActiveFilters({
-        q: null,
+        ...EMPTY,
         beds: 3,
-        baths: null,
         type: "apartment",
-        price_min: null,
         price_max: 5_000_000,
         area: "saadiyat-island",
       }),
@@ -88,31 +131,11 @@ describe("countActiveFilters", () => {
   });
 
   it("returns 0 for the empty state", () => {
-    expect(
-      countActiveFilters({
-        q: null,
-        beds: null,
-        baths: null,
-        type: null,
-        price_min: null,
-        price_max: null,
-        area: null,
-      }),
-    ).toBe(0);
+    expect(countActiveFilters({ ...EMPTY })).toBe(0);
   });
 
   it("counts q as a filter when set", () => {
-    expect(
-      countActiveFilters({
-        q: "saadiyat",
-        beds: null,
-        baths: null,
-        type: null,
-        price_min: null,
-        price_max: null,
-        area: null,
-      }),
-    ).toBe(1);
+    expect(countActiveFilters({ ...EMPTY, q: "saadiyat" })).toBe(1);
   });
 });
 
@@ -120,9 +143,8 @@ describe("describeFilters", () => {
   it("renders a single-line summary", () => {
     const text = describeFilters(
       {
-        q: null,
+        ...EMPTY,
         beds: 3,
-        baths: null,
         type: "apartment",
         price_min: 2_000_000,
         price_max: 5_000_000,
@@ -137,30 +159,10 @@ describe("describeFilters", () => {
   });
 
   it("returns an empty string when no filters are active", () => {
-    expect(
-      describeFilters({
-        q: null,
-        beds: null,
-        baths: null,
-        type: null,
-        price_min: null,
-        price_max: null,
-        area: null,
-      }),
-    ).toBe("");
+    expect(describeFilters({ ...EMPTY })).toBe("");
   });
 
   it("quotes the search term when present", () => {
-    expect(
-      describeFilters({
-        q: "sea view",
-        beds: null,
-        baths: null,
-        type: null,
-        price_min: null,
-        price_max: null,
-        area: null,
-      }),
-    ).toBe('"sea view"');
+    expect(describeFilters({ ...EMPTY, q: "sea view" })).toBe('"sea view"');
   });
 });

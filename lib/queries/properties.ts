@@ -168,11 +168,54 @@ export async function listPublishedProperties(opts: {
       if (id) query = query.eq("area_id", id);
       else return { rows: [], total: 0 }; // bogus area slug → no results
     }
+
+    // Sprint 4b: extended facets.
+    if (filters.ft2_min != null) query = query.gte("built_up_ft2", filters.ft2_min);
+    if (filters.ft2_max != null) query = query.lte("built_up_ft2", filters.ft2_max);
+    if (filters.year_min != null) query = query.gte("year_built", filters.year_min);
+    if (filters.year_max != null) query = query.lte("year_built", filters.year_max);
+    if (filters.tenure) query = query.eq("tenure", filters.tenure);
+    if (filters.furnishing) query = query.eq("furnishing", filters.furnishing);
+    if (filters.amenities && filters.amenities.length > 0) {
+      // properties.amenities is a text[]; `contains` performs a superset check.
+      query = query.contains("amenities", filters.amenities);
+    }
+    if (filters.advisor) {
+      // advisor slug → staff user_id lookup, then equality.
+      const { data: staffRow } = await supabase
+        .from("staff")
+        .select("user_id")
+        .eq("slug", filters.advisor)
+        .maybeSingle();
+      if (staffRow) query = query.eq("assigned_agent_id", staffRow.user_id);
+      else return { rows: [], total: 0 };
+    }
+    if (filters.verified) {
+      // Bazar Verified is a flag stored in jsonb. Use the @> superset op.
+      query = query.contains("flags", { verified: true });
+    }
   }
 
-  query = query
-    .order("published_at", { ascending: false })
-    .range(opts.offset ?? 0, (opts.offset ?? 0) + (opts.limit ?? 24) - 1);
+  // Sort.
+  const sort = opts.filters?.sort ?? null;
+  switch (sort) {
+    case "price_asc":
+      query = query.order("price_aed", { ascending: true });
+      break;
+    case "price_desc":
+      query = query.order("price_aed", { ascending: false });
+      break;
+    case "area_desc":
+      query = query
+        .order("built_up_ft2", { ascending: false, nullsFirst: false });
+      break;
+    case "recent":
+    default:
+      query = query.order("published_at", { ascending: false });
+  }
+
+  const offset = opts.offset ?? 0;
+  query = query.range(offset, offset + (opts.limit ?? 24) - 1);
 
   const { data, error, count } = await query;
   if (error) {

@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
-import { Eyebrow } from "@/components/brand/eyebrow";
+import { SearchList } from "../_components/search-list";
+import { parseFilters } from "@/lib/filters/property";
+import type { SearchView } from "../_components/view-toggle";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Off-plan",
@@ -7,21 +11,25 @@ export const metadata: Metadata = {
     "Pre-launch and on-sale developments from Abu Dhabi's leading developers.",
 };
 
-export default function OffPlanPage() {
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+const ALLOWED_VIEWS: readonly SearchView[] = ["grid", "list", "map"];
+
+export default async function OffPlanPage({ searchParams }: PageProps) {
+  const raw = await searchParams;
+  const filters = parseFilters(raw);
+  const v = typeof raw.view === "string" ? raw.view : null;
+  const view: SearchView = ALLOWED_VIEWS.includes(v as SearchView)
+    ? (v as SearchView)
+    : "grid";
   return (
-    <div className="px-12 py-24 max-w-[80ch]">
-      <Eyebrow>Coming in Phase 5</Eyebrow>
-      <h1
-        className="serif text-[56px] font-normal mt-2"
-        style={{ letterSpacing: "-0.025em" }}
-      >
-        New developments
-      </h1>
-      <p className="mt-4 text-[15px] text-bz-muted">
-        Development pages, payment plan calculators, and reservation flows
-        arrive in Phase 5 alongside the AI Concierge. In the meantime, talk to
-        an advisor to access pre-launch inventory.
-      </p>
-    </div>
+    <SearchList
+      mode="off_plan"
+      filters={filters}
+      view={view}
+      searchParams={raw}
+    />
   );
 }

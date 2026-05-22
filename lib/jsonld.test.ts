@@ -36,18 +36,19 @@ const PROPERTY = {
 };
 
 describe("propertyJsonLd", () => {
-  it("produces a valid Product + Offer + Accommodation JSON-LD", async () => {
+  it("produces a valid RealEstateListing + Offer + Accommodation JSON-LD", async () => {
     const { propertyJsonLd } = await importModule();
     const ld = propertyJsonLd(
       PROPERTY,
       "https://example.com/hero.jpg",
     );
     expect(ld["@context"]).toBe("https://schema.org");
-    expect(ld["@type"]).toBe("Product");
+    // Sprint 4c: replaces /Product.
+    expect(ld["@type"]).toBe("RealEstateListing");
     expect(ld.url).toBe(
       "https://bazar-real-estate-cms.example/p/mamsha-3-bed-beachfront-apartment-baz-ad-04891",
     );
-    expect(ld.sku).toBe("BAZ-AD-04891");
+    expect(ld.identifier).toBe("BAZ-AD-04891");
     expect(ld.image).toEqual(["https://example.com/hero.jpg"]);
 
     const offer = ld.offers as Record<string, unknown>;
@@ -55,7 +56,7 @@ describe("propertyJsonLd", () => {
     expect(offer.priceCurrency).toBe("AED");
     expect(offer.price).toBe(4_200_000);
 
-    const acc = ld.isRelatedTo as Record<string, unknown>;
+    const acc = ld.mainEntity as Record<string, unknown>;
     expect(acc["@type"]).toBe("Accommodation");
     expect(acc.numberOfBedrooms).toBe(3);
     expect((acc.geo as Record<string, unknown>).latitude).toBe(24.544);

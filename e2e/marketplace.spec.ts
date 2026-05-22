@@ -59,8 +59,9 @@ test("property page emits JSON-LD with the right reference", async ({ page }) =>
     .textContent();
   expect(ld).toBeTruthy();
   const parsed = JSON.parse(ld!);
-  expect(parsed["@type"]).toBe("Product");
-  expect(parsed.sku).toBe("BAZ-AD-04891");
+  // Sprint 4c: schema.org/RealEstateListing replaces /Product.
+  expect(parsed["@type"]).toBe("RealEstateListing");
+  expect(parsed.identifier).toBe("BAZ-AD-04891");
 });
 
 test("contact form rejects when no email or phone is supplied", async ({ page }) => {
