@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { DbrGauge } from "./_components/dbr-gauge";
 import {
   affordability,
   amortizationByYear,
@@ -346,6 +347,15 @@ export function MortgageCalculator() {
           >
             <CheckCircle2 size={14} strokeWidth={1.8} />
             <span>{afford.label}</span>
+          </div>
+        ) : null}
+
+        {annualIncome > 0 ? (
+          <div className="mt-4">
+            <DbrGauge
+              monthlyPaymentAed={summary.monthlyPaymentAed}
+              monthlyIncomeAed={annualIncome / 12}
+            />
           </div>
         ) : null}
       </div>

@@ -3,6 +3,7 @@ import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { EnquiryForm } from "../_components/enquiry-form";
 import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
+import { HqMap } from "./_components/hq-map";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -115,6 +116,7 @@ export default function ContactPage() {
           <ContactWhatsAppLink />
         </aside>
       </div>
+      <HqMap />
     </div>
   );
 }
