@@ -104,6 +104,55 @@ export function breadcrumbListJsonLd(
   };
 }
 
+/** Article JSON-LD — used on insights articles. Sprint 5d. */
+type ArticleForJsonLd = {
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  category: string;
+  published_at: string | null;
+  updated_at: string | null;
+  read_minutes: number | null;
+  author?: { display_name: string; slug: string } | null;
+};
+
+export function articleJsonLd(
+  a: ArticleForJsonLd,
+  heroPublicUrl: string | null,
+): Record<string, unknown> {
+  const url = `${siteUrl()}/insights/${a.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": url,
+    url,
+    headline: a.title,
+    description: a.excerpt ?? a.title,
+    image: heroPublicUrl ? [heroPublicUrl] : undefined,
+    datePublished: a.published_at ?? undefined,
+    dateModified: a.updated_at ?? a.published_at ?? undefined,
+    articleSection: a.category,
+    timeRequired: a.read_minutes ? `PT${a.read_minutes}M` : undefined,
+    author: a.author
+      ? {
+          "@type": "Person",
+          name: a.author.display_name,
+          url: `${siteUrl()}/insights/author/${a.author.slug}`,
+        }
+      : undefined,
+    publisher: {
+      "@type": "Organization",
+      name: "Bazar Real Estate",
+      url: siteUrl(),
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl()}/icon.png`,
+      },
+    },
+    mainEntityOfPage: url,
+  };
+}
+
 /** Default organisation block usable site-wide. */
 export function organizationJsonLd(): Record<string, unknown> {
   const url = siteUrl();

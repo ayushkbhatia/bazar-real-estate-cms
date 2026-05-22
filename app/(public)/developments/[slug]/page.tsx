@@ -19,6 +19,9 @@ import {
 } from "@/lib/schemas/development";
 import { PaymentPlanCalculator } from "./_payment-plan";
 import { UnitsTable } from "./_units-table";
+import { LeadAdvisorBanner } from "./_components/lead-advisor-banner";
+import { BrochureGate } from "./_components/brochure-gate";
+import { SEED_AGENTS } from "@/lib/seeds/agents";
 
 export const revalidate = 60;
 
@@ -69,7 +72,9 @@ const SECTIONS = [
   "Payment plan",
   "Units",
   "Floor plans",
+  "Location",
   "Developer",
+  "Advisor",
 ];
 
 export default async function DevelopmentDetailPage({ params }: PageProps) {
@@ -82,6 +87,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     listFloorPlans(development.id),
     listDevelopmentMedia(development.id),
   ]);
+
+  // Sprint 5a: lead advisor lookup — pick seeded advisor whose areas
+  // overlap with the development's area. Sprint 9 wires real assignment.
+  const leadAdvisor =
+    SEED_AGENTS.find((a) =>
+      a.areas.includes(development.area?.slug ?? ""),
+    ) ?? SEED_AGENTS[0];
 
   const heroUrl = development.hero
     ? mediaPublicUrl(development.hero.storage_key)
@@ -193,13 +205,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 />
               ) : null}
               <div className="ml-auto flex gap-2 items-end">
-                <Button
-                  variant="outline"
-                  className="border-white/40 text-white hover:bg-white/10 hover:text-white"
-                >
-                  <Download size={14} strokeWidth={1.6} />
-                  Brochure
-                </Button>
+                <BrochureGate developmentName={development.name} />
                 <Button className="bg-white text-bz-ink hover:bg-white/90">
                   <Calendar size={14} strokeWidth={1.6} />
                   Book a viewing
@@ -460,6 +466,25 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         </section>
       ) : null}
 
+      {/* Location */}
+      <section id="location" className="px-12 pb-16 scroll-mt-16">
+        <Eyebrow>Location</Eyebrow>
+        <h2
+          className="serif text-[32px] mt-2 leading-tight"
+          style={{ letterSpacing: "-0.018em" }}
+        >
+          Where {development.name} sits.
+        </h2>
+        <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+          Master-plan position + commute times to key Abu Dhabi destinations.
+          The interactive map embed lands in Sprint 12 alongside Mapbox.
+        </p>
+        <PlaceholderImage
+          label={`${development.slug} · map`}
+          className="mt-6 w-full aspect-[16/9] rounded-lg"
+        />
+      </section>
+
       {/* Developer */}
       {development.developer_profile ? (
         <section id="developer" className="px-12 pb-16 scroll-mt-16">
@@ -488,6 +513,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </div>
         </section>
       ) : null}
+
+      {/* Lead advisor banner */}
+      <LeadAdvisorBanner
+        agent={leadAdvisor}
+        developmentName={development.name}
+      />
     </article>
   );
 }
