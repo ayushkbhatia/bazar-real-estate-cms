@@ -16,6 +16,15 @@ export const dynamic = "force-dynamic";
  * key off `notifications.payload.viewing_id`.
  */
 export async function GET(req: NextRequest) {
+  if (!env.CRON_SECRET) {
+    return new Response(
+      JSON.stringify({ ok: false, reason: "CRON_SECRET not configured" }),
+      {
+        status: 503,
+        headers: { "content-type": "application/json" },
+      },
+    );
+  }
   if (!isAuthorized(req)) {
     return new Response("Unauthorized", { status: 401 });
   }
@@ -102,11 +111,9 @@ export async function GET(req: NextRequest) {
 }
 
 function isAuthorized(req: NextRequest): boolean {
-  // Vercel cron sends a Bearer header with CRON_SECRET when configured.
-  // We also accept the legacy `x-vercel-cron` header as a fallback for
-  // local invocation.
-  if (req.headers.get("x-vercel-cron")) return true;
+  // Bearer CRON_SECRET only. The `x-vercel-cron` header is set by
+  // Vercel's cron runner but is forwarded as-is from the caller, so
+  // it's trivially spoofable from outside Vercel — never trust it.
   const auth = req.headers.get("authorization") ?? "";
-  if (env.CRON_SECRET && auth === `Bearer ${env.CRON_SECRET}`) return true;
-  return false;
+  return auth === `Bearer ${env.CRON_SECRET}`;
 }
