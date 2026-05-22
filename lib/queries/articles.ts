@@ -68,6 +68,7 @@ function reshape<T extends RawJoin>(
 /** Public-facing list — published articles, newest first. */
 export async function listPublishedArticles(opts: {
   category?: ArticleCategory;
+  authorId?: string;
   limit?: number;
   offset?: number;
 }): Promise<{ rows: ArticleListRow[]; total: number }> {
@@ -79,6 +80,7 @@ export async function listPublishedArticles(opts: {
     .eq("status", "published")
     .is("deleted_at", null);
   if (opts.category) query = query.eq("category", opts.category);
+  if (opts.authorId) query = query.eq("author_id", opts.authorId);
   query = query
     .order("published_at", { ascending: false })
     .range(
@@ -94,6 +96,36 @@ export async function listPublishedArticles(opts: {
     reshape(r as unknown as RawJoin),
   ) as unknown as ArticleListRow[];
   return { rows, total: count ?? 0 };
+}
+
+/**
+ * Resolve a staff slug → { id, display_name, title } for the author-archive page.
+ * Returns null when no staff row matches.
+ */
+export async function getStaffByPublicSlug(slug: string): Promise<{
+  id: string;
+  display_name: string;
+  title: string | null;
+  bio: string | null;
+} | null> {
+  if (!isSupabaseConfigured) return null;
+  const supabase = createSupabasePublicClient();
+  const { data, error } = await supabase
+    .from("staff")
+    .select("user_id, display_name, title, bio")
+    .eq("slug", slug)
+    .eq("status", "active")
+    .maybeSingle();
+  if (error || !data) {
+    if (error) console.error("[getStaffByPublicSlug]", error);
+    return null;
+  }
+  return {
+    id: data.user_id,
+    display_name: data.display_name,
+    title: data.title,
+    bio: data.bio ?? null,
+  };
 }
 
 /** Counts per category (for the category chip bar). */
