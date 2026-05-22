@@ -5,11 +5,15 @@ import { ArrowLeft, Mail, MessageCircle, Phone } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
-import { getSeedAgentBySlug, SEED_AGENTS } from "@/lib/seeds/agents";
+import { getAgentBySlug, listAgents } from "@/lib/queries/agents";
+import { getSeedAgentBySlug } from "@/lib/seeds/agents";
 import { getSeedAreaGuideBySlug } from "@/lib/seeds/areas";
 
 export async function generateStaticParams() {
-  return SEED_AGENTS.map((a) => ({ slug: a.slug }));
+  // Pre-render every agent the DB exposes today; runtime requests for
+  // newly-added slugs still server-render on demand.
+  const agents = await listAgents();
+  return agents.map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({
@@ -18,11 +22,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const agent = getSeedAgentBySlug(slug);
+  const agent = await getAgentBySlug(slug);
   if (!agent) return { title: "Advisor not found" };
   return {
-    title: `${agent.display_name} — ${agent.title}`,
-    description: agent.bio,
+    title: `${agent.display_name} — ${agent.title ?? "Advisor"}`,
+    description: agent.bio ?? undefined,
   };
 }
 
@@ -32,14 +36,28 @@ export default async function AgentProfilePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const agent = getSeedAgentBySlug(slug);
+  const agent = await getAgentBySlug(slug);
   if (!agent) notFound();
 
-  const areas = agent.areas
+  // Stats + contact metadata that the DB schema doesn't yet expose
+  // continue to come from the matching seed entry. When the field is
+  // missing (a real DB agent not in seeds) we surface neutral defaults.
+  const supplementary = getSeedAgentBySlug(slug);
+  const phone = supplementary?.phone ?? "+971 2 000 0000";
+  const email = supplementary?.email ?? "team@bazar.ae";
+  const whatsapp = supplementary?.whatsapp ?? "+971500000000";
+  const yearsInMarket = supplementary?.years_in_market ?? null;
+  const closedLifetime = supplementary?.closed_aed_lifetime ?? "—";
+  const closedQtd = supplementary?.closed_qtd ?? 0;
+  const pullQuote =
+    supplementary?.pull_quote ??
+    `${agent.display_name.split(" ")[0]} works the full advisory cycle end to end.`;
+  const areaSlugs = supplementary?.areas ?? [];
+  const areas = areaSlugs
     .map((a) => getSeedAreaGuideBySlug(a))
     .filter((a) => a != null);
 
-  const waUrl = `https://wa.me/${agent.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
+  const waUrl = `https://wa.me/${whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
     `Hi ${agent.display_name.split(" ")[0]}, I'd like to talk about a Bazar engagement.`,
   )}`;
 
@@ -59,32 +77,43 @@ export default async function AgentProfilePage({
       {/* Hero */}
       <section className="px-12 pt-8 pb-14 max-w-[1280px]">
         <div className="grid grid-cols-[360px_1fr] gap-16 items-start">
-          <PlaceholderImage
-            label={agent.slug}
-            className="w-full aspect-[4/5] rounded-md"
-          />
+          {agent.photo_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={agent.photo_url}
+              alt={agent.display_name}
+              className="w-full aspect-[4/5] rounded-md object-cover"
+            />
+          ) : (
+            <PlaceholderImage
+              label={agent.slug}
+              className="w-full aspect-[4/5] rounded-md"
+            />
+          )}
           <div>
-            <Eyebrow>{agent.title}</Eyebrow>
+            <Eyebrow>{agent.title ?? "Advisor"}</Eyebrow>
             <h1
               className="serif text-[56px] mt-3 font-normal leading-[1.02] max-w-[16ch]"
               style={{ letterSpacing: "-0.025em" }}
             >
               {agent.display_name}
             </h1>
-            <p className="mt-6 text-[16px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-              {agent.bio}
-            </p>
+            {agent.bio ? (
+              <p className="mt-6 text-[16px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+                {agent.bio}
+              </p>
+            ) : null}
             <blockquote
               className="serif italic text-[20px] mt-8 pl-5 border-l-2 border-bz-accent text-bz-ink leading-relaxed max-w-[56ch]"
               style={{ letterSpacing: "-0.005em" }}
             >
-              &ldquo;{agent.pull_quote}&rdquo;
+              &ldquo;{pullQuote}&rdquo;
             </blockquote>
 
             {/* Contact actions */}
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild>
-                <a href={`tel:${agent.phone.replace(/\s/g, "")}`}>
+                <a href={`tel:${phone.replace(/\s/g, "")}`}>
                   <Phone size={14} strokeWidth={1.7} />
                   Call
                 </a>
@@ -96,7 +125,7 @@ export default async function AgentProfilePage({
                 </a>
               </Button>
               <Button asChild variant="ghost">
-                <a href={`mailto:${agent.email}`}>
+                <a href={`mailto:${email}`}>
                   <Mail size={14} strokeWidth={1.7} />
                   Email
                 </a>
@@ -118,7 +147,7 @@ export default async function AgentProfilePage({
                 className="serif text-[36px] mt-1 leading-none"
                 style={{ letterSpacing: "-0.018em" }}
               >
-                {agent.years_in_market}
+                {yearsInMarket ?? "—"}
               </div>
             </div>
             <div>
@@ -126,7 +155,7 @@ export default async function AgentProfilePage({
                 BRN
               </div>
               <div className="mono text-[20px] mt-2 text-bz-ink">
-                {agent.brn}
+                {agent.brn ?? "—"}
               </div>
             </div>
             <div>
@@ -137,7 +166,7 @@ export default async function AgentProfilePage({
                 className="serif text-[36px] mt-1 leading-none"
                 style={{ letterSpacing: "-0.018em" }}
               >
-                {agent.closed_aed_lifetime}
+                {closedLifetime}
               </div>
             </div>
             <div>
@@ -148,7 +177,7 @@ export default async function AgentProfilePage({
                 className="serif text-[36px] mt-1 leading-none"
                 style={{ letterSpacing: "-0.018em" }}
               >
-                {agent.closed_qtd}
+                {closedQtd}
               </div>
             </div>
           </div>

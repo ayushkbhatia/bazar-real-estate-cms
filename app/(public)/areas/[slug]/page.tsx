@@ -5,14 +5,16 @@ import { ArrowLeft } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
-import {
-  SEED_AREA_GUIDES,
-  getSeedAreaGuideBySlug,
-} from "@/lib/seeds/areas";
+import { getSeedAreaGuideBySlug } from "@/lib/seeds/areas";
 import { listSeedAgentsByArea } from "@/lib/seeds/agents";
+import {
+  getAreaGuide,
+  listAreasWithCounts,
+} from "@/lib/queries/areas-guide";
 
 export async function generateStaticParams() {
-  return SEED_AREA_GUIDES.map((a) => ({ slug: a.slug }));
+  const entries = await listAreasWithCounts();
+  return entries.map((e) => ({ slug: e.slug }));
 }
 
 export async function generateMetadata({
@@ -21,11 +23,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const area = getSeedAreaGuideBySlug(slug);
-  if (!area) return { title: "Area not found" };
+  const guide = await getAreaGuide(slug);
+  if (!guide) return { title: "Area not found" };
   return {
-    title: `${area.name} — Bazar area guide`,
-    description: area.intro,
+    title: `${guide.name} — Bazar area guide`,
+    description: guide.intro_md || undefined,
   };
 }
 
@@ -35,6 +37,12 @@ export default async function AreaProfilePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  // Existence check via the DB-or-seed lookup; rich editorial fields
+  // (vibe, position, hero_label, etc.) remain seed-driven until the DB
+  // covers them. When a DB-only area exists, the seed lookup returns
+  // null and we surface neutral fallbacks.
+  const guide = await getAreaGuide(slug);
+  if (!guide) notFound();
   const area = getSeedAreaGuideBySlug(slug);
   if (!area) notFound();
 

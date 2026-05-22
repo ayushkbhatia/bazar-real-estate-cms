@@ -43,6 +43,48 @@ export type DeveloperDevelopment = {
   area: { name: string; slug: string } | null;
 };
 
+export type DeveloperListEntry = {
+  id: string;
+  slug: string;
+  name: string;
+  founded_year: number | null;
+  description: string | null;
+};
+
+// ─────────────────────────────────────────────────────────────────────
+// listDevelopers
+// ─────────────────────────────────────────────────────────────────────
+export async function listDevelopers(): Promise<DeveloperListEntry[]> {
+  if (!isSupabaseConfigured) return seedDeveloperList();
+  try {
+    const sb = createSupabasePublicClient();
+    const { data, error } = await sb
+      .from("developers")
+      .select("id, slug, name, founded_year, description")
+      .order("name", { ascending: true });
+    if (error || !data || data.length === 0) return seedDeveloperList();
+    return data.map((r) => ({
+      id: r.id,
+      slug: r.slug,
+      name: r.name,
+      founded_year: r.founded_year,
+      description: r.description,
+    }));
+  } catch {
+    return seedDeveloperList();
+  }
+}
+
+function seedDeveloperList(): DeveloperListEntry[] {
+  return SEED_DEVELOPERS.map((s) => ({
+    id: `seed:${s.slug}`,
+    slug: s.slug,
+    name: s.name,
+    founded_year: s.founded_year,
+    description: s.blurb,
+  }));
+}
+
 // ─────────────────────────────────────────────────────────────────────
 // getDeveloperBySlug
 // ─────────────────────────────────────────────────────────────────────

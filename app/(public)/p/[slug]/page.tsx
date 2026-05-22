@@ -27,6 +27,7 @@ import {
   breadcrumbListJsonLd,
 } from "@/lib/jsonld";
 import { getSessionUser } from "@/lib/supabase/server";
+import { recordView } from "@/lib/queries/recently-viewed";
 import { env } from "@/lib/env";
 import { EnquiryForm } from "../../_components/enquiry-form";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
@@ -114,6 +115,11 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     ...similar.map((s) => s.id),
   ]);
   const isAuthed = user !== null;
+
+  // Best-effort recently-viewed tracking. Anonymous views aren't tracked.
+  if (user) {
+    void recordView(user.id, property.id);
+  }
 
   const priceAed = formatPriceAED(property.price_aed);
   const aedPerFt =
@@ -386,7 +392,10 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         <aside className="sticky top-6 self-start space-y-4">
           <AgentCard agent={leadAdvisor} />
 
-          <ScheduleViewing propertyReference={property.reference} />
+          <ScheduleViewing
+            propertyId={property.id}
+            propertyReference={property.reference}
+          />
 
           <div
             id="send-brief"

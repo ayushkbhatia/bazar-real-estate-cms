@@ -1,21 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Calendar, Clock } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { submitTourRequest } from "./_actions";
 
 /**
- * Sprint 4c: date + time picker for the property page sidebar. Submits
- * the requested viewing as an enquiry-style payload through the existing
- * /api or via a future server action. For Sprint 4c the form just toasts
- * a confirmation; Sprint 9 wires it into the `viewings` table.
+ * Sprint 4c: date + time picker for the property page sidebar.
+ * Sprint 9: persists via createTourRequest() — submissions land in
+ * tour_requests and surface on /account/saved → Tour requests.
  */
 export function ScheduleViewing({
+  propertyId,
   propertyReference,
 }: {
+  propertyId: string;
   propertyReference: string;
 }) {
   // Default date = tomorrow. Lazy initialiser keeps Date.now() out of the
@@ -27,24 +29,33 @@ export function ScheduleViewing({
   const [time, setTime] = useState("10:00");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [pending, setPending] = useState(false);
+  const [pending, startTransition] = useTransition();
 
-  async function submit(e: React.FormEvent) {
+  function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!name.trim() || !phone.trim()) {
       toast.error("Name + phone required.");
       return;
     }
-    setPending(true);
-    // Sprint 9 will write to the `viewings` table here. For now we POST
-    // to the enquiry endpoint with intent=viewing as the closest fit.
-    await new Promise((r) => setTimeout(r, 400));
-    toast.success(
-      `Viewing request for ${propertyReference} on ${date} at ${time} sent.`,
-    );
-    setPending(false);
-    setName("");
-    setPhone("");
+    startTransition(async () => {
+      const result = await submitTourRequest({
+        property_id: propertyId,
+        full_name: name.trim(),
+        phone: phone.trim(),
+        preferred_date: date,
+        preferred_time: time,
+        message: null,
+      });
+      if (result.ok) {
+        toast.success(
+          `Viewing request for ${propertyReference} on ${date} at ${time} sent.`,
+        );
+        setName("");
+        setPhone("");
+      } else {
+        toast.error(result.error);
+      }
+    });
   }
 
   return (
@@ -120,8 +131,7 @@ export function ScheduleViewing({
           {pending ? "Sending…" : "Request viewing"}
         </Button>
         <p className="text-[11px] text-bz-muted leading-relaxed">
-          Real viewing-table write lands in Sprint 9 alongside lead-engine
-          workflows.
+          An advisor confirms within 2 hours during office hours.
         </p>
       </form>
     </div>
