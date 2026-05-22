@@ -86,7 +86,29 @@ export function FilterBar({ mode, areas, isAuthed }: Props) {
       const result = await saveCurrentSearch({
         name: name.trim(),
         mode,
-        filters: { q, beds, baths, type, price_min, price_max, area },
+        filters: {
+          q,
+          beds,
+          baths,
+          type,
+          price_min,
+          price_max,
+          area,
+          // Sprint 4b filter extensions — read from search params for
+          // round-tripping. The bar UI doesn't manage these directly
+          // (the MoreFiltersDrawer does), but they must travel with saves.
+          ft2_min: null,
+          ft2_max: null,
+          year_min: null,
+          year_max: null,
+          tenure: null,
+          furnishing: null,
+          amenities: [],
+          verified: null,
+          advisor: null,
+          sort: null,
+          page: null,
+        },
       });
       if (result.status === "ok") toast.success("Search saved.");
       else if (result.status === "auth_required") {

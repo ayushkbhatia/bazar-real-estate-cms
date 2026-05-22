@@ -1,19 +1,9 @@
-import { Eyebrow } from "@/components/brand/eyebrow";
+import { redirect } from "next/navigation";
 
-export default function AccountHomePage() {
-  return (
-    <div>
-      <Eyebrow>Account</Eyebrow>
-      <h1
-        className="serif text-[48px] font-normal mt-2"
-        style={{ letterSpacing: "-0.025em" }}
-      >
-        Welcome back.
-      </h1>
-      <p className="mt-4 text-[15px] text-bz-muted max-w-[60ch]">
-        Saved properties, saved searches, viewings, and your document vault
-        will live here once Phase 1 ships.
-      </p>
-    </div>
-  );
+/**
+ * Per IA spec `/account` redirects to `/account/saved`.
+ * Sprint 2 closes this gap; previously rendered a static "Welcome back" stub.
+ */
+export default function AccountIndexPage() {
+  redirect("/account/saved");
 }

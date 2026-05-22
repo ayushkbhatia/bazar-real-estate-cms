@@ -25,10 +25,9 @@ type PropertyForJsonLd = {
 };
 
 /**
- * Returns a JSON-LD object for a property — schema.org `Product` with a
- * nested `Offer` and (when geo is available) a `Place`. Real estate
- * portals typically use Product + RealEstateAgent + Place; this is the
- * minimum useful set for Google rich results.
+ * Returns a JSON-LD object for a property using schema.org `RealEstateListing`
+ * (replaces the earlier `Product` shape). Includes a nested
+ * `Accommodation` + `Offer` and `GeoCoordinates` when available. Sprint 4c.
  */
 export function propertyJsonLd(
   p: PropertyForJsonLd,
@@ -64,17 +63,15 @@ export function propertyJsonLd(
 
   return {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": "RealEstateListing",
     "@id": url,
     url,
     name: p.title,
     description: p.short_description || p.description || p.title,
     image: images,
-    sku: p.reference,
-    productID: p.reference,
-    category: "real estate",
-    additionalType: "https://schema.org/Accommodation",
-    isRelatedTo: accommodation,
+    identifier: p.reference,
+    datePosted: p.published_at ?? undefined,
+    mainEntity: accommodation,
     offers: {
       "@type": "Offer",
       url,
@@ -82,13 +79,77 @@ export function propertyJsonLd(
       price: p.price_aed,
       availability: "https://schema.org/InStock",
       validFrom: p.published_at ?? undefined,
-      itemCondition: "https://schema.org/UsedCondition",
       seller: {
-        "@type": "Organization",
+        "@type": "RealEstateAgent",
         name: "Bazar Real Estate",
         url: siteUrl(),
       },
     },
+  };
+}
+
+/** Breadcrumb JSON-LD — used on property pages and articles. */
+export function breadcrumbListJsonLd(
+  items: { name: string; url: string }[],
+): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
+/** Article JSON-LD — used on insights articles. Sprint 5d. */
+type ArticleForJsonLd = {
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  category: string;
+  published_at: string | null;
+  updated_at: string | null;
+  read_minutes: number | null;
+  author?: { display_name: string; slug: string } | null;
+};
+
+export function articleJsonLd(
+  a: ArticleForJsonLd,
+  heroPublicUrl: string | null,
+): Record<string, unknown> {
+  const url = `${siteUrl()}/insights/${a.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": url,
+    url,
+    headline: a.title,
+    description: a.excerpt ?? a.title,
+    image: heroPublicUrl ? [heroPublicUrl] : undefined,
+    datePublished: a.published_at ?? undefined,
+    dateModified: a.updated_at ?? a.published_at ?? undefined,
+    articleSection: a.category,
+    timeRequired: a.read_minutes ? `PT${a.read_minutes}M` : undefined,
+    author: a.author
+      ? {
+          "@type": "Person",
+          name: a.author.display_name,
+          url: `${siteUrl()}/insights/author/${a.author.slug}`,
+        }
+      : undefined,
+    publisher: {
+      "@type": "Organization",
+      name: "Bazar Real Estate",
+      url: siteUrl(),
+      logo: {
+        "@type": "ImageObject",
+        url: `${siteUrl()}/icon.png`,
+      },
+    },
+    mainEntityOfPage: url,
   };
 }
 
@@ -107,5 +168,68 @@ export function organizationJsonLd(): Record<string, unknown> {
       addressCountry: "AE",
     },
     areaServed: { "@type": "Country", name: "United Arab Emirates" },
+  };
+}
+
+/** Per-area Place JSON-LD — used on /areas/[slug]. Sprint 11. */
+type AreaForJsonLd = {
+  slug: string;
+  name: string;
+  intro_md: string | null;
+};
+
+export function placeJsonLd(a: AreaForJsonLd): Record<string, unknown> {
+  const url = `${siteUrl()}/areas/${a.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    "@id": url,
+    url,
+    name: a.name,
+    description: a.intro_md ?? a.name,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Abu Dhabi",
+      addressCountry: "AE",
+    },
+  };
+}
+
+/** Per-agent RealEstateAgent JSON-LD — used on /agents/[slug]. Sprint 11. */
+type AgentForJsonLd = {
+  slug: string;
+  display_name: string;
+  title: string | null;
+  bio: string | null;
+  brn: string | null;
+  photo_url: string | null;
+  languages: string[];
+};
+
+export function realEstateAgentJsonLd(
+  a: AgentForJsonLd,
+): Record<string, unknown> {
+  const url = `${siteUrl()}/agents/${a.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "@id": url,
+    url,
+    name: a.display_name,
+    jobTitle: a.title ?? "Advisor",
+    description: a.bio ?? undefined,
+    image: a.photo_url ?? undefined,
+    identifier: a.brn ?? undefined,
+    knowsLanguage: a.languages.length > 0 ? a.languages : undefined,
+    worksFor: {
+      "@type": "Organization",
+      name: "Bazar Real Estate",
+      url: siteUrl(),
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Abu Dhabi",
+      addressCountry: "AE",
+    },
   };
 }

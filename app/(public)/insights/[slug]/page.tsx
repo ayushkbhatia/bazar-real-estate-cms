@@ -12,6 +12,9 @@ import {
 } from "@/lib/queries/articles";
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/schemas/article";
 import { mediaPublicUrl } from "@/lib/media";
+import { articleJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
+import { env } from "@/lib/env";
+import { ChevronRight } from "lucide-react";
 
 export const revalidate = 300;
 
@@ -59,9 +62,71 @@ export default async function ArticleDetailPage({ params }: PageProps) {
   const categoryLabel = ARTICLE_CATEGORY_LABELS[article.category];
   const heroSrc = article.hero ? mediaPublicUrl(article.hero.storage_key) : null;
 
+  // Sprint 5d: JSON-LD + breadcrumb structured data.
+  const siteUrl = (
+    env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app"
+  ).replace(/\/+$/, "");
+  const ldArticle = articleJsonLd(
+    {
+      slug: article.slug,
+      title: article.title,
+      excerpt: article.excerpt,
+      category: categoryLabel,
+      published_at: article.published_at,
+      updated_at: article.updated_at,
+      read_minutes: article.read_minutes,
+      author: article.author
+        ? {
+            display_name: article.author.display_name,
+            slug: article.author.slug,
+          }
+        : null,
+    },
+    heroSrc,
+  );
+  const ldBreadcrumb = breadcrumbListJsonLd([
+    { name: "Home", url: `${siteUrl}/` },
+    { name: "Insights", url: `${siteUrl}/insights` },
+    {
+      name: categoryLabel,
+      url: `${siteUrl}/insights/category/${article.category.replace(/_/g, "-")}`,
+    },
+    { name: article.title, url: `${siteUrl}/insights/${article.slug}` },
+  ]);
+
   return (
     <article className="bg-bz-bg">
-      <header className="px-12 pt-20 pb-12 max-w-[900px] mx-auto">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ldArticle) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ldBreadcrumb) }}
+      />
+
+      {/* Breadcrumb */}
+      <nav
+        aria-label="Breadcrumb"
+        className="px-12 pt-8 max-w-[900px] mx-auto text-[12px] text-bz-muted flex items-center gap-1.5"
+      >
+        <Link href="/" className="hover:text-bz-ink">
+          Home
+        </Link>
+        <ChevronRight size={12} />
+        <Link href="/insights" className="hover:text-bz-ink">
+          Insights
+        </Link>
+        <ChevronRight size={12} />
+        <Link
+          href={`/insights/category/${article.category.replace(/_/g, "-")}`}
+          className="hover:text-bz-ink"
+        >
+          {categoryLabel}
+        </Link>
+      </nav>
+
+      <header className="px-12 pt-8 pb-12 max-w-[900px] mx-auto">
         <Eyebrow>
           {categoryLabel}
           {article.read_minutes ? ` · ${article.read_minutes} min read` : ""}

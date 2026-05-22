@@ -359,3 +359,279 @@ export function dealStageChangeTemplate(
 
   return { subject, text, html };
 }
+
+// ─────────────────────────────────────────────────────────────────────
+// Sprint 10 — workflow + compliance email templates
+// ─────────────────────────────────────────────────────────────────────
+
+/** To: manager. Sent when an enquiry sits unassigned > 60 minutes. */
+export function enquiryEscalationTemplate(opts: {
+  managerName: string | null;
+  leadName: string;
+  propertyReference: string | null;
+  enquiryId: string;
+  minutesElapsed: number;
+}): { subject: string; text: string; html: string } {
+  const subject = `Escalation · enquiry from ${opts.leadName} unassigned ${opts.minutesElapsed} min`;
+  const url = `${siteUrl()}/admin/enquiries/${opts.enquiryId}`;
+  const greeting = opts.managerName ? `Hi ${opts.managerName}` : "Hi";
+  const refLine = opts.propertyReference
+    ? `Property: ${opts.propertyReference}.`
+    : "";
+
+  const text =
+    `${greeting},\n\n` +
+    `An enquiry from ${opts.leadName} has been waiting ${opts.minutesElapsed} minutes ` +
+    `without an assigned advisor. ${refLine}\n\n` +
+    `Open the conversation: ${url}\n\n` +
+    `— Bazar lead engine\n`;
+
+  const html = shell(`
+    <p>${escape(greeting)},</p>
+    <p>An enquiry from <strong>${escape(opts.leadName)}</strong> has been waiting <strong>${opts.minutesElapsed} minutes</strong> without an assigned advisor.</p>
+    ${opts.propertyReference ? `<p style="font-size:13px;color:#5a5a55">Property: <span style="font-family:monospace">${escape(opts.propertyReference)}</span></p>` : ""}
+    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#B33A2A;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open enquiry</a></p>
+    <p style="margin-top:18px;font-size:12px;color:#7d8e7e">Bazar lead engine</p>
+  `);
+
+  return { subject, text, html };
+}
+
+/** Nurture email at T+7 days post-valuation. */
+export function valuationNurtureDay7Template(opts: {
+  name: string;
+  valuationId: string;
+  estimateMid: number | null;
+}): { subject: string; text: string; html: string } {
+  const subject = "How's the valuation landing?";
+  const url = `${siteUrl()}/account/profile`;
+  const estLine = opts.estimateMid
+    ? `Our advisor estimate landed at ${formatAedShort(opts.estimateMid)}.`
+    : "";
+
+  const text =
+    `Hi ${opts.name},\n\n` +
+    `It's been a week since we sent your Bazar valuation. ${estLine}\n\n` +
+    `If you'd like to talk through next steps — listing strategy, ` +
+    `targeted off-market introductions, or a re-cut at a different price ` +
+    `point — reply to this thread.\n\n` +
+    `— Bazar\n${url}\n`;
+
+  const html = shell(`
+    <p>Hi ${escape(opts.name)},</p>
+    <p>It's been a week since we sent your Bazar valuation. ${escape(estLine)}</p>
+    <p>If you'd like to talk through next steps — listing strategy, targeted off-market introductions, or a re-cut at a different price point — reply to this thread.</p>
+    <p style="margin-top:20px;font-size:13px"><a href="${url}" style="color:#4B5A4C">Open your Bazar account →</a></p>
+  `);
+
+  return { subject, text, html };
+}
+
+/** Nurture email at T+30 days post-valuation. */
+export function valuationNurtureDay30Template(opts: {
+  name: string;
+  valuationId: string;
+}): { subject: string; text: string; html: string } {
+  const subject = "Market update on your Abu Dhabi unit";
+  const url = `${siteUrl()}/insights`;
+
+  const text =
+    `Hi ${opts.name},\n\n` +
+    `A month on from your valuation — we publish a monthly Abu Dhabi market ` +
+    `read at /insights. If your view on selling has shifted, or you'd like ` +
+    `a fresh valuation cut, reply here.\n\n` +
+    `— Bazar\n${url}\n`;
+
+  const html = shell(`
+    <p>Hi ${escape(opts.name)},</p>
+    <p>A month on from your valuation — we publish a monthly Abu Dhabi market read at <a href="${url}" style="color:#4B5A4C">/insights</a>.</p>
+    <p>If your view on selling has shifted, or you'd like a fresh valuation cut, reply here.</p>
+  `);
+
+  return { subject, text, html };
+}
+
+/** BRN expiry warning (< 30 days). To: agent + admin. */
+export function brnExpiryWarningTemplate(opts: {
+  agentName: string;
+  brn: string;
+  expiresAt: string;
+  daysToExpiry: number;
+}): { subject: string; text: string; html: string } {
+  const subject = `BRN ${opts.brn} expires in ${opts.daysToExpiry} days`;
+  const url = `${siteUrl()}/admin/settings/compliance`;
+
+  const text =
+    `Hi ${opts.agentName},\n\n` +
+    `Your broker registration (BRN ${opts.brn}) expires on ${opts.expiresAt} ` +
+    `(in ${opts.daysToExpiry} days).\n\n` +
+    `RERA-listed properties cannot be published past expiry. Please ` +
+    `initiate renewal via your registration portal and let admin know ` +
+    `once the new certificate is uploaded.\n\n` +
+    `Compliance: ${url}\n\n` +
+    `— Bazar compliance\n`;
+
+  const html = shell(`
+    <p>Hi ${escape(opts.agentName)},</p>
+    <p>Your broker registration <strong>BRN ${escape(opts.brn)}</strong> expires on <strong>${escape(opts.expiresAt)}</strong> (in ${opts.daysToExpiry} days).</p>
+    <p>RERA-listed properties cannot be published past expiry. Please initiate renewal via your registration portal and let admin know once the new certificate is uploaded.</p>
+    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open compliance panel</a></p>
+  `);
+
+  return { subject, text, html };
+}
+
+/** DLD listing permit expiry warning. To: admin. */
+export function permitExpiryWarningTemplate(opts: {
+  propertyReference: string;
+  permitNumber: string;
+  expiresAt: string;
+  daysToExpiry: number;
+}): { subject: string; text: string; html: string } {
+  const subject = `Permit ${opts.permitNumber} (${opts.propertyReference}) expires in ${opts.daysToExpiry} days`;
+  const url = `${siteUrl()}/admin/properties?status=published`;
+
+  const text =
+    `Hi,\n\n` +
+    `Listing permit ${opts.permitNumber} for ${opts.propertyReference} ` +
+    `expires on ${opts.expiresAt} (in ${opts.daysToExpiry} days). The ` +
+    `listing will be archived automatically at expiry unless renewed.\n\n` +
+    `Properties: ${url}\n\n` +
+    `— Bazar compliance\n`;
+
+  const html = shell(`
+    <p>Hi,</p>
+    <p>Listing permit <span style="font-family:monospace">${escape(opts.permitNumber)}</span> for <strong>${escape(opts.propertyReference)}</strong> expires on <strong>${escape(opts.expiresAt)}</strong> (in ${opts.daysToExpiry} days).</p>
+    <p>The listing will be archived automatically at expiry unless renewed.</p>
+    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open properties</a></p>
+  `);
+
+  return { subject, text, html };
+}
+
+/** KYC approval email to the account holder. */
+export function kycApprovedTemplate(opts: {
+  name: string;
+}): { subject: string; text: string; html: string } {
+  const subject = "Your Bazar account is now KYC-verified";
+  const url = `${siteUrl()}/account/profile`;
+
+  const text =
+    `Hi ${opts.name},\n\n` +
+    `Your KYC documents have been reviewed and approved. You can now ` +
+    `place offers and engage Bazar advisory services without further ` +
+    `verification.\n\n` +
+    `Account: ${url}\n\n— Bazar\n`;
+
+  const html = shell(`
+    <p>Hi ${escape(opts.name)},</p>
+    <p>Your KYC documents have been reviewed and <strong>approved</strong>. You can now place offers and engage Bazar advisory services without further verification.</p>
+    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#4B5A4C;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open your account</a></p>
+  `);
+
+  return { subject, text, html };
+}
+
+/** KYC rejection email with reason. */
+export function kycRejectedTemplate(opts: {
+  name: string;
+  reason: string;
+}): { subject: string; text: string; html: string } {
+  const subject = "Bazar KYC review — additional information needed";
+  const url = `${siteUrl()}/account/documents`;
+
+  const text =
+    `Hi ${opts.name},\n\n` +
+    `Your KYC review couldn't be completed. Reason: ${opts.reason}.\n\n` +
+    `Please upload an updated document at ${url} and we'll re-review ` +
+    `within one business day.\n\n— Bazar\n`;
+
+  const html = shell(`
+    <p>Hi ${escape(opts.name)},</p>
+    <p>Your KYC review couldn't be completed.</p>
+    <p style="margin-top:14px;padding:12px 16px;background:#fff;border-left:3px solid #B33A2A;color:#32312d"><strong>Reason:</strong> ${escape(opts.reason)}</p>
+    <p>Please upload an updated document and we'll re-review within one business day.</p>
+    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open document vault</a></p>
+  `);
+
+  return { subject, text, html };
+}
+
+/** Staff invitation email containing the accept link. */
+export function staffInvitationTemplate(opts: {
+  inviteeName: string;
+  inviterName: string;
+  acceptUrl: string;
+  role: string;
+}): { subject: string; text: string; html: string } {
+  const subject = `You're invited to Bazar as ${opts.role}`;
+
+  const text =
+    `Hi ${opts.inviteeName},\n\n` +
+    `${opts.inviterName} invited you to Bazar Real Estate's internal ` +
+    `console as ${opts.role}.\n\n` +
+    `Accept the invitation: ${opts.acceptUrl}\n\n` +
+    `The link is valid for 7 days.\n\n— Bazar\n`;
+
+  const html = shell(`
+    <p>Hi ${escape(opts.inviteeName)},</p>
+    <p><strong>${escape(opts.inviterName)}</strong> invited you to Bazar Real Estate's internal console as <strong>${escape(opts.role)}</strong>.</p>
+    <p style="margin-top:22px"><a href="${opts.acceptUrl}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Accept invitation</a></p>
+    <p style="margin-top:18px;font-size:12px;color:#7d8e7e">The link is valid for 7 days.</p>
+  `);
+
+  return { subject, text, html };
+}
+
+/** Email arm of the existing in-app viewing reminder (24h before). */
+export function viewingReminderTemplate(opts: {
+  name: string;
+  propertyReference: string;
+  propertyTitle: string;
+  whenLocalIso: string;
+  agentName: string | null;
+}): { subject: string; text: string; html: string } {
+  const subject = `Viewing tomorrow · ${opts.propertyReference}`;
+  const url = `${siteUrl()}/account/viewings`;
+
+  const text =
+    `Hi ${opts.name},\n\n` +
+    `Reminder — your viewing for ${opts.propertyReference} ` +
+    `(${opts.propertyTitle}) is at ${opts.whenLocalIso}.\n` +
+    (opts.agentName ? `Advisor: ${opts.agentName}.\n` : "") +
+    `\nReschedule or cancel: ${url}\n\n— Bazar\n`;
+
+  const html = shell(`
+    <p>Hi ${escape(opts.name)},</p>
+    <p>Reminder — your viewing for <strong>${escape(opts.propertyReference)}</strong> (${escape(opts.propertyTitle)}) is at <strong>${escape(opts.whenLocalIso)}</strong>.</p>
+    ${opts.agentName ? `<p style="font-size:13px;color:#5a5a55">Advisor: ${escape(opts.agentName)}</p>` : ""}
+    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Reschedule or cancel</a></p>
+  `);
+
+  return { subject, text, html };
+}
+
+/** Newsletter double-opt-in confirmation email. */
+export function newsletterConfirmTemplate(opts: {
+  email: string;
+  confirmUrl: string;
+}): { subject: string; text: string; html: string } {
+  const subject = "Confirm your Bazar newsletter subscription";
+
+  const text =
+    `Hi,\n\n` +
+    `Please confirm your subscription to the Bazar quarterly Abu Dhabi ` +
+    `market read.\n\n` +
+    `Confirm: ${opts.confirmUrl}\n\n` +
+    `If you didn't request this, ignore the email — no action is taken ` +
+    `until you click confirm.\n\n— Bazar\n`;
+
+  const html = shell(`
+    <p>Hi,</p>
+    <p>Please confirm your subscription to the Bazar quarterly Abu Dhabi market read.</p>
+    <p style="margin-top:22px"><a href="${opts.confirmUrl}" style="display:inline-block;padding:10px 16px;background:#4B5A4C;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Confirm subscription</a></p>
+    <p style="margin-top:18px;font-size:12px;color:#7d8e7e">If you didn't request this, ignore the email — no action is taken until you click confirm.</p>
+  `);
+
+  return { subject, text, html };
+}

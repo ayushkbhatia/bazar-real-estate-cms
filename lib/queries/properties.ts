@@ -168,11 +168,54 @@ export async function listPublishedProperties(opts: {
       if (id) query = query.eq("area_id", id);
       else return { rows: [], total: 0 }; // bogus area slug → no results
     }
+
+    // Sprint 4b: extended facets.
+    if (filters.ft2_min != null) query = query.gte("built_up_ft2", filters.ft2_min);
+    if (filters.ft2_max != null) query = query.lte("built_up_ft2", filters.ft2_max);
+    if (filters.year_min != null) query = query.gte("year_built", filters.year_min);
+    if (filters.year_max != null) query = query.lte("year_built", filters.year_max);
+    if (filters.tenure) query = query.eq("tenure", filters.tenure);
+    if (filters.furnishing) query = query.eq("furnishing", filters.furnishing);
+    if (filters.amenities && filters.amenities.length > 0) {
+      // properties.amenities is a text[]; `contains` performs a superset check.
+      query = query.contains("amenities", filters.amenities);
+    }
+    if (filters.advisor) {
+      // advisor slug → staff user_id lookup, then equality.
+      const { data: staffRow } = await supabase
+        .from("staff")
+        .select("user_id")
+        .eq("slug", filters.advisor)
+        .maybeSingle();
+      if (staffRow) query = query.eq("assigned_agent_id", staffRow.user_id);
+      else return { rows: [], total: 0 };
+    }
+    if (filters.verified) {
+      // Bazar Verified is a flag stored in jsonb. Use the @> superset op.
+      query = query.contains("flags", { verified: true });
+    }
   }
 
-  query = query
-    .order("published_at", { ascending: false })
-    .range(opts.offset ?? 0, (opts.offset ?? 0) + (opts.limit ?? 24) - 1);
+  // Sort.
+  const sort = opts.filters?.sort ?? null;
+  switch (sort) {
+    case "price_asc":
+      query = query.order("price_aed", { ascending: true });
+      break;
+    case "price_desc":
+      query = query.order("price_aed", { ascending: false });
+      break;
+    case "area_desc":
+      query = query
+        .order("built_up_ft2", { ascending: false, nullsFirst: false });
+      break;
+    case "recent":
+    default:
+      query = query.order("published_at", { ascending: false });
+  }
+
+  const offset = opts.offset ?? 0;
+  query = query.range(offset, offset + (opts.limit ?? 24) - 1);
 
   const { data, error, count } = await query;
   if (error) {
@@ -265,19 +308,27 @@ export async function listPropertiesByIds(
 }
 
 /** Admin: list ALL properties (any status). Uses the auth-aware server client
- *  so RLS gates this to staff users only. */
+ *  so RLS gates this to staff users only.
+ *
+ *  Sprint 7b: accepts an optional `status` filter so the dashboard's
+ *  `?status=published` deep-link works (was a no-op pre-Sprint 7).
+ */
 export async function listAllPropertiesForAdmin(opts: {
   limit?: number;
   offset?: number;
+  status?: Status;
 }): Promise<{ rows: ListingRow[]; total: number }> {
   if (!isSupabaseConfigured) return { rows: [], total: 0 };
   const supabase = await createSupabaseServerClient();
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("properties")
     .select(LISTING_FIELDS, { count: "exact" })
-    .is("deleted_at", null)
+    .is("deleted_at", null);
+  if (opts.status) query = query.eq("status", opts.status);
+  query = query
     .order("created_at", { ascending: false })
     .range(opts.offset ?? 0, (opts.offset ?? 0) + (opts.limit ?? 50) - 1);
+  const { data, error, count } = await query;
   if (error) {
     console.error("[listAllPropertiesForAdmin]", error);
     return { rows: [], total: 0 };
@@ -286,6 +337,153 @@ export async function listAllPropertiesForAdmin(opts: {
     attachHero(row as unknown as { property_media: RawMediaJoin[] }),
   ) as unknown as ListingRow[];
   return { rows, total: count ?? 0 };
+}
+
+/** Admin: count properties per status. Sprint 7b — for status-tab badges. */
+export async function countAdminPropertiesByStatus(): Promise<
+  Record<Status | "all", number>
+> {
+  const empty: Record<Status | "all", number> = {
+    all: 0,
+    draft: 0,
+    in_review: 0,
+    published: 0,
+    off_market: 0,
+    archived: 0,
+  };
+  if (!isSupabaseConfigured) return empty;
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("properties")
+    .select("status")
+    .is("deleted_at", null);
+  if (error || !data) {
+    if (error) console.error("[countAdminPropertiesByStatus]", error);
+    return empty;
+  }
+  const out = { ...empty };
+  for (const row of data as { status: Status }[]) {
+    out[row.status] = (out[row.status] ?? 0) + 1;
+    out.all += 1;
+  }
+  return out;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Sprint 11 — sold-state existence check.
+// ─────────────────────────────────────────────────────────────────────
+
+export type PropertyExistence = {
+  reference: string;
+  slug: string;
+  status: Status;
+  sold_at: string | null;
+};
+
+/** Look up a property by reference *without* the published-status filter.
+ *  Used by /p/[slug] to detect sold/archived listings and redirect to
+ *  /sold/[ref] (410 Gone) before falling through to notFound(). */
+export async function getPropertyExistenceByReference(
+  reference: string,
+): Promise<PropertyExistence | null> {
+  if (!isSupabaseConfigured || !reference) return null;
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("properties")
+      .select("reference, slug, status")
+      .ilike("reference", reference)
+      .is("deleted_at", null)
+      .maybeSingle();
+    if (!data) return null;
+    return {
+      reference: data.reference,
+      slug: data.slug,
+      status: data.status,
+      // sold_at lands in migration 0020. Until the column exists, treat
+      // a flipped status of 'off_market' as the sold signal.
+      sold_at: null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Sprint 8 additions — audit-log scope + sold-state mutation.
+// ─────────────────────────────────────────────────────────────────────
+
+export type PropertyAuditEntry = {
+  id: string;
+  actor_id: string | null;
+  actor_kind: Database["public"]["Enums"]["audit_actor_kind"];
+  action: string;
+  before: unknown;
+  after: unknown;
+  at: string;
+};
+
+/** Audit-log rows scoped to a single property — powers the History tab
+ *  on the property editor (Sprint 7c). Ordered newest first. */
+export async function getPropertyAuditLog(
+  propertyId: string,
+  limit = 50,
+): Promise<PropertyAuditEntry[]> {
+  if (!isSupabaseConfigured || !propertyId) return [];
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("audit_log")
+      .select("id, actor_id, actor_kind, action, before, after, at")
+      .eq("target_kind", "property")
+      .eq("target_id", propertyId)
+      .order("at", { ascending: false })
+      .limit(limit);
+    if (error || !data) {
+      if (error) console.error("[getPropertyAuditLog]", error);
+      return [];
+    }
+    return data as PropertyAuditEntry[];
+  } catch {
+    return [];
+  }
+}
+
+/** Mark a property as sold. Sets sold_at; sold-state guard on /p/[slug]
+ *  redirects to /sold/[ref] which returns 410 Gone (Sprint 11).
+ *
+ *  sold_at lands in migration 0020 — until the migration is applied,
+ *  the column won't exist and Postgres will reject the field. The
+ *  status flip to 'off_market' still applies. */
+export async function markPropertySold(
+  propertyId: string,
+  soldAt: Date = new Date(),
+): Promise<boolean> {
+  if (!isSupabaseConfigured || !propertyId) return false;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const payload: Record<string, unknown> = {
+      sold_at: soldAt.toISOString(),
+      status: "off_market",
+    };
+    const { error } = await (
+      supabase.from("properties") as unknown as {
+        update(p: Record<string, unknown>): {
+          eq(col: string, val: string): Promise<{ error: unknown }>;
+        };
+      }
+    )
+      .update(payload)
+      .eq("id", propertyId);
+    if (error) {
+      console.error("[markPropertySold]", error);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error("[markPropertySold]", e);
+    return false;
+  }
 }
 
 // Re-export the pure utilities so existing imports keep working.

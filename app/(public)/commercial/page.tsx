@@ -1,25 +1,35 @@
 import type { Metadata } from "next";
-import { Eyebrow } from "@/components/brand/eyebrow";
+import { SearchList } from "../_components/search-list";
+import { parseFilters } from "@/lib/filters/property";
+import type { SearchView } from "../_components/view-toggle";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Commercial",
-  description: "Commercial real estate — office, retail, and industrial.",
+  description:
+    "Office, retail, and industrial leases and freeholds across the United Arab Emirates.",
 };
 
-export default function CommercialPage() {
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+const ALLOWED_VIEWS: readonly SearchView[] = ["grid", "list", "map"];
+
+export default async function CommercialPage({ searchParams }: PageProps) {
+  const raw = await searchParams;
+  const filters = parseFilters(raw);
+  const v = typeof raw.view === "string" ? raw.view : null;
+  const view: SearchView = ALLOWED_VIEWS.includes(v as SearchView)
+    ? (v as SearchView)
+    : "grid";
   return (
-    <div className="px-12 py-24 max-w-[80ch]">
-      <Eyebrow>Coming soon</Eyebrow>
-      <h1
-        className="serif text-[56px] font-normal mt-2"
-        style={{ letterSpacing: "-0.025em" }}
-      >
-        Commercial real estate
-      </h1>
-      <p className="mt-4 text-[15px] text-bz-muted">
-        Office, retail, and industrial listings land later in Phase 1. For an
-        opportunity to engage now, contact our advisory team directly.
-      </p>
-    </div>
+    <SearchList
+      mode="commercial"
+      filters={filters}
+      view={view}
+      searchParams={raw}
+    />
   );
 }

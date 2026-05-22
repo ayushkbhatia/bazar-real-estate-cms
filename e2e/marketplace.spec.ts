@@ -53,14 +53,27 @@ test("sitemap + robots are served", async ({ request }) => {
 
 test("property page emits JSON-LD with the right reference", async ({ page }) => {
   await page.goto("/p/mamsha-3-bed-beachfront-apartment-baz-ad-04891");
-  const ld = await page
+  // Sprint 11: root layout now emits an organization-level RealEstateAgent
+  // block alongside the page-level RealEstateListing. Iterate all blocks
+  // and assert the RealEstateListing one exists with the right identifier.
+  const blocks = await page
     .locator('script[type="application/ld+json"]')
-    .first()
-    .textContent();
-  expect(ld).toBeTruthy();
-  const parsed = JSON.parse(ld!);
-  expect(parsed["@type"]).toBe("Product");
-  expect(parsed.sku).toBe("BAZ-AD-04891");
+    .allTextContents();
+  expect(blocks.length).toBeGreaterThan(0);
+  const listing = blocks
+    .map((b) => {
+      try {
+        return JSON.parse(b);
+      } catch {
+        return null;
+      }
+    })
+    .find(
+      (parsed) =>
+        parsed && parsed["@type"] === "RealEstateListing",
+    );
+  expect(listing).toBeTruthy();
+  expect(listing.identifier).toBe("BAZ-AD-04891");
 });
 
 test("contact form rejects when no email or phone is supplied", async ({ page }) => {

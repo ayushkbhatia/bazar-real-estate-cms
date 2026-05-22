@@ -11,6 +11,7 @@ import {
   type PropertyCompliance,
 } from "@/lib/schemas/property";
 import { propertyUrl } from "@/lib/queries/properties";
+import { s8 } from "@/lib/supabase/sprint-8";
 import {
   evaluatePublishability,
   type PublishabilityResult,
@@ -84,7 +85,10 @@ export async function updateProperty(
     .eq("id", id)
     .maybeSingle();
 
-  const { data, error } = await supabase
+  // s8() widens the .from() type so the Sprint 8 columns
+  // (bazar_verified, advisor_note, featured_on_homepage) typecheck
+  // until db/types.ts is regenerated against migrations 0015–0026.
+  const { data, error } = await s8(supabase)
     .from("properties")
     .update(updateData)
     .eq("id", id)

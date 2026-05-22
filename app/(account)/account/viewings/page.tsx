@@ -6,6 +6,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/db/types";
+import { ViewingActions } from "./_components/viewing-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -105,7 +106,7 @@ export default async function AccountViewingsPage() {
         ) : (
           <ul className="flex flex-col gap-3">
             {upcoming.map((v) => (
-              <ViewingRow key={v.id} v={v} />
+              <ViewingRow key={v.id} v={v} isUpcoming={upcoming.includes(v)} />
             ))}
           </ul>
         )}
@@ -122,7 +123,7 @@ export default async function AccountViewingsPage() {
           </h2>
           <ul className="flex flex-col gap-3">
             {past.map((v) => (
-              <ViewingRow key={v.id} v={v} />
+              <ViewingRow key={v.id} v={v} isUpcoming={upcoming.includes(v)} />
             ))}
           </ul>
         </section>
@@ -131,7 +132,7 @@ export default async function AccountViewingsPage() {
   );
 }
 
-function ViewingRow({ v }: { v: Row }) {
+function ViewingRow({ v, isUpcoming }: { v: Row; isUpcoming: boolean }) {
   return (
     <li className="bg-bz-surface border border-bz-border rounded-lg p-4 flex items-start gap-4">
       <Calendar size={16} strokeWidth={1.6} className="text-bz-muted mt-1" />
@@ -170,6 +171,18 @@ function ViewingRow({ v }: { v: Row }) {
             <MapPin size={12} />
             {v.location}
           </div>
+        ) : null}
+        {isUpcoming ? (
+          <ViewingActions
+            viewing={{
+              id: v.id,
+              startsAt: v.starts_at,
+              durationMinutes: v.duration_minutes,
+              propertyReference: v.properties?.reference ?? null,
+              propertyTitle: v.properties?.title ?? null,
+              location: v.location,
+            }}
+          />
         ) : null}
       </div>
     </li>

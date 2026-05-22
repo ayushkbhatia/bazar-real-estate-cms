@@ -1,0 +1,168 @@
+import Link from "next/link";
+import Image from "next/image";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { ArrowLeft } from "lucide-react";
+import { Eyebrow } from "@/components/brand/eyebrow";
+import { PlaceholderImage } from "@/components/brand/placeholder-image";
+import { Button } from "@/components/ui/button";
+import {
+  articleUrl,
+  listPublishedArticles,
+  type ArticleListRow,
+} from "@/lib/queries/articles";
+import {
+  ARTICLE_CATEGORIES,
+  ARTICLE_CATEGORY_LABELS,
+} from "@/lib/schemas/article";
+import { mediaPublicUrl } from "@/lib/media";
+
+export const revalidate = 300;
+
+/**
+ * The footer links to `/insights/category/buyers-guide` (hyphen) but the
+ * enum value is `buyers_guide` (underscore). This map keeps URL slugs
+ * SEO-friendly while preserving the schema enum.
+ */
+const URL_SLUG_TO_CATEGORY: Record<string, (typeof ARTICLE_CATEGORIES)[number]> = {
+  "market-report": "market_report",
+  "buyers-guide": "buyers_guide",
+  "sellers-guide": "sellers_guide",
+  "field-note": "field_note",
+  "policy": "policy",
+  "off-plan-watch": "off_plan_watch",
+};
+
+export async function generateStaticParams() {
+  return Object.keys(URL_SLUG_TO_CATEGORY).map((cat) => ({ cat }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ cat: string }>;
+}): Promise<Metadata> {
+  const { cat } = await params;
+  const category = URL_SLUG_TO_CATEGORY[cat];
+  if (!category) return { title: "Category not found" };
+  return {
+    title: `${ARTICLE_CATEGORY_LABELS[category]} — Bazar insights`,
+    description: `Bazar's ${ARTICLE_CATEGORY_LABELS[category].toLowerCase()} pieces on Abu Dhabi real estate.`,
+  };
+}
+
+function formatDate(iso: string | null): string {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function ArticleHero({ row }: { row: ArticleListRow }) {
+  if (row.hero) {
+    return (
+      <Image
+        src={mediaPublicUrl(row.hero.storage_key)}
+        alt={row.hero.alt_text ?? row.title}
+        fill
+        sizes="(min-width: 1280px) 380px, 33vw"
+        className="object-cover"
+      />
+    );
+  }
+  return (
+    <PlaceholderImage
+      label={row.title.toLowerCase().slice(0, 26)}
+      className="w-full h-full"
+    />
+  );
+}
+
+export default async function InsightsCategoryPage({
+  params,
+}: {
+  params: Promise<{ cat: string }>;
+}) {
+  const { cat } = await params;
+  const category = URL_SLUG_TO_CATEGORY[cat];
+  if (!category) notFound();
+
+  const { rows } = await listPublishedArticles({ category, limit: 48 });
+
+  return (
+    <div className="bg-bz-bg">
+      {/* Crumb */}
+      <div className="px-12 pt-10 max-w-[1280px]">
+        <Link
+          href="/insights"
+          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
+        >
+          <ArrowLeft size={13} strokeWidth={1.8} />
+          All insights
+        </Link>
+      </div>
+
+      {/* Hero */}
+      <section className="px-12 pt-8 pb-12 max-w-[1200px]">
+        <Eyebrow>Category</Eyebrow>
+        <h1
+          className="serif text-[64px] mt-3 font-normal leading-[1.02]"
+          style={{ letterSpacing: "-0.025em" }}
+        >
+          {ARTICLE_CATEGORY_LABELS[category]}
+        </h1>
+        <p className="mt-4 text-[15px] text-bz-muted mono">
+          {rows.length} {rows.length === 1 ? "article" : "articles"}
+        </p>
+      </section>
+
+      {/* Grid */}
+      <section className="px-12 pb-24 max-w-[1280px]">
+        {rows.length === 0 ? (
+          <div className="py-24 text-center max-w-[44ch] mx-auto border border-dashed border-bz-border rounded-md">
+            <p className="text-[15px] text-bz-ink-2">
+              We haven&apos;t published any{" "}
+              {ARTICLE_CATEGORY_LABELS[category].toLowerCase()} pieces yet.
+            </p>
+            <Button asChild variant="outline" className="mt-6">
+              <Link href="/insights">View all categories</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-9 gap-y-14">
+            {rows.map((row) => (
+              <article key={row.id} className="group">
+                <Link href={articleUrl(row)} className="block">
+                  <div className="relative aspect-[4/3] rounded overflow-hidden bg-bz-surface-2">
+                    <ArticleHero row={row} />
+                  </div>
+                  <div className="eyebrow mt-3.5">
+                    {ARTICLE_CATEGORY_LABELS[row.category]}
+                    {row.read_minutes ? ` · ${row.read_minutes} min` : ""}
+                  </div>
+                  <h2
+                    className="serif text-[22px] mt-2 leading-[1.2] group-hover:text-bz-accent transition-colors"
+                    style={{ letterSpacing: "-0.01em" }}
+                  >
+                    {row.title}
+                  </h2>
+                  {row.excerpt ? (
+                    <p className="mt-2 text-[13px] text-bz-ink-2 leading-snug line-clamp-3">
+                      {row.excerpt}
+                    </p>
+                  ) : null}
+                  <div className="mt-3 text-[11.5px] text-bz-muted">
+                    {row.author?.display_name ?? "Bazar"}
+                    {row.published_at ? ` · ${formatDate(row.published_at)}` : ""}
+                  </div>
+                </Link>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}

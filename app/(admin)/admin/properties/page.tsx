@@ -3,17 +3,47 @@ import { Plus } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { LiveDot } from "@/lib/realtime/live-dot";
 import { Button } from "@/components/ui/button";
-import { listAllPropertiesForAdmin } from "@/lib/queries/properties";
+import {
+  countAdminPropertiesByStatus,
+  listAllPropertiesForAdmin,
+} from "@/lib/queries/properties";
 import { listActiveAgents } from "@/lib/queries/staff-agents";
 import { PropertiesTable } from "./_table";
 import { BulkToolbar } from "./_toolbar";
+import { StatusTabs } from "./_status-tabs";
+import type { Database } from "@/db/types";
 
 export const dynamic = "force-dynamic"; // auth-aware fetch
 
-export default async function AdminPropertiesPage() {
-  const [{ rows, total }, agents] = await Promise.all([
-    listAllPropertiesForAdmin({ limit: 100 }),
+type Status = Database["public"]["Enums"]["property_status"];
+const VALID_STATUSES: readonly (Status | "all")[] = [
+  "all",
+  "draft",
+  "in_review",
+  "published",
+  "off_market",
+  "archived",
+];
+
+export default async function AdminPropertiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const params = await searchParams;
+  const status = VALID_STATUSES.includes(
+    (params.status ?? "all") as Status | "all",
+  )
+    ? ((params.status ?? "all") as Status | "all")
+    : "all";
+
+  const [{ rows, total }, agents, counts] = await Promise.all([
+    listAllPropertiesForAdmin({
+      limit: 100,
+      status: status === "all" ? undefined : status,
+    }),
     listActiveAgents(),
+    countAdminPropertiesByStatus(),
   ]);
 
   return (
@@ -37,6 +67,7 @@ export default async function AdminPropertiesPage() {
       }
     >
       <div className="flex flex-col gap-6">
+        <StatusTabs active={status} counts={counts} />
         <BulkToolbar
           rows={rows.map((r) => ({ id: r.id, reference: r.reference }))}
           agents={agents.map((a) => ({
@@ -50,7 +81,7 @@ export default async function AdminPropertiesPage() {
             {total} {total === 1 ? "property" : "properties"}
           </div>
           <div className="text-[12px] text-bz-muted">
-            Editing arrives next sprint — this is read-only.
+            Click a row to open the editor.
           </div>
         </div>
 

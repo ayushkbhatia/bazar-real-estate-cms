@@ -12,15 +12,16 @@ import {
   FileText,
   Layers,
   Settings,
-  Search,
-  MoreVertical,
   ClipboardCheck,
   Handshake,
+  ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Wordmark } from "./wordmark";
 import { NotificationsBell } from "./notifications-bell";
 import { NotificationsChime } from "@/lib/realtime/notifications-chime";
+import { CmsUserPile } from "./cms-user-pile";
+import { CmsSearchInput } from "./cms-search-input";
 
 type NavItem = {
   label: string;
@@ -68,6 +69,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
     items: [
       { label: "Users & roles", href: "/admin/users", icon: Users },
       { label: "Site settings", href: "/admin/settings", icon: Settings },
+      { label: "Audit log", href: "/admin/audit-log", icon: ScrollText },
     ],
   },
 ];
@@ -140,17 +142,8 @@ export function CmsShell({
             })}
           </div>
         ))}
-        <div className="mt-auto pt-4 border-t border-bz-border flex items-center gap-2.5 px-2.5">
-          <div className="w-8 h-8 rounded-full bg-bz-surface-3 text-bz-ink flex items-center justify-center text-[12px] font-medium">
-            MA
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-[13px] font-medium truncate">
-              Mariam Al-Hashimi
-            </div>
-            <div className="text-[11px] text-bz-muted">Admin</div>
-          </div>
-          <MoreVertical size={15} className="text-bz-muted" />
+        <div className="mt-auto pt-4 border-t border-bz-border">
+          <CmsUserPile />
         </div>
       </aside>
       <div className="flex flex-col min-w-0 overflow-hidden">
@@ -165,17 +158,7 @@ export function CmsShell({
               {title}
             </div>
           </div>
-          <div className="relative w-[280px]">
-            <Search
-              size={15}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-bz-muted"
-            />
-            <input
-              type="search"
-              placeholder="Search anything…"
-              className="w-full h-10 pl-9 pr-3 bg-bz-surface border border-bz-border rounded text-[13.5px] outline-none focus:border-bz-ink-2 transition-colors"
-            />
-          </div>
+          <CmsSearchInput />
           {live}
           <NotificationsChime />
           {notifications ?? <NotificationsBell />}

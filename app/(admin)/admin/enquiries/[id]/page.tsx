@@ -16,6 +16,7 @@ import { propertyUrl } from "@/lib/queries/property-utils";
 import { currentStaffRow } from "@/lib/queries/staff";
 import { LiveDot } from "@/lib/realtime/live-dot";
 import { PresencePile } from "@/lib/realtime/presence-pile";
+import { EscalationBanner } from "./_escalation-banner";
 import { cn } from "@/lib/utils";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { markConversationRead } from "../_actions";
@@ -41,10 +42,17 @@ function formatDateTime(iso: string): string {
   });
 }
 
+// Server-side helper — keeps Date.now() outside the JSX render body so
+// the React Compiler doesn't flag it as impure.
+function serverNow(): number {
+  return Date.now();
+}
+
 export default async function EnquiryDetailPage({ params }: PageProps) {
   const { id } = await params;
   const enquiry = await getEnquiryById(id);
   if (!enquiry) notFound();
+  const now = serverNow();
 
   // Best-effort mark-read on each staff view. Failures shouldn't block
   // page render — but they shouldn't disappear silently either.
@@ -124,6 +132,13 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
     >
       <div className="grid grid-cols-[1fr_320px] gap-6 items-start">
         <div className="flex flex-col gap-5 min-w-0">
+          <EscalationBanner
+            createdAt={enquiry.created_at}
+            firstResponseAt={enquiry.first_response_at}
+            assignedAgentId={enquiry.assigned_agent_id}
+            status={enquiry.status}
+            nowMs={now}
+          />
           {/* Header */}
           <div className="bg-bz-surface border border-bz-border rounded-lg p-5">
             <div className="flex items-baseline justify-between flex-wrap gap-3">

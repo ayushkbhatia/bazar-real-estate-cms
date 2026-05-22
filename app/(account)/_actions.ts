@@ -121,6 +121,42 @@ export async function saveCurrentSearch(input: {
   return { status: "ok", id: data.id };
 }
 
+export type UpdateAlertResult =
+  | { status: "ok" }
+  | { status: "auth_required" }
+  | { status: "error"; message: string };
+
+const FREQ = ["off", "instant", "daily", "weekly"] as const;
+type AlertFrequency = (typeof FREQ)[number];
+
+export async function updateSavedSearchAlert(input: {
+  id: string;
+  frequency: AlertFrequency;
+}): Promise<UpdateAlertResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  if (!FREQ.includes(input.frequency))
+    return { status: "error", message: "Invalid frequency." };
+
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { status: "auth_required" };
+
+  const { error } = await supabase
+    .from("saved_searches")
+    .update({ alert_frequency: input.frequency })
+    .eq("id", input.id)
+    .eq("user_id", user.id);
+
+  if (error) return { status: "error", message: error.message };
+
+  revalidatePath("/account/alerts");
+  revalidatePath("/account/saved");
+  return { status: "ok" };
+}
+
 export type DeleteSavedSearchResult =
   | { status: "ok" }
   | { status: "auth_required" }
