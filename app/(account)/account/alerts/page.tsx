@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { FrequencyPicker } from "./_frequency-picker";
+import { ChannelToggles } from "./_channel-toggles";
 
 export const metadata: Metadata = {
   title: "Alert preferences",
@@ -122,7 +123,8 @@ export default async function AccountAlertsPage() {
                     <span>Last alert · {formatRelative(row.last_alert_at)}</span>
                   </div>
                 </div>
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 flex items-center gap-3">
+                  <ChannelToggles searchId={row.id} />
                   <FrequencyPicker
                     id={row.id}
                     initial={row.alert_frequency}
@@ -135,10 +137,11 @@ export default async function AccountAlertsPage() {
       )}
 
       <div className="mt-14 border-t border-bz-border pt-10">
-        <Eyebrow>Channel</Eyebrow>
+        <Eyebrow>Delivery channels</Eyebrow>
         <p className="mt-3 text-[14px] text-bz-ink-2 max-w-[60ch] leading-relaxed">
-          Alerts currently send by email. WhatsApp and SMS channels arrive in
-          Sprint 10 once the lead-engine workflows ship.
+          Pick how each saved search alerts you. Email is wired today;
+          WhatsApp and SMS queue up and start delivering once Sprint 10&apos;s
+          lead-engine workflows ship.
         </p>
       </div>
     </div>
