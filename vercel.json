@@ -12,46 +12,6 @@
     {
       "path": "/api/cron/viewing-reminders",
       "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/cron/enquiry-auto-reply",
-      "schedule": "* * * * *"
-    },
-    {
-      "path": "/api/cron/enquiry-escalation",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/cron/saved-search-alerts-diff",
-      "schedule": "*/15 * * * *"
-    },
-    {
-      "path": "/api/cron/post-valuation-nurture",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/brn-validation",
-      "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/cron/permit-expiry",
-      "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/cron/meilisearch-sync",
-      "schedule": "0 2 * * *"
-    },
-    {
-      "path": "/api/cron/embeddings-backfill",
-      "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/cron/syndication-push",
-      "schedule": "0 4 * * *"
-    },
-    {
-      "path": "/api/cron/dld-import",
-      "schedule": "0 5 * * 1"
     }
   ]
 }
