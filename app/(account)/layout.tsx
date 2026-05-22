@@ -1,5 +1,6 @@
 import { PublicNav } from "@/components/brand/public-nav";
 import { PublicFooter } from "@/components/brand/public-footer";
+import { AccountSidebar } from "./_components/account-sidebar";
 
 export default function AccountLayout({
   children,
@@ -9,7 +10,10 @@ export default function AccountLayout({
   return (
     <>
       <PublicNav />
-      <main className="flex-1 px-12 py-12">{children}</main>
+      <div className="flex flex-1">
+        <AccountSidebar />
+        <main className="flex-1 px-12 py-12 min-w-0">{children}</main>
+      </div>
       <PublicFooter />
     </>
   );

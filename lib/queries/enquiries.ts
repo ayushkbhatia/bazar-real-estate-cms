@@ -193,6 +193,58 @@ export async function getEnquiryById(
   };
 }
 
+/**
+ * User-side enquiries listing — RLS-enforced via `enquiries_own_select`:
+ * `account_id = auth.uid()`. Returns the current account's enquiries only.
+ */
+export async function listEnquiriesForUser(): Promise<EnquiryListRow[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("enquiries")
+    .select(LIST_FIELDS)
+    .eq("account_id", user.id)
+    .order("created_at", { ascending: false });
+  if (error || !data) return [];
+
+  type RawRow = Omit<
+    EnquiryListRow,
+    "unread_count" | "properties" | "staff"
+  > & {
+    properties: EnquiryListRow["properties"];
+    staff: EnquiryListRow["staff"];
+    conversations: { messages: { id: string; direction: string; read_at: string | null }[] }[];
+  };
+  return (data as unknown as RawRow[]).map((row) => {
+    const messages = row.conversations?.[0]?.messages ?? [];
+    const unread_count = messages.filter(
+      (m) => m.direction === "outbound" && m.read_at === null,
+    ).length;
+    return {
+      id: row.id,
+      name: row.name,
+      email: row.email,
+      phone: row.phone,
+      brief_raw: row.brief_raw,
+      source: row.source,
+      status: row.status,
+      temperature: row.temperature,
+      created_at: row.created_at,
+      first_response_at: row.first_response_at,
+      property_id: row.property_id,
+      properties: row.properties,
+      assigned_agent_id: row.assigned_agent_id,
+      staff: row.staff,
+      unread_count,
+    };
+  });
+}
+
 export type DashboardKpis = {
   new_enquiries_today: number;
   active_listings: number;
