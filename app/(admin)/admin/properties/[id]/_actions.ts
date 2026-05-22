@@ -16,6 +16,9 @@ import {
   type PublishabilityResult,
 } from "@/lib/publishability";
 import { logAudit } from "@/lib/audit";
+import { requireRole } from "@/lib/auth";
+
+const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
 async function revalidatePropertyPaths(propertyId: string) {
   if (!isSupabaseConfigured) return;
@@ -49,6 +52,7 @@ export async function updateProperty(
       message:
         "Supabase env vars are not set. Configure NEXT_PUBLIC_SUPABASE_URL + ANON in .env.local.",
     };
+  await requireRole(PROPERTY_ROLES);
 
   const normalised = normaliseEditInput(raw);
   const parsed = propertyEditSchema.safeParse(normalised);
@@ -153,6 +157,7 @@ export async function setPropertyHero(
       status: "error",
       message: "Supabase env vars are not set.",
     };
+  await requireRole(PROPERTY_ROLES);
 
   const supabase = await createSupabaseServerClient();
 
@@ -199,6 +204,7 @@ export async function updateCompliance(
 ): Promise<ComplianceResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
 
   const parsed = propertyComplianceSchema.safeParse(normaliseCompliance(raw));
   if (!parsed.success) {
@@ -305,6 +311,7 @@ export async function publishProperty(
 ): Promise<PublishResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
 
   const pre = await loadPublishabilityFor(propertyId);
   if (pre.error || !pre.data)
@@ -350,6 +357,7 @@ export async function unpublishProperty(
 ): Promise<PublishResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
 
   const supabase = await createSupabaseServerClient();
   const { data: before } = await supabase

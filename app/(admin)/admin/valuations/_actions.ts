@@ -7,6 +7,9 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { valuationReportTemplate } from "@/lib/email-templates";
 import { logAudit } from "@/lib/audit";
+import { requireRole } from "@/lib/auth";
+
+const VALUATION_ROLES = ["admin", "editor"] as const;
 
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -41,6 +44,7 @@ export async function claimValuationRequest(
   raw: Record<string, unknown>,
 ): Promise<ActionResult> {
   if (!isSupabaseConfigured) return needConfig();
+  await requireRole(VALUATION_ROLES);
   const parsed = claimSchema.safeParse(raw);
   if (!parsed.success) return { status: "error", message: "Invalid input." };
 
@@ -89,6 +93,7 @@ export async function saveAdvisorDraft(
   raw: Record<string, unknown>,
 ): Promise<ActionResult> {
   if (!isSupabaseConfigured) return needConfig();
+  await requireRole(VALUATION_ROLES);
   const parsed = updateSchema.safeParse(raw);
   if (!parsed.success) return { status: "error", message: "Invalid input." };
 
@@ -121,6 +126,7 @@ export async function sendValuationReport(
   raw: Record<string, unknown>,
 ): Promise<ActionResult> {
   if (!isSupabaseConfigured) return needConfig();
+  await requireRole(VALUATION_ROLES);
   const parsed = sendReportSchema.safeParse(raw);
   if (!parsed.success) {
     const msg = parsed.error.issues[0]?.message ?? "Invalid input.";
@@ -211,6 +217,7 @@ export async function archiveValuationRequest(
   raw: Record<string, unknown>,
 ): Promise<ActionResult> {
   if (!isSupabaseConfigured) return needConfig();
+  await requireRole(VALUATION_ROLES);
   const parsed = claimSchema.safeParse(raw);
   if (!parsed.success) return { status: "error", message: "Invalid input." };
 

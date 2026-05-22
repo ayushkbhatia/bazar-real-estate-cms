@@ -5,6 +5,9 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { pageCreateSchema } from "@/lib/schemas/page";
 import { logAudit } from "@/lib/audit";
+import { requireRole } from "@/lib/auth";
+
+const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
 
 export type CreatePageResult =
   | { status: "ok"; id: string }
@@ -15,6 +18,7 @@ export async function createPage(
 ): Promise<CreatePageResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PAGE_ROLES);
 
   const parsed = pageCreateSchema.safeParse(raw);
   if (!parsed.success) {

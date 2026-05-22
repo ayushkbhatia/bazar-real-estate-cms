@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
+import { requireRole } from "@/lib/auth";
 import {
   evaluateStageAdvance,
   type DealStage,
@@ -13,6 +14,8 @@ import {
 import { createDealDocumentUpload } from "@/lib/documents-storage";
 import { sendEmail } from "@/lib/email";
 import { dealStageChangeTemplate } from "@/lib/email-templates";
+
+const DEAL_ROLES = ["admin", "editor", "agent"] as const;
 
 export type StageAdvanceResult =
   | { status: "ok"; stage: DealStage }
@@ -30,6 +33,7 @@ export async function advanceDealStage(opts: {
 }): Promise<StageAdvanceResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(DEAL_ROLES);
 
   const supabase = await createSupabaseServerClient();
   const {
@@ -234,6 +238,7 @@ export async function startDealDocumentUpload(opts: {
     }
   | { status: "error"; message: string }
 > {
+  await requireRole(DEAL_ROLES);
   const res = await createDealDocumentUpload(opts);
   if (res.status === "error") return res;
   await logAudit({
@@ -260,6 +265,7 @@ export async function setDocumentStatus(opts: {
 }): Promise<DocActionResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(DEAL_ROLES);
 
   const supabase = await createSupabaseServerClient();
   const {
@@ -331,6 +337,7 @@ export async function setDealCommission(opts: {
 }): Promise<DocActionResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(DEAL_ROLES);
   if (!Number.isFinite(opts.commissionAed) || opts.commissionAed < 0)
     return { status: "error", message: "Commission must be a positive number." };
 
