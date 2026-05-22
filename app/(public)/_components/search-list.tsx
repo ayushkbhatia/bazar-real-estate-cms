@@ -26,6 +26,9 @@ import { SortDropdown } from "./sort-dropdown";
 import { ViewToggle, type SearchView } from "./view-toggle";
 import { MoreFiltersDrawer } from "./more-filters-drawer";
 import { Pagination } from "./pagination";
+import { ModeSegmented } from "./mode-segmented";
+import { DrawAreaTool } from "./draw-area-tool";
+import { CommuteTimeTool } from "./commute-time-tool";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
 
@@ -125,6 +128,13 @@ export async function SearchList({
       </section>
 
       <FilterBar mode={mode} areas={areas} isAuthed={isAuthed} />
+
+      <section className="px-12 pt-6 pb-3 flex items-center gap-3 flex-wrap border-b border-bz-border">
+        <ModeSegmented />
+        <span className="text-bz-muted text-[11px]">·</span>
+        <DrawAreaTool />
+        <CommuteTimeTool />
+      </section>
 
       <section className="px-12 py-10">
         <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">

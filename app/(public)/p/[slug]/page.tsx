@@ -31,6 +31,9 @@ import { env } from "@/lib/env";
 import { EnquiryForm } from "../../_components/enquiry-form";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
 import { Gallery, type GalleryImage } from "./_components/gallery";
+import { GalleryTabs } from "./_components/gallery-tabs";
+import { FloorPlanSection } from "./_components/floor-plan-section";
+import { MapEmbed } from "./_components/map-embed";
 import { PropertyActionRow } from "./_components/action-row";
 import { PriceBlock } from "./_components/price-block";
 import { AdvisorNote } from "./_components/advisor-note";
@@ -216,7 +219,13 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       />
 
       <div className="mt-4">
-        <Gallery images={galleryImages} reference={property.reference} />
+        <GalleryTabs
+          hasFloorPlan={false}
+          hasVideo={false}
+          hasVirtualTour={false}
+        >
+          <Gallery images={galleryImages} reference={property.reference} />
+        </GalleryTabs>
       </div>
 
       {/* Header band */}
@@ -330,25 +339,38 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           ) : null}
 
           {/* Floor plan section */}
-          <div>
-            <Eyebrow>Floor plan</Eyebrow>
-            <h3 className="serif text-[24px] mt-2 mb-4">Unit layout</h3>
-            <PlaceholderImage
-              label="floor plan · upload via property editor (Sprint 7c)"
-              className="aspect-[16/10] rounded-lg"
-            />
-          </div>
+          <FloorPlanSection
+            imageUrl={null}
+            beds={property.beds}
+            baths={property.baths}
+            builtUpFt2={property.built_up_ft2}
+            reference={property.reference}
+          />
 
           {/* Location */}
-          <div>
+          <div id="location" className="scroll-mt-16">
             <Eyebrow>Location</Eyebrow>
-            <h3 className="serif text-[24px] mt-2 mb-4">
+            <h3
+              className="serif text-[24px] mt-2 mb-4"
+              style={{ letterSpacing: "-0.012em" }}
+            >
               {property.areas?.name ?? "Abu Dhabi"}
             </h3>
-            <PlaceholderImage
-              label="map · mapbox wires up in Sprint 12"
-              className="aspect-[16/9] rounded-lg"
-            />
+            {property.geo &&
+            typeof property.geo.lat === "number" &&
+            typeof property.geo.lng === "number" ? (
+              <MapEmbed
+                lat={property.geo.lat}
+                lng={property.geo.lng}
+                title={property.title}
+                className="w-full aspect-[16/9] rounded-lg overflow-hidden border border-bz-border"
+              />
+            ) : (
+              <PlaceholderImage
+                label="No coordinates set on this listing"
+                className="aspect-[16/9] rounded-lg"
+              />
+            )}
             {property.address_line ? (
               <p className="mt-3 text-[13px] text-bz-muted">
                 {property.address_line}
