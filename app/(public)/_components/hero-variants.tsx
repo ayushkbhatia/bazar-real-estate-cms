@@ -13,7 +13,7 @@ export type HeroVariant = "fullbleed" | "editorial" | "map" | "concierge";
  */
 export function HeroFullBleed() {
   return (
-    <section className="relative h-[680px] bg-bz-ink overflow-hidden">
+    <section className="relative h-[720px] bg-bz-ink overflow-hidden">
       <div
         className="absolute inset-0"
         style={{
@@ -35,6 +35,21 @@ export function HeroFullBleed() {
           investors across the United Arab Emirates.
         </p>
         <HeroSearch />
+        <div className="mt-5 flex gap-3 text-[13.5px]">
+          <Link
+            href="/buy"
+            className="text-white/85 hover:text-white underline underline-offset-4 transition-colors"
+          >
+            Browse the marketplace
+          </Link>
+          <span className="text-white/30">·</span>
+          <Link
+            href="/concierge"
+            className="text-white/85 hover:text-white underline underline-offset-4 transition-colors"
+          >
+            Talk to an advisor
+          </Link>
+        </div>
       </div>
     </section>
   );
