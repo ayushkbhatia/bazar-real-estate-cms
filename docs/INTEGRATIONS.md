@@ -19,8 +19,8 @@ light up. Order below matches priority for launch.
 | Meilisearch | `MEILISEARCH_HOST`, `MEILISEARCH_API_KEY`, `NEXT_PUBLIC_MEILISEARCH_HOST`, `NEXT_PUBLIC_MEILISEARCH_SEARCH_KEY` | `/buy`, `/rent`, `/off-plan`, `/commercial` search | 12 |
 | Voyage AI | `VOYAGE_API_KEY` | `/concierge` semantic search | 12 |
 | Mapbox | `NEXT_PUBLIC_MAPBOX_TOKEN` | Address typeahead, isochrones, HQ map | 12 |
-| Property Finder | `PROPERTY_FINDER_FEED_TOKEN` | XML feed at `/api/feeds/property-finder.xml` | 13 |
-| Bayut | `BAYUT_FEED_TOKEN` | XML feed at `/api/feeds/bayut.xml` | 13 |
+| Property Finder | `PROPERTY_FINDER_FEED_TOKEN` | XML feed at `/api/feeds/property-finder.xml` (rewrites to `/api/feeds/property-finder`) | 13 |
+| Bayut | `BAYUT_FEED_TOKEN` | XML feed at `/api/feeds/bayut.xml` (rewrites to `/api/feeds/bayut`) | 13 |
 | Mailchimp | `MAILCHIMP_API_KEY`, `MAILCHIMP_LIST_ID`, `MAILCHIMP_DC`, `MAILCHIMP_WEBHOOK_SECRET` | Newsletter signup + webhooks | 13 |
 | DocuSign | `DOCUSIGN_INTEGRATION_KEY`, `DOCUSIGN_USER_ID`, `DOCUSIGN_ACCOUNT_ID`, `DOCUSIGN_PRIVATE_KEY`, `DOCUSIGN_BASE_URL`, `DOCUSIGN_WEBHOOK_SECRET` | Envelope creation + signed-doc callbacks | 13 |
 | DLD open data | (uses `dld_open_data.config.csv_url` on the integrations table) | `/tools/valuation` comparables | 13 |
