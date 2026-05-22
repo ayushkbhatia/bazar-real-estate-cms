@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
-import { ChevronRight, BedDouble, Bath, Maximize2, Home, Calendar, KeyRound } from "lucide-react";
+import {
+  ChevronRight,
+  BedDouble,
+  Bath,
+  Maximize2,
+  Home,
+  Calendar,
+  KeyRound,
+} from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { ListingCard } from "@/components/brand/listing-card";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import { Button } from "@/components/ui/button";
 import {
   extractReferenceFromSlug,
   formatPriceAED,
@@ -16,9 +22,21 @@ import {
   propertyUrl,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
-import { propertyJsonLd } from "@/lib/jsonld";
+import {
+  propertyJsonLd,
+  breadcrumbListJsonLd,
+} from "@/lib/jsonld";
 import { getSessionUser } from "@/lib/supabase/server";
+import { env } from "@/lib/env";
 import { EnquiryForm } from "../../_components/enquiry-form";
+import { SEED_AGENTS } from "@/lib/seeds/agents";
+import { Gallery, type GalleryImage } from "./_components/gallery";
+import { PropertyActionRow } from "./_components/action-row";
+import { PriceBlock } from "./_components/price-block";
+import { AdvisorNote } from "./_components/advisor-note";
+import { TrueCostBlock } from "./_components/true-cost-block";
+import { AgentCard } from "./_components/agent-card";
+import { ScheduleViewing } from "./_components/schedule-viewing";
 
 export const revalidate = 60;
 
@@ -100,10 +118,55 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       ? Math.round(property.price_aed / property.built_up_ft2)
       : null;
 
-  const jsonLd = propertyJsonLd(
-    property,
-    property.hero ? mediaPublicUrl(property.hero.storage_key) : null,
-  );
+  const heroPublicUrl = property.hero
+    ? mediaPublicUrl(property.hero.storage_key)
+    : null;
+
+  // Gallery — for Sprint 4c we only have the hero in the query shape;
+  // Sprint 7c's Media tab will populate property_media so all images flow
+  // through here.
+  const galleryImages: GalleryImage[] = [];
+  if (property.hero) {
+    galleryImages.push({
+      src: heroPublicUrl,
+      alt: property.hero.alt_text ?? property.title,
+      label: `${property.reference} · 1`,
+    });
+  }
+
+  // Sprint 4c: pick a lead advisor from the seed set by area overlap.
+  // Sprint 9 swaps to property.assigned_agent_id → real staff lookup.
+  const leadAdvisor =
+    SEED_AGENTS.find((a) =>
+      a.areas.includes(property.areas?.slug ?? ""),
+    ) ?? SEED_AGENTS[0];
+
+  const advisorNoteCopy = property.short_description ?? property.description;
+
+  const siteUrl = (
+    env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app"
+  ).replace(/\/+$/, "");
+
+  const jsonLd = propertyJsonLd(property, heroPublicUrl);
+  const breadcrumbLd = breadcrumbListJsonLd([
+    { name: "Home", url: `${siteUrl}/` },
+    {
+      name: property.mode === "rent" ? "For rent" : "For sale",
+      url: `${siteUrl}/${property.mode === "rent" ? "rent" : "buy"}`,
+    },
+    ...(property.areas
+      ? [
+          {
+            name: property.areas.name,
+            url: `${siteUrl}/areas/${property.areas.slug}`,
+          },
+        ]
+      : []),
+    {
+      name: property.reference,
+      url: `${siteUrl}${canonical}`,
+    },
+  ]);
 
   return (
     <article className="bg-bz-bg">
@@ -111,9 +174,16 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+
       {/* Breadcrumb */}
       <div className="px-12 pt-8 pb-3 text-[12px] text-bz-muted flex items-center gap-1.5">
-        <Link href="/" className="hover:text-bz-ink">Home</Link>
+        <Link href="/" className="hover:text-bz-ink">
+          Home
+        </Link>
         <ChevronRight size={12} />
         <Link
           href={property.mode === "rent" ? "/rent" : "/buy"}
@@ -124,43 +194,30 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         {property.areas ? (
           <>
             <ChevronRight size={12} />
-            <span>{property.areas.name}</span>
+            <Link
+              href={`/areas/${property.areas.slug}`}
+              className="hover:text-bz-ink"
+            >
+              {property.areas.name}
+            </Link>
           </>
         ) : null}
         <ChevronRight size={12} />
         <span className="mono text-bz-ink">{property.reference}</span>
       </div>
 
-      {/* Gallery — hero + placeholder slots until the full gallery picker lands */}
-      <section className="px-12">
-        <div className="grid grid-cols-3 grid-rows-2 gap-2 h-[480px]">
-          {property.hero ? (
-            <div className="relative col-span-2 row-span-2 rounded-lg overflow-hidden">
-              <Image
-                src={mediaPublicUrl(property.hero.storage_key)}
-                alt={property.hero.alt_text ?? property.title}
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 66vw"
-                className="object-cover"
-              />
-            </div>
-          ) : (
-            <PlaceholderImage
-              label={`${property.reference} · 1`}
-              className="col-span-2 row-span-2 rounded-lg"
-            />
-          )}
-          <PlaceholderImage
-            label={`${property.reference} · 2`}
-            className="rounded-lg"
-          />
-          <PlaceholderImage
-            label={`${property.reference} · 3`}
-            className="rounded-lg"
-          />
-        </div>
-      </section>
+      {/* Action row */}
+      <PropertyActionRow
+        propertyId={property.id}
+        reference={property.reference}
+        title={property.title}
+        initialSaved={savedSet.has(property.id)}
+        isAuthed={isAuthed}
+      />
+
+      <div className="mt-4">
+        <Gallery images={galleryImages} reference={property.reference} />
+      </div>
 
       {/* Header band */}
       <section className="px-12 pt-10 pb-8">
@@ -187,46 +244,72 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         >
           {property.title}
         </h1>
-        <div className="flex items-baseline justify-between mt-3 flex-wrap gap-x-8 gap-y-3">
+        <div className="flex items-baseline justify-between mt-4 flex-wrap gap-x-8 gap-y-4">
           <div className="text-[14px] text-bz-muted">
             {property.areas?.name ?? "United Arab Emirates"} ·{" "}
             <span className="mono text-bz-ink-2">{property.reference}</span>
           </div>
-          <div className="flex items-baseline gap-3">
-            <span
-              className="serif text-[56px] font-normal leading-none"
-              style={{ letterSpacing: "-0.025em" }}
-            >
-              {priceAed}
-            </span>
-            {aedPerFt ? (
-              <span className="mono text-[13px] text-bz-muted">
-                {aedPerFt.toLocaleString()} AED/ft²
-              </span>
-            ) : null}
-          </div>
+          <PriceBlock
+            priceAed={property.price_aed}
+            aedPerFt2={aedPerFt}
+            listedDays={daysSince(property.published_at)}
+            formattedAed={priceAed}
+          />
         </div>
       </section>
 
       {/* Key facts */}
       <section className="px-12 pb-10">
         <div className="grid grid-cols-6 gap-3">
-          <FactTile icon={<BedDouble size={16} strokeWidth={1.6} />} label="Bedrooms" value={String(property.beds)} />
-          <FactTile icon={<Bath size={16} strokeWidth={1.6} />} label="Bathrooms" value={String(property.baths)} />
-          <FactTile icon={<Maximize2 size={16} strokeWidth={1.6} />} label="Built-up" value={property.built_up_ft2 ? `${property.built_up_ft2} ft²` : "—"} />
-          <FactTile icon={<Home size={16} strokeWidth={1.6} />} label="Type" value={titleCase(property.type)} />
-          <FactTile icon={<KeyRound size={16} strokeWidth={1.6} />} label="Tenure" value={property.tenure ? titleCase(property.tenure) : "—"} />
-          <FactTile icon={<Calendar size={16} strokeWidth={1.6} />} label="Year built" value={property.year_built ? String(property.year_built) : "—"} />
+          <FactTile
+            icon={<BedDouble size={16} strokeWidth={1.6} />}
+            label="Bedrooms"
+            value={String(property.beds)}
+          />
+          <FactTile
+            icon={<Bath size={16} strokeWidth={1.6} />}
+            label="Bathrooms"
+            value={String(property.baths)}
+          />
+          <FactTile
+            icon={<Maximize2 size={16} strokeWidth={1.6} />}
+            label="Built-up"
+            value={
+              property.built_up_ft2 ? `${property.built_up_ft2} ft²` : "—"
+            }
+          />
+          <FactTile
+            icon={<Home size={16} strokeWidth={1.6} />}
+            label="Type"
+            value={titleCase(property.type)}
+          />
+          <FactTile
+            icon={<KeyRound size={16} strokeWidth={1.6} />}
+            label="Tenure"
+            value={property.tenure ? titleCase(property.tenure) : "—"}
+          />
+          <FactTile
+            icon={<Calendar size={16} strokeWidth={1.6} />}
+            label="Year built"
+            value={property.year_built ? String(property.year_built) : "—"}
+          />
         </div>
       </section>
 
       {/* Description + sidebar */}
-      <section className="px-12 pb-16 grid grid-cols-[1fr_320px] gap-10">
-        <div className="space-y-10">
+      <section className="px-12 pb-16 grid grid-cols-[1fr_360px] gap-12">
+        <div className="space-y-12">
+          {advisorNoteCopy ? (
+            <AdvisorNote
+              note={advisorNoteCopy}
+              advisorName={leadAdvisor.display_name}
+            />
+          ) : null}
+
           {property.description ? (
             <div>
               <Eyebrow>Why this one</Eyebrow>
-              <p className="mt-3 text-[17px] leading-[1.7] text-bz-ink whitespace-pre-line">
+              <p className="mt-3 text-[16.5px] leading-[1.7] text-bz-ink whitespace-pre-line max-w-[64ch]">
                 {property.description}
               </p>
             </div>
@@ -246,14 +329,24 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             </div>
           ) : null}
 
-          {/* Location placeholder */}
+          {/* Floor plan section */}
+          <div>
+            <Eyebrow>Floor plan</Eyebrow>
+            <h3 className="serif text-[24px] mt-2 mb-4">Unit layout</h3>
+            <PlaceholderImage
+              label="floor plan · upload via property editor (Sprint 7c)"
+              className="aspect-[16/10] rounded-lg"
+            />
+          </div>
+
+          {/* Location */}
           <div>
             <Eyebrow>Location</Eyebrow>
             <h3 className="serif text-[24px] mt-2 mb-4">
               {property.areas?.name ?? "Abu Dhabi"}
             </h3>
             <PlaceholderImage
-              label="map · phase 1.2 (mapbox)"
+              label="map · mapbox wires up in Sprint 12"
               className="aspect-[16/9] rounded-lg"
             />
             {property.address_line ? (
@@ -262,15 +355,25 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               </p>
             ) : null}
           </div>
+
+          {/* True cost */}
+          <TrueCostBlock priceAed={property.price_aed} />
         </div>
 
         {/* Sticky sidebar */}
-        <aside className="sticky top-6 self-start">
-          <div className="bg-bz-surface border border-bz-border rounded-lg p-5">
-            <Eyebrow>Talk to an advisor</Eyebrow>
-            <h4 className="serif text-[22px] mt-2 leading-tight mb-4">
-              Send a brief on{" "}
-              <span className="mono text-[16px]">{property.reference}</span>.
+        <aside className="sticky top-6 self-start space-y-4">
+          <AgentCard agent={leadAdvisor} />
+
+          <ScheduleViewing propertyReference={property.reference} />
+
+          <div
+            id="send-brief"
+            className="bg-bz-surface border border-bz-border rounded-lg p-5 scroll-mt-24"
+          >
+            <Eyebrow>Send a brief</Eyebrow>
+            <h4 className="serif text-[18px] mt-2 leading-tight mb-4">
+              Ask anything about{" "}
+              <span className="mono text-[14px]">{property.reference}</span>.
             </h4>
             <EnquiryForm
               source="property_page"
@@ -278,7 +381,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               propertyReference={property.reference}
               compact
             />
-            <div className="mt-5 pt-4 border-t border-bz-border space-y-1.5 text-[12px] text-bz-muted">
+            <div className="mt-4 pt-3 border-t border-bz-border space-y-1 text-[11.5px] text-bz-muted">
               {property.listing_permit_no ? (
                 <div>
                   Permit:{" "}
@@ -295,16 +398,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                   </span>
                 </div>
               ) : null}
-              {property.published_at ? (
-                <div>
-                  Listed{" "}
-                  {new Date(property.published_at).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
-                </div>
-              ) : null}
             </div>
           </div>
         </aside>
@@ -313,9 +406,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       {/* Similar */}
       {similar.length > 0 ? (
         <section className="px-12 py-16 border-t border-bz-border">
-          <Eyebrow>
-            More in {property.areas?.name ?? "the UAE"}
-          </Eyebrow>
+          <Eyebrow>More in {property.areas?.name ?? "the UAE"}</Eyebrow>
           <h2
             className="serif text-[32px] font-normal mt-2 mb-8"
             style={{ letterSpacing: "-0.02em" }}
@@ -344,6 +435,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                   propertyId={row.id}
                   initialSaved={savedSet.has(row.id)}
                   isAuthed={isAuthed}
+                  compareEnabled
                 />
               </Link>
             ))}
@@ -379,4 +471,14 @@ function titleCase(s: string): string {
     .split("_")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
+}
+
+/** Server-side helper — kept outside the render body so the React Compiler
+ *  doesn't flag the Date.now() call as impure. */
+function daysSince(iso: string | null): number | null {
+  if (!iso) return null;
+  return Math.max(
+    0,
+    Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000),
+  );
 }

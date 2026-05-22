@@ -25,10 +25,9 @@ type PropertyForJsonLd = {
 };
 
 /**
- * Returns a JSON-LD object for a property — schema.org `Product` with a
- * nested `Offer` and (when geo is available) a `Place`. Real estate
- * portals typically use Product + RealEstateAgent + Place; this is the
- * minimum useful set for Google rich results.
+ * Returns a JSON-LD object for a property using schema.org `RealEstateListing`
+ * (replaces the earlier `Product` shape). Includes a nested
+ * `Accommodation` + `Offer` and `GeoCoordinates` when available. Sprint 4c.
  */
 export function propertyJsonLd(
   p: PropertyForJsonLd,
@@ -64,17 +63,15 @@ export function propertyJsonLd(
 
   return {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": "RealEstateListing",
     "@id": url,
     url,
     name: p.title,
     description: p.short_description || p.description || p.title,
     image: images,
-    sku: p.reference,
-    productID: p.reference,
-    category: "real estate",
-    additionalType: "https://schema.org/Accommodation",
-    isRelatedTo: accommodation,
+    identifier: p.reference,
+    datePosted: p.published_at ?? undefined,
+    mainEntity: accommodation,
     offers: {
       "@type": "Offer",
       url,
@@ -82,13 +79,28 @@ export function propertyJsonLd(
       price: p.price_aed,
       availability: "https://schema.org/InStock",
       validFrom: p.published_at ?? undefined,
-      itemCondition: "https://schema.org/UsedCondition",
       seller: {
-        "@type": "Organization",
+        "@type": "RealEstateAgent",
         name: "Bazar Real Estate",
         url: siteUrl(),
       },
     },
+  };
+}
+
+/** Breadcrumb JSON-LD — used on property pages and articles. */
+export function breadcrumbListJsonLd(
+  items: { name: string; url: string }[],
+): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
   };
 }
 

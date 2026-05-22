@@ -15,12 +15,17 @@ import { isSupabaseConfigured } from "@/lib/env";
 import {
   countActiveFilters,
   describeFilters,
+  PAGE_SIZE,
   type PropertyFilters,
 } from "@/lib/filters/property";
 import type { Database } from "@/db/types";
 import { FilterBar, type AreaOption } from "./filter-bar";
 import type { MapPin } from "./map-view";
 import { MapViewClient } from "./map-view-client";
+import { SortDropdown } from "./sort-dropdown";
+import { ViewToggle, type SearchView } from "./view-toggle";
+import { MoreFiltersDrawer } from "./more-filters-drawer";
+import { Pagination } from "./pagination";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
 
@@ -74,12 +79,19 @@ async function fetchAreas(): Promise<AreaOption[]> {
 export async function SearchList({
   mode,
   filters,
+  view = "grid",
+  searchParams,
 }: {
   mode: Mode;
   filters: PropertyFilters;
+  view?: SearchView;
+  searchParams: Record<string, string | string[] | undefined>;
 }) {
+  const page = filters.page && filters.page > 0 ? filters.page : 1;
+  const offset = (page - 1) * PAGE_SIZE;
+
   const [{ rows, total }, areas, user] = await Promise.all([
-    listPublishedProperties({ mode, filters, limit: 24 }),
+    listPublishedProperties({ mode, filters, limit: PAGE_SIZE, offset }),
     fetchAreas(),
     getSessionUser(),
   ]);
@@ -93,6 +105,9 @@ export async function SearchList({
       : undefined;
   const activeCount = countActiveFilters(filters);
   const filterSummary = describeFilters(filters, selectedArea);
+
+  const firstShown = total === 0 ? 0 : offset + 1;
+  const lastShown = Math.min(offset + rows.length, total);
 
   return (
     <div>
@@ -112,9 +127,11 @@ export async function SearchList({
       <FilterBar mode={mode} areas={areas} isAuthed={isAuthed} />
 
       <section className="px-12 py-10">
-        <div className="flex items-baseline justify-between mb-6 gap-4 flex-wrap">
+        <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
           <div className="text-[13px] text-bz-muted">
-            {total} {total === 1 ? "property" : "properties"}
+            {total > 0
+              ? `${firstShown}–${lastShown} of ${total.toLocaleString()} properties`
+              : "0 properties"}
             {filterSummary ? (
               <>
                 {" · "}
@@ -122,8 +139,10 @@ export async function SearchList({
               </>
             ) : null}
           </div>
-          <div className="text-[13px] text-bz-muted">
-            Sort: <span className="text-bz-ink">Recently listed</span>
+          <div className="flex items-center gap-3 flex-wrap">
+            <MoreFiltersDrawer />
+            <SortDropdown />
+            <ViewToggle />
           </div>
         </div>
 
@@ -131,15 +150,74 @@ export async function SearchList({
           <div className="py-20 text-center text-bz-muted">
             {activeCount > 0
               ? "No properties match those filters. Try widening the price range or clearing a filter."
-              : "No properties to show yet — Phase 1 search and filters arrive next sprint."}
+              : "No properties to show yet — seed the database to see real listings."}
+          </div>
+        ) : view === "map" ? (
+          <div className="rounded-lg overflow-hidden border border-bz-border h-[640px]">
+            <MapViewClient
+              pins={rows
+                .filter(
+                  (
+                    r,
+                  ): r is typeof r & { geo: { lat: number; lng: number } } =>
+                    r.geo !== null &&
+                    typeof r.geo.lat === "number" &&
+                    typeof r.geo.lng === "number",
+                )
+                .map(
+                  (r): MapPin => ({
+                    id: r.id,
+                    reference: r.reference,
+                    slug: r.slug,
+                    title: r.title,
+                    price_aed: r.price_aed,
+                    geo: r.geo,
+                  }),
+                )}
+              className="w-full h-full"
+            />
+          </div>
+        ) : view === "list" ? (
+          <div className="flex flex-col gap-4">
+            {rows.map((row, index) => {
+              const badge = badgeFor(row);
+              return (
+                <Link
+                  key={row.reference}
+                  href={propertyUrl(row)}
+                  className="block"
+                >
+                  <ListingCard
+                    variant="row"
+                    price={formatPriceAED(row.price_aed)}
+                    title={row.title}
+                    location={row.areas?.name ?? "United Arab Emirates"}
+                    beds={row.beds}
+                    baths={row.baths}
+                    area={row.built_up_ft2 ?? 0}
+                    badge={badge?.label}
+                    badgeKind={badge?.kind}
+                    imgLabel={row.reference}
+                    heroSrc={
+                      row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                    }
+                    heroAlt={row.hero?.alt_text ?? row.title}
+                    priority={index < 2}
+                    propertyId={row.id}
+                    initialSaved={savedSet.has(row.id)}
+                    isAuthed={isAuthed}
+                    verified={Boolean((row.flags as Record<string, unknown> | null)?.verified)}
+                    compareEnabled
+                  />
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_500px] gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-w-0">
               {rows.map((row, index) => {
                 const badge = badgeFor(row);
-                // The first two cards are above the fold on most viewports;
-                // marking their hero images priority improves LCP.
                 const priority = index < 2;
                 return (
                   <Link
@@ -165,6 +243,8 @@ export async function SearchList({
                       propertyId={row.id}
                       initialSaved={savedSet.has(row.id)}
                       isAuthed={isAuthed}
+                      verified={Boolean((row.flags as Record<string, unknown> | null)?.verified)}
+                      compareEnabled
                     />
                   </Link>
                 );
@@ -196,6 +276,13 @@ export async function SearchList({
             </aside>
           </div>
         )}
+
+        <Pagination
+          page={page}
+          total={total}
+          pageSize={PAGE_SIZE}
+          searchParams={searchParams}
+        />
       </section>
     </div>
   );

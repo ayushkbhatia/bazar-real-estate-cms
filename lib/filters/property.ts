@@ -3,13 +3,26 @@ import {
   parseAsInteger,
   parseAsString,
   parseAsStringEnum,
+  parseAsBoolean,
 } from "nuqs/server";
 import { PROPERTY_TYPES } from "@/lib/schemas/property";
+
+export const TENURES = ["freehold", "leasehold"] as const;
+export const FURNISHINGS = ["unfurnished", "semi", "fully"] as const;
+export const SORT_OPTIONS = [
+  "recent",
+  "price_asc",
+  "price_desc",
+  "area_desc",
+] as const;
 
 /**
  * Parsers shared between the server page (via createSearchParamsCache) and
  * the client FilterBar (via useQueryStates). Defining them once keeps the
  * URL ↔ state contract consistent between the two surfaces.
+ *
+ * Sprint 4b: ft²/year-built/tenure/furnishing/amenities/verified/advisor/
+ * sort/page added to lift facet coverage to the design's 15.
  */
 export const filterParsers = {
   q: parseAsString,
@@ -19,9 +32,24 @@ export const filterParsers = {
   price_min: parseAsInteger,
   price_max: parseAsInteger,
   area: parseAsString,
+  ft2_min: parseAsInteger,
+  ft2_max: parseAsInteger,
+  year_min: parseAsInteger,
+  year_max: parseAsInteger,
+  tenure: parseAsStringEnum([...TENURES]),
+  furnishing: parseAsStringEnum([...FURNISHINGS]),
+  amenities: parseAsString, // comma-separated list, parsed below
+  verified: parseAsBoolean,
+  advisor: parseAsString, // staff slug
+  sort: parseAsStringEnum([...SORT_OPTIONS]),
+  page: parseAsInteger,
 } as const;
 
 export const propertyFilterCache = createSearchParamsCache(filterParsers);
+
+export type Tenure = (typeof TENURES)[number];
+export type Furnishing = (typeof FURNISHINGS)[number];
+export type SortOption = (typeof SORT_OPTIONS)[number];
 
 export type PropertyFilters = {
   q: string | null;
@@ -31,6 +59,17 @@ export type PropertyFilters = {
   price_min: number | null;
   price_max: number | null;
   area: string | null;
+  ft2_min: number | null;
+  ft2_max: number | null;
+  year_min: number | null;
+  year_max: number | null;
+  tenure: Tenure | null;
+  furnishing: Furnishing | null;
+  amenities: string[];
+  verified: boolean | null;
+  advisor: string | null;
+  sort: SortOption | null;
+  page: number | null;
 };
 
 const EMPTY: PropertyFilters = {
@@ -41,11 +80,24 @@ const EMPTY: PropertyFilters = {
   price_min: null,
   price_max: null,
   area: null,
+  ft2_min: null,
+  ft2_max: null,
+  year_min: null,
+  year_max: null,
+  tenure: null,
+  furnishing: null,
+  amenities: [],
+  verified: null,
+  advisor: null,
+  sort: null,
+  page: null,
 };
+
+export const PAGE_SIZE = 24;
 
 /** Coerce an unknown record (typically searchParams) to PropertyFilters. */
 export function parseFilters(input: Record<string, unknown>): PropertyFilters {
-  const out: PropertyFilters = { ...EMPTY };
+  const out: PropertyFilters = { ...EMPTY, amenities: [] };
 
   if (typeof input.q === "string") {
     const trimmed = input.q.trim();
@@ -72,14 +124,73 @@ export function parseFilters(input: Record<string, unknown>): PropertyFilters {
     out.area = input.area.trim();
   }
 
+  const ft2min = toInt(input.ft2_min);
+  if (ft2min != null && ft2min >= 0) out.ft2_min = ft2min;
+  const ft2max = toInt(input.ft2_max);
+  if (ft2max != null && ft2max >= 0) out.ft2_max = ft2max;
+
+  const yrmin = toInt(input.year_min);
+  if (yrmin != null && yrmin >= 1900) out.year_min = yrmin;
+  const yrmax = toInt(input.year_max);
+  if (yrmax != null && yrmax >= 1900) out.year_max = yrmax;
+
+  if (
+    typeof input.tenure === "string" &&
+    (TENURES as readonly string[]).includes(input.tenure)
+  ) {
+    out.tenure = input.tenure as Tenure;
+  }
+  if (
+    typeof input.furnishing === "string" &&
+    (FURNISHINGS as readonly string[]).includes(input.furnishing)
+  ) {
+    out.furnishing = input.furnishing as Furnishing;
+  }
+
+  if (typeof input.amenities === "string" && input.amenities.trim() !== "") {
+    out.amenities = input.amenities
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .slice(0, 30);
+  } else if (Array.isArray(input.amenities)) {
+    out.amenities = input.amenities
+      .filter((s): s is string => typeof s === "string" && s.trim() !== "")
+      .slice(0, 30);
+  }
+
+  if (input.verified === true || input.verified === "true") {
+    out.verified = true;
+  }
+
+  if (typeof input.advisor === "string" && input.advisor.trim() !== "") {
+    out.advisor = input.advisor.trim();
+  }
+
+  if (
+    typeof input.sort === "string" &&
+    (SORT_OPTIONS as readonly string[]).includes(input.sort)
+  ) {
+    out.sort = input.sort as SortOption;
+  }
+
+  const pg = toInt(input.page);
+  if (pg != null && pg >= 1) out.page = pg;
+
   return out;
 }
 
-/** How many filters are non-null. */
+/** How many filters are non-null. Pagination + sort don't count as
+ * "active filters" — they're presentation, not narrowing. */
+const NON_COUNTING_KEYS = new Set(["sort", "page"]);
+
 export function countActiveFilters(f: PropertyFilters): number {
   let n = 0;
-  for (const v of Object.values(f)) {
-    if (v !== null && v !== undefined && v !== "") n++;
+  for (const [k, v] of Object.entries(f)) {
+    if (NON_COUNTING_KEYS.has(k)) continue;
+    if (v === null || v === undefined || v === "") continue;
+    if (Array.isArray(v) && v.length === 0) continue;
+    n++;
   }
   return n;
 }

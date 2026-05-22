@@ -1,10 +1,18 @@
 import Image from "next/image";
-import { BedDouble, Bath, Maximize2, Heart } from "lucide-react";
+import { BedDouble, Bath, Maximize2, Heart, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PlaceholderImage } from "./placeholder-image";
 import { SaveButton } from "./save-button";
+import { CompareButton } from "./compare-button";
 
 export type ListingCardVariant = "default" | "editorial" | "row";
+
+/** Sprint 4b: corner diff badges surfaced from saved-search + recently-viewed
+ * diffs. Sprint 9 will populate via real `last_alert_at` deltas. */
+export type ListingCardDiff = {
+  kind: "price-drop" | "just-listed" | "saved";
+  label: string;
+};
 
 export type ListingCardProps = {
   price: string;
@@ -27,6 +35,12 @@ export type ListingCardProps = {
   initialSaved?: boolean;
   /** Whether the current user is signed in (for SaveButton). */
   isAuthed?: boolean;
+  /** Sprint 4b: surfaces a Bazar-Verified badge in the bottom-left of media. */
+  verified?: boolean;
+  /** Sprint 4b: render an "Add to compare" button next to SaveButton. */
+  compareEnabled?: boolean;
+  /** Sprint 4b: top-right corner status pill — price-drop, just-listed, etc. */
+  diff?: ListingCardDiff;
   /** Hint Next/Image to preload this hero — pass true for the first card
    *  on a search results / featured row to improve LCP. */
   priority?: boolean;
@@ -55,6 +69,9 @@ function Media({
   propertyId,
   initialSaved,
   isAuthed,
+  verified,
+  compareEnabled,
+  diff,
 }: {
   imgLabel?: string;
   mediaDark?: boolean;
@@ -67,6 +84,9 @@ function Media({
   propertyId?: string;
   initialSaved?: boolean;
   isAuthed?: boolean;
+  verified?: boolean;
+  compareEnabled?: boolean;
+  diff?: ListingCardDiff;
 }) {
   const aspectClass = cn(
     "w-full",
@@ -77,6 +97,7 @@ function Media({
 
   const overlays = (
     <>
+      {/* Top-left: status badge (Exclusive, Vacant on transfer, etc.) */}
       {badge ? (
         <div className="absolute top-3 left-3 z-10 flex gap-1.5">
           <span
@@ -89,20 +110,60 @@ function Media({
           </span>
         </div>
       ) : null}
-      {propertyId ? (
-        <SaveButton
-          propertyId={propertyId}
-          initialSaved={initialSaved ?? false}
-          isAuthed={isAuthed ?? false}
-        />
-      ) : (
-        <span
-          aria-hidden
-          className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/92 flex items-center justify-center text-bz-ink-2"
-        >
-          <Heart size={16} strokeWidth={1.6} />
-        </span>
-      )}
+
+      {/* Top-right: diff badge above save/compare actions (price drop, etc.) */}
+      {diff ? (
+        <div className="absolute top-3 right-3 z-20">
+          <span
+            className={cn(
+              "inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium",
+              diff.kind === "price-drop"
+                ? "bg-bz-accent text-bz-accent-fg"
+                : diff.kind === "just-listed"
+                  ? "bg-bz-ink text-bz-bg"
+                  : "bg-white/92 text-bz-ink",
+            )}
+          >
+            {diff.label}
+          </span>
+        </div>
+      ) : null}
+
+      {/* Right column: save + compare buttons */}
+      <div
+        className={cn(
+          "absolute right-3 z-10 flex flex-col gap-2",
+          diff ? "top-[48px]" : "top-3",
+        )}
+      >
+        {propertyId ? (
+          <SaveButton
+            propertyId={propertyId}
+            initialSaved={initialSaved ?? false}
+            isAuthed={isAuthed ?? false}
+          />
+        ) : (
+          <span
+            aria-hidden
+            className="w-8 h-8 rounded-full bg-white/92 flex items-center justify-center text-bz-ink-2"
+          >
+            <Heart size={16} strokeWidth={1.6} />
+          </span>
+        )}
+        {compareEnabled && propertyId ? (
+          <CompareButton propertyId={propertyId} />
+        ) : null}
+      </div>
+
+      {/* Bottom-left: Bazar Verified pill */}
+      {verified ? (
+        <div className="absolute bottom-3 left-3 z-10">
+          <span className="inline-flex items-center gap-1 h-[22px] px-2 rounded-full text-[11px] font-medium bg-white/92 text-bz-accent">
+            <ShieldCheck size={11} strokeWidth={2.2} />
+            Bazar Verified
+          </span>
+        </div>
+      ) : null}
     </>
   );
 
@@ -149,6 +210,9 @@ export function ListingCard({
   propertyId,
   initialSaved,
   isAuthed,
+  verified,
+  compareEnabled,
+  diff,
   priority,
   variant = "default",
   className,
@@ -169,6 +233,9 @@ export function ListingCard({
             propertyId={propertyId}
             initialSaved={initialSaved}
             isAuthed={isAuthed}
+            verified={verified}
+            compareEnabled={compareEnabled}
+            diff={diff}
           />
         </div>
         <div className="py-3.5 flex flex-col gap-1.5">
@@ -212,6 +279,9 @@ export function ListingCard({
             propertyId={propertyId}
             initialSaved={initialSaved}
             isAuthed={isAuthed}
+            verified={verified}
+            compareEnabled={compareEnabled}
+            diff={diff}
           />
         </div>
         <div className="flex flex-col gap-2 px-[22px] py-[18px] flex-1">
@@ -258,6 +328,9 @@ export function ListingCard({
         propertyId={propertyId}
         initialSaved={initialSaved}
         isAuthed={isAuthed}
+        verified={verified}
+        compareEnabled={compareEnabled}
+        diff={diff}
       />
       <div className="p-4 flex flex-col gap-2 flex-1">
         <div className="text-[19px] font-medium tracking-tight">{price}</div>
