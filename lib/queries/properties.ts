@@ -369,6 +369,83 @@ export async function countAdminPropertiesByStatus(): Promise<
   return out;
 }
 
+// ─────────────────────────────────────────────────────────────────────
+// Sprint 8 additions — audit-log scope + sold-state mutation.
+// ─────────────────────────────────────────────────────────────────────
+
+export type PropertyAuditEntry = {
+  id: string;
+  actor_id: string | null;
+  actor_kind: Database["public"]["Enums"]["audit_actor_kind"];
+  action: string;
+  before: unknown;
+  after: unknown;
+  at: string;
+};
+
+/** Audit-log rows scoped to a single property — powers the History tab
+ *  on the property editor (Sprint 7c). Ordered newest first. */
+export async function getPropertyAuditLog(
+  propertyId: string,
+  limit = 50,
+): Promise<PropertyAuditEntry[]> {
+  if (!isSupabaseConfigured || !propertyId) return [];
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("audit_log")
+      .select("id, actor_id, actor_kind, action, before, after, at")
+      .eq("target_kind", "property")
+      .eq("target_id", propertyId)
+      .order("at", { ascending: false })
+      .limit(limit);
+    if (error || !data) {
+      if (error) console.error("[getPropertyAuditLog]", error);
+      return [];
+    }
+    return data as PropertyAuditEntry[];
+  } catch {
+    return [];
+  }
+}
+
+/** Mark a property as sold. Sets sold_at; sold-state guard on /p/[slug]
+ *  redirects to /sold/[ref] which returns 410 Gone (Sprint 11).
+ *
+ *  sold_at lands in migration 0020 — until the migration is applied,
+ *  the column won't exist and Postgres will reject the field. The
+ *  status flip to 'off_market' still applies. */
+export async function markPropertySold(
+  propertyId: string,
+  soldAt: Date = new Date(),
+): Promise<boolean> {
+  if (!isSupabaseConfigured || !propertyId) return false;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const payload: Record<string, unknown> = {
+      sold_at: soldAt.toISOString(),
+      status: "off_market",
+    };
+    const { error } = await (
+      supabase.from("properties") as unknown as {
+        update(p: Record<string, unknown>): {
+          eq(col: string, val: string): Promise<{ error: unknown }>;
+        };
+      }
+    )
+      .update(payload)
+      .eq("id", propertyId);
+    if (error) {
+      console.error("[markPropertySold]", error);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error("[markPropertySold]", e);
+    return false;
+  }
+}
+
 // Re-export the pure utilities so existing imports keep working.
 export {
   formatPriceAED,

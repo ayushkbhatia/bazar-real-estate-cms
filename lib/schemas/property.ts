@@ -38,7 +38,15 @@ const isoDateOrEmpty = z
   .nullable()
   .optional();
 
-/** Overview tab. */
+/** Overview tab. Sprint 8 adds bazar_verified + advisor_note +
+ *  featured_on_homepage so the property editor's overview form persists
+ *  the Bazar Verified badge, the Mariam's-voice contextual note, and
+ *  the homepage feature toggle.
+ *
+ *  All three are optional in the schema so existing callsites (pages
+ *  loading `initial` values, the action that constructs update objects)
+ *  compile without changes. Migration 0020 defaults them to
+ *  false/null at the database layer. */
 export const propertyOverviewSchema = z.object({
   title: z.string().min(3, "Title is too short").max(160, "Title is too long"),
   short_description: z
@@ -48,6 +56,13 @@ export const propertyOverviewSchema = z.object({
     .optional(),
   type: z.enum(PROPERTY_TYPES),
   mode: z.enum(PROPERTY_MODES),
+  bazar_verified: z.boolean().optional(),
+  advisor_note: z
+    .string()
+    .max(560, "Keep the advisor note under 560 characters")
+    .nullable()
+    .optional(),
+  featured_on_homepage: z.boolean().optional(),
 });
 
 /** Pricing tab. */
@@ -207,6 +222,7 @@ const NULLABLE_TEXT_FIELDS = [
   "area_id",
   "meta_title",
   "meta_description",
+  "advisor_note",
 ] as const;
 
 const NULLABLE_NUMBER_FIELDS = [
@@ -253,6 +269,16 @@ export function normaliseEditInput(raw: Record<string, unknown>): unknown {
       .filter(Boolean);
   } else if (!Array.isArray(out.amenities)) {
     out.amenities = [];
+  }
+
+  // Sprint 8 — boolean flags: coerce "on"/"true"/checkbox strings to bools.
+  for (const k of ["bazar_verified", "featured_on_homepage"] as const) {
+    const v = out[k];
+    if (typeof v === "string") {
+      out[k] = v === "on" || v === "true" || v === "1";
+    } else if (v === undefined || v === null) {
+      out[k] = false;
+    }
   }
 
   return out;
