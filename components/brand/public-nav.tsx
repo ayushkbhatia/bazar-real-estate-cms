@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Heart } from "lucide-react";
 import { Wordmark } from "./wordmark";
+import { AccountMenu } from "./account-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -51,9 +52,7 @@ export function PublicNav() {
             Saved
           </Link>
         </Button>
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/sign-in">Sign in</Link>
-        </Button>
+        <AccountMenu />
         <Button asChild size="sm">
           <Link href="/services/sell">List a property</Link>
         </Button>
