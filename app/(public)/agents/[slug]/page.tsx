@@ -8,6 +8,11 @@ import { Button } from "@/components/ui/button";
 import { getAgentBySlug, listAgents } from "@/lib/queries/agents";
 import { getSeedAgentBySlug } from "@/lib/seeds/agents";
 import { getSeedAreaGuideBySlug } from "@/lib/seeds/areas";
+import {
+  realEstateAgentJsonLd,
+  breadcrumbListJsonLd,
+} from "@/lib/jsonld";
+import { env } from "@/lib/env";
 
 export async function generateStaticParams() {
   // Pre-render every agent the DB exposes today; runtime requests for
@@ -61,8 +66,34 @@ export default async function AgentProfilePage({
     `Hi ${agent.display_name.split(" ")[0]}, I'd like to talk about a Bazar engagement.`,
   )}`;
 
+  const siteBase = (
+    env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app"
+  ).replace(/\/+$/, "");
+  const agentLd = realEstateAgentJsonLd({
+    slug: agent.slug,
+    display_name: agent.display_name,
+    title: agent.title,
+    bio: agent.bio,
+    brn: agent.brn,
+    photo_url: agent.photo_url,
+    languages: agent.languages,
+  });
+  const breadcrumbsLd = breadcrumbListJsonLd([
+    { name: "Home", url: siteBase },
+    { name: "Our team", url: `${siteBase}/agents` },
+    { name: agent.display_name, url: `${siteBase}/agents/${agent.slug}` },
+  ]);
+
   return (
     <div className="bg-bz-bg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(agentLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsLd) }}
+      />
       {/* Crumb */}
       <div className="px-12 pt-10 max-w-[1280px]">
         <Link

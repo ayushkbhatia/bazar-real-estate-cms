@@ -11,6 +11,8 @@ import {
   getAreaGuide,
   listAreasWithCounts,
 } from "@/lib/queries/areas-guide";
+import { placeJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
+import { env } from "@/lib/env";
 
 export async function generateStaticParams() {
   const entries = await listAreasWithCounts();
@@ -51,8 +53,30 @@ export default async function AreaProfilePage({
     .map((s) => getSeedAreaGuideBySlug(s))
     .filter((a) => a != null);
 
+  const siteBase = (
+    env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app"
+  ).replace(/\/+$/, "");
+  const placeLd = placeJsonLd({
+    slug: area.slug,
+    name: area.name,
+    intro_md: guide.intro_md || area.intro || null,
+  });
+  const breadcrumbsLd = breadcrumbListJsonLd([
+    { name: "Home", url: siteBase },
+    { name: "Areas", url: `${siteBase}/areas` },
+    { name: area.name, url: `${siteBase}/areas/${area.slug}` },
+  ]);
+
   return (
     <div className="bg-bz-bg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(placeLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsLd) }}
+      />
       {/* Crumb */}
       <div className="px-12 pt-10 max-w-[1280px]">
         <Link

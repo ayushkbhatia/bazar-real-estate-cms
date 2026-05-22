@@ -170,3 +170,66 @@ export function organizationJsonLd(): Record<string, unknown> {
     areaServed: { "@type": "Country", name: "United Arab Emirates" },
   };
 }
+
+/** Per-area Place JSON-LD — used on /areas/[slug]. Sprint 11. */
+type AreaForJsonLd = {
+  slug: string;
+  name: string;
+  intro_md: string | null;
+};
+
+export function placeJsonLd(a: AreaForJsonLd): Record<string, unknown> {
+  const url = `${siteUrl()}/areas/${a.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    "@id": url,
+    url,
+    name: a.name,
+    description: a.intro_md ?? a.name,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Abu Dhabi",
+      addressCountry: "AE",
+    },
+  };
+}
+
+/** Per-agent RealEstateAgent JSON-LD — used on /agents/[slug]. Sprint 11. */
+type AgentForJsonLd = {
+  slug: string;
+  display_name: string;
+  title: string | null;
+  bio: string | null;
+  brn: string | null;
+  photo_url: string | null;
+  languages: string[];
+};
+
+export function realEstateAgentJsonLd(
+  a: AgentForJsonLd,
+): Record<string, unknown> {
+  const url = `${siteUrl()}/agents/${a.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "@id": url,
+    url,
+    name: a.display_name,
+    jobTitle: a.title ?? "Advisor",
+    description: a.bio ?? undefined,
+    image: a.photo_url ?? undefined,
+    identifier: a.brn ?? undefined,
+    knowsLanguage: a.languages.length > 0 ? a.languages : undefined,
+    worksFor: {
+      "@type": "Organization",
+      name: "Bazar Real Estate",
+      url: siteUrl(),
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Abu Dhabi",
+      addressCountry: "AE",
+    },
+  };
+}
