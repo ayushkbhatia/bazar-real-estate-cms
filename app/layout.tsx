@@ -7,6 +7,7 @@ import { PostHogProvider } from "@/lib/posthog";
 import { ConsentProvider } from "./_consent/consent-provider";
 import { CookieBanner } from "./_consent/cookie-banner";
 import { VercelAnalyticsGate } from "./_consent/analytics-gate";
+import { organizationJsonLd } from "@/lib/jsonld";
 import "./globals.css";
 
 const geist = Geist({
@@ -53,6 +54,14 @@ export default function RootLayout({
       lang="en"
       className={`${geist.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} h-full`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationJsonLd()),
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <ConsentProvider>
           <NuqsAdapter>

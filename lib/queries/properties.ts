@@ -370,6 +370,46 @@ export async function countAdminPropertiesByStatus(): Promise<
 }
 
 // ─────────────────────────────────────────────────────────────────────
+// Sprint 11 — sold-state existence check.
+// ─────────────────────────────────────────────────────────────────────
+
+export type PropertyExistence = {
+  reference: string;
+  slug: string;
+  status: Status;
+  sold_at: string | null;
+};
+
+/** Look up a property by reference *without* the published-status filter.
+ *  Used by /p/[slug] to detect sold/archived listings and redirect to
+ *  /sold/[ref] (410 Gone) before falling through to notFound(). */
+export async function getPropertyExistenceByReference(
+  reference: string,
+): Promise<PropertyExistence | null> {
+  if (!isSupabaseConfigured || !reference) return null;
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("properties")
+      .select("reference, slug, status")
+      .ilike("reference", reference)
+      .is("deleted_at", null)
+      .maybeSingle();
+    if (!data) return null;
+    return {
+      reference: data.reference,
+      slug: data.slug,
+      status: data.status,
+      // sold_at lands in migration 0020. Until the column exists, treat
+      // a flipped status of 'off_market' as the sold signal.
+      sold_at: null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
 // Sprint 8 additions — audit-log scope + sold-state mutation.
 // ─────────────────────────────────────────────────────────────────────
 

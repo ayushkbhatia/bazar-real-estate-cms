@@ -16,6 +16,7 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import {
   extractReferenceFromSlug,
   formatPriceAED,
+  getPropertyExistenceByReference,
   getPublishedPropertyByReference,
   getSavedPropertyIds,
   getSimilarProperties,
@@ -93,7 +94,21 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   if (!ref) notFound();
 
   const property = await getPublishedPropertyByReference(ref);
-  if (!property) notFound();
+  if (!property) {
+    // Property may exist but be off-market / archived (e.g. sold). Look
+    // up unfiltered and redirect to /sold/[ref] so we return 410 Gone
+    // instead of 404 — preserves backlinks + SERP signals.
+    const existence = await getPropertyExistenceByReference(ref);
+    if (
+      existence &&
+      (existence.status === "off_market" ||
+        existence.status === "archived" ||
+        existence.sold_at !== null)
+    ) {
+      redirect(`/sold/${existence.reference}`);
+    }
+    notFound();
+  }
 
   // Redirect to canonical URL if slug prefix is off
   const canonical = propertyUrl({
