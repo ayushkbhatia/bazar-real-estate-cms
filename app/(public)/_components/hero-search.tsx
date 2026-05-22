@@ -82,6 +82,7 @@ export function HeroSearch({ defaultMode = "buy" }: { defaultMode?: Mode }) {
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
+          aria-label="Property type"
           className="h-10 px-3 rounded bg-white text-bz-ink text-[13px] outline-none border border-transparent focus:border-bz-accent"
         >
           {TYPES.map((t) => (
@@ -93,6 +94,7 @@ export function HeroSearch({ defaultMode = "buy" }: { defaultMode?: Mode }) {
         <select
           value={beds}
           onChange={(e) => setBeds(e.target.value)}
+          aria-label="Bedrooms"
           className="h-10 px-3 rounded bg-white text-bz-ink text-[13px] outline-none border border-transparent focus:border-bz-accent"
         >
           <option value="">Beds</option>
@@ -105,6 +107,7 @@ export function HeroSearch({ defaultMode = "buy" }: { defaultMode?: Mode }) {
         <select
           value={priceMax}
           onChange={(e) => setPriceMax(e.target.value)}
+          aria-label="Maximum price"
           className="h-10 px-3 rounded bg-white text-bz-ink text-[13px] outline-none border border-transparent focus:border-bz-accent"
         >
           <option value="">Max price</option>

@@ -24,7 +24,7 @@ export function ServicesBand() {
               href={`/services/${s.slug}`}
               className="group block"
             >
-              <div className="text-[11.5px] uppercase tracking-wider text-bz-accent">
+              <div className="text-[11.5px] uppercase tracking-wider text-white/85">
                 {`0${i + 1}`}
               </div>
               <div

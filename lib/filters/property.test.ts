@@ -16,6 +16,17 @@ describe("parseFilters", () => {
       price_min: null,
       price_max: null,
       area: null,
+      ft2_min: null,
+      ft2_max: null,
+      year_min: null,
+      year_max: null,
+      tenure: null,
+      furnishing: null,
+      amenities: [],
+      verified: null,
+      advisor: null,
+      sort: null,
+      page: null,
     });
   });
 
@@ -37,6 +48,17 @@ describe("parseFilters", () => {
       price_min: 1_000_000,
       price_max: 5_000_000,
       area: "saadiyat-island",
+      ft2_min: null,
+      ft2_max: null,
+      year_min: null,
+      year_max: null,
+      tenure: null,
+      furnishing: null,
+      amenities: [],
+      verified: null,
+      advisor: null,
+      sort: null,
+      page: null,
     });
   });
 
