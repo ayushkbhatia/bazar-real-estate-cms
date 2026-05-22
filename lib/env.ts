@@ -8,6 +8,10 @@ const serverSchema = z.object({
   RESEND_FROM_ADDRESS: z.string().email().optional(),
   RESEND_REPLY_TO: z.string().email().optional(),
   CRON_SECRET: z.string().min(1).optional(),
+  // Upstash Redis credentials for per-IP rate limiting. Both optional —
+  // when absent, lib/rate-limit no-ops so dev/test still work.
+  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
 });
 
 const clientSchema = z.object({
@@ -47,6 +51,8 @@ const serverEnv =
         RESEND_FROM_ADDRESS: process.env.RESEND_FROM_ADDRESS,
         RESEND_REPLY_TO: process.env.RESEND_REPLY_TO,
         CRON_SECRET: process.env.CRON_SECRET,
+        UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+        UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
       })
     : ({ NODE_ENV: "development" } as z.infer<typeof serverSchema>);
 

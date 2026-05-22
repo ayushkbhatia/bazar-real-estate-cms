@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured } from "@/lib/env";
@@ -11,6 +12,11 @@ import {
 } from "@/lib/schemas/enquiry";
 import { sendEmail } from "@/lib/email";
 import { enquiryReceivedTemplate } from "@/lib/email-templates";
+import {
+  checkRateLimit,
+  extractClientIp,
+  rateLimitMessage,
+} from "@/lib/rate-limit";
 import type { Database } from "@/db/types";
 
 export type CreateEnquiryResult =
@@ -34,6 +40,18 @@ export async function createEnquiry(
       message:
         "Supabase env vars are not set. Configure NEXT_PUBLIC_SUPABASE_URL + ANON in .env.local.",
     };
+
+  // Per-IP submission cap. Covers enquiry / contact / mortgage / property
+  // enquiry forms since they all flow through here.
+  const rl = await checkRateLimit({
+    name: "enquiry",
+    ip: extractClientIp(await headers()),
+    requests: 10,
+    windowSeconds: 60,
+  });
+  if (!rl.ok) {
+    return { status: "error", message: rateLimitMessage(rl.retryAfterSeconds) };
+  }
 
   const parsed = enquirySchema.safeParse(normaliseEnquiryInput(raw));
   if (!parsed.success) {
