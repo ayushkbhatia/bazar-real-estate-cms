@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { SEED_AREA_GUIDES } from "@/lib/seeds/areas";
+import { listAreasWithCounts } from "@/lib/queries/areas-guide";
 
 export const metadata: Metadata = {
   title: "Areas",
@@ -10,7 +11,14 @@ export const metadata: Metadata = {
     "Bazar's guides to Abu Dhabi's residential islands and central districts — Saadiyat, Yas, Reem, Al Raha, Corniche.",
 };
 
-export default function AreasIndexPage() {
+export default async function AreasIndexPage() {
+  // Real listing counts (when DB data exists) overlay the seed area
+  // guides. The seed remains the source of truth for editorial content
+  // (hero_label, intro, stats) until Sprint 12 wires DLD ingestion.
+  const indexEntries = await listAreasWithCounts();
+  const countBySlug = new Map(
+    indexEntries.map((e) => [e.slug, e.listing_count]),
+  );
   return (
     <div className="bg-bz-bg">
       <section className="px-12 pt-20 pb-14 max-w-[1200px]">
@@ -60,6 +68,14 @@ export default function AreasIndexPage() {
                       {a.stats.yoy_change_pct}%
                     </span>
                   </span>
+                  {countBySlug.has(a.slug) ? (
+                    <span className="text-bz-muted">
+                      Listings ·{" "}
+                      <span className="mono text-bz-ink">
+                        {countBySlug.get(a.slug)}
+                      </span>
+                    </span>
+                  ) : null}
                 </div>
               </div>
             </Link>

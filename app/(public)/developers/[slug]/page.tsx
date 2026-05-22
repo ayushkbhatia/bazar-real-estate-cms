@@ -5,13 +5,16 @@ import { ArrowLeft } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
+import { getSeedDeveloperBySlug } from "@/lib/seeds/developers";
 import {
-  SEED_DEVELOPERS,
-  getSeedDeveloperBySlug,
-} from "@/lib/seeds/developers";
+  getDeveloperBySlug,
+  listDeveloperDevelopments,
+  listDevelopers,
+} from "@/lib/queries/developers-extras";
 
 export async function generateStaticParams() {
-  return SEED_DEVELOPERS.map((d) => ({ slug: d.slug }));
+  const developers = await listDevelopers();
+  return developers.map((d) => ({ slug: d.slug }));
 }
 
 export async function generateMetadata({
@@ -20,11 +23,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const dev = getSeedDeveloperBySlug(slug);
+  const dev = await getDeveloperBySlug(slug);
   if (!dev) return { title: "Developer not found" };
   return {
     title: dev.name,
-    description: dev.blurb,
+    description: dev.description ?? undefined,
   };
 }
 
@@ -34,8 +37,14 @@ export default async function DeveloperProfilePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const dev = getSeedDeveloperBySlug(slug);
+  const dev = await getDeveloperBySlug(slug);
   if (!dev) notFound();
+  // Seed retains active_developments + total_handed_over_units +
+  // flagship_developments until the DB grows those fields.
+  const seed = getSeedDeveloperBySlug(slug);
+  const developments = dev.id.startsWith("seed:")
+    ? []
+    : await listDeveloperDevelopments(dev.id);
 
   return (
     <div className="bg-bz-bg">
@@ -58,16 +67,20 @@ export default async function DeveloperProfilePage({
             className="w-[120px] h-[120px] rounded-md"
           />
           <div>
-            <Eyebrow>Developer · Est. {dev.founded_year}</Eyebrow>
+            <Eyebrow>
+              Developer{dev.founded_year ? ` · Est. ${dev.founded_year}` : ""}
+            </Eyebrow>
             <h1
               className="serif text-[64px] mt-3 font-normal leading-[1.02]"
               style={{ letterSpacing: "-0.025em" }}
             >
               {dev.name}
             </h1>
-            <p className="mt-6 text-[17px] text-bz-ink-2 leading-relaxed max-w-[64ch]">
-              {dev.blurb}
-            </p>
+            {dev.description ? (
+              <p className="mt-6 text-[17px] text-bz-ink-2 leading-relaxed max-w-[64ch]">
+                {dev.description}
+              </p>
+            ) : null}
           </div>
         </div>
       </section>
@@ -84,7 +97,7 @@ export default async function DeveloperProfilePage({
                 className="serif text-[36px] mt-1 leading-none"
                 style={{ letterSpacing: "-0.018em" }}
               >
-                {dev.founded_year}
+                {dev.founded_year ?? "—"}
               </div>
             </div>
             <div>
@@ -92,7 +105,7 @@ export default async function DeveloperProfilePage({
                 HQ
               </div>
               <div className="serif text-[20px] mt-2 leading-tight">
-                {dev.headquarters}
+                {dev.headquarters ?? "—"}
               </div>
             </div>
             <div>
@@ -103,7 +116,7 @@ export default async function DeveloperProfilePage({
                 className="serif text-[36px] mt-1 leading-none"
                 style={{ letterSpacing: "-0.018em" }}
               >
-                {dev.active_developments}
+                {seed?.active_developments ?? developments.length}
               </div>
             </div>
             <div>
@@ -114,7 +127,7 @@ export default async function DeveloperProfilePage({
                 className="serif text-[36px] mt-1 leading-none"
                 style={{ letterSpacing: "-0.018em" }}
               >
-                {dev.total_handed_over_units.toLocaleString()}
+                {seed?.total_handed_over_units.toLocaleString() ?? "—"}
               </div>
             </div>
           </div>
@@ -125,7 +138,7 @@ export default async function DeveloperProfilePage({
       <section className="px-12 py-16 max-w-[1200px]">
         <Eyebrow>About</Eyebrow>
         <p className="mt-4 text-[16px] text-bz-ink leading-relaxed max-w-[64ch]">
-          {dev.bio}
+          {dev.bio ?? dev.description ?? ""}
         </p>
       </section>
 
@@ -136,7 +149,7 @@ export default async function DeveloperProfilePage({
             <div>
               <Eyebrow>Flagship developments</Eyebrow>
               <ul className="mt-5 flex flex-col gap-3">
-                {dev.flagship_developments.map((d) => (
+                {(seed?.flagship_developments ?? []).map((d) => (
                   <li
                     key={d}
                     className="serif text-[20px] text-bz-ink leading-tight"
@@ -153,10 +166,11 @@ export default async function DeveloperProfilePage({
                 <ul className="mt-5 flex flex-col gap-3">
                   {dev.awards.map((a) => (
                     <li
-                      key={a}
+                      key={`${a.name}-${a.year}`}
                       className="text-[14px] text-bz-ink-2 leading-relaxed"
                     >
-                      · {a}
+                      · {a.name}
+                      {a.year ? ` (${a.year})` : ""}
                     </li>
                   ))}
                 </ul>
@@ -170,7 +184,7 @@ export default async function DeveloperProfilePage({
         </div>
       </section>
 
-      {/* Off-plan teaser */}
+      {/* Current developments — wired via listDeveloperDevelopments() */}
       <section className="px-12 py-16 max-w-[1280px]">
         <Eyebrow>Current developments</Eyebrow>
         <div className="mt-2 flex items-end justify-between gap-8 flex-wrap">
@@ -184,9 +198,43 @@ export default async function DeveloperProfilePage({
             <Link href="/developments">View off-plan index</Link>
           </Button>
         </div>
-        <div className="mt-8 py-12 text-center text-[14px] text-bz-muted border border-dashed border-bz-border rounded-md">
-          Developer → development linking lands in Sprint 9.
-        </div>
+        {developments.length === 0 ? (
+          <div className="mt-8 py-12 text-center text-[14px] text-bz-muted border border-dashed border-bz-border rounded-md">
+            No active developments published yet.
+          </div>
+        ) : (
+          <div className="mt-8 grid grid-cols-3 gap-6">
+            {developments.map((d) => (
+              <Link
+                key={d.id}
+                href={`/developments/${d.slug}`}
+                className="group block rounded-md border border-bz-border bg-bz-surface p-6 hover:border-bz-border-strong transition-colors"
+              >
+                <h3
+                  className="serif text-[22px] leading-tight group-hover:text-bz-accent transition-colors"
+                  style={{ letterSpacing: "-0.012em" }}
+                >
+                  {d.name}
+                </h3>
+                {d.area ? (
+                  <div className="mt-2 text-[12.5px] text-bz-muted">
+                    {d.area.name}
+                  </div>
+                ) : null}
+                {d.starting_price ? (
+                  <div className="mt-3 mono text-[12px] text-bz-ink">
+                    From AED {d.starting_price.toLocaleString()}
+                  </div>
+                ) : null}
+                {d.handover_date ? (
+                  <div className="mt-1 text-[11px] text-bz-muted">
+                    Handover · {d.handover_date}
+                  </div>
+                ) : null}
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );

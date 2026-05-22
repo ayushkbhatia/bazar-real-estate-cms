@@ -4,6 +4,10 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { env } from "@/lib/env";
+import {
+  ensureReferralCode,
+  listReferrals,
+} from "@/lib/queries/referrals";
 import { CopyButton } from "./_copy-button";
 
 export const metadata: Metadata = {
@@ -13,9 +17,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * Until Sprint 8 lands the `referrals` table, derive a deterministic code
- * from the user's auth UID. Sprint 9 will swap to a real `referrals` row
- * lookup with status + payout columns.
+ * Deterministic fallback code derived from the auth UID. Used when the
+ * referrals table is not yet provisioned and `ensureReferralCode()`
+ * cannot mint a stable code. Migration 0015 introduces the real table.
  */
 function deriveCodeFromUserId(userId: string): string {
   const last8 = userId.replace(/-/g, "").slice(-8).toUpperCase();
@@ -30,9 +34,21 @@ export default async function AccountReferralsPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/sign-in");
 
-  const code = deriveCodeFromUserId(user.id);
-  const baseUrl = env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app";
+  // Try the real referrals table; fall back to the deterministic code
+  // when the DB layer isn't ready (table missing, empty, or insert
+  // forbidden). Both code paths surface the same shape to the UI.
+  const issuedCode = await ensureReferralCode(user.id);
+  const code = issuedCode || deriveCodeFromUserId(user.id);
+  const referrals = await listReferrals(user.id);
+  const baseUrl =
+    env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app";
   const inviteUrl = `${baseUrl}/?ref=${encodeURIComponent(code)}`;
+  const totalPaid = referrals
+    .filter((r) => r.status === "paid")
+    .reduce((sum, r) => sum + (r.payout_amount_aed ?? 0), 0);
+  const briefsCount = referrals.filter(
+    (r) => r.status === "signed_up" || r.status === "first_deal",
+  ).length;
 
   return (
     <div className="max-w-[860px]">
@@ -66,13 +82,13 @@ export default async function AccountReferralsPage() {
       <section className="mt-12 grid grid-cols-3 gap-6">
         <div className="rounded-md border border-bz-border bg-bz-surface p-6">
           <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-            Visits
+            Referrals
           </div>
           <div
             className="serif text-[36px] mt-1 leading-none"
             style={{ letterSpacing: "-0.018em" }}
           >
-            0
+            {referrals.length}
           </div>
         </div>
         <div className="rounded-md border border-bz-border bg-bz-surface p-6">
@@ -83,18 +99,18 @@ export default async function AccountReferralsPage() {
             className="serif text-[36px] mt-1 leading-none"
             style={{ letterSpacing: "-0.018em" }}
           >
-            0
+            {briefsCount}
           </div>
         </div>
         <div className="rounded-md border border-bz-border bg-bz-surface p-6">
           <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-            Closed (AED)
+            Paid (AED)
           </div>
           <div
             className="serif text-[36px] mt-1 leading-none"
             style={{ letterSpacing: "-0.018em" }}
           >
-            —
+            {totalPaid > 0 ? totalPaid.toLocaleString() : "—"}
           </div>
         </div>
       </section>
@@ -102,16 +118,52 @@ export default async function AccountReferralsPage() {
       {/* Activity */}
       <section className="mt-12">
         <Eyebrow>Activity</Eyebrow>
-        <div className="mt-4 rounded-md border border-dashed border-bz-border bg-bz-bg p-8 text-center">
-          <p className="text-[14px] text-bz-ink-2">
-            Referral tracking lands in Sprint 8 alongside the{" "}
-            <span className="mono text-bz-ink">referrals</span> table.
-          </p>
-          <p className="mt-2 text-[12.5px] text-bz-muted">
-            Until then, share your link — we&apos;ll match new sign-ups against
-            your code when the table goes live.
-          </p>
-        </div>
+        {referrals.length === 0 ? (
+          <div className="mt-4 rounded-md border border-dashed border-bz-border bg-bz-bg p-8 text-center">
+            <p className="text-[14px] text-bz-ink-2">
+              No referrals yet. Share your link to start.
+            </p>
+            <p className="mt-2 text-[12.5px] text-bz-muted">
+              We&apos;ll match new sign-ups against your code as they arrive.
+            </p>
+          </div>
+        ) : (
+          <ul className="mt-4 flex flex-col divide-y divide-bz-border bg-bz-surface border border-bz-border rounded-md">
+            {referrals.map((r) => (
+              <li key={r.id} className="p-4 flex items-center gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="text-[14px] text-bz-ink truncate">
+                    {r.referee_name ?? "Pending sign-up"}
+                  </div>
+                  <div className="mt-1 text-[11.5px] mono text-bz-muted">
+                    {r.code} ·{" "}
+                    {new Date(r.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+                <div className="text-right whitespace-nowrap">
+                  <div
+                    className={`text-[11px] mono px-2 py-0.5 rounded inline-block ${
+                      r.status === "paid"
+                        ? "bg-bz-accent/15 text-bz-accent"
+                        : r.status === "first_deal"
+                          ? "bg-bz-accent/10 text-bz-accent"
+                          : r.status === "signed_up"
+                            ? "bg-bz-surface-2 text-bz-ink-2"
+                            : "bg-bz-surface-2 text-bz-muted"
+                    }`}
+                  >
+                    {r.status.replace("_", " ")}
+                  </div>
+                  {r.payout_amount_aed > 0 ? (
+                    <div className="mt-1 text-[11px] mono text-bz-muted">
+                      AED {r.payout_amount_aed.toLocaleString()}
+                    </div>
+                  ) : null}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       {/* Terms */}

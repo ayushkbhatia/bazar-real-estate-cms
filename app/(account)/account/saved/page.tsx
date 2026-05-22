@@ -10,6 +10,8 @@ import {
   listPropertiesByIds,
   propertyUrl,
 } from "@/lib/queries/properties";
+import { listRecentlyViewed } from "@/lib/queries/recently-viewed";
+import { listTourRequests } from "@/lib/queries/tour-requests";
 import { mediaPublicUrl } from "@/lib/media";
 import { describeFilters, parseFilters } from "@/lib/filters/property";
 import { DeleteSavedSearchButton } from "./_delete-button";
@@ -67,17 +69,28 @@ function searchHref(s: SavedSearchRow): string {
 
 export default async function SavedPage() {
   const ids = await fetchSavedPropertyIds();
-  const [savedProps, savedSearches] = await Promise.all([
-    listPropertiesByIds(ids),
-    fetchSavedSearches(),
-  ]);
+  // Resolve current user id for recently-viewed / tour-requests reads.
+  let userId: string | null = null;
+  if (isSupabaseConfigured) {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    userId = user?.id ?? null;
+  }
+  const [savedProps, savedSearches, recentlyViewed, tourRequests] =
+    await Promise.all([
+      listPropertiesByIds(ids),
+      fetchSavedSearches(),
+      userId ? listRecentlyViewed(userId, 20) : Promise.resolve([]),
+      userId ? listTourRequests(userId) : Promise.resolve([]),
+    ]);
 
-  // Sprint 6: counts shown in tab badges. Recent + Tours land in Sprint 8/9.
   const counts: Record<SavedTab, number> = {
     properties: savedProps.length,
     searches: savedSearches.length,
-    recent: 0,
-    tours: 0,
+    recent: recentlyViewed.length,
+    tours: tourRequests.length,
   };
 
   const propertiesPanel =
@@ -158,31 +171,79 @@ export default async function SavedPage() {
       </ul>
     );
 
-  const recentPanel = (
-    <div className="bg-bz-surface border border-dashed border-bz-border rounded-lg p-12 text-center max-w-[60ch] mx-auto">
-      <Eyebrow className="text-bz-muted">Recently viewed</Eyebrow>
-      <p className="mt-3 text-[14px] text-bz-ink-2 leading-relaxed">
-        We&apos;ll surface the last 20 listings you opened here once the
-        recently-viewed table lands in Sprint 8.
-      </p>
-      <Button asChild className="mt-6">
-        <Link href="/buy">Browse listings</Link>
-      </Button>
-    </div>
-  );
+  const recentPanel =
+    recentlyViewed.length === 0 ? (
+      <div className="bg-bz-surface border border-dashed border-bz-border rounded-lg p-12 text-center max-w-[60ch] mx-auto">
+        <Eyebrow className="text-bz-muted">Recently viewed</Eyebrow>
+        <p className="mt-3 text-[14px] text-bz-ink-2 leading-relaxed">
+          Listings you open will land here.
+        </p>
+        <Button asChild className="mt-6">
+          <Link href="/buy">Browse listings</Link>
+        </Button>
+      </div>
+    ) : (
+      <ul className="flex flex-col divide-y divide-bz-border bg-bz-surface border border-bz-border rounded-lg">
+        {recentlyViewed.map((r) => (
+          <li key={r.property_id} className="p-4 flex items-center gap-4">
+            <div className="flex-1 min-w-0">
+              <Link
+                href={`/p/${r.slug}`}
+                className="text-[14px] text-bz-ink hover:text-bz-accent transition-colors truncate block"
+              >
+                {r.title}
+              </Link>
+              <div className="mt-1 text-[11.5px] mono text-bz-muted">
+                {r.reference} · AED {Number(r.price_aed).toLocaleString()}
+              </div>
+            </div>
+            <div className="text-[11px] text-bz-muted whitespace-nowrap">
+              {new Date(r.viewed_at).toLocaleDateString()}
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
 
-  const toursPanel = (
-    <div className="bg-bz-surface border border-dashed border-bz-border rounded-lg p-12 text-center max-w-[60ch] mx-auto">
-      <Eyebrow className="text-bz-muted">Tour requests</Eyebrow>
-      <p className="mt-3 text-[14px] text-bz-ink-2 leading-relaxed">
-        Viewing requests you submit from any listing land here. The
-        tour_requests table arrives in Sprint 8.
-      </p>
-      <Button asChild className="mt-6">
-        <Link href="/account/viewings">View scheduled viewings</Link>
-      </Button>
-    </div>
-  );
+  const toursPanel =
+    tourRequests.length === 0 ? (
+      <div className="bg-bz-surface border border-dashed border-bz-border rounded-lg p-12 text-center max-w-[60ch] mx-auto">
+        <Eyebrow className="text-bz-muted">Tour requests</Eyebrow>
+        <p className="mt-3 text-[14px] text-bz-ink-2 leading-relaxed">
+          Viewing requests you submit from any listing land here.
+        </p>
+        <Button asChild className="mt-6">
+          <Link href="/account/viewings">View scheduled viewings</Link>
+        </Button>
+      </div>
+    ) : (
+      <ul className="flex flex-col divide-y divide-bz-border bg-bz-surface border border-bz-border rounded-lg">
+        {tourRequests.map((t) => (
+          <li key={t.id} className="p-4 flex items-center gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="text-[14px] text-bz-ink truncate">
+                {t.property_title ?? t.property_reference ?? "Property"}
+              </div>
+              <div className="mt-1 text-[11.5px] mono text-bz-muted">
+                {t.preferred_window ?? "Window TBD"}
+                {t.message ? ` · ${t.message}` : ""}
+              </div>
+            </div>
+            <span
+              className={`text-[11px] mono px-2 py-0.5 rounded ${
+                t.status === "scheduled"
+                  ? "bg-bz-accent/15 text-bz-accent"
+                  : t.status === "completed"
+                    ? "bg-bz-surface-2 text-bz-muted"
+                    : "bg-bz-surface-2 text-bz-ink-2"
+              }`}
+            >
+              {t.status}
+            </span>
+          </li>
+        ))}
+      </ul>
+    );
 
   return (
     <div className="flex flex-col gap-10">
