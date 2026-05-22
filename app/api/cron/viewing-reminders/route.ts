@@ -16,16 +16,14 @@ export const dynamic = "force-dynamic";
  * key off `notifications.payload.viewing_id`.
  */
 export async function GET(req: NextRequest) {
-  if (!env.CRON_SECRET) {
-    return new Response(
-      JSON.stringify({ ok: false, reason: "CRON_SECRET not configured" }),
-      {
-        status: 503,
-        headers: { "content-type": "application/json" },
-      },
-    );
-  }
   if (!isAuthorized(req)) {
+    if (!env.CRON_SECRET) {
+      // Fail closed: anonymous callers see 401, not 503, so we don't leak
+      // server-side configuration state. Ops sees the misconfig here.
+      console.error(
+        "[cron/viewing-reminders] CRON_SECRET not configured — rejecting all requests",
+      );
+    }
     return new Response("Unauthorized", { status: 401 });
   }
   const admin = createAdminClient();
@@ -114,6 +112,9 @@ function isAuthorized(req: NextRequest): boolean {
   // Bearer CRON_SECRET only. The `x-vercel-cron` header is set by
   // Vercel's cron runner but is forwarded as-is from the caller, so
   // it's trivially spoofable from outside Vercel — never trust it.
+  // If the secret isn't configured we treat every caller as unauthorised
+  // (returning 401 above) so a misconfigured server fails closed.
+  if (!env.CRON_SECRET) return false;
   const auth = req.headers.get("authorization") ?? "";
   return auth === `Bearer ${env.CRON_SECRET}`;
 }
