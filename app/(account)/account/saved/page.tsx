@@ -13,6 +13,8 @@ import {
 import { mediaPublicUrl } from "@/lib/media";
 import { describeFilters, parseFilters } from "@/lib/filters/property";
 import { DeleteSavedSearchButton } from "./_delete-button";
+import { FrequencyPicker } from "../alerts/_frequency-picker";
+import { SavedTabs, type SavedTab } from "./_components/tabs";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +53,14 @@ function searchHref(s: SavedSearchRow): string {
   for (const [k, v] of Object.entries(s.query ?? {})) {
     if (v != null && v !== "") params.set(k, String(v));
   }
-  const base = s.mode === "rent" ? "/rent" : "/buy";
+  const base =
+    s.mode === "rent"
+      ? "/rent"
+      : s.mode === "off_plan"
+        ? "/off-plan"
+        : s.mode === "commercial"
+          ? "/commercial"
+          : "/buy";
   const qs = params.toString();
   return qs ? `${base}?${qs}` : base;
 }
@@ -63,8 +72,120 @@ export default async function SavedPage() {
     fetchSavedSearches(),
   ]);
 
+  // Sprint 6: counts shown in tab badges. Recent + Tours land in Sprint 8/9.
+  const counts: Record<SavedTab, number> = {
+    properties: savedProps.length,
+    searches: savedSearches.length,
+    recent: 0,
+    tours: 0,
+  };
+
+  const propertiesPanel =
+    savedProps.length === 0 ? (
+      <div className="bg-bz-surface border border-bz-border rounded-lg p-10 text-center text-bz-muted">
+        Nothing saved yet.{" "}
+        <Link
+          href="/buy"
+          className="underline text-bz-ink-2 hover:text-bz-ink"
+        >
+          Browse the marketplace
+        </Link>
+        .
+      </div>
+    ) : (
+      <div className="grid grid-cols-3 gap-6">
+        {savedProps.map((row) => (
+          <Link key={row.reference} href={propertyUrl(row)} className="block">
+            <ListingCard
+              price={formatPriceAED(row.price_aed)}
+              title={row.title}
+              location={row.areas?.name ?? "United Arab Emirates"}
+              beds={row.beds}
+              baths={row.baths}
+              area={row.built_up_ft2 ?? 0}
+              imgLabel={row.reference}
+              heroSrc={row.hero ? mediaPublicUrl(row.hero.storage_key) : null}
+              heroAlt={row.hero?.alt_text ?? row.title}
+              propertyId={row.id}
+              initialSaved
+              isAuthed
+              compareEnabled
+            />
+          </Link>
+        ))}
+      </div>
+    );
+
+  const searchesPanel =
+    savedSearches.length === 0 ? (
+      <div className="bg-bz-surface border border-bz-border rounded-lg p-10 text-center text-bz-muted">
+        Save a search from{" "}
+        <Link href="/buy" className="underline text-bz-ink-2">
+          /buy
+        </Link>{" "}
+        or{" "}
+        <Link href="/rent" className="underline text-bz-ink-2">
+          /rent
+        </Link>{" "}
+        to track new matches automatically.
+      </div>
+    ) : (
+      <ul className="flex flex-col gap-3">
+        {savedSearches.map((s) => {
+          const parsed = parseFilters(s.query ?? {});
+          const summary =
+            describeFilters(parsed) ||
+            (s.mode === "rent" ? "All rentals" : "All for-sale listings");
+          return (
+            <li
+              key={s.id}
+              className="flex items-center gap-4 bg-bz-surface border border-bz-border rounded-lg p-4"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="text-[14px] font-medium truncate">{s.name}</div>
+                <div className="text-[12px] text-bz-muted mt-1 truncate">
+                  {summary}
+                </div>
+              </div>
+              <FrequencyPicker id={s.id} initial={s.alert_frequency} />
+              <Button asChild variant="outline" size="sm">
+                <Link href={searchHref(s)}>Run</Link>
+              </Button>
+              <DeleteSavedSearchButton id={s.id} />
+            </li>
+          );
+        })}
+      </ul>
+    );
+
+  const recentPanel = (
+    <div className="bg-bz-surface border border-dashed border-bz-border rounded-lg p-12 text-center max-w-[60ch] mx-auto">
+      <Eyebrow className="text-bz-muted">Recently viewed</Eyebrow>
+      <p className="mt-3 text-[14px] text-bz-ink-2 leading-relaxed">
+        We&apos;ll surface the last 20 listings you opened here once the
+        recently-viewed table lands in Sprint 8.
+      </p>
+      <Button asChild className="mt-6">
+        <Link href="/buy">Browse listings</Link>
+      </Button>
+    </div>
+  );
+
+  const toursPanel = (
+    <div className="bg-bz-surface border border-dashed border-bz-border rounded-lg p-12 text-center max-w-[60ch] mx-auto">
+      <Eyebrow className="text-bz-muted">Tour requests</Eyebrow>
+      <p className="mt-3 text-[14px] text-bz-ink-2 leading-relaxed">
+        Viewing requests you submit from any listing land here. The
+        tour_requests table arrives in Sprint 8.
+      </p>
+      <Button asChild className="mt-6">
+        <Link href="/account/viewings">View scheduled viewings</Link>
+      </Button>
+    </div>
+  );
+
   return (
-    <div className="flex flex-col gap-14">
+    <div className="flex flex-col gap-10">
       <header>
         <Eyebrow>Saved</Eyebrow>
         <h1
@@ -79,116 +200,15 @@ export default async function SavedPage() {
         </p>
       </header>
 
-      <section>
-        <div className="flex items-baseline justify-between mb-6">
-          <h2
-            className="serif text-[24px] font-normal"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            Properties
-            <span className="text-bz-muted ml-2 text-[14px]">
-              {savedProps.length}
-            </span>
-          </h2>
-        </div>
-        {savedProps.length === 0 ? (
-          <div className="bg-bz-surface border border-bz-border rounded-lg p-10 text-center text-bz-muted">
-            Nothing saved yet.{" "}
-            <Link
-              href="/buy"
-              className="underline text-bz-ink-2 hover:text-bz-ink"
-            >
-              Browse the marketplace
-            </Link>
-            .
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 gap-6">
-            {savedProps.map((row) => (
-              <Link
-                key={row.reference}
-                href={propertyUrl(row)}
-                className="block"
-              >
-                <ListingCard
-                  price={formatPriceAED(row.price_aed)}
-                  title={row.title}
-                  location={row.areas?.name ?? "United Arab Emirates"}
-                  beds={row.beds}
-                  baths={row.baths}
-                  area={row.built_up_ft2 ?? 0}
-                  imgLabel={row.reference}
-                  heroSrc={
-                    row.hero ? mediaPublicUrl(row.hero.storage_key) : null
-                  }
-                  heroAlt={row.hero?.alt_text ?? row.title}
-                  propertyId={row.id}
-                  initialSaved
-                  isAuthed
-                />
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section>
-        <div className="flex items-baseline justify-between mb-6">
-          <h2
-            className="serif text-[24px] font-normal"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            Searches
-            <span className="text-bz-muted ml-2 text-[14px]">
-              {savedSearches.length}
-            </span>
-          </h2>
-        </div>
-        {savedSearches.length === 0 ? (
-          <div className="bg-bz-surface border border-bz-border rounded-lg p-10 text-center text-bz-muted">
-            Save a search from{" "}
-            <Link href="/buy" className="underline text-bz-ink-2">
-              /buy
-            </Link>{" "}
-            or{" "}
-            <Link href="/rent" className="underline text-bz-ink-2">
-              /rent
-            </Link>{" "}
-            to track new matches automatically.
-          </div>
-        ) : (
-          <ul className="flex flex-col gap-3">
-            {savedSearches.map((s) => {
-              const parsed = parseFilters(s.query ?? {});
-              const summary =
-                describeFilters(parsed) ||
-                (s.mode === "rent" ? "All rentals" : "All for-sale listings");
-              return (
-                <li
-                  key={s.id}
-                  className="flex items-center gap-4 bg-bz-surface border border-bz-border rounded-lg p-4"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[14px] font-medium truncate">
-                      {s.name}
-                    </div>
-                    <div className="text-[12px] text-bz-muted mt-1 truncate">
-                      {summary} · alerts{" "}
-                      <span className="text-bz-ink-2">
-                        {s.alert_frequency}
-                      </span>
-                    </div>
-                  </div>
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={searchHref(s)}>Run search</Link>
-                  </Button>
-                  <DeleteSavedSearchButton id={s.id} />
-                </li>
-              );
-            })}
-          </ul>
-        )}
-      </section>
+      <SavedTabs
+        counts={counts}
+        panels={{
+          properties: propertiesPanel,
+          searches: searchesPanel,
+          recent: recentPanel,
+          tours: toursPanel,
+        }}
+      />
     </div>
   );
 }
