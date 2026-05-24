@@ -31,6 +31,36 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [megamenu] Media library picker for featured tiles.
+  `megamenu_featured_tiles.media_asset_id` is in the schema (FK to
+  `media_assets`) but the admin editor at `app/(admin)/admin/navigation/
+  [slug]/_editor.tsx` doesn't render a picker yet — tiles fall back to the
+  `bz-img` / `bz-img-dark` diagonal placeholder. When a tile picks an image
+  asset, `components/brand/megamenu-tile.tsx` also needs an `image` variant
+  branch that resolves the storage_key to a public URL.
+
+- [megamenu] Entity picker for items (auto-fill label + href from target).
+  `megamenu_items.target_kind` + `target_id` are nullable hints today. The
+  editor lets you pick `target_kind` from a dropdown but `target_id` stays
+  empty — you have to type `label` + `href` manually. Wire in a cascading
+  picker: choose kind → search/list entities (areas, developers, pages,
+  developments, articles) → on select, prefill label & href with overrides
+  still allowed. Surfaced as v2 in the megamenu plan.
+
+- [megamenu] Surface `/admin/navigation` link in the CMS sidebar.
+  Blocked by the shared-files rule on `components/brand/cms-shell.tsx`.
+  Add it to the "Admin" group with a `Navigation` (or `Menu`) lucide icon
+  once parallel-work pressure is gone. Until then, the route is reachable
+  by typing the URL or via "Site settings → Megamenu" (once the link is
+  added on `app/(admin)/admin/settings/page.tsx`).
+
+- [megamenu] PostHog event for megamenu interactions.
+  Capture `megamenu_tab_opened` (tab slug, source: hover|click|keyboard)
+  and `megamenu_link_clicked` (tab slug, item label, href) in
+  `components/brand/public-mega-nav.tsx` to learn which panels and links
+  get used. Use the existing `posthog.capture` pattern from
+  `components/brand/listing-card.tsx`.
+
 - [i8] Regenerate `db/types.ts` after `0014_bulk_ops.sql` applies in prod.
   Server code in `lib/queries/bulk-operations.ts` + the action wrappers in
   `app/(admin)/admin/properties/_bulk-actions.ts` currently cast through
