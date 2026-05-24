@@ -6,7 +6,19 @@ A luxury real-estate marketplace **and** full operations CMS for [bazar.ae](http
 
 - **[docs/PROJECT_UNDERSTANDING.md](docs/PROJECT_UNDERSTANDING.md)** — what we're building, who Bazar is, IA, data model, compliance, roadmap. Required reading for any new contributor (human or AI).
 - **[AGENTS.md](AGENTS.md)** — Next.js 16 has breaking changes from earlier versions; consult `node_modules/next/dist/docs/` when in doubt.
+- **[docs/decisions/](docs/decisions/)** — Architecture Decision Records. Read these before assuming the spec is current; we deliberately diverged from the original brief in four places (FTS+Meilisearch, MapLibre+Mapbox, Vercel cron, Postgres+Mailchimp).
 - **Design handoff** (not in repo): `/Users/ayushkbhatia/Downloads/design_handoff_bazar_website_cms/` — 13 docs + 15 JSX screen mockups + tokens. The source of truth for screens, copy, and entity shapes.
+
+## Deviations from the original spec
+
+Four choices in the stack diverge from the original brief. Don't try to "fix" them back to the spec without reading the ADR first — most are two-layer architectures where the spec's choice was added later as a progressive enhancement, not replaced.
+
+| Spec said | We use | Why | ADR |
+|---|---|---|---|
+| Meilisearch | Postgres FTS baseline + Meilisearch when configured (Sprint 12) | Local/preview run on FTS; prod with Meilisearch creds gets typo tolerance. ID-only index contract keeps RLS as the boundary. | [ADR-0001](docs/decisions/ADR-0001-postgres-fts-with-meilisearch-fallback.md) |
+| Mapbox GL JS | MapLibre GL for tiles + Mapbox APIs for geocoding/isochrones (Sprint 12) | Avoid metered map loads on preview/e2e/lhci; pay only for the API calls that need Mapbox quality. | [ADR-0002](docs/decisions/ADR-0002-maplibre-tiles-with-mapbox-apis.md) |
+| Inngest | Vercel Cron + Bearer secret (13 jobs as of Sprint 13) | Jobs are idempotent and fit one execution; durability not yet load-bearing. **Known gap**: silent-failure surface grew with minute-cadence crons. | [ADR-0003](docs/decisions/ADR-0003-vercel-cron-over-inngest.md) |
+| Mailchimp | Postgres `newsletter_subscribers` source of truth + Mailchimp campaign surface (Sprint 13), two-way synced | One DSR surface, full CRM queryability, marketing keeps its tooling. | [ADR-0004](docs/decisions/ADR-0004-postgres-newsletter-with-mailchimp-campaigns.md) |
 
 ## Stack
 
@@ -19,14 +31,16 @@ A luxury real-estate marketplace **and** full operations CMS for [bazar.ae](http
 | DB / Auth / Storage / Realtime | Supabase (single platform, MCP-managed) |
 | Forms | react-hook-form + zod |
 | Icons | lucide-react |
-| Maps (Phase 1+) | Mapbox GL JS |
-| Search (Phase 1+) | Meilisearch |
-| Vectors (Phase 5) | pgvector inside Supabase Postgres |
-| LLM (Phase 5) | Anthropic Claude (Haiku for tool calls, Sonnet for synthesis) |
-| Background jobs (Phase 1+) | Inngest |
-| Email | Resend (transactional) + Mailchimp (newsletters) |
-| WhatsApp (Phase 2) | Meta WhatsApp Business Cloud API |
+| Maps | MapLibre GL JS (tiles) + Mapbox APIs (geocoding, isochrone) ([ADR-0002](docs/decisions/ADR-0002-maplibre-tiles-with-mapbox-apis.md)) |
+| Search | Postgres FTS baseline + Meilisearch progressive enhancement ([ADR-0001](docs/decisions/ADR-0001-postgres-fts-with-meilisearch-fallback.md)) |
+| Vector embeddings | pgvector inside Supabase Postgres + Voyage AI for embeddings |
+| LLM | Anthropic Claude (Haiku for tool calls, Sonnet for synthesis) — AI Concierge live |
+| Background jobs | Vercel Cron + Bearer secret, 13 scheduled jobs ([ADR-0003](docs/decisions/ADR-0003-vercel-cron-over-inngest.md)) |
+| Email | Resend (transactional) + Mailchimp (campaigns), Postgres source of truth ([ADR-0004](docs/decisions/ADR-0004-postgres-newsletter-with-mailchimp-campaigns.md)) |
+| WhatsApp | Meta WhatsApp Business Cloud API |
+| PDFs | @react-pdf/renderer (mortgage scenarios, valuation reports, analytics snapshots) |
 | Observability | Sentry + PostHog + Vercel Analytics |
+| Tests | vitest (units) + Playwright (e2e) + Lighthouse CI |
 | Hosting | Vercel |
 
 ## Commands
@@ -37,9 +51,18 @@ A luxury real-estate marketplace **and** full operations CMS for [bazar.ae](http
 | Production build | `npm run build` |
 | Lint | `npm run lint` |
 | Type-check | `npm run typecheck` |
-| Regenerate Supabase types | `npm run db:types` (Phase 1+) |
+| Unit tests (vitest) | `npm run test:run` |
+| Vitest watch / UI | `npm test` / `npm run test:ui` |
+| E2E (Playwright) | `npm run test:e2e` |
+| Lighthouse CI | `npx lhci autorun` |
+| Regenerate Supabase types | `npm run db:types` |
+| Seed local DB | `npm run db:seed` |
 
-No test runner is configured yet. We'll add **vitest** for units + **Playwright** for E2E in Phase 1.
+CI gate (run all four before requesting review):
+
+```
+npm run lint && npm run typecheck && npm run test:run && npm run build
+```
 
 ## Where things live
 
@@ -71,7 +94,7 @@ lib/
     browser.ts             # browser client
     proxy.ts               # session refresh + auth gating (Next.js 16 convention)
 db/
-  types.ts                 # generated from Supabase schema (Phase 1+)
+  types.ts                 # generated from Supabase schema
 supabase/
   migrations/              # versioned SQL files; apply via Supabase MCP
 proxy.ts                   # session refresh + route gating (replaces middleware.ts in Next.js 16)
@@ -79,7 +102,8 @@ instrumentation.ts         # Sentry server init
 instrumentation-client.ts  # Sentry browser init
 docs/
   PROJECT_UNDERSTANDING.md
-  decisions/               # ADRs (Phase 1+)
+  decisions/               # ADRs — read these before assuming the spec is current
+  INTEGRATIONS.md          # how Meilisearch / Mapbox / Mailchimp / Resend wire up
 ```
 
 ## Route groups
@@ -87,8 +111,8 @@ docs/
 We use three route groups under `app/`:
 
 - `(public)/` — marketplace pages + auth, no auth required.
-- `(account)/` — signed-in marketplace users (`/account/*`). Auth-gated in `middleware.ts`.
-- `(admin)/` — staff-only (`/admin/*`). Auth-gated **and** role-gated (once `staff` table lands in Phase 1).
+- `(account)/` — signed-in marketplace users (`/account/*`). Auth-gated in `proxy.ts`.
+- `(admin)/` — staff-only (`/admin/*`). Auth-gated **and** role-gated (`role ∈ {admin, editor, agent, marketing, support}` on the `staff` table).
 
 Inside `(public)/`, nested route group `(auth)/` groups the sign-in/sign-up/etc. pages without affecting URLs.
 
@@ -132,7 +156,19 @@ All env vars are loaded via `lib/env.ts` (zod-validated). Don't read `process.en
 
 ## Project status
 
-**Phase 0 complete** — foundations only. No real catalogue, no search, no concierge, no tools. See [docs/PROJECT_UNDERSTANDING.md](docs/PROJECT_UNDERSTANDING.md) for the 21-week roadmap.
+**Sprint 13 complete.** What's live in production today:
+
+- **Catalogue & search** — properties, developments, areas, developers, media assets (RLS on every table). Postgres FTS baseline; Meilisearch index synced daily for typo-tolerant search. pgvector + Voyage AI embeddings for semantic similarity.
+- **Public marketplace** — `/buy`, `/rent`, `/off-plan`, `/commercial`, `/p/[slug]`, filter bar with bed/bath/type/area/price + Sprint 4b extensions (ft², year, tenure, furnishing, amenities, verified-only, advisor) via the MoreFiltersDrawer, three views (grid / list / map), pagination, MapLibre map with Mapbox isochrone commute-time overlay, draw-area-on-map tool, saved properties, saved searches with daily/weekly/diff-frequency email alerts.
+- **Editorial & content** — `/insights` blog with category routing, `/pages/[slug]` block-based editor, `/about`, `/agents`, `/agents/[slug]`, `/services` + 5 sub-pages, `/areas/[slug]` guides, `/developers/[slug]` profiles, `/contact`.
+- **AI Concierge** — `/concierge` route with Claude Haiku function-calling, streaming SSE, hand-off to human advisor.
+- **Tools** — `/tools/valuation` (DLD-comparable model + PDF download), `/tools/mortgage` (Central-Bank-rate aware + PDF), `/tools/compare`.
+- **Admin CMS** — properties (publishability gates, agent assignment, bulk reassign/off-market/archive), developments, deals (Kanban stages, documents, KYC), enquiries (auto-reply + escalation crons, threads, assignment), valuations, audit log + bulk-operations view, users + roles, settings (integrations panel for Meilisearch / Mapbox / Mailchimp / Resend), pages, blog, analytics with PDF export.
+- **Compliance** — PDPL DSR export + delete flows, cookie consent banner, all legal pages (`/legal/privacy|terms|cookies`).
+- **Integrations** — Meilisearch sync, Voyage embeddings backfill, Mapbox geocoding + isochrones, Mailchimp two-way sync via webhook, Sentry, PostHog (consent-gated, with sign-in identify), Vercel Analytics, syndication push to portals, DLD weekly import, BRN validation, permit expiry alerts.
+- **Infra** — 29 migrations, 46 vitest specs, 25 Playwright specs, 13 cron jobs, full CI gate.
+
+See [docs/PROJECT_UNDERSTANDING.md](docs/PROJECT_UNDERSTANDING.md) for the full roadmap and what's next.
 
 ## Repo
 

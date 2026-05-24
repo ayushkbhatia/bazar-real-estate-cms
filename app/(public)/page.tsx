@@ -1,16 +1,13 @@
 import Link from "next/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { ListingCard } from "@/components/brand/listing-card";
 import { Button } from "@/components/ui/button";
 import {
   formatPriceAED,
-  getSavedPropertyIds,
   listPublishedProperties,
   propertyUrl,
   type ListingRow,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
-import { getSessionUser } from "@/lib/supabase/server";
 import { getPublicSiteSettings } from "@/lib/queries/site-settings";
 import {
   HeroForVariant,
@@ -22,8 +19,10 @@ import { OffPlanStrip } from "./_components/off-plan-strip";
 import { ServicesBand } from "./_components/services-band";
 import { InsightsTeaser } from "./_components/insights-teaser";
 import { CtaBanner } from "./_components/cta-banner";
+import { SavedIdsProvider } from "./_components/saved-ids-provider";
+import { ListingCardSaveable } from "./_components/listing-card-saveable";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const VALID_VARIANTS: HeroVariant[] = [
   "fullbleed",
@@ -47,13 +46,10 @@ export default async function HomePage({
   searchParams: Promise<{ hero?: string }>;
 }) {
   const params = await searchParams;
-  const [{ rows: featured }, user, settings] = await Promise.all([
+  const [{ rows: featured }, settings] = await Promise.all([
     listPublishedProperties({ mode: "buy", limit: 6 }),
-    getSessionUser(),
     getPublicSiteSettings(),
   ]);
-  const savedSet = await getSavedPropertyIds(featured.map((r) => r.id));
-  const isAuthed = user !== null;
 
   // Hero variant selection: ?hero=… overrides; otherwise site_settings.
   const querystringVariant = params.hero?.toLowerCase();
@@ -89,38 +85,38 @@ export default async function HomePage({
           </Button>
         </div>
         {featured.length > 0 ? (
-          <div className="grid grid-cols-3 gap-6">
-            {featured.map((row, index) => {
-              const badge = badgeFor(row);
-              return (
-                <Link
-                  key={row.reference}
-                  href={propertyUrl(row)}
-                  className="block"
-                >
-                  <ListingCard
-                    price={formatPriceAED(row.price_aed)}
-                    title={row.title}
-                    location={row.areas?.name ?? "United Arab Emirates"}
-                    beds={row.beds}
-                    baths={row.baths}
-                    area={row.built_up_ft2 ?? 0}
-                    badge={badge?.label}
-                    badgeKind={badge?.kind}
-                    imgLabel={row.reference}
-                    heroSrc={
-                      row.hero ? mediaPublicUrl(row.hero.storage_key) : null
-                    }
-                    heroAlt={row.hero?.alt_text ?? row.title}
-                    priority={index === 0}
-                    propertyId={row.id}
-                    initialSaved={savedSet.has(row.id)}
-                    isAuthed={isAuthed}
-                  />
-                </Link>
-              );
-            })}
-          </div>
+          <SavedIdsProvider>
+            <div className="grid grid-cols-3 gap-6">
+              {featured.map((row, index) => {
+                const badge = badgeFor(row);
+                return (
+                  <Link
+                    key={row.reference}
+                    href={propertyUrl(row)}
+                    className="block"
+                  >
+                    <ListingCardSaveable
+                      price={formatPriceAED(row.price_aed)}
+                      title={row.title}
+                      location={row.areas?.name ?? "United Arab Emirates"}
+                      beds={row.beds}
+                      baths={row.baths}
+                      area={row.built_up_ft2 ?? 0}
+                      badge={badge?.label}
+                      badgeKind={badge?.kind}
+                      imgLabel={row.reference}
+                      heroSrc={
+                        row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                      }
+                      heroAlt={row.hero?.alt_text ?? row.title}
+                      priority={index === 0}
+                      propertyId={row.id}
+                    />
+                  </Link>
+                );
+              })}
+            </div>
+          </SavedIdsProvider>
         ) : (
           <p className="text-bz-muted text-[14px]">
             Listings appear here once published. Seed the database to see real
