@@ -1132,6 +1132,211 @@ export type Database = {
           },
         ]
       }
+      megamenu_columns: {
+        Row: {
+          created_at: string
+          heading: string | null
+          id: string
+          position: number
+          tab_id: string
+          updated_at: string
+          zone: Database["public"]["Enums"]["megamenu_zone"]
+        }
+        Insert: {
+          created_at?: string
+          heading?: string | null
+          id?: string
+          position: number
+          tab_id: string
+          updated_at?: string
+          zone: Database["public"]["Enums"]["megamenu_zone"]
+        }
+        Update: {
+          created_at?: string
+          heading?: string | null
+          id?: string
+          position?: number
+          tab_id?: string
+          updated_at?: string
+          zone?: Database["public"]["Enums"]["megamenu_zone"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "megamenu_columns_tab_id_fkey"
+            columns: ["tab_id"]
+            isOneToOne: false
+            referencedRelation: "megamenu_tabs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      megamenu_featured_tiles: {
+        Row: {
+          badge_kind: Database["public"]["Enums"]["megamenu_tile_badge_kind"]
+          badge_label: string | null
+          created_at: string
+          cta_label: string | null
+          headline: string
+          href: string
+          id: string
+          media_asset_id: string | null
+          position: number
+          tab_id: string
+          updated_at: string
+          variant: Database["public"]["Enums"]["megamenu_tile_variant"]
+        }
+        Insert: {
+          badge_kind?: Database["public"]["Enums"]["megamenu_tile_badge_kind"]
+          badge_label?: string | null
+          created_at?: string
+          cta_label?: string | null
+          headline: string
+          href: string
+          id?: string
+          media_asset_id?: string | null
+          position: number
+          tab_id: string
+          updated_at?: string
+          variant?: Database["public"]["Enums"]["megamenu_tile_variant"]
+        }
+        Update: {
+          badge_kind?: Database["public"]["Enums"]["megamenu_tile_badge_kind"]
+          badge_label?: string | null
+          created_at?: string
+          cta_label?: string | null
+          headline?: string
+          href?: string
+          id?: string
+          media_asset_id?: string | null
+          position?: number
+          tab_id?: string
+          updated_at?: string
+          variant?: Database["public"]["Enums"]["megamenu_tile_variant"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "megamenu_featured_tiles_media_asset_id_fkey"
+            columns: ["media_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "megamenu_featured_tiles_tab_id_fkey"
+            columns: ["tab_id"]
+            isOneToOne: false
+            referencedRelation: "megamenu_tabs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      megamenu_items: {
+        Row: {
+          badge_label: string | null
+          badge_variant: Database["public"]["Enums"]["megamenu_badge_variant"]
+          column_id: string
+          created_at: string
+          href: string
+          icon: string | null
+          id: string
+          label: string
+          position: number
+          target_id: string | null
+          target_kind:
+            | Database["public"]["Enums"]["megamenu_target_kind"]
+            | null
+          updated_at: string
+        }
+        Insert: {
+          badge_label?: string | null
+          badge_variant?: Database["public"]["Enums"]["megamenu_badge_variant"]
+          column_id: string
+          created_at?: string
+          href: string
+          icon?: string | null
+          id?: string
+          label: string
+          position: number
+          target_id?: string | null
+          target_kind?:
+            | Database["public"]["Enums"]["megamenu_target_kind"]
+            | null
+          updated_at?: string
+        }
+        Update: {
+          badge_label?: string | null
+          badge_variant?: Database["public"]["Enums"]["megamenu_badge_variant"]
+          column_id?: string
+          created_at?: string
+          href?: string
+          icon?: string | null
+          id?: string
+          label?: string
+          position?: number
+          target_id?: string | null
+          target_kind?:
+            | Database["public"]["Enums"]["megamenu_target_kind"]
+            | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "megamenu_items_column_id_fkey"
+            columns: ["column_id"]
+            isOneToOne: false
+            referencedRelation: "megamenu_columns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      megamenu_tabs: {
+        Row: {
+          created_at: string
+          has_panel: boolean
+          href: string | null
+          id: string
+          label: string
+          panel_title: string | null
+          panel_title_href: string | null
+          position: number
+          published_at: string | null
+          right_column_title: string | null
+          slug: string
+          status: Database["public"]["Enums"]["megamenu_tab_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          has_panel?: boolean
+          href?: string | null
+          id?: string
+          label: string
+          panel_title?: string | null
+          panel_title_href?: string | null
+          position: number
+          published_at?: string | null
+          right_column_title?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["megamenu_tab_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          has_panel?: boolean
+          href?: string | null
+          id?: string
+          label?: string
+          panel_title?: string | null
+          panel_title_href?: string | null
+          position?: number
+          published_at?: string | null
+          right_column_title?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["megamenu_tab_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           attachments: Json | null
@@ -2233,6 +2438,27 @@ export type Database = {
         | "twelve_months"
         | "browsing"
       media_folder: "listings" | "brand" | "blog" | "team" | "documents"
+      megamenu_badge_variant:
+        | "default"
+        | "hot"
+        | "luxury"
+        | "new"
+        | "trending"
+        | "partner"
+      megamenu_tab_status: "draft" | "published"
+      megamenu_target_kind:
+        | "area"
+        | "developer"
+        | "service"
+        | "property_type"
+        | "transaction"
+        | "page"
+        | "development"
+        | "article"
+        | "external"
+      megamenu_tile_badge_kind: "dot" | "icon" | "none"
+      megamenu_tile_variant: "dark" | "light" | "image"
+      megamenu_zone: "left" | "right"
       message_author_kind: "lead" | "staff" | "system" | "ai"
       message_channel: "web" | "email" | "whatsapp" | "sms"
       message_direction: "inbound" | "outbound"
@@ -2513,6 +2739,29 @@ export const Constants = {
         "browsing",
       ],
       media_folder: ["listings", "brand", "blog", "team", "documents"],
+      megamenu_badge_variant: [
+        "default",
+        "hot",
+        "luxury",
+        "new",
+        "trending",
+        "partner",
+      ],
+      megamenu_tab_status: ["draft", "published"],
+      megamenu_target_kind: [
+        "area",
+        "developer",
+        "service",
+        "property_type",
+        "transaction",
+        "page",
+        "development",
+        "article",
+        "external",
+      ],
+      megamenu_tile_badge_kind: ["dot", "icon", "none"],
+      megamenu_tile_variant: ["dark", "light", "image"],
+      megamenu_zone: ["left", "right"],
       message_author_kind: ["lead", "staff", "system", "ai"],
       message_channel: ["web", "email", "whatsapp", "sms"],
       message_direction: ["inbound", "outbound"],
