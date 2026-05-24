@@ -12,8 +12,8 @@ import {
   EMAIL_TEMPLATE_KEYS,
   type EmailTemplateKey,
 } from "@/lib/schemas/site-settings";
-import { currentUserIsAdmin } from "@/lib/queries/staff";
 import { logAudit } from "@/lib/audit";
+import { requireRole } from "@/lib/auth";
 
 export type ActionResult =
   | { status: "ok"; message?: string }
@@ -22,8 +22,7 @@ export type ActionResult =
 async function gate(): Promise<ActionResult | null> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
-  if (!(await currentUserIsAdmin()))
-    return { status: "error", message: "Admins only." };
+  await requireRole(["admin"]);
   return null;
 }
 

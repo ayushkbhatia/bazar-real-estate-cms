@@ -9,6 +9,9 @@ import {
   type PropertyCreateInput,
 } from "@/lib/schemas/property";
 import { generatePropertyReference, slugify } from "@/lib/slug";
+import { requireRole } from "@/lib/auth";
+
+const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
 export type CreateResult =
   | { status: "ok"; id: string }
@@ -41,6 +44,7 @@ export async function createProperty(
       message:
         "Supabase env vars are not set. Configure NEXT_PUBLIC_SUPABASE_URL + ANON in .env.local.",
     };
+  await requireRole(PROPERTY_ROLES);
 
   const parsed = propertyCreateSchema.safeParse(
     normaliseCreateInput(raw) as PropertyCreateInput,

@@ -10,6 +10,9 @@ import {
   type Block,
 } from "@/lib/schemas/page";
 import { logAudit } from "@/lib/audit";
+import { requireRole } from "@/lib/auth";
+
+const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
 
 async function revalidatePagePaths(
   slug: string | null,
@@ -31,6 +34,7 @@ export async function updatePage(
 ): Promise<SavePageResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PAGE_ROLES);
 
   const normalised = normalisePageEditInput(raw);
   const parsed = pageEditSchema.safeParse(normalised);
@@ -103,6 +107,7 @@ export async function saveBlocks(
 ): Promise<SaveBlocksResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PAGE_ROLES);
 
   if (!Array.isArray(blocksRaw))
     return { status: "error", message: "Blocks must be an array." };
@@ -142,6 +147,7 @@ export type PublishResult =
 export async function publishPage(id: string): Promise<PublishResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PAGE_ROLES);
 
   const supabase = await createSupabaseServerClient();
   const { data: page } = await supabase
@@ -184,6 +190,7 @@ export async function publishPage(id: string): Promise<PublishResult> {
 export async function unpublishPage(id: string): Promise<PublishResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PAGE_ROLES);
 
   const supabase = await createSupabaseServerClient();
   const { data: page } = await supabase

@@ -5,6 +5,9 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
+import { requireRole } from "@/lib/auth";
+
+const DEAL_ROLES = ["admin", "editor", "agent"] as const;
 
 export type CreateDealResult =
   | { status: "ok"; dealId: string }
@@ -24,6 +27,7 @@ export async function createDealFromEnquiry(input: {
 }): Promise<CreateDealResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(DEAL_ROLES);
 
   if (!Number.isFinite(input.priceAed) || input.priceAed < MIN_PRICE || input.priceAed > MAX_PRICE)
     return {

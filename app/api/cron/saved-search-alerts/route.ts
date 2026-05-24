@@ -3,16 +3,17 @@ import { env } from "@/lib/env";
 import { runSavedSearchAlerts } from "@/lib/saved-search-alerts";
 
 // Vercel Cron Jobs send an Authorization: Bearer <CRON_SECRET> header.
-// Reject anything else.
+// Reject anything else. Fail closed when the secret isn't configured —
+// anonymous callers see 401, not 503, so we don't leak server-side
+// configuration state. Ops sees the misconfig via the console.error.
 export async function GET(req: NextRequest) {
-  if (!env.CRON_SECRET) {
-    return NextResponse.json(
-      { ok: false, reason: "CRON_SECRET not configured" },
-      { status: 503 },
-    );
-  }
   const auth = req.headers.get("authorization");
-  if (auth !== `Bearer ${env.CRON_SECRET}`) {
+  if (!env.CRON_SECRET || auth !== `Bearer ${env.CRON_SECRET}`) {
+    if (!env.CRON_SECRET) {
+      console.error(
+        "[cron/saved-search-alerts] CRON_SECRET not configured — rejecting all requests",
+      );
+    }
     return NextResponse.json(
       { ok: false, reason: "Unauthorized" },
       { status: 401 },

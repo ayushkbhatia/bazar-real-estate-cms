@@ -35,6 +35,11 @@ import {
   runConciergeLoop,
   MAX_ANON_TURNS,
 } from "@/lib/concierge/anthropic";
+import {
+  checkRateLimit,
+  extractClientIp,
+  rateLimitMessage,
+} from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -53,6 +58,27 @@ export async function POST(req: NextRequest) {
           "ANTHROPIC_API_KEY is not set. The concierge is disabled in this environment.",
       }),
       { status: 503, headers: { "content-type": "application/json" } },
+    );
+  }
+
+  // Per-IP rate cap. Token-budget gating still applies further down — this
+  // adds a request-rate ceiling so a single client can't burst the LLM.
+  const rl = await checkRateLimit({
+    name: "concierge",
+    ip: extractClientIp(req.headers),
+    requests: 20,
+    windowSeconds: 60,
+  });
+  if (!rl.ok) {
+    return new Response(
+      JSON.stringify({ error: rateLimitMessage(rl.retryAfterSeconds) }),
+      {
+        status: 429,
+        headers: {
+          "content-type": "application/json",
+          "retry-after": String(rl.retryAfterSeconds),
+        },
+      },
     );
   }
 

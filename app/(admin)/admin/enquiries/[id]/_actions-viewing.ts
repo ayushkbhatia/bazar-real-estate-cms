@@ -7,7 +7,10 @@ import { logAudit } from "@/lib/audit";
 import { sendEmail } from "@/lib/email";
 import { buildIcs } from "@/lib/ics";
 import { env } from "@/lib/env";
+import { requireRole } from "@/lib/auth";
 import type { Database } from "@/db/types";
+
+const VIEWING_ROLES = ["admin", "editor", "agent"] as const;
 
 type ViewingStatus = Database["public"]["Enums"]["viewing_status"];
 
@@ -48,6 +51,7 @@ export async function createViewing(input: {
 }): Promise<CreateViewingResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(VIEWING_ROLES);
 
   const startsAt = new Date(input.startsAtIso);
   if (Number.isNaN(startsAt.getTime()))
@@ -206,6 +210,7 @@ export async function setViewingStatus(
 ): Promise<{ status: "ok" } | { status: "error"; message: string }> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(VIEWING_ROLES);
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },

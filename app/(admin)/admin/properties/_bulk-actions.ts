@@ -17,6 +17,9 @@ import {
   type BulkPropertyRow,
 } from "@/lib/queries/properties-bulk";
 import { propertyUrl } from "@/lib/queries/property-utils";
+import { requireRole } from "@/lib/auth";
+
+const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
 /**
  * Server-action wrapper around `applyBulkUpdate`. The pure update helper
@@ -38,6 +41,7 @@ export async function bulkUpdateProperties(
         "Supabase env vars are not set. Configure NEXT_PUBLIC_SUPABASE_URL + ANON in .env.local.",
     };
   }
+  await requireRole(PROPERTY_ROLES);
 
   const supabase = await createSupabaseServerClient();
   // The Supabase generated client type is structurally compatible with
@@ -91,6 +95,7 @@ export async function bulkPublishProperties(
         "Supabase env vars are not set. Configure NEXT_PUBLIC_SUPABASE_URL + ANON in .env.local.",
     };
   }
+  await requireRole(PROPERTY_ROLES);
   if (ids.length === 0) {
     return {
       status: "error",
@@ -209,6 +214,7 @@ export async function bulkMoveOffMarket(
   if (!isSupabaseConfigured) {
     return { status: "error", message: "Supabase env vars are not set." };
   }
+  await requireRole(PROPERTY_ROLES);
   if (ids.length === 0) {
     return {
       status: "error",
@@ -276,6 +282,7 @@ export async function bulkArchiveProperties(
   if (!isSupabaseConfigured) {
     return { status: "error", message: "Supabase env vars are not set." };
   }
+  await requireRole(PROPERTY_ROLES);
   if (ids.length === 0) {
     return {
       status: "error",
@@ -399,6 +406,7 @@ export async function bulkReassignProperties(
       message: "Supabase env vars are not set.",
     };
   }
+  await requireRole(PROPERTY_ROLES);
   if (ids.length === 0) {
     return {
       status: "error",

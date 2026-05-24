@@ -6,7 +6,16 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
 import { sendEmail } from "@/lib/email";
 import { staffReplyTemplate } from "@/lib/email-templates";
+import { requireRole } from "@/lib/auth";
 import type { Database } from "@/db/types";
+
+const ENQUIRY_WRITE_ROLES = ["admin", "editor", "agent"] as const;
+const ENQUIRY_READ_ROLES = [
+  "admin",
+  "editor",
+  "agent",
+  "support",
+] as const;
 
 type Status = Database["public"]["Enums"]["enquiry_status"];
 type Temperature = Database["public"]["Enums"]["enquiry_temperature"];
@@ -54,6 +63,7 @@ export async function setEnquiryStatus(
 ): Promise<EnquiryActionResult> {
   if (!VALID_STATUSES.includes(next))
     return { status: "error", message: "Unknown status." };
+  if (isSupabaseConfigured) await requireRole(ENQUIRY_WRITE_ROLES);
   const ctx = await getStaffSupabase();
   if (isStaffErr(ctx)) return { status: "error", message: ctx.error };
 
@@ -97,6 +107,7 @@ export async function setEnquiryTemperature(
 ): Promise<EnquiryActionResult> {
   if (!VALID_TEMPERATURES.includes(next))
     return { status: "error", message: "Unknown temperature." };
+  if (isSupabaseConfigured) await requireRole(ENQUIRY_WRITE_ROLES);
   const ctx = await getStaffSupabase();
   if (isStaffErr(ctx)) return { status: "error", message: ctx.error };
 
@@ -132,6 +143,7 @@ export async function setEnquiryTemperature(
 export async function assignEnquiryToMe(
   enquiryId: string,
 ): Promise<EnquiryActionResult> {
+  if (isSupabaseConfigured) await requireRole(ENQUIRY_WRITE_ROLES);
   const ctx = await getStaffSupabase();
   if (isStaffErr(ctx)) return { status: "error", message: ctx.error };
 
@@ -167,6 +179,7 @@ export async function assignEnquiryToMe(
 export async function markConversationRead(
   enquiryId: string,
 ): Promise<EnquiryActionResult> {
+  if (isSupabaseConfigured) await requireRole(ENQUIRY_READ_ROLES);
   const ctx = await getStaffSupabase();
   if (isStaffErr(ctx)) return { status: "error", message: ctx.error };
 
@@ -198,6 +211,7 @@ export async function sendMessage(
   enquiryId: string,
   bodyRaw: string,
 ): Promise<SendMessageResult> {
+  if (isSupabaseConfigured) await requireRole(ENQUIRY_WRITE_ROLES);
   const ctx = await getStaffSupabase();
   if (isStaffErr(ctx)) return { status: "error", message: ctx.error };
 
@@ -296,6 +310,7 @@ export async function updateInternalNotes(
   enquiryId: string,
   notes: string,
 ): Promise<EnquiryActionResult> {
+  if (isSupabaseConfigured) await requireRole(ENQUIRY_WRITE_ROLES);
   const ctx = await getStaffSupabase();
   if (isStaffErr(ctx)) return { status: "error", message: ctx.error };
 

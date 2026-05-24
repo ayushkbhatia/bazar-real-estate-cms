@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import {
   generateConfirmationToken,
   newsletterSignupSchema,
@@ -16,6 +17,11 @@ import {
   newsletterConfirmTemplate,
   newsletterWelcomeTemplate,
 } from "@/lib/newsletter-templates";
+import {
+  checkRateLimit,
+  extractClientIp,
+  rateLimitMessage,
+} from "@/lib/rate-limit";
 import {
   subscribeToNewsletter as syncToMailchimp,
   unsubscribeFromNewsletter as removeFromMailchimp,
@@ -37,6 +43,16 @@ export async function subscribeToNewsletter(
 ): Promise<SubscribeResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Subscriptions are offline." };
+
+  const rl = await checkRateLimit({
+    name: "newsletter",
+    ip: extractClientIp(await headers()),
+    requests: 10,
+    windowSeconds: 60,
+  });
+  if (!rl.ok) {
+    return { status: "error", message: rateLimitMessage(rl.retryAfterSeconds) };
+  }
 
   const parsed = newsletterSignupSchema.safeParse(raw);
   if (!parsed.success) {

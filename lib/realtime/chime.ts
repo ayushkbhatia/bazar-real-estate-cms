@@ -32,7 +32,9 @@ export function playChime(): void {
   if (!ctx) return;
 
   // Some browsers suspend the context until a user gesture. Resuming is
-  // safe to call repeatedly.
+  // safe to call repeatedly; the failure path is the autoplay policy
+  // blocking us until the user interacts, which is expected and noisy
+  // to capture, so we swallow without reporting.
   if (ctx.state === "suspended") {
     ctx.resume().catch(() => {});
   }

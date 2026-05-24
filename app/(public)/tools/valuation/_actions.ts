@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { createClient } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { env, isSupabaseConfigured } from "@/lib/env";
@@ -13,6 +14,11 @@ import { estimateValuation } from "@/lib/valuation";
 import { getAreaSlugById } from "@/lib/queries/areas";
 import { sendEmail } from "@/lib/email";
 import { valuationReceivedTemplate } from "@/lib/email-templates";
+import {
+  checkRateLimit,
+  extractClientIp,
+  rateLimitMessage,
+} from "@/lib/rate-limit";
 import type { Database } from "@/db/types";
 
 export type SubmitValuationResult =
@@ -40,6 +46,16 @@ export async function submitValuation(
       message:
         "Supabase env vars are not set. Configure NEXT_PUBLIC_SUPABASE_URL + ANON in .env.local.",
     };
+  }
+
+  const rl = await checkRateLimit({
+    name: "valuation",
+    ip: extractClientIp(await headers()),
+    requests: 10,
+    windowSeconds: 60,
+  });
+  if (!rl.ok) {
+    return { status: "error", message: rateLimitMessage(rl.retryAfterSeconds) };
   }
 
   const parsed = valuationSubmissionSchema.safeParse(

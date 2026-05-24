@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import * as Sentry from "@sentry/nextjs";
 import {
   ChevronRight,
   ExternalLink,
@@ -53,9 +54,15 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
   if (!enquiry) notFound();
   const now = serverNow();
 
-  // Best-effort mark-read on each staff view.
+  // Best-effort mark-read on each staff view. Failures shouldn't block
+  // page render — but they shouldn't disappear silently either.
   if (enquiry.unread_count > 0) {
-    await markConversationRead(id).catch(() => {});
+    await markConversationRead(id).catch((err: unknown) => {
+      Sentry.captureException(err, {
+        tags: { component: "enquiry/mark-read" },
+        contexts: { enquiry: { id } },
+      });
+    });
   }
 
   // For the "Create deal" CTA: check whether a deal already exists for

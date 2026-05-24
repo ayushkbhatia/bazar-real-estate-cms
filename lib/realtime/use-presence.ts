@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import * as Sentry from "@sentry/nextjs";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 export type PresenceMember = {
@@ -130,14 +131,28 @@ export function usePresence({
         const subscribed = status === "SUBSCRIBED";
         setConnected(subscribed);
         if (subscribed) {
-          await ch.track(identity).catch(() => {});
+          // Failing to track ourselves means presence is broken for this
+          // viewer — worth knowing about. Don't crash the page over it.
+          await ch.track(identity).catch((err: unknown) => {
+            Sentry.captureException(err, {
+              tags: { component: "realtime/presence", op: "track" },
+            });
+          });
         }
       });
 
     // Best-effort untrack on tab close — Realtime also notices the socket
-    // drop, but this is faster for clean closes.
+    // drop, but this is faster for clean closes. Untrack failures during
+    // tab close are expected (page is going away); record a breadcrumb so
+    // we have signal if it ever becomes a pattern.
     const onBeforeUnload = () => {
-      ch.untrack().catch(() => {});
+      ch.untrack().catch(() => {
+        Sentry.addBreadcrumb({
+          category: "realtime/presence",
+          message: "untrack failed during beforeunload",
+          level: "info",
+        });
+      });
     };
     if (typeof window !== "undefined") {
       window.addEventListener("beforeunload", onBeforeUnload);
@@ -147,7 +162,13 @@ export function usePresence({
       if (typeof window !== "undefined") {
         window.removeEventListener("beforeunload", onBeforeUnload);
       }
-      ch.untrack().catch(() => {});
+      ch.untrack().catch(() => {
+        Sentry.addBreadcrumb({
+          category: "realtime/presence",
+          message: "untrack failed during cleanup",
+          level: "info",
+        });
+      });
       client.removeChannel(ch);
       setConnected(false);
     };

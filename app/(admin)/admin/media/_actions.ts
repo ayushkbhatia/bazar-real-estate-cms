@@ -10,6 +10,9 @@ import {
   MEDIA_BUCKET,
   storageKey,
 } from "@/lib/media";
+import { requireRole } from "@/lib/auth";
+
+const MEDIA_ROLES = ["admin", "editor", "marketing", "agent"] as const;
 
 export type UploadResult =
   | { status: "ok"; id: string; storage_key: string }
@@ -24,6 +27,7 @@ export async function uploadMedia(formData: FormData): Promise<UploadResult> {
       message:
         "Supabase env vars are not set. Configure NEXT_PUBLIC_SUPABASE_URL + ANON in .env.local.",
     };
+  await requireRole(MEDIA_ROLES);
 
   const file = formData.get("file");
   if (!(file instanceof File))

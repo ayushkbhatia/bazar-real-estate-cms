@@ -6,6 +6,9 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { articleCreateSchema } from "@/lib/schemas/article";
 import { slugify } from "@/lib/slug";
 import { logAudit } from "@/lib/audit";
+import { requireRole } from "@/lib/auth";
+
+const BLOG_ROLES = ["admin", "editor", "marketing"] as const;
 
 export type CreateArticleResult =
   | { status: "ok"; id: string }
@@ -33,6 +36,7 @@ export async function createArticle(
 ): Promise<CreateArticleResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(BLOG_ROLES);
 
   const parsed = articleCreateSchema.safeParse(raw);
   if (!parsed.success) {

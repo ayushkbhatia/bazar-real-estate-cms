@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { Bell, BellOff } from "lucide-react";
+import * as Sentry from "@sentry/nextjs";
 import { Button } from "@/components/ui/button";
 import {
   isChimeEnabled,
@@ -56,7 +57,17 @@ export function NotificationsChime({
         if (cancelled || !json) return;
         setUserId(json.userId ?? null);
       })
-      .catch(() => {});
+      .catch(() => {
+        // Offline or transient — the chime stays muted, which is the
+        // default state anyway. Drop a breadcrumb so we know if this
+        // becomes a pattern, but don't pop up a Sentry event for what
+        // is usually a network blip.
+        Sentry.addBreadcrumb({
+          category: "realtime/chime",
+          message: "userId self-fetch failed",
+          level: "info",
+        });
+      });
     return () => {
       cancelled = true;
     };

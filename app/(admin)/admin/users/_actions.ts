@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured, env } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
+import { requireRole } from "@/lib/auth";
 import {
   staffInviteSchema,
   staffRoleUpdateSchema,
@@ -13,27 +14,20 @@ import {
   STAFF_ROLES,
   type StaffRole,
 } from "@/lib/schemas/staff";
-import { currentUserIsAdmin } from "@/lib/queries/staff";
 
 export type ActionResult =
   | { status: "ok"; message?: string }
   | { status: "error"; message: string; fieldErrors?: Record<string, string> };
 
-async function gateAdmin(): Promise<ActionResult | null> {
-  if (!isSupabaseConfigured) {
-    return { status: "error", message: "Supabase env vars are not set." };
-  }
-  if (!(await currentUserIsAdmin())) {
-    return { status: "error", message: "Admins only." };
-  }
-  return null;
+function envUnsetResult(): ActionResult {
+  return { status: "error", message: "Supabase env vars are not set." };
 }
 
 export async function inviteStaff(
   raw: Record<string, unknown>,
 ): Promise<ActionResult> {
-  const gate = await gateAdmin();
-  if (gate) return gate;
+  if (!isSupabaseConfigured) return envUnsetResult();
+  await requireRole(["admin"]);
 
   const parsed = staffInviteSchema.safeParse({
     email: typeof raw.email === "string" ? raw.email : "",
@@ -146,8 +140,8 @@ export async function inviteStaff(
 export async function revokeInvitation(
   invitationId: string,
 ): Promise<ActionResult> {
-  const gate = await gateAdmin();
-  if (gate) return gate;
+  if (!isSupabaseConfigured) return envUnsetResult();
+  await requireRole(["admin"]);
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase
     .from("staff_invitations")
@@ -166,8 +160,8 @@ export async function revokeInvitation(
 export async function updateStaffRole(
   raw: Record<string, unknown>,
 ): Promise<ActionResult> {
-  const gate = await gateAdmin();
-  if (gate) return gate;
+  if (!isSupabaseConfigured) return envUnsetResult();
+  await requireRole(["admin"]);
   const parsed = staffRoleUpdateSchema.safeParse({
     user_id: typeof raw.user_id === "string" ? raw.user_id : "",
     role: typeof raw.role === "string" ? raw.role : "",
@@ -206,8 +200,8 @@ export async function updateStaffRole(
 export async function updateStaffStatus(
   raw: Record<string, unknown>,
 ): Promise<ActionResult> {
-  const gate = await gateAdmin();
-  if (gate) return gate;
+  if (!isSupabaseConfigured) return envUnsetResult();
+  await requireRole(["admin"]);
   const parsed = staffStatusUpdateSchema.safeParse({
     user_id: typeof raw.user_id === "string" ? raw.user_id : "",
     status: typeof raw.status === "string" ? raw.status : "",

@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/nextjs";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 
@@ -10,8 +11,13 @@ export type AuditEntry = {
 };
 
 /**
- * Append a row to `audit_log`. Best-effort: failures are logged and swallowed
- * so a failed audit write never blocks the user-visible operation.
+ * Append a row to `audit_log`. Best-effort: failures are reported to
+ * Sentry and swallowed so a failed audit write never blocks the
+ * user-visible operation.
+ *
+ * The audit log is our PDPL/AML compliance evidence — silent drops are
+ * unacceptable, so we route insert failures through Sentry with a
+ * dedicated tag for filtering and alerting.
  */
 export async function logAudit(entry: AuditEntry): Promise<void> {
   if (!isSupabaseConfigured) return;
@@ -39,9 +45,27 @@ export async function logAudit(entry: AuditEntry): Promise<void> {
       after: (entry.after ?? null) as Json,
     });
     if (error) {
-      console.warn("[audit] insert failed", entry.action, error.message);
+      Sentry.captureException(error, {
+        tags: { component: "audit" },
+        contexts: {
+          audit: {
+            action: entry.action,
+            target_kind: entry.target_kind,
+            target_id: entry.target_id,
+          },
+        },
+      });
     }
   } catch (err) {
-    console.warn("[audit] threw", (err as Error).message);
+    Sentry.captureException(err, {
+      tags: { component: "audit" },
+      contexts: {
+        audit: {
+          action: entry.action,
+          target_kind: entry.target_kind,
+          target_id: entry.target_id,
+        },
+      },
+    });
   }
 }

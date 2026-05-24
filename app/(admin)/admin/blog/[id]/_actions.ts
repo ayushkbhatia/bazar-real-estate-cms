@@ -10,6 +10,9 @@ import {
   readingMinutes,
 } from "@/lib/schemas/article";
 import { logAudit } from "@/lib/audit";
+import { requireRole } from "@/lib/auth";
+
+const BLOG_ROLES = ["admin", "editor", "marketing"] as const;
 
 async function revalidateArticlePaths(slug: string | null, prevSlug?: string | null) {
   if (!isSupabaseConfigured) return;
@@ -29,6 +32,7 @@ export async function updateArticle(
 ): Promise<SaveArticleResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(BLOG_ROLES);
 
   const normalised = normaliseArticleEditInput(raw);
   const parsed = articleEditSchema.safeParse(normalised);
@@ -106,6 +110,7 @@ export async function publishArticle(
 ): Promise<PublishArticleResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(BLOG_ROLES);
 
   const supabase = await createSupabaseServerClient();
   const { data: row } = await supabase
@@ -149,6 +154,7 @@ export async function unpublishArticle(
 ): Promise<PublishArticleResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(BLOG_ROLES);
 
   const supabase = await createSupabaseServerClient();
   const { data: row } = await supabase
@@ -185,6 +191,7 @@ export async function archiveArticle(
 ): Promise<PublishArticleResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(BLOG_ROLES);
 
   const supabase = await createSupabaseServerClient();
   const { data: row } = await supabase

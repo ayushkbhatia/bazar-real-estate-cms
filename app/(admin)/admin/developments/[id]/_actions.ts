@@ -9,6 +9,9 @@ import {
 } from "@/lib/schemas/development";
 import { developmentUrl } from "@/lib/queries/developments";
 import { logAudit } from "@/lib/audit";
+import { requireRole } from "@/lib/auth";
+
+const DEVELOPMENT_ROLES = ["admin", "editor"] as const;
 
 export type SaveResult =
   | { status: "ok"; message?: string }
@@ -35,6 +38,7 @@ export async function updateDevelopment(
 ): Promise<SaveResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(DEVELOPMENT_ROLES);
 
   const normalised = normaliseDevelopmentInput(raw);
   const parsed = developmentEditSchema.safeParse(normalised);
@@ -110,6 +114,7 @@ export async function publishDevelopment(
 ): Promise<SaveResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(DEVELOPMENT_ROLES);
 
   const supabase = await createSupabaseServerClient();
   const { data: before } = await supabase
@@ -146,6 +151,7 @@ export async function unpublishDevelopment(
 ): Promise<SaveResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(DEVELOPMENT_ROLES);
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
