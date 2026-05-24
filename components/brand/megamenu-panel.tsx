@@ -88,7 +88,11 @@ export function MegamenuPanel({ tab }: Props) {
     .join(" ");
 
   return (
-    <div className="bg-bz-bg border-b border-bz-border w-screen">
+    // No w-screen — the NavigationMenuContent override (in public-mega-nav)
+    // anchors this panel to the full-width `relative` header, so taking the
+    // wrapper's intrinsic width is enough. w-screen here would re-introduce
+    // the right-edge bleed on every panel.
+    <div className="bg-bz-bg border-b border-bz-border w-full">
       <div
         className="mx-auto max-w-[1320px] px-12 py-10 grid gap-12"
         style={{ gridTemplateColumns: gridCols || "1fr" }}

@@ -45,20 +45,31 @@ function isActive(pathname: string | null, tab: MegamenuTab): boolean {
   return pathname.startsWith(base);
 }
 
+// Override class for NavigationMenuContent so each panel spans the full
+// header width (anchored to the header, not the trigger). `!`-suffix forces
+// the override against shadcn's viewport=false defaults
+// (`bg-popover ring-1 rounded-lg shadow` etc.). Pairs with `static` on the
+// parent NavigationMenuItem so `absolute left:0 right:0` walks past it and
+// resolves against the `relative` header.
+const PANEL_CONTENT_CLASS =
+  "left-0! right-0! top-full! w-auto! mt-0! " +
+  "rounded-none! ring-0! bg-bz-bg! p-0! overflow-visible! " +
+  "shadow-[0_12px_32px_-12px_rgba(0,0,0,0.18)]!";
+
 export function PublicMegaNav({ data }: Props) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <>
-      <header className="sticky top-0 z-40 h-[72px] px-6 md:px-12 flex items-center gap-6 border-b border-bz-border bg-bz-bg">
+      <header className="sticky top-0 z-40 h-[72px] px-6 md:px-12 flex items-center gap-6 border-b border-bz-border bg-bz-bg relative">
         <Link href="/" className="flex items-center">
           <Wordmark />
         </Link>
 
         {/* Desktop nav — hidden on mobile, replaced by hamburger */}
         <div className="hidden md:flex flex-1 justify-center">
-          <NavigationMenu viewport>
+          <NavigationMenu viewport={false}>
             <NavigationMenuList className="gap-1">
               {data.tabs.map((tab) => {
                 const active = isActive(pathname, tab);
@@ -84,7 +95,9 @@ export function PublicMegaNav({ data }: Props) {
                 }
 
                 return (
-                  <NavigationMenuItem key={tab.id}>
+                  // `static` releases the absolute-positioning anchor so
+                  // the panel resolves against the `relative` header above.
+                  <NavigationMenuItem key={tab.id} className="static">
                     <NavigationMenuTrigger
                       className={cn(
                         "h-9 px-3 text-[13.5px] font-normal bg-transparent hover:bg-bz-surface-2 data-[state=open]:bg-bz-surface-2",
@@ -93,7 +106,7 @@ export function PublicMegaNav({ data }: Props) {
                     >
                       {tab.label}
                     </NavigationMenuTrigger>
-                    <NavigationMenuContent>
+                    <NavigationMenuContent className={PANEL_CONTENT_CLASS}>
                       <MegamenuPanel tab={tab} />
                     </NavigationMenuContent>
                   </NavigationMenuItem>
