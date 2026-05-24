@@ -1,16 +1,13 @@
 import Link from "next/link";
-import { ListingCard } from "@/components/brand/listing-card";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import {
   listPublishedProperties,
   formatPriceAED,
-  getSavedPropertyIds,
   propertyUrl,
   type ListingRow,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
-import { getSessionUser } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import {
   countActiveFilters,
@@ -29,6 +26,8 @@ import { Pagination } from "./pagination";
 import { ModeSegmented } from "./mode-segmented";
 import { DrawAreaTool } from "./draw-area-tool";
 import { CommuteTimeTool } from "./commute-time-tool";
+import { SavedIdsProvider } from "./saved-ids-provider";
+import { ListingCardSaveable } from "./listing-card-saveable";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
 
@@ -93,13 +92,10 @@ export async function SearchList({
   const page = filters.page && filters.page > 0 ? filters.page : 1;
   const offset = (page - 1) * PAGE_SIZE;
 
-  const [{ rows, total }, areas, user] = await Promise.all([
+  const [{ rows, total }, areas] = await Promise.all([
     listPublishedProperties({ mode, filters, limit: PAGE_SIZE, offset }),
     fetchAreas(),
-    getSessionUser(),
   ]);
-  const savedSet = await getSavedPropertyIds(rows.map((r) => r.id));
-  const isAuthed = user !== null;
   const copy = MODE_COPY[mode];
 
   const selectedArea =
@@ -113,7 +109,7 @@ export async function SearchList({
   const lastShown = Math.min(offset + rows.length, total);
 
   return (
-    <div>
+    <SavedIdsProvider>
       <section className="px-12 pt-16 pb-10 border-b border-bz-border">
         <Eyebrow>{copy.eyebrow}</Eyebrow>
         <h1
@@ -127,7 +123,7 @@ export async function SearchList({
         </p>
       </section>
 
-      <FilterBar mode={mode} areas={areas} isAuthed={isAuthed} />
+      <FilterBar mode={mode} areas={areas} />
 
       <section className="px-12 pt-6 pb-3 flex items-center gap-3 flex-wrap border-b border-bz-border">
         <ModeSegmented />
@@ -197,7 +193,7 @@ export async function SearchList({
                   href={propertyUrl(row)}
                   className="block"
                 >
-                  <ListingCard
+                  <ListingCardSaveable
                     variant="row"
                     price={formatPriceAED(row.price_aed)}
                     title={row.title}
@@ -214,8 +210,6 @@ export async function SearchList({
                     heroAlt={row.hero?.alt_text ?? row.title}
                     priority={index < 2}
                     propertyId={row.id}
-                    initialSaved={savedSet.has(row.id)}
-                    isAuthed={isAuthed}
                     verified={Boolean((row.flags as Record<string, unknown> | null)?.verified)}
                     compareEnabled
                   />
@@ -235,7 +229,7 @@ export async function SearchList({
                     href={propertyUrl(row)}
                     className="block"
                   >
-                    <ListingCard
+                    <ListingCardSaveable
                       price={formatPriceAED(row.price_aed)}
                       title={row.title}
                       location={row.areas?.name ?? "United Arab Emirates"}
@@ -251,8 +245,6 @@ export async function SearchList({
                       heroAlt={row.hero?.alt_text ?? row.title}
                       priority={priority}
                       propertyId={row.id}
-                      initialSaved={savedSet.has(row.id)}
-                      isAuthed={isAuthed}
                       verified={Boolean((row.flags as Record<string, unknown> | null)?.verified)}
                       compareEnabled
                     />
@@ -294,6 +286,6 @@ export async function SearchList({
           searchParams={searchParams}
         />
       </section>
-    </div>
+    </SavedIdsProvider>
   );
 }

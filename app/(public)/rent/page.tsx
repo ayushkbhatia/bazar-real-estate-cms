@@ -3,7 +3,7 @@ import { SearchList } from "../_components/search-list";
 import { parseFilters } from "@/lib/filters/property";
 import type { SearchView } from "../_components/view-toggle";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Rent",

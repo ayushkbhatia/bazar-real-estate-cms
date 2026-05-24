@@ -18,6 +18,7 @@ import { PROPERTY_TYPES } from "@/lib/schemas/property";
 import { filterParsers } from "@/lib/filters/property";
 import { cn } from "@/lib/utils";
 import { saveCurrentSearch } from "@/app/(account)/_actions";
+import { useSavedIds } from "./saved-ids-provider";
 
 const TYPE_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
   apartment: "Apartment",
@@ -38,12 +39,12 @@ export type AreaOption = { slug: string; name: string };
 type Props = {
   mode: "buy" | "rent" | "off_plan" | "commercial";
   areas: AreaOption[];
-  isAuthed: boolean;
 };
 
-export function FilterBar({ mode, areas, isAuthed }: Props) {
+export function FilterBar({ mode, areas }: Props) {
   const router = useRouter();
   const pathname = usePathname();
+  const { isAuthed } = useSavedIds();
   const [{ q, beds, baths, type, price_min, price_max, area }, setState] =
     useQueryStates(filterParsers, {
       shallow: false, // re-fetch the RSC page on change
