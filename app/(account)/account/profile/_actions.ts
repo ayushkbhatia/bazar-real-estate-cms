@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { logAudit } from "@/lib/audit";
 import {
   accountProfileSchema,
   normaliseAccountProfile,
@@ -42,22 +43,40 @@ export async function updateAccountProfileAction(
   } = await supabase.auth.getUser();
   if (!user) return { status: "error", message: "Not signed in." };
 
+  const { data: before } = await supabase
+    .from("accounts")
+    .select(
+      "first_name, last_name, nationality, preferred_language, residency_status, marketing_opt_in",
+    )
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  const nextRow = {
+    first_name: parsed.data.first_name ?? null,
+    last_name: parsed.data.last_name ?? null,
+    nationality: parsed.data.nationality ?? null,
+    preferred_language: parsed.data.preferred_language,
+    residency_status: parsed.data.residency_status ?? null,
+    marketing_opt_in: parsed.data.marketing_opt_in,
+  };
+
   const { error } = await supabase
     .from("accounts")
-    .update({
-      first_name: parsed.data.first_name ?? null,
-      last_name: parsed.data.last_name ?? null,
-      nationality: parsed.data.nationality ?? null,
-      preferred_language: parsed.data.preferred_language,
-      residency_status: parsed.data.residency_status ?? null,
-      marketing_opt_in: parsed.data.marketing_opt_in,
-    })
+    .update(nextRow)
     .eq("user_id", user.id);
 
   if (error) {
     console.error("[updateAccountProfileAction]", error);
     return { status: "error", message: "Could not save changes." };
   }
+
+  await logAudit({
+    action: "account.profile.update",
+    target_kind: "account",
+    target_id: user.id,
+    before: before ?? null,
+    after: nextRow,
+  });
 
   revalidatePath("/account/profile");
   return { status: "ok" };
