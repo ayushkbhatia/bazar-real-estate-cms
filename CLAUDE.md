@@ -5,6 +5,7 @@ A luxury real-estate marketplace **and** full operations CMS for [bazar.ae](http
 ## Read first
 
 - **[docs/PROJECT_UNDERSTANDING.md](docs/PROJECT_UNDERSTANDING.md)** — what we're building, who Bazar is, IA, data model, compliance, roadmap. Required reading for any new contributor (human or AI).
+- **[docs/FOLLOWUPS.md](docs/FOLLOWUPS.md)** — cross-session backlog of small "noticed during a PR, not worth bloating it" items. Pick from here when you have a slot; add to it when you finish a PR and spot something.
 - **[AGENTS.md](AGENTS.md)** — Next.js 16 has breaking changes from earlier versions; consult `node_modules/next/dist/docs/` when in doubt.
 - **Design handoff** (not in repo): `/Users/ayushkbhatia/Downloads/design_handoff_bazar_website_cms/` — 13 docs + 15 JSX screen mockups + tokens. The source of truth for screens, copy, and entity shapes.
 
