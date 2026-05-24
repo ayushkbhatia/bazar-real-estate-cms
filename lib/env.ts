@@ -12,6 +12,19 @@ const serverSchema = z.object({
   MEILISEARCH_HOST: z.string().url().optional(),
   MEILISEARCH_API_KEY: z.string().min(1).optional(),
   VOYAGE_API_KEY: z.string().min(1).optional(),
+  // Sprint 13 integrations
+  MAILCHIMP_API_KEY: z.string().min(1).optional(),
+  MAILCHIMP_LIST_ID: z.string().min(1).optional(),
+  MAILCHIMP_DC: z.string().min(1).optional(), // datacenter, e.g. 'us21'
+  MAILCHIMP_WEBHOOK_SECRET: z.string().min(1).optional(),
+  DOCUSIGN_INTEGRATION_KEY: z.string().min(1).optional(),
+  DOCUSIGN_USER_ID: z.string().min(1).optional(),
+  DOCUSIGN_ACCOUNT_ID: z.string().min(1).optional(),
+  DOCUSIGN_PRIVATE_KEY: z.string().min(1).optional(),
+  DOCUSIGN_BASE_URL: z.string().url().optional(),
+  DOCUSIGN_WEBHOOK_SECRET: z.string().min(1).optional(),
+  PROPERTY_FINDER_FEED_TOKEN: z.string().min(1).optional(),
+  BAYUT_FEED_TOKEN: z.string().min(1).optional(),
 });
 
 const clientSchema = z.object({
@@ -66,6 +79,18 @@ const serverEnv =
         MEILISEARCH_HOST: process.env.MEILISEARCH_HOST,
         MEILISEARCH_API_KEY: process.env.MEILISEARCH_API_KEY,
         VOYAGE_API_KEY: process.env.VOYAGE_API_KEY,
+        MAILCHIMP_API_KEY: process.env.MAILCHIMP_API_KEY,
+        MAILCHIMP_LIST_ID: process.env.MAILCHIMP_LIST_ID,
+        MAILCHIMP_DC: process.env.MAILCHIMP_DC,
+        MAILCHIMP_WEBHOOK_SECRET: process.env.MAILCHIMP_WEBHOOK_SECRET,
+        DOCUSIGN_INTEGRATION_KEY: process.env.DOCUSIGN_INTEGRATION_KEY,
+        DOCUSIGN_USER_ID: process.env.DOCUSIGN_USER_ID,
+        DOCUSIGN_ACCOUNT_ID: process.env.DOCUSIGN_ACCOUNT_ID,
+        DOCUSIGN_PRIVATE_KEY: process.env.DOCUSIGN_PRIVATE_KEY,
+        DOCUSIGN_BASE_URL: process.env.DOCUSIGN_BASE_URL,
+        DOCUSIGN_WEBHOOK_SECRET: process.env.DOCUSIGN_WEBHOOK_SECRET,
+        PROPERTY_FINDER_FEED_TOKEN: process.env.PROPERTY_FINDER_FEED_TOKEN,
+        BAYUT_FEED_TOKEN: process.env.BAYUT_FEED_TOKEN,
       })
     : ({ NODE_ENV: "development" } as z.infer<typeof serverSchema>);
 
@@ -99,6 +124,19 @@ export const isVoyageConfigured =
 export const isMapboxConfigured = Boolean(
   clientEnv.NEXT_PUBLIC_MAPBOX_TOKEN,
 );
+
+export const isMailchimpConfigured =
+  typeof window === "undefined" &&
+  Boolean(env.MAILCHIMP_API_KEY && env.MAILCHIMP_LIST_ID && env.MAILCHIMP_DC);
+
+export const isDocuSignConfigured =
+  typeof window === "undefined" &&
+  Boolean(
+    env.DOCUSIGN_INTEGRATION_KEY &&
+      env.DOCUSIGN_USER_ID &&
+      env.DOCUSIGN_ACCOUNT_ID &&
+      env.DOCUSIGN_PRIVATE_KEY,
+  );
 
 /** USD per 1 AED. Defaults to 0.272 (mid-2026 spot rate) when env unset. */
 export function usdPerAed(): number {
