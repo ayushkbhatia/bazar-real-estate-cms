@@ -89,7 +89,18 @@ export function CompareToolbar({
         Highlight differences
       </label>
       <div className="w-px h-6 bg-bz-border mx-1" />
-      <Button variant="outline" size="sm" disabled title="Coming soon">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          if (ids.length === 0) {
+            toast.error("Add properties to compare first.");
+            return;
+          }
+          window.location.href = `/api/pdf/compare?ids=${encodeURIComponent(ids.join(","))}`;
+        }}
+        title="Download comparison as PDF"
+      >
         <Download size={14} strokeWidth={1.6} />
         PDF
       </Button>

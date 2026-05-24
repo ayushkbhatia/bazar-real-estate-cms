@@ -24,6 +24,7 @@ const PUBLIC_PATHS = [
   "/sign-up",
   "/forgot-password",
   "/reset-password",
+  "/magic-link",
   "/verify-otp",
   "/auth",
 ];
