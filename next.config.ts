@@ -43,6 +43,18 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // BF-6: /verify-otp was always a magic-link form (the path name implied
+  // OTP entry but the action sends a magic link). Renamed to /magic-link;
+  // permanent redirect from the legacy URL keeps emailed deep-links live.
+  async redirects() {
+    return [
+      {
+        source: "/verify-otp",
+        destination: "/magic-link",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

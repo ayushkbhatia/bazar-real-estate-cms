@@ -10,7 +10,7 @@ import { magicLinkAction, type AuthState } from "../_actions";
 
 const initial: AuthState = { status: "idle" };
 
-export default function VerifyOtpPage() {
+export default function MagicLinkPage() {
   const [state, formAction, pending] = useActionState(magicLinkAction, initial);
 
   return (

@@ -71,7 +71,7 @@ export default function SignInPage() {
         <span className="flex-1 h-px bg-bz-border" />
       </div>
 
-      <Link href="/verify-otp">
+      <Link href="/magic-link">
         <Button variant="outline" className="w-full">
           Sign in with a magic link
         </Button>

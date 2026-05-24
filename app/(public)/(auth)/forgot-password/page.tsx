@@ -16,7 +16,7 @@ export default function ForgotPasswordPage() {
         your inbox. Full password reset lands once Supabase is wired in Phase 1.
       </p>
       <Link
-        href="/verify-otp"
+        href="/magic-link"
         className="inline-flex items-center justify-center h-10 px-4 rounded bg-bz-accent text-bz-accent-fg text-[13.5px] font-medium hover:bg-bz-accent-hover transition-colors"
       >
         Go to magic link sign-in
