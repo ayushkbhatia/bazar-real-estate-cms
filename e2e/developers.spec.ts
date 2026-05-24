@@ -11,8 +11,11 @@ test("public /developers renders the directory", async ({ page }) => {
 
 test("/developers/aldar renders the developer profile", async ({ page }) => {
   await page.goto("/developers/aldar");
+  // Pin to the h1; the current developments grid may render h3s that mention
+  // Aldar by name (e.g. "Aldar Mamsha Phase 2") which would otherwise trip
+  // Playwright's strict-mode multi-match check.
   await expect(
-    page.getByRole("heading", { name: /aldar properties/i }),
+    page.getByRole("heading", { level: 1, name: /aldar properties/i }),
   ).toBeVisible();
   await expect(page.getByText(/founded/i)).toBeVisible();
 });

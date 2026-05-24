@@ -11,8 +11,11 @@ test("public /areas renders the neighbourhood index", async ({ page }) => {
 
 test("/areas/saadiyat-island renders the area guide", async ({ page }) => {
   await page.goto("/areas/saadiyat-island");
+  // Pin to the h1; the page also has h2s like "Listings in Saadiyat Island."
+  // and "Who to talk to about Saadiyat" that would otherwise trip Playwright's
+  // strict-mode multi-match check.
   await expect(
-    page.getByRole("heading", { name: /saadiyat island/i }),
+    page.getByRole("heading", { level: 1, name: /saadiyat island/i }),
   ).toBeVisible();
   // The stats grid should surface the four headline figures
   await expect(page.getByText(/median apt \/ ft²/i)).toBeVisible();
