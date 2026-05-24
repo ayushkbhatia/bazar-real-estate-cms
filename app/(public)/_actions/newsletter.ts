@@ -22,6 +22,10 @@ import {
   extractClientIp,
   rateLimitMessage,
 } from "@/lib/rate-limit";
+import {
+  subscribeToNewsletter as syncToMailchimp,
+  unsubscribeFromNewsletter as removeFromMailchimp,
+} from "@/lib/mailchimp";
 
 function siteUrl(): string {
   return (
@@ -175,6 +179,16 @@ export async function confirmNewsletterToken(
       text: template.text,
       html: template.html,
     });
+
+    // BF-6: sync confirmed subscriber to Mailchimp. Fire-and-forget so
+    // a failed Mailchimp call doesn't block the welcome email. With
+    // doubleOptIn=false because Bazar's own confirm step is the
+    // double-opt-in checkpoint.
+    void syncToMailchimp({
+      email: row.email,
+      doubleOptIn: false,
+      tags: ["bazar-confirmed"],
+    });
   }
 
   revalidatePath("/account/newsletter");
@@ -212,6 +226,9 @@ export async function unsubscribeNewsletterToken(
       })
       .eq("id", row.id);
     if (error) return { status: "error", message: error.message };
+
+    // BF-6: mirror the opt-out to Mailchimp. Fire-and-forget.
+    void removeFromMailchimp(row.email);
   }
 
   revalidatePath("/account/newsletter");
@@ -251,6 +268,9 @@ export async function unsubscribeFromAccount(): Promise<AccountUnsubscribeResult
     })
     .or(`account_id.eq.${user.id},email.eq.${email}`);
   if (error) return { status: "error", message: error.message };
+
+  // BF-6: propagate to Mailchimp.
+  void removeFromMailchimp(email);
 
   revalidatePath("/account/newsletter");
   return { status: "ok", message: "Unsubscribed." };

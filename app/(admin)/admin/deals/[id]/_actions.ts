@@ -374,3 +374,101 @@ export async function setDealCommission(opts: {
   revalidatePath(`/admin/deals/${opts.dealId}`);
   return { status: "ok", documentId: opts.dealId };
 }
+
+// ─────────────────────────────────────────────────────────────────────
+// BF-6 — DocuSign envelope for a deal document.
+// ─────────────────────────────────────────────────────────────────────
+
+export type SendForSignatureResult =
+  | { status: "ok"; envelopeId: string }
+  | { status: "error"; message: string };
+
+/** Send a deal document for e-signature via DocuSign. Pulls the file
+ *  from Supabase Storage, base64-encodes it, and creates the envelope
+ *  with the buyer (account) as the signer. Updates documents.status
+ *  to 'pending_review' so the UI reflects the in-flight state. */
+export async function sendDocumentForSignature(opts: {
+  documentId: string;
+  signerEmail: string;
+  signerName: string;
+  emailSubject?: string;
+}): Promise<SendForSignatureResult> {
+  if (!isSupabaseConfigured) {
+    return { status: "error", message: "Supabase not configured" };
+  }
+  const { isDocuSignConfigured } = await import("@/lib/env");
+  if (!isDocuSignConfigured) {
+    return { status: "error", message: "DocuSign not configured" };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { status: "error", message: "Sign in required" };
+
+  // Fetch the doc + storage key.
+  const { data: doc, error } = await supabase
+    .from("documents")
+    .select("id, owner_kind, owner_id, kind, storage_key, filename")
+    .eq("id", opts.documentId)
+    .maybeSingle();
+  if (error || !doc || !doc.storage_key) {
+    return { status: "error", message: "Document not found or has no file" };
+  }
+
+  // Download the file via service-role storage client.
+  const admin = createAdminClient();
+  if (!admin) return { status: "error", message: "Service role not configured" };
+  const { data: blob, error: dlErr } = await admin.storage
+    .from("documents")
+    .download(doc.storage_key);
+  if (dlErr || !blob) {
+    return { status: "error", message: dlErr?.message ?? "Could not load file" };
+  }
+  const arrayBuf = await blob.arrayBuffer();
+  const base64 = Buffer.from(arrayBuf).toString("base64");
+
+  const { createEnvelope } = await import("@/lib/docusign");
+  const result = await createEnvelope({
+    documentBase64: base64,
+    documentName: doc.filename ?? "Bazar document.pdf",
+    emailSubject:
+      opts.emailSubject ?? `Please sign — ${doc.kind}`,
+    signers: [
+      {
+        email: opts.signerEmail,
+        name: opts.signerName,
+        role: "Signer",
+      },
+    ],
+    // We tag with bazar_document_id so the DocuSign Connect webhook
+    // can map the envelope back to the right documents row.
+    customFields: {
+      bazar_document_id: doc.id,
+    },
+  });
+
+  if (!result.ok || !result.envelopeId) {
+    return {
+      status: "error",
+      message: result.reason ?? "DocuSign envelope creation failed",
+    };
+  }
+
+  // Flip the document status so the UI shows it's out for signature.
+  await admin
+    .from("documents")
+    .update({ status: "pending_review" })
+    .eq("id", doc.id);
+
+  await logAudit({
+    action: "document.sent_for_signature",
+    target_kind: "document",
+    target_id: doc.id,
+    after: { envelope_id: result.envelopeId, signer: opts.signerEmail },
+  });
+
+  revalidatePath(`/admin/deals/${doc.owner_id}`);
+  return { status: "ok", envelopeId: result.envelopeId };
+}

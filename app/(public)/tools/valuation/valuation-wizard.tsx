@@ -154,6 +154,7 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
   const [submitted, setSubmitted] = useState<{
+    id: string | null;
     lowAed: number;
     midAed: number;
     highAed: number;
@@ -216,7 +217,15 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
         area_id: state.area_id || null,
       });
       if (result.status === "ok") {
-        setSubmitted(result.estimate);
+        // result.estimate may be null if the heuristic couldn't run;
+        // we keep a Submitted shape regardless so the confirmation
+        // screen always renders.
+        setSubmitted({
+          id: result.id ?? null,
+          lowAed: result.estimate?.lowAed ?? 0,
+          midAed: result.estimate?.midAed ?? 0,
+          highAed: result.estimate?.highAed ?? 0,
+        });
         toast.success("Valuation request received.");
       } else {
         setSubmissionError(result.message);
@@ -231,6 +240,7 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
         ownerName={state.owner_name}
         ownerEmail={state.owner_email}
         estimate={submitted}
+        valuationId={submitted.id}
       />
     );
   }
@@ -980,10 +990,12 @@ function SubmittedConfirmation({
   ownerName,
   ownerEmail,
   estimate,
+  valuationId,
 }: {
   ownerName: string;
   ownerEmail: string;
   estimate: { lowAed: number; midAed: number; highAed: number } | null;
+  valuationId: string | null;
 }) {
   return (
     <section
@@ -1018,6 +1030,14 @@ function SubmittedConfirmation({
             <div className="text-[12.5px] text-bz-muted mt-1">
               midpoint AED {formatRangeAed(estimate.midAed)}
             </div>
+            {valuationId ? (
+              <a
+                href={`/api/pdf/valuation/${valuationId}`}
+                className="mt-5 inline-flex items-center gap-1.5 h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[13px] text-bz-ink-2 hover:border-bz-border-strong transition-colors"
+              >
+                Download PDF
+              </a>
+            ) : null}
           </div>
         ) : null}
       </div>
