@@ -94,7 +94,10 @@ export function MegamenuPanel({ tab }: Props) {
     // the right-edge bleed on every panel.
     <div className="bg-bz-bg border-b border-bz-border w-full">
       <div
-        className="mx-auto max-w-[1320px] px-12 py-10 grid gap-12"
+        // px-12 matches the homepage section gutter so the panel content
+        // tracks the same width as the rest of the site. min-h keeps every
+        // panel visually the same size regardless of column/tile count.
+        className="px-12 py-10 grid gap-12 min-h-[460px]"
         style={{ gridTemplateColumns: gridCols || "1fr" }}
       >
         {/* LEFT — title + columns */}
@@ -124,12 +127,18 @@ export function MegamenuPanel({ tab }: Props) {
           </div>
         ) : null}
 
-        {/* MIDDLE — featured tiles */}
+        {/* MIDDLE — featured tiles. Constrain the 1-tile case so the lone
+            tile stays square-ish instead of stretching the whole track.
+            `w-full max-w-…` (not just max-w) is needed: with grid-cols-1
+            and an `aspect-square` child, the container would otherwise
+            shrink to the child's intrinsic content width. */}
         {hasFeatured ? (
           <div
             className={cn(
-              "grid gap-4",
-              tab.featured.length === 2 ? "grid-cols-2" : "grid-cols-1",
+              "grid gap-4 self-start w-full",
+              tab.featured.length === 2
+                ? "grid-cols-2"
+                : "grid-cols-1 max-w-[320px] justify-self-center",
             )}
           >
             {tab.featured.map((tile) => (

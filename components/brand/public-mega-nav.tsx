@@ -46,13 +46,16 @@ function isActive(pathname: string | null, tab: MegamenuTab): boolean {
 }
 
 // Override class for NavigationMenuContent so each panel spans the full
-// header width (anchored to the header, not the trigger). `!`-suffix forces
-// the override against shadcn's viewport=false defaults
-// (`bg-popover ring-1 rounded-lg shadow` etc.). Pairs with `static` on the
-// parent NavigationMenuItem so `absolute left:0 right:0` walks past it and
-// resolves against the `relative` header.
+// viewport width regardless of where the trigger sits. `position: fixed`
+// (with !) overrides shadcn's `md:absolute` and bypasses the Radix-internal
+// `position:relative` wrapper around the NavigationMenu root that would
+// otherwise constrain the panel to the trigger row's width.
+//
+// `top-[72px]` matches the sticky header height so the panel docks
+// directly under it. `z-30` puts the panel above page content but below
+// the header (z-40), which keeps the trigger row clickable when open.
 const PANEL_CONTENT_CLASS =
-  "left-0! right-0! top-full! w-auto! mt-0! " +
+  "fixed! left-0! right-0! top-[72px]! w-auto! mt-0! z-30! " +
   "rounded-none! ring-0! bg-bz-bg! p-0! overflow-visible! " +
   "shadow-[0_12px_32px_-12px_rgba(0,0,0,0.18)]!";
 
