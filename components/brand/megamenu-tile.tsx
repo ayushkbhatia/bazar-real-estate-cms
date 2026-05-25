@@ -56,7 +56,10 @@ export function MegamenuTile({ tile, className }: Props) {
     <Link
       href={tile.href}
       className={cn(
-        "group relative flex flex-col justify-between min-h-[260px] rounded-xl overflow-hidden p-5 transition-transform hover:scale-[1.005]",
+        // aspect-square keeps the tile a true square regardless of column
+        // width — matches the design mockups where featured tiles read as
+        // image cards rather than wide banners.
+        "group relative flex flex-col justify-between aspect-square w-full rounded-xl overflow-hidden p-5 transition-transform hover:scale-[1.005]",
         variantClasses[tile.variant],
         className,
       )}
