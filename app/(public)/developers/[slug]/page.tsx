@@ -46,6 +46,14 @@ export default async function DeveloperProfilePage({
     ? []
     : await listDeveloperDevelopments(dev.id);
 
+  // T2-G: split into active vs handed-over so the page can show both in
+  // distinct sections.  The query returns everything published; we partition
+  // in JS rather than running two queries (the dataset is small).
+  const active = developments.filter((d) => d.status !== "handed_over");
+  const handedOver = developments
+    .filter((d) => d.status === "handed_over")
+    .slice(0, 6);
+
   return (
     <div className="bg-bz-bg">
       {/* Crumb */}
@@ -198,13 +206,13 @@ export default async function DeveloperProfilePage({
             <Link href="/developments">View off-plan index</Link>
           </Button>
         </div>
-        {developments.length === 0 ? (
-          <div className="mt-8 py-12 text-center text-[14px] text-bz-muted border border-dashed border-bz-border rounded-md">
+        {active.length === 0 ? (
+          <div className="mt-8 py-12 text-center text-[14px] text-bz-ink-2 border border-dashed border-bz-border rounded-md">
             No active developments published yet.
           </div>
         ) : (
           <div className="mt-8 grid grid-cols-3 gap-6">
-            {developments.map((d) => (
+            {active.map((d) => (
               <Link
                 key={d.id}
                 href={`/developments/${d.slug}`}
@@ -217,7 +225,7 @@ export default async function DeveloperProfilePage({
                   {d.name}
                 </h3>
                 {d.area ? (
-                  <div className="mt-2 text-[12.5px] text-bz-muted">
+                  <div className="mt-2 text-[12.5px] text-bz-ink-2">
                     {d.area.name}
                   </div>
                 ) : null}
@@ -227,7 +235,7 @@ export default async function DeveloperProfilePage({
                   </div>
                 ) : null}
                 {d.handover_date ? (
-                  <div className="mt-1 text-[11px] text-bz-muted">
+                  <div className="mt-1 text-[11px] text-bz-ink-2">
                     Handover · {d.handover_date}
                   </div>
                 ) : null}
@@ -236,6 +244,58 @@ export default async function DeveloperProfilePage({
           </div>
         )}
       </section>
+
+      {/* T2-G: Recently handed over — proof-of-delivery for buyers
+          evaluating the developer's track record on completed projects. */}
+      {handedOver.length > 0 ? (
+        <section className="px-12 pb-20 max-w-[1280px]">
+          <Eyebrow>Recently handed over</Eyebrow>
+          <div className="mt-2 flex items-end justify-between gap-8 flex-wrap">
+            <h2
+              className="serif text-[32px] leading-tight max-w-[28ch]"
+              style={{ letterSpacing: "-0.015em" }}
+            >
+              Delivered projects — the track record.
+            </h2>
+            <p className="text-[13px] text-bz-ink-2 max-w-[42ch]">
+              The strongest signal for an off-plan buyer is what the
+              developer has actually delivered. The {handedOver.length} most
+              recent below.
+            </p>
+          </div>
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {handedOver.map((d) => (
+              <Link
+                key={d.id}
+                href={`/developments/${d.slug}`}
+                className="group block rounded-md border border-bz-border bg-bz-bg p-6 hover:border-bz-border-strong transition-colors"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] uppercase tracking-wider text-bz-ink-2">
+                    Handed over
+                  </span>
+                  {d.handover_date ? (
+                    <span className="mono text-[11px] text-bz-ink-2">
+                      {d.handover_date}
+                    </span>
+                  ) : null}
+                </div>
+                <h3
+                  className="serif text-[22px] leading-tight mt-3 group-hover:text-bz-accent transition-colors"
+                  style={{ letterSpacing: "-0.012em" }}
+                >
+                  {d.name}
+                </h3>
+                {d.area ? (
+                  <div className="mt-2 text-[12.5px] text-bz-ink-2">
+                    {d.area.name}
+                  </div>
+                ) : null}
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

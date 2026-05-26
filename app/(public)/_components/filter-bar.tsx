@@ -30,8 +30,24 @@ const TYPE_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
   hotel_apartment: "Hotel apartment",
 };
 
-const BED_OPTIONS = [1, 2, 3, 4, 5] as const;
+// T2-A — beds/baths chips. Studio (0) anchors the left side; "+" caps stay
+// at 5 (beds) and 4 (baths) to match the `lib/queries/properties.ts` `>=`
+// semantics (that file is locked, so we don't push the cap upward here).
+// Lifting the cap to 6/5 is a follow-up that needs the query to teach
+// `beds=6 → gte 6` distinct from `beds=5 → gte 5`.
+const BED_OPTIONS = [0, 1, 2, 3, 4, 5] as const;
 const BATH_OPTIONS = [1, 2, 3, 4] as const;
+
+function bedLabel(n: number): string {
+  if (n === 0) return "Studio";
+  if (n === 5) return "5+";
+  return String(n);
+}
+
+function bathLabel(n: number): string {
+  if (n === 4) return "4+";
+  return String(n);
+}
 const UNSET = "__unset__";
 
 export type AreaOption = { slug: string; name: string };
@@ -173,21 +189,28 @@ export function FilterBar({ mode, areas }: Props) {
           </span>
           {BED_OPTIONS.map((n) => {
             const active = beds === n;
+            const label = bedLabel(n);
             return (
               <button
                 key={n}
                 type="button"
                 onClick={() => commit({ beds: active ? null : n })}
                 className={cn(
-                  "h-8 min-w-[34px] px-2 rounded text-[12.5px] font-medium border transition-colors",
+                  "h-8 px-2.5 rounded text-[12.5px] font-medium border transition-colors",
+                  // Studio chip needs more breathing room than the digits
+                  n === 0 ? "min-w-[58px]" : "min-w-[34px]",
                   active
                     ? "bg-bz-ink text-bz-bg border-bz-ink"
                     : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
                 )}
                 aria-pressed={active}
-                aria-label={`${n === 5 ? "5+" : n} bed${n === 1 ? "" : "s"}`}
+                aria-label={
+                  n === 0
+                    ? "Studio"
+                    : `${label} bed${n === 1 ? "" : "s"}`
+                }
               >
-                {n === 5 ? "5+" : String(n)}
+                {label}
               </button>
             );
           })}
@@ -200,6 +223,7 @@ export function FilterBar({ mode, areas }: Props) {
           </span>
           {BATH_OPTIONS.map((n) => {
             const active = baths === n;
+            const label = bathLabel(n);
             return (
               <button
                 key={n}
@@ -212,9 +236,9 @@ export function FilterBar({ mode, areas }: Props) {
                     : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
                 )}
                 aria-pressed={active}
-                aria-label={`${n === 4 ? "4+" : n} bath${n === 1 ? "" : "s"}`}
+                aria-label={`${label} bath${n === 1 ? "" : "s"}`}
               >
-                {n === 4 ? "4+" : String(n)}
+                {label}
               </button>
             );
           })}
