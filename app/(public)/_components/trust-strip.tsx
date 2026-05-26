@@ -1,5 +1,4 @@
 import { Star } from "lucide-react";
-import { Eyebrow } from "@/components/brand/eyebrow";
 import { DLD_BROKER_PERMIT, getGoogleReviewsSnapshot } from "@/lib/queries/trust";
 import { SEED_PRESS_LOGOS } from "@/lib/seeds/awards";
 
@@ -10,6 +9,11 @@ import { SEED_PRESS_LOGOS } from "@/lib/seeds/awards";
  * Bazar's boutique voice argues for fewer, sharper trust signals — Google
  * rating, DLD broker permit, three press mentions. We deliberately stop
  * short of the half-dozen-badge stack Metropolitan uses.
+ *
+ * Contrast notes: every text colour here is calibrated to ≥ 4.5:1 against
+ * the `bg-bz-surface-2` background (CI's axe-core gate enforces WCAG 2.1 AA).
+ * That means `text-bz-ink-2` for low-emphasis labels, never `text-bz-muted`
+ * on this surface, and no opacity dampers on the press logos.
  */
 export async function TrustStrip() {
   const reviews = await getGoogleReviewsSnapshot();
@@ -37,22 +41,23 @@ export async function TrustStrip() {
           <div>
             <div className="text-[14px] font-medium text-bz-ink">
               {reviews.rating.toFixed(1)} on {reviews.platform}
-              <span className="text-bz-muted font-normal">
+              <span className="text-bz-ink-2 font-normal">
                 {" "}· {reviews.count} reviews
               </span>
             </div>
-            <div className="text-[11px] text-bz-muted group-hover:text-bz-ink-2 transition-colors">
+            <div className="text-[11.5px] text-bz-ink-2 group-hover:text-bz-ink transition-colors">
               Read every review →
             </div>
           </div>
         </a>
 
-        {/* Press logos */}
-        <div className="flex items-center gap-7 justify-self-center text-bz-muted">
+        {/* Press logos — serif wordmark fallback until real assets land.
+            Kept at full opacity so the WCAG-AA contrast check passes. */}
+        <div className="flex items-center gap-7 justify-self-center text-bz-ink-2">
           {SEED_PRESS_LOGOS.slice(0, 4).map((p) => (
             <span
               key={p.id}
-              className="serif text-[15px] tracking-tight whitespace-nowrap opacity-80 hover:opacity-100 transition-opacity"
+              className="serif text-[15px] tracking-tight whitespace-nowrap"
               style={{ letterSpacing: "-0.01em" }}
               title={`As referenced in ${p.label}`}
             >
@@ -63,8 +68,10 @@ export async function TrustStrip() {
 
         {/* Permit */}
         <div className="justify-self-end text-right">
-          <Eyebrow>DLD broker permit</Eyebrow>
-          <div className="mono text-[12.5px] text-bz-ink-2 mt-1">
+          <div className="text-[11px] uppercase tracking-wider text-bz-ink-2">
+            DLD broker permit
+          </div>
+          <div className="mono text-[12.5px] text-bz-ink mt-1">
             {DLD_BROKER_PERMIT}
           </div>
         </div>

@@ -13,9 +13,8 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
 import {
   DEFAULT_PREFERENCES,
@@ -52,34 +51,87 @@ function writeLocalStorage(prefs: Preferences) {
   }
 }
 
+/**
+ * External-store snapshot for `useSyncExternalStore`. Reads the cookie
+ * first (preferred — the popover writes it) and falls back to
+ * localStorage. We memoise the last result so React's snapshot-equality
+ * check can short-circuit re-renders.
+ */
+let cachedSnapshot: Preferences | null = null;
+let lastSnapshotKey = "";
+
+function readClientPrefs(): Preferences {
+  if (typeof document === "undefined" && typeof window === "undefined") {
+    return DEFAULT_PREFERENCES;
+  }
+  const cookieMatch =
+    typeof document !== "undefined"
+      ? document.cookie.match(/(?:^|; )bz_prefs=([^;]*)/)
+      : null;
+  const raw = cookieMatch
+    ? decodeURIComponent(cookieMatch[1]!)
+    : (typeof window !== "undefined" &&
+        window.localStorage.getItem(LS_KEY)) ||
+      "";
+  if (raw === lastSnapshotKey && cachedSnapshot) return cachedSnapshot;
+  lastSnapshotKey = raw;
+  cachedSnapshot = decodePrefs(raw);
+  return cachedSnapshot;
+}
+
+function getServerSnapshot(): Preferences {
+  return DEFAULT_PREFERENCES;
+}
+
+/**
+ * Tiny pub/sub so updates from `setPrefs` flow through `useSyncExternalStore`.
+ * `window.storage` events handle cross-tab; the in-tab listener set below
+ * handles same-tab updates from the popover.
+ */
+const subscribers = new Set<() => void>();
+function notifySubscribers() {
+  cachedSnapshot = null;
+  lastSnapshotKey = "";
+  subscribers.forEach((cb) => cb());
+}
+
+function subscribe(callback: () => void): () => void {
+  subscribers.add(callback);
+  function onStorage(e: StorageEvent) {
+    if (e.key === LS_KEY) callback();
+  }
+  if (typeof window !== "undefined") {
+    window.addEventListener("storage", onStorage);
+  }
+  return () => {
+    subscribers.delete(callback);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("storage", onStorage);
+    }
+  };
+}
+
 export function PreferencesProvider({
   children,
-  initial,
 }: {
   children: React.ReactNode;
-  initial?: Preferences;
 }) {
-  const [prefs, setPrefsState] = useState<Preferences>(
-    initial ?? DEFAULT_PREFERENCES,
+  // useSyncExternalStore is React's blessed way to subscribe to an external
+  // store without the setState-in-effect anti-pattern. On the server it
+  // returns DEFAULT_PREFERENCES (matching the static HTML); on the client
+  // it reads the cookie/localStorage and re-renders if the snapshot differs.
+  const prefs = useSyncExternalStore(
+    subscribe,
+    readClientPrefs,
+    getServerSnapshot,
   );
 
-  // Cross-tab sync: when another tab updates localStorage, re-decode and apply
-  useEffect(() => {
-    function onStorage(e: StorageEvent) {
-      if (e.key !== LS_KEY) return;
-      setPrefsState(decodePrefs(e.newValue ?? ""));
-    }
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
   const setPrefs = useCallback((patch: Partial<Preferences>) => {
-    setPrefsState((current) => {
-      const next: Preferences = { ...current, ...patch };
-      writeCookie(next);
-      writeLocalStorage(next);
-      return next;
-    });
+    const current = readClientPrefs();
+    const next: Preferences = { ...current, ...patch };
+    writeCookie(next);
+    writeLocalStorage(next);
+    notifySubscribers();
   }, []);
 
   const setCurrency = useCallback((c: Currency) => setPrefs({ currency: c }), [setPrefs]);

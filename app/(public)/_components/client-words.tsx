@@ -1,17 +1,23 @@
 import { Quote } from "lucide-react";
-import { Eyebrow } from "@/components/brand/eyebrow";
 import { SEED_TESTIMONIALS } from "@/lib/seeds/awards";
 
 /**
  * Client testimonials section — usable on home (subset) and /about (full).
  * Voice-led, editorial. Three quotes is the soft cap; more than that the
  * section starts to feel performative.
+ *
+ * Contrast note: the section uses `bg-bz-surface-2`, which the `.eyebrow`
+ * default text colour (`text-bz-muted`) fails WCAG-AA against. We render
+ * the eyebrow inline with `text-bz-ink-2` here rather than the shared
+ * `<Eyebrow>` component so the home-page axe gate stays green.
  */
 export function ClientWords({ limit = 3 }: { limit?: number }) {
   const items = SEED_TESTIMONIALS.slice(0, limit);
   return (
     <section className="px-12 py-16 border-t border-bz-border bg-bz-surface-2">
-      <Eyebrow>Client words</Eyebrow>
+      <div className="text-[11px] font-medium uppercase text-bz-ink-2" style={{ letterSpacing: "0.12em" }}>
+        Client words
+      </div>
       <h2
         className="serif text-[36px] mt-2 leading-tight max-w-[24ch]"
         style={{ letterSpacing: "-0.02em" }}

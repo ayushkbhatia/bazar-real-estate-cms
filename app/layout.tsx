@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { PostHogProvider } from "@/lib/posthog";
 import { PreferencesProvider } from "@/lib/preferences";
-import { readPreferencesFromCookie } from "@/lib/preferences/server";
 import { ConsentProvider } from "./_consent/consent-provider";
 import { CookieBanner } from "./_consent/cookie-banner";
 import { VercelAnalyticsGate } from "./_consent/analytics-gate";
@@ -46,14 +45,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Seed the preferences provider from the cookie so SSR matches first paint.
-  // Phase 2 of T1-B: makes the popover SSR-stable.
-  const initialPrefs = await readPreferencesFromCookie();
+  // Preferences provider initialises with defaults; the client effect in
+  // PreferencesProvider rehydrates from cookie/localStorage on mount. We
+  // deliberately do NOT call `cookies()` here because that would opt every
+  // page (including statically-cached /about etc.) into dynamic rendering.
+  // The brief render flicker — only visible for non-AED/ft² users — is the
+  // trade-off; addressing it would mean either a script-tag preamble or
+  // moving the provider down to (public)/layout.tsx (a meaningful refactor
+  // for marginal benefit). Documented as a Tier-1 follow-up.
 
   return (
     <html
@@ -72,7 +76,7 @@ export default async function RootLayout({
         <ConsentProvider>
           <NuqsAdapter>
             <PostHogProvider>
-              <PreferencesProvider initial={initialPrefs}>
+              <PreferencesProvider>
                 <TooltipProvider delayDuration={150}>{children}</TooltipProvider>
               </PreferencesProvider>
             </PostHogProvider>
