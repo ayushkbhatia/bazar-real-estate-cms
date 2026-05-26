@@ -52,6 +52,10 @@
     {
       "path": "/api/cron/dld-import",
       "schedule": "0 5 * * 1"
+    },
+    {
+      "path": "/api/cron/market-reports-refresh",
+      "schedule": "0 5 1 1,4,7,10 *"
     }
   ]
 }

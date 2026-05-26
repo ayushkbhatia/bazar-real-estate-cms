@@ -21,6 +21,8 @@ import { InsightsTeaser } from "./_components/insights-teaser";
 import { CtaBanner } from "./_components/cta-banner";
 import { SavedIdsProvider } from "./_components/saved-ids-provider";
 import { ListingCardSaveable } from "./_components/listing-card-saveable";
+import { TrustStrip } from "./_components/trust-strip";
+import { ClientWords } from "./_components/client-words";
 
 export const revalidate = 60;
 
@@ -67,6 +69,9 @@ export default async function HomePage({
       <HeroForVariant variant={variant} />
 
       <MarketStatsStrip />
+
+      {/* T1-D — Trust signals strip between market stats and featured listings */}
+      <TrustStrip />
 
       {/* Featured listings — 6 cards */}
       <section className="px-12 py-20">
@@ -128,6 +133,7 @@ export default async function HomePage({
       <AreasMosaic />
       <OffPlanStrip />
       <ServicesBand />
+      <ClientWords limit={3} />
       <InsightsTeaser />
       <CtaBanner />
     </div>
