@@ -4,6 +4,8 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { PostHogProvider } from "@/lib/posthog";
+import { PreferencesProvider } from "@/lib/preferences";
+import { readPreferencesFromCookie } from "@/lib/preferences/server";
 import { ConsentProvider } from "./_consent/consent-provider";
 import { CookieBanner } from "./_consent/cookie-banner";
 import { VercelAnalyticsGate } from "./_consent/analytics-gate";
@@ -44,11 +46,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Seed the preferences provider from the cookie so SSR matches first paint.
+  // Phase 2 of T1-B: makes the popover SSR-stable.
+  const initialPrefs = await readPreferencesFromCookie();
+
   return (
     <html
       lang="en"
@@ -66,7 +72,9 @@ export default function RootLayout({
         <ConsentProvider>
           <NuqsAdapter>
             <PostHogProvider>
-              <TooltipProvider delayDuration={150}>{children}</TooltipProvider>
+              <PreferencesProvider initial={initialPrefs}>
+                <TooltipProvider delayDuration={150}>{children}</TooltipProvider>
+              </PreferencesProvider>
             </PostHogProvider>
           </NuqsAdapter>
           <Toaster richColors closeButton position="bottom-right" />

@@ -4,6 +4,8 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
+import { AwardsBand } from "../_components/awards-band";
+import { ClientWords } from "../_components/client-words";
 
 export const metadata: Metadata = {
   title: "About Bazar",
@@ -112,6 +114,10 @@ export default function AboutPage() {
           ))}
         </div>
       </section>
+
+      {/* T1-D — Awards band + client words after principles */}
+      <AwardsBand />
+      <ClientWords limit={3} />
 
       {/* Team teaser */}
       <section className="border-t border-bz-border bg-bz-surface">

@@ -21,6 +21,16 @@ import { PaymentPlanCalculator } from "./_payment-plan";
 import { UnitsTable } from "./_units-table";
 import { LeadAdvisorBanner } from "./_components/lead-advisor-banner";
 import { BrochureGate } from "./_components/brochure-gate";
+import { DevelopmentFaq } from "./_components/development-faq";
+import { DeveloperProjectsStrip } from "./_components/developer-projects-strip";
+import { NearbyDevelopments } from "./_components/nearby-developments";
+import { FeatureBlocks } from "./_components/feature-blocks";
+import { MapEmbed } from "../../p/[slug]/_components/map-embed";
+import {
+  getDevelopmentMeta,
+  listOtherDevelopmentsByDeveloper,
+  listOtherDevelopmentsInArea,
+} from "@/lib/queries/development-extras";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
 
 export const revalidate = 60;
@@ -72,8 +82,10 @@ const SECTIONS = [
   "Payment plan",
   "Units",
   "Floor plans",
+  "Features",
   "Location",
   "Developer",
+  "FAQ",
   "Advisor",
 ];
 
@@ -82,11 +94,27 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const development = await getPublishedDevelopmentBySlug(slug);
   if (!development) notFound();
 
-  const [units, floorPlans, media] = await Promise.all([
-    listDevelopmentUnits(development.id),
-    listFloorPlans(development.id),
-    listDevelopmentMedia(development.id),
-  ]);
+  const [units, floorPlans, media, meta, siblingsByDeveloper, siblingsInArea] =
+    await Promise.all([
+      listDevelopmentUnits(development.id),
+      listFloorPlans(development.id),
+      listDevelopmentMedia(development.id),
+      getDevelopmentMeta(development.id),
+      development.developer_id
+        ? listOtherDevelopmentsByDeveloper({
+            excludeId: development.id,
+            developerId: development.developer_id,
+            limit: 4,
+          })
+        : Promise.resolve([]),
+      development.area_id
+        ? listOtherDevelopmentsInArea({
+            excludeId: development.id,
+            areaId: development.area_id,
+            limit: 3,
+          })
+        : Promise.resolve([]),
+    ]);
 
   // Sprint 5a: lead advisor lookup — pick seeded advisor whose areas
   // overlap with the development's area. Sprint 9 wires real assignment.
@@ -466,6 +494,16 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         </section>
       ) : null}
 
+      {/* Features (T1-C) */}
+      <section id="features" className="scroll-mt-16">
+        <FeatureBlocks
+          developmentName={development.name}
+          developmentSlug={development.slug}
+          blocks={meta?.feature_blocks}
+          amenitiesFallback={development.amenities}
+        />
+      </section>
+
       {/* Location */}
       <section id="location" className="px-12 pb-16 scroll-mt-16">
         <Eyebrow>Location</Eyebrow>
@@ -477,13 +515,27 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         </h2>
         <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
           Master-plan position + commute times to key Abu Dhabi destinations.
-          The interactive map embed lands in Sprint 12 alongside Mapbox.
         </p>
-        <PlaceholderImage
-          label={`${development.slug} · map`}
-          className="mt-6 w-full aspect-[16/9] rounded-lg"
-        />
+        {meta?.coords ? (
+          <MapEmbed
+            lat={meta.coords.lat}
+            lng={meta.coords.lng}
+            title={development.name}
+            className="mt-6 w-full aspect-[16/9] rounded-lg overflow-hidden"
+          />
+        ) : (
+          <PlaceholderImage
+            label={`${development.slug} · map`}
+            className="mt-6 w-full aspect-[16/9] rounded-lg"
+          />
+        )}
       </section>
+
+      {/* Nearby developments (T1-C) */}
+      <NearbyDevelopments
+        areaName={development.area?.name ?? "this area"}
+        nearby={siblingsInArea}
+      />
 
       {/* Developer */}
       {development.developer_profile ? (
@@ -513,6 +565,17 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </div>
         </section>
       ) : null}
+
+      {/* Other projects by this developer (T1-C) */}
+      {development.developer?.name ? (
+        <DeveloperProjectsStrip
+          developerName={development.developer.name}
+          siblings={siblingsByDeveloper}
+        />
+      ) : null}
+
+      {/* FAQ (T1-C) — JSON-LD FAQPage schema for SEO */}
+      <DevelopmentFaq development={development} curated={meta?.faq} />
 
       {/* Lead advisor banner */}
       <LeadAdvisorBanner

@@ -3,6 +3,7 @@ import { Check } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { listAreaOptions } from "@/lib/queries/areas";
 import { ValuationWizard } from "./valuation-wizard";
+import { ValuationLeadGate } from "./_components/lead-gate";
 
 export const metadata: Metadata = {
   title: "Get a valuation",
@@ -52,6 +53,16 @@ export default async function ValuationPage() {
             </li>
           ))}
         </ul>
+
+        {/* T1-E shortcut CTA: skip the wizard, just request the advisor
+            report directly. The wizard still runs the instant estimate for
+            anyone who wants the dopamine first. */}
+        <div className="mt-8 inline-flex gap-3 items-center">
+          <ValuationLeadGate triggerLabel="Skip to advisor-prepared report" />
+          <span className="text-[12.5px] text-bz-muted">
+            Already know your figures? Get the report straight to your inbox.
+          </span>
+        </div>
       </section>
 
       <ValuationWizard areas={areas} />
