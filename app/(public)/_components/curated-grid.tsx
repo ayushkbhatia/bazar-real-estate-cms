@@ -85,6 +85,7 @@ export function CuratedGrid({
                   >
                     <ListingCardSaveable
                       price={formatPriceAED(row.price_aed)}
+                      priceAed={row.price_aed}
                       title={row.title}
                       location={row.areas?.name ?? "United Arab Emirates"}
                       beds={row.beds}

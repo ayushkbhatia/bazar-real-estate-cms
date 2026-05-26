@@ -14,6 +14,8 @@ import {
 import { placeJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
 import { LifestyleDossier } from "./_components/lifestyle-dossier";
+import { AreaReportsRail } from "../../_components/market-context-link";
+import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
 
 export async function generateStaticParams() {
   const entries = await listAreasWithCounts();
@@ -196,8 +198,22 @@ export default async function AreaProfilePage({
                 >
                   <div>
                     <div className="text-[15px] text-bz-ink">{s.name}</div>
-                    <div className="text-[12px] text-bz-muted">
+                    <div className="text-[12px] text-bz-ink-2">
                       {s.curriculum}
+                      {s.rating ? (
+                        <>
+                          {" · "}
+                          <span
+                            className={
+                              s.rating === "Outstanding"
+                                ? "text-bz-accent font-medium"
+                                : "text-bz-ink-2"
+                            }
+                          >
+                            ADEK / KHDA · {s.rating}
+                          </span>
+                        </>
+                      ) : null}
                     </div>
                   </div>
                   <div className="mono text-[12px] text-bz-ink-2">
@@ -217,6 +233,34 @@ export default async function AreaProfilePage({
               ))}
             </ul>
           </div>
+        </div>
+      </section>
+
+      {/* T1-A cleanup: cross-link rail into the area's quarterly market
+          reports.  Closes the moat-orphan gap — visitors browsing the
+          area can pivot directly into the data. */}
+      <AreaReportsRail area_slug={area.slug} area_name={area.name} />
+
+      {/* T1-E cleanup: lead-gate surfaced on the area page — owners of
+          property in this community are the highest-intent valuation
+          lead source. */}
+      <section className="px-12 py-12 max-w-[1280px] border-t border-bz-border bg-bz-surface-2">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center">
+          <div>
+            <Eyebrow>Own property in {area.name}?</Eyebrow>
+            <h2
+              className="serif text-[28px] mt-2 leading-tight max-w-[36ch]"
+              style={{ letterSpacing: "-0.018em" }}
+            >
+              See what an advisor would price it at, free.
+            </h2>
+            <p className="mt-3 text-[14px] text-bz-ink-2 max-w-[58ch]">
+              Instant data-backed range from our model, then a senior
+              advisor reviews and sends a refined valuation within 24
+              hours.
+            </p>
+          </div>
+          <ValuationLeadGate triggerLabel={`Value my ${area.name} property`} />
         </div>
       </section>
 

@@ -3,6 +3,7 @@ import { PublicFooter } from "@/components/brand/public-footer";
 import { getPublishedMegamenu } from "@/lib/queries/megamenu";
 import { PreferencesPopover } from "./_components/preferences-popover";
 import { ShortlistDrawer } from "./_components/shortlist-drawer";
+import { FooterTrust } from "./_components/footer-trust";
 
 export default async function PublicLayout({
   children,
@@ -31,6 +32,9 @@ export default async function PublicLayout({
         with the advisor-contact rail at bottom-right.
       */}
       <ShortlistDrawer />
+      {/* T1.5 quick win: single-line trust signal above the global footer.
+          Wraps the locked PublicFooter rather than editing it. */}
+      <FooterTrust />
       <PublicFooter />
     </>
   );

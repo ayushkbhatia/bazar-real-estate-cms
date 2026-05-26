@@ -28,7 +28,9 @@ import { FeatureBlocks } from "./_components/feature-blocks";
 import { FloorplanGate } from "./_components/floorplan-gate";
 import { MapEmbed } from "../../p/[slug]/_components/map-embed";
 import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
+import { MarketContextBlock } from "../../_components/market-context-link";
 import {
+  getDevelopmentCoordsBulk,
   getDevelopmentMeta,
   listOtherDevelopmentsByDeveloper,
   listOtherDevelopmentsInArea,
@@ -117,6 +119,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           })
         : Promise.resolve([]),
     ]);
+
+  // T1-C cleanup: bulk coords lookup for the "Future developments around" map.
+  // Skips the round-trip when there are no siblings to plot.
+  const siblingCoords = siblingsInArea.length
+    ? await getDevelopmentCoordsBulk(siblingsInArea.map((d) => d.id))
+    : {};
 
   // Sprint 5a: lead advisor lookup — pick seeded advisor whose areas
   // overlap with the development's area. Sprint 9 wires real assignment.
@@ -546,11 +554,32 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         )}
       </section>
 
-      {/* Nearby developments (T1-C) */}
+      {/* Nearby developments (T1-C + T1-C cleanup: real Mapbox map) */}
       <NearbyDevelopments
         areaName={development.area?.name ?? "this area"}
         nearby={siblingsInArea}
+        primary={{
+          id: development.id,
+          name: development.name,
+          slug: development.slug,
+          coords: meta?.coords ?? null,
+        }}
+        siblingCoords={siblingCoords}
       />
+
+      {/* T1-A cleanup: market context — links off-plan buyers to the
+          area's resale market data so they can project the 3-5 year
+          exit case before they commit. */}
+      {development.area?.slug ? (
+        <section className="px-12 pb-12 max-w-[820px]">
+          <MarketContextBlock
+            area_slug={development.area.slug}
+            area_name={development.area.name}
+            property_type={null}
+            variant="inline"
+          />
+        </section>
+      ) : null}
 
       {/* Developer */}
       {development.developer_profile ? (
@@ -599,10 +628,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       />
 
       {/* T2-D: floating advisor contact rail — same component used on
-          property detail. Desktop sticky / mobile bottom-dock. */}
+          property detail. Desktop sticky / mobile bottom-dock.
+          T2-D cleanup: adds Email + Call-me-back to the action set. */}
       <AdvisorContactRail
         advisorName={leadAdvisor.display_name}
         advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone ?? null}
+        advisorEmail={leadAdvisor.email ?? null}
         contextRef={development.name}
         kind="development"
       />
