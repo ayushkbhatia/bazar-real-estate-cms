@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { listAgents } from "@/lib/queries/agents";
+import { DESK_INTRO, DESK_LABEL, groupByDesk } from "@/lib/agents/desk";
 
 export const metadata: Metadata = {
   title: "Our team",
@@ -12,6 +13,10 @@ export const metadata: Metadata = {
 
 export default async function AgentsIndexPage() {
   const agents = await listAgents();
+  // T3-A: group by desk so the team page reads as an org chart rather than
+  // a flat grid. Order: Leadership → Buy-side → Off-plan → Lettings.
+  const grouped = groupByDesk(agents);
+
   return (
     <div className="bg-bz-bg">
       <section className="px-12 pt-20 pb-14 max-w-[1200px]">
@@ -30,56 +35,67 @@ export default async function AgentsIndexPage() {
         </p>
       </section>
 
-      <section className="px-12 pb-24 max-w-[1280px]">
-        <div className="grid grid-cols-3 gap-8 gap-y-12">
-          {agents.map((a) => (
-            <Link
-              key={a.user_id}
-              href={`/agents/${a.slug}`}
-              className="group block"
-            >
-              {a.photo_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={a.photo_url}
-                  alt={a.display_name}
-                  className="w-full aspect-[4/5] rounded-md object-cover"
-                />
-              ) : (
-                <PlaceholderImage
-                  label={a.slug}
-                  className="w-full aspect-[4/5] rounded-md"
-                />
-              )}
-              <div className="mt-4">
-                <div className="text-[16px] text-bz-ink group-hover:text-bz-accent transition-colors">
-                  {a.display_name}
-                </div>
-                {a.title ? (
-                  <div className="text-[12.5px] text-bz-muted mt-0.5">
-                    {a.title}
+      {grouped.map(([desk, deskAgents]) => (
+        <section
+          key={desk}
+          className="px-12 pb-20 max-w-[1280px] border-t border-bz-border"
+        >
+          <div className="pt-14 mb-10">
+            <Eyebrow>{DESK_LABEL[desk]}</Eyebrow>
+            <p className="mt-3 text-[15px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+              {DESK_INTRO[desk]}
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 gap-y-12">
+            {deskAgents.map((a) => (
+              <Link
+                key={a.user_id}
+                href={`/agents/${a.slug}`}
+                className="group block"
+              >
+                {a.photo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={a.photo_url}
+                    alt={a.display_name}
+                    className="w-full aspect-[4/5] rounded-md object-cover"
+                  />
+                ) : (
+                  <PlaceholderImage
+                    label={a.slug}
+                    className="w-full aspect-[4/5] rounded-md"
+                  />
+                )}
+                <div className="mt-4">
+                  <div className="text-[16px] text-bz-ink group-hover:text-bz-accent transition-colors">
+                    {a.display_name}
                   </div>
-                ) : null}
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {a.specialties.slice(0, 3).map((s) => (
-                    <span
-                      key={s}
-                      className="inline-flex items-center h-6 px-2 rounded-sm border border-bz-border text-[11px] text-bz-ink-2"
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </div>
-                {a.languages.length > 0 ? (
-                  <div className="mt-3 mono text-[11px] text-bz-muted">
-                    {a.languages.join(" · ")}
+                  {a.title ? (
+                    <div className="text-[12.5px] text-bz-ink-2 mt-0.5">
+                      {a.title}
+                    </div>
+                  ) : null}
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {a.specialties.slice(0, 3).map((s) => (
+                      <span
+                        key={s}
+                        className="inline-flex items-center h-6 px-2 rounded-sm border border-bz-border text-[11px] text-bz-ink-2"
+                      >
+                        {s}
+                      </span>
+                    ))}
                   </div>
-                ) : null}
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+                  {a.languages.length > 0 ? (
+                    <div className="mt-3 mono text-[11px] text-bz-ink-2">
+                      {a.languages.join(" · ")}
+                    </div>
+                  ) : null}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
