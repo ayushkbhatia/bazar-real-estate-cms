@@ -42,6 +42,8 @@ import { AdvisorNote } from "./_components/advisor-note";
 import { TrueCostBlock } from "./_components/true-cost-block";
 import { AgentCard } from "./_components/agent-card";
 import { ScheduleViewing } from "./_components/schedule-viewing";
+import { ViewingCta } from "./_components/viewing-cta";
+import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
 
 export const revalidate = 60;
 
@@ -407,10 +409,20 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         <aside className="sticky top-6 self-start space-y-4">
           <AgentCard agent={leadAdvisor} />
 
-          <ScheduleViewing
-            propertyId={property.id}
+          {/* T2-C: video tour + live viewing dual CTA above the existing
+              schedule-viewing form. The "Live viewing" pill anchor-jumps
+              down to the form so we keep the existing flow intact. */}
+          <ViewingCta
             propertyReference={property.reference}
+            propertyTitle={property.title}
           />
+
+          <div id="schedule-viewing" className="scroll-mt-24">
+            <ScheduleViewing
+              propertyId={property.id}
+              propertyReference={property.reference}
+            />
+          </div>
 
           <div
             id="send-brief"
@@ -488,6 +500,15 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           </div>
         </section>
       ) : null}
+
+      {/* T2-D: floating advisor contact rail. Fades in past the hero on
+          desktop, slides up as a mobile bottom dock. */}
+      <AdvisorContactRail
+        advisorName={leadAdvisor.display_name}
+        advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone ?? null}
+        contextRef={property.reference}
+        kind="property"
+      />
     </article>
   );
 }

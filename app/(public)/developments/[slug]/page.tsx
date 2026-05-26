@@ -25,7 +25,9 @@ import { DevelopmentFaq } from "./_components/development-faq";
 import { DeveloperProjectsStrip } from "./_components/developer-projects-strip";
 import { NearbyDevelopments } from "./_components/nearby-developments";
 import { FeatureBlocks } from "./_components/feature-blocks";
+import { FloorplanGate } from "./_components/floorplan-gate";
 import { MapEmbed } from "../../p/[slug]/_components/map-embed";
+import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
 import {
   getDevelopmentMeta,
   listOtherDevelopmentsByDeveloper,
@@ -413,39 +415,52 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             How the units lay out
           </h2>
           <div className="grid grid-cols-3 gap-5 mt-6">
-            {floorPlans.map((fp) => (
-              <div
-                key={fp.id}
-                className="rounded-lg border border-bz-border bg-bz-surface p-4"
-              >
-                {fp.media ? (
-                  <div className="relative aspect-square rounded">
-                    <Image
-                      src={mediaPublicUrl(fp.media.storage_key)}
-                      alt={fp.media.alt_text ?? fp.label}
-                      fill
-                      sizes="33vw"
-                      className="object-cover rounded"
+            {floorPlans.map((fp) =>
+              meta?.floorplan_gated ? (
+                // T2-B: gated when `development.meta.floorplan_gated === true`.
+                // Renders a blurred preview behind a lead modal; the request
+                // funnels through the valuation-lead endpoint until we want
+                // separate conversion telemetry for floor-plan requests.
+                <FloorplanGate
+                  key={fp.id}
+                  developmentName={development.name}
+                  developmentSlug={development.slug}
+                  plan={fp}
+                />
+              ) : (
+                <div
+                  key={fp.id}
+                  className="rounded-lg border border-bz-border bg-bz-surface p-4"
+                >
+                  {fp.media ? (
+                    <div className="relative aspect-square rounded">
+                      <Image
+                        src={mediaPublicUrl(fp.media.storage_key)}
+                        alt={fp.media.alt_text ?? fp.label}
+                        fill
+                        sizes="33vw"
+                        className="object-cover rounded"
+                      />
+                    </div>
+                  ) : (
+                    <PlaceholderImage
+                      label={fp.label
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, "-")}
+                      className="aspect-square rounded"
                     />
-                  </div>
-                ) : (
-                  <PlaceholderImage
-                    label={fp.label
-                      .toLowerCase()
-                      .replace(/[^a-z0-9]+/g, "-")}
-                    className="aspect-square rounded"
-                  />
-                )}
-                <div className="flex justify-between items-center mt-3">
-                  <div>
-                    <div className="text-[14px] font-medium">{fp.label}</div>
-                    <div className="text-[11.5px] text-bz-muted">
-                      {fp.area_ft2 ? `${fp.area_ft2.toLocaleString()} ft²` : "—"}
+                  )}
+                  <div className="flex justify-between items-center mt-3">
+                    <div>
+                      <div className="text-[14px] font-medium">{fp.label}</div>
+                      <div className="text-[11.5px] text-bz-ink-2">
+                        {fp.area_ft2 ? `${fp.area_ft2.toLocaleString()} ft²` : "—"}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
         </section>
       ) : null}
@@ -581,6 +596,15 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       <LeadAdvisorBanner
         agent={leadAdvisor}
         developmentName={development.name}
+      />
+
+      {/* T2-D: floating advisor contact rail — same component used on
+          property detail. Desktop sticky / mobile bottom-dock. */}
+      <AdvisorContactRail
+        advisorName={leadAdvisor.display_name}
+        advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone ?? null}
+        contextRef={development.name}
+        kind="development"
       />
     </article>
   );
