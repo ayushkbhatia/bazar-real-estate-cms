@@ -1,6 +1,6 @@
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import type { NamedFeatureBlock } from "@/lib/queries/development-extras";
+import { FeatureRow } from "./feature-row";
 
 type Props = {
   developmentName: string;
@@ -54,40 +54,11 @@ export function FeatureBlocks({
   );
 }
 
-function FeatureRow({
-  block,
-  reverse,
-  slug,
-}: {
-  block: NamedFeatureBlock;
-  reverse: boolean;
-  slug: string;
-}) {
-  return (
-    <div
-      className={`grid grid-cols-1 md:grid-cols-2 gap-10 items-center ${reverse ? "md:[&>*:first-child]:order-2" : ""}`}
-    >
-      <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
-        <PlaceholderImage
-          label={`${slug}-${block.key}`}
-          className="absolute inset-0 w-full h-full"
-        />
-      </div>
-      <div>
-        <div className="eyebrow">{block.key.replace(/[-_]/g, " ")}</div>
-        <h3
-          className="serif text-[32px] mt-2 leading-tight"
-          style={{ letterSpacing: "-0.02em" }}
-        >
-          {block.title}
-        </h3>
-        <p className="mt-4 text-[15.5px] text-bz-ink-2 leading-[1.7] max-w-[52ch]">
-          {block.copy}
-        </p>
-      </div>
-    </div>
-  );
-}
+/**
+ * T3-D: the row component now lives in its own client file (`feature-row.tsx`)
+ * so it can hold the IntersectionObserver-driven reveal logic. This server
+ * file stays a thin wrapper around the section heading + iteration.
+ */
 
 /**
  * Generate narrative-block stubs from the flat `amenities[]` array. Keeps the

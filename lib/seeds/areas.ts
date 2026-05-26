@@ -22,6 +22,18 @@ export type SeedAreaGuide = {
   schools: { name: string; curriculum: string; distance_km: number }[];
   amenities: string[];
   similar_areas: string[];
+  // T3-E additions — all optional so existing seeds without these fields
+  // continue to render; the new sections drop quietly when missing.
+  /** Time-to-destination chips: "Corniche · 14 min · car" etc. */
+  commute_chips?: {
+    label: string;
+    minutes: number;
+    mode: "car" | "metro" | "walk";
+  }[];
+  /** Editorial lifestyle prose — what the area actually feels like. */
+  lifestyle_prose?: string;
+  /** A handful of dining picks for the lifestyle strip. */
+  dining_picks?: { name: string; kind: string; note: string }[];
 };
 
 export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
@@ -52,6 +64,37 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "9-hole golf course",
     ],
     similar_areas: ["yas-island", "al-raha"],
+    commute_chips: [
+      { label: "Saadiyat Beach", minutes: 4, mode: "car" },
+      { label: "Corniche", minutes: 14, mode: "car" },
+      { label: "Galleria Mall", minutes: 12, mode: "car" },
+      { label: "Abu Dhabi airport", minutes: 22, mode: "car" },
+      { label: "Louvre Abu Dhabi", minutes: 7, mode: "car" },
+    ],
+    lifestyle_prose:
+      "Quiet weekday mornings — the beach is genuinely empty most days. Things pick up Thursday evening, peak around Friday brunch (book Buddha Bar Beach a week ahead), then ease into a slower Saturday. The island feels lived-in rather than visited; weekend traffic is half what you'd see on Yas.",
+    dining_picks: [
+      {
+        name: "Buddha Bar Beach",
+        kind: "Asian / waterfront",
+        note: "Friday brunch is the social anchor of the island.",
+      },
+      {
+        name: "Niri",
+        kind: "Japanese, Saadiyat Rotana",
+        note: "Best omakase outside the city centre.",
+      },
+      {
+        name: "Beach House",
+        kind: "Mediterranean",
+        note: "Sunday brunch with kids welcome — the family-friendly default.",
+      },
+      {
+        name: "Cipriani",
+        kind: "Italian, Yacht Club",
+        note: "Special-occasion dinner. Make the reservation in advance.",
+      },
+    ],
   },
   {
     slug: "yas-island",
@@ -79,6 +122,32 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Etihad Arena",
     ],
     similar_areas: ["saadiyat-island", "al-reem-island"],
+    commute_chips: [
+      { label: "Yas Mall", minutes: 4, mode: "car" },
+      { label: "Yas Beach", minutes: 6, mode: "car" },
+      { label: "Abu Dhabi airport", minutes: 15, mode: "car" },
+      { label: "Corniche", minutes: 28, mode: "car" },
+      { label: "Saadiyat", minutes: 18, mode: "car" },
+    ],
+    lifestyle_prose:
+      "Loud where Saadiyat is quiet — F1 weekend turns the entire island into a concert venue, Yas Mall fills up Thursday evenings, and the marina restaurants run late. Daytime is still domestic and slow; the noise is concentrated at the entertainment cluster. If you want a 5-minute walk to a brunch spot but a 25-minute drive to a quiet beach, Yas is the trade.",
+    dining_picks: [
+      {
+        name: "Bord Eau",
+        kind: "French, Shangri-La",
+        note: "The grown-up dinner option — high-touch service, no music.",
+      },
+      {
+        name: "Aquarium",
+        kind: "Seafood, Yas Marina",
+        note: "Best on Friday afternoons facing the F1 paddock.",
+      },
+      {
+        name: "Diablito",
+        kind: "Tapas, Yas Marina",
+        note: "Loud, casual, late. Reliable Saturday night spot.",
+      },
+    ],
   },
   {
     slug: "al-reem-island",

@@ -23,6 +23,7 @@ import { SavedIdsProvider } from "./_components/saved-ids-provider";
 import { ListingCardSaveable } from "./_components/listing-card-saveable";
 import { TrustStrip } from "./_components/trust-strip";
 import { ClientWords } from "./_components/client-words";
+import { AdvisorOfMonth } from "./_components/advisor-of-month";
 
 export const revalidate = 60;
 
@@ -133,6 +134,10 @@ export default async function HomePage({
       <AreasMosaic />
       <OffPlanStrip />
       <ServicesBand />
+
+      {/* T3-A: editorial spotlight rotating monthly through the advisor roster. */}
+      <AdvisorOfMonth />
+
       <ClientWords limit={3} />
       <InsightsTeaser />
       <CtaBanner />

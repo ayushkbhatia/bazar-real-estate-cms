@@ -13,6 +13,7 @@ import {
 } from "@/lib/queries/areas-guide";
 import { placeJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
+import { LifestyleDossier } from "./_components/lifestyle-dossier";
 
 export async function generateStaticParams() {
   const entries = await listAreasWithCounts();
@@ -218,6 +219,11 @@ export default async function AreaProfilePage({
           </div>
         </div>
       </section>
+
+      {/* T3-E: lifestyle dossier — commute chips, prose, dining picks.
+          Self-hides if the seed for this area hasn't been editorially
+          enriched yet. */}
+      <LifestyleDossier area={area} />
 
       {/* Listings teaser */}
       <section className="border-t border-bz-border bg-bz-surface">
