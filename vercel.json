@@ -56,6 +56,10 @@
     {
       "path": "/api/cron/market-reports-refresh",
       "schedule": "0 5 1 1,4,7,10 *"
+    },
+    {
+      "path": "/api/cron/fx-rates",
+      "schedule": "0 6 * * *"
     }
   ]
 }

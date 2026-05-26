@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
 import { AwardsBand } from "../_components/awards-band";
 import { ClientWords } from "../_components/client-words";
+import { ValuationLeadGate } from "../tools/valuation/_components/lead-gate";
 
 export const metadata: Metadata = {
   title: "About Bazar",
@@ -159,25 +160,31 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* CTA — T1-E cleanup: valuation lead-gate surfaced alongside the
+          advisor-call CTA. Owners considering a sale should be one click
+          away from the report, not buried in the tools menu. */}
       <section className="px-12 py-20 max-w-[1200px]">
-        <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-12 grid grid-cols-[1fr_auto] gap-8 items-center">
+        <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
           <div>
             <Eyebrow className="text-bz-accent-fg/70">Get in touch</Eyebrow>
             <h2
               className="serif text-[36px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.015em" }}
             >
-              Book a 30-minute advisory call.
+              Talk to us, or read the numbers first.
             </h2>
             <p className="mt-3 text-[14.5px] opacity-90 max-w-[52ch]">
-              We&apos;ll ask what you&apos;re solving for. If we&apos;re the right firm, we&apos;ll
-              tell you. If we&apos;re not, we&apos;ll point you to who is.
+              Book a 30-minute call to walk through what you&apos;re solving
+              for, or request an advisor-prepared valuation of a specific
+              property — both are free.
             </p>
           </div>
-          <Button asChild size="lg" variant="secondary">
-            <Link href="/contact">Talk to an advisor</Link>
-          </Button>
+          <div className="flex flex-col gap-2 md:items-end">
+            <ValuationLeadGate triggerLabel="Free property valuation" />
+            <Button asChild size="lg" variant="secondary">
+              <Link href="/contact">Talk to an advisor</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </div>

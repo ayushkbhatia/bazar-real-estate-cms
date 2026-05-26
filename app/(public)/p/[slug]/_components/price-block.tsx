@@ -1,10 +1,28 @@
+"use client";
+
 import { Eyebrow } from "@/components/brand/eyebrow";
+import {
+  convertFromAed,
+  currencySymbol,
+  formatPrice,
+  usePreferences,
+} from "@/lib/preferences";
 
 /**
- * Sprint 4c: price block — AED headline, AED/ft² + USD equivalent below,
- * "Listed Xd ago" pill alongside. `listedDays` is pre-computed by the
- * server page so this component stays pure.
+ * Property-detail price block.  Headline + AED/ft² + secondary-currency
+ * equivalent + "Listed N days ago" pill.
+ *
+ * T1-B cleanup: now a client component that respects the user's currency
+ * preference.  Headline price re-formats through `formatPrice`; the
+ * "AED/ft²" sub-line stays in the schema unit so it's directly comparable
+ * to other listings.  The secondary-currency equivalent (USD by default,
+ * EUR or AED depending on the preference) sits next to it.
+ *
+ * Server passes `formattedAed` as the SSR fallback to avoid hydration
+ * flicker before client preferences resolve.
  */
+const FT2_PER_M2 = 10.7639;
+
 export function PriceBlock({
   priceAed,
   aedPerFt2,
@@ -16,15 +34,36 @@ export function PriceBlock({
   listedDays: number | null;
   formattedAed: string;
 }) {
-  // Fallback static rate (1 AED ≈ 0.272 USD). Sprint 12 wires a daily FX
-  // sync; until then the static rate is shown with a `~` to flag it.
-  const usd = priceAed * 0.272;
-  const usdLabel =
-    usd >= 1_000_000
-      ? `~ USD ${(usd / 1_000_000).toFixed(2)}M`
-      : usd >= 1000
-        ? `~ USD ${(usd / 1000).toFixed(0)}k`
-        : `~ USD ${Math.round(usd)}`;
+  const { prefs } = usePreferences();
+  const headline =
+    prefs.currency === "AED" ? formattedAed : formatPrice(priceAed, prefs);
+
+  // Surface the "other major" currency as a sanity-check line. When the
+  // user has AED selected we still show the USD equivalent; when they
+  // have USD or EUR we show AED so they can cross-check against the
+  // canonical schema number.
+  const otherCurrency = prefs.currency === "AED" ? "USD" : "AED";
+  const otherValue = convertFromAed(priceAed, otherCurrency);
+  const otherLabel =
+    otherValue >= 1_000_000
+      ? `${currencySymbol(otherCurrency)} ${(otherValue / 1_000_000).toFixed(2)}M`
+      : otherValue >= 1000
+        ? `${currencySymbol(otherCurrency)} ${(otherValue / 1000).toFixed(0)}k`
+        : `${currencySymbol(otherCurrency)} ${Math.round(otherValue).toLocaleString()}`;
+
+  // AED/ft² subline — convert to the user's currency-per-area unit when
+  // either changes from default.
+  const subline = (() => {
+    if (!aedPerFt2) return null;
+    if (prefs.currency === "AED" && prefs.area_unit === "ft2") {
+      return `${aedPerFt2.toLocaleString()} AED/ft²`;
+    }
+    const inCurrency = convertFromAed(aedPerFt2, prefs.currency);
+    const final =
+      prefs.area_unit === "m2" ? inCurrency * FT2_PER_M2 : inCurrency;
+    const unit = prefs.area_unit === "m2" ? "m²" : "ft²";
+    return `${currencySymbol(prefs.currency)} ${Math.round(final).toLocaleString()}/${unit}`;
+  })();
 
   return (
     <div className="flex items-baseline gap-4 flex-wrap">
@@ -32,15 +71,15 @@ export function PriceBlock({
         className="serif text-[56px] font-normal leading-none"
         style={{ letterSpacing: "-0.025em" }}
       >
-        {formattedAed}
+        {headline}
       </span>
       <div className="flex flex-col gap-1">
-        {aedPerFt2 ? (
-          <span className="mono text-[13px] text-bz-muted">
-            {aedPerFt2.toLocaleString()} AED/ft² · {usdLabel}
+        {subline ? (
+          <span className="mono text-[13px] text-bz-ink-2">
+            {subline} · ~ {otherLabel}
           </span>
         ) : (
-          <span className="mono text-[13px] text-bz-muted">{usdLabel}</span>
+          <span className="mono text-[13px] text-bz-ink-2">~ {otherLabel}</span>
         )}
         {listedDays != null ? (
           <Eyebrow className="text-bz-accent">

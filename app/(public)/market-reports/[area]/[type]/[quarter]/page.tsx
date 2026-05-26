@@ -14,10 +14,13 @@ import {
   type PropertyTypeSlug,
 } from "@/lib/queries/market-reports";
 import { readPreferencesFromCookie } from "@/lib/preferences/server";
+import { listLiveComparables } from "@/lib/queries/market-reports-listings";
 import { ReportHero } from "../../../_components/report-hero";
 import { TrendChart } from "../../../_components/trend-chart";
 import { ComparablesTable } from "../../../_components/comparables-table";
 import { ReportDownload } from "../../../_components/report-download";
+import { VelocityStrip } from "../../../_components/velocity-strip";
+import { LiveListingsRail } from "../../../_components/live-listings-rail";
 
 export const revalidate = 3600;
 
@@ -63,9 +66,11 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
   ]);
   if (!snapshot) notFound();
 
-  const [trend, comparables] = await Promise.all([
+  const [trend, comparables, liveListings] = await Promise.all([
     getTrend({ area_slug: area, property_type: type, endQuarter: quarter, span: 8 }),
     listRecentComparables({ area_slug: area, property_type: type, quarter, limit: 10 }),
+    // T1-A cleanup: live comparable resale listings rail
+    listLiveComparables({ area_slug: area, property_type: type, limit: 6 }),
   ]);
 
   // JSON-LD for SEO. Schema.org Dataset is the right fit — Google treats this
@@ -113,7 +118,18 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
 
       <ReportHero snapshot={snapshot} prefs={prefs} />
       <TrendChart trend={trend} prefs={prefs} />
+      {/* T1-A cleanup: market velocity strip (transaction count proxy
+          for DOM — DLD doesn't publish listing-to-close intervals). */}
+      <VelocityStrip trend={trend} />
       <ComparablesTable rows={comparables} prefs={prefs} />
+      {/* T1-A cleanup: live comparables rail bridges report → marketplace. */}
+      <LiveListingsRail
+        area_slug={snapshot.area_slug}
+        area_name={snapshot.area_name}
+        property_type={type}
+        rows={liveListings}
+        prefs={prefs}
+      />
 
       {/* Advisor commentary */}
       <section className="px-12 py-12 border-b border-bz-border">

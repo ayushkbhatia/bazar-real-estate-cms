@@ -115,3 +115,62 @@ export async function getDevelopmentMeta(
     .maybeSingle();
   return (data?.meta as DevelopmentMeta | null) ?? null;
 }
+
+/**
+ * T2-G cleanup: bulk signature-flag lookup for the developer profile
+ * "Signature buildings" carousel.  Returns a Set of development IDs where
+ * `meta.is_signature === true`.  When the meta column is unpopulated for
+ * a developer's portfolio, the Set is empty and the carousel renders the
+ * top N projects as a fallback — graceful degradation.
+ */
+export async function getSignatureDevelopmentIds(
+  ids: string[],
+): Promise<Set<string>> {
+  const out = new Set<string>();
+  if (!isSupabaseConfigured || ids.length === 0) return out;
+  const supabase = createSupabasePublicClient();
+  const { data } = await supabase
+    .from("developments")
+    .select("id, meta")
+    .in("id", ids);
+  for (const row of (data as Array<{ id: string; meta: unknown }> | null) ??
+    []) {
+    const m = row.meta as DevelopmentMeta | null;
+    if (m?.is_signature === true) out.add(row.id);
+  }
+  return out;
+}
+
+/**
+ * T1-C cleanup: bulk coords lookup for the "Future developments around"
+ * map.  Returns a per-id coords record (entries omitted when missing /
+ * malformed).  Pulls a single SELECT against developments + filters
+ * client-side rather than calling getDevelopmentMeta() N times.
+ */
+export async function getDevelopmentCoordsBulk(
+  ids: string[],
+): Promise<Record<string, { lat: number; lng: number } | null>> {
+  const out: Record<string, { lat: number; lng: number } | null> = {};
+  if (!isSupabaseConfigured || ids.length === 0) return out;
+  const supabase = createSupabasePublicClient();
+  const { data } = await supabase
+    .from("developments")
+    .select("id, meta")
+    .in("id", ids);
+  for (const row of (data as Array<{ id: string; meta: unknown }> | null) ?? []) {
+    const m = row.meta as DevelopmentMeta | null;
+    const c = m?.coords;
+    if (
+      c &&
+      typeof c.lat === "number" &&
+      typeof c.lng === "number" &&
+      Number.isFinite(c.lat) &&
+      Number.isFinite(c.lng)
+    ) {
+      out[row.id] = { lat: c.lat, lng: c.lng };
+    } else {
+      out[row.id] = null;
+    }
+  }
+  return out;
+}

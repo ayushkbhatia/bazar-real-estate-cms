@@ -19,7 +19,18 @@ export type SeedAreaGuide = {
     avg_dom_days: number;
     yoy_change_pct: number;
   };
-  schools: { name: string; curriculum: string; distance_km: number }[];
+  schools: {
+    name: string;
+    curriculum: string;
+    distance_km: number;
+    /** T3-E cleanup: ADEK / KHDA inspection rating where published. */
+    rating?:
+      | "Outstanding"
+      | "Very good"
+      | "Good"
+      | "Acceptable"
+      | "Weak";
+  }[];
   amenities: string[];
   similar_areas: string[];
   // T3-E additions — all optional so existing seeds without these fields
@@ -52,9 +63,23 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       yoy_change_pct: 8.4,
     },
     schools: [
-      { name: "Cranleigh Abu Dhabi", curriculum: "British", distance_km: 0 },
-      { name: "Redwood Montessori", curriculum: "Montessori", distance_km: 1.2 },
-      { name: "NYU Abu Dhabi", curriculum: "University", distance_km: 2.4 },
+      {
+        name: "Cranleigh Abu Dhabi",
+        curriculum: "British",
+        distance_km: 0,
+        rating: "Outstanding",
+      },
+      {
+        name: "Redwood Montessori",
+        curriculum: "Montessori",
+        distance_km: 1.2,
+        rating: "Very good",
+      },
+      {
+        name: "NYU Abu Dhabi",
+        curriculum: "University",
+        distance_km: 2.4,
+      },
     ],
     amenities: [
       "Saadiyat Beach Club",
@@ -111,8 +136,18 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       yoy_change_pct: 11.2,
     },
     schools: [
-      { name: "West Yas Academy", curriculum: "American", distance_km: 0.5 },
-      { name: "SABIS Yas", curriculum: "American/UK", distance_km: 1.0 },
+      {
+        name: "West Yas Academy",
+        curriculum: "American",
+        distance_km: 0.5,
+        rating: "Outstanding",
+      },
+      {
+        name: "SABIS Yas",
+        curriculum: "American/UK",
+        distance_km: 1.0,
+        rating: "Very good",
+      },
     ],
     amenities: [
       "Yas Mall",
@@ -164,8 +199,17 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       yoy_change_pct: 6.1,
     },
     schools: [
-      { name: "Repton Abu Dhabi", curriculum: "British", distance_km: 0.8 },
-      { name: "Sorbonne University Abu Dhabi", curriculum: "University", distance_km: 1.4 },
+      {
+        name: "Repton Abu Dhabi",
+        curriculum: "British",
+        distance_km: 0.8,
+        rating: "Outstanding",
+      },
+      {
+        name: "Sorbonne University Abu Dhabi",
+        curriculum: "University",
+        distance_km: 1.4,
+      },
     ],
     amenities: [
       "Reem Mall",
@@ -174,6 +218,32 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Sun & Sky Towers",
     ],
     similar_areas: ["corniche", "yas-island"],
+    commute_chips: [
+      { label: "Corniche", minutes: 8, mode: "car" },
+      { label: "Galleria Maryah", minutes: 3, mode: "car" },
+      { label: "Reem Mall", minutes: 4, mode: "car" },
+      { label: "Abu Dhabi airport", minutes: 30, mode: "car" },
+      { label: "Saadiyat", minutes: 16, mode: "car" },
+    ],
+    lifestyle_prose:
+      "Reem is the only Abu Dhabi address where you can walk to the supermarket and the office on the same morning. Density brings life — mid-week dinners stay busy, the building lobbies have neighbours who recognise each other. It's the closest the city has to a Manhattan rhythm, with Sun Tower brunches and a hum of weekday foot traffic that Saadiyat will never have.",
+    dining_picks: [
+      {
+        name: "Rosso Sky Lounge",
+        kind: "Italian, Sun & Sky Tower",
+        note: "The penthouse view from 75 floors up — best at sunset.",
+      },
+      {
+        name: "Maté",
+        kind: "Argentinian, Reem Mall",
+        note: "Surprisingly good for a mall steakhouse. Weekday lunch staple.",
+      },
+      {
+        name: "Cafe Bateel",
+        kind: "Café, Boutik Mall",
+        note: "Where Reem residents work remotely on Tuesday mornings.",
+      },
+    ],
   },
   {
     slug: "al-raha",
@@ -190,9 +260,24 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       yoy_change_pct: 5.7,
     },
     schools: [
-      { name: "Al Yasmina Academy", curriculum: "British", distance_km: 0.3 },
-      { name: "GEMS American Academy", curriculum: "American", distance_km: 1.1 },
-      { name: "Brighton College", curriculum: "British", distance_km: 2.0 },
+      {
+        name: "Al Yasmina Academy",
+        curriculum: "British",
+        distance_km: 0.3,
+        rating: "Outstanding",
+      },
+      {
+        name: "GEMS American Academy",
+        curriculum: "American",
+        distance_km: 1.1,
+        rating: "Very good",
+      },
+      {
+        name: "Brighton College",
+        curriculum: "British",
+        distance_km: 2.0,
+        rating: "Outstanding",
+      },
     ],
     amenities: [
       "Al Raha Beach Hotel",
@@ -201,6 +286,32 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Yas Mall (10 min)",
     ],
     similar_areas: ["yas-island", "saadiyat-island"],
+    commute_chips: [
+      { label: "Abu Dhabi airport", minutes: 12, mode: "car" },
+      { label: "Yas Mall", minutes: 10, mode: "car" },
+      { label: "Khalifa University", minutes: 5, mode: "car" },
+      { label: "Saadiyat", minutes: 22, mode: "car" },
+      { label: "Corniche", minutes: 25, mode: "car" },
+    ],
+    lifestyle_prose:
+      "Al Raha is where families settle when Saadiyat feels too quiet and Yas feels too loud. School-run mornings start early and traffic into Al Yasmina and Brighton College anchors the rhythm. Weekends are split between Al Raha Beach (less crowded than Saadiyat) and Yas across the bridge. The clubhouse pools see more weekday use than weekend — by Friday everyone's heading somewhere louder.",
+    dining_picks: [
+      {
+        name: "Sevilo",
+        kind: "Spanish, Al Raha Beach",
+        note: "Sunday-night fixture. Reliable, never trendy.",
+      },
+      {
+        name: "Boa Steakhouse",
+        kind: "Steak, Al Raha Beach Hotel",
+        note: "Where the corporate dinners happen.",
+      },
+      {
+        name: "Sloboda",
+        kind: "Mediterranean, Yas Acres",
+        note: "Short drive across to Yas — worth it for the patio.",
+      },
+    ],
   },
   {
     slug: "corniche",
@@ -217,8 +328,18 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       yoy_change_pct: 3.4,
     },
     schools: [
-      { name: "British School Al Khubairat", curriculum: "British", distance_km: 2.1 },
-      { name: "International Community School", curriculum: "American", distance_km: 2.4 },
+      {
+        name: "British School Al Khubairat",
+        curriculum: "British",
+        distance_km: 2.1,
+        rating: "Outstanding",
+      },
+      {
+        name: "International Community School",
+        curriculum: "American",
+        distance_km: 2.4,
+        rating: "Very good",
+      },
     ],
     amenities: [
       "Corniche beach",
@@ -228,6 +349,32 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Abu Dhabi Mall",
     ],
     similar_areas: ["al-reem-island", "al-raha"],
+    commute_chips: [
+      { label: "Corniche beach", minutes: 2, mode: "walk" },
+      { label: "Marina Mall", minutes: 6, mode: "car" },
+      { label: "Etihad Towers", minutes: 4, mode: "car" },
+      { label: "Saadiyat", minutes: 15, mode: "car" },
+      { label: "Abu Dhabi airport", minutes: 30, mode: "car" },
+    ],
+    lifestyle_prose:
+      "The Corniche is for people who still want to be in the city. Mornings are joggers and dog-walkers along the eight-kilometre promenade; evenings shift to families and the Friday-night crowd at Marina Mall. Stock skews older, so floor plates are bigger than the new towers on Reem — corner units with proper balconies still trade at a discount to anything new-build.",
+    dining_picks: [
+      {
+        name: "Hakkasan Abu Dhabi",
+        kind: "Chinese, Emirates Palace",
+        note: "Still the room for an occasion dinner.",
+      },
+      {
+        name: "Talea by Antonio Guida",
+        kind: "Italian, Marina Mall",
+        note: "Quiet enough for a serious lunch.",
+      },
+      {
+        name: "Hoi An",
+        kind: "Vietnamese, Shangri-La",
+        note: "Best pho on the city side.",
+      },
+    ],
   },
 ];
 

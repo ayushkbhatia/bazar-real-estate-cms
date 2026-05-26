@@ -3,6 +3,8 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { SEED_SERVICES, type SeedService } from "@/lib/seeds/services";
+import { SEED_AGENTS } from "@/lib/seeds/agents";
+import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
 
 /**
  * Shared layout for each /services/[slug] sub-page.
@@ -165,6 +167,20 @@ export function ServicePage({ service }: { service: SeedService }) {
           )}
         </div>
       </section>
+
+      {/* T2-D cleanup: advisor contact rail on every service page.
+          Default lead = MD (SEED_AGENTS[0]) since service enquiries
+          don't belong to a specific desk; the firm-wide intake routes
+          them from there. */}
+      <AdvisorContactRail
+        advisorName={SEED_AGENTS[0]!.display_name}
+        advisorPhone={
+          SEED_AGENTS[0]!.whatsapp ?? SEED_AGENTS[0]!.phone ?? null
+        }
+        advisorEmail={SEED_AGENTS[0]!.email ?? null}
+        contextRef={service.name}
+        kind="service"
+      />
     </div>
   );
 }

@@ -103,6 +103,7 @@ export default async function HomePage({
                   >
                     <ListingCardSaveable
                       price={formatPriceAED(row.price_aed)}
+                      priceAed={row.price_aed}
                       title={row.title}
                       location={row.areas?.name ?? "United Arab Emirates"}
                       beds={row.beds}

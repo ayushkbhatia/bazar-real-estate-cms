@@ -29,6 +29,11 @@ const serverSchema = z.object({
   DOCUSIGN_WEBHOOK_SECRET: z.string().min(1).optional(),
   PROPERTY_FINDER_FEED_TOKEN: z.string().min(1).optional(),
   BAYUT_FEED_TOKEN: z.string().min(1).optional(),
+  // T1-D cleanup: live Google Places reviews fetch for the home/about
+  // TrustStrip. Falls back to the curated rating in `lib/queries/trust.ts`
+  // when either is missing — keeps dev/preview working without a key.
+  GOOGLE_PLACES_API_KEY: z.string().min(1).optional(),
+  GOOGLE_PLACES_PLACE_ID: z.string().min(1).optional(),
 });
 
 const clientSchema = z.object({
@@ -97,6 +102,8 @@ const serverEnv =
         DOCUSIGN_WEBHOOK_SECRET: process.env.DOCUSIGN_WEBHOOK_SECRET,
         PROPERTY_FINDER_FEED_TOKEN: process.env.PROPERTY_FINDER_FEED_TOKEN,
         BAYUT_FEED_TOKEN: process.env.BAYUT_FEED_TOKEN,
+        GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY,
+        GOOGLE_PLACES_PLACE_ID: process.env.GOOGLE_PLACES_PLACE_ID,
       })
     : ({ NODE_ENV: "development" } as z.infer<typeof serverSchema>);
 

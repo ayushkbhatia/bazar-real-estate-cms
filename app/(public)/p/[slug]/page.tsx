@@ -11,7 +11,7 @@ import {
   KeyRound,
 } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { ListingCard } from "@/components/brand/listing-card";
+import { SimilarCard } from "./_components/similar-card";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import {
   extractReferenceFromSlug,
@@ -44,6 +44,12 @@ import { AgentCard } from "./_components/agent-card";
 import { ScheduleViewing } from "./_components/schedule-viewing";
 import { ViewingCta } from "./_components/viewing-cta";
 import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
+import {
+  MarketContextBlock,
+  reportableType,
+} from "../../_components/market-context-link";
+import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
+import { PropertyFaq } from "./_components/property-faq";
 
 export const revalidate = 60;
 
@@ -409,6 +415,17 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         <aside className="sticky top-6 self-start space-y-4">
           <AgentCard agent={leadAdvisor} />
 
+          {/* T1-A cleanup: market context block in the sidebar — links to
+              the report that matches this property's area + type. */}
+          {property.areas?.slug ? (
+            <MarketContextBlock
+              area_slug={property.areas.slug}
+              area_name={property.areas.name}
+              property_type={reportableType(property.type)}
+              variant="card"
+            />
+          ) : null}
+
           {/* T2-C: video tour + live viewing dual CTA above the existing
               schedule-viewing form. The "Live viewing" pill anchor-jumps
               down to the form so we keep the existing flow intact. */}
@@ -439,6 +456,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               propertyReference={property.reference}
               compact
             />
+            {/* T1-E cleanup: secondary CTA — visitors who own elsewhere
+                in the same area are a high-intent valuation source. */}
+            <div className="mt-4 pt-4 border-t border-bz-border">
+              <div className="text-[11px] uppercase tracking-wider text-bz-ink-2 mb-2">
+                Own elsewhere in {property.areas?.name ?? "this area"}?
+              </div>
+              <ValuationLeadGate triggerLabel="Get a free valuation report" />
+            </div>
             <div className="mt-4 pt-3 border-t border-bz-border space-y-1 text-[11.5px] text-bz-muted">
               {property.listing_permit_no ? (
                 <div>
@@ -462,6 +487,19 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       </section>
 
       {/* Similar */}
+      {/* T1.5 quick win: property FAQ with JSON-LD FAQPage schema.
+          Lifts long-tail SEO on every property page. */}
+      <PropertyFaq
+        reference={property.reference}
+        title={property.title}
+        areaName={property.areas?.name ?? null}
+        propertyType={property.type}
+        beds={property.beds}
+        baths={property.baths}
+        tenure={property.tenure ?? null}
+        listingPermitNo={property.listing_permit_no ?? null}
+      />
+
       {similar.length > 0 ? (
         <section className="px-12 py-16 border-t border-bz-border">
           <Eyebrow>More in {property.areas?.name ?? "the UAE"}</Eyebrow>
@@ -478,8 +516,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                 href={propertyUrl(row)}
                 className="block"
               >
-                <ListingCard
+                <SimilarCard
                   price={formatPriceAED(row.price_aed)}
+                  priceAed={row.price_aed}
                   title={row.title}
                   location={row.areas?.name ?? "United Arab Emirates"}
                   beds={row.beds}
@@ -502,10 +541,12 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       ) : null}
 
       {/* T2-D: floating advisor contact rail. Fades in past the hero on
-          desktop, slides up as a mobile bottom dock. */}
+          desktop, slides up as a mobile bottom dock.
+          T2-D cleanup: adds Email + Call-me-back to the action set. */}
       <AdvisorContactRail
         advisorName={leadAdvisor.display_name}
         advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone ?? null}
+        advisorEmail={leadAdvisor.email ?? null}
         contextRef={property.reference}
         kind="property"
       />

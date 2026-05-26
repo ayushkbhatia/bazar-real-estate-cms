@@ -32,14 +32,14 @@ function subscribeMotion(callback: () => void): () => void {
 /**
  * T3-D: IntersectionObserver-driven reveal on a single feature block.
  *
- * Subtle editorial cadence — image and prose fade + slide in once each
- * block scrolls into view, ~80px from the bottom of the viewport. Falls
- * back to the visible (no-animation) state when JS / motion is off or
- * `prefers-reduced-motion` is enabled.
+ * T3-D cleanup: the reveal now staggers eyebrow → title → image → prose
+ * via per-element transition delays once the row crosses the trigger
+ * line. Server-rendered HTML still ships the visible state so SSR + SEO
+ * are correct.
  *
- * Server-rendered HTML ships the visible state so SSR is correct and
- * search engines see the full content; the client component layers the
- * animation on top.
+ * Honours `prefers-reduced-motion` via `useSyncExternalStore` on the
+ * matchMedia query; the staggered cadence collapses to instant reveal
+ * when reduced motion is on.
  */
 export function FeatureRow({ block, reverse, slug }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -58,10 +58,6 @@ export function FeatureRow({ block, reverse, slug }: Props) {
     }
     const el = ref.current;
     if (!el) return;
-    // IntersectionObserver is exactly the "subscribe for updates from
-    // an external system" pattern useEffect is designed for — the
-    // observer is an external system that occasionally fires; we mirror
-    // that into local state. The lint rule is overly strict here.
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -78,30 +74,59 @@ export function FeatureRow({ block, reverse, slug }: Props) {
     return () => io.disconnect();
   }, [reduceMotion]);
 
+  // Stagger ladder. Each step waits 120ms longer than the previous. With
+  // reduced motion the delay collapses to zero so the reveal happens
+  // synchronously (no animation, no waiting).
+  const step = (n: number) =>
+    reduceMotion ? "0ms" : visible ? `${n * 120}ms` : "0ms";
+  const motionCls = (n: number) =>
+    cn(
+      "transition-all duration-700 ease-out",
+      visible
+        ? "opacity-100 translate-y-0"
+        : "opacity-0 translate-y-3",
+    );
+
   return (
     <div
       ref={ref}
       className={cn(
-        "grid grid-cols-1 md:grid-cols-2 gap-10 items-center transition-all duration-700 ease-out",
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
+        "grid grid-cols-1 md:grid-cols-2 gap-10 items-center",
         reverse ? "md:[&>*:first-child]:order-2" : "",
       )}
     >
-      <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+      <div
+        className={cn(
+          "relative aspect-[4/3] rounded-lg overflow-hidden",
+          motionCls(2),
+        )}
+        style={{ transitionDelay: step(2) }}
+      >
         <PlaceholderImage
           label={`${slug}-${block.key}`}
           className="absolute inset-0 w-full h-full"
         />
       </div>
       <div>
-        <div className="eyebrow">{block.key.replace(/[-_]/g, " ")}</div>
+        <div className={motionCls(0)} style={{ transitionDelay: step(0) }}>
+          <div className="eyebrow">{block.key.replace(/[-_]/g, " ")}</div>
+        </div>
         <h3
-          className="serif text-[32px] mt-2 leading-tight"
-          style={{ letterSpacing: "-0.02em" }}
+          className={cn(
+            "serif text-[32px] mt-2 leading-tight",
+            motionCls(1),
+          )}
+          style={{ letterSpacing: "-0.02em", transitionDelay: step(1) }}
         >
           {block.title}
         </h3>
-        <p className="mt-4 text-[15.5px] text-bz-ink-2 leading-[1.7] max-w-[52ch]">
+        <p
+          className={cn(
+            "mt-4 text-[15.5px] text-bz-ink-2 leading-[1.7] max-w-[52ch]",
+            motionCls(3),
+          )}
+          style={{ transitionDelay: step(3) }}
+        >
           {block.copy}
         </p>
       </div>

@@ -11,6 +11,7 @@ import {
   listDeveloperDevelopments,
   listDevelopers,
 } from "@/lib/queries/developers-extras";
+import { getSignatureDevelopmentIds } from "@/lib/queries/development-extras";
 
 export async function generateStaticParams() {
   const developers = await listDevelopers();
@@ -53,6 +54,19 @@ export default async function DeveloperProfilePage({
   const handedOver = developments
     .filter((d) => d.status === "handed_over")
     .slice(0, 6);
+
+  // T2-G cleanup: signature buildings carousel — uses
+  // `meta.is_signature === true` per development.  Falls back to the
+  // first 4 handed-over projects when none are flagged so the section
+  // still has weight on developer pages where staff haven't curated.
+  const signatureIds = await getSignatureDevelopmentIds(
+    developments.map((d) => d.id),
+  );
+  const flaggedSignature = developments.filter((d) => signatureIds.has(d.id));
+  const signature =
+    flaggedSignature.length > 0
+      ? flaggedSignature.slice(0, 6)
+      : handedOver.slice(0, 4);
 
   return (
     <div className="bg-bz-bg">
@@ -244,6 +258,46 @@ export default async function DeveloperProfilePage({
           </div>
         )}
       </section>
+
+      {/* T2-G cleanup: signature buildings carousel — the projects the
+          developer is best known for.  Honours `meta.is_signature` per
+          development; falls back to recent deliveries when not curated. */}
+      {signature.length > 0 ? (
+        <section className="px-12 pb-12 max-w-[1280px] border-t border-bz-border">
+          <Eyebrow>Signature buildings</Eyebrow>
+          <h2
+            className="serif text-[32px] mt-2 leading-tight max-w-[28ch]"
+            style={{ letterSpacing: "-0.015em" }}
+          >
+            What {dev.name} is best known for.
+          </h2>
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {signature.map((d) => (
+              <Link
+                key={d.id}
+                href={`/developments/${d.slug}`}
+                className="group block rounded-md border border-bz-border bg-bz-surface overflow-hidden hover:border-bz-ink transition-colors"
+              >
+                <PlaceholderImage
+                  label={d.slug}
+                  className="w-full aspect-[3/2]"
+                />
+                <div className="p-5">
+                  <div className="text-[11px] uppercase tracking-wider text-bz-ink-2">
+                    {d.area?.name ?? "Abu Dhabi"}
+                  </div>
+                  <div
+                    className="serif text-[22px] mt-1 leading-tight group-hover:text-bz-accent transition-colors"
+                    style={{ letterSpacing: "-0.012em" }}
+                  >
+                    {d.name}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       {/* T2-G: Recently handed over — proof-of-delivery for buyers
           evaluating the developer's track record on completed projects. */}

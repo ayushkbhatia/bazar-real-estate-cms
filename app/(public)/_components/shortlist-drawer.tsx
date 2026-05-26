@@ -13,7 +13,7 @@
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Scale, Send, Trash2 } from "lucide-react";
+import { ArrowRight, Mail, Scale, Send, Trash2 } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -149,6 +149,23 @@ export function ShortlistDrawer() {
     ? buildAdvisorWhatsAppLink(whatsappMessage)
     : null;
 
+  // T3-B cleanup: "Email me these" — mailto: with the shortlist pre-filled
+  // as the email body. Sends to the visitor's own email by default (they
+  // forward to whoever they want); on mobile this opens the system mail
+  // composer with all the property refs baked in.
+  const mailtoHref = items.length
+    ? `mailto:?subject=${encodeURIComponent("My Bazar shortlist")}&body=${encodeURIComponent(
+        `Here are the ${items.length} ${items.length === 1 ? "property" : "properties"} I'm tracking on bazar.ae:\n\n` +
+          items
+            .map(
+              (i) =>
+                `• ${i.title} (${i.reference}) — ${formatAed(i.price_aed)}\n  https://bazar.ae/p/${i.slug}-${i.reference}`,
+            )
+            .join("\n\n") +
+          "\n\n— Sent from Bazar Real Estate",
+      )}`
+    : null;
+
   // Hide the trigger entirely until there's at least one shortlisted item
   // so the corner isn't crowded for users who haven't engaged yet.
   if (ids.length === 0) return null;
@@ -246,6 +263,14 @@ export function ShortlistDrawer() {
               <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
                 <Send size={14} strokeWidth={1.7} />
                 WhatsApp these to an advisor
+              </a>
+            </Button>
+          ) : null}
+          {mailtoHref ? (
+            <Button asChild variant="outline">
+              <a href={mailtoHref}>
+                <Mail size={14} strokeWidth={1.7} />
+                Email me these
               </a>
             </Button>
           ) : null}
