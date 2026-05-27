@@ -376,6 +376,266 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       },
     ],
   },
+  // ─────────────────────────────────────────────────────────────────────
+  // Sprint 15 additions — 14 area stubs to close the megamenu 404s. Each
+  // entry carries the minimum content needed for the page to render
+  // (`getAreaGuide` returns null without a seed entry); editorial fields
+  // (commute_chips, lifestyle_prose, dining_picks) are intentionally
+  // omitted so the page surfaces neutral empty states until the client
+  // fills them in through the admin CMS at handover.
+  // ─────────────────────────────────────────────────────────────────────
+  {
+    slug: "adgm",
+    name: "ADGM",
+    hero_label: "adgm",
+    intro:
+      "Abu Dhabi Global Market — financial free-zone on Al Maryah Island. Mixed-use freehold towers, the ADGM courts, and the Galleria Mall a five-minute walk away.",
+    position: "Al Maryah Island · 8 min from Corniche",
+    vibe: "Financial district, mixed-use, freehold",
+    stats: {
+      median_apt_aed_per_ft2: 1850,
+      median_villa_aed_per_ft2: 0,
+      avg_dom_days: 52,
+      yoy_change_pct: 5.2,
+    },
+    schools: [],
+    amenities: ["The Galleria Mall", "ADGM Courts", "Rosewood Hotel", "Four Seasons"],
+    similar_areas: ["al-maryah", "al-reem-island"],
+  },
+  {
+    slug: "al-maryah",
+    name: "Al Maryah Island",
+    hero_label: "al-maryah",
+    intro:
+      "Central business island linking downtown to Reem. The Galleria Mall, Cleveland Clinic, ADGM offices, and a tight cluster of branded residential towers.",
+    position: "Between downtown and Reem · 8 min from Corniche",
+    vibe: "Business, retail, branded residences",
+    stats: {
+      median_apt_aed_per_ft2: 1780,
+      median_villa_aed_per_ft2: 0,
+      avg_dom_days: 49,
+      yoy_change_pct: 4.8,
+    },
+    schools: [],
+    amenities: ["The Galleria Mall", "Cleveland Clinic", "Four Seasons", "ADGM"],
+    similar_areas: ["adgm", "al-reem-island"],
+  },
+  {
+    slug: "hidd-al-saadiyat",
+    name: "Hidd Al Saadiyat",
+    hero_label: "hidd-al-saadiyat",
+    intro:
+      "Beachfront villa enclave on the north of Saadiyat. Freehold for all nationalities; large plots, low density, walking distance to Saadiyat Beach Club.",
+    position: "North Saadiyat · 15 min from Corniche",
+    vibe: "Beachfront, low-density, villas only",
+    stats: {
+      median_apt_aed_per_ft2: 0,
+      median_villa_aed_per_ft2: 2880,
+      avg_dom_days: 64,
+      yoy_change_pct: 9.1,
+    },
+    schools: [],
+    amenities: ["Private beach", "Saadiyat Beach Club", "Cranleigh Abu Dhabi"],
+    similar_areas: ["saadiyat-island", "nurai-island"],
+  },
+  {
+    slug: "khalifa-city",
+    name: "Khalifa City",
+    hero_label: "khalifa-city",
+    intro:
+      "Mainland community of villas and low-rise apartments east of the Abu Dhabi airport. Popular with families who want garden space and shorter commutes to the airport corridor.",
+    position: "Mainland · 12 min from airport, 25 min from Corniche",
+    vibe: "Family, suburban, leasehold villas",
+    stats: {
+      median_apt_aed_per_ft2: 720,
+      median_villa_aed_per_ft2: 1180,
+      avg_dom_days: 58,
+      yoy_change_pct: 3.4,
+    },
+    schools: [],
+    amenities: ["Etihad Plaza", "Khalifa Park"],
+    similar_areas: ["masdar-city", "al-raha"],
+  },
+  {
+    slug: "kizad",
+    name: "KIZAD",
+    hero_label: "kizad",
+    intro:
+      "Khalifa Industrial Zone Abu Dhabi — a master-planned logistics and industrial zone next to Khalifa Port. Mostly warehousing and light-industrial stock with limited residential support.",
+    position: "Industrial corridor · 35 min from Corniche",
+    vibe: "Industrial, logistics, leasehold",
+    stats: {
+      median_apt_aed_per_ft2: 0,
+      median_villa_aed_per_ft2: 0,
+      avg_dom_days: 90,
+      yoy_change_pct: 2.1,
+    },
+    schools: [],
+    amenities: ["Khalifa Port", "ADPorts logistics hub"],
+    similar_areas: ["mussafah"],
+  },
+  {
+    slug: "masdar-city",
+    name: "Masdar City",
+    hero_label: "masdar-city",
+    intro:
+      "Sustainable urban district east of the airport — research campuses, low-rise residential, Etihad Eco-Villa, and one of the few car-light master-plans in the emirate.",
+    position: "Mainland east · 5 min from airport, 22 min from Corniche",
+    vibe: "Sustainable, walkable, research-led",
+    stats: {
+      median_apt_aed_per_ft2: 1080,
+      median_villa_aed_per_ft2: 1240,
+      avg_dom_days: 67,
+      yoy_change_pct: 4.2,
+    },
+    schools: [],
+    amenities: ["Khalifa University", "Masdar Institute", "Etihad Eco-Villa"],
+    similar_areas: ["khalifa-city"],
+  },
+  {
+    slug: "mussafah",
+    name: "Mussafah",
+    hero_label: "mussafah",
+    intro:
+      "Industrial and light-industrial mainland district — warehousing, auto trade, and workforce housing. Residential is overwhelmingly leasehold.",
+    position: "Mainland · 20 min from Corniche",
+    vibe: "Industrial, leasehold, workforce",
+    stats: {
+      median_apt_aed_per_ft2: 480,
+      median_villa_aed_per_ft2: 0,
+      avg_dom_days: 72,
+      yoy_change_pct: 1.8,
+    },
+    schools: [],
+    amenities: ["Mussafah industrial belt", "ICAD"],
+    similar_areas: ["kizad"],
+  },
+  {
+    slug: "nurai-island",
+    name: "Nurai Island",
+    hero_label: "nurai-island",
+    intro:
+      "Boutique private island off the north coast of Saadiyat. Ultra-prime villa-only inventory, accessed by ferry from a private jetty. Tiny number of resales each year.",
+    position: "Private island off Saadiyat · 25 min from Corniche (with ferry)",
+    vibe: "Ultra-prime, private, villa-only",
+    stats: {
+      median_apt_aed_per_ft2: 0,
+      median_villa_aed_per_ft2: 5200,
+      avg_dom_days: 120,
+      yoy_change_pct: 7.0,
+    },
+    schools: [],
+    amenities: ["Private beach", "Boutique resort", "Ferry-only access"],
+    similar_areas: ["hidd-al-saadiyat", "saadiyat-island"],
+  },
+  {
+    slug: "yas-acres",
+    name: "Yas Acres",
+    hero_label: "yas-acres",
+    intro:
+      "Aldar's family-oriented villa community on Yas Island. Park frontage, golf access, and walking-distance schools. Built around 2020 and well-established now.",
+    position: "Yas Island · 18 min from Corniche",
+    vibe: "Family, villas, golf-adjacent",
+    stats: {
+      median_apt_aed_per_ft2: 0,
+      median_villa_aed_per_ft2: 1480,
+      avg_dom_days: 54,
+      yoy_change_pct: 6.2,
+    },
+    schools: [],
+    amenities: ["Yas Links golf", "West Yas mall", "Community park"],
+    similar_areas: ["yas-island"],
+  },
+  {
+    slug: "al-raha-beach",
+    name: "Al Raha Beach",
+    hero_label: "al-raha-beach",
+    intro:
+      "Waterfront apartment cluster within Al Raha — promenade restaurants, the marina, and a string of low-rise blocks along the channel between mainland and the islands.",
+    position: "Al Raha · 16 min from Corniche",
+    vibe: "Waterfront, apartments, established",
+    stats: {
+      median_apt_aed_per_ft2: 1180,
+      median_villa_aed_per_ft2: 0,
+      avg_dom_days: 56,
+      yoy_change_pct: 4.4,
+    },
+    schools: [],
+    amenities: ["Al Raha Beach promenade", "Al Raha Mall", "Marina"],
+    similar_areas: ["al-raha", "al-raha-gardens"],
+  },
+  {
+    slug: "al-raha-gardens",
+    name: "Al Raha Gardens",
+    hero_label: "al-raha-gardens",
+    intro:
+      "Established Aldar villa community within Al Raha, built around 2010. Mature trees, walking-distance schools and mosques, family-favourite for the long lease tail.",
+    position: "Al Raha · 18 min from Corniche",
+    vibe: "Family, villas, mature community",
+    stats: {
+      median_apt_aed_per_ft2: 0,
+      median_villa_aed_per_ft2: 1320,
+      avg_dom_days: 51,
+      yoy_change_pct: 5.6,
+    },
+    schools: [],
+    amenities: ["Yasmina British Academy", "Community pools", "Sidra mosque"],
+    similar_areas: ["al-raha", "al-raha-beach"],
+  },
+  {
+    slug: "mamsha-al-saadiyat",
+    name: "Mamsha Al Saadiyat",
+    hero_label: "mamsha-al-saadiyat",
+    intro:
+      "Six low-rise beachfront residences pressed against an 800m boardwalk in the Saadiyat Cultural District. First true freehold beachfront cluster on Saadiyat — Mamsha set the bar.",
+    position: "Saadiyat Cultural District · 14 min from Corniche",
+    vibe: "Beachfront, low-rise, freehold",
+    stats: {
+      median_apt_aed_per_ft2: 2120,
+      median_villa_aed_per_ft2: 0,
+      avg_dom_days: 47,
+      yoy_change_pct: 8.4,
+    },
+    schools: [],
+    amenities: ["Private beach", "Boardwalk", "Mamsha clubhouse", "Louvre nearby"],
+    similar_areas: ["saadiyat-island", "hidd-al-saadiyat"],
+  },
+  {
+    slug: "saadiyat-lagoons",
+    name: "Saadiyat Lagoons",
+    hero_label: "saadiyat-lagoons",
+    intro:
+      "Lagoon-fed villa community on Saadiyat — 312 freehold villas across 4 km of crystal waterways. Aldar's third Saadiyat phase, currently in pre-launch.",
+    position: "Saadiyat · 16 min from Corniche",
+    vibe: "Lagoons, villas, pre-launch",
+    stats: {
+      median_apt_aed_per_ft2: 0,
+      median_villa_aed_per_ft2: 2480,
+      avg_dom_days: 72,
+      yoy_change_pct: 0,
+    },
+    schools: [],
+    amenities: ["Crystal lagoons", "Beach pavilion", "Clubhouse", "Tennis"],
+    similar_areas: ["saadiyat-island", "saadiyat-reserve"],
+  },
+  {
+    slug: "saadiyat-reserve",
+    name: "Saadiyat Reserve",
+    hero_label: "saadiyat-reserve",
+    intro:
+      "Aldar's eco-themed cluster on Saadiyat — low-density villas and townhouses with mangrove views and protected coastline access.",
+    position: "Saadiyat · 18 min from Corniche",
+    vibe: "Eco-themed, low-density, villas + townhouses",
+    stats: {
+      median_apt_aed_per_ft2: 0,
+      median_villa_aed_per_ft2: 2240,
+      avg_dom_days: 60,
+      yoy_change_pct: 6.8,
+    },
+    schools: [],
+    amenities: ["Mangrove walk", "Beach access", "Community park"],
+    similar_areas: ["saadiyat-island", "saadiyat-lagoons"],
+  },
 ];
 
 export function getSeedAreaGuideBySlug(slug: string): SeedAreaGuide | null {
