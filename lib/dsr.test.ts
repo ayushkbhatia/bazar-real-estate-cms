@@ -68,6 +68,12 @@ describe("buildDataExport", () => {
     expect(archive.notes.some((n) => /KYC/i.test(n))).toBe(true);
     expect(archive.notes.some((n) => /Audit-log/i.test(n))).toBe(true);
   });
+
+  it("explains how the messages thread is scoped + how to filter to own-only", () => {
+    const archive = buildDataExport({ account: null });
+    expect(archive.notes.some((n) => /author_kind/.test(n))).toBe(true);
+    expect(archive.notes.some((n) => /'user'/.test(n))).toBe(true);
+  });
 });
 
 describe("exportFilename", () => {
