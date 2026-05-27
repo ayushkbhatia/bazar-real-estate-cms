@@ -13,6 +13,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { enquiryEscalationTemplate } from "@/lib/email-templates";
@@ -151,6 +152,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    Sentry.captureException(err, { tags: { cron: "enquiry-escalation" } });
     console.error("[cron/enquiry-escalation]", message);
     return NextResponse.json(
       { ok: false, reason: message },

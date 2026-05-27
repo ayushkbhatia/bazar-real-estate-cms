@@ -14,6 +14,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import {
@@ -131,6 +132,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, day7, day30 });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    Sentry.captureException(err, { tags: { cron: "post-valuation-nurture" } });
     console.error("[cron/post-valuation-nurture]", message);
     return NextResponse.json(
       { ok: false, reason: message },

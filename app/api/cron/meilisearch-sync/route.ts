@@ -10,6 +10,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import {
   ensurePropertiesIndex,
@@ -110,6 +111,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, indexed: totalIndexed });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    Sentry.captureException(err, { tags: { cron: "meilisearch-sync" } });
     console.error("[cron/meilisearch-sync]", message);
     return NextResponse.json(
       { ok: false, reason: message },

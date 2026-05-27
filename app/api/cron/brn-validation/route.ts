@@ -13,6 +13,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { brnExpiryWarningTemplate } from "@/lib/email-templates";
@@ -113,6 +114,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, scanned: rows.length, warned });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    Sentry.captureException(err, { tags: { cron: "brn-validation" } });
     console.error("[cron/brn-validation]", message);
     return NextResponse.json(
       { ok: false, reason: message },

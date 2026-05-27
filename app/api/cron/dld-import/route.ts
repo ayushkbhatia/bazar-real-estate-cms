@@ -7,6 +7,7 @@
  */
 
 import { NextResponse, type NextRequest } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { env } from "@/lib/env";
 import { importDldComparables } from "@/lib/dld-comparables";
 
@@ -23,6 +24,16 @@ export async function GET(req: NextRequest) {
       { status: 401 },
     );
   }
-  const result = await importDldComparables();
-  return NextResponse.json(result);
+  try {
+    const result = await importDldComparables();
+    return NextResponse.json(result);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    Sentry.captureException(err, { tags: { cron: "dld-import" } });
+    console.error("[cron/dld-import]", message);
+    return NextResponse.json(
+      { ok: false, reason: message },
+      { status: 500 },
+    );
+  }
 }

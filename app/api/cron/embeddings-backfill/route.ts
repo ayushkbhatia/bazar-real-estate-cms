@@ -11,6 +11,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured, isVoyageConfigured } from "@/lib/env";
 import {
   buildPropertyEmbedText,
@@ -138,6 +139,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, embedded });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    Sentry.captureException(err, { tags: { cron: "embeddings-backfill" } });
     console.error("[cron/embeddings-backfill]", message);
     return NextResponse.json(
       { ok: false, reason: message },
