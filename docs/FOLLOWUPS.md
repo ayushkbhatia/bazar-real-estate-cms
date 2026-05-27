@@ -68,15 +68,6 @@ quick grep can show "what's outstanding in my area."
   in the production Supabase project, run `npm run db:types` and drop the
   casts. Surfaced by PR #67.
 
-- [i5] Optional reassign-digest email.
-  When a bulk reassign happens, send each newly-assigned agent a single
-  "You were assigned N properties" Resend email. Spec'd as optional in I5
-  and deferred to keep PR #63 scoped. Trigger from
-  `bulkReassignProperties` after `logBulkOperation`; template should live
-  alongside the existing transactional templates in `lib/email-templates.ts`.
-  Group by agent so each one receives one email even if the bulk hit a
-  mix of agents.
-
 ## Recently done
 
 (Move entries here briefly before deleting, so a `git log -p docs/FOLLOWUPS.md`
@@ -86,3 +77,9 @@ shows the trail.)
   launch-readiness). Swapped to the `property_media` join pattern from
   `listings-by-agent.ts`; added error logging so PostgREST failures no
   longer silently empty `/exclusive`, `/new-this-week`, `/price-drops`.
+
+- [i5] Reassign-digest email shipped (P2 launch-readiness).
+  `bulkReassignProperties` now fires a one-off digest to the
+  newly-assigned agent via `bulkReassignDigestTemplate`. Single agent
+  per call so no grouping needed; fire-and-forget so failures don't
+  block the action response.

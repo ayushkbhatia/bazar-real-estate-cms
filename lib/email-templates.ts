@@ -612,6 +612,58 @@ export function viewingReminderTemplate(opts: {
 }
 
 /** Newsletter double-opt-in confirmation email. */
+/**
+ * Sent to an agent after a bulk reassign puts new listings in their queue.
+ * One email per reassign action, summarising the count plus a sample of
+ * property references for context.
+ */
+export function bulkReassignDigestTemplate(opts: {
+  agentName: string;
+  count: number;
+  sampleReferences: string[];
+}): { subject: string; text: string; html: string } {
+  const subject =
+    opts.count === 1
+      ? "You were assigned a Bazar listing"
+      : `You were assigned ${opts.count} Bazar listings`;
+  const url = `${siteUrl()}/admin/properties?assigned=me`;
+
+  const sample = opts.sampleReferences.slice(0, 8);
+  const remainder = Math.max(0, opts.count - sample.length);
+
+  const text =
+    `Hi ${opts.agentName},\n\n` +
+    `${opts.count} ${opts.count === 1 ? "listing was" : "listings were"} just assigned to you in the Bazar CMS.\n\n` +
+    (sample.length > 0
+      ? `References:\n${sample.map((r) => `  · ${r}`).join("\n")}\n` +
+        (remainder > 0 ? `  · …and ${remainder} more\n` : "") +
+        "\n"
+      : "") +
+    `Open your queue: ${url}\n\n— Bazar CMS\n`;
+
+  const refsBlock =
+    sample.length > 0
+      ? `<ul style="margin:14px 0;padding-left:18px;font-size:13px;color:#32312d">
+          ${sample
+            .map(
+              (r) =>
+                `<li style="margin:2px 0"><span style="font-family:monospace">${escape(r)}</span></li>`,
+            )
+            .join("")}
+          ${remainder > 0 ? `<li style="margin:2px 0;color:#7d8e7e">…and ${remainder} more</li>` : ""}
+        </ul>`
+      : "";
+
+  const html = shell(`
+    <p>Hi ${escape(opts.agentName)},</p>
+    <p><strong>${opts.count} ${opts.count === 1 ? "listing was" : "listings were"}</strong> just assigned to you in the Bazar CMS.</p>
+    ${refsBlock}
+    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#4B5A4C;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open my queue</a></p>
+  `);
+
+  return { subject, text, html };
+}
+
 export function newsletterConfirmTemplate(opts: {
   email: string;
   confirmUrl: string;

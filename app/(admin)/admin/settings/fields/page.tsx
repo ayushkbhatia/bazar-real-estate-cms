@@ -1,11 +1,12 @@
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
+import { listAmenitiesTaxonomyForAdmin } from "@/lib/queries/amenities-taxonomy";
 import { AMENITY_CATEGORY_LABELS } from "@/lib/schemas/amenity-taxonomy";
+import { AmenityActiveToggle, AddAmenityForm } from "./_form";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminSettingsFieldsPage() {
-  const taxonomy = await listAmenitiesTaxonomy();
+  const taxonomy = await listAmenitiesTaxonomyForAdmin();
 
   const grouped = new Map<string, typeof taxonomy>();
   for (const entry of taxonomy) {
@@ -26,9 +27,10 @@ export default async function AdminSettingsFieldsPage() {
         </h1>
         <p className="mt-3 text-[14px] text-bz-muted leading-relaxed">
           The canonical vocabulary that backs the 21-toggle grid on the
-          property editor and the amenity facet on /buy + /rent. Edits land
-          via a future admin form; this view reads the live taxonomy and
-          flags entries marked inactive.
+          property editor and the amenity facet on /buy + /rent. Click the
+          status label on any row to deactivate; deactivated entries stay
+          in the table (so existing listings still resolve their codes)
+          but drop out of new toggles and the public facet.
         </p>
       </header>
 
@@ -56,16 +58,22 @@ export default async function AdminSettingsFieldsPage() {
                       {e.code}
                     </div>
                   </div>
-                  {e.active ? null : (
-                    <span className="text-[10px] mono text-bz-muted bg-bz-surface-2 px-1.5 py-0.5 rounded">
-                      inactive
-                    </span>
-                  )}
+                  <AmenityActiveToggle code={e.code} active={e.active ?? true} />
                 </li>
               ))}
           </ul>
         </section>
       ))}
+
+      <section>
+        <Eyebrow>Add a new amenity</Eyebrow>
+        <p className="mt-2 text-[13px] text-bz-muted max-w-[60ch]">
+          Codes are immutable once a listing toggles them on. Pick a
+          short snake_case identifier; the label is what the property
+          editor + public facet display.
+        </p>
+        <AddAmenityForm />
+      </section>
 
       <section className="border-t border-bz-border pt-6 text-[12.5px] text-bz-muted">
         Total entries: <span className="mono text-bz-ink">{taxonomy.length}</span> ·

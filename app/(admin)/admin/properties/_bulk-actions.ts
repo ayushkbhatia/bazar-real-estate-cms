@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
 import { logBulkOperation } from "@/lib/queries/bulk-operations";
@@ -18,6 +19,8 @@ import {
 } from "@/lib/queries/properties-bulk";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { requireRole } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
+import { bulkReassignDigestTemplate } from "@/lib/email-templates";
 
 const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
@@ -433,9 +436,62 @@ export async function bulkReassignProperties(
     payload: { agent_id: agentId },
   });
 
+  // Fire-and-forget digest email to the newly-assigned agent. Skipped
+  // for "unassign" (agentId === null) and when no rows actually changed.
+  // Failures inside this block must not break the reassign response —
+  // the audit log is the source of truth.
+  if (agentId && result.succeeded.length > 0) {
+    try {
+      await sendBulkReassignDigest(agentId, result.succeeded);
+    } catch {
+      /* best-effort */
+    }
+  }
+
   return {
     status: "ok",
     succeeded: result.succeeded,
     skipped: result.skipped.map((s) => ({ id: s.id, reason: s.reason })),
   };
+}
+
+async function sendBulkReassignDigest(
+  agentId: string,
+  propertyIds: string[],
+): Promise<void> {
+  const admin = createAdminClient();
+  if (!admin) return; // No service role → can't resolve auth.users email.
+
+  const [staffRes, userRes, propsRes] = await Promise.all([
+    admin
+      .from("staff")
+      .select("display_name")
+      .eq("user_id", agentId)
+      .maybeSingle(),
+    admin.auth.admin.getUserById(agentId),
+    admin
+      .from("properties")
+      .select("reference")
+      .in("id", propertyIds.slice(0, 10)),
+  ]);
+
+  const email = userRes.data?.user?.email;
+  if (!email) return;
+
+  const agentName = staffRes.data?.display_name ?? "there";
+  const sampleReferences = (propsRes.data ?? [])
+    .map((r) => r.reference)
+    .filter((r): r is string => Boolean(r));
+
+  const tpl = bulkReassignDigestTemplate({
+    agentName,
+    count: propertyIds.length,
+    sampleReferences,
+  });
+  await sendEmail({
+    to: email,
+    subject: tpl.subject,
+    text: tpl.text,
+    html: tpl.html,
+  });
 }
