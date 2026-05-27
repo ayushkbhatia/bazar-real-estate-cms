@@ -13,6 +13,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import * as Sentry from "@sentry/nextjs";
 import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
@@ -37,8 +38,11 @@ export async function GET(req: NextRequest) {
   // the next visitor sees the new quarter pinned.
   try {
     revalidatePath("/market-reports");
-  } catch {
-    /* best-effort */
+  } catch (err) {
+    Sentry.captureException(err, {
+      tags: { cron: "market-reports-refresh" },
+    });
+    console.error("[cron/market-reports-refresh]", err);
   }
 
   return NextResponse.json({

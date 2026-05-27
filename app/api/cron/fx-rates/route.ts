@@ -16,6 +16,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
@@ -85,6 +86,8 @@ export async function GET(req: NextRequest) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    Sentry.captureException(err, { tags: { cron: "fx-rates" } });
+    console.error("[cron/fx-rates]", message);
     return NextResponse.json(
       { ok: false, error: message },
       { status: 502 },

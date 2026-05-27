@@ -9,6 +9,7 @@
  */
 
 import { NextResponse, type NextRequest } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { env } from "@/lib/env";
 import { markIntegrationSynced } from "@/lib/queries/integrations";
 import { loadFeedProperties } from "@/lib/syndication/load";
@@ -40,6 +41,7 @@ export async function GET(req: NextRequest) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    Sentry.captureException(err, { tags: { cron: "syndication-push" } });
     console.error("[cron/syndication-push]", message);
     return NextResponse.json(
       { ok: false, reason: message },

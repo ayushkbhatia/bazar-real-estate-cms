@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { env } from "@/lib/env";
 import { runSavedSearchAlerts } from "@/lib/saved-search-alerts";
 
@@ -30,6 +31,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, frequency, ...result });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    Sentry.captureException(err, {
+      tags: { cron: "saved-search-alerts", frequency },
+    });
     console.error("[cron/saved-search-alerts]", message);
     return NextResponse.json(
       { ok: false, reason: message },
