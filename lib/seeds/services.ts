@@ -16,7 +16,12 @@ export type SeedService = {
     | "handover"
     | "interior-design"
     | "residency-visas"
-    | "consulting";
+    | "consulting"
+    // Sprint 15 additions — closing the megamenu 404s.
+    | "developer"
+    | "rental-finance"
+    | "sales-leasing"
+    | "tenant-matchmaking";
   name: string;
   one_liner: string;
   intro: string;
@@ -211,6 +216,87 @@ export const SEED_SERVICES: SeedService[] = [
     ],
     pricing: "AED 950 per hour · billed in 30-minute increments · 4-hour blocks discounted to AED 3,500",
     contact_cta: "Book consulting hours",
+    related_tool: null,
+  },
+  // ─────────────────────────────────────────────────────────────────────
+  // Sprint 15 — four service desks the megamenu seed already links to.
+  // Pricing + scope mirror the existing service voice; copy capped at one
+  // screen each.
+  // ─────────────────────────────────────────────────────────────────────
+  {
+    slug: "developer",
+    name: "Developer services",
+    one_liner:
+      "Pre-launch advisory and exclusive client access for Abu Dhabi developers.",
+    intro:
+      "Most launches are noisy and indiscriminate. Bazar runs a parallel pre-launch channel: we curate a small group of qualified buyers, brief them on the project ahead of the public release, and feed back the price-sensitivity data that helps you tune the public launch. We don't list everything — only projects we'd defend with comparable evidence.",
+    for_whom:
+      "Master-plan developers and boutique sponsors launching AED 3M+ residential stock in Abu Dhabi who want a private soft-launch before broad marketing.",
+    process_steps: [
+      { title: "Project brief", body: "Two-hour workshop on the masterplan, payment structure, target segment, and competing launches. Output: a written GTM positioning memo." },
+      { title: "Buyer curation", body: "We select 50-150 qualified Bazar clients matching the brief and run a private 14-day soft-launch window with full deal economics disclosed." },
+      { title: "Launch data", body: "Weekly report on viewings, reservations, walked-away buyers, and price-sensitivity signals. Used to tune the public launch." },
+      { title: "Public-launch handover", body: "We hand back to your in-house team or stay engaged as a syndication channel through handover." },
+    ],
+    pricing: "1.5% of soft-launch contracted GDV · or AED 250K retainer credited against the variable fee",
+    contact_cta: "Talk to the developer desk",
+    related_tool: null,
+  },
+  {
+    slug: "rental-finance",
+    name: "Rental finance management",
+    one_liner:
+      "Cash-flow modelling, mortgage optimisation, and currency management for non-resident landlords.",
+    intro:
+      "Owning rental property from abroad is mostly a financial exercise. Bazar's landlord-finance desk models your net cash flow against the underlying mortgage, optimises the refinancing window, and handles currency conversion in tranches — so you're not exposed to AED/GBP/USD swings on every rent cycle. Quarterly reports in your home currency.",
+    for_whom:
+      "Non-resident landlords with one or more mortgaged units in Abu Dhabi, particularly those receiving income in AED but reporting in another currency.",
+    process_steps: [
+      { title: "Portfolio review", body: "Underlying mortgage(s), rent roll, service charges, and tax-residence structure. We model net yield after every cost." },
+      { title: "Refinance window", body: "Quarterly check against the open mortgage market. We flag refinance opportunities and run the application end-to-end if you want to switch." },
+      { title: "Currency tranching", body: "Monthly rent split across staged FX conversions to dampen exchange-rate exposure. Settled to your home account." },
+      { title: "Reporting", body: "One-page quarterly statement in your home currency. Annual pack for your tax adviser." },
+    ],
+    pricing: "AED 950 per unit per month · all-in · no FX spread on top of interbank · cancellable monthly",
+    contact_cta: "Book a portfolio review",
+    related_tool: { label: "Mortgage calculator", href: "/tools/mortgage" },
+  },
+  {
+    slug: "sales-leasing",
+    name: "Sales & leasing",
+    one_liner:
+      "Bulk-sale and bulk-lease representation for owners with multi-unit portfolios.",
+    intro:
+      "When a single owner controls 10+ units in one building, the normal sales playbook stops working — concentration risk depresses the unit price and exhausts the local buyer pool. Bazar's sales & leasing desk runs structured disposition programmes: phased releases, syndication to family offices, build-to-rent buyer matching, and bulk-lease deals with corporate tenants. Designed for owners who want certainty of execution over the last 5% of unit price.",
+    for_whom:
+      "Owners holding multi-unit portfolios (whole floors, whole buildings, master-developer recoveries), and family offices unwinding inherited stock.",
+    process_steps: [
+      { title: "Portfolio audit", body: "Unit-level valuation, comparable comps, tenancy rollover, and a 24-month disposition or build-to-rent letting plan." },
+      { title: "Buyer / tenant book", body: "Private syndication round to the Bazar family-office network for sales. For lettings: corporate-relocation desks and serviced-apartment operators." },
+      { title: "Execution", body: "Phased contracts to keep market price stable. Conveyancing handled in-house for sales; bulk-lease contracts negotiated centrally." },
+      { title: "Reporting", body: "Monthly disposition report — units cleared, average unit price vs underwriting, time-on-market. Stay-or-pivot decision points flagged early." },
+    ],
+    pricing: "0.85% of sale value (sales) · 6% of first-year rent (lease) · paid on closing each tranche",
+    contact_cta: "Discuss a portfolio mandate",
+    related_tool: null,
+  },
+  {
+    slug: "tenant-matchmaking",
+    name: "Tenant matchmaking",
+    one_liner:
+      "Targeted tenant search for high-spec or unusual units — not a portal listing.",
+    intro:
+      "Some units don't let well on the portals — six-bedroom villas, ultra-prime serviced apartments, mixed-use ground floors, anything above AED 600K annual rent. The buyer pool is small enough that you don't want a public listing. Bazar's tenant-matchmaking desk works the other way around: we know the families and corporates moving in, and we find them the property — not the other way around.",
+    for_whom:
+      "Landlords of villas above AED 600K p.a., serviced-apartment owners, and owners of unusual stock (heritage buildings, mixed-use, oversized layouts) that doesn't fit the portal template.",
+    process_steps: [
+      { title: "Unit brief", body: "Property walk + a one-page brief that captures price, term, audience, and what would make this tenant the right one. No portal photos, no public listing." },
+      { title: "Targeted outreach", body: "We approach 8-12 known families or corporate tenants who match the brief. All confidential — your address is never in a portal feed." },
+      { title: "Viewings", body: "Two-three private viewings per week with pre-qualified tenants. We're onsite for each one." },
+      { title: "Negotiation & contract", body: "We handle the tenancy contract, security deposit, post-dated cheques, and the Ejari registration once signed." },
+    ],
+    pricing: "Half-month rent · capped at AED 50K · paid on signed tenancy contract",
+    contact_cta: "Brief the matchmaking desk",
     related_tool: null,
   },
 ];
