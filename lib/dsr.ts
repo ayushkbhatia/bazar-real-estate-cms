@@ -70,8 +70,9 @@ export function buildDataExport(input: {
     newsletter_subscription: input.newsletter_subscription ?? null,
     notes: [
       "This archive contains every personal-data field Bazar holds about your account at the moment of generation.",
-      "KYC documents tied to closed transactions are retained for 7 years under UAE AML rules and are excluded from this export.",
-      "Audit-log rows are also excluded — they are non-PII and required for compliance.",
+      "The `messages` section includes the full conversation thread with your advisor — `author_kind` identifies whether each message was sent by you (`user`), Bazar (`agent`), or the system (`system`). Advisor replies are included so you have the context of your conversation; if you only want your own messages, filter by `author_kind === 'user'`.",
+      "KYC documents tied to closed transactions are retained for 7 years under UAE AML rules and are excluded from this export. Email dpo@bazar.ae to request a separate review of those.",
+      "Audit-log rows are required for AML/CFT compliance and excluded from this export; on a deletion request we wipe inline IP and user-agent fields rather than dropping the rows.",
       "Questions or corrections: dpo@bazar.ae",
     ],
   };
