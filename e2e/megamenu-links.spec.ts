@@ -1,13 +1,18 @@
 import { test, expect } from "@playwright/test";
-import { createClient } from "@supabase/supabase-js";
 
 /**
  * Sprint 15 Phase 5: forcing function against megamenu drift.
  *
  * Reads every href the public megamenu can show (column items, featured
- * tiles, and direct-link tabs) directly from the published rows in
- * Supabase, then hits each one through the running app and asserts it
- * doesn't 404.
+ * tiles, and direct-link tabs) directly from Supabase's REST endpoint,
+ * then hits each one through the running app and asserts it doesn't 404.
+ *
+ * Why direct REST rather than the supabase-js client: the JS client
+ * initialises a Realtime WebSocket connection on construction, which
+ * fails on the Node 20 CI runner ("Node.js 20 detected without native
+ * WebSocket support"). The REST endpoint speaks plain HTTP — Playwright's
+ * `request` fixture handles it directly and the dependency is one we
+ * already trust.
  *
  * Why DB-based and not DOM-based: Radix lazy-mounts NavigationMenuContent
  * when its trigger activates, and Playwright's hover/click on the
@@ -22,7 +27,7 @@ import { createClient } from "@supabase/supabase-js";
  * regression class the spec is here to catch.
  */
 
-type HrefRow = { href: string };
+type HrefRow = { href: string | null };
 
 test("every megamenu link returns a non-404 response", async ({ request }) => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -32,28 +37,33 @@ test("every megamenu link returns a non-404 response", async ({ request }) => {
     "Supabase env vars not set — megamenu link audit requires DB access",
   );
 
-  const sb = createClient(url!, anonKey!);
+  // Tiny REST-only helper: PostgREST treats every Supabase table as
+  // `${url}/rest/v1/${table}?select=...`, and RLS gates the response so
+  // we transparently see only published rows. `Prefer: count=exact` is
+  // not needed — we just want the rows.
+  const headers = {
+    apikey: anonKey!,
+    Authorization: `Bearer ${anonKey!}`,
+    Accept: "application/json",
+  };
+  async function fetchHrefs(table: string, extraQs = ""): Promise<HrefRow[]> {
+    const qs = extraQs ? `&${extraQs}` : "";
+    const res = await request.get(
+      `${url}/rest/v1/${table}?select=href${qs}`,
+      { headers },
+    );
+    expect(res.ok(), `${table} fetch returned ${res.status()}`).toBe(true);
+    return (await res.json()) as HrefRow[];
+  }
 
-  // Pull every href surface — RLS already filters to published-only.
-  // Direct-link tabs (Insights, About) have `has_panel = false` and store
-  // the href on the tab row itself; tabs with a panel use the panel
-  // contents (items + featured tiles).
-  const [itemsRes, tilesRes, tabsRes] = await Promise.all([
-    sb.from("megamenu_items").select("href"),
-    sb.from("megamenu_featured_tiles").select("href"),
-    sb.from("megamenu_tabs").select("href").not("href", "is", null),
+  const [items, tiles, tabs] = await Promise.all([
+    fetchHrefs("megamenu_items"),
+    fetchHrefs("megamenu_featured_tiles"),
+    fetchHrefs("megamenu_tabs", "href=not.is.null"),
   ]);
 
-  expect(itemsRes.error, "fetching megamenu_items failed").toBeNull();
-  expect(tilesRes.error, "fetching megamenu_featured_tiles failed").toBeNull();
-  expect(tabsRes.error, "fetching megamenu_tabs failed").toBeNull();
-
   const hrefs = new Set<string>(
-    [
-      ...(itemsRes.data as HrefRow[] | null ?? []),
-      ...(tilesRes.data as HrefRow[] | null ?? []),
-      ...(tabsRes.data as HrefRow[] | null ?? []),
-    ]
+    [...items, ...tiles, ...tabs]
       .map((r) => r.href)
       .filter((h): h is string => typeof h === "string" && h.startsWith("/")),
   );
