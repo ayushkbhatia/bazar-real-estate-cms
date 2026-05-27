@@ -14,7 +14,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "db:types": "bash scripts/db-types.sh",
-    "db:seed": "bash scripts/db-seed.sh"
+    "db:seed": "bash scripts/db-seed.sh",
+    "seed:demo": "node --env-file=.env.local scripts/seed-demo-content/index.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.97.1",

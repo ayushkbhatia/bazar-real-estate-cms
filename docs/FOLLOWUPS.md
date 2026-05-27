@@ -31,6 +31,18 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [curated] `lib/queries/curated-listings.ts` uses a broken hero embed.
+  The select string `hero:hero_image_id(...)` references a column that
+  doesn't exist on `properties` (it's on `developments`). PostgREST
+  returns `PGRST200` and the helper silently returns `[]`. Net effect:
+  `/exclusive`, `/new-this-week`, `/price-drops` render their empty
+  states even when the DB has matching listings. Fix: swap to the
+  property_media join shape used in
+  `lib/queries/listings-by-agent.ts` (added 2026-05-27). ~10-minute
+  change; the existing tests will pass because they assert behaviour
+  with no media. Surfaced while wiring active listings onto
+  `/agents/[slug]`.
+
 - [megamenu] Media library picker for featured tiles.
   `megamenu_featured_tiles.media_asset_id` is in the schema (FK to
   `media_assets`) but the admin editor at `app/(admin)/admin/navigation/
