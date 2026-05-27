@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { ArrowLeft, Mail, MessageCircle, Phone } from "lucide-react";
+import { ArrowLeft, Mail, MessageCircle, Phone, Star } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
 import { getAgentBySlug, listAgents } from "@/lib/queries/agents";
+import { listApprovedReviewsForAgent } from "@/lib/queries/reviews-by-subject";
+import { listListingsByAgent } from "@/lib/queries/listings-by-agent";
+import {
+  formatPriceAED,
+  propertyUrl,
+} from "@/lib/queries/properties";
+import { mediaPublicUrl } from "@/lib/media";
 import { getSeedAgentBySlug } from "@/lib/seeds/agents";
 import { getSeedAreaGuideBySlug } from "@/lib/seeds/areas";
 import {
@@ -13,6 +20,8 @@ import {
   breadcrumbListJsonLd,
 } from "@/lib/jsonld";
 import { env } from "@/lib/env";
+import { ListingCardSaveable } from "../../_components/listing-card-saveable";
+import { SavedIdsProvider } from "../../_components/saved-ids-provider";
 
 export async function generateStaticParams() {
   // Pre-render every agent the DB exposes today; runtime requests for
@@ -43,6 +52,16 @@ export default async function AgentProfilePage({
   const { slug } = await params;
   const agent = await getAgentBySlug(slug);
   if (!agent) notFound();
+
+  // Reviews + active listings — both keyed on the agent's user_id. Skip
+  // for seed-only agents (no DB id) so the section degrades cleanly.
+  const isSeedOnly = agent.user_id.startsWith("seed:");
+  const [reviews, activeListings] = isSeedOnly
+    ? [[], []]
+    : await Promise.all([
+        listApprovedReviewsForAgent(agent.user_id),
+        listListingsByAgent(agent.user_id, { limit: 6 }),
+      ]);
 
   // Stats + contact metadata that the DB schema doesn't yet expose
   // continue to come from the matching seed entry. When the field is
@@ -258,7 +277,58 @@ export default async function AgentProfilePage({
         </div>
       </section>
 
-      {/* Listings placeholder (real wiring in Sprint 9) */}
+      {/* Reviews */}
+      {reviews.length > 0 ? (
+        <section className="border-t border-bz-border">
+          <div className="px-12 py-16 max-w-[1280px]">
+            <Eyebrow>What clients say</Eyebrow>
+            <h2
+              className="serif text-[32px] mt-2 leading-tight"
+              style={{ letterSpacing: "-0.015em" }}
+            >
+              Working with {agent.display_name.split(" ")[0]}.
+            </h2>
+            <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {reviews.map((r) => (
+                <figure
+                  key={r.id}
+                  className="rounded-md border border-bz-border bg-bz-surface p-6 flex flex-col gap-4"
+                >
+                  <div className="flex items-center gap-1 text-bz-accent">
+                    {Array.from({ length: r.rating }).map((_, i) => (
+                      <Star key={i} size={13} strokeWidth={1.5} fill="currentColor" />
+                    ))}
+                  </div>
+                  {r.title ? (
+                    <div
+                      className="serif text-[18px] leading-snug text-bz-ink"
+                      style={{ letterSpacing: "-0.012em" }}
+                    >
+                      {r.title}
+                    </div>
+                  ) : null}
+                  {r.body ? (
+                    <blockquote className="text-[14px] text-bz-ink-2 leading-relaxed">
+                      {r.body}
+                    </blockquote>
+                  ) : null}
+                  <figcaption className="mt-auto pt-2 text-[12.5px] text-bz-muted">
+                    {r.author_name ?? "Bazar client"} ·{" "}
+                    <span className="mono">
+                      {new Date(r.created_at).toLocaleDateString("en-GB", {
+                        year: "numeric",
+                        month: "short",
+                      })}
+                    </span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* Active listings */}
       <section className="border-t border-bz-border bg-bz-surface">
         <div className="px-12 py-16 max-w-[1280px]">
           <Eyebrow>Active listings</Eyebrow>
@@ -268,9 +338,52 @@ export default async function AgentProfilePage({
           >
             What {agent.display_name.split(" ")[0]} is bringing to market.
           </h2>
-          <div className="mt-8 py-12 text-center text-[14px] text-bz-muted border border-dashed border-bz-border rounded-md">
-            Listings linked to advisors land in Sprint 9.
-          </div>
+          {activeListings.length === 0 ? (
+            <div className="mt-8 py-12 text-center text-[14px] text-bz-muted border border-dashed border-bz-border rounded-md">
+              No public listings on the desk this week. Open a brief to discuss
+              what {agent.display_name.split(" ")[0]} is working on off-market.
+            </div>
+          ) : (
+            <SavedIdsProvider>
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {activeListings.map((row, index) => {
+                  const badge = row.flags?.exclusive
+                    ? { label: "Exclusive", kind: "ink" as const }
+                    : row.flags?.vacant_on_transfer
+                    ? { label: "Vacant on transfer", kind: "accent" as const }
+                    : undefined;
+                  return (
+                    <Link
+                      key={row.reference}
+                      href={propertyUrl(row)}
+                      className="block"
+                    >
+                      <ListingCardSaveable
+                        price={formatPriceAED(row.price_aed)}
+                        priceAed={row.price_aed}
+                        title={row.title}
+                        location={row.areas?.name ?? "United Arab Emirates"}
+                        beds={row.beds}
+                        baths={row.baths}
+                        area={row.built_up_ft2 ?? 0}
+                        badge={badge?.label}
+                        badgeKind={badge?.kind}
+                        imgLabel={row.reference}
+                        heroSrc={
+                          row.hero
+                            ? mediaPublicUrl(row.hero.storage_key)
+                            : null
+                        }
+                        heroAlt={row.hero?.alt_text ?? row.title}
+                        priority={index === 0}
+                        propertyId={row.id}
+                      />
+                    </Link>
+                  );
+                })}
+              </div>
+            </SavedIdsProvider>
+          )}
         </div>
       </section>
 
