@@ -24,7 +24,7 @@ const STATS: Stat[] = [
 export function MarketStatsStrip() {
   return (
     <section className="border-y border-bz-border bg-bz-surface">
-      <div className="px-12 py-12">
+      <div className="px-4 md:px-12 py-12">
         <div className="flex items-end justify-between gap-8 flex-wrap mb-8">
           <div>
             <Eyebrow>Q2 2026 · Abu Dhabi snapshot</Eyebrow>
@@ -43,14 +43,14 @@ export function MarketStatsStrip() {
             <ArrowRight size={13} strokeWidth={1.7} />
           </Link>
         </div>
-        <div className="grid grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {STATS.map((s) => (
             <div key={s.label}>
               <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
                 {s.label}
               </div>
               <div
-                className="serif text-[40px] mt-1 leading-none"
+                className="serif text-[28px] md:text-[40px] mt-1 leading-none"
                 style={{ letterSpacing: "-0.02em" }}
               >
                 {s.value}

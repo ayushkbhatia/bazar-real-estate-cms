@@ -49,12 +49,9 @@ const SOCIAL = ["IG", "LI", "X", "YT"];
 
 export function PublicFooter() {
   return (
-    <footer className="bg-bz-ink text-[oklch(0.85_0.005_80)] px-12 pt-16 pb-8">
-      <div
-        className="grid gap-12 pb-12"
-        style={{ gridTemplateColumns: "1.5fr repeat(4, 1fr)" }}
-      >
-        <div>
+    <footer className="bg-bz-ink text-[oklch(0.85_0.005_80)] px-4 md:px-12 pt-12 md:pt-16 pb-8">
+      <div className="grid grid-cols-2 md:grid-cols-[1.5fr_repeat(4,1fr)] gap-8 md:gap-12 pb-12">
+        <div className="col-span-2 md:col-span-1">
           <div className="serif italic text-[28px] text-white leading-none">
             Bazar
           </div>

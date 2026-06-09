@@ -19,7 +19,7 @@ export async function TrustStrip() {
   const reviews = await getGoogleReviewsSnapshot();
   const stars = Math.round(reviews.rating);
   return (
-    <section className="px-12 py-9 border-y border-bz-border bg-bz-surface-2">
+    <section className="px-4 md:px-12 py-9 border-y border-bz-border bg-bz-surface-2">
       <div className="grid grid-cols-1 md:grid-cols-[auto_1fr_auto] items-center gap-10">
         {/* Google reviews */}
         <a
@@ -53,7 +53,7 @@ export async function TrustStrip() {
 
         {/* Press logos — serif wordmark fallback until real assets land.
             Kept at full opacity so the WCAG-AA contrast check passes. */}
-        <div className="flex items-center gap-7 justify-self-center text-bz-ink-2">
+        <div className="flex flex-wrap items-center gap-x-7 gap-y-2 md:justify-self-center text-bz-ink-2">
           {SEED_PRESS_LOGOS.slice(0, 4).map((p) => (
             <span
               key={p.id}
@@ -67,7 +67,7 @@ export async function TrustStrip() {
         </div>
 
         {/* Permit */}
-        <div className="justify-self-end text-right">
+        <div className="md:justify-self-end md:text-right">
           <div className="text-[11px] uppercase tracking-wider text-bz-ink-2">
             DLD broker permit
           </div>

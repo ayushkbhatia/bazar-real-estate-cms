@@ -9,15 +9,15 @@ import { SEED_SERVICES } from "@/lib/seeds/services";
 export function ServicesBand() {
   return (
     <section className="bg-bz-ink text-white">
-      <div className="px-12 py-20">
+      <div className="px-4 md:px-12 py-12 md:py-20">
         <Eyebrow className="text-white/60">Services</Eyebrow>
         <h2
-          className="serif text-[40px] mt-3 leading-tight max-w-[26ch]"
+          className="serif text-[28px] md:text-[40px] mt-3 leading-tight max-w-[26ch]"
           style={{ letterSpacing: "-0.022em" }}
         >
           One advisor each. Five practices.
         </h2>
-        <div className="mt-12 grid grid-cols-5 gap-10">
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
           {SEED_SERVICES.map((s, i) => (
             <Link
               key={s.slug}

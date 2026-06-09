@@ -3,8 +3,9 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useQueryStates } from "nuqs";
-import { Bookmark, Search, X } from "lucide-react";
+import { Bookmark, Search, X, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
+import { BottomSheet } from "@/components/brand/mobile";
 import {
   Select,
   SelectContent,
@@ -72,6 +73,7 @@ export function FilterBar({ mode, areas }: Props) {
   // the user retypes or clicks Clear — the trade-off is to avoid the
   // setState-in-effect anti-pattern flagged by the React Compiler lint.
   const [qInput, setQInput] = useState(q ?? "");
+  const [sheetOpen, setSheetOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function onQChange(value: string) {
@@ -156,17 +158,187 @@ export function FilterBar({ mode, areas }: Props) {
     });
   }
 
+  // Shared filter controls — rendered inline in the desktop bar and
+  // stacked inside the mobile filter sheet. `stacked` widens inputs to
+  // full width so they read as a vertical form on mobile.
+  const controls = (stacked: boolean) => (
+    <>
+      {/* Beds */}
+      <div className={cn("flex items-center gap-1", stacked && "flex-wrap")}>
+        <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
+          Beds
+        </span>
+        {BED_OPTIONS.map((n) => {
+          const active = beds === n;
+          const label = bedLabel(n);
+          return (
+            <button
+              key={n}
+              type="button"
+              onClick={() => commit({ beds: active ? null : n })}
+              className={cn(
+                "h-9 px-2.5 rounded text-[12.5px] font-medium border transition-colors",
+                n === 0 ? "min-w-[58px]" : "min-w-[40px]",
+                active
+                  ? "bg-bz-ink text-bz-bg border-bz-ink"
+                  : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
+              )}
+              aria-pressed={active}
+              aria-label={n === 0 ? "Studio" : `${label} bed${n === 1 ? "" : "s"}`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Baths */}
+      <div className={cn("flex items-center gap-1", stacked && "flex-wrap")}>
+        <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
+          Baths
+        </span>
+        {BATH_OPTIONS.map((n) => {
+          const active = baths === n;
+          const label = bathLabel(n);
+          return (
+            <button
+              key={n}
+              type="button"
+              onClick={() => commit({ baths: active ? null : n })}
+              className={cn(
+                "h-9 min-w-[40px] px-2 rounded text-[12.5px] font-medium border transition-colors",
+                active
+                  ? "bg-bz-ink text-bz-bg border-bz-ink"
+                  : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
+              )}
+              aria-pressed={active}
+              aria-label={`${label} bath${n === 1 ? "" : "s"}`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Type */}
+      <Select
+        value={type ?? UNSET}
+        onValueChange={(v) =>
+          commit({ type: v === UNSET ? null : (v as typeof type) })
+        }
+      >
+        <SelectTrigger
+          className={cn("h-9 text-[13px]", stacked ? "w-full" : "w-[160px]")}
+          aria-label="Property type"
+        >
+          <SelectValue placeholder="Any type" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={UNSET}>Any type</SelectItem>
+          {PROPERTY_TYPES.map((t) => (
+            <SelectItem key={t} value={t}>
+              {TYPE_LABELS[t]}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* Area */}
+      {areas.length > 0 ? (
+        <Select
+          value={area ?? UNSET}
+          onValueChange={(v) => commit({ area: v === UNSET ? null : v })}
+        >
+          <SelectTrigger
+            className={cn("h-9 text-[13px]", stacked ? "w-full" : "w-[200px]")}
+            aria-label="Area"
+          >
+            <SelectValue placeholder="Any area" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={UNSET}>Any area</SelectItem>
+            {areas.map((a) => (
+              <SelectItem key={a.slug} value={a.slug}>
+                {a.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : null}
+
+      {/* Price */}
+      <div className={cn("flex items-center gap-1", stacked && "w-full")}>
+        <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
+          Price
+        </span>
+        <Input
+          type="number"
+          placeholder="Min AED"
+          value={price_min ?? ""}
+          min={0}
+          step={10000}
+          onChange={(e) =>
+            commit({
+              price_min: e.target.value === "" ? null : Number(e.target.value),
+            })
+          }
+          className={cn("h-9 text-[13px]", stacked ? "flex-1" : "w-[140px]")}
+        />
+        <span className="text-bz-muted">–</span>
+        <Input
+          type="number"
+          placeholder="Max AED"
+          value={price_max ?? ""}
+          min={0}
+          step={10000}
+          onChange={(e) =>
+            commit({
+              price_max: e.target.value === "" ? null : Number(e.target.value),
+            })
+          }
+          className={cn("h-9 text-[13px]", stacked ? "flex-1" : "w-[140px]")}
+        />
+      </div>
+    </>
+  );
+
+  const saveClear =
+    activeCount > 0 ? (
+      <>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onSaveSearch}
+          className="text-[12.5px]"
+        >
+          <Bookmark size={12} strokeWidth={1.8} />
+          Save search
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={clearAll}
+          className="text-[12.5px] text-bz-muted hover:text-bz-ink"
+        >
+          <X size={12} strokeWidth={1.8} />
+          Clear {activeCount}
+        </Button>
+      </>
+    ) : null;
+
   return (
     <div
       className={cn(
         "sticky top-0 z-20 bg-bz-bg border-b border-bz-border",
-        "px-12 py-4",
+        "px-4 md:px-12 py-3 md:py-4",
         pending && "opacity-90",
       )}
     >
       <div className="flex flex-wrap items-center gap-3">
-        {/* Free-text search */}
-        <label className="relative">
+        {/* Free-text search — full width on mobile, fixed on desktop */}
+        <label className="relative flex-1 md:flex-none min-w-0">
           <span className="sr-only">Search</span>
           <Search
             size={14}
@@ -177,184 +349,72 @@ export function FilterBar({ mode, areas }: Props) {
             placeholder="Search Mamsha, Saadiyat, sea view…"
             value={qInput}
             onChange={(e) => onQChange(e.target.value)}
-            className="w-[260px] h-9 pl-8 text-[13px]"
+            className="w-full md:w-[260px] h-9 pl-8 text-[13px]"
             aria-label="Search properties"
           />
         </label>
 
-        {/* Beds */}
-        <div className="flex items-center gap-1">
-          <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
-            Beds
-          </span>
-          {BED_OPTIONS.map((n) => {
-            const active = beds === n;
-            const label = bedLabel(n);
-            return (
-              <button
-                key={n}
-                type="button"
-                onClick={() => commit({ beds: active ? null : n })}
-                className={cn(
-                  "h-8 px-2.5 rounded text-[12.5px] font-medium border transition-colors",
-                  // Studio chip needs more breathing room than the digits
-                  n === 0 ? "min-w-[58px]" : "min-w-[34px]",
-                  active
-                    ? "bg-bz-ink text-bz-bg border-bz-ink"
-                    : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
-                )}
-                aria-pressed={active}
-                aria-label={
-                  n === 0
-                    ? "Studio"
-                    : `${label} bed${n === 1 ? "" : "s"}`
-                }
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Baths */}
-        <div className="flex items-center gap-1">
-          <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
-            Baths
-          </span>
-          {BATH_OPTIONS.map((n) => {
-            const active = baths === n;
-            const label = bathLabel(n);
-            return (
-              <button
-                key={n}
-                type="button"
-                onClick={() => commit({ baths: active ? null : n })}
-                className={cn(
-                  "h-8 min-w-[34px] px-2 rounded text-[12.5px] font-medium border transition-colors",
-                  active
-                    ? "bg-bz-ink text-bz-bg border-bz-ink"
-                    : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
-                )}
-                aria-pressed={active}
-                aria-label={`${label} bath${n === 1 ? "" : "s"}`}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Type */}
-        <Select
-          value={type ?? UNSET}
-          onValueChange={(v) =>
-            commit({ type: v === UNSET ? null : (v as typeof type) })
-          }
+        {/* Mobile: open the filter sheet */}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setSheetOpen(true)}
+          className="md:hidden shrink-0 text-[12.5px]"
         >
-          <SelectTrigger
-            className="w-[160px] h-9 text-[13px]"
-            aria-label="Property type"
-          >
-            <SelectValue placeholder="Any type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={UNSET}>Any type</SelectItem>
-            {PROPERTY_TYPES.map((t) => (
-              <SelectItem key={t} value={t}>
-                {TYPE_LABELS[t]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <SlidersHorizontal size={13} strokeWidth={1.8} />
+          Filters{activeCount > 0 ? ` · ${activeCount}` : ""}
+        </Button>
 
-        {/* Area */}
-        {areas.length > 0 ? (
-          <Select
-            value={area ?? UNSET}
-            onValueChange={(v) =>
-              commit({ area: v === UNSET ? null : v })
-            }
-          >
-            <SelectTrigger
-              className="w-[200px] h-9 text-[13px]"
-              aria-label="Area"
-            >
-              <SelectValue placeholder="Any area" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={UNSET}>Any area</SelectItem>
-              {areas.map((a) => (
-                <SelectItem key={a.slug} value={a.slug}>
-                  {a.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : null}
-
-        {/* Price */}
-        <div className="flex items-center gap-1">
-          <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
-            Price
-          </span>
-          <Input
-            type="number"
-            placeholder="Min AED"
-            value={price_min ?? ""}
-            min={0}
-            step={10000}
-            onChange={(e) =>
-              commit({
-                price_min:
-                  e.target.value === "" ? null : Number(e.target.value),
-              })
-            }
-            className="w-[140px] h-9 text-[13px]"
-          />
-          <span className="text-bz-muted">–</span>
-          <Input
-            type="number"
-            placeholder="Max AED"
-            value={price_max ?? ""}
-            min={0}
-            step={10000}
-            onChange={(e) =>
-              commit({
-                price_max:
-                  e.target.value === "" ? null : Number(e.target.value),
-              })
-            }
-            className="w-[140px] h-9 text-[13px]"
-          />
+        {/* Desktop inline controls */}
+        <div className="hidden md:flex md:flex-1 md:flex-wrap md:items-center md:gap-3">
+          {controls(false)}
+          <div className="ml-auto flex items-center gap-2">{saveClear}</div>
         </div>
+      </div>
 
-        <div className="ml-auto flex items-center gap-2">
-          {activeCount > 0 ? (
-            <>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={onSaveSearch}
-                className="text-[12.5px]"
-              >
-                <Bookmark size={12} strokeWidth={1.8} />
-                Save search
-              </Button>
+      {/* Mobile filter sheet */}
+      <BottomSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        title="Filters"
+        footer={
+          <>
+            {activeCount > 0 ? (
               <Button
                 type="button"
                 variant="ghost"
-                size="sm"
                 onClick={clearAll}
-                className="text-[12.5px] text-bz-muted hover:text-bz-ink"
+                className="flex-1"
               >
-                <X size={12} strokeWidth={1.8} />
                 Clear {activeCount}
               </Button>
-            </>
+            ) : null}
+            <Button
+              type="button"
+              onClick={() => setSheetOpen(false)}
+              className="flex-1"
+            >
+              Show results
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-5">
+          {controls(true)}
+          {activeCount > 0 ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onSaveSearch}
+              className="w-full text-[13px]"
+            >
+              <Bookmark size={13} strokeWidth={1.8} />
+              Save this search
+            </Button>
           ) : null}
         </div>
-      </div>
+      </BottomSheet>
     </div>
   );
 }
