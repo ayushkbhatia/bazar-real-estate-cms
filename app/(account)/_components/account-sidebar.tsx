@@ -15,6 +15,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Chip, ChipGroup } from "@/components/brand/mobile";
 
 type NavItem = {
   label: string;
@@ -50,11 +51,44 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
   },
 ];
 
+// Flattened nav for the mobile chip rail — same source as the sidebar
+// groups so the two never drift.
+const ACCOUNT_NAV_ITEMS: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
+
+function isItemActive(pathname: string, href: string): boolean {
+  return (
+    pathname === href || (href !== "/account" && pathname.startsWith(href))
+  );
+}
+
+/**
+ * Mobile account nav (< md): a sticky horizontal chip rail standing in
+ * for the desktop sidebar. Same items, thumb-scrollable.
+ */
+export function AccountMobileNav() {
+  const pathname = usePathname() ?? "";
+  return (
+    <div className="md:hidden sticky top-0 z-20 border-b border-bz-border bg-bz-bg/95 px-4 py-2 supports-[backdrop-filter]:bg-bz-bg/75 supports-[backdrop-filter]:backdrop-blur">
+      <ChipGroup>
+        {ACCOUNT_NAV_ITEMS.map((item) => (
+          <Chip
+            key={item.href}
+            href={item.href}
+            active={isItemActive(pathname, item.href)}
+          >
+            {item.label}
+          </Chip>
+        ))}
+      </ChipGroup>
+    </div>
+  );
+}
+
 export function AccountSidebar() {
   const pathname = usePathname() ?? "";
 
   return (
-    <aside className="w-[240px] flex-shrink-0 border-r border-bz-border bg-bz-surface min-h-[calc(100vh-72px)]">
+    <aside className="hidden md:block w-[240px] flex-shrink-0 border-r border-bz-border bg-bz-surface min-h-[calc(100vh-72px)]">
       <div className="px-6 py-8">
         <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
           Account
