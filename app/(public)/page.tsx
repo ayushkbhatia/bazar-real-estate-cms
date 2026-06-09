@@ -24,6 +24,7 @@ import { ListingCardSaveable } from "./_components/listing-card-saveable";
 import { TrustStrip } from "./_components/trust-strip";
 import { ClientWords } from "./_components/client-words";
 import { AdvisorOfMonth } from "./_components/advisor-of-month";
+import { CarouselGrid } from "@/components/brand/mobile";
 
 export const revalidate = 60;
 
@@ -75,12 +76,12 @@ export default async function HomePage({
       <TrustStrip />
 
       {/* Featured listings — 6 cards */}
-      <section className="px-12 py-20">
-        <div className="flex justify-between items-end mb-10 gap-8 flex-wrap">
+      <section className="px-4 md:px-12 py-12 md:py-20">
+        <div className="flex justify-between items-end mb-7 md:mb-10 gap-8 flex-wrap">
           <div>
             <Eyebrow>Featured this week</Eyebrow>
             <h2
-              className="serif text-[40px] font-normal mt-2 leading-tight"
+              className="serif text-[28px] md:text-[40px] font-normal mt-2 leading-tight"
               style={{ letterSpacing: "-0.022em" }}
             >
               Hand-picked by our advisors.
@@ -92,7 +93,7 @@ export default async function HomePage({
         </div>
         {featured.length > 0 ? (
           <SavedIdsProvider>
-            <div className="grid grid-cols-3 gap-6">
+            <CarouselGrid cols={3}>
               {featured.map((row, index) => {
                 const badge = badgeFor(row);
                 return (
@@ -122,7 +123,7 @@ export default async function HomePage({
                   </Link>
                 );
               })}
-            </div>
+            </CarouselGrid>
           </SavedIdsProvider>
         ) : (
           <p className="text-bz-muted text-[14px]">

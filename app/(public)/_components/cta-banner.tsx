@@ -13,12 +13,12 @@ import { ValuationLeadGate } from "../tools/valuation/_components/lead-gate";
  */
 export function CtaBanner() {
   return (
-    <section className="px-12 py-16">
-      <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 items-center">
+    <section className="px-4 md:px-12 py-12 md:py-16">
+      <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-6 md:p-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-10 items-center">
         <div>
           <Eyebrow className="text-bz-accent-fg/70">Get in touch</Eyebrow>
           <h2
-            className="serif text-[40px] mt-2 leading-tight max-w-[24ch]"
+            className="serif text-[28px] md:text-[40px] mt-2 leading-tight max-w-[24ch]"
             style={{ letterSpacing: "-0.02em" }}
           >
             Two ways to start.

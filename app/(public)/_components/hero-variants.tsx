@@ -13,7 +13,7 @@ export type HeroVariant = "fullbleed" | "editorial" | "map" | "concierge";
  */
 export function HeroFullBleed() {
   return (
-    <section className="relative h-[720px] bg-bz-ink overflow-hidden">
+    <section className="relative min-h-[560px] md:h-[720px] bg-bz-ink overflow-hidden">
       <div
         className="absolute inset-0"
         style={{
@@ -22,15 +22,15 @@ export function HeroFullBleed() {
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-bz-ink/95 via-bz-ink/40 to-bz-ink/40" />
-      <div className="relative h-full px-12 flex flex-col justify-end pb-16 text-white">
+      <div className="relative h-full px-4 md:px-12 flex flex-col justify-end pb-10 md:pb-16 pt-24 md:pt-0 text-white">
         <Eyebrow className="text-white/60 mb-4">Bazar · Abu Dhabi</Eyebrow>
         <h1
-          className="serif text-[88px] leading-[0.98] font-normal max-w-[12ch]"
+          className="serif text-[44px] md:text-[88px] leading-[0.98] font-normal max-w-[12ch]"
           style={{ letterSpacing: "-0.03em" }}
         >
           Find a home worth keeping.
         </h1>
-        <p className="mt-5 max-w-[60ch] text-[17px] leading-relaxed text-white/80">
+        <p className="mt-5 max-w-[60ch] text-[15px] md:text-[17px] leading-relaxed text-white/80">
           Curated marketplace and bespoke advisory for buyers, sellers, and
           investors across the United Arab Emirates.
         </p>
@@ -57,11 +57,11 @@ export function HeroFullBleed() {
 
 export function HeroEditorial() {
   return (
-    <section className="grid grid-cols-2 min-h-[640px] bg-bz-bg">
-      <div className="px-12 py-20 flex flex-col justify-center">
+    <section className="grid grid-cols-1 md:grid-cols-2 md:min-h-[640px] bg-bz-bg">
+      <div className="px-4 py-12 md:px-12 md:py-20 flex flex-col justify-center order-2 md:order-1">
         <Eyebrow>The Bazar approach</Eyebrow>
         <h1
-          className="serif text-[68px] mt-4 leading-[1.0] font-normal max-w-[15ch]"
+          className="serif text-[40px] md:text-[68px] mt-4 leading-[1.0] font-normal max-w-[15ch]"
           style={{ letterSpacing: "-0.028em" }}
         >
           Abu Dhabi, properly understood.
@@ -70,7 +70,7 @@ export function HeroEditorial() {
           Twelve capped senior advisors. Fiduciary-aligned. Off-market deal
           flow. We close fewer deals by design.
         </p>
-        <div className="mt-8 flex gap-3">
+        <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild size="lg">
             <Link href="/about">About Bazar</Link>
           </Button>
@@ -81,7 +81,7 @@ export function HeroEditorial() {
       </div>
       <PlaceholderImage
         label="editorial · saadiyat"
-        className="h-full w-full min-h-[640px]"
+        className="h-full w-full min-h-[240px] md:min-h-[640px] order-1 md:order-2"
       />
     </section>
   );
@@ -89,16 +89,16 @@ export function HeroEditorial() {
 
 export function HeroMap() {
   return (
-    <section className="relative h-[640px] bg-bz-surface overflow-hidden">
+    <section className="relative min-h-[520px] md:h-[640px] bg-bz-surface overflow-hidden">
       <PlaceholderImage
         label="map · abu dhabi"
         className="absolute inset-0 w-full h-full"
       />
       <div className="absolute inset-0 bg-gradient-to-b from-bz-bg/85 via-bz-bg/40 to-transparent" />
-      <div className="relative px-12 py-16">
+      <div className="relative px-4 py-12 md:px-12 md:py-16">
         <Eyebrow>Start with the map</Eyebrow>
         <h1
-          className="serif text-[64px] mt-4 leading-[1.02] font-normal max-w-[14ch]"
+          className="serif text-[40px] md:text-[64px] mt-4 leading-[1.02] font-normal max-w-[14ch]"
           style={{ letterSpacing: "-0.025em" }}
         >
           Draw the area you want.
@@ -119,12 +119,12 @@ export function HeroMap() {
 
 export function HeroConcierge() {
   return (
-    <section className="bg-bz-ink text-white px-12 py-20">
-      <div className="grid grid-cols-[1fr_460px] gap-16 items-start max-w-[1400px] mx-auto">
+    <section className="bg-bz-ink text-white px-4 py-12 md:px-12 md:py-20">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_460px] gap-10 md:gap-16 items-start max-w-[1400px] mx-auto">
         <div>
           <Eyebrow className="text-white/60">AI concierge</Eyebrow>
           <h1
-            className="serif text-[68px] mt-4 leading-[1.0] font-normal max-w-[15ch]"
+            className="serif text-[40px] md:text-[68px] mt-4 leading-[1.0] font-normal max-w-[15ch]"
             style={{ letterSpacing: "-0.028em" }}
           >
             Tell us the brief. We&apos;ll narrow it down.
@@ -134,7 +134,7 @@ export function HeroConcierge() {
             budget, timeline, and constraints — then hand you to the
             advisor who fits.
           </p>
-          <div className="mt-8 flex gap-3">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
               <Link href="/concierge">Start a brief</Link>
             </Button>

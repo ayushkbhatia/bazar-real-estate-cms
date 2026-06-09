@@ -50,12 +50,12 @@ export async function InsightsTeaser() {
 
   return (
     <section className="border-y border-bz-border bg-bz-surface">
-      <div className="px-12 py-20">
+      <div className="px-4 md:px-12 py-12 md:py-20">
         <div className="flex items-end justify-between gap-8 flex-wrap mb-10">
           <div>
             <Eyebrow>The Bazar Brief</Eyebrow>
             <h2
-              className="serif text-[40px] mt-2 leading-tight max-w-[26ch]"
+              className="serif text-[28px] md:text-[40px] mt-2 leading-tight max-w-[26ch]"
               style={{ letterSpacing: "-0.022em" }}
             >
               Field notes, market reports, and the occasional contrarian take.
@@ -70,7 +70,7 @@ export async function InsightsTeaser() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-[1.6fr_1fr_1fr] gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr_1fr] gap-8">
           {/* Lead article */}
           {lead ? (
             <Link href={articleUrl(lead)} className="group block">
@@ -80,7 +80,7 @@ export async function InsightsTeaser() {
               <div className="mt-5">
                 <Eyebrow>{ARTICLE_CATEGORY_LABELS[lead.category]}</Eyebrow>
                 <h3
-                  className="serif text-[32px] mt-2 leading-[1.08] group-hover:text-bz-accent transition-colors max-w-[22ch]"
+                  className="serif text-[24px] md:text-[32px] mt-2 leading-[1.08] group-hover:text-bz-accent transition-colors max-w-[22ch]"
                   style={{ letterSpacing: "-0.018em" }}
                 >
                   {lead.title}
@@ -101,7 +101,7 @@ export async function InsightsTeaser() {
           )}
 
           {/* Stacked 4 */}
-          <div className="col-span-2 grid grid-cols-2 gap-x-8 gap-y-6">
+          <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
             {rest.length === 0
               ? Array.from({ length: 4 }).map((_, i) => (
                   <ArticlePlaceholder key={i} />
@@ -131,7 +131,7 @@ export async function InsightsTeaser() {
         </div>
 
         {/* Newsletter card */}
-        <div className="mt-12 bg-bz-ink text-white rounded-lg p-8 grid grid-cols-[1fr_auto] gap-10 items-center">
+        <div className="mt-12 bg-bz-ink text-white rounded-lg p-6 md:p-8 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 md:gap-10 items-center">
           <div>
             <div className="text-[11px] uppercase tracking-widest text-white/60">
               Subscribe to the Brief
@@ -144,7 +144,7 @@ export async function InsightsTeaser() {
               Riyadh, and London.
             </h3>
           </div>
-          <div className="w-[360px]">
+          <div className="w-full md:w-[360px]">
             <NewsletterSignup source="homepage" variant="dark" />
           </div>
         </div>

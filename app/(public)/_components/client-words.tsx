@@ -14,12 +14,12 @@ import { SEED_TESTIMONIALS } from "@/lib/seeds/awards";
 export function ClientWords({ limit = 3 }: { limit?: number }) {
   const items = SEED_TESTIMONIALS.slice(0, limit);
   return (
-    <section className="px-12 py-16 border-t border-bz-border bg-bz-surface-2">
+    <section className="px-4 md:px-12 py-12 md:py-16 border-t border-bz-border bg-bz-surface-2">
       <div className="text-[11px] font-medium uppercase text-bz-ink-2" style={{ letterSpacing: "0.12em" }}>
         Client words
       </div>
       <h2
-        className="serif text-[36px] mt-2 leading-tight max-w-[24ch]"
+        className="serif text-[26px] md:text-[36px] mt-2 leading-tight max-w-[24ch]"
         style={{ letterSpacing: "-0.02em" }}
       >
         Three things people tell us.

@@ -2,6 +2,7 @@
 // Bazar-branded compositions styled with --bz-* tokens. See the mobile
 // front-end plan for how each maps to a desktop pattern.
 export { SnapRail } from "./snap-rail";
+export { CarouselGrid } from "./carousel-grid";
 export { StickyActionBar } from "./sticky-action-bar";
 export { Chip, ChipGroup } from "./chip";
 export { SegmentedControl, type SegmentOption } from "./segmented-control";

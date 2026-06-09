@@ -110,10 +110,10 @@ export async function SearchList({
 
   return (
     <SavedIdsProvider>
-      <section className="px-12 pt-16 pb-10 border-b border-bz-border">
+      <section className="px-4 md:px-12 pt-10 md:pt-16 pb-6 md:pb-10 border-b border-bz-border">
         <Eyebrow>{copy.eyebrow}</Eyebrow>
         <h1
-          className="serif text-[56px] font-normal mt-2 max-w-[24ch]"
+          className="serif text-[32px] md:text-[56px] font-normal mt-2 max-w-[24ch]"
           style={{ letterSpacing: "-0.025em" }}
         >
           {copy.title}
@@ -125,14 +125,14 @@ export async function SearchList({
 
       <FilterBar mode={mode} areas={areas} />
 
-      <section className="px-12 pt-6 pb-3 flex items-center gap-3 flex-wrap border-b border-bz-border">
+      <section className="px-4 md:px-12 pt-4 md:pt-6 pb-3 flex items-center gap-3 flex-wrap border-b border-bz-border">
         <ModeSegmented />
-        <span className="text-bz-muted text-[11px]">·</span>
+        <span className="text-bz-muted text-[11px] hidden md:inline">·</span>
         <DrawAreaTool />
         <CommuteTimeTool />
       </section>
 
-      <section className="px-12 py-10">
+      <section className="px-4 md:px-12 py-8 md:py-10">
         <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
           <div className="text-[13px] text-bz-muted">
             {total > 0
@@ -159,7 +159,7 @@ export async function SearchList({
               : "No properties to show yet — seed the database to see real listings."}
           </div>
         ) : view === "map" ? (
-          <div className="rounded-lg overflow-hidden border border-bz-border h-[640px]">
+          <div className="rounded-lg overflow-hidden border border-bz-border h-[70vh] md:h-[640px]">
             <MapViewClient
               pins={rows
                 .filter(

@@ -16,12 +16,12 @@ export async function OffPlanStrip() {
   const featured = developments.slice(0, 2);
 
   return (
-    <section className="px-12 py-20">
-      <div className="grid grid-cols-[1fr_2fr] gap-12 items-start">
-        <div className="sticky top-8">
+    <section className="px-4 md:px-12 py-12 md:py-20">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-10 md:gap-12 items-start">
+        <div className="md:sticky md:top-8">
           <Eyebrow>Off-plan</Eyebrow>
           <h2
-            className="serif text-[40px] mt-2 leading-tight max-w-[14ch]"
+            className="serif text-[28px] md:text-[40px] mt-2 leading-tight max-w-[14ch]"
             style={{ letterSpacing: "-0.022em" }}
           >
             New developments worth queuing for.
@@ -39,7 +39,7 @@ export async function OffPlanStrip() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {featured.length === 0 ? (
             <>
               <DevelopmentPlaceholder label="Saadiyat Lagoons" />

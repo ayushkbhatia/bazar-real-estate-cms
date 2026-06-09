@@ -64,8 +64,8 @@ export function HeroSearch({ defaultMode = "buy" }: { defaultMode?: Mode }) {
           </button>
         ))}
       </div>
-      <div className="mt-1.5 grid grid-cols-[1fr_140px_120px_120px_auto] gap-1 p-1">
-        <div className="relative">
+      <div className="mt-1.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-[1fr_140px_120px_120px_auto] gap-1.5 md:gap-1 p-1">
+        <div className="relative sm:col-span-2 md:col-span-1">
           <Search
             size={14}
             strokeWidth={1.8}
@@ -76,14 +76,14 @@ export function HeroSearch({ defaultMode = "buy" }: { defaultMode?: Mode }) {
             placeholder="Area, building, or reference"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className="w-full h-10 pl-9 pr-3 rounded bg-white text-bz-ink text-[13.5px] outline-none border border-transparent focus:border-bz-accent"
+            className="w-full h-11 md:h-10 pl-9 pr-3 rounded bg-white text-bz-ink text-[13.5px] outline-none border border-transparent focus:border-bz-accent"
           />
         </div>
         <select
           value={type}
           onChange={(e) => setType(e.target.value)}
           aria-label="Property type"
-          className="h-10 px-3 rounded bg-white text-bz-ink text-[13px] outline-none border border-transparent focus:border-bz-accent"
+          className="h-11 md:h-10 px-3 rounded bg-white text-bz-ink text-[13px] outline-none border border-transparent focus:border-bz-accent"
         >
           {TYPES.map((t) => (
             <option key={t.value} value={t.value}>
@@ -95,7 +95,7 @@ export function HeroSearch({ defaultMode = "buy" }: { defaultMode?: Mode }) {
           value={beds}
           onChange={(e) => setBeds(e.target.value)}
           aria-label="Bedrooms"
-          className="h-10 px-3 rounded bg-white text-bz-ink text-[13px] outline-none border border-transparent focus:border-bz-accent"
+          className="h-11 md:h-10 px-3 rounded bg-white text-bz-ink text-[13px] outline-none border border-transparent focus:border-bz-accent"
         >
           <option value="">Beds</option>
           {[1, 2, 3, 4, 5].map((n) => (
@@ -108,7 +108,7 @@ export function HeroSearch({ defaultMode = "buy" }: { defaultMode?: Mode }) {
           value={priceMax}
           onChange={(e) => setPriceMax(e.target.value)}
           aria-label="Maximum price"
-          className="h-10 px-3 rounded bg-white text-bz-ink text-[13px] outline-none border border-transparent focus:border-bz-accent"
+          className="h-11 md:h-10 px-3 rounded bg-white text-bz-ink text-[13px] outline-none border border-transparent focus:border-bz-accent"
         >
           <option value="">Max price</option>
           <option value="1500000">Up to 1.5M</option>
@@ -117,7 +117,11 @@ export function HeroSearch({ defaultMode = "buy" }: { defaultMode?: Mode }) {
           <option value="10000000">Up to 10M</option>
           <option value="25000000">Up to 25M</option>
         </select>
-        <Button type="submit" disabled={pending}>
+        <Button
+          type="submit"
+          disabled={pending}
+          className="h-11 md:h-10 w-full sm:col-span-2 md:col-span-1 md:w-auto"
+        >
           {pending ? "Searching…" : "Search"}
         </Button>
       </div>

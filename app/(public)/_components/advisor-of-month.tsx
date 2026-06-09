@@ -24,7 +24,7 @@ export async function AdvisorOfMonth() {
   const focus = featured.title?.split("·")[1]?.trim();
 
   return (
-    <section className="px-12 py-20 border-t border-bz-border">
+    <section className="px-4 md:px-12 py-12 md:py-20 border-t border-bz-border">
       <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-12 items-start max-w-[1200px]">
         <div className="relative aspect-[4/5] rounded-md overflow-hidden">
           {featured.photo_url ? (
@@ -44,7 +44,7 @@ export async function AdvisorOfMonth() {
         <div>
           <Eyebrow>Advisor of the month</Eyebrow>
           <h2
-            className="serif text-[44px] mt-3 leading-[1.05]"
+            className="serif text-[28px] md:text-[44px] mt-3 leading-[1.05]"
             style={{ letterSpacing: "-0.02em" }}
           >
             {featured.display_name}

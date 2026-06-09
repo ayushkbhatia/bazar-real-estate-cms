@@ -17,12 +17,12 @@ const AREAS = [
  */
 export function AreasMosaic() {
   return (
-    <section className="px-12 py-20">
+    <section className="px-4 md:px-12 py-12 md:py-20">
       <div className="flex items-end justify-between gap-8 flex-wrap mb-10">
         <div>
           <Eyebrow>Areas</Eyebrow>
           <h2
-            className="serif text-[40px] mt-2 leading-tight max-w-[24ch]"
+            className="serif text-[28px] md:text-[40px] mt-2 leading-tight max-w-[24ch]"
             style={{ letterSpacing: "-0.022em" }}
           >
             Five neighbourhoods we know inside out.
@@ -37,11 +37,11 @@ export function AreasMosaic() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-4 grid-rows-2 gap-4 h-[520px]">
+      <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 auto-rows-[200px] md:auto-rows-auto gap-4 md:h-[520px]">
         {/* Saadiyat — big cell */}
         <Link
           href={`/areas/${AREAS[0].slug}`}
-          className="col-span-2 row-span-2 group relative overflow-hidden rounded-lg block"
+          className="md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-lg block"
         >
           <PlaceholderImage
             label={AREAS[0].slug}
