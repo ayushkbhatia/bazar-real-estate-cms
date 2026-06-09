@@ -106,6 +106,19 @@ export async function deleteProperty(id: string): Promise<boolean> {
   return true;
 }
 
+/** Remove a batch of properties from the index by id. Ids that aren't
+ *  in the index are ignored by Meilisearch, so callers can pass every
+ *  non-published id without diffing against the index first. */
+export async function deleteProperties(
+  ids: string[],
+): Promise<{ ok: boolean; count: number }> {
+  if (ids.length === 0) return { ok: true, count: 0 };
+  const client = meilisearchAdminClient();
+  if (!client) return { ok: false, count: 0 };
+  await client.index(PROPERTIES_INDEX).deleteDocuments(ids);
+  return { ok: true, count: ids.length };
+}
+
 /** Run a search query against the index. Returns matched ids only —
  *  the caller hydrates from Postgres so RLS still applies. */
 export async function searchProperties(opts: {

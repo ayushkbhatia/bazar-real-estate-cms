@@ -15,6 +15,7 @@ import { env, isSupabaseConfigured } from "@/lib/env";
 import {
   ensurePropertiesIndex,
   upsertProperties,
+  deleteProperties,
   type IndexedProperty,
 } from "@/lib/meilisearch";
 import { s8 } from "@/lib/supabase/sprint-8";
@@ -108,7 +109,34 @@ export async function GET(req: NextRequest) {
       offset += PAGE_SIZE;
     }
 
-    return NextResponse.json({ ok: true, indexed: totalIndexed });
+    // Remove anything no longer publicly listable so unpublished /
+    // archived / soft-deleted properties don't linger in the index.
+    // Meilisearch ignores ids it doesn't hold, so pushing every
+    // non-published id is safe and keeps this delta job stateless.
+    let totalRemoved = 0;
+    let removeOffset = 0;
+    while (true) {
+      const { data: gone, error: goneError } = await s8(supabase)
+        .from("properties")
+        .select("id")
+        .or("status.neq.published,deleted_at.not.is.null")
+        .range(removeOffset, removeOffset + PAGE_SIZE - 1);
+      if (goneError) throw goneError;
+      if (!gone || gone.length === 0) break;
+
+      const res = await deleteProperties(
+        (gone as { id: string }[]).map((r) => r.id),
+      );
+      totalRemoved += res.count;
+      if (gone.length < PAGE_SIZE) break;
+      removeOffset += PAGE_SIZE;
+    }
+
+    return NextResponse.json({
+      ok: true,
+      indexed: totalIndexed,
+      removed: totalRemoved,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     Sentry.captureException(err, { tags: { cron: "meilisearch-sync" } });

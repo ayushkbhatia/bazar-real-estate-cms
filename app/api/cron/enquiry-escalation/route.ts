@@ -91,19 +91,44 @@ export async function GET(req: NextRequest) {
         (Date.now() - new Date(row.created_at).getTime()) / 60_000,
       );
 
-      // 1) reassign (only when a fallback exists)
+      // 1) reassign (only when a fallback exists). If this fails, skip
+      // the escalated_at flag too — otherwise the enquiry drops out of
+      // every future scan while still unassigned. Leaving both unset
+      // lets the next run retry.
       if (fallback) {
-        await supabase
+        const { error: reassignError } = await supabase
           .from("enquiries")
           .update({ assigned_agent_id: fallback.user_id })
           .eq("id", row.id);
+        if (reassignError) {
+          Sentry.captureException(reassignError, {
+            tags: { cron: "enquiry-escalation", enquiry: row.id },
+          });
+          console.error(
+            "[cron/enquiry-escalation] reassign failed",
+            row.id,
+            reassignError.message,
+          );
+          continue;
+        }
       }
 
       // 2) flag escalated so we don't re-send
-      await s8(supabase)
+      const { error: flagError } = await s8(supabase)
         .from("enquiries")
         .update({ escalated_at: new Date().toISOString() })
         .eq("id", row.id);
+      if (flagError) {
+        Sentry.captureException(flagError, {
+          tags: { cron: "enquiry-escalation", enquiry: row.id },
+        });
+        console.error(
+          "[cron/enquiry-escalation] escalated_at flag failed",
+          row.id,
+          flagError.message,
+        );
+        continue;
+      }
 
       // 3) email each admin
       const recipients = adminRows
