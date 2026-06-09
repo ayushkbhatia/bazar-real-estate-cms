@@ -34,6 +34,12 @@ import type { Megamenu, MegamenuTab } from "@/lib/schemas/megamenu";
 
 type Props = {
   data: Megamenu;
+  /**
+   * Optional node rendered in the mobile drawer footer (e.g. the
+   * currency/area-unit preferences entry). Injected by the (public)
+   * layout so this brand component stays free of app-level imports.
+   */
+  footerSlot?: React.ReactNode;
 };
 
 function isActive(pathname: string | null, tab: MegamenuTab): boolean {
@@ -59,7 +65,7 @@ const PANEL_CONTENT_CLASS =
   "rounded-none! ring-0! bg-bz-bg! p-0! overflow-visible! " +
   "shadow-[0_12px_32px_-12px_rgba(0,0,0,0.18)]!";
 
-export function PublicMegaNav({ data }: Props) {
+export function PublicMegaNav({ data, footerSlot }: Props) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -158,6 +164,7 @@ export function PublicMegaNav({ data }: Props) {
         data={data}
         open={mobileOpen}
         onOpenChange={setMobileOpen}
+        footerSlot={footerSlot}
       />
     </>
   );

@@ -108,6 +108,15 @@
   --bz-16: calc(64px * var(--bz-density));
   --bz-20: calc(80px * var(--bz-density));
 
+  /* Mobile safe-area insets. env() reports 0 unless app/layout.tsx sets
+     viewport-fit=cover. --bz-bar-safe keeps an 18px design floor so
+     sticky bars never sit flush against the home indicator even if the
+     viewport export is somehow missing. */
+  --bz-safe-top: env(safe-area-inset-top, 0px);
+  --bz-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bz-bar-safe: max(env(safe-area-inset-bottom, 0px), 18px);
+  --bz-tabbar-h: calc(56px + var(--bz-safe-bottom));
+
   /* shadcn semantic tokens — mapped to Bazar palette */
   --background: var(--bz-bg);
   --foreground: var(--bz-ink);
@@ -179,6 +188,33 @@
   }
   .bz-shadow-2 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 16px 48px rgba(0, 0, 0, 0.08);
+  }
+
+  /* Mobile snap carousel (handoff pattern 2). Assumes a 16px-padded
+     parent: bleeds the gutter with a negative margin and restores it
+     with its own padding so the first/last card align to the page edge
+     while still snapping. Use .bz-rail--flush inside an unpadded parent
+     to opt out of the bleed. Encapsulated by <SnapRail>. */
+  .bz-rail {
+    display: flex;
+    gap: var(--bz-3);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-inline: var(--bz-4);
+    margin-inline: calc(var(--bz-4) * -1);
+  }
+  .bz-rail::-webkit-scrollbar {
+    display: none;
+  }
+  .bz-rail > * {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+  }
+  .bz-rail--flush {
+    padding-inline: 0;
+    margin-inline: 0;
   }
   /* Striped placeholder image (used until real photography lands) */
   .bz-img {
@@ -312,5 +348,25 @@
     border: 0;
     border-top: 1px solid var(--bz-border);
     margin: 1.5em 0;
+  }
+}
+
+/* ─── Mobile safe-area + viewport utilities ─────────────────────────
+   Composable on any fixed/sticky bar. Apply the safe-area inset exactly
+   once per stacked column (the bottommost element only) so the home
+   indicator gap isn't double-counted. */
+@layer utilities {
+  .pb-safe {
+    padding-bottom: var(--bz-safe-bottom);
+  }
+  .pb-bar-safe {
+    padding-bottom: var(--bz-bar-safe);
+  }
+  .pt-safe {
+    padding-top: var(--bz-safe-top);
+  }
+  /* dvh (not vh) so the iOS URL-bar collapse doesn't leave a gap. */
+  .min-h-dvh-safe {
+    min-height: 100dvh;
   }
 }

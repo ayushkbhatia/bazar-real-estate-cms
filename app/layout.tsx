@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -45,6 +45,15 @@ export const metadata: Metadata = {
   },
 };
 
+// `viewport-fit=cover` is required for env(safe-area-inset-*) to report
+// non-zero on notched / home-indicator devices — the mobile sticky bars
+// and CMS bottom tab bar rely on it (see globals.css --bz-bar-safe).
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -72,7 +81,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-foreground">
+      <body className="min-h-dvh-safe flex flex-col bg-background text-foreground">
         <ConsentProvider>
           <NuqsAdapter>
             <PostHogProvider>

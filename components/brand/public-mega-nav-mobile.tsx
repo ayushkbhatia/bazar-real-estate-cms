@@ -36,6 +36,8 @@ type Props = {
   data: Megamenu;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Rendered in the L1 footer above the Saved / List / Sign-in CTAs. */
+  footerSlot?: React.ReactNode;
 };
 
 function MobileColumn({ column }: { column: MegamenuColumn }) {
@@ -143,10 +145,12 @@ function TabsList({
   data,
   onPick,
   onClose,
+  footerSlot,
 }: {
   data: Megamenu;
   onPick: (tab: MegamenuTab) => void;
   onClose: () => void;
+  footerSlot?: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col h-full">
@@ -195,6 +199,7 @@ function TabsList({
       </ScrollArea>
 
       <div className="border-t border-bz-border bg-bz-surface px-4 py-3 flex flex-col gap-2 shrink-0">
+        {footerSlot}
         <Button asChild variant="outline" size="sm">
           <Link href="/account/saved" onClick={onClose}>
             <Heart size={14} strokeWidth={1.6} />
@@ -216,7 +221,12 @@ function TabsList({
   );
 }
 
-export function PublicMegaNavMobile({ data, open, onOpenChange }: Props) {
+export function PublicMegaNavMobile({
+  data,
+  open,
+  onOpenChange,
+  footerSlot,
+}: Props) {
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
 
   // Reset to L1 whenever the drawer closes so the next open is a fresh start.
@@ -253,6 +263,7 @@ export function PublicMegaNavMobile({ data, open, onOpenChange }: Props) {
             data={data}
             onPick={(tab) => setActiveTabId(tab.id)}
             onClose={() => onOpenChange(false)}
+            footerSlot={footerSlot}
           />
         )}
       </SheetContent>
