@@ -16,7 +16,7 @@ type Props = {
 export function DeveloperProjectsStrip({ developerName, siblings }: Props) {
   if (!siblings.length) return null;
   return (
-    <section className="px-12 py-16 scroll-mt-16 border-t border-bz-border">
+    <section className="px-4 md:px-12 py-16 scroll-mt-16 border-t border-bz-border">
       <div className="flex items-end justify-between flex-wrap gap-3 mb-6">
         <div>
           <Eyebrow>Other projects by {developerName}</Eyebrow>

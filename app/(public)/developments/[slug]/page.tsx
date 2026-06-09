@@ -151,7 +151,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   }));
 
   return (
-    <article className="bg-bz-bg">
+    <article className="bg-bz-bg pb-24 md:pb-0">
       {/* Hero */}
       <section className="relative h-[640px] text-white overflow-hidden">
         {heroUrl ? (
@@ -177,7 +177,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               "linear-gradient(180deg, rgba(0,0,0,.1) 0%, rgba(0,0,0,.62) 100%)",
           }}
         />
-        <div className="relative h-full flex flex-col px-12 pt-12 pb-12">
+        <div className="relative h-full flex flex-col px-4 md:px-12 pt-12 pb-12">
           <div className="flex gap-2 flex-wrap">
             {development.tagline ? (
               <span className="inline-flex items-center h-[26px] px-2.5 rounded-full text-[11.5px] font-medium bg-bz-accent text-white">
@@ -199,7 +199,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               {development.area?.name ?? "Abu Dhabi"}
             </div>
             <h1
-              className="serif text-[96px] font-normal mt-3"
+              className="serif text-[48px] md:text-[96px] font-normal mt-3"
               style={{ letterSpacing: "-0.03em", lineHeight: 0.96 }}
             >
               {development.name}
@@ -256,14 +256,14 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
       {/* Sub-nav */}
       <div
-        className="sticky top-0 z-[5] bg-bz-bg border-b border-bz-border px-12 flex items-center gap-7 h-14"
+        className="sticky top-0 z-[5] bg-bz-bg border-b border-bz-border px-4 md:px-12 flex items-center gap-7 h-14 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{ borderBottom: "1px solid var(--bz-border)" }}
       >
         {SECTIONS.map((s, i) => (
           <a
             key={s}
             href={`#${s.toLowerCase().replace(/\s+/g, "-")}`}
-            className={`text-[13px] py-4 -mb-px border-b-2 ${
+            className={`shrink-0 text-[13px] py-4 -mb-px border-b-2 ${
               i === 0
                 ? "text-bz-ink border-bz-ink font-medium"
                 : "text-bz-muted border-transparent hover:text-bz-ink"
@@ -277,12 +277,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       {/* Overview */}
       <section
         id="overview"
-        className="px-12 py-16 grid grid-cols-2 gap-16 scroll-mt-16"
+        className="px-4 md:px-12 py-16 grid grid-cols-1 md:grid-cols-2 gap-16 scroll-mt-16"
       >
         <div>
           <Eyebrow>Overview</Eyebrow>
           <h2
-            className="serif text-[44px] mt-3 leading-[1.1]"
+            className="serif text-[30px] md:text-[44px] mt-3 leading-[1.1]"
             style={{ letterSpacing: "-0.025em" }}
           >
             {development.area?.name
@@ -302,7 +302,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
           ) : null}
         </div>
-        <div className="grid grid-cols-2 gap-3 self-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 self-start">
           {factPairs(development.facts).map(([l, v]) => (
             <div
               key={l}
@@ -316,7 +316,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       </section>
 
       {/* Master plan */}
-      <section id="master-plan" className="px-12 pb-16 scroll-mt-16">
+      <section id="master-plan" className="px-4 md:px-12 pb-16 scroll-mt-16">
         <Eyebrow>Master plan</Eyebrow>
         <h2
           className="serif text-[36px] mt-2"
@@ -364,13 +364,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       {development.payment_plan ? (
         <section
           id="payment-plan"
-          className="px-12 py-16 bg-bz-surface-2 scroll-mt-16"
+          className="px-4 md:px-12 py-16 bg-bz-surface-2 scroll-mt-16"
         >
           <div className="flex justify-between items-end flex-wrap gap-4 mb-6">
             <div>
               <Eyebrow>Payment plan · {development.payment_plan.name}</Eyebrow>
               <h2
-                className="serif text-[40px] mt-2"
+                className="serif text-[28px] md:text-[40px] mt-2"
                 style={{ letterSpacing: "-0.02em" }}
               >
                 Cash flow timeline
@@ -390,7 +390,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
       {/* Units */}
       {units.length > 0 ? (
-        <section id="units" className="px-12 py-16 scroll-mt-16">
+        <section id="units" className="px-4 md:px-12 py-16 scroll-mt-16">
           <div className="flex justify-between items-end flex-wrap gap-4 mb-6">
             <div>
               <Eyebrow>
@@ -398,7 +398,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 {development.total_units ?? units.length} remaining
               </Eyebrow>
               <h2
-                className="serif text-[40px] mt-2"
+                className="serif text-[28px] md:text-[40px] mt-2"
                 style={{ letterSpacing: "-0.02em" }}
               >
                 What&apos;s left
@@ -413,7 +413,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       {floorPlans.length > 0 ? (
         <section
           id="floor-plans"
-          className="px-12 pb-16 scroll-mt-16"
+          className="px-4 md:px-12 pb-16 scroll-mt-16"
         >
           <Eyebrow>Floor plans</Eyebrow>
           <h2
@@ -422,7 +422,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           >
             How the units lay out
           </h2>
-          <div className="grid grid-cols-3 gap-5 mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
             {floorPlans.map((fp) =>
               meta?.floorplan_gated ? (
                 // T2-B: gated when `development.meta.floorplan_gated === true`.
@@ -475,7 +475,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
       {/* Renders */}
       {renderMedia.length > 0 ? (
-        <section className="px-12 pb-16">
+        <section className="px-4 md:px-12 pb-16">
           <Eyebrow>The vision</Eyebrow>
           <h2
             className="serif text-[36px] mt-2"
@@ -483,18 +483,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           >
             Renders &amp; inspiration
           </h2>
-          <div
-            className="grid mt-6 gap-3"
-            style={{
-              gridTemplateColumns: "2fr 1fr 1fr",
-              gridTemplateRows: "320px 320px",
-            }}
-          >
+          <div className="grid mt-6 gap-3 grid-cols-1 md:grid-cols-[2fr_1fr_1fr] md:grid-rows-[320px_320px]">
             {renderMedia.slice(0, 5).map((m, i) => (
               <div
                 key={`${m.media?.storage_key}-${i}`}
-                className={`relative rounded-lg overflow-hidden ${
-                  i === 0 ? "row-span-2" : ""
+                className={`relative rounded-lg overflow-hidden aspect-[16/9] md:aspect-auto ${
+                  i === 0 ? "md:row-span-2" : ""
                 }`}
               >
                 {m.media ? (
@@ -528,7 +522,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       </section>
 
       {/* Location */}
-      <section id="location" className="px-12 pb-16 scroll-mt-16">
+      <section id="location" className="px-4 md:px-12 pb-16 scroll-mt-16">
         <Eyebrow>Location</Eyebrow>
         <h2
           className="serif text-[32px] mt-2 leading-tight"
@@ -571,7 +565,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           area's resale market data so they can project the 3-5 year
           exit case before they commit. */}
       {development.area?.slug ? (
-        <section className="px-12 pb-12 max-w-[820px]">
+        <section className="px-4 md:px-12 pb-12 max-w-[820px]">
           <MarketContextBlock
             area_slug={development.area.slug}
             area_name={development.area.name}
@@ -583,12 +577,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
       {/* Developer */}
       {development.developer_profile ? (
-        <section id="developer" className="px-12 pb-16 scroll-mt-16">
+        <section id="developer" className="px-4 md:px-12 pb-16 scroll-mt-16">
           <Eyebrow>Developer</Eyebrow>
-          <div className="mt-3 rounded-xl border border-bz-border bg-bz-surface p-9 grid grid-cols-[1fr_2fr] gap-12 items-center">
+          <div className="mt-3 rounded-xl border border-bz-border bg-bz-surface p-6 md:p-9 grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-12 items-center">
             <div>
               <div
-                className="serif text-[48px] leading-tight"
+                className="serif text-[30px] md:text-[48px] leading-tight"
                 style={{ letterSpacing: "-0.025em" }}
               >
                 {development.developer_profile.name}

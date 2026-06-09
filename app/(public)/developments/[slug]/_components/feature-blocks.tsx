@@ -32,7 +32,7 @@ export function FeatureBlocks({
   if (!items.length) return null;
 
   return (
-    <section className="px-12 py-16 scroll-mt-16 border-t border-bz-border">
+    <section className="px-4 md:px-12 py-16 scroll-mt-16 border-t border-bz-border">
       <Eyebrow>Within {developmentName}</Eyebrow>
       <h2
         className="serif text-[36px] mt-2 leading-tight max-w-[28ch]"

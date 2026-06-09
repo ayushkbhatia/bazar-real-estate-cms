@@ -21,9 +21,9 @@ export function LeadAdvisorBanner({
   return (
     <section
       id="advisor"
-      className="px-12 py-16 scroll-mt-24"
+      className="px-4 md:px-12 py-16 scroll-mt-24"
     >
-      <div className="rounded-lg overflow-hidden bg-bz-ink text-white grid grid-cols-[280px_1fr_auto] gap-10 items-center px-10 py-10">
+      <div className="rounded-lg overflow-hidden bg-bz-ink text-white grid grid-cols-1 md:grid-cols-[280px_1fr_auto] gap-10 items-center px-6 md:px-10 py-8 md:py-10">
         <PlaceholderImage
           label={agent.slug}
           dark
@@ -46,7 +46,7 @@ export function LeadAdvisorBanner({
             &ldquo;{agent.pull_quote}&rdquo;
           </blockquote>
         </div>
-        <div className="flex flex-col gap-2 w-[200px]">
+        <div className="flex flex-col gap-2 w-full md:w-[200px]">
           <a
             href={`tel:${agent.phone.replace(/\s/g, "")}`}
             className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-md bg-white text-bz-ink text-[13px] font-medium hover:bg-white/90 transition-colors"

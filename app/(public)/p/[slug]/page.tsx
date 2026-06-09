@@ -11,6 +11,7 @@ import {
   KeyRound,
 } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import { CarouselGrid } from "@/components/brand/mobile";
 import { SimilarCard } from "./_components/similar-card";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import {
@@ -201,7 +202,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   ]);
 
   return (
-    <article className="bg-bz-bg">
+    <article className="bg-bz-bg pb-24 md:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -212,7 +213,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       />
 
       {/* Breadcrumb */}
-      <div className="px-12 pt-8 pb-3 text-[12px] text-bz-muted flex items-center gap-1.5">
+      <div className="px-4 md:px-12 pt-8 pb-3 text-[12px] text-bz-muted flex items-center gap-1.5 overflow-x-auto whitespace-nowrap">
         <Link href="/" className="hover:text-bz-ink">
           Home
         </Link>
@@ -258,8 +259,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       </div>
 
       {/* Header band */}
-      <section className="px-12 pt-10 pb-8">
-        <div className="flex gap-2 mb-4">
+      <section className="px-4 md:px-12 pt-8 md:pt-10 pb-8">
+        <div className="flex gap-2 mb-4 flex-wrap">
           {property.flags?.exclusive ? (
             <span className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium bg-bz-ink text-bz-bg">
               Exclusive
@@ -277,7 +278,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           ) : null}
         </div>
         <h1
-          className="serif text-[48px] font-normal leading-tight"
+          className="serif text-[30px] md:text-[48px] font-normal leading-tight"
           style={{ letterSpacing: "-0.025em" }}
         >
           {property.title}
@@ -297,8 +298,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       </section>
 
       {/* Key facts */}
-      <section className="px-12 pb-10">
-        <div className="grid grid-cols-6 gap-3">
+      <section className="px-4 md:px-12 pb-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <FactTile
             icon={<BedDouble size={16} strokeWidth={1.6} />}
             label="Bedrooms"
@@ -335,7 +336,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       </section>
 
       {/* Description + sidebar */}
-      <section className="px-12 pb-16 grid grid-cols-[1fr_360px] gap-12">
+      <section className="px-4 md:px-12 pb-16 grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8 lg:gap-12">
         <div className="space-y-12">
           {advisorNoteCopy ? (
             <AdvisorNote
@@ -356,7 +357,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           {property.amenities.length > 0 ? (
             <div>
               <Eyebrow>Features &amp; amenities</Eyebrow>
-              <ul className="mt-4 grid grid-cols-3 gap-x-6 gap-y-2.5 text-[14px]">
+              <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5 text-[14px]">
                 {property.amenities.map((a) => (
                   <li key={a} className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-bz-accent" />
@@ -411,8 +412,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           <TrueCostBlock priceAed={property.price_aed} />
         </div>
 
-        {/* Sticky sidebar */}
-        <aside className="sticky top-6 self-start space-y-4">
+        {/* Sidebar — sticky on desktop, folds inline on mobile */}
+        <aside className="lg:sticky lg:top-6 self-start space-y-4">
           <AgentCard agent={leadAdvisor} />
 
           {/* T1-A cleanup: market context block in the sidebar — links to
@@ -501,15 +502,15 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       />
 
       {similar.length > 0 ? (
-        <section className="px-12 py-16 border-t border-bz-border">
+        <section className="px-4 md:px-12 py-12 md:py-16 border-t border-bz-border">
           <Eyebrow>More in {property.areas?.name ?? "the UAE"}</Eyebrow>
           <h2
-            className="serif text-[32px] font-normal mt-2 mb-8"
+            className="serif text-[26px] md:text-[32px] font-normal mt-2 mb-8"
             style={{ letterSpacing: "-0.02em" }}
           >
             Similar properties
           </h2>
-          <div className="grid grid-cols-4 gap-5">
+          <CarouselGrid cols={4}>
             {similar.map((row) => (
               <Link
                 key={row.reference}
@@ -536,7 +537,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                 />
               </Link>
             ))}
-          </div>
+          </CarouselGrid>
         </section>
       ) : null}
 

@@ -13,9 +13,11 @@ import {
   buildAttributeGroups,
   formatAed,
   type CellValue,
+  type AttributeRow,
 } from "@/lib/compare";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { mediaPublicUrl } from "@/lib/media";
+import { SnapRail } from "@/components/brand/mobile";
 import { CompareToolbar } from "./compare-toolbar";
 import { InvestmentMetrics } from "./_components/investment-metrics";
 import { VerdictBand } from "./_components/verdict-band";
@@ -70,9 +72,15 @@ export default async function ComparePage({ searchParams }: PageProps) {
   const present = slots.filter((s): s is ComparableProperty => s !== null);
   const groups = buildAttributeGroups(present);
 
+  // Mobile-only: the attributes that actually differ across the present
+  // properties, flattened across groups. Drives the "What differs"
+  // section so mobile shows the decision-relevant rows up front instead
+  // of the full desktop matrix (handoff pattern 6).
+  const diffRows = groups.flatMap((g) => g.rows.filter((r) => r.differs));
+
   return (
     <div className="bg-bz-bg">
-      <section className="px-12 py-10 border-b border-bz-border">
+      <section className="px-4 md:px-12 py-8 md:py-10 border-b border-bz-border">
         <div className="flex justify-between items-center gap-6 flex-wrap">
           <div>
             <Eyebrow>
@@ -80,7 +88,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
               {present.length === 1 ? "property" : "properties"}
             </Eyebrow>
             <h1
-              className="serif text-[36px] mt-1.5"
+              className="serif text-[28px] md:text-[36px] mt-1.5"
               style={{ letterSpacing: "-0.02em" }}
             >
               Side by side
@@ -94,8 +102,60 @@ export default async function ComparePage({ searchParams }: PageProps) {
         </div>
       </section>
 
-      {/* Cards strip */}
-      <section className="px-12 pt-8">
+      {/* ── Mobile compare (< md): summary cards → what differs → full
+          comparison accordion. The desktop matrix below is hidden. ── */}
+      <div className="md:hidden">
+        <section className="px-4 pt-6">
+          <SnapRail>
+            {slots.map((slot, i) => (
+              <div key={`m-card-${i}`} className="w-[78%] max-w-[300px]">
+                {slot ? (
+                  <PropertyCard property={slot} pickIndex={i} />
+                ) : (
+                  <EmptySlot index={i} requestedIds={requestedIds} />
+                )}
+              </div>
+            ))}
+          </SnapRail>
+        </section>
+
+        {diffRows.length > 0 ? (
+          <section className="px-4 pt-8">
+            <Eyebrow className="text-bz-ink">What differs</Eyebrow>
+            <div className="mt-3 divide-y divide-bz-border">
+              {diffRows.map((r) => (
+                <MobileAttrRow key={r.key} row={r} present={present} />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="px-4 pt-8 pb-4">
+          <details className="rounded-lg border border-bz-border bg-bz-surface">
+            <summary className="cursor-pointer list-none px-4 py-3 text-[14px] font-medium flex items-center justify-between">
+              Full comparison
+              <span className="text-[12px] text-bz-muted">
+                {present.length} {present.length === 1 ? "property" : "properties"}
+              </span>
+            </summary>
+            <div className="px-4 pb-4">
+              {groups.map((group) => (
+                <div key={group.key} className="mt-4 first:mt-2">
+                  <Eyebrow className="text-bz-ink">{group.label}</Eyebrow>
+                  <div className="mt-1 divide-y divide-bz-border">
+                    {group.rows.map((r) => (
+                      <MobileAttrRow key={r.key} row={r} present={present} />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </details>
+        </section>
+      </div>
+
+      {/* Cards strip — desktop matrix */}
+      <section className="hidden md:block px-12 pt-8">
         <div
           className="grid gap-4"
           style={{ gridTemplateColumns: TABLE_COLS }}
@@ -111,8 +171,8 @@ export default async function ComparePage({ searchParams }: PageProps) {
         </div>
       </section>
 
-      {/* Attribute groups */}
-      <section className="px-12 pb-24" data-testid="compare-groups">
+      {/* Attribute groups — desktop matrix */}
+      <section className="hidden md:block px-12 pb-24" data-testid="compare-groups">
         {groups.map((group) => (
           <div key={group.key} className="mt-8">
             <div
@@ -174,7 +234,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
 
       {/* Sprint 5b: investment metrics + verdict band */}
       {present.length >= 2 ? (
-        <section className="px-12 pb-12 space-y-6">
+        <section className="px-4 md:px-12 pb-12 space-y-6">
           <InvestmentMetrics
             rows={present.map((p, i) => ({
               ref: p.reference,
@@ -194,6 +254,38 @@ export default async function ComparePage({ searchParams }: PageProps) {
 }
 
 /* ─── helpers ───────────────────────────────────────────────── */
+
+/** Mobile attribute row — label with each present property's value
+ *  stacked beneath, used for both "What differs" and the full-comparison
+ *  accordion. Replaces the desktop matrix table on small screens. */
+function MobileAttrRow({
+  row,
+  present,
+}: {
+  row: AttributeRow;
+  present: ComparableProperty[];
+}) {
+  return (
+    <div className="py-3">
+      <div className="text-[12px] text-bz-muted">{row.label}</div>
+      <div className="mt-1.5 flex flex-col gap-1">
+        {present.map((p, i) => (
+          <div
+            key={p.id}
+            className="flex items-center justify-between gap-3 text-[13px]"
+          >
+            <span className="mono text-[11px] text-bz-muted truncate">
+              {p.reference}
+            </span>
+            <span className="font-medium text-right">
+              {renderCell(row.values[i])}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function renderCell(value: CellValue) {
   if (value === null) return <span>—</span>;
@@ -310,10 +402,10 @@ function EmptySlot({
 
 function EmptyState() {
   return (
-    <div className="bg-bz-bg px-12 py-20">
+    <div className="bg-bz-bg px-4 md:px-12 py-12 md:py-20">
       <Eyebrow>Compare</Eyebrow>
       <h1
-        className="serif text-[48px] mt-2 max-w-[18ch]"
+        className="serif text-[30px] md:text-[48px] mt-2 max-w-[18ch]"
         style={{ letterSpacing: "-0.025em" }}
       >
         Stack properties side by side.
@@ -323,7 +415,7 @@ function EmptyState() {
         up price, specs, location, amenities, and investment fundamentals.
         Share the URL to send the same comparison to a partner or advisor.
       </p>
-      <div className="mt-8 flex gap-3">
+      <div className="mt-8 flex flex-wrap gap-3">
         <Button asChild>
           <Link href="/buy">Browse the marketplace</Link>
         </Button>
