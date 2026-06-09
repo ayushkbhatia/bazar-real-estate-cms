@@ -396,6 +396,7 @@ export async function sendDocumentForSignature(opts: {
   if (!isSupabaseConfigured) {
     return { status: "error", message: "Supabase not configured" };
   }
+  await requireRole(DEAL_ROLES);
   const { isDocuSignConfigured } = await import("@/lib/env");
   if (!isDocuSignConfigured) {
     return { status: "error", message: "DocuSign not configured" };

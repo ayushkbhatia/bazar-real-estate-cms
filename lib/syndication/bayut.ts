@@ -41,7 +41,10 @@ function maybe(tag: string, value: string | number | null | undefined): string {
 }
 
 export function verifyBayutToken(presented: string | null): boolean {
-  if (!env.BAYUT_FEED_TOKEN) return true;
+  // No token configured: open on non-prod so the feed works out of the
+  // box, closed on production so a missing env var can't expose the
+  // full catalogue feed publicly.
+  if (!env.BAYUT_FEED_TOKEN) return env.NODE_ENV !== "production";
   return presented === env.BAYUT_FEED_TOKEN;
 }
 

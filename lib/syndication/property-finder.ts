@@ -72,10 +72,10 @@ function maybe(tag: string, value: string | number | null | undefined): string {
 /** Verify the inbound feed-token query param matches env. */
 export function verifyPropertyFinderToken(presented: string | null): boolean {
   if (!env.PROPERTY_FINDER_FEED_TOKEN) {
-    // Allow access when no token is configured — lets the feed work
-    // out of the box for non-prod deployments. Production deploys MUST
-    // set the env var.
-    return true;
+    // No token configured: open on non-prod so the feed works out of
+    // the box, closed on production so a missing env var can't expose
+    // the full catalogue feed publicly.
+    return env.NODE_ENV !== "production";
   }
   return presented === env.PROPERTY_FINDER_FEED_TOKEN;
 }
