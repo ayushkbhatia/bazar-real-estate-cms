@@ -23,7 +23,7 @@ export function LocationSection({
   return (
     <section
       id="location"
-      className="px-12 pb-16 scroll-mt-16"
+      className="px-4 md:px-12 pb-16 scroll-mt-16"
     >
       <Eyebrow>Location</Eyebrow>
       <h2

@@ -39,11 +39,11 @@ export function GalleryTabs({
   const [active, setActive] = useState<TabKey>("photos");
 
   return (
-    <div className="px-12">
+    <div className="px-4 md:px-12">
       <div
         role="tablist"
         aria-label="Gallery views"
-        className="border-b border-bz-border flex gap-5 mb-4"
+        className="border-b border-bz-border flex gap-5 mb-4 overflow-x-auto"
       >
         {TABS.map(({ key, label, icon: Icon }) => {
           const isActive = active === key;

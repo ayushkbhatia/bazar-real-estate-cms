@@ -31,7 +31,7 @@ export function DevelopmentFaq({ development, curated }: Props) {
   };
 
   return (
-    <section id="faq" className="px-12 py-16 scroll-mt-16 border-t border-bz-border bg-bz-surface-2">
+    <section id="faq" className="px-4 md:px-12 py-16 scroll-mt-16 border-t border-bz-border bg-bz-surface-2">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}

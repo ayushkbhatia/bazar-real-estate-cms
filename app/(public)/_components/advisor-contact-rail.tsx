@@ -128,7 +128,7 @@ export function AdvisorContactRail({
 
       {/* Mobile bottom dock — slides up past the fold */}
       <div
-        className={`md:hidden fixed inset-x-0 bottom-0 z-40 px-3 pb-3 pt-2 transition-transform ${
+        className={`md:hidden fixed inset-x-0 bottom-0 z-40 px-3 pt-2 pb-bar-safe transition-transform ${
           visible ? "translate-y-0" : "translate-y-full"
         }`}
       >

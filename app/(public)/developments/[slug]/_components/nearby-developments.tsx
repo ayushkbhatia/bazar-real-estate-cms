@@ -72,7 +72,7 @@ export function NearbyDevelopments({
   }
 
   return (
-    <section className="px-12 py-16 scroll-mt-16 border-t border-bz-border bg-bz-surface-2">
+    <section className="px-4 md:px-12 py-16 scroll-mt-16 border-t border-bz-border bg-bz-surface-2">
       <Eyebrow>Future developments around · {areaName}</Eyebrow>
       <h2
         className="serif text-[32px] mt-2 leading-tight max-w-[28ch]"

@@ -53,7 +53,7 @@ export function PropertyActionRow({
   }
 
   return (
-    <div className="px-12 pt-6 flex items-center justify-between gap-4 flex-wrap">
+    <div className="px-4 md:px-12 pt-6 flex items-center justify-between gap-4 flex-wrap">
       <div className="mono text-[11px] uppercase tracking-wider text-bz-muted">
         REF · <span className="text-bz-ink">{reference}</span>
       </div>

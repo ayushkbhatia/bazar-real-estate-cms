@@ -37,8 +37,8 @@ export function Gallery({
 
   return (
     <>
-      <section className="px-12">
-        <div className="grid grid-cols-4 grid-rows-2 gap-2 h-[520px]">
+      <section className="px-0 md:px-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 auto-rows-[120px] sm:auto-rows-[150px] md:auto-rows-auto md:grid-rows-2 md:h-[520px]">
           {/* Hero: spans 2x2 */}
           <Tile
             slot={slots[0]}
