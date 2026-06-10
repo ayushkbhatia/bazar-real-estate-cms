@@ -106,7 +106,7 @@ export default async function SavedPage() {
         .
       </div>
     ) : (
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {savedProps.map((row) => (
           <Link key={row.reference} href={propertyUrl(row)} className="block">
             <ListingCard
@@ -250,7 +250,7 @@ export default async function SavedPage() {
       <header>
         <Eyebrow>Saved</Eyebrow>
         <h1
-          className="serif text-[48px] font-normal mt-2"
+          className="serif text-[30px] md:text-[48px] font-normal mt-2"
           style={{ letterSpacing: "-0.025em" }}
         >
           Your saved properties.

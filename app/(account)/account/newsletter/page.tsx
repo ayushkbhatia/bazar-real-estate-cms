@@ -45,7 +45,7 @@ export default async function AccountNewsletterPage() {
     <div className="max-w-[640px]">
       <Eyebrow>Newsletter</Eyebrow>
       <h1
-        className="serif text-[40px] font-normal mt-2"
+        className="serif text-[28px] md:text-[40px] font-normal mt-2"
         style={{ letterSpacing: "-0.025em" }}
       >
         The Bazar Brief.

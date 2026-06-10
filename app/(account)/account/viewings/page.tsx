@@ -81,7 +81,7 @@ export default async function AccountViewingsPage() {
       <header>
         <Eyebrow>Account · Viewings</Eyebrow>
         <h1
-          className="serif text-[48px] font-normal mt-2"
+          className="serif text-[30px] md:text-[48px] font-normal mt-2"
           style={{ letterSpacing: "-0.025em" }}
         >
           Your viewings.

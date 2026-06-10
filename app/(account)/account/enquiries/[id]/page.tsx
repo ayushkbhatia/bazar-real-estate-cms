@@ -65,7 +65,7 @@ export default async function AccountEnquiryDetailPage({
           {enquiry.staff ? ` · ${enquiry.staff.display_name}` : ""}
         </Eyebrow>
         <h1
-          className="serif text-[40px] mt-2 font-normal leading-[1.05] max-w-[26ch]"
+          className="serif text-[28px] md:text-[40px] mt-2 font-normal leading-[1.05] max-w-[26ch]"
           style={{ letterSpacing: "-0.02em" }}
         >
           {enquiry.properties ? enquiry.properties.title : "General brief"}

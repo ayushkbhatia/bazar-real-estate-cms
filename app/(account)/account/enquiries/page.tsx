@@ -42,7 +42,7 @@ export default async function AccountEnquiriesPage() {
     <div>
       <Eyebrow>Enquiries</Eyebrow>
       <h1
-        className="serif text-[48px] mt-2 font-normal leading-[1.05]"
+        className="serif text-[30px] md:text-[48px] mt-2 font-normal leading-[1.05]"
         style={{ letterSpacing: "-0.025em" }}
       >
         Your conversations.

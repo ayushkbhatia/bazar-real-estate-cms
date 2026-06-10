@@ -15,7 +15,7 @@ export default function DataDeletionPage() {
     <div className="max-w-[640px]">
       <Eyebrow>Privacy</Eyebrow>
       <h1
-        className="serif text-[40px] font-normal mt-2"
+        className="serif text-[28px] md:text-[40px] font-normal mt-2"
         style={{ letterSpacing: "-0.025em" }}
       >
         Delete my account.
