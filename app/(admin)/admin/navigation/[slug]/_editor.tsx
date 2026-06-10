@@ -165,7 +165,7 @@ function ItemRow({
         </button>
       </div>
       {expanded ? (
-        <div className="px-9 py-3 border-t border-bz-border grid grid-cols-2 gap-3">
+        <div className="px-9 py-3 border-t border-bz-border grid grid-cols-1 md:grid-cols-2 gap-3">
           <label className="flex flex-col gap-1">
             <FieldLabel>Target kind</FieldLabel>
             <select
@@ -452,7 +452,7 @@ function TileForm({
           Remove
         </button>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <label className="flex flex-col gap-1">
           <FieldLabel>Variant</FieldLabel>
           <select
@@ -699,7 +699,7 @@ export function MegamenuEditor({ tab }: Props) {
 
       {/* Meta */}
       <Section title="Tab metadata">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label className="flex flex-col gap-1">
             <FieldLabel>Label</FieldLabel>
             <input

@@ -112,7 +112,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
       breadcrumbs="Admin"
       primary={<InviteStaffButton />}
     >
-      <div className="grid grid-cols-[1fr_320px] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
         <div className="flex flex-col gap-5 min-w-0">
           <UserFilters initial={filters} />
 
@@ -128,8 +128,8 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
             ) : null}
           </div>
 
-          <div className="bg-bz-surface border border-bz-border rounded-lg overflow-hidden">
-            <table className="w-full text-[13px]">
+          <div className="bg-bz-surface border border-bz-border rounded-lg overflow-x-auto">
+            <table className="w-full text-[13px] min-w-[640px]">
               <thead>
                 <tr className="text-left text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
                   <th className="px-4 py-3 w-[36%]">User</th>
@@ -242,7 +242,8 @@ function PendingInvitationsTable({
       <div className="px-4 pt-3 pb-2 border-b border-bz-border">
         <Eyebrow>Pending invitations</Eyebrow>
       </div>
-      <table className="w-full text-[13px]">
+      <div className="overflow-x-auto">
+      <table className="w-full text-[13px] min-w-[640px]">
         <thead>
           <tr className="text-left text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
             <th className="px-4 py-2.5">Email</th>
@@ -277,6 +278,7 @@ function PendingInvitationsTable({
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

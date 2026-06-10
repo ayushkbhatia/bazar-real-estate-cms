@@ -205,7 +205,7 @@ export function PropertyEditForm({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="type">Type</Label>
               <Select
@@ -265,7 +265,7 @@ export function PropertyEditForm({
           value="pricing"
           className="bg-bz-surface border border-bz-border rounded-lg p-6 mt-6 flex flex-col gap-5"
         >
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="price_aed">Price (AED)</Label>
               <Input
@@ -302,7 +302,7 @@ export function PropertyEditForm({
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="beds">Beds</Label>
               <Input
@@ -369,7 +369,7 @@ export function PropertyEditForm({
           value="details"
           className="bg-bz-surface border border-bz-border rounded-lg p-6 mt-6 flex flex-col gap-5"
         >
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="year_built">Year built</Label>
               <Input
@@ -421,7 +421,7 @@ export function PropertyEditForm({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="tenure">Tenure</Label>
               <Select
@@ -476,7 +476,7 @@ export function PropertyEditForm({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="view">View</Label>
               <Input id="view" {...register("view")} placeholder="Sea view" />
@@ -491,7 +491,7 @@ export function PropertyEditForm({
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="listing_permit_no">Listing permit no.</Label>
               <Input

@@ -115,8 +115,8 @@ export default async function AuditLogPage({ searchParams }: PageProps) {
           </Link>
         </div>
 
-        <div className="bg-bz-surface border border-bz-border rounded-lg overflow-hidden">
-          <table className="w-full text-[13px]">
+        <div className="bg-bz-surface border border-bz-border rounded-lg overflow-x-auto">
+          <table className="w-full text-[13px] min-w-[720px]">
             <thead>
               <tr className="text-left text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
                 <th className="px-4 py-3 w-[16%]">When</th>
@@ -279,8 +279,8 @@ async function BulkOperationsView({
           </Link>
         </div>
 
-        <div className="bg-bz-surface border border-bz-border rounded-lg overflow-hidden">
-          <table className="w-full text-[13px]">
+        <div className="bg-bz-surface border border-bz-border rounded-lg overflow-x-auto">
+          <table className="w-full text-[13px] min-w-[720px]">
             <thead>
               <tr className="text-left text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
                 <th className="px-4 py-3 w-[16%]">When</th>

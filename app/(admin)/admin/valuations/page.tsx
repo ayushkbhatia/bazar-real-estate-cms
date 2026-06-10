@@ -101,8 +101,9 @@ export default async function AdminValuationsPage({
       {rows.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="border border-bz-border rounded-lg overflow-hidden">
-          <table className="w-full text-[13.5px]" data-testid="valuations-list">
+        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+          <div className="border border-bz-border rounded-lg overflow-hidden">
+            <table className="w-full text-[13.5px]" data-testid="valuations-list">
             <thead className="bg-bz-surface-2 text-[11.5px] uppercase tracking-wider text-bz-muted">
               <tr>
                 <th className="text-left px-4 py-2.5">Owner</th>
@@ -120,6 +121,7 @@ export default async function AdminValuationsPage({
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </CmsShell>

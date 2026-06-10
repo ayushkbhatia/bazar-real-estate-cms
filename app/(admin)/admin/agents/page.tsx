@@ -86,7 +86,7 @@ export default async function AdminAgentsPage() {
             </Button>
           </div>
         ) : (
-          <div className="mt-10 rounded-md border border-bz-border bg-bz-surface overflow-hidden">
+          <div className="mt-10 rounded-md border border-bz-border bg-bz-surface overflow-x-auto">
             <table className="w-full text-[13.5px]">
               <thead className="bg-bz-surface-2 border-b border-bz-border text-left text-[11.5px] uppercase tracking-wider text-bz-muted">
                 <tr>

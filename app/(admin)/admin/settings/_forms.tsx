@@ -66,7 +66,7 @@ export function BrandForm({ initial }: { initial: BrandSettingsInput }) {
     <SectionCard title="Brand & identity" subtitle="Public-facing name, tagline, and footer contact info.">
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid grid-cols-2 gap-4"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
         <Field
           label="Brand name"
@@ -148,7 +148,7 @@ export function DisplayForm({ initial }: { initial: DisplaySettingsInput }) {
           <Label className="text-[12px] text-bz-ink-2 font-normal mb-2 block">
             Homepage hero
           </Label>
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             {HERO_VARIANTS.map((v) => {
               const active = selectedVariant === v;
               return (
@@ -292,7 +292,7 @@ export function LeadRoutingForm({
             {rules.map((rule, i) => (
               <div
                 key={i}
-                className="grid grid-cols-[1fr_1fr_auto] gap-2 items-center bg-bz-surface-2 px-3 py-2 rounded"
+                className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2 items-center bg-bz-surface-2 px-3 py-2 rounded"
               >
                 <div className="flex items-center gap-2">
                   <span className="text-[11.5px] text-bz-muted shrink-0">
@@ -351,7 +351,7 @@ export function LeadRoutingForm({
           Add rule
         </Button>
 
-        <div className="grid grid-cols-2 gap-4 mt-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-1">
           <Field label="Fallback advisor">
             <select
               {...form.register("fallback_agent_id")}
@@ -393,8 +393,8 @@ export function EmailTemplatesEditor({
       title="Email templates"
       subtitle="Overrides for the system-generated transactional emails. Leave empty to use the bundled default."
     >
-      <div className="grid grid-cols-[200px_1fr] gap-5 min-h-[280px]">
-        <nav className="flex flex-col gap-1 border-r border-bz-border pr-3">
+      <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-5 min-h-[280px]">
+        <nav className="flex flex-col gap-1 md:border-r border-bz-border md:pr-3">
           {EMAIL_TEMPLATE_KEYS.map((k) => {
             const isActive = active === k;
             const hasOverride = overrides[k] != null;

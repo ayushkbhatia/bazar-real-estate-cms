@@ -88,7 +88,7 @@ export default async function DealDetailPage({ params }: PageProps) {
         </span>
       }
     >
-      <div className="grid grid-cols-[260px_1fr_300px] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr_300px] gap-6 items-start">
         <aside className="bg-bz-surface border border-bz-border rounded-lg p-5 sticky top-6 self-start">
           <Eyebrow>Timeline</Eyebrow>
           <div className="mt-3">

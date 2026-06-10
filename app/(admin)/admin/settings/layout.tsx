@@ -15,7 +15,7 @@ export default async function AdminSettingsLayout({
   }
   return (
     <CmsShell title="Site settings" breadcrumbs="Admin">
-      <div className="flex gap-10 items-start">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-stretch lg:items-start">
         <SettingsTabs />
         <div className="flex-1 min-w-0 max-w-[920px]">{children}</div>
       </div>

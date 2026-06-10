@@ -75,7 +75,7 @@ function HeroEditor({
           }
         />
       </label>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <label className="flex flex-col gap-1 text-[12.5px]">
           <span className="text-bz-muted">CTA label</span>
           <input
@@ -381,7 +381,7 @@ function BannerEditor({
           }
         />
       </label>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         <label className="flex flex-col gap-1 text-[12.5px]">
           <span className="text-bz-muted">CTA label</span>
           <input

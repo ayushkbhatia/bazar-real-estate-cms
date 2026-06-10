@@ -106,7 +106,7 @@ export function NewPropertyForm() {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="type">Type</Label>
             <Select
@@ -155,7 +155,7 @@ export function NewPropertyForm() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="price_aed">Price (AED)</Label>
             <Input

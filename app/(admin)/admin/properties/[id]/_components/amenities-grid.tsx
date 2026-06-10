@@ -26,7 +26,7 @@ export function AmenitiesGrid({
 
   return (
     <div>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
         {DEFAULT_AMENITIES.map((a) => {
           const active = value.includes(a.label);
           return (

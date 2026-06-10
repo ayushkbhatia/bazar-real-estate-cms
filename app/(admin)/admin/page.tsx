@@ -203,7 +203,7 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* KPI tiles */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {KPIS.map((kpi) => {
             const content = (
               <>
@@ -244,7 +244,7 @@ export default async function AdminDashboardPage() {
         <PipelineBarChart counts={pipeline} />
 
         {/* Activity feed + properties summary */}
-        <div className="grid grid-cols-[1fr_360px] gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4">
           <ActivityFeed entries={activity} />
           <div className="p-6 border border-bz-border rounded-lg bg-bz-surface">
             <Eyebrow>Catalogue</Eyebrow>

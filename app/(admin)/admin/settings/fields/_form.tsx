@@ -50,7 +50,7 @@ export function AddAmenityForm() {
 
   return (
     <form
-      className="mt-4 rounded-md border border-bz-border bg-bz-surface p-4 max-w-[640px] grid grid-cols-2 md:grid-cols-3 gap-3"
+      className="mt-4 rounded-md border border-bz-border bg-bz-surface p-4 max-w-[640px] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"
       onSubmit={(e) => {
         e.preventDefault();
         const fd = new FormData(e.currentTarget as HTMLFormElement);

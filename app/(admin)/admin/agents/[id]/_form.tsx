@@ -57,7 +57,7 @@ export function AgentEditForm({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
           <Label htmlFor="display_name">Display name</Label>
           <Input id="display_name" {...register("display_name")} />
@@ -127,7 +127,7 @@ export function AgentEditForm({
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
           <Label>Languages</Label>
           <Input

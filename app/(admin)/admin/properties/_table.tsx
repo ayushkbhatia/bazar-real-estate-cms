@@ -104,7 +104,7 @@ export function PropertiesTable({ rows }: { rows: ListingRow[] }) {
   const visibleCount = visibleIds.length;
 
   return (
-    <div className="bg-bz-surface border border-bz-border rounded-lg overflow-hidden">
+    <div className="bg-bz-surface border border-bz-border rounded-lg overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
