@@ -21,7 +21,7 @@ export function ServicePage({ service }: { service: SeedService }) {
   return (
     <div className="bg-bz-bg">
       {/* Crumb */}
-      <div className="px-12 pt-10 max-w-[1200px]">
+      <div className="px-4 md:px-12 pt-10 max-w-[1200px]">
         <Link
           href="/services"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
@@ -32,10 +32,10 @@ export function ServicePage({ service }: { service: SeedService }) {
       </div>
 
       {/* Hero */}
-      <section className="px-12 pt-8 pb-14 max-w-[1200px]">
+      <section className="px-4 md:px-12 pt-8 pb-14 max-w-[1200px]">
         <Eyebrow>Service · {service.name}</Eyebrow>
         <h1
-          className="serif text-[64px] mt-3 font-normal leading-[1.02] max-w-[18ch]"
+          className="serif text-[36px] md:text-[64px] mt-3 font-normal leading-[1.02] max-w-[18ch]"
           style={{ letterSpacing: "-0.025em" }}
         >
           {service.name}
@@ -47,7 +47,7 @@ export function ServicePage({ service }: { service: SeedService }) {
 
       {/* Intro + for-whom */}
       <section className="border-y border-bz-border bg-bz-surface">
-        <div className="px-12 py-14 max-w-[1200px] grid grid-cols-[1fr_360px] gap-16 items-start">
+        <div className="px-4 md:px-12 py-14 max-w-[1200px] grid grid-cols-1 md:grid-cols-[1fr_360px] gap-16 items-start">
           <div>
             <Eyebrow>Overview</Eyebrow>
             <p className="mt-4 text-[16px] text-bz-ink leading-relaxed">
@@ -72,15 +72,15 @@ export function ServicePage({ service }: { service: SeedService }) {
       </section>
 
       {/* Process steps */}
-      <section className="px-12 py-20 max-w-[1200px]">
+      <section className="px-4 md:px-12 py-12 md:py-20 max-w-[1200px]">
         <Eyebrow>The process</Eyebrow>
         <h2
-          className="serif text-[40px] mt-3 leading-[1.05] max-w-[24ch]"
+          className="serif text-[30px] md:text-[40px] mt-3 leading-[1.05] max-w-[24ch]"
           style={{ letterSpacing: "-0.018em" }}
         >
           What happens, step by step.
         </h2>
-        <ol className="mt-12 grid grid-cols-2 gap-x-12 gap-y-10">
+        <ol className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
           {service.process_steps.map((step, i) => (
             <li key={step.title}>
               <div className="text-[11.5px] uppercase tracking-wider text-bz-accent">
@@ -101,8 +101,8 @@ export function ServicePage({ service }: { service: SeedService }) {
       </section>
 
       {/* Related tool + CTA */}
-      <section className="px-12 pb-20 max-w-[1200px]">
-        <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-10 grid grid-cols-[1fr_auto] gap-8 items-center">
+      <section className="px-4 md:px-12 pb-20 max-w-[1200px]">
+        <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-6 md:p-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
           <div>
             <Eyebrow className="text-bz-accent-fg/70">Next step</Eyebrow>
             <h3
@@ -132,7 +132,7 @@ export function ServicePage({ service }: { service: SeedService }) {
 
       {/* Prev / next */}
       <section className="border-t border-bz-border bg-bz-surface">
-        <div className="px-12 py-8 max-w-[1200px] flex items-center justify-between gap-8">
+        <div className="px-4 md:px-12 py-8 max-w-[1200px] flex items-center justify-between gap-8">
           {prev ? (
             <Link
               href={`/services/${prev.slug}`}

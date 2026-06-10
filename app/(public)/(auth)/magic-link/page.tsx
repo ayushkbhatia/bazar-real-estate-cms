@@ -14,10 +14,10 @@ export default function MagicLinkPage() {
   const [state, formAction, pending] = useActionState(magicLinkAction, initial);
 
   return (
-    <div className="max-w-md mx-auto py-20 px-6">
+    <div className="max-w-md mx-auto py-12 md:py-20 px-4 md:px-6">
       <Eyebrow>Magic link</Eyebrow>
       <h1
-        className="serif text-[44px] font-normal mt-2 mb-4"
+        className="serif text-[30px] md:text-[44px] font-normal mt-2 mb-4"
         style={{ letterSpacing: "-0.025em" }}
       >
         Sign in by email

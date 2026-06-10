@@ -95,7 +95,7 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
       />
 
       {/* Breadcrumb */}
-      <div className="px-12 pt-6 text-[12px] text-bz-muted flex items-center gap-2">
+      <div className="px-4 md:px-12 pt-6 text-[12px] text-bz-muted flex flex-wrap items-center gap-2">
         <Link href="/market-reports" className="hover:text-bz-ink">
           Market reports
         </Link>
@@ -132,7 +132,7 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
       />
 
       {/* Advisor commentary */}
-      <section className="px-12 py-12 border-b border-bz-border">
+      <section className="px-4 md:px-12 py-12 border-b border-bz-border">
         <Eyebrow>Advisor commentary</Eyebrow>
         <h2
           className="serif text-[28px] mt-2 max-w-[44ch]"
@@ -158,7 +158,7 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
       </section>
 
       {/* Cross-link to sibling reports */}
-      <section className="px-12 py-12">
+      <section className="px-4 md:px-12 py-12">
         <Eyebrow>Sibling reports · {snapshot.area_name}</Eyebrow>
         <h2
           className="serif text-[24px] mt-2"

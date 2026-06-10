@@ -94,7 +94,7 @@ export default async function InsightsCategoryPage({
   return (
     <div className="bg-bz-bg">
       {/* Crumb */}
-      <div className="px-12 pt-10 max-w-[1280px]">
+      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
         <Link
           href="/insights"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
@@ -105,10 +105,10 @@ export default async function InsightsCategoryPage({
       </div>
 
       {/* Hero */}
-      <section className="px-12 pt-8 pb-12 max-w-[1200px]">
+      <section className="px-4 md:px-12 pt-8 pb-12 max-w-[1200px]">
         <Eyebrow>Category</Eyebrow>
         <h1
-          className="serif text-[64px] mt-3 font-normal leading-[1.02]"
+          className="serif text-[34px] md:text-[64px] mt-3 font-normal leading-[1.02]"
           style={{ letterSpacing: "-0.025em" }}
         >
           {ARTICLE_CATEGORY_LABELS[category]}
@@ -119,7 +119,7 @@ export default async function InsightsCategoryPage({
       </section>
 
       {/* Grid */}
-      <section className="px-12 pb-24 max-w-[1280px]">
+      <section className="px-4 md:px-12 pb-24 max-w-[1280px]">
         {rows.length === 0 ? (
           <div className="py-24 text-center max-w-[44ch] mx-auto border border-dashed border-bz-border rounded-md">
             <p className="text-[15px] text-bz-ink-2">
@@ -131,7 +131,7 @@ export default async function InsightsCategoryPage({
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-9 gap-y-14">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-9 gap-y-14">
             {rows.map((row) => (
               <article key={row.id} className="group">
                 <Link href={articleUrl(row)} className="block">

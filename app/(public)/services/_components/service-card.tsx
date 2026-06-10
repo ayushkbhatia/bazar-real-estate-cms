@@ -13,7 +13,7 @@ export function ServiceCard({
   return (
     <Link
       href={`/services/${slug}`}
-      className="group block rounded-lg border border-bz-border bg-bz-surface p-8 hover:border-bz-border-strong transition-colors"
+      className="group block rounded-lg border border-bz-border bg-bz-surface p-6 md:p-8 hover:border-bz-border-strong transition-colors"
     >
       <div className="text-[11.5px] uppercase tracking-wider text-bz-accent">
         {`0${["sell", "buy", "manage", "conveyancing", "invest"].indexOf(slug) + 1}`}

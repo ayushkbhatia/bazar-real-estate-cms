@@ -286,7 +286,7 @@ export function ConciergeChat() {
   return (
     <div className="bg-bz-bg">
       {/* Top bar */}
-      <section className="px-12 pt-10 pb-6 border-b border-bz-border">
+      <section className="px-4 md:px-12 pt-10 pb-6 border-b border-bz-border">
         <div className="flex justify-between items-end flex-wrap gap-4">
           <div>
             <div className="eyebrow inline-flex items-center gap-2">
@@ -294,7 +294,7 @@ export function ConciergeChat() {
               Concierge online · Mariam available to take over
             </div>
             <h1
-              className="serif text-[40px] mt-2 leading-tight"
+              className="serif text-[28px] md:text-[40px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.025em" }}
             >
               The Concierge{" "}
@@ -315,10 +315,10 @@ export function ConciergeChat() {
         </div>
       </section>
 
-      <div className="grid grid-cols-[1.2fr_1fr] min-h-[760px] overflow-hidden border-b border-bz-border">
+      <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] min-h-[760px] overflow-hidden border-b border-bz-border">
         {/* LEFT — Conversation */}
         <div className="flex flex-col border-r border-bz-border overflow-hidden">
-          <div className="flex-1 px-12 py-8 flex flex-col gap-6 overflow-auto">
+          <div className="flex-1 px-4 md:px-12 py-8 flex flex-col gap-6 overflow-auto">
             {messages.length === 0 ? (
               <EmptyState onPick={(t) => sendMessage(t)} />
             ) : null}
@@ -328,7 +328,7 @@ export function ConciergeChat() {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="px-12 pt-5 pb-8 border-t border-bz-border bg-bz-bg">
+          <div className="px-4 md:px-12 pt-5 pb-8 border-t border-bz-border bg-bz-bg">
             {error ? (
               <div className="mb-3 text-[12.5px] text-bz-danger">{error}</div>
             ) : null}
@@ -444,7 +444,7 @@ function EmptyState({ onPick }: { onPick: (s: string) => void }) {
         our catalogue and off-market mandates and hand you 3–5 options with
         deterministic match scores.
       </p>
-      <div className="mt-2 grid grid-cols-2 gap-2 w-full max-w-[60ch]">
+      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-[60ch]">
         {PROMPT_SUGGESTIONS.map((p) => (
           <button
             key={p}

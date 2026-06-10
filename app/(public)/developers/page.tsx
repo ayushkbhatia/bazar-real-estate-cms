@@ -18,10 +18,10 @@ export default async function DevelopersIndexPage() {
   const seedBySlug = new Map(SEED_DEVELOPERS.map((s) => [s.slug, s]));
   return (
     <div className="bg-bz-bg">
-      <section className="px-12 pt-20 pb-14 max-w-[1200px]">
+      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-14 max-w-[1200px]">
         <Eyebrow>Developers</Eyebrow>
         <h1
-          className="serif text-[80px] mt-3 font-normal leading-[0.98]"
+          className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
         >
           Who builds Abu Dhabi.
@@ -33,15 +33,15 @@ export default async function DevelopersIndexPage() {
         </p>
       </section>
 
-      <section className="px-12 pb-24 max-w-[1280px]">
-        <div className="grid grid-cols-2 gap-8">
+      <section className="px-4 md:px-12 pb-24 max-w-[1280px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {developers.map((d) => {
             const seed = seedBySlug.get(d.slug);
             return (
               <Link
                 key={d.id}
                 href={`/developers/${d.slug}`}
-                className="group block rounded-lg border border-bz-border bg-bz-surface p-8 hover:border-bz-border-strong transition-colors"
+                className="group block rounded-lg border border-bz-border bg-bz-surface p-6 md:p-8 hover:border-bz-border-strong transition-colors"
               >
                 <div className="flex gap-6 items-start">
                   <PlaceholderImage
@@ -68,7 +68,7 @@ export default async function DevelopersIndexPage() {
                       </p>
                     ) : null}
                     {seed ? (
-                      <div className="mt-5 flex gap-8 text-[12px]">
+                      <div className="mt-5 flex flex-wrap gap-x-8 gap-y-1 text-[12px]">
                         <span className="text-bz-muted">
                           Active developments ·{" "}
                           <span className="mono text-bz-ink">

@@ -27,10 +27,10 @@ function HeroBlock({
 }) {
   return (
     <section className="relative">
-      <div className="px-12 py-20 max-w-[1200px] mx-auto">
+      <div className="px-4 md:px-12 py-12 md:py-20 max-w-[1200px] mx-auto">
         {block.eyebrow ? <Eyebrow>{block.eyebrow}</Eyebrow> : null}
         <h1
-          className="serif text-[68px] mt-4 leading-[1] font-normal"
+          className="serif text-[36px] md:text-[68px] mt-4 leading-[1] font-normal"
           style={{ letterSpacing: "-0.03em" }}
         >
           {block.title}
@@ -68,14 +68,14 @@ function StripBlock({
   return (
     <section
       className={cn(
-        "px-12 py-20 max-w-[1024px] mx-auto",
+        "px-4 md:px-12 py-12 md:py-20 max-w-[1024px] mx-auto",
         block.align === "center" ? "text-center" : "text-left",
       )}
     >
       {block.eyebrow ? <Eyebrow>{block.eyebrow}</Eyebrow> : null}
       <h2
         className={cn(
-          "serif text-[40px] font-normal leading-tight mt-3",
+          "serif text-[28px] md:text-[40px] font-normal leading-tight mt-3",
           block.align === "center" ? "mx-auto" : "",
         )}
         style={{ letterSpacing: "-0.025em" }}
@@ -128,8 +128,8 @@ function SplitBlock({
   );
 
   return (
-    <section className="px-12 py-20 max-w-[1280px] mx-auto">
-      <div className="grid grid-cols-2 gap-12 items-start">
+    <section className="px-4 md:px-12 py-12 md:py-20 max-w-[1280px] mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         {imageOnRight ? (
           <>
             {textEl}
@@ -151,9 +151,12 @@ function GridBlock({
 }: {
   block: Extract<Block, { type: "grid" }>;
 }) {
-  const cols = block.items.length >= 4 ? "grid-cols-4" : "grid-cols-3";
+  const cols =
+    block.items.length >= 4
+      ? "grid-cols-2 md:grid-cols-4"
+      : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
   return (
-    <section className="px-12 py-20 max-w-[1280px] mx-auto">
+    <section className="px-4 md:px-12 py-12 md:py-20 max-w-[1280px] mx-auto">
       {block.heading ? (
         <h2
           className="serif text-[32px] font-normal leading-tight mb-10"
@@ -214,10 +217,10 @@ function BannerBlock({
         ? "bg-bz-accent-soft text-bz-accent"
         : "bg-bz-ink text-white";
   return (
-    <section className="px-12 py-12 max-w-[1280px] mx-auto">
+    <section className="px-4 md:px-12 py-12 max-w-[1280px] mx-auto">
       <div
         className={cn(
-          "rounded-lg p-10 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between",
+          "rounded-lg p-6 md:p-10 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between",
           palette,
         )}
       >

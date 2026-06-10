@@ -24,7 +24,7 @@ export function VelocityStrip({ trend }: Props) {
     last > first ? "deepening" : last < first ? "tightening" : "flat";
 
   return (
-    <section className="px-12 py-12 border-b border-bz-border">
+    <section className="px-4 md:px-12 py-12 border-b border-bz-border">
       <Eyebrow>Market depth · transactions per quarter</Eyebrow>
       <h2
         className="serif text-[24px] mt-2 leading-tight max-w-[40ch]"

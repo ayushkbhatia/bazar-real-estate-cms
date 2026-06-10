@@ -14,10 +14,10 @@ export default function SignInPage() {
   const [state, formAction, pending] = useActionState(signInAction, initial);
 
   return (
-    <div className="max-w-md mx-auto py-20 px-6">
+    <div className="max-w-md mx-auto py-12 md:py-20 px-4 md:px-6">
       <Eyebrow>Welcome back</Eyebrow>
       <h1
-        className="serif text-[44px] font-normal mt-2 mb-8"
+        className="serif text-[30px] md:text-[44px] font-normal mt-2 mb-8"
         style={{ letterSpacing: "-0.025em" }}
       >
         Sign in to Bazar

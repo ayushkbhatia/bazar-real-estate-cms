@@ -88,10 +88,10 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
   return (
     <div className="bg-bz-bg">
       {/* Header */}
-      <section className="px-12 pt-20 pb-14 max-w-[1200px]">
+      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-14 max-w-[1200px]">
         <Eyebrow>Insights</Eyebrow>
         <h1
-          className="serif text-[80px] mt-3 font-normal"
+          className="serif text-[42px] md:text-[80px] mt-3 font-normal"
           style={{ letterSpacing: "-0.03em", lineHeight: 0.98 }}
         >
           The Bazar Brief.
@@ -104,8 +104,8 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
 
       {/* Featured + editor's pick block */}
       {featured ? (
-        <section className="px-12 pb-14 max-w-[1280px]">
-          <div className="grid grid-cols-[1.4fr_1fr] gap-10 items-start">
+        <section className="px-4 md:px-12 pb-14 max-w-[1280px]">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 items-start">
             <Link
               href={articleUrl(featured)}
               className="group block"
@@ -122,7 +122,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
                   {ARTICLE_CATEGORY_LABELS[featured.category]}
                 </Eyebrow>
                 <h2
-                  className="serif text-[40px] mt-3 leading-[1.05] group-hover:text-bz-accent transition-colors"
+                  className="serif text-[28px] md:text-[40px] mt-3 leading-[1.05] group-hover:text-bz-accent transition-colors"
                   style={{ letterSpacing: "-0.025em" }}
                 >
                   {featured.title}
@@ -179,7 +179,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
       ) : null}
 
       {/* Category chips */}
-      <section className="px-12 py-6 border-t border-bz-border">
+      <section className="px-4 md:px-12 py-6 border-t border-bz-border">
         <div className="flex gap-2 flex-wrap max-w-[1280px]">
           <Link
             href="/insights"
@@ -215,7 +215,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
       </section>
 
       {/* Grid */}
-      <section className="px-12 pt-12 pb-24 max-w-[1280px]">
+      <section className="px-4 md:px-12 pt-12 pb-24 max-w-[1280px]">
         {rest.length === 0 && !featured ? (
           <div className="py-24 text-center max-w-[40ch] mx-auto">
             <p className="text-[15px] text-bz-ink-2">
@@ -228,7 +228,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-9 gap-y-14">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-9 gap-y-14">
             {rest.map((row) => (
               <article key={row.id} className="group">
                 <Link href={articleUrl(row)} className="block">

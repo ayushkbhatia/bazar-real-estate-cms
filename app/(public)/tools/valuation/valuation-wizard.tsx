@@ -246,7 +246,7 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
   }
 
   return (
-    <section className="px-12 pb-24 grid lg:grid-cols-[1.05fr_1fr] gap-14 items-start">
+    <section className="px-4 md:px-12 pb-12 md:pb-24 grid lg:grid-cols-[1.05fr_1fr] gap-8 lg:gap-14 items-start [&>*]:min-w-0">
       <div>
         <ProgressStrip current={step} />
 
@@ -292,7 +292,7 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
           />
         ) : null}
 
-        <div className="border border-bz-ink rounded-lg p-7 mt-2" style={{ borderWidth: 1.5 }}>
+        <div className="border border-bz-ink rounded-lg p-6 md:p-7 mt-2" style={{ borderWidth: 1.5 }}>
           <div className="flex justify-between items-center">
             <div>
               <Eyebrow>Step {String(step + 1).padStart(2, "0")} of 04</Eyebrow>
@@ -419,7 +419,7 @@ function Step1({
           placeholder="e.g. Mamsha Al Saadiyat"
         />
       </fieldset>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <fieldset>
           <Label htmlFor="address">Address line (optional)</Label>
           <Input
@@ -652,7 +652,7 @@ function Step3({
         </div>
       </fieldset>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <fieldset>
           <Label htmlFor="tenancy">Currently rented?</Label>
           <Select
@@ -727,7 +727,7 @@ function Step4({
         />
         <FieldError message={errors.owner_name} />
       </fieldset>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <fieldset>
           <Label htmlFor="owner_email">Email</Label>
           <Input
@@ -890,7 +890,7 @@ function LivePreview({
           {estimate ? (
             <>
               <div
-                className="serif text-[44px] mt-1.5"
+                className="serif text-[30px] md:text-[44px] mt-1.5"
                 style={{ letterSpacing: "-0.025em" }}
                 data-testid="preview-range"
               >
@@ -999,13 +999,13 @@ function SubmittedConfirmation({
 }) {
   return (
     <section
-      className="px-12 pb-24"
+      className="px-4 md:px-12 pb-12 md:pb-24"
       data-testid="valuation-confirmation"
     >
-      <div className="max-w-[640px] bg-bz-accent-soft rounded-xl p-10">
+      <div className="max-w-[640px] bg-bz-accent-soft rounded-xl p-6 md:p-10">
         <Eyebrow className="text-bz-accent">Thank you, {ownerName}</Eyebrow>
         <h2
-          className="serif text-[36px] mt-2"
+          className="serif text-[28px] md:text-[36px] mt-2"
           style={{ letterSpacing: "-0.02em" }}
         >
           Your valuation is in review.
@@ -1020,7 +1020,7 @@ function SubmittedConfirmation({
           <div className="mt-6 px-5 py-4 bg-white rounded-lg border border-bz-border">
             <Eyebrow>Instant range</Eyebrow>
             <div
-              className="serif text-[40px] mt-1"
+              className="serif text-[28px] md:text-[40px] mt-1"
               style={{ letterSpacing: "-0.025em" }}
               data-testid="confirmation-range"
             >

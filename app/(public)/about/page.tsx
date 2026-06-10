@@ -48,10 +48,10 @@ export default function AboutPage() {
   return (
     <div className="bg-bz-bg">
       {/* Hero */}
-      <section className="px-12 pt-20 pb-16 max-w-[1200px]">
+      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-16 max-w-[1200px]">
         <Eyebrow>About Bazar</Eyebrow>
         <h1
-          className="serif text-[80px] mt-3 font-normal leading-[0.98]"
+          className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
         >
           Abu Dhabi,<br />
@@ -67,8 +67,8 @@ export default function AboutPage() {
 
       {/* Stats */}
       <section className="border-y border-bz-border bg-bz-surface">
-        <div className="px-12 py-10 max-w-[1200px]">
-          <div className="grid grid-cols-4 gap-10">
+        <div className="px-4 md:px-12 py-10 max-w-[1200px]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
             {STATS.map((s) => (
               <div key={s.label}>
                 <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
@@ -88,15 +88,15 @@ export default function AboutPage() {
       </section>
 
       {/* Principles */}
-      <section className="px-12 py-20 max-w-[1200px]">
+      <section className="px-4 md:px-12 py-12 md:py-20 max-w-[1200px]">
         <Eyebrow>Principles</Eyebrow>
         <h2
-          className="serif text-[44px] mt-3 leading-[1.05] max-w-[20ch]"
+          className="serif text-[30px] md:text-[44px] mt-3 leading-[1.05] max-w-[20ch]"
           style={{ letterSpacing: "-0.02em" }}
         >
           Four rules we organise the firm around.
         </h2>
-        <div className="mt-12 grid grid-cols-2 gap-10 gap-y-14">
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-10 gap-y-14">
           {PRINCIPLES.map((p) => (
             <div key={p.eyebrow}>
               <div className="text-[11.5px] uppercase tracking-wider text-bz-accent">
@@ -122,11 +122,11 @@ export default function AboutPage() {
 
       {/* Team teaser */}
       <section className="border-t border-bz-border bg-bz-surface">
-        <div className="px-12 py-20 max-w-[1200px]">
+        <div className="px-4 md:px-12 py-12 md:py-20 max-w-[1200px]">
           <Eyebrow>Team</Eyebrow>
           <div className="mt-3 flex items-end justify-between gap-8 flex-wrap">
             <h2
-              className="serif text-[44px] leading-[1.05] max-w-[20ch]"
+              className="serif text-[30px] md:text-[44px] leading-[1.05] max-w-[20ch]"
               style={{ letterSpacing: "-0.02em" }}
             >
               Six of our twelve advisors.
@@ -135,7 +135,7 @@ export default function AboutPage() {
               <Link href="/agents">Meet the team</Link>
             </Button>
           </div>
-          <div className="mt-12 grid grid-cols-3 gap-8 gap-y-12">
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-3 gap-8 gap-y-12">
             {SEED_AGENTS.slice(0, 6).map((a) => (
               <Link
                 key={a.slug}
@@ -163,8 +163,8 @@ export default function AboutPage() {
       {/* CTA — T1-E cleanup: valuation lead-gate surfaced alongside the
           advisor-call CTA. Owners considering a sale should be one click
           away from the report, not buried in the tools menu. */}
-      <section className="px-12 py-20 max-w-[1200px]">
-        <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
+      <section className="px-4 md:px-12 py-12 md:py-20 max-w-[1200px]">
+        <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-6 md:p-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
           <div>
             <Eyebrow className="text-bz-accent-fg/70">Get in touch</Eyebrow>
             <h2

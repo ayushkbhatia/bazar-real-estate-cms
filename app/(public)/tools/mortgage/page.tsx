@@ -11,10 +11,10 @@ export const metadata: Metadata = {
 export default function MortgagePage() {
   return (
     <div className="bg-bz-bg">
-      <section className="px-12 pt-20 pb-6">
+      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-6">
         <Eyebrow>For buyers and investors</Eyebrow>
         <h1
-          className="serif text-[64px] font-normal mt-3 leading-[1.0] max-w-[16ch]"
+          className="serif text-[36px] md:text-[64px] font-normal mt-3 leading-[1.0] max-w-[16ch]"
           style={{ letterSpacing: "-0.025em" }}
         >
           What will this property actually{" "}

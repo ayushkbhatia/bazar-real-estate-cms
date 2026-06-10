@@ -108,7 +108,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
       {/* Breadcrumb */}
       <nav
         aria-label="Breadcrumb"
-        className="px-12 pt-8 max-w-[900px] mx-auto text-[12px] text-bz-muted flex items-center gap-1.5"
+        className="px-4 md:px-12 pt-8 max-w-[900px] mx-auto text-[12px] text-bz-muted flex flex-wrap items-center gap-1.5"
       >
         <Link href="/" className="hover:text-bz-ink">
           Home
@@ -126,13 +126,13 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         </Link>
       </nav>
 
-      <header className="px-12 pt-8 pb-12 max-w-[900px] mx-auto">
+      <header className="px-4 md:px-12 pt-8 pb-12 max-w-[900px] mx-auto">
         <Eyebrow>
           {categoryLabel}
           {article.read_minutes ? ` · ${article.read_minutes} min read` : ""}
         </Eyebrow>
         <h1
-          className="serif text-[60px] mt-4 font-normal"
+          className="serif text-[32px] md:text-[60px] mt-4 font-normal"
           style={{ letterSpacing: "-0.025em", lineHeight: 1.05 }}
         >
           {article.title}
@@ -142,7 +142,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             {article.excerpt}
           </p>
         ) : null}
-        <div className="mt-8 pt-6 border-t border-bz-border flex items-center gap-4">
+        <div className="mt-8 pt-6 border-t border-bz-border flex flex-wrap items-center gap-4">
           {article.author ? (
             <>
               <div className="w-11 h-11 rounded-full bg-bz-surface-3 text-bz-ink flex items-center justify-center text-[13px] font-medium">
@@ -172,7 +172,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         </div>
       </header>
 
-      <div className="px-12 max-w-[1024px] mx-auto">
+      <div className="px-4 md:px-12 max-w-[1024px] mx-auto">
         <div className="relative aspect-[21/9] rounded overflow-hidden bg-bz-surface-2">
           {heroSrc ? (
             <Image
@@ -192,7 +192,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="px-12 py-16 max-w-[760px] mx-auto">
+      <div className="px-4 md:px-12 py-16 max-w-[760px] mx-auto">
         <div
           className="bz-prose text-[17.5px] leading-[1.7] text-bz-ink"
           dangerouslySetInnerHTML={{ __html: article.body_html }}
@@ -200,14 +200,14 @@ export default async function ArticleDetailPage({ params }: PageProps) {
       </div>
 
       {related.length > 0 ? (
-        <section className="border-t border-bz-border px-12 py-20 max-w-[1280px] mx-auto">
+        <section className="border-t border-bz-border px-4 md:px-12 py-12 md:py-20 max-w-[1280px] mx-auto">
           <h3
             className="serif text-[28px]"
             style={{ letterSpacing: "-0.02em" }}
           >
             Keep reading
           </h3>
-          <div className="mt-8 grid grid-cols-3 gap-7">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
             {related.map((row) => (
               <Link key={row.id} href={articleUrl(row)} className="group block">
                 <div className="relative aspect-[4/3] rounded overflow-hidden bg-bz-surface-2">

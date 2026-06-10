@@ -32,10 +32,10 @@ export default async function AgentsIndexPage() {
 
   return (
     <div className="bg-bz-bg">
-      <section className="px-12 pt-20 pb-14 max-w-[1200px]">
+      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-14 max-w-[1200px]">
         <Eyebrow>Our team</Eyebrow>
         <h1
-          className="serif text-[80px] mt-3 font-normal leading-[0.98]"
+          className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
         >
           Twelve advisors.<br />
@@ -51,7 +51,7 @@ export default async function AgentsIndexPage() {
       {grouped.map(([desk, deskAgents]) => (
         <section
           key={desk}
-          className="px-12 pb-20 max-w-[1280px] border-t border-bz-border"
+          className="px-4 md:px-12 pb-20 max-w-[1280px] border-t border-bz-border"
         >
           <div className="pt-14 mb-10">
             <Eyebrow>{DESK_LABEL[desk]}</Eyebrow>

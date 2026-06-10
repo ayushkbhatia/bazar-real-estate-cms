@@ -15,10 +15,10 @@ export const dynamic = "force-dynamic";
 export default function ConciergePage() {
   if (!isAnthropicConfigured) {
     return (
-      <div className="px-12 py-24 max-w-[64ch]">
+      <div className="px-4 md:px-12 py-12 md:py-24 max-w-[64ch]">
         <Eyebrow>Coming soon</Eyebrow>
         <h1
-          className="serif text-[56px] font-normal mt-2 leading-tight"
+          className="serif text-[32px] md:text-[56px] font-normal mt-2 leading-tight"
           style={{ letterSpacing: "-0.025em" }}
         >
           The Concierge

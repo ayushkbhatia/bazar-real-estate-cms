@@ -16,7 +16,7 @@ export function HqMap() {
 
   return (
     <section className="border-t border-bz-border">
-      <div className="px-12 py-12">
+      <div className="px-4 md:px-12 py-12">
         <div className="mb-6">
           <Eyebrow>HQ</Eyebrow>
           <h2

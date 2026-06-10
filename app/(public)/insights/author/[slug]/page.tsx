@@ -90,7 +90,7 @@ export default async function InsightsAuthorPage({
   return (
     <div className="bg-bz-bg">
       {/* Crumb */}
-      <div className="px-12 pt-10 max-w-[1280px]">
+      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
         <Link
           href="/insights"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
@@ -101,8 +101,8 @@ export default async function InsightsAuthorPage({
       </div>
 
       {/* Author header */}
-      <section className="px-12 pt-8 pb-14 max-w-[1280px]">
-        <div className="grid grid-cols-[160px_1fr] gap-10 items-start">
+      <section className="px-4 md:px-12 pt-8 pb-14 max-w-[1280px]">
+        <div className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-10 items-start">
           <PlaceholderImage
             label={slug}
             className="w-[160px] h-[200px] rounded-md"
@@ -110,7 +110,7 @@ export default async function InsightsAuthorPage({
           <div>
             <Eyebrow>Author · {title ?? "Bazar"}</Eyebrow>
             <h1
-              className="serif text-[56px] mt-3 font-normal leading-[1.02]"
+              className="serif text-[30px] md:text-[56px] mt-3 font-normal leading-[1.02]"
               style={{ letterSpacing: "-0.025em" }}
             >
               {display_name}
@@ -132,7 +132,7 @@ export default async function InsightsAuthorPage({
       </section>
 
       {/* Articles */}
-      <section className="border-t border-bz-border px-12 py-16 max-w-[1280px]">
+      <section className="border-t border-bz-border px-4 md:px-12 py-16 max-w-[1280px]">
         <Eyebrow>Articles</Eyebrow>
         <h2
           className="serif text-[32px] mt-2 leading-tight"
@@ -153,7 +153,7 @@ export default async function InsightsAuthorPage({
             </Button>
           </div>
         ) : (
-          <div className="mt-10 grid grid-cols-3 gap-9 gap-y-14">
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-9 gap-y-14">
             {rows.map((row) => (
               <article key={row.id} className="group">
                 <Link href={articleUrl(row)} className="block">

@@ -69,10 +69,10 @@ export function EligibilityChecker({
   }
 
   return (
-    <section className="px-12 py-16 border-t border-bz-border bg-bz-surface-2">
+    <section className="px-4 md:px-12 py-16 border-t border-bz-border bg-bz-surface-2">
       <Eyebrow>Eligibility checker</Eyebrow>
       <h2
-        className="serif text-[36px] mt-2 leading-tight max-w-[28ch]"
+        className="serif text-[28px] md:text-[36px] mt-2 leading-tight max-w-[28ch]"
         style={{ letterSpacing: "-0.02em" }}
       >
         {title}

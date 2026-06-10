@@ -38,7 +38,7 @@ export function LiveListingsRail({
   const browseAllHref = `/buy?area=${encodeURIComponent(area_slug)}&type=${encodeURIComponent(property_type)}`;
 
   return (
-    <section className="px-12 py-12 border-b border-bz-border bg-bz-surface-2">
+    <section className="px-4 md:px-12 py-12 border-b border-bz-border bg-bz-surface-2">
       <div className="flex items-end justify-between gap-4 flex-wrap mb-6">
         <div>
           <Eyebrow>On the market now · {area_name}</Eyebrow>

@@ -71,7 +71,7 @@ export default async function DeveloperProfilePage({
   return (
     <div className="bg-bz-bg">
       {/* Crumb */}
-      <div className="px-12 pt-10 max-w-[1280px]">
+      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
         <Link
           href="/developers"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
@@ -82,8 +82,8 @@ export default async function DeveloperProfilePage({
       </div>
 
       {/* Hero */}
-      <section className="px-12 pt-8 pb-14 max-w-[1280px]">
-        <div className="grid grid-cols-[120px_1fr] gap-12 items-start">
+      <section className="px-4 md:px-12 pt-8 pb-14 max-w-[1280px]">
+        <div className="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-8 md:gap-12 items-start">
           <PlaceholderImage
             label={dev.slug}
             className="w-[120px] h-[120px] rounded-md"
@@ -93,7 +93,7 @@ export default async function DeveloperProfilePage({
               Developer{dev.founded_year ? ` · Est. ${dev.founded_year}` : ""}
             </Eyebrow>
             <h1
-              className="serif text-[64px] mt-3 font-normal leading-[1.02]"
+              className="serif text-[36px] md:text-[64px] mt-3 font-normal leading-[1.02]"
               style={{ letterSpacing: "-0.025em" }}
             >
               {dev.name}
@@ -109,8 +109,8 @@ export default async function DeveloperProfilePage({
 
       {/* Stats */}
       <section className="border-y border-bz-border bg-bz-surface">
-        <div className="px-12 py-10 max-w-[1280px]">
-          <div className="grid grid-cols-4 gap-10">
+        <div className="px-4 md:px-12 py-10 max-w-[1280px]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
             <div>
               <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
                 Founded
@@ -157,7 +157,7 @@ export default async function DeveloperProfilePage({
       </section>
 
       {/* Bio */}
-      <section className="px-12 py-16 max-w-[1200px]">
+      <section className="px-4 md:px-12 py-16 max-w-[1200px]">
         <Eyebrow>About</Eyebrow>
         <p className="mt-4 text-[16px] text-bz-ink leading-relaxed max-w-[64ch]">
           {dev.bio ?? dev.description ?? ""}
@@ -166,8 +166,8 @@ export default async function DeveloperProfilePage({
 
       {/* Flagship + awards */}
       <section className="border-t border-bz-border bg-bz-surface">
-        <div className="px-12 py-16 max-w-[1280px]">
-          <div className="grid grid-cols-2 gap-16">
+        <div className="px-4 md:px-12 py-16 max-w-[1280px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             <div>
               <Eyebrow>Flagship developments</Eyebrow>
               <ul className="mt-5 flex flex-col gap-3">
@@ -207,7 +207,7 @@ export default async function DeveloperProfilePage({
       </section>
 
       {/* Current developments — wired via listDeveloperDevelopments() */}
-      <section className="px-12 py-16 max-w-[1280px]">
+      <section className="px-4 md:px-12 py-16 max-w-[1280px]">
         <Eyebrow>Current developments</Eyebrow>
         <div className="mt-2 flex items-end justify-between gap-8 flex-wrap">
           <h2
@@ -225,7 +225,7 @@ export default async function DeveloperProfilePage({
             No active developments published yet.
           </div>
         ) : (
-          <div className="mt-8 grid grid-cols-3 gap-6">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {active.map((d) => (
               <Link
                 key={d.id}
@@ -263,7 +263,7 @@ export default async function DeveloperProfilePage({
           developer is best known for.  Honours `meta.is_signature` per
           development; falls back to recent deliveries when not curated. */}
       {signature.length > 0 ? (
-        <section className="px-12 pb-12 max-w-[1280px] border-t border-bz-border">
+        <section className="px-4 md:px-12 pb-12 max-w-[1280px] border-t border-bz-border">
           <Eyebrow>Signature buildings</Eyebrow>
           <h2
             className="serif text-[32px] mt-2 leading-tight max-w-[28ch]"
@@ -302,7 +302,7 @@ export default async function DeveloperProfilePage({
       {/* T2-G: Recently handed over — proof-of-delivery for buyers
           evaluating the developer's track record on completed projects. */}
       {handedOver.length > 0 ? (
-        <section className="px-12 pb-20 max-w-[1280px]">
+        <section className="px-4 md:px-12 pb-20 max-w-[1280px]">
           <Eyebrow>Recently handed over</Eyebrow>
           <div className="mt-2 flex items-end justify-between gap-8 flex-wrap">
             <h2
