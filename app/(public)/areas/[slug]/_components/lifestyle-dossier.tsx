@@ -19,10 +19,10 @@ export function LifestyleDossier({ area }: Props) {
   if (!hasChips && !hasProse && !hasDining) return null;
 
   return (
-    <section className="px-12 py-16 max-w-[1280px] border-t border-bz-border">
+    <section className="px-4 md:px-12 py-16 max-w-[1280px] border-t border-bz-border">
       <Eyebrow>Lifestyle</Eyebrow>
       <h2
-        className="serif text-[36px] mt-2 leading-tight max-w-[28ch]"
+        className="serif text-[28px] md:text-[36px] mt-2 leading-tight max-w-[28ch]"
         style={{ letterSpacing: "-0.02em" }}
       >
         What it feels like to live in {area.name}.

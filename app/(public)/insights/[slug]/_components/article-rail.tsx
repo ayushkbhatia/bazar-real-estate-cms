@@ -18,7 +18,7 @@ export function ArticleRail({
   } | null;
 }) {
   return (
-    <aside className="sticky top-6 w-[240px] flex-shrink-0 flex flex-col gap-4">
+    <aside className="sticky top-6 w-full md:w-[240px] flex-shrink-0 flex flex-col gap-4">
       {author ? (
         <div className="rounded-lg border border-bz-border bg-bz-surface p-5">
           <Eyebrow>Talk to the author</Eyebrow>

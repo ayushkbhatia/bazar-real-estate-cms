@@ -26,10 +26,10 @@ export default async function MarketReportsIndexPage() {
 
   return (
     <article className="bg-bz-bg">
-      <section className="px-12 pt-24 pb-12 border-b border-bz-border">
+      <section className="px-4 md:px-12 pt-12 md:pt-24 pb-12 border-b border-bz-border">
         <Eyebrow>Market reports · {quarterLabel(quarter)}</Eyebrow>
         <h1
-          className="serif text-[72px] mt-3 leading-[1.0]"
+          className="serif text-[38px] md:text-[72px] mt-3 leading-[1.0]"
           style={{ letterSpacing: "-0.028em" }}
         >
           Abu Dhabi, by community
@@ -41,7 +41,7 @@ export default async function MarketReportsIndexPage() {
         </p>
       </section>
 
-      <section className="px-12 py-16">
+      <section className="px-4 md:px-12 py-16">
         {areas.length === 0 ? (
           <div className="rounded-lg border border-bz-border bg-bz-surface p-9 text-[15px] text-bz-muted">
             No closed transactions surfaced for {quarterLabel(quarter)} yet.

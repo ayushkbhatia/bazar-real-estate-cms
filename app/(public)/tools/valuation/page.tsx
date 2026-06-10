@@ -18,10 +18,10 @@ export default async function ValuationPage() {
 
   return (
     <div className="bg-bz-bg">
-      <section className="px-12 pt-20 pb-8">
+      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-8">
         <Eyebrow>For owners considering selling</Eyebrow>
         <h1
-          className="serif text-[64px] font-normal mt-3 leading-[1.0] max-w-[18ch]"
+          className="serif text-[36px] md:text-[64px] font-normal mt-3 leading-[1.0] max-w-[18ch]"
           style={{ letterSpacing: "-0.025em" }}
         >
           What&apos;s your property worth,{" "}

@@ -14,10 +14,10 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <div className="bg-bz-bg">
-      <section className="px-12 pt-20 pb-16 max-w-[1200px]">
+      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-16 max-w-[1200px]">
         <Eyebrow>Services</Eyebrow>
         <h1
-          className="serif text-[80px] mt-3 font-normal leading-[0.98]"
+          className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
         >
           Five practices.<br />
@@ -30,8 +30,8 @@ export default function ServicesPage() {
         </p>
       </section>
 
-      <section className="px-12 pb-20 max-w-[1200px]">
-        <div className="grid grid-cols-2 gap-6">
+      <section className="px-4 md:px-12 pb-20 max-w-[1200px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {SEED_SERVICES.map((s) => (
             <ServiceCard
               key={s.slug}
@@ -44,7 +44,7 @@ export default function ServicesPage() {
       </section>
 
       <section className="border-t border-bz-border bg-bz-surface">
-        <div className="px-12 py-16 max-w-[1200px] grid grid-cols-[1fr_auto] gap-8 items-center">
+        <div className="px-4 md:px-12 py-16 max-w-[1200px] grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
           <div>
             <Eyebrow>Not sure which</Eyebrow>
             <h2

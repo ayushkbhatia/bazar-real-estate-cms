@@ -38,7 +38,7 @@ function fmtPerArea(
 
 export function ComparablesTable({ rows, prefs }: Props) {
   return (
-    <section className="px-12 py-12 border-b border-bz-border">
+    <section className="px-4 md:px-12 py-12 border-b border-bz-border">
       <Eyebrow>What&apos;s selling · DLD recorded</Eyebrow>
       <h2
         className="serif text-[28px] mt-2"
@@ -57,6 +57,7 @@ export function ComparablesTable({ rows, prefs }: Props) {
         </div>
       ) : (
         <div className="mt-6 rounded-lg border border-bz-border bg-bz-surface overflow-hidden">
+          <div className="overflow-x-auto">
           <table className="w-full text-[13.5px]">
             <thead className="bg-bz-surface-2 text-left">
               <tr className="text-bz-muted text-[11px] uppercase tracking-wide">
@@ -99,6 +100,7 @@ export function ComparablesTable({ rows, prefs }: Props) {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </section>

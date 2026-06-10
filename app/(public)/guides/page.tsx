@@ -44,10 +44,10 @@ const GUIDES = [
 export default function GuidesIndexPage() {
   return (
     <article className="bg-bz-bg">
-      <section className="px-12 pt-24 pb-12 border-b border-bz-border">
+      <section className="px-4 md:px-12 pt-12 md:pt-24 pb-12 border-b border-bz-border">
         <Eyebrow>Guides</Eyebrow>
         <h1
-          className="serif text-[72px] mt-3 leading-[0.98] max-w-[24ch]"
+          className="serif text-[38px] md:text-[72px] mt-3 leading-[0.98] max-w-[24ch]"
           style={{ letterSpacing: "-0.028em" }}
         >
           Buying paperwork, demystified.
@@ -60,7 +60,7 @@ export default function GuidesIndexPage() {
         </p>
       </section>
 
-      <section className="px-12 py-16">
+      <section className="px-4 md:px-12 py-16">
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[1100px]">
           {GUIDES.map((g) => (
             <li key={g.slug}>

@@ -32,12 +32,12 @@ function ContactWhatsAppLink() {
 
 export default function ContactPage() {
   return (
-    <div className="px-12 py-16">
-      <div className="grid lg:grid-cols-[1fr_520px] gap-16 max-w-[1300px] mx-auto">
+    <div className="px-4 md:px-12 py-16">
+      <div className="grid lg:grid-cols-[1fr_520px] gap-16 max-w-[1300px] mx-auto [&>*]:min-w-0">
         <section>
           <Eyebrow>Contact</Eyebrow>
           <h1
-            className="serif text-[64px] font-normal mt-2 leading-[1.05] max-w-[14ch]"
+            className="serif text-[36px] md:text-[64px] font-normal mt-2 leading-[1.05] max-w-[14ch]"
             style={{ letterSpacing: "-0.025em" }}
           >
             Tell us what you&apos;re looking for.

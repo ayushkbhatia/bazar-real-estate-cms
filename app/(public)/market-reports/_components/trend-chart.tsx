@@ -37,7 +37,7 @@ export function TrendChart({ trend, prefs }: Props) {
 
   if (!hasData) {
     return (
-      <section className="px-12 py-12 border-b border-bz-border">
+      <section className="px-4 md:px-12 py-12 border-b border-bz-border">
         <Eyebrow>Trend</Eyebrow>
         <h2
           className="serif text-[28px] mt-2"
@@ -79,7 +79,7 @@ export function TrendChart({ trend, prefs }: Props) {
   const yTicks = [minAed, minAed + span / 2, maxAed];
 
   return (
-    <section className="px-12 py-12 border-b border-bz-border">
+    <section className="px-4 md:px-12 py-12 border-b border-bz-border">
       <Eyebrow>Trend · {trend.length} quarters</Eyebrow>
       <h2
         className="serif text-[28px] mt-2"

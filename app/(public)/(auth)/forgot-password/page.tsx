@@ -3,10 +3,10 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 
 export default function ForgotPasswordPage() {
   return (
-    <div className="max-w-md mx-auto py-20 px-6">
+    <div className="max-w-md mx-auto py-12 md:py-20 px-4 md:px-6">
       <Eyebrow>Reset</Eyebrow>
       <h1
-        className="serif text-[44px] font-normal mt-2 mb-4"
+        className="serif text-[30px] md:text-[44px] font-normal mt-2 mb-4"
         style={{ letterSpacing: "-0.025em" }}
       >
         Forgot your password?

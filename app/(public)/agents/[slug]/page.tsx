@@ -114,7 +114,7 @@ export default async function AgentProfilePage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsLd) }}
       />
       {/* Crumb */}
-      <div className="px-12 pt-10 max-w-[1280px]">
+      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
         <Link
           href="/agents"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
@@ -125,8 +125,8 @@ export default async function AgentProfilePage({
       </div>
 
       {/* Hero */}
-      <section className="px-12 pt-8 pb-14 max-w-[1280px]">
-        <div className="grid grid-cols-[360px_1fr] gap-16 items-start">
+      <section className="px-4 md:px-12 pt-8 pb-14 max-w-[1280px]">
+        <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-8 md:gap-16 items-start">
           {agent.photo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -143,7 +143,7 @@ export default async function AgentProfilePage({
           <div>
             <Eyebrow>{agent.title ?? "Advisor"}</Eyebrow>
             <h1
-              className="serif text-[56px] mt-3 font-normal leading-[1.02] max-w-[16ch]"
+              className="serif text-[32px] md:text-[56px] mt-3 font-normal leading-[1.02] max-w-[16ch]"
               style={{ letterSpacing: "-0.025em" }}
             >
               {agent.display_name}
@@ -187,8 +187,8 @@ export default async function AgentProfilePage({
 
       {/* Stats strip */}
       <section className="border-y border-bz-border bg-bz-surface">
-        <div className="px-12 py-10 max-w-[1280px]">
-          <div className="grid grid-cols-4 gap-10">
+        <div className="px-4 md:px-12 py-10 max-w-[1280px]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
             <div>
               <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
                 Years in market
@@ -235,8 +235,8 @@ export default async function AgentProfilePage({
       </section>
 
       {/* Specialties + languages + areas */}
-      <section className="px-12 py-16 max-w-[1280px]">
-        <div className="grid grid-cols-3 gap-10">
+      <section className="px-4 md:px-12 py-16 max-w-[1280px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
           <div>
             <Eyebrow>Specialties</Eyebrow>
             <ul className="mt-4 flex flex-col gap-2">
@@ -280,7 +280,7 @@ export default async function AgentProfilePage({
       {/* Reviews */}
       {reviews.length > 0 ? (
         <section className="border-t border-bz-border">
-          <div className="px-12 py-16 max-w-[1280px]">
+          <div className="px-4 md:px-12 py-16 max-w-[1280px]">
             <Eyebrow>What clients say</Eyebrow>
             <h2
               className="serif text-[32px] mt-2 leading-tight"
@@ -330,7 +330,7 @@ export default async function AgentProfilePage({
 
       {/* Active listings */}
       <section className="border-t border-bz-border bg-bz-surface">
-        <div className="px-12 py-16 max-w-[1280px]">
+        <div className="px-4 md:px-12 py-16 max-w-[1280px]">
           <Eyebrow>Active listings</Eyebrow>
           <h2
             className="serif text-[32px] mt-2 leading-tight"
@@ -388,8 +388,8 @@ export default async function AgentProfilePage({
       </section>
 
       {/* CTA */}
-      <section className="px-12 py-16 max-w-[1280px]">
-        <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-10 grid grid-cols-[1fr_auto] gap-8 items-center">
+      <section className="px-4 md:px-12 py-16 max-w-[1280px]">
+        <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-6 md:p-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
           <div>
             <Eyebrow className="text-bz-accent-fg/70">Get in touch</Eyebrow>
             <h3

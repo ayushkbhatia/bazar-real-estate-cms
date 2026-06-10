@@ -19,7 +19,7 @@ type Props = {
 export function GuideShell({ eyebrow, title, intro, body, children }: Props) {
   return (
     <article className="bg-bz-bg">
-      <div className="px-12 pt-10 max-w-[1200px]">
+      <div className="px-4 md:px-12 pt-10 max-w-[1200px]">
         <Link
           href="/insights"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-ink-2 hover:text-bz-ink transition-colors"
@@ -29,10 +29,10 @@ export function GuideShell({ eyebrow, title, intro, body, children }: Props) {
         </Link>
       </div>
 
-      <section className="px-12 pt-8 pb-14 max-w-[1100px]">
+      <section className="px-4 md:px-12 pt-8 pb-14 max-w-[1100px]">
         <Eyebrow>{eyebrow}</Eyebrow>
         <h1
-          className="serif text-[64px] mt-3 font-normal leading-[1.0]"
+          className="serif text-[34px] md:text-[64px] mt-3 font-normal leading-[1.0]"
           style={{ letterSpacing: "-0.025em" }}
         >
           {title}
@@ -42,7 +42,7 @@ export function GuideShell({ eyebrow, title, intro, body, children }: Props) {
         </p>
       </section>
 
-      <section className="px-12 pb-16 max-w-[760px]">
+      <section className="px-4 md:px-12 pb-16 max-w-[760px]">
         {body.map((block, i) => (
           <div key={i} className="mt-8 first:mt-0">
             {block.heading ? (

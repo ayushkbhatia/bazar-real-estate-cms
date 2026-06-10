@@ -16,10 +16,10 @@ export default async function ResetPasswordPage({
   const tokenHint = params.token ? params.token.slice(0, 6) : null;
 
   return (
-    <div className="px-12 py-20 max-w-[480px] mx-auto">
+    <div className="px-4 md:px-12 py-12 md:py-20 max-w-[480px] mx-auto">
       <Eyebrow>Reset password</Eyebrow>
       <h1
-        className="serif text-[40px] mt-2 font-normal leading-[1.05]"
+        className="serif text-[30px] md:text-[40px] mt-2 font-normal leading-[1.05]"
         style={{ letterSpacing: "-0.02em" }}
       >
         Set a new password.

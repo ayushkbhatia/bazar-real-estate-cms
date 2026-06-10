@@ -81,7 +81,7 @@ export default async function AreaProfilePage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsLd) }}
       />
       {/* Crumb */}
-      <div className="px-12 pt-10 max-w-[1280px]">
+      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
         <Link
           href="/areas"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
@@ -92,10 +92,10 @@ export default async function AreaProfilePage({
       </div>
 
       {/* Hero */}
-      <section className="px-12 pt-8 pb-12 max-w-[1280px]">
+      <section className="px-4 md:px-12 pt-8 pb-12 max-w-[1280px]">
         <Eyebrow>Area guide · {area.vibe}</Eyebrow>
         <h1
-          className="serif text-[80px] mt-3 font-normal leading-[0.98] max-w-[14ch]"
+          className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98] max-w-[14ch]"
           style={{ letterSpacing: "-0.03em" }}
         >
           {area.name}
@@ -109,7 +109,7 @@ export default async function AreaProfilePage({
       </section>
 
       {/* Hero image */}
-      <section className="px-12 pb-14 max-w-[1280px]">
+      <section className="px-4 md:px-12 pb-14 max-w-[1280px]">
         <PlaceholderImage
           label={area.hero_label}
           className="w-full aspect-[21/9] rounded-md"
@@ -118,8 +118,8 @@ export default async function AreaProfilePage({
 
       {/* Stats */}
       <section className="border-y border-bz-border bg-bz-surface">
-        <div className="px-12 py-10 max-w-[1280px]">
-          <div className="grid grid-cols-4 gap-10">
+        <div className="px-4 md:px-12 py-10 max-w-[1280px]">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
             <div>
               <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
                 Median apt / ft²
@@ -186,8 +186,8 @@ export default async function AreaProfilePage({
       </section>
 
       {/* Schools + amenities */}
-      <section className="px-12 py-16 max-w-[1280px]">
-        <div className="grid grid-cols-2 gap-16">
+      <section className="px-4 md:px-12 py-16 max-w-[1280px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
           <div>
             <Eyebrow>Schools nearby</Eyebrow>
             <ul className="mt-5 flex flex-col gap-3">
@@ -244,7 +244,7 @@ export default async function AreaProfilePage({
       {/* T1-E cleanup: lead-gate surfaced on the area page — owners of
           property in this community are the highest-intent valuation
           lead source. */}
-      <section className="px-12 py-12 max-w-[1280px] border-t border-bz-border bg-bz-surface-2">
+      <section className="px-4 md:px-12 py-12 max-w-[1280px] border-t border-bz-border bg-bz-surface-2">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center">
           <div>
             <Eyebrow>Own property in {area.name}?</Eyebrow>
@@ -271,7 +271,7 @@ export default async function AreaProfilePage({
 
       {/* Listings teaser */}
       <section className="border-t border-bz-border bg-bz-surface">
-        <div className="px-12 py-16 max-w-[1280px]">
+        <div className="px-4 md:px-12 py-16 max-w-[1280px]">
           <div className="flex items-end justify-between gap-8 flex-wrap">
             <div>
               <Eyebrow>Available now</Eyebrow>
@@ -293,7 +293,7 @@ export default async function AreaProfilePage({
       </section>
 
       {/* Advisors who cover this area */}
-      <section className="px-12 py-16 max-w-[1280px]">
+      <section className="px-4 md:px-12 py-16 max-w-[1280px]">
         <Eyebrow>Advisors who cover this area</Eyebrow>
         <h2
           className="serif text-[32px] mt-2 leading-tight"
@@ -301,7 +301,7 @@ export default async function AreaProfilePage({
         >
           Who to talk to about {area.name}.
         </h2>
-        <div className="mt-8 grid grid-cols-3 gap-8">
+        <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-8">
           {advisors.map((a) => (
             <Link
               key={a.slug}
@@ -328,7 +328,7 @@ export default async function AreaProfilePage({
       {/* Similar areas */}
       {similar.length > 0 ? (
         <section className="border-t border-bz-border bg-bz-surface">
-          <div className="px-12 py-12 max-w-[1280px]">
+          <div className="px-4 md:px-12 py-12 max-w-[1280px]">
             <Eyebrow>Similar areas</Eyebrow>
             <div className="mt-5 flex flex-wrap gap-3">
               {similar.map((s) =>

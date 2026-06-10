@@ -156,9 +156,9 @@ export function MortgageCalculator() {
 
   return (
     <>
-    <section className="px-12 pb-12 grid lg:grid-cols-[440px_1fr] gap-10 items-start">
+    <section className="px-4 md:px-12 pb-12 grid lg:grid-cols-[440px_1fr] gap-10 items-start [&>*]:min-w-0">
       {/* ── LEFT: inputs ───────────────────────────────────────── */}
-      <div className="border border-bz-border bg-bz-surface rounded-lg p-7 lg:sticky lg:top-6">
+      <div className="border border-bz-border bg-bz-surface rounded-lg p-6 md:p-7 lg:sticky lg:top-6">
         <Eyebrow>Scenario</Eyebrow>
 
         <fieldset className="mt-5">
@@ -364,10 +364,10 @@ export function MortgageCalculator() {
       {/* ── RIGHT: results ─────────────────────────────────────── */}
       <div className="flex flex-col gap-4">
         {/* Hero — monthly payment */}
-        <div className="bg-bz-ink text-white rounded-xl p-9">
+        <div className="bg-bz-ink text-white rounded-xl p-6 md:p-9">
           <Eyebrow className="text-white/70">Monthly payment</Eyebrow>
           <div
-            className="serif text-[88px] mt-1 leading-none"
+            className="serif text-[52px] md:text-[88px] mt-1 leading-none"
             style={{ letterSpacing: "-0.03em" }}
             data-testid="monthly-payment"
           >
@@ -377,7 +377,7 @@ export function MortgageCalculator() {
             For {formatAed(summary.principalAed)} borrowed · {termYears} years
             at {annualRatePct}% {mortgageType}
           </p>
-          <div className="grid grid-cols-3 gap-6 mt-9 pt-7 border-t border-white/15">
+          <div className="grid grid-cols-3 gap-4 md:gap-6 mt-9 pt-7 border-t border-white/15">
             <Metric label="Total to be paid" value={formatAed(summary.totalPaidAed)} />
             <Metric label="Total interest" value={formatAed(summary.totalInterestAed)} />
             <Metric label="Principal share" value={`${summary.principalSharePct}%`} />
@@ -385,7 +385,7 @@ export function MortgageCalculator() {
         </div>
 
         {/* Cash to close table */}
-        <div className="border border-bz-border bg-bz-surface rounded-lg p-7">
+        <div className="border border-bz-border bg-bz-surface rounded-lg p-6 md:p-7">
           <div className="flex justify-between items-end mb-4">
             <div>
               <Eyebrow>True cash to close</Eyebrow>
@@ -444,7 +444,7 @@ export function MortgageCalculator() {
         </div>
 
         {/* Amortization chart */}
-        <div className="border border-bz-border bg-bz-surface rounded-lg p-7">
+        <div className="border border-bz-border bg-bz-surface rounded-lg p-6 md:p-7">
           <div className="flex justify-between items-center mb-5">
             <div>
               <Eyebrow>Amortization · {termYears} years</Eyebrow>
@@ -470,7 +470,7 @@ export function MortgageCalculator() {
         </div>
 
         {/* Scenario compare */}
-        <div className="border border-bz-border bg-bz-surface rounded-lg p-7">
+        <div className="border border-bz-border bg-bz-surface rounded-lg p-6 md:p-7">
           <Eyebrow>Compare scenarios</Eyebrow>
           <h3
             className="serif text-[22px] mt-1"
@@ -522,8 +522,8 @@ export function MortgageCalculator() {
     </section>
 
     {/* ── Pre-approval CTA — wa.me deep link with the current scenario ── */}
-    <section className="px-12 pb-24">
-      <div className="bg-bz-accent-soft rounded-xl p-8 flex flex-wrap items-center justify-between gap-6">
+    <section className="px-4 md:px-12 pb-12 md:pb-24">
+      <div className="bg-bz-accent-soft rounded-xl p-6 md:p-8 flex flex-wrap items-center justify-between gap-6">
         <div>
           <Eyebrow className="text-bz-accent">Ready to make it real?</Eyebrow>
           <h2
@@ -536,7 +536,7 @@ export function MortgageCalculator() {
             Soft credit pull · 24-hour response · 5 partner banks
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button asChild variant="outline">
             <Link href="/contact">
               <Calendar size={14} strokeWidth={1.6} />
