@@ -52,7 +52,7 @@ export default async function AccountDocumentsPage() {
     return (
       <div>
         <Eyebrow>Documents</Eyebrow>
-        <h1 className="serif text-[40px] font-normal mt-2 -tracking-[0.025em]">
+        <h1 className="serif text-[28px] md:text-[40px] font-normal mt-2 -tracking-[0.025em]">
           Your document vault
         </h1>
         <p className="mt-4 text-bz-muted">
@@ -108,7 +108,7 @@ export default async function AccountDocumentsPage() {
   return (
     <div className="max-w-[800px]">
       <Eyebrow>Documents</Eyebrow>
-      <h1 className="serif text-[40px] font-normal mt-2 -tracking-[0.025em]">
+      <h1 className="serif text-[28px] md:text-[40px] font-normal mt-2 -tracking-[0.025em]">
         Your document vault
       </h1>
       <p className="mt-4 text-[15px] text-bz-muted max-w-[60ch]">

@@ -106,6 +106,10 @@ export function ViewingsCalendarView({
           </button>
         </div>
       </div>
+      {/* On mobile the 7-col month grid would crush cells to ~50px;
+          scroll it horizontally (cells stay legible) and reset at md. */}
+      <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+      <div className="min-w-[620px] md:min-w-0">
       <div className="grid grid-cols-7 text-[10.5px] uppercase tracking-widest text-bz-muted">
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
           <div
@@ -171,6 +175,8 @@ export function ViewingsCalendarView({
             ) : null}
           </div>
         ))}
+      </div>
+      </div>
       </div>
     </div>
   );

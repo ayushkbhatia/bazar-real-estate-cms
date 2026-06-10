@@ -54,7 +54,7 @@ export default async function AccountReferralsPage() {
     <div className="max-w-[860px]">
       <Eyebrow>Referrals</Eyebrow>
       <h1
-        className="serif text-[48px] mt-2 font-normal leading-[1.05]"
+        className="serif text-[30px] md:text-[48px] mt-2 font-normal leading-[1.05]"
         style={{ letterSpacing: "-0.025em" }}
       >
         Refer. Earn. Quietly.
@@ -79,7 +79,7 @@ export default async function AccountReferralsPage() {
       </section>
 
       {/* Stats */}
-      <section className="mt-12 grid grid-cols-3 gap-6">
+      <section className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="rounded-md border border-bz-border bg-bz-surface p-6">
           <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
             Referrals
