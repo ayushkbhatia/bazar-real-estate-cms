@@ -47,7 +47,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps) {
       primary={<AnalyticsRangePicker current={range} />}
     >
       <div className="flex flex-col gap-6 min-w-0">
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Kpi
             label="Properties published"
             value={snapshot.kpis.properties_published.toString()}
@@ -69,7 +69,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps) {
           />
         </div>
 
-        <div className="grid grid-cols-[1.4fr_1fr] gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-3">
           <Card title="Properties published over time">
             <PublishedOverTimeChart
               data={snapshot.properties_published_over_time}
@@ -80,7 +80,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps) {
           </Card>
         </div>
 
-        <div className="grid grid-cols-[1.4fr_1fr] gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-3">
           <Card title="Enquiries over time">
             <EnquiriesOverTimeChart data={snapshot.enquiries_over_time} />
           </Card>

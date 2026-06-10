@@ -46,7 +46,7 @@ const TABS: { group: string; items: Tab[] }[] = [
 export function SettingsTabs() {
   const pathname = usePathname() ?? "";
   return (
-    <nav className="w-[220px] flex-shrink-0 flex flex-col gap-6">
+    <nav className="w-full lg:w-[220px] flex-shrink-0 flex flex-col gap-6">
       {TABS.map((group) => (
         <div key={group.group}>
           <div className="px-3 pb-2 text-[10.5px] uppercase tracking-widest text-bz-muted-2">

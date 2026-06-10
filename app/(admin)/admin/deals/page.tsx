@@ -119,8 +119,9 @@ export default async function DealsListPage({ searchParams }: PageProps) {
           </form>
         </div>
 
-        <div className="bg-bz-surface border border-bz-border rounded-lg overflow-hidden">
-          <table className="w-full text-[13px]">
+        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+          <div className="bg-bz-surface border border-bz-border rounded-lg overflow-hidden">
+            <table className="w-full text-[13px]">
             <thead className="border-b border-bz-border bg-bz-surface-2">
               <tr className="text-left text-[11px] uppercase tracking-wider text-bz-muted">
                 <th className="px-4 py-2.5 font-medium">Ref / Property</th>
@@ -201,6 +202,7 @@ export default async function DealsListPage({ searchParams }: PageProps) {
               )}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </CmsShell>

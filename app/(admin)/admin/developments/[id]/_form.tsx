@@ -59,7 +59,7 @@ export function DevelopmentEditForm({
       className="flex flex-col gap-6"
     >
       <Section title="Identity">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field label="Name" error={form.formState.errors.name?.message}>
             <Input {...form.register("name")} />
           </Field>
@@ -67,7 +67,7 @@ export function DevelopmentEditForm({
             <Input {...form.register("slug")} />
           </Field>
         </div>
-        <div className="grid grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
           <Field
             label="Status"
             error={form.formState.errors.status?.message}
@@ -124,7 +124,7 @@ export function DevelopmentEditForm({
       </Section>
 
       <Section title="Inventory & pricing">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Field
             label="Handover date"
             error={form.formState.errors.handover_date?.message}
@@ -156,7 +156,7 @@ export function DevelopmentEditForm({
             <Input {...form.register("bedrooms_text")} />
           </Field>
         </div>
-        <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <Field
             label="Escrow account"
             error={form.formState.errors.escrow_account?.message}

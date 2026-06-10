@@ -86,7 +86,7 @@ export function ArticleEditForm({ articleId, initial }: ArticleEditFormProps) {
           />
         </div>
 
-        <div className="grid grid-cols-[1fr_240px] gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-5">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="slug">Slug</Label>
             <Input id="slug" {...register("slug")} />

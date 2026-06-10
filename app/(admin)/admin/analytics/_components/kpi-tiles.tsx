@@ -12,7 +12,7 @@ type Kpi = {
 
 export function AnalyticsKpiTiles({ kpis }: { kpis: Kpi[] }) {
   return (
-    <div className="grid grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
       {kpis.map((k) => (
         <div
           key={k.label}

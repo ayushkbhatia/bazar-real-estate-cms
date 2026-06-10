@@ -64,7 +64,7 @@ export default async function ValuationDetailPage({ params }: PageProps) {
         </Link>
       }
     >
-      <div className="grid lg:grid-cols-[1fr_440px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_440px] gap-6">
         {/* Left — full submission */}
         <section className="border border-bz-border bg-bz-surface rounded-lg p-6">
           <h2
@@ -157,7 +157,7 @@ export default async function ValuationDetailPage({ params }: PageProps) {
           >
             Instant range (frozen at submission)
           </h3>
-          <dl className="grid grid-cols-3 gap-3 text-[13.5px]">
+          <dl className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-[13.5px]">
             <Field
               label="Low"
               value={formatAedFull(row.estimate_low_aed as string | null)}

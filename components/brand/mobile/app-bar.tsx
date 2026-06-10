@@ -54,7 +54,12 @@ export function AppBar({
             {title}
           </div>
         )}
-        <div className="flex items-center gap-1">{actions}</div>
+        {/* min-w-0 + overflow lets a wide actions cluster (some admin
+            pages pass view toggles + a primary CTA) scroll within the
+            bar instead of pushing the page past the viewport. */}
+        <div className="flex items-center gap-1 min-w-0 shrink overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {actions}
+        </div>
       </div>
     </header>
   );

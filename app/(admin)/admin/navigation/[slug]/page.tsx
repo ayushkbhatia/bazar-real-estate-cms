@@ -51,7 +51,7 @@ export default async function MegamenuTabEditorPage({ params }: PageProps) {
       <div className="flex flex-col gap-6">
         <MegamenuTabsNav tabs={tabs} activeSlug={slug} />
 
-        <div className="grid grid-cols-[1fr_320px] gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
           <div className="flex flex-col gap-6 min-w-0">
             <MegamenuEditor tab={tab} />
           </div>

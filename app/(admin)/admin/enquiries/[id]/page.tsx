@@ -130,7 +130,7 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
         </>
       }
     >
-      <div className="grid grid-cols-[1fr_320px] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
         <div className="flex flex-col gap-5 min-w-0">
           <EscalationBanner
             createdAt={enquiry.created_at}

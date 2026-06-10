@@ -76,7 +76,7 @@ export default async function AdminPagesPage() {
           </div>
         </div>
 
-        <div className="bg-bz-surface border border-bz-border rounded-lg overflow-hidden">
+        <div className="bg-bz-surface border border-bz-border rounded-lg overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

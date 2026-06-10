@@ -54,7 +54,7 @@ export default async function PageEditPage({ params }: PageProps) {
         ) : null
       }
     >
-      <div className="grid grid-cols-[1fr_320px] gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
         <div className="flex flex-col gap-6 min-w-0">
           <PageMetaForm pageId={page.id} initial={initial} />
           <BlockListEditor pageId={page.id} initial={page.blocks} />
