@@ -110,9 +110,13 @@ export default async function ComparePage({ searchParams }: PageProps) {
             {slots.map((slot, i) => (
               <div key={`m-card-${i}`} className="w-[78%] max-w-[300px]">
                 {slot ? (
-                  <PropertyCard property={slot} pickIndex={i} />
+                  <PropertyCard property={slot} pickIndex={i} showTestId={false} />
                 ) : (
-                  <EmptySlot index={i} requestedIds={requestedIds} />
+                  <EmptySlot
+                    index={i}
+                    requestedIds={requestedIds}
+                    showTestId={false}
+                  />
                 )}
               </div>
             ))}
@@ -311,9 +315,13 @@ function renderCell(value: CellValue) {
 function PropertyCard({
   property,
   pickIndex,
+  showTestId = true,
 }: {
   property: ComparableProperty;
   pickIndex: number;
+  /** Suppressed on the mobile rail so the desktop matrix testids stay
+   *  unique for the e2e specs (both trees are in the DOM at once). */
+  showTestId?: boolean;
 }) {
   return (
     <article
@@ -323,7 +331,7 @@ function PropertyCard({
           ? "border-bz-ink"
           : "border-bz-border",
       )}
-      data-testid={`compare-card-${pickIndex}`}
+      data-testid={showTestId ? `compare-card-${pickIndex}` : undefined}
     >
       {pickIndex === 0 ? (
         <div className="absolute top-2 left-2 z-10">
@@ -370,9 +378,11 @@ function PropertyCard({
 function EmptySlot({
   index,
   requestedIds,
+  showTestId = true,
 }: {
   index: number;
   requestedIds: string[];
+  showTestId?: boolean;
 }) {
   // If this slot index is occupied in the URL but couldn't be resolved,
   // show a different message than for genuinely empty slots.
@@ -380,7 +390,7 @@ function EmptySlot({
   return (
     <article
       className="border-[1.5px] border-dashed border-bz-border-strong rounded-lg flex flex-col items-center justify-center gap-2 p-6 text-bz-muted min-h-[320px]"
-      data-testid={`empty-slot-${index}`}
+      data-testid={showTestId ? `empty-slot-${index}` : undefined}
     >
       <div className="w-9 h-9 rounded-full bg-bz-surface-2 flex items-center justify-center">
         <Plus size={16} strokeWidth={1.8} />
