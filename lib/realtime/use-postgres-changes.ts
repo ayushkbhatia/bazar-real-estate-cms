@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
@@ -125,6 +125,16 @@ export function usePostgresChanges({
   const [lastEventAt, setLastEventAt] = useState<number | null>(null);
   const [connected, setConnected] = useState(false);
 
+  // Supabase's browser client is a singleton and `client.channel(topic)`
+  // returns the *existing* channel for a topic that's already been
+  // subscribed — so if the same logical channel is mounted twice at once
+  // (e.g. the CMS shell renders its topbar in both the desktop and mobile
+  // chrome trees), the second mount's `.on(...)` lands after the first's
+  // `.subscribe()` and throws "cannot add postgres_changes callbacks
+  // after subscribe()". A per-instance suffix gives every mount its own
+  // channel, so concurrent duplicates each subscribe independently.
+  const instanceId = useId();
+
   // Stash callbacks + factories in refs so we don't tear down the
   // subscription every time the parent re-renders with a fresh arrow.
   const onEventRef = useRef(onEvent);
@@ -164,7 +174,7 @@ export function usePostgresChanges({
     if (filter) filterPayload.filter = filter;
 
     const ch = client
-      .channel(channelName)
+      .channel(`${channelName}::${instanceId}`)
       .on("postgres_changes", filterPayload, (payload) => {
         setLastEventAt(Date.now());
         onEventRef.current?.(payload);
@@ -179,7 +189,7 @@ export function usePostgresChanges({
       client.removeChannel(ch);
       setConnected(false);
     };
-  }, [channelName, table, schema, filter, event, throttleMs, enabled]);
+  }, [channelName, instanceId, table, schema, filter, event, throttleMs, enabled]);
 
   return { lastEventAt, connected };
 }
