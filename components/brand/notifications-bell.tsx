@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useId, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { Bell, Check, CheckCheck } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
@@ -60,6 +60,13 @@ export function NotificationsBell({
   const [userId, setUserId] = useState<string | null>(userIdProp);
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+  // Per-instance suffix so two concurrent bells (the CMS shell renders one
+  // in the desktop topbar and one in the mobile app bar) don't collide on
+  // the same realtime channel. `client.channel(topic)` reuses an existing
+  // subscribed channel, and calling `.on()` on it after `.subscribe()`
+  // throws — which would take down the whole admin shell via the error
+  // boundary. A unique topic per mount keeps each subscription independent.
+  const instanceId = useId();
 
   // Self-populate on mount when no SSR props were passed.
   useEffect(() => {
@@ -99,7 +106,7 @@ export function NotificationsBell({
       return;
     }
     const channel = supabase
-      .channel(`notifications:${userId}`)
+      .channel(`notifications:${userId}::${instanceId}`)
       .on(
         "postgres_changes",
         {
@@ -131,7 +138,7 @@ export function NotificationsBell({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId]);
+  }, [userId, instanceId]);
 
   function markOne(id: string) {
     startTransition(async () => {
