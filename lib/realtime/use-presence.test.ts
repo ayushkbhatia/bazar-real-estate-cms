@@ -208,4 +208,48 @@ describe("usePresence", () => {
       ),
     ).not.toThrow();
   });
+
+  // Regression: the CMS shell mounts PresencePile in both the desktop and
+  // mobile chrome, and the body mounts a PresenceBanner — three consumers of
+  // the same topic in one tab. The Supabase client returns the same channel
+  // for a topic, so the 2nd `.on(...)` after `.subscribe()` used to throw
+  // "cannot add presence callbacks after subscribe()" and crash the page.
+  // Concurrent hooks must now share one reference-counted subscription.
+  it("shares one subscription across concurrent hooks on the same channel", async () => {
+    const { client, injectOther, removed } = fakeClient();
+    const opts = {
+      channel: "presence:property:shared",
+      self,
+      createClient: () => client,
+    };
+
+    // Two hooks mounting the same topic must not throw.
+    const a = renderHook(() => usePresence(opts));
+    const b = renderHook(() => usePresence(opts));
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    // A roster change on the shared channel reaches BOTH hooks.
+    act(() => {
+      injectOther({
+        user_id: "mariam",
+        display_name: "Mariam Al-Hashimi",
+        joined_at: "2026-05-21T16:00:05Z",
+      });
+    });
+
+    expect(a.result.current.connected).toBe(true);
+    expect(b.result.current.connected).toBe(true);
+    expect(a.result.current.others.map((m) => m.user_id)).toEqual(["mariam"]);
+    expect(b.result.current.others.map((m) => m.user_id)).toEqual(["mariam"]);
+
+    // Releasing one consumer keeps the channel alive for the other.
+    a.unmount();
+    expect(removed.length).toBe(0);
+    // Last consumer gone — the real channel is removed exactly once.
+    b.unmount();
+    expect(removed.length).toBe(1);
+  });
 });
