@@ -6,6 +6,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/properties";
 import { currentStaffRow } from "@/lib/queries/staff";
+import { listActiveAgents, type ActiveAgent } from "@/lib/queries/staff-agents";
 import { PresenceBanner } from "@/lib/realtime/presence-banner";
 import { PresencePile } from "@/lib/realtime/presence-pile";
 import {
@@ -21,6 +22,7 @@ import {
   type MediaOption,
 } from "./_hero-picker";
 import { PublishCard } from "./_publish-card";
+import { AssignedAgentCard } from "./_components/assigned-agent-card";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +34,7 @@ async function fetchPropertyForEdit(id: string) {
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, amenities, seo, compliance",
+      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, amenities, seo, compliance, assigned_agent_id",
     )
     .eq("id", id)
     .maybeSingle();
@@ -97,14 +99,52 @@ async function fetchHeroAndMedia(
   };
 }
 
+/**
+ * Ensure `assignedId` (if set) appears in the options even when they're no
+ * longer an active agent — otherwise the picker would misrepresent an existing
+ * assignment as "Unassigned".
+ */
+async function withCurrentAgent(
+  activeAgents: ActiveAgent[],
+  assignedId: string | null,
+): Promise<ActiveAgent[]> {
+  if (!assignedId || activeAgents.some((a) => a.user_id === assignedId)) {
+    return activeAgents;
+  }
+  if (!isSupabaseConfigured) return activeAgents;
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("staff")
+    .select("user_id, display_name, title, photo_url")
+    .eq("user_id", assignedId)
+    .maybeSingle();
+  if (!data) return activeAgents;
+  return [
+    {
+      user_id: data.user_id,
+      display_name: `${data.display_name} (inactive)`,
+      title: data.title,
+      photo_url: data.photo_url,
+    },
+    ...activeAgents,
+  ];
+}
+
 export default async function PropertyEditPage({ params }: PageProps) {
   const { id } = await params;
-  const [property, areas, heroAndMedia] = await Promise.all([
+  const [property, areas, heroAndMedia, activeAgents] = await Promise.all([
     fetchPropertyForEdit(id),
     fetchAreas(),
     fetchHeroAndMedia(id),
+    listActiveAgents(),
   ]);
   if (!property) notFound();
+
+  // Keep the currently-assigned agent selectable even if they've since gone
+  // inactive, so the picker shows the real assignee instead of "Unassigned".
+  const assignedAgentId = (property as { assigned_agent_id: string | null })
+    .assigned_agent_id;
+  const agentOptions = await withCurrentAgent(activeAgents, assignedAgentId);
 
   const seo = (property.seo as Record<string, unknown> | null) ?? {};
   const compliance: PropertyCompliance = normaliseCompliance(
@@ -221,7 +261,12 @@ export default async function PropertyEditPage({ params }: PageProps) {
             areas={areas}
           />
         </div>
-        <aside className="sticky top-6">
+        <aside className="sticky top-6 flex flex-col gap-6">
+          <AssignedAgentCard
+            propertyId={property.id}
+            agents={agentOptions}
+            value={assignedAgentId}
+          />
           <PublishCard
             propertyId={property.id}
             status={property.status}
