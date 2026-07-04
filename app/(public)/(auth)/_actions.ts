@@ -6,6 +6,7 @@ import {
   createSupabaseServerClient,
 } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { pickPostSignInPath } from "@/lib/auth-redirect";
 
 const signInSchema = z.object({
   email: z.string().email(),
@@ -51,14 +52,31 @@ export async function signInAction(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data: signInData, error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
     password: parsed.data.password,
   });
   if (error) return { status: "error", message: error.message };
 
-  const redirectTo = (formData.get("redirect") as string) || "/account";
-  redirect(redirectTo);
+  // Route by role: active staff land in the CMS (/admin), everyone else in
+  // their account. This is what lets a staff member sign in from either the
+  // customer page or /admin/login and end up in the right place. An explicit
+  // ?redirect is honoured only when safe and role-appropriate.
+  const userId = signInData.user?.id;
+  let isStaff = false;
+  if (userId) {
+    const { data: staffRow } = await supabase
+      .from("staff")
+      .select("status")
+      .eq("user_id", userId)
+      .maybeSingle();
+    isStaff = staffRow?.status === "active";
+  }
+  const dest = pickPostSignInPath({
+    isStaff,
+    requested: formData.get("redirect") as string | null,
+  });
+  redirect(dest);
 }
 
 export async function signUpAction(

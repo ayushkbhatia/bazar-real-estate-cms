@@ -20,6 +20,8 @@ const PUBLIC_PATHS = [
   "/tools",
   "/concierge",
   "/legal",
+  // Staff sign-in lives under /admin but must stay reachable while signed out.
+  "/admin/login",
   "/sign-in",
   "/sign-up",
   "/forgot-password",
@@ -74,7 +76,9 @@ export async function updateSession(request: NextRequest) {
 
   if (!user && (isAdmin || isAccount) && !isPublicPath(pathname)) {
     const url = request.nextUrl.clone();
-    url.pathname = "/sign-in";
+    // Staff get their own door (/admin/login); customers keep the marketplace
+    // sign-in. Either way we round-trip the original path via ?redirect.
+    url.pathname = isAdmin ? "/admin/login" : "/sign-in";
     url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
   }

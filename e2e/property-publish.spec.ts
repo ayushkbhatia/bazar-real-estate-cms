@@ -36,17 +36,17 @@ test("/off-plan renders without error", async ({ page }) => {
 
 test("anon visitor cannot reach /admin/properties/new", async ({ page }) => {
   await page.goto("/admin/properties/new");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 test("anon visitor cannot reach a property edit page", async ({ page }) => {
   await page.goto("/admin/properties/00000000-0000-0000-0000-000000000000");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 test("anon visitor cannot reach /admin/developments", async ({ page }) => {
   await page.goto("/admin/developments");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 test("/sold/[ref] returns 410 for unknown references", async ({ request }) => {

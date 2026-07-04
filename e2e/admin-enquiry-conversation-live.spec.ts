@@ -7,5 +7,5 @@ import { test, expect } from "@playwright/test";
 test("anon visitor cannot reach an enquiry detail page", async ({ page }) => {
   // Any UUID-shaped path is fine; auth blocks before the row lookup runs.
   await page.goto("/admin/enquiries/00000000-0000-0000-0000-000000000000");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });

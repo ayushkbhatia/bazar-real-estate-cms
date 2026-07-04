@@ -19,9 +19,9 @@ test("/pages/<unknown> 404s", async ({ page }) => {
   expect(response?.status()).toBe(404);
 });
 
-test("admin /admin/pages redirects anon to sign-in", async ({ page }) => {
+test("admin /admin/pages redirects anon to staff login", async ({ page }) => {
   await page.goto("/admin/pages");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 test("/pages/about exposes meta description from SEO", async ({ page }) => {
