@@ -9,16 +9,16 @@ import { test, expect } from "@playwright/test";
 // state survives a hard reload — proving I1's URL-as-source-of-truth
 // contract isn't lost when later phases touch the page.
 
-test("anon visitor cannot reach /admin/properties (redirect to sign-in)", async ({
+test("anon visitor cannot reach /admin/properties (redirect to staff login)", async ({
   page,
 }) => {
   await page.goto("/admin/properties");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
-test("a ?selected= URL on /admin/properties redirects to sign-in (no leak)", async ({
+test("a ?selected= URL on /admin/properties redirects to staff login (no leak)", async ({
   page,
 }) => {
   await page.goto("/admin/properties?selected=abc123def456,abc789def012");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });

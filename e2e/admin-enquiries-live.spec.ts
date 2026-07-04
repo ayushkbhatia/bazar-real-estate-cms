@@ -7,11 +7,11 @@ import { test, expect } from "@playwright/test";
 // lib/realtime/use-postgres-changes.test.ts; this spec just guards the
 // route shape so the LiveDot import doesn't regress the page bundle.
 
-test("anon visitor cannot reach /admin/enquiries (redirect to sign-in)", async ({
+test("anon visitor cannot reach /admin/enquiries (redirect to staff login)", async ({
   page,
 }) => {
   await page.goto("/admin/enquiries");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 test("/admin/enquiries route still resolves (no crash from realtime wiring)", async ({

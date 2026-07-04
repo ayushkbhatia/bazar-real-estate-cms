@@ -38,12 +38,12 @@ test("/contact renders the public enquiry form", async ({ page }) => {
 
 test("anon visitor cannot reach /admin/enquiries", async ({ page }) => {
   await page.goto("/admin/enquiries");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 test("anon visitor cannot reach /admin/deals", async ({ page }) => {
   await page.goto("/admin/deals");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 const CRON_ROUTES = [

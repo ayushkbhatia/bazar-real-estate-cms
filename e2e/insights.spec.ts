@@ -31,9 +31,9 @@ test("/insights/<unknown> 404s", async ({ page }) => {
   expect(response?.status()).toBe(404);
 });
 
-test("admin /admin/blog redirects anon to sign-in", async ({ page }) => {
+test("admin /admin/blog redirects anon to staff login", async ({ page }) => {
   await page.goto("/admin/blog");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 test("category filter narrows the index via query string", async ({ page }) => {

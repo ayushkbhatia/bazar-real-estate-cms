@@ -2,12 +2,12 @@ import { test, expect } from "@playwright/test";
 
 test("anon visitor cannot reach /admin/deals", async ({ page }) => {
   await page.goto("/admin/deals");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 test("anon visitor cannot reach a deal detail page", async ({ page }) => {
   await page.goto("/admin/deals/00000000-0000-0000-0000-000000000000");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 test("documents download endpoint rejects anonymous requests", async ({

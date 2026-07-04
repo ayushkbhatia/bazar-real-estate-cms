@@ -1,10 +1,10 @@
 import { test, expect } from "@playwright/test";
 
-test("anon visitor cannot see /admin/agents (redirect to sign-in)", async ({
+test("anon visitor cannot see /admin/agents (redirect to staff login)", async ({
   page,
 }) => {
   await page.goto("/admin/agents");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 test("/admin/agents responds with a redirect, never a 404 or 500", async ({

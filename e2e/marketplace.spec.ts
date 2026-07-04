@@ -32,9 +32,9 @@ test("invalid property reference 404s", async ({ page }) => {
   expect(response?.status()).toBe(404);
 });
 
-test("admin gating redirects anon to sign-in", async ({ page }) => {
+test("admin gating redirects anon to staff login", async ({ page }) => {
   await page.goto("/admin");
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL(/\/admin\/login/);
 });
 
 test("sitemap + robots are served", async ({ request }) => {
