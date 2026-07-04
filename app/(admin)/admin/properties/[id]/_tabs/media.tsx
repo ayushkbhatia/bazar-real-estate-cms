@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import Image from "next/image";
 import {
   DndContext,
@@ -51,6 +51,7 @@ export function PropertyMediaTab({
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+  const dndId = useId();
 
   function onDragEnd(e: DragEndEvent) {
     const { active, over } = e;
@@ -113,6 +114,7 @@ export function PropertyMediaTab({
       </div>
 
       <DndContext
+        id={dndId}
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={onDragEnd}

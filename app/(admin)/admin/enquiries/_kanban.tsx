@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useId, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   DndContext,
@@ -48,6 +48,7 @@ export function KanbanBoard({ rows }: { rows: EnquiryListRow[] }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
   );
+  const dndId = useId();
 
   const columns = useMemo(() => {
     const map = new Map<EnquiryStatus, EnquiryListRow[]>();
@@ -100,6 +101,7 @@ export function KanbanBoard({ rows }: { rows: EnquiryListRow[] }) {
 
   return (
     <DndContext
+      id={dndId}
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}

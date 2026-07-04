@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import {
   DndContext,
   closestCenter,
@@ -46,6 +47,7 @@ export function BlockReorderList({
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+  const dndId = useId();
 
   function onDragEnd(e: DragEndEvent) {
     const { active, over } = e;
@@ -60,6 +62,7 @@ export function BlockReorderList({
     <div>
       <Eyebrow>Blocks · {blocks.length}</Eyebrow>
       <DndContext
+        id={dndId}
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={onDragEnd}

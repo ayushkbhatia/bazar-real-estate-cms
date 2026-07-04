@@ -28,8 +28,10 @@ const TABS: { group: string; items: Tab[] }[] = [
       { label: "Domain & SEO", href: "/admin/settings/domain", status: "stub" },
       {
         label: "Integrations",
+        // Live since Sprint 13 (Meilisearch / Mapbox / Mailchimp / Resend
+        // status cards) — badge was never flipped when the panel shipped.
         href: "/admin/settings/integrations",
-        status: "stub",
+        status: "live",
       },
       { label: "Billing", href: "/admin/settings/billing", status: "stub" },
       {
