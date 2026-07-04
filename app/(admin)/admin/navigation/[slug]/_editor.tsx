@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useId, useMemo, useState, useTransition } from "react";
 import {
   DndContext,
   KeyboardSensor,
@@ -260,6 +260,10 @@ function ColumnCard({
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
+  // Stable id keeps dnd-kit's aria-describedby ("DndDescribedBy-<id>")
+  // identical between server render and hydration — without it the global
+  // counter drifts when several DndContexts mount, logging hydration errors.
+  const dndId = useId();
 
   function handleItemDragEnd(e: DragEndEvent) {
     const { active, over } = e;
@@ -317,6 +321,7 @@ function ColumnCard({
       </div>
 
       <DndContext
+        id={dndId}
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleItemDragEnd}
@@ -361,6 +366,7 @@ function ZoneEditor({
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
+  const dndId = useId();
 
   function handleDragEnd(e: DragEndEvent) {
     const { active, over } = e;
@@ -394,6 +400,7 @@ function ZoneEditor({
   return (
     <div className="flex flex-col gap-3">
       <DndContext
+        id={dndId}
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}

@@ -19,7 +19,8 @@ import {
 } from "@/lib/schemas/staff";
 import { InviteStaffButton } from "./_invite-form";
 import { InvitationActions, StaffRowActions } from "./_row-actions";
-import { UserFilters, parseUserFilters } from "./_filters";
+import { UserFilters } from "./_filters";
+import { parseUserFilters } from "./_filter-state";
 
 export const dynamic = "force-dynamic";
 

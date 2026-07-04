@@ -9,36 +9,8 @@ import {
   STAFF_STATUSES,
   ROLE_LABEL,
   STATUS_LABEL,
-  type StaffRole,
-  type StaffStatus,
 } from "@/lib/schemas/staff";
-
-type FilterState = {
-  role: StaffRole | null;
-  status: StaffStatus | null;
-  q: string | null;
-};
-
-export function parseUserFilters(
-  params: URLSearchParams | Record<string, string | string[] | undefined>,
-): FilterState {
-  const get = (k: string): string | undefined => {
-    if (params instanceof URLSearchParams) return params.get(k) ?? undefined;
-    const v = (params as Record<string, string | string[] | undefined>)[k];
-    if (Array.isArray(v)) return v[0];
-    return v;
-  };
-  const role = get("role");
-  const status = get("status");
-  const q = get("q");
-  return {
-    role: STAFF_ROLES.includes(role as StaffRole) ? (role as StaffRole) : null,
-    status: STAFF_STATUSES.includes(status as StaffStatus)
-      ? (status as StaffStatus)
-      : null,
-    q: q?.trim() ? q.trim() : null,
-  };
-}
+import type { FilterState } from "./_filter-state";
 
 export function UserFilters({ initial }: { initial: FilterState }) {
   const router = useRouter();
