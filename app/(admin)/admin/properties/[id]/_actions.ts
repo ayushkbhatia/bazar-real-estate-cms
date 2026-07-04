@@ -148,6 +148,91 @@ export async function updateProperty(
   return { status: "ok", message: "Saved." };
 }
 
+const UUID_RE =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export type AssignAgentResult =
+  | { status: "ok"; message: string }
+  | { status: "error"; message: string };
+
+/**
+ * Assign (or clear) the advisor responsible for a single property. Standalone
+ * from the main edit form — the form's partial update never touches
+ * `assigned_agent_id`, so this and a form save don't clobber each other. The
+ * assigned agent surfaces on the public `/p/[slug]` contact card and on their
+ * `/agents/[slug]` profile listings; enquiry routing reads it too.
+ *
+ * For multi-property assignment (with a digest email to the agent), use the
+ * bulk-reassign tool on the properties list instead.
+ */
+export async function assignAgent(
+  propertyId: string,
+  agentId: string | null,
+): Promise<AssignAgentResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
+
+  if (agentId !== null && !UUID_RE.test(agentId)) {
+    return { status: "error", message: "Invalid agent id." };
+  }
+
+  const supabase = await createSupabaseServerClient();
+
+  // Only allow assigning to an active agent (defence-in-depth against a stale
+  // or tampered id). Clearing the assignment (null) skips this.
+  if (agentId !== null) {
+    const { data: agent } = await supabase
+      .from("staff")
+      .select("user_id")
+      .eq("user_id", agentId)
+      .eq("role", "agent")
+      .eq("status", "active")
+      .maybeSingle();
+    if (!agent) {
+      return {
+        status: "error",
+        message: "That advisor is no longer an active agent.",
+      };
+    }
+  }
+
+  const { data: before } = await supabase
+    .from("properties")
+    .select("assigned_agent_id")
+    .eq("id", propertyId)
+    .maybeSingle();
+
+  const { data, error } = await supabase
+    .from("properties")
+    .update({ assigned_agent_id: agentId })
+    .eq("id", propertyId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { status: "error", message: error.message };
+  if (!data)
+    return {
+      status: "error",
+      message: "Property not found, or your account is not allowed to edit it.",
+    };
+
+  await logAudit({
+    action: "property.reassign",
+    target_kind: "property",
+    target_id: propertyId,
+    before: { assigned_agent_id: before?.assigned_agent_id ?? null },
+    after: { assigned_agent_id: agentId },
+  });
+
+  await revalidatePropertyPaths(propertyId);
+  revalidatePath("/agents");
+  return {
+    status: "ok",
+    message: agentId ? "Advisor assigned." : "Advisor cleared.",
+  };
+}
+
 export type HeroResult =
   | { status: "ok"; message?: string }
   | { status: "error"; message: string };
