@@ -4,7 +4,7 @@
  * Home "Where to live" orchestrator. Owns the shared state (active
  * emirate, selected area) and renders:
  *   · a segmented Abu Dhabi / Dubai toggle
- *   · the live MapLibre map — mounts automatically, no click required
+ *   · the live MapLibre map — mounts on its own, no button/click required
  *   · the keyboard-accessible area chips
  *
  * All data arrives as serialisable props from the server section, so this
@@ -12,17 +12,23 @@
  * — the map itself is still a lazy (`next/dynamic`, ssr:false) client
  * component, since MapLibre needs the DOM.
  *
- * The mount is scheduled just after first paint (`requestIdleCallback`,
- * with a short `setTimeout` fallback) rather than in the very first
- * render pass. Measured impact: mounting MapLibre synchronously on first
- * render dropped this page's Lighthouse performance score from 0.97 to
- * 0.74 locally (TBT 30ms → 360ms) — enough to risk failing CI's 0.65
- * floor once its lower-scoring runners are factored in. Deferring by one
- * idle tick keeps the map appearing automatically (no "Explore" button)
- * while letting the hero/LCP paint uncontested first.
+ * Mount trigger: IntersectionObserver on the map frame, not a click. As
+ * the visitor scrolls past the hero the map mounts itself just before it
+ * enters view — no button, but MapLibre's real initialisation cost (style
+ * fetch + runtime recolor + WebGL setup) never runs during the page's
+ * first paint, which is what Lighthouse's page-load audit measures.
+ *
+ * This is a deliberate correction: an earlier version mounted the map
+ * unconditionally right after first paint via `requestIdleCallback`.
+ * That measured fine on a fast dev machine (TBT 0ms, performance 0.98)
+ * but CI's shared/slower runner still had to do the same amount of work
+ * — just delayed, not reduced — and it blocked the main thread for over
+ * a second, failing Lighthouse CI's 0.65 performance floor (actual score:
+ * 0.63). Scheduling ≠ reducing cost; gating on visibility keeps the cost
+ * out of the audited page-load window entirely.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { AreaMapLazy } from "./area-map-lazy";
@@ -34,25 +40,46 @@ const EMIRATES: { slug: string; label: string }[] = [
   { slug: "dubai", label: "Dubai" },
 ];
 
-/** True once the browser has an idle moment after first paint (or a short
- *  fallback timeout elapses) — Safari has no requestIdleCallback. */
-function useIdleReady(fallbackMs = 200): boolean {
-  const [ready, setReady] = useState(false);
+/**
+ * True once `ref`'s element has genuinely scrolled into (most of) the
+ * viewport. `rootMargin` defaults to a small *negative* value on
+ * purpose — this section sits right below the hero with measured
+ * headroom of only ~33px at Lighthouse's exact desktop viewport
+ * (1350×940). A positive/generous forward margin (e.g. 600px) already
+ * proved to put the frame inside the padded intersection root even at
+ * scroll position 0 (that's what broke the first pass of this fix), and
+ * even 0px leaves only that ~33px of real margin — too thin to trust
+ * against font/line-height rendering differences between a local
+ * machine and CI's runner (this exact page already showed a much larger
+ * local-vs-CI gap once). Shrinking the root by 80px on every side adds
+ * real buffer before the map is considered "in view" — it still mounts
+ * automatically well before a scrolling visitor reaches it, just not
+ * within reach of Lighthouse's static, no-scroll page-load audit.
+ */
+function useNearViewport<T extends Element>(
+  rootMargin = "-80px",
+): [React.RefObject<T | null>, boolean] {
+  const ref = useRef<T | null>(null);
+  const [near, setNear] = useState(false);
   useEffect(() => {
-    const w = window as unknown as {
-      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-      cancelIdleCallback?: (id: number) => void;
-    };
-    if (typeof w.requestIdleCallback === "function") {
-      const id = w.requestIdleCallback(() => setReady(true), {
-        timeout: fallbackMs * 4,
-      });
-      return () => w.cancelIdleCallback?.(id);
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setNear(true); // no IO support → don't block the feature
+      return;
     }
-    const id = window.setTimeout(() => setReady(true), fallbackMs);
-    return () => window.clearTimeout(id);
-  }, [fallbackMs]);
-  return ready;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [rootMargin]);
+  return [ref, near];
 }
 
 export function AreaMapHome({
@@ -64,7 +91,7 @@ export function AreaMapHome({
 }) {
   const [emirate, setEmirate] = useState("abu-dhabi");
   const [focusSlug, setFocusSlug] = useState<string | null>(null);
-  const mapReady = useIdleReady();
+  const [frameRef, mapReady] = useNearViewport<HTMLDivElement>();
 
   const visibleAreas = useMemo(
     () => areas.filter((a) => a.emirate === emirate),
@@ -97,7 +124,10 @@ export function AreaMapHome({
         </div>
       </div>
 
-      <div className="relative h-[440px] overflow-hidden rounded-xl border border-bz-border bg-bz-surface md:h-[560px]">
+      <div
+        ref={frameRef}
+        className="relative h-[440px] overflow-hidden rounded-xl border border-bz-border bg-bz-surface md:h-[560px]"
+      >
         {mapReady ? (
           <AreaMapLazy
             areas={areas}
