@@ -63,6 +63,8 @@ describe("<PropertyEditForm>", () => {
         initial={INITIAL}
         reference="BAZ-AD-04891"
         areas={[]}
+        geo={null}
+        mapboxAvailable={false}
       />,
     );
     expect(screen.getByLabelText(/title/i)).toHaveValue(INITIAL.title);
@@ -79,6 +81,8 @@ describe("<PropertyEditForm>", () => {
         initial={INITIAL}
         reference="BAZ-AD-04891"
         areas={[]}
+        geo={null}
+        mapboxAvailable={false}
       />,
     );
     expect(screen.getByRole("button", { name: /save/i })).toBeDisabled();
@@ -94,6 +98,8 @@ describe("<PropertyEditForm>", () => {
         initial={INITIAL}
         reference="BAZ-AD-04891"
         areas={[]}
+        geo={null}
+        mapboxAvailable={false}
       />,
     );
 
@@ -128,6 +134,8 @@ describe("<PropertyEditForm>", () => {
         initial={INITIAL}
         reference="BAZ-AD-04891"
         areas={[]}
+        geo={null}
+        mapboxAvailable={false}
       />,
     );
 

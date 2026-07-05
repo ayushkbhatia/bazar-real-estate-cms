@@ -37,41 +37,24 @@ export function MapEmbed({
     if (!containerRef.current) return;
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style:
-        "https://api.maptiler.com/maps/dataviz-light/style.json?key=open",
-      // Use OSM raster fallback if MapTiler open style fails. We try
-      // OSM raster directly since it's the most portable + zero-key.
+      // Keyless OSM raster — the same tiles the /buy search map uses. (The old
+      // MapTiler "?key=open" style now 403s, leaving a blank map; a client with
+      // a Mapbox/MapTiler key can swap this at handover.)
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: "raster",
+            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            tileSize: 256,
+            attribution: "© OpenStreetMap contributors",
+          },
+        },
+        layers: [{ id: "osm", type: "raster", source: "osm" }],
+      },
       center: [lng, lat],
       zoom: 13,
       attributionControl: { compact: true },
-    });
-
-    // Fall back to OSM raster if the styled source 404s.
-    map.on("error", (e: unknown) => {
-      // Best-effort: swap to OSM raster on any tile error.
-      try {
-        const err = e as { error?: { message?: string } };
-        if (err.error?.message?.includes("404")) {
-          map.setStyle({
-            version: 8,
-            sources: {
-              osm: {
-                type: "raster",
-                tiles: [
-                  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                ],
-                tileSize: 256,
-                attribution: "© OpenStreetMap contributors",
-              },
-            },
-            layers: [
-              { id: "osm", type: "raster", source: "osm" },
-            ],
-          });
-        }
-      } catch {
-        /* swallow */
-      }
     });
 
     // Listing pin.

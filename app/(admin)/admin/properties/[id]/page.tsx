@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isSupabaseConfigured } from "@/lib/env";
+import { isSupabaseConfigured, isMapboxConfigured } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/properties";
 import { currentStaffRow } from "@/lib/queries/staff";
 import { listActiveAgents, type ActiveAgent } from "@/lib/queries/staff-agents";
@@ -34,7 +34,7 @@ async function fetchPropertyForEdit(id: string) {
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, amenities, seo, compliance, assigned_agent_id",
+      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, amenities, seo, compliance, assigned_agent_id, geo",
     )
     .eq("id", id)
     .maybeSingle();
@@ -183,6 +183,16 @@ export default async function PropertyEditPage({ params }: PageProps) {
     meta_description: (seo.meta_description as string | null) ?? null,
   };
 
+  const rawGeo = (property as { geo: unknown }).geo as
+    | { lat?: unknown; lng?: unknown }
+    | null;
+  const geo =
+    rawGeo &&
+    typeof rawGeo.lat === "number" &&
+    typeof rawGeo.lng === "number"
+      ? { lat: rawGeo.lat, lng: rawGeo.lng }
+      : null;
+
   const isPublished = property.status === "published";
 
   // Used by presence — null when the viewer isn't on the staff table.
@@ -259,6 +269,8 @@ export default async function PropertyEditPage({ params }: PageProps) {
             initial={initial}
             reference={property.reference}
             areas={areas}
+            geo={geo}
+            mapboxAvailable={isMapboxConfigured}
           />
         </div>
         <aside className="sticky top-6 flex flex-col gap-6">

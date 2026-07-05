@@ -27,6 +27,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { updateProperty } from "./_actions";
+import { LocationPicker } from "./_components/location-picker";
 
 export type AreaOption = { id: string; name: string; kind: string };
 
@@ -35,6 +36,8 @@ type Props = {
   initial: PropertyEditInput;
   reference: string;
   areas: AreaOption[];
+  geo: { lat: number; lng: number } | null;
+  mapboxAvailable: boolean;
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -80,6 +83,8 @@ export function PropertyEditForm({
   initial,
   reference,
   areas,
+  geo,
+  mapboxAvailable,
 }: Props) {
   const [pending, startTransition] = useTransition();
   const [serverFieldErrors, setServerFieldErrors] = useState<
@@ -530,7 +535,15 @@ export function PropertyEditForm({
           value="location"
           className="bg-bz-surface border border-bz-border rounded-lg p-6 mt-6 flex flex-col gap-5"
         >
-          <div className="flex flex-col gap-1.5 max-w-md">
+          {/* Map pin — saves on its own (not part of the form submit), so the
+              public Location map updates immediately. */}
+          <LocationPicker
+            propertyId={propertyId}
+            initialGeo={geo}
+            mapboxAvailable={mapboxAvailable}
+          />
+
+          <div className="border-t border-bz-border pt-5 flex flex-col gap-1.5 max-w-md">
             <Label htmlFor="area_id">Area</Label>
             <Select
               value={areaId ?? UNSET}
