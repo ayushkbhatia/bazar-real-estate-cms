@@ -18,6 +18,13 @@ import {
 } from "@/lib/publishability";
 import { logAudit } from "@/lib/audit";
 import { requireRole } from "@/lib/auth";
+import { randomUUID } from "node:crypto";
+import {
+  ALLOWED_MIME,
+  MAX_UPLOAD_BYTES,
+  MEDIA_BUCKET,
+  storageKey,
+} from "@/lib/media";
 
 const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
@@ -306,6 +313,151 @@ export async function setPropertyLocation(
   return {
     status: "ok",
     message: geo ? "Location saved." : "Location cleared.",
+  };
+}
+
+export type UploadedPhoto = {
+  id: string;
+  storage_key: string;
+  filename: string;
+  mime_type: string;
+  became_hero: boolean;
+};
+export type UploadPhotoResult =
+  | { status: "ok"; photo: UploadedPhoto }
+  | { status: "error"; message: string };
+
+/**
+ * Upload one image straight from the property editor: stores the file, records
+ * it in `media_assets` (so it appears in the shared media library), and
+ * attaches it to this property as a `gallery` image. The hero picker calls
+ * this per file, then promotes the first upload to hero via `setPropertyHero`
+ * when the listing has none yet.
+ */
+export async function uploadPropertyPhoto(
+  propertyId: string,
+  formData: FormData,
+): Promise<UploadPhotoResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
+
+  const file = formData.get("file");
+  if (!(file instanceof File))
+    return { status: "error", message: "No file provided." };
+  if (file.size === 0) return { status: "error", message: "File is empty." };
+  if (file.size > MAX_UPLOAD_BYTES)
+    return {
+      status: "error",
+      message: `"${file.name}" is too large — max ${Math.floor(
+        MAX_UPLOAD_BYTES / 1024 / 1024,
+      )} MB.`,
+    };
+  if (!file.type.startsWith("image/") || !ALLOWED_MIME.has(file.type))
+    return {
+      status: "error",
+      message: `"${file.name}" isn't a supported image (use JPG, PNG, WebP, AVIF, or GIF).`,
+    };
+
+  const supabase = await createSupabaseServerClient();
+  const key = storageKey({
+    folder: "listings",
+    filename: file.name,
+    uuid: randomUUID(),
+  });
+  const buffer = Buffer.from(await file.arrayBuffer());
+
+  const upload = await supabase.storage
+    .from(MEDIA_BUCKET)
+    .upload(key, buffer, {
+      contentType: file.type,
+      cacheControl: "3600",
+      upsert: false,
+    });
+  if (upload.error)
+    return { status: "error", message: `Upload failed: ${upload.error.message}` };
+
+  const asset = await supabase
+    .from("media_assets")
+    .insert({
+      filename: file.name,
+      mime_type: file.type,
+      size_bytes: file.size,
+      storage_key: key,
+      alt_text: null,
+      folder: "listings",
+    })
+    .select("id, storage_key, filename, mime_type")
+    .maybeSingle();
+
+  if (asset.error || !asset.data) {
+    // Roll back the orphaned storage object.
+    await supabase.storage.from(MEDIA_BUCKET).remove([key]);
+    return {
+      status: "error",
+      message: asset.error?.message ?? "Failed to record the upload.",
+    };
+  }
+
+  // Attach to the property. The primary key is (property_id, media_id), so a
+  // photo has exactly one role. When the listing has no hero yet, the first
+  // upload becomes it; the rest join the gallery in order. (Sequential upload
+  // on the client keeps this race-free.)
+  const { data: heroRow } = await supabase
+    .from("property_media")
+    .select("media_id")
+    .eq("property_id", propertyId)
+    .eq("role", "hero")
+    .maybeSingle();
+  const becameHero = !heroRow;
+
+  let sortOrder = 0;
+  if (!becameHero) {
+    const { data: last } = await supabase
+      .from("property_media")
+      .select("sort_order")
+      .eq("property_id", propertyId)
+      .order("sort_order", { ascending: false })
+      .limit(1);
+    sortOrder = (last?.[0]?.sort_order ?? -1) + 1;
+  }
+
+  const link = await supabase.from("property_media").insert({
+    property_id: propertyId,
+    media_id: asset.data.id,
+    role: becameHero ? "hero" : "gallery",
+    sort_order: sortOrder,
+  });
+  if (link.error) {
+    return {
+      status: "error",
+      message: `Saved to the library, but couldn't attach to the property: ${link.error.message}`,
+    };
+  }
+
+  await logAudit({
+    action: "property.media_upload",
+    target_kind: "property",
+    target_id: propertyId,
+    before: null,
+    after: {
+      media_id: asset.data.id,
+      filename: file.name,
+      role: becameHero ? "hero" : "gallery",
+    },
+  });
+  revalidatePath("/admin/media");
+  await revalidatePropertyPaths(propertyId);
+
+  return {
+    status: "ok",
+    photo: {
+      id: asset.data.id,
+      storage_key: asset.data.storage_key,
+      filename: asset.data.filename,
+      mime_type: asset.data.mime_type,
+      became_hero: becameHero,
+    },
   };
 }
 

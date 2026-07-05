@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ImagePlus, X } from "lucide-react";
+import { ImagePlus, UploadCloud, X } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -17,7 +17,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { mediaPublicUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
-import { setPropertyHero } from "./_actions";
+import {
+  setPropertyHero,
+  uploadPropertyPhoto,
+  type UploadedPhoto,
+} from "./_actions";
 
 export type HeroState = {
   id: string;
@@ -42,8 +46,20 @@ export function HeroPicker({ propertyId, initial, media }: Props) {
   const [hero, setHero] = useState<HeroState>(initial);
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
+  // Photos uploaded in-dialog this session, shown ahead of the library.
+  const [uploaded, setUploaded] = useState<MediaOption[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadMsg, setUploadMsg] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const images = media.filter((m) => m.mime_type.startsWith("image/"));
+  const libraryImages = media.filter((m) => m.mime_type.startsWith("image/"));
+  // Uploaded-this-session first, then the library — de-duped by id.
+  const seen = new Set<string>();
+  const images = [...uploaded, ...libraryImages].filter((m) => {
+    if (seen.has(m.id)) return false;
+    seen.add(m.id);
+    return true;
+  });
 
   function commit(next: HeroState) {
     startTransition(async () => {
@@ -56,6 +72,46 @@ export function HeroPicker({ propertyId, initial, media }: Props) {
         toast.error(result.message);
       }
     });
+  }
+
+  async function handleFiles(fileList: FileList | null) {
+    if (!fileList || fileList.length === 0) return;
+    const files = Array.from(fileList);
+    setUploading(true);
+    const done: UploadedPhoto[] = [];
+    try {
+      for (let i = 0; i < files.length; i++) {
+        setUploadMsg(`Uploading ${i + 1} of ${files.length}…`);
+        const fd = new FormData();
+        fd.set("file", files[i]);
+        const res = await uploadPropertyPhoto(propertyId, fd);
+        if (res.status === "ok") {
+          done.push(res.photo);
+        } else {
+          toast.error(res.message);
+        }
+      }
+      if (done.length > 0) {
+        setUploaded((prev) => [...done, ...prev]);
+        // The action promotes the first upload to hero when the listing had
+        // none; reflect that here so the card + pre-flight update.
+        const newHero = done.find((p) => p.became_hero);
+        if (newHero) {
+          setHero({
+            id: newHero.id,
+            storage_key: newHero.storage_key,
+            filename: newHero.filename,
+          });
+        }
+        toast.success(
+          `${done.length} photo${done.length === 1 ? "" : "s"} added to this property and the media library.`,
+        );
+      }
+    } finally {
+      setUploading(false);
+      setUploadMsg(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   }
 
   return (
@@ -71,19 +127,56 @@ export function HeroPicker({ propertyId, initial, media }: Props) {
           </DialogTrigger>
           <DialogContent className="max-w-3xl">
             <DialogHeader>
-              <DialogTitle>Choose a hero image</DialogTitle>
+              <DialogTitle>Property photos</DialogTitle>
               <DialogDescription>
-                Pick from media already uploaded to the library. To upload a
-                new asset,{" "}
+                Upload photos straight to this listing (they&apos;re added to
+                the{" "}
                 <Link
                   href="/admin/media"
                   className="underline hover:text-bz-ink"
                 >
-                  open the media library
-                </Link>
-                .
+                  media library
+                </Link>{" "}
+                too), or pick an existing image as the hero.
               </DialogDescription>
             </DialogHeader>
+
+            {/* Upload zone */}
+            <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                if (!uploading) void handleFiles(e.dataTransfer.files);
+              }}
+              className="rounded-lg border border-dashed border-bz-border bg-bz-bg px-4 py-5 flex flex-col items-center gap-2 text-center"
+            >
+              <UploadCloud size={20} className="text-bz-muted" strokeWidth={1.6} />
+              <div className="text-[13px] text-bz-ink">
+                Drag photos here, or
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={uploading}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {uploading ? uploadMsg ?? "Uploading…" : "Upload photos"}
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => void handleFiles(e.target.files)}
+              />
+              <p className="text-[11px] text-bz-muted">
+                JPG, PNG, WebP, AVIF or GIF · up to 10 MB each. The first photo
+                becomes the hero when none is set.
+              </p>
+            </div>
+
             {images.length === 0 ? (
               <div className="py-12 text-center text-bz-muted text-[13px]">
                 No images uploaded yet.
