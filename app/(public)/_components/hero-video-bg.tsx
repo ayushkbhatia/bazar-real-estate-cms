@@ -3,28 +3,23 @@
 import { useSyncExternalStore } from "react";
 
 /**
- * True only on a desktop-width viewport with motion allowed. Read via
- * useSyncExternalStore so it's SSR-safe (server renders `false` → poster only)
- * and reacts to viewport / reduced-motion changes without a setState-in-effect.
+ * True whenever motion is allowed (all viewport widths — mobile included).
+ * Read via useSyncExternalStore so it's SSR-safe (server renders `false` →
+ * poster only, avoiding a hydration mismatch) and reacts live to a
+ * prefers-reduced-motion change without a setState-in-effect.
  */
 function subscribe(cb: () => void): () => void {
   if (typeof window === "undefined" || !window.matchMedia) return () => {};
-  const desktop = window.matchMedia("(min-width: 768px)");
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  desktop.addEventListener("change", cb);
   reduced.addEventListener("change", cb);
   return () => {
-    desktop.removeEventListener("change", cb);
     reduced.removeEventListener("change", cb);
   };
 }
 
 function getSnapshot(): boolean {
   if (typeof window === "undefined" || !window.matchMedia) return false;
-  return (
-    window.matchMedia("(min-width: 768px)").matches &&
-    !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
+  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
 function getServerSnapshot(): boolean {
@@ -32,11 +27,13 @@ function getServerSnapshot(): boolean {
 }
 
 /**
- * Full-bleed hero background video. The poster image is always painted (so the
- * hero has an instant, correct backdrop on first paint and on mobile), and the
- * <video> is only mounted — and the ~15 MB file only fetched — on desktop with
- * motion allowed. Mobile and `prefers-reduced-motion` users keep the poster,
- * which avoids a heavy download on cellular and respects the motion setting.
+ * Full-bleed hero background video. The poster image is always painted (so
+ * the hero has an instant, correct backdrop on first paint before the video
+ * is ready), and the <video> mounts on every viewport width — mobile included
+ * — except for `prefers-reduced-motion`, which keeps the poster.
+ *
+ * Note: this plays the ~15 MB clip on mobile too, which is a real data-usage
+ * cost on cellular connections — an explicit product choice, not an oversight.
  */
 export function HeroVideoBg({
   src,
