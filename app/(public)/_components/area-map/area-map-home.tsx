@@ -53,7 +53,7 @@ export function AreaMapHome({
   };
 
   return (
-    <section className="bg-bz-surface-2 px-4 py-12 md:px-12 md:py-20">
+    <section className="bg-bz-bg px-4 py-12 md:px-12 md:py-20">
       <div className="mb-8 flex flex-col gap-5 md:mb-9 md:flex-row md:items-end md:justify-between">
         <div>
           <div className="eyebrow">Where to live</div>
@@ -138,7 +138,7 @@ function EmirateToggle({
               "h-[34px] rounded-md px-4 text-sm font-medium transition-colors",
               active
                 ? "bg-bz-surface text-bz-ink shadow-sm"
-                : "text-bz-muted hover:text-bz-ink-2",
+                : "text-bz-ink-2 hover:text-bz-ink",
             ].join(" ")}
           >
             {e.label}

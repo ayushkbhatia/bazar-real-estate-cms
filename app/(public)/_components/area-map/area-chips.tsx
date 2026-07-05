@@ -19,18 +19,13 @@ export function AreaChips({
 }) {
   if (areas.length === 0) return null;
   return (
-    <div
-      className="flex flex-wrap gap-2"
-      role="list"
-      aria-label="Areas"
-    >
+    <div className="flex flex-wrap gap-2" role="group" aria-label="Areas">
       {areas.map((a) => {
         const active = a.slug === activeSlug;
         return (
           <button
             key={a.id}
             type="button"
-            role="listitem"
             aria-pressed={active}
             onClick={() => onSelect(a.slug)}
             className={[
@@ -41,7 +36,13 @@ export function AreaChips({
             ].join(" ")}
           >
             {a.name}
-            <span className="mono text-[10.5px] opacity-65">{a.count}</span>
+            {/* Active count inherits the light on-ink text; inactive uses a
+                muted tone that still clears 4.5:1 on the white chip. */}
+            <span
+              className={`mono text-[10.5px] ${active ? "" : "text-bz-muted"}`}
+            >
+              {a.count}
+            </span>
           </button>
         );
       })}
