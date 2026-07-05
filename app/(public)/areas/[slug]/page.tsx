@@ -11,11 +11,33 @@ import {
   getAreaGuide,
   listAreasWithCounts,
 } from "@/lib/queries/areas-guide";
+import { listAreaPins, listAreaListingDots } from "@/lib/queries/area-map";
+import {
+  listPublishedProperties,
+  formatPriceAED,
+  propertyUrl,
+  type ListingRow,
+} from "@/lib/queries/properties";
+import { mediaPublicUrl } from "@/lib/media";
+import { parseFilters } from "@/lib/filters/property";
 import { placeJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
 import { LifestyleDossier } from "./_components/lifestyle-dossier";
+import { AreaMapDetail } from "../../_components/area-map/area-map-detail";
+import { SavedIdsProvider } from "../../_components/saved-ids-provider";
+import { ListingCardSaveable } from "../../_components/listing-card-saveable";
+import { CarouselGrid } from "@/components/brand/mobile";
 import { AreaReportsRail } from "../../_components/market-context-link";
 import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
+
+function badgeFor(row: ListingRow):
+  | { label: string; kind: "ink" | "accent" }
+  | undefined {
+  if (row.flags?.exclusive) return { label: "Exclusive", kind: "ink" };
+  if (row.flags?.vacant_on_transfer)
+    return { label: "Vacant on transfer", kind: "accent" };
+  return undefined;
+}
 
 export async function generateStaticParams() {
   const entries = await listAreasWithCounts();
@@ -55,6 +77,17 @@ export default async function AreaProfilePage({
   const similar = area.similar_areas
     .map((s) => getSeedAreaGuideBySlug(s))
     .filter((a) => a != null);
+
+  // Interactive map band + real listings for this area. `focusPin` is null
+  // for areas without a seeded centroid (e.g. sub-communities) — the map
+  // band then quietly self-hides.
+  const [pins, dots, listings] = await Promise.all([
+    listAreaPins(),
+    listAreaListingDots({ areaSlug: slug }),
+    listPublishedProperties({ filters: parseFilters({ area: slug }), limit: 6 }),
+  ]);
+  const focusPin = pins.find((p) => p.slug === slug) ?? null;
+  const listingRows = listings.rows;
 
   const siteBase = (
     env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app"
@@ -115,6 +148,16 @@ export default async function AreaProfilePage({
           className="w-full aspect-[21/9] rounded-md"
         />
       </section>
+
+      {/* Interactive map band — deep-linked to this area with its listing
+          dots. Self-hides for areas without a seeded centroid. */}
+      {focusPin ? (
+        <section className="px-4 md:px-12 pb-14 max-w-[1280px]">
+          <div className="relative h-[420px] md:h-[520px] overflow-hidden rounded-md border border-bz-border bg-bz-surface">
+            <AreaMapDetail areas={pins} dots={dots} areaSlug={area.slug} />
+          </div>
+        </section>
+      ) : null}
 
       {/* Stats */}
       <section className="border-y border-bz-border bg-bz-surface">
@@ -286,9 +329,53 @@ export default async function AreaProfilePage({
               <Link href={`/buy?area=${area.slug}`}>View all listings</Link>
             </Button>
           </div>
-          <div className="mt-8 py-12 text-center text-[14px] text-bz-muted border border-dashed border-bz-border rounded-md">
-            Area → listings linking lands in Sprint 9.
-          </div>
+          {listingRows.length > 0 ? (
+            <div className="mt-8">
+              <SavedIdsProvider>
+                <CarouselGrid cols={3}>
+                  {listingRows.map((row, index) => {
+                    const badge = badgeFor(row);
+                    return (
+                      <Link
+                        key={row.reference}
+                        href={propertyUrl(row)}
+                        className="block"
+                      >
+                        <ListingCardSaveable
+                          price={formatPriceAED(row.price_aed)}
+                          priceAed={row.price_aed}
+                          title={row.title}
+                          location={row.areas?.name ?? area.name}
+                          beds={row.beds}
+                          baths={row.baths}
+                          area={row.built_up_ft2 ?? 0}
+                          badge={badge?.label}
+                          badgeKind={badge?.kind}
+                          imgLabel={row.reference}
+                          heroSrc={
+                            row.hero
+                              ? mediaPublicUrl(row.hero.storage_key)
+                              : null
+                          }
+                          heroAlt={row.hero?.alt_text ?? row.title}
+                          priority={index === 0}
+                          propertyId={row.id}
+                        />
+                      </Link>
+                    );
+                  })}
+                </CarouselGrid>
+              </SavedIdsProvider>
+            </div>
+          ) : (
+            <div className="mt-8 py-12 text-center text-[14px] text-bz-muted border border-dashed border-bz-border rounded-md">
+              No published listings in {area.name} right now.{" "}
+              <Link href="/buy" className="text-bz-accent hover:underline">
+                Browse all properties
+              </Link>
+              .
+            </div>
+          )}
         </div>
       </section>
 
