@@ -44,27 +44,26 @@ function badgeFor(row: ListingRow):
   return undefined;
 }
 
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ hero?: string }>;
-}) {
-  const params = await searchParams;
+export default async function HomePage() {
   const [{ rows: featured }, settings] = await Promise.all([
     listPublishedProperties({ mode: "buy", limit: 6 }),
     getPublicSiteSettings(),
   ]);
 
-  // Hero variant selection: ?hero=… overrides; otherwise site_settings.
-  const querystringVariant = params.hero?.toLowerCase();
+  // Hero variant is driven entirely by site_settings now — the page used to
+  // also accept a `?hero=` querystring override, but reading `searchParams`
+  // (even just to await it) forces Next.js to treat the whole route as fully
+  // dynamic, which silently discards the `revalidate = 60` above and disables
+  // static/ISR caching for the home page. That meant every single visitor
+  // triggered a fresh server render + fresh Supabase queries — the main cause
+  // of the slow home page. To preview a different hero, change it in
+  // /admin/settings/brand instead.
   const settingsVariant = settings.display?.hero_variant;
   const variant: HeroVariant = VALID_VARIANTS.includes(
-    querystringVariant as HeroVariant,
+    settingsVariant as HeroVariant,
   )
-    ? (querystringVariant as HeroVariant)
-    : VALID_VARIANTS.includes(settingsVariant as HeroVariant)
-      ? (settingsVariant as HeroVariant)
-      : "fullbleed";
+    ? (settingsVariant as HeroVariant)
+    : "fullbleed";
 
   return (
     <div className="bg-bz-bg">
