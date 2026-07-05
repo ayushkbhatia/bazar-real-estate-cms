@@ -66,6 +66,12 @@ type Props = {
   focusSlug?: string | null;
   onSelectArea?: (slug: string | null) => void;
   mode?: "explore" | "detail";
+  /**
+   * Camera-only initial framing: centre on this area's centroid at
+   * detail zoom on mount, without opening its flyout. Used by the area
+   * detail page (the flyout for the page's own area would be redundant).
+   */
+  centerSlug?: string;
   className?: string;
 };
 
@@ -239,6 +245,7 @@ export function AreaMap({
   focusSlug,
   onSelectArea,
   mode = "explore",
+  centerSlug,
   className,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -249,6 +256,10 @@ export function AreaMap({
   // Skip the emirate/focus fly effects on first mount — the constructor
   // already framed the initial camera.
   const mounted = useRef(false);
+  // Tracks the last emirate we flew to, so the emirate effect fires only
+  // on an actual change — not when it re-runs as the map finishes loading
+  // (which would clobber a detail page's initial centerSlug framing).
+  const prevEmirate = useRef(emirate);
 
   const select = useCallback(
     (slug: string | null) => onSelectArea?.(slug),
@@ -273,7 +284,12 @@ export function AreaMap({
     let dead = false;
     let m: MapLibreMap | null = null;
 
-    const focus = focusSlug ? areas.find((a) => a.slug === focusSlug) : null;
+    // Frame on the deep-linked area (detail page) or the current
+    // selection; fall back to the emirate overview.
+    const framingSlug = centerSlug ?? focusSlug;
+    const focus = framingSlug
+      ? areas.find((a) => a.slug === framingSlug)
+      : null;
     const city = CITIES[emirate] ?? CITIES["abu-dhabi"];
     const center: [number, number] = focus ? [focus.lng, focus.lat] : city.center;
     const zoom = focus ? DETAIL_ZOOM : city.zoom;
@@ -411,10 +427,15 @@ export function AreaMap({
     src?.setData(dotsToFeatureCollection(dots));
   }, [dots, map]);
 
-  // Emirate toggle → fly the camera between cities (never on first mount).
+  // Emirate toggle → fly the camera between cities. Guarded on an actual
+  // emirate change so the mount-time re-run (when `map` first sets) can't
+  // override the initial framing — critical for the detail page, which
+  // frames on its own area via centerSlug.
   useEffect(() => {
     const m = mapRef.current;
-    if (!m || !map || !mounted.current) return;
+    if (!m || !map) return;
+    if (prevEmirate.current === emirate) return;
+    prevEmirate.current = emirate;
     const city = CITIES[emirate];
     if (!city) return;
     if (reduced) m.jumpTo({ center: city.center, zoom: city.zoom });

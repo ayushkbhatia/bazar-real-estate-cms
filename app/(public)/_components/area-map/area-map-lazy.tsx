@@ -27,6 +27,7 @@ export function AreaMapLazy(props: {
   focusSlug?: string | null;
   onSelectArea?: (slug: string | null) => void;
   mode?: "explore" | "detail";
+  centerSlug?: string;
   className?: string;
 }) {
   return <AreaMap {...props} />;
