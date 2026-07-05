@@ -28,9 +28,37 @@ import {
   propertyJsonLd,
   breadcrumbListJsonLd,
 } from "@/lib/jsonld";
-import { getSessionUser } from "@/lib/supabase/server";
+import {
+  getSessionUser,
+  createSupabaseServerClient,
+} from "@/lib/supabase/server";
 import { recordView } from "@/lib/queries/recently-viewed";
 import { env } from "@/lib/env";
+
+/**
+ * The shared detail query (`DETAIL_FIELDS`) doesn't select `geo`, so we fetch
+ * the map coordinates route-locally rather than editing that shared file. RLS
+ * still gates the read to published listings.
+ */
+async function fetchPropertyGeo(
+  id: string,
+): Promise<{ lat: number; lng: number } | null> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase
+      .from("properties")
+      .select("geo")
+      .eq("id", id)
+      .maybeSingle();
+    const g = (data?.geo ?? null) as { lat?: unknown; lng?: unknown } | null;
+    if (g && typeof g.lat === "number" && typeof g.lng === "number") {
+      return { lat: g.lat, lng: g.lng };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
 import { EnquiryForm } from "../../_components/enquiry-form";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
 import { Gallery, type GalleryImage } from "./_components/gallery";
@@ -138,6 +166,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     property.id,
     ...similar.map((s) => s.id),
   ]);
+  const geo = await fetchPropertyGeo(property.id);
   const isAuthed = user !== null;
 
   // Best-effort recently-viewed tracking. Anonymous views aren't tracked.
@@ -386,12 +415,10 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             >
               {property.areas?.name ?? "Abu Dhabi"}
             </h3>
-            {property.geo &&
-            typeof property.geo.lat === "number" &&
-            typeof property.geo.lng === "number" ? (
+            {geo ? (
               <MapEmbed
-                lat={property.geo.lat}
-                lng={property.geo.lng}
+                lat={geo.lat}
+                lng={geo.lng}
                 title={property.title}
                 className="w-full aspect-[16/9] rounded-lg overflow-hidden border border-bz-border"
               />

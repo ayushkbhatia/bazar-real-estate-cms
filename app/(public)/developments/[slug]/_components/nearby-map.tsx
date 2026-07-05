@@ -25,9 +25,9 @@ type Props = {
  * with up to 4 sibling-area developments as secondary pins (neutral).
  * Click any pin → popup with project name + link.
  *
- * Falls back to MapTiler open style on default load and OSM raster on
- * tile errors — matches the existing `<MapEmbed>` pattern from
- * `/p/[slug]`.
+ * Uses keyless OSM raster tiles (the same as the /buy search map). The old
+ * MapTiler "?key=open" style now 403s; a client with a Mapbox/MapTiler key
+ * can swap the style at handover.
  */
 export function NearbyMap({ pins, className }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -38,32 +38,21 @@ export function NearbyMap({ pins, className }: Props) {
     const primary = pins.find((p) => p.isPrimary) ?? pins[0]!;
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: "https://api.maptiler.com/maps/dataviz-light/style.json?key=open",
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: "raster",
+            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            tileSize: 256,
+            attribution: "© OpenStreetMap contributors",
+          },
+        },
+        layers: [{ id: "osm", type: "raster", source: "osm" }],
+      },
       center: [primary.lng, primary.lat],
       zoom: 11,
       attributionControl: { compact: true },
-    });
-
-    map.on("error", (e: unknown) => {
-      try {
-        const err = e as { error?: { message?: string } };
-        if (err.error?.message?.includes("404")) {
-          map.setStyle({
-            version: 8,
-            sources: {
-              osm: {
-                type: "raster",
-                tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-                tileSize: 256,
-                attribution: "© OpenStreetMap contributors",
-              },
-            },
-            layers: [{ id: "osm", type: "raster", source: "osm" }],
-          });
-        }
-      } catch {
-        /* swallow */
-      }
     });
 
     // Add pins

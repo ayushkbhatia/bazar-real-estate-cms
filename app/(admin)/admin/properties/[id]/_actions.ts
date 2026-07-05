@@ -233,6 +233,82 @@ export async function assignAgent(
   };
 }
 
+export type LocationResult =
+  | { status: "ok"; message: string }
+  | { status: "error"; message: string };
+
+/**
+ * Set (or clear) the map coordinates for a property. Standalone from the main
+ * edit form — `geo` isn't in `propertyEditSchema`, so this persists on its own
+ * (like the hero picker / agent card) and won't clobber a form save. The pin
+ * drives the "Location" map on the public `/p/[slug]` page.
+ */
+export async function setPropertyLocation(
+  propertyId: string,
+  coords: { lat: number; lng: number } | null,
+): Promise<LocationResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
+
+  let geo: { lat: number; lng: number } | null = null;
+  if (coords !== null) {
+    const { lat, lng } = coords;
+    if (
+      typeof lat !== "number" ||
+      typeof lng !== "number" ||
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lng) ||
+      lat < -90 ||
+      lat > 90 ||
+      lng < -180 ||
+      lng > 180
+    ) {
+      return { status: "error", message: "Coordinates are out of range." };
+    }
+    // ~0.11 m precision is plenty; keeps the stored JSON tidy.
+    geo = {
+      lat: Math.round(lat * 1e6) / 1e6,
+      lng: Math.round(lng * 1e6) / 1e6,
+    };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data: before } = await supabase
+    .from("properties")
+    .select("geo")
+    .eq("id", propertyId)
+    .maybeSingle();
+
+  const { data, error } = await supabase
+    .from("properties")
+    .update({ geo })
+    .eq("id", propertyId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { status: "error", message: error.message };
+  if (!data)
+    return {
+      status: "error",
+      message: "Property not found, or your account is not allowed to edit it.",
+    };
+
+  await logAudit({
+    action: "property.location_update",
+    target_kind: "property",
+    target_id: propertyId,
+    before: { geo: (before?.geo as Record<string, unknown>) ?? null },
+    after: { geo },
+  });
+
+  await revalidatePropertyPaths(propertyId);
+  return {
+    status: "ok",
+    message: geo ? "Location saved." : "Location cleared.",
+  };
+}
+
 export type HeroResult =
   | { status: "ok"; message?: string }
   | { status: "error"; message: string };
