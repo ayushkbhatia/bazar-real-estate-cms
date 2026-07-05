@@ -14,6 +14,7 @@ import {
   type HeroVariant,
 } from "./_components/hero-variants";
 import { MarketStatsStrip } from "./_components/market-stats-strip";
+import { AreaMapSection } from "./_components/area-map-section";
 import { AreasMosaic } from "./_components/areas-mosaic";
 import { OffPlanStrip } from "./_components/off-plan-strip";
 import { ServicesBand } from "./_components/services-band";
@@ -68,6 +69,11 @@ export default async function HomePage() {
   return (
     <div className="bg-bz-bg">
       <HeroForVariant variant={variant} />
+
+      {/* Interactive area map — right after the hero. Deferred-mount: the
+          MapLibre engine + tiles only load when the visitor clicks
+          "Explore the map", so this doesn't slow the home page. */}
+      <AreaMapSection />
 
       <MarketStatsStrip />
 

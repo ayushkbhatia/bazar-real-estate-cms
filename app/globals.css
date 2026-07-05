@@ -370,3 +370,333 @@
     min-height: 100dvh;
   }
 }
+
+/* ─── Interactive area map (MapLibre GL) ────────────────────────────
+   Ported from the design handoff's map.css. Pins, flyout, controls,
+   dots, credit chip — all against the --bz-* tokens. The basemap is
+   always the warm light Positron palette (even in dark mode), so the
+   white pill pins are intentional regardless of site theme. */
+@layer components {
+  .bzmap {
+    position: relative;
+    overflow: hidden;
+    background: #eceae2;
+  }
+  .bzmap__gl {
+    position: absolute;
+    inset: 0;
+    /* MapLibre adds its own (unlayered) `.maplibregl-map` rule with
+       position:relative, which beats this layered rule and would collapse
+       the container to height 0. Explicit 100% dims fill the parent
+       regardless of which `position` wins. */
+    width: 100%;
+    height: 100%;
+  }
+  .bzmap .maplibregl-canvas {
+    outline: none;
+  }
+
+  /* Attribution / credit — required, do not remove. */
+  .bzmap__credit {
+    position: absolute;
+    right: 10px;
+    bottom: 8px;
+    z-index: 3;
+    font-size: 10px;
+    letter-spacing: 0.01em;
+    color: rgba(62, 60, 52, 0.6);
+    background: rgba(250, 250, 246, 0.75);
+    padding: 2px 8px;
+    border-radius: 99px;
+    pointer-events: none;
+  }
+
+  /* Zoom controls */
+  .bzmap__ctrls {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--bz-surface);
+    border: 1px solid var(--bz-border);
+    border-radius: 8px;
+    padding: 4px;
+    box-shadow: 0 4px 16px rgba(20, 18, 12, 0.08);
+  }
+  .bzmap__ctrls button {
+    width: 34px;
+    height: 34px;
+    border: 0;
+    background: transparent;
+    border-radius: 6px;
+    color: var(--bz-ink-2);
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .bzmap__ctrls button:hover {
+    background: var(--bz-surface-2);
+    color: var(--bz-ink);
+  }
+  .bzmap__ctrls hr {
+    width: 22px;
+    height: 1px;
+    border: 0;
+    background: var(--bz-border);
+    margin: 2px auto;
+  }
+
+  /* Area pin — serif label + count, Bazar white pill */
+  .bzmap-pin {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.97);
+    color: var(--bz-ink);
+    border: 1px solid rgba(20, 18, 12, 0.08);
+    border-radius: 999px;
+    padding: 6px 6px 6px 14px;
+    cursor: pointer;
+    z-index: 2;
+    box-shadow: 0 2px 10px rgba(20, 18, 12, 0.14);
+    transition:
+      box-shadow 0.15s,
+      opacity 0.2s;
+    font-family: inherit;
+  }
+  .bzmap-pin::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -4px;
+    transform: translateX(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    background: inherit;
+    border-right: 1px solid rgba(20, 18, 12, 0.08);
+    border-bottom: 1px solid rgba(20, 18, 12, 0.08);
+  }
+  .bzmap-pin__name {
+    font-family: var(--bz-font-serif);
+    font-size: 14.5px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  .bzmap-pin__count {
+    background: var(--bz-ink);
+    color: var(--bz-bg);
+    font-size: 10.5px;
+    font-weight: 600;
+    min-width: 22px;
+    height: 20px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 7px;
+  }
+  .bzmap-pin:hover,
+  .bzmap-pin.is-hover {
+    z-index: 6;
+    box-shadow: 0 8px 22px rgba(20, 18, 12, 0.22);
+  }
+  .bzmap-pin.is-active {
+    background: var(--bz-ink);
+    color: var(--bz-bg);
+    border-color: var(--bz-ink);
+  }
+  .bzmap-pin.is-active::after {
+    background: var(--bz-ink);
+    border-color: var(--bz-ink);
+  }
+  .bzmap-pin.is-active .bzmap-pin__count {
+    background: var(--bz-accent);
+    color: var(--bz-accent-fg);
+  }
+  .bzmap-pin.is-quiet {
+    opacity: 0.62;
+  }
+  .bzmap-pin.is-quiet:hover {
+    opacity: 1;
+  }
+
+  /* Area flyout card */
+  .bzmap-flyout {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    z-index: 7;
+    width: 316px;
+    max-width: calc(100% - 36px);
+    background: var(--bz-surface);
+    border: 1px solid var(--bz-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+      0 8px 20px rgba(20, 18, 12, 0.1),
+      0 24px 64px rgba(20, 18, 12, 0.16);
+  }
+  .bzmap-flyout__close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    width: 30px;
+    height: 30px;
+    border-radius: 99px;
+    border: 0;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--bz-ink-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .bzmap-flyout__head {
+    position: relative;
+    aspect-ratio: 16 / 8;
+    display: flex;
+    align-items: flex-end;
+    padding: 14px;
+    background:
+      radial-gradient(
+        120% 140% at 15% 10%,
+        rgba(75, 90, 76, 0.55),
+        rgba(27, 26, 23, 0.85)
+      ),
+      var(--bz-ink);
+    color: #fff;
+  }
+  .bzmap-flyout__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--bz-border);
+    border-bottom: 1px solid var(--bz-border);
+  }
+  .bzmap-flyout__stats > div {
+    padding: 12px 14px;
+  }
+  .bzmap-flyout__stats > div + div {
+    border-left: 1px solid var(--bz-border);
+  }
+
+  /* Hint pill */
+  .bzmap-hint {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(27, 26, 23, 0.85);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    white-space: nowrap;
+    backdrop-filter: blur(6px);
+    pointer-events: none;
+  }
+
+  /* Legend */
+  .bzmap-legend {
+    position: absolute;
+    left: 18px;
+    bottom: 16px;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(250, 250, 246, 0.92);
+    border: 1px solid var(--bz-border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: var(--bz-ink-2);
+  }
+  .bzmap-legend > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Listing-dot popup (mini card) */
+  .bzmap-popup {
+    position: absolute;
+    z-index: 8;
+    width: 232px;
+    transform: translate(-50%, calc(-100% - 14px));
+    background: var(--bz-surface);
+    border: 1px solid var(--bz-border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow:
+      0 6px 16px rgba(20, 18, 12, 0.12),
+      0 20px 48px rgba(20, 18, 12, 0.18);
+  }
+  .bzmap-popup::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    transform: translateX(-50%) rotate(45deg);
+    width: 10px;
+    height: 10px;
+    background: var(--bz-surface);
+    border-right: 1px solid var(--bz-border);
+    border-bottom: 1px solid var(--bz-border);
+  }
+
+  /* "Coming soon" empty state — an emirate with no seeded areas yet. */
+  .bzmap-empty {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-align: center;
+    padding: 24px;
+    background: rgba(236, 234, 226, 0.72);
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+  }
+
+  /* Cooperative-gesture overlay, restyled to Bazar */
+  .bzmap .maplibregl-cooperative-gesture-screen {
+    background: rgba(27, 26, 23, 0.42);
+    color: #fff;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Mobile: flyout becomes a bottom sheet spanning the map width. */
+  @media (max-width: 767px) {
+    .bzmap-flyout {
+      top: auto;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      width: auto;
+      max-width: none;
+    }
+    .bzmap-legend {
+      display: none;
+    }
+  }
+}
