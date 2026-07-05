@@ -8,9 +8,11 @@ import { HeroVideoBg } from "./hero-video-bg";
 export type HeroVariant = "fullbleed" | "editorial" | "map" | "concierge";
 
 /**
- * Sprint 4a: 4 hero variants picked by `site_settings.display.hero_variant`.
- * Sprint 9 wires the picker to the existing settings/_actions; until then
- * the variant is passed via prop or `?hero=` querystring on /.
+ * 4 hero variants picked by `site_settings.display.hero_variant` (edit at
+ * /admin/settings/brand). The home page passes the resolved variant as a
+ * prop — it deliberately does not accept a querystring override, since
+ * reading `searchParams` would force the whole route into dynamic
+ * (uncached) rendering.
  */
 export function HeroFullBleed() {
   return (
