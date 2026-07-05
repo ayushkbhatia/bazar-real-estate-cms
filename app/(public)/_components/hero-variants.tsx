@@ -3,6 +3,7 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
 import { HeroSearch } from "./hero-search";
+import { HeroVideoBg } from "./hero-video-bg";
 
 export type HeroVariant = "fullbleed" | "editorial" | "map" | "concierge";
 
@@ -14,14 +15,12 @@ export type HeroVariant = "fullbleed" | "editorial" | "map" | "concierge";
 export function HeroFullBleed() {
   return (
     <section className="relative min-h-[560px] md:h-[720px] bg-bz-ink overflow-hidden">
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(135deg, var(--bz-ink) 0%, oklch(0.22 0.05 155) 55%, var(--bz-ink) 100%)",
-        }}
+      <HeroVideoBg
+        src="/hero/home-hero.mp4"
+        poster="/hero/home-hero-poster.jpg"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-bz-ink/95 via-bz-ink/40 to-bz-ink/40" />
+      {/* Scrim: keeps the white headline + search legible over the footage. */}
+      <div className="absolute inset-0 bg-gradient-to-t from-bz-ink/95 via-bz-ink/55 to-bz-ink/35" />
       <div className="relative h-full px-4 md:px-12 flex flex-col justify-end pb-10 md:pb-16 pt-24 md:pt-0 text-white">
         <Eyebrow className="text-white/60 mb-4">Bazar · Abu Dhabi</Eyebrow>
         <h1
