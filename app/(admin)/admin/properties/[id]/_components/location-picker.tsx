@@ -68,38 +68,48 @@ export function LocationPicker({
 
   const dirty = !coordsEqual(coords, savedCoords);
 
-  // Keep the latest coords in a ref so the (once-bound) map click handler
-  // always sees current state without re-binding.
-  const coordsRef = useRef(coords);
-  coordsRef.current = coords;
-
-  const applyCoords = useCallback((next: Coords | null, recenter: boolean) => {
-    setCoords(next);
-    setLatInput(next ? String(next.lat) : "");
-    setLngInput(next ? String(next.lng) : "");
-    const map = mapRef.current;
-    if (!map) return;
-    if (next) {
-      if (!markerRef.current) {
-        markerRef.current = new maplibregl.Marker({
-          color: "#4a6c4a",
-          draggable: true,
-        })
-          .setLngLat([next.lng, next.lat])
-          .addTo(map);
-        markerRef.current.on("dragend", () => {
-          const p = markerRef.current!.getLngLat();
-          applyCoords({ lat: p.lat, lng: p.lng }, false);
-        });
-      } else {
-        markerRef.current.setLngLat([next.lng, next.lat]);
-      }
-      if (recenter) map.easeTo({ center: [next.lng, next.lat], zoom: Math.max(map.getZoom(), 14) });
-    } else if (markerRef.current) {
-      markerRef.current.remove();
-      markerRef.current = null;
-    }
+  // On drag the marker has already moved — just mirror its position into
+  // state (no need to reposition it). Stable, and self-reference-free so
+  // `applyCoords` doesn't have to call itself.
+  const syncMarkerToState = useCallback(() => {
+    const p = markerRef.current?.getLngLat();
+    if (!p) return;
+    setCoords({ lat: p.lat, lng: p.lng });
+    setLatInput(String(p.lat));
+    setLngInput(String(p.lng));
   }, []);
+
+  const applyCoords = useCallback(
+    (next: Coords | null, recenter: boolean) => {
+      setCoords(next);
+      setLatInput(next ? String(next.lat) : "");
+      setLngInput(next ? String(next.lng) : "");
+      const map = mapRef.current;
+      if (!map) return;
+      if (next) {
+        if (!markerRef.current) {
+          markerRef.current = new maplibregl.Marker({
+            color: "#4a6c4a",
+            draggable: true,
+          })
+            .setLngLat([next.lng, next.lat])
+            .addTo(map);
+          markerRef.current.on("dragend", syncMarkerToState);
+        } else {
+          markerRef.current.setLngLat([next.lng, next.lat]);
+        }
+        if (recenter)
+          map.easeTo({
+            center: [next.lng, next.lat],
+            zoom: Math.max(map.getZoom(), 14),
+          });
+      } else if (markerRef.current) {
+        markerRef.current.remove();
+        markerRef.current = null;
+      }
+    },
+    [syncMarkerToState],
+  );
 
   // Init map once. Guard the WebGL init so an environment without it (jsdom
   // in tests, or a very old browser) degrades to the coordinate inputs +
@@ -127,17 +137,14 @@ export function LocationPicker({
       markerRef.current = new maplibregl.Marker({ color: "#4a6c4a", draggable: true })
         .setLngLat([initialGeo.lng, initialGeo.lat])
         .addTo(map);
-      markerRef.current.on("dragend", () => {
-        const p = markerRef.current!.getLngLat();
-        applyCoords({ lat: p.lat, lng: p.lng }, false);
-      });
+      markerRef.current.on("dragend", syncMarkerToState);
     }
     return () => {
       map.remove();
       mapRef.current = null;
       markerRef.current = null;
     };
-  }, [initialGeo, applyCoords]);
+  }, [initialGeo, applyCoords, syncMarkerToState]);
 
   function commitInputs() {
     const lat = Number(latInput);
