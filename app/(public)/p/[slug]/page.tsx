@@ -59,6 +59,35 @@ async function fetchPropertyGeo(
     return null;
   }
 }
+
+/**
+ * Gallery images attached to the property (role `gallery`), ordered.
+ * Fetched route-locally because the shared detail query reduces
+ * `property_media` down to just the hero.
+ */
+async function fetchGalleryMedia(
+  id: string,
+): Promise<{ storage_key: string; alt: string | null }[]> {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase
+      .from("property_media")
+      .select("sort_order, media:media_assets(storage_key, alt_text)")
+      .eq("property_id", id)
+      .eq("role", "gallery")
+      .order("sort_order", { ascending: true });
+    return (data ?? [])
+      .map((r) => {
+        const m = (r as { media: { storage_key?: string; alt_text?: string | null } | null }).media;
+        return m?.storage_key
+          ? { storage_key: m.storage_key, alt: m.alt_text ?? null }
+          : null;
+      })
+      .filter((x): x is { storage_key: string; alt: string | null } => x !== null);
+  } catch {
+    return [];
+  }
+}
 import { EnquiryForm } from "../../_components/enquiry-form";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
 import { Gallery, type GalleryImage } from "./_components/gallery";
@@ -167,6 +196,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     ...similar.map((s) => s.id),
   ]);
   const geo = await fetchPropertyGeo(property.id);
+  const galleryMedia = await fetchGalleryMedia(property.id);
   const isAuthed = user !== null;
 
   // Best-effort recently-viewed tracking. Anonymous views aren't tracked.
@@ -184,15 +214,25 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     ? mediaPublicUrl(property.hero.storage_key)
     : null;
 
-  // Gallery — for Sprint 4c we only have the hero in the query shape;
-  // Sprint 7c's Media tab will populate property_media so all images flow
-  // through here.
+  // Gallery — hero first, then the property's uploaded gallery photos
+  // (deduped against the hero in case one was promoted from a gallery row).
   const galleryImages: GalleryImage[] = [];
+  const usedKeys = new Set<string>();
   if (property.hero) {
     galleryImages.push({
       src: heroPublicUrl,
       alt: property.hero.alt_text ?? property.title,
       label: `${property.reference} · 1`,
+    });
+    usedKeys.add(property.hero.storage_key);
+  }
+  for (const g of galleryMedia) {
+    if (usedKeys.has(g.storage_key)) continue;
+    usedKeys.add(g.storage_key);
+    galleryImages.push({
+      src: mediaPublicUrl(g.storage_key),
+      alt: g.alt ?? property.title,
+      label: `${property.reference} · ${galleryImages.length + 1}`,
     });
   }
 
