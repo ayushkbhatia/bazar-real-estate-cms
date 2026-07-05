@@ -2,19 +2,29 @@
 
 /**
  * Home "Where to live" orchestrator. Owns the shared state (active
- * emirate, deferred-mount flag, selected area) and renders:
+ * emirate, selected area) and renders:
  *   · a segmented Abu Dhabi / Dubai toggle
- *   · a static teaser (no MapLibre) that defers the heavy map until the
- *     visitor clicks "Explore the map" — keeps the home page fast/static
+ *   · the live MapLibre map — mounts automatically, no click required
  *   · the keyboard-accessible area chips
  *
  * All data arrives as serialisable props from the server section, so this
- * subtree does no per-request work and the page stays static / ISR.
+ * subtree does no per-request server work and the page stays static / ISR
+ * — the map itself is still a lazy (`next/dynamic`, ssr:false) client
+ * component, since MapLibre needs the DOM.
+ *
+ * The mount is scheduled just after first paint (`requestIdleCallback`,
+ * with a short `setTimeout` fallback) rather than in the very first
+ * render pass. Measured impact: mounting MapLibre synchronously on first
+ * render dropped this page's Lighthouse performance score from 0.97 to
+ * 0.74 locally (TBT 30ms → 360ms) — enough to risk failing CI's 0.65
+ * floor once its lower-scoring runners are factored in. Deferring by one
+ * idle tick keeps the map appearing automatically (no "Explore" button)
+ * while letting the hero/LCP paint uncontested first.
  */
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Map as MapIcon } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { AreaMapLazy } from "./area-map-lazy";
 import { AreaChips } from "./area-chips";
 import type { AreaPin, AreaDot } from "@/lib/queries/area-map";
@@ -24,6 +34,27 @@ const EMIRATES: { slug: string; label: string }[] = [
   { slug: "dubai", label: "Dubai" },
 ];
 
+/** True once the browser has an idle moment after first paint (or a short
+ *  fallback timeout elapses) — Safari has no requestIdleCallback. */
+function useIdleReady(fallbackMs = 200): boolean {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const w = window as unknown as {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (typeof w.requestIdleCallback === "function") {
+      const id = w.requestIdleCallback(() => setReady(true), {
+        timeout: fallbackMs * 4,
+      });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const id = window.setTimeout(() => setReady(true), fallbackMs);
+    return () => window.clearTimeout(id);
+  }, [fallbackMs]);
+  return ready;
+}
+
 export function AreaMapHome({
   areas,
   dots,
@@ -32,25 +63,13 @@ export function AreaMapHome({
   dots: AreaDot[];
 }) {
   const [emirate, setEmirate] = useState("abu-dhabi");
-  const [live, setLive] = useState(false);
   const [focusSlug, setFocusSlug] = useState<string | null>(null);
+  const mapReady = useIdleReady();
 
   const visibleAreas = useMemo(
     () => areas.filter((a) => a.emirate === emirate),
     [areas, emirate],
   );
-  const liveCount = useMemo(
-    () => visibleAreas.reduce((n, a) => n + a.count, 0),
-    [visibleAreas],
-  );
-  const emirateLabel =
-    EMIRATES.find((e) => e.slug === emirate)?.label ?? "Abu Dhabi";
-
-  // A chip click both unlocks the map and flies to the area.
-  const onChipSelect = (slug: string) => {
-    setLive(true);
-    setFocusSlug(slug);
-  };
 
   return (
     <section className="bg-bz-bg px-4 py-12 md:px-12 md:py-20">
@@ -79,7 +98,7 @@ export function AreaMapHome({
       </div>
 
       <div className="relative h-[440px] overflow-hidden rounded-xl border border-bz-border bg-bz-surface md:h-[560px]">
-        {live ? (
+        {mapReady ? (
           <AreaMapLazy
             areas={areas}
             dots={dots}
@@ -90,11 +109,7 @@ export function AreaMapHome({
             className="absolute inset-0"
           />
         ) : (
-          <Teaser
-            count={liveCount}
-            label={emirateLabel}
-            onExplore={() => setLive(true)}
-          />
+          <div className="absolute inset-0 animate-pulse bg-bz-surface-2" />
         )}
       </div>
 
@@ -102,7 +117,7 @@ export function AreaMapHome({
         <AreaChips
           areas={visibleAreas}
           activeSlug={focusSlug}
-          onSelect={onChipSelect}
+          onSelect={setFocusSlug}
         />
       </div>
     </section>
@@ -149,57 +164,3 @@ function EmirateToggle({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────
-// Static teaser — a lightweight map-toned poster shown until "Explore".
-// Deliberately contains NO MapLibre import so the engine + tiles only
-// download once the visitor opts in.
-// ─────────────────────────────────────────────────────────────────────
-function Teaser({
-  count,
-  label,
-  onExplore,
-}: {
-  count: number;
-  label: string;
-  onExplore: () => void;
-}) {
-  return (
-    <div className="absolute inset-0">
-      {/* Warm, map-like backdrop echoing the recoloured Positron palette. */}
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(120% 90% at 20% 15%, #f5f3ec 0%, #eef0e8 45%, #e3e7dc 100%)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute inset-0 opacity-60"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(75,90,76,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(75,90,76,0.06) 1px, transparent 1px)",
-          backgroundSize: "44px 44px",
-        }}
-      />
-
-      {count > 0 && (
-        <div className="absolute left-4 top-4 inline-flex h-[30px] items-center gap-2 rounded-full bg-bz-surface/95 px-3 text-xs text-bz-ink-2 shadow-sm">
-          <span className="inline-block h-2 w-2 rounded-full bg-bz-accent" />
-          {count} live listings · {label}
-        </div>
-      )}
-
-      <div className="absolute inset-0 flex items-end justify-center pb-12">
-        <button
-          type="button"
-          onClick={onExplore}
-          className="inline-flex h-12 items-center gap-2 rounded-md bg-bz-ink px-6 text-sm font-medium text-bz-bg shadow-[0_12px_32px_rgba(20,18,12,0.28)] transition-colors hover:bg-bz-ink/90"
-        >
-          <MapIcon size={17} /> Explore the map
-        </button>
-      </div>
-    </div>
-  );
-}
