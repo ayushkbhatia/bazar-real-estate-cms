@@ -70,9 +70,11 @@ export default async function HomePage() {
     <div className="bg-bz-bg">
       <HeroForVariant variant={variant} />
 
-      {/* Interactive area map — right after the hero. Deferred-mount: the
-          MapLibre engine + tiles only load when the visitor clicks
-          "Explore the map", so this doesn't slow the home page. */}
+      {/* Interactive area map — right after the hero. Mounts automatically
+          (no click required), scheduled just after first paint so it
+          doesn't compete with the hero for LCP. Still a lazy client
+          component with no cookies/headers/searchParams in this subtree,
+          so `/` stays static / ISR. */}
       <AreaMapSection />
 
       <MarketStatsStrip />
