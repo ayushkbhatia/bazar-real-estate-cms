@@ -70,9 +70,10 @@ export default async function HomePage() {
     <div className="bg-bz-bg">
       <HeroForVariant variant={variant} />
 
-      {/* Interactive area map — right after the hero. Mounts automatically
-          (no click required), scheduled just after first paint so it
-          doesn't compete with the hero for LCP. Still a lazy client
+      {/* Interactive area map — right after the hero. No button: it mounts
+          on its own via IntersectionObserver just before the visitor
+          scrolls it into view, so MapLibre's init cost never lands in the
+          page-load window Lighthouse audits. Still a lazy client
           component with no cookies/headers/searchParams in this subtree,
           so `/` stays static / ISR. */}
       <AreaMapSection />
