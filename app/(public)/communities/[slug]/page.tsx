@@ -51,14 +51,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const guide = await getAreaGuide(slug);
-  if (!guide) return { title: "Area not found" };
+  if (!guide) return { title: "Community not found" };
   return {
-    title: `${guide.name} — Bazar area guide`,
+    title: `${guide.name} — Bazar community guide`,
     description: guide.intro_md || undefined,
   };
 }
 
-export default async function AreaProfilePage({
+export default async function CommunityProfilePage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -99,8 +99,8 @@ export default async function AreaProfilePage({
   });
   const breadcrumbsLd = breadcrumbListJsonLd([
     { name: "Home", url: siteBase },
-    { name: "Areas", url: `${siteBase}/areas` },
-    { name: area.name, url: `${siteBase}/areas/${area.slug}` },
+    { name: "Communities", url: `${siteBase}/communities` },
+    { name: area.name, url: `${siteBase}/communities/${area.slug}` },
   ]);
 
   return (
@@ -116,17 +116,17 @@ export default async function AreaProfilePage({
       {/* Crumb */}
       <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
         <Link
-          href="/areas"
+          href="/communities"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
         >
           <ArrowLeft size={13} strokeWidth={1.8} />
-          All areas
+          All communities
         </Link>
       </div>
 
       {/* Hero */}
       <section className="px-4 md:px-12 pt-8 pb-12 max-w-[1280px]">
-        <Eyebrow>Area guide · {area.vibe}</Eyebrow>
+        <Eyebrow>Community guide · {area.vibe}</Eyebrow>
         <h1
           className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98] max-w-[14ch]"
           style={{ letterSpacing: "-0.03em" }}
@@ -412,17 +412,17 @@ export default async function AreaProfilePage({
         </div>
       </section>
 
-      {/* Similar areas */}
+      {/* Similar communities */}
       {similar.length > 0 ? (
         <section className="border-t border-bz-border bg-bz-surface">
           <div className="px-4 md:px-12 py-12 max-w-[1280px]">
-            <Eyebrow>Similar areas</Eyebrow>
+            <Eyebrow>Similar communities</Eyebrow>
             <div className="mt-5 flex flex-wrap gap-3">
               {similar.map((s) =>
                 s ? (
                   <Link
                     key={s.slug}
-                    href={`/areas/${s.slug}`}
+                    href={`/communities/${s.slug}`}
                     className="inline-flex items-center h-9 px-3 rounded border border-bz-border bg-bz-bg text-[13px] text-bz-ink-2 hover:border-bz-border-strong hover:text-bz-ink transition-colors"
                   >
                     {s.name}

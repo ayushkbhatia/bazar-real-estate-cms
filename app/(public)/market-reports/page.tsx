@@ -59,10 +59,10 @@ export default async function MarketReportsIndexPage() {
                     {a.name}
                   </h2>
                   <Link
-                    href={`/areas/${a.slug}`}
+                    href={`/communities/${a.slug}`}
                     className="text-[12.5px] text-bz-muted hover:text-bz-ink"
                   >
-                    Area guide →
+                    Community guide →
                   </Link>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

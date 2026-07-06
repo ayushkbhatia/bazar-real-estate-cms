@@ -46,11 +46,25 @@ const nextConfig: NextConfig = {
   // BF-6: /verify-otp was always a magic-link form (the path name implied
   // OTP entry but the action sends a magic link). Renamed to /magic-link;
   // permanent redirect from the legacy URL keeps emailed deep-links live.
+  //
+  // Client nav restructure: "Areas" renamed to "Communities" (label + URL).
+  // Permanent redirects keep old /areas links (bookmarks, backlinks,
+  // search results) resolving to the new path.
   async redirects() {
     return [
       {
         source: "/verify-otp",
         destination: "/magic-link",
+        permanent: true,
+      },
+      {
+        source: "/areas",
+        destination: "/communities",
+        permanent: true,
+      },
+      {
+        source: "/areas/:slug*",
+        destination: "/communities/:slug*",
         permanent: true,
       },
     ];

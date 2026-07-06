@@ -116,10 +116,10 @@ export function AreaMapHome({
             }}
           />
           <Link
-            href="/areas"
+            href="/communities"
             className="hidden items-center gap-1.5 text-sm text-bz-ink-2 transition-colors hover:text-bz-ink md:inline-flex"
           >
-            All areas <ArrowRight size={14} />
+            All communities <ArrowRight size={14} />
           </Link>
         </div>
       </div>

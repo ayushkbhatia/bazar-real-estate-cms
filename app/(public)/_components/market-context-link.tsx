@@ -27,7 +27,7 @@ export function reportableType(
 }
 
 /**
- * T1-A cleanup: per-area quarterly reports rail. Surfaced on /areas/[slug]
+ * T1-A cleanup: per-area quarterly reports rail. Surfaced on /communities/[slug]
  * so visitors can pivot directly into the data moat for the area they're
  * browsing.
  */

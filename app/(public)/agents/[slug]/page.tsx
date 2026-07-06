@@ -258,13 +258,13 @@ export default async function AgentProfilePage({
             </ul>
           </div>
           <div>
-            <Eyebrow>Areas</Eyebrow>
+            <Eyebrow>Communities</Eyebrow>
             <ul className="mt-4 flex flex-col gap-2">
               {areas.map((a) =>
                 a ? (
                   <li key={a.slug}>
                     <Link
-                      href={`/areas/${a.slug}`}
+                      href={`/communities/${a.slug}`}
                       className="text-[14px] text-bz-ink hover:text-bz-accent transition-colors"
                     >
                       · {a.name}

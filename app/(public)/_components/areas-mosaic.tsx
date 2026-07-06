@@ -20,7 +20,7 @@ export function AreasMosaic() {
     <section className="px-4 md:px-12 py-12 md:py-20">
       <div className="flex items-end justify-between gap-8 flex-wrap mb-10">
         <div>
-          <Eyebrow>Areas</Eyebrow>
+          <Eyebrow>Communities</Eyebrow>
           <h2
             className="serif text-[28px] md:text-[40px] mt-2 leading-tight max-w-[24ch]"
             style={{ letterSpacing: "-0.022em" }}
@@ -29,10 +29,10 @@ export function AreasMosaic() {
           </h2>
         </div>
         <Link
-          href="/areas"
+          href="/communities"
           className="inline-flex items-center gap-1.5 text-[13px] text-bz-ink-2 hover:text-bz-accent transition-colors"
         >
-          All areas
+          All communities
           <ArrowRight size={13} strokeWidth={1.7} />
         </Link>
       </div>
@@ -40,7 +40,7 @@ export function AreasMosaic() {
       <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 auto-rows-[200px] md:auto-rows-auto gap-4 md:h-[520px]">
         {/* Saadiyat — big cell */}
         <Link
-          href={`/areas/${AREAS[0].slug}`}
+          href={`/communities/${AREAS[0].slug}`}
           className="md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-lg block"
         >
           <PlaceholderImage
@@ -63,7 +63,7 @@ export function AreasMosaic() {
         {AREAS.slice(1).map((a) => (
           <Link
             key={a.slug}
-            href={`/areas/${a.slug}`}
+            href={`/communities/${a.slug}`}
             className="group relative overflow-hidden rounded-lg block"
           >
             <PlaceholderImage label={a.slug} className="w-full h-full" />

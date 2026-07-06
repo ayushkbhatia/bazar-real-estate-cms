@@ -100,7 +100,7 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
           Market reports
         </Link>
         <span>›</span>
-        <Link href={`/areas/${snapshot.area_slug}`} className="hover:text-bz-ink">
+        <Link href={`/communities/${snapshot.area_slug}`} className="hover:text-bz-ink">
           {snapshot.area_name}
         </Link>
         <span>›</span>

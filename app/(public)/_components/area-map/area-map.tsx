@@ -2,7 +2,7 @@
 
 /**
  * Interactive area map (MapLibre GL) — the shared engine behind the home
- * "Where to live" section and the map band on /areas/[slug].
+ * "Where to live" section and the map band on /communities/[slug].
  *
  * Ported from the design handoff (area-map.jsx) but rebuilt as a typed,
  * *controlled* client component: the parent owns `emirate` + `focusSlug`
@@ -10,7 +10,7 @@
  * it serialisable props with zero per-request work.
  *
  * Behaviour: zoomed out → area pins with listing counts; click a pin →
- * flyout (count · median AED/ft² · YoY) with "View area guide" +
+ * flyout (count · median AED/ft² · YoY) with "View community guide" +
  * "Zoom to N listings"; past z≈12.5 pins go quiet and individual listing
  * dots appear; click a dot → mini popup → property page.
  *
@@ -647,10 +647,10 @@ function Flyout({
 
       <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 8 }}>
         <Link
-          href={`/areas/${area.slug}`}
+          href={`/communities/${area.slug}`}
           className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-bz-ink px-4 text-sm font-medium text-bz-bg transition-colors hover:bg-bz-ink/90"
         >
-          View area guide <ArrowRight size={15} />
+          View community guide <ArrowRight size={15} />
         </Link>
         <button
           type="button"
