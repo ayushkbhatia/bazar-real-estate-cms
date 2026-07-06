@@ -5,7 +5,7 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 export const metadata: Metadata = {
   title: "Sitemap",
   description:
-    "Every public surface on bazar.ae — listings, market reports, guides, services, areas, developers, and editorial.",
+    "Every public surface on bazar.ae — listings, market reports, guides, services, communities, developers, and editorial.",
   alternates: { canonical: "/sitemap" },
 };
 
@@ -35,14 +35,14 @@ const SECTIONS: { title: string; links: { label: string; href: string }[] }[] =
       links: [{ label: "All market reports", href: "/market-reports" }],
     },
     {
-      title: "Areas",
+      title: "Communities",
       links: [
-        { label: "All areas", href: "/areas" },
-        { label: "Saadiyat Island", href: "/areas/saadiyat-island" },
-        { label: "Yas Island", href: "/areas/yas-island" },
-        { label: "Al Reem Island", href: "/areas/al-reem-island" },
-        { label: "Al Raha", href: "/areas/al-raha" },
-        { label: "Corniche", href: "/areas/corniche" },
+        { label: "All communities", href: "/communities" },
+        { label: "Saadiyat Island", href: "/communities/saadiyat-island" },
+        { label: "Yas Island", href: "/communities/yas-island" },
+        { label: "Al Reem Island", href: "/communities/al-reem-island" },
+        { label: "Al Raha", href: "/communities/al-raha" },
+        { label: "Corniche", href: "/communities/corniche" },
       ],
     },
     {

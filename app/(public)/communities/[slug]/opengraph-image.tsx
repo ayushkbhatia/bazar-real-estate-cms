@@ -4,17 +4,17 @@ import { getAreaGuide } from "@/lib/queries/areas-guide";
 import { getSeedAreaGuideBySlug } from "@/lib/seeds/areas";
 
 export const runtime = "edge";
-export const alt = "Bazar area guide";
+export const alt = "Bazar community guide";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 /**
- * Sprint 11 — composed OG image for /areas/[slug]. Pulls the canonical
- * name + median price strip from the seed (the DB layer's stats jsonb
- * is editorial and Sprint 12 wires DLD ingestion). Falls back to
- * "Abu Dhabi" when nothing matches the slug.
+ * Sprint 11 — composed OG image for /communities/[slug]. Pulls the
+ * canonical name + median price strip from the seed (the DB layer's
+ * stats jsonb is editorial and Sprint 12 wires DLD ingestion). Falls
+ * back to "Abu Dhabi" when nothing matches the slug.
  */
-export default async function AreaOpenGraph({
+export default async function CommunityOpenGraph({
   params,
 }: {
   params: { slug: string };
@@ -50,7 +50,7 @@ export default async function AreaOpenGraph({
               color: "#7d8e7e",
             }}
           >
-            Area guide · Abu Dhabi
+            Community guide · Abu Dhabi
           </div>
           <div
             style={{
