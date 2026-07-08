@@ -158,12 +158,14 @@ export function MegamenuPanel({ tab }: Props) {
           </div>
         ) : null}
 
-        {/* RIGHT — sub-locations / sub-markets */}
+        {/* RIGHT — sub-locations / sub-markets. Title uses the same size +
+            gap as the left zone's panel_title so the two zones' column
+            sub-headings sit on the same baseline. */}
         {hasRight ? (
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-7">
             {tab.right_column_title ? (
               <h4
-                className="serif italic text-[22px] leading-tight"
+                className="serif italic text-[26px] leading-tight"
                 style={{ letterSpacing: "-0.015em" }}
               >
                 {tab.right_column_title}
