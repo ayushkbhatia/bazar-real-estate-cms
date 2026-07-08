@@ -84,8 +84,8 @@ export function LegalDocFrame({
       <hr className="mt-16 border-t border-bz-border" />
       <p className="mt-6 text-[12px] text-bz-muted leading-snug max-w-[60ch]">
         Questions on this document? Email{" "}
-        <a className="underline text-bz-ink hover:text-bz-accent" href="mailto:dpo@bazar.ae">
-          dpo@bazar.ae
+        <a className="underline text-bz-ink hover:text-bz-accent" href="mailto:dpo@bazarrealestate.ae">
+          dpo@bazarrealestate.ae
         </a>
         . For PDPL data-subject requests, use{" "}
         <Link href="/account/data-export" className="underline text-bz-ink hover:text-bz-accent">
