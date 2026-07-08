@@ -78,9 +78,15 @@ export function MegamenuPanel({ tab }: Props) {
   const hasRight = tab.columns.right.length > 0;
   const hasFeatured = tab.featured.length > 0;
 
+  // A single-column left zone (e.g. Rent's "Property Types") sizes to its
+  // content instead of claiming an even fraction, so the featured tiles slide
+  // left toward it rather than sitting dead-centre. Multi-column left zones
+  // (e.g. Buy) keep the balanced 1fr track.
+  const leftIsNarrow = tab.columns.left.length <= 1;
+
   // Grid layout. Each present zone gets a track.
   const gridCols = [
-    hasLeft ? "minmax(0, 1fr)" : null,
+    hasLeft ? (leftIsNarrow ? "minmax(0, max-content)" : "minmax(0, 1fr)") : null,
     hasFeatured ? "minmax(0, 1.1fr)" : null,
     hasRight ? "minmax(0, 0.85fr)" : null,
   ]
@@ -119,7 +125,12 @@ export function MegamenuPanel({ tab }: Props) {
                 </span>
               </Link>
             ) : null}
-            <div className="grid grid-cols-2 gap-x-10 gap-y-7">
+            <div
+              className={cn(
+                "grid gap-x-10 gap-y-7",
+                leftIsNarrow ? "grid-cols-1" : "grid-cols-2",
+              )}
+            >
               {tab.columns.left.map((column) => (
                 <ColumnBlock key={column.id} column={column} />
               ))}
