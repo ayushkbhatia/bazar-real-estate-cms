@@ -8,9 +8,9 @@ test("home → /buy → property detail", async ({ page }) => {
 
   // Featured listings come from Supabase. If they're not present, the page
   // shows a placeholder — we tolerate that locally and only assert on the
-  // CTA, then navigate to /buy via the featured "View all properties" link
+  // CTA, then navigate to /buy via the featured "All properties" link
   // (the hero's "Browse Properties" CTA now points at /off-plan).
-  await page.getByRole("link", { name: /view all properties/i }).click();
+  await page.getByRole("link", { name: /^all properties$/i }).click();
   await expect(page).toHaveURL(/\/buy$/);
   await expect(
     page.getByRole("heading", { name: /properties for sale/i }),

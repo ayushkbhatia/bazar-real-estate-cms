@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import {
   formatPriceAED,
@@ -13,19 +12,17 @@ import {
   HeroForVariant,
   type HeroVariant,
 } from "./_components/hero-variants";
-import { MarketStatsStrip } from "./_components/market-stats-strip";
 import { AreaMapSection } from "./_components/area-map-section";
-import { AreasMosaic } from "./_components/areas-mosaic";
-import { OffPlanStrip } from "./_components/off-plan-strip";
-import { ServicesBand } from "./_components/services-band";
-import { InsightsTeaser } from "./_components/insights-teaser";
-import { CtaBanner } from "./_components/cta-banner";
 import { SavedIdsProvider } from "./_components/saved-ids-provider";
 import { ListingCardSaveable } from "./_components/listing-card-saveable";
-import { TrustStrip } from "./_components/trust-strip";
-import { ClientWords } from "./_components/client-words";
-import { AdvisorOfMonth } from "./_components/advisor-of-month";
 import { CarouselGrid } from "@/components/brand/mobile";
+import { LocationBrowsing } from "./_components/home/location-browsing";
+import { OffPlanProjects } from "./_components/home/off-plan-projects";
+import { ListYourProperty } from "./_components/home/list-your-property";
+import { MortgageCalculatorSection } from "./_components/home/mortgage-calculator-section";
+import { WhoWeAre } from "./_components/home/who-we-are";
+import { HomeFaqs } from "./_components/home/home-faqs";
+import { HomeTestimonials } from "./_components/home/home-testimonials";
 
 export const revalidate = 60;
 
@@ -55,10 +52,8 @@ export default async function HomePage() {
   // also accept a `?hero=` querystring override, but reading `searchParams`
   // (even just to await it) forces Next.js to treat the whole route as fully
   // dynamic, which silently discards the `revalidate = 60` above and disables
-  // static/ISR caching for the home page. That meant every single visitor
-  // triggered a fresh server render + fresh Supabase queries — the main cause
-  // of the slow home page. To preview a different hero, change it in
-  // /admin/settings/brand instead.
+  // static/ISR caching for the home page. To preview a different hero, change
+  // it in /admin/settings/brand instead.
   const settingsVariant = settings.display?.hero_variant;
   const variant: HeroVariant = VALID_VARIANTS.includes(
     settingsVariant as HeroVariant,
@@ -70,33 +65,36 @@ export default async function HomePage() {
     <div className="bg-bz-bg">
       <HeroForVariant variant={variant} />
 
-      {/* Interactive area map — right after the hero. No button: it mounts
-          on its own via IntersectionObserver just before the visitor
-          scrolls it into view, so MapLibre's init cost never lands in the
-          page-load window Lighthouse audits. Still a lazy client
-          component with no cookies/headers/searchParams in this subtree,
-          so `/` stays static / ISR. */}
+      {/* Interactive area map — mounts on scroll (kept as-is). Everything
+          below here is the client-audit home restructure. */}
       <AreaMapSection />
 
-      <MarketStatsStrip />
+      {/* 1 — Location-based browsing */}
+      <LocationBrowsing />
 
-      {/* T1-D — Trust signals strip between market stats and featured listings */}
-      <TrustStrip />
+      {/* 2 — Off-plan projects */}
+      <OffPlanProjects />
 
-      {/* Featured listings — 6 cards */}
-      <section className="px-4 md:px-12 py-12 md:py-20">
-        <div className="flex justify-between items-end mb-7 md:mb-10 gap-8 flex-wrap">
+      {/* 3 — Featured properties */}
+      <section className="px-4 md:px-12 py-14 md:py-20">
+        <div className="mb-8 flex flex-col gap-5 md:mb-11 md:flex-row md:items-end md:justify-between">
           <div>
-            <Eyebrow>Featured this week</Eyebrow>
-            <h2
-              className="serif text-[28px] md:text-[40px] font-normal mt-2 leading-tight"
-              style={{ letterSpacing: "-0.022em" }}
+            <div
+              className="text-[11px] font-medium uppercase text-bz-muted"
+              style={{ letterSpacing: "0.12em" }}
             >
-              Hand-picked by our advisors.
+              Featured properties for sale
+            </div>
+            <h2 className="serif mt-2 text-[28px] md:text-[44px] font-normal leading-[1.05] tracking-tight">
+              Featured properties, handpicked for you
             </h2>
+            <p className="mt-4 max-w-[56ch] text-[14.5px] md:text-[15.5px] text-bz-ink-2 leading-relaxed">
+              Discover properties that bring you closer to the lifestyle you are
+              looking for.
+            </p>
           </div>
-          <Button asChild variant="outline">
-            <Link href="/buy">View all properties</Link>
+          <Button asChild variant="outline" className="self-start">
+            <Link href="/buy">All properties</Link>
           </Button>
         </div>
         {featured.length > 0 ? (
@@ -141,16 +139,20 @@ export default async function HomePage() {
         )}
       </section>
 
-      <AreasMosaic />
-      <OffPlanStrip />
-      <ServicesBand />
+      {/* 4 — List your property */}
+      <ListYourProperty />
 
-      {/* T3-A: editorial spotlight rotating monthly through the advisor roster. */}
-      <AdvisorOfMonth />
+      {/* 5 — Mortgage calculator */}
+      <MortgageCalculatorSection />
 
-      <ClientWords limit={3} />
-      <InsightsTeaser />
-      <CtaBanner />
+      {/* 6 — Who we are */}
+      <WhoWeAre />
+
+      {/* 7 — FAQs */}
+      <HomeFaqs />
+
+      {/* 8 — Testimonials */}
+      <HomeTestimonials />
     </div>
   );
 }

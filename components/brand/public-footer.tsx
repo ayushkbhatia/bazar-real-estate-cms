@@ -2,86 +2,82 @@ import Link from "next/link";
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
-    title: "Marketplace",
+    title: "Company",
     links: [
-      { label: "Buy", href: "/buy" },
-      { label: "Rent", href: "/rent" },
-      { label: "Off-plan", href: "/off-plan" },
-      { label: "Commercial", href: "/commercial" },
-      { label: "New developments", href: "/developments" },
-      { label: "Communities guide", href: "/communities" },
+      { label: "About", href: "/about" },
+      { label: "Careers", href: "/careers" },
+      { label: "News & Insights", href: "/insights" },
+      { label: "Developers", href: "/developers" },
+      { label: "Communities", href: "/communities" },
+      { label: "New Projects", href: "/off-plan" },
     ],
   },
   {
     title: "Services",
     links: [
-      { label: "Advisory", href: "/services/buy" },
-      { label: "Property management", href: "/services/manage" },
-      { label: "Mortgage", href: "/tools/mortgage" },
-      { label: "Conveyancing", href: "/services/conveyancing" },
-      { label: "Investment", href: "/services/invest" },
-      { label: "Valuation", href: "/tools/valuation" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About Bazar", href: "/about" },
-      { label: "Our team", href: "/agents" },
-      { label: "Press", href: "/press" },
-      { label: "Careers", href: "/careers" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { label: "Market insights", href: "/insights" },
-      { label: "Buyer's guide", href: "/insights/category/buyers-guide" },
-      { label: "Seller's guide", href: "/insights/category/sellers-guide" },
-      { label: "RERA glossary", href: "/insights/category/policy" },
-      { label: "Calculator", href: "/tools/mortgage" },
+      { label: "Buy a Property", href: "/buy" },
+      { label: "Sell Your Property", href: "/services/sell" },
+      { label: "Rent a Property", href: "/rent" },
+      { label: "List Your Property", href: "/services/sell" },
+      { label: "Property Management", href: "/services/manage" },
+      { label: "Mortgage Support", href: "/tools/mortgage" },
     ],
   },
 ];
 
-const SOCIAL = ["IG", "LI", "X", "YT"];
+// Some communities aren't seeded as guide pages yet — those fall back to the
+// communities index rather than 404.
+const POPULAR_AREAS: { label: string; href: string }[] = [
+  { label: "Hudayriyat Island", href: "/communities" },
+  { label: "Al Reem Island", href: "/communities/al-reem-island" },
+  { label: "Yas Island", href: "/communities/yas-island" },
+  { label: "Saadiyat Island", href: "/communities/saadiyat-island" },
+  { label: "Al Raha Beach", href: "/communities/al-raha" },
+  { label: "Masdar City", href: "/communities/masdar-city" },
+  { label: "Al Ghadeer", href: "/communities" },
+  { label: "Zayed City", href: "/communities" },
+];
+
+const SOCIAL = ["Facebook", "Instagram", "TikTok", "YouTube", "LinkedIn"];
 
 export function PublicFooter() {
   return (
-    <footer className="bg-bz-ink text-[oklch(0.85_0.005_80)] px-4 md:px-12 pt-12 md:pt-16 pb-8">
-      <div className="grid grid-cols-2 md:grid-cols-[1.5fr_repeat(4,1fr)] gap-8 md:gap-12 pb-12">
+    <footer className="bg-bz-ink text-[oklch(0.85_0.005_80)] px-4 md:px-12 pt-14 md:pt-16 pb-8">
+      <div className="grid grid-cols-2 gap-10 md:grid-cols-[1.5fr_repeat(3,1fr)_1.15fr] md:gap-12 pb-12">
+        {/* Brand + socials */}
         <div className="col-span-2 md:col-span-1">
           <div className="serif italic text-[28px] text-white leading-none">
             Bazar
           </div>
-          <p className="mt-3 text-[13px] leading-[1.6] max-w-[280px] text-[oklch(0.7_0.005_80)]">
-            Bespoke real estate advisory for investors and sellers across the
-            United Arab Emirates.
+          <p className="mt-3 max-w-[280px] text-[13px] leading-[1.6] text-[oklch(0.7_0.005_80)]">
+            Bazar Real Estate is a leading UAE real estate agency, serving the
+            property market with expertise since 2005.
           </p>
-          <div className="flex gap-2.5 mt-5">
+          <div className="mt-5 flex flex-wrap gap-2">
             {SOCIAL.map((s) => (
               <a
                 key={s}
                 href="#"
-                className="w-8 h-8 rounded-full border border-[oklch(0.3_0_0)] flex items-center justify-center text-[10px] tracking-wider hover:border-white hover:text-white transition-colors"
+                className="rounded-full border border-[oklch(0.3_0_0)] px-3 py-1.5 text-[11.5px] text-[oklch(0.8_0.005_80)] transition-colors hover:border-white hover:text-white"
               >
                 {s}
               </a>
             ))}
           </div>
         </div>
+
+        {/* Link columns */}
         {COLUMNS.map((col) => (
           <div key={col.title}>
-            <h4 className="text-[12px] font-medium text-[oklch(0.7_0.005_80)] uppercase tracking-wider mb-4">
+            <h4 className="mb-4 text-[12px] font-medium uppercase tracking-wider text-[oklch(0.7_0.005_80)]">
               {col.title}
             </h4>
             <ul className="flex flex-col gap-2.5 text-[13.5px]">
               {col.links.map((link) => (
-                <li key={link.href}>
+                <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="hover:text-white transition-colors"
+                    className="transition-colors hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -90,18 +86,79 @@ export function PublicFooter() {
             </ul>
           </div>
         ))}
-      </div>
-      <div className="border-t border-[oklch(0.28_0_0)] pt-6 flex flex-wrap justify-between gap-4 text-[12px] text-[oklch(0.6_0.005_80)]">
+
+        {/* Popular areas */}
         <div>
-          © {new Date().getFullYear()} Bazar Real Estate Brokerage LLC · ORN
-          28041 · Abu Dhabi, UAE
+          <h4 className="mb-4 text-[12px] font-medium uppercase tracking-wider text-[oklch(0.7_0.005_80)]">
+            Popular areas
+          </h4>
+          <ul className="flex flex-col gap-2.5 text-[13.5px]">
+            {POPULAR_AREAS.map((a) => (
+              <li key={a.label}>
+                <Link
+                  href={a.href}
+                  className="transition-colors hover:text-white"
+                >
+                  {a.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Contact */}
+        <div className="col-span-2 md:col-span-1">
+          <h4 className="mb-4 text-[12px] font-medium uppercase tracking-wider text-[oklch(0.7_0.005_80)]">
+            Contact
+          </h4>
+          <ul className="flex flex-col gap-4 text-[13.5px]">
+            <li>
+              <div className="text-[11.5px] text-[oklch(0.6_0.005_80)]">
+                Phone / WhatsApp
+              </div>
+              <a href="tel:+97126322223" className="block text-white hover:underline">
+                +971 2 632 2223
+              </a>
+              <a href="tel:+971506911103" className="block text-white hover:underline">
+                +971 50 691 1103
+              </a>
+            </li>
+            <li>
+              <div className="text-[11.5px] text-[oklch(0.6_0.005_80)]">Email</div>
+              <a
+                href="mailto:info@bazarrealestate.ae"
+                className="text-white hover:underline"
+              >
+                info@bazarrealestate.ae
+              </a>
+            </li>
+            <li>
+              <div className="text-[11.5px] text-[oklch(0.6_0.005_80)]">
+                Office location
+              </div>
+              <div className="leading-[1.55]">
+                Sheikha Salama Building, Office 4
+                <br />
+                Zayed The First Street, Al Bateen
+                <br />
+                Abu Dhabi, United Arab Emirates
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap justify-between gap-4 border-t border-[oklch(0.28_0_0)] pt-6 text-[12px] text-[oklch(0.6_0.005_80)]">
+        <div>
+          © 2026 Bazar Real Estate L.L.C. All rights reserved. · ADM:
+          202400997397 · Regulated by ADREC &amp; DLD
         </div>
         <div className="flex gap-6">
           <Link href="/legal/privacy" className="hover:text-white">
-            Privacy
+            Privacy Policy
           </Link>
           <Link href="/legal/terms" className="hover:text-white">
-            Terms
+            Terms of Use
           </Link>
           <Link href="/legal/cookies" className="hover:text-white">
             Cookies
