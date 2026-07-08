@@ -291,6 +291,30 @@
   .bz-prose strong {
     font-weight: 600;
   }
+  .bz-prose code {
+    font-family: var(--bz-font-mono);
+    font-size: 0.9em;
+    background: var(--bz-surface);
+    border: 1px solid var(--bz-border);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+  }
+  .bz-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+  }
+  .bz-prose th,
+  .bz-prose td {
+    border: 1px solid var(--bz-border);
+    padding: 0.6em 0.8em;
+    text-align: left;
+    vertical-align: top;
+  }
+  .bz-prose th {
+    font-weight: 600;
+    background: var(--bz-surface);
+  }
 
   /* Tiptap editor surface */
   .tiptap p.is-editor-empty:first-child::before {
