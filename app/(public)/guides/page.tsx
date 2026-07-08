@@ -39,6 +39,20 @@ const GUIDES = [
     intro:
       "The KYC and source-of-funds paperwork to expect at the trustee desk. Compile this before MoU and the transfer day runs smoothly.",
   },
+  {
+    slug: "for-tenants",
+    eyebrow: "Renting · For Tenants",
+    title: "Renting in Abu Dhabi",
+    intro:
+      "The tenant's playbook — move-in steps, the documents to prepare, and the full rental journey from budget to Tawtheeq to renewal.",
+  },
+  {
+    slug: "for-landlords",
+    eyebrow: "Renting · For Landlords",
+    title: "Renting out your property",
+    intro:
+      "The landlord's playbook — professional property management and how to rent out your property the right way, from pricing to handover.",
+  },
 ];
 
 export default function GuidesIndexPage() {

@@ -4,9 +4,9 @@ import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const MODES = [
-  { value: "buy", label: "Buy", path: "/buy" },
-  { value: "rent", label: "Rent", path: "/rent" },
-  { value: "off_plan", label: "Off-plan", path: "/off-plan" },
+  { value: "buy", label: "Buy", path: "/buy/search" },
+  { value: "rent", label: "Rent", path: "/rent/search" },
+  { value: "off_plan", label: "Off-plan", path: "/off-plan/search" },
   { value: "commercial", label: "Commercial", path: "/commercial" },
 ] as const;
 
@@ -17,7 +17,7 @@ const MODES = [
  */
 export function ModeSegmented() {
   const router = useRouter();
-  const pathname = usePathname() ?? "/buy";
+  const pathname = usePathname() ?? "/buy/search";
 
   function go(path: string) {
     if (path === pathname) return;

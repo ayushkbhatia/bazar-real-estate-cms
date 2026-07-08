@@ -19,7 +19,7 @@ export default async function NewThisWeekPage() {
       title="Listed in the last seven days."
       intro="Fresh stock, including off-market drops that aren't on portals yet. We push these out to our saved-search subscribers first; this page is the public mirror."
       rows={rows}
-      browseAllHref="/buy"
+      browseAllHref="/buy/search"
       browseAllLabel="Browse all listings"
     />
   );

@@ -41,7 +41,10 @@ async function revalidatePropertyPaths(propertyId: string) {
   if (data?.status === "published") {
     revalidatePath(propertyUrl(data));
     revalidatePath("/buy");
+    revalidatePath("/buy/search");
     revalidatePath("/rent");
+    revalidatePath("/rent/search");
+    revalidatePath("/off-plan/search");
     revalidatePath("/");
   }
 }
@@ -148,7 +151,10 @@ export async function updateProperty(
   if (data.status === "published") {
     revalidatePath(propertyUrl(data));
     revalidatePath("/buy");
+    revalidatePath("/buy/search");
     revalidatePath("/rent");
+    revalidatePath("/rent/search");
+    revalidatePath("/off-plan/search");
     revalidatePath("/");
   }
 

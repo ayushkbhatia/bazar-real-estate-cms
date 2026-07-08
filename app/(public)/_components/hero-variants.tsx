@@ -110,7 +110,7 @@ export function HeroMap() {
         </p>
         <div className="mt-8 flex gap-3">
           <Button asChild size="lg">
-            <Link href="/buy">Open the map</Link>
+            <Link href="/buy/search?view=map">Open the map</Link>
           </Button>
         </div>
       </div>

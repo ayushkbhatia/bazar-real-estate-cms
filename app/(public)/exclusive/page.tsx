@@ -19,7 +19,7 @@ export default async function ExclusivePage() {
       title="Listings nobody else has."
       intro="When a seller wants their property represented quietly — by a single firm, off-portal, with a known buyer pool — they come to us. Below: every Bazar-exclusive listing currently active."
       rows={rows}
-      browseAllHref="/buy"
+      browseAllHref="/buy/search"
       browseAllLabel="Browse all listings"
     />
   );

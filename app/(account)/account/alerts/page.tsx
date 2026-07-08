@@ -31,12 +31,12 @@ function searchHref(s: SavedSearchRow): string {
   }
   const base =
     s.mode === "rent"
-      ? "/rent"
+      ? "/rent/search"
       : s.mode === "off_plan"
-        ? "/off-plan"
+        ? "/off-plan/search"
         : s.mode === "commercial"
           ? "/commercial"
-          : "/buy";
+          : "/buy/search";
   const qs = params.toString();
   return qs ? `${base}?${qs}` : base;
 }

@@ -94,7 +94,7 @@ export default async function HomePage() {
             </p>
           </div>
           <Button asChild variant="outline" className="self-start">
-            <Link href="/buy">All properties</Link>
+            <Link href="/buy/search">All properties</Link>
           </Button>
         </div>
         {featured.length > 0 ? (

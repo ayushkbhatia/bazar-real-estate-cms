@@ -1,21 +1,53 @@
 import type { Metadata } from "next";
-import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import Link from "next/link";
+import {
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Home,
+  Building2,
+  Tag,
+  Upload,
+  Layers,
+  Link2,
+  SlidersHorizontal,
+  FileText,
+  User,
+  ArrowRight,
+  type LucideIcon,
+} from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { EnquiryForm } from "../_components/enquiry-form";
 import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
+import { fluid } from "../_components/marketing/fluid";
+import { SectionHead } from "../_components/marketing/section-head";
 import { HqMap } from "./_components/hq-map";
 
 export const metadata: Metadata = {
-  title: "Contact",
+  title: "Contact Bazar Real Estate",
   description:
-    "Talk to a Bazar advisor. We respond within 2 hours during business hours and by next morning otherwise.",
+    "Get in touch with Bazar Real Estate for buying, selling, renting, listing, or investment enquiries across Abu Dhabi and the UAE.",
+  alternates: { canonical: "/contact" },
 };
+
+const HELP: [string, LucideIcon, string][] = [
+  ["Buy a Property", Home, "/buy"],
+  ["Rent a Property", Building2, "/rent"],
+  ["Sell Your Property", Tag, "/services/sell"],
+  ["List Your Property", Upload, "/services/sell"],
+  ["Explore New Projects", Layers, "/off-plan"],
+  ["Our Partners", Link2, "/developers"],
+  ["Our Services", SlidersHorizontal, "/services"],
+  ["Insights", FileText, "/insights"],
+  ["About Us", User, "/about"],
+];
 
 function ContactWhatsAppLink() {
   const waUrl = buildAdvisorWhatsAppLink("Hi Bazar, I'd like to talk.");
   if (!waUrl) return null;
   return (
-    <div className="mt-4 flex items-center justify-center">
+    <div className="mt-4 flex items-center">
       <a
         href={waUrl}
         target="_blank"
@@ -32,90 +64,145 @@ function ContactWhatsAppLink() {
 
 export default function ContactPage() {
   return (
-    <div className="px-4 md:px-12 py-16">
-      <div className="grid lg:grid-cols-[1fr_520px] gap-16 max-w-[1300px] mx-auto [&>*]:min-w-0">
-        <section>
-          <Eyebrow>Contact</Eyebrow>
-          <h1
-            className="serif text-[36px] md:text-[64px] font-normal mt-2 leading-[1.05] max-w-[14ch]"
-            style={{ letterSpacing: "-0.025em" }}
-          >
-            Tell us what you&apos;re looking for.
-          </h1>
-          <p className="mt-5 text-[15px] text-bz-muted max-w-[55ch] leading-relaxed">
-            One brief, one advisor. We&apos;ll come back within 2 hours during
-            business hours, and by next morning otherwise.
-          </p>
+    <div className="bg-bz-bg">
+      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-8">
+        <Eyebrow>Contact</Eyebrow>
+        <h1
+          className="serif mt-3.5"
+          style={{
+            fontSize: fluid(88),
+            letterSpacing: "-0.03em",
+            lineHeight: 0.97,
+          }}
+        >
+          Let&apos;s talk <em className="italic">property.</em>
+        </h1>
+        <p className="text-[16px] md:text-[18px] text-bz-ink-2 max-w-[680px] leading-relaxed mt-5">
+          Get in touch with Bazar Real Estate for buying, selling, renting,
+          listing, or investment enquiries across Abu Dhabi and the UAE.
+        </p>
+      </section>
 
-          <ul className="mt-10 flex flex-col gap-5 text-[14px]">
-            <li className="flex gap-3 items-start">
-              <MapPin
-                size={16}
-                strokeWidth={1.6}
-                className="text-bz-muted mt-0.5 flex-shrink-0"
-              />
-              <div>
-                <div className="text-bz-muted text-[11.5px] uppercase tracking-wider mb-0.5">
-                  Office
-                </div>
-                <div className="text-bz-ink">
-                  Bazar Real Estate Brokerage LLC<br />
-                  Saadiyat Island, Abu Dhabi
-                </div>
-              </div>
-            </li>
-            <li className="flex gap-3 items-start">
-              <Phone
-                size={16}
-                strokeWidth={1.6}
-                className="text-bz-muted mt-0.5 flex-shrink-0"
-              />
-              <div>
-                <div className="text-bz-muted text-[11.5px] uppercase tracking-wider mb-0.5">
-                  Phone
-                </div>
+      <section className="px-4 md:px-12 py-10 md:py-14">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-[72px] items-start max-w-[1200px]">
+          {/* Contact info */}
+          <div className="flex flex-col">
+            {[
+              [
+                Phone,
+                "Call us / message us",
+                <div key="p">
+                  <a
+                    href="tel:+97121234567"
+                    className="block text-[18px] hover:text-bz-accent"
+                  >
+                    +971 2 123 4567
+                  </a>
+                </div>,
+                "Mon–Sat 9am–7pm GST",
+              ],
+              [
+                Mail,
+                "Email us",
                 <a
-                  href="tel:+97121234567"
-                  className="text-bz-ink hover:text-bz-accent"
-                >
-                  +971 2 123 4567
-                </a>
-              </div>
-            </li>
-            <li className="flex gap-3 items-start">
-              <Mail
-                size={16}
-                strokeWidth={1.6}
-                className="text-bz-muted mt-0.5 flex-shrink-0"
-              />
-              <div>
-                <div className="text-bz-muted text-[11.5px] uppercase tracking-wider mb-0.5">
-                  Email
-                </div>
-                <a
+                  key="e"
                   href="mailto:hello@bazar.ae"
-                  className="text-bz-ink hover:text-bz-accent"
+                  className="text-[18px] text-bz-accent"
                 >
                   hello@bazar.ae
-                </a>
-              </div>
-            </li>
-          </ul>
-        </section>
-
-        <aside>
-          <div className="bg-bz-surface border border-bz-border rounded-lg p-6">
-            <h2
-              className="serif text-[22px] mb-4"
-              style={{ letterSpacing: "-0.01em" }}
-            >
-              Send a brief
-            </h2>
-            <EnquiryForm source="contact_page" showIntent />
+                </a>,
+                "We reply within 2 hours on business days",
+              ],
+              [
+                MapPin,
+                "Visit our office",
+                <div key="o" className="text-[15px] leading-relaxed">
+                  Bazar Real Estate Brokerage LLC
+                  <br />
+                  Saadiyat Island, Abu Dhabi
+                  <br />
+                  United Arab Emirates
+                </div>,
+                null,
+              ],
+            ].map(([Icon, label, body, note]) => {
+              const IconC = Icon as LucideIcon;
+              return (
+                <div
+                  key={label as string}
+                  className="flex gap-5 py-6 border-t border-bz-border"
+                >
+                  <div className="text-bz-accent mt-0.5">
+                    <IconC size={20} strokeWidth={1.6} />
+                  </div>
+                  <div className="flex-1">
+                    <div className="eyebrow">{label as string}</div>
+                    <div className="mt-2 text-bz-ink">
+                      {body as React.ReactNode}
+                    </div>
+                    {note ? (
+                      <div className="text-[12.5px] text-bz-muted mt-1.5">
+                        {note as string}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <ContactWhatsAppLink />
-        </aside>
-      </div>
+
+          {/* Enquiry form */}
+          <div className="rounded-lg border border-bz-border bg-bz-surface p-6 md:p-9">
+            <div
+              className="serif text-[26px]"
+              style={{ letterSpacing: "-0.015em" }}
+            >
+              Send us an enquiry
+            </div>
+            <p className="text-[14px] text-bz-muted mt-2">
+              Tell us what you&apos;re looking for, and our team will get back to
+              you shortly.
+            </p>
+            <div className="mt-6">
+              <EnquiryForm source="contact_page" showIntent />
+            </div>
+            <ContactWhatsAppLink />
+          </div>
+        </div>
+      </section>
+
+      {/* How can we help */}
+      <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border bg-bz-surface-2">
+        <div className="max-w-[1200px]">
+          <SectionHead
+            eyebrow="How can we help?"
+            title="Choose the service that matches your enquiry."
+            sub="We'll connect you with the right member of our team."
+            size={44}
+            className="mb-9"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {HELP.map(([label, Icon, href]) => (
+              <Link
+                key={label}
+                href={href}
+                className="group flex items-center gap-4 rounded-lg border border-bz-border bg-bz-surface p-6 hover:border-bz-ink transition-colors"
+              >
+                <div className="w-11 h-11 rounded-lg bg-bz-accent-soft text-bz-accent flex items-center justify-center flex-shrink-0">
+                  <Icon size={20} strokeWidth={1.6} />
+                </div>
+                <div className="text-[16px] font-medium flex-1">{label}</div>
+                <ArrowRight
+                  size={16}
+                  strokeWidth={1.7}
+                  className="text-bz-muted transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <HqMap />
     </div>
   );

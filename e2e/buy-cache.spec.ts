@@ -33,13 +33,13 @@ test("/about serves a cached response on the second request", async ({
   ).toContain(cacheHeader);
 });
 
-test("/buy is no longer force-dynamic", async ({ request }) => {
+test("/buy/search is no longer force-dynamic", async ({ request }) => {
   // Two requests should both return 200; the route is revalidate=60 with
   // dynamic params, so it renders per-URL but with the per-user SSR fetches
-  // lifted to the client.
-  const a = await request.get("/buy");
+  // lifted to the client. (Search relocated from /buy to /buy/search.)
+  const a = await request.get("/buy/search");
   expect(a.status()).toBe(200);
-  const b = await request.get("/buy");
+  const b = await request.get("/buy/search");
   expect(b.status()).toBe(200);
 
   // The page rendered without any user session — assert that the response
@@ -51,6 +51,6 @@ test("/buy is no longer force-dynamic", async ({ request }) => {
   const setCookie = b.headers()["set-cookie"];
   expect(
     setCookie ?? "",
-    "anon GET /buy should not refresh an auth cookie",
+    "anon GET /buy/search should not refresh an auth cookie",
   ).not.toMatch(/sb-[^=]+-auth-token/);
 });

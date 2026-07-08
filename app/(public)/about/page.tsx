@@ -1,189 +1,386 @@
-import Link from "next/link";
 import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, Check, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import { Button } from "@/components/ui/button";
-import { SEED_AGENTS } from "@/lib/seeds/agents";
-import { AwardsBand } from "../_components/awards-band";
-import { ClientWords } from "../_components/client-words";
-import { ValuationLeadGate } from "../tools/valuation/_components/lead-gate";
+import { fluid } from "../_components/marketing/fluid";
+import { SectionHead } from "../_components/marketing/section-head";
 
 export const metadata: Metadata = {
-  title: "About Bazar",
+  title: "About Bazar Real Estate",
   description:
-    "Twelve capped advisors. Fiduciary-aligned. A boutique Abu Dhabi advisory firm built on referrals, not portal traffic.",
+    "A trusted name in UAE real estate since 2005 — over 20 years of trust, transparency, and proven market experience across Abu Dhabi and the wider UAE.",
+  alternates: { canonical: "/about" },
 };
 
-const PRINCIPLES: { eyebrow: string; title: string; body: string }[] = [
-  {
-    eyebrow: "01 · Capped",
-    title: "Twelve advisors. By design.",
-    body: "Bazar caps senior advisor headcount at twelve. When a thirteenth seat opens, we turn most candidates away. The cap is the product. It is how we keep the relationships dense and the deals quiet.",
-  },
-  {
-    eyebrow: "02 · Fiduciary",
-    title: "Paid by the client, not the developer.",
-    body: "Most Abu Dhabi brokers are paid by the listing side. Our advisory fee is on the buyer or seller we represent. That is the only way the conversation is honest.",
-  },
-  {
-    eyebrow: "03 · Off-market",
-    title: "The best stock never lists.",
-    body: "About 40% of Bazar transactions don't appear on Property Finder or Bayut. Owners who don't want their property publicly listed bring it to us. That deal flow is the moat.",
-  },
-  {
-    eyebrow: "04 · Editorial",
-    title: "We write the Brief — and we mean it.",
-    body: "The Bazar Brief is read by ~14,400 people in Abu Dhabi, Riyadh, and London. We send it once a week, and it shapes our buyer demand. The market reads us; we read the market.",
-  },
+const VALUES: [string, string][] = [
+  ["Trust", "Transparency, reliability, and long-term confidence."],
+  ["Excellence", "Premium standards across every client experience."],
+  [
+    "Access",
+    "Strong connections with developers, banks, and industry partners.",
+  ],
+  ["Customer Focus", "Client satisfaction, success, and long-term value."],
+  ["Innovation", "Smart solutions for evolving market needs."],
 ];
 
-const STATS: { label: string; value: string; sub: string }[] = [
-  { label: "Founded", value: "2018", sub: "By Rashid Bin Faris" },
-  { label: "Advisors", value: "12", sub: "Capped, senior only" },
-  { label: "Closed lifetime", value: "AED 11.2B", sub: "Across all engagements" },
-  { label: "Repeat clients", value: "68%", sub: "Of last year's closes" },
+const EXPERTISE = [
+  "Off-Plan Sales",
+  "Secondary Market",
+  "Listing Services",
+  "Property Investment",
+  "Property Management",
+  "Real Estate Consulting",
+  "Luxury Properties",
+  "Commercial Real Estate",
+  "Mortgage & Banking Guidance",
+];
+
+const PARTNERS = [
+  "Aldar Properties",
+  "Modon Properties",
+  "Bloom Holding",
+  "IMKAN Properties",
+  "Reportage Properties",
+  "Eagle Hills",
+  "Radiant Real Estate",
+  "Ohana Development",
+  "Taraf",
+];
+
+const HIGHLIGHTS = [
+  "Established in 2005",
+  "Two decades of experience",
+  "Award-winning UAE agency",
+  "Strong Abu Dhabi presence",
+  "Experienced local team",
+  "Trusted developer relationships",
 ];
 
 export default function AboutPage() {
   return (
     <div className="bg-bz-bg">
       {/* Hero */}
-      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-16 max-w-[1200px]">
-        <Eyebrow>About Bazar</Eyebrow>
+      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-12 md:pb-16">
+        <Eyebrow>About Bazar Real Estate</Eyebrow>
         <h1
-          className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98]"
-          style={{ letterSpacing: "-0.03em" }}
+          className="serif mt-4 max-w-[1100px]"
+          style={{
+            fontSize: fluid(88),
+            letterSpacing: "-0.03em",
+            lineHeight: 0.98,
+          }}
         >
-          Abu Dhabi,<br />
-          properly understood.
+          A trusted name in UAE
+          <br />
+          real estate <em className="italic">since 2005.</em>
         </h1>
-        <p className="mt-8 text-[17px] text-bz-ink-2 leading-relaxed max-w-[64ch]">
-          Bazar is a capped, fiduciary-aligned advisory firm based in Abu Dhabi.
-          We do not run a portal. We do not employ junior brokers. We work for
-          twelve senior advisors and the people they represent — most often,
-          quietly, off-market.
-        </p>
-      </section>
-
-      {/* Stats */}
-      <section className="border-y border-bz-border bg-bz-surface">
-        <div className="px-4 md:px-12 py-10 max-w-[1200px]">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
-            {STATS.map((s) => (
-              <div key={s.label}>
-                <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-                  {s.label}
-                </div>
-                <div
-                  className="serif text-[40px] mt-1 leading-none"
-                  style={{ letterSpacing: "-0.02em" }}
-                >
-                  {s.value}
-                </div>
-                <div className="mt-2 text-[12.5px] text-bz-ink-2">{s.sub}</div>
-              </div>
-            ))}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-10 lg:gap-[72px] mt-12">
+          <div className="eyebrow pt-1.5">Established Abu Dhabi · 2005</div>
+          <div className="text-[17px] md:text-[19px] leading-[1.65] text-bz-ink-2 max-w-[760px]">
+            <p className="m-0">
+              Established in Abu Dhabi in 2005, Bazar Real Estate L.L.C. is a
+              leading award-winning real estate agency in the UAE, built on over
+              20 years of trust, transparency, and proven market experience.
+            </p>
+            <p className="mt-4">
+              With deep roots in Abu Dhabi and a growing presence across the
+              wider UAE, Bazar has developed a trusted reputation for market
+              expertise, professional excellence, and strong industry
+              relationships in one of the region&apos;s most dynamic real estate
+              markets.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Principles */}
-      <section className="px-4 md:px-12 py-12 md:py-20 max-w-[1200px]">
-        <Eyebrow>Principles</Eyebrow>
-        <h2
-          className="serif text-[30px] md:text-[44px] mt-3 leading-[1.05] max-w-[20ch]"
-          style={{ letterSpacing: "-0.02em" }}
-        >
-          Four rules we organise the firm around.
-        </h2>
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-10 gap-y-14">
-          {PRINCIPLES.map((p) => (
-            <div key={p.eyebrow}>
-              <div className="text-[11.5px] uppercase tracking-wider text-bz-accent">
-                {p.eyebrow}
-              </div>
-              <h3
-                className="serif text-[26px] mt-3 leading-tight"
-                style={{ letterSpacing: "-0.012em" }}
+      <section className="px-4 md:px-12 pb-16 md:pb-20">
+        <div className="relative w-full" style={{ aspectRatio: "21/9" }}>
+          <PlaceholderImage
+            label="bazar office · al bateen · abu dhabi"
+            className="absolute inset-0 h-full w-full rounded-xl"
+          />
+        </div>
+      </section>
+
+      {/* Beyond property + Our story */}
+      <section className="px-4 md:px-12 py-14 md:py-18 border-t border-bz-border">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-[72px] max-w-[1200px]">
+          {[
+            [
+              "Beyond property",
+              "A partner, not just a broker.",
+              [
+                "At Bazar Real Estate, we go beyond property transactions. We act as a trusted partner for clients navigating Abu Dhabi and the wider UAE real estate market, combining local expertise with a modern, investor-focused approach.",
+                "With direct relationships with leading developers, financial partners, and key industry stakeholders, Bazar provides clients with the knowledge, access, and confidence needed to make informed property decisions.",
+              ],
+            ],
+            [
+              "Our story",
+              "Twenty years, built on the ground.",
+              [
+                "Founded in Abu Dhabi in 2005 by Azmi Mohamdin, Bazar Real Estate was built on deep, hands-on knowledge of the local property market.",
+                "Over the years, the company has grown into a trusted real estate partner, known for clear guidance, market insight, professionalism, transparency, and long-term value. Our journey reflects the growth of the UAE property sector itself — from established communities to landmark developments and emerging investment destinations.",
+              ],
+            ],
+          ].map(([eyebrow, title, paras]) => (
+            <div key={eyebrow as string}>
+              <div className="eyebrow">{eyebrow as string}</div>
+              <h2
+                className="serif mt-3.5"
+                style={{
+                  fontSize: fluid(36),
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1.1,
+                }}
               >
-                {p.title}
-              </h3>
-              <p className="mt-4 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[52ch]">
-                {p.body}
-              </p>
+                {title as string}
+              </h2>
+              {(paras as string[]).map((p, i) => (
+                <p
+                  key={i}
+                  className="text-[15.5px] text-bz-ink-2 leading-[1.7] mt-4"
+                >
+                  {p}
+                </p>
+              ))}
             </div>
           ))}
         </div>
       </section>
 
-      {/* T1-D — Awards band + client words after principles */}
-      <AwardsBand />
-      <ClientWords limit={3} />
+      {/* Mission */}
+      <section className="px-4 md:px-12 py-16 md:py-24 bg-bz-ink text-white text-center">
+        <div className="max-w-[1000px] mx-auto">
+          <Eyebrow className="text-white/60">Our mission</Eyebrow>
+          <h2
+            className="serif text-white mt-5 mx-auto"
+            style={{
+              fontSize: fluid(52),
+              letterSpacing: "-0.025em",
+              lineHeight: 1.15,
+            }}
+          >
+            To guide clients through the UAE real estate market with clarity,
+            integrity, and strategic insight.
+          </h2>
+          <p className="text-[15px] md:text-[16px] text-white/75 leading-[1.7] mt-6 max-w-[700px] mx-auto">
+            Drawing on over 20 years of local expertise, strong developer
+            relationships, and in-depth market knowledge, we deliver tailored
+            property guidance that creates lasting value and a seamless client
+            experience.
+          </p>
+        </div>
+      </section>
 
-      {/* Team teaser */}
-      <section className="border-t border-bz-border bg-bz-surface">
-        <div className="px-4 md:px-12 py-12 md:py-20 max-w-[1200px]">
-          <Eyebrow>Team</Eyebrow>
-          <div className="mt-3 flex items-end justify-between gap-8 flex-wrap">
-            <h2
-              className="serif text-[30px] md:text-[44px] leading-[1.05] max-w-[20ch]"
-              style={{ letterSpacing: "-0.02em" }}
-            >
-              Six of our twelve advisors.
-            </h2>
-            <Button asChild variant="outline">
-              <Link href="/agents">Meet the team</Link>
-            </Button>
-          </div>
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-3 gap-8 gap-y-12">
-            {SEED_AGENTS.slice(0, 6).map((a) => (
-              <Link
-                key={a.slug}
-                href={`/agents/${a.slug}`}
-                className="group block"
+      {/* Values */}
+      <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border">
+        <div className="max-w-[1200px]">
+          <SectionHead
+            eyebrow="Our values"
+            title="What we stand on."
+            size={44}
+            className="mb-11"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-0 border-t border-bz-border">
+            {VALUES.map(([t, d], i) => (
+              <div
+                key={t}
+                className="pt-9 pb-2 lg:pr-6 lg:border-r border-bz-border last:border-r-0 lg:[&:not(:first-child)]:pl-6"
               >
-                <PlaceholderImage
-                  label={a.slug}
-                  className="w-full aspect-[4/5] rounded-md"
-                />
-                <div className="mt-4">
-                  <div className="text-[15.5px] text-bz-ink group-hover:text-bz-accent transition-colors">
-                    {a.display_name}
-                  </div>
-                  <div className="text-[12.5px] text-bz-muted mt-0.5">
-                    {a.title}
-                  </div>
+                <div className="serif italic text-bz-accent text-[30px]">
+                  {String(i + 1).padStart(2, "0")}
                 </div>
-              </Link>
+                <div
+                  className="serif text-[24px] mt-3.5"
+                  style={{ letterSpacing: "-0.01em" }}
+                >
+                  {t}
+                </div>
+                <p className="text-[13px] text-bz-muted leading-relaxed mt-2.5">
+                  {d}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA — T1-E cleanup: valuation lead-gate surfaced alongside the
-          advisor-call CTA. Owners considering a sale should be one click
-          away from the report, not buried in the tools menu. */}
-      <section className="px-4 md:px-12 py-12 md:py-20 max-w-[1200px]">
-        <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-6 md:p-12 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
-          <div>
-            <Eyebrow className="text-bz-accent-fg/70">Get in touch</Eyebrow>
-            <h2
-              className="serif text-[36px] mt-2 leading-tight"
-              style={{ letterSpacing: "-0.015em" }}
-            >
-              Talk to us, or read the numbers first.
-            </h2>
-            <p className="mt-3 text-[14.5px] opacity-90 max-w-[52ch]">
-              Book a 30-minute call to walk through what you&apos;re solving
-              for, or request an advisor-prepared valuation of a specific
-              property — both are free.
-            </p>
+      {/* Footprint */}
+      <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border bg-bz-surface-2">
+        <div className="max-w-[1200px]">
+          <SectionHead
+            eyebrow="Our footprint"
+            title="Rooted in Abu Dhabi, reaching the wider UAE."
+            size={44}
+            className="mb-9"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              [
+                "Abu Dhabi",
+                "Our home market",
+                "Abu Dhabi is our home market and core area of expertise. From prime island communities to the heart of the city, Bazar covers residential, investment, and commercial opportunities across the capital.",
+                "abu dhabi · corniche",
+              ],
+              [
+                "Dubai & Wider UAE",
+                "Selected opportunities",
+                "Expanding beyond Abu Dhabi, Bazar connects clients to selected opportunities across Dubai and other key UAE markets — established communities, new developments, and investment-focused destinations.",
+                "dubai skyline",
+              ],
+            ].map(([t, tag, d, img]) => (
+              <article
+                key={t}
+                className="rounded-lg border border-bz-border bg-bz-surface overflow-hidden"
+              >
+                <div className="relative w-full" style={{ aspectRatio: "2/1" }}>
+                  <PlaceholderImage
+                    label={img}
+                    className="absolute inset-0 h-full w-full"
+                  />
+                </div>
+                <div className="p-7">
+                  <div className="eyebrow">{tag}</div>
+                  <div
+                    className="serif text-[30px] mt-2"
+                    style={{ letterSpacing: "-0.02em" }}
+                  >
+                    {t}
+                  </div>
+                  <p className="text-[14.5px] text-bz-ink-2 leading-[1.65] mt-3">
+                    {d}
+                  </p>
+                </div>
+              </article>
+            ))}
           </div>
-          <div className="flex flex-col gap-2 md:items-end">
-            <ValuationLeadGate triggerLabel="Free property valuation" />
-            <Button asChild size="lg" variant="secondary">
-              <Link href="/contact">Talk to an advisor</Link>
+        </div>
+      </section>
+
+      {/* Expertise + track record */}
+      <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-[72px] items-start max-w-[1200px]">
+          <div>
+            <div className="eyebrow">Our areas of expertise</div>
+            <h2
+              className="serif mt-3.5"
+              style={{
+                fontSize: fluid(40),
+                letterSpacing: "-0.025em",
+                lineHeight: 1.05,
+              }}
+            >
+              Where our knowledge runs deep.
+            </h2>
+            <p className="text-[15px] text-bz-ink-2 leading-relaxed mt-3.5 max-w-[520px]">
+              We combine market expertise, strong industry relationships, and a
+              client-focused approach to support buyers, investors, landlords,
+              sellers, and tenants across the UAE.
+            </p>
+            <div className="flex flex-wrap gap-2 mt-6">
+              {EXPERTISE.map((e) => (
+                <span
+                  key={e}
+                  className="px-4 py-2 rounded-full bg-bz-surface-2 border border-bz-border text-[13.5px]"
+                >
+                  {e}
+                </span>
+              ))}
+            </div>
+            <Button
+              asChild
+              className="mt-7 bg-bz-ink text-bz-bg hover:bg-bz-ink/90"
+            >
+              <Link href="/services">
+                Our services
+                <ArrowRight size={15} strokeWidth={1.7} />
+              </Link>
             </Button>
+          </div>
+          <div>
+            <div className="eyebrow">Our track record</div>
+            <div className="mt-4 border-t border-bz-border">
+              {HIGHLIGHTS.map((h) => (
+                <div
+                  key={h}
+                  className="flex items-center gap-3.5 py-4 border-b border-bz-border text-[15.5px]"
+                >
+                  <Check size={16} strokeWidth={2} className="text-bz-accent" />
+                  {h}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Developer partners */}
+      <section className="px-4 md:px-12 py-14 md:py-18 border-t border-bz-border">
+        <div className="max-w-[1200px]">
+          <div className="flex flex-wrap justify-between items-end gap-4 mb-8">
+            <SectionHead
+              eyebrow="Our developer partners"
+              title="Trusted by the region's builders."
+              size={40}
+            />
+            <Button asChild variant="outline">
+              <Link href="/developers">
+                All partners
+                <ArrowRight size={15} strokeWidth={1.7} />
+              </Link>
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-bz-border border border-bz-border rounded-xl overflow-hidden">
+            {PARTNERS.map((p) => (
+              <div
+                key={p}
+                className="bg-bz-surface px-7 py-9 flex items-center justify-center serif text-[26px] min-h-[110px]"
+                style={{ letterSpacing: "-0.01em" }}
+              >
+                {p}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Location */}
+      <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-10 lg:gap-14 items-center max-w-[1200px]">
+          <div>
+            <div className="eyebrow">Our location</div>
+            <h2
+              className="serif mt-3.5"
+              style={{
+                fontSize: fluid(40),
+                letterSpacing: "-0.025em",
+                lineHeight: 1.1,
+              }}
+            >
+              Based in Abu Dhabi, serving the UAE.
+            </h2>
+            <div className="text-[16px] text-bz-ink-2 leading-[1.7] mt-5">
+              <div className="font-medium text-bz-ink">
+                Bazar Real Estate Brokerage LLC
+              </div>
+              Saadiyat Island
+              <br />
+              Abu Dhabi, United Arab Emirates
+            </div>
+            <Button asChild className="mt-6">
+              <Link href="/contact">
+                <MapPin size={15} strokeWidth={1.8} />
+                Get directions
+              </Link>
+            </Button>
+          </div>
+          <div className="relative w-full" style={{ aspectRatio: "16/10" }}>
+            <PlaceholderImage
+              label="map · saadiyat island"
+              className="absolute inset-0 h-full w-full rounded-xl"
+            />
           </div>
         </div>
       </section>

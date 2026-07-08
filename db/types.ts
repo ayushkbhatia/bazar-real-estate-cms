@@ -2370,6 +2370,7 @@ export type Database = {
         | "field_note"
         | "policy"
         | "off_plan_watch"
+        | "luxury"
       article_status: "draft" | "scheduled" | "published" | "archived"
       audit_actor_kind: "user" | "system" | "integration"
       concierge_message_role: "user" | "assistant" | "system"
@@ -2666,6 +2667,7 @@ export const Constants = {
         "field_note",
         "policy",
         "off_plan_watch",
+        "luxury",
       ],
       article_status: ["draft", "scheduled", "published", "archived"],
       audit_actor_kind: ["user", "system", "integration"],
