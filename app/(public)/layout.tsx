@@ -1,6 +1,6 @@
 import { PublicMegaNav } from "@/components/brand/public-mega-nav";
 import { PublicFooter } from "@/components/brand/public-footer";
-import { getPublishedMegamenu } from "@/lib/queries/megamenu";
+import { getPublishedMegamenuHydrated } from "@/lib/queries/megamenu-hydrate";
 import { PreferencesPopover } from "./_components/preferences-popover";
 import { MobilePreferences } from "./_components/mobile-preferences";
 import { ShortlistDrawer } from "./_components/shortlist-drawer";
@@ -11,7 +11,7 @@ export default async function PublicLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const megamenu = await getPublishedMegamenu();
+  const megamenu = await getPublishedMegamenuHydrated();
   return (
     <>
       {/*
