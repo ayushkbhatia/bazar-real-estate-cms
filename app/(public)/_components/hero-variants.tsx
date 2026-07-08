@@ -38,17 +38,17 @@ export function HeroFullBleed() {
         <HeroSearch />
         <div className="mt-5 flex gap-3 text-[13.5px]">
           <Link
-            href="/buy"
+            href="/off-plan"
             className="text-white/85 hover:text-white underline underline-offset-4 transition-colors"
           >
-            Browse the marketplace
+            Browse Properties
           </Link>
           <span className="text-white/30">·</span>
           <Link
             href="/concierge"
             className="text-white/85 hover:text-white underline underline-offset-4 transition-colors"
           >
-            Talk to an advisor
+            Talk to an Advisor
           </Link>
         </div>
       </div>

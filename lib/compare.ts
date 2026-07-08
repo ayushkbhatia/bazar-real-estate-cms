@@ -69,6 +69,14 @@ export function typeLabel(t: ComparableProperty["type"]): string {
       return "Land";
     case "hotel_apartment":
       return "Hotel apartment";
+    case "office":
+      return "Office";
+    case "building":
+      return "Building";
+    case "retail":
+      return "Retail";
+    case "commercial_villa":
+      return "Commercial villa";
   }
 }
 

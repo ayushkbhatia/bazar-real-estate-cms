@@ -50,6 +50,10 @@ const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
   commercial: "Commercial",
   land: "Land",
   hotel_apartment: "Hotel apartment",
+  office: "Office",
+  building: "Building",
+  retail: "Retail",
+  commercial_villa: "Commercial villa",
 };
 
 const FURNISHING_LABELS: Record<Furnishing, string> = {

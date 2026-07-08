@@ -29,6 +29,10 @@ const TYPE_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
   commercial: "Commercial",
   land: "Land",
   hotel_apartment: "Hotel apartment",
+  office: "Office",
+  building: "Building",
+  retail: "Retail",
+  commercial_villa: "Commercial villa",
 };
 
 // T2-A — beds/baths chips. Studio (0) anchors the left side; "+" caps stay
