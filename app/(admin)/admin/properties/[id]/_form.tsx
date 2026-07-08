@@ -55,6 +55,10 @@ const TYPE_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
   commercial: "Commercial",
   land: "Land",
   hotel_apartment: "Hotel apartment",
+  office: "Office",
+  building: "Building",
+  retail: "Retail",
+  commercial_villa: "Commercial villa",
 };
 
 const MODE_LABELS: Record<(typeof PROPERTY_MODES)[number], string> = {

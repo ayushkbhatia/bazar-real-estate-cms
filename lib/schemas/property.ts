@@ -9,6 +9,10 @@ export const PROPERTY_TYPES = [
   "commercial",
   "land",
   "hotel_apartment",
+  "office",
+  "building",
+  "retail",
+  "commercial_villa",
 ] as const;
 export const PROPERTY_STATUSES = [
   "draft",

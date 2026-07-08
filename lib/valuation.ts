@@ -106,6 +106,10 @@ const FALLBACK_PPF: Record<PropertyType, number> = {
   hotel_apartment: 1_450,
   commercial: 1_200,
   land: 800,
+  office: 1_300,
+  building: 1_000,
+  retail: 1_400,
+  commercial_villa: 1_600,
 };
 
 export function baselinePricePerFt2(

@@ -2501,6 +2501,10 @@ export type Database = {
         | "commercial"
         | "land"
         | "hotel_apartment"
+        | "office"
+        | "building"
+        | "retail"
+        | "commercial_villa"
       review_status: "pending" | "approved" | "rejected"
       review_subject_kind: "agent" | "area" | "development"
       staff_role: "admin" | "editor" | "agent" | "marketing" | "support"
@@ -2808,6 +2812,10 @@ export const Constants = {
         "commercial",
         "land",
         "hotel_apartment",
+        "office",
+        "building",
+        "retail",
+        "commercial_villa",
       ],
       review_status: ["pending", "approved", "rejected"],
       review_subject_kind: ["agent", "area", "development"],
