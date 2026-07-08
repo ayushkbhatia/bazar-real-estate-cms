@@ -82,7 +82,12 @@ export function MegamenuPanel({ tab }: Props) {
   // content instead of claiming an even fraction, so the featured tiles slide
   // left toward it rather than sitting dead-centre. Multi-column left zones
   // (e.g. Buy) keep the balanced 1fr track.
-  const leftIsNarrow = tab.columns.left.length <= 1;
+  const leftCount = tab.columns.left.length;
+  const leftIsNarrow = leftCount <= 1;
+  // A dense left zone (e.g. Services' six "lead magnet" cards) lays out as a
+  // 3-up grid so it reads as a tidy block rather than a tall two-column list.
+  const leftGridClass =
+    leftCount <= 1 ? "grid-cols-1" : leftCount >= 5 ? "grid-cols-3" : "grid-cols-2";
 
   // Grid layout. Each present zone gets a track.
   const gridCols = [
@@ -125,12 +130,7 @@ export function MegamenuPanel({ tab }: Props) {
                 </span>
               </Link>
             ) : null}
-            <div
-              className={cn(
-                "grid gap-x-10 gap-y-7",
-                leftIsNarrow ? "grid-cols-1" : "grid-cols-2",
-              )}
-            >
+            <div className={cn("grid gap-x-10 gap-y-7", leftGridClass)}>
               {tab.columns.left.map((column) => (
                 <ColumnBlock key={column.id} column={column} />
               ))}
