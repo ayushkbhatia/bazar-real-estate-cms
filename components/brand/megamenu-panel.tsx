@@ -1,7 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  Building2,
+  ClipboardList,
+  Compass,
+  KeyRound,
+  Landmark,
+  Search,
+  Tag,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MegamenuTile } from "./megamenu-tile";
 import type {
@@ -73,6 +83,53 @@ function ColumnBlock({ column }: { column: MegamenuColumn }) {
   );
 }
 
+// Icons for the card ("lead magnet") layout, keyed on the item's `icon`
+// string so the mapping stays data-driven rather than hardcoded per tab.
+const CARD_ICONS: Record<string, LucideIcon> = {
+  search: Search,
+  tag: Tag,
+  "key-round": KeyRound,
+  "clipboard-list": ClipboardList,
+  "building-2": Building2,
+  landmark: Landmark,
+};
+
+/**
+ * Card treatment for a dense left zone — one column becomes one card:
+ * icon chip + heading (as the title) + its single item (as the blurb),
+ * linking to that item's href. Used for the Services "lead magnet" grid so
+ * the panel reads as a structured block instead of a sparse text list.
+ */
+function ServiceCard({ column }: { column: MegamenuColumn }) {
+  const item = column.items[0];
+  const Icon = (item?.icon && CARD_ICONS[item.icon]) || Compass;
+  return (
+    <Link
+      href={item?.href ?? "#"}
+      className="group flex h-full flex-col gap-3 rounded-xl border border-bz-border bg-bz-surface p-5 transition-all hover:border-bz-ink/20 hover:bg-bz-surface-2 hover:shadow-[0_10px_28px_-18px_rgba(0,0,0,0.3)]"
+    >
+      <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-bz-accent-soft text-bz-accent">
+        <Icon size={18} strokeWidth={1.6} />
+      </span>
+      <div className="mt-auto flex flex-col gap-1.5">
+        <div className="flex items-center gap-1.5 text-[15px] font-medium text-bz-ink">
+          {column.heading}
+          <ArrowRight
+            size={14}
+            strokeWidth={1.8}
+            className="text-bz-accent opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0"
+          />
+        </div>
+        {item ? (
+          <p className="text-[13px] leading-relaxed text-bz-ink-2">
+            {item.label}
+          </p>
+        ) : null}
+      </div>
+    </Link>
+  );
+}
+
 export function MegamenuPanel({ tab }: Props) {
   const hasLeft = tab.columns.left.length > 0;
   const hasRight = tab.columns.right.length > 0;
@@ -84,10 +141,11 @@ export function MegamenuPanel({ tab }: Props) {
   // (e.g. Buy) keep the balanced 1fr track.
   const leftCount = tab.columns.left.length;
   const leftIsNarrow = leftCount <= 1;
-  // A dense left zone (e.g. Services' six "lead magnet" cards) lays out as a
-  // 3-up grid so it reads as a tidy block rather than a tall two-column list.
-  const leftGridClass =
-    leftCount <= 1 ? "grid-cols-1" : leftCount >= 5 ? "grid-cols-3" : "grid-cols-2";
+  // A dense left zone (e.g. Services' six single-item "lead magnet" columns)
+  // renders as a 3-up card grid so it reads as a structured block that fills
+  // the panel rather than a sparse text list.
+  const leftIsCards = leftCount >= 5;
+  const leftGridClass = leftCount <= 1 ? "grid-cols-1" : "grid-cols-2";
 
   // Grid layout. Each present zone gets a track.
   const gridCols = [
@@ -130,11 +188,19 @@ export function MegamenuPanel({ tab }: Props) {
                 </span>
               </Link>
             ) : null}
-            <div className={cn("grid gap-x-10 gap-y-7", leftGridClass)}>
-              {tab.columns.left.map((column) => (
-                <ColumnBlock key={column.id} column={column} />
-              ))}
-            </div>
+            {leftIsCards ? (
+              <div className="grid flex-1 grid-cols-3 gap-4">
+                {tab.columns.left.map((column) => (
+                  <ServiceCard key={column.id} column={column} />
+                ))}
+              </div>
+            ) : (
+              <div className={cn("grid gap-x-10 gap-y-7", leftGridClass)}>
+                {tab.columns.left.map((column) => (
+                  <ColumnBlock key={column.id} column={column} />
+                ))}
+              </div>
+            )}
           </div>
         ) : null}
 
