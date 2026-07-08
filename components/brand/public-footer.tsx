@@ -38,7 +38,13 @@ const POPULAR_AREAS: { label: string; href: string }[] = [
   { label: "Zayed City", href: "/communities" },
 ];
 
-const SOCIAL = ["Facebook", "Instagram", "TikTok", "YouTube", "LinkedIn"];
+const SOCIAL: { label: string; href: string }[] = [
+  { label: "Facebook", href: "https://www.facebook.com/bazarrealestateae" },
+  { label: "Instagram", href: "https://www.instagram.com/bazarrealestate" },
+  { label: "TikTok", href: "https://www.tiktok.com/@bazarrealestate" },
+  { label: "YouTube", href: "https://www.youtube.com/@bazarrealestateae" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/bazarrealestate" },
+];
 
 export function PublicFooter() {
   return (
@@ -56,11 +62,13 @@ export function PublicFooter() {
           <div className="mt-5 flex flex-wrap gap-2">
             {SOCIAL.map((s) => (
               <a
-                key={s}
-                href="#"
+                key={s.label}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="rounded-full border border-[oklch(0.3_0_0)] px-3 py-1.5 text-[11.5px] text-[oklch(0.8_0.005_80)] transition-colors hover:border-white hover:text-white"
               >
-                {s}
+                {s.label}
               </a>
             ))}
           </div>
