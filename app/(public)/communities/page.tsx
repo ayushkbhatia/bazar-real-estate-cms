@@ -112,9 +112,9 @@ export default async function CommunitiesPage() {
     return {
       ...a,
       count: hit?.count,
-      href: hit
-        ? `/buy/search?area=${encodeURIComponent(hit.slug)}`
-        : "/buy/search",
+      // Real areas link to their community guide; unseeded ones fall back to
+      // a filtered search (avoids a /communities/<slug> 404).
+      href: hit ? `/communities/${hit.slug}` : "/buy/search",
     };
   });
 

@@ -5,9 +5,12 @@ test("public /communities renders the neighbourhood index", async ({
 }) => {
   await page.goto("/communities");
   await expect(
-    page.getByRole("heading", { name: /neighbourhood by neighbourhood/i }),
+    page.getByRole("heading", {
+      name: /leading communities/i,
+      level: 1,
+    }),
   ).toBeVisible();
-  // At least one community card should link into /communities/<slug>
+  // At least one community row should link into /communities/<slug>
   await expect(page.locator("a[href^='/communities/']").first()).toBeVisible();
 });
 

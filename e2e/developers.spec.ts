@@ -3,7 +3,10 @@ import { test, expect } from "@playwright/test";
 test("public /developers renders the directory", async ({ page }) => {
   await page.goto("/developers");
   await expect(
-    page.getByRole("heading", { name: /who builds abu dhabi/i }),
+    page.getByRole("heading", {
+      name: /the developers\s*shaping\s*the uae/i,
+      level: 1,
+    }),
   ).toBeVisible();
   // At least one developer card should link into /developers/<slug>
   await expect(page.locator("a[href^='/developers/']").first()).toBeVisible();
