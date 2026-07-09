@@ -10,7 +10,10 @@ test("/about renders with title set", async ({ page }) => {
   expect(response?.status()).toBe(200);
   await expect(page).toHaveTitle(/about bazar/i);
   await expect(
-    page.getByRole("heading", { name: /twelve advisors\.\s*by design\./i }),
+    page.getByRole("heading", {
+      name: /a trusted name in uae real estate/i,
+      level: 1,
+    }),
   ).toBeVisible();
 });
 
@@ -54,7 +57,7 @@ test("/services renders with title set", async ({ page }) => {
   await expect(page).toHaveTitle(/services/i);
   await expect(
     page.getByRole("heading", {
-      name: /five practices\.\s*one advisor each\./i,
+      name: /five practices,?\s*one bench of advisors/i,
       level: 1,
     }),
   ).toBeVisible();

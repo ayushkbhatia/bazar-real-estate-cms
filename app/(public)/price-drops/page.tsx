@@ -19,7 +19,7 @@ export default async function PriceDropsPage() {
       title="Sellers who've moved."
       intro="Listings where the asking price has been reduced since first listing. Useful for buyers tracking a market that's still finding its footing on the resale side. Pair with a saved search and we'll email you the moment a watched listing reprices."
       rows={rows}
-      browseAllHref="/buy"
+      browseAllHref="/buy/search"
       browseAllLabel="Browse all listings"
     />
   );

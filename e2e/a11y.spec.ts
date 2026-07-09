@@ -15,7 +15,8 @@ import AxeBuilder from "@axe-core/playwright";
 
 const ROUTES = [
   { path: "/", label: "home" },
-  { path: "/buy", label: "buy" },
+  { path: "/buy", label: "buy landing" },
+  { path: "/buy/search", label: "buy search" },
   {
     path: "/p/mamsha-3-bed-beachfront-apartment-baz-ad-04891",
     label: "property detail",

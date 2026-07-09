@@ -8,10 +8,10 @@ test("home → /buy → property detail", async ({ page }) => {
 
   // Featured listings come from Supabase. If they're not present, the page
   // shows a placeholder — we tolerate that locally and only assert on the
-  // CTA, then navigate to /buy via the featured "All properties" link
-  // (the hero's "Browse Properties" CTA now points at /off-plan).
+  // CTA, then navigate to /buy/search via the featured "All properties" link
+  // (search moved to /buy/search; /buy is now the marketing landing).
   await page.getByRole("link", { name: /^all properties$/i }).click();
-  await expect(page).toHaveURL(/\/buy$/);
+  await expect(page).toHaveURL(/\/buy\/search/);
   await expect(
     page.getByRole("heading", { name: /properties for sale/i }),
   ).toBeVisible();
@@ -100,7 +100,7 @@ test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
 });
 
 test("filter bar narrows the result set via URL state", async ({ page }) => {
-  await page.goto("/buy");
+  await page.goto("/buy/search");
   // Beds filter — click "3 beds" (aria-label distinguishes from the baths button).
   await page.getByRole("button", { name: "3 beds" }).click();
 

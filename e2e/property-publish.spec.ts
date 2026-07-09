@@ -19,18 +19,23 @@ import { test, expect } from "@playwright/test";
  * lib/publishability.test.ts (every blocker case enumerated).
  */
 
-test("/buy renders without error", async ({ page }) => {
+test("/buy/search renders without error", async ({ page }) => {
+  const response = await page.goto("/buy/search");
+  expect([200, 304]).toContain(response?.status() ?? 0);
+});
+
+test("/rent/search renders without error", async ({ page }) => {
+  const response = await page.goto("/rent/search");
+  expect([200, 304]).toContain(response?.status() ?? 0);
+});
+
+test("/off-plan/search renders without error", async ({ page }) => {
+  const response = await page.goto("/off-plan/search");
+  expect([200, 304]).toContain(response?.status() ?? 0);
+});
+
+test("/buy landing renders without error", async ({ page }) => {
   const response = await page.goto("/buy");
-  expect([200, 304]).toContain(response?.status() ?? 0);
-});
-
-test("/rent renders without error", async ({ page }) => {
-  const response = await page.goto("/rent");
-  expect([200, 304]).toContain(response?.status() ?? 0);
-});
-
-test("/off-plan renders without error", async ({ page }) => {
-  const response = await page.goto("/off-plan");
   expect([200, 304]).toContain(response?.status() ?? 0);
 });
 

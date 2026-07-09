@@ -1,19 +1,28 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
+
+export type GuideBlock = {
+  heading?: string;
+  copy?: string;
+  /** Plain bullet list rendered under the copy. */
+  bullets?: string[];
+  /** Checklist (green ticks) rendered under the copy. */
+  checklist?: string[];
+};
 
 type Props = {
   eyebrow: string;
   title: string;
   intro: string;
-  body: { heading?: string; copy: string }[];
+  body: GuideBlock[];
   children?: React.ReactNode;
 };
 
 /**
- * Shared layout for /guides/* pages. Body is a list of `{heading, copy}`
- * blocks (rendered as h3 + p) so each guide stays editorial without HTML
- * in the seed. The eligibility checker (or any other interactive widget)
+ * Shared layout for /guides/* pages. Body is a list of blocks (rendered as
+ * h2 + p, with optional bullet/checklist lists) so each guide stays editorial
+ * without HTML in the seed. An interactive widget (e.g. eligibility checker)
  * lands as `children` below the body.
  */
 export function GuideShell({ eyebrow, title, intro, body, children }: Props) {
@@ -53,9 +62,44 @@ export function GuideShell({ eyebrow, title, intro, body, children }: Props) {
                 {block.heading}
               </h2>
             ) : null}
-            <p className="text-[16px] text-bz-ink-2 leading-[1.75]">
-              {block.copy}
-            </p>
+            {block.copy ? (
+              <p className="text-[16px] text-bz-ink-2 leading-[1.75]">
+                {block.copy}
+              </p>
+            ) : null}
+            {block.bullets ? (
+              <ul className="mt-3 flex flex-col gap-2.5">
+                {block.bullets.map((b, j) => (
+                  <li
+                    key={j}
+                    className="flex gap-3 text-[15.5px] text-bz-ink leading-[1.55]"
+                  >
+                    <span
+                      className="mt-2 h-[5px] w-[5px] rounded-full bg-bz-accent shrink-0"
+                      aria-hidden
+                    />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {block.checklist ? (
+              <ul className="mt-3 flex flex-col gap-2.5">
+                {block.checklist.map((c, j) => (
+                  <li
+                    key={j}
+                    className="flex gap-3 text-[15.5px] text-bz-ink leading-[1.55]"
+                  >
+                    <Check
+                      size={16}
+                      strokeWidth={2}
+                      className="text-bz-accent mt-0.5 shrink-0"
+                    />
+                    <span>{c}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </div>
         ))}
       </section>

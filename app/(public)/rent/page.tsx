@@ -1,35 +1,110 @@
 import type { Metadata } from "next";
-import { SearchList } from "../_components/search-list";
-import { parseFilters } from "@/lib/filters/property";
-import type { SearchView } from "../_components/view-toggle";
+import { redirect } from "next/navigation";
+import { listNewThisWeek } from "@/lib/queries/curated-listings";
+import { BuyRentLanding } from "../_components/marketing/buy-rent-landing";
+import { listingRowToCard } from "../_components/marketing/map-listing";
+import { searchRedirectTarget } from "../_components/search-redirect";
+import {
+  AD_COMMUNITIES,
+  SALE_PROP_TYPES,
+} from "../_components/marketing/ad-data";
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Rent",
+  title: "Rent a Property in Abu Dhabi",
   description:
-    "Long-let homes from advisor-vetted landlords across the United Arab Emirates.",
+    "Residential and commercial rentals across Abu Dhabi's most connected communities — matched to your budget, lifestyle, and move-in date.",
+  alternates: { canonical: "/rent" },
 };
 
 type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-const ALLOWED_VIEWS: readonly SearchView[] = ["grid", "list", "map"];
+const RENT_TYPE_HREF: Record<string, string> = {
+  Apartments: "/rent/search?type=apartment",
+  Villas: "/rent/search?type=villa",
+  Townhouses: "/rent/search?type=townhouse",
+  Penthouses: "/rent/search?type=penthouse",
+  "Commercial Properties": "/commercial",
+};
 
 export default async function RentPage({ searchParams }: PageProps) {
   const raw = await searchParams;
-  const filters = parseFilters(raw);
-  const v = typeof raw.view === "string" ? raw.view : null;
-  const view: SearchView = ALLOWED_VIEWS.includes(v as SearchView)
-    ? (v as SearchView)
-    : "grid";
+  const target = searchRedirectTarget("/rent", raw);
+  if (target) redirect(target);
+
+  const featured = (await listNewThisWeek({ limit: 4 }))
+    .slice(0, 4)
+    .map(listingRowToCard);
+
   return (
-    <SearchList
-      mode="rent"
-      filters={filters}
-      view={view}
-      searchParams={raw}
+    <BuyRentLanding
+      eyebrow="Rent a Property"
+      title={
+        <>
+          Find your next
+          <br />
+          rental in <em className="italic">Abu Dhabi.</em>
+        </>
+      }
+      sub="Residential and commercial rentals across the city's most connected communities — matched to your budget, lifestyle and move-in date."
+      chips={["Apartments", "Villas", "Townhouses", "Offices", "Retail"]}
+      stats={[
+        ["Residential", "& commercial"],
+        ["8", "popular rental areas"],
+        ["Vacant", "ready-to-move options"],
+      ]}
+      formTitle="Rent a Property"
+      formSub="Tell us what you're looking for and our team will find the right rental for you."
+      featured={featured}
+      featuredTitle="Featured properties for rent"
+      featuredCta="Browse all for rent"
+      featuredCtaHref="/rent/search"
+      waysEyebrow=""
+      waysTitle=""
+      categoryTiles={[]}
+      propTypesTitle="Rentals for every kind of tenant."
+      propTypes={SALE_PROP_TYPES.map(([name, desc]) => ({
+        name,
+        desc,
+        cta: "View rentals",
+        href: RENT_TYPE_HREF[name] ?? "/rent/search",
+      }))}
+      communitiesEyebrow="Popular rental areas"
+      communitiesTitle="Rent in Abu Dhabi's leading communities."
+      communitiesSub="Explore rental properties across Abu Dhabi's most popular residential and lifestyle destinations."
+      communityChips={[...AD_COMMUNITIES]}
+      communitiesCta="Explore rental locations"
+      why={{
+        title: "Local knowledge that turns a search into the right home.",
+        body: "With deep local market knowledge and experience across residential and commercial properties, Bazar Real Estate helps tenants find the right rental option with clarity and confidence — from shortlist to move-in.",
+        stats: [
+          ["Homes + offices", "Residential & commercial"],
+          ["Budget-led", "Location recommendations"],
+        ],
+      }}
+      faqEyebrow="Renting with Bazar"
+      faqTitle="Questions, answered."
+      faqs={[
+        [
+          "Can Bazar help me find both residential and commercial rentals?",
+          "Yes. We assist with homes, apartments, villas, offices, retail spaces, and other commercial rentals.",
+        ],
+        [
+          "What documents do tenants usually need?",
+          "Tenants usually need identification documents, contact details, and payment information.",
+        ],
+        [
+          "Can I rent a ready-to-move property?",
+          "Yes. We can help you find vacant and ready-to-move rental options.",
+        ],
+        [
+          "Can Bazar help with location recommendations?",
+          "Yes. We can suggest areas based on your budget, lifestyle, commute, and property needs.",
+        ],
+      ]}
     />
   );
 }

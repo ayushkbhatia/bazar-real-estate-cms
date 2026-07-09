@@ -7,6 +7,7 @@ export const ARTICLE_CATEGORIES = [
   "field_note",
   "policy",
   "off_plan_watch",
+  "luxury",
 ] as const;
 
 export const ARTICLE_STATUSES = [
@@ -26,6 +27,7 @@ export const ARTICLE_CATEGORY_LABELS: Record<
   field_note: "Field note",
   policy: "Policy & regulation",
   off_plan_watch: "Off-plan watch",
+  luxury: "Luxury",
 };
 
 const slugRegex = /^[a-z0-9-]+$/;

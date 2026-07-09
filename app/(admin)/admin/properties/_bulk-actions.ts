@@ -57,7 +57,10 @@ export async function bulkUpdateProperties(
     revalidatePath("/admin/properties");
     if (input.patch.status !== undefined) {
       revalidatePath("/buy");
+      revalidatePath("/buy/search");
       revalidatePath("/rent");
+      revalidatePath("/rent/search");
+      revalidatePath("/off-plan/search");
       revalidatePath("/");
     }
   }
@@ -358,7 +361,10 @@ export async function bulkArchiveProperties(
   if (afterRows.length > 0) {
     revalidatePath("/admin/properties");
     revalidatePath("/buy");
+    revalidatePath("/buy/search");
     revalidatePath("/rent");
+    revalidatePath("/rent/search");
+    revalidatePath("/off-plan/search");
     revalidatePath("/");
     for (const after of afterRows) {
       const before = beforeMap.get(after.id);
