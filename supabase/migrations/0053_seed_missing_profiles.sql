@@ -16,10 +16,12 @@ insert into public.developers (slug, name, description) values
    'Creates premium residential projects across Dubai and Abu Dhabi, focused on elegant design, exclusivity, and elevated living.')
 on conflict (slug) do nothing;
 
-insert into public.areas (slug, name, kind, description) values
-  ('hudayriyat-island', 'Hudayriyat Island', 'area',
-   'One of Abu Dhabi''s rising lifestyle destinations, shaped around waterfront living, sport, and wellness.')
-on conflict (slug) do nothing;
+-- `areas` has no unique constraint on slug, so guard with NOT EXISTS
+-- rather than ON CONFLICT.
+insert into public.areas (slug, name, kind, description)
+select 'hudayriyat-island', 'Hudayriyat Island', 'area',
+       'One of Abu Dhabi''s rising lifestyle destinations, shaped around waterfront living, sport, and wellness.'
+where not exists (select 1 from public.areas where slug = 'hudayriyat-island');
 
 -- Restore the direct megamenu links (reverse of 0052).
 update public.megamenu_items
