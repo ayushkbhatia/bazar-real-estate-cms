@@ -49,6 +49,29 @@ export type SeedAreaGuide = {
 
 export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
   {
+    slug: "hudayriyat-island",
+    name: "Hudayriyat Island",
+    hero_label: "hudayriyat-island",
+    intro:
+      "Hudayriyat is Abu Dhabi's emerging lifestyle island — a master-planned destination shaped around waterfront living, sport, and wellness. Modon is delivering villas, apartments, and mansions alongside a fast-growing spread of beach, leisure, and active-lifestyle facilities.",
+    position: "Off the south-west coast, ~15 minutes from the Corniche",
+    vibe: "Emerging, waterfront, active-lifestyle",
+    stats: {
+      median_apt_aed_per_ft2: 1650,
+      median_villa_aed_per_ft2: 2100,
+      avg_dom_days: 55,
+      yoy_change_pct: 0,
+    },
+    schools: [],
+    amenities: [
+      "Hudayriyat Beach",
+      "Marsana promenade",
+      "Circuit X sports hub",
+      "BMX & bike park",
+    ],
+    similar_areas: ["saadiyat-island", "al-raha-beach"],
+  },
+  {
     slug: "saadiyat-island",
     name: "Saadiyat Island",
     hero_label: "saadiyat-island",
