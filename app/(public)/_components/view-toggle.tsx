@@ -15,7 +15,12 @@ const OPTIONS: { value: SearchView; label: string; Icon: React.ElementType }[] =
 export function ViewToggle() {
   const [view, setView] = useQueryState(
     "view",
-    parseAsStringEnum<SearchView>(["grid", "list", "map"]).withDefault("grid"),
+    parseAsStringEnum<SearchView>(["grid", "list", "map"])
+      .withDefault("grid")
+      // shallow:false re-fetches the RSC (SearchList branches on `view`
+      // server-side) so the switched view renders without a manual refresh —
+      // matching SortDropdown / FilterBar.
+      .withOptions({ shallow: false }),
   );
 
   return (
