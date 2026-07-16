@@ -1,18 +1,17 @@
-import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import { HqMapCanvas } from "./hq-map-canvas";
 
 /**
  * Sprint 5e: full-width HQ map under the contact hero.
  *
- * Renders an iframe-free OpenStreetMap embed centred on Saadiyat Island.
- * Sprint 12 swaps this to a real Mapbox interactive embed.
+ * Renders the shared Bazar pastel basemap (recoloured CARTO Positron via
+ * ../../_components/map-style) centred on the Saadiyat Island HQ — the same
+ * look as the home, search and listing maps.
  */
 export function HqMap() {
   // Saadiyat marina area — Bazar HQ.
   const lat = 24.5440;
   const lng = 54.4406;
-  const bbox = `${lng - 0.012},${lat - 0.008},${lng + 0.012},${lat + 0.008}`;
-  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat},${lng}`;
 
   return (
     <section className="border-t border-bz-border">
@@ -26,18 +25,12 @@ export function HqMap() {
             Saadiyat Island, Abu Dhabi.
           </h2>
         </div>
-        <div className="relative rounded-lg overflow-hidden border border-bz-border aspect-[21/9]">
-          <iframe
-            title="Bazar HQ — Saadiyat Island"
-            src={mapUrl}
-            className="absolute inset-0 w-full h-full"
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-          <noscript>
-            <PlaceholderImage label="HQ · Saadiyat Island" className="w-full h-full" />
-          </noscript>
-        </div>
+        <HqMapCanvas
+          lat={lat}
+          lng={lng}
+          label="Bazar HQ — Saadiyat Island"
+          className="w-full aspect-[21/9] rounded-lg overflow-hidden border border-bz-border"
+        />
         <p className="mt-4 text-[12px] text-bz-muted">
           By appointment only. We don&apos;t walk-in business — every meeting
           is briefed in advance.
