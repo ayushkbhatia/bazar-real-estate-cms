@@ -84,19 +84,25 @@ export default function ContactPage() {
       </section>
 
       <section className="px-4 md:px-12 py-10 md:py-14">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-[72px] items-start max-w-[1200px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-[72px] items-start">
           {/* Contact info */}
           <div className="flex flex-col">
             {[
               [
                 Phone,
                 "Call us / message us",
-                <div key="p">
+                <div key="p" className="space-y-0.5">
                   <a
-                    href="tel:+97121234567"
+                    href="tel:+97126322223"
                     className="block text-[18px] hover:text-bz-accent"
                   >
-                    +971 2 123 4567
+                    +971 2 632 2223
+                  </a>
+                  <a
+                    href="tel:+971506911103"
+                    className="block text-[18px] hover:text-bz-accent"
+                  >
+                    +971 50 691 1103
                   </a>
                 </div>,
                 "Mon–Sat 9am–7pm GST",
@@ -106,10 +112,10 @@ export default function ContactPage() {
                 "Email us",
                 <a
                   key="e"
-                  href="mailto:hello@bazar.ae"
+                  href="mailto:info@bazarrealestate.ae"
                   className="text-[18px] text-bz-accent"
                 >
-                  hello@bazar.ae
+                  info@bazarrealestate.ae
                 </a>,
                 "We reply within 2 hours on business days",
               ],
@@ -117,11 +123,11 @@ export default function ContactPage() {
                 MapPin,
                 "Visit our office",
                 <div key="o" className="text-[15px] leading-relaxed">
-                  Bazar Real Estate Brokerage LLC
+                  Sheikha Salama Building, Office 4
                   <br />
-                  Saadiyat Island, Abu Dhabi
+                  Zayed The First Street, Al Bateen
                   <br />
-                  United Arab Emirates
+                  Abu Dhabi, United Arab Emirates
                 </div>,
                 null,
               ],
@@ -173,7 +179,7 @@ export default function ContactPage() {
 
       {/* How can we help */}
       <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border bg-bz-surface-2">
-        <div className="max-w-[1200px]">
+        <div>
           <SectionHead
             eyebrow="How can we help?"
             title="Choose the service that matches your enquiry."
