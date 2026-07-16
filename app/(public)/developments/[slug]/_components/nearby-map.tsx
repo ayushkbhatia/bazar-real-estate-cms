@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { pastelMapStyle } from "../../../_components/map-style";
 
 type Pin = {
   id: string;
@@ -25,67 +26,62 @@ type Props = {
  * with up to 4 sibling-area developments as secondary pins (neutral).
  * Click any pin → popup with project name + link.
  *
- * Uses keyless OSM raster tiles (the same as the /buy search map). The old
- * MapTiler "?key=open" style now 403s; a client with a Mapbox/MapTiler key
- * can swap the style at handover.
+ * Uses the shared Bazar pastel basemap (../../../_components/map-style) — the
+ * same recoloured CARTO Positron style as the home + search maps.
  */
 export function NearbyMap({ pins, className }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current || pins.length === 0) return;
+    let dead = false;
+    let map: maplibregl.Map | null = null;
 
     const primary = pins.find((p) => p.isPrimary) ?? pins[0]!;
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: {
-        version: 8,
-        sources: {
-          osm: {
-            type: "raster",
-            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-            tileSize: 256,
-            attribution: "© OpenStreetMap contributors",
-          },
-        },
-        layers: [{ id: "osm", type: "raster", source: "osm" }],
-      },
-      center: [primary.lng, primary.lat],
-      zoom: 11,
-      attributionControl: { compact: true },
+
+    pastelMapStyle().then((style) => {
+      if (dead || !containerRef.current) return;
+      map = new maplibregl.Map({
+        container: containerRef.current,
+        style,
+        center: [primary.lng, primary.lat],
+        zoom: 11,
+        attributionControl: { compact: true },
+      });
+
+      // Add pins
+      for (const pin of pins) {
+        const marker = new maplibregl.Marker({
+          color: pin.isPrimary ? "var(--bz-accent, #4B5A4C)" : "#7d8e7e",
+        })
+          .setLngLat([pin.lng, pin.lat])
+          .setPopup(
+            new maplibregl.Popup({ offset: 18 }).setHTML(
+              `<div style="font-family:system-ui;font-size:12.5px;color:#1B1A17;line-height:1.4;">
+                <strong>${escapeHtml(pin.name)}</strong>
+                ${
+                  pin.isPrimary
+                    ? '<br/><span style="color:#7d8e7e;font-size:10.5px;">This development</span>'
+                    : `<br/><a href="/developments/${escapeHtml(pin.slug)}" style="color:#4B5A4C;font-size:11px;text-decoration:underline;">View project →</a>`
+                }
+              </div>`,
+            ),
+          )
+          .addTo(map);
+        if (pin.isPrimary) marker.togglePopup();
+      }
+
+      // Fit bounds to include every pin when there's more than one
+      if (pins.length > 1) {
+        const bounds = new maplibregl.LngLatBounds();
+        for (const p of pins) bounds.extend([p.lng, p.lat]);
+        map.fitBounds(bounds, { padding: 64, maxZoom: 13 });
+      }
     });
 
-    // Add pins
-    for (const pin of pins) {
-      const marker = new maplibregl.Marker({
-        color: pin.isPrimary ? "var(--bz-accent, #4B5A4C)" : "#7d8e7e",
-      })
-        .setLngLat([pin.lng, pin.lat])
-        .setPopup(
-          new maplibregl.Popup({ offset: 18 }).setHTML(
-            `<div style="font-family:system-ui;font-size:12.5px;color:#1B1A17;line-height:1.4;">
-              <strong>${escapeHtml(pin.name)}</strong>
-              ${
-                pin.isPrimary
-                  ? '<br/><span style="color:#7d8e7e;font-size:10.5px;">This development</span>'
-                  : `<br/><a href="/developments/${escapeHtml(pin.slug)}" style="color:#4B5A4C;font-size:11px;text-decoration:underline;">View project →</a>`
-              }
-            </div>`,
-          ),
-        )
-        .addTo(map);
-      if (pin.isPrimary) marker.togglePopup();
-    }
-
-    // Fit bounds to include every pin when there's more than one
-    if (pins.length > 1) {
-      const bounds = new maplibregl.LngLatBounds();
-      for (const p of pins) bounds.extend([p.lng, p.lat]);
-      map.fitBounds(bounds, { padding: 64, maxZoom: 13 });
-    }
-
     return () => {
-      map.remove();
+      dead = true;
+      map?.remove();
     };
   }, [pins]);
 

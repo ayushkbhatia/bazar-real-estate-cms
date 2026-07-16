@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import maplibregl, { type Map as MapLibreMap, Marker, Popup } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   formatPriceAED,
   propertyUrl,
 } from "@/lib/queries/property-utils";
+import { pastelMapStyle } from "./map-style";
 
 export type MapPin = {
   id: string;
@@ -25,59 +26,46 @@ type Props = {
 // Default to Abu Dhabi if no pins (city centre, zoomed mid).
 const DEFAULT_CENTER: [number, number] = [54.3773, 24.4539];
 
-// OpenStreetMap raster tiles via the OSM project. Acceptable for dev +
-// low-traffic UAT; swap to Mapbox / MapTiler / etc. once we have a real
-// tile budget.
-const OSM_STYLE = {
-  version: 8 as const,
-  sources: {
-    osm: {
-      type: "raster" as const,
-      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-      tileSize: 256,
-      attribution: "© OpenStreetMap contributors",
-    },
-  },
-  layers: [
-    {
-      id: "osm",
-      type: "raster" as const,
-      source: "osm",
-      minzoom: 0,
-      maxzoom: 19,
-    },
-  ],
-};
-
 export function MapView({ pins, className }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
+  // The pastel style is fetched async; flip this once the map exists so the
+  // marker effect below (which reads mapRef) knows to re-run.
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
+    let dead = false;
+    let map: MapLibreMap | null = null;
 
     const center: [number, number] = pins.length
       ? [pins[0].geo.lng, pins[0].geo.lat]
       : DEFAULT_CENTER;
 
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: OSM_STYLE,
-      center,
-      zoom: pins.length ? 10 : 9,
-      attributionControl: false,
+    pastelMapStyle().then((style) => {
+      if (dead || !containerRef.current) return;
+      map = new maplibregl.Map({
+        container: containerRef.current,
+        style,
+        center,
+        zoom: pins.length ? 10 : 9,
+        attributionControl: false,
+      });
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
+      map.addControl(
+        new maplibregl.AttributionControl({ compact: true }),
+        "bottom-right",
+      );
+      mapRef.current = map;
+      setReady(true);
     });
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
-    map.addControl(
-      new maplibregl.AttributionControl({ compact: true }),
-      "bottom-right",
-    );
-    mapRef.current = map;
 
     return () => {
-      map.remove();
+      dead = true;
+      map?.remove();
       mapRef.current = null;
+      setReady(false);
     };
     // We deliberately recreate the map only on mount; pin updates are
     // applied in the next effect.
@@ -126,7 +114,7 @@ export function MapView({ pins, className }: Props) {
       );
       map.fitBounds(bounds, { padding: 40, maxZoom: 13 });
     }
-  }, [pins]);
+  }, [pins, ready]);
 
   return <div ref={containerRef} className={className} />;
 }
