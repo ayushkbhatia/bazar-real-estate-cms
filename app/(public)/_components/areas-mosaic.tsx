@@ -29,7 +29,7 @@ export function AreasMosaic() {
           </h2>
         </div>
         <Link
-          href="/communities"
+          href="/areas"
           className="inline-flex items-center gap-1.5 text-[13px] text-bz-ink-2 hover:text-bz-accent transition-colors"
         >
           All communities
@@ -40,7 +40,7 @@ export function AreasMosaic() {
       <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 auto-rows-[200px] md:auto-rows-auto gap-4 md:h-[520px]">
         {/* Saadiyat — big cell */}
         <Link
-          href={`/communities/${AREAS[0].slug}`}
+          href={`/areas/${AREAS[0].slug}`}
           className="md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-lg block"
         >
           <PlaceholderImage
@@ -63,7 +63,7 @@ export function AreasMosaic() {
         {AREAS.slice(1).map((a) => (
           <Link
             key={a.slug}
-            href={`/communities/${a.slug}`}
+            href={`/areas/${a.slug}`}
             className="group relative overflow-hidden rounded-lg block"
           >
             <PlaceholderImage label={a.slug} className="w-full h-full" />

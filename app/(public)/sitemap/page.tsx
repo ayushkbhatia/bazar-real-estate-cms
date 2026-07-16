@@ -37,12 +37,12 @@ const SECTIONS: { title: string; links: { label: string; href: string }[] }[] =
     {
       title: "Communities",
       links: [
-        { label: "All communities", href: "/communities" },
-        { label: "Saadiyat Island", href: "/communities/saadiyat-island" },
-        { label: "Yas Island", href: "/communities/yas-island" },
-        { label: "Al Reem Island", href: "/communities/al-reem-island" },
-        { label: "Al Raha", href: "/communities/al-raha" },
-        { label: "Corniche", href: "/communities/corniche" },
+        { label: "All communities", href: "/areas" },
+        { label: "Saadiyat Island", href: "/areas/saadiyat-island" },
+        { label: "Yas Island", href: "/areas/yas-island" },
+        { label: "Al Reem Island", href: "/areas/al-reem-island" },
+        { label: "Al Raha", href: "/areas/al-raha" },
+        { label: "Corniche", href: "/areas/corniche" },
       ],
     },
     {

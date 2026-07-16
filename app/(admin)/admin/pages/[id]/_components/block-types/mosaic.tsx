@@ -53,7 +53,7 @@ export function MosaicBlockEditor({
             <input
               value={t.href}
               onChange={(e) => update(i, { href: e.target.value })}
-              placeholder="/communities/saadiyat-island"
+              placeholder="/areas/saadiyat-island"
               className="h-8 px-2.5 rounded border border-bz-border bg-bz-surface text-[12.5px]"
             />
             <button

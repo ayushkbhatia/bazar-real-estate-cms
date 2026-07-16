@@ -47,9 +47,9 @@ const nextConfig: NextConfig = {
   // OTP entry but the action sends a magic link). Renamed to /magic-link;
   // permanent redirect from the legacy URL keeps emailed deep-links live.
   //
-  // Client nav restructure: "Areas" renamed to "Communities" (label + URL).
-  // Permanent redirects keep old /areas links (bookmarks, backlinks,
-  // search results) resolving to the new path.
+  // Client nav restructure: the areas index is back to "Areas" + /areas.
+  // Permanent redirects keep the interim /communities links (brand footer,
+  // bookmarks, backlinks, search results) resolving to the new path.
   async redirects() {
     return [
       {
@@ -58,13 +58,13 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
-        source: "/areas",
-        destination: "/communities",
+        source: "/communities",
+        destination: "/areas",
         permanent: true,
       },
       {
-        source: "/areas/:slug*",
-        destination: "/communities/:slug*",
+        source: "/communities/:slug*",
+        destination: "/areas/:slug*",
         permanent: true,
       },
     ];

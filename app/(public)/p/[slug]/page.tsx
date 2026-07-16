@@ -260,7 +260,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       ? [
           {
             name: property.areas.name,
-            url: `${siteUrl}/communities/${property.areas.slug}`,
+            url: `${siteUrl}/areas/${property.areas.slug}`,
           },
         ]
       : []),
@@ -297,7 +297,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           <>
             <ChevronRight size={12} />
             <Link
-              href={`/communities/${property.areas.slug}`}
+              href={`/areas/${property.areas.slug}`}
               className="hover:text-bz-ink"
             >
               {property.areas.name}

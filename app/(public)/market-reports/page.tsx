@@ -59,7 +59,7 @@ export default async function MarketReportsIndexPage() {
                     {a.name}
                   </h2>
                   <Link
-                    href={`/communities/${a.slug}`}
+                    href={`/areas/${a.slug}`}
                     className="text-[12.5px] text-bz-muted hover:text-bz-ink"
                   >
                     Community guide →

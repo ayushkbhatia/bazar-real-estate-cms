@@ -87,7 +87,7 @@ export function AreaMapHome({
   dots,
   eyebrow = "Where to live",
   heading = "Find your area first. The home follows.",
-  allHref = "/communities",
+  allHref = "/areas",
   allLabel = "All communities",
 }: {
   areas: AreaPin[];

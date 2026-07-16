@@ -55,7 +55,7 @@ export function AreaList({ areas, ctaLabel = "View properties" }: Props) {
           <p className="text-[13.5px] text-bz-muted leading-[1.6]">{a.about}</p>
           <div>
             <Button asChild variant="outline">
-              <Link href={a.href ?? "/communities"}>
+              <Link href={a.href ?? "/areas"}>
                 {ctaLabel}
                 <ArrowRight size={15} strokeWidth={1.7} />
               </Link>

@@ -28,7 +28,7 @@ export async function LocationBrowsing() {
           </p>
         </div>
         <Link
-          href="/communities"
+          href="/areas"
           className="inline-flex items-center gap-1.5 self-start text-[13.5px] text-bz-ink-2 hover:text-bz-accent transition-colors"
         >
           All locations <ArrowRight size={14} strokeWidth={1.7} />
@@ -38,7 +38,7 @@ export async function LocationBrowsing() {
       <div className="md:grid md:grid-cols-[1.15fr_2fr] md:gap-4 md:h-[520px]">
         {/* Overview tile */}
         <Tile
-          href="/communities"
+          href="/areas"
           name="Abu Dhabi"
           countLabel={`${total.toLocaleString("en-US")} homes for sale`}
           imgLabel="abu dhabi"
@@ -59,7 +59,7 @@ export async function LocationBrowsing() {
           {communities.map((c) => (
             <Tile
               key={c.id}
-              href={`/communities/${c.slug}`}
+              href={`/areas/${c.slug}`}
               name={c.name}
               countLabel={`${c.listing_count.toLocaleString("en-US")} homes for sale`}
               imgLabel={c.slug}
