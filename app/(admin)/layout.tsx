@@ -1,6 +1,14 @@
 import { requireRole } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
 
+// Every admin route is auth-gated and reads cookies (role gate below +
+// per-request Supabase queries), so none can be statically prerendered.
+// Declaring the whole segment dynamic stops `next build` from attempting a
+// static render and then logging the expected `DYNAMIC_SERVER_USAGE` bail as
+// an error (e.g. the dashboard's kpis / recent-activity fetches). Mirrors the
+// existing admin/settings layout.
+export const dynamic = "force-dynamic";
+
 const STAFF_ROLES = [
   "admin",
   "editor",
