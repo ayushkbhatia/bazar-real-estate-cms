@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { ListingCardProps } from "@/components/brand/listing-card";
@@ -24,6 +25,12 @@ export type BuyRentLandingProps = {
   /** Static informational pills (Rent). Ignored when `categories` is set. */
   chips?: string[];
   /**
+   * Optional per-chip link targets, index-aligned with `chips`. When a chip
+   * has an href it renders as a link into search; without one it stays a
+   * static pill. Ignored when `categories` (the interactive path) is set.
+   */
+  chipHrefs?: (string | undefined)[];
+  /**
    * Interactive property-type categories (Buy). When set, the hero pills
    * become clickable and drive the featured grid via `featuredByCategory`.
    */
@@ -44,8 +51,13 @@ export type BuyRentLandingProps = {
   featuredTitle: string;
   featuredCta: string;
   featuredCtaHref: string;
-  /** Rendered directly under the featured row (Buy: the properties map). */
+  /** Rendered near the featured row (Buy: the properties map). */
   mapSlot?: React.ReactNode;
+  /**
+   * Place `mapSlot` above the featured row instead of below it. Opt-in so
+   * /buy keeps its map under Featured while /rent leads with the map.
+   */
+  mapAbove?: boolean;
   /** Rendered just above the "Why Bazar" band (Buy: a second lead form). */
   leadBand?: React.ReactNode;
   waysEyebrow: string;
@@ -86,19 +98,33 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
     <HeroCategoryChips categories={p.categories!} />
   ) : (
     <div className="flex flex-wrap gap-2 mt-7">
-      {(p.chips ?? []).map((c, i) => (
-        <span
-          key={c}
-          className={
-            "inline-flex items-center h-9 px-4 rounded-full border text-[13px] " +
-            (i === 0
-              ? "bg-bz-ink text-bz-bg border-bz-ink"
-              : "bg-bz-surface text-bz-ink-2 border-bz-border")
-          }
-        >
-          {c}
-        </span>
-      ))}
+      {(p.chips ?? []).map((c, i) => {
+        const base =
+          "inline-flex items-center h-9 px-4 rounded-full border text-[13px] " +
+          (i === 0
+            ? "bg-bz-ink text-bz-bg border-bz-ink"
+            : "bg-bz-surface text-bz-ink-2 border-bz-border");
+        const href = p.chipHrefs?.[i];
+        return href ? (
+          <Link
+            key={c}
+            href={href}
+            className={
+              base +
+              " transition-colors " +
+              (i === 0
+                ? "hover:bg-bz-ink/90"
+                : "hover:border-bz-ink hover:text-bz-ink")
+            }
+          >
+            {c}
+          </Link>
+        ) : (
+          <span key={c} className={base}>
+            {c}
+          </span>
+        );
+      })}
     </div>
   );
 
@@ -168,6 +194,9 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
         </div>
       </section>
 
+      {/* Area map above the featured row (Rent) */}
+      {p.mapAbove ? p.mapSlot : null}
+
       {/* Featured listings */}
       {showFeatured ? (
         <section className={SECTION}>
@@ -194,8 +223,8 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
         </section>
       ) : null}
 
-      {/* Buy properties map (Buy only) */}
-      {p.mapSlot}
+      {/* Area map below the featured row (Buy) */}
+      {p.mapAbove ? null : p.mapSlot}
 
       {/* Ways to buy — category tiles (Buy only) */}
       {p.categoryTiles.length > 0 ? (

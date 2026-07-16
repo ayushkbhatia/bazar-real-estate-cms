@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { listNewThisWeek } from "@/lib/queries/curated-listings";
 import { BuyRentLanding } from "../_components/marketing/buy-rent-landing";
+import { RentAreaMap } from "../_components/marketing/rent-area-map";
+import { LeadBand } from "../_components/marketing/lead-band";
 import { listingRowToCard } from "../_components/marketing/map-listing";
 import { searchRedirectTarget } from "../_components/search-redirect";
 import {
@@ -30,6 +32,23 @@ const RENT_TYPE_HREF: Record<string, string> = {
   "Commercial Properties": "/commercial",
 };
 
+// Hero quick-filter chips → search. Residential types deep-link into the
+// rent search; commercial formats (offices, retail) route to /commercial.
+const RENT_CHIPS = [
+  "Apartments",
+  "Villas",
+  "Townhouses",
+  "Offices",
+  "Retail",
+] as const;
+const RENT_CHIP_HREF: Record<(typeof RENT_CHIPS)[number], string> = {
+  Apartments: "/rent/search?type=apartment",
+  Villas: "/rent/search?type=villa",
+  Townhouses: "/rent/search?type=townhouse",
+  Offices: "/commercial",
+  Retail: "/commercial",
+};
+
 export default async function RentPage({ searchParams }: PageProps) {
   const raw = await searchParams;
   const target = searchRedirectTarget("/rent", raw);
@@ -50,7 +69,9 @@ export default async function RentPage({ searchParams }: PageProps) {
         </>
       }
       sub="Residential and commercial rentals across the city's most connected communities — matched to your budget, lifestyle and move-in date."
-      chips={["Apartments", "Villas", "Townhouses", "Offices", "Retail"]}
+      wide
+      chips={[...RENT_CHIPS]}
+      chipHrefs={RENT_CHIPS.map((c) => RENT_CHIP_HREF[c])}
       stats={[
         ["Residential", "& commercial"],
         ["8", "popular rental areas"],
@@ -62,6 +83,16 @@ export default async function RentPage({ searchParams }: PageProps) {
       featuredTitle="Featured properties for rent"
       featuredCta="Browse all for rent"
       featuredCtaHref="/rent/search"
+      mapSlot={<RentAreaMap />}
+      mapAbove
+      leadBand={
+        <LeadBand
+          eyebrow="Get matched"
+          title="Tell us what you're looking to rent."
+          sub="Share your budget, preferred areas and move-in date — an advisor will send you matched rentals, usually within one business day."
+          image="Abu Dhabi rental interiors"
+        />
+      }
       waysEyebrow=""
       waysTitle=""
       categoryTiles={[]}

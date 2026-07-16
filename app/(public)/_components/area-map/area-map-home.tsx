@@ -85,9 +85,20 @@ function useNearViewport<T extends Element>(
 export function AreaMapHome({
   areas,
   dots,
+  eyebrow = "Where to live",
+  heading = "Find your area first. The home follows.",
+  allHref = "/communities",
+  allLabel = "All communities",
 }: {
   areas: AreaPin[];
   dots: AreaDot[];
+  /** Section eyebrow — overridden per surface (e.g. rental areas). */
+  eyebrow?: string;
+  /** Section heading. */
+  heading?: string;
+  /** "All …" link target + label (defaults to the communities index). */
+  allHref?: string;
+  allLabel?: string;
 }) {
   const [emirate, setEmirate] = useState("abu-dhabi");
   const [focusSlug, setFocusSlug] = useState<string | null>(null);
@@ -102,9 +113,9 @@ export function AreaMapHome({
     <section className="bg-bz-bg px-4 py-12 md:px-12 md:py-20">
       <div className="mb-8 flex flex-col gap-5 md:mb-9 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="eyebrow">Where to live</div>
+          <div className="eyebrow">{eyebrow}</div>
           <h2 className="serif mt-2 text-3xl tracking-tight md:text-4xl">
-            Find your area first. The home follows.
+            {heading}
           </h2>
         </div>
         <div className="flex items-center gap-4">
@@ -116,10 +127,10 @@ export function AreaMapHome({
             }}
           />
           <Link
-            href="/communities"
+            href={allHref}
             className="hidden items-center gap-1.5 text-sm text-bz-ink-2 transition-colors hover:text-bz-ink md:inline-flex"
           >
-            All communities <ArrowRight size={14} />
+            {allLabel} <ArrowRight size={14} />
           </Link>
         </div>
       </div>
