@@ -52,7 +52,7 @@ export function ChipCloud({ chips, icon = MapPin, cta, ctaHref }: Props) {
           size="lg"
           className="mt-7 bg-bz-ink text-bz-bg hover:bg-bz-ink/90"
         >
-          <Link href={ctaHref ?? "/communities"}>
+          <Link href={ctaHref ?? "/areas"}>
             {cta}
             <ArrowRight size={15} strokeWidth={1.7} />
           </Link>

@@ -16,7 +16,7 @@ const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[numb
   { path: "/insights", changeFrequency: "daily", priority: 0.7 },
   { path: "/contact", changeFrequency: "monthly", priority: 0.5 },
   { path: "/agents", changeFrequency: "weekly", priority: 0.5 },
-  { path: "/communities", changeFrequency: "weekly", priority: 0.5 },
+  { path: "/areas", changeFrequency: "weekly", priority: 0.5 },
   { path: "/developers", changeFrequency: "weekly", priority: 0.5 },
 ];
 
@@ -65,7 +65,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     listAreasWithCounts()
       .then((rows) =>
         rows.map<MetadataRoute.Sitemap[number]>((r) => ({
-          url: `${base}/communities/${r.slug}`,
+          url: `${base}/areas/${r.slug}`,
           lastModified: now,
           changeFrequency: "weekly",
           priority: 0.6,

@@ -264,7 +264,7 @@ export default async function AgentProfilePage({
                 a ? (
                   <li key={a.slug}>
                     <Link
-                      href={`/communities/${a.slug}`}
+                      href={`/areas/${a.slug}`}
                       className="text-[14px] text-bz-ink hover:text-bz-accent transition-colors"
                     >
                       · {a.name}

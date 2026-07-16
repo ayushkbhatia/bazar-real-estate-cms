@@ -2,7 +2,7 @@
 
 /**
  * Interactive area map (MapLibre GL) — the shared engine behind the home
- * "Where to live" section and the map band on /communities/[slug].
+ * "Where to live" section and the map band on /areas/[slug].
  *
  * Ported from the design handoff (area-map.jsx) but rebuilt as a typed,
  * *controlled* client component: the parent owns `emirate` + `focusSlug`
@@ -588,7 +588,7 @@ function Flyout({
 
       <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 8 }}>
         <Link
-          href={`/communities/${area.slug}`}
+          href={`/areas/${area.slug}`}
           className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-bz-ink px-4 text-sm font-medium text-bz-bg transition-colors hover:bg-bz-ink/90"
         >
           View community guide <ArrowRight size={15} />

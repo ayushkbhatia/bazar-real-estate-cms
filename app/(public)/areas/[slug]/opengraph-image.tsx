@@ -8,7 +8,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 /**
- * Sprint 11 — composed OG image for /communities/[slug]. Pulls the
+ * Sprint 11 — composed OG image for /areas/[slug]. Pulls the
  * canonical name + median price strip from the seed (the DB layer's
  * stats jsonb is editorial and Sprint 12 wires DLD ingestion). Falls
  * back to "Abu Dhabi" when nothing matches the slug.

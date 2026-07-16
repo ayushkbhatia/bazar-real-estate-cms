@@ -271,7 +271,7 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           <ChipCloud
             chips={p.communityChips}
             cta={p.communitiesCta}
-            ctaHref="/communities"
+            ctaHref="/areas"
           />
         </div>
       </section>

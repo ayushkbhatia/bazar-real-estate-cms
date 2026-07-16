@@ -99,8 +99,8 @@ export default async function CommunityProfilePage({
   });
   const breadcrumbsLd = breadcrumbListJsonLd([
     { name: "Home", url: siteBase },
-    { name: "Communities", url: `${siteBase}/communities` },
-    { name: area.name, url: `${siteBase}/communities/${area.slug}` },
+    { name: "Communities", url: `${siteBase}/areas` },
+    { name: area.name, url: `${siteBase}/areas/${area.slug}` },
   ]);
 
   return (
@@ -116,7 +116,7 @@ export default async function CommunityProfilePage({
       {/* Crumb */}
       <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
         <Link
-          href="/communities"
+          href="/areas"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
         >
           <ArrowLeft size={13} strokeWidth={1.8} />
@@ -422,7 +422,7 @@ export default async function CommunityProfilePage({
                 s ? (
                   <Link
                     key={s.slug}
-                    href={`/communities/${s.slug}`}
+                    href={`/areas/${s.slug}`}
                     className="inline-flex items-center h-9 px-3 rounded border border-bz-border bg-bz-bg text-[13px] text-bz-ink-2 hover:border-bz-border-strong hover:text-bz-ink transition-colors"
                   >
                     {s.name}
