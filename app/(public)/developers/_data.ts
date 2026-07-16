@@ -53,16 +53,16 @@ export const DEVELOPERS: DeveloperDir[] = [
   { slug: "nine-yards", name: "Nine Yards", blurb: "Luxury projects in iconic locations.", logo: "/developers/nine-yards.png", w: W, h: W },
   { slug: "nic-developers", name: "NIC Developers", blurb: "Residential & mixed-use developments.", logo: "/developers/nic-developers.png", w: W, h: W },
   { slug: "nshama", name: "Nshama", blurb: "Developer behind the Town Square community.", logo: "/developers/nshama.png", w: W, h: W },
-  { slug: "ohana", name: "Ohana Development", blurb: "Branded waterfront residences.", logo: "/developers/ohana.png", w: W, h: W },
+  { slug: "ohana-development", name: "Ohana Development", blurb: "Branded waterfront residences.", logo: "/developers/ohana-development.png", w: W, h: W },
   { slug: "q-properties", name: "Q Properties", blurb: "Reem-focused tower specialist.", logo: "/developers/q-properties.png", w: W, h: W },
-  { slug: "radiant", name: "Radiant Real Estate", blurb: "Al Reem residential towers.", logo: "/developers/radiant.png", w: W, h: W },
+  { slug: "radiant-real-estate", name: "Radiant Real Estate", blurb: "Al Reem residential towers.", logo: "/developers/radiant-real-estate.png", w: W, h: W },
   { slug: "rak-properties", name: "RAK Properties", blurb: "Northern-emirates waterfront living.", logo: "/developers/rak-properties.png", w: W, h: W },
   { slug: "reportage", name: "Reportage Properties", blurb: "Off-plan residential communities.", logo: "/developers/reportage.png", w: W, h: W },
   { slug: "saas-properties", name: "SAAS Properties", blurb: "Residential & commercial developments.", logo: "/developers/saas-properties.png", w: W, h: W },
   { slug: "samana", name: "Samana Developers", blurb: "Investor-focused off-plan projects.", logo: "/developers/samana.png", w: W, h: W },
   { slug: "sobha", name: "Sobha Realty", blurb: "High-quality villas & apartments.", logo: "/developers/sobha.png", w: W, h: W },
   { slug: "taraf", name: "Taraf", blurb: "Boutique luxury residences.", logo: "/developers/taraf.png", w: W, h: W },
-  { slug: "tiger-group", name: "Tiger Group", blurb: "Mixed-use developments.", logo: "/developers/tiger-group.png", w: W, h: W },
+  { slug: "tiger-properties", name: "Tiger Properties", blurb: "Mixed-use developments.", logo: "/developers/tiger-properties.png", w: W, h: W },
 ];
 
 /** Developers sorted alphabetically by brand name (the master-grid order). */
