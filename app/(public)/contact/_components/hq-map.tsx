@@ -5,13 +5,14 @@ import { HqMapCanvas } from "./hq-map-canvas";
  * Sprint 5e: full-width HQ map under the contact hero.
  *
  * Renders the shared Bazar pastel basemap (recoloured CARTO Positron via
- * ../../_components/map-style) centred on the Saadiyat Island HQ — the same
- * look as the home, search and listing maps.
+ * ../../_components/map-style) centred on the Al Bateen HQ — the same look as
+ * the home, search and listing maps.
  */
 export function HqMap() {
-  // Saadiyat marina area — Bazar HQ.
-  const lat = 24.5440;
-  const lng = 54.4406;
+  // Al Bateen — Zayed The First Street, Bazar HQ. Approximate pin; refine to
+  // the exact building coordinate when available.
+  const lat = 24.4619;
+  const lng = 54.3487;
 
   return (
     <section className="border-t border-bz-border">
@@ -22,13 +23,13 @@ export function HqMap() {
             className="serif text-[28px] mt-2 leading-tight"
             style={{ letterSpacing: "-0.012em" }}
           >
-            Saadiyat Island, Abu Dhabi.
+            Al Bateen, Abu Dhabi.
           </h2>
         </div>
         <HqMapCanvas
           lat={lat}
           lng={lng}
-          label="Bazar HQ — Saadiyat Island"
+          label="Bazar HQ — Al Bateen"
           className="w-full aspect-[21/9] rounded-lg overflow-hidden border border-bz-border"
         />
         <p className="mt-4 text-[12px] text-bz-muted">
