@@ -279,9 +279,14 @@ export async function listAreaPins(
 // listAreaListingDots
 // ─────────────────────────────────────────────────────────────────────
 export async function listAreaListingDots(
-  opts: { emirate?: string; areaSlug?: string } = {},
+  opts: {
+    emirate?: string;
+    areaSlug?: string;
+    /** Scope dots to one listing mode (e.g. "rent" for the /rent map). */
+    mode?: "buy" | "rent" | "off_plan" | "commercial";
+  } = {},
 ): Promise<AreaDot[]> {
-  const { emirate = DEFAULT_EMIRATE, areaSlug } = opts;
+  const { emirate = DEFAULT_EMIRATE, areaSlug, mode } = opts;
   if (!isSupabaseConfigured) return [];
   try {
     const sb = createSupabasePublicClient();
@@ -313,12 +318,14 @@ export async function listAreaListingDots(
       if (areaIds.length === 0) return [];
     }
 
-    const { data: props } = await sb
+    let query = sb
       .from("properties")
       .select("slug, reference, geo, price_aed, title, beds, built_up_ft2")
       .eq("status", "published")
       .in("area_id", areaIds)
       .not("geo", "is", null);
+    if (mode) query = query.eq("mode", mode);
+    const { data: props } = await query;
 
     const dots: AreaDot[] = [];
     for (const p of props ?? []) {

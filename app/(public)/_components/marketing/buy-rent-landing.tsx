@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { ListingCardProps } from "@/components/brand/listing-card";
@@ -23,6 +24,12 @@ export type BuyRentLandingProps = {
   sub: string;
   /** Static informational pills (Rent). Ignored when `categories` is set. */
   chips?: string[];
+  /**
+   * Optional per-chip link targets, index-aligned with `chips`. When a chip
+   * has an href it renders as a link into search; without one it stays a
+   * static pill. Ignored when `categories` (the interactive path) is set.
+   */
+  chipHrefs?: (string | undefined)[];
   /**
    * Interactive property-type categories (Buy). When set, the hero pills
    * become clickable and drive the featured grid via `featuredByCategory`.
@@ -86,19 +93,33 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
     <HeroCategoryChips categories={p.categories!} />
   ) : (
     <div className="flex flex-wrap gap-2 mt-7">
-      {(p.chips ?? []).map((c, i) => (
-        <span
-          key={c}
-          className={
-            "inline-flex items-center h-9 px-4 rounded-full border text-[13px] " +
-            (i === 0
-              ? "bg-bz-ink text-bz-bg border-bz-ink"
-              : "bg-bz-surface text-bz-ink-2 border-bz-border")
-          }
-        >
-          {c}
-        </span>
-      ))}
+      {(p.chips ?? []).map((c, i) => {
+        const base =
+          "inline-flex items-center h-9 px-4 rounded-full border text-[13px] " +
+          (i === 0
+            ? "bg-bz-ink text-bz-bg border-bz-ink"
+            : "bg-bz-surface text-bz-ink-2 border-bz-border");
+        const href = p.chipHrefs?.[i];
+        return href ? (
+          <Link
+            key={c}
+            href={href}
+            className={
+              base +
+              " transition-colors " +
+              (i === 0
+                ? "hover:bg-bz-ink/90"
+                : "hover:border-bz-ink hover:text-bz-ink")
+            }
+          >
+            {c}
+          </Link>
+        ) : (
+          <span key={c} className={base}>
+            {c}
+          </span>
+        );
+      })}
     </div>
   );
 
