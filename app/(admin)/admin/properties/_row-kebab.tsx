@@ -24,11 +24,12 @@ import { toast } from "sonner";
  * Sprint 9 bulk operations; for now they toast.
  */
 export function PropertyRowKebab({
-  propertyId,
   reference,
   slug,
   status,
 }: {
+  // Accepted for a stable call-site API; wiring lands with the Sprint 9
+  // single-row delete/archive counterpart.
   propertyId: string;
   reference: string;
   slug: string;

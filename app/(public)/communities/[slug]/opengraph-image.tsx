@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from "next/og";
 import { getAreaGuide } from "@/lib/queries/areas-guide";
 import { getSeedAreaGuideBySlug } from "@/lib/seeds/areas";

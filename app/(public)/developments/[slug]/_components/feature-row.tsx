@@ -79,7 +79,7 @@ export function FeatureRow({ block, reverse, slug }: Props) {
   // synchronously (no animation, no waiting).
   const step = (n: number) =>
     reduceMotion ? "0ms" : visible ? `${n * 120}ms` : "0ms";
-  const motionCls = (n: number) =>
+  const motionCls = (_n: number) =>
     cn(
       "transition-all duration-700 ease-out",
       visible

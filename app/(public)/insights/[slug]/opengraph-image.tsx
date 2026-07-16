@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from "next/og";
 import { getPublishedArticleBySlug } from "@/lib/queries/articles";
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/schemas/article";
