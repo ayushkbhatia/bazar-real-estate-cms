@@ -108,7 +108,6 @@ export async function* runConciergeLoop(
   const tools = toolsForSession({ anonymous: opts.anonymous });
   let messages: ConversationMessage[] = [...opts.messages];
   let inputTokens = opts.totalInputTokensSoFar;
-  let outputTokens = 0;
 
   for (let iter = 0; iter < MAX_TOOL_LOOPS; iter++) {
     if (inputTokens >= MAX_INPUT_TOKENS_PER_SESSION) {
@@ -141,7 +140,6 @@ export async function* runConciergeLoop(
     const usage = response.usage;
     if (usage) {
       inputTokens += usage.input_tokens ?? 0;
-      outputTokens += usage.output_tokens ?? 0;
       yield {
         kind: "tokens",
         input: usage.input_tokens ?? 0,
