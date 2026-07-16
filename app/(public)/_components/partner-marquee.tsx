@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { ECOSYSTEM_PARTNERS } from "../../_components/partners-data";
+import { ECOSYSTEM_PARTNERS } from "./partners-data";
 
 /**
  * "Our Partner Ecosystem" — a continuous, seamless logo marquee of Bazar's

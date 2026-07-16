@@ -7,7 +7,7 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
 import { HqMapCanvas } from "../contact/_components/hq-map-canvas";
-import { PartnerMarquee } from "./_components/partner-marquee";
+import { PartnerEcosystemSection } from "../_components/partner-ecosystem-section";
 
 // Bazar HQ — Al Bateen, Abu Dhabi. Same coordinate as the /contact HQ map so
 // the two location surfaces stay 1:1.
@@ -354,24 +354,8 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Partner ecosystem — banking + regulatory */}
-      <section className="px-4 md:px-12 py-14 md:py-18 border-t border-bz-border bg-bz-surface-2">
-        <div className="flex flex-wrap justify-between items-end gap-4 mb-9">
-          <SectionHead
-            eyebrow="Our Partner Ecosystem"
-            title="The banks and regulators behind every deal."
-            sub="Direct relationships with the UAE's leading financial institutions and real-estate authorities."
-            size={40}
-          />
-          <Button asChild variant="outline">
-            <Link href="/partners">
-              All partners
-              <ArrowRight size={15} strokeWidth={1.7} />
-            </Link>
-          </Button>
-        </div>
-        <PartnerMarquee />
-      </section>
+      {/* Partner ecosystem — banking + regulatory (shared with home) */}
+      <PartnerEcosystemSection />
 
       {/* Location — 1:1 with the /contact HQ map + details */}
       <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border">
