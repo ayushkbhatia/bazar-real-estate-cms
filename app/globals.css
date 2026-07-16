@@ -74,6 +74,10 @@
   --bz-ink-2: oklch(0.32 0.006 80);
   --bz-muted: oklch(0.55 0.005 80);
   --bz-muted-2: oklch(0.68 0.005 80);
+  /* Eyebrows are 11px, so WCAG AA demands 4.5:1 — muted (0.55) only clears
+     4.2 on the lightest surface (bz-surface-2). A dedicated, slightly darker
+     token keeps the muted look while passing the axe home/about a11y gate. */
+  --bz-eyebrow: oklch(0.5 0.005 80);
   --bz-accent: oklch(0.42 0.045 155);
   --bz-accent-hover: oklch(0.36 0.045 155);
   --bz-accent-soft: oklch(0.93 0.015 155);
@@ -149,6 +153,9 @@
   --bz-ink-2: oklch(0.86 0.006 80);
   --bz-muted: oklch(0.65 0.006 80);
   --bz-muted-2: oklch(0.52 0.006 80);
+  /* Dark mode: eyebrows sit on dark surfaces, so the muted value already
+     clears AA — mirror it. */
+  --bz-eyebrow: oklch(0.65 0.006 80);
   --bz-accent: oklch(0.62 0.07 155);
   --bz-accent-hover: oklch(0.7 0.08 155);
   --bz-accent-soft: oklch(0.28 0.03 155);
@@ -171,7 +178,8 @@
 /* ─── Bazar utility classes ─────────────────────────────────────── */
 @layer components {
   .eyebrow {
-    @apply text-[11px] font-medium uppercase text-bz-muted;
+    @apply text-[11px] font-medium uppercase;
+    color: var(--bz-eyebrow);
     letter-spacing: 0.12em;
   }
   .serif {
