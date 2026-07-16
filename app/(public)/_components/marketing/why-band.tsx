@@ -7,6 +7,8 @@ type Props = {
   body: React.ReactNode;
   /** [value, label][] — rendered as a stat grid on the right. */
   stats?: [string, string][];
+  /** Let the content span the full section width (no 1200px cap). */
+  wide?: boolean;
 };
 
 /**
@@ -14,14 +16,22 @@ type Props = {
  * stat grid. Full-bleed; used at most once or twice per page (the handoff's
  * `WhyBand`).
  */
-export function WhyBand({ eyebrow = "Why Bazar", title, body, stats }: Props) {
+export function WhyBand({
+  eyebrow = "Why Bazar",
+  title,
+  body,
+  stats,
+  wide,
+}: Props) {
+  const cap = wide ? "" : " max-w-[1200px]";
   return (
     <section className="bg-bz-ink text-white px-4 md:px-12 py-16 md:py-20">
       <div
         className={
           stats
-            ? "grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-12 lg:gap-20 items-center max-w-[1200px]"
-            : "max-w-[1200px]"
+            ? "grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-12 lg:gap-20 items-center" +
+              cap
+            : cap.trim()
         }
       >
         <div>

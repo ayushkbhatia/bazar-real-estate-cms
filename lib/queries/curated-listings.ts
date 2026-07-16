@@ -22,6 +22,10 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import type { ListingRow } from "@/lib/queries/properties";
+import type { Database } from "@/db/types";
+
+type PropertyMode = Database["public"]["Enums"]["property_mode"];
+type PropertyTypeEnum = Database["public"]["Enums"]["property_type"];
 
 type RawMediaJoin = {
   role: string;
@@ -83,6 +87,46 @@ export async function listNewThisWeek(opts: {
   }
   return mapRows(
     data as unknown as (Record<string, unknown> & { property_media?: RawMediaJoin[] })[],
+  );
+}
+
+/**
+ * Featured listings scoped to a property type / mode — powers the
+ * interactive category chips on the /buy landing (Apartment · Villa ·
+ * Penthouse · Commercial). Recent-first, DB-linked; returns `[]` when the
+ * bucket is empty so the caller can fall back to a general featured row.
+ */
+export async function listFeaturedByType(
+  opts: {
+    mode?: PropertyMode;
+    type?: PropertyTypeEnum;
+    /** Match any of several types (e.g. all commercial formats). */
+    types?: PropertyTypeEnum[];
+    limit?: number;
+  } = {},
+): Promise<ListingRow[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = createSupabasePublicClient();
+  let query = supabase
+    .from("properties")
+    .select(LISTING_FIELDS)
+    .eq("status", "published" as never);
+  if (opts.mode) query = query.eq("mode", opts.mode as never);
+  if (opts.type) query = query.eq("type", opts.type as never);
+  if (opts.types && opts.types.length)
+    query = query.in("type", opts.types as never);
+  query = query
+    .order("published_at", { ascending: false, nullsFirst: false })
+    .limit(opts.limit ?? 4);
+  const { data, error } = await query;
+  if (error || !data) {
+    if (error) console.error("[listFeaturedByType]", error);
+    return [];
+  }
+  return mapRows(
+    data as unknown as (Record<string, unknown> & {
+      property_media?: RawMediaJoin[];
+    })[],
   );
 }
 
