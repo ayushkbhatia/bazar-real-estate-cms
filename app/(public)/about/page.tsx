@@ -71,7 +71,7 @@ export default function AboutPage() {
     <div className="bg-bz-bg">
       {/* Hero — text left, office image right, at the same level */}
       <section className="px-4 md:px-12 pt-10 md:pt-16 pb-12 md:pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-14 items-center">
           <div>
             <Eyebrow>About Bazar Real Estate</Eyebrow>
             <h1
@@ -103,7 +103,7 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
-          <div className="relative w-full" style={{ aspectRatio: "4/5" }}>
+          <div className="relative w-full" style={{ aspectRatio: "4/3" }}>
             <PlaceholderImage
               label="bazar office · al bateen · abu dhabi"
               className="absolute inset-0 h-full w-full rounded-xl"
