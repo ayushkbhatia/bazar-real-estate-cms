@@ -20,7 +20,11 @@ test("/developers/aldar renders the developer profile", async ({ page }) => {
   await expect(
     page.getByRole("heading", { level: 1, name: /aldar properties/i }),
   ).toBeVisible();
-  await expect(page.getByText(/founded/i)).toBeVisible();
+  // The simplified profile leads with a "Developments" section; pin to its
+  // "<developer>'s projects." heading rather than the removed stats block.
+  await expect(
+    page.getByRole("heading", { level: 2, name: /projects/i }),
+  ).toBeVisible();
 });
 
 test("/developers/<unknown> 404s", async ({ page }) => {
