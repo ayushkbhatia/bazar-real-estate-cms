@@ -3,9 +3,14 @@ import { redirect } from "next/navigation";
 import {
   listExclusiveProperties,
   listNewThisWeek,
+  listFeaturedByType,
 } from "@/lib/queries/curated-listings";
+import { listAreaPins, listAreaListingDots } from "@/lib/queries/area-map";
 import { BuyRentLanding } from "../_components/marketing/buy-rent-landing";
 import { listingRowToCard } from "../_components/marketing/map-listing";
+import { BuyPropertiesMap } from "../_components/marketing/buy-properties-map";
+import { LeadBand } from "../_components/marketing/lead-band";
+import type { BuyCategory } from "../_components/marketing/buy-category-explorer";
 import { searchRedirectTarget } from "../_components/search-redirect";
 import {
   AD_COMMUNITIES,
@@ -33,19 +38,62 @@ const TYPE_PARAM: Record<string, string> = {
   "Commercial Properties": "/commercial",
 };
 
+// Hero category chips → featured filter + "browse all" target.
+const CATEGORIES: BuyCategory[] = [
+  { key: "apartment", label: "Apartment" },
+  { key: "villa", label: "Villa" },
+  { key: "penthouse", label: "Penthouse" },
+  { key: "commercial", label: "Commercial" },
+];
+
+const CATEGORY_CTA_HREF: Record<string, string> = {
+  apartment: "/buy/search?type=apartment",
+  villa: "/buy/search?type=villa",
+  penthouse: "/buy/search?type=penthouse",
+  commercial: "/commercial",
+};
+
 export default async function BuyPage({ searchParams }: PageProps) {
   const raw = await searchParams;
   // Old deep-links (/buy?type=apartment) → the relocated search route.
   const target = searchRedirectTarget("/buy", raw);
   if (target) redirect(target);
 
-  const rows =
-    (await listExclusiveProperties({ limit: 4 })).slice(0, 4) ?? [];
-  const featured = (
-    rows.length >= 4 ? rows : await listNewThisWeek({ limit: 4 })
-  )
-    .slice(0, 4)
-    .map(listingRowToCard);
+  const [
+    exclusiveRows,
+    apartmentRows,
+    villaRows,
+    penthouseRows,
+    commercialRows,
+    abuDhabiPins,
+    dubaiPins,
+    dots,
+  ] = await Promise.all([
+    listExclusiveProperties({ limit: 4 }),
+    listFeaturedByType({ mode: "buy", type: "apartment", limit: 4 }),
+    listFeaturedByType({ mode: "buy", type: "villa", limit: 4 }),
+    listFeaturedByType({ mode: "buy", type: "penthouse", limit: 4 }),
+    listFeaturedByType({ mode: "commercial", limit: 4 }),
+    listAreaPins("abu-dhabi"),
+    listAreaPins("dubai"),
+    listAreaListingDots(),
+  ]);
+
+  // General featured fallback (used when a category bucket is empty).
+  const fallbackRows =
+    exclusiveRows.length >= 4
+      ? exclusiveRows
+      : await listNewThisWeek({ limit: 4 });
+  const featured = fallbackRows.slice(0, 4).map(listingRowToCard);
+
+  const featuredByCategory: Record<string, ReturnType<typeof listingRowToCard>[]> = {
+    apartment: apartmentRows.slice(0, 4).map(listingRowToCard),
+    villa: villaRows.slice(0, 4).map(listingRowToCard),
+    penthouse: penthouseRows.slice(0, 4).map(listingRowToCard),
+    commercial: commercialRows.slice(0, 4).map(listingRowToCard),
+  };
+
+  const mapAreas = [...abuDhabiPins, ...dubaiPins];
 
   return (
     <BuyRentLanding
@@ -58,18 +106,29 @@ export default async function BuyPage({ searchParams }: PageProps) {
         </>
       }
       sub="Browse ready, resale and off-plan homes across Abu Dhabi's most sought-after communities — with a senior advisor guiding every step."
-      chips={["Off-Plan", "Resale", "Ready-to-Move", "Commercial"]}
-      stats={[
-        ["20+ yrs", "UAE market experience"],
-        ["8", "leading communities"],
-        ["9", "developer partners"],
-      ]}
+      wide
+      categories={CATEGORIES}
       formTitle="Start your property search"
       formSub="Tell us what you're looking for, and our team will help you find the right opportunity."
       featured={featured}
+      featuredByCategory={featuredByCategory}
+      featuredCtaHrefByCategory={CATEGORY_CTA_HREF}
       featuredTitle="Featured properties for sale"
       featuredCta="Browse all for sale"
       featuredCtaHref="/buy/search"
+      mapSlot={
+        mapAreas.length > 0 ? (
+          <BuyPropertiesMap areas={mapAreas} dots={dots} />
+        ) : null
+      }
+      leadBand={
+        <LeadBand
+          eyebrow="Talk to an advisor"
+          title="Tell us what you're after."
+          sub="Share your brief — area, budget, timeline — and a senior advisor will come back with a shortlist worth your time."
+          image="Abu Dhabi waterfront · homes for sale"
+        />
+      }
       waysEyebrow="Ways to buy"
       waysTitle="What type of property are you looking for?"
       categoryTiles={[
@@ -106,7 +165,10 @@ export default async function BuyPage({ searchParams }: PageProps) {
       propTypes={SALE_PROP_TYPES.map(([name, desc]) => ({
         name,
         desc,
-        cta: name === "Commercial Properties" ? "Browse commercial" : `Browse ${name.toLowerCase()}`,
+        cta:
+          name === "Commercial Properties"
+            ? "Browse commercial"
+            : `Browse ${name.toLowerCase()}`,
         href: TYPE_PARAM[name] ?? "/buy/search",
       }))}
       communitiesEyebrow="Where to buy"
