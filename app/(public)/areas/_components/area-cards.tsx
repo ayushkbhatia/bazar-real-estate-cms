@@ -4,6 +4,23 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
 
 /**
+ * Curated "marquee" order for the index cards — the recognisable lifestyle
+ * islands and prime districts, rather than the raw alphabetical cut (which
+ * led with free zones like ADGM / KIZAD). Any slug absent from the live set
+ * is skipped and backfilled below, so this list can't 404 the grid.
+ */
+const MARQUEE_SLUGS = [
+  "saadiyat-island",
+  "yas-island",
+  "al-reem-island",
+  "hudayriyat-island",
+  "al-maryah",
+  "al-raha",
+  "corniche",
+  "khalifa-city",
+];
+
+/**
  * Areas index "clickable cards" — the same tile treatment as the home
  * "Location-based browsing" grid (image + gradient scrim + name + live
  * listing count), laid out as a clean 4×2 grid (2-up on mobile) linking
@@ -12,7 +29,17 @@ import { listAreasWithCounts } from "@/lib/queries/areas-guide";
  */
 export async function AreaCards() {
   const entries = await listAreasWithCounts();
-  const areas = entries.slice(0, 8);
+  const bySlug = new Map(entries.map((e) => [e.slug, e]));
+
+  // Marquee order first (only those present in the live set), then backfill
+  // from the remaining areas so the grid always renders a full 4×2 even if
+  // the seed/DB set shifts.
+  const picked = MARQUEE_SLUGS.flatMap((s) => {
+    const e = bySlug.get(s);
+    return e ? [e] : [];
+  });
+  const fill = entries.filter((e) => !MARQUEE_SLUGS.includes(e.slug));
+  const areas = [...picked, ...fill].slice(0, 8);
   if (areas.length === 0) return null;
 
   return (
