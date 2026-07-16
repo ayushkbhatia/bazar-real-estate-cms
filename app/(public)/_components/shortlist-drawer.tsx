@@ -49,8 +49,13 @@ type ShortlistItem = {
 // snapshot-equality check can short-circuit re-renders. Re-deriving from
 // localStorage on every call would return a fresh array each time and
 // force an infinite render loop.
+// Stable empty reference for the server/SSR snapshot. `useSyncExternalStore`
+// calls `getServerSnapshot` more than once and compares by reference — a
+// fresh `[]` each call reads as an ever-changing store and trips React's
+// "getServerSnapshot should be cached to avoid an infinite loop" warning.
+const EMPTY_COMPARE_IDS: string[] = [];
 let cachedRaw = "";
-let cachedSnapshot: string[] = [];
+let cachedSnapshot: string[] = EMPTY_COMPARE_IDS;
 function getCompareSnapshot(): string[] {
   if (typeof window === "undefined") return cachedSnapshot;
   const raw = window.localStorage.getItem(COMPARE_STORAGE_KEY) ?? "";
@@ -60,7 +65,7 @@ function getCompareSnapshot(): string[] {
   return cachedSnapshot;
 }
 function getServerCompareSnapshot(): string[] {
-  return [];
+  return EMPTY_COMPARE_IDS;
 }
 function subscribeCompare(callback: () => void): () => void {
   function onStorage(e: StorageEvent) {
