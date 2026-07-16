@@ -84,6 +84,7 @@ export default async function RentPage({ searchParams }: PageProps) {
       featuredCta="Browse all for rent"
       featuredCtaHref="/rent/search"
       mapSlot={<RentAreaMap />}
+      mapAbove
       leadBand={
         <LeadBand
           eyebrow="Get matched"

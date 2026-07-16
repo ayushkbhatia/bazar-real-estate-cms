@@ -51,8 +51,13 @@ export type BuyRentLandingProps = {
   featuredTitle: string;
   featuredCta: string;
   featuredCtaHref: string;
-  /** Rendered directly under the featured row (Buy: the properties map). */
+  /** Rendered near the featured row (Buy: the properties map). */
   mapSlot?: React.ReactNode;
+  /**
+   * Place `mapSlot` above the featured row instead of below it. Opt-in so
+   * /buy keeps its map under Featured while /rent leads with the map.
+   */
+  mapAbove?: boolean;
   /** Rendered just above the "Why Bazar" band (Buy: a second lead form). */
   leadBand?: React.ReactNode;
   waysEyebrow: string;
@@ -189,6 +194,9 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
         </div>
       </section>
 
+      {/* Area map above the featured row (Rent) */}
+      {p.mapAbove ? p.mapSlot : null}
+
       {/* Featured listings */}
       {showFeatured ? (
         <section className={SECTION}>
@@ -215,8 +223,8 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
         </section>
       ) : null}
 
-      {/* Buy properties map (Buy only) */}
-      {p.mapSlot}
+      {/* Area map below the featured row (Buy) */}
+      {p.mapAbove ? null : p.mapSlot}
 
       {/* Ways to buy — category tiles (Buy only) */}
       {p.categoryTiles.length > 0 ? (
