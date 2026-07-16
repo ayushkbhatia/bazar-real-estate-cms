@@ -28,6 +28,9 @@ export function AreaMapLazy(props: {
   onSelectArea?: (slug: string | null) => void;
   mode?: "explore" | "detail";
   centerSlug?: string;
+  dotHref?: (dot: AreaDot) => string;
+  dotCtaLabel?: string;
+  countNoun?: { singular: string; plural: string };
   className?: string;
 }) {
   return <AreaMap {...props} />;

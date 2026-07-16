@@ -73,8 +73,25 @@ type Props = {
    * detail page (the flyout for the page's own area would be redundant).
    */
   centerSlug?: string;
+  /**
+   * Where a dot popup's CTA links. Defaults to the public property page
+   * (`/p/<slug>-<ref>`); the New Projects map overrides it to point each
+   * project dot at its off-plan detail page.
+   */
+  dotHref?: (dot: AreaDot) => string;
+  /** Dot popup CTA label. Defaults to "View property". */
+  dotCtaLabel?: string;
+  /**
+   * Noun for a pin's count in the flyout ("6 Listings" / "Zoom to 6
+   * listings"). Defaults to listings; the off-plan map passes projects.
+   */
+  countNoun?: { singular: string; plural: string };
   className?: string;
 };
+
+const DEFAULT_COUNT_NOUN = { singular: "listing", plural: "listings" };
+const DEFAULT_DOT_HREF = (d: AreaDot) =>
+  `/p/${d.slug}-${d.reference.toLowerCase()}`;
 
 // Basemap (CARTO Positron recoloured to Bazar's warm palette) now lives in
 // the shared ../map-style module so every map surface matches this one.
@@ -145,6 +162,9 @@ export function AreaMap({
   onSelectArea,
   mode = "explore",
   centerSlug,
+  dotHref = DEFAULT_DOT_HREF,
+  dotCtaLabel = "View property",
+  countNoun = DEFAULT_COUNT_NOUN,
   className,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -375,6 +395,9 @@ export function AreaMap({
           onZoomToListings={(a) => flyToArea(a, true)}
           dot={dot}
           onCloseDot={() => setDot(null)}
+          dotHref={dotHref}
+          dotCtaLabel={dotCtaLabel}
+          countNoun={countNoun}
         />
       )}
 
@@ -412,6 +435,9 @@ function Overlay({
   onZoomToListings,
   dot,
   onCloseDot,
+  dotHref,
+  dotCtaLabel,
+  countNoun,
 }: {
   map: MapLibreMap;
   areas: AreaPin[];
@@ -420,6 +446,9 @@ function Overlay({
   onZoomToListings: (a: AreaPin) => void;
   dot: AreaDot | null;
   onCloseDot: () => void;
+  dotHref: (dot: AreaDot) => string;
+  dotCtaLabel: string;
+  countNoun: { singular: string; plural: string };
 }) {
   useRafRerenderOnMove(map);
   const z = map.getZoom();
@@ -457,17 +486,26 @@ function Overlay({
       {selected && (
         <Flyout
           area={selected}
+          countNoun={countNoun}
           onClose={() => onSelectArea(null)}
           onZoomToListings={() => onZoomToListings(selected)}
         />
       )}
 
-      {dot && <DotPopupCard map={map} dot={dot} onClose={onCloseDot} />}
+      {dot && (
+        <DotPopupCard
+          map={map}
+          dot={dot}
+          href={dotHref(dot)}
+          ctaLabel={dotCtaLabel}
+          onClose={onCloseDot}
+        />
+      )}
 
       {!dot && z < DOT_REVEAL_ZOOM && (
         <div className="bzmap-hint">
           <MapPin size={13} strokeWidth={2} /> Click an area pin — zoom in to see
-          individual listings
+          individual {countNoun.plural}
         </div>
       )}
     </>
@@ -479,10 +517,12 @@ function Overlay({
 // ─────────────────────────────────────────────────────────────────────
 function Flyout({
   area,
+  countNoun,
   onClose,
   onZoomToListings,
 }: {
   area: AreaPin;
+  countNoun: { singular: string; plural: string };
   onClose: () => void;
   onZoomToListings: () => void;
 }) {
@@ -495,8 +535,10 @@ function Flyout({
     area.yoyChange != null
       ? `${area.yoyChange > 0 ? "+" : ""}${area.yoyChange}%`
       : "—";
+  const countLabel =
+    countNoun.plural.charAt(0).toUpperCase() + countNoun.plural.slice(1);
   const stats: [string, string][] = [
-    [String(area.count), "Listings"],
+    [String(area.count), countLabel],
     [median, "Median /ft²"],
     [yoy, "YoY"],
   ];
@@ -556,7 +598,8 @@ function Flyout({
           onClick={onZoomToListings}
           className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-bz-border px-4 text-sm text-bz-ink-2 transition-colors hover:bg-bz-surface-2"
         >
-          <Search size={14} /> Zoom to {area.count} listings
+          <Search size={14} /> Zoom to {area.count}{" "}
+          {area.count === 1 ? countNoun.singular : countNoun.plural}
         </button>
       </div>
     </div>
@@ -569,10 +612,14 @@ function Flyout({
 function DotPopupCard({
   map,
   dot,
+  href,
+  ctaLabel,
   onClose,
 }: {
   map: MapLibreMap;
   dot: AreaDot;
+  href: string;
+  ctaLabel: string;
   onClose: () => void;
 }) {
   const p = map.project([dot.lng, dot.lat]);
@@ -598,7 +645,7 @@ function DotPopupCard({
           {dot.meta}
         </div>
         <Link
-          href={`/p/${dot.slug}-${dot.reference.toLowerCase()}`}
+          href={href}
           style={{
             display: "inline-flex",
             alignItems: "center",
@@ -609,7 +656,7 @@ function DotPopupCard({
             marginTop: 10,
           }}
         >
-          View property <ArrowRight size={13} />
+          {ctaLabel} <ArrowRight size={13} />
         </Link>
       </div>
     </div>
