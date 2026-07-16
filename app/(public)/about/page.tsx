@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, MapPin } from "lucide-react";
+import { ArrowRight, Check, MapPin, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
+import { HqMapCanvas } from "../contact/_components/hq-map-canvas";
+import { PartnerMarquee } from "./_components/partner-marquee";
+
+// Bazar HQ — Al Bateen, Abu Dhabi. Same coordinate as the /contact HQ map so
+// the two location surfaces stay 1:1.
+const HQ_LAT = 24.4619;
+const HQ_LNG = 54.3487;
+const HQ_DIRECTIONS = `https://www.google.com/maps/dir/?api=1&destination=${HQ_LAT},${HQ_LNG}`;
 
 export const metadata: Metadata = {
   title: "About Bazar Real Estate",
@@ -61,52 +69,52 @@ const HIGHLIGHTS = [
 export default function AboutPage() {
   return (
     <div className="bg-bz-bg">
-      {/* Hero */}
-      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-12 md:pb-16">
-        <Eyebrow>About Bazar Real Estate</Eyebrow>
-        <h1
-          className="serif mt-4 max-w-[1100px]"
-          style={{
-            fontSize: fluid(88),
-            letterSpacing: "-0.03em",
-            lineHeight: 0.98,
-          }}
-        >
-          A trusted name in UAE
-          <br />
-          real estate <em className="italic">since 2005.</em>
-        </h1>
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.6fr] gap-10 lg:gap-[72px] mt-12">
-          <div className="eyebrow pt-1.5">Established Abu Dhabi · 2005</div>
-          <div className="text-[17px] md:text-[19px] leading-[1.65] text-bz-ink-2 max-w-[760px]">
-            <p className="m-0">
-              Established in Abu Dhabi in 2005, Bazar Real Estate L.L.C. is a
-              leading award-winning real estate agency in the UAE, built on over
-              20 years of trust, transparency, and proven market experience.
-            </p>
-            <p className="mt-4">
-              With deep roots in Abu Dhabi and a growing presence across the
-              wider UAE, Bazar has developed a trusted reputation for market
-              expertise, professional excellence, and strong industry
-              relationships in one of the region&apos;s most dynamic real estate
-              markets.
-            </p>
+      {/* Hero — text left, office image right, at the same level */}
+      <section className="px-4 md:px-12 pt-10 md:pt-16 pb-12 md:pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-14 items-center">
+          <div>
+            <Eyebrow>About Bazar Real Estate</Eyebrow>
+            <h1
+              className="serif mt-4"
+              style={{
+                fontSize: fluid(64),
+                letterSpacing: "-0.03em",
+                lineHeight: 1.0,
+              }}
+            >
+              A trusted name in UAE
+              <br />
+              real estate <em className="italic">since 2005.</em>
+            </h1>
+            <div className="eyebrow mt-6">Established Abu Dhabi · 2005</div>
+            <div className="text-[15.5px] md:text-[17px] leading-[1.65] text-bz-ink-2 mt-3.5 max-w-[620px]">
+              <p className="m-0">
+                Established in Abu Dhabi in 2005, Bazar Real Estate L.L.C. is a
+                leading award-winning real estate agency in the UAE, built on
+                over 20 years of trust, transparency, and proven market
+                experience.
+              </p>
+              <p className="mt-4">
+                With deep roots in Abu Dhabi and a growing presence across the
+                wider UAE, Bazar has developed a trusted reputation for market
+                expertise, professional excellence, and strong industry
+                relationships in one of the region&apos;s most dynamic real
+                estate markets.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
-
-      <section className="px-4 md:px-12 pb-16 md:pb-20">
-        <div className="relative w-full" style={{ aspectRatio: "21/9" }}>
-          <PlaceholderImage
-            label="bazar office · al bateen · abu dhabi"
-            className="absolute inset-0 h-full w-full rounded-xl"
-          />
+          <div className="relative w-full" style={{ aspectRatio: "4/5" }}>
+            <PlaceholderImage
+              label="bazar office · al bateen · abu dhabi"
+              className="absolute inset-0 h-full w-full rounded-xl"
+            />
+          </div>
         </div>
       </section>
 
       {/* Beyond property + Our story */}
       <section className="px-4 md:px-12 py-14 md:py-18 border-t border-bz-border">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-[72px] max-w-[1200px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-[72px]">
           {[
             [
               "Beyond property",
@@ -176,7 +184,7 @@ export default function AboutPage() {
 
       {/* Values */}
       <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border">
-        <div className="max-w-[1200px]">
+        <div>
           <SectionHead
             eyebrow="Our values"
             title="What we stand on."
@@ -209,7 +217,7 @@ export default function AboutPage() {
 
       {/* Footprint */}
       <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border bg-bz-surface-2">
-        <div className="max-w-[1200px]">
+        <div>
           <SectionHead
             eyebrow="Our footprint"
             title="Rooted in Abu Dhabi, reaching the wider UAE."
@@ -261,7 +269,7 @@ export default function AboutPage() {
 
       {/* Expertise + track record */}
       <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-[72px] items-start max-w-[1200px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-[72px] items-start">
           <div>
             <div className="eyebrow">Our areas of expertise</div>
             <h2
@@ -318,7 +326,7 @@ export default function AboutPage() {
 
       {/* Developer partners */}
       <section className="px-4 md:px-12 py-14 md:py-18 border-t border-bz-border">
-        <div className="max-w-[1200px]">
+        <div>
           <div className="flex flex-wrap justify-between items-end gap-4 mb-8">
             <SectionHead
               eyebrow="Our developer partners"
@@ -327,7 +335,7 @@ export default function AboutPage() {
             />
             <Button asChild variant="outline">
               <Link href="/developers">
-                All partners
+                All developers
                 <ArrowRight size={15} strokeWidth={1.7} />
               </Link>
             </Button>
@@ -346,9 +354,28 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Location */}
+      {/* Partner ecosystem — banking + regulatory */}
+      <section className="px-4 md:px-12 py-14 md:py-18 border-t border-bz-border bg-bz-surface-2">
+        <div className="flex flex-wrap justify-between items-end gap-4 mb-9">
+          <SectionHead
+            eyebrow="Our Partner Ecosystem"
+            title="The banks and regulators behind every deal."
+            sub="Direct relationships with the UAE's leading financial institutions and real-estate authorities."
+            size={40}
+          />
+          <Button asChild variant="outline">
+            <Link href="/partners">
+              All partners
+              <ArrowRight size={15} strokeWidth={1.7} />
+            </Link>
+          </Button>
+        </div>
+        <PartnerMarquee />
+      </section>
+
+      {/* Location — 1:1 with the /contact HQ map + details */}
       <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-10 lg:gap-14 items-center max-w-[1200px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-10 lg:gap-14 items-center">
           <div>
             <div className="eyebrow">Our location</div>
             <h2
@@ -363,25 +390,35 @@ export default function AboutPage() {
             </h2>
             <div className="text-[16px] text-bz-ink-2 leading-[1.7] mt-5">
               <div className="font-medium text-bz-ink">
-                Bazar Real Estate Brokerage LLC
+                Bazar Real Estate L.L.C.
               </div>
-              Saadiyat Island
+              Sheikha Salama Building, Office 4
+              <br />
+              Zayed The First Street, Al Bateen
               <br />
               Abu Dhabi, United Arab Emirates
             </div>
-            <Button asChild className="mt-6">
-              <Link href="/contact">
-                <MapPin size={15} strokeWidth={1.8} />
-                Get directions
-              </Link>
-            </Button>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild>
+                <a href={HQ_DIRECTIONS} target="_blank" rel="noopener noreferrer">
+                  <Navigation size={15} strokeWidth={1.8} />
+                  Get directions
+                </a>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/contact">
+                  <MapPin size={15} strokeWidth={1.8} />
+                  Contact us
+                </Link>
+              </Button>
+            </div>
           </div>
-          <div className="relative w-full" style={{ aspectRatio: "16/10" }}>
-            <PlaceholderImage
-              label="map · saadiyat island"
-              className="absolute inset-0 h-full w-full rounded-xl"
-            />
-          </div>
+          <HqMapCanvas
+            lat={HQ_LAT}
+            lng={HQ_LNG}
+            label="Bazar HQ — Al Bateen"
+            className="w-full aspect-[16/10] rounded-xl overflow-hidden border border-bz-border"
+          />
         </div>
       </section>
     </div>
