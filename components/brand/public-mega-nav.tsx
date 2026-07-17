@@ -28,7 +28,7 @@ import type { Megamenu, MegamenuTab } from "@/lib/schemas/megamenu";
  * render a Radix NavigationMenu dropdown using MegamenuPanel; direct-link
  * tabs (Insights, About) render as plain links.
  *
- * Renders a hamburger trigger at < md that hands off to
+ * Renders a hamburger trigger at < xl that hands off to
  * PublicMegaNavMobile (Sheet drawer).
  */
 
@@ -76,8 +76,12 @@ export function PublicMegaNav({ data, footerSlot }: Props) {
           <Wordmark />
         </Link>
 
-        {/* Desktop nav — hidden on mobile, replaced by hamburger */}
-        <div className="hidden md:flex flex-1 justify-center">
+        {/* Desktop nav — hidden below xl, replaced by hamburger.
+            Gated at xl (not md) because the trigger row is intrinsically
+            ~766px wide: alongside the wordmark, right cluster and px-12
+            gutters the header needs ~1205px, so md and lg both overflow
+            the viewport. */}
+        <div className="hidden xl:flex flex-1 justify-center">
           <NavigationMenu viewport={false}>
             <NavigationMenuList className="gap-1">
               {data.tabs.map((tab) => {
@@ -126,7 +130,7 @@ export function PublicMegaNav({ data, footerSlot }: Props) {
         </div>
 
         {/* Right cluster */}
-        <div className="hidden md:flex gap-2 items-center">
+        <div className="hidden xl:flex gap-2 items-center">
           <Button asChild variant="ghost" size="sm">
             <Link href="/account/saved">
               <Heart size={14} strokeWidth={1.6} />
@@ -140,7 +144,7 @@ export function PublicMegaNav({ data, footerSlot }: Props) {
         </div>
 
         {/* Mobile right cluster — just the hamburger + CTA */}
-        <div className="md:hidden ml-auto flex items-center gap-2">
+        <div className="xl:hidden ml-auto flex items-center gap-2">
           <Button asChild size="sm">
             <Link href="/services/sell">List</Link>
           </Button>
