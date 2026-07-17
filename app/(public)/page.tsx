@@ -21,6 +21,7 @@ import { OffPlanProjects } from "./_components/home/off-plan-projects";
 import { ListYourProperty } from "./_components/home/list-your-property";
 import { MortgageCalculatorSection } from "./_components/home/mortgage-calculator-section";
 import { WhoWeAre } from "./_components/home/who-we-are";
+import { DevelopersSection } from "./_components/developers-section";
 import { PartnerEcosystemSection } from "./_components/partner-ecosystem-section";
 import { HomeFaqs } from "./_components/home/home-faqs";
 import { HomeTestimonials } from "./_components/home/home-testimonials";
@@ -149,7 +150,10 @@ export default async function HomePage() {
       {/* 6 — Who we are */}
       <WhoWeAre />
 
-      {/* 6b — Partner ecosystem (shared with /about) */}
+      {/* 6b — Developer partners */}
+      <DevelopersSection />
+
+      {/* 6c — Partner ecosystem (shared with /about) */}
       <PartnerEcosystemSection />
 
       {/* 7 — FAQs */}
