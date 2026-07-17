@@ -68,6 +68,26 @@ quick grep can show "what's outstanding in my area."
   in the production Supabase project, run `npm run db:types` and drop the
   casts. Surfaced by PR #67.
 
+- [nav] Mobile drawer footer offers "Sign in" to already-signed-in users.
+  `components/brand/public-mega-nav-mobile.tsx:213` hardcodes a `/sign-in`
+  link with no session awareness — unlike the desktop right cluster, which
+  renders `AccountMenu`. `/sign-in` doesn't redirect an authenticated user,
+  so they land on a login form while holding a session. Pre-existing, but
+  exposure widened when the desktop nav moved from an `md` to an `xl` gate
+  (drawer now covers 768–1279 too) and when `app/(account)/layout.tsx`
+  adopted the megamenu — every account user is signed in by definition, so
+  it is always wrong there. Fix: render `AccountMenu` (or a session-aware
+  sign-out entry) in the drawer footer instead. Blocked by the shared-files
+  rule on `components/brand/*`.
+
+- [nav] Delete `components/brand/public-nav.tsx` — now dead code.
+  `app/(account)/layout.tsx` was its only consumer and now mounts
+  `PublicMegaNav` instead, so nothing imports it. Left in place only
+  because of the shared-files rule on `components/brand/*`. Its
+  `AccountMenu` and `Wordmark` imports are shared with `public-mega-nav.tsx`
+  and must survive the deletion. Delete once parallel-work pressure is
+  gone; grep for `PublicNav` first to confirm it's still unreferenced.
+
 ## Recently done
 
 (Move entries here briefly before deleting, so a `git log -p docs/FOLLOWUPS.md`
