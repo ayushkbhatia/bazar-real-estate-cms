@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import { trimmedLogo } from "../_components/developer-logos";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
 import { DEVELOPERS_SORTED } from "./_data";
@@ -52,46 +53,69 @@ export default function DevelopersPage() {
           className="mb-10 md:mb-12"
         />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
-          {DEVELOPERS_SORTED.map((d) => (
-            <Link
-              key={d.slug}
-              href={`/developers/${d.slug}`}
-              className="group flex flex-col rounded-lg border border-bz-border bg-bz-surface overflow-hidden hover:border-bz-border-strong transition-colors"
-            >
-              {/* The logo PNGs are square canvases with padding baked in, so
-                  they need a taller box than a trimmed logo would to carry
-                  the same optical weight as the card body. */}
-              <div className="flex items-center justify-center px-5 min-h-[140px] md:min-h-[152px]">
-                <Image
-                  src={d.logo}
-                  alt={d.name}
-                  width={d.w}
-                  height={d.h}
-                  className="h-20 md:h-24 w-auto object-contain"
-                  sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
-                />
-              </div>
-              <div className="flex flex-col flex-1 p-5 border-t border-bz-border">
-                <div
-                  className="serif text-[19px] leading-tight"
-                  style={{ letterSpacing: "-0.01em" }}
-                >
-                  {d.name}
+          {DEVELOPERS_SORTED.map((d) => {
+            // Unlike the home-page marquee, a developer with no trimmed asset
+            // still has to appear here — this grid is the master directory, so
+            // it falls back to the padded master canvas rather than skipping.
+            const trimmed = trimmedLogo(d.slug);
+            return (
+              <Link
+                key={d.slug}
+                href={`/developers/${d.slug}`}
+                className="group flex flex-col rounded-lg border border-bz-border bg-bz-surface overflow-hidden hover:border-bz-border-strong transition-colors"
+              >
+                <div className="flex items-center justify-center px-5 min-h-[140px] md:min-h-[152px]">
+                  {trimmed ? (
+                    // Fitting the trimmed art into a box that bounds both axes
+                    // is what evens out optical weight across the set — wide
+                    // wordmarks cap on width, tall lockups on height. Same box
+                    // as `DeveloperMarquee`, so both developer surfaces
+                    // normalise identically. See `developer-logos`.
+                    // `max-w-full` keeps the box inside the card on narrow
+                    // two-column viewports, where it is the tighter bound.
+                    <Image
+                      src={trimmed.src}
+                      alt={d.name}
+                      width={trimmed.w}
+                      height={trimmed.h}
+                      className="w-[132px] h-12 md:w-40 md:h-14 max-w-full object-contain"
+                      sizes="160px"
+                    />
+                  ) : (
+                    // The master PNGs are square canvases with padding baked
+                    // in, so they need a taller box to carry comparable weight.
+                    <Image
+                      src={d.logo}
+                      alt={d.name}
+                      width={d.w}
+                      height={d.h}
+                      className="h-20 md:h-24 w-auto object-contain"
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
+                    />
+                  )}
                 </div>
-                <p className="text-[12px] text-bz-ink-2 leading-snug mt-1.5 flex-1">
-                  {d.blurb}
-                </p>
-                <div className="flex items-center gap-1.5 mt-4 text-[12.5px] font-medium text-bz-accent">
-                  View developments
-                  <ArrowRight
-                    size={13}
-                    strokeWidth={1.8}
-                    className="transition-transform group-hover:translate-x-0.5"
-                  />
+                <div className="flex flex-col flex-1 p-5 border-t border-bz-border">
+                  <div
+                    className="serif text-[19px] leading-tight"
+                    style={{ letterSpacing: "-0.01em" }}
+                  >
+                    {d.name}
+                  </div>
+                  <p className="text-[12px] text-bz-ink-2 leading-snug mt-1.5 flex-1">
+                    {d.blurb}
+                  </p>
+                  <div className="flex items-center gap-1.5 mt-4 text-[12.5px] font-medium text-bz-accent">
+                    View developments
+                    <ArrowRight
+                      size={13}
+                      strokeWidth={1.8}
+                      className="transition-transform group-hover:translate-x-0.5"
+                    />
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </section>
     </div>
