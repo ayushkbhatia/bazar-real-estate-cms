@@ -43,13 +43,12 @@ export default function DevelopersPage() {
 
       {/* Our partners — the master directory. Every UAE developer Bazar works
           with, sorted alphabetically, each linking to its own profile. */}
-      <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border bg-bz-ink text-white">
+      <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border bg-bz-surface-2">
         <SectionHead
           eyebrow="Our partners"
           title="Working with leading developers across the UAE."
           sub="Access to established communities, new launches, luxury residences, and investment opportunities across Abu Dhabi, Dubai and the wider UAE."
           size={44}
-          dark
           className="mb-10 md:mb-12"
         />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
@@ -57,29 +56,32 @@ export default function DevelopersPage() {
             <Link
               key={d.slug}
               href={`/developers/${d.slug}`}
-              className="group flex flex-col rounded-xl border border-white/12 bg-bz-ink overflow-hidden hover:border-white/40 transition-colors"
+              className="group flex flex-col rounded-lg border border-bz-border bg-bz-surface overflow-hidden hover:border-bz-border-strong transition-colors"
             >
-              <div className="flex items-center justify-center bg-white px-6 min-h-[128px] md:min-h-[136px]">
+              {/* The logo PNGs are square canvases with padding baked in, so
+                  they need a taller box than a trimmed logo would to carry
+                  the same optical weight as the card body. */}
+              <div className="flex items-center justify-center px-5 min-h-[140px] md:min-h-[152px]">
                 <Image
                   src={d.logo}
                   alt={d.name}
                   width={d.w}
                   height={d.h}
-                  className="h-14 md:h-16 w-auto object-contain"
+                  className="h-20 md:h-24 w-auto object-contain"
                   sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
                 />
               </div>
-              <div className="flex flex-col flex-1 p-5 border-t border-white/10">
+              <div className="flex flex-col flex-1 p-5 border-t border-bz-border">
                 <div
-                  className="serif text-white text-[19px] leading-tight"
+                  className="serif text-[19px] leading-tight"
                   style={{ letterSpacing: "-0.01em" }}
                 >
                   {d.name}
                 </div>
-                <p className="text-[12px] text-white/55 leading-snug mt-1.5 flex-1">
+                <p className="text-[12px] text-bz-ink-2 leading-snug mt-1.5 flex-1">
                   {d.blurb}
                 </p>
-                <div className="flex items-center gap-1.5 mt-4 text-[12.5px] font-medium text-white/90">
+                <div className="flex items-center gap-1.5 mt-4 text-[12.5px] font-medium text-bz-accent">
                   View developments
                   <ArrowRight
                     size={13}
