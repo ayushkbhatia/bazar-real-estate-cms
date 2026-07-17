@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { ArrowLeft, ChevronRight, Heart } from "lucide-react";
+import { useState, useTransition } from "react";
+import { ArrowLeft, ChevronRight, Heart, LogOut } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -14,6 +14,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Wordmark } from "./wordmark";
 import { MegamenuTile } from "./megamenu-tile";
+import { useSessionEmail } from "@/lib/hooks/use-session-email";
+import { signOutAction } from "@/app/(public)/(auth)/_actions";
 import { cn } from "@/lib/utils";
 import type {
   Megamenu,
@@ -29,7 +31,9 @@ import type {
  *            vertically. Back button returns to L1.
  *
  * Tabs without panels (Insights, About) navigate directly on tap and
- * close the drawer. Pinned bottom row has Saved + Sign-in + List CTA.
+ * close the drawer. Pinned bottom row has Saved + List CTA + a
+ * session-aware entry: "Sign in" when signed out, "Sign out" (with the
+ * current email) when signed in.
  */
 
 type Props = {
@@ -152,6 +156,12 @@ function TabsList({
   onClose: () => void;
   footerSlot?: React.ReactNode;
 }) {
+  // Session-aware footer: the drawer stands in for the desktop right
+  // cluster below xl, so it needs AccountMenu's sign-in/out affordance —
+  // not a hardcoded "Sign in" that lies to already-signed-in users.
+  const email = useSessionEmail();
+  const [pending, startTransition] = useTransition();
+
   return (
     <div className="flex flex-col h-full">
       <div className="h-[60px] px-5 flex items-center border-b border-bz-border bg-bz-bg shrink-0">
@@ -211,11 +221,36 @@ function TabsList({
             List a property
           </Link>
         </Button>
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/sign-in" onClick={onClose}>
-            Sign in
-          </Link>
-        </Button>
+        {email ? (
+          <>
+            <div className="px-1 pt-1 leading-tight">
+              <div className="text-[11px] uppercase tracking-wider text-bz-muted">
+                Signed in as
+              </div>
+              <div className="mt-0.5 text-[13px] text-bz-ink-2 truncate">
+                {email}
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={pending}
+              onClick={() => {
+                onClose();
+                startTransition(() => signOutAction());
+              }}
+            >
+              <LogOut size={14} strokeWidth={1.6} />
+              {pending ? "Signing out…" : "Sign out"}
+            </Button>
+          </>
+        ) : (
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/sign-in" onClick={onClose}>
+              Sign in
+            </Link>
+          </Button>
+        )}
       </div>
     </div>
   );

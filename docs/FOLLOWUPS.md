@@ -68,17 +68,16 @@ quick grep can show "what's outstanding in my area."
   in the production Supabase project, run `npm run db:types` and drop the
   casts. Surfaced by PR #67.
 
-- [nav] Mobile drawer footer offers "Sign in" to already-signed-in users.
-  `components/brand/public-mega-nav-mobile.tsx:213` hardcodes a `/sign-in`
-  link with no session awareness — unlike the desktop right cluster, which
-  renders `AccountMenu`. `/sign-in` doesn't redirect an authenticated user,
-  so they land on a login form while holding a session. Pre-existing, but
-  exposure widened when the desktop nav moved from an `md` to an `xl` gate
-  (drawer now covers 768–1279 too) and when `app/(account)/layout.tsx`
-  adopted the megamenu — every account user is signed in by definition, so
-  it is always wrong there. Fix: render `AccountMenu` (or a session-aware
-  sign-out entry) in the drawer footer instead. Blocked by the shared-files
-  rule on `components/brand/*`.
+- [nav] React key warning in the mobile drawer (public tree only).
+  Opening the hamburger drawer on a `(public)` page logs "Each child in a
+  list should have a unique key prop. Check the render method of
+  `TabsList`. It was passed a child from `PublicLayout`." Pre-existing on
+  `main` (predates the drawer sign-in fix — confirmed the sign-in diff
+  touches neither the `data.tabs.map()` nor `{footerSlot}`). Only fires
+  when a `footerSlot` is passed, so the `(account)` tree (no footerSlot)
+  is clean. Likely the `{footerSlot}` node interacting with the tab list
+  render in `components/brand/public-mega-nav-mobile.tsx`; track down the
+  unkeyed list. Blocked by the shared-files rule on `components/brand/*`.
 
 - [nav] Delete `components/brand/public-nav.tsx` — now dead code.
   `app/(account)/layout.tsx` was its only consumer and now mounts
@@ -92,6 +91,13 @@ quick grep can show "what's outstanding in my area."
 
 (Move entries here briefly before deleting, so a `git log -p docs/FOLLOWUPS.md`
 shows the trail.)
+
+- [nav] Mobile drawer footer is now session-aware (this PR).
+  `components/brand/public-mega-nav-mobile.tsx` no longer hardcodes a
+  `/sign-in` link — it renders "Sign in" when signed out (unchanged) or
+  "Signed in as <email>" + "Sign out" when signed in, via the new
+  `lib/hooks/use-session-email.ts` (extracted from `AccountMenu`'s
+  subscription). Fixes the wrong affordance the account tree always hit.
 
 - [curated] `lib/queries/curated-listings.ts` hero embed fixed (P0
   launch-readiness). Swapped to the `property_media` join pattern from
