@@ -677,9 +677,7 @@ async function loadPublishabilityFor(propertyId: string): Promise<{
   error: string | null;
 }> {
   const supabase = await createSupabaseServerClient();
-  // s8() widens the client so `developer_id` (migration 0055, not yet in
-  // db/types.ts) typechecks in the select + return.
-  const { data: p, error } = await s8(supabase)
+  const { data: p, error } = await supabase
     .from("properties")
     .select(
       "id, slug, reference, status, title, price_aed, developer_id, listing_permit_no, listing_permit_expires_at, compliance, property_media(role)",

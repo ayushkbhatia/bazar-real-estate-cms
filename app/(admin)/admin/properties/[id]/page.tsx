@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { s8 } from "@/lib/supabase/sprint-8";
 import { isSupabaseConfigured, isMapboxConfigured } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/properties";
 import { currentStaffRow } from "@/lib/queries/staff";
@@ -34,9 +33,7 @@ type PageProps = { params: Promise<{ id: string }> };
 async function fetchPropertyForEdit(id: string) {
   if (!isSupabaseConfigured) return null;
   const supabase = await createSupabaseServerClient();
-  // s8() widens the client so `developer_id` (added in migration 0055, not yet
-  // in the generated db/types.ts) typechecks in the select + return.
-  const { data, error } = await s8(supabase)
+  const { data, error } = await supabase
     .from("properties")
     .select(
       "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, compliance, assigned_agent_id, geo",
@@ -183,8 +180,7 @@ export default async function PropertyEditPage({ params }: PageProps) {
     listing_permit_expires_at: property.listing_permit_expires_at,
     dld_plot_number: property.dld_plot_number,
     area_id: property.area_id,
-    developer_id:
-      (property as { developer_id: string | null }).developer_id ?? "",
+    developer_id: property.developer_id ?? "",
     amenities: property.amenities ?? [],
     slug: property.slug,
     meta_title: (seo.meta_title as string | null) ?? null,
