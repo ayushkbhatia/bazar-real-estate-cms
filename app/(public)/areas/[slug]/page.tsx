@@ -99,7 +99,7 @@ export default async function CommunityProfilePage({
   });
   const breadcrumbsLd = breadcrumbListJsonLd([
     { name: "Home", url: siteBase },
-    { name: "Communities", url: `${siteBase}/areas` },
+    { name: "Areas", url: `${siteBase}/areas` },
     { name: area.name, url: `${siteBase}/areas/${area.slug}` },
   ]);
 
@@ -120,7 +120,7 @@ export default async function CommunityProfilePage({
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
         >
           <ArrowLeft size={13} strokeWidth={1.8} />
-          All communities
+          All areas
         </Link>
       </div>
 
@@ -412,11 +412,11 @@ export default async function CommunityProfilePage({
         </div>
       </section>
 
-      {/* Similar communities */}
+      {/* Similar areas */}
       {similar.length > 0 ? (
         <section className="border-t border-bz-border bg-bz-surface">
           <div className="px-4 md:px-12 py-12 max-w-[1280px]">
-            <Eyebrow>Similar communities</Eyebrow>
+            <Eyebrow>Similar areas</Eyebrow>
             <div className="mt-5 flex flex-wrap gap-3">
               {similar.map((s) =>
                 s ? (

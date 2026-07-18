@@ -20,7 +20,7 @@ export function AreasMosaic() {
     <section className="px-4 md:px-12 py-12 md:py-20">
       <div className="flex items-end justify-between gap-8 flex-wrap mb-10">
         <div>
-          <Eyebrow>Communities</Eyebrow>
+          <Eyebrow>Areas</Eyebrow>
           <h2
             className="serif text-[28px] md:text-[40px] mt-2 leading-tight max-w-[24ch]"
             style={{ letterSpacing: "-0.022em" }}
@@ -32,7 +32,7 @@ export function AreasMosaic() {
           href="/areas"
           className="inline-flex items-center gap-1.5 text-[13px] text-bz-ink-2 hover:text-bz-accent transition-colors"
         >
-          All communities
+          All areas
           <ArrowRight size={13} strokeWidth={1.7} />
         </Link>
       </div>

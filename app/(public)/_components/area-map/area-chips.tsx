@@ -19,7 +19,7 @@ export function AreaChips({
 }) {
   if (areas.length === 0) return null;
   return (
-    <div className="flex flex-wrap gap-2" role="group" aria-label="Communities">
+    <div className="flex flex-wrap gap-2" role="group" aria-label="Areas">
       {areas.map((a) => {
         const active = a.slug === activeSlug;
         return (
