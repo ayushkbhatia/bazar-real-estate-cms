@@ -35,9 +35,9 @@ const SECTIONS: { title: string; links: { label: string; href: string }[] }[] =
       links: [{ label: "All market reports", href: "/market-reports" }],
     },
     {
-      title: "Communities",
+      title: "Areas",
       links: [
-        { label: "All communities", href: "/areas" },
+        { label: "All areas", href: "/areas" },
         { label: "Saadiyat Island", href: "/areas/saadiyat-island" },
         { label: "Yas Island", href: "/areas/yas-island" },
         { label: "Al Reem Island", href: "/areas/al-reem-island" },

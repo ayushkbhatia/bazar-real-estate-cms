@@ -60,11 +60,36 @@ function ItemBadge({ item }: { item: MegamenuItem }) {
   );
 }
 
-function ColumnBlock({ column }: { column: MegamenuColumn }) {
+function ColumnBlock({
+  column,
+  headingAs = "eyebrow",
+}: {
+  column: MegamenuColumn;
+  // "title" gives the heading the same serif treatment as a zone title, for
+  // columns that stand on their own rather than sitting under a shared one.
+  headingAs?: "eyebrow" | "title";
+}) {
+  const headingIsTitle = headingAs === "title";
   return (
-    <div className="flex flex-col gap-1.5 min-w-[170px]">
+    <div
+      className={cn(
+        "flex flex-col min-w-[170px]",
+        // Matches the gap a zone title has to its columns, so items in a
+        // self-titled column land on the same baseline as items elsewhere.
+        headingIsTitle ? "gap-7" : "gap-1.5",
+      )}
+    >
       {column.heading ? (
-        <div className="eyebrow pb-1">{column.heading}</div>
+        headingIsTitle ? (
+          <h4
+            className="serif italic text-[26px] leading-tight"
+            style={{ letterSpacing: "-0.015em" }}
+          >
+            {column.heading}
+          </h4>
+        ) : (
+          <div className="eyebrow pb-1">{column.heading}</div>
+        )
       ) : null}
       <ul className="flex flex-col gap-1">
         {column.items.map((item) => (
@@ -226,7 +251,12 @@ export function MegamenuPanel({ tab }: Props) {
 
         {/* RIGHT — sub-locations / sub-markets. Title uses the same size +
             gap as the left zone's panel_title so the two zones' column
-            sub-headings sit on the same baseline. */}
+            sub-headings sit on the same baseline.
+
+            A tab with no right_column_title of its own hands the title
+            treatment down to each column's heading, so a zone covering two
+            unrelated groups (e.g. Rent's guides and areas) reads as two
+            titled blocks rather than one heading stretched over both. */}
         {hasRight ? (
           <div className="flex flex-col gap-7">
             {tab.right_column_title ? (
@@ -239,7 +269,11 @@ export function MegamenuPanel({ tab }: Props) {
             ) : null}
             <div className="grid grid-cols-2 gap-x-8 gap-y-6">
               {tab.columns.right.map((column) => (
-                <ColumnBlock key={column.id} column={column} />
+                <ColumnBlock
+                  key={column.id}
+                  column={column}
+                  headingAs={tab.right_column_title ? "eyebrow" : "title"}
+                />
               ))}
             </div>
           </div>

@@ -258,7 +258,7 @@ export default async function AgentProfilePage({
             </ul>
           </div>
           <div>
-            <Eyebrow>Communities</Eyebrow>
+            <Eyebrow>Areas</Eyebrow>
             <ul className="mt-4 flex flex-col gap-2">
               {areas.map((a) =>
                 a ? (
