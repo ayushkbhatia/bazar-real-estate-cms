@@ -68,6 +68,14 @@ export async function createArticle(
     .maybeSingle();
 
   if (error || !data) {
+    // 23503 = foreign_key_violation: the category slug is not in
+    // article_categories (retired since the form loaded).
+    if (error?.code === "23503") {
+      return {
+        status: "error",
+        message: "That blog type no longer exists — pick another.",
+      };
+    }
     return {
       status: "error",
       message: error?.message ?? "Could not create article.",

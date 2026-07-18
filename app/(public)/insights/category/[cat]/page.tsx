@@ -12,29 +12,22 @@ import {
   type ArticleListRow,
 } from "@/lib/queries/articles";
 import {
-  ARTICLE_CATEGORIES,
-  ARTICLE_CATEGORY_LABELS,
-} from "@/lib/schemas/article";
+  listArticleCategories,
+  resolveArticleCategoryByUrlSlug,
+} from "@/lib/queries/article-categories";
+import { categoryToUrlSlug } from "@/lib/schemas/article";
 import { mediaPublicUrl } from "@/lib/media";
 
 export const revalidate = 300;
 
 /**
- * The footer links to `/insights/category/buyers-guide` (hyphen) but the
- * enum value is `buyers_guide` (underscore). This map keeps URL slugs
- * SEO-friendly while preserving the schema enum.
+ * URL slugs are the hyphenated form of the stored category slug
+ * (`off_plan_watch` → `off-plan-watch`), kept SEO-friendly. Resolution is
+ * DB-driven so categories added from the CMS get their own archive page.
  */
-const URL_SLUG_TO_CATEGORY: Record<string, (typeof ARTICLE_CATEGORIES)[number]> = {
-  "market-report": "market_report",
-  "buyers-guide": "buyers_guide",
-  "sellers-guide": "sellers_guide",
-  "field-note": "field_note",
-  "policy": "policy",
-  "off-plan-watch": "off_plan_watch",
-};
-
 export async function generateStaticParams() {
-  return Object.keys(URL_SLUG_TO_CATEGORY).map((cat) => ({ cat }));
+  const categories = await listArticleCategories();
+  return categories.map((c) => ({ cat: categoryToUrlSlug(c.slug) }));
 }
 
 export async function generateMetadata({
@@ -43,11 +36,13 @@ export async function generateMetadata({
   params: Promise<{ cat: string }>;
 }): Promise<Metadata> {
   const { cat } = await params;
-  const category = URL_SLUG_TO_CATEGORY[cat];
+  const category = await resolveArticleCategoryByUrlSlug(cat);
   if (!category) return { title: "Category not found" };
   return {
-    title: `${ARTICLE_CATEGORY_LABELS[category]} — Bazar insights`,
-    description: `Bazar's ${ARTICLE_CATEGORY_LABELS[category].toLowerCase()} pieces on Abu Dhabi real estate.`,
+    title: `${category.label} — Bazar insights`,
+    description:
+      category.description ??
+      `Bazar's ${category.label.toLowerCase()} pieces on Abu Dhabi real estate.`,
   };
 }
 
@@ -86,10 +81,13 @@ export default async function InsightsCategoryPage({
   params: Promise<{ cat: string }>;
 }) {
   const { cat } = await params;
-  const category = URL_SLUG_TO_CATEGORY[cat];
+  const category = await resolveArticleCategoryByUrlSlug(cat);
   if (!category) notFound();
 
-  const { rows } = await listPublishedArticles({ category, limit: 48 });
+  const { rows } = await listPublishedArticles({
+    category: category.slug,
+    limit: 48,
+  });
 
   return (
     <div className="bg-bz-bg">
@@ -111,7 +109,7 @@ export default async function InsightsCategoryPage({
           className="serif text-[34px] md:text-[64px] mt-3 font-normal leading-[1.02]"
           style={{ letterSpacing: "-0.025em" }}
         >
-          {ARTICLE_CATEGORY_LABELS[category]}
+          {category.label}
         </h1>
         <p className="mt-4 text-[15px] text-bz-muted mono">
           {rows.length} {rows.length === 1 ? "article" : "articles"}
@@ -124,7 +122,7 @@ export default async function InsightsCategoryPage({
           <div className="py-24 text-center max-w-[44ch] mx-auto border border-dashed border-bz-border rounded-md">
             <p className="text-[15px] text-bz-ink-2">
               We haven&apos;t published any{" "}
-              {ARTICLE_CATEGORY_LABELS[category].toLowerCase()} pieces yet.
+              {category.label.toLowerCase()} pieces yet.
             </p>
             <Button asChild variant="outline" className="mt-6">
               <Link href="/insights">View all categories</Link>
@@ -139,7 +137,7 @@ export default async function InsightsCategoryPage({
                     <ArticleHero row={row} />
                   </div>
                   <div className="eyebrow mt-3.5">
-                    {ARTICLE_CATEGORY_LABELS[row.category]}
+                    {row.category_label}
                     {row.read_minutes ? ` · ${row.read_minutes} min` : ""}
                   </div>
                   <h2

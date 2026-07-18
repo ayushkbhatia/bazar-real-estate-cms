@@ -10,7 +10,7 @@ import {
   getPublishedArticleBySlug,
   getRelatedArticles,
 } from "@/lib/queries/articles";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/schemas/article";
+import { categoryToUrlSlug } from "@/lib/schemas/article";
 import { mediaPublicUrl } from "@/lib/media";
 import { articleJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
@@ -59,7 +59,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
   const related = await getRelatedArticles(article.id, article.category, 3);
 
-  const categoryLabel = ARTICLE_CATEGORY_LABELS[article.category];
+  const categoryLabel = article.category_label;
   const heroSrc = article.hero ? mediaPublicUrl(article.hero.storage_key) : null;
 
   // Sprint 5d: JSON-LD + breadcrumb structured data.
@@ -89,7 +89,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
     { name: "Insights", url: `${siteUrl}/insights` },
     {
       name: categoryLabel,
-      url: `${siteUrl}/insights/category/${article.category.replace(/_/g, "-")}`,
+      url: `${siteUrl}/insights/category/${categoryToUrlSlug(article.category)}`,
     },
     { name: article.title, url: `${siteUrl}/insights/${article.slug}` },
   ]);
@@ -119,7 +119,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         </Link>
         <ChevronRight size={12} />
         <Link
-          href={`/insights/category/${article.category.replace(/_/g, "-")}`}
+          href={`/insights/category/${categoryToUrlSlug(article.category)}`}
           className="hover:text-bz-ink"
         >
           {categoryLabel}
@@ -227,7 +227,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                   )}
                 </div>
                 <div className="eyebrow mt-3.5">
-                  {ARTICLE_CATEGORY_LABELS[row.category]}
+                  {row.category_label}
                   {row.read_minutes ? ` · ${row.read_minutes} min` : ""}
                 </div>
                 <h4

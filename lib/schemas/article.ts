@@ -1,14 +1,43 @@
 import { z } from "zod";
 
-export const ARTICLE_CATEGORIES = [
-  "market_report",
-  "buyers_guide",
-  "sellers_guide",
-  "field_note",
-  "policy",
-  "off_plan_watch",
-  "luxury",
+/**
+ * Article categories ("blog types") are a runtime-editable taxonomy stored in
+ * the `article_categories` table (migration 0055). Editors add new types from
+ * the blog editor without a deploy.
+ *
+ * The list below is the *seed* set — the seven categories that shipped as the
+ * old `article_category` enum. It doubles as a fallback so the marketplace and
+ * CMS keep rendering sensible labels when Supabase is unconfigured (preview /
+ * e2e) or before the migration has been applied to a given environment. The
+ * live dropdown, chip bar, and label lookups all read the DB first and fall
+ * back to this only on error. See lib/queries/article-categories.ts.
+ */
+export type SeedArticleCategory = {
+  slug: string;
+  label: string;
+  sort_order: number;
+};
+
+export const SEED_ARTICLE_CATEGORIES: readonly SeedArticleCategory[] = [
+  { slug: "market_report", label: "Market report", sort_order: 10 },
+  { slug: "buyers_guide", label: "Buyer's guide", sort_order: 20 },
+  { slug: "sellers_guide", label: "Seller's guide", sort_order: 30 },
+  { slug: "field_note", label: "Field note", sort_order: 40 },
+  { slug: "policy", label: "Policy & regulation", sort_order: 50 },
+  { slug: "off_plan_watch", label: "Off-plan watch", sort_order: 60 },
+  { slug: "luxury", label: "Luxury", sort_order: 70 },
 ] as const;
+
+/** Seed slugs — kept for callers that only need the identifiers. */
+export const ARTICLE_CATEGORIES = SEED_ARTICLE_CATEGORIES.map(
+  (c) => c.slug,
+);
+
+/** Seed slug → label map. Merged under DB labels for known-slug fallback. */
+export const ARTICLE_CATEGORY_LABELS: Record<string, string> =
+  Object.fromEntries(
+    SEED_ARTICLE_CATEGORIES.map((c) => [c.slug, c.label]),
+  );
 
 export const ARTICLE_STATUSES = [
   "draft",
@@ -17,22 +46,37 @@ export const ARTICLE_STATUSES = [
   "archived",
 ] as const;
 
-export const ARTICLE_CATEGORY_LABELS: Record<
-  (typeof ARTICLE_CATEGORIES)[number],
-  string
-> = {
-  market_report: "Market report",
-  buyers_guide: "Buyer's guide",
-  sellers_guide: "Seller's guide",
-  field_note: "Field note",
-  policy: "Policy & regulation",
-  off_plan_watch: "Off-plan watch",
-  luxury: "Luxury",
-};
+/** URL slug (hyphenated) ⇄ stored category slug (underscored). */
+export function categoryToUrlSlug(slug: string): string {
+  return slug.replace(/_/g, "-");
+}
 
+/**
+ * Human label for a category slug. Prefers a caller-supplied map (DB labels),
+ * then the seed labels, then a title-cased fallback derived from the slug so a
+ * brand-new category always renders *something* readable, never `undefined`.
+ */
+export function formatCategoryLabel(
+  slug: string,
+  labels?: Record<string, string>,
+): string {
+  const fromMap = labels?.[slug] ?? ARTICLE_CATEGORY_LABELS[slug];
+  if (fromMap) return fromMap;
+  const words = slug.replace(/[_-]+/g, " ").trim();
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
+/** Stored category slugs allow lowercase letters, numbers, `_` and `-`. */
+const categorySlugRegex = /^[a-z0-9_-]+$/;
 const slugRegex = /^[a-z0-9-]+$/;
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+const categoryField = z
+  .string()
+  .min(1, "Pick a category")
+  .max(60, "Category slug is too long")
+  .regex(categorySlugRegex, "Invalid category");
 
 /** Minimal payload to create a new article — the editor fills the rest. */
 export const articleCreateSchema = z.object({
@@ -40,10 +84,30 @@ export const articleCreateSchema = z.object({
     .string()
     .min(3, "Title is too short")
     .max(160, "Title is too long"),
-  category: z.enum(ARTICLE_CATEGORIES),
+  category: categoryField,
 });
 
 export type ArticleCreateInput = z.infer<typeof articleCreateSchema>;
+
+/** Payload for adding a new category ("blog type") from the editor. */
+export const articleCategoryCreateSchema = z.object({
+  label: z
+    .string()
+    .trim()
+    .min(2, "Name is too short")
+    .max(60, "Name is too long"),
+  slug: z
+    .string()
+    .trim()
+    .max(60, "Slug is too long")
+    .regex(categorySlugRegex, "Lowercase letters, numbers, - and _ only")
+    .optional()
+    .or(z.literal("")),
+});
+
+export type ArticleCategoryCreateInput = z.infer<
+  typeof articleCategoryCreateSchema
+>;
 
 /** Full edit form schema — every field on the article edit screen. */
 export const articleEditSchema = z.object({
@@ -61,7 +125,7 @@ export const articleEditSchema = z.object({
     .max(320, "Keep it under 320 characters")
     .nullable()
     .optional(),
-  category: z.enum(ARTICLE_CATEGORIES),
+  category: categoryField,
   body_html: z.string().max(200_000, "Body is too long"),
   hero_image_id: z
     .union([

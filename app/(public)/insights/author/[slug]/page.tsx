@@ -12,7 +12,6 @@ import {
   listPublishedArticles,
   type ArticleListRow,
 } from "@/lib/queries/articles";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/schemas/article";
 import { mediaPublicUrl } from "@/lib/media";
 import { getSeedAgentBySlug, SEED_AGENTS } from "@/lib/seeds/agents";
 
@@ -161,7 +160,7 @@ export default async function InsightsAuthorPage({
                     <ArticleHero row={row} />
                   </div>
                   <div className="eyebrow mt-3.5">
-                    {ARTICLE_CATEGORY_LABELS[row.category]}
+                    {row.category_label}
                     {row.read_minutes ? ` · ${row.read_minutes} min` : ""}
                   </div>
                   <h3

@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
+import { listArticleCategories } from "@/lib/queries/article-categories";
 import { NewArticleForm } from "./_form";
 
 export const dynamic = "force-dynamic";
 
-export default function NewArticlePage() {
+export default async function NewArticlePage() {
+  const categories = await listArticleCategories();
   return (
     <CmsShell
       title="New article"
@@ -24,7 +26,7 @@ export default function NewArticlePage() {
           Start a draft. Body, hero image, SEO, and publish controls all live
           on the editor screen.
         </p>
-        <NewArticleForm />
+        <NewArticleForm categories={categories} />
       </div>
     </CmsShell>
   );

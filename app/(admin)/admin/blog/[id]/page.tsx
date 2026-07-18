@@ -5,6 +5,7 @@ import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { articleUrl } from "@/lib/queries/articles";
+import { listArticleCategories } from "@/lib/queries/article-categories";
 import { type ArticleEditInput } from "@/lib/schemas/article";
 import { ArticleEditForm } from "./_form";
 import { ArticlePublishCard } from "./_publish-card";
@@ -29,7 +30,10 @@ async function fetchArticle(id: string) {
 
 export default async function ArticleEditPage({ params }: PageProps) {
   const { id } = await params;
-  const article = await fetchArticle(id);
+  const [article, categories] = await Promise.all([
+    fetchArticle(id),
+    listArticleCategories(),
+  ]);
   if (!article) notFound();
 
   const seo = (article.seo as Record<string, unknown> | null) ?? {};
@@ -76,7 +80,11 @@ export default async function ArticleEditPage({ params }: PageProps) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
         <div className="flex flex-col gap-6 min-w-0">
-          <ArticleEditForm articleId={article.id} initial={initial} />
+          <ArticleEditForm
+            articleId={article.id}
+            initial={initial}
+            categories={categories}
+          />
         </div>
         <aside className="sticky top-6">
           <ArticlePublishCard

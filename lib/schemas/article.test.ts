@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   articleCreateSchema,
+  articleCategoryCreateSchema,
   articleEditSchema,
+  categoryToUrlSlug,
   deriveExcerpt,
+  formatCategoryLabel,
   normaliseArticleEditInput,
   readingMinutes,
   stripHtml,
@@ -25,12 +28,71 @@ describe("articleCreateSchema", () => {
     expect(res.success).toBe(false);
   });
 
-  it("rejects unknown categories", () => {
+  it("accepts a new (dynamic) category slug", () => {
+    // Categories are runtime-editable, so any well-formed slug is valid at
+    // the schema layer — the DB FK enforces existence.
     const res = articleCreateSchema.safeParse({
       title: "Some article",
-      category: "bogus_cat",
+      category: "investor_briefing",
     });
-    expect(res.success).toBe(false);
+    expect(res.success).toBe(true);
+  });
+
+  it("rejects malformed category slugs", () => {
+    for (const bad of ["Has Spaces", "MixedCase", ""]) {
+      expect(
+        articleCreateSchema.safeParse({ title: "Some article", category: bad })
+          .success,
+      ).toBe(false);
+    }
+  });
+});
+
+describe("articleCategoryCreateSchema", () => {
+  it("accepts a label with an optional slug", () => {
+    expect(
+      articleCategoryCreateSchema.safeParse({ label: "Investor briefing" })
+        .success,
+    ).toBe(true);
+    expect(
+      articleCategoryCreateSchema.safeParse({
+        label: "Investor briefing",
+        slug: "investor_briefing",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("rejects too-short labels and malformed slugs", () => {
+    expect(articleCategoryCreateSchema.safeParse({ label: "X" }).success).toBe(
+      false,
+    );
+    expect(
+      articleCategoryCreateSchema.safeParse({
+        label: "Fine name",
+        slug: "Bad Slug",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("formatCategoryLabel", () => {
+  it("prefers a supplied label map, then seed labels", () => {
+    expect(formatCategoryLabel("market_report")).toBe("Market report");
+    expect(
+      formatCategoryLabel("market_report", { market_report: "Custom" }),
+    ).toBe("Custom");
+  });
+
+  it("title-cases an unknown slug so it never renders undefined", () => {
+    expect(formatCategoryLabel("investor_briefing")).toBe("Investor briefing");
+    expect(formatCategoryLabel("off-plan-watch-2")).toBe("Off plan watch 2");
+  });
+});
+
+describe("categoryToUrlSlug", () => {
+  it("hyphenates underscored slugs", () => {
+    expect(categoryToUrlSlug("off_plan_watch")).toBe("off-plan-watch");
+    expect(categoryToUrlSlug("luxury")).toBe("luxury");
   });
 });
 
