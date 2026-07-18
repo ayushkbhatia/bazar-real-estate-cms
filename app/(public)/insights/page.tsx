@@ -10,10 +10,7 @@ import {
   listPublishedArticles,
   type ArticleListRow,
 } from "@/lib/queries/articles";
-import {
-  ARTICLE_CATEGORIES,
-  ARTICLE_CATEGORY_LABELS,
-} from "@/lib/schemas/article";
+import { listArticleCategories } from "@/lib/queries/article-categories";
 import { mediaPublicUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import { NewsletterSignup } from "../_components/newsletter-signup";
@@ -69,11 +66,13 @@ function formatDate(iso: string | null): string {
 
 export default async function InsightsIndexPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const category = (
-    ARTICLE_CATEGORIES as readonly string[]
-  ).includes(params.category ?? "")
-    ? (params.category as (typeof ARTICLE_CATEGORIES)[number])
+  const categories = await listArticleCategories();
+  const category = categories.some((c) => c.slug === params.category)
+    ? (params.category as string)
     : null;
+  const selectedLabel = category
+    ? categories.find((c) => c.slug === category)?.label ?? ""
+    : "";
 
   const [{ rows }, counts] = await Promise.all([
     listPublishedArticles({
@@ -118,9 +117,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
                 />
               </div>
               <div className="mt-5">
-                <Eyebrow>
-                  {ARTICLE_CATEGORY_LABELS[featured.category]}
-                </Eyebrow>
+                <Eyebrow>{featured.category_label}</Eyebrow>
                 <h2
                   className="serif text-[28px] md:text-[40px] mt-3 leading-[1.05] group-hover:text-bz-accent transition-colors"
                   style={{ letterSpacing: "-0.025em" }}
@@ -192,14 +189,14 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
           >
             All · {counts.total}
           </Link>
-          {ARTICLE_CATEGORIES.map((c) => {
-            const count = counts.byCategory[c] ?? 0;
-            if (count === 0 && c !== category) return null;
-            const active = category === c;
+          {categories.map((c) => {
+            const count = counts.byCategory[c.slug] ?? 0;
+            if (count === 0 && c.slug !== category) return null;
+            const active = category === c.slug;
             return (
               <Link
-                key={c}
-                href={`/insights?category=${c}`}
+                key={c.slug}
+                href={`/insights?category=${c.slug}`}
                 className={cn(
                   "h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors",
                   active
@@ -207,7 +204,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
                     : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
                 )}
               >
-                {ARTICLE_CATEGORY_LABELS[c]} · {count}
+                {c.label} · {count}
               </Link>
             );
           })}
@@ -220,7 +217,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
           <div className="py-24 text-center max-w-[40ch] mx-auto">
             <p className="text-[15px] text-bz-ink-2">
               We haven&apos;t published any{" "}
-              {category ? ARTICLE_CATEGORY_LABELS[category].toLowerCase() : ""}{" "}
+              {selectedLabel ? `${selectedLabel.toLowerCase()} ` : ""}
               insights yet.
             </p>
             <Button asChild variant="outline" className="mt-6">
@@ -239,7 +236,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
                     />
                   </div>
                   <div className="eyebrow mt-3.5">
-                    {ARTICLE_CATEGORY_LABELS[row.category]}
+                    {row.category_label}
                     {row.read_minutes ? ` · ${row.read_minutes} min` : ""}
                   </div>
                   <h3

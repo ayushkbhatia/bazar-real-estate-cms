@@ -125,11 +125,44 @@ export type Database = {
           },
         ]
       }
+      article_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          label: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          label: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author_id: string | null
           body_html: string
-          category: Database["public"]["Enums"]["article_category"]
+          category: string
           created_at: string
           deleted_at: string | null
           excerpt: string | null
@@ -147,7 +180,7 @@ export type Database = {
         Insert: {
           author_id?: string | null
           body_html?: string
-          category?: Database["public"]["Enums"]["article_category"]
+          category?: string
           created_at?: string
           deleted_at?: string | null
           excerpt?: string | null
@@ -165,7 +198,7 @@ export type Database = {
         Update: {
           author_id?: string | null
           body_html?: string
-          category?: Database["public"]["Enums"]["article_category"]
+          category?: string
           created_at?: string
           deleted_at?: string | null
           excerpt?: string | null
@@ -194,6 +227,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "media_assets"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "articles_category_fkey"
+            columns: ["category"]
+            isOneToOne: false
+            referencedRelation: "article_categories"
+            referencedColumns: ["slug"]
           },
         ]
       }
@@ -2373,14 +2413,6 @@ export type Database = {
       account_residency_status: "uae_resident" | "non_resident" | "gcc_national"
       alert_frequency: "off" | "instant" | "daily" | "weekly"
       area_kind: "emirate" | "area" | "sub_community" | "building"
-      article_category:
-        | "market_report"
-        | "buyers_guide"
-        | "sellers_guide"
-        | "field_note"
-        | "policy"
-        | "off_plan_watch"
-        | "luxury"
       article_status: "draft" | "scheduled" | "published" | "archived"
       audit_actor_kind: "user" | "system" | "integration"
       concierge_message_role: "user" | "assistant" | "system"
@@ -2670,15 +2702,6 @@ export const Constants = {
       ],
       alert_frequency: ["off", "instant", "daily", "weekly"],
       area_kind: ["emirate", "area", "sub_community", "building"],
-      article_category: [
-        "market_report",
-        "buyers_guide",
-        "sellers_guide",
-        "field_note",
-        "policy",
-        "off_plan_watch",
-        "luxury",
-      ],
       article_status: ["draft", "scheduled", "published", "archived"],
       audit_actor_kind: ["user", "system", "integration"],
       concierge_message_role: ["user", "assistant", "system"],

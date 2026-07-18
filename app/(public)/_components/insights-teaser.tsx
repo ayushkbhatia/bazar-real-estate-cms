@@ -8,7 +8,6 @@ import {
   listPublishedArticles,
   type ArticleListRow,
 } from "@/lib/queries/articles";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/schemas/article";
 import { mediaPublicUrl } from "@/lib/media";
 import { NewsletterSignup } from "./newsletter-signup";
 
@@ -78,7 +77,7 @@ export async function InsightsTeaser() {
                 <ArticleImage row={lead} />
               </div>
               <div className="mt-5">
-                <Eyebrow>{ARTICLE_CATEGORY_LABELS[lead.category]}</Eyebrow>
+                <Eyebrow>{lead.category_label}</Eyebrow>
                 <h3
                   className="serif text-[24px] md:text-[32px] mt-2 leading-[1.08] group-hover:text-bz-accent transition-colors max-w-[22ch]"
                   style={{ letterSpacing: "-0.018em" }}
@@ -112,9 +111,7 @@ export async function InsightsTeaser() {
                     href={articleUrl(row)}
                     className="group block border-t border-bz-border pt-5"
                   >
-                    <div className="eyebrow">
-                      {ARTICLE_CATEGORY_LABELS[row.category]}
-                    </div>
+                    <div className="eyebrow">{row.category_label}</div>
                     <h4
                       className="serif text-[18px] mt-1 leading-tight group-hover:text-bz-accent transition-colors line-clamp-2"
                       style={{ letterSpacing: "-0.008em" }}

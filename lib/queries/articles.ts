@@ -1,10 +1,16 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { formatCategoryLabel } from "@/lib/schemas/article";
+import { getArticleCategoryLabels } from "@/lib/queries/article-categories";
 import type { Database } from "@/db/types";
 
-export type ArticleCategory =
-  Database["public"]["Enums"]["article_category"];
+/**
+ * A category slug. Categories are a runtime-editable taxonomy (migration 0055),
+ * so this is an open `string` rather than a fixed enum. Use `category_label`
+ * for display and `getArticleCategoryLabels()` to resolve arbitrary slugs.
+ */
+export type ArticleCategory = string;
 export type ArticleStatus =
   Database["public"]["Enums"]["article_status"];
 
@@ -14,6 +20,8 @@ export type ArticleListRow = {
   title: string;
   excerpt: string | null;
   category: ArticleCategory;
+  /** Resolved display label for `category` (DB label, else title-cased slug). */
+  category_label: string;
   status: ArticleStatus;
   read_minutes: number | null;
   published_at: string | null;
@@ -65,6 +73,20 @@ function reshape<T extends RawJoin>(
   return { ...rest, author: staff ?? null, hero: media ?? null };
 }
 
+/**
+ * Resolve `category_label` for each row from the (cached) category label map.
+ * One tiny lookup per render regardless of how many article queries run.
+ */
+async function attachLabels<T extends ArticleListRow>(
+  rows: T[],
+): Promise<T[]> {
+  const labels = await getArticleCategoryLabels();
+  return rows.map((r) => ({
+    ...r,
+    category_label: formatCategoryLabel(r.category, labels),
+  }));
+}
+
 /** Public-facing list — published articles, newest first. */
 export async function listPublishedArticles(opts: {
   category?: ArticleCategory;
@@ -92,9 +114,11 @@ export async function listPublishedArticles(opts: {
     console.error("[listPublishedArticles]", error);
     return { rows: [], total: 0 };
   }
-  const rows = (data ?? []).map((r) =>
-    reshape(r as unknown as RawJoin),
-  ) as unknown as ArticleListRow[];
+  const rows = await attachLabels(
+    (data ?? []).map((r) =>
+      reshape(r as unknown as RawJoin),
+    ) as unknown as ArticleListRow[],
+  );
   return { rows, total: count ?? 0 };
 }
 
@@ -173,7 +197,10 @@ export async function getPublishedArticleBySlug(
     return null;
   }
   if (!data) return null;
-  return reshape(data as unknown as RawJoin) as unknown as ArticleDetail;
+  const [row] = await attachLabels([
+    reshape(data as unknown as RawJoin) as unknown as ArticleDetail,
+  ]);
+  return row;
 }
 
 /** Find up to N other published articles, prefer same category, exclude self. */
@@ -193,9 +220,11 @@ export async function getRelatedArticles(
     .order("published_at", { ascending: false })
     .limit(limit + 4); // over-fetch so we can prefer same category
   if (error || !data) return [];
-  const all = data.map((r) =>
-    reshape(r as unknown as RawJoin),
-  ) as unknown as ArticleListRow[];
+  const all = await attachLabels(
+    data.map((r) =>
+      reshape(r as unknown as RawJoin),
+    ) as unknown as ArticleListRow[],
+  );
   const same = all.filter((a) => a.category === category);
   const others = all.filter((a) => a.category !== category);
   return [...same, ...others].slice(0, limit);
@@ -218,9 +247,11 @@ export async function listAllArticlesForAdmin(opts: {
     console.error("[listAllArticlesForAdmin]", error);
     return { rows: [], total: 0 };
   }
-  const rows = (data ?? []).map((r) =>
-    reshape(r as unknown as RawJoin),
-  ) as unknown as ArticleListRow[];
+  const rows = await attachLabels(
+    (data ?? []).map((r) =>
+      reshape(r as unknown as RawJoin),
+    ) as unknown as ArticleListRow[],
+  );
   return { rows, total: count ?? 0 };
 }
 

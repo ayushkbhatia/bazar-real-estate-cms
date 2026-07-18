@@ -78,6 +78,13 @@ export async function updateArticle(
         fieldErrors: { slug: "Already in use" },
       };
     }
+    if (error.code === "23503") {
+      return {
+        status: "error",
+        message: "That blog type no longer exists — pick another.",
+        fieldErrors: { category: "Unknown category" },
+      };
+    }
     return { status: "error", message: error.message };
   }
   if (!data) {

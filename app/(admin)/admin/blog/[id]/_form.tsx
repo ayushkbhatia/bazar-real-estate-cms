@@ -7,19 +7,12 @@ import { toast } from "sonner";
 import {
   articleEditSchema,
   type ArticleEditInput,
-  ARTICLE_CATEGORIES,
-  ARTICLE_CATEGORY_LABELS,
 } from "@/lib/schemas/article";
+import type { ArticleCategoryRow } from "@/lib/queries/article-categories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { CategorySelect } from "../_category-select";
 import { ArticleEditor } from "../_article-editor";
 import { updateArticle } from "./_actions";
 
@@ -33,9 +26,14 @@ function FieldError({ message }: { message?: string }) {
 export type ArticleEditFormProps = {
   articleId: string;
   initial: ArticleEditInput;
+  categories: ArticleCategoryRow[];
 };
 
-export function ArticleEditForm({ articleId, initial }: ArticleEditFormProps) {
+export function ArticleEditForm({
+  articleId,
+  initial,
+  categories,
+}: ArticleEditFormProps) {
   const [pending, startTransition] = useTransition();
   const [serverFieldErrors, setServerFieldErrors] = useState<
     Record<string, string>
@@ -86,7 +84,7 @@ export function ArticleEditForm({ articleId, initial }: ArticleEditFormProps) {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_240px] gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="slug">Slug</Label>
             <Input id="slug" {...register("slug")} />
@@ -98,24 +96,13 @@ export function ArticleEditForm({ articleId, initial }: ArticleEditFormProps) {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="category">Category</Label>
-            <Select
+            <Label htmlFor="category">Blog type</Label>
+            <CategorySelect
+              id="category"
               value={category}
-              onValueChange={(v) =>
-                setValue("category", v as ArticleEditInput["category"])
-              }
-            >
-              <SelectTrigger id="category">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ARTICLE_CATEGORIES.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {ARTICLE_CATEGORY_LABELS[c]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onChange={(v) => setValue("category", v)}
+              categories={categories}
+            />
           </div>
         </div>
 

@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 import { getPublishedArticleBySlug } from "@/lib/queries/articles";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/schemas/article";
 import { mediaPublicUrl } from "@/lib/media";
 
 export const runtime = "edge";
@@ -19,9 +18,7 @@ export default async function ArticleOpenGraph({
   const article = await getPublishedArticleBySlug(params.slug);
 
   const title = article?.title ?? "The Bazar Brief";
-  const category = article
-    ? ARTICLE_CATEGORY_LABELS[article.category]
-    : "Insights";
+  const category = article?.category_label ?? "Insights";
   const authorName = article?.author?.display_name ?? "Bazar";
   const heroSrc = article?.hero
     ? mediaPublicUrl(article.hero.storage_key)

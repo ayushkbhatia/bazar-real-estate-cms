@@ -8,19 +8,12 @@ import { toast } from "sonner";
 import {
   articleCreateSchema,
   type ArticleCreateInput,
-  ARTICLE_CATEGORIES,
-  ARTICLE_CATEGORY_LABELS,
 } from "@/lib/schemas/article";
+import type { ArticleCategoryRow } from "@/lib/queries/article-categories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { CategorySelect } from "../_category-select";
 import { createArticle } from "./_actions";
 
 function FieldError({ message }: { message?: string }) {
@@ -30,12 +23,11 @@ function FieldError({ message }: { message?: string }) {
   );
 }
 
-const DEFAULTS: ArticleCreateInput = {
-  title: "",
-  category: "field_note",
-};
-
-export function NewArticleForm() {
+export function NewArticleForm({
+  categories,
+}: {
+  categories: ArticleCategoryRow[];
+}) {
   const [pending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -47,7 +39,13 @@ export function NewArticleForm() {
     watch,
   } = useForm<ArticleCreateInput>({
     resolver: zodResolver(articleCreateSchema),
-    defaultValues: DEFAULTS,
+    defaultValues: {
+      title: "",
+      category:
+        categories.find((c) => c.slug === "field_note")?.slug ??
+        categories[0]?.slug ??
+        "field_note",
+    },
   });
 
   const category = watch("category");
@@ -85,25 +83,14 @@ export function NewArticleForm() {
           <FieldError message={errors.title?.message} />
         </div>
 
-        <div className="flex flex-col gap-1.5 max-w-xs">
-          <Label htmlFor="category">Category</Label>
-          <Select
+        <div className="flex flex-col gap-1.5 max-w-md">
+          <Label htmlFor="category">Blog type</Label>
+          <CategorySelect
+            id="category"
             value={category}
-            onValueChange={(v) =>
-              setValue("category", v as ArticleCreateInput["category"])
-            }
-          >
-            <SelectTrigger id="category">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {ARTICLE_CATEGORIES.map((c) => (
-                <SelectItem key={c} value={c}>
-                  {ARTICLE_CATEGORY_LABELS[c]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            onChange={(v) => setValue("category", v)}
+            categories={categories}
+          />
           <FieldError message={errors.category?.message} />
         </div>
 

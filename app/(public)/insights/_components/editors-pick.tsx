@@ -6,7 +6,6 @@ import {
   articleUrl,
   type ArticleListRow,
 } from "@/lib/queries/articles";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/schemas/article";
 import { mediaPublicUrl } from "@/lib/media";
 
 /**
@@ -56,7 +55,7 @@ export function EditorsPick({ article }: { article: ArticleListRow | null }) {
       </div>
       <div className="p-6">
         <div className="text-[11px] uppercase tracking-widest opacity-60">
-          Editor&apos;s pick · {ARTICLE_CATEGORY_LABELS[article.category]}
+          Editor&apos;s pick · {article.category_label}
         </div>
         <h3
           className="serif text-[22px] mt-2 leading-tight group-hover:text-bz-accent-soft transition-colors"

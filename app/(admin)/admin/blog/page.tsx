@@ -16,7 +16,6 @@ import {
   listAllArticlesForAdmin,
   type ArticleListRow,
 } from "@/lib/queries/articles";
-import { ARTICLE_CATEGORY_LABELS } from "@/lib/schemas/article";
 
 export const dynamic = "force-dynamic";
 
@@ -126,7 +125,7 @@ export default async function AdminBlogPage() {
                       <StatusPill status={row.status} />
                     </TableCell>
                     <TableCell className="text-bz-ink-2 text-[12.5px]">
-                      {ARTICLE_CATEGORY_LABELS[row.category]}
+                      {row.category_label}
                     </TableCell>
                     <TableCell className="text-bz-ink-2 text-[12.5px]">
                       {row.author?.display_name ?? "—"}

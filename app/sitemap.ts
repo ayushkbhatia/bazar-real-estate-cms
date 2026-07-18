@@ -4,6 +4,8 @@ import { isSupabaseConfigured, env } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
 import { listDevelopers } from "@/lib/queries/developers-extras";
+import { listArticleCategories } from "@/lib/queries/article-categories";
+import { categoryToUrlSlug } from "@/lib/schemas/article";
 
 const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number }[] = [
   { path: "/", changeFrequency: "daily", priority: 1.0 },
@@ -20,19 +22,6 @@ const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[numb
   { path: "/developers", changeFrequency: "weekly", priority: 0.5 },
 ];
 
-// Mirrors the URL_SLUG_TO_CATEGORY map in
-// app/(public)/insights/category/[cat]/page.tsx. Kept inline (rather than
-// imported) because the page file is a client of these slugs, not their
-// source of truth — the source of truth is the URL contract itself.
-const INSIGHTS_CATEGORY_SLUGS = [
-  "market-report",
-  "buyers-guide",
-  "sellers-guide",
-  "field-note",
-  "policy",
-  "off-plan-watch",
-] as const;
-
 function siteUrl(): string {
   return (env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app").replace(/\/+$/, "");
 }
@@ -48,16 +37,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: r.priority,
   }));
 
-  // Insights category pages are a fixed enum — emit unconditionally so
-  // they appear in the sitemap even when Supabase is unreachable.
-  const categoryEntries: MetadataRoute.Sitemap = INSIGHTS_CATEGORY_SLUGS.map(
-    (slug) => ({
-      url: `${base}/insights/category/${slug}`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: 0.5,
-    }),
-  );
+  // Insights category pages are a runtime-editable taxonomy.
+  // listArticleCategories() falls back to the seed set when Supabase is
+  // unreachable, so these always populate.
+  const categoryEntries: MetadataRoute.Sitemap = (
+    await listArticleCategories().catch((err) => {
+      console.error("[sitemap] category fetch failed", err);
+      return [];
+    })
+  ).map((c) => ({
+    url: `${base}/insights/category/${categoryToUrlSlug(c.slug)}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: 0.5,
+  }));
 
   // listAreasWithCounts() and listDevelopers() both fall back to seeds
   // when Supabase is offline, so we always get a populated list.
