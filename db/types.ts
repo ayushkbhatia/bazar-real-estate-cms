@@ -222,18 +222,18 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
-            foreignKeyName: "articles_hero_image_id_fkey"
-            columns: ["hero_image_id"]
-            isOneToOne: false
-            referencedRelation: "media_assets"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "articles_category_fkey"
             columns: ["category"]
             isOneToOne: false
             referencedRelation: "article_categories"
             referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "articles_hero_image_id_fkey"
+            columns: ["hero_image_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["id"]
           },
         ]
       }
