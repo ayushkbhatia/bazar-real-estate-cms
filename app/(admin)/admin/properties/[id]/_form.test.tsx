@@ -17,8 +17,24 @@ vi.mock("sonner", () => ({
   },
 }));
 
+const refreshMock = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    refresh: refreshMock,
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+  }),
+}));
+
 import { PropertyEditForm } from "./_form";
 import { toast } from "sonner";
+
+const DEVELOPERS = [
+  { id: "11111111-1111-1111-1111-111111111111", name: "Aldar Properties" },
+];
 
 const INITIAL: PropertyEditInput = {
   title: "Mamsha · 3-bed beachfront",
@@ -43,6 +59,7 @@ const INITIAL: PropertyEditInput = {
   listing_permit_expires_at: null,
   dld_plot_number: null,
   area_id: null,
+  developer_id: "11111111-1111-1111-1111-111111111111",
   amenities: ["Pool", "Gym"],
   slug: "mamsha-3-bed-beachfront-apartment",
   meta_title: null,
@@ -63,6 +80,7 @@ describe("<PropertyEditForm>", () => {
         initial={INITIAL}
         reference="BAZ-AD-04891"
         areas={[]}
+        developers={DEVELOPERS}
         geo={null}
         mapboxAvailable={false}
       />,
@@ -81,6 +99,7 @@ describe("<PropertyEditForm>", () => {
         initial={INITIAL}
         reference="BAZ-AD-04891"
         areas={[]}
+        developers={DEVELOPERS}
         geo={null}
         mapboxAvailable={false}
       />,
@@ -98,6 +117,7 @@ describe("<PropertyEditForm>", () => {
         initial={INITIAL}
         reference="BAZ-AD-04891"
         areas={[]}
+        developers={DEVELOPERS}
         geo={null}
         mapboxAvailable={false}
       />,
@@ -134,6 +154,7 @@ describe("<PropertyEditForm>", () => {
         initial={INITIAL}
         reference="BAZ-AD-04891"
         areas={[]}
+        developers={DEVELOPERS}
         geo={null}
         mapboxAvailable={false}
       />,

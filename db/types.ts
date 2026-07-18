@@ -1602,6 +1602,7 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           description: string | null
+          developer_id: string | null
           development_id: string | null
           dld_plot_number: string | null
           enquiry_count: number
@@ -1650,6 +1651,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           description?: string | null
+          developer_id?: string | null
           development_id?: string | null
           dld_plot_number?: string | null
           enquiry_count?: number
@@ -1698,6 +1700,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           description?: string | null
+          developer_id?: string | null
           development_id?: string | null
           dld_plot_number?: string | null
           enquiry_count?: number
@@ -1760,6 +1763,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "staff"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "properties_developer_id_fkey"
+            columns: ["developer_id"]
+            isOneToOne: false
+            referencedRelation: "developers"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "properties_development_id_fkey"

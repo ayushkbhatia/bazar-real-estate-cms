@@ -109,3 +109,24 @@ shows the trail.)
   newly-assigned agent via `bulkReassignDigestTemplate`. Single agent
   per call so no grouping needed; fire-and-forget so failures don't
   block the action response.
+
+- [properties] Bulk-publish doesn't enforce the Developer gate or PoA-optionality.
+  Surfaced by the listing-wizard PR (developer_id + publish overhaul). The
+  single-property gate now requires a developer and treats Power of Attorney as
+  optional (`poa_optional`), but `lib/queries/properties-bulk.ts`
+  (`evaluateBulkPublishability`) shares `evaluatePublishability` and passes
+  neither flag, so bulk-publish still ignores developer and still requires PoA.
+  Left inconsistent because that file + its test are under the protected
+  `lib/queries/properties*` glob. Decide whether bulk should match single-property.
+
+- [properties] Publish role gate 404s marketing/support silently.
+  `PROPERTY_ROLES = [admin, editor, agent]` in
+  `app/(admin)/admin/properties/[id]/_actions.ts`; `requireRole` throws
+  `notFound()` for other staff, so marketing/support clicking Publish get a bare
+  404 with no explanation. Show a "you don't have permission" message instead.
+
+- [properties] permit-expiry cron auto-archives with no in-app warning.
+  `app/api/cron/permit-expiry/route.ts` flips any published listing whose permit
+  has lapsed to `archived` (emails admins only). Paired with the permit-expiry
+  publish gate this is a re-publish lockout. Consider an in-app banner /
+  soft-warning window before the hard archive.

@@ -517,6 +517,96 @@ export async function setPropertyHero(
   return { status: "ok", message: mediaId ? "Hero set." : "Hero removed." };
 }
 
+/**
+ * Detach one photo from this property. Deletes only the property_media link —
+ * the underlying media_assets row stays in the shared library. If the removed
+ * photo was the hero, the listing simply has no hero afterwards (the pre-flight
+ * gate will flag it).
+ */
+export async function detachPropertyPhoto(
+  propertyId: string,
+  mediaId: string,
+): Promise<HeroResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("property_media")
+    .delete()
+    .eq("property_id", propertyId)
+    .eq("media_id", mediaId);
+  if (error) return { status: "error", message: error.message };
+
+  await logAudit({
+    action: "property.media_detach",
+    target_kind: "property",
+    target_id: propertyId,
+    before: { media_id: mediaId },
+    after: null,
+  });
+  await revalidatePropertyPaths(propertyId);
+  return { status: "ok", message: "Photo removed." };
+}
+
+/**
+ * Persist a new photo order. `orderedMediaIds` is the full list of this
+ * property's attached media in display order; each row's sort_order is set to
+ * its index. The hero keeps its role; ordering is independent of role.
+ */
+export async function reorderPropertyMedia(
+  propertyId: string,
+  orderedMediaIds: string[],
+): Promise<HeroResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
+
+  if (!Array.isArray(orderedMediaIds) || orderedMediaIds.some((id) => !UUID_RE.test(id)))
+    return { status: "error", message: "Invalid media order." };
+
+  const supabase = await createSupabaseServerClient();
+  for (let i = 0; i < orderedMediaIds.length; i++) {
+    const { error } = await supabase
+      .from("property_media")
+      .update({ sort_order: i })
+      .eq("property_id", propertyId)
+      .eq("media_id", orderedMediaIds[i]);
+    if (error) return { status: "error", message: error.message };
+  }
+
+  await revalidatePropertyPaths(propertyId);
+  return { status: "ok", message: "Order saved." };
+}
+
+/**
+ * Update the alt text on a media asset. Alt lives on media_assets (shared), so
+ * this edits the asset itself, not the property_media link.
+ */
+export async function setPropertyMediaAlt(
+  mediaId: string,
+  alt: string,
+): Promise<HeroResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
+
+  if (!UUID_RE.test(mediaId))
+    return { status: "error", message: "Invalid media id." };
+
+  const trimmed = alt.trim().slice(0, 300);
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("media_assets")
+    .update({ alt_text: trimmed === "" ? null : trimmed })
+    .eq("id", mediaId);
+  if (error) return { status: "error", message: error.message };
+
+  revalidatePath("/admin/media");
+  return { status: "ok", message: "Alt text saved." };
+}
+
 export type ComplianceResult =
   | { status: "ok"; message?: string; compliance: PropertyCompliance }
   | { status: "error"; message: string };
@@ -590,7 +680,7 @@ async function loadPublishabilityFor(propertyId: string): Promise<{
   const { data: p, error } = await supabase
     .from("properties")
     .select(
-      "id, slug, reference, status, title, price_aed, listing_permit_no, listing_permit_expires_at, compliance, property_media(role)",
+      "id, slug, reference, status, title, price_aed, developer_id, listing_permit_no, listing_permit_expires_at, compliance, property_media(role)",
     )
     .eq("id", propertyId)
     .maybeSingle();
@@ -605,6 +695,8 @@ async function loadPublishabilityFor(propertyId: string): Promise<{
   const result = evaluatePublishability({
     status: p.status,
     has_hero,
+    has_developer: p.developer_id != null,
+    poa_optional: true,
     listing_permit_no: p.listing_permit_no,
     listing_permit_expires_at: p.listing_permit_expires_at,
     slug: p.slug,

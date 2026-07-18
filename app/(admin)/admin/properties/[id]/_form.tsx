@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, X } from "lucide-react";
@@ -30,12 +31,14 @@ import { updateProperty } from "./_actions";
 import { LocationPicker } from "./_components/location-picker";
 
 export type AreaOption = { id: string; name: string; kind: string };
+export type DeveloperOption = { id: string; name: string };
 
 type Props = {
   propertyId: string;
   initial: PropertyEditInput;
   reference: string;
   areas: AreaOption[];
+  developers: DeveloperOption[];
   geo: { lat: number; lng: number } | null;
   mapboxAvailable: boolean;
 };
@@ -87,9 +90,11 @@ export function PropertyEditForm({
   initial,
   reference,
   areas,
+  developers,
   geo,
   mapboxAvailable,
 }: Props) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [serverFieldErrors, setServerFieldErrors] = useState<
     Record<string, string>
@@ -108,6 +113,7 @@ export function PropertyEditForm({
 
   const type = watch("type");
   const mode = watch("mode");
+  const developerId = watch("developer_id") ?? "";
   const tenure = watch("tenure") ?? null;
   const furnishing = watch("furnishing") ?? null;
   const areaId = watch("area_id") ?? null;
@@ -160,6 +166,9 @@ export function PropertyEditForm({
       const result = await updateProperty(propertyId, values);
       if (result.status === "ok") {
         toast.success(result.message ?? "Saved.");
+        // Refresh so the publish card's pre-flight (title/slug/price/permit/
+        // developer) re-reads the saved row.
+        router.refresh();
       } else {
         toast.error(result.message);
         if (result.fieldErrors) setServerFieldErrors(result.fieldErrors);
@@ -266,6 +275,36 @@ export function PropertyEditForm({
                 message={errors.mode?.message ?? serverFieldErrors.mode}
               />
             </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5 max-w-md">
+            <Label htmlFor="developer_id">Developer</Label>
+            <Select
+              value={developerId}
+              onValueChange={(v) =>
+                setValue("developer_id", v, { shouldDirty: true })
+              }
+            >
+              <SelectTrigger id="developer_id">
+                <SelectValue placeholder="Choose a developer" />
+              </SelectTrigger>
+              <SelectContent>
+                {developers.map((d) => (
+                  <SelectItem key={d.id} value={d.id}>
+                    {d.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-[11.5px] text-bz-muted">
+              Required. The developer behind this listing — shown on the public
+              property page and required before it can be published.
+            </span>
+            <FieldError
+              message={
+                errors.developer_id?.message ?? serverFieldErrors.developer_id
+              }
+            />
           </div>
         </TabsContent>
 

@@ -18,8 +18,22 @@ describe("propertyOverviewSchema", () => {
       short_description: "Three-bedroom apartment with sea views.",
       type: "apartment",
       mode: "buy",
+      developer_id: "11111111-1111-1111-1111-111111111111",
     });
     expect(res.success).toBe(true);
+  });
+
+  it("requires a developer", () => {
+    const res = propertyOverviewSchema.safeParse({
+      title: "A perfectly fine title",
+      type: "apartment",
+      mode: "buy",
+    });
+    expect(res.success).toBe(false);
+    if (!res.success)
+      expect(res.error.issues.some((i) => i.path[0] === "developer_id")).toBe(
+        true,
+      );
   });
 
   it("rejects a title that is too short", () => {
@@ -191,6 +205,7 @@ describe("propertyEditSchema (merged)", () => {
       title: "A valid title",
       type: "apartment",
       mode: "buy",
+      developer_id: "11111111-1111-1111-1111-111111111111",
       price_aed: 1_000_000,
       beds: 1,
       baths: 1,
