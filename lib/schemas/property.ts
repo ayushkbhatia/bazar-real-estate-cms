@@ -60,6 +60,10 @@ export const propertyOverviewSchema = z.object({
     .optional(),
   type: z.enum(PROPERTY_TYPES),
   mode: z.enum(PROPERTY_MODES),
+  // Developer is a required section of the listing wizard. The column is
+  // nullable at the DB layer (a fresh "create draft" has none), so we enforce
+  // requiredness here — mirroring developmentEditSchema's developer_id.
+  developer_id: z.string().regex(uuidRegex, "Pick a developer"),
   bazar_verified: z.boolean().optional(),
   advisor_note: z
     .string()

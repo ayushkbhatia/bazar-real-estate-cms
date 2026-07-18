@@ -11,6 +11,8 @@ function base(): PublishabilityInput {
   return {
     status: "draft",
     has_hero: true,
+    has_developer: true,
+    poa_optional: true,
     listing_permit_no: "ORN-12345-AD",
     listing_permit_expires_at: FUTURE,
     slug: "mamsha-3-bed-beachfront-apartment",
@@ -53,14 +55,34 @@ describe("evaluatePublishability", () => {
     expect(res.blockers.some((b) => b.includes("Title deed"))).toBe(true);
   });
 
-  it("blocks when compliance is null entirely", () => {
+  it("blocks on the three REQUIRED compliance items when compliance is null", () => {
     const res = evaluatePublishability({ ...base(), compliance: null });
     expect(res.ok).toBe(false);
-    // All four compliance items should appear in blockers.
+    // Form A, Title deed, NOC are required; Power of Attorney is optional.
     const complianceBlockers = res.blockers.filter((b) =>
-      /Form A|Title deed|NOC|Power of Attorney/i.test(b),
+      /Form A|Title deed|NOC/i.test(b),
     );
-    expect(complianceBlockers).toHaveLength(4);
+    expect(complianceBlockers).toHaveLength(3);
+    expect(res.blockers.some((b) => /Power of Attorney/i.test(b))).toBe(false);
+  });
+
+  it("does NOT block when only Power of Attorney is unticked (optional)", () => {
+    const res = evaluatePublishability({
+      ...base(),
+      compliance: {
+        form_a: true,
+        title_deed: true,
+        noc: true,
+        power_of_attorney: false,
+      },
+    });
+    expect(res.ok).toBe(true);
+  });
+
+  it("blocks when no developer is set", () => {
+    const res = evaluatePublishability({ ...base(), has_developer: false });
+    expect(res.ok).toBe(false);
+    expect(res.blockers).toContain("Developer is missing");
   });
 
   it("blocks when permit is missing or expired", () => {

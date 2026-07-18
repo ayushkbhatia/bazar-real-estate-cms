@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { s8 } from "@/lib/supabase/sprint-8";
 import { isSupabaseConfigured, isMapboxConfigured } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/properties";
 import { currentStaffRow } from "@/lib/queries/staff";
@@ -14,14 +15,16 @@ import {
   normaliseCompliance,
   type PropertyCompliance,
 } from "@/lib/schemas/property";
-import { evaluatePublishability } from "@/lib/publishability";
-import { PropertyEditForm, type AreaOption } from "./_form";
 import {
-  HeroPicker,
-  type HeroState,
-  type MediaOption,
-} from "./_hero-picker";
-import { PublishCard } from "./_publish-card";
+  PropertyEditForm,
+  type AreaOption,
+  type DeveloperOption,
+} from "./_form";
+import {
+  PropertyMediaLibrary,
+  type PropertyMediaItem,
+} from "./_media-library";
+import { PublishCard, type PublishInput } from "./_publish-card";
 import { AssignedAgentCard } from "./_components/assigned-agent-card";
 
 export const dynamic = "force-dynamic";
@@ -31,15 +34,28 @@ type PageProps = { params: Promise<{ id: string }> };
 async function fetchPropertyForEdit(id: string) {
   if (!isSupabaseConfigured) return null;
   const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase
+  // s8() widens the client so `developer_id` (added in migration 0055, not yet
+  // in the generated db/types.ts) typechecks in the select + return.
+  const { data, error } = await s8(supabase)
     .from("properties")
     .select(
-      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, amenities, seo, compliance, assigned_agent_id, geo",
+      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, compliance, assigned_agent_id, geo",
     )
     .eq("id", id)
     .maybeSingle();
   if (error || !data) return null;
   return data;
+}
+
+async function fetchDevelopers(): Promise<DeveloperOption[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("developers")
+    .select("id, name")
+    .order("name", { ascending: true });
+  if (error || !data) return [];
+  return data as DeveloperOption[];
 }
 
 async function fetchAreas(): Promise<AreaOption[]> {
@@ -54,49 +70,38 @@ async function fetchAreas(): Promise<AreaOption[]> {
   return data as AreaOption[];
 }
 
-async function fetchHeroAndMedia(
+/** Every photo attached to this property, in display order — for the media
+ *  library. Hero is one row (role='hero') among them, not a separate fetch. */
+async function fetchPropertyMedia(
   propertyId: string,
-): Promise<{ hero: HeroState; media: MediaOption[] }> {
-  if (!isSupabaseConfigured) return { hero: null, media: [] };
+): Promise<PropertyMediaItem[]> {
+  if (!isSupabaseConfigured) return [];
   const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("property_media")
+    .select(
+      "media_id, role, sort_order, media_assets:media_id(id, storage_key, alt_text)",
+    )
+    .eq("property_id", propertyId)
+    .order("sort_order", { ascending: true });
 
-  const [{ data: heroJoin }, { data: media }] = await Promise.all([
-    supabase
-      .from("property_media")
-      .select("media_id, media_assets:media_id(id, storage_key, filename)")
-      .eq("property_id", propertyId)
-      .eq("role", "hero")
-      .maybeSingle(),
-    supabase
-      .from("media_assets")
-      .select("id, storage_key, filename, mime_type")
-      .is("deleted_at", null)
-      .order("created_at", { ascending: false })
-      .limit(200),
-  ]);
-
-  let hero: HeroState = null;
-  const heroRow = (
-    heroJoin as
-      | {
-          media_assets:
-            | { id: string; storage_key: string; filename: string }
-            | null;
-        }
-      | null
-  )?.media_assets;
-  if (heroRow) {
-    hero = {
-      id: heroRow.id,
-      storage_key: heroRow.storage_key,
-      filename: heroRow.filename,
-    };
-  }
-
-  return {
-    hero,
-    media: (media ?? []) as MediaOption[],
+  type Row = {
+    role: PropertyMediaItem["role"];
+    sort_order: number;
+    media_assets:
+      | { id: string; storage_key: string; alt_text: string | null }
+      | null;
   };
+
+  return ((data as Row[] | null) ?? [])
+    .filter((r) => r.media_assets !== null)
+    .map((r) => ({
+      id: r.media_assets!.id,
+      storage_key: r.media_assets!.storage_key,
+      alt_text: r.media_assets!.alt_text,
+      role: r.role,
+      sort_order: r.sort_order,
+    }));
 }
 
 /**
@@ -132,10 +137,11 @@ async function withCurrentAgent(
 
 export default async function PropertyEditPage({ params }: PageProps) {
   const { id } = await params;
-  const [property, areas, heroAndMedia, activeAgents] = await Promise.all([
+  const [property, areas, developers, media, activeAgents] = await Promise.all([
     fetchPropertyForEdit(id),
     fetchAreas(),
-    fetchHeroAndMedia(id),
+    fetchDevelopers(),
+    fetchPropertyMedia(id),
     listActiveAgents(),
   ]);
   if (!property) notFound();
@@ -177,6 +183,8 @@ export default async function PropertyEditPage({ params }: PageProps) {
     listing_permit_expires_at: property.listing_permit_expires_at,
     dld_plot_number: property.dld_plot_number,
     area_id: property.area_id,
+    developer_id:
+      (property as { developer_id: string | null }).developer_id ?? "",
     amenities: property.amenities ?? [],
     slug: property.slug,
     meta_title: (seo.meta_title as string | null) ?? null,
@@ -206,16 +214,20 @@ export default async function PropertyEditPage({ params }: PageProps) {
       }
     : null;
 
-  const publishability = evaluatePublishability({
+  // Raw inputs for the publish gate. The PublishCard recomputes the checklist
+  // client-side from these + its live compliance state (compliance is omitted
+  // here — the card owns it).
+  const publishInput: PublishInput = {
     status: property.status,
-    has_hero: heroAndMedia.hero !== null,
+    has_hero: media.some((m) => m.role === "hero"),
+    has_developer: initial.developer_id !== "",
+    poa_optional: true,
     listing_permit_no: property.listing_permit_no,
     listing_permit_expires_at: property.listing_permit_expires_at,
     slug: property.slug,
     title: property.title,
     price_aed: Number(property.price_aed),
-    compliance,
-  });
+  };
 
   return (
     <CmsShell
@@ -259,16 +271,13 @@ export default async function PropertyEditPage({ params }: PageProps) {
               self={presenceSelf}
             />
           ) : null}
-          <HeroPicker
-            propertyId={property.id}
-            initial={heroAndMedia.hero}
-            media={heroAndMedia.media}
-          />
+          <PropertyMediaLibrary propertyId={property.id} initial={media} />
           <PropertyEditForm
             propertyId={property.id}
             initial={initial}
             reference={property.reference}
             areas={areas}
+            developers={developers}
             geo={geo}
             mapboxAvailable={isMapboxConfigured}
           />
@@ -283,8 +292,7 @@ export default async function PropertyEditPage({ params }: PageProps) {
             propertyId={property.id}
             status={property.status}
             compliance={compliance}
-            checks={publishability.checks}
-            publishable={publishability.ok}
+            input={publishInput}
           />
         </aside>
       </div>
