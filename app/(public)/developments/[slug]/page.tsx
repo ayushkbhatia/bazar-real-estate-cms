@@ -265,7 +265,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             href={`#${s.toLowerCase().replace(/\s+/g, "-")}`}
             className={`shrink-0 text-[13px] py-4 -mb-px border-b-2 ${
               i === 0
-                ? "text-bz-ink border-bz-ink font-medium"
+                ? "text-bz-teal border-bz-teal font-medium"
                 : "text-bz-muted border-transparent hover:text-bz-ink"
             }`}
           >

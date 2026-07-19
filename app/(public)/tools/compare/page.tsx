@@ -335,7 +335,7 @@ function PropertyCard({
     >
       {pickIndex === 0 ? (
         <div className="absolute top-2 left-2 z-10">
-          <span className="bg-bz-ink text-bz-bg text-[10px] uppercase tracking-wider font-medium rounded-sm px-1.5 py-1">
+          <span className="bg-bz-navy text-bz-bg text-[10px] uppercase tracking-wider font-medium rounded-sm px-1.5 py-1">
             Best fit · advisor pick
           </span>
         </div>
@@ -354,7 +354,7 @@ function PropertyCard({
       </div>
       <div className="p-4">
         <div
-          className="serif text-[20px]"
+          className="serif text-[20px] text-bz-navy"
           style={{ letterSpacing: "-0.01em" }}
         >
           {formatAed(property.price_aed)}

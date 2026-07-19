@@ -102,7 +102,7 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
         const base =
           "inline-flex items-center h-9 px-4 rounded-full border text-[13px] " +
           (i === 0
-            ? "bg-bz-ink text-bz-bg border-bz-ink"
+            ? "bg-bz-navy text-bz-bg border-bz-navy"
             : "bg-bz-surface text-bz-ink-2 border-bz-border");
         const href = p.chipHrefs?.[i];
         return href ? (
@@ -113,7 +113,7 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
               base +
               " transition-colors " +
               (i === 0
-                ? "hover:bg-bz-ink/90"
+                ? "hover:bg-bz-navy/90"
                 : "hover:border-bz-ink hover:text-bz-ink")
             }
           >

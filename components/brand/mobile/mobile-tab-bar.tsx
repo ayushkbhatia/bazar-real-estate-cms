@@ -42,7 +42,7 @@ export function MobileTabBar({
             <span
               className={cn(
                 "flex h-[26px] w-10 items-center justify-center rounded-full transition-colors",
-                t.isActive ? "bg-bz-ink text-bz-bg" : "text-bz-muted",
+                t.isActive ? "bg-bz-teal text-bz-bg" : "text-bz-muted",
               )}
             >
               <Icon className="size-[18px]" />
@@ -50,7 +50,7 @@ export function MobileTabBar({
             <span
               className={cn(
                 "text-[10px] font-medium",
-                t.isActive ? "text-bz-ink" : "text-bz-muted",
+                t.isActive ? "text-bz-teal" : "text-bz-muted",
               )}
             >
               {t.label}

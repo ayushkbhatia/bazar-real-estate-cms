@@ -24,7 +24,7 @@ export function LeadBand({
       <div className="grid overflow-hidden rounded-2xl border border-bz-border bg-bz-surface md:grid-cols-[1.05fr_1fr]">
         {/* Form */}
         <div className="p-6 md:p-14">
-          <Eyebrow className="text-bz-accent">{eyebrow}</Eyebrow>
+          <Eyebrow>{eyebrow}</Eyebrow>
           <h2
             className="serif mt-2 font-normal"
             style={{

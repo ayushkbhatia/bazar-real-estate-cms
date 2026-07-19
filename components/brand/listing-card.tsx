@@ -50,7 +50,7 @@ export type ListingCardProps = {
 };
 
 const badgeStyles: Record<NonNullable<ListingCardProps["badgeKind"]>, string> = {
-  ink: "bg-bz-ink text-bz-bg",
+  ink: "bg-bz-navy text-bz-bg",
   accent: "bg-bz-accent-soft text-bz-accent",
   success: "bg-[oklch(0.94_0.04_145)] text-[oklch(0.35_0.08_145)]",
   warn: "bg-[oklch(0.96_0.05_80)] text-[oklch(0.45_0.1_60)]",
@@ -120,7 +120,7 @@ function Media({
               diff.kind === "price-drop"
                 ? "bg-bz-accent text-bz-accent-fg"
                 : diff.kind === "just-listed"
-                  ? "bg-bz-ink text-bz-bg"
+                  ? "bg-bz-navy text-bz-bg"
                   : "bg-white/92 text-bz-ink",
             )}
           >
@@ -244,7 +244,7 @@ export function ListingCard({
             {title}
           </h3>
           <div className="flex justify-between items-baseline mt-1.5">
-            <div className="text-[19px] font-medium tracking-tight">
+            <div className="text-[19px] font-medium tracking-tight text-bz-navy">
               {price}
             </div>
             <div className="flex gap-3 text-[12px] text-bz-muted">
@@ -297,7 +297,7 @@ export function ListingCard({
               </span>
             </div>
           ) : null}
-          <div className="text-[19px] font-medium tracking-tight">{price}</div>
+          <div className="text-[19px] font-medium tracking-tight text-bz-navy">{price}</div>
           <div className="text-[14px] text-bz-ink-2">{title}</div>
           <div className="text-[12px] text-bz-muted">{location}</div>
           <div className="flex gap-3 mt-2 text-[12px] text-bz-muted">
@@ -333,7 +333,7 @@ export function ListingCard({
         diff={diff}
       />
       <div className="p-4 flex flex-col gap-2 flex-1">
-        <div className="text-[19px] font-medium tracking-tight">{price}</div>
+        <div className="text-[19px] font-medium tracking-tight text-bz-navy">{price}</div>
         <div className="text-[14px] text-bz-ink-2">{title}</div>
         <div className="text-[12px] text-bz-muted">{location}</div>
         <div className="flex gap-4 mt-auto pt-3 border-t border-bz-border text-bz-muted text-[12px]">

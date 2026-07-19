@@ -51,7 +51,7 @@ function HeroEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Eyebrow</span>
         <input
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.eyebrow ?? ""}
           onChange={(e) => onChange({ ...block, eyebrow: e.target.value || null })}
         />
@@ -59,7 +59,7 @@ function HeroEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Title</span>
         <input
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.title}
           onChange={(e) => onChange({ ...block, title: e.target.value })}
         />
@@ -68,7 +68,7 @@ function HeroEditor({
         <span className="text-bz-muted">Subtitle</span>
         <textarea
           rows={2}
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.subtitle ?? ""}
           onChange={(e) =>
             onChange({ ...block, subtitle: e.target.value || null })
@@ -79,7 +79,7 @@ function HeroEditor({
         <label className="flex flex-col gap-1 text-[12.5px]">
           <span className="text-bz-muted">CTA label</span>
           <input
-            className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+            className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
             value={block.cta?.label ?? ""}
             onChange={(e) =>
               onChange({
@@ -94,7 +94,7 @@ function HeroEditor({
         <label className="flex flex-col gap-1 text-[12.5px]">
           <span className="text-bz-muted">CTA href</span>
           <input
-            className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+            className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
             value={block.cta?.href ?? ""}
             onChange={(e) =>
               onChange({
@@ -110,7 +110,7 @@ function HeroEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Image placeholder label</span>
         <input
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           placeholder="e.g. mamsha · dusk"
           value={block.image?.label ?? ""}
           onChange={(e) =>
@@ -142,7 +142,7 @@ function StripEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Eyebrow</span>
         <input
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.eyebrow ?? ""}
           onChange={(e) =>
             onChange({ ...block, eyebrow: e.target.value || null })
@@ -152,7 +152,7 @@ function StripEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Heading</span>
         <input
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.heading}
           onChange={(e) => onChange({ ...block, heading: e.target.value })}
         />
@@ -161,7 +161,7 @@ function StripEditor({
         <span className="text-bz-muted">Body</span>
         <textarea
           rows={4}
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.body ?? ""}
           onChange={(e) =>
             onChange({ ...block, body: e.target.value || null })
@@ -171,7 +171,7 @@ function StripEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Alignment</span>
         <select
-          className="bz-field w-fit rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-fit rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.align}
           onChange={(e) =>
             onChange({ ...block, align: e.target.value as "left" | "center" })
@@ -197,7 +197,7 @@ function SplitEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Eyebrow</span>
         <input
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.eyebrow ?? ""}
           onChange={(e) =>
             onChange({ ...block, eyebrow: e.target.value || null })
@@ -207,7 +207,7 @@ function SplitEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Heading</span>
         <input
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.heading}
           onChange={(e) => onChange({ ...block, heading: e.target.value })}
         />
@@ -216,7 +216,7 @@ function SplitEditor({
         <span className="text-bz-muted">Body</span>
         <textarea
           rows={4}
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.body ?? ""}
           onChange={(e) =>
             onChange({ ...block, body: e.target.value || null })
@@ -226,7 +226,7 @@ function SplitEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Image label</span>
         <input
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.image?.label ?? ""}
           onChange={(e) =>
             onChange({
@@ -241,7 +241,7 @@ function SplitEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Image side</span>
         <select
-          className="bz-field w-fit rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-fit rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.image_side}
           onChange={(e) =>
             onChange({
@@ -294,7 +294,7 @@ function GridEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Heading (optional)</span>
         <input
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.heading ?? ""}
           onChange={(e) =>
             onChange({ ...block, heading: e.target.value || null })
@@ -321,14 +321,14 @@ function GridEditor({
               </button>
             </div>
             <input
-              className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2 text-[12.5px]"
+              className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent text-[12.5px]"
               placeholder="Title"
               value={item.title}
               onChange={(e) => setItem(idx, { title: e.target.value })}
             />
             <textarea
               rows={2}
-              className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2 text-[12.5px]"
+              className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent text-[12.5px]"
               placeholder="Body"
               value={item.body ?? ""}
               onChange={(e) =>
@@ -336,7 +336,7 @@ function GridEditor({
               }
             />
             <input
-              className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2 text-[12.5px]"
+              className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent text-[12.5px]"
               placeholder="Link href (optional, e.g. /services/buy)"
               value={item.href ?? ""}
               onChange={(e) =>
@@ -365,7 +365,7 @@ function BannerEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Title</span>
         <input
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.title}
           onChange={(e) => onChange({ ...block, title: e.target.value })}
         />
@@ -374,7 +374,7 @@ function BannerEditor({
         <span className="text-bz-muted">Body</span>
         <textarea
           rows={3}
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.body ?? ""}
           onChange={(e) =>
             onChange({ ...block, body: e.target.value || null })
@@ -385,7 +385,7 @@ function BannerEditor({
         <label className="flex flex-col gap-1 text-[12.5px]">
           <span className="text-bz-muted">CTA label</span>
           <input
-            className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+            className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
             value={block.cta?.label ?? ""}
             onChange={(e) =>
               onChange({
@@ -400,7 +400,7 @@ function BannerEditor({
         <label className="flex flex-col gap-1 text-[12.5px]">
           <span className="text-bz-muted">CTA href</span>
           <input
-            className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+            className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
             value={block.cta?.href ?? ""}
             onChange={(e) =>
               onChange({
@@ -416,7 +416,7 @@ function BannerEditor({
       <label className="flex flex-col gap-1 text-[12.5px]">
         <span className="text-bz-muted">Variant</span>
         <select
-          className="bz-field w-fit rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2"
+          className="bz-field w-fit rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent"
           value={block.variant}
           onChange={(e) =>
             onChange({

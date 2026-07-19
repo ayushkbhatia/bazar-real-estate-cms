@@ -95,7 +95,7 @@ export default async function InsightsCategoryPage({
       <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
         <Link
           href="/insights"
-          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
+          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
         >
           <ArrowLeft size={13} strokeWidth={1.8} />
           All insights

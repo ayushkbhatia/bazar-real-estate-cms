@@ -86,7 +86,7 @@ export function MapView({ pins, className }: Props) {
       const el = document.createElement("button");
       el.type = "button";
       el.className =
-        "h-7 px-2 rounded-full bg-[#1B1A17] text-white text-[12px] font-medium shadow-md whitespace-nowrap";
+        "h-7 px-2 rounded-full bg-bz-navy hover:bg-bz-teal transition-colors text-white text-[12px] font-medium shadow-md whitespace-nowrap";
       el.textContent = formatPriceAED(pin.price_aed);
       el.setAttribute("aria-label", `${pin.title} — ${formatPriceAED(pin.price_aed)}`);
 

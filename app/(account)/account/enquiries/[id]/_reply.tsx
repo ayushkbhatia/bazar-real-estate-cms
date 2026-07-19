@@ -62,7 +62,7 @@ export function ReplyComposer({
         onChange={(e) => setBody(e.target.value)}
         rows={4}
         placeholder="Send a follow-up to your advisor…"
-        className="w-full rounded-md border border-bz-border bg-bz-bg px-4 py-3 text-[14px] leading-relaxed resize-y focus:outline-none focus:border-bz-border-strong"
+        className="w-full rounded-md border border-bz-border bg-bz-bg px-4 py-3 text-[14px] leading-relaxed resize-y focus:outline-none focus:border-bz-accent"
         disabled={pending}
       />
       {error ? (

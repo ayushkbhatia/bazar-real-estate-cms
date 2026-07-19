@@ -27,7 +27,7 @@ function shellEmailHtml(body: string): string {
 <tr><td>
 <div style="font-family:Georgia,serif;font-style:italic;font-size:22px;letter-spacing:-0.01em;margin-bottom:24px">Bazar</div>
 ${body}
-<div style="margin-top:32px;padding-top:24px;border-top:1px solid #E5E5DF;font-size:12px;color:#7d8e7e">Bazar Real Estate Brokerage LLC · ORN 28041</div>
+<div style="margin-top:32px;padding-top:24px;border-top:1px solid #E5E5DF;font-size:12px;color:#99896e">Bazar Real Estate Brokerage LLC · ORN 28041</div>
 </td></tr></table></body></html>`;
 }
 

@@ -23,13 +23,13 @@ export function PricingComparableCallout({
       className="mt-3 rounded-md border px-4 py-3 flex items-start gap-3 text-[12.5px]"
       style={{
         background: under
-          ? "var(--bz-accent-soft, oklch(0.94 0.04 145))"
+          ? "var(--bz-accent-soft, oklch(0.945 0.022 222))"
           : "var(--bz-surface-2, oklch(0.95 0.005 80))",
         borderColor: under
-          ? "var(--bz-accent, oklch(0.42 0.06 145))"
+          ? "var(--bz-accent, #005777)"
           : "var(--bz-border, oklch(0.9 0.005 80))",
         color: under
-          ? "var(--bz-accent, oklch(0.42 0.06 145))"
+          ? "var(--bz-accent, #005777)"
           : "var(--bz-ink-2, oklch(0.3 0.005 80))",
       }}
     >

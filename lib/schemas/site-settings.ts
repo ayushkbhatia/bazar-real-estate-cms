@@ -26,7 +26,7 @@ export const ACCENT_TOKENS = ["moss", "rust", "sand", "ink"] as const;
 export type AccentToken = (typeof ACCENT_TOKENS)[number];
 
 export const ACCENT_TOKEN_HEX: Record<AccentToken, string> = {
-  moss: "#5a6b4a",
+  moss: "#005777",
   rust: "#a85a3a",
   sand: "#c8a878",
   ink: "#1a1a1a",

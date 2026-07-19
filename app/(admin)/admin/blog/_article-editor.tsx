@@ -48,7 +48,7 @@ function ToolbarBtn({
       className={cn(
         "h-7 px-2 rounded text-[12.5px] flex items-center gap-1.5 transition-colors",
         active
-          ? "bg-bz-ink text-bz-bg"
+          ? "bg-bz-navy text-bz-bg"
           : "text-bz-ink-2 hover:bg-bz-surface-2",
         disabled && "opacity-40 cursor-not-allowed",
       )}

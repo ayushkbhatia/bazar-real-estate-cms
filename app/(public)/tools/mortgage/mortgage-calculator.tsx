@@ -272,7 +272,7 @@ export function MortgageCalculator() {
                   className={cn(
                     "flex-1 h-10 rounded text-[13px] border transition-colors",
                     active
-                      ? "bg-bz-ink text-bz-bg border-bz-ink"
+                      ? "bg-bz-navy text-bz-bg border-bz-navy"
                       : "bg-bz-surface-2 text-bz-ink-2 border-transparent hover:border-bz-border-strong",
                   )}
                 >
@@ -302,7 +302,7 @@ export function MortgageCalculator() {
                   className={cn(
                     "flex-1 h-10 rounded text-[11.5px] border transition-colors px-1",
                     active
-                      ? "bg-bz-ink text-bz-bg border-bz-ink"
+                      ? "bg-bz-navy text-bz-bg border-bz-navy"
                       : "bg-bz-surface-2 text-bz-ink-2 border-transparent hover:border-bz-border-strong",
                   )}
                 >
@@ -430,7 +430,7 @@ export function MortgageCalculator() {
                   Total cash needed at close
                 </td>
                 <td
-                  className="py-3 px-2 text-right mono text-[16px] font-medium"
+                  className="py-3 px-2 text-right mono text-[16px] font-medium text-bz-navy"
                   data-testid="cash-to-close-total"
                 >
                   {formatAed(closing.totalAed)}
@@ -485,7 +485,7 @@ export function MortgageCalculator() {
                 className={cn(
                   "rounded-lg p-5",
                   s.active
-                    ? "bg-bz-ink text-white"
+                    ? "bg-bz-navy text-white"
                     : "bg-bz-surface border border-bz-border text-bz-ink",
                 )}
               >
@@ -501,7 +501,7 @@ export function MortgageCalculator() {
                   {s.sub}
                 </p>
                 <div
-                  className="serif text-[24px] mt-3.5"
+                  className={cn("serif text-[24px] mt-3.5", !s.active && "text-bz-navy")}
                   style={{ letterSpacing: "-0.015em" }}
                 >
                   {formatAed(s.monthly)}/mo

@@ -52,7 +52,7 @@ export function NearbyMap({ pins, className }: Props) {
       // Add pins
       for (const pin of pins) {
         const marker = new maplibregl.Marker({
-          color: pin.isPrimary ? "var(--bz-accent, #4B5A4C)" : "#7d8e7e",
+          color: pin.isPrimary ? "var(--bz-accent, #005777)" : "var(--bz-navy, #003452)",
         })
           .setLngLat([pin.lng, pin.lat])
           .setPopup(
@@ -61,8 +61,8 @@ export function NearbyMap({ pins, className }: Props) {
                 <strong>${escapeHtml(pin.name)}</strong>
                 ${
                   pin.isPrimary
-                    ? '<br/><span style="color:#7d8e7e;font-size:10.5px;">This development</span>'
-                    : `<br/><a href="/developments/${escapeHtml(pin.slug)}" style="color:#4B5A4C;font-size:11px;text-decoration:underline;">View project →</a>`
+                    ? '<br/><span style="color:#99896e;font-size:10.5px;">This development</span>'
+                    : `<br/><a href="/developments/${escapeHtml(pin.slug)}" style="color:#005777;font-size:11px;text-decoration:underline;">View project →</a>`
                 }
               </div>`,
             ),

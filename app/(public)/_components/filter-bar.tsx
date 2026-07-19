@@ -184,7 +184,7 @@ export function FilterBar({ mode, areas }: Props) {
                 "h-9 px-2.5 rounded text-[12.5px] font-medium border transition-colors",
                 n === 0 ? "min-w-[58px]" : "min-w-[40px]",
                 active
-                  ? "bg-bz-ink text-bz-bg border-bz-ink"
+                  ? "bg-bz-navy text-bz-bg border-bz-navy"
                   : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
               )}
               aria-pressed={active}
@@ -212,7 +212,7 @@ export function FilterBar({ mode, areas }: Props) {
               className={cn(
                 "h-9 min-w-[40px] px-2 rounded text-[12.5px] font-medium border transition-colors",
                 active
-                  ? "bg-bz-ink text-bz-bg border-bz-ink"
+                  ? "bg-bz-navy text-bz-bg border-bz-navy"
                   : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
               )}
               aria-pressed={active}

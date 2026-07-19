@@ -68,7 +68,7 @@ export function ArticleToc() {
               href={`#${e.id}`}
               className={
                 activeId === e.id
-                  ? "text-bz-ink font-medium"
+                  ? "text-bz-accent font-medium"
                   : "text-bz-muted hover:text-bz-ink-2 transition-colors"
               }
             >

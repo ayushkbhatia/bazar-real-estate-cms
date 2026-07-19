@@ -60,7 +60,7 @@ export function PagesSiteTree({
                       className={cn(
                         "flex items-center gap-2 px-2 py-1.5 rounded text-[12.5px] transition-colors",
                         active
-                          ? "bg-bz-ink text-bz-bg"
+                          ? "bg-bz-navy text-bz-bg"
                           : "text-bz-ink-2 hover:bg-bz-surface-2",
                       )}
                     >

@@ -64,7 +64,7 @@ export function SettingsTabs() {
                     className={cn(
                       "flex items-center justify-between px-3 py-1.5 rounded text-[13px] transition-colors",
                       isActive
-                        ? "bg-bz-ink text-bz-bg font-medium"
+                        ? "bg-bz-navy text-bz-bg font-medium"
                         : "text-bz-ink-2 hover:bg-bz-surface-2",
                     )}
                   >

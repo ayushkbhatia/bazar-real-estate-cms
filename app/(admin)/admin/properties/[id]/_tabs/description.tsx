@@ -129,7 +129,7 @@ function ToolbarBtn({
       title={label}
       className={
         active
-          ? "w-7 h-7 rounded bg-bz-ink text-bz-bg flex items-center justify-center"
+          ? "w-7 h-7 rounded bg-bz-navy text-bz-bg flex items-center justify-center"
           : "w-7 h-7 rounded text-bz-ink-2 hover:bg-bz-bg flex items-center justify-center"
       }
     >

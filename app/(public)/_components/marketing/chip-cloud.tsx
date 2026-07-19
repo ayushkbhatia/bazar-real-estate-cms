@@ -34,7 +34,7 @@ export function ChipCloud({ chips, icon = MapPin, cta, ctaHref }: Props) {
             </>
           );
           const cls =
-            "inline-flex items-center gap-2 h-10 px-4 rounded-full bg-bz-surface border border-bz-border text-[14px] hover:border-bz-ink transition-colors";
+            "inline-flex items-center gap-2 h-10 px-4 rounded-full bg-bz-surface border border-bz-border text-[14px] hover:border-bz-teal transition-colors";
           return href ? (
             <Link key={label} href={href} className={cls}>
               {inner}

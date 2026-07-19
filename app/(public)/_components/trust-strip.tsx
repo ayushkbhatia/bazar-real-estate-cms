@@ -34,7 +34,7 @@ export async function TrustStrip() {
                 key={i}
                 size={14}
                 strokeWidth={0}
-                fill={i < stars ? "var(--bz-accent, #4B5A4C)" : "var(--bz-border)"}
+                fill={i < stars ? "var(--bz-accent, #005777)" : "var(--bz-border)"}
               />
             ))}
           </div>

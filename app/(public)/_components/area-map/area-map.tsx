@@ -57,8 +57,8 @@ const AREA_ZOOM = 12.9;
 const AREA_DEEP_ZOOM = 13.8;
 const DETAIL_ZOOM = 13.5;
 
-// WebGL paint can't parse oklch() tokens — resolve the moss accent to hex.
-const ACCENT_HEX = "#4B5A4C";
+// WebGL paint can't parse oklch() tokens — resolve the teal accent to hex.
+const ACCENT_HEX = "#005777";
 
 type Props = {
   areas: AreaPin[];

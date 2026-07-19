@@ -90,7 +90,7 @@ function ScopeTabs({
           className={cn(
             "px-3 h-8 inline-flex items-center rounded text-[13px] transition-colors",
             current === s.value
-              ? "bg-bz-ink text-bz-bg"
+              ? "bg-bz-navy text-bz-bg"
               : "text-bz-ink-2 hover:bg-bz-surface-2",
           )}
         >
@@ -202,7 +202,7 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
                           ● {row.temperature}
                         </span>
                         {row.unread_count > 0 ? (
-                          <span className="inline-flex items-center h-[20px] px-1.5 rounded-full text-[10.5px] bg-bz-ink text-bz-bg">
+                          <span className="inline-flex items-center h-[20px] px-1.5 rounded-full text-[10.5px] bg-bz-navy text-bz-bg">
                             {row.unread_count} unread
                           </span>
                         ) : null}
@@ -258,7 +258,7 @@ function ViewToggle({ view }: { view: "list" | "kanban" }) {
         className={cn(
           "h-full px-3 inline-flex items-center gap-1.5 transition-colors",
           view === "list"
-            ? "bg-bz-ink text-bz-bg"
+            ? "bg-bz-navy text-bz-bg"
             : "text-bz-ink-2 hover:bg-bz-surface-2",
         )}
         aria-pressed={view === "list"}
@@ -270,7 +270,7 @@ function ViewToggle({ view }: { view: "list" | "kanban" }) {
         className={cn(
           "h-full px-3 inline-flex items-center gap-1.5 transition-colors",
           view === "kanban"
-            ? "bg-bz-ink text-bz-bg"
+            ? "bg-bz-navy text-bz-bg"
             : "text-bz-ink-2 hover:bg-bz-surface-2",
         )}
         aria-pressed={view === "kanban"}

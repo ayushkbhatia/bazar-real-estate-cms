@@ -62,7 +62,7 @@ export default async function PropertyOpenGraph({
                 width: 540,
                 height: 630,
                 background:
-                  "linear-gradient(135deg, #2b5640 0%, #13110f 100%)",
+                  "linear-gradient(135deg, #003452 0%, #13110f 100%)",
               }}
             />
           )}

@@ -177,7 +177,7 @@ export function PropertyEditForm({
   };
 
   const fieldClass =
-    "border border-bz-border rounded p-2 text-[14px] bg-bz-surface focus:border-bz-ink-2 outline-none";
+    "border border-bz-border rounded p-2 text-[14px] bg-bz-surface focus:border-bz-accent outline-none";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">

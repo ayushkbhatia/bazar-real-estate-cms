@@ -64,11 +64,11 @@ export function SaveButton({
       aria-pressed={saved}
       aria-label={saved ? "Remove from saved" : "Save property"}
       className={cn(
-        "absolute top-3 right-3 z-10 rounded-full bg-white/92 flex items-center justify-center transition-colors",
+        "absolute top-3 right-3 z-10 rounded-full flex items-center justify-center transition-colors",
         dim,
         saved
-          ? "text-bz-accent hover:text-bz-accent-hover"
-          : "text-bz-ink-2 hover:text-bz-accent",
+          ? "bg-bz-accent-soft border border-bz-accent text-bz-accent hover:text-bz-accent-hover"
+          : "bg-white/92 text-bz-ink-2 hover:text-bz-accent",
         className,
       )}
     >

@@ -37,7 +37,7 @@ export function ResubscribeForm({ defaultEmail }: Props) {
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="bz-field flex-1 h-9 px-3 rounded border border-bz-border bg-bz-bg text-[14px] outline-none focus:border-bz-ink-2"
+        className="bz-field flex-1 h-9 px-3 rounded border border-bz-border bg-bz-bg text-[14px] outline-none focus:border-bz-accent"
         required
       />
       <Button type="submit" size="sm" disabled={pending}>

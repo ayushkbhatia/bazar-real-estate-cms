@@ -54,7 +54,7 @@ export function MediaFolderRail({
             className={cn(
               "flex items-center justify-between px-3 py-2 rounded text-[13px] transition-colors",
               isActive
-                ? "bg-bz-ink text-bz-bg"
+                ? "bg-bz-navy text-bz-bg"
                 : "text-bz-ink-2 hover:bg-bz-surface-2",
             )}
           >

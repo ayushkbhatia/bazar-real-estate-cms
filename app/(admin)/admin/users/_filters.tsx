@@ -42,7 +42,7 @@ export function UserFilters({ initial }: { initial: FilterState }) {
           type="search"
           defaultValue={initial.q ?? ""}
           placeholder="Search name or email"
-          className="h-8 pl-7 pr-2.5 bg-bz-surface border border-bz-border rounded text-[12.5px] outline-none focus:border-bz-ink-2 w-[220px]"
+          className="h-8 pl-7 pr-2.5 bg-bz-surface border border-bz-border rounded text-[12.5px] outline-none focus:border-bz-accent w-[220px]"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               setParam("q", (e.currentTarget.value ?? "").trim() || null);
@@ -115,7 +115,7 @@ function FilterGroup<T extends string>({
             className={cn(
               "h-full px-2.5 transition-colors",
               active
-                ? "bg-bz-ink text-bz-bg"
+                ? "bg-bz-navy text-bz-bg"
                 : "text-bz-ink-2 hover:bg-bz-surface-2",
             )}
             aria-pressed={active}

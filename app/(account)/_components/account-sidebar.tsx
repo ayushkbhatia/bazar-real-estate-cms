@@ -118,7 +118,7 @@ export function AccountSidebar() {
                   className={cn(
                     "inline-flex items-center gap-2.5 h-9 px-3 rounded-md text-[13.5px] transition-colors",
                     isActive
-                      ? "bg-bz-bg text-bz-ink font-medium"
+                      ? "bg-bz-bg text-bz-teal font-medium"
                       : "text-bz-ink-2 hover:bg-bz-bg/60 hover:text-bz-ink",
                   )}
                 >

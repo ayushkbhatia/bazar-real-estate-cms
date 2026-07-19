@@ -68,7 +68,7 @@ export function MegamenuTile({ tile, className }: Props) {
       {tile.variant === "dark" ? (
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-br from-black/55 via-black/30 to-black/55"
+          className="absolute inset-0 bg-gradient-to-br from-bz-navy/55 via-bz-navy/30 to-bz-navy/55"
         />
       ) : null}
 

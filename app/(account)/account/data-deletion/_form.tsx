@@ -51,7 +51,7 @@ export function RequestDeletionForm() {
           type="text"
           value={confirmInput}
           onChange={(e) => setConfirmInput(e.target.value)}
-          className="bz-field h-9 px-3 rounded border border-bz-border bg-bz-bg text-[14px] mono outline-none focus:border-bz-ink-2 max-w-[200px]"
+          className="bz-field h-9 px-3 rounded border border-bz-border bg-bz-bg text-[14px] mono outline-none focus:border-bz-accent max-w-[200px]"
           autoComplete="off"
           aria-describedby="confirm-delete-hint"
         />

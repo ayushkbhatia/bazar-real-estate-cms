@@ -75,7 +75,7 @@ export function GuideShell({ eyebrow, title, intro, body, children }: Props) {
                     className="flex gap-3 text-[15.5px] text-bz-ink leading-[1.55]"
                   >
                     <span
-                      className="mt-2 h-[5px] w-[5px] rounded-full bg-bz-accent shrink-0"
+                      className="mt-2 h-[5px] w-[5px] rounded-full bg-bz-taupe shrink-0"
                       aria-hidden
                     />
                     <span>{b}</span>
@@ -93,7 +93,7 @@ export function GuideShell({ eyebrow, title, intro, body, children }: Props) {
                     <Check
                       size={16}
                       strokeWidth={2}
-                      className="text-bz-accent mt-0.5 shrink-0"
+                      className="text-bz-taupe mt-0.5 shrink-0"
                     />
                     <span>{c}</span>
                   </li>

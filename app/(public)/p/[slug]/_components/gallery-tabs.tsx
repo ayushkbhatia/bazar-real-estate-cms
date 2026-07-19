@@ -63,7 +63,7 @@ export function GalleryTabs({
               className={cn(
                 "py-2.5 inline-flex items-center gap-1.5 text-[13.5px] border-b-2 -mb-px transition-colors",
                 isActive
-                  ? "border-bz-ink text-bz-ink"
+                  ? "border-bz-teal text-bz-teal"
                   : "border-transparent text-bz-muted hover:text-bz-ink-2",
               )}
             >

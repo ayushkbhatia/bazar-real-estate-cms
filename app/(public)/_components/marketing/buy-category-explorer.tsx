@@ -65,8 +65,8 @@ export function HeroCategoryChips({
             className={
               "inline-flex items-center h-9 px-4 rounded-full border text-[13px] transition-colors " +
               (on
-                ? "bg-bz-ink text-bz-bg border-bz-ink"
-                : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-ink")
+                ? "bg-bz-navy text-bz-bg border-bz-navy"
+                : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-teal")
             }
           >
             {c.label}

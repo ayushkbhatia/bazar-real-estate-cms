@@ -159,7 +159,7 @@ export function ValuationReviewForm({
             disabled={isClosed || pending}
             placeholder="Briefly explain how you priced it and what would change the number."
             className={cn(
-              "mt-1.5 w-full border border-bz-border rounded p-2 text-[13.5px] bg-bz-surface focus:border-bz-ink-2 outline-none resize-y",
+              "mt-1.5 w-full border border-bz-border rounded p-2 text-[13.5px] bg-bz-surface focus:border-bz-accent outline-none resize-y",
               isClosed && "opacity-60",
             )}
             data-testid="advisor-notes"

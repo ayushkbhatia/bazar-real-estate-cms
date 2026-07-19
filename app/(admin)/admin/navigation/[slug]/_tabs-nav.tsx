@@ -26,7 +26,7 @@ export function MegamenuTabsNav({ tabs, activeSlug }: Props) {
             className={cn(
               "shrink-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-[13px] transition-colors",
               isActive
-                ? "bg-bz-ink text-bz-bg"
+                ? "bg-bz-navy text-bz-bg"
                 : "text-bz-ink-2 hover:bg-bz-surface-2",
             )}
           >

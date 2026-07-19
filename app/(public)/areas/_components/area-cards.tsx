@@ -55,7 +55,7 @@ export async function AreaCards() {
               label={c.slug}
               className="absolute inset-0 h-full w-full"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-bz-navy/75 via-bz-navy/10 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-4 text-white md:p-5">
               <div
                 className="serif text-[20px] leading-tight md:text-[21px]"

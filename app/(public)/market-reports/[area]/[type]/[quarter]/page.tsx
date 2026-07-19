@@ -96,17 +96,17 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
 
       {/* Breadcrumb */}
       <div className="px-4 md:px-12 pt-6 text-[12px] text-bz-muted flex flex-wrap items-center gap-2">
-        <Link href="/market-reports" className="hover:text-bz-ink">
+        <Link href="/market-reports" className="text-bz-teal hover:text-bz-navy">
           Market reports
         </Link>
         <span>›</span>
-        <Link href={`/areas/${snapshot.area_slug}`} className="hover:text-bz-ink">
+        <Link href={`/areas/${snapshot.area_slug}`} className="text-bz-teal hover:text-bz-navy">
           {snapshot.area_name}
         </Link>
         <span>›</span>
-        <span className="text-bz-ink-2">{propertyTypeLabel(type)}s</span>
+        <span className="text-bz-navy">{propertyTypeLabel(type)}s</span>
         <span>›</span>
-        <span className="text-bz-ink-2">{quarterLabel(quarter)}</span>
+        <span className="text-bz-navy">{quarterLabel(quarter)}</span>
         <div className="ml-auto">
           <ReportDownload
             area_slug={snapshot.area_slug}

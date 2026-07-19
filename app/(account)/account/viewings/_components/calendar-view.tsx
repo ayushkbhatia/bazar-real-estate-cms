@@ -156,7 +156,7 @@ export function ViewingsCalendarView({
                           : v.status === "cancelled" ||
                               v.status === "no_show"
                             ? "bg-bz-surface-2 text-bz-muted line-through"
-                            : "bg-bz-ink text-bz-bg",
+                            : "bg-bz-navy text-bz-bg",
                       )}
                       title={
                         v.properties?.title ?? "Viewing"

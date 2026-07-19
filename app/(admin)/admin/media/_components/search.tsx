@@ -38,7 +38,7 @@ export function MediaSearchInput() {
         onChange={(e) => setQ(e.target.value)}
         placeholder="Filename or alt text…"
         disabled={pending}
-        className="w-full h-9 pl-9 pr-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-border-strong"
+        className="w-full h-9 pl-9 pr-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-accent"
       />
     </form>
   );

@@ -50,7 +50,7 @@ export function SavedTabs({
               className={cn(
                 "py-3 inline-flex items-center gap-2 text-[13.5px] border-b-2 -mb-px transition-colors",
                 active
-                  ? "border-bz-ink text-bz-ink"
+                  ? "border-bz-teal text-bz-teal"
                   : "border-transparent text-bz-muted hover:text-bz-ink-2",
               )}
             >
@@ -59,7 +59,7 @@ export function SavedTabs({
                 className={cn(
                   "mono text-[11px] px-1.5 rounded",
                   active
-                    ? "bg-bz-ink text-bz-bg"
+                    ? "bg-bz-navy text-bz-bg"
                     : "bg-bz-surface-2 text-bz-muted",
                 )}
               >

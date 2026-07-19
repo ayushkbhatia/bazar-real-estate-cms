@@ -96,7 +96,7 @@ export function PublicMegaNav({ data, footerSlot }: Props) {
                           className={cn(
                             "px-3 py-2 text-[13.5px] rounded-md transition-colors hover:bg-bz-surface-2",
                             active
-                              ? "text-bz-ink"
+                              ? "text-bz-teal"
                               : "text-bz-ink-2 hover:text-bz-ink",
                           )}
                         >
@@ -114,7 +114,7 @@ export function PublicMegaNav({ data, footerSlot }: Props) {
                     <NavigationMenuTrigger
                       className={cn(
                         "h-9 px-3 text-[13.5px] font-normal bg-transparent hover:bg-bz-surface-2 data-[state=open]:bg-bz-surface-2",
-                        active ? "text-bz-ink" : "text-bz-ink-2",
+                        active ? "text-bz-teal" : "text-bz-ink-2",
                       )}
                     >
                       {tab.label}

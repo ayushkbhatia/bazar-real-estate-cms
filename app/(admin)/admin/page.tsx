@@ -209,7 +209,7 @@ export default async function AdminDashboardPage() {
               <>
                 <div className="text-[12px] text-bz-muted">{kpi.label}</div>
                 <div
-                  className="text-[28px] font-medium mt-1"
+                  className="text-[28px] font-medium mt-1 text-bz-navy"
                   style={{ letterSpacing: "-0.02em" }}
                 >
                   {kpi.value}

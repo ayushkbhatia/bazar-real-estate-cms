@@ -61,7 +61,7 @@ export function CommuteTimeTool() {
                 onClick={() => setMinutes(m)}
                 className={
                   minutes === m
-                    ? "h-7 px-2.5 rounded text-[12px] bg-bz-ink text-bz-bg font-medium"
+                    ? "h-7 px-2.5 rounded text-[12px] bg-bz-navy text-bz-bg font-medium"
                     : "h-7 px-2.5 rounded text-[12px] text-bz-ink-2 hover:text-bz-ink"
                 }
               >

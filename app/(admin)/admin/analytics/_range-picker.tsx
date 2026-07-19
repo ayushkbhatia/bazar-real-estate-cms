@@ -36,7 +36,7 @@ export function AnalyticsRangePicker({
             className={cn(
               "h-full px-3 transition-colors",
               active
-                ? "bg-bz-ink text-bz-bg"
+                ? "bg-bz-navy text-bz-bg"
                 : "text-bz-ink-2 hover:bg-bz-surface-2",
             )}
             aria-pressed={active}

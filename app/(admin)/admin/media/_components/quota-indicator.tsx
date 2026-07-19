@@ -16,7 +16,7 @@ export function MediaQuotaIndicator({
   const tone =
     pct < 0.6 ? "ok" : pct < 0.85 ? "warn" : "danger";
   const color = {
-    ok: "var(--bz-accent, #4a6c4a)",
+    ok: "var(--bz-accent, #005777)",
     warn: "var(--bz-warning, #b58a30)",
     danger: "var(--bz-danger, #8c2b2b)",
   }[tone];

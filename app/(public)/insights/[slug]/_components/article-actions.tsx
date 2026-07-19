@@ -91,7 +91,7 @@ function Btn({
       aria-pressed={pressed}
       className={
         pressed
-          ? "inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-bz-ink text-bz-bg text-[12px]"
+          ? "inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-bz-accent-soft border border-bz-accent text-bz-accent text-[12px]"
           : "inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-bz-border bg-bz-bg text-[12px] text-bz-ink-2 hover:border-bz-border-strong transition-colors"
       }
     >

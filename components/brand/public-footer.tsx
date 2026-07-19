@@ -66,7 +66,7 @@ export function PublicFooter() {
                 href={s.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full border border-[oklch(0.3_0_0)] px-3 py-1.5 text-[11.5px] text-[oklch(0.8_0.005_80)] transition-colors hover:border-white hover:text-white"
+                className="rounded-full border border-[oklch(0.3_0_0)] px-3 py-1.5 text-[11.5px] text-[oklch(0.8_0.005_80)] transition-colors hover:border-bz-teal hover:text-white"
               >
                 {s.label}
               </a>
@@ -77,7 +77,7 @@ export function PublicFooter() {
         {/* Link columns */}
         {COLUMNS.map((col) => (
           <div key={col.title}>
-            <h4 className="mb-4 text-[12px] font-medium uppercase tracking-wider text-[oklch(0.7_0.005_80)]">
+            <h4 className="mb-4 text-[12px] font-medium uppercase tracking-wider text-bz-taupe">
               {col.title}
             </h4>
             <ul className="flex flex-col gap-2.5 text-[13.5px]">
@@ -97,7 +97,7 @@ export function PublicFooter() {
 
         {/* Popular areas */}
         <div>
-          <h4 className="mb-4 text-[12px] font-medium uppercase tracking-wider text-[oklch(0.7_0.005_80)]">
+          <h4 className="mb-4 text-[12px] font-medium uppercase tracking-wider text-bz-taupe">
             Popular areas
           </h4>
           <ul className="flex flex-col gap-2.5 text-[13.5px]">
@@ -116,7 +116,7 @@ export function PublicFooter() {
 
         {/* Contact */}
         <div className="col-span-2 md:col-span-1">
-          <h4 className="mb-4 text-[12px] font-medium uppercase tracking-wider text-[oklch(0.7_0.005_80)]">
+          <h4 className="mb-4 text-[12px] font-medium uppercase tracking-wider text-bz-taupe">
             Contact
           </h4>
           <ul className="flex flex-col gap-4 text-[13.5px]">

@@ -31,7 +31,7 @@ export function AreaChips({
             className={[
               "inline-flex h-[38px] items-center gap-2 rounded-full border px-4 text-sm transition-colors",
               active
-                ? "border-bz-ink bg-bz-ink text-bz-bg"
+                ? "border-bz-navy bg-bz-navy text-bz-bg"
                 : "border-bz-border-strong bg-bz-surface text-bz-ink-2 hover:bg-bz-surface-2",
             ].join(" ")}
           >

@@ -23,7 +23,7 @@ export function DashboardKpiTiles({ kpis }: { kpis: Kpi[] }) {
               {kpi.label}
             </div>
             <div
-              className="text-[26px] font-medium mt-1 leading-none"
+              className="text-[26px] font-medium mt-1 leading-none text-bz-navy"
               style={{ letterSpacing: "-0.02em" }}
             >
               {kpi.value}

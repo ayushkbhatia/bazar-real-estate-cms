@@ -22,11 +22,11 @@ function shell(bodyHtml: string): string {
 <body style="margin:0;padding:0;background:#FAFAF6;color:#1B1A17;font-family:'Geist',ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55">
   <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width:540px;margin:0 auto;padding:24px">
     <tr><td>
-      <div style="font-family:Georgia,serif;font-style:italic;font-size:22px;letter-spacing:-0.01em;margin-bottom:24px;color:#1B1A17">Bazar <span style="font-family:'Geist',sans-serif;font-style:normal;font-size:12px;letter-spacing:0.05em;color:#7d8e7e">· Abu Dhabi</span></div>
+      <div style="font-family:Georgia,serif;font-style:italic;font-size:22px;letter-spacing:-0.01em;margin-bottom:24px;color:#1B1A17">Bazar <span style="font-family:'Geist',sans-serif;font-style:normal;font-size:12px;letter-spacing:0.05em;color:#99896e">· Abu Dhabi</span></div>
       ${bodyHtml}
-      <div style="margin-top:32px;padding-top:24px;border-top:1px solid #E5E5DF;font-size:12px;color:#7d8e7e;line-height:1.5">
+      <div style="margin-top:32px;padding-top:24px;border-top:1px solid #E5E5DF;font-size:12px;color:#99896e;line-height:1.5">
         Bazar Real Estate Brokerage LLC · ORN 28041 · Abu Dhabi, UAE<br>
-        <a href="${siteUrl()}" style="color:#7d8e7e">bazar.ae</a>
+        <a href="${siteUrl()}" style="color:#99896e">bazar.ae</a>
       </div>
     </td></tr>
   </table>
@@ -61,7 +61,7 @@ export function enquiryReceivedTemplate(opts: {
     <p>Thank you for getting in touch with Bazar.</p>
     ${refLine ? `<p style="font-size:13px;color:#5a5a55;margin-top:8px">${escape(refLine)}</p>` : ""}
     <p>One of our advisors will reach out within <strong>two hours during business hours</strong>, and by next morning otherwise.</p>
-    <p style="margin-top:20px;padding:12px 16px;background:#fff;border-left:3px solid #4B5A4C;font-style:italic;color:#32312d">${escape(opts.message).replace(/\n/g, "<br>")}</p>
+    <p style="margin-top:20px;padding:12px 16px;background:#fff;border-left:3px solid #005777;font-style:italic;color:#32312d">${escape(opts.message).replace(/\n/g, "<br>")}</p>
   `);
 
   return { subject, text, html };
@@ -130,7 +130,7 @@ export function valuationReceivedTemplate(opts: {
     <p>Hello ${escape(opts.name)},</p>
     <p>Thanks for sharing the details on <strong>${escape(propertyLine)}</strong>.</p>
     <div style="margin:24px 0;padding:20px 22px;background:#fff;border:1px solid #E5E5DF;border-radius:8px">
-      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#7d8e7e">Instant range</div>
+      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#99896e">Instant range</div>
       <div style="font-family:Georgia,serif;font-style:italic;font-size:30px;letter-spacing:-0.02em;color:#1B1A17;margin-top:6px">
         ${escape(formatAedShort(opts.estimateLowAed))} – ${escape(formatAedShort(opts.estimateHighAed))}
       </div>
@@ -185,22 +185,22 @@ export function valuationReportTemplate(opts: {
     <p>Hello ${escape(opts.name)},</p>
     <p>Here is the refined valuation for <strong>${escape(propertyLine)}</strong>.</p>
     <div style="margin:24px 0;padding:24px;background:#1B1A17;border-radius:10px;color:#fff">
-      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#a8b2a4">Refined valuation</div>
+      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#b0a48b">Refined valuation</div>
       <div style="font-family:Georgia,serif;font-style:italic;font-size:44px;line-height:1.05;letter-spacing:-0.025em;margin-top:8px">
         ${escape(formatAedShort(opts.finalEstimateAed))}
       </div>
       ${
         opts.rangeLowAed != null && opts.rangeHighAed != null
-          ? `<div style="font-size:12px;color:#a8b2a4;margin-top:8px">Initial instant range ${escape(formatAedShort(opts.rangeLowAed))}–${escape(formatAedShort(opts.rangeHighAed))}</div>`
+          ? `<div style="font-size:12px;color:#b0a48b;margin-top:8px">Initial instant range ${escape(formatAedShort(opts.rangeLowAed))}–${escape(formatAedShort(opts.rangeHighAed))}</div>`
           : ""
       }
     </div>
     ${
       opts.advisorNotes
-        ? `<div style="margin:20px 0;padding:16px 18px;background:#fff;border-left:3px solid #4B5A4C;color:#32312d;font-style:italic;white-space:pre-line">${escape(opts.advisorNotes)}</div>`
+        ? `<div style="margin:20px 0;padding:16px 18px;background:#fff;border-left:3px solid #005777;color:#32312d;font-style:italic;white-space:pre-line">${escape(opts.advisorNotes)}</div>`
         : ""
     }
-    <p>If you&rsquo;d like to discuss the figure or what a listing would look like, just reply to this email or book a call at <a href="${siteUrl()}/contact" style="color:#4B5A4C">${siteUrl()}/contact</a>.</p>
+    <p>If you&rsquo;d like to discuss the figure or what a listing would look like, just reply to this email or book a call at <a href="${siteUrl()}/contact" style="color:#005777">${siteUrl()}/contact</a>.</p>
     <p style="margin-top:24px;color:#5a5a55">${escape(sig)}</p>
   `);
 
@@ -352,7 +352,7 @@ export function dealStageChangeTemplate(
     }
     ${
       dealUrl
-        ? `<p style="margin-top:18px;font-size:13px"><a href="${dealUrl}" style="color:#4B5A4C">Open the deal file →</a></p>`
+        ? `<p style="margin-top:18px;font-size:13px"><a href="${dealUrl}" style="color:#005777">Open the deal file →</a></p>`
         : ""
     }
   `);
@@ -391,7 +391,7 @@ export function enquiryEscalationTemplate(opts: {
     <p>An enquiry from <strong>${escape(opts.leadName)}</strong> has been waiting <strong>${opts.minutesElapsed} minutes</strong> without an assigned advisor.</p>
     ${opts.propertyReference ? `<p style="font-size:13px;color:#5a5a55">Property: <span style="font-family:monospace">${escape(opts.propertyReference)}</span></p>` : ""}
     <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#B33A2A;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open enquiry</a></p>
-    <p style="margin-top:18px;font-size:12px;color:#7d8e7e">Bazar lead engine</p>
+    <p style="margin-top:18px;font-size:12px;color:#99896e">Bazar lead engine</p>
   `);
 
   return { subject, text, html };
@@ -421,7 +421,7 @@ export function valuationNurtureDay7Template(opts: {
     <p>Hi ${escape(opts.name)},</p>
     <p>It's been a week since we sent your Bazar valuation. ${escape(estLine)}</p>
     <p>If you'd like to talk through next steps — listing strategy, targeted off-market introductions, or a re-cut at a different price point — reply to this thread.</p>
-    <p style="margin-top:20px;font-size:13px"><a href="${url}" style="color:#4B5A4C">Open your Bazar account →</a></p>
+    <p style="margin-top:20px;font-size:13px"><a href="${url}" style="color:#005777">Open your Bazar account →</a></p>
   `);
 
   return { subject, text, html };
@@ -444,7 +444,7 @@ export function valuationNurtureDay30Template(opts: {
 
   const html = shell(`
     <p>Hi ${escape(opts.name)},</p>
-    <p>A month on from your valuation — we publish a monthly Abu Dhabi market read at <a href="${url}" style="color:#4B5A4C">/insights</a>.</p>
+    <p>A month on from your valuation — we publish a monthly Abu Dhabi market read at <a href="${url}" style="color:#005777">/insights</a>.</p>
     <p>If your view on selling has shifted, or you'd like a fresh valuation cut, reply here.</p>
   `);
 
@@ -526,7 +526,7 @@ export function kycApprovedTemplate(opts: {
   const html = shell(`
     <p>Hi ${escape(opts.name)},</p>
     <p>Your KYC documents have been reviewed and <strong>approved</strong>. You can now place offers and engage Bazar advisory services without further verification.</p>
-    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#4B5A4C;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open your account</a></p>
+    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#005777;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open your account</a></p>
   `);
 
   return { subject, text, html };
@@ -577,7 +577,7 @@ export function staffInvitationTemplate(opts: {
     <p>Hi ${escape(opts.inviteeName)},</p>
     <p><strong>${escape(opts.inviterName)}</strong> invited you to Bazar Real Estate's internal console as <strong>${escape(opts.role)}</strong>.</p>
     <p style="margin-top:22px"><a href="${opts.acceptUrl}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Accept invitation</a></p>
-    <p style="margin-top:18px;font-size:12px;color:#7d8e7e">The link is valid for 7 days.</p>
+    <p style="margin-top:18px;font-size:12px;color:#99896e">The link is valid for 7 days.</p>
   `);
 
   return { subject, text, html };
@@ -650,7 +650,7 @@ export function bulkReassignDigestTemplate(opts: {
                 `<li style="margin:2px 0"><span style="font-family:monospace">${escape(r)}</span></li>`,
             )
             .join("")}
-          ${remainder > 0 ? `<li style="margin:2px 0;color:#7d8e7e">…and ${remainder} more</li>` : ""}
+          ${remainder > 0 ? `<li style="margin:2px 0;color:#99896e">…and ${remainder} more</li>` : ""}
         </ul>`
       : "";
 
@@ -658,7 +658,7 @@ export function bulkReassignDigestTemplate(opts: {
     <p>Hi ${escape(opts.agentName)},</p>
     <p><strong>${opts.count} ${opts.count === 1 ? "listing was" : "listings were"}</strong> just assigned to you in the Bazar CMS.</p>
     ${refsBlock}
-    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#4B5A4C;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open my queue</a></p>
+    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#005777;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open my queue</a></p>
   `);
 
   return { subject, text, html };
@@ -681,8 +681,8 @@ export function newsletterConfirmTemplate(opts: {
   const html = shell(`
     <p>Hi,</p>
     <p>Please confirm your subscription to the Bazar quarterly Abu Dhabi market read.</p>
-    <p style="margin-top:22px"><a href="${opts.confirmUrl}" style="display:inline-block;padding:10px 16px;background:#4B5A4C;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Confirm subscription</a></p>
-    <p style="margin-top:18px;font-size:12px;color:#7d8e7e">If you didn't request this, ignore the email — no action is taken until you click confirm.</p>
+    <p style="margin-top:22px"><a href="${opts.confirmUrl}" style="display:inline-block;padding:10px 16px;background:#005777;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Confirm subscription</a></p>
+    <p style="margin-top:18px;font-size:12px;color:#99896e">If you didn't request this, ignore the email — no action is taken until you click confirm.</p>
   `);
 
   return { subject, text, html };

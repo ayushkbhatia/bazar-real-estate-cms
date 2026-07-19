@@ -24,7 +24,7 @@ export function ServicePage({ service }: { service: SeedService }) {
       <div className="px-4 md:px-12 pt-10 max-w-[1200px]">
         <Link
           href="/services"
-          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
+          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
         >
           <ArrowLeft size={13} strokeWidth={1.8} />
           All services
@@ -83,7 +83,7 @@ export function ServicePage({ service }: { service: SeedService }) {
         <ol className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
           {service.process_steps.map((step, i) => (
             <li key={step.title}>
-              <div className="text-[11.5px] uppercase tracking-wider text-bz-accent">
+              <div className="text-[11.5px] uppercase tracking-wider text-bz-navy">
                 Step {String(i + 1).padStart(2, "0")}
               </div>
               <h3

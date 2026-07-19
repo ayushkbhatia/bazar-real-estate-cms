@@ -93,7 +93,7 @@ function Tile({
       className={`group relative block overflow-hidden rounded-lg ${className ?? ""}`.trim()}
     >
       <PlaceholderImage label={imgLabel} className="absolute inset-0 h-full w-full" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-bz-navy/75 via-bz-navy/10 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 text-white">
         <div
           className={`serif leading-tight ${big ? "text-[30px] md:text-[34px]" : "text-[20px] md:text-[21px]"}`}

@@ -67,7 +67,7 @@ export function AdminPropertiesPagination({
             aria-current={p === page ? "page" : undefined}
             className={
               p === page
-                ? "inline-flex items-center justify-center h-8 min-w-8 px-2 rounded bg-bz-ink text-bz-bg text-[12px] font-medium"
+                ? "inline-flex items-center justify-center h-8 min-w-8 px-2 rounded bg-bz-navy text-bz-bg text-[12px] font-medium"
                 : "inline-flex items-center justify-center h-8 min-w-8 px-2 rounded border border-bz-border bg-bz-bg text-bz-ink-2 text-[12px] hover:border-bz-border-strong"
             }
           >

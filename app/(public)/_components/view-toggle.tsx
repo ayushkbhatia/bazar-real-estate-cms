@@ -38,7 +38,7 @@ export function ViewToggle() {
           onClick={() => setView(value === "grid" ? null : value)}
           className={
             view === value
-              ? "inline-flex items-center gap-1.5 h-7 px-2.5 rounded text-[12px] font-medium bg-bz-ink text-bz-bg"
+              ? "inline-flex items-center gap-1.5 h-7 px-2.5 rounded text-[12px] font-medium bg-bz-navy text-bz-bg"
               : "inline-flex items-center gap-1.5 h-7 px-2.5 rounded text-[12px] text-bz-ink-2 hover:text-bz-ink transition-colors"
           }
         >

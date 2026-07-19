@@ -17,7 +17,7 @@ export function ConfidenceIndicator({
         : "low";
 
   const TIER = {
-    high: { label: "High confidence", value: 3, color: "var(--bz-accent, #4a6c4a)" },
+    high: { label: "High confidence", value: 3, color: "var(--bz-accent, #005777)" },
     medium: { label: "Medium confidence", value: 2, color: "var(--bz-warning, #b58a30)" },
     low: { label: "Low confidence", value: 1, color: "var(--bz-danger, #8c2b2b)" },
   } as const;

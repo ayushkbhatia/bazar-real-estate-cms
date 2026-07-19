@@ -44,7 +44,7 @@ export function ModeSegmented() {
             className={cn(
               "h-8 px-3 rounded text-[12.5px] transition-colors",
               active
-                ? "bg-bz-ink text-bz-bg font-medium"
+                ? "bg-bz-navy text-bz-bg font-medium"
                 : "text-bz-ink-2 hover:text-bz-ink",
             )}
           >

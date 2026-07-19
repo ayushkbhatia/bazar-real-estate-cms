@@ -60,7 +60,7 @@ export function LiveDot({
             : `${label} · waiting for events`
           : `${label} · disconnected`
       }
-      className="inline-flex items-center gap-1.5 px-2 h-7 rounded-full bg-bz-surface-2 text-[10.5px] uppercase tracking-wider text-bz-muted select-none"
+      className="inline-flex items-center gap-1.5 px-2 h-7 rounded-full bg-bz-accent-soft text-[10.5px] uppercase tracking-wider text-bz-muted select-none"
     >
       <span className="relative inline-flex w-1.5 h-1.5">
         {tone === "live" && lastEventAt != null ? (
@@ -80,7 +80,7 @@ export function LiveDot({
           aria-hidden
         />
       </span>
-      <span className={tone === "live" ? "text-bz-ink-2" : "text-bz-muted"}>
+      <span className={tone === "live" ? "text-bz-accent" : "text-bz-muted"}>
         {label}
       </span>
     </span>

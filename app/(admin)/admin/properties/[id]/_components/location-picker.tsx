@@ -89,7 +89,7 @@ export function LocationPicker({
       if (next) {
         if (!markerRef.current) {
           markerRef.current = new maplibregl.Marker({
-            color: "#4a6c4a",
+            color: "var(--bz-accent, #005777)",
             draggable: true,
           })
             .setLngLat([next.lng, next.lat])
@@ -134,7 +134,7 @@ export function LocationPicker({
       applyCoords({ lat: e.lngLat.lat, lng: e.lngLat.lng }, false);
     });
     if (initialGeo) {
-      markerRef.current = new maplibregl.Marker({ color: "#4a6c4a", draggable: true })
+      markerRef.current = new maplibregl.Marker({ color: "var(--bz-accent, #005777)", draggable: true })
         .setLngLat([initialGeo.lng, initialGeo.lat])
         .addTo(map);
       markerRef.current.on("dragend", syncMarkerToState);

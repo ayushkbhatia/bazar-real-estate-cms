@@ -81,7 +81,7 @@ export async function OffPlanStrip() {
                   {d.starting_price ? (
                     <div className="mt-1 text-[13px] text-bz-ink-2">
                       From{" "}
-                      <span className="mono">
+                      <span className="mono text-bz-navy">
                         AED {(d.starting_price / 1_000_000).toFixed(1)}M
                       </span>
                     </div>

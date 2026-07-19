@@ -181,7 +181,7 @@ export function CmsShell({
                   className={cn(
                     "flex items-center gap-2.5 px-2.5 py-2 rounded text-[13px] cursor-pointer transition-colors",
                     isActive
-                      ? "bg-bz-ink text-bz-bg"
+                      ? "bg-bz-navy text-bz-bg"
                       : "text-bz-ink-2 hover:bg-bz-surface-2",
                   )}
                 >
@@ -202,7 +202,7 @@ export function CmsShell({
         <header className="hidden md:flex h-[60px] px-7 items-center gap-4 border-b border-bz-border bg-bz-surface">
           <div className="flex-1 min-w-0">
             {breadcrumbs ? (
-              <div className="text-[11.5px] text-bz-muted mb-0.5">
+              <div className="text-[11.5px] text-bz-muted mb-0.5 [&_a]:text-bz-teal [&_a:hover]:text-bz-navy [&_.mono]:text-bz-navy">
                 {breadcrumbs}
               </div>
             ) : null}
@@ -266,7 +266,7 @@ export function CmsShell({
                         className={cn(
                           "flex items-center gap-3 rounded-lg px-2 py-2.5 text-[14px] transition-colors",
                           isActive
-                            ? "bg-bz-ink text-bz-bg"
+                            ? "bg-bz-navy text-bz-bg"
                             : "text-bz-ink-2 active:bg-bz-surface-2",
                         )}
                       >

@@ -82,7 +82,7 @@ export function CompareButton({ propertyId }: { propertyId: string }) {
       }
       className={
         active
-          ? "w-8 h-8 rounded-full bg-bz-ink text-bz-bg flex items-center justify-center transition-colors"
+          ? "w-8 h-8 rounded-full bg-bz-accent-soft border border-bz-accent text-bz-accent flex items-center justify-center transition-colors"
           : "w-8 h-8 rounded-full bg-white/92 text-bz-ink-2 hover:text-bz-ink flex items-center justify-center transition-colors"
       }
     >

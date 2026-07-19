@@ -45,6 +45,12 @@
   --color-bz-accent-hover: var(--bz-accent-hover);
   --color-bz-accent-soft: var(--bz-accent-soft);
   --color-bz-accent-fg: var(--bz-accent-fg);
+  --color-bz-navy: var(--bz-navy);
+  --color-bz-teal: var(--bz-teal);
+  --color-bz-soft: var(--bz-soft);
+  --color-bz-taupe: var(--bz-taupe);
+  --color-bz-taupe-soft: var(--bz-taupe-soft);
+  --color-bz-taupe-light: var(--bz-taupe-light);
   --color-bz-success: var(--bz-success);
   --color-bz-warning: var(--bz-warning);
   --color-bz-danger: var(--bz-danger);
@@ -63,7 +69,7 @@
 }
 
 :root {
-  /* ── Bazar tokens (Moss accent — default) */
+  /* ── Bazar tokens (brand-core recolor: navy/teal/taupe accent) */
   --bz-bg: oklch(0.98 0.004 85);
   --bz-surface: #ffffff;
   --bz-surface-2: oklch(0.95 0.005 85);
@@ -74,13 +80,24 @@
   --bz-ink-2: oklch(0.32 0.006 80);
   --bz-muted: oklch(0.55 0.005 80);
   --bz-muted-2: oklch(0.68 0.005 80);
-  /* Eyebrows are 11px, so WCAG AA demands 4.5:1 — muted (0.55) only clears
-     4.2 on the lightest surface (bz-surface-2). A dedicated, slightly darker
-     token keeps the muted look while passing the axe home/about a11y gate. */
-  --bz-eyebrow: oklch(0.5 0.005 80);
-  --bz-accent: oklch(0.42 0.045 155);
-  --bz-accent-hover: oklch(0.36 0.045 155);
-  --bz-accent-soft: oklch(0.93 0.015 155);
+  /* Eyebrows are 11px, so WCAG AA demands 4.5:1 — the handoff's raw taupe
+     (#99896e, ~3.4:1 on white) fails the axe home/about a11y gate. This is
+     taupe pulled down to the lightness the gate already passes at. */
+  --bz-eyebrow: oklch(0.5 0.045 88);
+
+  /* Brand-core palette (client recolor handoff, M01–M29) */
+  --bz-navy: #003452;
+  --bz-teal: #005777;
+  --bz-soft: #a8d8e8;
+  --bz-taupe: #99896e;
+  --bz-taupe-soft: oklch(0.955 0.014 88);
+  /* Raw taupe only hits ~3.8:1 on navy — this lifted variant clears 4.5:1
+     for the 11px eyebrows that sit on the navy why/mission bands. */
+  --bz-taupe-light: oklch(0.78 0.035 88);
+
+  --bz-accent: #005777;
+  --bz-accent-hover: #003452;
+  --bz-accent-soft: oklch(0.945 0.022 222);
   --bz-accent-fg: #ffffff;
   --bz-success: oklch(0.55 0.12 145);
   --bz-warning: oklch(0.72 0.13 75);
@@ -139,7 +156,7 @@
   --destructive: var(--bz-danger);
   --border: var(--bz-border);
   --input: var(--bz-border);
-  --ring: var(--bz-ink-2);
+  --ring: var(--bz-accent);
 }
 
 .dark {
@@ -172,6 +189,11 @@
   }
   html {
     font-family: var(--bz-font-sans);
+  }
+  /* Site-wide micro-brand (M26) */
+  ::selection {
+    background: var(--bz-teal);
+    color: #fff;
   }
 }
 
@@ -271,6 +293,7 @@
   }
   .bz-prose a:hover {
     color: var(--bz-accent-hover);
+    text-decoration-color: var(--bz-taupe);
   }
   .bz-prose ul,
   .bz-prose ol {
@@ -375,6 +398,10 @@
   .tiptap a {
     color: var(--bz-accent);
     text-decoration: underline;
+  }
+  .tiptap a:hover {
+    color: var(--bz-accent-hover);
+    text-decoration-color: var(--bz-taupe);
   }
   .tiptap hr {
     border: 0;
@@ -524,7 +551,7 @@
     white-space: nowrap;
   }
   .bzmap-pin__count {
-    background: var(--bz-ink);
+    background: var(--bz-navy);
     color: var(--bz-bg);
     font-size: 10.5px;
     font-weight: 600;
@@ -542,13 +569,13 @@
     box-shadow: 0 8px 22px rgba(20, 18, 12, 0.22);
   }
   .bzmap-pin.is-active {
-    background: var(--bz-ink);
-    color: var(--bz-bg);
-    border-color: var(--bz-ink);
+    background: var(--bz-navy);
+    color: #fff;
+    border-color: var(--bz-navy);
   }
   .bzmap-pin.is-active::after {
-    background: var(--bz-ink);
-    border-color: var(--bz-ink);
+    background: var(--bz-navy);
+    border-color: var(--bz-navy);
   }
   .bzmap-pin.is-active .bzmap-pin__count {
     background: var(--bz-accent);
@@ -602,7 +629,7 @@
     background:
       radial-gradient(
         120% 140% at 15% 10%,
-        rgba(75, 90, 76, 0.55),
+        rgba(0, 87, 119, 0.55),
         rgba(27, 26, 23, 0.85)
       ),
       var(--bz-ink);
@@ -731,4 +758,18 @@
       display: none;
     }
   }
+}
+
+/* ─── Brand recolor overrides (M20 tabs / M21 table hover) ──────────
+   Unlayered on purpose: these must out-cascade Tailwind's utilities
+   layer (shadcn TableRow's hover:bg-muted/50, Tabs' data-active text
+   utilities) without editing the shadcn primitives themselves. */
+[data-slot="tabs-trigger"][data-state="active"] {
+  color: var(--bz-teal);
+}
+[data-slot="tabs-trigger"][data-state="active"]::after {
+  background-color: var(--bz-teal);
+}
+[data-slot="table-row"]:hover {
+  background-color: var(--bz-accent-soft);
 }

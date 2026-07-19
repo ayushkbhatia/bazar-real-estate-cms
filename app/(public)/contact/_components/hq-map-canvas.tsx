@@ -51,7 +51,7 @@ export function HqMapCanvas({
         "top-right",
       );
 
-      new maplibregl.Marker({ color: "var(--bz-accent, #4a6c4a)" })
+      new maplibregl.Marker({ color: "var(--bz-accent, #005777)" })
         .setLngLat([lng, lat])
         .setPopup(
           new maplibregl.Popup({ offset: 18 }).setHTML(

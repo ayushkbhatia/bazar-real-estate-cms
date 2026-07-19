@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
           <div style="font-family:system-ui;color:#1B1A17">
             <p style="font-size:14px">Your one-time code:</p>
             <p style="font-family:'Courier New',monospace;font-size:28px;letter-spacing:6px;color:#1B1A17;margin:12px 0">${code}</p>
-            <p style="font-size:13px;color:#7d8e7e">Expires in 10 minutes. If you didn't request this, you can ignore it.</p>
+            <p style="font-size:13px;color:#99896e">Expires in 10 minutes. If you didn't request this, you can ignore it.</p>
           </div>
         `,
       });
@@ -167,7 +167,7 @@ export async function POST(req: NextRequest) {
         <div style="font-family:system-ui;color:#1B1A17">
           <p style="font-size:14px">Thanks for verifying.</p>
           <p style="font-size:14px;line-height:1.6">A Bazar advisor will review your property details, sense-check the instant estimate against the latest comparables, and send you the full advisor-prepared report within 24 hours.</p>
-          <p style="font-size:13px;color:#7d8e7e">Questions in the meantime? Reply to this email.</p>
+          <p style="font-size:13px;color:#99896e">Questions in the meantime? Reply to this email.</p>
         </div>
       `,
     });

@@ -62,7 +62,7 @@ export function ColumnGallery({
                 key={i}
                 className={
                   i === idx
-                    ? "w-1.5 h-1.5 rounded-full bg-white"
+                    ? "w-1.5 h-1.5 rounded-full bg-bz-navy"
                     : "w-1.5 h-1.5 rounded-full bg-white/40"
                 }
               />

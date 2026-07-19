@@ -37,7 +37,7 @@ export function ArticleSchedulePicker({
           onChange={(e) =>
             onChange(e.target.value ? `${e.target.value}:00Z` : null)
           }
-          className="w-full h-9 pl-9 pr-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-border-strong"
+          className="w-full h-9 pl-9 pr-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-accent"
         />
       </div>
     </div>

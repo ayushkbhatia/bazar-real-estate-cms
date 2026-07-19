@@ -89,7 +89,7 @@ export default async function DealsListPage({ searchParams }: PageProps) {
                   className={cn(
                     "px-3 h-8 inline-flex items-center gap-2 rounded text-[13px] transition-colors",
                     active
-                      ? "bg-bz-ink text-bz-bg"
+                      ? "bg-bz-navy text-bz-bg"
                       : "text-bz-ink-2 hover:bg-bz-surface-2",
                   )}
                 >
@@ -113,7 +113,7 @@ export default async function DealsListPage({ searchParams }: PageProps) {
               name="q"
               defaultValue={search ?? ""}
               placeholder="Search ref or buyer name"
-              className="h-8 w-[260px] px-3 rounded border border-bz-border bg-bz-surface text-[13px] placeholder:text-bz-muted focus:outline-none focus:border-bz-border-strong"
+              className="h-8 w-[260px] px-3 rounded border border-bz-border bg-bz-surface text-[13px] placeholder:text-bz-muted focus:outline-none focus:border-bz-accent"
               aria-label="Search deals"
             />
           </form>
@@ -160,7 +160,7 @@ export default async function DealsListPage({ searchParams }: PageProps) {
                   return (
                     <tr
                       key={d.id}
-                      className="border-t border-bz-border hover:bg-bz-surface-2/60"
+                      className="border-t border-bz-border hover:bg-bz-accent-soft"
                     >
                       <td className="px-4 py-3 align-top">
                         <Link

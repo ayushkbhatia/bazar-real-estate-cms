@@ -50,7 +50,7 @@ export function AmenitiesMultiSelect({
               className={cn(
                 "inline-flex items-center h-7 px-2.5 rounded-full text-[11.5px] transition-colors",
                 active
-                  ? "bg-bz-ink text-bz-bg"
+                  ? "bg-bz-navy text-bz-bg"
                   : "border border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong",
               )}
             >

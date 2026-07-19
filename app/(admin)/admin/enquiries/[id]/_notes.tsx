@@ -24,7 +24,7 @@ export function NotesEditor({
         onChange={(e) => setText(e.target.value)}
         rows={5}
         placeholder="Internal notes only — never shown to the lead."
-        className="border border-bz-border rounded p-2 text-[13px] bg-bz-surface focus:border-bz-ink-2 outline-none resize-y"
+        className="border border-bz-border rounded p-2 text-[13px] bg-bz-surface focus:border-bz-accent outline-none resize-y"
       />
       <Button
         type="button"

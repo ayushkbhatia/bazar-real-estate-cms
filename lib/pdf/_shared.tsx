@@ -20,9 +20,9 @@ export const palette = {
   bg: "#FAFAF6",
   ink: "#1B1A17",
   ink2: "#32312d",
-  muted: "#7d8e7e",
+  muted: "#99896e",
   border: "#E5E5DF",
-  accent: "#4B5A4C",
+  accent: "#005777",
   danger: "#B33A2A",
   surface: "#FFFFFF",
 };

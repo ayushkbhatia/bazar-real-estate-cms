@@ -44,7 +44,7 @@ export function InvestmentMetrics({ rows }: { rows: Metric[] }) {
                   style={{
                     color:
                       r.yoyGrowthPct > 0
-                        ? "var(--bz-accent, oklch(0.42 0.06 145))"
+                        ? "var(--bz-accent, #005777)"
                         : "var(--bz-danger, oklch(0.5 0.18 25))",
                   }}
                 >

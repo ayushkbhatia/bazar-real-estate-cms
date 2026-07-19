@@ -159,9 +159,9 @@ export default function AboutPage() {
       </section>
 
       {/* Mission */}
-      <section className="px-4 md:px-12 py-16 md:py-24 bg-bz-ink text-white text-center">
+      <section className="px-4 md:px-12 py-16 md:py-24 bg-bz-navy text-white text-center">
         <div className="max-w-[1000px] mx-auto">
-          <Eyebrow className="text-white/60">Our mission</Eyebrow>
+          <Eyebrow className="text-bz-taupe-light">Our mission</Eyebrow>
           <h2
             className="serif text-white mt-5 mx-auto"
             style={{
