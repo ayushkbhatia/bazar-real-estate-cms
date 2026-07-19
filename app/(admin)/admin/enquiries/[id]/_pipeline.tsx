@@ -50,7 +50,7 @@ export function StatusPipeline({
               className={cn(
                 "px-2.5 h-7 rounded text-[12px] font-medium border transition-colors whitespace-nowrap",
                 active
-                  ? "bg-bz-ink text-bz-bg border-bz-ink"
+                  ? "bg-bz-navy text-bz-bg border-bz-navy"
                   : past
                     ? "bg-bz-accent-soft text-bz-accent border-bz-accent-soft"
                     : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",

@@ -58,7 +58,7 @@ export function AreaSpotlights() {
               className="absolute inset-0"
               style={{
                 background:
-                  "linear-gradient(180deg, rgba(20,18,14,.15) 0%, rgba(20,18,14,.82) 100%)",
+                  "linear-gradient(180deg, rgba(0,52,82,.15) 0%, rgba(0,52,82,.82) 100%)",
               }}
             />
             <div className="relative p-6 md:p-8">

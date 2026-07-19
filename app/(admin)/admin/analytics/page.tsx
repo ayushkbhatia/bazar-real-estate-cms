@@ -123,7 +123,7 @@ function Kpi({
     <div className="bg-bz-surface border border-bz-border rounded-lg p-4">
       <div className="eyebrow">{label}</div>
       <div
-        className="serif text-[36px] mt-2 leading-none"
+        className="serif text-[36px] mt-2 leading-none text-bz-navy"
         style={{ letterSpacing: "-0.025em" }}
       >
         {value}

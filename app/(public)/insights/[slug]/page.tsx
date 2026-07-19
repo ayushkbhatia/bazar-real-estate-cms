@@ -110,17 +110,17 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         aria-label="Breadcrumb"
         className="px-4 md:px-12 pt-8 max-w-[900px] mx-auto text-[12px] text-bz-muted flex flex-wrap items-center gap-1.5"
       >
-        <Link href="/" className="hover:text-bz-ink">
+        <Link href="/" className="text-bz-teal hover:text-bz-navy">
           Home
         </Link>
         <ChevronRight size={12} />
-        <Link href="/insights" className="hover:text-bz-ink">
+        <Link href="/insights" className="text-bz-teal hover:text-bz-navy">
           Insights
         </Link>
         <ChevronRight size={12} />
         <Link
           href={`/insights/category/${categoryToUrlSlug(article.category)}`}
-          className="hover:text-bz-ink"
+          className="text-bz-teal hover:text-bz-navy"
         >
           {categoryLabel}
         </Link>

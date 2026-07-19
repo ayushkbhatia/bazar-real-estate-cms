@@ -37,7 +37,7 @@ export function InsightsSortDropdown() {
               : (e.target.value as SortKey),
           )
         }
-        className="h-8 px-2.5 rounded border border-bz-border bg-bz-bg text-[13px] text-bz-ink outline-none focus:border-bz-border-strong"
+        className="h-8 px-2.5 rounded border border-bz-border bg-bz-bg text-[13px] text-bz-ink outline-none focus:border-bz-accent"
       >
         {SORTS.map((s) => (
           <option key={s} value={s}>

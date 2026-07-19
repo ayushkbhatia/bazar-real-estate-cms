@@ -115,7 +115,7 @@ function TabBtn({
       onClick={onClick}
       className={
         active
-          ? "py-2 inline-flex items-center gap-1.5 text-[12.5px] border-b-2 border-bz-ink text-bz-ink -mb-px"
+          ? "py-2 inline-flex items-center gap-1.5 text-[12.5px] border-b-2 border-bz-teal text-bz-teal -mb-px"
           : "py-2 inline-flex items-center gap-1.5 text-[12.5px] border-b-2 border-transparent text-bz-muted hover:text-bz-ink-2 -mb-px"
       }
     >

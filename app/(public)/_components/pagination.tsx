@@ -69,7 +69,7 @@ export function Pagination({
             aria-current={p === page ? "page" : undefined}
             className={
               p === page
-                ? "inline-flex items-center justify-center h-9 min-w-9 px-2 rounded-md bg-bz-ink text-bz-bg text-[13px] font-medium"
+                ? "inline-flex items-center justify-center h-9 min-w-9 px-2 rounded-md bg-bz-navy text-bz-bg text-[13px] font-medium"
                 : "inline-flex items-center justify-center h-9 min-w-9 px-2 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[13px] hover:border-bz-border-strong"
             }
           >

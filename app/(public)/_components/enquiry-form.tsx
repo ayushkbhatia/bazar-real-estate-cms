@@ -199,7 +199,7 @@ export function EnquiryForm({
                   className={cn(
                     "h-9 px-3 rounded text-[13px] border transition-colors",
                     active
-                      ? "bg-bz-ink text-bz-bg border-bz-ink"
+                      ? "bg-bz-navy text-bz-bg border-bz-navy"
                       : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
                   )}
                   aria-pressed={active}
@@ -220,7 +220,7 @@ export function EnquiryForm({
           id="enq-message"
           {...register("message")}
           rows={compact ? 3 : 5}
-          className="border border-bz-border rounded p-2 text-[14px] bg-bz-surface focus:border-bz-ink-2 outline-none resize-y"
+          className="border border-bz-border rounded p-2 text-[14px] bg-bz-surface focus:border-bz-accent outline-none resize-y"
           placeholder={
             compact
               ? "What would you like to know?"

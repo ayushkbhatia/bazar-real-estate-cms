@@ -94,7 +94,7 @@ export function ChannelToggles({ searchId }: { searchId: string }) {
             className={cn(
               "inline-flex items-center gap-1 h-7 px-2 rounded text-[11.5px] transition-colors",
               active
-                ? "bg-bz-ink text-bz-bg font-medium"
+                ? "bg-bz-navy text-bz-bg font-medium"
                 : "text-bz-muted hover:text-bz-ink",
             )}
           >

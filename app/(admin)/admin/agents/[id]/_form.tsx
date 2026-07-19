@@ -107,7 +107,7 @@ export function AgentEditForm({
           rows={5}
           {...register("bio")}
           placeholder="Twelve years in Saadiyat. The advisor families ask for when the deal needs to close quietly."
-          className="mt-1.5 w-full px-3 py-2 rounded-md border border-bz-border bg-bz-bg text-[14px] leading-relaxed resize-y focus:outline-none focus:border-bz-border-strong"
+          className="mt-1.5 w-full px-3 py-2 rounded-md border border-bz-border bg-bz-bg text-[14px] leading-relaxed resize-y focus:outline-none focus:border-bz-accent"
         />
         <FieldError message={errors.bio?.message ?? serverErrors.bio} />
       </div>

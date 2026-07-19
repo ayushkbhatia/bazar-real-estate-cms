@@ -46,7 +46,7 @@ export function StatusTabs({
             className={cn(
               "py-3 inline-flex items-center gap-2 text-[13.5px] border-b-2 -mb-px transition-colors",
               isActive
-                ? "border-bz-ink text-bz-ink"
+                ? "border-bz-teal text-bz-teal"
                 : "border-transparent text-bz-muted hover:text-bz-ink-2",
             )}
           >
@@ -55,7 +55,7 @@ export function StatusTabs({
               className={cn(
                 "mono text-[11px] px-1.5 rounded",
                 isActive
-                  ? "bg-bz-ink text-bz-bg"
+                  ? "bg-bz-teal text-bz-bg"
                   : "bg-bz-surface-2 text-bz-muted",
               )}
             >

@@ -46,7 +46,7 @@ export function DocumentSectionTabs({
             className={cn(
               "py-3 inline-flex flex-col items-start gap-0.5 border-b-2 -mb-px transition-colors text-left",
               active
-                ? "border-bz-ink text-bz-ink"
+                ? "border-bz-teal text-bz-teal"
                 : "border-transparent text-bz-muted hover:text-bz-ink-2",
             )}
           >
@@ -56,7 +56,7 @@ export function DocumentSectionTabs({
                 className={cn(
                   "mono text-[11px] px-1.5 rounded",
                   active
-                    ? "bg-bz-ink text-bz-bg"
+                    ? "bg-bz-navy text-bz-bg"
                     : "bg-bz-surface-2 text-bz-muted",
                 )}
               >

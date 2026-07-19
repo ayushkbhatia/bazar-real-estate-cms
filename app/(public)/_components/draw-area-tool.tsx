@@ -38,7 +38,7 @@ export function DrawAreaTool({
         className={cn(
           "inline-flex items-center gap-1.5 h-8 px-3 rounded-md border text-[12.5px] transition-colors",
           active
-            ? "bg-bz-ink text-bz-bg border-bz-ink"
+            ? "bg-bz-navy text-bz-bg border-bz-navy"
             : "border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong",
         )}
       >

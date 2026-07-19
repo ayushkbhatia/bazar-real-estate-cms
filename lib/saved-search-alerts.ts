@@ -160,8 +160,8 @@ export function alertEmailTemplate(opts: {
   <div style="font-family:Georgia,serif;font-style:italic;font-size:22px;letter-spacing:-0.01em;margin-bottom:8px">Bazar</div>
   <h1 style="font-family:Georgia,serif;font-style:italic;font-weight:400;font-size:24px;line-height:1.2;margin:8px 0 16px">New matches for &ldquo;${escapeHtml(opts.searchName)}&rdquo;</h1>
   <ul style="list-style:none;padding:0;margin:0">${items}</ul>
-  <p style="margin-top:24px;font-size:12px;color:#7d8e7e">
-    <a href="${escapeHtml(opts.manageUrl)}" style="color:#7d8e7e">Manage your saved searches →</a>
+  <p style="margin-top:24px;font-size:12px;color:#99896e">
+    <a href="${escapeHtml(opts.manageUrl)}" style="color:#99896e">Manage your saved searches →</a>
   </p>
 </td></tr></table></body></html>`;
 

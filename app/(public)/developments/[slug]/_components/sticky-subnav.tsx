@@ -42,7 +42,7 @@ export function StickySubnavActions({
         aria-pressed={saved}
         className={
           saved
-            ? "inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-bz-ink text-bz-bg text-[12.5px]"
+            ? "inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-bz-accent-soft border border-bz-accent text-bz-accent text-[12.5px]"
             : "inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-bz-border text-bz-ink-2 text-[12.5px] hover:border-bz-border-strong"
         }
       >

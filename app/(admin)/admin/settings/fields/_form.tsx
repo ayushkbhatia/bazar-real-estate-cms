@@ -140,7 +140,7 @@ function Field({
         className={
           error
             ? "h-9 rounded-md border border-red-500 bg-white px-2.5 text-[13px]"
-            : "h-9 rounded-md border border-bz-border bg-white px-2.5 text-[13px] focus:outline-none focus:ring-1 focus:ring-bz-ink"
+            : "h-9 rounded-md border border-bz-border bg-white px-2.5 text-[13px] focus:outline-none focus:ring-1 focus:ring-bz-accent"
         }
       />
       {error ? <span className="text-[11px] text-red-600">{error}</span> : null}
@@ -170,7 +170,7 @@ function SelectField({
         className={
           error
             ? "h-9 rounded-md border border-red-500 bg-white px-2.5 text-[13px]"
-            : "h-9 rounded-md border border-bz-border bg-white px-2.5 text-[13px] focus:outline-none focus:ring-1 focus:ring-bz-ink"
+            : "h-9 rounded-md border border-bz-border bg-white px-2.5 text-[13px] focus:outline-none focus:ring-1 focus:ring-bz-accent"
         }
       >
         {options.map((o) => (

@@ -33,7 +33,7 @@ export function ReplyComposer({ enquiryId }: { enquiryId: string }) {
         onChange={(e) => setBody(e.target.value)}
         rows={3}
         placeholder="Write a reply — appears in the lead's web inbox. Email + WhatsApp channels arrive in Phase 2.3+."
-        className="border border-bz-border rounded p-2 text-[14px] bg-bz-surface focus:border-bz-ink-2 outline-none resize-y"
+        className="border border-bz-border rounded p-2 text-[14px] bg-bz-surface focus:border-bz-accent outline-none resize-y"
         onKeyDown={(e) => {
           if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();

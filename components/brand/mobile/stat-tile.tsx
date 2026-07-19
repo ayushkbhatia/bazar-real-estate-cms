@@ -27,7 +27,7 @@ export function StatTile({
       )}
     >
       <div className="eyebrow">{label}</div>
-      <div className="mt-1 font-serif text-[26px] leading-none text-bz-ink">
+      <div className="mt-1 font-serif text-[26px] leading-none text-bz-navy">
         {value}
       </div>
       {delta != null && (

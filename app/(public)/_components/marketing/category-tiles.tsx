@@ -36,7 +36,7 @@ export function CategoryTiles({ items }: Props) {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(180deg, rgba(20,18,14,.1) 0%, rgba(20,18,14,.78) 100%)",
+                "linear-gradient(180deg, rgba(0,52,82,.1) 0%, rgba(0,52,82,.78) 100%)",
             }}
           />
           <div className="relative p-6">

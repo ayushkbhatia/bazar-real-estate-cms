@@ -130,3 +130,23 @@ shows the trail.)
   has lapsed to `archived` (emails admins only). Paired with the permit-expiry
   publish gate this is a re-publish lockout. Consider an in-app banner /
   soft-warning window before the hard archive.
+
+- [brand] Dark mode still runs the old moss accent.
+  The navy/teal/taupe recolor (M01–M29 handoff) deliberately left the `.dark`
+  block in `app/globals.css` untouched — the handoff scopes dark mode out and
+  says to flag it separately. `.dark` still redefines `--bz-accent/-hover/-soft`
+  at moss hue 155, so dark mode shows the old green. Needs its own pass with
+  client-approved dark-surface teal/navy values.
+
+- [brand] `accent_token` storage key is still "moss" (now pointing at teal).
+  `lib/schemas/site-settings.ts` swapped the hex (`moss: "#005777"`) so the CMS
+  brand panel shows teal, but the stored key/name is still `moss` because
+  renaming it means migrating stored `site_settings.accent_token` values.
+  Rename to `teal` (with a data migration + update `site-settings.test.ts`
+  literals) post-handover.
+
+- [brand] Ink CTAs/dark bands intentionally kept ink, not navy.
+  The recolor moved only the surfaces the handoff names (why/mission bands,
+  category-tile scrims). Other `bg-bz-ink` dark CTAs and bands (chip-cloud CTA,
+  mortgage hero band, area-map flyout CTA, insights aside, chat bubbles) stay
+  ink by design. Revisit only if the client wants navy everywhere.

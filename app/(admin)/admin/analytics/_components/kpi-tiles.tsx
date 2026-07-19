@@ -22,7 +22,7 @@ export function AnalyticsKpiTiles({ kpis }: { kpis: Kpi[] }) {
             {k.label}
           </div>
           <div
-            className="serif text-[32px] mt-1 leading-none"
+            className="serif text-[32px] mt-1 leading-none text-bz-navy"
             style={{ letterSpacing: "-0.02em" }}
           >
             {k.value}

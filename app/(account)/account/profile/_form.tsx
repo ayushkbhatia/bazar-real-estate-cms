@@ -87,7 +87,7 @@ export function ProfileForm({ initial }: { initial: AccountProfileInput }) {
           <select
             id="preferred_language"
             {...register("preferred_language")}
-            className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-border-strong"
+            className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-accent"
           >
             {ACCOUNT_LANGUAGES.map((l) => (
               <option key={l} value={l}>
@@ -107,7 +107,7 @@ export function ProfileForm({ initial }: { initial: AccountProfileInput }) {
           <select
             id="residency_status"
             {...register("residency_status")}
-            className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-border-strong"
+            className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-accent"
           >
             <option value="">Not specified</option>
             {ACCOUNT_RESIDENCY.map((r) => (

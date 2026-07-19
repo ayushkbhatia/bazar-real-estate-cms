@@ -52,7 +52,7 @@ export default async function AccountEnquiryDetailPage({
       {/* Crumb */}
       <Link
         href="/account/enquiries"
-        className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink-2 transition-colors"
+        className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
       >
         <ArrowLeft size={13} strokeWidth={1.8} />
         All enquiries

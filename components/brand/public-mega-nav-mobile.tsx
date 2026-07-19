@@ -134,7 +134,7 @@ function TabPanel({
           {tab.panel_title_href ? (
             <Link
               href={tab.panel_title_href}
-              className="mt-2 inline-flex items-center justify-center py-3 rounded-md bg-bz-ink text-bz-bg text-[14px]"
+              className="mt-2 inline-flex items-center justify-center py-3 rounded-md bg-bz-accent text-bz-accent-fg hover:bg-bz-accent-hover text-[14px]"
             >
               View all {tab.label.toLowerCase()}
             </Link>

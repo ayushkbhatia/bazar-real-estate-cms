@@ -25,7 +25,7 @@ export function WhyBand({
 }: Props) {
   const cap = wide ? "" : " max-w-[1200px]";
   return (
-    <section className="bg-bz-ink text-white px-4 md:px-12 py-16 md:py-20">
+    <section className="bg-bz-navy text-white px-4 md:px-12 py-16 md:py-20">
       <div
         className={
           stats
@@ -35,7 +35,7 @@ export function WhyBand({
         }
       >
         <div>
-          <Eyebrow className="text-white/60">{eyebrow}</Eyebrow>
+          <Eyebrow className="text-bz-taupe-light">{eyebrow}</Eyebrow>
           <h2
             className="serif text-white mt-4 max-w-[720px]"
             style={{

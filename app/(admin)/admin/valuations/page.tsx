@@ -88,7 +88,7 @@ export default async function AdminValuationsPage({
               className={cn(
                 "px-3.5 py-1.5 rounded text-[13px] transition-colors",
                 active
-                  ? "bg-bz-ink text-bz-bg"
+                  ? "bg-bz-navy text-bz-bg"
                   : "bg-bz-surface border border-bz-border text-bz-ink-2 hover:border-bz-border-strong",
               )}
             >
@@ -138,7 +138,7 @@ function RowLine({ row }: { row: ValuationListRow }) {
     .filter(Boolean)
     .join(" · ");
   return (
-    <tr className="border-t border-bz-border hover:bg-bz-surface-2">
+    <tr className="border-t border-bz-border hover:bg-bz-accent-soft">
       <td className="px-4 py-3">
         <div className="font-medium">{row.owner_name}</div>
         <div className="text-[12px] text-bz-muted">{row.owner_email}</div>

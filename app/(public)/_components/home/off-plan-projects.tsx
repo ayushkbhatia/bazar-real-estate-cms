@@ -22,11 +22,7 @@ export async function OffPlanProjects() {
     <section className="px-4 md:px-12 py-14 md:py-20 bg-bz-surface-2">
       <div className="mb-8 flex flex-col gap-5 md:mb-11 md:flex-row md:items-end md:justify-between">
         <div>
-          {/* Inline eyebrow (accent) — .eyebrow muted fails AA on surface-2. */}
-          <div
-            className="text-[11px] font-medium uppercase text-bz-accent"
-            style={{ letterSpacing: "0.12em" }}
-          >
+          <div className="eyebrow">
             Off-plan projects for sale
           </div>
           <h2 className="serif mt-2 text-[28px] md:text-[44px] font-normal leading-[1.05] tracking-tight">
@@ -61,7 +57,7 @@ export async function OffPlanProjects() {
                     className="h-full w-full"
                   />
                 )}
-                <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-bz-ink px-2.5 py-1 text-[11px] font-medium text-bz-bg">
+                <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-bz-navy px-2.5 py-1 text-[11px] font-medium text-bz-bg">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-current" />
                   Off-plan
                 </span>
@@ -86,7 +82,7 @@ export async function OffPlanProjects() {
                 <div className="mt-5 flex items-end justify-between border-t border-bz-border pt-4">
                   <div>
                     <div className="text-[11px] text-bz-muted">Starting from</div>
-                    <div className="mt-0.5 text-[20px] font-medium tracking-tight">
+                    <div className="mt-0.5 text-[20px] font-medium tracking-tight text-bz-navy">
                       {d.starting_price
                         ? formatPriceAED(d.starting_price)
                         : "Price on request"}

@@ -70,12 +70,12 @@ export function AreaTrendChart({
           stroke="var(--bz-border, #e5e2dc)"
         />
         {/* Filled area */}
-        <path d={fill} fill="var(--bz-accent-soft, #e8efe4)" />
+        <path d={fill} fill="var(--bz-accent-soft, #def1f8)" />
         {/* Line */}
         <path
           d={path}
           fill="none"
-          stroke="var(--bz-accent, #4a6c4a)"
+          stroke="var(--bz-accent, #005777)"
           strokeWidth="1.6"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -85,7 +85,7 @@ export function AreaTrendChart({
           cx={lastPoint.x}
           cy={lastPoint.y}
           r="3"
-          fill="var(--bz-accent, #4a6c4a)"
+          fill="var(--bz-accent, #005777)"
         />
         {/* Axis labels */}
         <text

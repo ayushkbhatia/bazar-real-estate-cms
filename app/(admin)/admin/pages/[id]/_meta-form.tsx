@@ -85,7 +85,7 @@ export function PageMetaForm({ pageId, initial }: Props) {
           <textarea
             id="meta_description"
             rows={2}
-            className="bz-field w-full rounded border border-bz-border px-3 py-2 text-[14px] outline-none focus:border-bz-ink-2 transition-colors bg-bz-bg"
+            className="bz-field w-full rounded border border-bz-border px-3 py-2 text-[14px] outline-none focus:border-bz-accent transition-colors bg-bz-bg"
             {...register("meta_description")}
           />
           <FieldError message={errors.meta_description?.message} />

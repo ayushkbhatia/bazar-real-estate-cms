@@ -137,7 +137,7 @@ export function TrendChart({ trend, prefs }: Props) {
             <polyline
               key={`seg-${si}`}
               fill="none"
-              stroke="var(--bz-accent, #4B5A4C)"
+              stroke="var(--bz-accent, #005777)"
               strokeWidth={1.5}
               strokeLinejoin="round"
               points={seg.map((p) => `${p.x},${p.y}`).join(" ")}
@@ -151,7 +151,7 @@ export function TrendChart({ trend, prefs }: Props) {
                 cx={p.x}
                 cy={p.y}
                 r={3}
-                fill="var(--bz-accent, #4B5A4C)"
+                fill="var(--bz-accent, #005777)"
               />
             ))}
         </svg>

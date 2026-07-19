@@ -38,7 +38,7 @@ export async function GET(
       html, body { background: #0F0F0E; color: #ECECE8; }
     }
     main { max-width: 640px; margin: 0 auto; padding: 80px 32px 56px; text-align: center; }
-    .eyebrow { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #7d8e7e; }
+    .eyebrow { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #99896e; }
     h1 { font-family: Georgia, serif; font-size: 56px; line-height: 1.05; letter-spacing: -0.025em; margin: 12px 0 0; font-weight: 400; }
     p { font-size: 15.5px; line-height: 1.6; color: #32312d; margin-top: 20px; }
     @media (prefers-color-scheme: dark) { p { color: #c5c5c0; } }

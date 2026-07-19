@@ -105,7 +105,7 @@ export function StageTimeline({
                   past
                     ? "bg-bz-accent text-bz-bg border-bz-accent"
                     : isCurrent
-                      ? "bg-bz-ink text-bz-bg border-bz-ink"
+                      ? "bg-bz-navy text-bz-bg border-bz-navy"
                       : "bg-bz-surface text-bz-muted border-bz-border",
                 )}
               >

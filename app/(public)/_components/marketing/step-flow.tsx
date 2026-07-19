@@ -24,7 +24,7 @@ export function StepFlow({ steps, className }: Props) {
           className="py-6 pr-6 border-b border-bz-border md:[&:nth-child(odd)]:border-r md:[&:nth-child(odd)]:pr-6 md:[&:nth-child(even)]:pl-6"
         >
           <div className="flex items-center gap-2.5">
-            <span className="mono text-[11px] text-bz-accent">
+            <span className="mono text-[11px] text-bz-navy">
               {String(i + 1).padStart(2, "0")}
             </span>
             <span className="text-[15px] font-semibold">{t}</span>

@@ -155,7 +155,7 @@ export function ListYourProperty() {
                         className={[
                           "h-11 rounded-md px-4 text-[13.5px] transition-colors sm:h-9",
                           on
-                            ? "border border-bz-ink bg-bz-ink text-bz-bg"
+                            ? "border border-bz-navy bg-bz-navy text-bz-bg"
                             : "border border-bz-border-strong bg-bz-surface text-bz-ink-2 hover:bg-bz-surface-2",
                         ].join(" ")}
                       >

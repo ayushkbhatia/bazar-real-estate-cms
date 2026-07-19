@@ -283,13 +283,13 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
       {/* Breadcrumb */}
       <div className="px-4 md:px-12 pt-8 pb-3 text-[12px] text-bz-muted flex items-center gap-1.5 overflow-x-auto whitespace-nowrap">
-        <Link href="/" className="hover:text-bz-ink">
+        <Link href="/" className="text-bz-teal hover:text-bz-navy">
           Home
         </Link>
         <ChevronRight size={12} />
         <Link
           href={property.mode === "rent" ? "/rent" : "/buy"}
-          className="hover:text-bz-ink"
+          className="text-bz-teal hover:text-bz-navy"
         >
           {property.mode === "rent" ? "For rent" : "For sale"}
         </Link>
@@ -298,14 +298,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             <ChevronRight size={12} />
             <Link
               href={`/areas/${property.areas.slug}`}
-              className="hover:text-bz-ink"
+              className="text-bz-teal hover:text-bz-navy"
             >
               {property.areas.name}
             </Link>
           </>
         ) : null}
         <ChevronRight size={12} />
-        <span className="mono text-bz-ink">{property.reference}</span>
+        <span className="mono text-bz-navy">{property.reference}</span>
       </div>
 
       {/* Action row */}
@@ -331,7 +331,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       <section className="px-4 md:px-12 pt-8 md:pt-10 pb-8">
         <div className="flex gap-2 mb-4 flex-wrap">
           {property.flags?.exclusive ? (
-            <span className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium bg-bz-ink text-bz-bg">
+            <span className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium bg-bz-navy text-bz-bg">
               Exclusive
             </span>
           ) : null}

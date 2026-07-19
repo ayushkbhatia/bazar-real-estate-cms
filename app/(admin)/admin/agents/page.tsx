@@ -109,7 +109,7 @@ export default async function AdminAgentsPage() {
                   return (
                     <tr
                       key={row.user_id}
-                      className="border-b border-bz-border last:border-b-0 hover:bg-bz-surface-2/40"
+                      className="border-b border-bz-border last:border-b-0 hover:bg-bz-accent-soft"
                     >
                       <td className="py-3 px-4">
                         <Link

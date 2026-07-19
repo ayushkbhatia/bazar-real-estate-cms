@@ -111,7 +111,7 @@ export default async function ArticleOpenGraph({
               style={{
                 width: 420,
                 background:
-                  "linear-gradient(135deg, #4a6c4a 0%, #13110f 100%)",
+                  "linear-gradient(135deg, #003452 0%, #13110f 100%)",
               }}
             />
           )}

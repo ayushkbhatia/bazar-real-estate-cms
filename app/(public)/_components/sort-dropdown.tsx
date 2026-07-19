@@ -29,7 +29,7 @@ export function SortDropdown() {
               : (e.target.value as (typeof SORT_OPTIONS)[number]),
           )
         }
-        className="h-8 px-2.5 rounded border border-bz-border bg-bz-bg text-[13px] text-bz-ink outline-none focus:border-bz-border-strong"
+        className="h-8 px-2.5 rounded border border-bz-border bg-bz-bg text-[13px] text-bz-ink outline-none focus:border-bz-accent"
       >
         {SORT_OPTIONS.map((s) => (
           <option key={s} value={s}>

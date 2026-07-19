@@ -56,7 +56,7 @@ function withUid<T>(row: T): T & { uid: string } {
 // styling used in app/(admin)/admin/pages/[id]/_block-list.tsx so the
 // look stays consistent across the admin.
 const fieldCls =
-  "bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-ink-2 text-[12.5px]";
+  "bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent text-[12.5px]";
 
 // ───────────────────────────────────────────────────────────────
 // Tiny presentational helpers

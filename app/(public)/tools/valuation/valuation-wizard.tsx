@@ -562,7 +562,7 @@ function Step3({
                 className={cn(
                   "h-11 px-2 rounded text-[12.5px] border transition-colors text-center",
                   active
-                    ? "bg-bz-ink text-bz-bg border-bz-ink"
+                    ? "bg-bz-navy text-bz-bg border-bz-navy"
                     : "bg-bz-surface-2 text-bz-ink-2 border-transparent hover:border-bz-border-strong",
                 )}
               >
@@ -620,7 +620,7 @@ function Step3({
                 className={cn(
                   "flex-1 h-9 rounded text-[12.5px] border transition-colors",
                   active
-                    ? "bg-bz-ink text-bz-bg border-bz-ink"
+                    ? "bg-bz-navy text-bz-bg border-bz-navy"
                     : "bg-bz-surface-2 text-bz-ink-2 border-transparent hover:border-bz-border-strong",
                 )}
               >
@@ -782,7 +782,7 @@ function ProgressStrip({ current }: { current: number }) {
             key={label}
             className={cn(
               "flex-1 pb-3 border-b-2",
-              state === "pending" ? "border-bz-border" : "border-bz-ink",
+              state === "pending" ? "border-bz-border" : "border-bz-navy",
             )}
           >
             <div className="flex items-center gap-2">
@@ -791,7 +791,7 @@ function ProgressStrip({ current }: { current: number }) {
                   "mono text-[10.5px]",
                   state === "pending"
                     ? "text-bz-muted-2"
-                    : "text-bz-ink",
+                    : "text-bz-navy",
                 )}
               >
                 {String(i + 1).padStart(2, "0")}
@@ -801,7 +801,7 @@ function ProgressStrip({ current }: { current: number }) {
                   "text-[12.5px]",
                   state === "pending"
                     ? "text-bz-muted"
-                    : "text-bz-ink",
+                    : "text-bz-navy",
                   state === "current" && "font-semibold",
                 )}
               >
@@ -894,7 +894,7 @@ function LivePreview({
           {estimate ? (
             <>
               <div
-                className="serif text-[30px] md:text-[44px] mt-1.5"
+                className="serif text-[30px] md:text-[44px] mt-1.5 text-bz-navy"
                 style={{ letterSpacing: "-0.025em" }}
                 data-testid="preview-range"
               >
@@ -903,7 +903,7 @@ function LivePreview({
               </div>
               <div className="text-[12px] text-bz-muted mt-1">
                 Midpoint{" "}
-                <span className="text-bz-ink font-medium">
+                <span className="text-bz-navy font-medium">
                   AED {formatRangeAed(estimate.midAed)}
                 </span>{" "}
                 · AED {estimate.pricePerFt2Used.toLocaleString()}/ft²
@@ -1024,7 +1024,7 @@ function SubmittedConfirmation({
           <div className="mt-6 px-5 py-4 bg-white rounded-lg border border-bz-border">
             <Eyebrow>Instant range</Eyebrow>
             <div
-              className="serif text-[28px] md:text-[40px] mt-1"
+              className="serif text-[28px] md:text-[40px] mt-1 text-bz-navy"
               style={{ letterSpacing: "-0.025em" }}
               data-testid="confirmation-range"
             >

@@ -34,7 +34,7 @@ export function CmsSearchInput() {
         onChange={(e) => setValue(e.target.value)}
         placeholder="Search properties, enquiries…"
         disabled={pending}
-        className="w-full h-10 pl-9 pr-3 bg-bz-surface border border-bz-border rounded text-[13.5px] outline-none focus:border-bz-ink-2 transition-colors"
+        className="w-full h-10 pl-9 pr-3 bg-bz-surface border border-bz-border rounded text-[13.5px] outline-none focus:border-bz-accent transition-colors"
       />
     </form>
   );

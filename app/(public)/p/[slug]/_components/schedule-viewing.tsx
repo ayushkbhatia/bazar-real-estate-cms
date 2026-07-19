@@ -80,7 +80,7 @@ export function ScheduleViewing({
                 value={date}
                 min={tomorrow}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full h-9 pl-9 pr-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-border-strong"
+                className="w-full h-9 pl-9 pr-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-accent"
               />
             </div>
           </div>
@@ -100,7 +100,7 @@ export function ScheduleViewing({
                 step={1800}
                 min="09:00"
                 max="20:00"
-                className="w-full h-9 pl-9 pr-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-border-strong"
+                className="w-full h-9 pl-9 pr-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-accent"
               />
             </div>
           </div>
@@ -113,7 +113,7 @@ export function ScheduleViewing({
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Full name"
-            className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-border-strong"
+            className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-accent"
           />
         </div>
         <div>
@@ -124,7 +124,7 @@ export function ScheduleViewing({
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+971 5…"
-            className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-border-strong"
+            className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[13px] outline-none focus:border-bz-accent"
           />
         </div>
         <Button type="submit" disabled={pending} className="mt-2">

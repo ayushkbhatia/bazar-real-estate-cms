@@ -45,7 +45,7 @@ export function LegalDocFrame({
               className={cn(
                 "h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors",
                 isActive
-                  ? "bg-bz-ink text-bz-bg border-bz-ink"
+                  ? "bg-bz-navy text-bz-bg border-bz-navy"
                   : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
               )}
               aria-current={isActive ? "page" : undefined}

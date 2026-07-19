@@ -38,7 +38,7 @@ export function AmenitiesGrid({
               className={cn(
                 "flex items-center gap-2 px-3 py-2 rounded-md border text-[13px] transition-colors text-left",
                 active
-                  ? "border-bz-ink bg-bz-ink text-bz-bg"
+                  ? "border-bz-navy bg-bz-navy text-bz-bg"
                   : "border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong",
               )}
             >

@@ -96,7 +96,7 @@ export function EligibilityChecker({
                   key={s.key}
                   className={cn(
                     "h-1 flex-1 rounded-full",
-                    i <= index ? "bg-bz-ink" : "bg-bz-border",
+                    i <= index ? "bg-bz-navy" : "bg-bz-border",
                   )}
                 />
               ))}
@@ -120,7 +120,7 @@ export function EligibilityChecker({
                     className={cn(
                       "w-full text-left p-3 rounded-md border transition-colors",
                       current === c.value
-                        ? "border-bz-ink bg-bz-ink/5"
+                        ? "border-bz-navy bg-bz-navy/5"
                         : "border-bz-border bg-bz-bg hover:border-bz-ink/40",
                     )}
                   >

@@ -46,7 +46,7 @@ export default async function CommunityOpenGraph({
               fontSize: 18,
               letterSpacing: "0.16em",
               textTransform: "uppercase",
-              color: "#7d8e7e",
+              color: "#99896e",
             }}
           >
             Community guide · Abu Dhabi
@@ -108,7 +108,7 @@ export default async function CommunityOpenGraph({
                 fontSize: 18,
                 letterSpacing: "0.18em",
                 textTransform: "uppercase",
-                color: "#7d8e7e",
+                color: "#99896e",
               }}
             >
               · bazar.ae
@@ -129,7 +129,7 @@ export default async function CommunityOpenGraph({
                 Median apt {medianApt.toLocaleString()} AED/ft²
               </div>
               {yoy !== undefined ? (
-                <div style={{ marginTop: 4, color: yoy >= 0 ? "#4B5A4C" : "#B33A2A" }}>
+                <div style={{ marginTop: 4, color: yoy >= 0 ? "#3e8343" : "#B33A2A" }}>
                   YoY {yoy >= 0 ? "+" : ""}
                   {yoy}%
                 </div>

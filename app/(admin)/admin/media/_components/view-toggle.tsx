@@ -25,7 +25,7 @@ export function MediaViewToggle() {
         className={cn(
           "inline-flex items-center gap-1 h-7 px-2 rounded text-[12px]",
           view === "grid"
-            ? "bg-bz-ink text-bz-bg font-medium"
+            ? "bg-bz-navy text-bz-bg font-medium"
             : "text-bz-ink-2 hover:text-bz-ink",
         )}
       >
@@ -39,7 +39,7 @@ export function MediaViewToggle() {
         className={cn(
           "inline-flex items-center gap-1 h-7 px-2 rounded text-[12px]",
           view === "list"
-            ? "bg-bz-ink text-bz-bg font-medium"
+            ? "bg-bz-navy text-bz-bg font-medium"
             : "text-bz-ink-2 hover:text-bz-ink",
         )}
       >

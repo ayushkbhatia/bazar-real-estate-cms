@@ -23,7 +23,7 @@ export function YieldTile({
       <div className="rounded-md border border-bz-border bg-bz-surface p-4">
         <Eyebrow>Est. annual rent</Eyebrow>
         <div
-          className="serif text-[28px] mt-1 leading-none"
+          className="serif text-[28px] mt-1 leading-none text-bz-navy"
           style={{ letterSpacing: "-0.015em" }}
         >
           AED {(annualRent / 1000).toFixed(0)}k
@@ -35,7 +35,7 @@ export function YieldTile({
       <div className="rounded-md border border-bz-border bg-bz-surface p-4">
         <Eyebrow>Gross yield</Eyebrow>
         <div
-          className="serif text-[28px] mt-1 leading-none"
+          className="serif text-[28px] mt-1 leading-none text-bz-navy"
           style={{ letterSpacing: "-0.015em" }}
         >
           {grossYield.toFixed(1)}%

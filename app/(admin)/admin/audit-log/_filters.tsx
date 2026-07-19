@@ -46,7 +46,7 @@ export function AuditLogFilters({
           type="search"
           defaultValue={initial.q ?? ""}
           placeholder="Free-text (action / target_id)"
-          className="h-8 pl-7 pr-2.5 bg-bz-surface border border-bz-border rounded text-[12.5px] outline-none focus:border-bz-ink-2 w-[260px]"
+          className="h-8 pl-7 pr-2.5 bg-bz-surface border border-bz-border rounded text-[12.5px] outline-none focus:border-bz-accent w-[260px]"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               setParam("q", (e.currentTarget.value ?? "").trim() || null);
@@ -59,7 +59,7 @@ export function AuditLogFilters({
         type="search"
         defaultValue={initial.actor_email ?? ""}
         placeholder="Actor email or name"
-        className="h-8 px-2.5 bg-bz-surface border border-bz-border rounded text-[12.5px] outline-none focus:border-bz-ink-2 w-[200px]"
+        className="h-8 px-2.5 bg-bz-surface border border-bz-border rounded text-[12.5px] outline-none focus:border-bz-accent w-[200px]"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             setParam(

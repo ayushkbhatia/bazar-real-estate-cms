@@ -183,7 +183,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
             className={cn(
               "h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors",
               !category
-                ? "bg-bz-ink text-bz-bg border-bz-ink"
+                ? "bg-bz-navy text-bz-bg border-bz-navy"
                 : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
             )}
           >
@@ -200,7 +200,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
                 className={cn(
                   "h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors",
                   active
-                    ? "bg-bz-ink text-bz-bg border-bz-ink"
+                    ? "bg-bz-navy text-bz-bg border-bz-navy"
                     : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
                 )}
               >

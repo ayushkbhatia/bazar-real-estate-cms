@@ -38,7 +38,7 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
               onClick={() => setFilter(t.key)}
               className={`h-[30px] px-3 rounded text-[12.5px] border transition-colors ${
                 active
-                  ? "bg-bz-ink text-bz-bg border-bz-ink"
+                  ? "bg-bz-navy text-bz-bg border-bz-navy"
                   : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-ink-2"
               }`}
               aria-pressed={active}

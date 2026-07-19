@@ -27,7 +27,7 @@ export default function OpengraphImage() {
             alignItems: "baseline",
             gap: 12,
             fontSize: 28,
-            color: "#7d8e7e",
+            color: "#99896e",
           }}
         >
           <span style={{ fontStyle: "italic" }}>Bazar</span>
@@ -72,7 +72,7 @@ export default function OpengraphImage() {
             alignItems: "center",
             justifyContent: "space-between",
             fontSize: 16,
-            color: "#7d8e7e",
+            color: "#99896e",
             letterSpacing: "0.05em",
             fontFamily: "system-ui, sans-serif",
           }}

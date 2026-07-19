@@ -128,7 +128,7 @@ export function MoreFiltersDrawer() {
           <SlidersHorizontal size={13} strokeWidth={1.7} />
           More filters
           {activeCount > 0 ? (
-            <span className="ml-1 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-bz-ink text-bz-bg text-[10px] font-medium">
+            <span className="ml-1 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-bz-navy text-bz-bg text-[10px] font-medium">
               {activeCount}
             </span>
           ) : null}
@@ -195,7 +195,7 @@ export function MoreFiltersDrawer() {
               onChange={(e) =>
                 setState((s) => ({ ...s, tenure: e.target.value }))
               }
-              className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-border-strong"
+              className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-accent"
             >
               <option value="">Any</option>
               {TENURES.map((t) => (
@@ -215,7 +215,7 @@ export function MoreFiltersDrawer() {
               onChange={(e) =>
                 setState((s) => ({ ...s, furnishing: e.target.value }))
               }
-              className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-border-strong"
+              className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-accent"
             >
               <option value="">Any</option>
               {FURNISHINGS.map((f) => (
@@ -257,7 +257,7 @@ export function MoreFiltersDrawer() {
                     onClick={() => toggleAmenity(a)}
                     className={
                       active
-                        ? "inline-flex items-center h-7 px-2.5 rounded-full bg-bz-ink text-bz-bg text-[11.5px]"
+                        ? "inline-flex items-center h-7 px-2.5 rounded-full bg-bz-navy text-bz-bg text-[11.5px]"
                         : "inline-flex items-center h-7 px-2.5 rounded-full border border-bz-border bg-bz-bg text-bz-ink-2 text-[11.5px] hover:border-bz-border-strong"
                     }
                   >

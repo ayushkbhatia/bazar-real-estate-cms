@@ -6,7 +6,7 @@ const chipClass = (active: boolean | undefined, className?: string) =>
   cn(
     "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[14px] border px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors",
     active
-      ? "border-bz-ink bg-bz-ink text-bz-bg"
+      ? "border-bz-navy bg-bz-navy text-bz-bg"
       : "border-bz-border bg-bz-surface text-bz-ink-2 hover:border-bz-border-strong",
     className,
   );

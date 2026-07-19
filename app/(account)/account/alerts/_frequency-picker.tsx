@@ -61,7 +61,7 @@ export function FrequencyPicker({
           onClick={() => pick(opt.value)}
           className={
             value === opt.value
-              ? "h-7 px-3 rounded text-[12px] font-medium bg-bz-ink text-bz-bg"
+              ? "h-7 px-3 rounded text-[12px] font-medium bg-bz-navy text-bz-bg"
               : "h-7 px-3 rounded text-[12px] text-bz-ink-2 hover:text-bz-ink transition-colors"
           }
         >

@@ -182,7 +182,7 @@ export function DisplayForm({ initial }: { initial: DisplaySettingsInput }) {
           <Label className="text-[12px] text-bz-ink-2 font-normal mb-2 block">
             Accent token{" "}
             <span className="text-bz-muted-2 ml-1">
-              (moss locked for the launch palette)
+              (brand teal locked for the launch palette)
             </span>
           </Label>
           <div className="flex gap-2.5">
@@ -406,7 +406,7 @@ export function EmailTemplatesEditor({
                 className={cn(
                   "text-left px-2.5 py-2 rounded text-[13px] flex items-center justify-between transition-colors",
                   isActive
-                    ? "bg-bz-ink text-bz-bg"
+                    ? "bg-bz-navy text-bz-bg"
                     : "text-bz-ink-2 hover:bg-bz-surface-2",
                 )}
               >

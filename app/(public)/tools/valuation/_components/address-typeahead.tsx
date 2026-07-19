@@ -119,7 +119,7 @@ export function AddressTypeahead({
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 120)}
-        className="w-full h-10 pl-9 pr-3 rounded-md border border-bz-border bg-bz-bg text-[14px] outline-none focus:border-bz-border-strong"
+        className="w-full h-10 pl-9 pr-3 rounded-md border border-bz-border bg-bz-bg text-[14px] outline-none focus:border-bz-accent"
       />
       {open && suggestions.length > 0 ? (
         <ul className="absolute z-10 top-[42px] left-0 right-0 max-h-[240px] overflow-y-auto rounded-md border border-bz-border bg-bz-bg shadow-md text-[13px]">
