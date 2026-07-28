@@ -68,6 +68,159 @@ export type Database = {
         }
         Relationships: []
       }
+      amenities_taxonomy: {
+        Row: {
+          active: boolean
+          category: Database["public"]["Enums"]["amenity_category"]
+          code: string
+          created_at: string
+          icon: string | null
+          label: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          category: Database["public"]["Enums"]["amenity_category"]
+          code: string
+          created_at?: string
+          icon?: string | null
+          label: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          category?: Database["public"]["Enums"]["amenity_category"]
+          code?: string
+          created_at?: string
+          icon?: string | null
+          label?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      api_keys: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          key_hash: string
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          notes: string | null
+          revoked_at: string | null
+          role: Database["public"]["Enums"]["api_key_role"]
+          status: Database["public"]["Enums"]["api_key_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          key_hash: string
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          notes?: string | null
+          revoked_at?: string | null
+          role: Database["public"]["Enums"]["api_key_role"]
+          status?: Database["public"]["Enums"]["api_key_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          notes?: string | null
+          revoked_at?: string | null
+          role?: Database["public"]["Enums"]["api_key_role"]
+          status?: Database["public"]["Enums"]["api_key_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      app_settings: {
+        Row: {
+          key: string
+          value: string
+        }
+        Insert: {
+          key: string
+          value: string
+        }
+        Update: {
+          key?: string
+          value?: string
+        }
+        Relationships: []
+      }
+      area_guides: {
+        Row: {
+          amenities: Json
+          area_id: string
+          created_at: string
+          hero_image_id: string | null
+          intro_md: string | null
+          published_at: string | null
+          related_areas: string[]
+          schools: Json
+          seo: Json | null
+          stats: Json
+          updated_at: string
+        }
+        Insert: {
+          amenities?: Json
+          area_id: string
+          created_at?: string
+          hero_image_id?: string | null
+          intro_md?: string | null
+          published_at?: string | null
+          related_areas?: string[]
+          schools?: Json
+          seo?: Json | null
+          stats?: Json
+          updated_at?: string
+        }
+        Update: {
+          amenities?: Json
+          area_id?: string
+          created_at?: string
+          hero_image_id?: string | null
+          intro_md?: string | null
+          published_at?: string | null
+          related_areas?: string[]
+          schools?: Json
+          seo?: Json | null
+          stats?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "area_guides_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: true
+            referencedRelation: "areas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "area_guides_hero_image_id_fkey"
+            columns: ["hero_image_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       areas: {
         Row: {
           created_at: string
@@ -276,6 +429,42 @@ export type Database = {
           target_id?: string | null
           target_kind?: string | null
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      bulk_operations: {
+        Row: {
+          action: Database["public"]["Enums"]["bulk_action_kind"]
+          actor_id: string | null
+          created_at: string
+          id: string
+          payload: Json | null
+          skipped: Json
+          succeeded: Json
+          target_count: number
+          target_kind: string
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["bulk_action_kind"]
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json | null
+          skipped?: Json
+          succeeded?: Json
+          target_count: number
+          target_kind?: string
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["bulk_action_kind"]
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          payload?: Json | null
+          skipped?: Json
+          succeeded?: Json
+          target_count?: number
+          target_kind?: string
         }
         Relationships: []
       }
@@ -533,6 +722,69 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "accounts"
             referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      developer_profiles: {
+        Row: {
+          awards: Json
+          bio: string | null
+          created_at: string
+          current_focus: string | null
+          developer_id: string
+          founded: number | null
+          headquarters: string | null
+          hero_image_id: string | null
+          published_at: string | null
+          seo: Json | null
+          signature_styles: string[]
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          awards?: Json
+          bio?: string | null
+          created_at?: string
+          current_focus?: string | null
+          developer_id: string
+          founded?: number | null
+          headquarters?: string | null
+          hero_image_id?: string | null
+          published_at?: string | null
+          seo?: Json | null
+          signature_styles?: string[]
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          awards?: Json
+          bio?: string | null
+          created_at?: string
+          current_focus?: string | null
+          developer_id?: string
+          founded?: number | null
+          headquarters?: string | null
+          hero_image_id?: string | null
+          published_at?: string | null
+          seo?: Json | null
+          signature_styles?: string[]
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "developer_profiles_developer_id_fkey"
+            columns: ["developer_id"]
+            isOneToOne: true
+            referencedRelation: "developers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "developer_profiles_hero_image_id_fkey"
+            columns: ["hero_image_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -821,6 +1073,42 @@ export type Database = {
           },
         ]
       }
+      dld_comparables: {
+        Row: {
+          area_slug: string | null
+          bedrooms: number | null
+          built_up_ft2: number | null
+          id: string
+          imported_at: string
+          price_aed: number
+          property_type: string
+          source: string
+          transaction_date: string
+        }
+        Insert: {
+          area_slug?: string | null
+          bedrooms?: number | null
+          built_up_ft2?: number | null
+          id?: string
+          imported_at?: string
+          price_aed: number
+          property_type: string
+          source?: string
+          transaction_date: string
+        }
+        Update: {
+          area_slug?: string | null
+          bedrooms?: number | null
+          built_up_ft2?: number | null
+          id?: string
+          imported_at?: string
+          price_aed?: number
+          property_type?: string
+          source?: string
+          transaction_date?: string
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           created_at: string
@@ -958,6 +1246,7 @@ export type Database = {
       enquiries: {
         Row: {
           account_id: string | null
+          ack_sent_at: string | null
           assigned_agent_id: string | null
           brief_raw: string | null
           budget_max: number | null
@@ -967,6 +1256,7 @@ export type Database = {
           created_at: string
           development_id: string | null
           email: string | null
+          escalated_at: string | null
           first_response_at: string | null
           id: string
           inferred_constraints: Json | null
@@ -983,6 +1273,7 @@ export type Database = {
         }
         Insert: {
           account_id?: string | null
+          ack_sent_at?: string | null
           assigned_agent_id?: string | null
           brief_raw?: string | null
           budget_max?: number | null
@@ -992,6 +1283,7 @@ export type Database = {
           created_at?: string
           development_id?: string | null
           email?: string | null
+          escalated_at?: string | null
           first_response_at?: string | null
           id?: string
           inferred_constraints?: Json | null
@@ -1008,6 +1300,7 @@ export type Database = {
         }
         Update: {
           account_id?: string | null
+          ack_sent_at?: string | null
           assigned_agent_id?: string | null
           brief_raw?: string | null
           budget_max?: number | null
@@ -1017,6 +1310,7 @@ export type Database = {
           created_at?: string
           development_id?: string | null
           email?: string | null
+          escalated_at?: string | null
           first_response_at?: string | null
           id?: string
           inferred_constraints?: Json | null
@@ -1107,6 +1401,95 @@ export type Database = {
           {
             foreignKeyName: "floor_plans_media_id_fkey"
             columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      integrations: {
+        Row: {
+          config: Json
+          created_at: string
+          enabled: boolean
+          kind: Database["public"]["Enums"]["integration_kind"]
+          last_error: string | null
+          last_error_at: string | null
+          last_synced_at: string | null
+          status: Database["public"]["Enums"]["integration_status"]
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          enabled?: boolean
+          kind: Database["public"]["Enums"]["integration_kind"]
+          last_error?: string | null
+          last_error_at?: string | null
+          last_synced_at?: string | null
+          status?: Database["public"]["Enums"]["integration_status"]
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          enabled?: boolean
+          kind?: Database["public"]["Enums"]["integration_kind"]
+          last_error?: string | null
+          last_error_at?: string | null
+          last_synced_at?: string | null
+          status?: Database["public"]["Enums"]["integration_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      licenses: {
+        Row: {
+          created_at: string
+          expires_at: string
+          file_id: string | null
+          holder_id: string | null
+          holder_kind: Database["public"]["Enums"]["license_holder_kind"]
+          id: string
+          issued_at: string | null
+          kind: Database["public"]["Enums"]["license_kind"]
+          notes: string | null
+          number: string
+          status: Database["public"]["Enums"]["license_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          file_id?: string | null
+          holder_id?: string | null
+          holder_kind: Database["public"]["Enums"]["license_holder_kind"]
+          id?: string
+          issued_at?: string | null
+          kind: Database["public"]["Enums"]["license_kind"]
+          notes?: string | null
+          number: string
+          status?: Database["public"]["Enums"]["license_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          file_id?: string | null
+          holder_id?: string | null
+          holder_kind?: Database["public"]["Enums"]["license_holder_kind"]
+          id?: string
+          issued_at?: string | null
+          kind?: Database["public"]["Enums"]["license_kind"]
+          notes?: string | null
+          number?: string
+          status?: Database["public"]["Enums"]["license_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "licenses_file_id_fkey"
+            columns: ["file_id"]
             isOneToOne: false
             referencedRelation: "media_assets"
             referencedColumns: ["id"]
@@ -1591,6 +1974,51 @@ export type Database = {
         }
         Relationships: []
       }
+      otp_codes: {
+        Row: {
+          attempts: number
+          channel: string
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          identifier: string
+          ip: string | null
+          max_attempts: number
+          purpose: string
+          user_agent: string | null
+        }
+        Insert: {
+          attempts?: number
+          channel: string
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          identifier: string
+          ip?: string | null
+          max_attempts?: number
+          purpose: string
+          user_agent?: string | null
+        }
+        Update: {
+          attempts?: number
+          channel?: string
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          identifier?: string
+          ip?: string | null
+          max_attempts?: number
+          purpose?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       pages: {
         Row: {
           blocks: Json
@@ -1630,10 +2058,12 @@ export type Database = {
       properties: {
         Row: {
           address_line: string | null
+          advisor_note: string | null
           amenities: string[]
           area_id: string | null
           assigned_agent_id: string | null
           baths: number
+          bazar_verified: boolean
           beds: number
           building_id: string | null
           built_up_ft2: number | null
@@ -1646,6 +2076,7 @@ export type Database = {
           development_id: string | null
           dld_plot_number: string | null
           enquiry_count: number
+          featured_on_homepage: boolean
           flags: Json
           floor: number | null
           furnishing: Database["public"]["Enums"]["property_furnishing"] | null
@@ -1666,6 +2097,7 @@ export type Database = {
           service_charge_per_ft2: number | null
           short_description: string | null
           slug: string
+          sold_at: string | null
           status: Database["public"]["Enums"]["property_status"]
           sub_community_id: string | null
           tenure: Database["public"]["Enums"]["property_tenure"] | null
@@ -1679,10 +2111,12 @@ export type Database = {
         }
         Insert: {
           address_line?: string | null
+          advisor_note?: string | null
           amenities?: string[]
           area_id?: string | null
           assigned_agent_id?: string | null
           baths?: number
+          bazar_verified?: boolean
           beds?: number
           building_id?: string | null
           built_up_ft2?: number | null
@@ -1695,6 +2129,7 @@ export type Database = {
           development_id?: string | null
           dld_plot_number?: string | null
           enquiry_count?: number
+          featured_on_homepage?: boolean
           flags?: Json
           floor?: number | null
           furnishing?: Database["public"]["Enums"]["property_furnishing"] | null
@@ -1715,6 +2150,7 @@ export type Database = {
           service_charge_per_ft2?: number | null
           short_description?: string | null
           slug: string
+          sold_at?: string | null
           status?: Database["public"]["Enums"]["property_status"]
           sub_community_id?: string | null
           tenure?: Database["public"]["Enums"]["property_tenure"] | null
@@ -1728,10 +2164,12 @@ export type Database = {
         }
         Update: {
           address_line?: string | null
+          advisor_note?: string | null
           amenities?: string[]
           area_id?: string | null
           assigned_agent_id?: string | null
           baths?: number
+          bazar_verified?: boolean
           beds?: number
           building_id?: string | null
           built_up_ft2?: number | null
@@ -1744,6 +2182,7 @@ export type Database = {
           development_id?: string | null
           dld_plot_number?: string | null
           enquiry_count?: number
+          featured_on_homepage?: boolean
           flags?: Json
           floor?: number | null
           furnishing?: Database["public"]["Enums"]["property_furnishing"] | null
@@ -1764,6 +2203,7 @@ export type Database = {
           service_charge_per_ft2?: number | null
           short_description?: string | null
           slug?: string
+          sold_at?: string | null
           status?: Database["public"]["Enums"]["property_status"]
           sub_community_id?: string | null
           tenure?: Database["public"]["Enums"]["property_tenure"] | null
@@ -1831,20 +2271,26 @@ export type Database = {
         Row: {
           embedded_at: string | null
           embedding: string | null
+          model: string
           property_id: string
           source_text: string | null
+          updated_at: string
         }
         Insert: {
           embedded_at?: string | null
           embedding?: string | null
+          model?: string
           property_id: string
           source_text?: string | null
+          updated_at?: string
         }
         Update: {
           embedded_at?: string | null
           embedding?: string | null
+          model?: string
           property_id?: string
           source_text?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -1892,6 +2338,99 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "properties"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      recently_viewed: {
+        Row: {
+          property_id: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          property_id: string
+          user_id: string
+          viewed_at?: string
+        }
+        Update: {
+          property_id?: string
+          user_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recently_viewed_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recently_viewed_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          code: string
+          created_at: string
+          first_deal_at: string | null
+          id: string
+          notes: string | null
+          paid_at: string | null
+          payout_amount_aed: number
+          referee_account_id: string | null
+          referrer_account_id: string
+          signed_up_at: string | null
+          status: Database["public"]["Enums"]["referral_status"]
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          first_deal_at?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payout_amount_aed?: number
+          referee_account_id?: string | null
+          referrer_account_id: string
+          signed_up_at?: string | null
+          status?: Database["public"]["Enums"]["referral_status"]
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          first_deal_at?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          payout_amount_aed?: number
+          referee_account_id?: string | null
+          referrer_account_id?: string
+          signed_up_at?: string | null
+          status?: Database["public"]["Enums"]["referral_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referee_account_id_fkey"
+            columns: ["referee_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_account_id_fkey"
+            columns: ["referrer_account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1960,6 +2499,36 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      roles_custom: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          display_name: string
+          name: string
+          permissions: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_name: string
+          name: string
+          permissions?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_name?: string
+          name?: string
+          permissions?: Json
+          updated_at?: string
+        }
+        Relationships: []
       }
       saved_properties: {
         Row: {
@@ -2180,6 +2749,76 @@ export type Database = {
           },
         ]
       }
+      tour_requests: {
+        Row: {
+          account_id: string | null
+          assigned_agent_id: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          message: string | null
+          phone: string | null
+          preferred_window: string | null
+          property_id: string
+          scheduled_at: string | null
+          status: Database["public"]["Enums"]["tour_request_status"]
+          updated_at: string
+        }
+        Insert: {
+          account_id?: string | null
+          assigned_agent_id?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          message?: string | null
+          phone?: string | null
+          preferred_window?: string | null
+          property_id: string
+          scheduled_at?: string | null
+          status?: Database["public"]["Enums"]["tour_request_status"]
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string | null
+          assigned_agent_id?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          message?: string | null
+          phone?: string | null
+          preferred_window?: string | null
+          property_id?: string
+          scheduled_at?: string | null
+          status?: Database["public"]["Enums"]["tour_request_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tour_requests_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tour_requests_assigned_agent_id_fkey"
+            columns: ["assigned_agent_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tour_requests_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       valuation_requests: {
         Row: {
           account_id: string | null
@@ -2393,6 +3032,51 @@ export type Database = {
           },
         ]
       }
+      webhooks: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          events: Database["public"]["Enums"]["webhook_event"][]
+          failure_count: number
+          id: string
+          last_failure_at: string | null
+          last_success_at: string | null
+          name: string
+          secret: string
+          status: Database["public"]["Enums"]["webhook_status"]
+          target_url: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          events: Database["public"]["Enums"]["webhook_event"][]
+          failure_count?: number
+          id?: string
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          name: string
+          secret: string
+          status?: Database["public"]["Enums"]["webhook_status"]
+          target_url: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          events?: Database["public"]["Enums"]["webhook_event"][]
+          failure_count?: number
+          id?: string
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          name?: string
+          secret?: string
+          status?: Database["public"]["Enums"]["webhook_status"]
+          target_url?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -2404,17 +3088,45 @@ export type Database = {
         Returns: Database["public"]["Enums"]["staff_role"]
       }
       deal_buyer_account: { Args: { deal_id: string }; Returns: string }
+      functions_base_url: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
+      match_properties: {
+        Args: { match_limit?: number; query_embedding: string }
+        Returns: {
+          distance: number
+          property_id: string
+        }[]
+      }
     }
     Enums: {
       account_kyc_status: "unverified" | "pending" | "verified" | "rejected"
       account_language: "en" | "ar"
       account_residency_status: "uae_resident" | "non_resident" | "gcc_national"
       alert_frequency: "off" | "instant" | "daily" | "weekly"
+      amenity_category:
+        | "indoor"
+        | "outdoor"
+        | "building"
+        | "community"
+        | "view"
+        | "security"
+        | "wellness"
+      api_key_role:
+        | "read_only"
+        | "read_write"
+        | "webhook_dispatch"
+        | "syndication"
+      api_key_status: "active" | "revoked"
       area_kind: "emirate" | "area" | "sub_community" | "building"
       article_status: "draft" | "scheduled" | "published" | "archived"
       audit_actor_kind: "user" | "system" | "integration"
+      bulk_action_kind:
+        | "bulk_update"
+        | "bulk_publish"
+        | "bulk_off_market"
+        | "bulk_reassign"
+        | "bulk_archive"
       concierge_message_role: "user" | "assistant" | "system"
       deal_stage:
         | "mou"
@@ -2480,6 +3192,23 @@ export type Database = {
         | "six_months"
         | "twelve_months"
         | "browsing"
+      integration_kind:
+        | "mapbox"
+        | "meilisearch"
+        | "voyage_ai"
+        | "property_finder"
+        | "bayut"
+        | "mailchimp"
+        | "whatsapp_cloud"
+        | "dld_open_data"
+        | "docusign"
+        | "posthog"
+        | "sentry"
+        | "resend"
+      integration_status: "disconnected" | "connected" | "error" | "paused"
+      license_holder_kind: "firm" | "staff" | "development"
+      license_kind: "orn" | "brn" | "trakheesi" | "rera" | "dmt"
+      license_status: "active" | "expiring_soon" | "expired" | "revoked"
       media_folder: "listings" | "brand" | "blog" | "team" | "documents"
       megamenu_badge_variant:
         | "default"
@@ -2548,10 +3277,17 @@ export type Database = {
         | "building"
         | "retail"
         | "commercial_villa"
+      referral_status: "pending" | "signed_up" | "first_deal" | "paid" | "void"
       review_status: "pending" | "approved" | "rejected"
       review_subject_kind: "agent" | "area" | "development"
       staff_role: "admin" | "editor" | "agent" | "marketing" | "support"
       staff_status: "active" | "on_leave" | "onboarding" | "suspended"
+      tour_request_status:
+        | "pending"
+        | "contacted"
+        | "scheduled"
+        | "completed"
+        | "cancelled"
       valuation_condition:
         | "original"
         | "lightly_refreshed"
@@ -2566,6 +3302,20 @@ export type Database = {
         | "completed"
         | "cancelled"
         | "no_show"
+      webhook_event:
+        | "property.published"
+        | "property.updated"
+        | "property.archived"
+        | "property.sold"
+        | "enquiry.created"
+        | "enquiry.assigned"
+        | "viewing.scheduled"
+        | "viewing.cancelled"
+        | "deal.stage_changed"
+        | "valuation.submitted"
+        | "kyc.approved"
+        | "kyc.rejected"
+      webhook_status: "active" | "paused" | "failing"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2701,9 +3451,32 @@ export const Constants = {
         "gcc_national",
       ],
       alert_frequency: ["off", "instant", "daily", "weekly"],
+      amenity_category: [
+        "indoor",
+        "outdoor",
+        "building",
+        "community",
+        "view",
+        "security",
+        "wellness",
+      ],
+      api_key_role: [
+        "read_only",
+        "read_write",
+        "webhook_dispatch",
+        "syndication",
+      ],
+      api_key_status: ["active", "revoked"],
       area_kind: ["emirate", "area", "sub_community", "building"],
       article_status: ["draft", "scheduled", "published", "archived"],
       audit_actor_kind: ["user", "system", "integration"],
+      bulk_action_kind: [
+        "bulk_update",
+        "bulk_publish",
+        "bulk_off_market",
+        "bulk_reassign",
+        "bulk_archive",
+      ],
       concierge_message_role: ["user", "assistant", "system"],
       deal_stage: [
         "mou",
@@ -2777,6 +3550,24 @@ export const Constants = {
         "twelve_months",
         "browsing",
       ],
+      integration_kind: [
+        "mapbox",
+        "meilisearch",
+        "voyage_ai",
+        "property_finder",
+        "bayut",
+        "mailchimp",
+        "whatsapp_cloud",
+        "dld_open_data",
+        "docusign",
+        "posthog",
+        "sentry",
+        "resend",
+      ],
+      integration_status: ["disconnected", "connected", "error", "paused"],
+      license_holder_kind: ["firm", "staff", "development"],
+      license_kind: ["orn", "brn", "trakheesi", "rera", "dmt"],
+      license_status: ["active", "expiring_soon", "expired", "revoked"],
       media_folder: ["listings", "brand", "blog", "team", "documents"],
       megamenu_badge_variant: [
         "default",
@@ -2852,10 +3643,18 @@ export const Constants = {
         "retail",
         "commercial_villa",
       ],
+      referral_status: ["pending", "signed_up", "first_deal", "paid", "void"],
       review_status: ["pending", "approved", "rejected"],
       review_subject_kind: ["agent", "area", "development"],
       staff_role: ["admin", "editor", "agent", "marketing", "support"],
       staff_status: ["active", "on_leave", "onboarding", "suspended"],
+      tour_request_status: [
+        "pending",
+        "contacted",
+        "scheduled",
+        "completed",
+        "cancelled",
+      ],
       valuation_condition: [
         "original",
         "lightly_refreshed",
@@ -2872,6 +3671,21 @@ export const Constants = {
         "cancelled",
         "no_show",
       ],
+      webhook_event: [
+        "property.published",
+        "property.updated",
+        "property.archived",
+        "property.sold",
+        "enquiry.created",
+        "enquiry.assigned",
+        "viewing.scheduled",
+        "viewing.cancelled",
+        "deal.stage_changed",
+        "valuation.submitted",
+        "kyc.approved",
+        "kyc.rejected",
+      ],
+      webhook_status: ["active", "paused", "failing"],
     },
   },
 } as const
