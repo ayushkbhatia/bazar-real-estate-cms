@@ -27,6 +27,21 @@ export type SimpleFieldDef = {
   optional?: boolean;
 };
 
+/**
+ * A pick from live records — a development, an area — rather than free text.
+ * Options come from the same `seeds` the admin route already supplies, and the
+ * stored value is the record's slug, so a rename doesn't break the link.
+ */
+export type SelectFieldDef = {
+  key: string;
+  label: string;
+  kind: "select";
+  optionsKey: SeedKey;
+  help?: string;
+  /** Placeholder for the empty option. */
+  placeholder?: string;
+};
+
 export type ToggleFieldDef = {
   key: string;
   label: string;
@@ -49,7 +64,12 @@ export type ListFieldDef = {
   /** Singular noun for the add button — "tile", "question", "community". */
   itemLabel: string;
   max: number;
-  fields: (SimpleFieldDef | ImageFieldDef | ToggleFieldDef)[];
+  fields: (
+    | SimpleFieldDef
+    | ImageFieldDef
+    | ToggleFieldDef
+    | SelectFieldDef
+  )[];
   /**
    * Live data this list mirrors. When the stored list is empty the editor
    * offers to seed it from the current records (areas, say) so an editor can
@@ -58,12 +78,13 @@ export type ListFieldDef = {
   seedKey?: SeedKey;
 };
 
-export type SeedKey = "areas";
+export type SeedKey = "areas" | "developments";
 
 export type FieldDef =
   | SimpleFieldDef
   | ImageFieldDef
   | ToggleFieldDef
+  | SelectFieldDef
   | ListFieldDef;
 
 /** A picked media asset. `media_id` null ⇒ fall back to the placeholder art. */
@@ -146,6 +167,10 @@ export function isListField(f: FieldDef): f is ListFieldDef {
 
 export function isToggleField(f: FieldDef): f is ToggleFieldDef {
   return f.kind === "toggle";
+}
+
+export function isSelectField(f: FieldDef): f is SelectFieldDef {
+  return f.kind === "select";
 }
 
 export function emptyImage(label: string | null = null): ImageValue {

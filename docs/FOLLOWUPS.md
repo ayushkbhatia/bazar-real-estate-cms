@@ -250,3 +250,10 @@ shows the trail.)
   route at `/admin/pages/sub/<kind>` — the block on the Pages index, the
   storage and the editor are already generic. `countSubPagesByKind` needs a
   query per kind.
+
+- [master pages] Featured-project picks aren't validated against live records.
+  The home page's off-plan section stores development slugs; the renderer drops
+  any that no longer resolve and the editor flags them as "no longer
+  available", but nothing warns the editor when a project they featured is
+  later unpublished. A cron or a check on the developments publish action could
+  surface "this project is featured on the home page" before it goes dark.

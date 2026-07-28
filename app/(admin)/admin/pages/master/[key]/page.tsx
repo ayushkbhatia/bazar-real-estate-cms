@@ -8,6 +8,7 @@ import { mediaPublicUrl } from "@/lib/media";
 import { getMasterPage, isMasterPageKey } from "@/lib/master-pages";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
+import { listDevelopmentSubPages } from "@/lib/queries/subpages";
 import {
   MasterPageEditor,
   type MediaOption,
@@ -42,10 +43,11 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
   const def = getMasterPage(key);
   if (!def) notFound();
 
-  const [content, media, areas] = await Promise.all([
+  const [content, media, areas, developments] = await Promise.all([
     getMasterPageContent(key),
     fetchMedia(),
     listAreasWithCounts(),
+    listDevelopmentSubPages(),
   ]);
 
   // Live records a seedable list can be filled from, so an editor can switch
@@ -56,6 +58,15 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
       href: `/areas/${a.slug}`,
       slug: a.slug,
     })),
+    // Only published projects — featuring an unpublished one would render a
+    // card linking to a page the public can't open.
+    developments: developments
+      .filter((d) => d.published_at !== null)
+      .map((d) => ({
+        name: d.name,
+        href: `/developments/${d.slug}`,
+        slug: d.slug,
+      })),
   };
 
   return (

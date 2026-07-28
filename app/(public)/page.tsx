@@ -141,6 +141,10 @@ export default async function HomePage() {
     off_plan_projects: (
       <OffPlanProjects
         key="off_plan_projects"
+        featuredSlugs={list<Record<string, unknown>>(offPlanV, "projects")
+          .filter((p) => p.enabled !== false)
+          .map((p) => (typeof p.slug === "string" ? p.slug : ""))
+          .filter(Boolean)}
         eyebrow={str(offPlanV, "eyebrow")}
         heading={str(offPlanV, "heading")}
         body={str(offPlanV, "body")}

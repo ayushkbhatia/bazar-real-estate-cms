@@ -285,3 +285,72 @@ describe("location cards (toggleable list items)", () => {
     expect(cards[0].image).not.toHaveProperty("url");
   });
 });
+
+describe("featured developments on the home page", () => {
+  const home = getMasterPage("home") as MasterPageDef;
+  const section = home.sections.find((s) => s.key === "off_plan_projects")!;
+
+  it("ships empty, so the section keeps showing the latest projects", () => {
+    expect(section.defaults.projects).toEqual([]);
+  });
+
+  it("offers a picker fed from the development sub-pages", () => {
+    const list = section.fields.find((f) => f.key === "projects");
+    expect(list?.kind).toBe("list");
+    if (list?.kind !== "list") return;
+    expect(list.seedKey).toBe("developments");
+    const picker = list.fields.find((f) => f.key === "slug");
+    expect(picker?.kind).toBe("select");
+    if (picker?.kind !== "select") return;
+    expect(picker.optionsKey).toBe("developments");
+  });
+
+  it("stores slugs in the chosen order and keeps the off switches", () => {
+    const result = validateSections(home, [
+      {
+        key: "off_plan_projects",
+        enabled: true,
+        values: {
+          projects: [
+            { enabled: true, slug: "six-senses-residences" },
+            { enabled: false, slug: "solaya-by-aldar" },
+            { enabled: true, slug: "  reem-hills-phase-4  " },
+          ],
+        },
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const picks = result.sections.find((s) => s.key === "off_plan_projects")!
+      .values.projects as Record<string, unknown>[];
+    expect(picks.map((p) => p.slug)).toEqual([
+      "six-senses-residences",
+      "solaya-by-aldar",
+      "reem-hills-phase-4",
+    ]);
+    expect(picks.map((p) => p.enabled)).toEqual([true, false, true]);
+  });
+
+  it("caps the list and keeps an empty pick as null", () => {
+    const result = validateSections(home, [
+      {
+        key: "off_plan_projects",
+        enabled: true,
+        values: {
+          projects: [
+            { enabled: true, slug: "" },
+            ...Array.from({ length: 8 }, () => ({
+              enabled: true,
+              slug: "solaya-by-aldar",
+            })),
+          ],
+        },
+      },
+    ]);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues.some((i) => /6 projects or fewer/i.test(i.message))).toBe(
+      true,
+    );
+  });
+});
