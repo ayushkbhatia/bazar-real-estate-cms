@@ -4,7 +4,10 @@ import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
-import type { SectionCopy } from "./section-copy";
+import {
+  HOME_AREA_TILE_COUNT,
+  type SectionCopy,
+} from "./section-copy";
 
 /**
  * Home "Location-based browsing" (handoff §1). A large Abu Dhabi overview
@@ -77,7 +80,7 @@ export async function LocationBrowsing({
               imgAlt: c.imageAlt,
             };
           })
-      : entries.slice(0, 8).map((c) => ({
+      : entries.slice(0, HOME_AREA_TILE_COUNT).map((c) => ({
           key: c.id,
           href: `/areas/${c.slug}`,
           name: c.name,

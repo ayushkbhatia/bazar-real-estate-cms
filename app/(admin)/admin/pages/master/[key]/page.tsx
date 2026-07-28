@@ -8,7 +8,11 @@ import { mediaPublicUrl } from "@/lib/media";
 import { getMasterPage, isMasterPageKey } from "@/lib/master-pages";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
-import { listDevelopmentSubPages } from "@/lib/queries/subpages";
+import { listPublishedDevelopments } from "@/lib/queries/developments";
+import {
+  HOME_AREA_TILE_COUNT,
+  HOME_OFFPLAN_CARD_COUNT,
+} from "@/app/(public)/_components/home/section-copy";
 import {
   MasterPageEditor,
   type MediaOption,
@@ -47,26 +51,40 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
     getMasterPageContent(key),
     fetchMedia(),
     listAreasWithCounts(),
-    listDevelopmentSubPages(),
+    listPublishedDevelopments(),
   ]);
 
-  // Live records a seedable list can be filled from, so an editor can switch
-  // individual cards off instead of typing the whole set by hand.
+  // What a seedable list can be filled from. `current` mirrors what the live
+  // page renders today — same source, same order, same cut — so "load what's
+  // on the page" reproduces the section rather than dumping the catalogue.
+  // `options` is everything pickable.
+  const areaSeed = areas.map((a) => ({
+    name: a.name,
+    href: `/areas/${a.slug}`,
+    slug: a.slug,
+  }));
+  const developmentSeed = developments.map((d) => ({
+    name: d.name,
+    href: `/developments/${d.slug}`,
+    slug: d.slug,
+  }));
+
   const seeds: Seeds = {
-    areas: areas.slice(0, 12).map((a) => ({
-      name: a.name,
-      href: `/areas/${a.slug}`,
-      slug: a.slug,
-    })),
-    // Only published projects — featuring an unpublished one would render a
-    // card linking to a page the public can't open.
-    developments: developments
-      .filter((d) => d.published_at !== null)
-      .map((d) => ({
-        name: d.name,
-        href: `/developments/${d.slug}`,
-        slug: d.slug,
-      })),
+    areas: {
+      options: areaSeed,
+      // LocationBrowsing renders the first 8 areas.
+      current: areaSeed.slice(0, HOME_AREA_TILE_COUNT),
+    },
+    developments: {
+      // Sorted by name for the picker; only published projects are offered,
+      // since featuring an unpublished one links to a page nobody can open.
+      options: [...developmentSeed].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      ),
+      // OffPlanProjects renders the 3 most recently published projects, and
+      // `listPublishedDevelopments` is already in that order.
+      current: developmentSeed.slice(0, HOME_OFFPLAN_CARD_COUNT),
+    },
   };
 
   return (
