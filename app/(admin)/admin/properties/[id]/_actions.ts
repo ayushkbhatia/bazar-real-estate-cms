@@ -461,6 +461,16 @@ export type HeroResult =
   | { status: "ok"; message?: string }
   | { status: "error"; message: string };
 
+/**
+ * Promote one photo to hero (or, with `mediaId: null`, leave the listing
+ * without one).
+ *
+ * `property_media` is keyed on (property_id, media_id), so a photo has exactly
+ * one role — swapping the hero is a role change, not a re-link. Doing it as
+ * delete-hero + insert-hero detached the outgoing photo from the listing and
+ * blew up with `property_media_pkey` the moment the incoming photo was already
+ * attached, which is every photo the media library can offer.
+ */
 export async function setPropertyHero(
   propertyId: string,
   mediaId: string | null,
@@ -474,25 +484,43 @@ export async function setPropertyHero(
 
   const supabase = await createSupabaseServerClient();
 
-  // Remove the existing hero (if any).
-  const delResult = await supabase
+  // Demote the outgoing hero to the gallery — it keeps its link and its place
+  // in the order. Skipping the incoming photo keeps re-setting the current
+  // hero a no-op instead of a momentary heroless state.
+  const demote = supabase
     .from("property_media")
-    .delete()
+    .update({ role: "gallery" })
     .eq("property_id", propertyId)
     .eq("role", "hero");
-  if (delResult.error) {
-    return { status: "error", message: delResult.error.message };
+  const demoteResult = await (mediaId !== null
+    ? demote.neq("media_id", mediaId)
+    : demote);
+  if (demoteResult.error) {
+    return { status: "error", message: demoteResult.error.message };
   }
 
   if (mediaId !== null) {
-    const insResult = await supabase.from("property_media").insert({
-      property_id: propertyId,
-      media_id: mediaId,
-      role: "hero",
-      sort_order: 0,
-    });
-    if (insResult.error) {
-      return { status: "error", message: insResult.error.message };
+    const promoted = await supabase
+      .from("property_media")
+      .update({ role: "hero" })
+      .eq("property_id", propertyId)
+      .eq("media_id", mediaId)
+      .select("media_id");
+    if (promoted.error) {
+      return { status: "error", message: promoted.error.message };
+    }
+
+    // Not attached yet (picked straight from the shared library) — link it.
+    if ((promoted.data?.length ?? 0) === 0) {
+      const insResult = await supabase.from("property_media").insert({
+        property_id: propertyId,
+        media_id: mediaId,
+        role: "hero",
+        sort_order: 0,
+      });
+      if (insResult.error) {
+        return { status: "error", message: insResult.error.message };
+      }
     }
   }
 
