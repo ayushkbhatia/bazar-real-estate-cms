@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, ExternalLink } from "lucide-react";
+import { Plus, ExternalLink, ArrowRight } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Button } from "@/components/ui/button";
 import {
@@ -93,6 +93,25 @@ export default async function AdminPagesPage() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section className="flex flex-col gap-3 border-t border-bz-border pt-6">
+          <div className="flex items-start gap-3">
+            <div className="mr-auto">
+              <h2 className="text-[14px] font-medium">Sub-pages</h2>
+              <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
+                Project pages under <span className="mono">/developments</span>,
+                built from one template — edit each project&apos;s copy,
+                imagery and sections, or add a new project page.
+              </p>
+            </div>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/admin/pages/sub">
+                Open sub-pages
+                <ArrowRight size={13} strokeWidth={1.8} />
+              </Link>
+            </Button>
+          </div>
         </section>
 
         <p className="text-[13px] text-bz-muted max-w-[60ch] border-t border-bz-border pt-6">

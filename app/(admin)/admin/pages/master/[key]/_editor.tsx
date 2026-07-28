@@ -50,6 +50,26 @@ import {
   type StoredSection,
 } from "@/lib/master-pages";
 import { saveMasterPage, resetMasterPage } from "./_actions";
+
+/**
+ * Save/reset are injected so the same editor drives master pages and
+ * record-backed sub-pages (development project pages) without a second copy.
+ */
+export type SectionSaveResult =
+  | { status: "ok"; message: string }
+  | { status: "invalid"; message: string; issues: string[] }
+  | { status: "error"; message: string };
+
+export type SectionActions = {
+  save: (id: string, sections: StoredSection[]) => Promise<SectionSaveResult>;
+  reset: (id: string) => Promise<SectionSaveResult>;
+};
+
+const MASTER_ACTIONS: SectionActions = {
+  save: (id, sections) =>
+    saveMasterPage(id as MasterPageKey, sections) as Promise<SectionSaveResult>,
+  reset: (id) => resetMasterPage(id as MasterPageKey) as Promise<SectionSaveResult>,
+};
 import { uploadMedia } from "../../../media/_actions";
 
 export type MediaOption = { id: string; filename: string; url: string };
@@ -76,14 +96,25 @@ export function MasterPageEditor({
   media: initialMedia,
   seeds,
   usingDefaults,
+  actions = MASTER_ACTIONS,
+  allowReorder = true,
+  resetLabel = "Reset to defaults",
 }: {
-  pageKey: MasterPageKey;
+  /** Master page key, or the record slug for a sub-page. */
+  pageKey: string;
   pageLabel: string;
   path: string;
   initial: EditorSection[];
   media: MediaOption[];
   seeds: Seeds;
   usingDefaults: boolean;
+  actions?: SectionActions;
+  /**
+   * Sub-pages keep the template's order — their anchor sub-nav points at
+   * section ids in document order.
+   */
+  allowReorder?: boolean;
+  resetLabel?: string;
 }) {
   // Uploads from an image field append here, so a freshly uploaded asset is
   // pickable straight away without a page refresh.
@@ -125,7 +156,7 @@ export function MasterPageEditor({
         enabled: s.enabled,
         values: s.values,
       }));
-      const result = await saveMasterPage(pageKey, payload);
+      const result = await actions.save(pageKey, payload);
       if (result.status === "ok") {
         toast.success(result.message);
         setDirty(false);
@@ -148,7 +179,7 @@ export function MasterPageEditor({
     )
       return;
     startTransition(async () => {
-      const result = await resetMasterPage(pageKey);
+      const result = await actions.reset(pageKey);
       if (result.status === "ok") {
         toast.success("Reset to defaults.");
         setDirty(false);
@@ -172,7 +203,7 @@ export function MasterPageEditor({
         </p>
         <Button type="button" variant="outline" size="sm" onClick={onReset} disabled={pending}>
           <RotateCcw size={13} strokeWidth={1.8} />
-          Reset to defaults
+          {resetLabel}
         </Button>
         <Button type="button" size="sm" onClick={onSave} disabled={pending || !dirty}>
           <Save size={13} strokeWidth={1.8} />
@@ -203,6 +234,7 @@ export function MasterPageEditor({
                 onToggleEnabled={() =>
                   setSection(section.key, { enabled: !section.enabled })
                 }
+                allowReorder={allowReorder}
                 onValues={(values) => setSection(section.key, { values })}
                 media={media}
                 onMediaAdded={(m) => setMedia((cur) => [m, ...cur])}
@@ -228,9 +260,11 @@ function SectionRow({
   onMediaAdded,
   seeds,
   path,
+  allowReorder,
 }: {
   section: EditorSection;
   index: number;
+  allowReorder: boolean;
   expanded: boolean;
   onToggleExpand: () => void;
   onToggleEnabled: () => void;
@@ -240,7 +274,7 @@ function SectionRow({
   seeds: Seeds;
   path: string;
 }) {
-  const locked = section.def.locked === true;
+  const locked = section.def.locked === true || !allowReorder;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: section.key, disabled: locked });
 
@@ -263,7 +297,11 @@ function SectionRow({
         {locked ? (
           <span
             className="h-7 w-7 inline-flex items-center justify-center text-bz-muted-2"
-            title="This section is fixed in place"
+            title={
+              allowReorder
+                ? "This section is fixed in place"
+                : "Section order is fixed by the page template"
+            }
           >
             <Lock size={13} strokeWidth={1.7} />
           </span>
@@ -301,10 +339,10 @@ function SectionRow({
         <button
           type="button"
           onClick={onToggleEnabled}
-          disabled={locked}
+          disabled={section.def.locked === true}
           aria-label={section.enabled ? "Hide section" : "Show section"}
           title={
-            locked
+            section.def.locked === true
               ? "This section can't be hidden"
               : section.enabled
                 ? "Hide this section on the live page"
@@ -312,7 +350,7 @@ function SectionRow({
           }
           className={cn(
             "h-7 w-7 inline-flex items-center justify-center rounded text-bz-muted hover:text-bz-ink",
-            locked && "opacity-40 cursor-not-allowed",
+            section.def.locked === true && "opacity-40 cursor-not-allowed",
           )}
         >
           {section.enabled ? (

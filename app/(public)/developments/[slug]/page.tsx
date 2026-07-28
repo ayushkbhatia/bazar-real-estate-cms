@@ -6,6 +6,8 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
 import { mediaPublicUrl } from "@/lib/media";
+import { getDevelopmentPageContent } from "@/lib/queries/subpages";
+import { str } from "@/lib/master-pages";
 import {
   developmentUrl,
   getPublishedDevelopmentBySlug,
@@ -98,8 +100,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const development = await getPublishedDevelopmentBySlug(slug);
   if (!development) notFound();
 
-  const [units, floorPlans, media, meta, siblingsByDeveloper, siblingsInArea] =
+  const [content, units, floorPlans, media, meta, siblingsByDeveloper, siblingsInArea] =
     await Promise.all([
+      getDevelopmentPageContent({
+        name: development.name,
+        slug: development.slug,
+      }),
       listDevelopmentUnits(development.id),
       listFloorPlans(development.id),
       listDevelopmentMedia(development.id),
@@ -132,6 +138,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     SEED_AGENTS.find((a) =>
       a.areas.includes(development.area?.slug ?? ""),
     ) ?? SEED_AGENTS[0];
+
+  // Section copy overrides from /admin/pages/sub/development/<slug>. Blank
+  // fields fall through to the template's own wording.
+  const sv = (key: string, field: string) =>
+    str(content.section(key)?.values ?? {}, field);
 
   const heroUrl = development.hero
     ? mediaPublicUrl(development.hero.storage_key)
@@ -181,7 +192,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           <div className="flex gap-2 flex-wrap">
             {development.tagline ? (
               <span className="inline-flex items-center h-[26px] px-2.5 rounded-full text-[11.5px] font-medium bg-bz-accent text-white">
-                {development.tagline}
+                {sv("hero", "intro") ?? development.tagline}
               </span>
             ) : null}
             <span className="inline-flex items-center h-[26px] px-2.5 rounded-full text-[11.5px] font-medium bg-black/70 text-white">
@@ -202,7 +213,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               className="serif text-[48px] md:text-[96px] font-normal mt-3"
               style={{ letterSpacing: "-0.03em", lineHeight: 0.96 }}
             >
-              {development.name}
+              {sv("hero", "heading") ?? development.name}
             </h1>
             {development.description ? (
               <p
@@ -275,6 +286,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       </div>
 
       {/* Overview */}
+      {content.isOn("overview") ? (
       <section
         id="overview"
         className="px-4 md:px-12 py-16 grid grid-cols-1 md:grid-cols-2 gap-16 scroll-mt-16"
@@ -314,15 +326,17 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           ))}
         </div>
       </section>
+      ) : null}
 
       {/* Master plan */}
+      {content.isOn("master-plan") ? (
       <section id="master-plan" className="px-4 md:px-12 pb-16 scroll-mt-16">
         <Eyebrow>Master plan</Eyebrow>
         <h2
           className="serif text-[36px] mt-2"
           style={{ letterSpacing: "-0.02em" }}
         >
-          The site
+          {sv("master-plan", "heading") ?? "The site"}
         </h2>
         <div className="relative mt-6 rounded-lg overflow-hidden aspect-[21/9] bg-bz-surface-2">
           {masterplanMedia ? (
@@ -359,9 +373,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           ))}
         </div>
       </section>
+      ) : null}
 
       {/* Payment plan */}
-      {development.payment_plan ? (
+      {content.isOn("payment-plan") && development.payment_plan ? (
         <section
           id="payment-plan"
           className="px-4 md:px-12 py-16 bg-bz-surface-2 scroll-mt-16"
@@ -373,7 +388,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 className="serif text-[28px] md:text-[40px] mt-2"
                 style={{ letterSpacing: "-0.02em" }}
               >
-                Cash flow timeline
+                {sv("payment-plan", "heading") ?? "Cash flow timeline"}
               </h2>
             </div>
             <Button variant="outline" size="sm">
@@ -389,7 +404,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       ) : null}
 
       {/* Units */}
-      {units.length > 0 ? (
+      {content.isOn("units") && units.length > 0 ? (
         <section id="units" className="px-4 md:px-12 py-16 scroll-mt-16">
           <div className="flex justify-between items-end flex-wrap gap-4 mb-6">
             <div>
@@ -401,7 +416,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 className="serif text-[28px] md:text-[40px] mt-2"
                 style={{ letterSpacing: "-0.02em" }}
               >
-                What&apos;s left
+                {sv("units", "heading") ?? "What\u2019s left"}
               </h2>
             </div>
           </div>
@@ -410,7 +425,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       ) : null}
 
       {/* Floor plans */}
-      {floorPlans.length > 0 ? (
+      {content.isOn("floor-plans") && floorPlans.length > 0 ? (
         <section
           id="floor-plans"
           className="px-4 md:px-12 pb-16 scroll-mt-16"
@@ -420,7 +435,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             className="serif text-[36px] mt-2"
             style={{ letterSpacing: "-0.02em" }}
           >
-            How the units lay out
+            {sv("floor-plans", "heading") ?? "How the units lay out"}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
             {floorPlans.map((fp) =>
@@ -474,7 +489,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       ) : null}
 
       {/* Renders */}
-      {renderMedia.length > 0 ? (
+      {content.isOn("renders") && renderMedia.length > 0 ? (
         <section className="px-4 md:px-12 pb-16">
           <Eyebrow>The vision</Eyebrow>
           <h2
@@ -512,6 +527,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       ) : null}
 
       {/* Features (T1-C) */}
+      {content.isOn("features") ? (
       <section id="features" className="scroll-mt-16">
         <FeatureBlocks
           developmentName={development.name}
@@ -520,15 +536,17 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           amenitiesFallback={development.amenities}
         />
       </section>
+      ) : null}
 
       {/* Location */}
+      {content.isOn("location") ? (
       <section id="location" className="px-4 md:px-12 pb-16 scroll-mt-16">
         <Eyebrow>Location</Eyebrow>
         <h2
           className="serif text-[32px] mt-2 leading-tight"
           style={{ letterSpacing: "-0.018em" }}
         >
-          Where {development.name} sits.
+          {sv("location", "heading") ?? `Where ${development.name} sits.`}
         </h2>
         <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
           Master-plan position + commute times to key Abu Dhabi destinations.
@@ -547,6 +565,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           />
         )}
       </section>
+      ) : null}
 
       {/* Nearby developments (T1-C + T1-C cleanup: real Mapbox map) */}
       <NearbyDevelopments
@@ -564,7 +583,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       {/* T1-A cleanup: market context — links off-plan buyers to the
           area's resale market data so they can project the 3-5 year
           exit case before they commit. */}
-      {development.area?.slug ? (
+      {content.isOn("market-context") && development.area?.slug ? (
         <section className="px-4 md:px-12 pb-12 max-w-[820px]">
           <MarketContextBlock
             area_slug={development.area.slug}
@@ -576,7 +595,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       ) : null}
 
       {/* Developer */}
-      {development.developer_profile ? (
+      {content.isOn("developer") && development.developer_profile ? (
         <section id="developer" className="px-4 md:px-12 pb-16 scroll-mt-16">
           <Eyebrow>Developer</Eyebrow>
           <div className="mt-3 rounded-xl border border-bz-border bg-bz-surface p-6 md:p-9 grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-12 items-center">
@@ -605,7 +624,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       ) : null}
 
       {/* Other projects by this developer (T1-C) */}
-      {development.developer?.name ? (
+      {content.isOn("other-projects") && development.developer?.name ? (
         <DeveloperProjectsStrip
           developerName={development.developer.name}
           siblings={siblingsByDeveloper}
@@ -613,13 +632,17 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       ) : null}
 
       {/* FAQ (T1-C) — JSON-LD FAQPage schema for SEO */}
-      <DevelopmentFaq development={development} curated={meta?.faq} />
+      {content.isOn("faq") ? (
+        <DevelopmentFaq development={development} curated={meta?.faq} />
+      ) : null}
 
       {/* Lead advisor banner */}
-      <LeadAdvisorBanner
+      {content.isOn("advisor") ? (
+        <LeadAdvisorBanner
         agent={leadAdvisor}
         developmentName={development.name}
-      />
+        />
+      ) : null}
 
       {/* T2-D: floating advisor contact rail — same component used on
           property detail. Desktop sticky / mobile bottom-dock.
