@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
@@ -6,8 +7,12 @@ export type CategoryTile = {
   name: string;
   desc: string;
   cta: string;
+  /** Caption for the placeholder art, used when no asset is picked. */
   img: string;
   href: string;
+  /** Resolved URL of the asset chosen in the master-page editor. */
+  imgUrl?: string | null;
+  imgAlt?: string | null;
 };
 
 type Props = {
@@ -27,11 +32,21 @@ export function CategoryTiles({ items }: Props) {
           href={t.href}
           className="group relative rounded-xl overflow-hidden min-h-[320px] flex flex-col justify-end text-white"
         >
-          <PlaceholderImage
-            label={t.img}
-            dark
-            className="absolute inset-0 h-full w-full"
-          />
+          {t.imgUrl ? (
+            <Image
+              src={t.imgUrl}
+              alt={t.imgAlt ?? t.name}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <PlaceholderImage
+              label={t.img}
+              dark
+              className="absolute inset-0 h-full w-full"
+            />
+          )}
           <div
             className="absolute inset-0"
             style={{

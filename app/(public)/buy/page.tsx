@@ -12,10 +12,8 @@ import { BuyPropertiesMap } from "../_components/marketing/buy-properties-map";
 import { LeadBand } from "../_components/marketing/lead-band";
 import type { BuyCategory } from "../_components/marketing/buy-category-explorer";
 import { searchRedirectTarget } from "../_components/search-redirect";
-import {
-  AD_COMMUNITIES,
-  SALE_PROP_TYPES,
-} from "../_components/marketing/ad-data";
+import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { buyRentContent } from "../_components/marketing/master-content";
 
 export const revalidate = 300;
 
@@ -30,29 +28,6 @@ type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-const TYPE_PARAM: Record<string, string> = {
-  Apartments: "/buy/search?type=apartment",
-  Villas: "/buy/search?type=villa",
-  Townhouses: "/buy/search?type=townhouse",
-  Penthouses: "/buy/search?type=penthouse",
-  "Commercial Properties": "/commercial",
-};
-
-// Hero category chips → featured filter + "browse all" target.
-const CATEGORIES: BuyCategory[] = [
-  { key: "apartment", label: "Apartment" },
-  { key: "villa", label: "Villa" },
-  { key: "penthouse", label: "Penthouse" },
-  { key: "commercial", label: "Commercial" },
-];
-
-const CATEGORY_CTA_HREF: Record<string, string> = {
-  apartment: "/buy/search?type=apartment",
-  villa: "/buy/search?type=villa",
-  penthouse: "/buy/search?type=penthouse",
-  commercial: "/commercial",
-};
-
 export default async function BuyPage({ searchParams }: PageProps) {
   const raw = await searchParams;
   // Old deep-links (/buy?type=apartment) → the relocated search route.
@@ -60,6 +35,7 @@ export default async function BuyPage({ searchParams }: PageProps) {
   if (target) redirect(target);
 
   const [
+    content,
     exclusiveRows,
     apartmentRows,
     villaRows,
@@ -69,6 +45,7 @@ export default async function BuyPage({ searchParams }: PageProps) {
     dubaiPins,
     dots,
   ] = await Promise.all([
+    getMasterPageContent("buy"),
     listExclusiveProperties({ limit: 4 }),
     listFeaturedByType({ mode: "buy", type: "apartment", limit: 4 }),
     listFeaturedByType({ mode: "buy", type: "villa", limit: 4 }),
@@ -95,27 +72,43 @@ export default async function BuyPage({ searchParams }: PageProps) {
 
   const mapAreas = [...abuDhabiPins, ...dubaiPins];
 
+  // Copy, links, images and section order all come from the master-page editor
+  // (/admin/pages/master/buy). Untouched fields fall back to the defaults in
+  // lib/master-pages, which are this page's original copy.
+  const c = buyRentContent(content);
+
+  // The hero chips drive the interactive featured grid, so their labels double
+  // as category keys.
+  const categories: BuyCategory[] = (c.chips ?? []).map((label) => ({
+    key: label.toLowerCase(),
+    label,
+  }));
+  const categoryCtaHref: Record<string, string> = {};
+  (c.chips ?? []).forEach((label, i) => {
+    const href = c.chipHrefs?.[i];
+    if (href) categoryCtaHref[label.toLowerCase()] = href;
+  });
+  const byCategory: Record<string, ReturnType<typeof listingRowToCard>[]> = {};
+  for (const category of categories) {
+    byCategory[category.key] = featuredByCategory[category.key] ?? [];
+  }
+
   return (
     <BuyRentLanding
-      eyebrow="Buy a Property"
-      title={
-        <>
-          Find the right property
-          <br />
-          with <em className="italic">confidence.</em>
-        </>
-      }
-      sub="Browse ready, resale and off-plan homes across Abu Dhabi's most sought-after communities — with a senior advisor guiding every step."
+      eyebrow={c.eyebrow}
+      title={c.title}
+      sub={c.sub}
       wide
-      categories={CATEGORIES}
-      formTitle="Start your property search"
-      formSub="Tell us what you're looking for, and our team will help you find the right opportunity."
+      categories={categories}
+      formTitle={c.formTitle}
+      formSub={c.formSub}
       featured={featured}
-      featuredByCategory={featuredByCategory}
-      featuredCtaHrefByCategory={CATEGORY_CTA_HREF}
-      featuredTitle="Featured properties for sale"
-      featuredCta="Browse all for sale"
-      featuredCtaHref="/buy/search"
+      featuredByCategory={byCategory}
+      featuredCtaHrefByCategory={categoryCtaHref}
+      featuredTitle={c.featuredTitle}
+      featuredCta={c.featuredCta}
+      featuredCtaHref={c.featuredCtaHref}
+      sectionOrder={c.sectionOrder}
       mapSlot={
         mapAreas.length > 0 ? (
           <BuyPropertiesMap areas={mapAreas} dots={dots} />
@@ -123,87 +116,29 @@ export default async function BuyPage({ searchParams }: PageProps) {
       }
       leadBand={
         <LeadBand
-          eyebrow="Talk to an advisor"
-          title="Tell us what you're after."
-          sub="Share your brief — area, budget, timeline — and a senior advisor will come back with a shortlist worth your time."
-          image="Abu Dhabi waterfront · homes for sale"
+          eyebrow={c.lead.eyebrow}
+          title={c.lead.title}
+          sub={c.lead.sub}
+          image={c.lead.image.label}
+          imageUrl={c.lead.image.url}
+          imageAlt={c.lead.image.alt}
         />
       }
-      waysEyebrow="Ways to buy"
-      waysTitle="What type of property are you looking for?"
-      categoryTiles={[
-        {
-          name: "Off-Plan Properties",
-          desc: "New launches with structured payment plans.",
-          cta: "Browse off-plan",
-          img: "off-plan tower · render",
-          href: "/off-plan",
-        },
-        {
-          name: "Resale Properties",
-          desc: "Established homes ready for handover.",
-          cta: "Browse resale",
-          img: "resale apartment",
-          href: "/buy/search",
-        },
-        {
-          name: "Ready-to-Move Properties",
-          desc: "Vacant, keys-in-hand homes.",
-          cta: "Browse ready",
-          img: "ready villa · interior",
-          href: "/buy/search",
-        },
-        {
-          name: "Commercial Properties",
-          desc: "Offices, retail and land.",
-          cta: "Browse commercial",
-          img: "commercial tower",
-          href: "/commercial",
-        },
-      ]}
-      propTypesTitle="A home for every stage."
-      propTypes={SALE_PROP_TYPES.map(([name, desc]) => ({
-        name,
-        desc,
-        cta:
-          name === "Commercial Properties"
-            ? "Browse commercial"
-            : `Browse ${name.toLowerCase()}`,
-        href: TYPE_PARAM[name] ?? "/buy/search",
-      }))}
-      communitiesEyebrow="Where to buy"
-      communitiesTitle="Abu Dhabi's leading communities."
-      communitiesSub="Explore properties across Abu Dhabi's most popular residential and lifestyle destinations."
-      communityChips={[...AD_COMMUNITIES]}
-      communitiesCta="Explore all locations"
-      why={{
-        title: "Two decades of Abu Dhabi expertise, on your side.",
-        body: "With over 20 years of UAE real estate experience, Bazar Real Estate combines local market knowledge, developer relationships, and client-focused guidance to help you make confident property decisions — whether you're buying your first home or your fifth investment.",
-        stats: [
-          ["20+ yrs", "In the UAE market"],
-          ["Ready + off-plan", "Full-market access"],
-        ],
-      }}
-      faqEyebrow="Buying with Bazar"
-      faqTitle="Questions, answered."
-      faqs={[
-        [
-          "Can Bazar help me buy both ready and off-plan properties?",
-          "Yes. We assist with ready, resale, and off-plan property purchases across Abu Dhabi and the wider UAE.",
-        ],
-        [
-          "Can I buy property in Abu Dhabi as a foreigner?",
-          "Foreign buyers can purchase property in designated investment areas in Abu Dhabi.",
-        ],
-        [
-          "Do I need mortgage approval before searching?",
-          "It is recommended if you plan to finance your purchase, as it helps define your budget clearly.",
-        ],
-        [
-          "Can Bazar help with investment properties?",
-          "Yes. We can guide you based on location, rental demand, developer reputation, and long-term value.",
-        ],
-      ]}
+      waysEyebrow={c.waysEyebrow}
+      waysTitle={c.waysTitle}
+      categoryTiles={c.categoryTiles}
+      propTypesTitle={c.propTypesTitle}
+      propTypes={c.propTypes}
+      communitiesEyebrow={c.communitiesEyebrow}
+      communitiesTitle={c.communitiesTitle}
+      communitiesSub={c.communitiesSub}
+      communityChips={c.communityChips}
+      communitiesCta={c.communitiesCta}
+      communitiesCtaHref={c.communitiesCtaHref}
+      why={c.why}
+      faqEyebrow={c.faqEyebrow}
+      faqTitle={c.faqTitle}
+      faqs={c.faqs}
     />
   );
 }

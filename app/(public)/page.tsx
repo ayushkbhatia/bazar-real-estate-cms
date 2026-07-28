@@ -1,3 +1,4 @@
+import * as React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +26,8 @@ import { DevelopersSection } from "./_components/developers-section";
 import { PartnerEcosystemSection } from "./_components/partner-ecosystem-section";
 import { HomeFaqs } from "./_components/home/home-faqs";
 import { HomeTestimonials } from "./_components/home/home-testimonials";
+import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { faqPairs, img, statPairs, str } from "@/lib/master-pages";
 
 export const revalidate = 60;
 
@@ -45,9 +48,10 @@ function badgeFor(row: ListingRow):
 }
 
 export default async function HomePage() {
-  const [{ rows: featured }, settings] = await Promise.all([
+  const [{ rows: featured }, settings, content] = await Promise.all([
     listPublishedProperties({ mode: "buy", limit: 6 }),
     getPublicSiteSettings(),
+    getMasterPageContent("home"),
   ]);
 
   // Hero variant is driven entirely by site_settings now — the page used to
@@ -63,41 +67,90 @@ export default async function HomePage() {
     ? (settingsVariant as HeroVariant)
     : "fullbleed";
 
-  return (
-    <div className="bg-bz-bg">
-      <HeroForVariant variant={variant} />
+  // Section copy, links, images and order come from
+  // /admin/pages/master/home. Anything untouched falls back to the literals
+  // the components ship with.
+  const v = (key: string) => content.section(key)?.values ?? {};
+  const heroV = v("hero");
+  const locationV = v("location_browsing");
+  const offPlanV = v("off_plan_projects");
+  const featuredV = v("featured_properties");
+  const listV = v("list_your_property");
+  const mortgageV = v("mortgage_calculator");
+  const whoV = v("who_we_are");
+  const faqV = v("faqs");
+  const testimonialsV = v("testimonials");
+  const listImage = img(listV, "image");
 
-      {/* Interactive area map — mounts on scroll (kept as-is). Everything
-          below here is the client-audit home restructure. */}
-      <AreaMapSection />
+  const nodes: Record<string, React.ReactNode> = {
+    hero: (
+      <HeroForVariant
+        key="hero"
+        variant={variant}
+        copy={{
+          eyebrow: str(heroV, "eyebrow"),
+          title: str(heroV, "title"),
+          subtitle: str(heroV, "subtitle"),
+          link1: {
+            label: str(heroV, "link_1_label"),
+            href: str(heroV, "link_1_href"),
+          },
+          link2: {
+            label: str(heroV, "link_2_label"),
+            href: str(heroV, "link_2_href"),
+          },
+        }}
+      />
+    ),
 
-      {/* 1 — Location-based browsing */}
-      <LocationBrowsing />
+    area_map: <AreaMapSection key="area_map" />,
 
-      {/* 2 — Off-plan projects */}
-      <OffPlanProjects />
+    location_browsing: (
+      <LocationBrowsing
+        key="location_browsing"
+        eyebrow={str(locationV, "eyebrow")}
+        heading={str(locationV, "heading")}
+        body={str(locationV, "body")}
+        ctaLabel={str(locationV, "cta_label")}
+        ctaHref={str(locationV, "cta_href")}
+      />
+    ),
 
-      {/* 3 — Featured properties */}
-      <section className="px-4 md:px-12 py-14 md:py-20">
+    off_plan_projects: (
+      <OffPlanProjects
+        key="off_plan_projects"
+        eyebrow={str(offPlanV, "eyebrow")}
+        heading={str(offPlanV, "heading")}
+        body={str(offPlanV, "body")}
+        ctaLabel={str(offPlanV, "cta_label")}
+        ctaHref={str(offPlanV, "cta_href")}
+      />
+    ),
+
+    featured_properties: (
+      <section key="featured_properties" className="px-4 md:px-12 py-14 md:py-20">
         <div className="mb-8 flex flex-col gap-5 md:mb-11 md:flex-row md:items-end md:justify-between">
           <div>
             <div
               className="text-[11px] font-medium uppercase text-bz-muted"
               style={{ letterSpacing: "0.12em" }}
             >
-              Featured properties for sale
+              {str(featuredV, "eyebrow")}
             </div>
             <h2 className="serif mt-2 text-[28px] md:text-[44px] font-normal leading-[1.05] tracking-tight">
-              Featured properties, handpicked for you
+              {str(featuredV, "heading")}
             </h2>
             <p className="mt-4 max-w-[56ch] text-[14.5px] md:text-[15.5px] text-bz-ink-2 leading-relaxed">
-              Discover properties that bring you closer to the lifestyle you are
-              looking for.
+              {str(featuredV, "body")}
             </p>
           </div>
-          <Button asChild variant="outline" className="self-start">
-            <Link href="/buy/search">All properties</Link>
-          </Button>
+          {str(featuredV, "cta_label") ? (
+            <Button asChild variant="outline" className="self-start">
+              <Link href={str(featuredV, "cta_href") ?? "/buy/search"}>
+                {str(featuredV, "cta_label")}
+              </Link>
+            </Button>
+          ) : null}
         </div>
         {featured.length > 0 ? (
           <SavedIdsProvider>
@@ -140,27 +193,65 @@ export default async function HomePage() {
           </p>
         )}
       </section>
+    ),
 
-      {/* 4 — List your property */}
-      <ListYourProperty />
+    list_your_property: (
+      <ListYourProperty
+        key="list_your_property"
+        eyebrow={str(listV, "eyebrow")}
+        heading={str(listV, "heading")}
+        body={str(listV, "body")}
+        imageUrl={listImage?.url ?? null}
+        imageAlt={listImage?.alt ?? null}
+        imageLabel={listImage?.label ?? null}
+      />
+    ),
 
-      {/* 5 — Mortgage calculator */}
-      <MortgageCalculatorSection />
+    mortgage_calculator: (
+      <MortgageCalculatorSection
+        key="mortgage_calculator"
+        eyebrow={str(mortgageV, "eyebrow")}
+        heading={str(mortgageV, "heading")}
+      />
+    ),
 
-      {/* 6 — Who we are */}
-      <WhoWeAre />
+    who_we_are: (
+      <WhoWeAre
+        key="who_we_are"
+        eyebrow={str(whoV, "eyebrow")}
+        heading={str(whoV, "heading")}
+        body={str(whoV, "body")}
+        stats={statPairs(whoV)}
+      />
+    ),
 
-      {/* 6b — Developer partners */}
-      <DevelopersSection />
+    developers: <DevelopersSection key="developers" />,
+    partners: <PartnerEcosystemSection key="partners" />,
 
-      {/* 6c — Partner ecosystem (shared with /about) */}
-      <PartnerEcosystemSection />
+    faqs: (
+      <HomeFaqs
+        key="faqs"
+        eyebrow={str(faqV, "eyebrow")}
+        heading={str(faqV, "heading")}
+        body={str(faqV, "body")}
+        items={faqPairs(faqV)}
+      />
+    ),
 
-      {/* 7 — FAQs */}
-      <HomeFaqs />
+    testimonials: (
+      <HomeTestimonials
+        key="testimonials"
+        eyebrow={str(testimonialsV, "eyebrow")}
+        heading={str(testimonialsV, "heading")}
+      />
+    ),
+  };
 
-      {/* 8 — Testimonials */}
-      <HomeTestimonials />
+  return (
+    <div className="bg-bz-bg">
+      {content.order.map((key) => (
+        <React.Fragment key={key}>{nodes[key] ?? null}</React.Fragment>
+      ))}
     </div>
   );
 }

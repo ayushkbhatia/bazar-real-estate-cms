@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import type { SectionCopy } from "./section-copy";
 
 /**
  * Home "FAQs" (handoff §7). Single-open accordion, first item open, plus
@@ -31,7 +32,12 @@ const FAQS: [string, string][] = [
   ],
 ];
 
-export function HomeFaqs() {
+export function HomeFaqs({
+  eyebrow = "FAQs",
+  heading = "Frequently asked questions",
+  body = "Clear guidance for every step of your real estate journey.",
+  items,
+}: SectionCopy & { items?: [string, string][] } = {}) {
   const [open, setOpen] = useState(0);
 
   return (
@@ -42,18 +48,18 @@ export function HomeFaqs() {
             className="text-[11px] font-medium uppercase text-bz-accent"
             style={{ letterSpacing: "0.12em" }}
           >
-            FAQs
+            {eyebrow}
           </div>
           <h2 className="serif mt-2.5 text-[30px] md:text-[44px] font-normal leading-[1.05] tracking-tight">
-            Frequently asked questions
+            {heading}
           </h2>
           <p className="mt-4 max-w-[36ch] text-[14.5px] md:text-[15.5px] text-bz-ink-2 leading-relaxed">
-            Clear guidance for every step of your real estate journey.
+            {body}
           </p>
         </div>
 
         <div>
-          {FAQS.map(([q, a], i) => {
+          {(items && items.length > 0 ? items : FAQS).map(([q, a], i) => {
             const on = open === i;
             return (
               <div key={q} className="border-t border-bz-border">

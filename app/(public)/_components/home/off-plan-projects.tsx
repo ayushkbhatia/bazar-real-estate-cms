@@ -8,12 +8,19 @@ import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { developmentUrl } from "@/lib/queries/development-utils";
 import { formatPriceAED } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
+import type { SectionCopy } from "./section-copy";
 
 /**
  * Home "Off-plan projects" (handoff §2). Three live developments from
  * listPublishedDevelopments(). Desktop 3-up grid, mobile snap carousel.
  */
-export async function OffPlanProjects() {
+export async function OffPlanProjects({
+  eyebrow = "Off-plan projects for sale",
+  heading = "New developments in Abu Dhabi",
+  body = "Explore the latest off-plan projects across top communities.",
+  ctaLabel = "All developments",
+  ctaHref = "/developments",
+}: SectionCopy = {}) {
   const developments = await listPublishedDevelopments();
   const projects = developments.slice(0, 3);
   if (projects.length === 0) return null;
@@ -22,18 +29,16 @@ export async function OffPlanProjects() {
     <section className="px-4 md:px-12 py-14 md:py-20 bg-bz-surface-2">
       <div className="mb-8 flex flex-col gap-5 md:mb-11 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="eyebrow">
-            Off-plan projects for sale
-          </div>
+          <div className="eyebrow">{eyebrow}</div>
           <h2 className="serif mt-2 text-[28px] md:text-[44px] font-normal leading-[1.05] tracking-tight">
-            New developments in Abu Dhabi
+            {heading}
           </h2>
           <p className="mt-4 max-w-[52ch] text-[14.5px] md:text-[15.5px] text-bz-ink-2 leading-relaxed">
-            Explore the latest off-plan projects across top communities.
+            {body}
           </p>
         </div>
         <Button asChild variant="outline" className="self-start">
-          <Link href="/developments">All developments</Link>
+          <Link href={ctaHref ?? "/developments"}>{ctaLabel}</Link>
         </Button>
       </div>
 

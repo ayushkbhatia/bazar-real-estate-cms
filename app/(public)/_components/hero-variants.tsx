@@ -14,7 +14,20 @@ export type HeroVariant = "fullbleed" | "editorial" | "map" | "concierge";
  * reading `searchParams` would force the whole route into dynamic
  * (uncached) rendering.
  */
-export function HeroFullBleed() {
+/**
+ * Copy overrides from the master-page editor. Only the full-bleed hero — the
+ * default and the one the home page ships with — is editable; the other three
+ * variants keep their own copy.
+ */
+export type HeroCopy = {
+  eyebrow?: string | null;
+  title?: string | null;
+  subtitle?: string | null;
+  link1?: { label?: string | null; href?: string | null };
+  link2?: { label?: string | null; href?: string | null };
+};
+
+export function HeroFullBleed({ copy }: { copy?: HeroCopy } = {}) {
   return (
     <section className="relative min-h-[560px] md:h-[720px] bg-bz-ink overflow-hidden">
       <HeroVideoBg
@@ -24,31 +37,33 @@ export function HeroFullBleed() {
       {/* Scrim: keeps the white headline + search legible over the footage. */}
       <div className="absolute inset-0 bg-gradient-to-t from-bz-ink/95 via-bz-ink/55 to-bz-ink/35" />
       <div className="relative h-full px-4 md:px-12 flex flex-col justify-end pb-10 md:pb-16 pt-24 md:pt-0 text-white">
-        <Eyebrow className="text-white/60 mb-4">Bazar · Abu Dhabi</Eyebrow>
+        <Eyebrow className="text-white/60 mb-4">
+          {copy?.eyebrow ?? "Bazar · Abu Dhabi"}
+        </Eyebrow>
         <h1
           className="serif text-[44px] md:text-[88px] leading-[0.98] font-normal max-w-[12ch]"
           style={{ letterSpacing: "-0.03em" }}
         >
-          Find a home worth keeping.
+          {copy?.title ?? "Find a home worth keeping."}
         </h1>
         <p className="mt-5 max-w-[60ch] text-[15px] md:text-[17px] leading-relaxed text-white/80">
-          Curated marketplace and bespoke advisory for buyers, sellers, and
-          investors across the United Arab Emirates.
+          {copy?.subtitle ??
+            "Curated marketplace and bespoke advisory for buyers, sellers, and investors across the United Arab Emirates."}
         </p>
         <HeroSearch />
         <div className="mt-5 flex gap-3 text-[13.5px]">
           <Link
-            href="/off-plan"
+            href={copy?.link1?.href ?? "/off-plan"}
             className="text-white/85 hover:text-white underline underline-offset-4 transition-colors"
           >
-            Browse Properties
+            {copy?.link1?.label ?? "Browse Properties"}
           </Link>
           <span className="text-white/30">·</span>
           <Link
-            href="/concierge"
+            href={copy?.link2?.href ?? "/concierge"}
             className="text-white/85 hover:text-white underline underline-offset-4 transition-colors"
           >
-            Talk to an Advisor
+            {copy?.link2?.label ?? "Talk to an Advisor"}
           </Link>
         </div>
       </div>
@@ -176,7 +191,13 @@ export function HeroConcierge() {
   );
 }
 
-export function HeroForVariant({ variant }: { variant: HeroVariant }) {
+export function HeroForVariant({
+  variant,
+  copy,
+}: {
+  variant: HeroVariant;
+  copy?: HeroCopy;
+}) {
   switch (variant) {
     case "editorial":
       return <HeroEditorial />;
@@ -186,6 +207,6 @@ export function HeroForVariant({ variant }: { variant: HeroVariant }) {
       return <HeroConcierge />;
     case "fullbleed":
     default:
-      return <HeroFullBleed />;
+      return <HeroFullBleed copy={copy} />;
   }
 }

@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { listAllPagesForAdmin, pageUrl, type PageListRow } from "@/lib/queries/pages";
+import { MASTER_PAGES } from "@/lib/master-pages";
 
 export const dynamic = "force-dynamic";
 
@@ -65,7 +66,36 @@ export default async function AdminPagesPage() {
       }
     >
       <div className="flex flex-col gap-6">
-        <p className="text-[13px] text-bz-muted max-w-[60ch]">
+        <section className="flex flex-col gap-3">
+          <div>
+            <h2 className="text-[14px] font-medium">Master pages</h2>
+            <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
+              The marketing pages. Reorder their sections, hide the ones you
+              don&apos;t need, and edit copy, links and images without touching
+              code.
+            </p>
+          </div>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {MASTER_PAGES.map((p) => (
+              <li key={p.key}>
+                <Link
+                  href={`/admin/pages/master/${p.key}`}
+                  className="flex h-full flex-col gap-1 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
+                >
+                  <span className="text-[13.5px] font-medium">{p.label}</span>
+                  <span className="mono text-[11px] text-bz-muted">
+                    {p.path}
+                  </span>
+                  <span className="mt-1 text-[11.5px] text-bz-muted-2">
+                    {p.sections.length} sections
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <p className="text-[13px] text-bz-muted max-w-[60ch] border-t border-bz-border pt-6">
           Block-based content pages. Each lives at <span className="mono">/pages/&lt;slug&gt;</span>.
           Compose hero, strip, split, grid, and banner blocks; publish when ready.
         </p>

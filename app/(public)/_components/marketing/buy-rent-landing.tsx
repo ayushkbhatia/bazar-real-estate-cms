@@ -1,3 +1,4 @@
+import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -68,13 +69,33 @@ export type BuyRentLandingProps = {
   communitiesEyebrow: string;
   communitiesTitle: string;
   communitiesSub: string;
-  communityChips: string[];
+  communityChips: (string | { label: string; href?: string })[];
   communitiesCta: string;
   why: { title: React.ReactNode; body: string; stats: [string, string][] };
   faqEyebrow: string;
   faqTitle: string;
   faqs: [string, string][];
+  /**
+   * Ordered, enabled section keys from the master-page editor
+   * (`lib/master-pages`). Omit to keep the built-in order with every section
+   * shown — which is what /buy and /rent render before anyone edits them.
+   */
+  sectionOrder?: string[];
+  communitiesCtaHref?: string;
 };
+
+/** Section keys, in the order they render by default. Mirrors the registry. */
+export const BUY_RENT_SECTIONS = [
+  "hero",
+  "map",
+  "featured",
+  "ways",
+  "prop_types",
+  "communities",
+  "lead_band",
+  "why",
+  "faq",
+] as const;
 
 const SECTION = "px-4 md:px-12 py-14 md:py-[72px] border-t border-bz-border";
 
@@ -135,10 +156,15 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
     ? p.featured.length > 0 || hasCategoryFeatured
     : p.featured.length > 0;
 
-  const body = (
-    <>
-      {/* Hero + lead form */}
-      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-14 md:pb-[72px]">
+  // Each section is built once, then emitted in whatever order the master-page
+  // editor asks for. `hero` carries the enquiry-form card with it — they are
+  // one grid, not two stacked sections.
+  const nodes: Record<string, React.ReactNode> = {
+    hero: (
+      <section
+        key="hero"
+        className="px-4 md:px-12 pt-12 md:pt-20 pb-14 md:pb-[72px]"
+      >
         <div
           className={cn(
             "grid grid-cols-1 lg:grid-cols-[1fr_460px] gap-10 lg:gap-16 items-center",
@@ -193,42 +219,38 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           </div>
         </div>
       </section>
+    ),
 
-      {/* Area map above the featured row (Rent) */}
-      {p.mapAbove ? p.mapSlot : null}
+    map: p.mapSlot ?? null,
 
-      {/* Featured listings */}
-      {showFeatured ? (
-        <section className={SECTION}>
-          <div className={wrap}>
-            {interactive ? (
-              <CategoryFeatured
-                byCategory={p.featuredByCategory ?? {}}
-                fallback={p.featured}
-                title={p.featuredTitle}
-                ctaLabel={p.featuredCta}
-                ctaHref={p.featuredCtaHref}
-                ctaHrefByCategory={p.featuredCtaHrefByCategory}
-              />
-            ) : (
-              <FeaturedListings
-                eyebrow="Handpicked"
-                title={p.featuredTitle}
-                ctaLabel={p.featuredCta}
-                ctaHref={p.featuredCtaHref}
-                items={p.featured}
-              />
-            )}
-          </div>
-        </section>
-      ) : null}
+    featured: showFeatured ? (
+      <section key="featured" className={SECTION}>
+        <div className={wrap}>
+          {interactive ? (
+            <CategoryFeatured
+              byCategory={p.featuredByCategory ?? {}}
+              fallback={p.featured}
+              title={p.featuredTitle}
+              ctaLabel={p.featuredCta}
+              ctaHref={p.featuredCtaHref}
+              ctaHrefByCategory={p.featuredCtaHrefByCategory}
+            />
+          ) : (
+            <FeaturedListings
+              eyebrow="Handpicked"
+              title={p.featuredTitle}
+              ctaLabel={p.featuredCta}
+              ctaHref={p.featuredCtaHref}
+              items={p.featured}
+            />
+          )}
+        </div>
+      </section>
+    ) : null,
 
-      {/* Area map below the featured row (Buy) */}
-      {p.mapAbove ? null : p.mapSlot}
-
-      {/* Ways to buy — category tiles (Buy only) */}
-      {p.categoryTiles.length > 0 ? (
-        <section className={SECTION}>
+    ways:
+      p.categoryTiles.length > 0 ? (
+        <section key="ways" className={SECTION}>
           <div className={wrap}>
             <SectionHead
               eyebrow={p.waysEyebrow}
@@ -239,10 +261,10 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
             <CategoryTiles items={p.categoryTiles} />
           </div>
         </section>
-      ) : null}
+      ) : null,
 
-      {/* Property types */}
-      <section className={SECTION}>
+    prop_types: (
+      <section key="prop_types" className={SECTION}>
         <div className={wrap}>
           <SectionHead
             eyebrow="Property types"
@@ -253,9 +275,10 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           <PropTypeGrid items={p.propTypes} cols={3} />
         </div>
       </section>
+    ),
 
-      {/* Communities */}
-      <section className={SECTION}>
+    communities: (
+      <section key="communities" className={SECTION}>
         <div
           className={cn(
             "grid grid-cols-1 lg:grid-cols-[1fr_1.3fr] gap-10 lg:gap-16 items-center",
@@ -271,23 +294,26 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           <ChipCloud
             chips={p.communityChips}
             cta={p.communitiesCta}
-            ctaHref="/areas"
+            ctaHref={p.communitiesCtaHref ?? "/areas"}
           />
         </div>
       </section>
+    ),
 
-      {/* Second lead form (Buy only) */}
-      {p.leadBand}
+    lead_band: p.leadBand ?? null,
 
+    why: (
       <WhyBand
+        key="why"
         title={p.why.title}
         body={p.why.body}
         stats={p.why.stats}
         wide={p.wide}
       />
+    ),
 
-      {/* FAQ */}
-      <section className="px-4 md:px-12 py-14 md:py-20">
+    faq: (
+      <section key="faq" className="px-4 md:px-12 py-14 md:py-20">
         <div className={wrap}>
           <SectionHead
             eyebrow={p.faqEyebrow}
@@ -298,6 +324,22 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           <Faq items={p.faqs} />
         </div>
       </section>
+    ),
+  };
+
+  // Default order preserves the historical layout, including /rent's map above
+  // the featured row.
+  const defaultOrder = p.mapAbove
+    ? ["hero", "map", "featured", "ways", "prop_types", "communities", "lead_band", "why", "faq"]
+    : ["hero", "featured", "map", "ways", "prop_types", "communities", "lead_band", "why", "faq"];
+
+  const order = p.sectionOrder?.length ? p.sectionOrder : defaultOrder;
+
+  const body = (
+    <>
+      {order.map((key) => (
+        <React.Fragment key={key}>{nodes[key] ?? null}</React.Fragment>
+      ))}
     </>
   );
 
