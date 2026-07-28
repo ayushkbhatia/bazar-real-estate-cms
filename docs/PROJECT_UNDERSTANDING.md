@@ -87,7 +87,7 @@ RLS from day one. Permissions baked into Postgres, not application code.
 From [handoff docs/07-workflows.md](/Users/ayushkbhatia/Downloads/design_handoff_bazar_website_cms/docs/07-workflows.md):
 
 1. **Lead lifecycle** (the most critical): capture → qualify → viewing → offer → close. Auto-reply within 30s, route to assigned agent, escalate at 60min, log every step to `audit_log`.
-2. **Listing publication:** compliance pre-flight (Form A, title deed, NOC, PoA, valid listing permit, valid BRN), publish → Meilisearch reindex → ISR revalidation → optional Property Finder/Bayut syndication.
+2. **Listing publication:** pre-flight (developer, title, slug, price, valid + non-expired listing permit), publish → Meilisearch reindex → ISR revalidation → optional Property Finder/Bayut syndication. The paperwork flags on `properties.compliance` (Form A, title deed, NOC, PoA) and the hero-image requirement were removed from the gate — that paperwork is chased outside the CMS and was blocking listings that were otherwise ready.
 3. **Valuation request:** 4-step form → auto-estimate from DARI/DMT comparables → advisor reviews and adjusts → branded PDF delivered → 7- and 30-day nurture emails.
 4. **AI Concierge:** Anthropic Claude with function-calling against Meilisearch + pgvector + DB. Streams responses; manages an inferred brief (chips with × to remove); can hand off to a human advisor.
 5. **Saved-search alerts:** instant/daily/weekly cadence; Inngest cron.

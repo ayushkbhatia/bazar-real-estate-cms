@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   CheckCircle2,
@@ -11,24 +11,16 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import {
-  COMPLIANCE_LABELS,
-  type PropertyCompliance,
-} from "@/lib/schemas/property";
-import {
   evaluatePublishability,
   type PublishabilityInput,
 } from "@/lib/publishability";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import {
-  publishProperty,
-  unpublishProperty,
-  updateCompliance,
-} from "./_actions";
+import { publishProperty, unpublishProperty } from "./_actions";
 
-/** Everything the pre-flight gate needs EXCEPT the compliance flags, which the
- *  card owns as live state. Fed from the server-rendered property row. */
-export type PublishInput = Omit<PublishabilityInput, "compliance" | "now">;
+/** Everything the pre-flight gate needs. Fed from the server-rendered
+ *  property row, so it re-reads on every `router.refresh()`. */
+export type PublishInput = Omit<PublishabilityInput, "now">;
 
 type Status =
   | "draft"
@@ -40,7 +32,6 @@ type Status =
 type Props = {
   propertyId: string;
   status: Status;
-  compliance: PropertyCompliance;
   input: PublishInput;
 };
 
@@ -60,44 +51,21 @@ const STATUS_STYLES: Record<Status, string> = {
   archived: "bg-[oklch(0.96_0.04_28)] text-[oklch(0.45_0.13_28)]",
 };
 
-export function PublishCard({
-  propertyId,
-  status,
-  compliance: initialCompliance,
-  input,
-}: Props) {
+export function PublishCard({ propertyId, status, input }: Props) {
   const router = useRouter();
-  const [compliance, setCompliance] = useState(initialCompliance);
-  const [savingFlag, setSavingFlag] = useState<keyof PropertyCompliance | null>(
-    null,
-  );
   const [publishing, startPublishing] = useTransition();
 
-  // Recompute the gate live from the current compliance state + the
-  // server-fed inputs. This is the fix for the "ticked everything but the
-  // button won't enable" bug: previously checks/publishable were frozen props.
   const { checks, ok: publishable } = useMemo(
-    () => evaluatePublishability({ ...input, compliance }),
-    [input, compliance],
+    () => evaluatePublishability(input),
+    [input],
   );
 
   const permitCheckFailing = checks.some(
     (c) => !c.passed && c.label.toLowerCase().includes("permit"),
   );
-
-  function toggle(key: keyof PropertyCompliance) {
-    const next = { ...compliance, [key]: !compliance[key] };
-    setCompliance(next);
-    setSavingFlag(key);
-    void (async () => {
-      const result = await updateCompliance(propertyId, next);
-      setSavingFlag(null);
-      if (result.status === "error") {
-        toast.error(result.message);
-        setCompliance(compliance); // rollback
-      }
-    })();
-  }
+  const developerCheckFailing = checks.some(
+    (c) => !c.passed && c.label.toLowerCase().includes("developer"),
+  );
 
   function onPublish() {
     startPublishing(async () => {
@@ -143,35 +111,6 @@ export function PublishCard({
 
       <section>
         <div className="text-[12px] text-bz-muted uppercase tracking-wider mb-2">
-          Compliance
-        </div>
-        <ul className="flex flex-col gap-1.5">
-          {(Object.keys(COMPLIANCE_LABELS) as (keyof PropertyCompliance)[]).map(
-            (key) => (
-              <li key={key}>
-                <label className="flex items-center gap-2.5 cursor-pointer select-none text-[13.5px]">
-                  <input
-                    type="checkbox"
-                    checked={compliance[key]}
-                    onChange={() => toggle(key)}
-                    disabled={savingFlag === key}
-                    className="h-3.5 w-3.5 accent-bz-accent"
-                  />
-                  <span>{COMPLIANCE_LABELS[key]}</span>
-                  {savingFlag === key ? (
-                    <span className="text-[11px] text-bz-muted ml-auto">
-                      Saving…
-                    </span>
-                  ) : null}
-                </label>
-              </li>
-            ),
-          )}
-        </ul>
-      </section>
-
-      <section>
-        <div className="text-[12px] text-bz-muted uppercase tracking-wider mb-2">
           Pre-flight
         </div>
         <ul className="flex flex-col gap-1">
@@ -200,6 +139,13 @@ export function PublishCard({
             </li>
           ))}
         </ul>
+        {developerCheckFailing ? (
+          <p className="mt-2 text-[11.5px] text-bz-muted">
+            Pick a developer in the{" "}
+            <span className="text-bz-ink-2">Overview</span> tab — it saves as
+            soon as you choose one.
+          </p>
+        ) : null}
         {permitCheckFailing ? (
           <p className="mt-2 text-[11.5px] text-bz-muted">
             Set the listing permit number and a future expiry date in the{" "}

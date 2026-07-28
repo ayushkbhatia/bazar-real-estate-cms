@@ -9,11 +9,7 @@ import { currentStaffRow } from "@/lib/queries/staff";
 import { listActiveAgents, type ActiveAgent } from "@/lib/queries/staff-agents";
 import { PresenceBanner } from "@/lib/realtime/presence-banner";
 import { PresencePile } from "@/lib/realtime/presence-pile";
-import {
-  type PropertyEditInput,
-  normaliseCompliance,
-  type PropertyCompliance,
-} from "@/lib/schemas/property";
+import { type PropertyEditInput } from "@/lib/schemas/property";
 import {
   PropertyEditForm,
   type AreaOption,
@@ -36,7 +32,7 @@ async function fetchPropertyForEdit(id: string) {
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, compliance, assigned_agent_id, geo",
+      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, assigned_agent_id, geo",
     )
     .eq("id", id)
     .maybeSingle();
@@ -150,9 +146,6 @@ export default async function PropertyEditPage({ params }: PageProps) {
   const agentOptions = await withCurrentAgent(activeAgents, assignedAgentId);
 
   const seo = (property.seo as Record<string, unknown> | null) ?? {};
-  const compliance: PropertyCompliance = normaliseCompliance(
-    property.compliance as Record<string, unknown> | null,
-  );
 
   const initial: PropertyEditInput = {
     title: property.title,
@@ -210,14 +203,12 @@ export default async function PropertyEditPage({ params }: PageProps) {
       }
     : null;
 
-  // Raw inputs for the publish gate. The PublishCard recomputes the checklist
-  // client-side from these + its live compliance state (compliance is omitted
-  // here — the card owns it).
+  // Raw inputs for the publish gate. The PublishCard renders the checklist
+  // from these; every value is server truth, so the card re-reads on
+  // `router.refresh()` after a save.
   const publishInput: PublishInput = {
     status: property.status,
-    has_hero: media.some((m) => m.role === "hero"),
     has_developer: initial.developer_id !== "",
-    poa_optional: true,
     listing_permit_no: property.listing_permit_no,
     listing_permit_expires_at: property.listing_permit_expires_at,
     slug: property.slug,
@@ -287,7 +278,6 @@ export default async function PropertyEditPage({ params }: PageProps) {
           <PublishCard
             propertyId={property.id}
             status={property.status}
-            compliance={compliance}
             input={publishInput}
           />
         </aside>

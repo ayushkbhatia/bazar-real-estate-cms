@@ -3,13 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import {
-  propertyEditSchema,
-  propertyComplianceSchema,
-  normaliseEditInput,
-  normaliseCompliance,
-  type PropertyCompliance,
-} from "@/lib/schemas/property";
+import { propertyEditSchema, normaliseEditInput } from "@/lib/schemas/property";
 import { propertyUrl } from "@/lib/queries/properties";
 import {
   evaluatePublishability,
@@ -603,51 +597,49 @@ export async function setPropertyMediaAlt(
   return { status: "ok", message: "Alt text saved." };
 }
 
-export type ComplianceResult =
-  | { status: "ok"; message?: string; compliance: PropertyCompliance }
+export type SetDeveloperResult =
+  | { status: "ok"; message: string }
   | { status: "error"; message: string };
 
-export async function updateCompliance(
+/**
+ * Persist the developer the moment it is picked in the Overview tab, instead
+ * of waiting for a full form save. "Developer is set" is a publish gate read
+ * from the saved row, so a pick that only lived in form state left the
+ * pre-flight check stuck on unticked until the whole form was saved — the
+ * single biggest source of "I selected it, why is it still failing?".
+ *
+ * Standalone like `assignAgent`/`setPropertyLocation`: it touches one column,
+ * so it can't clobber unsaved edits elsewhere in the form (and the form's own
+ * save writes the same value again, harmlessly).
+ */
+export async function setPropertyDeveloper(
   propertyId: string,
-  raw: Record<string, unknown>,
-): Promise<ComplianceResult> {
+  developerId: string,
+): Promise<SetDeveloperResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
   await requireRole(PROPERTY_ROLES);
 
-  const parsed = propertyComplianceSchema.safeParse(normaliseCompliance(raw));
-  if (!parsed.success) {
-    return { status: "error", message: "Invalid compliance payload." };
-  }
+  if (!UUID_RE.test(developerId))
+    return { status: "error", message: "Pick a developer." };
 
   const supabase = await createSupabaseServerClient();
-  const { data: before } = await supabase
-    .from("properties")
-    .select("compliance")
-    .eq("id", propertyId)
-    .maybeSingle();
-
   const { data, error } = await supabase
     .from("properties")
-    .update({ compliance: parsed.data })
+    .update({ developer_id: developerId })
     .eq("id", propertyId)
     .select("id")
     .maybeSingle();
 
-  if (error)
-    return { status: "error", message: error.message };
-  if (!data) return { status: "error", message: "Not found / not allowed." };
-
-  await logAudit({
-    action: "property.compliance_update",
-    target_kind: "property",
-    target_id: propertyId,
-    before: (before?.compliance as Record<string, unknown>) ?? null,
-    after: parsed.data,
-  });
+  if (error) return { status: "error", message: error.message };
+  if (!data)
+    return {
+      status: "error",
+      message: "Property not found, or your account is not allowed to edit it.",
+    };
 
   await revalidatePropertyPaths(propertyId);
-  return { status: "ok", message: "Compliance saved.", compliance: parsed.data };
+  return { status: "ok", message: "Developer saved." };
 }
 
 export type PublishResult =
@@ -676,7 +668,7 @@ async function loadPublishabilityFor(propertyId: string): Promise<{
   const { data: p, error } = await supabase
     .from("properties")
     .select(
-      "id, slug, reference, status, title, price_aed, developer_id, listing_permit_no, listing_permit_expires_at, compliance, property_media(role)",
+      "id, slug, reference, status, title, price_aed, developer_id, listing_permit_no, listing_permit_expires_at",
     )
     .eq("id", propertyId)
     .maybeSingle();
@@ -684,23 +676,14 @@ async function loadPublishabilityFor(propertyId: string): Promise<{
   if (error) return { data: null, error: error.message };
   if (!p) return { data: null, error: "Property not found." };
 
-  const has_hero = ((p.property_media as { role: string }[] | null) ?? []).some(
-    (m) => m.role === "hero",
-  );
-
   const result = evaluatePublishability({
     status: p.status,
-    has_hero,
     has_developer: p.developer_id != null,
-    poa_optional: true,
     listing_permit_no: p.listing_permit_no,
     listing_permit_expires_at: p.listing_permit_expires_at,
     slug: p.slug,
     title: p.title,
     price_aed: p.price_aed != null ? Number(p.price_aed) : null,
-    compliance: normaliseCompliance(
-      p.compliance as Record<string, unknown> | null,
-    ),
   });
 
   return {

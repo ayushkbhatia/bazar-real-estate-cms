@@ -4,7 +4,6 @@ import {
   evaluatePublishability,
   type PublishabilityResult,
 } from "@/lib/publishability";
-import { normaliseCompliance } from "@/lib/schemas/property";
 
 /**
  * Shape returned by `listPropertiesByIdsForBulk`. Lightweight on purpose —
@@ -21,8 +20,6 @@ export type BulkPropertyRow = {
   price_aed: number;
   listing_permit_no: string | null;
   listing_permit_expires_at: string | null;
-  compliance: Record<string, unknown> | null;
-  has_hero: boolean;
 };
 
 /**
@@ -43,7 +40,7 @@ export async function listPropertiesByIdsForBulk(
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, reference, slug, title, status, price_aed, listing_permit_no, listing_permit_expires_at, compliance, property_media(role)",
+      "id, reference, slug, title, status, price_aed, listing_permit_no, listing_permit_expires_at",
     )
     .in("id", ids.slice(0, 500))
     .is("deleted_at", null);
@@ -52,21 +49,17 @@ export async function listPropertiesByIdsForBulk(
     return [];
   }
 
-  const rows: BulkPropertyRow[] = data.map((r) => {
-    const media = (r as { property_media?: { role: string }[] }).property_media ?? [];
-    return {
-      id: r.id,
-      reference: r.reference,
-      slug: r.slug,
-      title: r.title,
-      status: r.status,
-      price_aed: typeof r.price_aed === "number" ? r.price_aed : Number(r.price_aed),
-      listing_permit_no: r.listing_permit_no,
-      listing_permit_expires_at: r.listing_permit_expires_at,
-      compliance: r.compliance as Record<string, unknown> | null,
-      has_hero: media.some((m) => m.role === "hero"),
-    };
-  });
+  const rows: BulkPropertyRow[] = data.map((r) => ({
+    id: r.id,
+    reference: r.reference,
+    slug: r.slug,
+    title: r.title,
+    status: r.status,
+    price_aed:
+      typeof r.price_aed === "number" ? r.price_aed : Number(r.price_aed),
+    listing_permit_no: r.listing_permit_no,
+    listing_permit_expires_at: r.listing_permit_expires_at,
+  }));
 
   const order = new Map(ids.map((id, idx) => [id, idx]));
   return rows.sort(
@@ -81,12 +74,10 @@ export function evaluateBulkPublishability(
 ): PublishabilityResult {
   return evaluatePublishability({
     status: row.status,
-    has_hero: row.has_hero,
     listing_permit_no: row.listing_permit_no,
     listing_permit_expires_at: row.listing_permit_expires_at,
     slug: row.slug,
     title: row.title,
     price_aed: row.price_aed,
-    compliance: normaliseCompliance(row.compliance),
   });
 }

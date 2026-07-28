@@ -5,9 +5,12 @@ import userEvent from "@testing-library/user-event";
 import type { PropertyEditInput } from "@/lib/schemas/property";
 
 const updatePropertyMock = vi.fn();
+const setPropertyDeveloperMock = vi.fn();
 
 vi.mock("./_actions", () => ({
   updateProperty: (...args: unknown[]) => updatePropertyMock(...args),
+  setPropertyDeveloper: (...args: unknown[]) =>
+    setPropertyDeveloperMock(...args),
 }));
 
 vi.mock("sonner", () => ({
@@ -69,6 +72,8 @@ const INITIAL: PropertyEditInput = {
 describe("<PropertyEditForm>", () => {
   beforeEach(() => {
     updatePropertyMock.mockReset();
+    setPropertyDeveloperMock.mockReset().mockResolvedValue({ status: "ok" });
+    refreshMock.mockReset();
     vi.mocked(toast.success).mockReset();
     vi.mocked(toast.error).mockReset();
   });
@@ -138,6 +143,43 @@ describe("<PropertyEditForm>", () => {
       }),
     );
     expect(toast.success).toHaveBeenCalledWith("Saved.");
+  });
+
+  // Note: the developer picker's instant-save can't be exercised here —
+  // Radix's Select never opens under jsdom (no pointer/layout APIs). It's
+  // covered by the publish-gate specs plus the e2e admin flow.
+
+  it("surfaces a validation failure that lives in a collapsed tab", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <PropertyEditForm
+        propertyId="abc"
+        initial={INITIAL}
+        reference="BAZ-AD-04891"
+        areas={[]}
+        developers={DEVELOPERS}
+        geo={null}
+        mapboxAvailable={false}
+      />,
+    );
+
+    // Break the slug (SEO tab), then Save from the Overview tab.
+    await user.click(screen.getByRole("tab", { name: /seo/i }));
+    const slugInput = screen.getByLabelText(/url slug/i);
+    await user.clear(slugInput);
+    await user.type(slugInput, "Not A Slug");
+    await user.click(screen.getByRole("tab", { name: /overview/i }));
+
+    await user.click(screen.getByRole("button", { name: /save/i }));
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalled());
+    expect(updatePropertyMock).not.toHaveBeenCalled();
+    // Jumped back to the tab that owns the bad field instead of no-opping.
+    expect(screen.getByRole("tab", { name: /seo/i })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
   });
 
   it("surfaces server-side field errors back into the form", async () => {
