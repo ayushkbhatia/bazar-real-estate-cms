@@ -175,3 +175,27 @@ shows the trail.)
   `COMPLIANCE_LABELS` / `normaliseCompliance` are retained for the historic data
   and for whatever surface picks the paperwork trail back up. Drop them if a
   future sprint confirms the paperwork lives entirely outside the CMS.
+
+- [media] Trash has a 30-day window in the copy but nothing purges it.
+  The media library labels trashed assets "In trash Nd" against a 30-day
+  window (`TRASH_WINDOW_DAYS` in `app/(admin)/admin/media/page.tsx`), but only a
+  human clicking "Delete permanently" ever removes the storage object. Either
+  add a cron that purges expired + still-unused assets, or drop the countdown.
+
+- [media] No bulk trash on the media library.
+  The "Unused" filter makes a pile of dead files easy to find, then they have to
+  be trashed one at a time. Add select-all + bulk trash over the filtered set
+  (server side must re-verify usage per asset, as `trashMedia` already does).
+
+- [media] Storage objects with no `media_assets` row are invisible.
+  The usage index reasons from the DB outward, so it can't see files that exist
+  in the `media` bucket without a row (failed uploads before the rollback
+  landed, manual uploads via the Supabase dashboard). A reconciliation job would
+  need to list the bucket and diff against `media_assets.storage_key`.
+
+- [media] Three orphaned Sprint-7d components remain unwired.
+  `_components/filters.tsx` (type/date/uploader), `quota-indicator.tsx` (needs a
+  real bytes-used reading) and `upload-zone.tsx` (its drop handler still toasts
+  "Sprint 9 wires the bulk upload action") are imported by nothing.
+  `folder-rail`, `search`, `view-toggle` and `usage-badge` are now wired; the
+  fake `trash.tsx` was deleted when the real trash view landed.
