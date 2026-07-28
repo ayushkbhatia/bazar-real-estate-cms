@@ -385,7 +385,8 @@ function RowActions({
         </>
       ) : (
         <IconButton
-          label={item.trashable.reason ?? "Move to trash"}
+          label="Move to trash"
+          hint={trashLabel(item)}
           disabled={!item.trashable.allowed}
           danger
           onClick={() => onTrash(item)}
@@ -397,37 +398,72 @@ function RowActions({
   );
 }
 
+/** Tooltip for the trash button. When it's disabled this is the only place the
+ *  user learns why, so it names what's holding the file. */
+function trashLabel(item: MediaLibraryItem): string {
+  if (item.trashable.allowed) return "Move to trash";
+  const reason = item.trashable.reason ?? "Can't be deleted.";
+  return item.usages.length > 0
+    ? `${reason} Used in ${summariseUsage(item.usages)}.`
+    : reason;
+}
+
+/** Red text + red wash + a soft red glow. Kept as one string so there is never
+ *  a second `hover:text-*` competing with it for the same element. */
+const DANGER_HOVER =
+  "hover:text-[oklch(0.45_0.13_28)] hover:bg-[oklch(0.95_0.05_28)] hover:ring-1 hover:ring-[oklch(0.82_0.08_28)] hover:shadow-[0_0_0_4px_oklch(0.45_0.13_28_/_0.14)] dark:hover:bg-[oklch(0.3_0.08_28)] dark:hover:ring-[oklch(0.45_0.12_28)]";
+
+const NEUTRAL_HOVER = "hover:text-bz-ink hover:bg-bz-surface-2";
+
 function IconButton({
   label,
+  hint,
   onClick,
   children,
   disabled,
   danger,
 }: {
+  /** What the button does — stays constant so the accessible name does too. */
   label: string;
+  /** Tooltip text. Falls back to the label; carries the "why not" when disabled. */
+  hint?: string;
   onClick: () => void;
   children: React.ReactNode;
   disabled?: boolean;
   danger?: boolean;
 }) {
-  return (
+  const tooltip = hint ?? label;
+  const button = (
     <Button
       type="button"
       variant="ghost"
       size="icon"
       aria-label={label}
-      title={label}
+      title={disabled ? undefined : tooltip}
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "h-6 w-6 text-bz-muted hover:text-bz-ink",
-        danger && !disabled && "hover:text-[oklch(0.45_0.13_28)]",
+        "h-6 w-6 text-bz-muted transition-all",
+        !disabled && (danger ? DANGER_HOVER : NEUTRAL_HOVER),
         disabled && "opacity-40",
       )}
     >
       {children}
     </Button>
   );
+
+  // A disabled button gets `pointer-events-none` from the button variant, which
+  // also swallows its own tooltip — so the one thing the user needs (why can't
+  // I delete this?) was the one thing they couldn't read. Hang the explanation
+  // on a wrapper that still receives the hover.
+  if (disabled) {
+    return (
+      <span title={tooltip} className="inline-flex cursor-not-allowed">
+        {button}
+      </span>
+    );
+  }
+  return button;
 }
 
 function formatBytes(n: number | null): string {
