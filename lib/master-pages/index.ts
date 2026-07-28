@@ -2,6 +2,7 @@ import { MASTER_PAGES } from "./pages";
 import {
   isImageField,
   isListField,
+  isSelectField,
   isToggleField,
   type FieldDef,
   type ImageValue,
@@ -103,6 +104,7 @@ function mergeValues(
 
 function emptyFor(field: FieldDef) {
   if (isListField(field)) return [];
+  if (isSelectField(field)) return null;
   if (isToggleField(field)) return true;
   if (isImageField(field)) return { media_id: null, alt: null, label: null };
   return null;
@@ -242,6 +244,12 @@ function normaliseScalar(
     // Anything but an explicit false reads as on, so a card added by an older
     // client (or by hand) defaults to visible rather than silently hidden.
     return value !== false;
+  }
+  if (isSelectField(field)) {
+    // The stored value is a record slug. It is not validated against the live
+    // records here: a record can be unpublished or renamed after the fact, and
+    // the renderer already drops picks it can't resolve.
+    return trimOrNull(value);
   }
   if (isImageField(field)) {
     if (!value || typeof value !== "object" || Array.isArray(value)) {

@@ -39,6 +39,7 @@ import { cn } from "@/lib/utils";
 import {
   isImageField,
   isListField,
+  isSelectField,
   isToggleField,
   type FieldDef,
   type ImageValue,
@@ -489,6 +490,7 @@ function FieldEditor({
                   value={item[sub.key]}
                   media={media}
                   onMediaAdded={onMediaAdded}
+                  seeds={seeds}
                   onChange={(v) => {
                     const next = items.slice();
                     next[i] = { ...item, [sub.key]: v };
@@ -535,6 +537,7 @@ function FieldEditor({
       onChange={onChange}
       media={media}
       onMediaAdded={onMediaAdded}
+      seeds={seeds}
     />
   );
 }
@@ -545,13 +548,49 @@ function ScalarField({
   onChange,
   media,
   onMediaAdded,
+  seeds,
 }: {
   field: Exclude<FieldDef, { kind: "list" }>;
   value: ItemValue | undefined;
   onChange: (v: ItemValue) => void;
   media: MediaOption[];
   onMediaAdded: (m: MediaOption) => void;
+  seeds: Seeds;
 }) {
+  if (isSelectField(field)) {
+    const options = seeds[field.optionsKey] ?? [];
+    const picked = typeof value === "string" ? value : "";
+    const missing = picked !== "" && !options.some((o) => o.slug === picked);
+    return (
+      <div className="flex flex-col gap-1.5">
+        <FieldLabel label={field.label} help={field.help} />
+        <select
+          className={fieldCls}
+          value={picked}
+          onChange={(e) => onChange(e.target.value || null)}
+        >
+          <option value="">{field.placeholder ?? "Choose one"}</option>
+          {/* A pick whose record has since been unpublished or renamed stays
+              selectable, so saving doesn't silently drop it. */}
+          {missing ? (
+            <option value={picked}>{picked} (no longer available)</option>
+          ) : null}
+          {options.map((o) => (
+            <option key={o.slug} value={o.slug}>
+              {o.name}
+            </option>
+          ))}
+        </select>
+        {missing ? (
+          <span className="text-[11px] text-[oklch(0.45_0.13_28)]">
+            This record isn&apos;t published any more — it won&apos;t appear on
+            the page.
+          </span>
+        ) : null}
+      </div>
+    );
+  }
+
   if (isToggleField(field)) {
     const on = value !== false;
     return (

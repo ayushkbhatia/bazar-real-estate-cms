@@ -20,9 +20,25 @@ export async function OffPlanProjects({
   body = "Explore the latest off-plan projects across top communities.",
   ctaLabel = "All developments",
   ctaHref = "/developments",
-}: SectionCopy = {}) {
+  featuredSlugs,
+}: SectionCopy & {
+  /**
+   * Project pages chosen in the home master page, in display order. Empty ⇒
+   * the three most recent published projects, which is what this section did
+   * before it was editable.
+   */
+  featuredSlugs?: string[];
+} = {}) {
   const developments = await listPublishedDevelopments();
-  const projects = developments.slice(0, 3);
+
+  // A pick that no longer resolves — unpublished, renamed, deleted — is
+  // dropped rather than rendering a card that links nowhere.
+  const bySlug = new Map(developments.map((d) => [d.slug, d]));
+  const picked = (featuredSlugs ?? [])
+    .map((slug) => bySlug.get(slug))
+    .filter((d): d is (typeof developments)[number] => d !== undefined);
+
+  const projects = picked.length > 0 ? picked : developments.slice(0, 3);
   if (projects.length === 0) return null;
 
   return (

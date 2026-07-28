@@ -272,15 +272,41 @@ const HOME: MasterPageDef = {
     {
       key: "off_plan_projects",
       label: "Off-plan projects",
-      description: "Carousel of the latest published developments.",
-      dataNote: "Cards come from published developments.",
-      fields: [eyebrow(), heading(), body(), ...ctaPair()],
+      description: "Carousel of featured developments.",
+      dataNote:
+        "Each card is a development project page — its name, price, area and cover image come from that record. Leave the list empty to show the three most recent published projects.",
+      fields: [
+        eyebrow(),
+        heading(),
+        body(),
+        ...ctaPair(),
+        {
+          key: "projects",
+          label: "Featured projects",
+          kind: "list",
+          itemLabel: "project",
+          max: 6,
+          seedKey: "developments",
+          help: "Pick the projects to feature, in the order they should appear.",
+          fields: [
+            toggle("enabled", "Show this project"),
+            {
+              key: "slug",
+              label: "Project",
+              kind: "select",
+              optionsKey: "developments",
+              placeholder: "Choose a development",
+            },
+          ],
+        },
+      ],
       defaults: {
         eyebrow: "Off-plan projects for sale",
         heading: "New developments in Abu Dhabi",
         body: "Explore the latest off-plan projects across top communities.",
         cta_label: "All developments",
         cta_href: "/developments",
+        projects: [],
       },
     },
     {
