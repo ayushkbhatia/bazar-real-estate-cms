@@ -224,3 +224,27 @@ shows the trail.)
   list it ships with (home FAQs, testimonials). Adding one item takes over the
   whole list. It's explained in the editor, but a clearer "override" toggle
   would beat the implicit rule.
+
+- [sub-pages] Development page sections can be hidden but not reordered.
+  The project page carries a sticky sub-nav whose anchors point at section ids
+  in document order, so shuffling sections would break those links. The editor
+  locks order deliberately (`allowReorder={false}`). To allow reordering, drive
+  the sub-nav from the resolved section order first.
+
+- [sub-pages] Only the sections with static headings take a copy override.
+  Master plan, payment plan, units, floor plans, location and the hero read
+  `heading`/`intro` overrides; the rest build their headings from the record
+  (developer name, area name) and ignore them today. Either wire the remaining
+  sections or drop the fields from those section definitions so the editor
+  stops offering a field that does nothing.
+
+- [sub-pages] Renders and floor-plan images aren't editable from the sub-page.
+  Cover and site plan are (they're columns on the row), but the gallery comes
+  from `development_media` and floor plans from `floor_plans` — both still need
+  the developments editor. Worth folding into the sub-page once there's a
+  repeatable media-list field.
+
+- [sub-pages] The framework is development-only.
+  `SubPageKind` has one member. Area guides and developer profiles are the
+  obvious next kinds and should drop straight in — the registry, storage and
+  editor are already generic.
