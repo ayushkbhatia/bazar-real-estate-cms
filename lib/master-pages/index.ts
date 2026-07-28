@@ -2,8 +2,10 @@ import { MASTER_PAGES } from "./pages";
 import {
   isImageField,
   isListField,
+  isToggleField,
   type FieldDef,
   type ImageValue,
+  type ItemValue,
   type MasterPageDef,
   type MasterPageKey,
   type ResolvedSection,
@@ -101,6 +103,7 @@ function mergeValues(
 
 function emptyFor(field: FieldDef) {
   if (isListField(field)) return [];
+  if (isToggleField(field)) return true;
   if (isImageField(field)) return { media_id: null, alt: null, label: null };
   return null;
 }
@@ -187,7 +190,7 @@ export function validateSections(
           });
         }
         values[field.key] = arr.slice(0, field.max).map((item) => {
-          const out: Record<string, string | null | ImageValue> = {};
+          const out: Record<string, ItemValue> = {};
           for (const sub of field.fields) {
             out[sub.key] = normaliseScalar(
               sub,
@@ -234,7 +237,12 @@ function normaliseScalar(
   value: unknown,
   sectionLabel: string,
   issues: ValidationIssue[],
-): string | null | ImageValue {
+): ItemValue {
+  if (isToggleField(field)) {
+    // Anything but an explicit false reads as on, so a card added by an older
+    // client (or by hand) defaults to visible rather than silently hidden.
+    return value !== false;
+  }
   if (isImageField(field)) {
     if (!value || typeof value !== "object" || Array.isArray(value)) {
       return { media_id: null, alt: null, label: null };

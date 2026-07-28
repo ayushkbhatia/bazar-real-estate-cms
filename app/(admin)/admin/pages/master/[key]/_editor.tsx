@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo, useState, useTransition } from "react";
+import { useId, useMemo, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
@@ -30,6 +30,7 @@ import {
   RotateCcw,
   Save,
   Trash2,
+  Upload,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -38,16 +39,24 @@ import { cn } from "@/lib/utils";
 import {
   isImageField,
   isListField,
+  isToggleField,
   type FieldDef,
   type ImageValue,
+  type ItemValue,
+  type SeedKey,
   type MasterPageKey,
   type SectionDef,
   type SectionValues,
   type StoredSection,
 } from "@/lib/master-pages";
 import { saveMasterPage, resetMasterPage } from "./_actions";
+import { uploadMedia } from "../../../media/_actions";
 
 export type MediaOption = { id: string; filename: string; url: string };
+
+/** Live records a seedable list can be filled from. */
+export type SeedItem = { name: string; href: string; slug: string };
+export type Seeds = Partial<Record<SeedKey, SeedItem[]>>;
 
 export type EditorSection = {
   key: string;
@@ -64,7 +73,8 @@ export function MasterPageEditor({
   pageLabel,
   path,
   initial,
-  media,
+  media: initialMedia,
+  seeds,
   usingDefaults,
 }: {
   pageKey: MasterPageKey;
@@ -72,8 +82,12 @@ export function MasterPageEditor({
   path: string;
   initial: EditorSection[];
   media: MediaOption[];
+  seeds: Seeds;
   usingDefaults: boolean;
 }) {
+  // Uploads from an image field append here, so a freshly uploaded asset is
+  // pickable straight away without a page refresh.
+  const [media, setMedia] = useState(initialMedia);
   const router = useRouter();
   const [sections, setSections] = useState(initial);
   const [open, setOpen] = useState<string | null>(null);
@@ -191,6 +205,8 @@ export function MasterPageEditor({
                 }
                 onValues={(values) => setSection(section.key, { values })}
                 media={media}
+                onMediaAdded={(m) => setMedia((cur) => [m, ...cur])}
+                seeds={seeds}
                 path={path}
               />
             ))}
@@ -209,6 +225,8 @@ function SectionRow({
   onToggleEnabled,
   onValues,
   media,
+  onMediaAdded,
+  seeds,
   path,
 }: {
   section: EditorSection;
@@ -218,6 +236,8 @@ function SectionRow({
   onToggleEnabled: () => void;
   onValues: (v: SectionValues) => void;
   media: MediaOption[];
+  onMediaAdded: (m: MediaOption) => void;
+  seeds: Seeds;
   path: string;
 }) {
   const locked = section.def.locked === true;
@@ -336,6 +356,8 @@ function SectionRow({
                 field={field}
                 value={section.values[field.key]}
                 media={media}
+                onMediaAdded={onMediaAdded}
+                seeds={seeds}
                 onChange={(v) =>
                   onValues({ ...section.values, [field.key]: v })
                 }
@@ -353,24 +375,53 @@ function FieldEditor({
   value,
   onChange,
   media,
+  onMediaAdded,
+  seeds,
 }: {
   field: FieldDef;
   value: unknown;
   onChange: (v: SectionValues[string]) => void;
   media: MediaOption[];
+  onMediaAdded: (m: MediaOption) => void;
+  seeds: Seeds;
 }) {
   if (isListField(field)) {
     const items = Array.isArray(value)
-      ? (value as Record<string, string | null | ImageValue>[])
+      ? (value as Record<string, ItemValue>[])
       : [];
+    const seed = field.seedKey ? (seeds[field.seedKey] ?? []) : [];
     return (
       <div className="flex flex-col gap-2">
         <FieldLabel label={field.label} help={field.help} />
         {items.length === 0 ? (
-          <p className="text-[11.5px] text-bz-muted">
-            Empty — the section keeps the list it ships with. Add one to take
-            over the whole list.
-          </p>
+          <div className="flex flex-col gap-2">
+            <p className="text-[11.5px] text-bz-muted">
+              Empty — the section keeps the list it ships with. Add one to take
+              over the whole list.
+            </p>
+            {seed.length > 0 ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="self-start"
+                onClick={() =>
+                  onChange(
+                    seed.slice(0, field.max).map((s) => ({
+                      enabled: true,
+                      name: s.name,
+                      href: s.href,
+                      slug: s.slug,
+                      image: { media_id: null, alt: null, label: s.slug },
+                    })),
+                  )
+                }
+              >
+                <Plus size={12} strokeWidth={1.8} /> Load the {seed.length}{" "}
+                current {field.itemLabel}s
+              </Button>
+            ) : null}
+          </div>
         ) : null}
         <ul className="flex flex-col gap-2">
           {items.map((item, i) => (
@@ -399,6 +450,7 @@ function FieldEditor({
                   field={sub}
                   value={item[sub.key]}
                   media={media}
+                  onMediaAdded={onMediaAdded}
                   onChange={(v) => {
                     const next = items.slice();
                     next[i] = { ...item, [sub.key]: v };
@@ -421,11 +473,13 @@ function FieldEditor({
                 Object.fromEntries(
                   field.fields.map((f) => [
                     f.key,
-                    isImageField(f)
-                      ? { media_id: null, alt: null, label: null }
-                      : "",
+                    isToggleField(f)
+                      ? true
+                      : isImageField(f)
+                        ? { media_id: null, alt: null, label: null }
+                        : "",
                   ]),
-                ) as Record<string, string | null | ImageValue>,
+                ) as Record<string, ItemValue>,
               ])
             }
           >
@@ -439,9 +493,10 @@ function FieldEditor({
   return (
     <ScalarField
       field={field}
-      value={value as string | null | ImageValue}
+      value={value as ItemValue}
       onChange={onChange}
       media={media}
+      onMediaAdded={onMediaAdded}
     />
   );
 }
@@ -451,12 +506,31 @@ function ScalarField({
   value,
   onChange,
   media,
+  onMediaAdded,
 }: {
   field: Exclude<FieldDef, { kind: "list" }>;
-  value: string | null | ImageValue | undefined;
-  onChange: (v: string | null | ImageValue) => void;
+  value: ItemValue | undefined;
+  onChange: (v: ItemValue) => void;
   media: MediaOption[];
+  onMediaAdded: (m: MediaOption) => void;
 }) {
+  if (isToggleField(field)) {
+    const on = value !== false;
+    return (
+      <label className="flex items-center gap-2 text-[12.5px] cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={on}
+          onChange={(e) => onChange(e.target.checked)}
+          className="h-3.5 w-3.5 accent-bz-accent"
+        />
+        <span className={cn(!on && "text-bz-muted")}>
+          {on ? field.label : `${field.label} — hidden`}
+        </span>
+      </label>
+    );
+  }
+
   if (isImageField(field)) {
     const v: ImageValue =
       value && typeof value === "object"
@@ -503,15 +577,23 @@ function ScalarField({
               value={v.alt ?? ""}
               onChange={(e) => onChange({ ...v, alt: e.target.value || null })}
             />
-            {v.media_id ? (
-              <button
-                type="button"
-                onClick={() => onChange({ ...v, media_id: null })}
-                className="self-start inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink"
-              >
-                <X size={11} /> Use placeholder instead
-              </button>
-            ) : null}
+            <div className="flex items-center gap-3">
+              <UploadButton
+                onUploaded={(m) => {
+                  onMediaAdded(m);
+                  onChange({ ...v, media_id: m.id });
+                }}
+              />
+              {v.media_id ? (
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...v, media_id: null })}
+                  className="inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink"
+                >
+                  <X size={11} /> Use placeholder instead
+                </button>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
@@ -541,6 +623,61 @@ function ScalarField({
         />
       )}
     </div>
+  );
+}
+
+/**
+ * Upload straight from a section's image field. Goes through the same
+ * `uploadMedia` action the media library uses, so the file lands in Storage
+ * *and* gets a `media_assets` row — the section stores that row's id, which is
+ * what keeps section images visible to the library's usage index.
+ */
+function UploadButton({
+  onUploaded,
+}: {
+  onUploaded: (m: MediaOption) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function handle(file: File | undefined) {
+    if (!file) return;
+    setBusy(true);
+    const form = new FormData();
+    form.set("file", file);
+    form.set("folder", "brand");
+    const result = await uploadMedia(form);
+    setBusy(false);
+    if (result.status === "error") {
+      toast.error(result.message);
+      return;
+    }
+    toast.success(`Uploaded "${file.name}" to the media library.`);
+    onUploaded({ id: result.id, filename: file.name, url: result.url });
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => inputRef.current?.click()}
+        className="inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink disabled:opacity-50"
+      >
+        <Upload size={11} strokeWidth={1.8} />
+        {busy ? "Uploading…" : "Upload new"}
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          void handle(e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
+    </>
   );
 }
 

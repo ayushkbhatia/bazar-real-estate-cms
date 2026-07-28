@@ -1,5 +1,6 @@
 import type {
   ImageFieldDef,
+  ToggleFieldDef,
   ImageValue,
   ListFieldDef,
   MasterPageDef,
@@ -55,6 +56,12 @@ const image = (key: string, label: string, help?: string): ImageFieldDef => ({
   kind: "image",
   help,
 });
+
+const toggle = (
+  key: string,
+  label: string,
+  help?: string,
+): ToggleFieldDef => ({ key, label, kind: "toggle", help });
 
 const eyebrow = (extra: Partial<SimpleFieldDef> = {}) =>
   text("eyebrow", "Eyebrow", { max: 60, optional: true, ...extra });
@@ -218,15 +225,48 @@ const HOME: MasterPageDef = {
     {
       key: "location_browsing",
       label: "Location-based browsing",
-      description: "Community tiles linking into the areas index.",
-      dataNote: "Tiles are generated from published areas.",
-      fields: [eyebrow(), heading(), body(), ...ctaPair("CTA label")],
+      description: "Overview tile plus a grid of community cards.",
+      dataNote:
+        "Listing counts on each card always come from live data. Leave the card list empty to show the top 8 published areas automatically.",
+      fields: [
+        eyebrow(),
+        heading(),
+        body(),
+        ...ctaPair("CTA label"),
+        text("overview_name", "Overview tile · title", { max: 80 }),
+        link("overview_href", "Overview tile · link"),
+        image("overview_image", "Overview tile · image"),
+        {
+          key: "cards",
+          label: "Community cards",
+          kind: "list",
+          itemLabel: "card",
+          max: 12,
+          seedKey: "areas",
+          help: "Switch cards off to hide them without deleting them.",
+          fields: [
+            toggle("enabled", "Show this card"),
+            text("name", "Title", { max: 80 }),
+            link("href", "Link"),
+            image("image", "Image"),
+            text("slug", "Area slug", {
+              max: 140,
+              optional: true,
+              help: "Matches the live listing count to this card.",
+            }),
+          ],
+        },
+      ],
       defaults: {
         eyebrow: "Location-based browsing",
         heading: "Your next location starts here",
         body: "Discover leading communities across Abu Dhabi.",
         cta_label: "All locations",
         cta_href: "/areas",
+        overview_name: "Abu Dhabi",
+        overview_href: "/areas",
+        overview_image: { media_id: null, alt: null, label: "abu dhabi" },
+        cards: [],
       },
     },
     {
