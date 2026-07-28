@@ -8,7 +8,6 @@
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type {
   TourRequestRow,
   TourRequestStatus,
@@ -46,7 +45,7 @@ export async function createTourRequest(
   if (!isSupabaseConfigured || !input.property_id) return null;
   try {
     const sb = await createSupabaseServerClient();
-    const { data, error } = await s8(sb)
+    const { data, error } = await sb
       .from("tour_requests")
       .insert({
         property_id: input.property_id,
@@ -78,7 +77,7 @@ export async function listTourRequests(
   if (!isSupabaseConfigured || !userId) return [];
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("tour_requests")
       .select(
         "id, property_id, full_name, email, phone, preferred_window, message, status, scheduled_at, created_at, property:property_id(reference, title)",

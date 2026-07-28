@@ -10,7 +10,6 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
-import { s8 } from "@/lib/supabase/sprint-8";
 import { SEED_DEVELOPERS } from "@/lib/seeds/developers";
 import type {
   DeveloperProfileRow,
@@ -104,7 +103,7 @@ export async function getDeveloperBySlug(
         .eq("slug", slug)
         .maybeSingle();
       if (dev) {
-        const { data: profile } = await s8(sb)
+        const { data: profile } = await sb
           .from("developer_profiles")
           .select("*")
           .eq("developer_id", dev.id)

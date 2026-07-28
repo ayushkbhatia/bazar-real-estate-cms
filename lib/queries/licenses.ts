@@ -11,7 +11,6 @@
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type {
   LicenseHolderKind,
   LicenseKind,
@@ -38,7 +37,7 @@ export async function listLicenses(): Promise<LicenseDisplay[]> {
   if (!isSupabaseConfigured) return [];
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("licenses")
       .select(
         "id, kind, holder_kind, holder_id, number, issued_at, expires_at, status, notes",
@@ -95,7 +94,7 @@ export async function getActiveBrn(staffUserId: string): Promise<LicenseRow | nu
   if (!isSupabaseConfigured || !staffUserId) return null;
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("licenses")
       .select("*")
       .eq("kind", "brn")
@@ -138,7 +137,7 @@ export async function upsertLicense(input: {
       status: deriveStatus(input.expires_at),
       ...(input.id ? { id: input.id } : {}),
     };
-    const { error } = await s8(sb)
+    const { error } = await sb
       .from("licenses")
       .upsert(payload, { onConflict: "kind,number" });
     if (error) {
@@ -168,13 +167,13 @@ export async function refreshLicenseStatuses(): Promise<number> {
     const now = new Date();
     const in30 = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
     // expired
-    await s8(sb)
+    await sb
       .from("licenses")
       .update({ status: "expired" })
       .lt("expires_at", now.toISOString())
       .in("status", ["active", "expiring_soon"]);
     // expiring_soon
-    await s8(sb)
+    await sb
       .from("licenses")
       .update({ status: "expiring_soon" })
       .gte("expires_at", now.toISOString())

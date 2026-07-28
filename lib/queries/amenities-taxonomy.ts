@@ -8,7 +8,6 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import { s8 } from "@/lib/supabase/sprint-8";
 import {
   DEFAULT_AMENITIES,
   type AmenityTaxonomyEntry,
@@ -22,7 +21,7 @@ export async function listAmenitiesTaxonomy(): Promise<
   if (!isSupabaseConfigured) return DEFAULT_AMENITIES;
   try {
     const sb = createSupabasePublicClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("amenities_taxonomy")
       .select("*")
       .eq("active", true)
@@ -53,7 +52,7 @@ export async function listAmenitiesTaxonomyForAdmin(): Promise<
   if (!isSupabaseConfigured) return DEFAULT_AMENITIES;
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("amenities_taxonomy")
       .select("*")
       .order("sort_order", { ascending: true });
@@ -78,7 +77,7 @@ export async function upsertAmenityTaxonomyEntry(
   if (!isSupabaseConfigured) return false;
   try {
     const sb = await createSupabaseServerClient();
-    const { error } = await s8(sb)
+    const { error } = await sb
       .from("amenities_taxonomy")
       .upsert(
         {
@@ -109,7 +108,7 @@ export async function deleteAmenityTaxonomyEntry(
   if (!isSupabaseConfigured) return false;
   try {
     const sb = await createSupabaseServerClient();
-    const { error } = await s8(sb)
+    const { error } = await sb
       .from("amenities_taxonomy")
       .delete()
       .eq("code", code);

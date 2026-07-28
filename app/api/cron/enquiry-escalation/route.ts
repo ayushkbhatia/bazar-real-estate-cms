@@ -17,7 +17,6 @@ import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { enquiryEscalationTemplate } from "@/lib/email-templates";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type { Database } from "@/db/types";
 
 function adminClient() {
@@ -52,7 +51,7 @@ export async function GET(req: NextRequest) {
     const supabase = adminClient();
     const sixtyMinAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 
-    const { data: stale, error } = await s8(supabase)
+    const { data: stale, error } = await supabase
       .from("enquiries")
       .select(
         "id, name, email, property_id, created_at, properties(reference, title)",
@@ -114,7 +113,7 @@ export async function GET(req: NextRequest) {
       }
 
       // 2) flag escalated so we don't re-send
-      const { error: flagError } = await s8(supabase)
+      const { error: flagError } = await supabase
         .from("enquiries")
         .update({ escalated_at: new Date().toISOString() })
         .eq("id", row.id);

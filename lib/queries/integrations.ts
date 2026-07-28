@@ -10,7 +10,7 @@
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import { s8 } from "@/lib/supabase/sprint-8";
+import type { Json } from "@/db/types";
 import type {
   IntegrationKind,
   IntegrationRow,
@@ -22,7 +22,7 @@ export async function listIntegrations(): Promise<IntegrationRow[]> {
   if (!isSupabaseConfigured) return [];
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("integrations")
       .select("*")
       .order("kind", { ascending: true });
@@ -39,7 +39,7 @@ export async function getIntegration(
   if (!isSupabaseConfigured) return null;
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("integrations")
       .select("*")
       .eq("kind", kind)
@@ -65,9 +65,17 @@ export async function setIntegrationStatus(
   if (!isSupabaseConfigured) return false;
   try {
     const sb = await createSupabaseServerClient();
-    const { error } = await s8(sb)
+    // `config` is a jsonb column, so the generated type is `Json`. The
+    // caller-facing shape is the friendlier Record<string, unknown>; narrow
+    // it here rather than pushing Json onto every call site. Only spread the
+    // key when it was supplied, so an omitted config isn't written as null.
+    const { config, ...rest } = update;
+    const { error } = await sb
       .from("integrations")
-      .update(update)
+      .update({
+        ...rest,
+        ...(config !== undefined && { config: config as Json }),
+      })
       .eq("kind", kind);
     if (error) {
       console.error("[setIntegrationStatus]", error);

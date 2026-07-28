@@ -292,14 +292,15 @@ async function handleSemanticSearch(
     const vec = await embed(query, "query");
     if (vec) {
       try {
-        const { s8 } = await import("@/lib/supabase/sprint-8");
         // Vector-similarity query — order by cosine distance ASC
         // (smaller = closer). pgvector supports the `<=>` operator;
         // use rpc when the index is sparse for better performance.
-        const { data: vecMatches } = await s8(supabase).rpc(
-          "match_properties",
-          { query_embedding: vec, match_limit: limit },
-        );
+        // query_embedding is pgvector, emitted as `string` by the type
+        // generator; PostgREST accepts a JSON number array and casts it.
+        const { data: vecMatches } = await supabase.rpc("match_properties", {
+          query_embedding: vec as unknown as string,
+          match_limit: limit,
+        });
         if (Array.isArray(vecMatches) && vecMatches.length > 0) {
           const ids = (vecMatches as { property_id: string }[]).map(
             (m) => m.property_id,

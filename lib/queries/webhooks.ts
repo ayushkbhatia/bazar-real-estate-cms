@@ -10,7 +10,6 @@
 import { randomBytes } from "node:crypto";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type {
   WebhookEvent,
   WebhookRow,
@@ -48,7 +47,7 @@ export async function listWebhooks(): Promise<WebhookDisplay[]> {
   if (!isSupabaseConfigured) return [];
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("webhooks")
       .select(DISPLAY_FIELDS)
       .order("created_at", { ascending: false });
@@ -65,7 +64,7 @@ export async function getWebhookWithSecret(
   if (!isSupabaseConfigured || !id) return null;
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("webhooks")
       .select("*")
       .eq("id", id)
@@ -83,7 +82,7 @@ export async function listWebhooksForEvent(
   if (!isSupabaseConfigured) return [];
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("webhooks")
       .select("*")
       .eq("status", "active")
@@ -103,7 +102,7 @@ export async function createWebhook(
   try {
     const secret = `whsec_${randomBytes(24).toString("base64url")}`;
     const sb = await createSupabaseServerClient();
-    const { data, error } = await s8(sb)
+    const { data, error } = await sb
       .from("webhooks")
       .insert({
         name: input.name,
@@ -134,7 +133,7 @@ export async function setWebhookStatus(
   if (!isSupabaseConfigured) return false;
   try {
     const sb = await createSupabaseServerClient();
-    const { error } = await s8(sb)
+    const { error } = await sb
       .from("webhooks")
       .update({ status })
       .eq("id", id);
@@ -149,7 +148,7 @@ export async function deleteWebhook(id: string): Promise<boolean> {
   if (!isSupabaseConfigured) return false;
   try {
     const sb = await createSupabaseServerClient();
-    const { error } = await s8(sb).from("webhooks").delete().eq("id", id);
+    const { error } = await sb.from("webhooks").delete().eq("id", id);
     return !error;
   } catch {
     return false;

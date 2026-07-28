@@ -17,7 +17,6 @@ import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { brnExpiryWarningTemplate } from "@/lib/email-templates";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type { LicenseRow } from "@/lib/types/sprint-8";
 import type { Database } from "@/db/types";
 
@@ -55,12 +54,12 @@ export async function GET(req: NextRequest) {
     const in30 = new Date(now.getTime() + 30 * 86_400_000);
 
     // 1) Roll status forward.
-    await s8(supabase)
+    await supabase
       .from("licenses")
       .update({ status: "expired" })
       .lt("expires_at", now.toISOString())
       .in("status", ["active", "expiring_soon"]);
-    await s8(supabase)
+    await supabase
       .from("licenses")
       .update({ status: "expiring_soon" })
       .gte("expires_at", now.toISOString())
@@ -68,7 +67,7 @@ export async function GET(req: NextRequest) {
       .eq("status", "active");
 
     // 2) Notify BRN holders newly in expiring_soon.
-    const { data: licenses } = await s8(supabase)
+    const { data: licenses } = await supabase
       .from("licenses")
       .select("*")
       .eq("kind", "brn")

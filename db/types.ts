@@ -2844,6 +2844,8 @@ export type Database = {
           mortgage_state:
             | Database["public"]["Enums"]["valuation_mortgage_state"]
             | null
+          nurture_day30_at: string | null
+          nurture_day7_at: string | null
           owner_email: string
           owner_name: string
           owner_phone: string | null
@@ -2881,6 +2883,8 @@ export type Database = {
           mortgage_state?:
             | Database["public"]["Enums"]["valuation_mortgage_state"]
             | null
+          nurture_day30_at?: string | null
+          nurture_day7_at?: string | null
           owner_email: string
           owner_name: string
           owner_phone?: string | null
@@ -2918,6 +2922,8 @@ export type Database = {
           mortgage_state?:
             | Database["public"]["Enums"]["valuation_mortgage_state"]
             | null
+          nurture_day30_at?: string | null
+          nurture_day7_at?: string | null
           owner_email?: string
           owner_name?: string
           owner_phone?: string | null

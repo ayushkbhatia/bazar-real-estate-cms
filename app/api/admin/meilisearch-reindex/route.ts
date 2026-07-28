@@ -18,7 +18,6 @@ import {
   upsertProperties,
   type IndexedProperty,
 } from "@/lib/meilisearch";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type { Database } from "@/db/types";
 
 function adminClient() {
@@ -70,7 +69,7 @@ export async function POST(_req: NextRequest) {
     let totalIndexed = 0;
 
     while (true) {
-      const { data, error } = await s8(supabase)
+      const { data, error } = await supabase
         .from("properties")
         .select(
           "id, reference, slug, title, short_description, price_aed, mode, type, beds, baths, built_up_ft2, amenities, bazar_verified, published_at, areas:area_id(slug, name), property_media(role, media:media_assets(storage_key))",
@@ -81,7 +80,7 @@ export async function POST(_req: NextRequest) {
       if (error) throw error;
       if (!data || data.length === 0) break;
 
-      const docs: IndexedProperty[] = (data as RawRow[]).map((r) => {
+      const docs: IndexedProperty[] = (data as unknown as RawRow[]).map((r) => {
         const area = Array.isArray(r.areas) ? r.areas[0] : r.areas;
         const heroJoin = (r.property_media ?? []).find(
           (m) => m.role === "hero",

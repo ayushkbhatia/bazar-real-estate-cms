@@ -21,7 +21,6 @@ import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { enquiryReceivedTemplate } from "@/lib/email-templates";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type { Database } from "@/db/types";
 
 function adminClient() {
@@ -57,7 +56,7 @@ export async function GET(req: NextRequest) {
     const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
     // ack_sent_at lands in migration 0027 — until applied, fall back to
     // a 5-minute window only (best-effort dedupe).
-    const { data: rows, error } = await s8(supabase)
+    const { data: rows, error } = await supabase
       .from("enquiries")
       .select(
         "id, name, email, brief_raw, property_id, created_at, properties(reference, title)",
@@ -86,7 +85,7 @@ export async function GET(req: NextRequest) {
       });
       if (ok.status === "ok") {
         sent += 1;
-        await s8(supabase)
+        await supabase
           .from("enquiries")
           .update({ ack_sent_at: new Date().toISOString() })
           .eq("id", row.id);

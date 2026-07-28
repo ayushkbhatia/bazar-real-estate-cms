@@ -11,7 +11,6 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
-import { s8 } from "@/lib/supabase/sprint-8";
 import { SEED_AREA_GUIDES } from "@/lib/seeds/areas";
 import type {
   AreaGuideRow,
@@ -56,7 +55,7 @@ export async function getAreaGuide(slug: string): Promise<AreaGuide | null> {
         .eq("slug", slug)
         .maybeSingle();
       if (area) {
-        const { data: guide } = await s8(sb)
+        const { data: guide } = await sb
           .from("area_guides")
           .select("*")
           .eq("area_id", area.id)
@@ -145,7 +144,7 @@ export async function listAreasWithCounts(): Promise<AreaIndexEntry[]> {
 
     // Which areas have a published guide?
     const ids = areas.map((a) => a.id);
-    const { data: guides } = await s8(sb)
+    const { data: guides } = await sb
       .from("area_guides")
       .select("area_id, published_at")
       .in("area_id", ids)

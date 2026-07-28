@@ -8,7 +8,6 @@
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type { ReferralRow, ReferralStatus } from "@/lib/types/sprint-8";
 
 export type ReferralEntry = {
@@ -30,7 +29,7 @@ export async function getReferralCode(userId: string): Promise<string | null> {
   if (!isSupabaseConfigured || !userId) return null;
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("referrals")
       .select("code")
       .eq("referrer_account_id", userId)
@@ -52,7 +51,7 @@ export async function ensureReferralCode(userId: string): Promise<string> {
     if (existing) return existing;
     const code = generateCode(userId);
     const sb = await createSupabaseServerClient();
-    const { error } = await s8(sb)
+    const { error } = await sb
       .from("referrals")
       .insert({
         code,
@@ -75,7 +74,7 @@ export async function listReferrals(userId: string): Promise<ReferralEntry[]> {
   if (!isSupabaseConfigured || !userId) return [];
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("referrals")
       .select(
         "id, code, status, payout_amount_aed, signed_up_at, first_deal_at, paid_at, created_at, referee:referee_account_id(first_name, last_name)",
@@ -83,13 +82,32 @@ export async function listReferrals(userId: string): Promise<ReferralEntry[]> {
       .eq("referrer_account_id", userId)
       .order("created_at", { ascending: false });
     if (!data) return [];
-    return (data as RawReferralWithReferee[]).map(toReferralEntry);
+    // referrals has two FKs into accounts (referrer_account_id and
+    // referee_account_id), so supabase-js cannot infer the embed and widens
+    // `referee` to SelectQueryError. The `referee:referee_account_id(...)`
+    // form names the column explicitly and is accepted by PostgREST, so cast
+    // through `unknown`.
+    return (data as unknown as RawReferralWithReferee[]).map(toReferralEntry);
   } catch {
     return [];
   }
 }
 
-type RawReferralWithReferee = ReferralRow & {
+/** Exactly the columns the listReferrals select fetches, plus the embedded
+ *  referee. Narrower than ReferralRow on purpose: the query omits
+ *  referrer_account_id, referee_account_id, notes, and updated_at, and
+ *  toReferralEntry never reads them. */
+type RawReferralWithReferee = Pick<
+  ReferralRow,
+  | "id"
+  | "code"
+  | "status"
+  | "payout_amount_aed"
+  | "signed_up_at"
+  | "first_deal_at"
+  | "paid_at"
+  | "created_at"
+> & {
   referee:
     | { first_name: string | null; last_name: string | null }
     | { first_name: string | null; last_name: string | null }[]

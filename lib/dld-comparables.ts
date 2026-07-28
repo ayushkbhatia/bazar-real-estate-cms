@@ -19,7 +19,6 @@ import {
   markIntegrationError,
   markIntegrationSynced,
 } from "@/lib/queries/integrations";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type { Database } from "@/db/types";
 
 export type DldComparable = {
@@ -129,14 +128,14 @@ export async function importDldComparables(): Promise<{
     const oneYearAgo = new Date(
       Date.now() - 365 * 86_400_000,
     ).toISOString();
-    await s8(supabase)
+    await supabase
       .from("dld_comparables")
       .delete()
       .gte("transaction_date", oneYearAgo);
     if (rows.length > 0) {
       // Insert in chunks of 500 to avoid request-size limits.
       for (let i = 0; i < rows.length; i += 500) {
-        await s8(supabase)
+        await supabase
           .from("dld_comparables")
           .insert(rows.slice(i, i + 500));
       }
@@ -161,7 +160,7 @@ export async function getComparablesForSubject(opts: {
 }): Promise<DldComparable[]> {
   if (!isSupabaseConfigured || !opts.area_slug) return [];
   const supabase = adminClient();
-  let q = s8(supabase)
+  let q = supabase
     .from("dld_comparables")
     .select("*")
     .eq("area_slug", opts.area_slug)

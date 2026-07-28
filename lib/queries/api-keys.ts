@@ -10,7 +10,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type {
   ApiKeyRole,
   ApiKeyRow,
@@ -46,7 +45,7 @@ export async function listApiKeys(): Promise<ApiKeyDisplay[]> {
   if (!isSupabaseConfigured) return [];
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("api_keys")
       .select(
         "id, name, key_prefix, role, status, last_used_at, expires_at, notes, created_at",
@@ -70,7 +69,7 @@ export async function createApiKey(
     const prefix = `bzk_${plaintext.slice(0, 6)}`;
     const hash = sha256(plaintext);
     const sb = await createSupabaseServerClient();
-    const { data, error } = await s8(sb)
+    const { data, error } = await sb
       .from("api_keys")
       .insert({
         name: input.name,
@@ -105,7 +104,7 @@ export async function revokeApiKey(id: string): Promise<boolean> {
   if (!isSupabaseConfigured) return false;
   try {
     const sb = await createSupabaseServerClient();
-    const { error } = await s8(sb)
+    const { error } = await sb
       .from("api_keys")
       .update({ status: "revoked", revoked_at: new Date().toISOString() })
       .eq("id", id);
@@ -127,7 +126,7 @@ export async function verifyApiKey(
   try {
     const hash = sha256(plaintext);
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("api_keys")
       .select("*")
       .eq("key_hash", hash)
@@ -137,7 +136,7 @@ export async function verifyApiKey(
     if (!row) return null;
     if (row.expires_at && new Date(row.expires_at) < new Date()) return null;
     // Bump last_used_at — best-effort.
-    void s8(sb)
+    void sb
       .from("api_keys")
       .update({ last_used_at: new Date().toISOString() })
       .eq("id", row.id);

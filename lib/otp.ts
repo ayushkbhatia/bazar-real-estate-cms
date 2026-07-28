@@ -12,7 +12,6 @@
 
 import crypto from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { s8 } from "@/lib/supabase/sprint-8";
 import { env } from "@/lib/env";
 
 export const OTP_TTL_SECONDS = 10 * 60;
@@ -58,7 +57,7 @@ export async function issueOtp(opts: {
   const code = generateNumericCode();
   const expiresAt = new Date(Date.now() + OTP_TTL_SECONDS * 1000).toISOString();
 
-  await s8(supabase)
+  await supabase
     .from("otp_codes")
     .insert({
       identifier: opts.identifier.toLowerCase().trim(),
@@ -87,7 +86,7 @@ export async function verifyOtp(opts: {
   const supabase = createAdminClient();
   if (!supabase) return { ok: false, reason: "not_found" };
 
-  const { data: rows } = await s8(supabase)
+  const { data: rows } = await supabase
     .from("otp_codes")
     .select("id, code_hash, attempts, max_attempts, expires_at, consumed_at")
     .eq("identifier", identifier)
@@ -115,7 +114,7 @@ export async function verifyOtp(opts: {
   }
 
   if (row.code_hash !== expected) {
-    await s8(supabase)
+    await supabase
       .from("otp_codes")
       .update({ attempts: row.attempts + 1 })
       .eq("id", row.id);
@@ -123,7 +122,7 @@ export async function verifyOtp(opts: {
   }
 
   // Success — mark consumed atomically.
-  await s8(supabase)
+  await supabase
     .from("otp_codes")
     .update({ consumed_at: new Date().toISOString() })
     .eq("id", row.id);

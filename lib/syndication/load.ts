@@ -10,7 +10,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { mediaPublicUrl } from "@/lib/media";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type { FeedProperty } from "./property-finder";
 import type { Database } from "@/db/types";
 
@@ -33,7 +32,7 @@ export async function loadFeedProperties(): Promise<FeedProperty[]> {
   const out: FeedProperty[] = [];
   let offset = 0;
   while (true) {
-    const { data, error } = await s8(supabase)
+    const { data, error } = await supabase
       .from("properties")
       .select(
         "reference, slug, title, description, type, mode, beds, baths, built_up_ft2, price_aed, geo, listing_permit_no, listing_permit_expires_at, published_at, areas:area_id(name, slug), assigned_agent:assigned_agent_id(display_name, brn), property_media(role, media:media_assets(storage_key))",
@@ -43,7 +42,7 @@ export async function loadFeedProperties(): Promise<FeedProperty[]> {
       .range(offset, offset + PAGE_SIZE - 1);
     if (error || !data || data.length === 0) break;
 
-    for (const row of data as RawRow[]) {
+    for (const row of data as unknown as RawRow[]) {
       const area = Array.isArray(row.areas) ? row.areas[0] : row.areas;
       const agent = Array.isArray(row.assigned_agent)
         ? row.assigned_agent[0]

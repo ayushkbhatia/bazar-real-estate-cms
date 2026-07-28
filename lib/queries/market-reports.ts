@@ -12,7 +12,6 @@
  */
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
-import { s8 } from "@/lib/supabase/sprint-8";
 import { isSupabaseConfigured } from "@/lib/env";
 
 export type PropertyTypeSlug = "villa" | "apartment" | "townhouse" | "penthouse";
@@ -150,7 +149,7 @@ async function fetchDldRows(opts: {
   const supabase = createSupabasePublicClient();
   // `dld_comparables` isn't in db/types.ts yet (Sprint 13 added it via 0029
   // but the types haven't been regenerated). Use the s8 escape hatch.
-  const { data, error } = await s8(supabase)
+  const { data, error } = await supabase
     .from("dld_comparables")
     .select(
       "transaction_date, property_type, area_slug, built_up_ft2, price_aed, bedrooms",
@@ -295,7 +294,7 @@ export async function listReportableAreas(opts: {
   // Two queries: pull distinct area_slugs from comparables for the quarter,
   // then join area names. Postgres-pure approach would be one RPC; the JS
   // approach below is fine for ~30 areas.
-  const { data: slugs } = await s8(supabase)
+  const { data: slugs } = await supabase
     .from("dld_comparables")
     .select("area_slug")
     .gte("transaction_date", bounds.start)

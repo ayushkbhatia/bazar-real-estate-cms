@@ -9,7 +9,6 @@
 
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import { s8 } from "@/lib/supabase/sprint-8";
 
 export type RecentlyViewedEntry = {
   property_id: string;
@@ -30,7 +29,7 @@ export async function recordView(
   if (!isSupabaseConfigured || !userId || !propertyId) return;
   try {
     const sb = await createSupabaseServerClient();
-    await s8(sb)
+    await sb
       .from("recently_viewed")
       .upsert(
         { user_id: userId, property_id: propertyId, viewed_at: new Date().toISOString() },
@@ -50,7 +49,7 @@ export async function listRecentlyViewed(
   if (!isSupabaseConfigured || !userId) return [];
   try {
     const sb = await createSupabaseServerClient();
-    const { data } = await s8(sb)
+    const { data } = await sb
       .from("recently_viewed")
       .select(
         "property_id, viewed_at, property:property_id(reference, slug, title, price_aed, property_media(role, media:media_assets(storage_key)))",

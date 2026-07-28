@@ -18,7 +18,6 @@ import {
   embedBatch,
   EMBEDDING_MODEL,
 } from "@/lib/embeddings";
-import { s8 } from "@/lib/supabase/sprint-8";
 import type { Database } from "@/db/types";
 
 function adminClient() {
@@ -62,7 +61,7 @@ export async function GET(req: NextRequest) {
     for (let batchIdx = 0; batchIdx < MAX_BATCHES_PER_RUN; batchIdx++) {
       // Pull properties whose embedding is missing or stale. Using a
       // LEFT JOIN view is cleaner — for v1, two queries + JS filter.
-      const { data: candidates, error } = await s8(supabase)
+      const { data: candidates, error } = await supabase
         .from("properties")
         .select(
           "id, title, short_description, description, type, beds, baths, amenities, updated_at, areas:area_id(name)",
@@ -76,7 +75,7 @@ export async function GET(req: NextRequest) {
 
       // Filter to ones that need (re)embedding.
       const ids = candidates.map((c) => c.id);
-      const { data: existing } = await s8(supabase)
+      const { data: existing } = await supabase
         .from("property_embeddings")
         .select("property_id, updated_at")
         .in("property_id", ids);
@@ -128,9 +127,13 @@ export async function GET(req: NextRequest) {
         });
       }
       if (upserts.length > 0) {
-        await s8(supabase)
+        // `embedding` is a pgvector column, which the type generator emits
+        // as `string`. PostgREST accepts a JSON number array and casts it,
+        // so the runtime shape is correct and only the generated type is
+        // narrower than reality.
+        await supabase
           .from("property_embeddings")
-          .upsert(upserts, { onConflict: "property_id" });
+          .upsert(upserts as unknown as never, { onConflict: "property_id" });
         embedded += upserts.length;
       }
       if (candidates.length < BATCH_SIZE) break;
