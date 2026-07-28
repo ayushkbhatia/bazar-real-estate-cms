@@ -144,8 +144,8 @@ function ConfirmView({
         </DialogTitle>
         <DialogDescription>
           Each row passes the same publish gate as the single-property flow
-          (compliance + permit + hero + slug). Rows that fail any check stay
-          in selection — fix them and try again.
+          (title + slug + price + listing permit). Rows that fail any check
+          stay in selection — fix them and try again.
         </DialogDescription>
       </DialogHeader>
       <ul className="mt-2 flex flex-col gap-1 text-[13px]">

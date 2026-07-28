@@ -3,6 +3,11 @@ import {
   evaluatePublishability,
   type PublishabilityInput,
 } from "./publishability";
+import {
+  normaliseEditInput,
+  propertyEditSchema,
+  type PropertyEditInput,
+} from "./schemas/property";
 
 const FUTURE = "2099-12-31";
 const PAST = "2010-01-01";
@@ -10,20 +15,12 @@ const PAST = "2010-01-01";
 function base(): PublishabilityInput {
   return {
     status: "draft",
-    has_hero: true,
     has_developer: true,
-    poa_optional: true,
     listing_permit_no: "ORN-12345-AD",
     listing_permit_expires_at: FUTURE,
     slug: "mamsha-3-bed-beachfront-apartment",
     title: "Mamsha · 3-bed beachfront",
     price_aed: 4_200_000,
-    compliance: {
-      form_a: true,
-      title_deed: true,
-      noc: true,
-      power_of_attorney: true,
-    },
   };
 }
 
@@ -35,54 +32,26 @@ describe("evaluatePublishability", () => {
     expect(res.checks.every((c) => c.passed)).toBe(true);
   });
 
-  it("blocks when no hero is set", () => {
-    const res = evaluatePublishability({ ...base(), has_hero: false });
-    expect(res.ok).toBe(false);
-    expect(res.blockers).toContain("No hero image set");
-  });
-
-  it("blocks when any compliance flag is missing", () => {
-    const res = evaluatePublishability({
-      ...base(),
-      compliance: {
-        form_a: true,
-        title_deed: false,
-        noc: true,
-        power_of_attorney: true,
-      },
-    });
-    expect(res.ok).toBe(false);
-    expect(res.blockers.some((b) => b.includes("Title deed"))).toBe(true);
-  });
-
-  it("blocks on the three REQUIRED compliance items when compliance is null", () => {
-    const res = evaluatePublishability({ ...base(), compliance: null });
-    expect(res.ok).toBe(false);
-    // Form A, Title deed, NOC are required; Power of Attorney is optional.
-    const complianceBlockers = res.blockers.filter((b) =>
-      /Form A|Title deed|NOC/i.test(b),
+  it("does not gate on paperwork or hero imagery", () => {
+    const labels = evaluatePublishability(base()).checks.map((c) =>
+      c.label.toLowerCase(),
     );
-    expect(complianceBlockers).toHaveLength(3);
-    expect(res.blockers.some((b) => /Power of Attorney/i.test(b))).toBe(false);
-  });
-
-  it("does NOT block when only Power of Attorney is unticked (optional)", () => {
-    const res = evaluatePublishability({
-      ...base(),
-      compliance: {
-        form_a: true,
-        title_deed: true,
-        noc: true,
-        power_of_attorney: false,
-      },
-    });
-    expect(res.ok).toBe(true);
+    for (const gone of ["form a", "title deed", "noc", "power of attorney", "hero"]) {
+      expect(labels.some((l) => l.includes(gone))).toBe(false);
+    }
   });
 
   it("blocks when no developer is set", () => {
     const res = evaluatePublishability({ ...base(), has_developer: false });
     expect(res.ok).toBe(false);
     expect(res.blockers).toContain("Developer is missing");
+  });
+
+  it("skips the developer check when the caller doesn't track it", () => {
+    const { has_developer: _omitted, ...withoutDeveloper } = base();
+    const res = evaluatePublishability(withoutDeveloper);
+    expect(res.ok).toBe(true);
+    expect(res.checks.some((c) => c.label.includes("Developer"))).toBe(false);
   });
 
   it("blocks when permit is missing or expired", () => {
@@ -92,6 +61,12 @@ describe("evaluatePublishability", () => {
     });
     expect(noPermit.blockers).toContain("Listing permit number is missing");
 
+    const blankPermit = evaluatePublishability({
+      ...base(),
+      listing_permit_no: "   ",
+    });
+    expect(blankPermit.blockers).toContain("Listing permit number is missing");
+
     const expired = evaluatePublishability({
       ...base(),
       listing_permit_expires_at: PAST,
@@ -99,6 +74,12 @@ describe("evaluatePublishability", () => {
     expect(
       expired.blockers.some((b) => b.toLowerCase().includes("expires_at")),
     ).toBe(true);
+
+    const noExpiry = evaluatePublishability({
+      ...base(),
+      listing_permit_expires_at: null,
+    });
+    expect(noExpiry.ok).toBe(false);
   });
 
   it("blocks when slug is invalid", () => {
@@ -136,11 +117,93 @@ describe("evaluatePublishability", () => {
     expect(res.ok).toBe(true);
   });
 
+  // The permit checks are only worth anything if they read what the property
+  // editor actually writes. This walks the real path: raw form values →
+  // normaliseEditInput → propertyEditSchema → the saved column values → gate.
+  describe("permit checks against real editor output", () => {
+    const RAW_FORM_VALUES = {
+      title: "Mamsha · 3-bed beachfront",
+      short_description: "",
+      type: "apartment",
+      mode: "buy",
+      developer_id: "11111111-1111-1111-1111-111111111111",
+      price_aed: "4200000",
+      beds: "3",
+      baths: "4",
+      amenities: [],
+      slug: "mamsha-3-bed-beachfront",
+      area_id: "",
+      listing_permit_no: "ORN-12345-AD",
+      listing_permit_expires_at: "2099-12-31",
+    };
+
+    function gateFromForm(overrides: Record<string, unknown> = {}) {
+      const parsed = propertyEditSchema.parse(
+        normaliseEditInput({ ...RAW_FORM_VALUES, ...overrides }),
+      ) as PropertyEditInput;
+      return evaluatePublishability({
+        status: "draft",
+        has_developer: parsed.developer_id !== "",
+        listing_permit_no: parsed.listing_permit_no ?? null,
+        listing_permit_expires_at: parsed.listing_permit_expires_at ?? null,
+        slug: parsed.slug,
+        title: parsed.title,
+        price_aed: parsed.price_aed,
+      });
+    }
+
+    it("passes both permit checks for a filled-in editor form", () => {
+      const res = gateFromForm();
+      expect(res.ok).toBe(true);
+      expect(
+        res.checks.find((c) => c.label === "Listing permit no. is recorded")
+          ?.passed,
+      ).toBe(true);
+      expect(
+        res.checks.find((c) => c.label === "Listing permit not expired")
+          ?.passed,
+      ).toBe(true);
+    });
+
+    it("fails when the permit fields are left blank in the editor", () => {
+      // Blank inputs arrive as "" and are normalised to null before the save.
+      const res = gateFromForm({
+        listing_permit_no: "",
+        listing_permit_expires_at: "",
+      });
+      expect(res.ok).toBe(false);
+      expect(res.blockers).toContain("Listing permit number is missing");
+      expect(res.blockers).toContain(
+        "Listing permit expires_at is missing or in the past",
+      );
+    });
+
+    it("fails when the editor's date picker holds a past expiry", () => {
+      const res = gateFromForm({ listing_permit_expires_at: "2010-01-01" });
+      expect(res.ok).toBe(false);
+      expect(
+        res.checks.find((c) => c.label === "Listing permit not expired")
+          ?.passed,
+      ).toBe(false);
+    });
+
+    it("fails on both layers when the developer dropdown was never touched", () => {
+      // A fresh draft has developer_id "" in the form and null in the row, so
+      // the editor refuses to save it AND the gate blocks the publish.
+      const parsed = propertyEditSchema.safeParse(
+        normaliseEditInput({ ...RAW_FORM_VALUES, developer_id: "" }),
+      );
+      expect(parsed.success).toBe(false);
+
+      const res = evaluatePublishability({ ...base(), has_developer: false });
+      expect(res.blockers).toContain("Developer is missing");
+    });
+  });
+
   it("aggregates several blockers when multiple checks fail", () => {
     const res = evaluatePublishability({
       ...base(),
-      has_hero: false,
-      compliance: null,
+      has_developer: false,
       title: null,
       slug: "BAD",
       price_aed: null,
@@ -148,6 +211,6 @@ describe("evaluatePublishability", () => {
       listing_permit_expires_at: null,
     });
     expect(res.ok).toBe(false);
-    expect(res.blockers.length).toBeGreaterThanOrEqual(7);
+    expect(res.blockers.length).toBe(6);
   });
 });

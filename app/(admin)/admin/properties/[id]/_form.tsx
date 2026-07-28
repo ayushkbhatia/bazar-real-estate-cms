@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, X } from "lucide-react";
 import { toast } from "sonner";
@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { updateProperty } from "./_actions";
+import { setPropertyDeveloper, updateProperty } from "./_actions";
 import { LocationPicker } from "./_components/location-picker";
 
 export type AreaOption = { id: string; name: string; kind: string };
@@ -85,6 +85,38 @@ const FURNISHING_LABELS: Record<(typeof FURNISHINGS)[number], string> = {
 
 const UNSET = "__unset__";
 
+/** Which tab owns each field, so a failed validation can jump the user to it
+ *  instead of failing silently inside an unmounted tab panel. */
+const FIELD_TAB: Partial<Record<keyof PropertyEditInput, string>> = {
+  title: "overview",
+  short_description: "overview",
+  type: "overview",
+  mode: "overview",
+  developer_id: "overview",
+  price_aed: "pricing",
+  service_charge_per_ft2: "pricing",
+  beds: "pricing",
+  baths: "pricing",
+  built_up_ft2: "pricing",
+  plot_ft2: "pricing",
+  year_built: "details",
+  tenure: "details",
+  furnishing: "details",
+  view: "details",
+  orientation: "details",
+  parking_bays: "details",
+  floor: "details",
+  address_line: "details",
+  listing_permit_no: "details",
+  listing_permit_expires_at: "details",
+  dld_plot_number: "details",
+  area_id: "location",
+  amenities: "amenities",
+  slug: "seo",
+  meta_title: "seo",
+  meta_description: "seo",
+};
+
 export function PropertyEditForm({
   propertyId,
   initial,
@@ -96,6 +128,8 @@ export function PropertyEditForm({
 }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [tab, setTab] = useState("overview");
+  const [savingDeveloper, setSavingDeveloper] = useState(false);
   const [serverFieldErrors, setServerFieldErrors] = useState<
     Record<string, string>
   >({});
@@ -176,12 +210,51 @@ export function PropertyEditForm({
     });
   };
 
+  /** Client-side validation failed. The offending field usually lives in a tab
+   *  that isn't mounted, so its inline error is invisible and Save looks like
+   *  it did nothing. Say what failed and open the tab that owns it. */
+  const onInvalid = (formErrors: FieldErrors<PropertyEditInput>) => {
+    const first = Object.keys(formErrors)[0] as
+      | keyof PropertyEditInput
+      | undefined;
+    if (!first) return;
+    const target = FIELD_TAB[first];
+    if (target) setTab(target);
+    const message = formErrors[first]?.message;
+    toast.error(
+      typeof message === "string"
+        ? message
+        : "Some fields need fixing before saving.",
+    );
+  };
+
+  /** Save the developer as soon as it's picked — the publish gate reads it
+   *  from the saved row, so deferring it to the form save is what made
+   *  "Developer is set" look stuck. */
+  const onDeveloperChange = (developerId: string) => {
+    setValue("developer_id", developerId, { shouldDirty: true });
+    setServerFieldErrors((prev) => ({ ...prev, developer_id: "" }));
+    setSavingDeveloper(true);
+    void (async () => {
+      const result = await setPropertyDeveloper(propertyId, developerId);
+      setSavingDeveloper(false);
+      if (result.status === "ok") {
+        router.refresh();
+      } else {
+        toast.error(result.message);
+      }
+    })();
+  };
+
   const fieldClass =
     "border border-bz-border rounded p-2 text-[14px] bg-bz-surface focus:border-bz-accent outline-none";
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-      <Tabs defaultValue="overview" className="w-full">
+    <form
+      onSubmit={handleSubmit(onSubmit, onInvalid)}
+      className="flex flex-col gap-6"
+    >
+      <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="pricing">Pricing</TabsTrigger>
@@ -279,12 +352,7 @@ export function PropertyEditForm({
 
           <div className="flex flex-col gap-1.5 max-w-md">
             <Label htmlFor="developer_id">Developer</Label>
-            <Select
-              value={developerId}
-              onValueChange={(v) =>
-                setValue("developer_id", v, { shouldDirty: true })
-              }
-            >
+            <Select value={developerId} onValueChange={onDeveloperChange}>
               <SelectTrigger id="developer_id">
                 <SelectValue placeholder="Choose a developer" />
               </SelectTrigger>
@@ -297,8 +365,9 @@ export function PropertyEditForm({
               </SelectContent>
             </Select>
             <span className="text-[11.5px] text-bz-muted">
-              Required. The developer behind this listing — shown on the public
-              property page and required before it can be published.
+              {savingDeveloper
+                ? "Saving…"
+                : "Required. The developer behind this listing — shown on the public property page and required before it can be published. Saved as soon as you pick one."}
             </span>
             <FieldError
               message={

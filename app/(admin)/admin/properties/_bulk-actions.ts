@@ -84,8 +84,8 @@ export type BulkPublishResult =
 
 /**
  * Bulk-publish a list of property ids. Each id goes through the same
- * publishability gate as the single-property publish flow (compliance +
- * permit + hero + slug + title + price). Blocked rows are returned with
+ * publishability gate as the single-property publish flow (permit + slug +
+ * title + price). Blocked rows are returned with
  * their per-row reasons so the UI can surface a pass/fail list and keep
  * the user's selection of failed rows intact.
  *

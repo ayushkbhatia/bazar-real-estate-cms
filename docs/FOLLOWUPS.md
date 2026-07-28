@@ -150,3 +150,28 @@ shows the trail.)
   category-tile scrims). Other `bg-bz-ink` dark CTAs and bands (chip-cloud CTA,
   mortgage hero band, area-map flyout CTA, insights aside, chat bubbles) stay
   ink by design. Revisit only if the client wants navy everywhere.
+
+- [properties] Every property-form save silently resets three Sprint-8 fields.
+  `normaliseEditInput` (`lib/schemas/property.ts`) coerces `bazar_verified` and
+  `featured_on_homepage` to `false` and `advisor_note` to `null` when they're
+  absent from the payload — and the edit form never renders them, so a plain
+  Save on any listing wipes the Bazar Verified badge, the homepage feature
+  toggle, and the advisor note. Fix: only include those keys when present in
+  `raw` (and update the three `normaliseEditInput` cases in
+  `lib/schemas/property.test.ts` that assert the coercion).
+
+- [properties] Bulk publish doesn't check that a developer is set.
+  `evaluateBulkPublishability` (`lib/queries/properties-bulk.ts`) never selects
+  `developer_id`, so `has_developer` is undefined and the gate skips it — a
+  listing that single-publish blocks can go live via the bulk dialog. Add
+  `developer_id` to the row select/type once the existing catalogue is
+  backfilled (most seeded rows have no developer today, so turning it on now
+  would block bulk publish broadly).
+
+- [properties] `properties.compliance` is now write-nothing, read-nothing.
+  The publish gate no longer reads the Form A / title deed / NOC / PoA flags and
+  the CMS no longer writes them (the `updateCompliance` action was removed with
+  the Compliance card). The column and `propertyComplianceSchema` /
+  `COMPLIANCE_LABELS` / `normaliseCompliance` are retained for the historic data
+  and for whatever surface picks the paperwork trail back up. Drop them if a
+  future sprint confirms the paperwork lives entirely outside the CMS.
