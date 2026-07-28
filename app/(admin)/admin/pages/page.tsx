@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, ExternalLink, ArrowRight } from "lucide-react";
+import { Plus, ExternalLink } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +13,8 @@ import {
 import { cn } from "@/lib/utils";
 import { listAllPagesForAdmin, pageUrl, type PageListRow } from "@/lib/queries/pages";
 import { MASTER_PAGES } from "@/lib/master-pages";
+import { SUBPAGE_KINDS } from "@/lib/master-pages/subpages";
+import { countSubPagesByKind } from "@/lib/queries/subpages";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +52,10 @@ function relative(iso: string | null): string {
 }
 
 export default async function AdminPagesPage() {
-  const { rows, total } = await listAllPagesForAdmin({ limit: 200 });
+  const [{ rows, total }, subPageCounts] = await Promise.all([
+    listAllPagesForAdmin({ limit: 200 }),
+    countSubPagesByKind(),
+  ]);
 
   return (
     <CmsShell
@@ -96,22 +101,34 @@ export default async function AdminPagesPage() {
         </section>
 
         <section className="flex flex-col gap-3 border-t border-bz-border pt-6">
-          <div className="flex items-start gap-3">
-            <div className="mr-auto">
-              <h2 className="text-[14px] font-medium">Sub-pages</h2>
-              <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
-                Project pages under <span className="mono">/developments</span>,
-                built from one template — edit each project&apos;s copy,
-                imagery and sections, or add a new project page.
-              </p>
-            </div>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/pages/sub">
-                Open sub-pages
-                <ArrowRight size={13} strokeWidth={1.8} />
-              </Link>
-            </Button>
+          <div>
+            <h2 className="text-[14px] font-medium">Sub-pages</h2>
+            <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
+              Pages that exist once per record, built from a shared template.
+              Edit any one of them, or add a new one.
+            </p>
           </div>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {SUBPAGE_KINDS.map((k) => (
+              <li key={k.kind}>
+                <Link
+                  href={k.adminPath}
+                  className="flex h-full flex-col gap-1 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
+                >
+                  <span className="text-[13.5px] font-medium">{k.label}</span>
+                  <span className="mono text-[11px] text-bz-muted">
+                    {k.publicPath}/…
+                  </span>
+                  <span className="mt-1 text-[11.5px] text-bz-muted-2">
+                    {subPageCounts[k.kind] ?? 0}{" "}
+                    {subPageCounts[k.kind] === 1
+                      ? k.itemLabel
+                      : `${k.itemLabel}s`}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
 
         <p className="text-[13px] text-bz-muted max-w-[60ch] border-t border-bz-border pt-6">

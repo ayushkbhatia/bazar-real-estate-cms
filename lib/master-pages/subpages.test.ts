@@ -7,7 +7,9 @@ import {
 } from "./index";
 import {
   DEVELOPMENT_SECTIONS,
+  SUBPAGE_KINDS,
   developmentPageDef,
+  getSubPageKind,
   isSubPageSlug,
   subPageSlug,
 } from "./subpages";
@@ -105,5 +107,27 @@ describe("development sub-pages", () => {
     expect(developmentPageDef({ name: "Reem Hills Phase 4", slug: "reem-hills-phase-4" }).path).toBe(
       "/developments/reem-hills-phase-4",
     );
+  });
+});
+
+describe("sub-page kinds registry", () => {
+  it("exposes each kind as a block with a distinct admin route", () => {
+    expect(SUBPAGE_KINDS.length).toBeGreaterThan(0);
+    const kinds = SUBPAGE_KINDS.map((k) => k.kind);
+    const paths = SUBPAGE_KINDS.map((k) => k.adminPath);
+    expect(new Set(kinds).size).toBe(kinds.length);
+    expect(new Set(paths).size).toBe(paths.length);
+    for (const k of SUBPAGE_KINDS) {
+      // The block links to the kind's own index, not the shared one — that's
+      // what lets a second kind sit beside developments without a rewrite.
+      expect(k.adminPath).toBe(`/admin/pages/sub/${k.kind}`);
+      expect(k.publicPath.startsWith("/")).toBe(true);
+      expect(k.label.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("resolves a kind by name and rejects unknown ones", () => {
+    expect(getSubPageKind("development")?.label).toBe("Developments");
+    expect(getSubPageKind("nonsense")).toBeNull();
   });
 });

@@ -77,6 +77,13 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
             Sub-pages
           </Link>
           <ChevronRight size={11} />
+          <Link
+            href="/admin/pages/sub/development"
+            className="hover:text-bz-ink"
+          >
+            Developments
+          </Link>
+          <ChevronRight size={11} />
           <span className="mono">/developments/{development.slug}</span>
         </span>
       }

@@ -1,15 +1,18 @@
 import Link from "next/link";
-import { ChevronRight, ExternalLink, Plus } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { listDevelopmentSubPages } from "@/lib/queries/subpages";
+import { SUBPAGE_KINDS } from "@/lib/master-pages/subpages";
+import { countSubPagesByKind } from "@/lib/queries/subpages";
 
 export const dynamic = "force-dynamic";
 
-export default async function SubPagesIndex() {
-  const rows = await listDevelopmentSubPages();
-  const live = rows.filter((r) => r.published_at !== null).length;
+/**
+ * Index of sub-page kinds. One kind today (developments); it exists as its own
+ * route so the blocks on the Pages index have somewhere to land when a second
+ * kind arrives, and so deep links to /admin/pages/sub keep working.
+ */
+export default async function SubPageKindsIndex() {
+  const counts = await countSubPagesByKind();
 
   return (
     <CmsShell
@@ -23,83 +26,33 @@ export default async function SubPagesIndex() {
           <span>Sub-pages</span>
         </span>
       }
-      primary={
-        <Button asChild>
-          <Link href="/admin/pages/sub/development/new">
-            <Plus size={14} strokeWidth={1.8} />
-            Add development page
-          </Link>
-        </Button>
-      }
     >
       <div className="flex flex-col gap-5 max-w-[900px]">
         <p className="text-[13px] text-bz-ink-2 leading-relaxed">
-          Project pages under <span className="mono">/developments</span>. Each
-          one is built from the same template, so editing here changes the copy,
-          imagery and which sections appear on that project&apos;s page — not on
-          the others.
+          Pages that exist once per record, built from a shared template.
         </p>
-
-        <div className="text-[12.5px] text-bz-muted">
-          {rows.length} {rows.length === 1 ? "page" : "pages"} · {live} live
-        </div>
-
-        {rows.length === 0 ? (
-          <div className="bg-bz-surface border border-bz-border rounded-lg p-12 text-center text-bz-muted text-[13.5px]">
-            No development pages yet — start one with{" "}
-            <span className="text-bz-ink">Add development page</span>.
-          </div>
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {rows.map((row) => (
-              <li
-                key={row.id}
-                className="flex items-center gap-3 rounded-lg border border-bz-border bg-bz-surface px-4 py-3"
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {SUBPAGE_KINDS.map((k) => (
+            <li key={k.kind}>
+              <Link
+                href={k.adminPath}
+                className="flex h-full flex-col gap-1 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
               >
-                <div className="min-w-0 flex-1">
-                  <Link
-                    href={`/admin/pages/sub/development/${row.slug}`}
-                    className="text-[13.5px] font-medium hover:text-bz-accent transition-colors"
-                  >
-                    {row.name}
-                  </Link>
-                  <div className="mono text-[11px] text-bz-muted truncate">
-                    /developments/{row.slug}
-                    {row.developer ? ` · ${row.developer}` : ""}
-                  </div>
-                </div>
-
-                {row.edited ? (
-                  <span className="text-[11px] text-bz-muted-2">Edited</span>
-                ) : null}
-
-                <span
-                  className={cn(
-                    "inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium",
-                    row.published_at
-                      ? "bg-[oklch(0.94_0.04_145)] text-[oklch(0.35_0.08_145)]"
-                      : "bg-bz-surface-2 text-bz-ink-2",
-                  )}
-                >
-                  {row.published_at ? "Live" : "Not published"}
+                <span className="text-[13.5px] font-medium">{k.label}</span>
+                <span className="mono text-[11px] text-bz-muted">
+                  {k.publicPath}/…
                 </span>
-
-                {row.published_at ? (
-                  <Link
-                    href={`/developments/${row.slug}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-[12px] text-bz-muted hover:text-bz-ink"
-                  >
-                    View <ExternalLink size={12} />
-                  </Link>
-                ) : (
-                  <span className="text-[12px] text-bz-muted-2">—</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+                <span className="mt-1 text-[12px] text-bz-muted">
+                  {k.description}
+                </span>
+                <span className="mt-1 text-[11.5px] text-bz-muted-2">
+                  {counts[k.kind] ?? 0}{" "}
+                  {counts[k.kind] === 1 ? k.itemLabel : `${k.itemLabel}s`}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </CmsShell>
   );

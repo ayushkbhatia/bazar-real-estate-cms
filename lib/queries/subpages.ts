@@ -123,3 +123,18 @@ export async function listDevelopmentSubPages(
     edited: editedSlugs.has(r.slug),
   }));
 }
+
+/**
+ * How many records back each sub-page kind — the count on the Pages index
+ * blocks. One query per kind; there is one kind today.
+ */
+export async function countSubPagesByKind(): Promise<
+  Partial<Record<SubPageKind, number>>
+> {
+  if (!isSupabaseConfigured) return {};
+  const supabase = createSupabasePublicClient();
+  const { count } = await supabase
+    .from("developments")
+    .select("id", { count: "exact", head: true });
+  return { development: count ?? 0 };
+}
