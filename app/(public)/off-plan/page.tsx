@@ -17,6 +17,7 @@ import { WhyBand } from "../_components/marketing/why-band";
 import { Faq } from "../_components/marketing/faq";
 import { AD_AREAS } from "../_components/marketing/ad-data";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { OFFPLAN_LAUNCH_COUNT } from "../_components/marketing/counts";
 import {
   faqPairs,
   img,
@@ -52,7 +53,22 @@ export default async function NewProjectsPage({ searchParams }: PageProps) {
     listPublishedDevelopments(),
     listAreasWithCounts(),
   ]);
-  const featuredDevs = developments.slice(0, 6);
+  // Curated in the New Projects master page; a pick that no longer resolves
+  // (unpublished, renamed, deleted) is dropped rather than rendered as a card
+  // linking nowhere. Empty ⇒ the most recent published projects.
+  const launchPicks = list<Record<string, unknown>>(
+    content.section("launches")?.values ?? {},
+    "projects",
+  )
+    .filter((p) => p.enabled !== false)
+    .map((p) => (typeof p.slug === "string" ? p.slug : ""))
+    .filter(Boolean);
+  const bySlug = new Map(developments.map((d) => [d.slug, d]));
+  const picked = launchPicks
+    .map((slug) => bySlug.get(slug))
+    .filter((d): d is (typeof developments)[number] => d !== undefined);
+  const featuredDevs =
+    picked.length > 0 ? picked : developments.slice(0, OFFPLAN_LAUNCH_COUNT);
   const { pins, dots, groups, options } = buildOffplanMap(developments);
   const countBySlug = new Map(
     areaCounts.map((a) => [a.name, { slug: a.slug, count: a.listing_count }]),
@@ -86,6 +102,9 @@ export default async function NewProjectsPage({ searchParams }: PageProps) {
     desc: String(t.desc ?? ""),
     cta: String(t.cta ?? ""),
     href: String(t.href ?? "/off-plan/search"),
+    img: typeof t.img === "string" ? t.img : undefined,
+    imgUrl: imageUrlOf(t.image),
+    imgAlt: imageAltOf(t.image),
   }));
 
   const nodes: Record<string, React.ReactNode> = {
@@ -225,4 +244,16 @@ export default async function NewProjectsPage({ searchParams }: PageProps) {
       ))}
     </div>
   );
+}
+
+function imageUrlOf(value: unknown): string | null {
+  if (!value || typeof value !== "object") return null;
+  const url = (value as { url?: unknown }).url;
+  return typeof url === "string" && url ? url : null;
+}
+
+function imageAltOf(value: unknown): string | null {
+  if (!value || typeof value !== "object") return null;
+  const alt = (value as { alt?: unknown }).alt;
+  return typeof alt === "string" && alt ? alt : null;
 }

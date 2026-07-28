@@ -13,6 +13,7 @@ import {
   HOME_AREA_TILE_COUNT,
   HOME_OFFPLAN_CARD_COUNT,
 } from "@/app/(public)/_components/home/section-copy";
+import { OFFPLAN_LAUNCH_COUNT } from "@/app/(public)/_components/marketing/counts";
 import {
   MasterPageEditor,
   type MediaOption,
@@ -81,9 +82,13 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
       options: [...developmentSeed].sort((a, b) =>
         a.name.localeCompare(b.name),
       ),
-      // OffPlanProjects renders the 3 most recently published projects, and
-      // `listPublishedDevelopments` is already in that order.
-      current: developmentSeed.slice(0, HOME_OFFPLAN_CARD_COUNT),
+      // How many the page shows depends on which page is being edited: the
+      // home carousel takes 3, New Projects' launch grid takes 6.
+      // `listPublishedDevelopments` is already in published-at order.
+      current: developmentSeed.slice(
+        0,
+        key === "off-plan" ? OFFPLAN_LAUNCH_COUNT : HOME_OFFPLAN_CARD_COUNT,
+      ),
     },
   };
 

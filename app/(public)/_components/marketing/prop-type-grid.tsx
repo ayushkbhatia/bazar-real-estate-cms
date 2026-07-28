@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -7,8 +8,12 @@ export type PropType = {
   name: string;
   desc: string;
   cta?: string;
+  /** Caption for the placeholder art, used when no asset is picked. */
   img?: string;
   href?: string;
+  /** Resolved URL of the asset chosen in the master-page editor. */
+  imgUrl?: string | null;
+  imgAlt?: string | null;
 };
 
 type Props = {
@@ -36,10 +41,20 @@ export function PropTypeGrid({ items, cols = 3, aspect = "4/3" }: Props) {
         const body = (
           <article className="flex flex-col h-full rounded-lg border border-bz-border bg-bz-surface overflow-hidden">
             <div className="relative w-full" style={{ aspectRatio: aspect }}>
-              <PlaceholderImage
-                label={p.img ?? p.name.toLowerCase()}
-                className="absolute inset-0 h-full w-full"
-              />
+              {p.imgUrl ? (
+                <Image
+                  src={p.imgUrl}
+                  alt={p.imgAlt ?? p.name}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <PlaceholderImage
+                  label={p.img ?? p.name.toLowerCase()}
+                  className="absolute inset-0 h-full w-full"
+                />
+              )}
             </div>
             <div className="p-5 flex flex-col flex-1">
               <div

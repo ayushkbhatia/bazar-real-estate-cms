@@ -126,7 +126,10 @@ const statList = (max = 4): ListFieldDef => ({
   ],
 });
 
-const propTypeList = (max = 8): ListFieldDef => ({
+const propTypeList = (
+  max = 8,
+  opts: { withImage?: boolean } = {},
+): ListFieldDef => ({
   key: "items",
   label: "Property types",
   kind: "list",
@@ -137,6 +140,12 @@ const propTypeList = (max = 8): ListFieldDef => ({
     area("desc", "Description", { max: 240 }),
     text("cta", "Link label", { max: 60, optional: true }),
     link("href", "Link"),
+    ...(opts.withImage
+      ? [
+          image("image", "Image", "Falls back to the placeholder caption."),
+          text("img", "Placeholder caption", { max: 80, optional: true }),
+        ]
+      : []),
   ],
 });
 
@@ -835,7 +844,7 @@ const OFF_PLAN: MasterPageDef = {
         eyebrow(),
         heading(),
         body(),
-        propTypeList(),
+        propTypeList(8, { withImage: true }),
       ],
       defaults: {
         eyebrow: "Property types",
@@ -886,15 +895,41 @@ const OFF_PLAN: MasterPageDef = {
     {
       key: "launches",
       label: "Latest launches",
-      description: "Cards for the newest published developments.",
-      dataNote: "Cards come from published developments.",
-      fields: [eyebrow(), heading(), body(), ...ctaPair()],
+      description: "Cards for featured developments.",
+      dataNote:
+        "Each card is a development project page — its name, price, area and cover image come from that record. Leave the list empty to show the most recent published projects.",
+      fields: [
+        eyebrow(),
+        heading(),
+        body(),
+        ...ctaPair(),
+        {
+          key: "projects",
+          label: "Featured projects",
+          kind: "list",
+          itemLabel: "project",
+          max: 12,
+          seedKey: "developments",
+          help: "Pick the projects to feature, in the order they should appear.",
+          fields: [
+            toggle("enabled", "Show this project"),
+            {
+              key: "slug",
+              label: "Project",
+              kind: "select",
+              optionsKey: "developments",
+              placeholder: "Choose a development",
+            },
+          ],
+        },
+      ],
       defaults: {
         eyebrow: "New launch",
         heading: "Abu Dhabi's latest launches.",
         body: "Browse the newest and upcoming residential developments across the emirate.",
         cta_label: "View all developments",
         cta_href: "/developments",
+        projects: [],
       },
     },
     {

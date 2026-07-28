@@ -12,6 +12,7 @@ import {
   str,
   validateSections,
   type MasterPageDef,
+  type SectionValues,
   type StoredSection,
 } from "./index";
 
@@ -352,5 +353,101 @@ describe("featured developments on the home page", () => {
     expect(result.issues.some((i) => /6 projects or fewer/i.test(i.message))).toBe(
       true,
     );
+  });
+});
+
+describe("New Projects master page", () => {
+  const offPlan = getMasterPage("off-plan") as MasterPageDef;
+
+  it("lets an editor curate the launch grid from the development pages", () => {
+    const launches = offPlan.sections.find((s) => s.key === "launches")!;
+    expect(launches.defaults.projects).toEqual([]);
+    const list = launches.fields.find((f) => f.key === "projects");
+    expect(list?.kind).toBe("list");
+    if (list?.kind !== "list") return;
+    expect(list.seedKey).toBe("developments");
+    // The grid fits more than the home carousel, so the cap is higher.
+    expect(list.max).toBeGreaterThanOrEqual(6);
+    const picker = list.fields.find((f) => f.key === "slug");
+    expect(picker?.kind).toBe("select");
+    if (picker?.kind !== "select") return;
+    expect(picker.optionsKey).toBe("developments");
+  });
+
+  it("gives every property type an image field", () => {
+    const types = offPlan.sections.find((s) => s.key === "prop_types")!;
+    const list = types.fields.find((f) => f.key === "items");
+    expect(list?.kind).toBe("list");
+    if (list?.kind !== "list") return;
+    expect(list.fields.some((f) => f.kind === "image")).toBe(true);
+
+    // The five shipped types are all editable, images included.
+    const items = types.defaults.items as Record<string, unknown>[];
+    expect(items.map((i) => i.name)).toEqual([
+      "Apartments",
+      "Villas",
+      "Townhouses",
+      "Penthouses",
+      "Branded Residences",
+    ]);
+  });
+
+  it("stores a picked image against the right property type", () => {
+    const types = offPlan.sections.find((s) => s.key === "prop_types")!;
+    const blank = (): Record<string, string | null> => ({
+      media_id: null,
+      alt: null,
+      label: null,
+    });
+    const items = (types.defaults.items as Record<string, unknown>[]).map(
+      (i) => ({ ...i, image: blank() }),
+    );
+    items[4] = {
+      ...items[4],
+      image: {
+        media_id: "bbbbbbbb-1111-2222-3333-444444444444",
+        alt: "Branded residence lobby",
+        label: null,
+      },
+    };
+
+    const result = validateSections(offPlan, [
+      {
+        key: "prop_types",
+        enabled: true,
+        values: { items } as unknown as SectionValues,
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const saved = result.sections.find((s) => s.key === "prop_types")!.values
+      .items as Record<string, Record<string, unknown>>[];
+    expect(saved[4].name).toBe("Branded Residences");
+    expect(saved[4].image.media_id).toBe("bbbbbbbb-1111-2222-3333-444444444444");
+    expect(saved[0].image.media_id).toBeNull();
+  });
+
+  it("keeps launch picks in order with their switches", () => {
+    const result = validateSections(offPlan, [
+      {
+        key: "launches",
+        enabled: true,
+        values: {
+          projects: [
+            { enabled: true, slug: "bulgari-residences" },
+            { enabled: false, slug: "saadiyat-lagoons" },
+          ],
+        },
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const picks = result.sections.find((s) => s.key === "launches")!.values
+      .projects as Record<string, unknown>[];
+    expect(picks.map((p) => p.slug)).toEqual([
+      "bulgari-residences",
+      "saadiyat-lagoons",
+    ]);
+    expect(picks.map((p) => p.enabled)).toEqual([true, false]);
   });
 });
