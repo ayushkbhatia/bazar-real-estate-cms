@@ -8,6 +8,7 @@ import {
   ALLOWED_MIME,
   MAX_UPLOAD_BYTES,
   MEDIA_BUCKET,
+  mediaPublicUrl,
   storageKey,
 } from "@/lib/media";
 import { requireRole } from "@/lib/auth";
@@ -20,7 +21,7 @@ const MEDIA_ROLES = ["admin", "editor", "marketing", "agent"] as const;
 const MEDIA_DESTROY_ROLES = ["admin"] as const;
 
 export type UploadResult =
-  | { status: "ok"; id: string; storage_key: string }
+  | { status: "ok"; id: string; storage_key: string; url: string }
   | { status: "error"; message: string };
 
 const FOLDERS = new Set(["listings", "brand", "blog", "team", "documents"]);
@@ -115,6 +116,9 @@ export async function uploadMedia(formData: FormData): Promise<UploadResult> {
     status: "ok",
     id: insert.data.id,
     storage_key: insert.data.storage_key,
+    // Returned so callers that upload from elsewhere (the master-page image
+    // fields) can preview the asset without waiting for a refresh.
+    url: mediaPublicUrl(insert.data.storage_key),
   };
 }
 

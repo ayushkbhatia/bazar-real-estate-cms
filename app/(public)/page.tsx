@@ -27,7 +27,7 @@ import { PartnerEcosystemSection } from "./_components/partner-ecosystem-section
 import { HomeFaqs } from "./_components/home/home-faqs";
 import { HomeTestimonials } from "./_components/home/home-testimonials";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
-import { faqPairs, img, statPairs, str } from "@/lib/master-pages";
+import { faqPairs, img, list, statPairs, str } from "@/lib/master-pages";
 
 export const revalidate = 60;
 
@@ -81,6 +81,7 @@ export default async function HomePage() {
   const faqV = v("faqs");
   const testimonialsV = v("testimonials");
   const listImage = img(listV, "image");
+  const overviewImage = img(locationV, "overview_image");
 
   const nodes: Record<string, React.ReactNode> = {
     hero: (
@@ -113,6 +114,27 @@ export default async function HomePage() {
         body={str(locationV, "body")}
         ctaLabel={str(locationV, "cta_label")}
         ctaHref={str(locationV, "cta_href")}
+        overviewName={str(locationV, "overview_name")}
+        overviewHref={str(locationV, "overview_href")}
+        overviewImageUrl={overviewImage?.url ?? null}
+        overviewImageAlt={overviewImage?.alt ?? null}
+        overviewImageLabel={overviewImage?.label ?? null}
+        cards={list<Record<string, unknown>>(locationV, "cards").map((c) => {
+          const image = (c.image ?? null) as {
+            url?: string | null;
+            alt?: string | null;
+            label?: string | null;
+          } | null;
+          return {
+            enabled: c.enabled !== false,
+            name: typeof c.name === "string" ? c.name : null,
+            href: typeof c.href === "string" ? c.href : null,
+            slug: typeof c.slug === "string" ? c.slug : null,
+            imageUrl: image?.url ?? null,
+            imageAlt: image?.alt ?? null,
+            imageLabel: image?.label ?? null,
+          };
+        })}
       />
     ),
 

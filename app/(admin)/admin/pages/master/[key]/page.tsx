@@ -7,7 +7,12 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { mediaPublicUrl } from "@/lib/media";
 import { getMasterPage, isMasterPageKey } from "@/lib/master-pages";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
-import { MasterPageEditor, type MediaOption } from "./_editor";
+import { listAreasWithCounts } from "@/lib/queries/areas-guide";
+import {
+  MasterPageEditor,
+  type MediaOption,
+  type Seeds,
+} from "./_editor";
 
 export const dynamic = "force-dynamic";
 
@@ -37,10 +42,21 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
   const def = getMasterPage(key);
   if (!def) notFound();
 
-  const [content, media] = await Promise.all([
+  const [content, media, areas] = await Promise.all([
     getMasterPageContent(key),
     fetchMedia(),
+    listAreasWithCounts(),
   ]);
+
+  // Live records a seedable list can be filled from, so an editor can switch
+  // individual cards off instead of typing the whole set by hand.
+  const seeds: Seeds = {
+    areas: areas.slice(0, 12).map((a) => ({
+      name: a.name,
+      href: `/areas/${a.slug}`,
+      slug: a.slug,
+    })),
+  };
 
   return (
     <CmsShell
@@ -78,6 +94,7 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
           path={def.path}
           usingDefaults={content.usingDefaults}
           media={media}
+          seeds={seeds}
           initial={content.sections.map((s) => ({
             key: s.key,
             def: s.def,

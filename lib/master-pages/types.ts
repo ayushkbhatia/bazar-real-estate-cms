@@ -27,6 +27,13 @@ export type SimpleFieldDef = {
   optional?: boolean;
 };
 
+export type ToggleFieldDef = {
+  key: string;
+  label: string;
+  kind: "toggle";
+  help?: string;
+};
+
 export type ImageFieldDef = {
   key: string;
   label: string;
@@ -42,10 +49,22 @@ export type ListFieldDef = {
   /** Singular noun for the add button — "tile", "question", "community". */
   itemLabel: string;
   max: number;
-  fields: (SimpleFieldDef | ImageFieldDef)[];
+  fields: (SimpleFieldDef | ImageFieldDef | ToggleFieldDef)[];
+  /**
+   * Live data this list mirrors. When the stored list is empty the editor
+   * offers to seed it from the current records (areas, say) so an editor can
+   * switch individual cards off without hand-typing the whole set.
+   */
+  seedKey?: SeedKey;
 };
 
-export type FieldDef = SimpleFieldDef | ImageFieldDef | ListFieldDef;
+export type SeedKey = "areas";
+
+export type FieldDef =
+  | SimpleFieldDef
+  | ImageFieldDef
+  | ToggleFieldDef
+  | ListFieldDef;
 
 /** A picked media asset. `media_id` null ⇒ fall back to the placeholder art. */
 export type ImageValue = {
@@ -61,11 +80,14 @@ export type ImageValue = {
   url?: string | null;
 };
 
+export type ItemValue = string | boolean | null | ImageValue;
+
 export type FieldValue =
   | string
+  | boolean
   | null
   | ImageValue
-  | Record<string, string | null | ImageValue>[];
+  | Record<string, ItemValue>[];
 
 export type SectionValues = Record<string, FieldValue>;
 
@@ -120,6 +142,10 @@ export function isImageField(f: FieldDef): f is ImageFieldDef {
 
 export function isListField(f: FieldDef): f is ListFieldDef {
   return f.kind === "list";
+}
+
+export function isToggleField(f: FieldDef): f is ToggleFieldDef {
+  return f.kind === "toggle";
 }
 
 export function emptyImage(label: string | null = null): ImageValue {

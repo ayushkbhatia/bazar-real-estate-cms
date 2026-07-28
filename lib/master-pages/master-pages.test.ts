@@ -204,3 +204,84 @@ describe("storage round-trip", () => {
     expect(parseStoredSections("string")).toBeNull();
   });
 });
+
+describe("location cards (toggleable list items)", () => {
+  const home = getMasterPage("home") as MasterPageDef;
+
+  it("ships an empty card list, so the live areas still drive the section", () => {
+    const resolved = resolveSections(home, null);
+    const section = resolved.find((s) => s.key === "location_browsing")!;
+    expect(section.values.cards).toEqual([]);
+  });
+
+  it("keeps a card's off switch through validation", () => {
+    const result = validateSections(home, [
+      {
+        key: "location_browsing",
+        enabled: true,
+        values: {
+          cards: [
+            { enabled: false, name: "Yas Island", href: "/areas/yas-island", slug: "yas-island" },
+            { enabled: true, name: "Saadiyat", href: "/areas/saadiyat", slug: "saadiyat" },
+          ],
+        },
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const cards = result.sections.find((s) => s.key === "location_browsing")!
+      .values.cards as Record<string, unknown>[];
+    expect(cards.map((c) => c.enabled)).toEqual([false, true]);
+  });
+
+  it("defaults a card with no explicit switch to visible", () => {
+    const result = validateSections(home, [
+      {
+        key: "location_browsing",
+        enabled: true,
+        values: { cards: [{ name: "Reem", href: "/areas/reem", slug: "reem" }] },
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const cards = result.sections.find((s) => s.key === "location_browsing")!
+      .values.cards as Record<string, unknown>[];
+    expect(cards[0].enabled).toBe(true);
+  });
+
+  it("stores the picked asset id, not a URL", () => {
+    const result = validateSections(home, [
+      {
+        key: "location_browsing",
+        enabled: true,
+        values: {
+          cards: [
+            {
+              enabled: true,
+              name: "Yas",
+              href: "/areas/yas",
+              slug: "yas",
+              image: {
+                media_id: "aaaaaaaa-1111-2222-3333-444444444444",
+                alt: "Yas Island marina",
+                label: "yas",
+                url: "https://example.test/should-not-persist.jpg",
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const cards = result.sections.find((s) => s.key === "location_browsing")!
+      .values.cards as Record<string, Record<string, unknown>>[];
+    expect(cards[0].image).toEqual({
+      media_id: "aaaaaaaa-1111-2222-3333-444444444444",
+      alt: "Yas Island marina",
+      label: "yas",
+    });
+    // The resolved URL is derived on read — persisting it would go stale.
+    expect(cards[0].image).not.toHaveProperty("url");
+  });
+});

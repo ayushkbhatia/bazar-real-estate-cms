@@ -34,6 +34,26 @@ describe("collectMediaIds", () => {
     expect(collectMediaIds(blocks)).toEqual(["a"]);
   });
 
+  it("finds images inside a master-page section document", () => {
+    // Master pages store their sections in `pages.blocks` too, with images
+    // nested inside list items — those must count as usages, or the media
+    // library would offer a live home-page card image for deletion.
+    const blocks = [
+      {
+        key: "location_browsing",
+        enabled: true,
+        values: {
+          overview_image: { media_id: "overview" },
+          cards: [
+            { enabled: true, image: { media_id: "yas" } },
+            { enabled: false, image: { media_id: "reem" } },
+          ],
+        },
+      },
+    ];
+    expect(collectMediaIds(blocks).sort()).toEqual(["overview", "reem", "yas"]);
+  });
+
   it("survives junk", () => {
     expect(collectMediaIds(null)).toEqual([]);
     expect(collectMediaIds("string")).toEqual([]);
