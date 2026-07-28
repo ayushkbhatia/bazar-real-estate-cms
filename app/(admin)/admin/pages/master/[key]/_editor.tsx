@@ -75,9 +75,18 @@ import { uploadMedia } from "../../../media/_actions";
 
 export type MediaOption = { id: string; filename: string; url: string };
 
-/** Live records a seedable list can be filled from. */
 export type SeedItem = { name: string; href: string; slug: string };
-export type Seeds = Partial<Record<SeedKey, SeedItem[]>>;
+
+/**
+ * Live records behind a list or picker, split by role:
+ *
+ *  - `options` — everything that *can* be picked (every published development).
+ *  - `current` — what the page is showing *right now*, in page order. This is
+ *    what the "load what's on the page" button fills in, so the editor starts
+ *    from the live section rather than the whole catalogue.
+ */
+export type SeedSource = { options: SeedItem[]; current: SeedItem[] };
+export type Seeds = Partial<Record<SeedKey, SeedSource>>;
 
 export type EditorSection = {
   key: string;
@@ -428,7 +437,9 @@ function FieldEditor({
     const items = Array.isArray(value)
       ? (value as Record<string, ItemValue>[])
       : [];
-    const seed = field.seedKey ? (seeds[field.seedKey] ?? []) : [];
+    const seedCurrent = field.seedKey
+      ? (seeds[field.seedKey]?.current ?? [])
+      : [];
     return (
       <div className="flex flex-col gap-2">
         <FieldLabel label={field.label} help={field.help} />
@@ -438,7 +449,7 @@ function FieldEditor({
               Empty — the section keeps the list it ships with. Add one to take
               over the whole list.
             </p>
-            {seed.length > 0 ? (
+            {seedCurrent.length > 0 ? (
               <Button
                 type="button"
                 variant="outline"
@@ -446,7 +457,7 @@ function FieldEditor({
                 className="self-start"
                 onClick={() =>
                   onChange(
-                    seed.slice(0, field.max).map((s) => ({
+                    seedCurrent.slice(0, field.max).map((s) => ({
                       enabled: true,
                       name: s.name,
                       href: s.href,
@@ -456,8 +467,11 @@ function FieldEditor({
                   )
                 }
               >
-                <Plus size={12} strokeWidth={1.8} /> Load the {seed.length}{" "}
-                current {field.itemLabel}s
+                <Plus size={12} strokeWidth={1.8} /> Load the{" "}
+                {Math.min(seedCurrent.length, field.max)}{" "}
+                {field.itemLabel}
+                {Math.min(seedCurrent.length, field.max) === 1 ? "" : "s"} on
+                the page
               </Button>
             ) : null}
           </div>
@@ -558,7 +572,7 @@ function ScalarField({
   seeds: Seeds;
 }) {
   if (isSelectField(field)) {
-    const options = seeds[field.optionsKey] ?? [];
+    const options = seeds[field.optionsKey]?.options ?? [];
     const picked = typeof value === "string" ? value : "";
     const missing = picked !== "" && !options.some((o) => o.slug === picked);
     return (

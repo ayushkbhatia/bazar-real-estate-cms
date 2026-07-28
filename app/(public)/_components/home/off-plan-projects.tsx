@@ -8,7 +8,10 @@ import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { developmentUrl } from "@/lib/queries/development-utils";
 import { formatPriceAED } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
-import type { SectionCopy } from "./section-copy";
+import {
+  HOME_OFFPLAN_CARD_COUNT,
+  type SectionCopy,
+} from "./section-copy";
 
 /**
  * Home "Off-plan projects" (handoff §2). Three live developments from
@@ -38,7 +41,10 @@ export async function OffPlanProjects({
     .map((slug) => bySlug.get(slug))
     .filter((d): d is (typeof developments)[number] => d !== undefined);
 
-  const projects = picked.length > 0 ? picked : developments.slice(0, 3);
+  const projects =
+    picked.length > 0
+      ? picked
+      : developments.slice(0, HOME_OFFPLAN_CARD_COUNT);
   if (projects.length === 0) return null;
 
   return (
