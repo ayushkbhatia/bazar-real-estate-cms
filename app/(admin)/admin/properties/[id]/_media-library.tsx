@@ -56,8 +56,9 @@ type Props = {
  * Uploading drops files into the shared media library and attaches them here.
  *
  * Mutations that change the hero or the photo count call router.refresh() so
- * the sibling PublishCard's "hero image" pre-flight check re-reads from the
- * server (the gate lives on server-rendered props).
+ * the server-rendered media list is re-read rather than left to the optimistic
+ * local copy. (Imagery no longer gates publishing — the PublishCard dropped its
+ * hero check.)
  */
 export function PropertyMediaLibrary({ propertyId, initial }: Props) {
   const router = useRouter();
