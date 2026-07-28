@@ -3,8 +3,10 @@
 import { useState, useTransition } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { createEnquiry } from "../../_actions";
+import type { SectionCopy } from "./section-copy";
 
 const PURPOSES = [
   { label: "Sell Your Property", intent: "sell" as const },
@@ -20,7 +22,18 @@ const DIAL_CODES = ["+971", "+966", "+44", "+1"];
  * "contact_page"); the chosen purpose rides in `intent` + the message, so
  * no schema/DB change is needed.
  */
-export function ListYourProperty() {
+export function ListYourProperty({
+  eyebrow = "List your property",
+  heading = "List your property",
+  body = "Looking to sell or rent? We'll handle the process for you.",
+  imageUrl,
+  imageAlt,
+  imageLabel,
+}: SectionCopy & {
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+  imageLabel?: string | null;
+} = {}) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -65,13 +78,13 @@ export function ListYourProperty() {
             className="text-[11px] font-medium uppercase text-bz-accent"
             style={{ letterSpacing: "0.12em" }}
           >
-            List your property
+            {eyebrow}
           </div>
           <h2 className="serif mt-2 text-[32px] md:text-[40px] font-normal leading-[1.05] tracking-tight">
-            List your property
+            {heading}
           </h2>
           <p className="mt-3 max-w-[44ch] text-[14.5px] text-bz-ink-2 leading-relaxed">
-            Looking to sell or rent? We&apos;ll handle the process for you.
+            {body}
           </p>
 
           {done ? (
@@ -179,10 +192,20 @@ export function ListYourProperty() {
 
         {/* Photo */}
         <div className="relative min-h-[220px] bg-bz-ink md:min-h-0">
-          <PlaceholderImage
-            label="agent handing over keys"
-            className="absolute inset-0 h-full w-full"
-          />
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={imageAlt ?? ""}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <PlaceholderImage
+              label={imageLabel ?? "agent handing over keys"}
+              className="absolute inset-0 h-full w-full"
+            />
+          )}
         </div>
       </div>
     </section>

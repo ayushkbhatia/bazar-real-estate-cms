@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
+import type { SectionCopy } from "./section-copy";
 
 /**
  * Home "Who we are" (handoff §6). Image + verbatim company copy + stat row.
@@ -12,7 +13,12 @@ const STATS: [string, string][] = [
   ["Al Bateen", "Head office"],
 ];
 
-export function WhoWeAre() {
+export function WhoWeAre({
+  eyebrow = "Who we are",
+  heading = "About Bazar Real Estate",
+  body = "Established in 2005, Bazar Real Estate L.L.C. is a leading award-winning real estate agency in the UAE, recognized for its market expertise, professional excellence, and trusted presence in the region's ever-evolving property market.",
+  stats,
+}: SectionCopy & { stats?: [string, string][] } = {}) {
   return (
     <section className="px-4 md:px-12 py-8 md:py-10">
       <div className="grid items-center gap-8 md:grid-cols-[1fr_1.05fr] md:gap-16">
@@ -36,19 +42,16 @@ export function WhoWeAre() {
             className="text-[11px] font-medium uppercase text-bz-accent"
             style={{ letterSpacing: "0.12em" }}
           >
-            Who we are
+            {eyebrow}
           </div>
           <h2 className="serif mt-2 text-[28px] md:text-[40px] font-normal leading-[1.05] tracking-tight">
-            About Bazar Real Estate
+            {heading}
           </h2>
           <p className="mt-3 max-w-[50ch] text-[15px] md:text-[16px] text-bz-ink-2 leading-relaxed">
-            Established in 2005, Bazar Real Estate L.L.C. is a leading
-            award-winning real estate agency in the UAE, recognized for its
-            market expertise, professional excellence, and trusted presence in
-            the region&apos;s ever-evolving property market.
+            {body}
           </p>
           <div className="mt-5 flex flex-wrap gap-8 border-t border-bz-border pt-5 md:gap-10">
-            {STATS.map(([v, l]) => (
+            {(stats && stats.length > 0 ? stats : STATS).map(([v, l]) => (
               <div key={l}>
                 <div className="serif text-[22px] md:text-[24px] tracking-tight">
                   {v}

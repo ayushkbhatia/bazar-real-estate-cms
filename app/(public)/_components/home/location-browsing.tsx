@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
+import type { SectionCopy } from "./section-copy";
 
 /**
  * Home "Location-based browsing" (handoff §1). A large Abu Dhabi overview
@@ -10,7 +11,13 @@ import { listAreasWithCounts } from "@/lib/queries/areas-guide";
  * Desktop: overview left, 4×2 grid right. Mobile: overview full-width, the
  * 8 communities become a horizontal snap rail (single DOM tree).
  */
-export async function LocationBrowsing() {
+export async function LocationBrowsing({
+  eyebrow = "Location-based browsing",
+  heading = "Your next location starts here",
+  body = "Discover leading communities across Abu Dhabi.",
+  ctaLabel = "All locations",
+  ctaHref = "/areas",
+}: SectionCopy = {}) {
   const entries = await listAreasWithCounts();
   const communities = entries.slice(0, 8);
   const total = entries.reduce((n, e) => n + e.listing_count, 0);
@@ -19,19 +26,20 @@ export async function LocationBrowsing() {
     <section className="px-4 md:px-12 py-14 md:py-20">
       <div className="mb-8 flex flex-col gap-5 md:mb-11 md:flex-row md:items-end md:justify-between">
         <div>
-          <Eyebrow>Location-based browsing</Eyebrow>
+          <Eyebrow>{eyebrow}</Eyebrow>
           <h2 className="serif mt-2 text-[28px] md:text-[44px] font-normal leading-[1.05] tracking-tight">
-            Your next location starts here
+            {heading}
           </h2>
           <p className="mt-4 max-w-[52ch] text-[14.5px] md:text-[15.5px] text-bz-ink-2 leading-relaxed">
-            Discover leading communities across Abu Dhabi.
+            {body}
           </p>
         </div>
         <Link
-          href="/areas"
+          href={ctaHref ?? "/areas"}
           className="inline-flex items-center gap-1.5 self-start text-[13.5px] text-bz-ink-2 hover:text-bz-accent transition-colors"
         >
-          All locations <ArrowRight size={14} strokeWidth={1.7} />
+          {ctaLabel ?? "All locations"}{" "}
+          <ArrowRight size={14} strokeWidth={1.7} />
         </Link>
       </div>
 

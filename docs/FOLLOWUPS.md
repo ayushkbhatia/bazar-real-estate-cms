@@ -199,3 +199,28 @@ shows the trail.)
   "Sprint 9 wires the bulk upload action") are imported by nothing.
   `folder-rail`, `search`, `view-toggle` and `usage-badge` are now wired; the
   fake `trash.tsx` was deleted when the real trash view landed.
+
+- [master pages] Section defaults are duplicated between code and registry.
+  `lib/master-pages/pages.ts` holds each section's default copy, and most
+  section components still carry the same literal as a fallback for callers
+  that pass nothing. They can drift. Once every caller goes through
+  `getMasterPageContent`, delete the component-level literals and let the
+  registry be the only source.
+
+- [master pages] Home hero copy is only editable on the full-bleed variant.
+  `HeroForVariant` renders one of four heroes chosen in Settings → Brand; only
+  `HeroFullBleed` (the default) takes copy overrides. Editing the hero fields
+  while a different variant is selected has no visible effect. Either give the
+  other three the same treatment or scope the fields to the active variant.
+
+- [master pages] No preview or draft state.
+  Saving a master page publishes immediately (it writes the `pages` row and
+  revalidates). There's no "preview my changes" step and no draft/publish split
+  the way the rest of the CMS has one. Worth adding before non-technical
+  editors use it heavily.
+
+- [master pages] Empty list = "keep the built-in list".
+  A list field an editor never touches stays empty and the section renders the
+  list it ships with (home FAQs, testimonials). Adding one item takes over the
+  whole list. It's explained in the editor, but a clearer "override" toggle
+  would beat the implicit rule.

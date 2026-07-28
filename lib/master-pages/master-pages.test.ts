@@ -1,0 +1,206 @@
+import { describe, it, expect } from "vitest";
+import {
+  MASTER_PAGES,
+  defaultDocument,
+  faqPairs,
+  getMasterPage,
+  isMasterSlug,
+  masterSlug,
+  parseStoredSections,
+  resolveSections,
+  statPairs,
+  str,
+  validateSections,
+  type MasterPageDef,
+  type StoredSection,
+} from "./index";
+
+const buy = getMasterPage("buy") as MasterPageDef;
+
+describe("registry", () => {
+  it("declares the four master pages with unique section keys", () => {
+    expect(MASTER_PAGES.map((p) => p.key)).toEqual([
+      "home",
+      "buy",
+      "rent",
+      "off-plan",
+    ]);
+    for (const page of MASTER_PAGES) {
+      const keys = page.sections.map((s) => s.key);
+      expect(new Set(keys).size, `${page.key} has duplicate keys`).toBe(
+        keys.length,
+      );
+      expect(page.sections.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("gives every editable field a default, so nothing renders blank", () => {
+    for (const page of MASTER_PAGES) {
+      for (const section of page.sections) {
+        for (const field of section.fields) {
+          // Optional fields may legitimately default to null/absent.
+          if (field.kind === "list" || "optional" in field) continue;
+          expect(
+            section.defaults[field.key],
+            `${page.key}/${section.key}/${field.key}`,
+          ).toBeDefined();
+        }
+      }
+    }
+  });
+
+  it("keeps master rows out of the public pages route", () => {
+    expect(masterSlug("home")).toBe("master/home");
+    expect(isMasterSlug("master/buy")).toBe(true);
+    expect(isMasterSlug("about")).toBe(false);
+  });
+});
+
+describe("resolveSections", () => {
+  it("returns the code defaults when nothing is stored", () => {
+    const resolved = resolveSections(buy, null);
+    expect(resolved.map((s) => s.key)).toEqual(buy.sections.map((s) => s.key));
+    expect(resolved.every((s) => s.enabled)).toBe(true);
+    const hero = resolved.find((s) => s.key === "hero")!;
+    expect(str(hero.values, "eyebrow")).toBe("Buy a Property");
+  });
+
+  it("honours a stored order and hidden sections", () => {
+    const stored: StoredSection[] = [
+      { key: "faq", enabled: true, values: {} },
+      { key: "hero", enabled: true, values: {} },
+      { key: "why", enabled: false, values: {} },
+    ];
+    const resolved = resolveSections(buy, stored);
+    expect(resolved.slice(0, 3).map((s) => s.key)).toEqual([
+      "faq",
+      "hero",
+      "why",
+    ]);
+    expect(resolved.find((s) => s.key === "why")!.enabled).toBe(false);
+    // Sections the stored document never mentioned still appear, at the end.
+    expect(resolved.map((s) => s.key)).toContain("communities");
+  });
+
+  it("cannot hide a locked section", () => {
+    const resolved = resolveSections(buy, [
+      { key: "hero", enabled: false, values: {} },
+    ]);
+    expect(resolved.find((s) => s.key === "hero")!.enabled).toBe(true);
+  });
+
+  it("drops sections that no longer exist in code", () => {
+    const resolved = resolveSections(buy, [
+      { key: "a_section_we_deleted", enabled: true, values: {} },
+    ]);
+    expect(resolved.map((s) => s.key)).not.toContain("a_section_we_deleted");
+  });
+
+  it("falls back per field, so a partial document still renders", () => {
+    const resolved = resolveSections(buy, [
+      { key: "hero", enabled: true, values: { eyebrow: "Buy in Abu Dhabi" } },
+    ]);
+    const hero = resolved.find((s) => s.key === "hero")!;
+    expect(str(hero.values, "eyebrow")).toBe("Buy in Abu Dhabi");
+    // Untouched field keeps the shipped copy rather than going blank.
+    expect(str(hero.values, "sub")).toContain("Browse ready, resale");
+  });
+});
+
+describe("validateSections", () => {
+  it("trims, strips unknown fields, and keeps known ones", () => {
+    const result = validateSections(buy, [
+      {
+        key: "hero",
+        enabled: true,
+        values: { eyebrow: "  Spaced  ", nonsense: "x" },
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const hero = result.sections.find((s) => s.key === "hero")!;
+    expect(hero.values.eyebrow).toBe("Spaced");
+    expect(hero.values).not.toHaveProperty("nonsense");
+  });
+
+  it("rejects a blank required field and an over-long one", () => {
+    const blank = validateSections(buy, [
+      { key: "hero", enabled: true, values: { title: "   " } },
+    ]);
+    expect(blank.ok).toBe(false);
+    if (blank.ok) return;
+    expect(blank.issues.some((i) => /can't be empty/i.test(i.message))).toBe(
+      true,
+    );
+
+    const long = validateSections(buy, [
+      { key: "hero", enabled: true, values: { title: "x".repeat(400) } },
+    ]);
+    expect(long.ok).toBe(false);
+  });
+
+  it("caps list length and normalises image values", () => {
+    const result = validateSections(buy, [
+      {
+        key: "ways",
+        enabled: true,
+        values: {
+          ways_title: "Ways",
+          tiles: Array.from({ length: 3 }, (_, i) => ({
+            name: `Tile ${i}`,
+            desc: "d",
+            cta: "c",
+            href: "/x",
+            img: "",
+            image: { media_id: "  ", alt: "  ", label: "cap" },
+          })),
+        },
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const tiles = result.sections.find((s) => s.key === "ways")!.values
+      .tiles as Record<string, unknown>[];
+    expect(tiles).toHaveLength(3);
+    expect(tiles[0].image).toEqual({
+      media_id: null,
+      alt: null,
+      label: "cap",
+    });
+  });
+
+  it("keeps sections a stale editor tab didn't send", () => {
+    const result = validateSections(buy, [
+      { key: "hero", enabled: true, values: {} },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.sections.map((s) => s.key)).toEqual(
+      expect.arrayContaining(buy.sections.map((s) => s.key)),
+    );
+  });
+});
+
+describe("storage round-trip", () => {
+  it("survives defaults → store → parse → resolve unchanged", () => {
+    const stored = defaultDocument(buy);
+    const parsed = parseStoredSections(JSON.parse(JSON.stringify(stored)));
+    const resolved = resolveSections(buy, parsed);
+    const hero = resolved.find((s) => s.key === "hero")!;
+    expect(str(hero.values, "eyebrow")).toBe("Buy a Property");
+    const faq = resolved.find((s) => s.key === "faq")!;
+    expect(faqPairs(faq.values).length).toBeGreaterThan(0);
+    const why = resolved.find((s) => s.key === "why")!;
+    expect(statPairs(why.values)).toEqual([
+      ["20+ yrs", "In the UAE market"],
+      ["Ready + off-plan", "Full-market access"],
+    ]);
+  });
+
+  it("treats junk jsonb as 'never edited'", () => {
+    expect(parseStoredSections(null)).toBeNull();
+    expect(parseStoredSections([])).toBeNull();
+    expect(parseStoredSections([{ nope: 1 }])).toBeNull();
+    expect(parseStoredSections("string")).toBeNull();
+  });
+});

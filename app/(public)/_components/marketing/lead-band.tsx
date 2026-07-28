@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { EnquiryForm } from "../enquiry-form";
@@ -13,11 +14,17 @@ export function LeadBand({
   title,
   sub,
   image,
+  imageUrl,
+  imageAlt,
 }: {
   eyebrow?: string;
   title: React.ReactNode;
   sub: string;
+  /** Caption for the placeholder art, used when no asset is picked. */
   image: string;
+  /** Resolved URL of the asset chosen in the master-page editor. */
+  imageUrl?: string | null;
+  imageAlt?: string | null;
 }) {
   return (
     <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border">
@@ -43,11 +50,21 @@ export function LeadBand({
 
         {/* Photo */}
         <div className="relative min-h-[220px] bg-bz-ink md:min-h-0">
-          <PlaceholderImage
-            label={image}
-            dark
-            className="absolute inset-0 h-full w-full"
-          />
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={imageAlt ?? ""}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <PlaceholderImage
+              label={image}
+              dark
+              className="absolute inset-0 h-full w-full"
+            />
+          )}
         </div>
       </div>
     </section>

@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import Image from "next/image";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { fluid } from "./fluid";
 
@@ -9,6 +10,9 @@ type Props = {
   sub?: React.ReactNode;
   /** Placeholder caption / eventual alt for the hero image. */
   image?: string;
+  /** Resolved URL of the asset chosen in the master-page editor. */
+  imageUrl?: string | null;
+  imageAlt?: string | null;
   tall?: boolean;
   /** Bottom kicker stats: [value, label][]. */
   kicker?: [string, string][];
@@ -25,6 +29,8 @@ export function MHero({
   title,
   sub,
   image = "abu dhabi · corniche skyline",
+  imageUrl,
+  imageAlt,
   tall,
   kicker,
   children,
@@ -34,11 +40,22 @@ export function MHero({
       className="relative overflow-hidden text-white"
       style={{ minHeight: tall ? 620 : 520 }}
     >
-      <PlaceholderImage
+      {imageUrl ? (
+        <Image
+          src={imageUrl}
+          alt={imageAlt ?? ""}
+          fill
+          priority
+          sizes="100vw"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : (
+        <PlaceholderImage
         label={image}
         dark
         className="absolute inset-0 h-full w-full"
       />
+      )}
       <div
         className="absolute inset-0"
         style={{

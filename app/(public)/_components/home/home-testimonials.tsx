@@ -2,6 +2,7 @@ import { Star } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { CarouselGrid } from "@/components/brand/mobile";
 import { SEED_TESTIMONIALS } from "@/lib/seeds/awards";
+import type { SectionCopy } from "./section-copy";
 
 /**
  * Home "Testimonials" (handoff §8). Three review cards fed by the curated
@@ -14,16 +15,19 @@ function initialsOf(name: string): string {
   return (first + last).toUpperCase();
 }
 
-export function HomeTestimonials() {
+export function HomeTestimonials({
+  eyebrow = "Testimonials",
+  heading = "Reviews and comments",
+}: SectionCopy = {}) {
   const reviews = SEED_TESTIMONIALS.slice(0, 3);
   if (reviews.length === 0) return null;
 
   return (
     <section className="px-4 md:px-12 py-14 md:py-20">
       <div className="mb-8 md:mb-11">
-        <Eyebrow>Testimonials</Eyebrow>
+        <Eyebrow>{eyebrow}</Eyebrow>
         <h2 className="serif mt-2 text-[28px] md:text-[44px] font-normal leading-[1.05] tracking-tight">
-          Reviews and comments
+          {heading}
         </h2>
       </div>
 

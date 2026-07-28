@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Home, Check } from "lucide-react";
 import { totals } from "@/lib/mortgage";
+import type { SectionCopy } from "./section-copy";
 
 /**
  * Home "Mortgage calculator" (handoff §5). Always-dark section with four
@@ -14,7 +15,10 @@ function fmtAED(n: number): string {
   return "AED " + Math.round(n).toLocaleString("en-US");
 }
 
-export function MortgageCalculatorSection() {
+export function MortgageCalculatorSection({
+  eyebrow = "Mortgage calculator",
+  heading = "Estimate your monthly payments before making your move",
+}: SectionCopy = {}) {
   const [price, setPrice] = useState(2_500_000);
   const [downPct, setDownPct] = useState(20);
   const [rate, setRate] = useState(4.25);
@@ -38,10 +42,10 @@ export function MortgageCalculatorSection() {
         className="text-[11px] font-medium uppercase text-[oklch(0.72_0.005_80)]"
         style={{ letterSpacing: "0.12em" }}
       >
-        Mortgage calculator
+        {eyebrow}
       </div>
       <h2 className="serif mt-2 max-w-[20ch] text-[28px] md:text-[40px] font-normal leading-[1.1] tracking-tight text-white">
-        Estimate your monthly payments before making your move
+        {heading}
       </h2>
 
       <div className="mt-9 grid gap-4 md:grid-cols-[1.3fr_1fr] md:gap-0 md:overflow-hidden md:rounded-2xl md:border md:border-[oklch(0.3_0_0)]">
