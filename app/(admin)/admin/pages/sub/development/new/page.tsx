@@ -51,6 +51,13 @@ export default async function NewDevelopmentPage() {
             Sub-pages
           </Link>
           <ChevronRight size={11} />
+          <Link
+            href="/admin/pages/sub/development"
+            className="hover:text-bz-ink"
+          >
+            Developments
+          </Link>
+          <ChevronRight size={11} />
           <span>New</span>
         </span>
       }

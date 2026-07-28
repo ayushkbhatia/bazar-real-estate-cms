@@ -16,6 +16,39 @@ export const SUBPAGE_SLUG_PREFIX = "subpage/";
 
 export type SubPageKind = "development";
 
+/**
+ * Sub-page kinds, rendered as blocks on the Pages index the same way master
+ * pages are. Adding a kind here (area guides, developer profiles) is what makes
+ * it appear — the registry, storage and editor are already generic.
+ */
+export type SubPageKindDef = {
+  kind: SubPageKind;
+  label: string;
+  /** Public route the pages of this kind live under. */
+  publicPath: string;
+  description: string;
+  /** Admin index for this kind. */
+  adminPath: string;
+  /** Noun for counts — "project page". */
+  itemLabel: string;
+};
+
+export const SUBPAGE_KINDS: SubPageKindDef[] = [
+  {
+    kind: "development",
+    label: "Developments",
+    publicPath: "/developments",
+    adminPath: "/admin/pages/sub/development",
+    description:
+      "One project page per development, built from a shared template.",
+    itemLabel: "project page",
+  },
+];
+
+export function getSubPageKind(kind: string): SubPageKindDef | null {
+  return SUBPAGE_KINDS.find((k) => k.kind === kind) ?? null;
+}
+
 export function subPageSlug(kind: SubPageKind, recordSlug: string): string {
   return `${SUBPAGE_SLUG_PREFIX}${kind}/${recordSlug}`;
 }

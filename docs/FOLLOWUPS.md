@@ -245,6 +245,8 @@ shows the trail.)
   repeatable media-list field.
 
 - [sub-pages] The framework is development-only.
-  `SubPageKind` has one member. Area guides and developer profiles are the
-  obvious next kinds and should drop straight in — the registry, storage and
-  editor are already generic.
+  `SUBPAGE_KINDS` has one member. Area guides and developer profiles are the
+  obvious next kinds: add an entry to the registry, a section list, and an index
+  route at `/admin/pages/sub/<kind>` — the block on the Pages index, the
+  storage and the editor are already generic. `countSubPagesByKind` needs a
+  query per kind.
