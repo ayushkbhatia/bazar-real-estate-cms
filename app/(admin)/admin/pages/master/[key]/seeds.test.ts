@@ -3,6 +3,7 @@ import {
   HOME_AREA_TILE_COUNT,
   HOME_OFFPLAN_CARD_COUNT,
 } from "@/app/(public)/_components/home/section-copy";
+import { OFFPLAN_LAUNCH_COUNT } from "@/app/(public)/_components/marketing/counts";
 
 type SeedItem = { name: string; href: string; slug: string };
 
@@ -16,6 +17,7 @@ function buildSeeds(input: {
   areas: SeedItem[];
   /** Published developments, newest first — the page's own order. */
   developments: SeedItem[];
+  pageKey?: string;
 }) {
   return {
     areas: {
@@ -26,7 +28,12 @@ function buildSeeds(input: {
       options: [...input.developments].sort((a, b) =>
         a.name.localeCompare(b.name),
       ),
-      current: input.developments.slice(0, HOME_OFFPLAN_CARD_COUNT),
+      current: input.developments.slice(
+        0,
+        input.pageKey === "off-plan"
+          ? OFFPLAN_LAUNCH_COUNT
+          : HOME_OFFPLAN_CARD_COUNT,
+      ),
     },
   };
 }
@@ -77,5 +84,19 @@ describe("master-page seeds", () => {
     const seeds = buildSeeds({ areas: [item("a")], developments: [item("d")] });
     expect(seeds.areas.current).toHaveLength(1);
     expect(seeds.developments.current).toHaveLength(1);
+  });
+
+  it("seeds New Projects with its own cut, not the home page's", () => {
+    // The launch grid shows 6 where the home carousel shows 3 — seeding one
+    // page from the other's count is the bug this guards.
+    const home = buildSeeds({ areas: [], developments: EIGHT });
+    const offPlan = buildSeeds({
+      areas: [],
+      developments: EIGHT,
+      pageKey: "off-plan",
+    });
+    expect(home.developments.current).toHaveLength(HOME_OFFPLAN_CARD_COUNT);
+    expect(offPlan.developments.current).toHaveLength(OFFPLAN_LAUNCH_COUNT);
+    expect(offPlan.developments.options).toHaveLength(EIGHT.length);
   });
 });
