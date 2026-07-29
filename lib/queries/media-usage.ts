@@ -391,6 +391,40 @@ export async function buildMediaUsageIndex(
       }
     }),
 
+    // Advisor portraits are stored as a URL on `staff.photo_url`, not as a
+    // media id, so they're matched on storage key — same approach as article
+    // body images. Without this the library would offer a live headshot for
+    // deletion.
+    source("staff", async () => {
+      type Row = {
+        user_id: string;
+        display_name: string;
+        slug: string | null;
+        status: string;
+        photo_url: string | null;
+      };
+      const res = await supabase
+        .from("staff")
+        .select("user_id, display_name, slug, status, photo_url")
+        .not("photo_url", "is", null)
+        .limit(500);
+      for (const r of rows<Row>(res, "staff")) {
+        if (!r.photo_url) continue;
+        for (const asset of assets) {
+          if (!r.photo_url.includes(asset.storage_key)) continue;
+          add(asset.id, {
+            kind: "advisor",
+            id: r.user_id,
+            label: r.display_name,
+            role: "Portrait",
+            href: `/admin/agents/${r.user_id}`,
+            live: r.status === "active",
+            internal: false,
+          });
+        }
+      }
+    }),
+
     // ── Internal surfaces — never public, but still in use ───────────────
     source("documents", async () => {
       type Row = {

@@ -61,6 +61,26 @@ describe("collectMediaIds", () => {
   });
 });
 
+describe("advisor portraits", () => {
+  it("is a usage kind, so a headshot in use is protected", async () => {
+    const { deriveMediaState, canTrash } = await import("../media-usage");
+    const portrait = {
+      kind: "advisor" as const,
+      id: "u-1",
+      label: "Mariam",
+      role: "Portrait",
+      href: "/admin/agents/u-1",
+      live: true,
+      internal: false,
+    };
+    // staff.photo_url holds a URL rather than a media id, so the index matches
+    // on storage key — without it the library would offer a live headshot for
+    // deletion.
+    expect(deriveMediaState([portrait])).toBe("live");
+    expect(canTrash({ state: "live", indexPartial: false }).allowed).toBe(false);
+  });
+});
+
 describe("buildMediaUsageIndex", () => {
   it("returns a complete empty index when there is nothing to look up", async () => {
     const index = await buildMediaUsageIndex([]);
