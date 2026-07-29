@@ -37,7 +37,6 @@ import { FloorplanGate } from "./_components/floorplan-gate";
 import { MapEmbed } from "../../p/[slug]/_components/map-embed";
 import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
 import {
-  getDevelopmentCoordsBulk,
   getDevelopmentMeta,
   listOtherDevelopmentsByDeveloper,
   listOtherDevelopmentsInArea,
@@ -136,8 +135,6 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         : Promise.resolve([]),
     ]);
 
-  // T1-C cleanup: bulk coords lookup for the "Future developments around" map.
-  // Skips the round-trip when there are no siblings to plot.
   // Curated neighbours win over the same-area fallback, in the order they
   // were picked in the page editor.
   const curatedIds = Array.isArray(meta?.nearby_ids)
@@ -149,10 +146,6 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const neighbours = curatedNeighbours.length
     ? curatedNeighbours
     : siblingsInArea;
-
-  const siblingCoords = neighbours.length
-    ? await getDevelopmentCoordsBulk(neighbours.map((d: { id: string }) => d.id))
-    : {};
 
   // Sprint 5a: lead advisor lookup — pick seeded advisor whose areas
   // overlap with the development's area. Sprint 9 wires real assignment.
@@ -498,13 +491,6 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <NearbyDevelopments
           areaName={development.area?.name ?? "this area"}
           nearby={neighbours}
-          primary={{
-            id: development.id,
-            name: development.name,
-            slug: development.slug,
-            coords: meta?.coords ?? null,
-          }}
-          siblingCoords={siblingCoords}
         />
     ),
     "developer": development.developer_profile ? (
