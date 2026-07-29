@@ -260,6 +260,6 @@ export async function createDevelopmentPage(input: {
   });
 
   revalidatePath("/admin/pages/sub");
-  revalidatePath("/admin/developments");
+  revalidatePath("/admin/pages/sub/development");
   return { status: "ok", slug: data.slug };
 }

@@ -272,3 +272,11 @@ shows the trail.)
 - [blog] No bulk archive or trash.
   Rows are actioned one at a time. Fine at the current volume; worth
   select-all + bulk once the list runs past a screenful.
+
+- [admin] Server actions must be passed to client components by reference.
+  `MasterPageEditor` takes its save/reset as props. Wrapping them in arrows in
+  a server component — `{ save: (a, b) => saveThing(a, b) }` — makes them plain
+  functions, and the page 500s with "Functions cannot be passed directly to
+  Client Components". That shipped in #180 and #186 and broke both sub-page
+  editors. TypeScript can't tell the two apart, so if another caller appears,
+  consider a Playwright smoke test that loads each editor route.
