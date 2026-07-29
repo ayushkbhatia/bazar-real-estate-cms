@@ -12,6 +12,7 @@ import {
   Inbox,
   FileText,
   Layers,
+  Mails,
   Menu,
   Settings,
   ClipboardCheck,
@@ -69,6 +70,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
       { label: "Blog editor", href: "/admin/blog", icon: FileText },
       { label: "Pages & blocks", href: "/admin/pages", icon: Layers },
       { label: "Megamenu", href: "/admin/megamenu", icon: Menu },
+      { label: "Content assets", href: "/admin/content-assets", icon: Mails },
     ],
   },
   {
@@ -100,7 +102,8 @@ function activeCmsTab(pathname: string | null): string {
     return "catalogue";
   if (["/admin/enquiries", "/admin/valuations", "/admin/deals"].some((m) => p.startsWith(m)))
     return "inbox";
-  if (["/admin/blog", "/admin/pages"].some((m) => p.startsWith(m))) return "content";
+  if (["/admin/blog", "/admin/pages", "/admin/content-assets"].some((m) => p.startsWith(m)))
+    return "content";
   return "more";
 }
 
