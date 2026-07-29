@@ -301,3 +301,19 @@ shows the trail.)
   It adds the 15 amenities already in use that have no taxonomy entry. DDL/data
   apply is blocked on the stale PAT, so until it runs those listings keep
   showing their values under "not in the amenity list" in the editor.
+
+- [developments] "Other projects by this developer" is still automatic.
+  It lists the developer's other published projects; there's no way to curate
+  or reorder them the way future neighbours now can. Same picker pattern would
+  drop in — `meta.sibling_ids` alongside `meta.nearby_ids`.
+
+- [developments] The developer section has no editable copy.
+  It renders the linked developer's name, description and stats from the
+  `developers` row, so editing means editing that record. Fine while a
+  developer's blurb is shared across their projects; revisit if per-project
+  wording is ever wanted.
+
+- [developments] Feature blocks have no drag-to-reorder.
+  They render in stored order and can be added/removed, but reordering means
+  deleting and re-adding. The dnd-kit pattern from the section list would drop
+  straight in.

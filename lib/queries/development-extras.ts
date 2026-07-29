@@ -96,8 +96,11 @@ export type NamedFeatureBlock = {
   key: string;
   title: string;
   copy: string;
-  /** Tailwind class fragment we can route an image into in a follow-up
-   *  once the media-asset picker lands. For v1 it's optional. */
+  /** Media asset chosen in the page editor. */
+  media_id?: string | null;
+  alt?: string | null;
+  /** Public URL, resolved when the page loads — never stored. */
+  image_url?: string | null;
   image_role?: string;
 };
 

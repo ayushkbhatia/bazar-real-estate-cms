@@ -8,6 +8,11 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
 import { mediaPublicUrl } from "@/lib/media";
 import { getDevelopmentPageContent } from "@/lib/queries/subpages";
+import {
+  getAdvisorForBanner,
+  listDevelopmentsByIds,
+  withFeatureImages,
+} from "@/lib/queries/development-content";
 import { list, str } from "@/lib/master-pages";
 import {
   developmentUrl,
@@ -31,7 +36,6 @@ import { FeatureBlocks } from "./_components/feature-blocks";
 import { FloorplanGate } from "./_components/floorplan-gate";
 import { MapEmbed } from "../../p/[slug]/_components/map-embed";
 import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
-import { MarketContextBlock } from "../../_components/market-context-link";
 import {
   getDevelopmentCoordsBulk,
   getDevelopmentMeta,
@@ -134,16 +138,42 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
   // T1-C cleanup: bulk coords lookup for the "Future developments around" map.
   // Skips the round-trip when there are no siblings to plot.
-  const siblingCoords = siblingsInArea.length
-    ? await getDevelopmentCoordsBulk(siblingsInArea.map((d) => d.id))
+  // Curated neighbours win over the same-area fallback, in the order they
+  // were picked in the page editor.
+  const curatedIds = Array.isArray(meta?.nearby_ids)
+    ? (meta.nearby_ids as string[]).slice(0, 3)
+    : [];
+  const curatedNeighbours = curatedIds.length
+    ? await listDevelopmentsByIds(curatedIds)
+    : [];
+  const neighbours = curatedNeighbours.length
+    ? curatedNeighbours
+    : siblingsInArea;
+
+  const siblingCoords = neighbours.length
+    ? await getDevelopmentCoordsBulk(neighbours.map((d: { id: string }) => d.id))
     : {};
 
   // Sprint 5a: lead advisor lookup — pick seeded advisor whose areas
   // overlap with the development's area. Sprint 9 wires real assignment.
+  // An advisor picked on the record wins; otherwise fall back to whoever
+  // covers the project's area.
+  const pickedAdvisor = development.lead_advisor_id
+    ? await getAdvisorForBanner(development.lead_advisor_id)
+    : null;
   const leadAdvisor =
+    pickedAdvisor ??
     SEED_AGENTS.find((a) =>
       a.areas.includes(development.area?.slug ?? ""),
-    ) ?? SEED_AGENTS[0];
+    ) ??
+    SEED_AGENTS[0];
+
+  // Curated feature blocks carry a media id; resolve them once for the page.
+  const featureImages = await withFeatureImages(meta?.feature_blocks);
+  const featureBlocks = meta?.feature_blocks?.map((b) => ({
+    ...b,
+    image_url: b.media_id ? (featureImages[b.media_id] ?? null) : null,
+  }));
 
   // Section copy overrides from /admin/pages/sub/development/<slug>. Blank
   // fields fall through to the template's own wording.
@@ -431,7 +461,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <FeatureBlocks
           developmentName={development.name}
           developmentSlug={development.slug}
-          blocks={meta?.feature_blocks}
+          blocks={featureBlocks}
           amenitiesFallback={development.amenities}
         />
       </section>
@@ -467,7 +497,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     "nearby": (
         <NearbyDevelopments
           areaName={development.area?.name ?? "this area"}
-          nearby={siblingsInArea}
+          nearby={neighbours}
           primary={{
             id: development.id,
             name: development.name,
@@ -477,16 +507,6 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           siblingCoords={siblingCoords}
         />
     ),
-    "market-context": development.area?.slug ? (
-        <section className="px-4 md:px-12 pb-12 max-w-[820px]">
-          <MarketContextBlock
-            area_slug={development.area.slug}
-            area_name={development.area.name}
-            property_type={null}
-            variant="inline"
-          />
-        </section>
-    ) : null,
     "developer": development.developer_profile ? (
         <section id="developer" className="px-4 md:px-12 pb-16 scroll-mt-16">
           <Eyebrow>Developer</Eyebrow>
