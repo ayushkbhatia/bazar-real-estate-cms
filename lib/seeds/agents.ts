@@ -8,6 +8,12 @@
 
 export type SeedAgent = {
   slug: string;
+  /**
+   * Portrait from `staff.photo_url`, overlaid at read time by
+   * `lib/queries/agent-photos`. Absent on the seed data itself — the seeds
+   * carry an initial, not an image.
+   */
+  photo_url?: string | null;
   display_name: string;
   title: string;
   brn: string;

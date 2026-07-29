@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { SEED_AGENTS, type SeedAgent } from "@/lib/seeds/agents";
@@ -14,10 +15,20 @@ export function ValuationAdvisorCard({ areaSlug }: { areaSlug?: string }) {
 
   return (
     <div className="rounded-md border border-bz-border bg-bz-surface p-4 flex items-center gap-3">
-      <PlaceholderImage
-        label={agent.slug}
-        className="w-12 h-12 rounded-full flex-shrink-0"
-      />
+      {agent.photo_url ? (
+        <Image
+          src={agent.photo_url}
+          alt={agent.display_name}
+          width={48}
+          height={48}
+          className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+        />
+      ) : (
+        <PlaceholderImage
+          label={agent.slug}
+          className="w-12 h-12 rounded-full flex-shrink-0"
+        />
+      )}
       <div className="min-w-0 flex-1">
         <Eyebrow>Your advisor</Eyebrow>
         <div className="text-[13.5px] font-medium mt-0.5 truncate">

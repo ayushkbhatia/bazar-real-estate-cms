@@ -25,6 +25,7 @@ import {
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
+import { withAgentPhoto } from "@/lib/queries/agent-photos";
 import { amenityLabel, orderAmenities, toOptions } from "@/lib/amenities";
 import {
   propertyJsonLd,
@@ -243,10 +244,10 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   // Sprint 4c: pick a lead advisor from the seed set by area overlap.
   // Sprint 9 swaps to property.assigned_agent_id → real staff lookup.
-  const leadAdvisor =
-    SEED_AGENTS.find((a) =>
-      a.areas.includes(property.areas?.slug ?? ""),
-    ) ?? SEED_AGENTS[0];
+  const leadAdvisor = (await withAgentPhoto(
+    SEED_AGENTS.find((a) => a.areas.includes(property.areas?.slug ?? "")) ??
+      SEED_AGENTS[0],
+  ))!;
 
   const advisorNoteCopy = property.short_description ?? property.description;
 

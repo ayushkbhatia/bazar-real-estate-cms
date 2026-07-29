@@ -9,6 +9,7 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
 import { getSeedAreaGuideBySlug } from "@/lib/seeds/areas";
 import { listSeedAgentsByArea } from "@/lib/seeds/agents";
+import { withAgentPhotos } from "@/lib/queries/agent-photos";
 import {
   getAreaGuide,
   listAreasWithCounts,
@@ -77,7 +78,7 @@ export default async function CommunityProfilePage({
   const area = getSeedAreaGuideBySlug(slug);
   if (!area) notFound();
 
-  const advisors = listSeedAgentsByArea(area.slug);
+  const advisors = await withAgentPhotos(listSeedAgentsByArea(area.slug));
   const similar = area.similar_areas
     .map((s) => getSeedAreaGuideBySlug(s))
     .filter((a) => a != null);
@@ -430,10 +431,22 @@ export default async function CommunityProfilePage({
               href={`/agents/${a.slug}`}
               className="group block"
             >
+              {a.photo_url ? (
+                <div className="relative w-full aspect-[4/5] overflow-hidden rounded-md">
+                  <Image
+                    src={a.photo_url}
+                    alt={a.display_name}
+                    fill
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
               <PlaceholderImage
                 label={a.slug}
                 className="w-full aspect-[4/5] rounded-md"
               />
+              )}
               <div className="mt-3">
                 <div className="text-[15px] text-bz-ink group-hover:text-bz-accent transition-colors">
                   {a.display_name}

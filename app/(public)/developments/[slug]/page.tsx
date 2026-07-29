@@ -8,6 +8,7 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
 import { mediaPublicUrl } from "@/lib/media";
 import { getDevelopmentPageContent } from "@/lib/queries/subpages";
+import { withAgentPhoto } from "@/lib/queries/agent-photos";
 import {
   getAdvisorForBanner,
   listDevelopmentsByIds,
@@ -154,12 +155,14 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const pickedAdvisor = development.lead_advisor_id
     ? await getAdvisorForBanner(development.lead_advisor_id)
     : null;
-  const leadAdvisor =
+  // SEED_AGENTS[0] is always present, so the overlay can't return null here.
+  const leadAdvisor = (await withAgentPhoto(
     pickedAdvisor ??
-    SEED_AGENTS.find((a) =>
-      a.areas.includes(development.area?.slug ?? ""),
-    ) ??
-    SEED_AGENTS[0];
+      SEED_AGENTS.find((a) =>
+        a.areas.includes(development.area?.slug ?? ""),
+      ) ??
+      SEED_AGENTS[0],
+  ))!;
 
   // Curated feature blocks carry a media id; resolve them once for the page.
   const featureImages = await withFeatureImages(meta?.feature_blocks);
