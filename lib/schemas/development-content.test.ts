@@ -55,6 +55,25 @@ describe("payment plan", () => {
 });
 
 describe("development content", () => {
+  it("accepts the catalogue's seeded ids, not just RFC-conformant uuids", () => {
+    // `33333333-0000-…` has a zero version nibble, so zod's .uuid() rejects
+    // it — and every seeded development is numbered that way, which made
+    // picking any neighbour impossible.
+    const seeded = {
+      ...VALID,
+      nearby_ids: ["33333333-0000-0000-0000-000000000008"],
+      lead_advisor_id: "22222222-0000-0000-0000-000000000001",
+    };
+    expect(developmentContentSchema.safeParse(seeded).success).toBe(true);
+  });
+
+  it("still rejects something that isn't an id at all", () => {
+    expect(
+      developmentContentSchema.safeParse({ ...VALID, nearby_ids: ["nope"] })
+        .success,
+    ).toBe(false);
+  });
+
   it("caps future neighbours at three, matching the design", () => {
     const four = { ...VALID, nearby_ids: Array(4).fill(crypto.randomUUID()) };
     expect(developmentContentSchema.safeParse(four).success).toBe(false);

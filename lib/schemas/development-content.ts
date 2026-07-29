@@ -10,6 +10,20 @@ import { z } from "zod";
  * second copy of the same fact.
  */
 
+/**
+ * Ids in this project aren't all RFC-conformant UUIDs: the seeded catalogue
+ * uses readable ids like `33333333-0000-0000-0000-000000000008`, whose version
+ * nibble is `0`. Zod's `.uuid()` rejects those, which made every neighbour
+ * pick fail validation. Match the shape instead — the same regex the property
+ * and development schemas already use.
+ */
+const uuidLike = z
+  .string()
+  .regex(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    "Invalid id",
+  );
+
 export const milestoneSchema = z.object({
   label: z.string().min(1, "Give the stage a name").max(60),
   timing: z.string().max(60).nullable().optional(),
@@ -56,8 +70,8 @@ export const developmentContentSchema = z.object({
     .object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) })
     .nullable(),
   /** Up to three sibling projects, in display order. Mirrors the design. */
-  nearby_ids: z.array(z.string().uuid()).max(3),
-  lead_advisor_id: z.string().uuid().nullable(),
+  nearby_ids: z.array(uuidLike).max(3),
+  lead_advisor_id: uuidLike.nullable(),
 });
 
 export type DevelopmentContentInput = z.infer<typeof developmentContentSchema>;
