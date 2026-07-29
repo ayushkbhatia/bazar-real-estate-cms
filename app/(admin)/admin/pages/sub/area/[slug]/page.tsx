@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight, ExternalLink } from "lucide-react";
+import { ChevronRight, Database, ExternalLink } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -83,15 +83,26 @@ export default async function AreaSubPage({ params }: PageProps) {
         </span>
       }
       secondary={
-        <Link
-          href={`/areas/${area.slug}`}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
-        >
-          View page
-          <ExternalLink size={12} />
-        </Link>
+        <span className="inline-flex items-center gap-4">
+          {/* This page edits how the guide reads; the area's facts — name,
+              hierarchy, map position — live on the record. */}
+          <Link
+            href={`/admin/areas/${area.id}`}
+            className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
+          >
+            <Database size={12} />
+            Edit area record
+          </Link>
+          <Link
+            href={`/areas/${area.slug}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
+          >
+            View page
+            <ExternalLink size={12} />
+          </Link>
+        </span>
       }
     >
       <div className="flex flex-col gap-5 max-w-[860px]">

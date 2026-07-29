@@ -103,6 +103,7 @@ export type AreaSubPageRow = {
   name: string;
   slug: string;
   kind: string;
+  parent_id: string | null;
   hero_image_id: string | null;
   edited: boolean;
 };
@@ -115,7 +116,7 @@ export async function listAreaSubPages(): Promise<AreaSubPageRow[]> {
   const [{ data: rows }, { data: pages }] = await Promise.all([
     supabase
       .from("areas")
-      .select("id, name, slug, kind, hero_image_id")
+      .select("id, name, slug, kind, parent_id, hero_image_id")
       .order("name", { ascending: true }),
     supabase
       .from("pages")
@@ -132,6 +133,7 @@ export async function listAreaSubPages(): Promise<AreaSubPageRow[]> {
     name: r.name,
     slug: r.slug,
     kind: r.kind,
+    parent_id: r.parent_id,
     hero_image_id: r.hero_image_id,
     edited: editedSlugs.has(r.slug),
   }));
