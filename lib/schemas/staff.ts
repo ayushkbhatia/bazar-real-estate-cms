@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { uuidLike } from "@/lib/uuid";
 
 export const STAFF_ROLES = [
   "admin",
@@ -56,13 +57,13 @@ export type StaffInviteInput = z.infer<typeof staffInviteSchema>;
 
 /** Change-role payload. */
 export const staffRoleUpdateSchema = z.object({
-  user_id: z.string().uuid(),
+  user_id: uuidLike(),
   role: z.enum(STAFF_ROLES),
 });
 
 /** Change-status payload (used for suspend / restore). */
 export const staffStatusUpdateSchema = z.object({
-  user_id: z.string().uuid(),
+  user_id: uuidLike(),
   status: z.enum(STAFF_STATUSES),
 });
 

@@ -6,12 +6,13 @@ import {
 } from "@/lib/notifications";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { uuidLike } from "@/lib/uuid";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const bodySchema = z.object({
-  id: z.string().uuid().nullable().optional(),
+  id: uuidLike().nullable().optional(),
   /** When true, mark every notification of the current user as read. */
   all: z.boolean().optional(),
 });

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UUID_SHAPE_RE } from "@/lib/uuid";
 
 export const PROPERTY_MODES = ["buy", "rent", "off_plan", "commercial"] as const;
 export const PROPERTY_TYPES = [
@@ -25,11 +26,9 @@ export const TENURES = ["freehold", "leasehold", "usufruct"] as const;
 export const FURNISHINGS = ["unfurnished", "semi", "fully"] as const;
 
 const slugRegex = /^[a-z0-9-]+$/;
-const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const uuidOrEmpty = z
   .union([
-    z.string().regex(uuidRegex, "Invalid UUID"),
+    z.string().regex(UUID_SHAPE_RE, "Invalid UUID"),
     z.literal(""),
     z.null(),
   ])
@@ -63,7 +62,7 @@ export const propertyOverviewSchema = z.object({
   // Developer is a required section of the listing wizard. The column is
   // nullable at the DB layer (a fresh "create draft" has none), so we enforce
   // requiredness here — mirroring developmentEditSchema's developer_id.
-  developer_id: z.string().regex(uuidRegex, "Pick a developer"),
+  developer_id: z.string().regex(UUID_SHAPE_RE, "Pick a developer"),
   bazar_verified: z.boolean().optional(),
   advisor_note: z
     .string()

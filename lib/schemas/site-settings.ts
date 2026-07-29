@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { uuidLike } from "@/lib/uuid";
 
 export const HERO_VARIANTS = [
   "fullbleed",
@@ -58,13 +59,13 @@ export type DisplaySettingsInput = z.infer<typeof displaySettingsSchema>;
  *  first match wins. If no rule matches, the fallback agent gets it. */
 export const leadRoutingRuleSchema = z.object({
   area_slug: z.string().min(1).max(80),
-  agent_id: z.string().uuid(),
+  agent_id: uuidLike(),
 });
 
 export const leadRoutingSettingsSchema = z.object({
   rules: z.array(leadRoutingRuleSchema).max(40),
   fallback_agent_id: z
-    .union([z.literal(""), z.string().uuid()])
+    .union([z.literal(""), uuidLike()])
     .transform((v) => (v === "" ? null : v))
     .nullable()
     .optional(),

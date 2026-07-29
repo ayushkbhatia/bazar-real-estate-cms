@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { uuidLike } from "@/lib/uuid";
 
 /**
  * Schemas + shaped types for the CMS-editable megamenu.
@@ -129,12 +130,12 @@ export const tabMetaEditSchema = z.object({
 export type TabMetaEditInput = z.infer<typeof tabMetaEditSchema>;
 
 export const itemEditSchema = z.object({
-  id: z.string().uuid().optional(), // optional for newly-created rows
+  id: uuidLike().optional(), // optional for newly-created rows
   position: z.number().int().min(0),
   label: z.string().min(1).max(120),
   href: z.string().min(1).max(240),
   target_kind: z.enum(MEGAMENU_TARGET_KINDS).nullable().optional(),
-  target_id: z.string().uuid().nullable().optional(),
+  target_id: uuidLike().nullable().optional(),
   icon: z.string().max(40).nullable().optional(),
   badge_label: z.string().max(40).nullable().optional(),
   badge_variant: z.enum(MEGAMENU_BADGE_VARIANTS).default("default"),
@@ -142,7 +143,7 @@ export const itemEditSchema = z.object({
 export type ItemEditInput = z.infer<typeof itemEditSchema>;
 
 export const columnEditSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: uuidLike().optional(),
   zone: z.enum(MEGAMENU_ZONES),
   position: z.number().int().min(0),
   heading: z.string().max(80).nullable().optional(),
@@ -151,14 +152,14 @@ export const columnEditSchema = z.object({
 export type ColumnEditInput = z.infer<typeof columnEditSchema>;
 
 export const featuredTileEditSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: uuidLike().optional(),
   position: z.number().int().min(0).max(1),
   variant: z.enum(MEGAMENU_TILE_VARIANTS).default("dark"),
   badge_label: z.string().max(40).nullable().optional(),
   badge_kind: z.enum(MEGAMENU_TILE_BADGE_KINDS).default("dot"),
   headline: z.string().min(1).max(120),
   href: z.string().min(1).max(240),
-  media_asset_id: z.string().uuid().nullable().optional(),
+  media_asset_id: uuidLike().nullable().optional(),
   cta_label: z.string().max(40).nullable().optional(),
 });
 export type FeaturedTileEditInput = z.infer<typeof featuredTileEditSchema>;
