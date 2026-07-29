@@ -75,10 +75,17 @@ export function MegamenuTile({ tile, className }: Props) {
           className="absolute inset-0 h-full w-full object-cover"
         />
       ) : null}
+      {/* The scrim follows the headline colour: a navy wash lifts white text
+          off a bright photo, a white wash does the same for black text. */}
       {tile.media_url ? (
         <div
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-br from-bz-navy/60 via-bz-navy/25 to-bz-navy/60"
+          className={cn(
+            "absolute inset-0 bg-gradient-to-br",
+            tile.variant === "light"
+              ? "from-white/75 via-white/45 to-white/75"
+              : "from-bz-navy/60 via-bz-navy/25 to-bz-navy/60",
+          )}
         />
       ) : null}
 
