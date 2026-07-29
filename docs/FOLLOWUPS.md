@@ -343,3 +343,16 @@ shows the trail.)
   deletes the tiles, not the assets, so both now show as not-live in the media
   library and can be trashed there if nobody wants them. Left for a human to
   eyeball rather than deleted automatically.
+
+- [cms-shell] Megamenu isn't in the mobile tab matcher.
+  `activeCmsTab` in `components/brand/cms-shell.tsx` maps `/admin/blog`,
+  `/admin/pages` and now `/admin/content-assets` to the Content tab;
+  `/admin/megamenu` still falls through to "More". Left alone because it's a
+  behaviour change in a protected file that nobody asked for, but it is an
+  oversight from the megamenu build.
+
+- [content-assets] Only the enquiry composer consumes assets so far.
+  `getContentAsset(slug)` exists so deal-stage mail, viewing reminders and
+  valuation nurture can adopt the library, but none of them do yet — they
+  still use the hardcoded templates in `lib/email-templates.ts`. Migrating
+  each is a per-surface decision about what should stay code-driven.

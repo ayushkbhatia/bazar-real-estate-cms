@@ -600,6 +600,78 @@ export type Database = {
           },
         ]
       }
+      content_assets: {
+        Row: {
+          body: string
+          category: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          follow_up_after_days: number | null
+          id: string
+          kind: Database["public"]["Enums"]["content_asset_kind"]
+          name: string
+          next_asset_id: string | null
+          notes: string | null
+          position: number
+          slug: string
+          status: Database["public"]["Enums"]["content_asset_status"]
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          follow_up_after_days?: number | null
+          id?: string
+          kind: Database["public"]["Enums"]["content_asset_kind"]
+          name: string
+          next_asset_id?: string | null
+          notes?: string | null
+          position?: number
+          slug: string
+          status?: Database["public"]["Enums"]["content_asset_status"]
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          follow_up_after_days?: number | null
+          id?: string
+          kind?: Database["public"]["Enums"]["content_asset_kind"]
+          name?: string
+          next_asset_id?: string | null
+          notes?: string | null
+          position?: number
+          slug?: string
+          status?: Database["public"]["Enums"]["content_asset_status"]
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_assets_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "content_assets_next_asset_id_fkey"
+            columns: ["next_asset_id"]
+            isOneToOne: false
+            referencedRelation: "content_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversations: {
         Row: {
           created_at: string
@@ -3134,6 +3206,8 @@ export type Database = {
         | "bulk_reassign"
         | "bulk_archive"
       concierge_message_role: "user" | "assistant" | "system"
+      content_asset_kind: "email" | "whatsapp"
+      content_asset_status: "draft" | "published"
       deal_stage:
         | "mou"
         | "deposit"
@@ -3484,6 +3558,8 @@ export const Constants = {
         "bulk_archive",
       ],
       concierge_message_role: ["user", "assistant", "system"],
+      content_asset_kind: ["email", "whatsapp"],
+      content_asset_status: ["draft", "published"],
       deal_stage: [
         "mou",
         "deposit",
