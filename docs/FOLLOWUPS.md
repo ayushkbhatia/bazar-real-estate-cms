@@ -263,3 +263,12 @@ shows the trail.)
   reorder or hide any section, but stats, schools, amenities and the lifestyle
   dossier still read from the seed module and `area_guides`. Exposing those
   means list fields writing to `area_guides`, not to the section document.
+
+- [blog] Trashed posts have no purge and no countdown.
+  `/admin/blog?view=trash` keeps posts indefinitely until an admin deletes them
+  for good. Same gap as the media library's trash — either add a cron that
+  purges after N days or leave it deliberate and say so in the UI.
+
+- [blog] No bulk archive or trash.
+  Rows are actioned one at a time. Fine at the current volume; worth
+  select-all + bulk once the list runs past a screenful.
