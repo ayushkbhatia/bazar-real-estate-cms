@@ -12,6 +12,7 @@ import {
   type AgentEditInput,
 } from "@/lib/schemas/agent";
 import { updateAgentAction } from "../_actions";
+import { AgentPhotoField, type PhotoOption } from "./_photo-field";
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -21,9 +22,11 @@ function FieldError({ message }: { message?: string }) {
 export function AgentEditForm({
   userId,
   initial,
+  photoOptions,
 }: {
   userId: string;
   initial: AgentEditInput;
+  photoOptions: PhotoOption[];
 }) {
   const [pending, startTransition] = useTransition();
   const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
@@ -37,6 +40,8 @@ export function AgentEditForm({
     resolver: zodResolver(agentEditSchema),
     defaultValues: initial,
   });
+
+  const photoUrl = watch("photo_url");
 
   const languages = watch("languages");
   const specialties = watch("specialties");
@@ -112,20 +117,17 @@ export function AgentEditForm({
         <FieldError message={errors.bio?.message ?? serverErrors.bio} />
       </div>
 
-      <div>
-        <Label htmlFor="photo_url">Photo URL</Label>
-        <Input
-          id="photo_url"
-          placeholder="https://…"
-          {...register("photo_url")}
-        />
-        <FieldError
-          message={errors.photo_url?.message ?? serverErrors.photo_url}
-        />
-        <p className="text-[11.5px] text-bz-muted mt-1">
-          Full URL to a 4:5 portrait. Storage upload lands in Sprint 7d.
-        </p>
-      </div>
+      <AgentPhotoField
+        value={photoUrl ?? ""}
+        options={photoOptions}
+        onChange={(url) =>
+          setValue("photo_url", url === "" ? null : url, {
+            shouldDirty: true,
+            shouldValidate: true,
+          })
+        }
+        error={errors.photo_url?.message ?? serverErrors.photo_url}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>

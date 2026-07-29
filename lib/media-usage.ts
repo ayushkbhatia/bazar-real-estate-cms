@@ -17,6 +17,7 @@ export type MediaUsageKind =
   | "developer"
   | "developer_profile"
   | "megamenu"
+  | "advisor"
   | "document"
   | "license";
 
@@ -63,6 +64,7 @@ export const USAGE_KIND_LABELS: Record<MediaUsageKind, string> = {
   developer: "Developer",
   developer_profile: "Developer profile",
   megamenu: "Navigation",
+  advisor: "Advisor",
   document: "Deal document",
   license: "Licence",
 };
