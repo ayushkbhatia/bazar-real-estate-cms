@@ -146,6 +146,10 @@ export type SubPageRow = {
   published_at: string | null;
   hero_image_id: string | null;
   developer: string | null;
+  area: string | null;
+  handover_date: string | null;
+  total_units: number | null;
+  starting_price: number | null;
   /** Whether a section document has been saved for it. */
   edited: boolean;
 };
@@ -160,7 +164,7 @@ export async function listDevelopmentSubPages(
     supabase
       .from("developments")
       .select(
-        "id, name, slug, status, published_at, hero_image_id, developers:developer_id(name)",
+        "id, name, slug, status, published_at, hero_image_id, handover_date, total_units, starting_price, developers:developer_id(name), areas:area_id(name)",
       )
       .order("name", { ascending: true }),
     supabase
@@ -180,7 +184,11 @@ export async function listDevelopmentSubPages(
     status: string;
     published_at: string | null;
     hero_image_id: string | null;
+    handover_date: string | null;
+    total_units: number | null;
+    starting_price: number | null;
     developers: { name: string } | null;
+    areas: { name: string } | null;
   };
 
   return ((rows ?? []) as unknown as Row[]).map((r) => ({
@@ -191,6 +199,10 @@ export async function listDevelopmentSubPages(
     published_at: r.published_at,
     hero_image_id: r.hero_image_id,
     developer: r.developers?.name ?? null,
+    area: r.areas?.name ?? null,
+    handover_date: r.handover_date,
+    total_units: r.total_units,
+    starting_price: r.starting_price,
     edited: editedSlugs.has(r.slug),
   }));
 }

@@ -73,7 +73,7 @@ export default async function AdminDevelopmentEditPage({ params }: PageProps) {
       breadcrumbs={
         <span className="inline-flex items-center gap-1">
           <Link
-            href="/admin/developments"
+            href="/admin/pages/sub/development"
             className="hover:text-bz-ink"
           >
             Developments

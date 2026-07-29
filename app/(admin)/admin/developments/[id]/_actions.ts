@@ -18,7 +18,7 @@ export type SaveResult =
   | { status: "error"; message: string; fieldErrors?: Record<string, string> };
 
 async function revalidateDevelopmentPaths(developmentId: string) {
-  revalidatePath("/admin/developments");
+  revalidatePath("/admin/pages/sub/development");
   revalidatePath(`/admin/developments/${developmentId}`);
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase

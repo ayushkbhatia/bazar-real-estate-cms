@@ -46,10 +46,11 @@ async function fetchDevelopment(slug: string) {
   return data;
 }
 
-const ACTIONS: SectionActions = {
-  save: (slug, sections) => saveDevelopmentPage(slug, sections),
-  reset: (slug) => resetDevelopmentPage(slug),
-};
+// Server actions are handed to the client editor by reference. Wrapping them
+// in arrows here would make them plain functions, which can't cross the
+// server/client boundary — the page 500s with "Functions cannot be passed
+// directly to Client Components".
+const ACTIONS: SectionActions = { save: saveDevelopmentPage, reset: resetDevelopmentPage };
 
 export default async function DevelopmentSubPage({ params }: PageProps) {
   const { slug } = await params;
