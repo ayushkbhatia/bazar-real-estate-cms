@@ -39,6 +39,10 @@ import {
   type TabMetaEditInput,
 } from "@/lib/schemas/megamenu";
 import { saveMegamenuTab } from "./_actions";
+import {
+  ImagePicker,
+} from "../../pages/sub/development/[slug]/_images-card";
+import type { MediaOption } from "../../pages/master/[key]/_editor";
 
 // ───────────────────────────────────────────────────────────────
 // Local state types — same as schema, plus a UI-only uid for stable React
@@ -438,10 +442,14 @@ function ZoneEditor({
 // Featured tiles (0-2 slots)
 // ───────────────────────────────────────────────────────────────
 function TileForm({
+  media,
+  onMediaAdded,
   tile,
   onChange,
   onRemove,
 }: {
+  media: MediaOption[];
+  onMediaAdded: (m: MediaOption) => void;
   tile: LocalTile;
   onChange: (next: LocalTile) => void;
   onRemove: () => void;
@@ -537,10 +545,14 @@ function TileForm({
           />
         </label>
       </div>
-      <p className="text-[11px] text-bz-muted-2">
-        Image picker arrives with the media library integration. Until then,
-        tiles render the diagonal-line placeholder.
-      </p>
+      <ImagePicker
+        label="Tile image"
+        help="Leave empty for the diagonal-line placeholder."
+        value={tile.media_asset_id ?? null}
+        media={media}
+        onChange={(id) => onChange({ ...tile, media_asset_id: id })}
+        onUploaded={onMediaAdded}
+      />
     </div>
   );
 }
@@ -550,9 +562,12 @@ function TileForm({
 // ───────────────────────────────────────────────────────────────
 type Props = {
   tab: MegamenuTab;
+  /** Image assets offered by the tile picker. */
+  media: MediaOption[];
 };
 
-export function MegamenuEditor({ tab }: Props) {
+export function MegamenuEditor({ tab, media: initialMedia }: Props) {
+  const [media, setMedia] = useState(initialMedia);
   // Initial state — hydrate from the server-loaded tab and stamp uids.
   const initial = useMemo(() => {
     const left = tab.columns.left.map<LocalColumn>((c) =>
@@ -781,6 +796,8 @@ export function MegamenuEditor({ tab }: Props) {
               {featured.map((tile, idx) => (
                 <TileForm
                   key={tile.uid}
+                  media={media}
+                  onMediaAdded={(m) => setMedia((cur) => [m, ...cur])}
                   tile={tile}
                   onChange={(next) => setTile(idx, next)}
                   onRemove={() => removeTile(idx)}

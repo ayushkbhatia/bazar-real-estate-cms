@@ -92,6 +92,12 @@ export type MegamenuFeaturedTile = {
   headline: string;
   href: string;
   media_asset_id: string | null;
+  /**
+   * Public URL for `media_asset_id`, resolved when the menu is read. Never
+   * stored — the id is the source of truth, so moving or renaming the asset
+   * doesn't strand the tile.
+   */
+  media_url?: string | null;
   cta_label: string | null;
 };
 
