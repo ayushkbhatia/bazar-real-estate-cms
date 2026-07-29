@@ -1,6 +1,7 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { mediaPublicUrl } from "@/lib/media";
 import type {
   Megamenu,
   MegamenuColumn,
@@ -66,6 +67,9 @@ type RawTile = {
   headline: string;
   href: string;
   media_asset_id: string | null;
+  /** Public URL for `media_asset_id`, resolved at read time. Never stored. */
+  media_url?: string | null;
+  media?: { storage_key: string; deleted_at: string | null } | null;
   cta_label: string | null;
 };
 
@@ -154,6 +158,11 @@ function buildMegamenu(
         headline: tl.headline,
         href: tl.href,
         media_asset_id: tl.media_asset_id,
+        // A trashed asset falls back to the placeholder rather than 404-ing.
+        media_url:
+          tl.media && !tl.media.deleted_at
+            ? mediaPublicUrl(tl.media.storage_key)
+            : null,
         cta_label: tl.cta_label,
       }));
     return {
@@ -204,7 +213,7 @@ export async function getPublishedMegamenu(): Promise<Megamenu> {
       supabase
         .from("megamenu_featured_tiles")
         .select(
-          "id, tab_id, position, variant, badge_label, badge_kind, headline, href, media_asset_id, cta_label",
+          "id, tab_id, position, variant, badge_label, badge_kind, headline, href, media_asset_id, cta_label, media:media_asset_id(storage_key, deleted_at)",
         ),
     ]);
 
@@ -277,7 +286,7 @@ export async function getMegamenuTabBySlugForAdmin(
     supabase
       .from("megamenu_featured_tiles")
       .select(
-        "id, tab_id, position, variant, badge_label, badge_kind, headline, href, media_asset_id, cta_label",
+        "id, tab_id, position, variant, badge_label, badge_kind, headline, href, media_asset_id, cta_label, media:media_asset_id(storage_key, deleted_at)",
       )
       .eq("tab_id", tab.id),
   ]);

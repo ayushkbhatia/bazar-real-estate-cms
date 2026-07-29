@@ -12,6 +12,7 @@ import {
   Inbox,
   FileText,
   Layers,
+  Menu,
   Settings,
   ClipboardCheck,
   Handshake,
@@ -67,6 +68,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
     items: [
       { label: "Blog editor", href: "/admin/blog", icon: FileText },
       { label: "Pages & blocks", href: "/admin/pages", icon: Layers },
+      { label: "Megamenu", href: "/admin/megamenu", icon: Menu },
     ],
   },
   {

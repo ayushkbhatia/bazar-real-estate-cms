@@ -325,3 +325,14 @@ shows the trail.)
   `lib/seeds/agents`, joined on slug. Editing those in the admin changes
   /agents and /agents/[slug] only. Replacing the seed lookups with a staff
   query is the real fix; the photo overlay is the seam to do it through.
+
+- [megamenu] Tile images are the only media the menu carries.
+  Featured tiles now take an asset; column items still render a lucide icon
+  chosen by name (`megamenu_items.icon`) with no picker. If the design ever
+  wants imagery on menu links, that's the next field.
+
+- [megamenu] Two protected files were edited for this build.
+  `components/brand/cms-shell.tsx` (the sidebar entry) and
+  `components/brand/megamenu-tile.tsx` (rendering the tile image) are both on
+  the do-not-edit list, and were changed because the feature can't work
+  without them. Worth confirming they survive the next brand sync.

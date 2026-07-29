@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -27,7 +28,6 @@ type Props = {
 const variantClasses: Record<MegamenuTileVariant, string> = {
   dark: "bz-img-dark text-white",
   light: "bz-img text-bz-ink",
-  // PR will add the resolved-image case; safe default for now.
   image: "bz-img-dark text-white",
 };
 
@@ -64,6 +64,24 @@ export function MegamenuTile({ tile, className }: Props) {
         className,
       )}
     >
+      {/* A picked asset replaces the diagonal-line pattern entirely. */}
+      {tile.media_url ? (
+        <Image
+          src={tile.media_url}
+          alt=""
+          aria-hidden
+          fill
+          sizes="(max-width: 1024px) 50vw, 320px"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : null}
+      {tile.media_url ? (
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-br from-bz-navy/60 via-bz-navy/25 to-bz-navy/60"
+        />
+      ) : null}
+
       {/* Soft scrim so text remains readable against the diagonal pattern */}
       {tile.variant === "dark" ? (
         <div
