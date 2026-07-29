@@ -336,3 +336,10 @@ shows the trail.)
   `components/brand/megamenu-tile.tsx` (rendering the tile image) are both on
   the do-not-edit list, and were changed because the feature can't work
   without them. Worth confirming they survive the next brand sync.
+
+- [media] Two uploads went unreferenced when Sell/Commercial were deleted.
+  `0a92872e-…` ("How to sell your property") and `35f114f9-…` ("Online
+  valuation") were used only by the Sell tab's featured tiles. Migration 0060
+  deletes the tiles, not the assets, so both now show as not-live in the media
+  library and can be trashed there if nobody wants them. Left for a human to
+  eyeball rather than deleted automatically.

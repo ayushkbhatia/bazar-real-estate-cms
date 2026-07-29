@@ -1,0 +1,37 @@
+-- 0060_megamenu_drop_sell_commercial.sql
+-- Delete the Sell and Commercial megamenu tabs outright.
+--
+-- 0040_nav_restructure dropped both from the public nav by flipping them to
+-- status='draft' and deliberately kept the rows ("Sell + Commercial keep their
+-- pages/routes; only dropped from the top nav"). The rows have sat unpublished
+-- ever since — invisible on the site, but still listed in /admin/megamenu,
+-- where they read as two tabs someone forgot to finish. The client has since
+-- confirmed neither is coming back as a nav header, so the rows go.
+--
+-- This removes NAV ENTRIES ONLY. The pages themselves stay:
+--   · /commercial       — still a live marketplace surface, and 'commercial'
+--                         remains one of PROPERTY_MODES across search,
+--                         syndication, saved searches and the concierge.
+--   · /services/sell    — still a live service page.
+-- Every destination the two panels linked to is already reachable from a
+-- published tab (verified against the live nav before writing this):
+--   /commercial      -> Buy › Property Types, Buy › Property Status,
+--                       Rent › Property Types
+--   /services/sell   -> Rent › Guides, Services › Sell Your Property
+--   /tools/valuation -> reachable from the Services panel and the utility bar
+-- so no user-facing link is lost.
+--
+-- Children go by cascade: megamenu_columns.tab_id, megamenu_items.column_id and
+-- megamenu_featured_tiles.tab_id are all ON DELETE CASCADE (0031). That clears
+-- 5 columns, 20 items and 3 featured tiles.
+--
+-- Two media assets were referenced only by the Sell tiles
+-- (0a92872e-… "How to sell your property", 35f114f9-… "Online valuation").
+-- The assets are NOT deleted here — losing a tile shouldn't destroy an upload.
+-- They simply become unreferenced, so the media library will report them as
+-- not-live and offer them for trashing like any other unused asset.
+--
+-- Idempotent: keyed by slug, so re-running against a nav that no longer has
+-- these tabs is a no-op.
+
+delete from public.megamenu_tabs where slug in ('sell', 'commercial');
