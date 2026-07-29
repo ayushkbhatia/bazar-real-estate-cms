@@ -230,17 +230,23 @@ export async function getRelatedArticles(
   return [...same, ...others].slice(0, limit);
 }
 
-/** Admin (auth-aware): list every article regardless of status. */
+/**
+ * Admin (auth-aware): every article regardless of status.
+ *
+ * `trashed` flips the soft-delete filter, which is what the Trash view on
+ * /admin/blog reads — trashed posts are excluded everywhere else.
+ */
 export async function listAllArticlesForAdmin(opts: {
   limit?: number;
   offset?: number;
+  trashed?: boolean;
 }): Promise<{ rows: ArticleListRow[]; total: number }> {
   if (!isSupabaseConfigured) return { rows: [], total: 0 };
   const supabase = await createSupabaseServerClient();
-  const { data, error, count } = await supabase
-    .from("articles")
-    .select(LIST_FIELDS, { count: "exact" })
-    .is("deleted_at", null)
+  const base = supabase.from("articles").select(LIST_FIELDS, { count: "exact" });
+  const { data, error, count } = await (opts.trashed
+    ? base.not("deleted_at", "is", null)
+    : base.is("deleted_at", null))
     .order("updated_at", { ascending: false })
     .range(opts.offset ?? 0, (opts.offset ?? 0) + (opts.limit ?? 100) - 1);
   if (error) {

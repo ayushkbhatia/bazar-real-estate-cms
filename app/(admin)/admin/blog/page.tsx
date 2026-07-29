@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, ExternalLink } from "lucide-react";
+import { Plus, ExternalLink, Trash2 } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,8 @@ import {
   listAllArticlesForAdmin,
   type ArticleListRow,
 } from "@/lib/queries/articles";
+import { currentStaffRow } from "@/lib/queries/staff";
+import { BlogRowActions } from "./_row-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -56,8 +58,21 @@ function relative(iso: string | null): string {
   return `${Math.floor(days / 365)}y ago`;
 }
 
-export default async function AdminBlogPage() {
-  const { rows, total } = await listAllArticlesForAdmin({ limit: 100 });
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function AdminBlogPage({ searchParams }: PageProps) {
+  const sp = await searchParams;
+  const view = (Array.isArray(sp.view) ? sp.view[0] : sp.view) ?? "";
+  const trashed = view === "trash";
+
+  const [{ rows, total }, trash, staff] = await Promise.all([
+    listAllArticlesForAdmin({ limit: 100, trashed }),
+    listAllArticlesForAdmin({ limit: 1, trashed: true }),
+    currentStaffRow(),
+  ]);
+  const canDestroy = staff?.role === "admin";
 
   return (
     <CmsShell
@@ -73,9 +88,45 @@ export default async function AdminBlogPage() {
       }
     >
       <div className="flex flex-col gap-6">
-        <div className="flex items-baseline justify-between">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex rounded-md border border-bz-border bg-bz-bg p-0.5">
+            <Link
+              href="/admin/blog"
+              aria-current={trashed ? undefined : "page"}
+              className={cn(
+                "inline-flex items-center gap-1.5 h-7 px-2.5 rounded text-[12px] transition-colors",
+                trashed
+                  ? "text-bz-ink-2 hover:text-bz-ink"
+                  : "bg-bz-navy text-bz-bg font-medium",
+              )}
+            >
+              Articles
+            </Link>
+            <Link
+              href="/admin/blog?view=trash"
+              aria-current={trashed ? "page" : undefined}
+              className={cn(
+                "inline-flex items-center gap-1.5 h-7 px-2.5 rounded text-[12px] transition-colors",
+                trashed
+                  ? "bg-bz-navy text-bz-bg font-medium"
+                  : "text-bz-ink-2 hover:text-bz-ink",
+              )}
+            >
+              <Trash2 size={12} strokeWidth={1.8} />
+              Trash
+              <span
+                className={cn(
+                  "mono text-[10.5px]",
+                  trashed ? "text-bz-bg/80" : "text-bz-muted",
+                )}
+              >
+                {trash.total}
+              </span>
+            </Link>
+          </div>
           <div className="text-[13px] text-bz-muted">
             {total} {total === 1 ? "article" : "articles"}
+            {trashed ? " in trash" : ""}
           </div>
         </div>
 
@@ -88,21 +139,27 @@ export default async function AdminBlogPage() {
                 <TableHead>Category</TableHead>
                 <TableHead>Author</TableHead>
                 <TableHead>Updated</TableHead>
-                <TableHead className="text-right">Open</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-16 text-bz-muted">
-                    No articles yet — start the first one with{" "}
-                    <Link
-                      href="/admin/blog/new"
-                      className="text-bz-ink underline"
-                    >
-                      New article
-                    </Link>
-                    .
+                    {trashed ? (
+                      "Trash is empty. Posts you delete land here first."
+                    ) : (
+                      <>
+                        No articles yet — start the first one with{" "}
+                        <Link
+                          href="/admin/blog/new"
+                          className="text-bz-ink underline"
+                        >
+                          New article
+                        </Link>
+                        .
+                      </>
+                    )}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -134,18 +191,25 @@ export default async function AdminBlogPage() {
                       {relative(row.updated_at)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {row.status === "published" ? (
-                        <Link
-                          href={articleUrl(row)}
-                          className="inline-flex items-center gap-1 text-[12px] text-bz-muted hover:text-bz-ink"
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          View <ExternalLink size={12} />
-                        </Link>
-                      ) : (
-                        <span className="text-[12px] text-bz-muted-2">—</span>
-                      )}
+                      <span className="inline-flex items-center justify-end gap-2">
+                        {row.status === "published" && !trashed ? (
+                          <Link
+                            href={articleUrl(row)}
+                            className="inline-flex items-center gap-1 text-[12px] text-bz-muted hover:text-bz-ink"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            View <ExternalLink size={12} />
+                          </Link>
+                        ) : null}
+                        <BlogRowActions
+                          id={row.id}
+                          title={row.title}
+                          archived={row.status === "archived"}
+                          trashed={trashed}
+                          canDestroy={canDestroy}
+                        />
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))
