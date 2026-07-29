@@ -78,7 +78,7 @@ export type ListFieldDef = {
   seedKey?: SeedKey;
 };
 
-export type SeedKey = "areas" | "developments";
+export type SeedKey = "areas" | "developments" | "properties";
 
 export type FieldDef =
   | SimpleFieldDef

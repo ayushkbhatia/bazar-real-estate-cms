@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, ExternalLink } from "lucide-react";
+import { Plus, ExternalLink, LayoutList } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Button } from "@/components/ui/button";
 import {
@@ -129,14 +129,26 @@ export default async function AdminDevelopmentsPage() {
                       {formatStartingPrice(row.starting_price)}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Link
-                        href={developmentUrl(row)}
-                        className="inline-flex items-center gap-1 text-[12px] text-bz-muted hover:text-bz-ink"
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        View <ExternalLink size={12} />
-                      </Link>
+                      <span className="inline-flex items-center gap-3">
+                        {/* The record editor holds the project's facts; the
+                            page editor holds how its page reads. Both are
+                            reachable from here — the title link goes to the
+                            record, this one to the page. */}
+                        <Link
+                          href={`/admin/pages/sub/development/${row.slug}`}
+                          className="inline-flex items-center gap-1 text-[12px] text-bz-muted hover:text-bz-ink"
+                        >
+                          <LayoutList size={12} /> Edit page
+                        </Link>
+                        <Link
+                          href={developmentUrl(row)}
+                          className="inline-flex items-center gap-1 text-[12px] text-bz-muted hover:text-bz-ink"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          View <ExternalLink size={12} />
+                        </Link>
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))

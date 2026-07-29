@@ -27,6 +27,8 @@ import { PartnerEcosystemSection } from "./_components/partner-ecosystem-section
 import { HomeFaqs } from "./_components/home/home-faqs";
 import { HomeTestimonials } from "./_components/home/home-testimonials";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { listPropertiesByReference } from "@/lib/queries/featured-properties";
+import { HOME_FEATURED_LISTING_COUNT } from "./_components/home/section-copy";
 import { faqPairs, img, list, statPairs, str } from "@/lib/master-pages";
 
 export const revalidate = 60;
@@ -48,8 +50,8 @@ function badgeFor(row: ListingRow):
 }
 
 export default async function HomePage() {
-  const [{ rows: featured }, settings, content] = await Promise.all([
-    listPublishedProperties({ mode: "buy", limit: 6 }),
+  const [{ rows: latest }, settings, content] = await Promise.all([
+    listPublishedProperties({ mode: "buy", limit: HOME_FEATURED_LISTING_COUNT }),
     getPublicSiteSettings(),
     getMasterPageContent("home"),
   ]);
@@ -81,6 +83,16 @@ export default async function HomePage() {
   const faqV = v("faqs");
   const testimonialsV = v("testimonials");
   const listImage = img(listV, "image");
+
+  // Listings curated in the home master page, in the order they were picked.
+  // Anything that no longer resolves — unpublished, deleted — drops out, and
+  // an empty list keeps the most recent published listings for sale.
+  const curatedRefs = list<Record<string, unknown>>(featuredV, "listings")
+    .filter((l) => l.enabled !== false)
+    .map((l) => (typeof l.slug === "string" ? l.slug : ""))
+    .filter(Boolean);
+  const curated = await listPropertiesByReference(curatedRefs);
+  const featured = curated.length > 0 ? curated : latest;
   const overviewImage = img(locationV, "overview_image");
 
   const nodes: Record<string, React.ReactNode> = {

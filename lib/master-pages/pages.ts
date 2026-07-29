@@ -321,15 +321,41 @@ const HOME: MasterPageDef = {
     {
       key: "featured_properties",
       label: "Featured properties",
-      description: "Carousel of published listings for sale.",
-      dataNote: "Cards come from published listings.",
-      fields: [eyebrow(), heading(), body(), ...ctaPair()],
+      description: "Carousel of featured listings.",
+      dataNote:
+        "Each card is a live listing — its price, beds, area and photo come from that record. Leave the list empty to show the most recent published listings for sale.",
+      fields: [
+        eyebrow(),
+        heading(),
+        body(),
+        ...ctaPair(),
+        {
+          key: "listings",
+          label: "Featured listings",
+          kind: "list",
+          itemLabel: "listing",
+          max: 12,
+          seedKey: "properties",
+          help: "Pick the listings to feature, in the order they should appear.",
+          fields: [
+            toggle("enabled", "Show this listing"),
+            {
+              key: "slug",
+              label: "Listing",
+              kind: "select",
+              optionsKey: "properties",
+              placeholder: "Choose a property",
+            },
+          ],
+        },
+      ],
       defaults: {
         eyebrow: "Featured properties for sale",
         heading: "Featured properties, handpicked for you",
         body: "Discover properties that bring you closer to the lifestyle you are looking for.",
         cta_label: "All properties",
         cta_href: "/buy/search",
+        listings: [],
       },
     },
     {

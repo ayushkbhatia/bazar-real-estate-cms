@@ -9,8 +9,10 @@ import { getMasterPage, isMasterPageKey } from "@/lib/master-pages";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
+import { listPropertyOptions } from "@/lib/queries/featured-properties";
 import {
   HOME_AREA_TILE_COUNT,
+  HOME_FEATURED_LISTING_COUNT,
   HOME_OFFPLAN_CARD_COUNT,
 } from "@/app/(public)/_components/home/section-copy";
 import { OFFPLAN_LAUNCH_COUNT } from "@/app/(public)/_components/marketing/counts";
@@ -48,11 +50,13 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
   const def = getMasterPage(key);
   if (!def) notFound();
 
-  const [content, media, areas, developments] = await Promise.all([
+  const [content, media, areas, developments, properties] = await Promise.all([
     getMasterPageContent(key),
     fetchMedia(),
     listAreasWithCounts(),
     listPublishedDevelopments(),
+    // Only the home page offers a listings picker; skip the query elsewhere.
+    key === "home" ? listPropertyOptions() : Promise.resolve([]),
   ]);
 
   // What a seedable list can be filled from. `current` mirrors what the live
@@ -68,6 +72,12 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
     name: d.name,
     href: `/developments/${d.slug}`,
     slug: d.slug,
+  }));
+
+  const propertySeed = properties.map((p) => ({
+    name: p.areaName ? `${p.title} · ${p.areaName}` : p.title,
+    href: "#",
+    slug: p.reference,
   }));
 
   const seeds: Seeds = {
@@ -89,6 +99,12 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
         0,
         key === "off-plan" ? OFFPLAN_LAUNCH_COUNT : HOME_OFFPLAN_CARD_COUNT,
       ),
+    },
+    properties: {
+      // Newest published first, which is the order the picker lists them in.
+      options: propertySeed,
+      // The home carousel shows 6.
+      current: propertySeed.slice(0, HOME_FEATURED_LISTING_COUNT),
     },
   };
 
