@@ -64,6 +64,55 @@ describe("enquiryReceivedTemplate", () => {
 });
 
 describe("staffReplyTemplate", () => {
+  it("takes the subject the advisor typed", async () => {
+    const { staffReplyTemplate } = await importModule();
+    const { subject } = staffReplyTemplate({
+      name: "Lead",
+      body: "Reply body",
+      staffDisplayName: null,
+      propertyReference: "BAZ-AD-04891",
+      subject: "Viewing on Saturday?",
+    });
+    expect(subject).toBe("Viewing on Saturday?");
+  });
+
+  it("derives the subject when none is supplied", async () => {
+    const { staffReplyTemplate } = await importModule();
+    const { subject } = staffReplyTemplate({
+      name: "Lead",
+      body: "Reply body",
+      staffDisplayName: null,
+      propertyReference: "BAZ-AD-04891",
+    });
+    expect(subject).toBe("Re: BAZ-AD-04891");
+  });
+
+  it("never sends a blank subject line", async () => {
+    const { staffReplyTemplate } = await importModule();
+    for (const blank of ["", "   ", null]) {
+      const { subject } = staffReplyTemplate({
+        name: "Lead",
+        body: "Reply body",
+        staffDisplayName: null,
+        propertyReference: null,
+        subject: blank,
+      });
+      expect(subject).toBe("From your Bazar advisor");
+    }
+  });
+
+  it("trims a padded subject", async () => {
+    const { staffReplyTemplate } = await importModule();
+    const { subject } = staffReplyTemplate({
+      name: "Lead",
+      body: "Reply body",
+      staffDisplayName: null,
+      propertyReference: null,
+      subject: "  Padded  ",
+    });
+    expect(subject).toBe("Padded");
+  });
+
   it("uses the staff name in the signature when available", async () => {
     const { staffReplyTemplate } = await importModule();
     const { text } = staffReplyTemplate({

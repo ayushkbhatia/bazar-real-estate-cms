@@ -19,11 +19,14 @@ import { PresencePile } from "@/lib/realtime/presence-pile";
 import { EscalationBanner } from "./_escalation-banner";
 import { cn } from "@/lib/utils";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
-import { markConversationRead } from "../_actions";
+import { markConversationRead, sendEnquiryTouch } from "../_actions";
 import { StatusPipeline, TemperatureToggle } from "./_pipeline";
 import { AssignToMeButton } from "./_assign-button";
 import { NotesEditor } from "./_notes";
-import { ReplyComposer } from "./_reply";
+import { EnquiryComposer, type ComposerAsset } from "./_composer";
+import { listPublishedAssets } from "@/lib/queries/content-assets";
+import { SEED_AGENTS } from "@/lib/seeds/agents";
+import type { TokenContext } from "@/lib/content-assets/tokens";
 import { ScheduleViewingButton } from "./_schedule";
 import { CreateDealButton } from "./_create-deal";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -46,6 +49,22 @@ function formatDateTime(iso: string): string {
 // the React Compiler doesn't flag it as impure.
 function serverNow(): number {
   return Date.now();
+}
+
+/**
+ * How the touch actually went out. Until now every staff reply was logged
+ * 'web' even when it was emailed, so the timeline described the wrong channel.
+ * Unknown values fall through to the raw enum rather than being hidden.
+ */
+function channelLabel(channel: string): string {
+  const labels: Record<string, string> = {
+    web: "web",
+    email: "email",
+    whatsapp: "WhatsApp",
+    sms: "SMS",
+    call: "call",
+  };
+  return labels[channel] ?? channel;
 }
 
 export default async function EnquiryDetailPage({ params }: PageProps) {
@@ -93,6 +112,46 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
   // For presence — null when the viewer isn't staff (auth middleware
   // already gated the route, but the row may briefly be missing).
   const me = await currentStaffRow();
+
+  // Outreach library for the composer. An empty list is fine — the advisor
+  // writes from scratch.
+  const [emailAssets, whatsappAssets] = await Promise.all([
+    listPublishedAssets("email"),
+    listPublishedAssets("whatsapp"),
+  ]);
+  const assetName = new Map(
+    [...emailAssets, ...whatsappAssets].map((a) => [a.id, a.name]),
+  );
+  const toComposerAsset = (a: (typeof emailAssets)[number]): ComposerAsset => ({
+    id: a.id,
+    name: a.name,
+    subject: a.subject,
+    body: a.body,
+    notes: a.notes,
+    followUpAfterDays: a.follow_up_after_days,
+    nextName: a.next_asset_id ? (assetName.get(a.next_asset_id) ?? null) : null,
+  });
+
+  // `staff` carries no phone number, so the advisor's direct line still comes
+  // from the seeded profile, matched on slug — same join the public advisor
+  // cards use.
+  // Only the assigned advisor resolves to a slug — `currentStaffRow` doesn't
+  // select one — so an unassigned lead falls back to the token's generic
+  // wording rather than quoting the viewer's number.
+  const advisor = enquiry.staff ?? me;
+  const advisorPhone = enquiry.staff?.slug
+    ? (SEED_AGENTS.find((a) => a.slug === enquiry.staff!.slug)?.phone ?? null)
+    : null;
+
+  const tokenContext: TokenContext = {
+    lead_first_name: enquiry.name.split(" ")[0] ?? null,
+    lead_name: enquiry.name,
+    property_reference: enquiry.properties?.reference ?? null,
+    property_title: enquiry.properties?.title ?? null,
+    advisor_name: advisor?.display_name ?? null,
+    advisor_phone: advisorPhone,
+    site_url: "bazar.ae",
+  };
 
   return (
     <CmsShell
@@ -225,14 +284,25 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                           : "text-bz-muted",
                       )}
                     >
-                      {m.author_kind} · {m.channel} ·{" "}
+                      {m.author_kind} · {channelLabel(m.channel)} ·{" "}
                       {formatDateTime(m.sent_at)}
                     </div>
                   </div>
                 </li>
               ))}
             </ul>
-            <ReplyComposer enquiryId={enquiry.id} />
+            <EnquiryComposer
+              enquiryId={enquiry.id}
+              tokenContext={tokenContext}
+              hasEmail={Boolean(enquiry.email)}
+              hasPhone={Boolean(enquiry.phone)}
+              assets={{
+                email: emailAssets.map(toComposerAsset),
+                whatsapp: whatsappAssets.map(toComposerAsset),
+              }}
+              // By reference — an arrow wrapper here can't cross the boundary.
+              send={sendEnquiryTouch}
+            />
           </div>
         </div>
 

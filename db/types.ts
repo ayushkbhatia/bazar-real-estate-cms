@@ -3312,7 +3312,7 @@ export type Database = {
       megamenu_tile_variant: "dark" | "light" | "image"
       megamenu_zone: "left" | "right"
       message_author_kind: "lead" | "staff" | "system" | "ai"
-      message_channel: "web" | "email" | "whatsapp" | "sms"
+      message_channel: "web" | "email" | "whatsapp" | "sms" | "call"
       message_direction: "inbound" | "outbound"
       mortgage_buyer_status: "uae_resident" | "non_resident" | "gcc_national"
       mortgage_inquiry_status:
@@ -3675,7 +3675,7 @@ export const Constants = {
       megamenu_tile_variant: ["dark", "light", "image"],
       megamenu_zone: ["left", "right"],
       message_author_kind: ["lead", "staff", "system", "ai"],
-      message_channel: ["web", "email", "whatsapp", "sms"],
+      message_channel: ["web", "email", "whatsapp", "sms", "call"],
       message_direction: ["inbound", "outbound"],
       mortgage_buyer_status: ["uae_resident", "non_resident", "gcc_national"],
       mortgage_inquiry_status: [
