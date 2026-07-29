@@ -317,3 +317,11 @@ shows the trail.)
   They render in stored order and can be added/removed, but reordering means
   deleting and re-adding. The dnd-kit pattern from the section list would drop
   straight in.
+
+- [schemas] `z.string().uuid()` rejects the catalogue's seeded ids.
+  Seeded rows use readable ids like `33333333-0000-0000-0000-000000000008`,
+  whose version nibble is `0`; zod validates the RFC version and refuses them.
+  Property, development, area and development-content schemas use a
+  shape-matching regex instead. `site-settings.ts` (agent_id) and
+  `megamenu.ts` still use `.uuid()` — they happen to carry generated ids today,
+  but the same trap is one seed away.
