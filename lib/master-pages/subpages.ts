@@ -14,7 +14,7 @@ import type { MasterPageDef, SectionDef } from "./types";
 
 export const SUBPAGE_SLUG_PREFIX = "subpage/";
 
-export type SubPageKind = "development";
+export type SubPageKind = "development" | "area";
 
 /**
  * Sub-page kinds, rendered as blocks on the Pages index the same way master
@@ -34,6 +34,14 @@ export type SubPageKindDef = {
 };
 
 export const SUBPAGE_KINDS: SubPageKindDef[] = [
+  {
+    kind: "area",
+    label: "Areas",
+    publicPath: "/areas",
+    adminPath: "/admin/pages/sub/area",
+    description: "One community guide per area, built from a shared template.",
+    itemLabel: "area page",
+  },
   {
     kind: "development",
     label: "Developments",
@@ -183,5 +191,61 @@ export function developmentPageDef(record: {
     path: `/developments/${record.slug}`,
     description: `Project page for ${record.name}.`,
     sections: DEVELOPMENT_SECTIONS,
+  };
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// Areas — community guide pages under /areas/<slug>
+// ────────────────────────────────────────────────────────────────────────
+export const AREA_SECTIONS: SectionDef[] = [
+  {
+    key: "hero",
+    label: "Hero",
+    description: "Eyebrow, area name and the opening paragraph.",
+    locked: true,
+    dataNote:
+      "Blank fields use the guide copy that ships with the area. The cover image is set in Page images below.",
+    fields: [
+      optionalText("eyebrow", "Eyebrow", "Blank keeps “Community guide · …”."),
+      optionalText("heading", "Heading", "Blank uses the area name."),
+      optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
+      optionalText("position", "Position line", "The small mono line below."),
+    ],
+    defaults: { eyebrow: null, heading: null, intro: null, position: null },
+  },
+  section("hero-image", "Cover image", "Wide image under the intro.", {
+    dataNote: "Set the image in Page images below.",
+    fields: [],
+    defaults: {},
+  }),
+  section("map", "Map", "Interactive map focused on this area.", {
+    dataNote: "Pins come from the area's coordinates and live listings.",
+  }),
+  section("stats", "Stats", "Median prices, yield and days on market."),
+  section("schools", "Schools & amenities", "Nearby schools and facilities."),
+  section("reports", "Market reports", "Rail linking to the area's reports.", {
+    dataNote: "Reports come from the market-report records.",
+  }),
+  section("valuation", "Valuation prompt", "Lead capture for owners."),
+  section("lifestyle", "Lifestyle dossier", "Commute chips, prose, dining."),
+  section("listings", "Listings", "Properties for sale in this area.", {
+    dataNote: "Cards come from published listings.",
+  }),
+  section("advisors", "Advisors", "Advisors who cover this area.", {
+    dataNote: "Advisors come from the team records.",
+  }),
+  section("similar", "Similar areas", "Links to comparable communities."),
+];
+
+export function areaPageDef(record: {
+  name: string;
+  slug: string;
+}): MasterPageDef {
+  return {
+    key: "area" as unknown as MasterPageDef["key"],
+    label: record.name,
+    path: `/areas/${record.slug}`,
+    description: `Community guide for ${record.name}.`,
+    sections: AREA_SECTIONS,
   };
 }
