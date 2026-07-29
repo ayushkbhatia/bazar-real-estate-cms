@@ -356,3 +356,18 @@ shows the trail.)
   valuation nurture can adopt the library, but none of them do yet — they
   still use the hardcoded templates in `lib/email-templates.ts`. Migrating
   each is a per-surface decision about what should stay code-driven.
+
+- [enquiries] WhatsApp is still a deep link, not an API send.
+  The composer opens wa.me with the message prefilled and logs the handoff on
+  the timeline, but it cannot confirm delivery and inbound WhatsApp replies
+  never reach the conversation. A real WhatsApp Business Cloud integration
+  needs a Meta app, a verified number and template approval — note that
+  CLAUDE.md currently lists the Cloud API in the stack table, which overstates
+  what is wired.
+
+- [enquiries] The lead's web inbox no longer receives staff replies.
+  Replies used to insert a message with channel 'web' — which the lead could
+  read at /account/enquiries/[id] — and separately forward by email. They are
+  now logged on the channel they actually went out on. The account inbox still
+  renders the thread, so nothing broke, but "reply in the lead's web inbox" is
+  no longer a distinct channel an advisor can choose.

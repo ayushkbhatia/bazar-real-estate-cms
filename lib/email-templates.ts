@@ -72,10 +72,18 @@ export function staffReplyTemplate(opts: {
   body: string;
   staffDisplayName: string | null;
   propertyReference: string | null;
+  /**
+   * Overrides the derived subject. Set when the advisor edited the subject in
+   * the composer, or when it came from a content asset — a blank string falls
+   * back to the derived one rather than sending an empty subject line.
+   */
+  subject?: string | null;
 }): { subject: string; text: string; html: string } {
-  const subject = opts.propertyReference
+  const derived = opts.propertyReference
     ? `Re: ${opts.propertyReference}`
     : "From your Bazar advisor";
+  const subject =
+    opts.subject && opts.subject.trim() !== "" ? opts.subject.trim() : derived;
 
   const sig = opts.staffDisplayName
     ? `— ${opts.staffDisplayName}, Bazar Real Estate`
