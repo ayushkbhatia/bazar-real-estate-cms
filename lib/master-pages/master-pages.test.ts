@@ -451,3 +451,59 @@ describe("New Projects master page", () => {
     expect(picks.map((p) => p.enabled)).toEqual([true, false]);
   });
 });
+
+describe("featured listings on the home page", () => {
+  const home = getMasterPage("home") as MasterPageDef;
+  const section = home.sections.find((s) => s.key === "featured_properties")!;
+
+  it("ships empty, so the row keeps showing the latest listings", () => {
+    expect(section.defaults.listings).toEqual([]);
+  });
+
+  it("offers a picker fed from published listings", () => {
+    const list = section.fields.find((f) => f.key === "listings");
+    expect(list?.kind).toBe("list");
+    if (list?.kind !== "list") return;
+    expect(list.seedKey).toBe("properties");
+    const picker = list.fields.find((f) => f.key === "slug");
+    expect(picker?.kind).toBe("select");
+    if (picker?.kind !== "select") return;
+    expect(picker.optionsKey).toBe("properties");
+  });
+
+  it("stores references in the chosen order, switches intact", () => {
+    const result = validateSections(home, [
+      {
+        key: "featured_properties",
+        enabled: true,
+        values: {
+          listings: [
+            { enabled: true, slug: "BAZ-AD-04891" },
+            { enabled: false, slug: "BAZ-AD-05060" },
+            { enabled: true, slug: "  BAZ-AD-02326  " },
+          ],
+        },
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const picks = result.sections.find((s) => s.key === "featured_properties")!
+      .values.listings as Record<string, unknown>[];
+    // References, not ids or slugs — stable across renames and legible in the
+    // stored document.
+    expect(picks.map((p) => p.slug)).toEqual([
+      "BAZ-AD-04891",
+      "BAZ-AD-05060",
+      "BAZ-AD-02326",
+    ]);
+    expect(picks.map((p) => p.enabled)).toEqual([true, false, true]);
+  });
+
+  it("keeps the developments and listings pickers separate", () => {
+    const offPlan = home.sections.find((s) => s.key === "off_plan_projects")!;
+    const devList = offPlan.fields.find((f) => f.key === "projects");
+    const propList = section.fields.find((f) => f.key === "listings");
+    expect(devList?.kind === "list" && devList.seedKey).toBe("developments");
+    expect(propList?.kind === "list" && propList.seedKey).toBe("properties");
+  });
+});

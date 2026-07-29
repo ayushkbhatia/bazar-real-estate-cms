@@ -17,3 +17,4 @@ export type SectionCopy = {
  */
 export const HOME_OFFPLAN_CARD_COUNT = 3;
 export const HOME_AREA_TILE_COUNT = 8;
+export const HOME_FEATURED_LISTING_COUNT = 6;

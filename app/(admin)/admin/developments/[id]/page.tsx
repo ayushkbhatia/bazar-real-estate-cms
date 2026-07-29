@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight, ExternalLink } from "lucide-react";
+import { ChevronRight, ExternalLink, LayoutList } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -83,17 +83,28 @@ export default async function AdminDevelopmentEditPage({ params }: PageProps) {
         </span>
       }
       secondary={
-        isPublished ? (
+        <span className="inline-flex items-center gap-4">
+          {/* This page edits the project's facts. How its public page reads —
+              section order, copy, imagery — is the page editor. */}
           <Link
-            href={developmentUrl(development)}
-            target="_blank"
-            rel="noreferrer"
+            href={`/admin/pages/sub/development/${development.slug}`}
             className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
           >
-            View on site
-            <ExternalLink size={12} />
+            <LayoutList size={12} />
+            Edit page layout
           </Link>
-        ) : null
+          {isPublished ? (
+            <Link
+              href={developmentUrl(development)}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
+            >
+              View on site
+              <ExternalLink size={12} />
+            </Link>
+          ) : null}
+        </span>
       }
     >
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">

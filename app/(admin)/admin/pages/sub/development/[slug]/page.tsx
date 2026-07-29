@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronRight, ExternalLink } from "lucide-react";
+import { ChevronRight, Database, ExternalLink } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -88,17 +88,28 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
         </span>
       }
       secondary={
-        development.published_at ? (
+        <span className="inline-flex items-center gap-4">
+          {/* This page edits how the project reads; its facts — units, prices,
+              payment plan — live on the record. */}
           <Link
-            href={`/developments/${development.slug}`}
-            target="_blank"
-            rel="noreferrer"
+            href={`/admin/developments/${development.id}`}
             className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
           >
-            View page
-            <ExternalLink size={12} />
+            <Database size={12} />
+            Edit project record
           </Link>
-        ) : null
+          {development.published_at ? (
+            <Link
+              href={`/developments/${development.slug}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
+            >
+              View page
+              <ExternalLink size={12} />
+            </Link>
+          ) : null}
+        </span>
       }
     >
       <div className="flex flex-col gap-5 max-w-[860px]">
