@@ -1,11 +1,13 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { mediaPublicUrl } from "@/lib/media";
 import {
   parseStoredSections,
   resolveSections,
   type ResolvedSection,
 } from "@/lib/master-pages";
 import {
+  areaPageDef,
   developmentPageDef,
   subPageSlug,
   type SubPageKind,
@@ -66,6 +68,73 @@ export async function getDevelopmentPageContent(record: {
     console.error(`[subpages] failed to load "${record.slug}"`, error);
     return build(resolveSections(def, null), true);
   }
+}
+
+/**
+ * Section document for one area guide. Same contract as the development
+ * variant — cookie-free read, defaults when there's nothing stored.
+ */
+export async function getAreaPageContent(record: {
+  name: string;
+  slug: string;
+}): Promise<SubPageContent> {
+  const def = areaPageDef(record);
+  if (!isSupabaseConfigured) return build(resolveSections(def, null), true);
+
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data, error } = await supabase
+      .from("pages")
+      .select("blocks")
+      .eq("slug", subPageSlug("area", record.slug))
+      .maybeSingle();
+    if (error || !data) return build(resolveSections(def, null), true);
+
+    const stored = parseStoredSections(data.blocks);
+    return build(resolveSections(def, stored), stored === null);
+  } catch (error) {
+    console.error(`[subpages] failed to load area "${record.slug}"`, error);
+    return build(resolveSections(def, null), true);
+  }
+}
+
+export type AreaSubPageRow = {
+  id: string;
+  name: string;
+  slug: string;
+  kind: string;
+  hero_image_id: string | null;
+  edited: boolean;
+};
+
+/** Admin: every area that has (or could have) a guide page. */
+export async function listAreaSubPages(): Promise<AreaSubPageRow[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = createSupabasePublicClient();
+
+  const [{ data: rows }, { data: pages }] = await Promise.all([
+    supabase
+      .from("areas")
+      .select("id, name, slug, kind, hero_image_id")
+      .order("name", { ascending: true }),
+    supabase
+      .from("pages")
+      .select("slug")
+      .like("slug", `${subPageSlug("area", "")}%`),
+  ]);
+
+  const editedSlugs = new Set(
+    (pages ?? []).map((p) => p.slug.split("/").slice(2).join("/")),
+  );
+
+  return (rows ?? []).map((r) => ({
+    id: r.id,
+    name: r.name,
+    slug: r.slug,
+    kind: r.kind,
+    hero_image_id: r.hero_image_id,
+    edited: editedSlugs.has(r.slug),
+  }));
 }
 
 /** Admin: every development that has (or could have) a sub-page. */
@@ -135,8 +204,46 @@ export async function countSubPagesByKind(): Promise<
 > {
   if (!isSupabaseConfigured) return {};
   const supabase = createSupabasePublicClient();
-  const { count } = await supabase
-    .from("developments")
-    .select("id", { count: "exact", head: true });
-  return { development: count ?? 0 };
+  const [developments, areas] = await Promise.all([
+    supabase.from("developments").select("id", { count: "exact", head: true }),
+    supabase.from("areas").select("id", { count: "exact", head: true }),
+  ]);
+  return {
+    development: developments.count ?? 0,
+    area: areas.count ?? 0,
+  };
+}
+
+/**
+ * Cover image for an area guide. Stored as `areas.hero_image_id` and resolved
+ * to a public URL here, so the page doesn't have to know about storage keys.
+ * Returns null when nothing is set — the page then draws its placeholder.
+ */
+export async function getAreaHeroImage(
+  slug: string,
+): Promise<{ url: string; alt: string | null } | null> {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("areas")
+      .select("hero:hero_image_id(storage_key, alt_text, deleted_at)")
+      .eq("slug", slug)
+      .maybeSingle();
+    const hero = (
+      data as {
+        hero: {
+          storage_key: string;
+          alt_text: string | null;
+          deleted_at: string | null;
+        } | null;
+      } | null
+    )?.hero;
+    // A trashed asset falls back to the placeholder rather than 404-ing.
+    if (!hero || hero.deleted_at) return null;
+    return { url: mediaPublicUrl(hero.storage_key), alt: hero.alt_text };
+  } catch (error) {
+    console.error(`[subpages] area hero lookup failed for "${slug}"`, error);
+    return null;
+  }
 }

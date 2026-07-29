@@ -1,3 +1,5 @@
+import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -19,6 +21,8 @@ import {
   type ListingRow,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
+import { getAreaHeroImage, getAreaPageContent } from "@/lib/queries/subpages";
+import { str } from "@/lib/master-pages";
 import { parseFilters } from "@/lib/filters/property";
 import { placeJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
@@ -81,7 +85,9 @@ export default async function CommunityProfilePage({
   // Interactive map band + real listings for this area. `focusPin` is null
   // for areas without a seeded centroid (e.g. sub-communities) — the map
   // band then quietly self-hides.
-  const [pins, dots, listings] = await Promise.all([
+  const [content, heroImage, pins, dots, listings] = await Promise.all([
+    getAreaPageContent({ name: area.name, slug: area.slug }),
+    getAreaHeroImage(area.slug),
     listAreaPins(),
     listAreaListingDots({ areaSlug: slug }),
     listPublishedProperties({ filters: parseFilters({ area: slug }), limit: 6 }),
@@ -103,52 +109,60 @@ export default async function CommunityProfilePage({
     { name: area.name, url: `${siteBase}/areas/${area.slug}` },
   ]);
 
-  return (
-    <div className="bg-bz-bg">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(placeLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsLd) }}
-      />
-      {/* Crumb */}
-      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
-        <Link
-          href="/areas"
-          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
-        >
-          <ArrowLeft size={13} strokeWidth={1.8} />
-          All areas
-        </Link>
-      </div>
+  // Copy overrides from /admin/pages/sub/area/<slug>. Blank fields fall
+  // through to the guide copy that ships with the area.
+  const sv = (key: string, field: string) =>
+    str(content.section(key)?.values ?? {}, field);
 
+  const nodes: Record<string, React.ReactNode> = {
+    "hero": (
+      <>
       {/* Hero */}
       <section className="px-4 md:px-12 pt-8 pb-12 max-w-[1280px]">
-        <Eyebrow>Community guide · {area.vibe}</Eyebrow>
+        <Eyebrow>
+          {sv("hero", "eyebrow") ?? `Community guide · ${area.vibe}`}
+        </Eyebrow>
         <h1
           className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98] max-w-[14ch]"
           style={{ letterSpacing: "-0.03em" }}
         >
-          {area.name}
+          {sv("hero", "heading") ?? area.name}
         </h1>
         <p className="mt-6 text-[17px] text-bz-ink-2 leading-relaxed max-w-[64ch]">
-          {area.intro}
+          {sv("hero", "intro") ?? area.intro}
         </p>
         <p className="mt-4 mono text-[12.5px] text-bz-muted">
-          {area.position}
+          {sv("hero", "position") ?? area.position}
         </p>
       </section>
-
+      </>
+    ),
+    "hero-image": (
+      <>
       {/* Hero image */}
       <section className="px-4 md:px-12 pb-14 max-w-[1280px]">
-        <PlaceholderImage
-          label={area.hero_label}
-          className="w-full aspect-[21/9] rounded-md"
-        />
+        {heroImage ? (
+          <div className="relative w-full aspect-[21/9] overflow-hidden rounded-md">
+            <Image
+              src={heroImage.url}
+              alt={heroImage.alt ?? area.name}
+              fill
+              priority
+              sizes="(max-width: 1280px) 100vw, 1280px"
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <PlaceholderImage
+            label={area.hero_label}
+            className="w-full aspect-[21/9] rounded-md"
+          />
+        )}
       </section>
-
+      </>
+    ),
+    "map": (
+      <>
       {/* Interactive map band — deep-linked to this area with its listing
           dots. Self-hides for areas without a seeded centroid. */}
       {focusPin ? (
@@ -158,7 +172,10 @@ export default async function CommunityProfilePage({
           </div>
         </section>
       ) : null}
-
+      </>
+    ),
+    "stats": (
+      <>
       {/* Stats */}
       <section className="border-y border-bz-border bg-bz-surface">
         <div className="px-4 md:px-12 py-10 max-w-[1280px]">
@@ -227,7 +244,10 @@ export default async function CommunityProfilePage({
           </div>
         </div>
       </section>
-
+      </>
+    ),
+    "schools": (
+      <>
       {/* Schools + amenities */}
       <section className="px-4 md:px-12 py-16 max-w-[1280px]">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
@@ -278,12 +298,18 @@ export default async function CommunityProfilePage({
           </div>
         </div>
       </section>
-
+      </>
+    ),
+    "reports": (
+      <>
       {/* T1-A cleanup: cross-link rail into the area's quarterly market
           reports.  Closes the moat-orphan gap — visitors browsing the
           area can pivot directly into the data. */}
       <AreaReportsRail area_slug={area.slug} area_name={area.name} />
-
+      </>
+    ),
+    "valuation": (
+      <>
       {/* T1-E cleanup: lead-gate surfaced on the area page — owners of
           property in this community are the highest-intent valuation
           lead source. */}
@@ -306,12 +332,18 @@ export default async function CommunityProfilePage({
           <ValuationLeadGate triggerLabel={`Value my ${area.name} property`} />
         </div>
       </section>
-
+      </>
+    ),
+    "lifestyle": (
+      <>
       {/* T3-E: lifestyle dossier — commute chips, prose, dining picks.
           Self-hides if the seed for this area hasn't been editorially
           enriched yet. */}
       <LifestyleDossier area={area} />
-
+      </>
+    ),
+    "listings": (
+      <>
       {/* Listings teaser */}
       <section className="border-t border-bz-border bg-bz-surface">
         <div className="px-4 md:px-12 py-16 max-w-[1280px]">
@@ -378,7 +410,10 @@ export default async function CommunityProfilePage({
           )}
         </div>
       </section>
-
+      </>
+    ),
+    "advisors": (
+      <>
       {/* Advisors who cover this area */}
       <section className="px-4 md:px-12 py-16 max-w-[1280px]">
         <Eyebrow>Advisors who cover this area</Eyebrow>
@@ -411,7 +446,10 @@ export default async function CommunityProfilePage({
           ))}
         </div>
       </section>
-
+      </>
+    ),
+    "similar": (
+      <>
       {/* Similar areas */}
       {similar.length > 0 ? (
         <section className="border-t border-bz-border bg-bz-surface">
@@ -433,6 +471,36 @@ export default async function CommunityProfilePage({
           </div>
         </section>
       ) : null}
+      </>
+    ),
+  };
+
+  return (
+    <div className="bg-bz-bg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(placeLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsLd) }}
+      />
+      {/* Crumb */}
+      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
+        <Link
+          href="/areas"
+          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
+        >
+          <ArrowLeft size={13} strokeWidth={1.8} />
+          All areas
+        </Link>
+      </div>
+
+      {content.order
+        .filter((key) => key in nodes)
+        .map((key) => (
+          <React.Fragment key={key}>{nodes[key]}</React.Fragment>
+        ))}
     </div>
   );
 }

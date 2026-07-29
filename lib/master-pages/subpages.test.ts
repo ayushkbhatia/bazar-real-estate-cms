@@ -6,8 +6,10 @@ import {
   validateSections,
 } from "./index";
 import {
+  AREA_SECTIONS,
   DEVELOPMENT_SECTIONS,
   SUBPAGE_KINDS,
+  areaPageDef,
   developmentPageDef,
   getSubPageKind,
   isSubPageSlug,
@@ -192,5 +194,88 @@ describe("reordering and gallery", () => {
     // It renders on the page, so it has to be switchable and orderable like
     // everything else — it was invisible to the editor before.
     expect(DEVELOPMENT_SECTIONS.map((s) => s.key)).toContain("nearby");
+  });
+});
+
+describe("area sub-pages", () => {
+  const areaRecord = { name: "Saadiyat Island", slug: "saadiyat-island" };
+  const areaDef = areaPageDef(areaRecord);
+
+  it("is registered as its own kind, with its own admin route", () => {
+    const kind = getSubPageKind("area");
+    expect(kind?.label).toBe("Areas");
+    expect(kind?.adminPath).toBe("/admin/pages/sub/area");
+    expect(kind?.publicPath).toBe("/areas");
+  });
+
+  it("namespaces storage away from developments", () => {
+    expect(subPageSlug("area", "saadiyat-island")).toBe(
+      "subpage/area/saadiyat-island",
+    );
+    // Two records with the same slug in different kinds must not collide.
+    expect(subPageSlug("area", "saadiyat-lagoons")).not.toBe(
+      subPageSlug("development", "saadiyat-lagoons"),
+    );
+  });
+
+  it("mirrors the guide template", () => {
+    const keys = AREA_SECTIONS.map((s) => s.key);
+    expect(new Set(keys).size).toBe(keys.length);
+    for (const expected of [
+      "hero",
+      "hero-image",
+      "map",
+      "stats",
+      "schools",
+      "lifestyle",
+      "listings",
+      "advisors",
+      "similar",
+    ]) {
+      expect(keys).toContain(expected);
+    }
+  });
+
+  it("starts blank, so the shipped guide copy is used", () => {
+    const resolved = resolveSections(areaDef, null);
+    for (const section of resolved) {
+      for (const field of section.def.fields) {
+        expect(str(section.values, field.key)).toBeNull();
+      }
+    }
+    expect(resolved.every((s) => s.enabled)).toBe(true);
+  });
+
+  it("reorders and hides sections, but keeps the hero", () => {
+    const resolved = resolveSections(areaDef, [
+      { key: "listings", enabled: true, values: {} },
+      { key: "stats", enabled: false, values: {} },
+      { key: "hero", enabled: false, values: {} },
+    ]);
+    expect(resolved.slice(0, 2).map((s) => s.key)).toEqual([
+      "listings",
+      "stats",
+    ]);
+    expect(resolved.find((s) => s.key === "stats")!.enabled).toBe(false);
+    expect(resolved.find((s) => s.key === "hero")!.enabled).toBe(true);
+  });
+
+  it("accepts hero copy overrides", () => {
+    const result = validateSections(areaDef, [
+      {
+        key: "hero",
+        enabled: true,
+        values: {
+          heading: "  Saadiyat  ",
+          intro: "Culture, beaches and the museums.",
+          position: null,
+        },
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const hero = result.sections.find((s) => s.key === "hero")!;
+    expect(hero.values.heading).toBe("Saadiyat");
+    expect(hero.values.position).toBeNull();
   });
 });

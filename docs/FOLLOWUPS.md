@@ -251,3 +251,15 @@ shows the trail.)
   available", but nothing warns the editor when a project they featured is
   later unpublished. A cron or a check on the developments publish action could
   surface "this project is featured on the home page" before it goes dark.
+
+- [sub-pages] Area guides have no "add area page" wizard.
+  Development pages have one; areas are edited only for records that already
+  exist in the catalogue. Adding one means the same form against `areas`
+  (name, slug, kind, parent, cover image) — worth it once someone needs to add
+  a community without going through the catalogue.
+
+- [sub-pages] Area guide body copy still lives in `lib/seeds/areas`.
+  The editor overrides the hero (eyebrow, heading, intro, position) and can
+  reorder or hide any section, but stats, schools, amenities and the lifestyle
+  dossier still read from the seed module and `area_guides`. Exposing those
+  means list fields writing to `area_guides`, not to the section document.
