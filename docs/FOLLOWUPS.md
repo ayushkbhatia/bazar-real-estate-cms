@@ -280,3 +280,24 @@ shows the trail.)
   properties, developments, area_guides and the megamenu, so a delete needs to
   decide between blocking on references and reparenting them — worth designing
   before adding the button.
+
+- [amenities] Storage is labels, not codes — the handoff asks for codes.
+  `properties.amenities` holds labels ("Beach access"), which is what the
+  search facet matches via `contains` and what the public page prints. The
+  design handoff wants stable ids so labels can be translated for the Arabic
+  site. Switching means: apply 0059 (and decide the ~14 ambiguous values it
+  lists), backfill every listing's array label→code, flip `valueOf()` in
+  `lib/amenities.ts` to return `entry.code`, and re-point the facet. The UI
+  needs no changes — that's why the indirection exists.
+
+- [amenities] The search facet is a static snapshot of the taxonomy.
+  `MoreFiltersDrawer` is a client component, so it reads `DEFAULT_AMENITIES`
+  rather than the table. Entries an admin adds under Settings → Fields appear
+  in the property editor and on property pages immediately, but in the facet
+  only on the next deploy. Fix by passing the taxonomy down from the search
+  page's server component.
+
+- [amenities] Migration 0059 is written but unapplied.
+  It adds the 15 amenities already in use that have no taxonomy entry. DDL/data
+  apply is blocked on the stale PAT, so until it runs those listings keep
+  showing their values under "not in the amenity list" in the editor.

@@ -7,6 +7,8 @@ import { isSupabaseConfigured, isMapboxConfigured } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/properties";
 import { currentStaffRow } from "@/lib/queries/staff";
 import { listActiveAgents, type ActiveAgent } from "@/lib/queries/staff-agents";
+import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
+import { toOptions } from "@/lib/amenities";
 import { PresenceBanner } from "@/lib/realtime/presence-banner";
 import { PresencePile } from "@/lib/realtime/presence-pile";
 import { type PropertyEditInput } from "@/lib/schemas/property";
@@ -130,13 +132,15 @@ async function withCurrentAgent(
 
 export default async function PropertyEditPage({ params }: PageProps) {
   const { id } = await params;
-  const [property, areas, developers, media, activeAgents] = await Promise.all([
-    fetchPropertyForEdit(id),
-    fetchAreas(),
-    fetchDevelopers(),
-    fetchPropertyMedia(id),
-    listActiveAgents(),
-  ]);
+  const [property, areas, developers, media, activeAgents, taxonomy] =
+    await Promise.all([
+      fetchPropertyForEdit(id),
+      fetchAreas(),
+      fetchDevelopers(),
+      fetchPropertyMedia(id),
+      listActiveAgents(),
+      listAmenitiesTaxonomy(),
+    ]);
   if (!property) notFound();
 
   // Keep the currently-assigned agent selectable even if they've since gone
@@ -267,6 +271,7 @@ export default async function PropertyEditPage({ params }: PageProps) {
             developers={developers}
             geo={geo}
             mapboxAvailable={isMapboxConfigured}
+            amenityOptions={toOptions(taxonomy)}
           />
         </div>
         <aside className="sticky top-6 flex flex-col gap-6">

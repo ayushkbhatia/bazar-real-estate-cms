@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Save, X } from "lucide-react";
+import { Save } from "lucide-react";
 import { toast } from "sonner";
 import {
   propertyEditSchema,
@@ -29,6 +29,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { setPropertyDeveloper, updateProperty } from "./_actions";
 import { LocationPicker } from "./_components/location-picker";
+import { AmenitiesPicker } from "./_components/amenities-picker";
+import type { AmenityOption } from "@/lib/amenities";
 
 export type AreaOption = { id: string; name: string; kind: string };
 export type DeveloperOption = { id: string; name: string };
@@ -41,6 +43,8 @@ type Props = {
   developers: DeveloperOption[];
   geo: { lat: number; lng: number } | null;
   mapboxAvailable: boolean;
+  /** Amenity taxonomy, resolved server-side. */
+  amenityOptions: AmenityOption[];
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -125,6 +129,7 @@ export function PropertyEditForm({
   developers,
   geo,
   mapboxAvailable,
+  amenityOptions,
 }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -163,27 +168,6 @@ export function PropertyEditForm({
       setValue("slug", slugify(title), { shouldDirty: true });
     }
   }, [title, slug, setValue]);
-
-  const [amenityDraft, setAmenityDraft] = useState("");
-
-  const addAmenity = () => {
-    const next = amenityDraft.trim();
-    if (!next) return;
-    if (amenities.includes(next)) {
-      setAmenityDraft("");
-      return;
-    }
-    setValue("amenities", [...amenities, next], { shouldDirty: true });
-    setAmenityDraft("");
-  };
-
-  const removeAmenity = (a: string) => {
-    setValue(
-      "amenities",
-      amenities.filter((x) => x !== a),
-      { shouldDirty: true },
-    );
-  };
 
   const sortedAreas = useMemo(
     () =>
@@ -707,53 +691,13 @@ export function PropertyEditForm({
           value="amenities"
           className="bg-bz-surface border border-bz-border rounded-lg p-6 mt-6 flex flex-col gap-5"
         >
-          <div className="flex gap-2">
-            <Input
-              placeholder="Add an amenity… (press Enter or , to add)"
-              value={amenityDraft}
-              onChange={(e) => setAmenityDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === ",") {
-                  e.preventDefault();
-                  addAmenity();
-                } else if (
-                  e.key === "Backspace" &&
-                  amenityDraft === "" &&
-                  amenities.length > 0
-                ) {
-                  removeAmenity(amenities[amenities.length - 1]);
-                }
-              }}
-            />
-            <Button type="button" variant="outline" onClick={addAmenity}>
-              Add
-            </Button>
-          </div>
-          {amenities.length === 0 ? (
-            <p className="text-[12px] text-bz-muted">
-              No amenities yet — start by adding &ldquo;Pool&rdquo;,
-              &ldquo;Gym&rdquo;, &ldquo;Concierge&rdquo;, etc.
-            </p>
-          ) : (
-            <ul className="flex flex-wrap gap-2">
-              {amenities.map((a) => (
-                <li
-                  key={a}
-                  className="inline-flex items-center gap-1.5 px-2.5 h-[26px] bg-bz-surface-2 border border-bz-border rounded-full text-[12.5px]"
-                >
-                  {a}
-                  <button
-                    type="button"
-                    onClick={() => removeAmenity(a)}
-                    className="text-bz-muted hover:text-bz-ink"
-                    aria-label={`Remove ${a}`}
-                  >
-                    <X size={11} />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <AmenitiesPicker
+            value={amenities}
+            options={amenityOptions}
+            onChange={(next) =>
+              setValue("amenities", next, { shouldDirty: true })
+            }
+          />
           <FieldError
             message={errors.amenities?.message ?? serverFieldErrors.amenities}
           />
