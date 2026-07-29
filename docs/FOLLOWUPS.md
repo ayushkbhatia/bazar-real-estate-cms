@@ -252,12 +252,6 @@ shows the trail.)
   later unpublished. A cron or a check on the developments publish action could
   surface "this project is featured on the home page" before it goes dark.
 
-- [sub-pages] Area guides have no "add area page" wizard.
-  Development pages have one; areas are edited only for records that already
-  exist in the catalogue. Adding one means the same form against `areas`
-  (name, slug, kind, parent, cover image) — worth it once someone needs to add
-  a community without going through the catalogue.
-
 - [sub-pages] Area guide body copy still lives in `lib/seeds/areas`.
   The editor overrides the hero (eyebrow, heading, intro, position) and can
   reorder or hide any section, but stats, schools, amenities and the lifestyle
@@ -280,3 +274,9 @@ shows the trail.)
   Client Components". That shipped in #180 and #186 and broke both sub-page
   editors. TypeScript can't tell the two apart, so if another caller appears,
   consider a Playwright smoke test that loads each editor route.
+
+- [areas] Deleting an area has no admin path.
+  Areas can be created and edited but not removed. `areas.id` is referenced by
+  properties, developments, area_guides and the megamenu, so a delete needs to
+  decide between blocking on references and reparenting them — worth designing
+  before adding the button.
