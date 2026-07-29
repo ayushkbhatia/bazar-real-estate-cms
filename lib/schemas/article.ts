@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UUID_SHAPE_RE } from "@/lib/uuid";
 
 /**
  * Article categories ("blog types") are a runtime-editable taxonomy stored in
@@ -69,8 +70,6 @@ export function formatCategoryLabel(
 /** Stored category slugs allow lowercase letters, numbers, `_` and `-`. */
 const categorySlugRegex = /^[a-z0-9_-]+$/;
 const slugRegex = /^[a-z0-9-]+$/;
-const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const categoryField = z
   .string()
@@ -129,7 +128,7 @@ export const articleEditSchema = z.object({
   body_html: z.string().max(200_000, "Body is too long"),
   hero_image_id: z
     .union([
-      z.string().regex(uuidRegex, "Invalid UUID"),
+      z.string().regex(UUID_SHAPE_RE, "Invalid UUID"),
       z.literal(""),
       z.null(),
     ])

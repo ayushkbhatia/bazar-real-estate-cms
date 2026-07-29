@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { uuidLikeOrEmpty } from "@/lib/uuid";
 
 /**
  * Area records — the catalogue rows behind `/areas/<slug>` guides.
@@ -9,14 +10,8 @@ import { z } from "zod";
  */
 
 const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const uuidOrEmpty = z
-  .union([z.string().regex(uuidRegex, "Invalid UUID"), z.literal(""), z.null()])
-  .transform((v) => (v ? v : null))
-  .nullable()
-  .optional();
+const uuidOrEmpty = uuidLikeOrEmpty();
 
 export const AREA_KINDS = [
   "emirate",

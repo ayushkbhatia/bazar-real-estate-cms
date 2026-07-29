@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PROPERTY_TYPES, FURNISHINGS } from "@/lib/schemas/property";
+import { UUID_SHAPE_RE } from "@/lib/uuid";
 
 export const VALUATION_CONDITIONS = [
   "original",
@@ -35,11 +36,9 @@ export const VIEW_OPTIONS = [
   "Partial sea",
 ] as const;
 
-const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const uuidOrEmpty = z
-  .union([z.string().regex(uuidRegex, "Invalid area"), z.literal("")])
+  .union([z.string().regex(UUID_SHAPE_RE, "Invalid area"), z.literal("")])
   .nullable()
   .optional();
 

@@ -40,12 +40,13 @@ import {
   extractClientIp,
   rateLimitMessage,
 } from "@/lib/rate-limit";
+import { uuidLike } from "@/lib/uuid";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const bodySchema = z.object({
-  sessionId: z.string().uuid().optional(),
+  sessionId: uuidLike().optional(),
   message: z.string().min(1).max(2000),
   briefPatch: conciergeBriefSchema.partial().optional(),
 });

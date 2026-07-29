@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { UUID_SHAPE_RE } from "@/lib/uuid";
 
 export const DEVELOPMENT_STATUSES = [
   "pre_launch",
@@ -15,11 +16,9 @@ export const UNIT_STATUSES = [
 ] as const;
 
 const slugRegex = /^[a-z0-9-]+$/;
-const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const uuidOrEmpty = z
   .union([
-    z.string().regex(uuidRegex, "Invalid UUID"),
+    z.string().regex(UUID_SHAPE_RE, "Invalid UUID"),
     z.literal(""),
     z.null(),
   ])
@@ -94,7 +93,7 @@ export const developmentEditSchema = z.object({
     .regex(slugRegex, "Lowercase letters, numbers, and hyphens only"),
   status: z.enum(DEVELOPMENT_STATUSES),
   // developer_id is NOT NULL on the row, so we require it here too.
-  developer_id: z.string().regex(uuidRegex, "Pick a developer"),
+  developer_id: z.string().regex(UUID_SHAPE_RE, "Pick a developer"),
   area_id: uuidOrEmpty,
   handover_date: isoDateOrEmpty,
   total_units: z.number().int().min(0).max(50_000).nullable().optional(),

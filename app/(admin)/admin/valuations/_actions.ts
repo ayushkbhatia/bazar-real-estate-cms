@@ -8,18 +8,17 @@ import { sendEmail } from "@/lib/email";
 import { valuationReportTemplate } from "@/lib/email-templates";
 import { logAudit } from "@/lib/audit";
 import { requireRole } from "@/lib/auth";
+import { UUID_SHAPE_RE } from "@/lib/uuid";
 
 const VALUATION_ROLES = ["admin", "editor"] as const;
 
-const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const claimSchema = z.object({
-  id: z.string().regex(uuidRegex, "Invalid id"),
+  id: z.string().regex(UUID_SHAPE_RE, "Invalid id"),
 });
 
 const updateSchema = z.object({
-  id: z.string().regex(uuidRegex, "Invalid id"),
+  id: z.string().regex(UUID_SHAPE_RE, "Invalid id"),
   advisor_estimate_aed: z
     .union([z.number().positive("Must be positive"), z.null()])
     .optional(),
@@ -27,7 +26,7 @@ const updateSchema = z.object({
 });
 
 const sendReportSchema = z.object({
-  id: z.string().regex(uuidRegex, "Invalid id"),
+  id: z.string().regex(UUID_SHAPE_RE, "Invalid id"),
   advisor_estimate_aed: z
     .number({ message: "Final number is required" })
     .positive("Must be positive")

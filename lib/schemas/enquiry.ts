@@ -1,7 +1,6 @@
 import { z } from "zod";
+import { UUID_SHAPE_RE } from "@/lib/uuid";
 
-const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export const ENQUIRY_SOURCES = [
   "property_page",
@@ -61,12 +60,12 @@ export const enquirySchema = z
     source: z.enum(ENQUIRY_SOURCES),
     property_id: z
       .string()
-      .regex(uuidRegex, "Invalid UUID")
+      .regex(UUID_SHAPE_RE, "Invalid UUID")
       .nullable()
       .optional(),
     development_id: z
       .string()
-      .regex(uuidRegex, "Invalid UUID")
+      .regex(UUID_SHAPE_RE, "Invalid UUID")
       .nullable()
       .optional(),
     intent: z.enum(ENQUIRY_INTENTS).nullable().optional(),
