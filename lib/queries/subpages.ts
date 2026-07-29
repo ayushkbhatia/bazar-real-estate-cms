@@ -14,8 +14,9 @@ import {
 export type SubPageContent = {
   sections: ResolvedSection[];
   section: (key: string) => ResolvedSection | null;
-  /** Section keys that should render, in template order. */
+  /** Section keys that should render, in the editor's order. */
   enabled: Set<string>;
+  order: string[];
   isOn: (key: string) => boolean;
   usingDefaults: boolean;
 };
@@ -30,6 +31,7 @@ function build(
     sections,
     section: (key) => byKey.get(key) ?? null,
     enabled,
+    order: sections.filter((s) => s.enabled).map((s) => s.key),
     // A section the document has never heard of renders — new template
     // sections shouldn't need a save before they appear.
     isOn: (key) => (byKey.has(key) ? enabled.has(key) : true),
