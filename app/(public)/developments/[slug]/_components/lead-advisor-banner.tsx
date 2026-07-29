@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Phone, MessageCircle } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import Image from "next/image";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import type { SeedAgent } from "@/lib/seeds/agents";
 
@@ -24,11 +25,23 @@ export function LeadAdvisorBanner({
       className="px-4 md:px-12 py-16 scroll-mt-24"
     >
       <div className="rounded-lg overflow-hidden bg-bz-ink text-white grid grid-cols-1 md:grid-cols-[280px_1fr_auto] gap-10 items-center px-6 md:px-10 py-8 md:py-10">
-        <PlaceholderImage
-          label={agent.slug}
-          dark
-          className="w-[200px] h-[240px] rounded-md"
-        />
+        {agent.photo_url ? (
+          <div className="relative w-[200px] h-[240px] overflow-hidden rounded-md">
+            <Image
+              src={agent.photo_url}
+              alt={agent.display_name}
+              fill
+              sizes="200px"
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <PlaceholderImage
+            label={agent.slug}
+            dark
+            className="w-[200px] h-[240px] rounded-md"
+          />
+        )}
         <div>
           <Eyebrow className="text-white/60">Lead advisor</Eyebrow>
           <Link

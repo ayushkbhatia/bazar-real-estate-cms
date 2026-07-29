@@ -318,3 +318,10 @@ shows the trail.)
   deleting and re-adding. The dnd-kit pattern from the section list would drop
   straight in.
 
+
+- [agents] Public advisor cards still render seeded profiles, not staff rows.
+  Portraits now come from `staff.photo_url`, but the name, title, phone,
+  WhatsApp and bio on a development/property/area advisor card still come from
+  `lib/seeds/agents`, joined on slug. Editing those in the admin changes
+  /agents and /agents/[slug] only. Replacing the seed lookups with a staff
+  query is the real fix; the photo overlay is the seam to do it through.

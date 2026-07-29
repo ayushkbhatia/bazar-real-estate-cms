@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Phone, MessageCircle, Mail } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import Image from "next/image";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import type { SeedAgent } from "@/lib/seeds/agents";
 
@@ -20,10 +21,17 @@ export function AgentCard({ agent }: { agent: SeedAgent }) {
           href={`/agents/${agent.slug}`}
           className="block w-16 h-16 rounded-md overflow-hidden flex-shrink-0"
         >
-          <PlaceholderImage
-            label={agent.slug}
-            className="w-full h-full"
-          />
+          {agent.photo_url ? (
+            <Image
+              src={agent.photo_url}
+              alt={agent.display_name}
+              width={64}
+              height={64}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <PlaceholderImage label={agent.slug} className="w-full h-full" />
+          )}
         </Link>
         <div className="min-w-0">
           <Eyebrow>Lead advisor</Eyebrow>
