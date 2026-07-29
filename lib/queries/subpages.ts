@@ -1,6 +1,7 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { mediaPublicUrl } from "@/lib/media";
+import { attachImageUrls } from "@/lib/queries/section-images";
 import {
   parseStoredSections,
   resolveSections,
@@ -63,7 +64,12 @@ export async function getDevelopmentPageContent(record: {
     if (error || !data) return build(resolveSections(def, null), true);
 
     const stored = parseStoredSections(data.blocks);
-    return build(resolveSections(def, stored), stored === null);
+    const sections = resolveSections(def, stored);
+    // Without this every picked image resolves to a null URL and the section
+    // silently falls back to its record media — which is what made the
+    // renders gallery look dormant after an upload.
+    await attachImageUrls(sections);
+    return build(sections, stored === null);
   } catch (error) {
     console.error(`[subpages] failed to load "${record.slug}"`, error);
     return build(resolveSections(def, null), true);
@@ -91,7 +97,9 @@ export async function getAreaPageContent(record: {
     if (error || !data) return build(resolveSections(def, null), true);
 
     const stored = parseStoredSections(data.blocks);
-    return build(resolveSections(def, stored), stored === null);
+    const sections = resolveSections(def, stored);
+    await attachImageUrls(sections);
+    return build(sections, stored === null);
   } catch (error) {
     console.error(`[subpages] failed to load area "${record.slug}"`, error);
     return build(resolveSections(def, null), true);

@@ -25,7 +25,7 @@ const INDEX_FIELDS =
   "id, name, slug, status, handover_date, total_units, starting_price, tagline, bedrooms_text, description, published_at, developers:developer_id(name, slug), areas:area_id(name, slug), hero:hero_image_id(storage_key, filename, alt_text)";
 
 const DETAIL_FIELDS =
-  "id, name, slug, status, handover_date, total_units, starting_price, tagline, bedrooms_text, description, vision, facts, payment_plan, master_plan, amenities, escrow_account, seo, published_at, developer_id, area_id, hero:hero_image_id(storage_key, filename, alt_text), developers:developer_id(id, name, slug, founded_year, description, stats), areas:area_id(name, slug)";
+  "id, name, slug, status, handover_date, total_units, starting_price, tagline, bedrooms_text, description, vision, facts, payment_plan, master_plan, amenities, escrow_account, seo, published_at, developer_id, area_id, lead_advisor_id, hero:hero_image_id(storage_key, filename, alt_text), developers:developer_id(id, name, slug, founded_year, description, stats), areas:area_id(name, slug)";
 
 type HeroMedia = {
   storage_key: string;
@@ -50,6 +50,8 @@ export type DevelopmentIndexRow = {
 };
 
 export type DevelopmentDetail = DevelopmentIndexRow & {
+  /** Advisor chosen for the page's banner; null falls back to by-area. */
+  lead_advisor_id?: string | null;
   vision: string | null;
   facts: DevelopmentFacts;
   payment_plan: PaymentPlan | null;
@@ -168,6 +170,7 @@ function shapeDetail(raw: Record<string, unknown>): DevelopmentDetail {
     amenities: Array.isArray(raw.amenities) ? (raw.amenities as string[]) : [],
     escrow_account: (raw.escrow_account as string | null) ?? null,
     developer_id: (raw.developer_id as string | null) ?? null,
+    lead_advisor_id: (raw.lead_advisor_id as string | null) ?? null,
     area_id: (raw.area_id as string | null) ?? null,
     developer_profile: dev
       ? {

@@ -46,11 +46,20 @@ export function LocationPicker({
   propertyId,
   initialGeo,
   mapboxAvailable,
+  onChange,
 }: {
   propertyId: string;
   initialGeo: Coords | null;
   mapboxAvailable: boolean;
+  /**
+   * Controlled mode. When supplied the picker reports the pin upward and its
+   * own Save button disappears — the parent form owns persistence. Used by the
+   * development page editor, where the pin saves alongside the rest of the
+   * project's content.
+   */
+  onChange?: (next: Coords | null) => void;
 }) {
+  const controlled = typeof onChange === "function";
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const markerRef = useRef<maplibregl.Marker | null>(null);
@@ -67,6 +76,14 @@ export function LocationPicker({
   const [saving, startSaving] = useTransition();
 
   const dirty = !coordsEqual(coords, savedCoords);
+
+  // Mirror every pin move outward in controlled mode.
+  useEffect(() => {
+    if (controlled) onChange?.(coords);
+    // `onChange` is a fresh closure each render in most parents; depending on
+    // it would loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coords, controlled]);
 
   // On drag the marker has already moved — just mirror its position into
   // state (no need to reposition it). Stable, and self-reference-free so
@@ -306,10 +323,12 @@ export function LocationPicker({
       </div>
 
       <div className="flex items-center gap-2">
-        <Button type="button" onClick={onSave} disabled={saving || !dirty}>
-          <Crosshair size={14} strokeWidth={1.8} />
-          {saving ? "Saving…" : "Save location"}
-        </Button>
+        {controlled ? null : (
+          <Button type="button" onClick={onSave} disabled={saving || !dirty}>
+            <Crosshair size={14} strokeWidth={1.8} />
+            {saving ? "Saving…" : "Save location"}
+          </Button>
+        )}
         {coords ? (
           <Button
             type="button"

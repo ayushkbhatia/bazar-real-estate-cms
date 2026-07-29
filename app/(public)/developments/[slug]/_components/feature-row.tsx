@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import Image from "next/image";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { cn } from "@/lib/utils";
 import type { NamedFeatureBlock } from "@/lib/queries/development-extras";
@@ -102,10 +103,20 @@ export function FeatureRow({ block, reverse, slug }: Props) {
         )}
         style={{ transitionDelay: step(2) }}
       >
-        <PlaceholderImage
-          label={`${slug}-${block.key}`}
-          className="absolute inset-0 w-full h-full"
-        />
+        {block.image_url ? (
+          <Image
+            src={block.image_url}
+            alt={block.alt ?? block.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <PlaceholderImage
+            label={`${slug}-${block.key}`}
+            className="absolute inset-0 w-full h-full"
+          />
+        )}
       </div>
       <div>
         <div className={motionCls(0)} style={{ transitionDelay: step(0) }}>

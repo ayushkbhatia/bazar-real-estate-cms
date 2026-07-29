@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ChevronRight, Database, ExternalLink } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isSupabaseConfigured } from "@/lib/env";
+import { isSupabaseConfigured, isMapboxConfigured } from "@/lib/env";
 import { mediaPublicUrl } from "@/lib/media";
 import { getDevelopmentPageContent } from "@/lib/queries/subpages";
 import {
@@ -12,6 +12,11 @@ import {
   type SectionActions,
 } from "../../../master/[key]/_editor";
 import { DevelopmentImagesCard } from "./_images-card";
+import {
+  DevelopmentContentCard,
+  type AdvisorOption,
+  type NeighbourOption,
+} from "./_content-card";
 import { saveDevelopmentPage, resetDevelopmentPage } from "../_actions";
 
 export const dynamic = "force-dynamic";
@@ -35,12 +40,36 @@ async function fetchMedia(): Promise<MediaOption[]> {
   }));
 }
 
+async function fetchContentOptions(excludeId: string) {
+  if (!isSupabaseConfigured)
+    return { neighbours: [] as NeighbourOption[], advisors: [] as AdvisorOption[] };
+  const supabase = await createSupabaseServerClient();
+  const [projects, staff] = await Promise.all([
+    supabase
+      .from("developments")
+      .select("id, name")
+      .neq("id", excludeId)
+      .order("name", { ascending: true }),
+    supabase
+      .from("staff")
+      .select("user_id, display_name")
+      .eq("status", "active")
+      .order("display_name", { ascending: true }),
+  ]);
+  return {
+    neighbours: (projects.data ?? []) as NeighbourOption[],
+    advisors: (staff.data ?? []) as AdvisorOption[],
+  };
+}
+
 async function fetchDevelopment(slug: string) {
   if (!isSupabaseConfigured) return null;
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("developments")
-    .select("id, name, slug, status, published_at, hero_image_id, masterplan_id")
+    .select(
+      "id, name, slug, status, published_at, hero_image_id, masterplan_id, payment_plan, meta, lead_advisor_id",
+    )
     .eq("slug", slug)
     .maybeSingle();
   return data;
@@ -57,13 +86,28 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
   const development = await fetchDevelopment(slug);
   if (!development) notFound();
 
-  const [content, media] = await Promise.all([
+  const [content, media, options] = await Promise.all([
     getDevelopmentPageContent({
       name: development.name,
       slug: development.slug,
     }),
     fetchMedia(),
+    fetchContentOptions(development.id),
   ]);
+
+  const meta = (development.meta as Record<string, unknown> | null) ?? {};
+  const contentInitial = {
+    payment_plan: (development.payment_plan as never) ?? null,
+    feature_blocks: Array.isArray(meta.feature_blocks)
+      ? (meta.feature_blocks as never[])
+      : [],
+    faq: Array.isArray(meta.faq) ? (meta.faq as never[]) : [],
+    coords: (meta.coords as { lat: number; lng: number } | null) ?? null,
+    nearby_ids: Array.isArray(meta.nearby_ids)
+      ? (meta.nearby_ids as string[]).slice(0, 3)
+      : [],
+    lead_advisor_id: development.lead_advisor_id ?? null,
+  };
 
   return (
     <CmsShell
@@ -133,6 +177,15 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
           media={media}
           heroImageId={development.hero_image_id}
           masterplanId={development.masterplan_id}
+        />
+
+        <DevelopmentContentCard
+          slug={development.slug}
+          initial={contentInitial}
+          media={media}
+          neighbours={options.neighbours}
+          advisors={options.advisors}
+          mapboxAvailable={isMapboxConfigured}
         />
 
         <div className="flex flex-col gap-3">

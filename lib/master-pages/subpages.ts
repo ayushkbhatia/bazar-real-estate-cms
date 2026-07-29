@@ -168,7 +168,6 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
   section("nearby", "Nearby developments", "Map of other projects in the area.", {
     dataNote: "Projects come from the same area's published developments.",
   }),
-  section("market-context", "Market context", "Link out to area market data."),
   section("developer", "Developer", "Profile of the developer behind it."),
   section("other-projects", "Other projects", "Siblings by the same developer.", {
     dataNote: "Cards come from the developer's other published projects.",

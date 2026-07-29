@@ -190,6 +190,14 @@ describe("reordering and gallery", () => {
     expect(images[1].enabled).toBe(false);
   });
 
+  it("no longer offers a market-context section", () => {
+    // Removed from the template, so it must be gone from the editor too —
+    // otherwise the wizard advertises a section that renders nothing.
+    expect(DEVELOPMENT_SECTIONS.map((s) => s.key)).not.toContain(
+      "market-context",
+    );
+  });
+
   it("includes the nearby-developments map as a section", () => {
     // It renders on the page, so it has to be switchable and orderable like
     // everything else — it was invisible to the editor before.

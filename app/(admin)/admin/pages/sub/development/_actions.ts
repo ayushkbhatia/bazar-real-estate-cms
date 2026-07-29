@@ -15,6 +15,7 @@ import {
   developmentPageDef,
   subPageSlug,
 } from "@/lib/master-pages/subpages";
+import { developmentContentSchema } from "@/lib/schemas/development-content";
 
 const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
 
@@ -262,4 +263,90 @@ export async function createDevelopmentPage(input: {
   revalidatePath("/admin/pages/sub");
   revalidatePath("/admin/pages/sub/development");
   return { status: "ok", slug: data.slug };
+}
+
+/**
+ * Everything on the development row that its page renders but the section
+ * document doesn't hold: payment plan, named features, map pin, neighbouring
+ * projects, FAQs and the lead advisor.
+ *
+ * One action rather than six because they save from one card — and because
+ * `meta` is a single jsonb column, so writing them separately would mean
+ * read-modify-write races between the sub-editors.
+ */
+export async function saveDevelopmentContent(
+  slug: string,
+  raw: unknown,
+): Promise<SubPageResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PAGE_ROLES);
+
+  const { record, message } = await loadRecord(slug);
+  if (!record)
+    return { status: "error", message: message ?? "Development not found." };
+
+  const parsed = developmentContentSchema.safeParse(raw);
+  if (!parsed.success) {
+    return {
+      status: "invalid",
+      message: "Fix the highlighted fields before saving.",
+      issues: parsed.error.issues.map(
+        (i) => `${i.path.join(".") || "field"}: ${i.message}`,
+      ),
+    };
+  }
+  const input = parsed.data;
+
+  const supabase = await createSupabaseServerClient();
+  const { data: existing } = await supabase
+    .from("developments")
+    .select("meta")
+    .eq("id", record.id)
+    .maybeSingle();
+
+  // Merge rather than replace: `meta` also carries flags this card doesn't
+  // edit (floorplan_gated, is_signature) and they mustn't be dropped.
+  const meta = {
+    ...((existing?.meta as Record<string, unknown> | null) ?? {}),
+    feature_blocks: input.feature_blocks,
+    faq: input.faq,
+    coords: input.coords,
+    nearby_ids: input.nearby_ids,
+  };
+
+  const { data, error } = await supabase
+    .from("developments")
+    .update({
+      payment_plan: input.payment_plan as unknown as never,
+      lead_advisor_id: input.lead_advisor_id,
+      meta: meta as unknown as never,
+    })
+    .eq("id", record.id)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { status: "error", message: error.message };
+  if (!data)
+    return {
+      status: "error",
+      message: "Not saved — your account may not be allowed to edit this.",
+    };
+
+  await logAudit({
+    action: "development.content_update",
+    target_kind: "development",
+    target_id: record.id,
+    before: null,
+    after: {
+      payment_plan: input.payment_plan?.name ?? null,
+      features: input.feature_blocks.length,
+      faqs: input.faq.length,
+      nearby: input.nearby_ids.length,
+    },
+  });
+
+  revalidatePath(`/developments/${record.slug}`);
+  revalidatePath(`/admin/pages/sub/development/${record.slug}`);
+  return { status: "ok", message: "Saved." };
 }
