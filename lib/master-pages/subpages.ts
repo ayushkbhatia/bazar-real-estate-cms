@@ -128,10 +128,38 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
     dataNote: "Plans come from the development's floor-plan records.",
   }),
   section("renders", "Renders", "Gallery of project imagery.", {
-    dataNote: "Images come from the development's media, roles render/gallery.",
+    dataNote:
+      "Leave the gallery empty to show the images attached to the development record (roles render/gallery).",
+    fields: [
+      optionalText("heading", "Heading", "Blank keeps the built-in heading."),
+      optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
+      {
+        key: "images",
+        label: "Gallery",
+        kind: "list",
+        itemLabel: "image",
+        max: 12,
+        help: "Adding one takes over the whole gallery, in this order.",
+        fields: [
+          { key: "enabled", label: "Show this image", kind: "toggle" },
+          { key: "image", label: "Image", kind: "image" },
+          {
+            key: "caption",
+            label: "Caption",
+            kind: "text",
+            max: 120,
+            optional: true,
+          },
+        ],
+      },
+    ],
+    defaults: { heading: null, intro: null, images: [] },
   }),
   section("features", "Features", "Amenity and finish highlights."),
   section("location", "Location", "Map and surroundings."),
+  section("nearby", "Nearby developments", "Map of other projects in the area.", {
+    dataNote: "Projects come from the same area's published developments.",
+  }),
   section("market-context", "Market context", "Link out to area market data."),
   section("developer", "Developer", "Profile of the developer behind it."),
   section("other-projects", "Other projects", "Siblings by the same developer.", {

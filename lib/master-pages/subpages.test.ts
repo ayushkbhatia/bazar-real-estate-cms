@@ -131,3 +131,66 @@ describe("sub-page kinds registry", () => {
     expect(getSubPageKind("nonsense")).toBeNull();
   });
 });
+
+describe("reordering and gallery", () => {
+  it("renders sections in the stored order", () => {
+    const resolved = resolveSections(def, [
+      { key: "faq", enabled: true, values: {} },
+      { key: "overview", enabled: true, values: {} },
+      { key: "location", enabled: true, values: {} },
+    ]);
+    expect(resolved.slice(0, 3).map((s) => s.key)).toEqual([
+      "faq",
+      "overview",
+      "location",
+    ]);
+  });
+
+  it("gives the renders section an add/remove gallery", () => {
+    const renders = DEVELOPMENT_SECTIONS.find((s) => s.key === "renders")!;
+    const gallery = renders.fields.find((f) => f.key === "images");
+    expect(gallery?.kind).toBe("list");
+    if (gallery?.kind !== "list") return;
+    expect(gallery.fields.some((f) => f.kind === "image")).toBe(true);
+    expect(gallery.fields.some((f) => f.kind === "toggle")).toBe(true);
+    // Empty ⇒ the development record's own media still shows.
+    expect(renders.defaults.images).toEqual([]);
+  });
+
+  it("stores gallery images as asset ids, in order, with their switches", () => {
+    const result = validateSections(def, [
+      {
+        key: "renders",
+        enabled: true,
+        values: {
+          images: [
+            {
+              enabled: true,
+              caption: " Pool deck ",
+              image: { media_id: "aaaa", alt: "Pool", label: null },
+            },
+            {
+              enabled: false,
+              caption: null,
+              image: { media_id: "bbbb", alt: null, label: null },
+            },
+          ],
+        },
+      },
+    ]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const images = result.sections.find((s) => s.key === "renders")!.values
+      .images as Record<string, Record<string, unknown> | unknown>[];
+    expect(images).toHaveLength(2);
+    expect((images[0].image as Record<string, unknown>).media_id).toBe("aaaa");
+    expect(images[0].caption).toBe("Pool deck");
+    expect(images[1].enabled).toBe(false);
+  });
+
+  it("includes the nearby-developments map as a section", () => {
+    // It renders on the page, so it has to be switchable and orderable like
+    // everything else — it was invisible to the editor before.
+    expect(DEVELOPMENT_SECTIONS.map((s) => s.key)).toContain("nearby");
+  });
+});

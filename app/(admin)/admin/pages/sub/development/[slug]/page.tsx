@@ -127,10 +127,11 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
           <div>
             <h2 className="text-[13.5px] font-medium">Sections</h2>
             <p className="text-[12.5px] text-bz-muted mt-1 leading-relaxed">
-              Switch sections off to hide them on this project&apos;s page, and
-              override a heading or intro where the built-in copy doesn&apos;t
-              fit. Blank fields keep the template&apos;s wording. Section order
-              is fixed — the sticky sub-nav links to sections in template order.
+              Drag to reorder, switch sections off to hide them on this
+              project&apos;s page, and override a heading or intro where the
+              built-in copy doesn&apos;t fit. Blank fields keep the
+              template&apos;s wording. The sticky sub-nav follows this order and
+              drops anything hidden.
             </p>
           </div>
           <MasterPageEditor
@@ -141,7 +142,7 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
             media={media}
             seeds={{}}
             actions={ACTIONS}
-            allowReorder={false}
+            allowReorder
             resetLabel="Reset sections"
             initial={content.sections.map((s) => ({
               key: s.key,
