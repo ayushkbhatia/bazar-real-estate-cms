@@ -27,7 +27,6 @@ import {
   MEGAMENU_BADGE_VARIANT_LABELS,
   MEGAMENU_TARGET_KINDS,
   MEGAMENU_TILE_BADGE_KINDS,
-  MEGAMENU_TILE_VARIANTS,
   defaultNewColumn,
   defaultNewFeaturedTile,
   defaultNewItem,
@@ -469,25 +468,6 @@ function TileForm({
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <label className="flex flex-col gap-1">
-          <FieldLabel>Variant</FieldLabel>
-          <select
-            className={fieldCls}
-            value={tile.variant}
-            onChange={(e) =>
-              onChange({
-                ...tile,
-                variant: e.target.value as LocalTile["variant"],
-              })
-            }
-          >
-            {MEGAMENU_TILE_VARIANTS.map((v) => (
-              <option key={v} value={v}>
-                {v}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1">
           <FieldLabel>Badge kind</FieldLabel>
           <select
             className={fieldCls}
@@ -536,6 +516,50 @@ function TileForm({
             onChange={(e) => onChange({ ...tile, headline: e.target.value })}
           />
         </label>
+        <div className="flex flex-col gap-1 col-span-2">
+          <FieldLabel>Headline colour</FieldLabel>
+          <div className="flex gap-2">
+            {(
+              [
+                { value: "dark", label: "White text", swatch: "bg-bz-navy" },
+                { value: "light", label: "Black text", swatch: "bg-bz-bg" },
+              ] as const
+            ).map((option) => {
+              // `image` predates this control and reads as white, so it
+              // highlights the same box a fresh dark tile would.
+              const active =
+                option.value === "light"
+                  ? tile.variant === "light"
+                  : tile.variant !== "light";
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => onChange({ ...tile, variant: option.value })}
+                  className={cn(
+                    "flex items-center gap-2 rounded border px-2.5 py-1.5 text-[12px] transition-colors",
+                    active
+                      ? "border-bz-accent bg-bz-accent-soft text-bz-accent"
+                      : "border-bz-border text-bz-ink-2 hover:border-bz-border-strong",
+                  )}
+                >
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "h-3.5 w-3.5 rounded-sm border border-bz-border",
+                      option.swatch,
+                    )}
+                  />
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+          <span className="text-[11px] text-bz-muted-2">
+            Pick whichever stays legible against the tile image.
+          </span>
+        </div>
         <label className="flex flex-col gap-1 col-span-2">
           <FieldLabel>Href</FieldLabel>
           <input
