@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toOptions } from "@/lib/amenities";
 import { SlidersHorizontal, X } from "lucide-react";
 import {
   Sheet,
@@ -15,29 +16,17 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { TENURES, FURNISHINGS } from "@/lib/filters/property";
 
-const AMENITIES = [
-  "Pool",
-  "Gym",
-  "Concierge",
-  "Beach access",
-  "Sea view",
-  "Skyline view",
-  "Park",
-  "Garden",
-  "Private pool",
-  "Maid's room",
-  "Driver's room",
-  "Smart home",
-  "Sauna",
-  "Spa",
-  "Kids' club",
-  "Covered parking",
-  "Storage",
-  "Pet friendly",
-  "Furnished kitchen",
-  "Balcony",
-  "Walk-in closet",
-] as const;
+/**
+ * Facet options come from the shared amenity taxonomy rather than a list
+ * maintained here — the picker in the property editor and the public page read
+ * the same source, so a filter can't drift out of step with what's selectable.
+ *
+ * `DEFAULT_AMENITIES` is the static seed: this is a client component, so it
+ * can't read the table directly. Entries an admin adds under Settings → Fields
+ * reach the editor and the property page immediately, and this facet on the
+ * next deploy.
+ */
+const AMENITIES = toOptions().map((o) => o.label);
 
 export function MoreFiltersDrawer() {
   const router = useRouter();

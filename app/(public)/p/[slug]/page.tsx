@@ -24,6 +24,8 @@ import {
   propertyUrl,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
+import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
+import { amenityLabel, orderAmenities, toOptions } from "@/lib/amenities";
 import {
   propertyJsonLd,
   breadcrumbListJsonLd,
@@ -183,7 +185,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   });
   if (`/p/${slug}` !== canonical) redirect(canonical);
 
-  const [similar, user] = await Promise.all([
+  const [amenityTaxonomy, similar, user] = await Promise.all([
+    listAmenitiesTaxonomy(),
     getSimilarProperties(
       property.id,
       property.areas?.slug ?? null,
@@ -191,6 +194,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     ),
     getSessionUser(),
   ]);
+
+  const amenityOptions = toOptions(amenityTaxonomy);
   const savedSet = await getSavedPropertyIds([
     property.id,
     ...similar.map((s) => s.id),
@@ -427,12 +432,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             <div>
               <Eyebrow>Features &amp; amenities</Eyebrow>
               <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5 text-[14px]">
-                {property.amenities.map((a) => (
-                  <li key={a} className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-bz-accent" />
-                    {a}
-                  </li>
-                ))}
+                {orderAmenities(property.amenities, amenityOptions).map(
+                  (a) => (
+                    <li key={a} className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-bz-accent" />
+                      {amenityLabel(a, amenityOptions)}
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
           ) : null}

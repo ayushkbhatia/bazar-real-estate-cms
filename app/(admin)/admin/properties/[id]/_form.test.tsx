@@ -3,6 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { PropertyEditInput } from "@/lib/schemas/property";
+import { toOptions } from "@/lib/amenities";
 
 const updatePropertyMock = vi.fn();
 const setPropertyDeveloperMock = vi.fn();
@@ -34,6 +35,8 @@ vi.mock("next/navigation", () => ({
 
 import { PropertyEditForm } from "./_form";
 import { toast } from "sonner";
+
+const AMENITY_OPTIONS = toOptions();
 
 const DEVELOPERS = [
   { id: "11111111-1111-1111-1111-111111111111", name: "Aldar Properties" },
@@ -88,6 +91,7 @@ describe("<PropertyEditForm>", () => {
         developers={DEVELOPERS}
         geo={null}
         mapboxAvailable={false}
+        amenityOptions={AMENITY_OPTIONS}
       />,
     );
     expect(screen.getByLabelText(/title/i)).toHaveValue(INITIAL.title);
@@ -107,6 +111,7 @@ describe("<PropertyEditForm>", () => {
         developers={DEVELOPERS}
         geo={null}
         mapboxAvailable={false}
+        amenityOptions={AMENITY_OPTIONS}
       />,
     );
     expect(screen.getByRole("button", { name: /save/i })).toBeDisabled();
@@ -125,6 +130,7 @@ describe("<PropertyEditForm>", () => {
         developers={DEVELOPERS}
         geo={null}
         mapboxAvailable={false}
+        amenityOptions={AMENITY_OPTIONS}
       />,
     );
 
@@ -161,6 +167,7 @@ describe("<PropertyEditForm>", () => {
         developers={DEVELOPERS}
         geo={null}
         mapboxAvailable={false}
+        amenityOptions={AMENITY_OPTIONS}
       />,
     );
 
@@ -199,6 +206,7 @@ describe("<PropertyEditForm>", () => {
         developers={DEVELOPERS}
         geo={null}
         mapboxAvailable={false}
+        amenityOptions={AMENITY_OPTIONS}
       />,
     );
 
