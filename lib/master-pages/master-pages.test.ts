@@ -19,12 +19,13 @@ import {
 const buy = getMasterPage("buy") as MasterPageDef;
 
 describe("registry", () => {
-  it("declares the four master pages with unique section keys", () => {
+  it("declares the master pages with unique section keys", () => {
     expect(MASTER_PAGES.map((p) => p.key)).toEqual([
       "home",
       "buy",
       "rent",
       "off-plan",
+      "areas",
     ]);
     for (const page of MASTER_PAGES) {
       const keys = page.sections.map((s) => s.key);
