@@ -5,8 +5,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/env";
 import { ROLE_LABEL, type StaffRole } from "@/lib/schemas/staff";
 import {
+  activationCopy,
   linkState,
   linkStateMessage,
+  purposeOf,
   type InvitationRow,
 } from "@/lib/staff-invitations";
 import { ActivateForm } from "./_form";
@@ -31,7 +33,7 @@ export const dynamic = "force-dynamic";
 type PageProps = { searchParams: Promise<{ token?: string | string[] }> };
 
 const FIELDS =
-  "email, display_name, role, expires_at, accepted_at, activated_at";
+  "email, display_name, role, expires_at, accepted_at, activated_at, purpose";
 
 // Keeps Date.now() out of the JSX render body so the React Compiler doesn't
 // flag it as impure — same helper shape as the enquiry detail page.
@@ -59,6 +61,19 @@ export default async function StaffInvitePage({ searchParams }: PageProps) {
   }
 
   const state = linkState(invitation, serverNow());
+  // Copy comes from the row, not the URL — a query param would let anyone
+  // change what the page claims happened.
+  const purpose = purposeOf(invitation);
+  const roleLabel = invitation
+    ? (ROLE_LABEL[invitation.role as StaffRole] ?? invitation.role)
+    : "";
+  const copy = invitation
+    ? activationCopy({
+        purpose,
+        firstName: invitation.display_name.split(" ")[0] ?? invitation.display_name,
+        roleLabel,
+      })
+    : null;
 
   return (
     <main className="min-h-dvh bg-bz-bg flex items-center justify-center px-4 py-16">
@@ -71,10 +86,10 @@ export default async function StaffInvitePage({ searchParams }: PageProps) {
             <ActivateForm
               token={token}
               email={invitation.email}
-              displayName={invitation.display_name}
-              roleLabel={
-                ROLE_LABEL[invitation.role as StaffRole] ?? invitation.role
-              }
+              heading={copy!.heading}
+              lead={copy!.lead}
+              submitLabel={copy!.submitLabel}
+              eyebrow={purpose === "reset" ? "New password" : "Activate your account"}
               // By reference — see the note on the prop.
               activate={activateInvitation}
             />
@@ -84,7 +99,10 @@ export default async function StaffInvitePage({ searchParams }: PageProps) {
                 This link can&apos;t be used
               </h1>
               <p className="text-[13.5px] leading-relaxed text-bz-ink-2">
-                {linkStateMessage(state.usable ? "unknown" : state.reason)}
+                {linkStateMessage(
+                  state.usable ? "unknown" : state.reason,
+                  purpose,
+                )}
               </p>
               <Link
                 href="/admin/login"

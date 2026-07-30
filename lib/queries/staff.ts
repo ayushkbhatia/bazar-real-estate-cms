@@ -64,6 +64,10 @@ export async function listAllStaff(): Promise<StaffRow[]> {
  * from this list while the invitee had no password and no way to get one. There
  * was then no way to re-send from the admin at all. `activated_at` is set only
  * once the person has set a password (migration 0064).
+ *
+ * Scoped to `purpose = 'invite'` (0065). Password-reset links for existing staff
+ * ride on the same table, and listing one here would read as a colleague who
+ * hasn't joined yet.
  */
 export async function listPendingInvitations(): Promise<PendingInvitation[]> {
   if (!isSupabaseConfigured) return [];
@@ -73,6 +77,7 @@ export async function listPendingInvitations(): Promise<PendingInvitation[]> {
     .select(
       "id, email, display_name, role, expires_at, created_at, invited_by_staff:invited_by(display_name)",
     )
+    .eq("purpose", "invite")
     .is("activated_at", null)
     .gt("expires_at", new Date().toISOString())
     .order("created_at", { ascending: false });
@@ -150,6 +155,32 @@ async function fetchAuthMetadata(
     console.warn("[fetchAuthMetadata]", (err as Error).message);
   }
   return out;
+}
+
+/**
+ * Auth metadata for one staff member. Uses getUserById rather than paging
+ * through listUsers, since the caller already knows the id.
+ *
+ * `last_sign_in_at` is what tells an admin whether this person has ever
+ * actually got in — the question behind sending them a password link.
+ */
+export async function getStaffAuthMeta(
+  userId: string,
+): Promise<AuthMeta | null> {
+  try {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const admin = createAdminClient();
+    if (!admin) return null;
+    const { data, error } = await admin.auth.admin.getUserById(userId);
+    if (error || !data?.user) return null;
+    return {
+      email: data.user.email ?? null,
+      last_sign_in_at: data.user.last_sign_in_at ?? null,
+    };
+  } catch (err) {
+    console.warn("[getStaffAuthMeta]", (err as Error).message);
+    return null;
+  }
 }
 
 /** True if the current session belongs to an admin. */

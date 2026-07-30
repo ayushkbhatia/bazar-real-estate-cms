@@ -335,3 +335,44 @@ describe("staffInvitationTemplate", () => {
     expect(staffInvitationTemplate(base).text).toMatch(/set your password/i);
   });
 });
+
+describe("staffPasswordResetTemplate", () => {
+  const base = {
+    staffName: "Omar",
+    resetUrl: "https://bazar.ae/staff-invite?token=xyz",
+    senderName: "Aisha Khan",
+  };
+
+  it("carries the link in both parts", async () => {
+    const { staffPasswordResetTemplate } = await importModule();
+    const { text, html } = staffPasswordResetTemplate(base);
+    expect(text).toContain(base.resetUrl);
+    expect(html).toContain(base.resetUrl);
+  });
+
+  it("names who sent it, so an unexpected email is traceable", async () => {
+    const { staffPasswordResetTemplate } = await importModule();
+    expect(staffPasswordResetTemplate(base).text).toContain("Aisha Khan");
+  });
+
+  it("says the current password still works until the link is used", async () => {
+    const { staffPasswordResetTemplate } = await importModule();
+    const { text, html } = staffPasswordResetTemplate(base);
+    expect(text).toMatch(/current password still works/i);
+    expect(html).toMatch(/current password keeps working/i);
+  });
+
+  it("does not read like a new-hire invitation", async () => {
+    const { staffPasswordResetTemplate } = await importModule();
+    const { subject, text } = staffPasswordResetTemplate(base);
+    expect(subject).not.toMatch(/invit/i);
+    expect(text).not.toMatch(/invited/i);
+  });
+
+  it("states the expiry window", async () => {
+    const { staffPasswordResetTemplate } = await importModule();
+    expect(
+      staffPasswordResetTemplate({ ...base, expiryDays: 14 }).text,
+    ).toContain("valid for 14 days");
+  });
+});

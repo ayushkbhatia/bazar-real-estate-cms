@@ -9,6 +9,13 @@
 /** Matches the `expires_at` default on staff_invitations (0010). */
 export const INVITE_EXPIRY_DAYS = 14;
 
+/**
+ * Why a token was issued (0065). Both let the holder set a password; they
+ * differ in what the page says and whether the row counts as outstanding work
+ * on Users & roles.
+ */
+export type InvitationPurpose = "invite" | "reset";
+
 export type InvitationRow = {
   email: string;
   display_name: string;
@@ -18,7 +25,13 @@ export type InvitationRow = {
   accepted_at: string | null;
   /** Set when the invitee sets a password via the link (0064). */
   activated_at: string | null;
+  purpose?: string | null;
 };
+
+/** Narrow the stored text column, defaulting to the historical meaning. */
+export function purposeOf(row: InvitationRow | null): InvitationPurpose {
+  return row?.purpose === "reset" ? "reset" : "invite";
+}
 
 export type LinkState =
   | { usable: true }
@@ -44,13 +57,37 @@ export function linkState(
 }
 
 /** What to tell someone holding a link that doesn't work. */
-export function linkStateMessage(reason: "unknown" | "expired" | "used"): string {
+export function linkStateMessage(
+  reason: "unknown" | "expired" | "used",
+  purpose: InvitationPurpose = "invite",
+): string {
+  const noun = purpose === "reset" ? "password link" : "invitation";
   switch (reason) {
     case "used":
-      return "This invitation has already been used. Sign in with the password you set, or ask an administrator to send a new link.";
+      return `This ${noun} has already been used. Sign in with the password you set, or ask an administrator to send a new link.`;
     case "expired":
-      return `This invitation has expired — links are valid for ${INVITE_EXPIRY_DAYS} days. Ask an administrator to send a new one.`;
+      return `This ${noun} has expired — links are valid for ${INVITE_EXPIRY_DAYS} days. Ask an administrator to send a new one.`;
     default:
-      return "This invitation link isn't valid. Check you opened the most recent email, or ask an administrator to send a new one.";
+      return `This ${noun} isn't valid. Check you opened the most recent email, or ask an administrator to send a new one.`;
   }
+}
+
+/** Headline + lead copy for the set-password page. */
+export function activationCopy(opts: {
+  purpose: InvitationPurpose;
+  firstName: string;
+  roleLabel: string;
+}): { heading: string; lead: string; submitLabel: string } {
+  if (opts.purpose === "reset") {
+    return {
+      heading: `Set a new password, ${opts.firstName}.`,
+      lead: `Choose a new password for your Bazar admin account. Your ${opts.roleLabel} access is unchanged.`,
+      submitLabel: "Save password and continue",
+    };
+  }
+  return {
+    heading: `Welcome, ${opts.firstName}.`,
+    lead: `You've been invited to the Bazar admin console as ${opts.roleLabel}. Set a password to finish setting up your account.`,
+    submitLabel: "Set password and continue",
+  };
 }
