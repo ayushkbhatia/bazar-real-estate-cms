@@ -295,3 +295,43 @@ describe("dealStageChangeTemplate", () => {
     expect(html).toContain("&lt;img src=x&gt;");
   });
 });
+
+describe("staffInvitationTemplate", () => {
+  const base = {
+    inviteeName: "Omar",
+    inviterName: "Aisha Khan",
+    acceptUrl: "https://bazar.ae/staff-invite?token=abc123",
+    role: "Administrator",
+  };
+
+  it("puts the accept link in both the text and html parts", async () => {
+    const { staffInvitationTemplate } = await importModule();
+    const { text, html } = staffInvitationTemplate(base);
+    expect(text).toContain(base.acceptUrl);
+    expect(html).toContain(base.acceptUrl);
+  });
+
+  it("states the expiry window it is given", async () => {
+    const { staffInvitationTemplate } = await importModule();
+    const { text, html } = staffInvitationTemplate({ ...base, expiryDays: 14 });
+    expect(text).toContain("valid for 14 days");
+    expect(html).toContain("valid for 14 days");
+  });
+
+  it("never claims 7 days when the window is 14", async () => {
+    // The copy said 7 while the column defaulted to 14.
+    const { staffInvitationTemplate } = await importModule();
+    const { text } = staffInvitationTemplate({ ...base, expiryDays: 14 });
+    expect(text).not.toContain("7 days");
+  });
+
+  it("names the role in the subject", async () => {
+    const { staffInvitationTemplate } = await importModule();
+    expect(staffInvitationTemplate(base).subject).toContain("Administrator");
+  });
+
+  it("asks the invitee to set a password, not just 'accept'", async () => {
+    const { staffInvitationTemplate } = await importModule();
+    expect(staffInvitationTemplate(base).text).toMatch(/set your password/i);
+  });
+});

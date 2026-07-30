@@ -55,7 +55,16 @@ export async function listAllStaff(): Promise<StaffRow[]> {
   }));
 }
 
-/** Outstanding (un-accepted, un-expired) invitations. */
+/**
+ * Outstanding invitations — anyone who still can't sign in.
+ *
+ * Filtered on `activated_at`, not `accepted_at`. The latter is stamped by the
+ * accept trigger the moment an auth.users row exists for the address, which the
+ * old Supabase-mailer invite did at invite time — so invitations disappeared
+ * from this list while the invitee had no password and no way to get one. There
+ * was then no way to re-send from the admin at all. `activated_at` is set only
+ * once the person has set a password (migration 0064).
+ */
 export async function listPendingInvitations(): Promise<PendingInvitation[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = await createSupabaseServerClient();
@@ -64,7 +73,7 @@ export async function listPendingInvitations(): Promise<PendingInvitation[]> {
     .select(
       "id, email, display_name, role, expires_at, created_at, invited_by_staff:invited_by(display_name)",
     )
-    .is("accepted_at", null)
+    .is("activated_at", null)
     .gt("expires_at", new Date().toISOString())
     .order("created_at", { ascending: false });
   if (error || !data) {

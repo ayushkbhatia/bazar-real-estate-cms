@@ -18,7 +18,16 @@ const initial: AuthState = { status: "idle" };
  * role and routes accordingly, so a non-staff user who lands here is quietly
  * sent to `/account` instead.
  */
-export function StaffSignInForm({ redirectTo }: { redirectTo?: string }) {
+export function StaffSignInForm({
+  redirectTo,
+  prefillEmail,
+  justActivated,
+}: {
+  redirectTo?: string;
+  /** Filled in after activating an invitation, so signing in is one field. */
+  prefillEmail?: string;
+  justActivated?: boolean;
+}) {
   const [state, formAction, pending] = useActionState(signInAction, initial);
 
   return (
@@ -35,9 +44,15 @@ export function StaffSignInForm({ redirectTo }: { redirectTo?: string }) {
         >
           Sign in to the admin panel
         </h1>
-        <p className="text-[13px] text-bz-muted mb-7">
-          For Bazar team members. Use the email your invitation was sent to.
-        </p>
+        {justActivated ? (
+          <p className="mt-3 mb-6 rounded-md border border-bz-border bg-bz-surface-2 px-3 py-2.5 text-[13px] text-bz-ink-2">
+            Your account is active. Sign in to open the admin panel.
+          </p>
+        ) : (
+          <p className="text-[13px] text-bz-muted mb-7">
+            For Bazar team members. Use the email your invitation was sent to.
+          </p>
+        )}
 
         <form action={formAction} className="flex flex-col gap-4">
           {/* Deep-link back to the requested admin page after a bounce; the
@@ -52,6 +67,7 @@ export function StaffSignInForm({ redirectTo }: { redirectTo?: string }) {
               type="email"
               placeholder="you@bazar.ae"
               autoComplete="email"
+              defaultValue={prefillEmail ?? ""}
               required
             />
           </div>
