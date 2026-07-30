@@ -3264,6 +3264,7 @@ export type Database = {
         | "agent_page"
         | "share_with_advisor"
         | "whatsapp_inbound"
+        | "brochure"
       enquiry_status:
         | "new"
         | "qualified"
@@ -3621,6 +3622,7 @@ export const Constants = {
         "agent_page",
         "share_with_advisor",
         "whatsapp_inbound",
+        "brochure",
       ],
       enquiry_status: [
         "new",

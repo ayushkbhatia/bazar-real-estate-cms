@@ -248,6 +248,7 @@ function KanbanCardPresentation({
         {row.properties ? (
           <span className="mono">{row.properties.reference}</span>
         ) : null}
+        {row.developments ? <span>{row.developments.name}</span> : null}
         {row.unread_count > 0 ? (
           <span className="inline-flex items-center h-[16px] px-1.5 rounded-full bg-bz-ink text-bz-bg text-[9.5px] font-semibold">
             {row.unread_count}

@@ -30,13 +30,16 @@ async function fetchMedia(): Promise<MediaOption[]> {
     .from("media_assets")
     .select("id, filename, storage_key, mime_type")
     .is("deleted_at", null)
-    .like("mime_type", "image/%")
+    // Images for image fields, PDFs for file fields (the brochure). The
+    // editor filters by mime per field, so both live in one list.
+    .or("mime_type.like.image/%,mime_type.eq.application/pdf")
     .order("created_at", { ascending: false })
     .limit(300);
   return (data ?? []).map((m) => ({
     id: m.id,
     filename: m.filename,
     url: mediaPublicUrl(m.storage_key),
+    mime: m.mime_type,
   }));
 }
 

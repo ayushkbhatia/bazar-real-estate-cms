@@ -109,14 +109,31 @@ function section(
 }
 
 export const DEVELOPMENT_SECTIONS: SectionDef[] = [
-  section("hero", "Hero", "Cover image, name, and headline stats.", {
+  section("hero", "Hero", "Cover image, name, headline stats and the brochure.", {
     locked: true,
     dataNote:
       "The cover image and stats come from the development record — edit them in Page images below.",
     fields: [
       optionalText("heading", "Headline", "Blank uses the project name."),
       optionalBody("intro", "Standfirst", "Blank uses the tagline."),
+      {
+        key: "brochure",
+        label: "Brochure PDF",
+        kind: "file",
+        help: "Opens in a new tab once someone completes the form. Leave empty and the button still captures the lead, telling them an advisor will send it.",
+      },
+      optionalText(
+        "brochure_label",
+        "Brochure button label",
+        "Blank keeps “Download brochure”.",
+      ),
     ],
+    defaults: {
+      heading: null,
+      intro: null,
+      brochure: { media_id: null, alt: null, label: null },
+      brochure_label: null,
+    },
   }),
   section("subnav", "Sub-navigation", "Sticky anchor links down the page.", {
     locked: true,
