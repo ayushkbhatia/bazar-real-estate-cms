@@ -136,3 +136,27 @@ describe("sendEmail · from + reply-to env chain", () => {
     expect(sendSpy).not.toHaveBeenCalled();
   });
 });
+
+describe("explainResendError", () => {
+  it("explains the owner-only restriction, which is the common failure", async () => {
+    const { explainResendError } = await import("./email");
+    const out = explainResendError(
+      "You can only send testing emails to your own email address",
+    );
+    expect(out).toMatch(/verified sending domain/i);
+    expect(out).toMatch(/RESEND_FROM_ADDRESS/);
+  });
+
+  it("explains an unverified from-domain", async () => {
+    const { explainResendError } = await import("./email");
+    expect(explainResendError("The domain is not verified")).toMatch(
+      /verify the sending domain/i,
+    );
+  });
+
+  it("keeps the original message so nothing is hidden", async () => {
+    const { explainResendError } = await import("./email");
+    const original = "Rate limit exceeded";
+    expect(explainResendError(original)).toContain(original);
+  });
+});

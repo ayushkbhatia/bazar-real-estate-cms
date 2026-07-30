@@ -29,6 +29,38 @@ function getClient(): Resend | null {
   return client;
 }
 
+/**
+ * Turn Resend's two configuration failures into something an admin can act on.
+ *
+ * Both are silent traps rather than crashes: the call returns an error, the UI
+ * says "email failed", and nothing explains that the account simply isn't set
+ * up to mail strangers yet.
+ *
+ *  · With no verified sending domain, Resend accepts mail only to the address
+ *    that owns the account. Every invitation, password link and reply to a real
+ *    client is refused. `RESEND_FROM_ADDRESS` being unset is the tell — sends
+ *    then go out as onboarding@resend.dev, which is Resend's sandbox sender.
+ *  · A `from` on an unverified domain is rejected outright.
+ */
+export function explainResendError(message: string): string {
+  const m = message.toLowerCase();
+  const usingSandbox = !env.RESEND_FROM_ADDRESS;
+  if (
+    m.includes("testing email") ||
+    m.includes("own email address") ||
+    m.includes("only send")
+  ) {
+    return `${message} — Resend has no verified sending domain on this account, so it only accepts mail to the account owner's own address. Verify a domain and set RESEND_FROM_ADDRESS to send to anyone else.`;
+  }
+  if (m.includes("domain") && (m.includes("verif") || m.includes("not found"))) {
+    return `${message} — verify the sending domain in Resend, then set RESEND_FROM_ADDRESS to an address on it.`;
+  }
+  if (usingSandbox) {
+    return `${message} — note RESEND_FROM_ADDRESS is unset, so this went out from Resend's sandbox sender (onboarding@resend.dev), which can only deliver to the account owner.`;
+  }
+  return message;
+}
+
 export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
   const resend = getClient();
   if (!resend) {
@@ -52,7 +84,7 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     });
     if (result.error) {
       console.warn("[email] Resend error", result.error.message);
-      return { status: "error", message: result.error.message };
+      return { status: "error", message: explainResendError(result.error.message) };
     }
     if (!result.data?.id) {
       return { status: "error", message: "Resend returned no message id." };
