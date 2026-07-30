@@ -24,6 +24,7 @@ import {
   ChevronDown,
   Eye,
   EyeOff,
+  FileText,
   GripVertical,
   Lock,
   Plus,
@@ -37,12 +38,14 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
+  isFileField,
   isImageField,
   isListField,
   isSelectField,
   isToggleField,
   type FieldDef,
   type ImageValue,
+  type SimpleFieldDef,
   type ItemValue,
   type SeedKey,
   type MasterPageKey,
@@ -73,7 +76,13 @@ const MASTER_ACTIONS: SectionActions = {
 };
 import { uploadMedia } from "../../../media/_actions";
 
-export type MediaOption = { id: string; filename: string; url: string };
+export type MediaOption = {
+  id: string;
+  filename: string;
+  url: string;
+  /** Lets image fields offer only images and file fields only documents. */
+  mime?: string | null;
+};
 
 export type SeedItem = { name: string; href: string; slug: string };
 
@@ -622,12 +631,75 @@ function ScalarField({
     );
   }
 
+  if (isFileField(field)) {
+    const accept = field.accept ?? "application/pdf";
+    const v: ImageValue =
+      value && typeof value === "object"
+        ? (value as ImageValue)
+        : { media_id: null, alt: null, label: null };
+    // Documents only. Without this the brochure picker would list every photo
+    // in the library, which is a long way to scroll to find one PDF.
+    const options = media.filter((m) => (m.mime ?? "").startsWith(accept));
+    const picked = options.find((m) => m.id === v.media_id) ??
+      media.find((m) => m.id === v.media_id);
+    return (
+      <div className="flex flex-col gap-1.5">
+        <FieldLabel label={field.label} help={field.help} />
+        <div className="flex flex-col gap-2">
+          <select
+            className={fieldCls}
+            value={v.media_id ?? ""}
+            onChange={(e) =>
+              onChange({ ...v, media_id: e.target.value || null })
+            }
+          >
+            <option value="">— none —</option>
+            {options.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.filename}
+              </option>
+            ))}
+          </select>
+          <div className="flex items-center gap-3 flex-wrap">
+            <UploadButton accept={accept} label="Upload PDF" onUploaded={(m) => {
+              onMediaAdded(m);
+              onChange({ ...v, media_id: m.id });
+            }} />
+            {picked ? (
+              <a
+                href={picked.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink"
+              >
+                <FileText size={11} /> {picked.filename}
+              </a>
+            ) : null}
+            {v.media_id ? (
+              <button
+                type="button"
+                onClick={() => onChange({ ...v, media_id: null })}
+                className="inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink"
+              >
+                <X size={11} /> Remove
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isImageField(field)) {
     const v: ImageValue =
       value && typeof value === "object"
         ? (value as ImageValue)
         : { media_id: null, alt: null, label: null };
-    const picked = media.find((m) => m.id === v.media_id);
+    // PDFs share this list now, so filter them out of the image picker.
+    const imageOptions = media.filter(
+      (m) => !m.mime || m.mime.startsWith("image/"),
+    );
+    const picked = imageOptions.find((m) => m.id === v.media_id);
     return (
       <div className="flex flex-col gap-1.5">
         <FieldLabel label={field.label} help={field.help} />
@@ -656,7 +728,9 @@ function ScalarField({
               }
             >
               <option value="">Placeholder art</option>
-              {media.map((m) => (
+              {media
+                .filter((m) => !m.mime || m.mime.startsWith("image/"))
+                .map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.filename}
                 </option>
@@ -691,13 +765,15 @@ function ScalarField({
     );
   }
 
+  // Everything above returns, so only the simple text kinds reach here.
+  const simple = field as SimpleFieldDef;
   const text = typeof value === "string" ? value : "";
   return (
     <div className="flex flex-col gap-1.5">
       <FieldLabel
-        label={field.label}
-        help={field.help}
-        count={field.max ? `${text.length}/${field.max}` : undefined}
+        label={simple.label}
+        help={simple.help}
+        count={simple.max ? `${text.length}/${simple.max}` : undefined}
       />
       {field.kind === "textarea" ? (
         <textarea
@@ -725,8 +801,12 @@ function ScalarField({
  */
 function UploadButton({
   onUploaded,
+  accept = "image/*",
+  label = "Upload new",
 }: {
   onUploaded: (m: MediaOption) => void;
+  accept?: string;
+  label?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -744,7 +824,14 @@ function UploadButton({
       return;
     }
     toast.success(`Uploaded "${file.name}" to the media library.`);
-    onUploaded({ id: result.id, filename: file.name, url: result.url });
+    // Carry the mime through so the freshly uploaded asset appears in the
+    // right picker straight away, without a page refresh.
+    onUploaded({
+      id: result.id,
+      filename: file.name,
+      url: result.url,
+      mime: file.type,
+    });
   }
 
   return (
@@ -756,12 +843,12 @@ function UploadButton({
         className="inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink disabled:opacity-50"
       >
         <Upload size={11} strokeWidth={1.8} />
-        {busy ? "Uploading…" : "Upload new"}
+        {busy ? "Uploading…" : label}
       </button>
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept={accept}
         className="hidden"
         onChange={(e) => {
           void handle(e.target.files?.[0]);

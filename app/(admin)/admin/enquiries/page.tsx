@@ -219,6 +219,14 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
                             · {row.properties.title}
                           </span>
                         ) : null}
+                        {/* Brochure requests carry a development, not a
+                            listing — without this the row showed no source
+                            page at all. */}
+                        {row.developments ? (
+                          <span className="text-bz-ink-2">
+                            {row.developments.name}
+                          </span>
+                        ) : null}
                         <span className="capitalize">
                           via {summariseSource(row.source)}
                         </span>

@@ -56,6 +56,23 @@ export type ImageFieldDef = {
   help?: string;
 };
 
+/**
+ * A document picked from the media library — a brochure PDF, say.
+ *
+ * Its stored value is an `ImageValue`, deliberately: the reference is a
+ * `media_id` either way, so `attachImageUrls` resolves the public URL for a
+ * file field without knowing it exists. The kinds differ only in what the
+ * picker offers and what the page does with the result.
+ */
+export type FileFieldDef = {
+  key: string;
+  label: string;
+  kind: "file";
+  help?: string;
+  /** MIME prefix the picker filters on. Defaults to application/pdf. */
+  accept?: string;
+};
+
 export type ListFieldDef = {
   key: string;
   label: string;
@@ -67,6 +84,7 @@ export type ListFieldDef = {
   fields: (
     | SimpleFieldDef
     | ImageFieldDef
+    | FileFieldDef
     | ToggleFieldDef
     | SelectFieldDef
   )[];
@@ -83,6 +101,7 @@ export type SeedKey = "areas" | "developments" | "properties";
 export type FieldDef =
   | SimpleFieldDef
   | ImageFieldDef
+  | FileFieldDef
   | ToggleFieldDef
   | SelectFieldDef
   | ListFieldDef;
@@ -159,6 +178,15 @@ export type ResolvedSection = {
 
 export function isImageField(f: FieldDef): f is ImageFieldDef {
   return f.kind === "image";
+}
+
+export function isFileField(f: FieldDef): f is FileFieldDef {
+  return f.kind === "file";
+}
+
+/** Both kinds store a media reference, so both need URL resolution. */
+export function isMediaField(f: FieldDef): f is ImageFieldDef | FileFieldDef {
+  return f.kind === "image" || f.kind === "file";
 }
 
 export function isListField(f: FieldDef): f is ListFieldDef {

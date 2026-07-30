@@ -385,6 +385,31 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
             </div>
           </div>
 
+          {enquiry.developments ? (
+            <div className="bg-bz-surface border border-bz-border rounded-lg p-5">
+              <Eyebrow>Came from this development</Eyebrow>
+              <div className="mt-3 text-[13px]">
+                <div className="text-bz-ink">{enquiry.developments.name}</div>
+                <div className="mt-2 flex flex-col gap-1.5">
+                  <Link
+                    href={`/developments/${enquiry.developments.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-[12px] text-bz-muted hover:text-bz-ink"
+                  >
+                    View project page <ExternalLink size={11} />
+                  </Link>
+                  <Link
+                    href={`/admin/pages/sub/development/${enquiry.developments.slug}`}
+                    className="inline-flex items-center gap-1.5 text-[12px] text-bz-muted hover:text-bz-ink"
+                  >
+                    Edit page content <ChevronRight size={11} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           {enquiry.properties ? (
             <div className="bg-bz-surface border border-bz-border rounded-lg p-5">
               <Eyebrow>About this property</Eyebrow>

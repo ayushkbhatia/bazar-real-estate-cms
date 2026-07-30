@@ -431,3 +431,17 @@ shows the trail.)
      Resend and set RESEND_FROM_ADDRESS.
   Until (2) is done, the "from Supabase Auth" complaint can't be fully fixed
   either: switching Supabase to custom SMTP needs the same verified domain.
+
+- [developments] The floor-plan gate is the same stub the brochure gate was.
+  `_components/floorplan-gate.tsx` still collects an email, waits, and toasts —
+  no enquiry, no record, nothing sent. It wants the same treatment the brochure
+  gate just got: name + phone + email, a real enquiry carrying development_id,
+  and the plan opening rather than being promised by email. Left out to keep this
+  change reviewable.
+
+- [developments] No brochure means the button still appears.
+  With no PDF set, the form captures the lead and says an advisor will send it —
+  deliberately, so the lead isn't lost. Nobody is notified specifically that a
+  brochure was requested without one existing, though; the enquiry just says
+  "Brochure request". A flag on the enquiry, or hiding the button, are both
+  defensible if that turns out to be noisy.

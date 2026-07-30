@@ -14,7 +14,7 @@ import {
   listDevelopmentsByIds,
   withFeatureImages,
 } from "@/lib/queries/development-content";
-import { list, str } from "@/lib/master-pages";
+import { img, list, str } from "@/lib/master-pages";
 import {
   developmentUrl,
   getPublishedDevelopmentBySlug,
@@ -179,6 +179,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const heroUrl = development.hero
     ? mediaPublicUrl(development.hero.storage_key)
     : null;
+
+  // Brochure PDF picked in the sub-page editor. `attachImageUrls` has already
+  // resolved the media_id into a public URL — a file field stores the same
+  // shape as an image field precisely so that works.
+  const heroValues = content.section("hero")?.values ?? {};
+  const brochure = img(heroValues, "brochure");
 
   // A gallery curated in the sub-page editor wins over the record's media.
   const curatedRenders = list<Record<string, unknown>>(
@@ -642,7 +648,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 />
               ) : null}
               <div className="ml-auto flex gap-2 items-end">
-                <BrochureGate developmentName={development.name} />
+                <BrochureGate
+                  developmentName={development.name}
+                  developmentId={development.id}
+                  brochureUrl={brochure?.url ?? null}
+                  buttonLabel={sv("hero", "brochure_label")}
+                />
                 <Button className="bg-white text-bz-ink hover:bg-white/90">
                   <Calendar size={14} strokeWidth={1.6} />
                   Book a viewing

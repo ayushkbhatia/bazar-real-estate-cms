@@ -1,6 +1,6 @@
 import { MASTER_PAGES } from "./pages";
 import {
-  isImageField,
+  isMediaField,
   isListField,
   isSelectField,
   isToggleField,
@@ -106,7 +106,8 @@ function emptyFor(field: FieldDef) {
   if (isListField(field)) return [];
   if (isSelectField(field)) return null;
   if (isToggleField(field)) return true;
-  if (isImageField(field)) return { media_id: null, alt: null, label: null };
+  // A file field stores the same shape as an image field — see FileFieldDef.
+  if (isMediaField(field)) return { media_id: null, alt: null, label: null };
   return null;
 }
 
@@ -251,7 +252,7 @@ function normaliseScalar(
     // the renderer already drops picks it can't resolve.
     return trimOrNull(value);
   }
-  if (isImageField(field)) {
+  if (isMediaField(field)) {
     if (!value || typeof value !== "object" || Array.isArray(value)) {
       return { media_id: null, alt: null, label: null };
     }

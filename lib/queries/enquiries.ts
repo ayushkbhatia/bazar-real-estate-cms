@@ -23,6 +23,9 @@ export type EnquiryListRow = {
     title: string;
     slug: string;
   } | null;
+  /** Set when the lead came from a development page — e.g. a brochure request. */
+  development_id: string | null;
+  developments: { name: string; slug: string } | null;
   assigned_agent_id: string | null;
   staff: { display_name: string; slug: string } | null;
   unread_count: number;
@@ -30,8 +33,9 @@ export type EnquiryListRow = {
 
 const LIST_FIELDS = `
   id, name, email, phone, brief_raw, source, status, temperature,
-  created_at, first_response_at, property_id, assigned_agent_id,
+  created_at, first_response_at, property_id, development_id, assigned_agent_id,
   properties:property_id(reference, title, slug),
+  developments:development_id(name, slug),
   staff:assigned_agent_id(display_name, slug),
   conversations(
     messages(id, direction, read_at)
@@ -77,9 +81,10 @@ export async function listEnquiries(filter: ListFilter = {}): Promise<{
 
   type RawRow = Omit<
     EnquiryListRow,
-    "unread_count" | "properties" | "staff"
+    "unread_count" | "properties" | "developments" | "staff"
   > & {
     properties: EnquiryListRow["properties"];
+    developments: EnquiryListRow["developments"];
     staff: EnquiryListRow["staff"];
     conversations:
       | {
@@ -106,6 +111,8 @@ export async function listEnquiries(filter: ListFilter = {}): Promise<{
       first_response_at: row.first_response_at,
       property_id: row.property_id,
       properties: row.properties,
+      development_id: row.development_id,
+      developments: row.developments,
       assigned_agent_id: row.assigned_agent_id,
       staff: row.staff,
       unread_count,
@@ -147,10 +154,12 @@ export async function getEnquiryById(
     .from("enquiries")
     .select(
       `id, name, email, phone, brief_raw, source, status, temperature,
-       created_at, first_response_at, property_id, assigned_agent_id,
+       created_at, first_response_at, property_id, development_id,
+       assigned_agent_id,
        budget_min, budget_max, timeline, pre_approved, internal_notes,
        inferred_constraints, closed_at, close_reason, account_id,
        properties:property_id(reference, title, slug),
+       developments:development_id(name, slug),
        staff:assigned_agent_id(display_name, slug),
        conversations(id,
          messages(id, direction, author_kind, body, channel, sent_at,
@@ -214,9 +223,10 @@ export async function listEnquiriesForUser(): Promise<EnquiryListRow[]> {
 
   type RawRow = Omit<
     EnquiryListRow,
-    "unread_count" | "properties" | "staff"
+    "unread_count" | "properties" | "developments" | "staff"
   > & {
     properties: EnquiryListRow["properties"];
+    developments: EnquiryListRow["developments"];
     staff: EnquiryListRow["staff"];
     conversations: { messages: { id: string; direction: string; read_at: string | null }[] }[];
   };
@@ -238,6 +248,8 @@ export async function listEnquiriesForUser(): Promise<EnquiryListRow[]> {
       first_response_at: row.first_response_at,
       property_id: row.property_id,
       properties: row.properties,
+      development_id: row.development_id,
+      developments: row.developments,
       assigned_agent_id: row.assigned_agent_id,
       staff: row.staff,
       unread_count,
