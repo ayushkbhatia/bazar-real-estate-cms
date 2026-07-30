@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { mediaPublicUrl } from "@/lib/media";
 import { isSupabaseConfigured } from "@/lib/env";
-import { currentUserIsAdmin } from "@/lib/queries/staff";
+import { currentUserIsAdmin, getStaffAuthMeta } from "@/lib/queries/staff";
 import { AgentEditForm } from "./_form";
+import { AgentAccessCard } from "./_access-card";
+import { sendStaffPasswordLink } from "../_actions";
 
 /** Portraits offered by the photo picker — the library's image assets. */
 async function fetchPhotoOptions() {
@@ -48,7 +50,10 @@ export default async function AdminAgentEditPage({
 
   if (error || !data) notFound();
 
-  const photoOptions = await fetchPhotoOptions();
+  const [photoOptions, authMeta] = await Promise.all([
+    fetchPhotoOptions(),
+    getStaffAuthMeta(data.user_id),
+  ]);
 
   const initial = {
     display_name: data.display_name,
@@ -108,6 +113,17 @@ export default async function AdminAgentEditPage({
           <span className="mono">/agents/{data.slug}</span> and on listings this
           advisor is assigned to.
         </p>
+
+        <div className="mt-8">
+          <AgentAccessCard
+            userId={data.user_id}
+            email={authMeta?.email ?? null}
+            lastSignInAt={authMeta?.last_sign_in_at ?? null}
+            displayName={data.display_name}
+            // By reference — see the note on the prop.
+            sendLink={sendStaffPasswordLink}
+          />
+        </div>
 
         <div className="mt-10">
           <AgentEditForm photoOptions={photoOptions} userId={data.user_id} initial={initial} />

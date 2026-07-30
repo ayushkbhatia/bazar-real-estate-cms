@@ -566,6 +566,43 @@ export function kycRejectedTemplate(opts: {
 }
 
 /**
+ * Password-reset link for an existing staff member, sent from the advisor
+ * profile in the admin.
+ *
+ * Deliberately not Supabase's recovery email: that arrives from "Supabase Auth"
+ * and its link resolves against the project's Site URL, which is the pair of
+ * problems the staff invitation flow was rebuilt to avoid.
+ */
+export function staffPasswordResetTemplate(opts: {
+  staffName: string;
+  resetUrl: string;
+  /** Who triggered it, so an unexpected email is traceable. */
+  senderName: string;
+  expiryDays?: number;
+}): { subject: string; text: string; html: string } {
+  const subject = "Set a new password for your Bazar admin account";
+  const days = opts.expiryDays ?? 14;
+
+  const text =
+    `Hi ${opts.staffName},\n\n` +
+    `${opts.senderName} has sent you a link to set a new password for the ` +
+    `Bazar admin console.\n\n` +
+    `Set your password: ${opts.resetUrl}\n\n` +
+    `The link is valid for ${days} days and can be used once. If you didn't ` +
+    `expect this, tell an administrator — your current password still works ` +
+    `until you set a new one.\n\n— Bazar\n`;
+
+  const html = shell(`
+    <p>Hi ${escape(opts.staffName)},</p>
+    <p><strong>${escape(opts.senderName)}</strong> has sent you a link to set a new password for the Bazar admin console.</p>
+    <p style="margin-top:22px"><a href="${opts.resetUrl}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Set a new password</a></p>
+    <p style="margin-top:18px;font-size:12px;color:#99896e">Valid for ${days} days, single use. If you didn't expect this, tell an administrator — your current password keeps working until you set a new one.</p>
+  `);
+
+  return { subject, text, html };
+}
+
+/**
  * Staff invitation email containing the accept link.
  *
  * `expiryDays` is a parameter rather than a literal because the copy claimed 7

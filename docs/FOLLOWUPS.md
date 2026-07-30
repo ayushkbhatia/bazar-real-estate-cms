@@ -401,3 +401,17 @@ shows the trail.)
   means an admin who mis-types an invitee's email hands password-set rights over
   that address to whoever owns it. Invitations are admin-only and audited; worth
   knowing before widening who can invite.
+
+- [auth] Staff can't reset their own password from the staff door.
+  /admin/login links to /forgot-password, which goes through Supabase's mailer
+  and Site URL — so a staff member self-serving a reset still gets a
+  "Supabase Auth" email with a localhost link. The admin-triggered path from the
+  advisor profile is now sound; the self-service one isn't. Pointing
+  /forgot-password at the same token flow (or fixing the Supabase config) would
+  close it.
+
+- [staff] Suspended accounts are blocked from password links, active ones aren't rate-limited.
+  sendStaffPasswordLink refuses a suspended member, and each send deletes the
+  previous outstanding reset for that address so old links die. There's no cap on
+  how often it can be pressed, though — an admin could mail someone repeatedly.
+  Harmless internally, worth a throttle if invites are ever delegated.

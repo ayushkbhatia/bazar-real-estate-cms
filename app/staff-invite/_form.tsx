@@ -10,14 +10,19 @@ import { activateInvitation, type ActivateResult } from "./_actions";
 export function ActivateForm({
   token,
   email,
-  displayName,
-  roleLabel,
+  heading,
+  lead,
+  submitLabel,
+  eyebrow,
   activate,
 }: {
   token: string;
   email: string;
-  displayName: string;
-  roleLabel: string;
+  /** Copy is decided server-side from the token's purpose. */
+  heading: string;
+  lead: string;
+  submitLabel: string;
+  eyebrow: string;
   /**
    * Passed by reference from the page — wrapping it in an arrow would make it
    * a plain function, which can't cross the server/client boundary.
@@ -57,14 +62,13 @@ export function ActivateForm({
   return (
     <form onSubmit={submit} className="flex flex-col gap-5">
       <div>
-        <Eyebrow>Activate your account</Eyebrow>
-        <h1 className="serif mt-2 text-[32px] leading-tight">
-          Welcome, {displayName.split(" ")[0]}.
-        </h1>
+        <Eyebrow>{eyebrow}</Eyebrow>
+        <h1 className="serif mt-2 text-[32px] leading-tight">{heading}</h1>
         <p className="mt-3 text-[13.5px] leading-relaxed text-bz-ink-2">
-          You&apos;ve been invited to the Bazar admin console as{" "}
-          <strong>{roleLabel}</strong>. Set a password to finish setting up{" "}
-          <span className="mono text-[12.5px]">{email}</span>.
+          {lead}
+        </p>
+        <p className="mt-2 text-[12.5px] text-bz-muted">
+          For <span className="mono">{email}</span>
         </p>
       </div>
 
@@ -120,7 +124,7 @@ export function ActivateForm({
             Activating…
           </>
         ) : (
-          "Set password and continue"
+          submitLabel
         )}
       </Button>
     </form>

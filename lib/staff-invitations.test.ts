@@ -1,8 +1,10 @@
 import { describe, it, expect } from "vitest";
 import {
   INVITE_EXPIRY_DAYS,
+  activationCopy,
   linkState,
   linkStateMessage,
+  purposeOf,
   type InvitationRow,
 } from "./staff-invitations";
 
@@ -92,5 +94,71 @@ describe("INVITE_EXPIRY_DAYS", () => {
     // 0010 sets `expires_at default now() + interval '14 days'`. The email copy
     // used to claim 7 — this constant is what keeps the two honest.
     expect(INVITE_EXPIRY_DAYS).toBe(14);
+  });
+});
+
+describe("purposeOf", () => {
+  it("reads a reset row", () => {
+    expect(purposeOf(row({ purpose: "reset" }))).toBe("reset");
+  });
+
+  it("defaults to invite for rows that predate the column", () => {
+    expect(purposeOf(row({ purpose: null }))).toBe("invite");
+    expect(purposeOf(row({ purpose: undefined }))).toBe("invite");
+    expect(purposeOf(row())).toBe("invite");
+  });
+
+  it("refuses to invent a third purpose", () => {
+    // A hand-edited or future value must not change the page's claims.
+    expect(purposeOf(row({ purpose: "something-else" }))).toBe("invite");
+  });
+
+  it("handles a missing row", () => {
+    expect(purposeOf(null)).toBe("invite");
+  });
+});
+
+describe("activationCopy", () => {
+  const opts = { firstName: "Omar", roleLabel: "Administrator" };
+
+  it("welcomes a new invitee and explains the role", () => {
+    const copy = activationCopy({ ...opts, purpose: "invite" });
+    expect(copy.heading).toBe("Welcome, Omar.");
+    expect(copy.lead).toContain("Administrator");
+    expect(copy.lead).toMatch(/invited/i);
+  });
+
+  it("does not welcome an existing colleague back as a new hire", () => {
+    const copy = activationCopy({ ...opts, purpose: "reset" });
+    expect(copy.heading).toBe("Set a new password, Omar.");
+    expect(copy.lead).not.toMatch(/invited/i);
+    expect(copy.lead).toMatch(/unchanged/i);
+  });
+
+  it("labels the button for what it does in each case", () => {
+    expect(activationCopy({ ...opts, purpose: "invite" }).submitLabel).toMatch(
+      /^Set password/,
+    );
+    expect(activationCopy({ ...opts, purpose: "reset" }).submitLabel).toMatch(
+      /^Save password/,
+    );
+  });
+});
+
+describe("linkStateMessage by purpose", () => {
+  it("calls it an invitation for invites", () => {
+    expect(linkStateMessage("expired", "invite")).toContain("invitation");
+  });
+
+  it("calls it a password link for resets", () => {
+    const msg = linkStateMessage("expired", "reset");
+    expect(msg).toContain("password link");
+    expect(msg).not.toContain("invitation");
+  });
+
+  it("still quotes the real expiry window", () => {
+    expect(linkStateMessage("expired", "reset")).toContain(
+      String(INVITE_EXPIRY_DAYS),
+    );
   });
 });
