@@ -28,25 +28,56 @@ import {
   updateStaffRole,
   updateStaffStatus,
 } from "./_actions";
+// One implementation, shared with the Account access panel on the advisor
+// profile — the two surfaces must not drift on what a password link does.
+import { sendStaffPasswordLink } from "../agents/_actions";
+import { accessLinkItem } from "@/lib/staff-invitations";
 
 export function StaffRowActions({
   userId,
+  displayName,
+  email,
   currentRole,
   currentStatus,
+  hasSignedIn,
   isSelf,
 }: {
   userId: string;
+  displayName: string;
+  /** No address ⇒ nowhere to send a link, so the item is disabled. */
+  email: string | null;
   currentRole: StaffRole;
   currentStatus: StaffStatus;
+  /** Drives the wording: an invite to resend vs a password to reset. */
+  hasSignedIn: boolean;
   isSelf: boolean;
 }) {
   const [pending, startTransition] = useTransition();
+  const access = accessLinkItem({
+    hasSignedIn,
+    email,
+    suspended: currentStatus === "suspended",
+  });
 
   function changeRole(role: StaffRole) {
     if (role === currentRole) return;
     startTransition(async () => {
       const r = await updateStaffRole({ user_id: userId, role });
       if (r.status === "ok") toast.success(r.message ?? "Role updated.");
+      else toast.error(r.message);
+    });
+  }
+
+  function sendAccessLink() {
+    if (
+      !confirm(
+        `Email ${displayName} a link to set a new password?\n\nTheir current password keeps working until they use it. The link is valid for 14 days and can be used once.`,
+      )
+    )
+      return;
+    startTransition(async () => {
+      const r = await sendStaffPasswordLink(userId);
+      if (r.status === "ok") toast.success(r.message);
       else toast.error(r.message);
     });
   }
@@ -118,6 +149,22 @@ export function StaffRowActions({
             ))}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-bz-muted-2">
+          Access
+        </DropdownMenuLabel>
+        <DropdownMenuItem
+          disabled={access.disabled}
+          onSelect={(e) => {
+            e.preventDefault();
+            sendAccessLink();
+          }}
+        >
+          {access.label}
+          {access.suffix}
+        </DropdownMenuItem>
 
         {currentStatus !== "suspended" && !isSelf ? (
           <>

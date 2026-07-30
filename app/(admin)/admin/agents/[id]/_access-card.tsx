@@ -5,6 +5,7 @@ import { KeyRound, Loader2, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import { accessLinkItem } from "@/lib/staff-invitations";
 import type { PasswordLinkResult } from "../_actions";
 
 /**
@@ -21,12 +22,15 @@ export function AgentAccessCard({
   email,
   lastSignInAt,
   displayName,
+  suspended = false,
   sendLink,
 }: {
   userId: string;
   email: string | null;
   lastSignInAt: string | null;
   displayName: string;
+  /** A password link would hand back the access a suspension removed. */
+  suspended?: boolean;
   /**
    * Passed by reference from the server page — an arrow wrapper here would be
    * a plain function and couldn't cross the server/client boundary.
@@ -35,6 +39,13 @@ export function AgentAccessCard({
 }) {
   const [pending, start] = useTransition();
   const [sentTo, setSentTo] = useState<string | null>(null);
+  // Shared with the Users & roles dropdown so the two can't drift on wording
+  // or on when the action is unavailable.
+  const access = accessLinkItem({
+    hasSignedIn: lastSignInAt !== null,
+    email,
+    suspended,
+  });
 
   function send() {
     if (
@@ -88,7 +99,7 @@ export function AgentAccessCard({
           variant="outline"
           size="sm"
           onClick={send}
-          disabled={pending || !email}
+          disabled={pending || access.disabled}
         >
           {pending ? (
             <>
@@ -98,12 +109,16 @@ export function AgentAccessCard({
           ) : (
             <>
               <KeyRound size={13} strokeWidth={1.7} />
-              {lastSignInAt ? "Send password reset" : "Resend invite"}
+              {access.label}
             </>
           )}
         </Button>
         {sentTo ? (
           <span className="text-[12px] text-bz-muted">Sent to {sentTo}.</span>
+        ) : access.disabled ? (
+          <span className="text-[12px] text-bz-muted">
+            Unavailable{access.suffix}.
+          </span>
         ) : null}
       </div>
 

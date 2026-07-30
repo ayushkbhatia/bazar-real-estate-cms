@@ -91,3 +91,30 @@ export function activationCopy(opts: {
     submitLabel: "Set password and continue",
   };
 }
+
+/**
+ * The "send a password link" menu item, for one staff row.
+ *
+ * Extracted so the Users & roles dropdown and the Account access panel on the
+ * advisor profile agree on the wording and on when the action is unavailable —
+ * and so the reasons are testable rather than buried in JSX.
+ *
+ * A disabled item always states why. An option that is simply greyed out with
+ * no explanation reads as a bug.
+ */
+export function accessLinkItem(opts: {
+  hasSignedIn: boolean;
+  email: string | null;
+  suspended: boolean;
+}): { label: string; suffix: string; disabled: boolean } {
+  // Someone who has never signed in is still finishing their invitation;
+  // someone who has is resetting a password they already had.
+  const label = opts.hasSignedIn ? "Send password reset" : "Resend invite";
+  if (!opts.email)
+    return { label, suffix: " (no email on file)", disabled: true };
+  // A password link for a suspended account would hand back the access the
+  // suspension removed.
+  if (opts.suspended)
+    return { label, suffix: " (restore first)", disabled: true };
+  return { label, suffix: "", disabled: false };
+}
