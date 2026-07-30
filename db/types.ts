@@ -2777,6 +2777,7 @@ export type Database = {
       staff_invitations: {
         Row: {
           accepted_at: string | null
+          activated_at: string | null
           created_at: string
           display_name: string
           email: string
@@ -2789,6 +2790,7 @@ export type Database = {
         }
         Insert: {
           accepted_at?: string | null
+          activated_at?: string | null
           created_at?: string
           display_name: string
           email: string
@@ -2801,6 +2803,7 @@ export type Database = {
         }
         Update: {
           accepted_at?: string | null
+          activated_at?: string | null
           created_at?: string
           display_name?: string
           email?: string

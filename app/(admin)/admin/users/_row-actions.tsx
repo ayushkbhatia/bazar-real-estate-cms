@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { MoreVertical } from "lucide-react";
 import {
@@ -24,6 +24,7 @@ import {
 } from "@/lib/schemas/staff";
 import {
   revokeInvitation,
+  resendInvitation,
   updateStaffRole,
   updateStaffStatus,
 } from "./_actions";
@@ -152,22 +153,44 @@ export function StaffRowActions({
 
 export function InvitationActions({ invitationId }: { invitationId: string }) {
   const [pending, startTransition] = useTransition();
-  function revoke() {
+  const [busy, setBusy] = useState<"revoke" | "resend" | null>(null);
+
+  function run(
+    kind: "revoke" | "resend",
+    action: () => Promise<{ status: string; message?: string }>,
+  ) {
     if (pending) return;
+    setBusy(kind);
     startTransition(async () => {
-      const r = await revokeInvitation(invitationId);
-      if (r.status === "ok") toast.success(r.message ?? "Revoked.");
-      else toast.error(r.message);
+      const r = await action();
+      setBusy(null);
+      if (r.status === "ok") toast.success(r.message ?? "Done.");
+      else toast.error(r.message ?? "Something went wrong.");
     });
   }
+
   return (
-    <button
-      type="button"
-      onClick={revoke}
-      disabled={pending}
-      className="text-[12px] text-bz-muted hover:text-bz-danger"
-    >
-      {pending ? "Revoking…" : "Revoke"}
-    </button>
+    <span className="inline-flex items-center gap-3">
+      {/* Re-issues the token and emails a fresh link. Needed when an invitee
+          never managed to set a password — revoking and re-inviting doesn't
+          recover that, because the address already has an auth user. */}
+      <button
+        type="button"
+        onClick={() => run("resend", () => resendInvitation(invitationId))}
+        disabled={pending}
+        title="Send a fresh activation link"
+        className="text-[12px] text-bz-muted hover:text-bz-ink disabled:opacity-60"
+      >
+        {busy === "resend" ? "Sending…" : "Resend"}
+      </button>
+      <button
+        type="button"
+        onClick={() => run("revoke", () => revokeInvitation(invitationId))}
+        disabled={pending}
+        className="text-[12px] text-bz-muted hover:text-bz-danger disabled:opacity-60"
+      >
+        {busy === "revoke" ? "Revoking…" : "Revoke"}
+      </button>
+    </span>
   );
 }

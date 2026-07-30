@@ -12,12 +12,19 @@ export const metadata: Metadata = {
 };
 
 type PageProps = {
-  searchParams: Promise<{ redirect?: string | string[] }>;
+  searchParams: Promise<{
+    redirect?: string | string[];
+    /** Set by the invite-activation flow. */
+    invited?: string | string[];
+    email?: string | string[];
+  }>;
 };
 
 export default async function AdminLoginPage({ searchParams }: PageProps) {
   const sp = await searchParams;
   const requested = typeof sp.redirect === "string" ? sp.redirect : undefined;
+  const justActivated = sp.invited === "1";
+  const prefillEmail = typeof sp.email === "string" ? sp.email : undefined;
 
   // Already signed in as active staff? Skip the form and go straight in.
   if (isSupabaseConfigured) {
@@ -35,5 +42,11 @@ export default async function AdminLoginPage({ searchParams }: PageProps) {
     }
   }
 
-  return <StaffSignInForm redirectTo={requested} />;
+  return (
+    <StaffSignInForm
+      redirectTo={requested}
+      prefillEmail={prefillEmail}
+      justActivated={justActivated}
+    />
+  );
 }

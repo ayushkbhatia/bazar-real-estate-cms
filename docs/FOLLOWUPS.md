@@ -383,3 +383,21 @@ shows the trail.)
   stays a plain string. An editor can't choose which word is emphasised, and a
   headline ending in a short word ("of") will italicise that. Storing rich text
   or a separate "emphasised tail" field would fix it.
+
+- [auth] Customer auth emails still come from Supabase, with the localhost link.
+  The staff invitation now sends via Resend with a link built from the live
+  request, but /sign-up confirmation, /forgot-password recovery and /magic-link
+  all still use Supabase's mailer — so they arrive from "Supabase Auth" and
+  their links resolve against the project's Site URL, which is still
+  http://localhost:3000. Fixing it is either a dashboard change (Site URL +
+  redirect allow-list + custom SMTP pointed at Resend) or moving those flows to
+  our own tokens the way the invitation now works. Not touched here because it
+  changes production auth configuration.
+
+- [auth] Invitation activation trusts the token alone, by design.
+  /staff-invite sets a password for whoever holds a valid token — including for
+  an auth user that already exists, which is how the two stranded invitations
+  are recoverable. That is the same trust model as a password-reset link, but it
+  means an admin who mis-types an invitee's email hands password-set rights over
+  that address to whoever owns it. Invitations are admin-only and audited; worth
+  knowing before widening who can invite.

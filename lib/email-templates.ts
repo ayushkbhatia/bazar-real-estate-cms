@@ -565,27 +565,35 @@ export function kycRejectedTemplate(opts: {
   return { subject, text, html };
 }
 
-/** Staff invitation email containing the accept link. */
+/**
+ * Staff invitation email containing the accept link.
+ *
+ * `expiryDays` is a parameter rather than a literal because the copy claimed 7
+ * days while `staff_invitations.expires_at` defaults to 14 — the sender now
+ * passes the real window so the two can't drift again.
+ */
 export function staffInvitationTemplate(opts: {
   inviteeName: string;
   inviterName: string;
   acceptUrl: string;
   role: string;
+  expiryDays?: number;
 }): { subject: string; text: string; html: string } {
   const subject = `You're invited to Bazar as ${opts.role}`;
+  const days = opts.expiryDays ?? 14;
 
   const text =
     `Hi ${opts.inviteeName},\n\n` +
     `${opts.inviterName} invited you to Bazar Real Estate's internal ` +
     `console as ${opts.role}.\n\n` +
-    `Accept the invitation: ${opts.acceptUrl}\n\n` +
-    `The link is valid for 7 days.\n\n— Bazar\n`;
+    `Set your password and activate the account: ${opts.acceptUrl}\n\n` +
+    `The link is valid for ${days} days.\n\n— Bazar\n`;
 
   const html = shell(`
     <p>Hi ${escape(opts.inviteeName)},</p>
     <p><strong>${escape(opts.inviterName)}</strong> invited you to Bazar Real Estate's internal console as <strong>${escape(opts.role)}</strong>.</p>
-    <p style="margin-top:22px"><a href="${opts.acceptUrl}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Accept invitation</a></p>
-    <p style="margin-top:18px;font-size:12px;color:#99896e">The link is valid for 7 days.</p>
+    <p style="margin-top:22px"><a href="${opts.acceptUrl}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Set your password</a></p>
+    <p style="margin-top:18px;font-size:12px;color:#99896e">The link is valid for ${days} days.</p>
   `);
 
   return { subject, text, html };
