@@ -371,3 +371,15 @@ shows the trail.)
   now logged on the channel they actually went out on. The account inbox still
   renders the thread, so nothing broke, but "reply in the lead's web inbox" is
   no longer a distinct channel an advisor can choose.
+
+- [master-pages] Chip lists are a textarea, not a repeatable field.
+  Community-type chips are stored one label per line, because a list field's
+  sub-fields can only be scalars — a nested list isn't expressible in the
+  section model. Fine for eight short names; if chips ever need their own link
+  or image, the model needs a nested-list kind first.
+
+- [areas] The hero's italic treatment is derived, not authored.
+  `headlineParts` italicises the final word of the areas headline so the field
+  stays a plain string. An editor can't choose which word is emphasised, and a
+  headline ending in a short word ("of") will italicise that. Storing rich text
+  or a separate "emphasised tail" field would fix it.

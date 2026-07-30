@@ -17,6 +17,10 @@ import {
 } from "@/app/(public)/_components/home/section-copy";
 import { OFFPLAN_LAUNCH_COUNT } from "@/app/(public)/_components/marketing/counts";
 import {
+  AREAS_CARD_COUNT,
+  MARQUEE_SLUGS,
+} from "@/app/(public)/areas/_components/area-cards";
+import {
   MasterPageEditor,
   type MediaOption,
   type Seeds,
@@ -80,11 +84,27 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
     slug: p.reference,
   }));
 
+  // The areas index leads with a curated marquee order, not the raw area
+  // order the home page uses — so "load what's on the page" has to follow
+  // whichever page is being edited, or the seeded list wouldn't match what
+  // renders.
+  const bySlug = new Map(areaSeed.map((a) => [a.slug, a]));
+  const marqueeSeed = [
+    ...MARQUEE_SLUGS.flatMap((s) => {
+      const a = bySlug.get(s);
+      return a ? [a] : [];
+    }),
+    ...areaSeed.filter((a) => !MARQUEE_SLUGS.includes(a.slug)),
+  ].slice(0, AREAS_CARD_COUNT);
+
   const seeds: Seeds = {
     areas: {
       options: areaSeed,
-      // LocationBrowsing renders the first 8 areas.
-      current: areaSeed.slice(0, HOME_AREA_TILE_COUNT),
+      current:
+        key === "areas"
+          ? marqueeSeed
+          : // LocationBrowsing renders the first 8 areas.
+            areaSeed.slice(0, HOME_AREA_TILE_COUNT),
     },
     developments: {
       // Sorted by name for the picker; only published projects are offered,

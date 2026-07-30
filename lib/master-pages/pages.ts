@@ -1035,4 +1035,307 @@ const OFF_PLAN: MasterPageDef = {
   ],
 };
 
-export const MASTER_PAGES: MasterPageDef[] = [HOME, BUY, RENT, OFF_PLAN];
+/**
+ * /areas — the locations index.
+ *
+ * Defaults below are transcribed from the page and its three local components
+ * (_components/area-cards, area-spotlights, community-types), which held their
+ * copy as module constants. The chip lists inside community types are stored as
+ * one-per-line text: a list field's sub-fields can only be scalars, so a nested
+ * list isn't expressible in this model — and a textarea is easier to edit for
+ * eight short names than eight rows of inputs would be.
+ */
+const AREAS: MasterPageDef = {
+  key: "areas",
+  label: "Areas",
+  path: "/areas",
+  description: "The locations index — area cards, spotlights and community types.",
+  sections: [
+    {
+      key: "hero",
+      label: "Hero",
+      description: "Eyebrow, headline and standfirst at the top of the page.",
+      locked: true,
+      fields: [
+        eyebrow(),
+        heading({ key: "title", label: "Headline" }),
+        body({ key: "subtitle", label: "Sub-headline" }),
+      ],
+      defaults: {
+        eyebrow: "Abu Dhabi Locations",
+        // The rendered headline breaks across two lines and italicises the last
+        // word. Kept as one string here; the component owns the treatment.
+        title: "Explore Abu Dhabi's leading communities.",
+        subtitle:
+          "From waterfront destinations to family-friendly neighbourhoods, discover the areas that define living and investing in the capital.",
+      },
+    },
+    {
+      key: "area_cards",
+      label: "Abu Dhabi Locations",
+      description: "The 4×2 grid of clickable area cards below the hero.",
+      dataNote:
+        "Listing counts always come from live data. Leave the card list empty to show the eight marquee areas automatically.",
+      fields: [
+        {
+          key: "cards",
+          label: "Area cards",
+          kind: "list",
+          itemLabel: "card",
+          max: 12,
+          seedKey: "areas",
+          help: "Switch a card off to hide it without deleting it.",
+          fields: [
+            toggle("enabled", "Show this card"),
+            text("name", "Title", { max: 80 }),
+            link("href", "Link"),
+            image("image", "Image"),
+            text("slug", "Area slug", {
+              max: 140,
+              optional: true,
+              help: "Matches the live listing count to this card.",
+            }),
+          ],
+        },
+      ],
+      defaults: { cards: [] },
+    },
+    {
+      key: "area_map",
+      label: "Area map",
+      description: "Interactive map of Abu Dhabi communities.",
+      dataNote: "Pins come from published areas and listings.",
+      fields: [],
+      defaults: {},
+    },
+    {
+      key: "area_spotlights",
+      label: "Area spotlights",
+      description: "Two large editorial tiles for the areas being pushed hardest.",
+      fields: [
+        eyebrow(),
+        heading(),
+        area("sub", "Sub-heading", { max: 300 }),
+        text("tile_eyebrow", "Eyebrow on each tile", { max: 40, optional: true }),
+        {
+          key: "items",
+          label: "Spotlights",
+          kind: "list",
+          itemLabel: "spotlight",
+          max: 4,
+          fields: [
+            toggle("enabled", "Show this spotlight"),
+            text("name", "Area name", { max: 80 }),
+            area("blurb", "Blurb", { max: 400 }),
+            link("href", "Link"),
+            image("image", "Image"),
+            text("img", "Placeholder caption", { max: 80, optional: true }),
+          ],
+        },
+      ],
+      defaults: {
+        eyebrow: "Area spotlights",
+        heading: "Two islands worth a closer look.",
+        sub: "Where demand, new supply, and lifestyle are converging right now.",
+        tile_eyebrow: "Area Spotlight",
+        items: [
+          {
+            enabled: true,
+            name: "Hudayriyat Island",
+            blurb:
+              "Abu Dhabi's emerging waterfront destination — beaches, sports and leisure districts, and a new wave of low-rise coastal homes.",
+            href: "/areas/hudayriyat-island",
+            image: { media_id: null, alt: null, label: null },
+            img: "hudayriyat island · coastline aerial",
+          },
+          {
+            enabled: true,
+            name: "Al Reem Island",
+            blurb:
+              "A vibrant, high-density waterfront community minutes from the city — strong rental demand and a deep mix of apartments and towers.",
+            href: "/areas/al-reem-island",
+            image: { media_id: null, alt: null, label: null },
+            img: "al reem island · skyline waterfront",
+          },
+        ],
+      },
+    },
+    {
+      key: "list_your_property",
+      label: "List your property",
+      description: "Lead-capture band with the seller enquiry form.",
+      dataNote: "The form fields themselves aren't editable here.",
+      fields: [eyebrow(), heading(), body(), image("image", "Image")],
+      defaults: {
+        eyebrow: "List your property",
+        heading: "List your property",
+        body: "Looking to sell or rent? We'll handle the process for you.",
+        image: { media_id: null, alt: null, label: null },
+      },
+    },
+    {
+      key: "community_types",
+      label: "Community types",
+      description:
+        "Alternating image/copy rows — waterfront, gated, luxury, family.",
+      fields: [
+        eyebrow(),
+        heading(),
+        area("sub", "Sub-heading", { max: 300 }),
+        {
+          key: "items",
+          label: "Community types",
+          kind: "list",
+          itemLabel: "type",
+          max: 8,
+          fields: [
+            toggle("enabled", "Show this type"),
+            text("name", "Name", { max: 80 }),
+            area("tagline", "Tagline", { max: 400 }),
+            area("about", "Supporting line", { max: 400 }),
+            area("chips", "Communities", {
+              max: 800,
+              help: "One per line. Rendered as chips.",
+            }),
+            text("chips_label", "Chips heading", { max: 80, optional: true }),
+            text("cta_label", "Button label", { max: 60, optional: true }),
+            link("cta_href", "Button link"),
+            image("image", "Image"),
+            text("img", "Placeholder caption", { max: 80, optional: true }),
+          ],
+        },
+      ],
+      defaults: {
+        eyebrow: "Community types",
+        heading: "Find the setting that fits your life.",
+        sub: "Every community has a character. Filter by the way you want to live.",
+        items: [
+          {
+            enabled: true,
+            name: "Waterfront Communities",
+            tagline:
+              "Explore communities designed around sea views, canals, promenades, and relaxed waterfront living.",
+            about:
+              "Designed around views, open spaces, and lifestyle convenience, waterfront communities remain highly desirable.",
+            chips:
+              "Mamsha Al Saadiyat\nHidd Al Saadiyat\nAl Muneera\nAl Bandar\nAl Zeina\nYas Acres\nReem Hills\nGardenia Bay",
+            chips_label: "Popular waterfront communities",
+            cta_label: "Explore waterfront communities",
+            cta_href: "/areas",
+            image: { media_id: null, alt: null, label: null },
+            img: "waterfront promenade · canal",
+          },
+          {
+            enabled: true,
+            name: "Gated Communities",
+            tagline:
+              "Discover private residential communities offering security, comfort, and a more exclusive living environment.",
+            about:
+              "Gated communities are ideal for families seeking privacy, security, landscaped spaces, and everyday convenience.",
+            chips:
+              "Yas Acres\nSaadiyat Lagoons\nSaadiyat Reserve\nAl Raha Gardens\nReem Hills\nAl Ghadeer\nBloom Living\nHidd Al Saadiyat",
+            chips_label: "Popular gated communities",
+            cta_label: "Explore gated communities",
+            cta_href: "/areas",
+            image: { media_id: null, alt: null, label: null },
+            img: "gated villa community · aerial",
+          },
+          {
+            enabled: true,
+            name: "Luxury Communities",
+            tagline:
+              "Explore Abu Dhabi's most premium addresses, offering high-end residences, exclusive amenities, and prime locations.",
+            about:
+              "Luxury communities offer premium homes, refined surroundings, privacy, and strong lifestyle appeal.",
+            chips:
+              "Mamsha Al Saadiyat\nHidd Al Saadiyat\nSaadiyat Lagoons\nSaadiyat Reserve\nNurai Island\nNobu Residences\nBaccarat Residences Saadiyat\nRamhan Island",
+            chips_label: "Popular luxury communities",
+            cta_label: "Explore luxury communities",
+            cta_href: "/areas",
+            image: { media_id: null, alt: null, label: null },
+            img: "luxury residence · beachfront",
+          },
+          {
+            enabled: true,
+            name: "Family-Friendly Communities",
+            tagline:
+              "Find communities designed around comfort, convenience, space, and everyday family living.",
+            about:
+              "Family-friendly communities are ideal for those seeking space, convenience, and long-term comfort.",
+            chips:
+              "Yas Acres\nAl Raha Gardens\nBloom Living\nAl Ghadeer\nSaadiyat Lagoons\nNoya\nNoya Viva\nFay Al Reeman",
+            chips_label: "Popular family-friendly communities",
+            cta_label: "Explore family-friendly communities",
+            cta_href: "/areas",
+            image: { media_id: null, alt: null, label: null },
+            img: "family townhouses · park",
+          },
+        ],
+      },
+    },
+    {
+      key: "why_bazar",
+      label: "Why Bazar",
+      description: "Navy band with the positioning statement and stats.",
+      fields: [
+        eyebrow(),
+        heading({ key: "title", label: "Heading" }),
+        body(),
+        statList(),
+      ],
+      defaults: {
+        eyebrow: "Why Bazar",
+        title: "Two decades of Abu Dhabi expertise, on your side.",
+        body: "With over 20 years in the UAE market, Bazar pairs street-level knowledge of every Abu Dhabi community with developer relationships and honest, client-first guidance — so you choose an area with conviction, not guesswork.",
+        stats: [
+          { value: "20+ yrs", label: "In the UAE market" },
+          { value: "Every district", label: "Abu Dhabi coverage" },
+        ],
+      },
+    },
+    {
+      key: "faqs",
+      label: "Areas FAQ",
+      description: "Accordion of questions at the foot of the page.",
+      fields: [
+        eyebrow(),
+        heading(),
+        area("sub", "Sub-heading", { max: 300 }),
+        faqList(),
+      ],
+      defaults: {
+        eyebrow: "Areas FAQ",
+        heading: "Questions about Abu Dhabi's areas.",
+        sub: "The essentials on ownership, investment, and choosing where to live.",
+        items: [
+          {
+            q: "Which are the best areas to invest in Abu Dhabi?",
+            a: "It depends on your goal. Saadiyat Island and Al Reem Island are perennial favourites for capital appreciation and rental demand, while emerging destinations like Hudayriyat Island offer earlier entry points. Our advisors can match an area to your budget, timeline, and whether you're buying to live or to let.",
+          },
+          {
+            q: "Can foreigners buy property in these areas?",
+            a: "Yes. Abu Dhabi allows foreign nationals to own freehold property in designated investment zones, which cover most of the islands and communities featured here — including Saadiyat, Al Reem, Yas, and Al Raha Beach.",
+          },
+          {
+            q: "What's the difference between an investment zone and a freehold area?",
+            a: "In Abu Dhabi's designated investment zones, non-UAE nationals can hold freehold ownership of the property and the land. Elsewhere, foreign ownership is typically structured as long-term leasehold or usufruct. Every area guide notes its ownership terms.",
+          },
+          {
+            q: "Which areas are best for families?",
+            a: "Gated, low-rise communities with schools and parks nearby tend to suit families best — Yas Acres, Al Raha Gardens, Saadiyat Lagoons, and Bloom Living are common choices. Filter by the family-friendly community type above to see the full list.",
+          },
+          {
+            q: "Which areas offer the strongest rental yields?",
+            a: "Higher-density waterfront communities such as Al Reem Island typically post the strongest gross yields thanks to steady tenant demand, while premium addresses trade yield for capital growth. Each area guide shows median prices and recent market movement.",
+          },
+          {
+            q: "How do I choose between a waterfront and a gated community?",
+            a: "Waterfront communities lead on views, promenades, and lifestyle; gated communities lead on privacy, security, and space for families. Tell an advisor how you want to live and we'll shortlist areas that fit — often across both categories.",
+          },
+        ],
+      },
+    },
+  ],
+};
+
+export const MASTER_PAGES: MasterPageDef[] = [HOME, BUY, RENT, OFF_PLAN, AREAS];

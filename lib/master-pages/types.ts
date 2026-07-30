@@ -131,7 +131,7 @@ export type SectionDef = {
   dataNote?: string;
 };
 
-export type MasterPageKey = "home" | "buy" | "rent" | "off-plan";
+export type MasterPageKey = "home" | "buy" | "rent" | "off-plan" | "areas";
 
 export type MasterPageDef = {
   key: MasterPageKey;
