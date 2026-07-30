@@ -120,6 +120,7 @@ export default async function AdminAgentEditPage({
             email={authMeta?.email ?? null}
             lastSignInAt={authMeta?.last_sign_in_at ?? null}
             displayName={data.display_name}
+            suspended={data.status === "suspended"}
             // By reference — see the note on the prop.
             sendLink={sendStaffPasswordLink}
           />

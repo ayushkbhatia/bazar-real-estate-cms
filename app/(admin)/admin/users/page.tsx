@@ -224,8 +224,11 @@ function StaffTableRow({
       <td className="px-3 py-3 text-right">
         <StaffRowActions
           userId={staff.user_id}
+          displayName={staff.display_name}
+          email={staff.email}
           currentRole={staff.role}
           currentStatus={staff.status}
+          hasSignedIn={staff.last_sign_in_at !== null}
           isSelf={isSelf}
         />
       </td>

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   INVITE_EXPIRY_DAYS,
+  accessLinkItem,
   activationCopy,
   linkState,
   linkStateMessage,
@@ -160,5 +161,81 @@ describe("linkStateMessage by purpose", () => {
     expect(linkStateMessage("expired", "reset")).toContain(
       String(INVITE_EXPIRY_DAYS),
     );
+  });
+});
+
+describe("accessLinkItem", () => {
+  it("offers to resend the invite to someone who has never signed in", () => {
+    const item = accessLinkItem({
+      hasSignedIn: false,
+      email: "a@b.com",
+      suspended: false,
+    });
+    expect(item).toEqual({ label: "Resend invite", suffix: "", disabled: false });
+  });
+
+  it("offers a password reset to someone who has", () => {
+    const item = accessLinkItem({
+      hasSignedIn: true,
+      email: "a@b.com",
+      suspended: false,
+    });
+    expect(item.label).toBe("Send password reset");
+    expect(item.disabled).toBe(false);
+  });
+
+  it("disables it with a reason when there's no email", () => {
+    const item = accessLinkItem({
+      hasSignedIn: true,
+      email: null,
+      suspended: false,
+    });
+    expect(item.disabled).toBe(true);
+    expect(item.suffix).toMatch(/no email/i);
+  });
+
+  it("disables it for a suspended account", () => {
+    // A password link would hand back the access the suspension removed.
+    const item = accessLinkItem({
+      hasSignedIn: true,
+      email: "a@b.com",
+      suspended: true,
+    });
+    expect(item.disabled).toBe(true);
+    expect(item.suffix).toMatch(/restore first/i);
+  });
+
+  it("reports the missing email first when both apply", () => {
+    const item = accessLinkItem({
+      hasSignedIn: false,
+      email: null,
+      suspended: true,
+    });
+    expect(item.suffix).toMatch(/no email/i);
+  });
+
+  it("never disables without explaining why", () => {
+    for (const email of [null, "a@b.com"]) {
+      for (const suspended of [true, false]) {
+        for (const hasSignedIn of [true, false]) {
+          const item = accessLinkItem({ hasSignedIn, email, suspended });
+          if (item.disabled) expect(item.suffix.trim()).not.toBe("");
+          else expect(item.suffix).toBe("");
+        }
+      }
+    }
+  });
+
+  it("keeps the same wording the advisor profile panel uses", () => {
+    // The two surfaces must not drift — an admin seeing "Resend invite" in one
+    // place and something else in the other would assume they differ.
+    expect(
+      accessLinkItem({ hasSignedIn: false, email: "a@b.com", suspended: false })
+        .label,
+    ).toBe("Resend invite");
+    expect(
+      accessLinkItem({ hasSignedIn: true, email: "a@b.com", suspended: false })
+        .label,
+    ).toBe("Send password reset");
   });
 });
