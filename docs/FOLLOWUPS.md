@@ -415,3 +415,19 @@ shows the trail.)
   previous outstanding reset for that address so old links die. There's no cap on
   how often it can be pressed, though — an admin could mail someone repeatedly.
   Harmless internally, worth a throttle if invites are ever delegated.
+- [auth] TWO CONFIG CHANGES ARE STILL REQUIRED — code alone can't fix these.
+  1. Supabase auth: `site_url` is `http://localhost:3000` and `uri_allow_list`
+     is EMPTY (read from the Management API on 2026-07-30). Every auth email
+     link — sign-up confirmation, magic link, recovery — resolves to localhost,
+     and because the allow-list is empty Supabase rejects any redirectTo the
+     code passes and falls back to site_url. `mailer_autoconfirm` is false, so
+     new customer sign-ups are blocked in production. Set site_url to the
+     deployed origin and allow-list the prod + preview + localhost callbacks.
+  2. Resend has no verified sending domain (only `indushydraulics.me`, status
+     `not_started`) and `RESEND_FROM_ADDRESS` is unset, so every Bazar-sent
+     email goes out as onboarding@resend.dev — Resend's sandbox sender, which
+     only delivers to the account owner's address. Staff invitations and
+     password links to real client addresses will be refused. Verify bazar.ae in
+     Resend and set RESEND_FROM_ADDRESS.
+  Until (2) is done, the "from Supabase Auth" complaint can't be fully fixed
+  either: switching Supabase to custom SMTP needs the same verified domain.

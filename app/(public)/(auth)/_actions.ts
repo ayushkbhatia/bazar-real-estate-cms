@@ -6,6 +6,7 @@ import {
   createSupabaseServerClient,
 } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { absoluteUrl } from "@/lib/site-url";
 import { pickPostSignInPath } from "@/lib/auth-redirect";
 
 const signInSchema = z.object({
@@ -103,6 +104,15 @@ export async function signUpAction(
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
+      // Without this, Supabase builds the confirmation link from the project's
+      // Site URL alone — one static host for every environment. Deriving it
+      // from the live request means a preview deployment confirms back to
+      // itself instead of sending the user to production (or, as configured
+      // until now, to localhost).
+      //
+      // The target must appear in the project's redirect allow-list, or
+      // Supabase silently falls back to Site URL.
+      emailRedirectTo: await absoluteUrl("/auth/callback?type=signup"),
       data: {
         first_name: parsed.data.firstName,
         last_name: parsed.data.lastName,
@@ -131,6 +141,12 @@ export async function magicLinkAction(
   const supabase = await createSupabaseServerClient();
   const { error } = await supabase.auth.signInWithOtp({
     email: parsed.data.email,
+    options: {
+      // Same reasoning as sign-up. This is also the password-recovery route —
+      // /forgot-password sends people here — so a broken link here means no
+      // way back into an account.
+      emailRedirectTo: await absoluteUrl("/auth/callback?type=magiclink"),
+    },
   });
   if (error) return { status: "error", message: error.message };
 
