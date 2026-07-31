@@ -26,8 +26,7 @@ import { Pagination } from "./pagination";
 import { ModeSegmented } from "./mode-segmented";
 import { DrawAreaTool } from "./draw-area-tool";
 import { CommuteTimeTool } from "./commute-time-tool";
-import { SavedIdsProvider } from "./saved-ids-provider";
-import { ListingCardSaveable } from "./listing-card-saveable";
+import { ListingCardPriced } from "./listing-card-priced";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
 
@@ -109,7 +108,7 @@ export async function SearchList({
   const lastShown = Math.min(offset + rows.length, total);
 
   return (
-    <SavedIdsProvider>
+    <>
       <section className="px-4 md:px-12 pt-10 md:pt-16 pb-6 md:pb-10 border-b border-bz-border">
         <Eyebrow>{copy.eyebrow}</Eyebrow>
         <h1
@@ -193,7 +192,7 @@ export async function SearchList({
                   href={propertyUrl(row)}
                   className="block"
                 >
-                  <ListingCardSaveable
+                  <ListingCardPriced
                     variant="row"
                     price={formatPriceAED(row.price_aed)}
                     priceAed={row.price_aed}
@@ -230,7 +229,7 @@ export async function SearchList({
                     href={propertyUrl(row)}
                     className="block"
                   >
-                    <ListingCardSaveable
+                    <ListingCardPriced
                       price={formatPriceAED(row.price_aed)}
                       priceAed={row.price_aed}
                       title={row.title}
@@ -288,6 +287,6 @@ export async function SearchList({
           searchParams={searchParams}
         />
       </section>
-    </SavedIdsProvider>
+    </>
   );
 }

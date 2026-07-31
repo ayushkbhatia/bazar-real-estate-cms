@@ -19,7 +19,7 @@ import {
   formatPriceAED,
   getPropertyExistenceByReference,
   getPublishedPropertyByReference,
-  getSavedPropertyIds,
+  
   getSimilarProperties,
   propertyUrl,
 } from "@/lib/queries/properties";
@@ -197,13 +197,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   ]);
 
   const amenityOptions = toOptions(amenityTaxonomy);
-  const savedSet = await getSavedPropertyIds([
-    property.id,
-    ...similar.map((s) => s.id),
-  ]);
   const geo = await fetchPropertyGeo(property.id);
   const galleryMedia = await fetchGalleryMedia(property.id);
-  const isAuthed = user !== null;
 
   // Best-effort recently-viewed tracking. Anonymous views aren't tracked.
   if (user) {
@@ -319,8 +314,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         propertyId={property.id}
         reference={property.reference}
         title={property.title}
-        initialSaved={savedSet.has(property.id)}
-        isAuthed={isAuthed}
       />
 
       <div className="mt-4">
@@ -606,8 +599,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                   }
                   heroAlt={row.hero?.alt_text ?? row.title}
                   propertyId={row.id}
-                  initialSaved={savedSet.has(row.id)}
-                  isAuthed={isAuthed}
                   compareEnabled
                 />
               </Link>

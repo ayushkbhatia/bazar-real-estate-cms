@@ -1,10 +1,8 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import { useQueryStates } from "nuqs";
-import { Bookmark, Search, X, SlidersHorizontal } from "lucide-react";
-import { toast } from "sonner";
+import { Search, X, SlidersHorizontal } from "lucide-react";
 import { BottomSheet } from "@/components/brand/mobile";
 import {
   Select,
@@ -18,8 +16,6 @@ import { Button } from "@/components/ui/button";
 import { PROPERTY_TYPES } from "@/lib/schemas/property";
 import { filterParsers } from "@/lib/filters/property";
 import { cn } from "@/lib/utils";
-import { saveCurrentSearch } from "@/app/(account)/_actions";
-import { useSavedIds } from "./saved-ids-provider";
 
 const TYPE_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
   apartment: "Apartment",
@@ -58,14 +54,15 @@ const UNSET = "__unset__";
 export type AreaOption = { slug: string; name: string };
 
 type Props = {
-  mode: "buy" | "rent" | "off_plan" | "commercial";
+  /**
+   * Retained so every call site keeps its existing shape; the bar no longer
+   * varies by mode now that "Save search" is gone.
+   */
+  mode?: "buy" | "rent" | "off_plan" | "commercial";
   areas: AreaOption[];
 };
 
-export function FilterBar({ mode, areas }: Props) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { isAuthed } = useSavedIds();
+export function FilterBar({ areas }: Props) {
   const [{ q, beds, baths, type, price_min, price_max, area }, setState] =
     useQueryStates(filterParsers, {
       shallow: false, // re-fetch the RSC page on change
@@ -93,53 +90,6 @@ export function FilterBar({ mode, areas }: Props) {
   const activeCount = [q, beds, baths, type, price_min, price_max, area].filter(
     (v) => v !== null && v !== undefined && v !== "",
   ).length;
-
-  function onSaveSearch() {
-    if (!isAuthed) {
-      const target = pathname ?? "/buy";
-      router.push(`/sign-in?redirect=${encodeURIComponent(target)}`);
-      return;
-    }
-    const defaultName = q
-      ? `"${q}"`
-      : `${mode === "rent" ? "Rentals" : "For sale"}${area ? ` · ${area}` : ""}`;
-    const name = window.prompt("Name this search", defaultName);
-    if (!name || !name.trim()) return;
-    startTransition(async () => {
-      const result = await saveCurrentSearch({
-        name: name.trim(),
-        mode,
-        filters: {
-          q,
-          beds,
-          baths,
-          type,
-          price_min,
-          price_max,
-          area,
-          // Sprint 4b filter extensions — read from search params for
-          // round-tripping. The bar UI doesn't manage these directly
-          // (the MoreFiltersDrawer does), but they must travel with saves.
-          ft2_min: null,
-          ft2_max: null,
-          year_min: null,
-          year_max: null,
-          tenure: null,
-          furnishing: null,
-          amenities: [],
-          verified: null,
-          advisor: null,
-          sort: null,
-          page: null,
-        },
-      });
-      if (result.status === "ok") toast.success("Search saved.");
-      else if (result.status === "auth_required") {
-        const target = pathname ?? "/buy";
-        router.push(`/sign-in?redirect=${encodeURIComponent(target)}`);
-      } else toast.error(result.message);
-    });
-  }
 
   function commit(patch: Parameters<typeof setState>[0]) {
     startTransition(() => {
@@ -311,16 +261,6 @@ export function FilterBar({ mode, areas }: Props) {
       <>
         <Button
           type="button"
-          variant="outline"
-          size="sm"
-          onClick={onSaveSearch}
-          className="text-[12.5px]"
-        >
-          <Bookmark size={12} strokeWidth={1.8} />
-          Save search
-        </Button>
-        <Button
-          type="button"
           variant="ghost"
           size="sm"
           onClick={clearAll}
@@ -406,17 +346,6 @@ export function FilterBar({ mode, areas }: Props) {
       >
         <div className="flex flex-col gap-5">
           {controls(true)}
-          {activeCount > 0 ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onSaveSearch}
-              className="w-full text-[13px]"
-            >
-              <Bookmark size={13} strokeWidth={1.8} />
-              Save this search
-            </Button>
-          ) : null}
         </div>
       </BottomSheet>
     </div>

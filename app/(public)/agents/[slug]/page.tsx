@@ -20,8 +20,7 @@ import {
   breadcrumbListJsonLd,
 } from "@/lib/jsonld";
 import { env } from "@/lib/env";
-import { ListingCardSaveable } from "../../_components/listing-card-saveable";
-import { SavedIdsProvider } from "../../_components/saved-ids-provider";
+import { ListingCardPriced } from "../../_components/listing-card-priced";
 
 export async function generateStaticParams() {
   // Pre-render every agent the DB exposes today; runtime requests for
@@ -344,7 +343,6 @@ export default async function AgentProfilePage({
               what {agent.display_name.split(" ")[0]} is working on off-market.
             </div>
           ) : (
-            <SavedIdsProvider>
               <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {activeListings.map((row, index) => {
                   const badge = row.flags?.exclusive
@@ -358,7 +356,7 @@ export default async function AgentProfilePage({
                       href={propertyUrl(row)}
                       className="block"
                     >
-                      <ListingCardSaveable
+                      <ListingCardPriced
                         price={formatPriceAED(row.price_aed)}
                         priceAed={row.price_aed}
                         title={row.title}
@@ -382,7 +380,6 @@ export default async function AgentProfilePage({
                   );
                 })}
               </div>
-            </SavedIdsProvider>
           )}
         </div>
       </section>
