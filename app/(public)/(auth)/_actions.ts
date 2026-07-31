@@ -1,18 +1,48 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { z } from "zod";
 import {
   createSupabaseServerClient,
 } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { absoluteUrl } from "@/lib/site-url";
-import { pickPostSignInPath } from "@/lib/auth-redirect";
+/**
+ * Sign-in and sign-out moved to app/_actions/auth.ts so the staff door does not
+ * depend on this route group, which is scheduled for deletion with the
+ * customer-account surface. They are re-exported here so the three protected
+ * brand components that import them (account-menu, cms-user-pile,
+ * public-mega-nav-mobile) keep working untouched — repointing those needs the
+ * do-not-edit exemption named in the removal plan, §2a.
+ */
+import {
+  signInAction as signIn,
+  signOutAction as signOut,
+  type AuthState,
+} from "@/app/_actions/auth";
 
-const signInSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-});
+export type { AuthState };
+
+/**
+ * Thin pass-throughs, not re-exports: a "use server" module may only export
+ * async functions declared in it, so `export { x } from "..."` compiles to a
+ * module with no exports at all and every importer breaks at build time.
+ *
+ * These exist so the three protected brand components that import from this
+ * path (account-menu, cms-user-pile, public-mega-nav-mobile) keep working
+ * untouched. Repointing them at @/app/_actions/auth needs the do-not-edit
+ * exemption named in the removal plan, §2a — at which point these two
+ * wrappers, and this whole module, go.
+ */
+export async function signInAction(
+  prev: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  return signIn(prev, formData);
+}
+
+export async function signOutAction(): Promise<void> {
+  return signOut();
+}
 
 const signUpSchema = z.object({
   email: z.string().email(),
@@ -25,10 +55,6 @@ const magicLinkSchema = z.object({
   email: z.string().email(),
 });
 
-export type AuthState = {
-  status: "idle" | "error" | "success";
-  message?: string;
-};
 
 function notConfiguredState(): AuthState {
   return {
@@ -36,48 +62,6 @@ function notConfiguredState(): AuthState {
     message:
       "Auth is not configured yet. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to .env.local.",
   };
-}
-
-export async function signInAction(
-  _prev: AuthState,
-  formData: FormData,
-): Promise<AuthState> {
-  if (!isSupabaseConfigured) return notConfiguredState();
-
-  const parsed = signInSchema.safeParse({
-    email: formData.get("email"),
-    password: formData.get("password"),
-  });
-  if (!parsed.success) {
-    return { status: "error", message: "Enter a valid email and password." };
-  }
-
-  const supabase = await createSupabaseServerClient();
-  const { data: signInData, error } = await supabase.auth.signInWithPassword({
-    email: parsed.data.email,
-    password: parsed.data.password,
-  });
-  if (error) return { status: "error", message: error.message };
-
-  // Route by role: active staff land in the CMS (/admin), everyone else in
-  // their account. This is what lets a staff member sign in from either the
-  // customer page or /admin/login and end up in the right place. An explicit
-  // ?redirect is honoured only when safe and role-appropriate.
-  const userId = signInData.user?.id;
-  let isStaff = false;
-  if (userId) {
-    const { data: staffRow } = await supabase
-      .from("staff")
-      .select("status")
-      .eq("user_id", userId)
-      .maybeSingle();
-    isStaff = staffRow?.status === "active";
-  }
-  const dest = pickPostSignInPath({
-    isStaff,
-    requested: formData.get("redirect") as string | null,
-  });
-  redirect(dest);
 }
 
 export async function signUpAction(
@@ -154,11 +138,4 @@ export async function magicLinkAction(
     status: "success",
     message: "Magic link sent — check your email.",
   };
-}
-
-export async function signOutAction() {
-  if (!isSupabaseConfigured) return;
-  const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
-  redirect("/");
 }
