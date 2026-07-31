@@ -1264,7 +1264,7 @@ export type Database = {
       }
       dsr_requests: {
         Row: {
-          account_id: string
+          account_id: string | null
           confirmed_at: string | null
           created_at: string
           email: string
@@ -1278,7 +1278,7 @@ export type Database = {
           user_agent: string | null
         }
         Insert: {
-          account_id: string
+          account_id?: string | null
           confirmed_at?: string | null
           created_at?: string
           email: string
@@ -1292,7 +1292,7 @@ export type Database = {
           user_agent?: string | null
         }
         Update: {
-          account_id?: string
+          account_id?: string | null
           confirmed_at?: string | null
           created_at?: string
           email?: string
@@ -3167,6 +3167,7 @@ export type Database = {
     }
     Functions: {
       anonymise_account: { Args: { target: string }; Returns: undefined }
+      anonymise_by_email: { Args: { target_email: string }; Returns: Json }
       current_staff_role: {
         Args: never
         Returns: Database["public"]["Enums"]["staff_role"]

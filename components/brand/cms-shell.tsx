@@ -18,6 +18,7 @@ import {
   ClipboardCheck,
   Handshake,
   ScrollText,
+  ShieldCheck,
   MoreHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -79,6 +80,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
       { label: "Users & roles", href: "/admin/users", icon: Users },
       { label: "Site settings", href: "/admin/settings", icon: Settings },
       { label: "Audit log", href: "/admin/audit-log", icon: ScrollText },
+      { label: "Data requests", href: "/admin/dsr", icon: ShieldCheck },
     ],
   },
 ];

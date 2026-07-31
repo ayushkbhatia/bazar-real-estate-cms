@@ -274,15 +274,17 @@ export default function PrivacyPage() {
       <p>You have the right to:</p>
       <ul>
         <li>
-          <b>Access</b> the personal data we hold about you — use{" "}
-          <code>/account/data-export</code>, or write to{" "}
+          <b>Access</b> the personal data we hold about you — write to{" "}
+          <a href="mailto:dpo@bazarrealestate.ae">dpo@bazarrealestate.ae</a>{" "}
+          and we will verify your identity and send a machine-readable copy.
+        </li>
+        <li>
+          <b>Rectify</b> inaccurate data — write to{" "}
           <a href="mailto:dpo@bazarrealestate.ae">dpo@bazarrealestate.ae</a>.
         </li>
         <li>
-          <b>Rectify</b> inaccurate data — edit your profile, or contact us.
-        </li>
-        <li>
-          <b>Erase</b> your data — use <code>/account/data-deletion</code>.
+          <b>Erase</b> your data — write to{" "}
+          <a href="mailto:dpo@bazarrealestate.ae">dpo@bazarrealestate.ae</a>.
           KYC records tied to a closed transaction are retained per Section
           10 and anonymised where deletion isn&apos;t legally permitted.
         </li>
