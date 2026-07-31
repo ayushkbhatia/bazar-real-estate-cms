@@ -77,12 +77,12 @@ export function StaffSignInForm({
           <div className="flex flex-col gap-1.5">
             <div className="flex items-baseline justify-between">
               <Label htmlFor="password">Password</Label>
-              {/* Self-service recovery went with the customer auth pages.
-                  Staff get a single-use link from an admin instead — see
-                  Users & roles, or the advisor profile. */}
-              <span className="text-[12px] text-bz-muted">
-                Forgot? Ask an admin
-              </span>
+              <Link
+                href="/forgot-password"
+                className="text-[12px] text-bz-muted hover:text-bz-ink"
+              >
+                Forgot?
+              </Link>
             </div>
             <Input
               id="password"

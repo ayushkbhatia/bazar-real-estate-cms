@@ -22,6 +22,8 @@ const PUBLIC_PATHS = [
   "/legal",
   // Staff sign-in lives under /admin but must stay reachable while signed out.
   "/admin/login",
+  // Staff password recovery — reached with no session by definition.
+  "/forgot-password",
   "/auth",
 ];
 

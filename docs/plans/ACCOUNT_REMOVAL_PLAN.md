@@ -10,6 +10,56 @@ the decisions in §1.
 
 ---
 
+## D10 — RESOLVED: the Supabase mailer is retired
+
+*Recorded 2026-07-31, after PRs #215/#217 landed. Implemented in the phase 6-9
+branch; this section supersedes the "Keep" entry for `/magic-link` in Phase 7.*
+
+Taken the recommended way. **Supabase Auth now sends no email at all** — there
+are zero `auth.signUp` and zero `signInWithOtp` callsites left in the repo, so
+both of its templates are unreachable. Every email the product sends goes
+through `lib/email.ts` → Resend.
+
+| path | before | after |
+|---|---|---|
+| `/forgot-password` | placeholder whose only content was a button to `/magic-link` | real self-service page: issues a Resend token link |
+| `/magic-link` | the actual recovery mechanism | **deleted**, 308 → `/admin/login` |
+| `/verify-otp` | redirect to `/magic-link` | 308 → `/admin/login` |
+| Staff recovery | Supabase magic link, or an admin-issued link | one mechanism, two entry points |
+
+**The trap the handoff flagged is closed.** An earlier revision of the phase 6-9
+branch deleted `/forgot-password` outright and replaced the login link with
+"Ask an admin" — which would have left a sole locked-out admin with no way in
+short of the Supabase dashboard. `/forgot-password` is now a working page, and
+`lib/supabase/proxy.ts` keeps it publicly reachable, which it must be: anyone
+using it has no session by definition.
+
+`issueStaffPasswordLink` (`lib/staff-password-link.ts`) is the single
+implementation, shared by `/forgot-password` and the admin surfaces from
+#205/#208, so the two cannot drift on token lifetime, single-use semantics or
+what the email says.
+
+Two security properties the self-service route needs and the admin one did not:
+
+- **No account enumeration.** The page is public and emails an address the
+  caller chooses, so it answers identically whether the address is staff, is
+  not staff, or is suspended. A truthful "that isn't a staff account" would
+  make it a staff-directory oracle. Covered by tests.
+- **Rate limited** — 5 requests per IP per 15 minutes, checked before anything
+  is issued. It is the obvious lever for mailbombing a colleague or probing
+  addresses.
+
+Kept, per the handoff's constraints: the SMTP config (costs nothing, and is the
+break-glass if a Supabase dashboard recovery mail is ever needed), the
+`safeRelativePath` guard on both callbacks, and staff invitations on Resend
+rather than `inviteUserByEmail`.
+
+`/auth/callback` survives with its guard intact. It has no routine caller now,
+but Supabase can still issue a link for a staff auth user from the dashboard,
+and the guard is what makes that safe.
+
+---
+
 ## Verified against production (corrections to the audit)
 
 The audit was written believing the Supabase credentials were unusable. They are

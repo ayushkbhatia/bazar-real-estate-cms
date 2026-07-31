@@ -72,11 +72,6 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
-        source: "/forgot-password",
-        destination: "/admin/login",
-        permanent: true,
-      },
-      {
         source: "/reset-password",
         destination: "/admin/login",
         permanent: true,

@@ -1,15 +1,11 @@
 "use server";
 
-import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentUserIsAdmin, getStaffAuthMeta } from "@/lib/queries/staff";
-import { sendEmail } from "@/lib/email";
-import { staffPasswordResetTemplate } from "@/lib/email-templates";
-import { absoluteUrl } from "@/lib/site-url";
-import { INVITE_EXPIRY_DAYS } from "@/lib/staff-invitations";
+import { issueStaffPasswordLink } from "@/lib/staff-password-link";
 import {
   agentEditSchema,
   normaliseAgentEdit,
@@ -163,68 +159,34 @@ export async function sendStaffPasswordLink(
         .maybeSingle()
     : { data: null };
 
-  const token = randomBytes(24).toString("base64url");
-  const expiresAt = new Date(
-    Date.now() + INVITE_EXPIRY_DAYS * 86_400_000,
-  ).toISOString();
-
-  // One outstanding reset per address: replace rather than accumulate, so an
-  // older emailed link stops working the moment a new one is sent.
-  await admin
-    .from("staff_invitations")
-    .delete()
-    .ilike("email", meta.email)
-    .eq("purpose", "reset");
-
-  const { error: insertError } = await admin.from("staff_invitations").insert({
+  // Shared with /forgot-password so both surfaces agree on token lifetime,
+  // single-use semantics and the wording of the email.
+  const issued = await issueStaffPasswordLink({
     email: meta.email,
-    display_name: staff.display_name,
-    role: staff.role,
-    token,
-    purpose: "reset",
-    expires_at: expiresAt,
-    invited_by: actor?.id ?? null,
-    // Already on the team — `accepted_at` means "staff row exists", which it
-    // does. Leaving it null would list an existing colleague as a pending
-    // invitation on Users & roles.
-    accepted_at: new Date().toISOString(),
-  });
-  if (insertError) return { status: "error", message: insertError.message };
-
-  const resetUrl = await absoluteUrl(
-    `/staff-invite?token=${encodeURIComponent(token)}`,
-  );
-  const tpl = staffPasswordResetTemplate({
-    staffName: staff.display_name.split(" ")[0] ?? staff.display_name,
-    resetUrl,
     senderName: actorStaff?.display_name ?? "A Bazar administrator",
-    expiryDays: INVITE_EXPIRY_DAYS,
+    invitedBy: actor?.id ?? null,
   });
-  const sent = await sendEmail({
-    to: meta.email,
-    subject: tpl.subject,
-    text: tpl.text,
-    html: tpl.html,
-  });
+  if (issued.status === "error")
+    return { status: "error", message: issued.message };
+  if (issued.status === "suspended")
+    return {
+      status: "error",
+      message:
+        "This account is suspended. Restore it first — a password link would let a suspended user back in.",
+    };
+  if (issued.status === "no_such_staff")
+    return { status: "error", message: "No staff account for that address." };
 
   await logAudit({
     action: "staff.password_link_sent",
     target_kind: "staff",
     target_id: userId,
     before: null,
-    after: { email: meta.email, emailed: sent.status === "ok" },
+    after: { email: meta.email, emailed: true },
   });
 
   revalidatePath(`/admin/agents/${userId}`);
   revalidatePath("/admin/users");
 
-  if (sent.status === "ok")
-    return { status: "ok", message: `Password link emailed to ${meta.email}.` };
-  return {
-    status: "error",
-    message:
-      sent.status === "skipped"
-        ? `Link created but email isn't configured here (${sent.reason}), so nothing was sent.`
-        : `Link created but the email failed: ${sent.message}`,
-  };
+  return { status: "ok", message: `Password link emailed to ${meta.email}.` };
 }
