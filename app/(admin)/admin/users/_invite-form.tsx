@@ -36,7 +36,13 @@ export function InviteStaffButton() {
     startTransition(async () => {
       const result = await inviteStaff(values);
       if (result.status === "ok") {
-        toast.success(result.message ?? "Invitation sent.");
+        // The row exists either way, so the dialog still closes — but a green
+        // toast for an invite nobody received is worse than no toast at all.
+        if (result.emailed === false) {
+          toast.warning(result.message ?? "Invitation created, but no email was sent.");
+        } else {
+          toast.success(result.message ?? "Invitation sent.");
+        }
         form.reset();
         setOpen(false);
       } else {

@@ -415,22 +415,56 @@ shows the trail.)
   previous outstanding reset for that address so old links die. There's no cap on
   how often it can be pressed, though — an admin could mail someone repeatedly.
   Harmless internally, worth a throttle if invites are ever delegated.
-- [auth] TWO CONFIG CHANGES ARE STILL REQUIRED — code alone can't fix these.
-  1. Supabase auth: `site_url` is `http://localhost:3000` and `uri_allow_list`
-     is EMPTY (read from the Management API on 2026-07-30). Every auth email
-     link — sign-up confirmation, magic link, recovery — resolves to localhost,
-     and because the allow-list is empty Supabase rejects any redirectTo the
-     code passes and falls back to site_url. `mailer_autoconfirm` is false, so
-     new customer sign-ups are blocked in production. Set site_url to the
-     deployed origin and allow-list the prod + preview + localhost callbacks.
-  2. Resend has no verified sending domain (only `indushydraulics.me`, status
-     `not_started`) and `RESEND_FROM_ADDRESS` is unset, so every Bazar-sent
-     email goes out as onboarding@resend.dev — Resend's sandbox sender, which
-     only delivers to the account owner's address. Staff invitations and
-     password links to real client addresses will be refused. Verify bazar.ae in
-     Resend and set RESEND_FROM_ADDRESS.
-  Until (2) is done, the "from Supabase Auth" complaint can't be fully fixed
-  either: switching Supabase to custom SMTP needs the same verified domain.
+- [auth] CONFIG STATUS as of 2026-07-31 — item (2) is DONE, item (1) is done
+  but needs verifying end to end.
+  1. Supabase auth: `site_url` was `http://localhost:3000` and `uri_allow_list`
+     was EMPTY (read from the Management API on 2026-07-30). Every auth email
+     link — sign-up confirmation, magic link, recovery — resolved to localhost,
+     and because the allow-list was empty Supabase rejected any redirectTo the
+     code passed and fell back to site_url. Both have now been set, along with
+     custom SMTP pointed at Resend and the auth email rate limit. Still unproven
+     by a real end-to-end sign-up and magic link from production.
+  2. DONE — `bazarrealestate.com` is verified in Resend (eu-west-1) and
+     `RESEND_FROM_ADDRESS=hello@bazarrealestate.com` is set in `.env.local` and
+     all three Vercel environments. Previously every Bazar-sent email went out
+     as onboarding@resend.dev, Resend's sandbox sender, which only delivers to
+     the account owner. Note the domain is `bazarrealestate.com`, NOT `bazar.ae`
+     — if the site later moves to bazar.ae, that domain needs verifying too.
+
+- [email] Three crons stamp their "already handled" marker before the send, so
+  a failed email is never retried and the row is excluded forever.
+  `enquiry-auto-reply/route.ts:56,64` also scans a fixed 5-minute window, so any
+  enquiry not mailed within 5 minutes is abandoned; `app/(public)/_actions.ts:159`
+  doesn't stamp `ack_sent_at` at all on the inline path, which double-sends the
+  ack when the inline send succeeds. `enquiry-escalation/route.ts:116` stamps
+  `escalated_at` before the mail loop and discards the `sendEmail` result at
+  `:151`. `permit-expiry/route.ts:109` gates its 7-day dedup on an audit insert
+  written regardless of send outcome. Each wants: stamp only when at least one
+  send returned ok, and widen the scan window with an attempt counter.
+
+- [email] `lib/saved-search-alerts.ts:138,149` builds property CTAs from
+  `propertyUrl()` (`lib/queries/property-utils.ts:14`), which is site-relative —
+  so every property link in a saved-search alert email is dead. The absolute
+  `base` is already computed at `:224`; prefix with it.
+
+- [email] `vercel.json:24` schedules `saved-search-alerts-diff` every 15 min but
+  the route calls `runSavedSearchAlerts("daily")`, and `lib/saved-search-alerts.ts:211`
+  stamps `last_alert_at` before the no-match early return at `:216` — so the
+  04:00 daily digest inherits a 15-minute window. `"instant"` subscribers are
+  never processed by anything.
+
+- [email] `enquiries/[id]/_actions-viewing.ts:181` tells the client the calendar
+  invite is attached; `:197` is literally `void ics`. `SendEmailInput`
+  (`lib/email.ts:8`) has no attachments field, so no callsite can attach
+  anything. Either wire attachments through or delete the sentence — the
+  plain-text body at `:164` correctly doesn't promise one.
+
+- [security] `supabase/migrations/0010_admin_polish.sql:90` fires
+  `handle_staff_invitation` on ANY `auth.users` INSERT. Under the current invite
+  flow (which leaves `accepted_at` null until activation) a public sign-up using
+  an invited address would mint the staff row without ever presenting the token,
+  for the whole 14-day window. Not exploitable today, but worth scoping to
+  `new.raw_user_meta_data->>'bazar_staff_invite' = 'true'` in a NEW migration.
 
 - [developments] The floor-plan gate is the same stub the brochure gate was.
   `_components/floorplan-gate.tsx` still collects an email, waits, and toasts —

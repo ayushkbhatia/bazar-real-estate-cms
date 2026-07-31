@@ -7,6 +7,7 @@ import {
   isMeilisearchConfigured,
   isVoyageConfigured,
   isMapboxConfigured,
+  isResendConfigured,
 } from "@/lib/env";
 import type {
   IntegrationKind,
@@ -119,6 +120,8 @@ function envConfigured(kind: IntegrationKind): boolean {
       return isMailchimpConfigured;
     case "docusign":
       return isDocuSignConfigured;
+    case "resend":
+      return isResendConfigured;
     default:
       return false;
   }

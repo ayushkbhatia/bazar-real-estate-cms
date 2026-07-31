@@ -1,11 +1,30 @@
 import { z } from "zod";
 
+/**
+ * `Bazar Real Estate <hello@bazar.ae>` → `hello@bazar.ae`. A bare address
+ * passes through untouched.
+ */
+export function extractEmailAddress(value: string): string {
+  const match = value.match(/<([^>]+)>\s*$/);
+  return (match ? match[1] : value).trim();
+}
+
+/**
+ * Resend accepts a sender either bare or with a display name. Validating the
+ * raw string with `.email()` rejected the display-name form, so setting the
+ * documented value threw at module load and failed the build.
+ */
+const senderAddress = z.string().refine(
+  (value) => z.string().email().safeParse(extractEmailAddress(value)).success,
+  { message: 'Expected "user@domain" or "Display Name <user@domain>"' },
+);
+
 const serverSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   SENTRY_DSN: z.string().url().optional(),
   RESEND_API_KEY: z.string().min(1).optional(),
-  RESEND_FROM_ADDRESS: z.string().email().optional(),
+  RESEND_FROM_ADDRESS: senderAddress.optional(),
   RESEND_REPLY_TO: z.string().email().optional(),
   CRON_SECRET: z.string().min(1).optional(),
   // Upstash Redis credentials for per-IP rate limiting. Both optional —
