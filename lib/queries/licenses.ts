@@ -2,8 +2,9 @@
  * Licenses (ORN, BRN, trakheesi, RERA, DMT).
  *
  * /admin/settings/compliance lists rows + flags expirations < 30 days as
- * 'expiring_soon'. Sprint 10 cron rolls status forward (active →
- * expiring_soon → expired) based on `expires_at`.
+ * 'expiring_soon'. Status is DERIVED from `expires_at` on every read — a cron
+ * used to roll the stored column forward, but deriving it cannot go stale and
+ * needs no scheduled job.
  *
  * BRN gating: the publish-blocking check in Sprint 7c reads the assigned
  * agent's BRN here and refuses publish when status != 'active'.
@@ -79,7 +80,10 @@ export async function listLicenses(): Promise<LicenseDisplay[]> {
         number: l.number,
         issued_at: l.issued_at,
         expires_at: l.expires_at,
-        status: l.status,
+        // Derived, not the stored column: a cron used to roll `status`
+        // forward and it no longer exists, so a licence would otherwise read
+        // "active" for ever after it expired.
+        status: deriveStatus(l.expires_at as string),
         days_to_expiry: days,
         notes: l.notes,
       };
@@ -157,30 +161,4 @@ function deriveStatus(expiresAt: string): LicenseStatus {
   if (days < 0) return "expired";
   if (days < 30) return "expiring_soon";
   return "active";
-}
-
-/** Cron-managed: roll active → expiring_soon → expired based on dates. */
-export async function refreshLicenseStatuses(): Promise<number> {
-  if (!isSupabaseConfigured) return 0;
-  try {
-    const sb = await createSupabaseServerClient();
-    const now = new Date();
-    const in30 = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-    // expired
-    await sb
-      .from("licenses")
-      .update({ status: "expired" })
-      .lt("expires_at", now.toISOString())
-      .in("status", ["active", "expiring_soon"]);
-    // expiring_soon
-    await sb
-      .from("licenses")
-      .update({ status: "expiring_soon" })
-      .gte("expires_at", now.toISOString())
-      .lt("expires_at", in30.toISOString())
-      .eq("status", "active");
-    return 1;
-  } catch {
-    return 0;
-  }
 }

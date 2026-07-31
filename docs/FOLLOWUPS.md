@@ -493,3 +493,23 @@ shows the trail.)
   /verify-otp). It renders every exported template and greps the output. If a
   future template legitimately needs one of those paths, that test is the thing
   that will stop it.
+
+- [cron] The seven surviving jobs still need CRON_SECRET set in Vercel.
+  Production returns `{"reason":"CRON_SECRET not configured"}` on every cron
+  route, so none has ever run — no enquiry acknowledgement has ever been sent
+  and no enquiry has ever been escalated. `.env.example` has documented it as
+  REQUIRED IN PRODUCTION since the beginning. Setting it in Production and
+  Preview and redeploying is the entire fix; Vercel injects the matching
+  Authorization header automatically.
+
+- [cron] The enquiry auto-reply has a second, also-dead path.
+  The pg_net trigger (0030) posts to a Supabase Edge Function that has never
+  been deployed (`list_edge_functions` is empty), and `app_settings` is empty
+  so `functions_base_url()` returns NULL and the trigger deliberately no-ops.
+  Deploying the function and setting that row would restore acknowledgements
+  independently of Vercel.
+
+- [valuation] dld_comparables is empty and no longer refreshed.
+  The weekly import cron was removed as unused. /tools/valuation and
+  /market-reports read that table, so both price against nothing until it is
+  loaded — manually, or by reinstating the import.
