@@ -49,7 +49,6 @@ test("/newsletter/unsubscribe/<bad-token> shows the already-removed copy", async
   ).toBeVisible();
 });
 
-test("/account/newsletter redirects anon to sign-in", async ({ page }) => {
-  await page.goto("/account/newsletter");
-  await expect(page).toHaveURL(/\/sign-in/);
-});
+// The /account/newsletter preference page went with the customer-account
+// surface in #216. The public newsletter flow above (signup, confirm,
+// unsubscribe) is what survives; e2e/dsr.spec.ts pins the 404.
