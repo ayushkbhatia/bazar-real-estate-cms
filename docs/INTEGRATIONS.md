@@ -39,7 +39,7 @@ https://supabase.com/ and set:
 - `SUPABASE_SERVICE_ROLE_KEY` — service role key (NEVER expose; used
   by crons + webhooks only)
 
-Then apply migrations 0001–0029 from `supabase/migrations/` via the
+Then apply every file in `supabase/migrations/`, in filename order, via the
 Supabase CLI or MCP. Run `npm run db:types` after the project is wired
 to regenerate `db/types.ts` (this also lets us delete the manual
 type stubs in `lib/types/sprint-8.ts`).
@@ -49,9 +49,33 @@ type stubs in `lib/types/sprint-8.ts`).
 Transactional email. Sign up at https://resend.com/.
 
 - `RESEND_API_KEY` — server-only, starts `re_…`
-- `RESEND_FROM_ADDRESS` — e.g. `Bazar <hello@bazar.ae>` (must verify
-  the domain in Resend's dashboard)
+- `RESEND_FROM_ADDRESS` — `hello@bazar.ae` or `Bazar <hello@bazar.ae>`
 - `RESEND_REPLY_TO` — where replies land (e.g. `hello@bazar.ae`)
+
+**The sender's domain must be verified in Resend before anyone but the
+account owner can receive mail.** Until then Resend rejects every send with
+"You can only send testing emails to your own email address", and the app
+surfaces that verbatim. Verification is per-account and does **not** transfer
+when the API key is swapped — see the handover note below.
+
+Setup order matters:
+
+1. Add the domain at https://resend.com/domains and publish the three DNS
+   records it gives you (DKIM `TXT` on `resend._domainkey`, plus `MX` and SPF
+   `TXT` on the `send` subdomain). The records live on a subdomain, so they
+   don't collide with existing mailboxes on the apex.
+2. Wait for the domain to report `verified` — DKIM is the slow one.
+3. Only then set `RESEND_FROM_ADDRESS` to an address on that domain, in
+   `.env.local` **and** in Vercel (Production + Preview), and redeploy.
+
+Note for local dev: `.env.local` is per-worktree and gitignored, so a git
+worktree gets its own copy. Setting the variable in one checkout does not
+affect a dev server running out of another.
+
+Supabase Auth's own emails (sign-up confirmation, magic link) are a separate
+delivery system and do **not** go through `lib/email.ts`. They're sent by
+Supabase's SMTP, configured under Auth → SMTP Settings, and are governed by
+`site_url` and `uri_allow_list` rather than anything in this repo.
 
 ## Sentry
 

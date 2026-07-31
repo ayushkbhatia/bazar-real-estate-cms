@@ -2,6 +2,7 @@ import "server-only";
 
 import {
   env,
+  extractEmailAddress,
   isMeilisearchConfigured,
   isResendConfigured,
   isSupabaseConfigured,
@@ -59,6 +60,42 @@ async function checkSupabase(): Promise<HealthCheck> {
   }
 }
 
+/**
+ * Compare `RESEND_FROM_ADDRESS` against the domains this account has actually
+ * verified. Returns a human-readable problem, or null when the pairing is
+ * sound. Consumes the `/domains` response body.
+ */
+async function describeSenderDomainIssue(
+  response: Response,
+): Promise<string | null> {
+  if (!env.RESEND_FROM_ADDRESS) {
+    return "RESEND_FROM_ADDRESS not set — sending from Resend's shared sandbox address, which only delivers to the account owner";
+  }
+  const domain = extractEmailAddress(env.RESEND_FROM_ADDRESS)
+    .split("@")[1]
+    ?.toLowerCase();
+  if (!domain) return null;
+
+  let payload: unknown;
+  try {
+    payload = await response.json();
+  } catch {
+    return null; // Unexpected shape — not worth failing the probe over.
+  }
+  const domains = (payload as { data?: { name?: string; status?: string }[] })
+    ?.data;
+  if (!Array.isArray(domains)) return null;
+
+  const match = domains.find((d) => d.name?.toLowerCase() === domain);
+  if (!match) {
+    return `${domain} is not registered in Resend — only the account owner will receive mail`;
+  }
+  if (match.status !== "verified") {
+    return `${domain} is registered but ${match.status ?? "unverified"} — only the account owner will receive mail`;
+  }
+  return null;
+}
+
 /** Resend reachability + key-validity check via /domains (auth-required). */
 async function checkResend(): Promise<HealthCheck> {
   if (!isResendConfigured) {
@@ -86,6 +123,18 @@ async function checkResend(): Promise<HealthCheck> {
         status,
         latency_ms,
         detail: `HTTP ${response.status}`,
+      };
+    }
+    // The key being valid isn't enough: Resend refuses to mail anyone but the
+    // account owner unless the sender's domain is verified on this account.
+    // That failure only shows up per-send, so check the pairing here.
+    const senderIssue = await describeSenderDomainIssue(response);
+    if (senderIssue) {
+      return {
+        name: "resend",
+        status: "degraded",
+        latency_ms,
+        detail: senderIssue,
       };
     }
     return {

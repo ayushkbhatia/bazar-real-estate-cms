@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { safeRelativePath } from "@/lib/auth-redirect";
 
 /**
  * SSO callback handler.
@@ -18,7 +19,8 @@ export async function GET(
   const { provider } = await ctx.params;
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const next = url.searchParams.get("next") ?? "/account/saved";
+  const next =
+    safeRelativePath(url.searchParams.get("next")) ?? "/account/saved";
 
   if (!isSupabaseConfigured || !code) {
     return NextResponse.redirect(new URL("/sign-in?sso_error=1", url.origin));

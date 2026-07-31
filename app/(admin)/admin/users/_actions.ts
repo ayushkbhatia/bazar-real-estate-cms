@@ -21,7 +21,12 @@ import {
 } from "@/lib/schemas/staff";
 
 export type ActionResult =
-  | { status: "ok"; message?: string }
+  | {
+      status: "ok";
+      message?: string;
+      /** False when the row was created but no mail left the building. */
+      emailed?: boolean;
+    }
   | { status: "error"; message: string; fieldErrors?: Record<string, string> };
 
 function envUnsetResult(): ActionResult {
@@ -117,17 +122,26 @@ export async function inviteStaff(
       email: parsed.data.email,
       role: parsed.data.role,
       display_name: parsed.data.display_name,
+      // Without this, a failed send is undiagnosable after the fact — the
+      // audit row looked identical whether or not mail actually left.
+      emailed: sent.ok,
+      email_failure: sent.ok ? null : sent.reason,
     },
   });
 
   revalidatePath("/admin/users");
   return sent.ok
-    ? { status: "ok", message: `Invitation emailed to ${parsed.data.email}.` }
+    ? {
+        status: "ok",
+        emailed: true,
+        message: `Invitation emailed to ${parsed.data.email}.`,
+      }
     : {
         status: "ok",
         // The invitation row exists and the link works, so this isn't a
         // failure — but saying "sent" when no mail left would send an admin
         // away believing the invitee has a link.
+        emailed: false,
         message: `Invitation created, but the email didn't send (${sent.reason}). Use Resend once email is configured.`,
       };
 }

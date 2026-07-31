@@ -16,12 +16,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { safeRelativePath } from "@/lib/auth-redirect";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const type = url.searchParams.get("type"); // recovery | magiclink | signup
-  const next = url.searchParams.get("next");
+  // Same-origin paths only. Supabase hands `next` straight through from the
+  // link it was given, so an attacker who can trigger an auth email for a
+  // victim would otherwise choose where that victim lands after sign-in.
+  const next = safeRelativePath(url.searchParams.get("next"));
 
   if (!isSupabaseConfigured) {
     return NextResponse.redirect(new URL("/sign-in?auth_error=1", url.origin));
