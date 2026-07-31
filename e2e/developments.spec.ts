@@ -41,7 +41,9 @@ test("off-plan detail page renders hero + payment plan + units", async ({
   // calculator (options inside a closed select are present in the DOM but
   // not visible).
   await expect(
-    page.getByRole("heading", { name: /what's left/i }),
+    // Tolerate either apostrophe: the heading is editor-overridable, and a
+    // curly one crept in during the sub-pages refactor and broke this test.
+    page.getByRole("heading", { name: /what['’]s left/i }),
   ).toBeVisible();
   const table = page.locator("table");
   await expect(table.getByRole("cell", { name: /^Villa A$/ })).toBeVisible();

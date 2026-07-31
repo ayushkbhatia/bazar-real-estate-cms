@@ -77,8 +77,7 @@ for (const route of ADMIN_TRIGGERED_ROUTES) {
 const PUBLISH_FLOW_CRON_ROUTES = [
   "/api/cron/meilisearch-sync",
   "/api/cron/permit-expiry",
-  "/api/cron/brn-validation",
-  "/api/cron/syndication-push",
+  // brn-validation and syndication-push were removed in #219.
 ];
 
 for (const route of PUBLISH_FLOW_CRON_ROUTES) {
