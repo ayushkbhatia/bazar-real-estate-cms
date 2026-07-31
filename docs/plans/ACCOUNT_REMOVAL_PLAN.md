@@ -145,6 +145,7 @@ No phase past Phase 2 starts without these. Each has a recommendation, but the d
 | **D7** | **Newsletter.** Survives untouched? | Confirmed **not** account-gated: public signup (`app/(public)/_components/newsletter-signup.tsx`, mounted on home / `/insights` / article pages), token confirm + unsubscribe are public routes, and every write goes through a service-role client so no account RLS policy is involved. 290 live rows, Mailchimp two-way synced. | **Yes, survives.** Only `app/(account)/account/newsletter/` (the signed-in preference page) and `unsubscribeFromAccount` (`app/(public)/_actions/newsletter.ts:245`) are account-only. Separately flag: `listNewsletterSubscribers` (`lib/queries/newsletter.ts:22`) has **zero callers** — there is no admin newsletter view, so after this change the client has no in-CMS window onto the one customer dataset they're keeping. Recommend a small `/admin/newsletter` list as a follow-up. |
 | **D8** | **AI Concierge anonymous cap.** `app/api/concierge/route.ts:127` caps anonymous sessions and tells the user *"Sign in to continue."* With no customer sign-in, every user is permanently anonymous and the Concierge becomes unusable past N turns with no escape. | Raise/remove `MAX_ANON_TURNS` and rewrite the copy to hand off to a human advisor. Nothing errors at build time, so this is easy to ship broken. |
 | **D9** | **`/sign-up` and the first-admin bootstrap.** `supabase/seed.sql:8` and `docs/HANDOVER.md:218` document `/sign-up` + `scripts/promote-staff.sh` as the way to create the **first** staff user. `/staff-invite` requires an already-authenticated admin. | Replace the bootstrap with a service-role script (or a seeded auth user) **before** deleting `/sign-up`, or a fresh environment at handover has no way to create its first admin. |
+| **D10** | **Does Supabase Auth keep sending email at all?** After `/sign-up` goes, the only remaining Supabase-sent email is the magic link — which exists solely for staff recovery (see Phase 7). Keep it, or retire the Supabase mailer entirely in favour of the Resend token flow? | Two delivery systems are live and independent. Our own mail goes through `lib/email.ts` → Resend. Supabase Auth's mailer is separate, has its own templates that exist **only** in the Supabase dashboard, and is governed by `site_url` / `uri_allow_list` rather than by anything in this repo. Since 2026-07-31 it is configured with custom SMTP pointing at Resend (`scripts/configure-auth-email.sh`). Meanwhile `app/(admin)/admin/agents/_actions.ts:166-208` already implements a full Resend-delivered staff password link, proven end to end in production. So staff recovery has **two** working implementations, and one of them is redundant. | **Retire the Supabase mailer.** Repoint `/forgot-password` at the Resend token flow, drop `/magic-link`, and Supabase Auth stops sending email entirely — one delivery system, no dependency on Supabase redirect config, and the auth-email rate limit stops mattering. Keep the SMTP config in place regardless: it costs nothing and is the fallback if a Supabase-dashboard recovery email is ever needed. **If instead the magic link is kept**, its Supabase template must be rewritten by hand — custom SMTP changed the envelope sender, not the branding. |
 
 ---
 
@@ -166,7 +167,13 @@ No phase past Phase 2 starts without these. Each has a recommendation, but the d
 
 **2b. Verify at least two active admins exist** before Phase 7 touches password recovery. Staff recovery today runs entirely through customer pages: `/admin/login` → `/forgot-password` → `/magic-link` → `/auth/callback` → `/account/saved`. If there is one admin and they get locked out mid-migration, the only remaining path is a Supabase-dashboard recovery email.
 
-**2c. Live DB reconnaissance we cannot do from here.** Supabase MCP points at the wrong projects and the PAT is stale (401); no psql/CLI. Before Phase 8 or 9, someone with working credentials must produce counts for: `accounts` (split staff vs customer), `saved_properties`, `saved_searches`, `recently_viewed`, `referrals`, `comparisons`, `tour_requests`, `dsr_requests`, `documents WHERE owner_kind='account'`, and `deals` (they pin `accounts` rows via `on delete restrict`).
+**2c. Live DB reconnaissance.** *(Updated 2026-07-31 — partly unblocked.)* The
+`SUPABASE_ACCESS_TOKEN` in `.env.local` is **not** stale: it authenticates
+against the Management API for project `ztxbguvmwpqccxuqwdqa` (which backs
+production), and was used on 2026-07-31 to read and change the live auth config
+(see `scripts/configure-auth-email.sh`). Table-row counts still need a SQL path
+rather than the Management API. Before Phase 8 or 9, someone must produce counts
+for: `accounts` (split staff vs customer), `saved_properties`, `saved_searches`, `recently_viewed`, `referrals`, `comparisons`, `tour_requests`, `dsr_requests`, `documents WHERE owner_kind='account'`, and `deals` (they pin `accounts` rows via `on delete restrict`).
 
 **2d. Check live `megamenu_links.href` in prod.** Every migration is clean — zero `/account`, `/sign-in`, `/sign-up` hrefs across all of `supabase/migrations/` (only three prose comments). But `/admin/megamenu` and `/admin/navigation` are live editors, and `e2e/megamenu-links.spec.ts` reads hrefs from the DB and fails on any 404 — a spec that goes red for reasons invisible in the diff.
 
@@ -341,6 +348,25 @@ Each phase is one PR. Phases 0–2 are reversible and safe to land immediately. 
 - `app/(public)/sso/[provider]/callback/route.ts` — unreferenced Sprint-2 shell with no sibling `page.tsx`; safe to delete outright once nothing links it.
 
 **Verify (mandatory manual, in this order, with a second admin standing by):** staff sign-in; staff sign-out from the CMS pile; `/admin/login` → `Forgot?` → `/magic-link` → email → callback → lands on a real page; admin-triggered staff password link (`app/(admin)/admin/agents/_actions.ts` → `/staff-invite?purpose=reset`); a fresh `/staff-invite` acceptance end-to-end.
+
+**Email delivery mechanics — read before touching any of the above** *(added 2026-07-31, requires **D10**)*
+
+There are two independent email systems, and the phases above only affect one of them.
+
+| | Sender | What it carries | Affected by this removal? |
+|---|---|---|---|
+| `lib/email.ts` → Resend | `RESEND_FROM_ADDRESS` | staff invitations, staff password links, enquiry acks, cron mail, DSR, newsletter | No. Staff invites were deliberately moved **off** `inviteUserByEmail` onto our own token flow precisely so they don't depend on Supabase redirect config. **Do not move them back.** |
+| Supabase Auth's own mailer | Supabase SMTP (now Resend) | sign-up confirmation, magic link | Yes — both. `/sign-up` is deleted in this phase; the magic link's fate is **D10**. |
+
+Consequences, in order of how easy they are to get wrong:
+
+1. **`/sign-up`'s deletion kills the "Confirm signup" email.** That template lives only in the Supabase dashboard. Don't spend time restyling it — it becomes dead the moment the page goes.
+2. **The magic link is not customer UX.** It is the sole self-service staff recovery path (`/admin/login` → `/forgot-password` → `/magic-link`), and there are **zero** `resetPasswordForEmail` callsites repo-wide. Deleting it as "customer auth" locks staff out. Phase 7 already says keep it; D10 is about replacing it deliberately rather than keeping it by default.
+3. **`uri_allow_list` and `site_url` only matter while `/auth/callback` is reachable.** Both were empty/localhost in production until 2026-07-31, which is why every auth email had been shipping a localhost link. If D10 retires the Supabase mailer, `/auth/callback` loses its last real caller and the `type='recovery'` and `type='magiclink'` branches can go with it.
+4. **`safeRelativePath` in `app/auth/callback/route.ts` must survive** any rewrite of that route. It guards `next` against open redirect, and it is load-bearing *because* the callback is allow-listed. §4 already says not to touch it; this is the reason.
+5. **The `rate_limit_email_sent` cap applies only to the Supabase mailer.** It was 2/hour project-wide until 2026-07-31 (now 60). Resend-delivered mail was never subject to it, so nothing in the Resend path needs re-testing against it.
+
+If D10 goes the recommended way, Phase 7's "Keep" list shrinks: `/magic-link`, the `/verify-otp → /magic-link` redirect at `next.config.ts:56-60`, and their `lib/supabase/proxy.ts:27-30` allowlist entries all become deletable, and `/forgot-password` becomes a thin page pointing at the Resend flow instead of a button to `/magic-link`.
 
 ---
 
