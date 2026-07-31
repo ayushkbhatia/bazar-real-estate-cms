@@ -426,32 +426,6 @@ export async function buildMediaUsageIndex(
     }),
 
     // ── Internal surfaces — never public, but still in use ───────────────
-    source("documents", async () => {
-      type Row = {
-        id: string;
-        kind: string;
-        filename: string | null;
-        media_id: string | null;
-      };
-      const found = await inChunks<Row>("documents", (batch) =>
-        supabase
-          .from("documents")
-          .select("id, kind, filename, media_id")
-          .in("media_id", batch),
-      );
-      for (const r of found) {
-        add(r.media_id, {
-          kind: "document",
-          id: r.id,
-          label: r.filename ?? roleLabel(r.kind),
-          role: "Deal attachment",
-          href: null,
-          live: false,
-          internal: true,
-        });
-      }
-    }),
-
     source("licenses", async () => {
       type Row = {
         id: string;

@@ -4,7 +4,7 @@ import { safeRelativePath, pickPostSignInPath } from "./auth-redirect";
 describe("safeRelativePath", () => {
   it("accepts a plain relative path", () => {
     expect(safeRelativePath("/admin/properties")).toBe("/admin/properties");
-    expect(safeRelativePath("/account")).toBe("/account");
+    expect(safeRelativePath("/buy/search")).toBe("/buy/search");
   });
 
   it("rejects absolute and protocol-relative URLs (open-redirect guard)", () => {
@@ -23,9 +23,9 @@ describe("safeRelativePath", () => {
 });
 
 describe("pickPostSignInPath", () => {
-  it("routes staff to /admin and customers to /account when no request", () => {
+  it("routes staff to /admin and everyone else to the marketplace home", () => {
     expect(pickPostSignInPath({ isStaff: true })).toBe("/admin");
-    expect(pickPostSignInPath({ isStaff: false })).toBe("/account");
+    expect(pickPostSignInPath({ isStaff: false })).toBe("/");
   });
 
   it("honours a safe requested path for the matching role", () => {
@@ -33,17 +33,17 @@ describe("pickPostSignInPath", () => {
       pickPostSignInPath({ isStaff: true, requested: "/admin/enquiries" }),
     ).toBe("/admin/enquiries");
     expect(
-      pickPostSignInPath({ isStaff: false, requested: "/account/saved" }),
-    ).toBe("/account/saved");
+      pickPostSignInPath({ isStaff: false, requested: "/buy/search" }),
+    ).toBe("/buy/search");
   });
 
   it("never sends a non-staff user to an /admin destination", () => {
     expect(
       pickPostSignInPath({ isStaff: false, requested: "/admin" }),
-    ).toBe("/account");
+    ).toBe("/");
     expect(
       pickPostSignInPath({ isStaff: false, requested: "/admin/properties" }),
-    ).toBe("/account");
+    ).toBe("/");
   });
 
   it("does not treat '/administrator' as an /admin destination", () => {
@@ -59,6 +59,6 @@ describe("pickPostSignInPath", () => {
     ).toBe("/admin");
     expect(
       pickPostSignInPath({ isStaff: false, requested: "//evil.com" }),
-    ).toBe("/account");
+    ).toBe("/");
   });
 });

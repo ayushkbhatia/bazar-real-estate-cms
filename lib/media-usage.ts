@@ -18,7 +18,6 @@ export type MediaUsageKind =
   | "developer_profile"
   | "megamenu"
   | "advisor"
-  | "document"
   | "license";
 
 export type MediaUsage = {
@@ -33,8 +32,8 @@ export type MediaUsage = {
   href: string | null;
   /** Visible on the public site right now. */
   live: boolean;
-  /** Internal-only surface (deal documents, licence files) — never public,
-   *  but still very much in use. */
+  /** Internal-only surface (licence files) — never public, but still very
+   *  much in use. */
   internal: boolean;
 };
 
@@ -65,7 +64,6 @@ export const USAGE_KIND_LABELS: Record<MediaUsageKind, string> = {
   developer_profile: "Developer profile",
   megamenu: "Navigation",
   advisor: "Advisor",
-  document: "Deal document",
   license: "Licence",
 };
 

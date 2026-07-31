@@ -16,7 +16,8 @@ import { Button } from "@/components/ui/button";
  * Sprint 5b (backfilled): picker drawer for empty compare slots.
  * Three tabs — Saved, Recently viewed, Search. Today only Search is
  * wired (just a link to /buy); Sprint 9 wires Saved + Recently viewed
- * via the `saved_properties` + `recently_viewed` (Sprint 8) tables.
+ * The saved / recent tabs were backed by customer accounts, which have been
+ * removed; both now point people at search.
  */
 export function PickerDrawer({
   onPick,
@@ -72,14 +73,14 @@ export function PickerDrawer({
             {tab === "saved" ? (
               <EmptyPanel
                 title="No saved listings yet"
-                body="Heart a listing to bring it into compare. Sprint 9 wires the saved-properties lookup."
-                href="/account/saved"
-                cta="Open saved"
+                body="Pick listings from search to bring them into compare."
+                href="/buy"
+                cta="Browse listings"
               />
             ) : tab === "recent" ? (
               <EmptyPanel
-                title="Recently viewed activates in Sprint 8"
-                body="Your last 20 listings will appear here once the recently_viewed table lands."
+                title="Nothing viewed yet"
+                body="Listings you open will not be remembered — pick them from search instead."
                 href="/buy"
                 cta="Browse listings"
               />

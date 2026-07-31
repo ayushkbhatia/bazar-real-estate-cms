@@ -77,12 +77,12 @@ export function StaffSignInForm({
           <div className="flex flex-col gap-1.5">
             <div className="flex items-baseline justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link
-                href="/forgot-password"
-                className="text-[12px] text-bz-muted hover:text-bz-ink"
-              >
-                Forgot?
-              </Link>
+              {/* Self-service recovery went with the customer auth pages.
+                  Staff get a single-use link from an admin instead — see
+                  Users & roles, or the advisor profile. */}
+              <span className="text-[12px] text-bz-muted">
+                Forgot? Ask an admin
+              </span>
             </div>
             <Input
               id="password"
@@ -108,14 +108,6 @@ export function StaffSignInForm({
       <p className="mt-6 text-[12.5px] text-bz-muted text-center leading-relaxed">
         Staff access is invite-only. Need an account?{" "}
         <span className="text-bz-ink-2">Ask an administrator to invite you.</span>
-      </p>
-      <p className="mt-3 text-center">
-        <Link
-          href="/sign-in"
-          className="text-[12.5px] text-bz-muted hover:text-bz-ink underline"
-        >
-          Not staff? Customer sign-in
-        </Link>
       </p>
     </div>
   );

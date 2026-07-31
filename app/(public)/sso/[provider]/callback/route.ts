@@ -19,11 +19,14 @@ export async function GET(
   const { provider } = await ctx.params;
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const next =
-    safeRelativePath(url.searchParams.get("next")) ?? "/account/saved";
+  // Same-origin paths only. Supabase hands `next` straight through from the
+  // link it was given, so an attacker who can trigger an auth email for a
+  // victim would otherwise choose where that victim lands after sign-in.
+  // The guard stays; only the default moved, since /account is gone.
+  const next = safeRelativePath(url.searchParams.get("next")) ?? "/";
 
   if (!isSupabaseConfigured || !code) {
-    return NextResponse.redirect(new URL("/sign-in?sso_error=1", url.origin));
+    return NextResponse.redirect(new URL("/admin/login?sso_error=1", url.origin));
   }
 
   const supabase = await createSupabaseServerClient();
@@ -31,7 +34,7 @@ export async function GET(
   if (error) {
     console.error(`[sso/${provider}/callback]`, error);
     return NextResponse.redirect(
-      new URL(`/sign-in?sso_error=1&provider=${provider}`, url.origin),
+      new URL(`/admin/login?sso_error=1&provider=${provider}`, url.origin),
     );
   }
 

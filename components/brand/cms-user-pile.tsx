@@ -11,7 +11,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, LogOut } from "lucide-react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
-import { signOutAction } from "@/app/(public)/(auth)/_actions";
+// Neutral module — the customer auth route group this used to import from
+// has been removed along with customer accounts.
+import { signOutAction } from "@/app/_actions/auth";
 import { isSupabaseConfigured } from "@/lib/env";
 
 type StaffSummary = {
