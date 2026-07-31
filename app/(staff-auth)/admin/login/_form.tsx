@@ -7,7 +7,10 @@ import { Wordmark } from "@/components/brand/wordmark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signInAction, type AuthState } from "@/app/(public)/(auth)/_actions";
+// Imported from the neutral module, not the customer auth route group — that
+// group is being deleted with the customer-account surface, and the staff door
+// must not go with it.
+import { signInAction, type AuthState } from "@/app/_actions/auth";
 
 const initial: AuthState = { status: "idle" };
 

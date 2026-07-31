@@ -2,14 +2,14 @@
  * @vitest-environment node
  *
  * `signInAction` is the single sign-in path for BOTH doors: the customer page
- * at /sign-in and the staff page at /admin/login, which imports it from here
- * (app/(staff-auth)/admin/login/_form.tsx). It had no test at all, and no
- * Playwright project authenticates — so the staff door could be broken with
- * the whole CI gate staying green.
+ * at /sign-in and the staff page at /admin/login
+ * (app/(staff-auth)/admin/login/_form.tsx imports it from here). It had no test
+ * at all, and no Playwright project authenticates — so the staff door could be
+ * broken with the whole CI gate staying green.
  *
- * That matters right now because the customer-account surface is being removed
- * and this module sits inside the route group scheduled for deletion. These
- * tests exist to fail loudly if that refactor changes how staff sign in.
+ * The action moved to this neutral module precisely so that deleting the
+ * customer-account route group cannot take staff sign-in with it. These tests
+ * exist to fail loudly if that refactor changes how staff sign in.
  *
  * The module imports `server-only` and Next's request context, so the Supabase
  * factory and next/navigation are mocked outright, following lib/auth.test.ts.
@@ -56,7 +56,7 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 async function signIn(fields: Record<string, string>) {
-  const { signInAction } = await import("./_actions");
+  const { signInAction } = await import("./auth");
   const form = new FormData();
   for (const [k, v] of Object.entries(fields)) form.set(k, v);
   return signInAction({ status: "idle" }, form);
