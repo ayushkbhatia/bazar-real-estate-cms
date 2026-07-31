@@ -128,7 +128,6 @@ function prettyHref(kind: string, id: string): string | undefined {
   if (kind === "property") return `/admin/properties/${id}`;
   if (kind === "enquiry") return `/admin/enquiries?id=${id}`;
   if (kind === "staff") return `/admin/agents/${id}`;
-  if (kind === "deal") return `/admin/deals/${id}`;
   return undefined;
 }
 function relativeTime(iso: string, nowMs: number): string {

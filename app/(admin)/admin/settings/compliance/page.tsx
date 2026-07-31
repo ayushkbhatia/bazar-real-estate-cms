@@ -1,5 +1,5 @@
 /**
- * /admin/settings/compliance — read-only summary of licenses + KYC
+ * /admin/settings/compliance — read-only summary of licenses and permits
  * queue + permit expiry. Full editor + suspicious-activity reporting
  * lands later; this page surfaces the regulatory state today.
  */
@@ -27,22 +27,6 @@ const STATUS_LABELS: Record<LicenseStatus, string> = {
   expired: "Expired",
   revoked: "Revoked",
 };
-
-async function countPendingKycDocs(): Promise<number> {
-  if (!isSupabaseConfigured) return 0;
-  try {
-    const sb = await createSupabaseServerClient();
-    const { count } = await sb
-      .from("documents")
-      .select("id", { count: "exact", head: true })
-      .eq("owner_kind", "account")
-      .eq("status", "uploaded")
-      .is("deleted_at", null);
-    return count ?? 0;
-  } catch {
-    return 0;
-  }
-}
 
 async function countPermitsExpiringIn30d(): Promise<number> {
   if (!isSupabaseConfigured) return 0;
@@ -75,9 +59,8 @@ function formatDate(iso: string | null): string {
 }
 
 export default async function AdminSettingsCompliancePage() {
-  const [licenses, kycPending, expiringPermits] = await Promise.all([
+  const [licenses, expiringPermits] = await Promise.all([
     listLicenses(),
-    countPendingKycDocs(),
     countPermitsExpiringIn30d(),
   ]);
 
@@ -109,11 +92,11 @@ export default async function AdminSettingsCompliancePage() {
         className="serif text-[28px] mt-2 leading-tight"
         style={{ letterSpacing: "-0.012em" }}
       >
-        Compliance · RERA / DMT / KYC
+        Compliance · RERA / DMT
       </h2>
       <p className="mt-3 text-[14px] text-bz-ink-2 max-w-[60ch] leading-relaxed">
         Regulatory state today: licenses (ORN, BRN, Trakheesi/DARI),
-        listing-permit expiry, and KYC review queue. The permit-expiry
+        listing-permit expiry. The permit-expiry
         cron runs daily at 06:00 UTC and emails admins for properties
         falling within the 30-day window.
       </p>
@@ -129,12 +112,6 @@ export default async function AdminSettingsCompliancePage() {
           value={byStatus.expiring_soon + expiringPermits}
           subValue={`${byStatus.expiring_soon} licenses, ${expiringPermits} permits`}
           highlight={byStatus.expiring_soon + expiringPermits > 0}
-        />
-        <StatCard
-          label="KYC pending"
-          value={kycPending}
-          subValue="Account docs awaiting review"
-          highlight={kycPending > 0}
         />
       </div>
 
@@ -210,16 +187,6 @@ export default async function AdminSettingsCompliancePage() {
           <li>
             ·{" "}
             <Link
-              href="/admin/deals"
-              className="text-bz-accent underline underline-offset-2"
-            >
-              Deals
-            </Link>{" "}
-            — open a deal to review buyer KYC documents.
-          </li>
-          <li>
-            ·{" "}
-            <Link
               href="/admin/users"
               className="text-bz-accent underline underline-offset-2"
             >
@@ -241,7 +208,6 @@ export default async function AdminSettingsCompliancePage() {
           {[
             "License editor (issue / renew / upload certificate file)",
             "Per-advisor BRN training-certificate tracker",
-            "KYC review queue page with approve / reject actions inline",
             "Suspicious-activity (goAML) reporting workflow",
           ].map((b) => (
             <li key={b} className="text-[13.5px] text-bz-ink-2 leading-snug">

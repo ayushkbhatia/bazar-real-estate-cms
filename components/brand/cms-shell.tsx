@@ -16,7 +16,6 @@ import {
   Menu,
   Settings,
   ClipboardCheck,
-  Handshake,
   ScrollText,
   ShieldCheck,
   MoreHorizontal,
@@ -62,7 +61,6 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
         href: "/admin/valuations",
         icon: ClipboardCheck,
       },
-      { label: "Deals", href: "/admin/deals", icon: Handshake },
     ],
   },
   {
@@ -102,7 +100,7 @@ function activeCmsTab(pathname: string | null): string {
   if (p === "/admin" || p.startsWith("/admin/analytics")) return "home";
   if (["/admin/properties", "/admin/media", "/admin/agents"].some((m) => p.startsWith(m)))
     return "catalogue";
-  if (["/admin/enquiries", "/admin/valuations", "/admin/deals"].some((m) => p.startsWith(m)))
+  if (["/admin/enquiries", "/admin/valuations"].some((m) => p.startsWith(m)))
     return "inbox";
   if (["/admin/blog", "/admin/pages", "/admin/content-assets"].some((m) => p.startsWith(m)))
     return "content";

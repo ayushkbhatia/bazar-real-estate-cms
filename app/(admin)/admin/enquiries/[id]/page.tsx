@@ -7,7 +7,6 @@ import {
   Mail,
   Phone,
   Calendar,
-  Handshake,
 } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -28,9 +27,6 @@ import { listPublishedAssets } from "@/lib/queries/content-assets";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
 import type { TokenContext } from "@/lib/content-assets/tokens";
 import { ScheduleViewingButton } from "./_schedule";
-import { CreateDealButton } from "./_create-deal";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { isSupabaseConfigured } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
@@ -82,31 +78,6 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
         contexts: { enquiry: { id } },
       });
     });
-  }
-
-  // For the "Create deal" CTA: check whether a deal already exists for
-  // this enquiry, and grab the listing price as the default price.
-  let existingDealId: string | null = null;
-  let defaultPriceAed: number | null = null;
-  if (isSupabaseConfigured && enquiry.status === "closed_won") {
-    const supabase = await createSupabaseServerClient();
-    const [{ data: dealRow }, { data: propRow }] = await Promise.all([
-      supabase
-        .from("deals")
-        .select("id")
-        .eq("enquiry_id", enquiry.id)
-        .is("deleted_at", null)
-        .maybeSingle(),
-      enquiry.property_id
-        ? supabase
-            .from("properties")
-            .select("price_aed")
-            .eq("id", enquiry.property_id)
-            .maybeSingle()
-        : Promise.resolve({ data: null as { price_aed: number } | null }),
-    ]);
-    existingDealId = dealRow?.id ?? null;
-    defaultPriceAed = propRow?.price_aed ?? null;
   }
 
   // For presence — null when the viewer isn't staff (auth middleware
@@ -221,24 +192,6 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 <ScheduleViewingButton enquiryId={enquiry.id} />
-                {enquiry.status === "closed_won" &&
-                enquiry.property_id &&
-                enquiry.account_id ? (
-                  existingDealId ? (
-                    <Link
-                      href={`/admin/deals/${existingDealId}`}
-                      className="inline-flex items-center gap-1.5 px-2.5 h-8 rounded-md border border-bz-border-strong bg-bz-surface-2 text-[12px] font-medium text-bz-ink hover:bg-bz-surface-3"
-                    >
-                      <Handshake size={13} strokeWidth={1.8} />
-                      Open deal file
-                    </Link>
-                  ) : (
-                    <CreateDealButton
-                      enquiryId={enquiry.id}
-                      defaultPriceAed={defaultPriceAed}
-                    />
-                  )
-                ) : null}
                 {enquiry.assigned_agent_id == null ? (
                   <AssignToMeButton enquiryId={enquiry.id} />
                 ) : (
