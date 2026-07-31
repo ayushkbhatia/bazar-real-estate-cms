@@ -29,8 +29,7 @@ import { placeJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
 import { LifestyleDossier } from "./_components/lifestyle-dossier";
 import { AreaMapDetail } from "../../_components/area-map/area-map-detail";
-import { SavedIdsProvider } from "../../_components/saved-ids-provider";
-import { ListingCardSaveable } from "../../_components/listing-card-saveable";
+import { ListingCardPriced } from "../../_components/listing-card-priced";
 import { CarouselGrid } from "@/components/brand/mobile";
 import { AreaReportsRail } from "../../_components/market-context-link";
 import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
@@ -364,7 +363,6 @@ export default async function CommunityProfilePage({
           </div>
           {listingRows.length > 0 ? (
             <div className="mt-8">
-              <SavedIdsProvider>
                 <CarouselGrid cols={3}>
                   {listingRows.map((row, index) => {
                     const badge = badgeFor(row);
@@ -374,7 +372,7 @@ export default async function CommunityProfilePage({
                         href={propertyUrl(row)}
                         className="block"
                       >
-                        <ListingCardSaveable
+                        <ListingCardPriced
                           price={formatPriceAED(row.price_aed)}
                           priceAed={row.price_aed}
                           title={row.title}
@@ -398,7 +396,6 @@ export default async function CommunityProfilePage({
                     );
                   })}
                 </CarouselGrid>
-              </SavedIdsProvider>
             </div>
           ) : (
             <div className="mt-8 py-12 text-center text-[14px] text-bz-muted border border-dashed border-bz-border rounded-md">

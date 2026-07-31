@@ -14,8 +14,7 @@ import {
   type HeroVariant,
 } from "./_components/hero-variants";
 import { AreaMapSection } from "./_components/area-map-section";
-import { SavedIdsProvider } from "./_components/saved-ids-provider";
-import { ListingCardSaveable } from "./_components/listing-card-saveable";
+import { ListingCardPriced } from "./_components/listing-card-priced";
 import { CarouselGrid } from "@/components/brand/mobile";
 import { LocationBrowsing } from "./_components/home/location-browsing";
 import { OffPlanProjects } from "./_components/home/off-plan-projects";
@@ -191,7 +190,6 @@ export default async function HomePage() {
           ) : null}
         </div>
         {featured.length > 0 ? (
-          <SavedIdsProvider>
             <CarouselGrid cols={3}>
               {featured.map((row, index) => {
                 const badge = badgeFor(row);
@@ -201,7 +199,7 @@ export default async function HomePage() {
                     href={propertyUrl(row)}
                     className="block"
                   >
-                    <ListingCardSaveable
+                    <ListingCardPriced
                       price={formatPriceAED(row.price_aed)}
                       priceAed={row.price_aed}
                       title={row.title}
@@ -223,7 +221,6 @@ export default async function HomePage() {
                 );
               })}
             </CarouselGrid>
-          </SavedIdsProvider>
         ) : (
           <p className="text-bz-muted text-[14px]">
             Listings appear here once published. Seed the database to see real

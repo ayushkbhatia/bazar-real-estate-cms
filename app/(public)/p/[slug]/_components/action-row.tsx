@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Share2, Send, Check } from "lucide-react";
-import { SaveButton } from "@/components/brand/save-button";
 import { CompareButton } from "@/components/brand/compare-button";
 
 /**
@@ -13,14 +12,10 @@ export function PropertyActionRow({
   propertyId,
   reference,
   title,
-  initialSaved,
-  isAuthed,
 }: {
   propertyId: string;
   reference: string;
   title: string;
-  initialSaved: boolean;
-  isAuthed: boolean;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -58,14 +53,6 @@ export function PropertyActionRow({
         REF · <span className="text-bz-ink">{reference}</span>
       </div>
       <div className="flex items-center gap-2">
-        <SaveButton
-          propertyId={propertyId}
-          initialSaved={initialSaved}
-          isAuthed={isAuthed}
-          // SaveButton renders absolutely-positioned by default; wrap to
-          // make it sit inline here.
-          className="relative top-auto right-auto"
-        />
         <CompareButton propertyId={propertyId} />
         <button
           type="button"

@@ -8,8 +8,7 @@ import {
   propertyUrl,
   type ListingRow,
 } from "@/lib/queries/properties";
-import { ListingCardSaveable } from "./listing-card-saveable";
-import { SavedIdsProvider } from "./saved-ids-provider";
+import { ListingCardPriced } from "./listing-card-priced";
 
 type Props = {
   eyebrow: string;
@@ -73,7 +72,6 @@ export function CuratedGrid({
             listings land.
           </div>
         ) : (
-          <SavedIdsProvider>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {rows.map((row, index) => {
                 const badge = badgeFor(row);
@@ -83,7 +81,7 @@ export function CuratedGrid({
                     href={propertyUrl(row)}
                     className="block"
                   >
-                    <ListingCardSaveable
+                    <ListingCardPriced
                       price={formatPriceAED(row.price_aed)}
                       priceAed={row.price_aed}
                       title={row.title}
@@ -105,7 +103,6 @@ export function CuratedGrid({
                 );
               })}
             </div>
-          </SavedIdsProvider>
         )}
 
         <div className="mt-12 flex items-center justify-between flex-wrap gap-4">

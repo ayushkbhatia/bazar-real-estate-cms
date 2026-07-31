@@ -1,8 +1,7 @@
 import Image from "next/image";
-import { BedDouble, Bath, Maximize2, Heart, ShieldCheck } from "lucide-react";
+import { BedDouble, Bath, Maximize2, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PlaceholderImage } from "./placeholder-image";
-import { SaveButton } from "./save-button";
 import { CompareButton } from "./compare-button";
 
 export type ListingCardVariant = "default" | "editorial" | "row";
@@ -29,15 +28,11 @@ export type ListingCardProps = {
   heroSrc?: string | null;
   /** Alt text for the hero image (filename, alt_text, or human label). */
   heroAlt?: string;
-  /** When provided, renders a functional SaveButton instead of a static heart. */
+  /** Identifies the listing for the compare tool. */
   propertyId?: string;
-  /** Whether the current user has saved this property (for SaveButton). */
-  initialSaved?: boolean;
-  /** Whether the current user is signed in (for SaveButton). */
-  isAuthed?: boolean;
   /** Sprint 4b: surfaces a Bazar-Verified badge in the bottom-left of media. */
   verified?: boolean;
-  /** Sprint 4b: render an "Add to compare" button next to SaveButton. */
+  /** Sprint 4b: render an "Add to compare" button on the media. */
   compareEnabled?: boolean;
   /** Sprint 4b: top-right corner status pill — price-drop, just-listed, etc. */
   diff?: ListingCardDiff;
@@ -67,8 +62,6 @@ function Media({
   heroAlt,
   priority,
   propertyId,
-  initialSaved,
-  isAuthed,
   verified,
   compareEnabled,
   diff,
@@ -82,8 +75,6 @@ function Media({
   heroAlt?: string;
   priority?: boolean;
   propertyId?: string;
-  initialSaved?: boolean;
-  isAuthed?: boolean;
   verified?: boolean;
   compareEnabled?: boolean;
   diff?: ListingCardDiff;
@@ -129,27 +120,13 @@ function Media({
         </div>
       ) : null}
 
-      {/* Right column: save + compare buttons */}
+      {/* Right column: compare button */}
       <div
         className={cn(
           "absolute right-3 z-10 flex flex-col gap-2",
           diff ? "top-[48px]" : "top-3",
         )}
       >
-        {propertyId ? (
-          <SaveButton
-            propertyId={propertyId}
-            initialSaved={initialSaved ?? false}
-            isAuthed={isAuthed ?? false}
-          />
-        ) : (
-          <span
-            aria-hidden
-            className="w-8 h-8 rounded-full bg-white/92 flex items-center justify-center text-bz-ink-2"
-          >
-            <Heart size={16} strokeWidth={1.6} />
-          </span>
-        )}
         {compareEnabled && propertyId ? (
           <CompareButton propertyId={propertyId} />
         ) : null}
@@ -208,8 +185,6 @@ export function ListingCard({
   heroSrc,
   heroAlt,
   propertyId,
-  initialSaved,
-  isAuthed,
   verified,
   compareEnabled,
   diff,
@@ -231,8 +206,6 @@ export function ListingCard({
             heroAlt={heroAlt}
             priority={priority}
             propertyId={propertyId}
-            initialSaved={initialSaved}
-            isAuthed={isAuthed}
             verified={verified}
             compareEnabled={compareEnabled}
             diff={diff}
@@ -277,8 +250,6 @@ export function ListingCard({
             heroAlt={heroAlt}
             priority={priority}
             propertyId={propertyId}
-            initialSaved={initialSaved}
-            isAuthed={isAuthed}
             verified={verified}
             compareEnabled={compareEnabled}
             diff={diff}
@@ -326,8 +297,6 @@ export function ListingCard({
         heroSrc={heroSrc}
         heroAlt={heroAlt}
         propertyId={propertyId}
-        initialSaved={initialSaved}
-        isAuthed={isAuthed}
         verified={verified}
         compareEnabled={compareEnabled}
         diff={diff}

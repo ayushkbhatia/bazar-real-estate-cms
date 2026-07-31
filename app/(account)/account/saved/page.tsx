@@ -120,8 +120,6 @@ export default async function SavedPage() {
               heroSrc={row.hero ? mediaPublicUrl(row.hero.storage_key) : null}
               heroAlt={row.hero?.alt_text ?? row.title}
               propertyId={row.id}
-              initialSaved
-              isAuthed
               compareEnabled
             />
           </Link>
