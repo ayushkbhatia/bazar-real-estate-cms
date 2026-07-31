@@ -87,15 +87,9 @@ export function LegalDocFrame({
         <a className="underline text-bz-ink hover:text-bz-accent" href="mailto:dpo@bazarrealestate.ae">
           dpo@bazarrealestate.ae
         </a>
-        . For PDPL data-subject requests, use{" "}
-        <Link href="/account/data-export" className="underline text-bz-ink hover:text-bz-accent">
-          /account/data-export
-        </Link>{" "}
-        or{" "}
-        <Link href="/account/data-deletion" className="underline text-bz-ink hover:text-bz-accent">
-          /account/data-deletion
-        </Link>
-        .
+        . For PDPL data-subject requests \u2014 access, rectification or
+        erasure \u2014 email the same address and we will verify your identity and
+        respond within the statutory period.
       </p>
     </div>
   );

@@ -33,7 +33,7 @@ export default function TermsPage() {
         <li>
           You may browse the marketplace, submit enquiries, save listings, and
           use the calculator tools without an account. Some features (saved
-          searches, viewings, the data-export and data-deletion endpoints)
+          searches, viewings)
           require an account.
         </li>
         <li>
@@ -159,11 +159,11 @@ export default function TermsPage() {
 
       <h2>15. Termination</h2>
       <p>
-        We may suspend or terminate accounts that violate these terms. You
-        may terminate your account at any time via{" "}
-        <code>/account/data-deletion</code>. Sections that by their nature
-        should survive termination (fees owed, liability caps, governing
-        law) continue to apply.
+        We may suspend or terminate access for anyone who violates these
+        terms. To have the personal data we hold about you erased, email{" "}
+        <a href="mailto:dpo@bazarrealestate.ae">dpo@bazarrealestate.ae</a>.
+        Sections that by their nature should survive termination (fees owed,
+        liability caps, governing law) continue to apply.
       </p>
 
       <h2>16. Governing Law and Dispute Resolution</h2>
