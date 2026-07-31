@@ -513,3 +513,24 @@ shows the trail.)
   The weekly import cron was removed as unused. /tools/valuation and
   /market-reports read that table, so both price against nothing until it is
   loaded — manually, or by reinstating the import.
+
+- [db] CASCADE does not reach function bodies — this bit us once already.
+  0068 dropped `deals`; `deal_buyer_account()` kept querying it and an RLS
+  policy on storage.objects kept calling that, which broke ALL image uploads
+  (0069). `anonymise_account()` was broken the same way, for the second time.
+  Before any future `drop table`, grep pg_proc for the table name:
+    select proname from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+    where n.nspname='public' and pg_get_functiondef(p.oid) ilike '%<table>%';
+  and check pg_policies in BOTH `public` and `storage`.
+
+- [db] anonymise_account covers less than 0037 claims.
+  The live definition scrubs accounts, enquiries, messages, viewings,
+  newsletter_subscribers and reviews only. 0037 said it was extended to
+  valuation_requests, mortgage_inquiries, tour_requests and others — those
+  statements are not in the deployed function, so 0037 looks never to have been
+  applied. `anonymise_by_email` (0067) does cover them, so the email-keyed path
+  is the more complete one. Worth reconciling.
+
+- [storage] The `documents` bucket still exists, empty and policy-less.
+  Postgres blocks deleting it via SQL; remove it through the Storage API or the
+  dashboard. Nothing can read or write it in the meantime.
