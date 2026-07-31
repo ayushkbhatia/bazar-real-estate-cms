@@ -49,11 +49,11 @@ beforeEach(() => {
 });
 
 describe("requireSignedIn", () => {
-  it("redirects to /sign-in when there is no user", async () => {
+  it("redirects to the staff door when there is no user", async () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { requireSignedIn } = await import("./auth");
-    await expect(requireSignedIn()).rejects.toThrow(/NEXT_REDIRECT:\/sign-in/);
-    expect(redirectSpy).toHaveBeenCalledWith("/sign-in");
+    await expect(requireSignedIn()).rejects.toThrow(/NEXT_REDIRECT:\/admin\/login/);
+    expect(redirectSpy).toHaveBeenCalledWith("/admin/login");
   });
 
   it("returns the user + supabase client when signed in", async () => {
@@ -75,7 +75,7 @@ describe("requireRole", () => {
     getUserMock.mockResolvedValue({ data: { user: null } });
     const { requireRole } = await import("./auth");
     await expect(requireRole(["admin"])).rejects.toThrow(
-      /NEXT_REDIRECT:\/sign-in/,
+      /NEXT_REDIRECT:\/admin\/login/,
     );
   });
 

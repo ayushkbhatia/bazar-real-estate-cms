@@ -4,28 +4,6 @@ import { isSupabaseConfigured } from "@/lib/env";
 import type { PropertyFilters } from "@/lib/filters/property";
 import type { Database } from "@/db/types";
 
-/** Return a set of propertyIds that the current signed-in user has saved.
- *  Returns an empty set for anon users or any failure. */
-export async function getSavedPropertyIds(
-  propertyIds: string[],
-): Promise<Set<string>> {
-  if (!isSupabaseConfigured || propertyIds.length === 0) return new Set();
-  try {
-    const supabase = await createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return new Set();
-    const { data } = await supabase
-      .from("saved_properties")
-      .select("property_id")
-      .eq("user_id", user.id)
-      .in("property_id", propertyIds);
-    return new Set((data ?? []).map((r) => r.property_id));
-  } catch {
-    return new Set();
-  }
-}
 
 type Mode = Database["public"]["Enums"]["property_mode"];
 type Status = Database["public"]["Enums"]["property_status"];

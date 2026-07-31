@@ -27,7 +27,8 @@ export function safeRelativePath(
  * - An explicit, safe `requested` path wins — EXCEPT an `/admin` destination is
  *   never honoured for a non-staff user (they'd only bounce off the role gate),
  *   so they fall back to their account home.
- * - With no usable request, staff go to `/admin`, everyone else to `/account`.
+ * - With no usable request, staff go to `/admin`. Customer accounts were
+ *   removed, so everyone else goes to the marketplace home.
  */
 export function pickPostSignInPath(opts: {
   isStaff: boolean;
@@ -36,8 +37,8 @@ export function pickPostSignInPath(opts: {
   const safe = safeRelativePath(opts.requested);
   if (safe) {
     const isAdminDest = safe === "/admin" || safe.startsWith("/admin/");
-    if (isAdminDest && !opts.isStaff) return "/account";
+    if (isAdminDest && !opts.isStaff) return "/";
     return safe;
   }
-  return opts.isStaff ? "/admin" : "/account";
+  return opts.isStaff ? "/admin" : "/";
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Heart, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import { Wordmark } from "./wordmark";
-import { AccountMenu } from "./account-menu";
 import { MegamenuPanel } from "./megamenu-panel";
 import { PublicMegaNavMobile } from "./public-mega-nav-mobile";
 import { cn } from "@/lib/utils";
@@ -131,13 +130,6 @@ export function PublicMegaNav({ data, footerSlot }: Props) {
 
         {/* Right cluster */}
         <div className="hidden xl:flex gap-2 items-center">
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/account/saved">
-              <Heart size={14} strokeWidth={1.6} />
-              Saved
-            </Link>
-          </Button>
-          <AccountMenu />
           <Button asChild size="sm">
             <Link href="/services/sell">List a property</Link>
           </Button>

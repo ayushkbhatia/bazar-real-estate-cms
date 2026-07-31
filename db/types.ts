@@ -468,41 +468,6 @@ export type Database = {
         }
         Relationships: []
       }
-      comparisons: {
-        Row: {
-          account_id: string
-          created_at: string
-          id: string
-          name: string | null
-          property_ids: string[]
-          updated_at: string
-        }
-        Insert: {
-          account_id: string
-          created_at?: string
-          id?: string
-          name?: string | null
-          property_ids: string[]
-          updated_at?: string
-        }
-        Update: {
-          account_id?: string
-          created_at?: string
-          id?: string
-          name?: string | null
-          property_ids?: string[]
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comparisons_account_id_fkey"
-            columns: ["account_id"]
-            isOneToOne: false
-            referencedRelation: "accounts"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
       concierge_messages: {
         Row: {
           content: string
@@ -695,105 +660,6 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "enquiries"
             referencedColumns: ["id"]
-          },
-        ]
-      }
-      deals: {
-        Row: {
-          advisory_fee_aed: number
-          buyer_account_id: string
-          commission_aed: number | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          enquiry_id: string | null
-          id: string
-          lead_agent_id: string | null
-          mou_signed_at: string | null
-          noc_obtained_at: string | null
-          notes: string | null
-          price_aed: number
-          property_id: string
-          seller_account_id: string | null
-          stage: Database["public"]["Enums"]["deal_stage"]
-          transferred_at: string | null
-          updated_at: string
-        }
-        Insert: {
-          advisory_fee_aed?: number
-          buyer_account_id: string
-          commission_aed?: number | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          enquiry_id?: string | null
-          id?: string
-          lead_agent_id?: string | null
-          mou_signed_at?: string | null
-          noc_obtained_at?: string | null
-          notes?: string | null
-          price_aed: number
-          property_id: string
-          seller_account_id?: string | null
-          stage?: Database["public"]["Enums"]["deal_stage"]
-          transferred_at?: string | null
-          updated_at?: string
-        }
-        Update: {
-          advisory_fee_aed?: number
-          buyer_account_id?: string
-          commission_aed?: number | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          enquiry_id?: string | null
-          id?: string
-          lead_agent_id?: string | null
-          mou_signed_at?: string | null
-          noc_obtained_at?: string | null
-          notes?: string | null
-          price_aed?: number
-          property_id?: string
-          seller_account_id?: string | null
-          stage?: Database["public"]["Enums"]["deal_stage"]
-          transferred_at?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "deals_buyer_account_id_fkey"
-            columns: ["buyer_account_id"]
-            isOneToOne: false
-            referencedRelation: "accounts"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "deals_enquiry_id_fkey"
-            columns: ["enquiry_id"]
-            isOneToOne: false
-            referencedRelation: "enquiries"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "deals_lead_agent_id_fkey"
-            columns: ["lead_agent_id"]
-            isOneToOne: false
-            referencedRelation: "staff"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "deals_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "deals_seller_account_id_fkey"
-            columns: ["seller_account_id"]
-            isOneToOne: false
-            referencedRelation: "accounts"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1180,87 +1046,6 @@ export type Database = {
           transaction_date?: string
         }
         Relationships: []
-      }
-      documents: {
-        Row: {
-          created_at: string
-          deleted_at: string | null
-          expires_at: string | null
-          filename: string | null
-          id: string
-          kind: Database["public"]["Enums"]["document_kind"]
-          media_id: string | null
-          mime_type: string | null
-          notes: string | null
-          owner_id: string
-          owner_kind: Database["public"]["Enums"]["document_owner_kind"]
-          rejected_reason: string | null
-          size_bytes: number | null
-          status: Database["public"]["Enums"]["document_status"]
-          storage_key: string | null
-          updated_at: string
-          uploaded_by: string | null
-          verified_at: string | null
-          verified_by: string | null
-        }
-        Insert: {
-          created_at?: string
-          deleted_at?: string | null
-          expires_at?: string | null
-          filename?: string | null
-          id?: string
-          kind: Database["public"]["Enums"]["document_kind"]
-          media_id?: string | null
-          mime_type?: string | null
-          notes?: string | null
-          owner_id: string
-          owner_kind: Database["public"]["Enums"]["document_owner_kind"]
-          rejected_reason?: string | null
-          size_bytes?: number | null
-          status?: Database["public"]["Enums"]["document_status"]
-          storage_key?: string | null
-          updated_at?: string
-          uploaded_by?: string | null
-          verified_at?: string | null
-          verified_by?: string | null
-        }
-        Update: {
-          created_at?: string
-          deleted_at?: string | null
-          expires_at?: string | null
-          filename?: string | null
-          id?: string
-          kind?: Database["public"]["Enums"]["document_kind"]
-          media_id?: string | null
-          mime_type?: string | null
-          notes?: string | null
-          owner_id?: string
-          owner_kind?: Database["public"]["Enums"]["document_owner_kind"]
-          rejected_reason?: string | null
-          size_bytes?: number | null
-          status?: Database["public"]["Enums"]["document_status"]
-          storage_key?: string | null
-          updated_at?: string
-          uploaded_by?: string | null
-          verified_at?: string | null
-          verified_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "documents_media_id_fkey"
-            columns: ["media_id"]
-            isOneToOne: false
-            referencedRelation: "media_assets"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "documents_verified_by_fkey"
-            columns: ["verified_by"]
-            isOneToOne: false
-            referencedRelation: "staff"
-            referencedColumns: ["user_id"]
-          },
-        ]
       }
       dsr_requests: {
         Row: {
@@ -2413,99 +2198,6 @@ export type Database = {
           },
         ]
       }
-      recently_viewed: {
-        Row: {
-          property_id: string
-          user_id: string
-          viewed_at: string
-        }
-        Insert: {
-          property_id: string
-          user_id: string
-          viewed_at?: string
-        }
-        Update: {
-          property_id?: string
-          user_id?: string
-          viewed_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "recently_viewed_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "recently_viewed_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "accounts"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
-      referrals: {
-        Row: {
-          code: string
-          created_at: string
-          first_deal_at: string | null
-          id: string
-          notes: string | null
-          paid_at: string | null
-          payout_amount_aed: number
-          referee_account_id: string | null
-          referrer_account_id: string
-          signed_up_at: string | null
-          status: Database["public"]["Enums"]["referral_status"]
-          updated_at: string
-        }
-        Insert: {
-          code: string
-          created_at?: string
-          first_deal_at?: string | null
-          id?: string
-          notes?: string | null
-          paid_at?: string | null
-          payout_amount_aed?: number
-          referee_account_id?: string | null
-          referrer_account_id: string
-          signed_up_at?: string | null
-          status?: Database["public"]["Enums"]["referral_status"]
-          updated_at?: string
-        }
-        Update: {
-          code?: string
-          created_at?: string
-          first_deal_at?: string | null
-          id?: string
-          notes?: string | null
-          paid_at?: string | null
-          payout_amount_aed?: number
-          referee_account_id?: string | null
-          referrer_account_id?: string
-          signed_up_at?: string | null
-          status?: Database["public"]["Enums"]["referral_status"]
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "referrals_referee_account_id_fkey"
-            columns: ["referee_account_id"]
-            isOneToOne: false
-            referencedRelation: "accounts"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "referrals_referrer_account_id_fkey"
-            columns: ["referrer_account_id"]
-            isOneToOne: false
-            referencedRelation: "accounts"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
       reviews: {
         Row: {
           account_id: string | null
@@ -2599,68 +2291,6 @@ export type Database = {
           name?: string
           permissions?: Json
           updated_at?: string
-        }
-        Relationships: []
-      }
-      saved_properties: {
-        Row: {
-          created_at: string
-          property_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          property_id: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          property_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "saved_properties_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      saved_searches: {
-        Row: {
-          alert_frequency: Database["public"]["Enums"]["alert_frequency"]
-          created_at: string
-          id: string
-          last_alert_at: string | null
-          mode: Database["public"]["Enums"]["property_mode"] | null
-          name: string
-          query: Json
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          alert_frequency?: Database["public"]["Enums"]["alert_frequency"]
-          created_at?: string
-          id?: string
-          last_alert_at?: string | null
-          mode?: Database["public"]["Enums"]["property_mode"] | null
-          name: string
-          query: Json
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          alert_frequency?: Database["public"]["Enums"]["alert_frequency"]
-          created_at?: string
-          id?: string
-          last_alert_at?: string | null
-          mode?: Database["public"]["Enums"]["property_mode"] | null
-          name?: string
-          query?: Json
-          updated_at?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -3215,12 +2845,6 @@ export type Database = {
       concierge_message_role: "user" | "assistant" | "system"
       content_asset_kind: "email" | "whatsapp"
       content_asset_status: "draft" | "published"
-      deal_stage:
-        | "mou"
-        | "deposit"
-        | "noc_pending"
-        | "dld_pending"
-        | "transferred"
       development_media_role:
         | "hero"
         | "gallery"
@@ -3230,29 +2854,6 @@ export type Database = {
         | "video"
       development_status: "pre_launch" | "on_sale" | "sold_out" | "handed_over"
       development_unit_status: "available" | "held" | "reserved" | "sold"
-      document_kind:
-        | "passport"
-        | "emirates_id"
-        | "title_deed"
-        | "form_a"
-        | "noc"
-        | "mou"
-        | "sale_contract"
-        | "power_of_attorney"
-        | "valuation_report"
-        | "mortgage_pre_approval"
-      document_owner_kind:
-        | "account"
-        | "deal"
-        | "property"
-        | "development"
-        | "enquiry"
-      document_status:
-        | "uploaded"
-        | "pending_review"
-        | "verified"
-        | "rejected"
-        | "expired"
       dsr_kind: "export" | "delete"
       dsr_status: "pending" | "fulfilled" | "expired" | "cancelled"
       enquiry_source:
@@ -3365,7 +2966,6 @@ export type Database = {
         | "building"
         | "retail"
         | "commercial_villa"
-      referral_status: "pending" | "signed_up" | "first_deal" | "paid" | "void"
       review_status: "pending" | "approved" | "rejected"
       review_subject_kind: "agent" | "area" | "development"
       staff_role: "admin" | "editor" | "agent" | "marketing" | "support"
@@ -3568,13 +3168,6 @@ export const Constants = {
       concierge_message_role: ["user", "assistant", "system"],
       content_asset_kind: ["email", "whatsapp"],
       content_asset_status: ["draft", "published"],
-      deal_stage: [
-        "mou",
-        "deposit",
-        "noc_pending",
-        "dld_pending",
-        "transferred",
-      ],
       development_media_role: [
         "hero",
         "gallery",
@@ -3585,32 +3178,6 @@ export const Constants = {
       ],
       development_status: ["pre_launch", "on_sale", "sold_out", "handed_over"],
       development_unit_status: ["available", "held", "reserved", "sold"],
-      document_kind: [
-        "passport",
-        "emirates_id",
-        "title_deed",
-        "form_a",
-        "noc",
-        "mou",
-        "sale_contract",
-        "power_of_attorney",
-        "valuation_report",
-        "mortgage_pre_approval",
-      ],
-      document_owner_kind: [
-        "account",
-        "deal",
-        "property",
-        "development",
-        "enquiry",
-      ],
-      document_status: [
-        "uploaded",
-        "pending_review",
-        "verified",
-        "rejected",
-        "expired",
-      ],
       dsr_kind: ["export", "delete"],
       dsr_status: ["pending", "fulfilled", "expired", "cancelled"],
       enquiry_source: [
@@ -3734,7 +3301,6 @@ export const Constants = {
         "retail",
         "commercial_villa",
       ],
-      referral_status: ["pending", "signed_up", "first_deal", "paid", "void"],
       review_status: ["pending", "approved", "rejected"],
       review_subject_kind: ["agent", "area", "development"],
       staff_role: ["admin", "editor", "agent", "marketing", "support"],

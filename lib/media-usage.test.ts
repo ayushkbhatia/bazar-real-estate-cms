@@ -42,7 +42,8 @@ describe("deriveMediaState", () => {
   });
 
   it("is internal only when every usage is internal", () => {
-    const doc = usage({ kind: "document", live: false, internal: true });
+    // Licence files are the remaining internal-only surface.
+    const doc = usage({ kind: "license", live: false, internal: true });
     expect(deriveMediaState([doc])).toBe("internal");
     expect(deriveMediaState([doc, usage({ live: false })])).toBe("attached");
     expect(deriveMediaState([doc, usage({ live: true })])).toBe("live");

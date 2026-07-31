@@ -52,9 +52,33 @@ const nextConfig: NextConfig = {
   // bookmarks, backlinks, search results) resolving to the new path.
   async redirects() {
     return [
+      // Customer accounts were removed. These paths were the customer auth
+      // surface; anything still pointing at them — bookmarks, old emails,
+      // lib/auth's anonymous fallback — lands on the staff door rather than
+      // a 404, which is the only sign-in that still exists.
+      {
+        source: "/sign-in",
+        destination: "/admin/login",
+        permanent: true,
+      },
+      {
+        source: "/sign-up",
+        destination: "/admin/login",
+        permanent: true,
+      },
+      {
+        source: "/magic-link",
+        destination: "/admin/login",
+        permanent: true,
+      },
+      {
+        source: "/reset-password",
+        destination: "/admin/login",
+        permanent: true,
+      },
       {
         source: "/verify-otp",
-        destination: "/magic-link",
+        destination: "/admin/login",
         permanent: true,
       },
       {

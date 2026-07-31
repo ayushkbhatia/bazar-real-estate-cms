@@ -429,9 +429,6 @@ function EmptyState() {
         <Button asChild>
           <Link href="/buy">Browse the marketplace</Link>
         </Button>
-        <Button asChild variant="outline">
-          <Link href="/account/saved">Open saved properties</Link>
-        </Button>
       </div>
     </div>
   );

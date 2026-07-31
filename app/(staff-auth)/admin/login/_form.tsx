@@ -109,14 +109,6 @@ export function StaffSignInForm({
         Staff access is invite-only. Need an account?{" "}
         <span className="text-bz-ink-2">Ask an administrator to invite you.</span>
       </p>
-      <p className="mt-3 text-center">
-        <Link
-          href="/sign-in"
-          className="text-[12.5px] text-bz-muted hover:text-bz-ink underline"
-        >
-          Not staff? Customer sign-in
-        </Link>
-      </p>
     </div>
   );
 }

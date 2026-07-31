@@ -22,12 +22,8 @@ const PUBLIC_PATHS = [
   "/legal",
   // Staff sign-in lives under /admin but must stay reachable while signed out.
   "/admin/login",
-  "/sign-in",
-  "/sign-up",
+  // Staff password recovery — reached with no session by definition.
   "/forgot-password",
-  "/reset-password",
-  "/magic-link",
-  "/verify-otp",
   "/auth",
 ];
 
@@ -70,15 +66,16 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Gate /admin and /account behind auth
+  // Gate /admin behind auth. /account is gone with customer accounts.
   const isAdmin = pathname.startsWith("/admin");
-  const isAccount = pathname.startsWith("/account");
 
-  if (!user && (isAdmin || isAccount) && !isPublicPath(pathname)) {
+  if (!user && isAdmin && !isPublicPath(pathname)) {
     const url = request.nextUrl.clone();
     // Staff get their own door (/admin/login); customers keep the marketplace
     // sign-in. Either way we round-trip the original path via ?redirect.
-    url.pathname = isAdmin ? "/admin/login" : "/sign-in";
+    // Customer accounts are gone, so /account no longer exists and the staff
+    // door is the only sign-in surface.
+    url.pathname = "/admin/login";
     url.searchParams.set("redirect", pathname);
     return NextResponse.redirect(url);
   }

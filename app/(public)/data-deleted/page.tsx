@@ -45,7 +45,7 @@ export default async function AccountDeletedPage({ searchParams }: PageProps) {
           </p>
           <div className="mt-10">
             <Button asChild>
-              <Link href="/sign-in">Sign in</Link>
+              <Link href="/">Back to the marketplace</Link>
             </Button>
           </div>
         </>

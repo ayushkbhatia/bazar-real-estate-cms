@@ -39,7 +39,8 @@ export async function requireSignedIn(): Promise<{
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/sign-in");
+  // /sign-in is gone with customer accounts; the staff door is the only one.
+  if (!user) redirect("/admin/login");
   return { user, supabase };
 }
 

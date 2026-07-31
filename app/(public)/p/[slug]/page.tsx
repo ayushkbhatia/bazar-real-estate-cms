@@ -31,11 +31,7 @@ import {
   propertyJsonLd,
   breadcrumbListJsonLd,
 } from "@/lib/jsonld";
-import {
-  getSessionUser,
-  createSupabaseServerClient,
-} from "@/lib/supabase/server";
-import { recordView } from "@/lib/queries/recently-viewed";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { env } from "@/lib/env";
 
 /**
@@ -186,24 +182,20 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   });
   if (`/p/${slug}` !== canonical) redirect(canonical);
 
-  const [amenityTaxonomy, similar, user] = await Promise.all([
+  // No session lookup: with customer accounts gone the property page is the
+  // same for everyone, which keeps it out of dynamic rendering.
+  const [amenityTaxonomy, similar] = await Promise.all([
     listAmenitiesTaxonomy(),
     getSimilarProperties(
       property.id,
       property.areas?.slug ?? null,
       property.mode,
     ),
-    getSessionUser(),
   ]);
 
   const amenityOptions = toOptions(amenityTaxonomy);
   const geo = await fetchPropertyGeo(property.id);
   const galleryMedia = await fetchGalleryMedia(property.id);
-
-  // Best-effort recently-viewed tracking. Anonymous views aren't tracked.
-  if (user) {
-    void recordView(user.id, property.id);
-  }
 
   const priceAed = formatPriceAED(property.price_aed);
   const aedPerFt =
