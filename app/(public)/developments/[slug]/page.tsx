@@ -353,7 +353,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 className="serif text-[28px] md:text-[40px] mt-2"
                 style={{ letterSpacing: "-0.02em" }}
               >
-                {sv("units", "heading") ?? "What\u2019s left"}
+                {sv("units", "heading") ?? "What's left"}
               </h2>
             </div>
           </div>

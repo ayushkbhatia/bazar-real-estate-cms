@@ -49,9 +49,12 @@ test("anon visitor cannot reach /admin/deals", async ({ page }) => {
 const CRON_ROUTES = [
   "/api/cron/enquiry-auto-reply",
   "/api/cron/enquiry-escalation",
-  "/api/cron/saved-search-alerts",
-  "/api/cron/saved-search-alerts-diff",
   "/api/cron/viewing-reminders",
+  // saved-search-alerts and saved-search-alerts-diff were removed in #219
+  // along with four other unused jobs; what they maintained is derived now.
+  // Keep this list in step with app/api/cron/ and vercel.json — a route here
+  // that no longer exists returns 404, which is not the fail-closed behaviour
+  // these tests are meant to prove.
 ];
 
 for (const route of CRON_ROUTES) {
