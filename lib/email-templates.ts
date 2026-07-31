@@ -217,162 +217,6 @@ export function valuationReportTemplate(opts: {
 
 // ── Deal-room stage change emails (Phase 8 · G8) ──────────────────────
 
-type StageEmailOpts = {
-  recipientName: string;
-  /** "buyer" or "agent" — drives the framing. */
-  audience: "buyer" | "agent";
-  propertyReference: string;
-  propertyTitle: string | null;
-  /** Which stage we just moved into. */
-  stage:
-    | "mou"
-    | "deposit"
-    | "noc_pending"
-    | "dld_pending"
-    | "transferred";
-  dealId: string;
-};
-
-function stageCopy(
-  stage: StageEmailOpts["stage"],
-  audience: StageEmailOpts["audience"],
-): { headline: string; body: string; cta?: string } {
-  switch (stage) {
-    case "mou":
-      return audience === "buyer"
-        ? {
-            headline: "We've opened your deal",
-            body:
-              "We've drawn up the MoU on this property and are starting the transaction file. " +
-              "Please upload your passport and Emirates ID to your document vault — we need them " +
-              "before we can move to the deposit stage.",
-            cta: "/account/documents",
-          }
-        : {
-            headline: "Deal opened — MoU stage",
-            body:
-              "The deal file is live. Buyer KYC has been requested; the deposit stage unlocks " +
-              "once their passport or Emirates ID is verified.",
-            cta: undefined,
-          };
-    case "deposit":
-      return audience === "buyer"
-        ? {
-            headline: "Deposit stage",
-            body:
-              "Thanks — the MoU is signed. Next: we'll collect the 10% deposit and request the NOC " +
-              "from the developer. Please make sure your Emirates ID and passport are uploaded if " +
-              "you haven't already.",
-            cta: "/account/documents",
-          }
-        : {
-            headline: "Deal advanced — Deposit stage",
-            body:
-              "MoU stamped. Deposit collection + NOC request are the next blockers; advance to " +
-              "noc_pending once KYC is verified.",
-            cta: undefined,
-          };
-    case "noc_pending":
-      return audience === "buyer"
-        ? {
-            headline: "We've requested the NOC",
-            body:
-              "We've formally asked the developer for the No-Objection Certificate. It usually " +
-              "takes 3–5 working days. Once it lands we'll set the DLD transfer appointment.",
-            cta: undefined,
-          }
-        : {
-            headline: "Deal advanced — NOC pending",
-            body:
-              "NOC requested from the developer. Once verified on the deal file, the DLD stage " +
-              "will unlock.",
-            cta: undefined,
-          };
-    case "dld_pending":
-      return audience === "buyer"
-        ? {
-            headline: "DLD transfer is scheduled",
-            body:
-              "The NOC is in. We've booked your DLD transfer appointment — please make sure your " +
-              "original Emirates ID and passport are with you on the day, along with the manager's " +
-              "cheque for the balance.",
-            cta: undefined,
-          }
-        : {
-            headline: "Deal advanced — DLD pending",
-            body:
-              "NOC verified, transfer queued at DLD. Confirm the appointment time with the buyer " +
-              "and the seller-side advisor.",
-            cta: undefined,
-          };
-    case "transferred":
-      return audience === "buyer"
-        ? {
-            headline: "Title transferred — welcome home",
-            body:
-              "The property is officially yours. Congratulations. We'll send the final closing " +
-              "pack with the title deed and a copy of the signed sale contract shortly.",
-            cta: undefined,
-          }
-        : {
-            headline: "Deal closed — Transferred",
-            body:
-              "Title transferred at DLD. Commission can be recorded on the deal file. " +
-              "Move the property to off_market when ready.",
-            cta: undefined,
-          };
-  }
-}
-
-export function dealStageChangeTemplate(
-  opts: StageEmailOpts,
-): { subject: string; text: string; html: string } {
-  const copy = stageCopy(opts.stage, opts.audience);
-  const refLine = `${opts.propertyReference}${opts.propertyTitle ? ` · ${opts.propertyTitle}` : ""}`;
-  const subject =
-    opts.audience === "agent"
-      ? `[Deal ${opts.propertyReference}] ${copy.headline}`
-      : `${copy.headline} · ${opts.propertyReference}`;
-
-  const ctaUrl = copy.cta ? `${siteUrl()}${copy.cta}` : null;
-  const dealUrl =
-    opts.audience === "agent"
-      ? `${siteUrl()}/admin/deals/${opts.dealId}`
-      : null;
-
-  const text =
-    `Hello ${opts.recipientName},\n\n` +
-    `${refLine}\n\n` +
-    `${copy.body}\n\n` +
-    (ctaUrl ? `Manage your documents: ${ctaUrl}\n\n` : "") +
-    (dealUrl ? `Open the deal file: ${dealUrl}\n\n` : "") +
-    `— Bazar Real Estate\n${siteUrl()}\n`;
-
-  const html = shell(`
-    <p>Hello ${escape(opts.recipientName)},</p>
-    <p style="font-size:13px;color:#5a5a55">${escape(refLine)}</p>
-    <h2 style="font-family:Georgia,serif;font-style:italic;font-size:26px;letter-spacing:-0.015em;margin:18px 0 4px;color:#1B1A17">${escape(copy.headline)}</h2>
-    <p style="margin-top:14px">${escape(copy.body)}</p>
-    ${
-      ctaUrl
-        ? `<p style="margin-top:22px"><a href="${ctaUrl}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open document vault</a></p>`
-        : ""
-    }
-    ${
-      dealUrl
-        ? `<p style="margin-top:18px;font-size:13px"><a href="${dealUrl}" style="color:#005777">Open the deal file →</a></p>`
-        : ""
-    }
-  `);
-
-  return { subject, text, html };
-}
-
-// ─────────────────────────────────────────────────────────────────────
-// Sprint 10 — workflow + compliance email templates
-// ─────────────────────────────────────────────────────────────────────
-
-/** To: manager. Sent when an enquiry sits unassigned > 60 minutes. */
 export function enquiryEscalationTemplate(opts: {
   managerName: string | null;
   leadName: string;
@@ -517,7 +361,6 @@ export function permitExpiryWarningTemplate(opts: {
   return { subject, text, html };
 }
 
-/** KYC approval email to the account holder. */
 export function kycApprovedTemplate(opts: {
   name: string;
 }): { subject: string; text: string; html: string } {
@@ -540,7 +383,6 @@ export function kycApprovedTemplate(opts: {
   return { subject, text, html };
 }
 
-/** KYC rejection email with reason. */
 export function kycRejectedTemplate(opts: {
   name: string;
   reason: string;
