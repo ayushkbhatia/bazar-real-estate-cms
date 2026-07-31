@@ -231,8 +231,10 @@ set config = jsonb_set(config, '{csv_url}', '"https://…/transactions.csv"')
 where kind = 'dld_open_data';
 ```
 
-`/api/cron/dld-import` runs weekly (Mon 05:00) and refreshes the
-`dld_comparables` snapshot. `/tools/valuation` reads from there.
+`/tools/valuation` and `/market-reports` read the `dld_comparables` snapshot.
+The weekly import cron that refreshed it was **removed** — the feature was
+never live and the table is empty. Load it manually, or reinstate the cron,
+before either surface can price against real comparables.
 
 ## WhatsApp Cloud API (deferred)
 

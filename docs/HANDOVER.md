@@ -195,15 +195,31 @@ All four must pass. The current state passes (0 errors, 35 pre-existing warnings
 
 ### Scheduled cron jobs
 
-13 jobs run on Vercel Cron, configured in [vercel.json](../vercel.json). They require the `CRON_SECRET` env var. Important ones:
+**7 jobs** run on Vercel Cron, configured in [vercel.json](../vercel.json).
 
-- `daily-saved-search-alerts` — runs nightly, sends saved-search digest emails
-- `daily-meilisearch-sync` — refreshes the search index from Postgres
-- `weekly-dld-import` — pulls DLD comparable transaction data
-- `enquiry-escalation-60m` — re-routes unanswered enquiries to a backup advisor
-- `permit-expiry-alert` — warns when listing permits are 30 days from expiry
+> **They have never run.** `CRON_SECRET` is not set in Vercel, so every route
+> rejects every invocation — production returns
+> `{"reason":"CRON_SECRET not configured"}`. Set it in Production and Preview
+> and redeploy; Vercel injects the matching `Authorization` header
+> automatically. Nothing else is required.
 
-See `app/api/cron/*` for the full list. None of these are load-bearing during a soft launch; they all degrade gracefully without their respective integrations.
+- `enquiry-auto-reply` (every minute) — the "we received your brief"
+  acknowledgement. **Customer-facing.**
+- `enquiry-escalation` (every 5 min) — re-routes enquiries unassigned for
+  60 minutes. This is the lead-response SLA.
+- `post-valuation-nurture` (daily) — day-7 and day-30 follow-ups to valuation
+  leads. **Customer-facing.**
+- `viewing-reminders` (hourly) — notifies the assigned agent ~2h before a
+  viewing.
+- `permit-expiry` (daily) — warns when a listing permit is 30 days from expiry.
+  Compliance-relevant.
+- `meilisearch-sync` (daily) — refreshes the search index from Postgres.
+- `embeddings-backfill` (daily) — re-embeds changed properties for semantic
+  search.
+
+Five others (`fx-rates`, `market-reports-refresh`, `syndication-push`,
+`dld-import`, `brn-validation`) were removed as unused — see the ADR on cron
+pruning. Saved-search alerts went with customer accounts (ADR-0005).
 
 ### Database migrations
 

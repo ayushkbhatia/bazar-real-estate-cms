@@ -18,10 +18,6 @@
       "schedule": "0 8 * * *"
     },
     {
-      "path": "/api/cron/brn-validation",
-      "schedule": "0 6 * * *"
-    },
-    {
       "path": "/api/cron/permit-expiry",
       "schedule": "0 6 * * *"
     },
@@ -32,22 +28,6 @@
     {
       "path": "/api/cron/embeddings-backfill",
       "schedule": "0 3 * * *"
-    },
-    {
-      "path": "/api/cron/syndication-push",
-      "schedule": "0 4 * * *"
-    },
-    {
-      "path": "/api/cron/dld-import",
-      "schedule": "0 5 * * 1"
-    },
-    {
-      "path": "/api/cron/market-reports-refresh",
-      "schedule": "0 5 1 1,4,7,10 *"
-    },
-    {
-      "path": "/api/cron/fx-rates",
-      "schedule": "0 6 * * *"
     }
   ]
 }

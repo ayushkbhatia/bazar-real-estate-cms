@@ -18,7 +18,7 @@ Four choices in the stack diverge from the original brief. Don't try to "fix" th
 |---|---|---|---|
 | Meilisearch | Postgres FTS baseline + Meilisearch when configured (Sprint 12) | Local/preview run on FTS; prod with Meilisearch creds gets typo tolerance. ID-only index contract keeps RLS as the boundary. | [ADR-0001](docs/decisions/ADR-0001-postgres-fts-with-meilisearch-fallback.md) |
 | Mapbox GL JS | MapLibre GL for tiles + Mapbox APIs for geocoding/isochrones (Sprint 12) | Avoid metered map loads on preview/e2e/lhci; pay only for the API calls that need Mapbox quality. | [ADR-0002](docs/decisions/ADR-0002-maplibre-tiles-with-mapbox-apis.md) |
-| Inngest | Vercel Cron + Bearer secret (12 jobs) | Jobs are idempotent and fit one execution; durability not yet load-bearing. **Known gap**: silent-failure surface grew with minute-cadence crons. | [ADR-0003](docs/decisions/ADR-0003-vercel-cron-over-inngest.md) |
+| Inngest | Vercel Cron + Bearer secret (7 jobs) | Jobs are idempotent and fit one execution; durability not yet load-bearing. **Known gap**: silent-failure surface grew with minute-cadence crons. | [ADR-0003](docs/decisions/ADR-0003-vercel-cron-over-inngest.md) |
 | Mailchimp | Postgres `newsletter_subscribers` source of truth + Mailchimp campaign surface (Sprint 13), two-way synced | One DSR surface, full CRM queryability, marketing keeps its tooling. | [ADR-0004](docs/decisions/ADR-0004-postgres-newsletter-with-mailchimp-campaigns.md) |
 
 ## Stack
@@ -36,7 +36,7 @@ Four choices in the stack diverge from the original brief. Don't try to "fix" th
 | Search | Postgres FTS baseline + Meilisearch progressive enhancement ([ADR-0001](docs/decisions/ADR-0001-postgres-fts-with-meilisearch-fallback.md)) |
 | Vector embeddings | pgvector inside Supabase Postgres + Voyage AI for embeddings |
 | LLM | Anthropic Claude (Haiku for tool calls, Sonnet for synthesis) — AI Concierge live |
-| Background jobs | Vercel Cron + Bearer secret, 12 scheduled jobs ([ADR-0003](docs/decisions/ADR-0003-vercel-cron-over-inngest.md)) |
+| Background jobs | Vercel Cron + Bearer secret, 7 scheduled jobs ([ADR-0003](docs/decisions/ADR-0003-vercel-cron-over-inngest.md)) |
 | Email | Resend (transactional) + Mailchimp (campaigns), Postgres source of truth ([ADR-0004](docs/decisions/ADR-0004-postgres-newsletter-with-mailchimp-campaigns.md)) |
 | WhatsApp | Meta WhatsApp Business Cloud API |
 | PDFs | @react-pdf/renderer (mortgage scenarios, valuation reports, analytics snapshots) |
@@ -169,7 +169,7 @@ All env vars are loaded via `lib/env.ts` (zod-validated). Don't read `process.en
 - **Admin CMS** — properties (publishability gates, agent assignment, bulk reassign/off-market/archive), developments, deals (Kanban stages, documents, KYC), enquiries (auto-reply + escalation crons, threads, assignment), valuations, audit log + bulk-operations view, users + roles, settings (integrations panel for Meilisearch / Mapbox / Mailchimp / Resend), pages, blog, analytics with PDF export.
 - **Compliance** — PDPL DSR export + delete flows, cookie consent banner, all legal pages (`/legal/privacy|terms|cookies`).
 - **Integrations** — Meilisearch sync, Voyage embeddings backfill, Mapbox geocoding + isochrones, Mailchimp two-way sync via webhook, Sentry, PostHog (consent-gated, with sign-in identify), Vercel Analytics, syndication push to portals, DLD weekly import, BRN validation, permit expiry alerts.
-- **Infra** — 68 migrations, 80+ vitest specs, Playwright specs, 12 cron jobs, full CI gate.
+- **Infra** — 68 migrations, 80+ vitest specs, Playwright specs, 7 cron jobs, full CI gate.
   **Known gap**: the crons have never run in production — no Edge Function deployed, `app_settings` empty, `CRON_SECRET` unset. See docs/FOLLOWUPS.md.
 
 See [docs/PROJECT_UNDERSTANDING.md](docs/PROJECT_UNDERSTANDING.md) for the full roadmap and what's next.
