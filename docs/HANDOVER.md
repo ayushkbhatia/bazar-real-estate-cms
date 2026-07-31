@@ -215,7 +215,7 @@ npm run db:types
 
 ### Admin access
 
-1. Sign up via `/sign-up` with the real owner email.
+1. Create the first admin with `node --env-file=.env.local scripts/bootstrap-admin.mjs --email <owner@domain> --name "<Name>"`. (`/sign-up` was removed with customer accounts — ADR-0005.)
 2. Run `bash scripts/promote-staff.sh <email> admin` to grant admin role.
 3. From there, the Admin user can invite other staff at `/admin/users`.
 

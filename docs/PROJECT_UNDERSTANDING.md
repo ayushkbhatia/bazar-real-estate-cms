@@ -11,7 +11,7 @@ This is the onboarding document for anyone — engineer, designer, advisor, AI a
 1. **A luxury marketplace** — a public website where buyers, renters, and investors find Abu Dhabi properties. 16 screens cover discovery (home with 4 hero variants, search with map, property detail, off-plan developments), credibility (about, agents directory, insights blog), and proprietary tools (valuation calculator, mortgage calculator, AI concierge powered by Anthropic Claude, compare).
 2. **A full operations CMS** — a private back-office where the Bazar team runs the business. 11 screens cover the property catalogue, a 3-pane enquiries inbox with lead routing, viewings/offers/deals lifecycle, AML/KYC verification, blog editor, pages/blocks system, agents/team, users/roles, site settings, analytics, and an audit log.
 
-These ship as a **single Next.js app** with internal route groups: `(public)`, `(account)` for signed-in marketplace users, and `(admin)` for staff.
+These ship as a **single Next.js app** with internal route groups: `(public)` for the anonymous marketplace, `(staff-auth)` for the staff door, and `(admin)` for staff. There are no customer accounts — see [ADR-0005](decisions/ADR-0005-remove-customer-accounts.md).
 
 ## Who Bazar Real Estate is
 
@@ -43,12 +43,12 @@ Public:
 - `/legal/{privacy,terms,cookies}`
 
 Authenticated user (`/account/*`):
-- `/account/saved`, `/account/viewings`, `/account/enquiries`, `/account/documents`, `/account/profile`, `/account/alerts`, `/account/referrals`
+- ~~Customer account pages~~ — removed, ADR-0005. The marketplace is anonymous.
 
 Admin (`/admin/*`):
 - `/admin` (dashboard), `/admin/analytics`, `/admin/properties`, `/admin/properties/:id`, `/admin/media`, `/admin/enquiries`, `/admin/agents`, `/admin/blog/:id`, `/admin/pages`, `/admin/users`, `/admin/settings`
 
-Auth: `/sign-in`, `/sign-up`, `/forgot-password`, `/verify-otp`.
+Auth: staff only — `/admin/login`, `/forgot-password` (Resend token link), `/staff-invite`. The customer auth pages were removed (ADR-0005) and permanently redirect to `/admin/login`.
 
 Slug-+-ref URLs (e.g. `/p/mamsha-3-bed-baz-ad-04891`) give SEO-friendly slugs while keeping refs stable. Old slugs 301-redirect; removed listings return 410 Gone with a "This listing has sold" message and similar suggestions.
 
@@ -123,7 +123,6 @@ Full plan: [handoff docs/11-phased-roadmap.md](/Users/ayushkbhatia/Downloads/des
 ```
 app/
   (public)/        # marketplace + auth pages
-  (account)/       # signed-in user (saved, viewings, profile, …)
   (admin)/         # CMS shell (dashboard, properties, enquiries, …)
 components/
   ui/              # shadcn primitives (don't modify; re-add via shadcn CLI)
@@ -158,8 +157,8 @@ What's wired:
 - Next.js 16 + TS + Tailwind v4 + shadcn/ui
 - Design tokens (OKLCH palette, fonts, density)
 - Brand components: Wordmark, Eyebrow, PlaceholderImage, ListingCard, PublicNav, PublicFooter, CmsShell
-- Route groups: `(public)` / `(account)` / `(admin)` with layouts
-- Auth pages (sign-in, sign-up, magic-link, forgot-password) with server actions wired to Supabase
+- Route groups: `(public)` / `(staff-auth)` / `(admin)` with layouts
+- Staff auth (`/admin/login`, `/forgot-password`, `/staff-invite`) with server actions wired to Supabase
 - Supabase client utilities (server, browser, middleware) — gracefully no-op until env keys are added
 - Sentry instrumentation (env-gated)
 - PostHog client provider (env-gated)

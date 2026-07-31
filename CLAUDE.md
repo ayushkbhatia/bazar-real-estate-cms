@@ -18,7 +18,7 @@ Four choices in the stack diverge from the original brief. Don't try to "fix" th
 |---|---|---|---|
 | Meilisearch | Postgres FTS baseline + Meilisearch when configured (Sprint 12) | Local/preview run on FTS; prod with Meilisearch creds gets typo tolerance. ID-only index contract keeps RLS as the boundary. | [ADR-0001](docs/decisions/ADR-0001-postgres-fts-with-meilisearch-fallback.md) |
 | Mapbox GL JS | MapLibre GL for tiles + Mapbox APIs for geocoding/isochrones (Sprint 12) | Avoid metered map loads on preview/e2e/lhci; pay only for the API calls that need Mapbox quality. | [ADR-0002](docs/decisions/ADR-0002-maplibre-tiles-with-mapbox-apis.md) |
-| Inngest | Vercel Cron + Bearer secret (13 jobs as of Sprint 13) | Jobs are idempotent and fit one execution; durability not yet load-bearing. **Known gap**: silent-failure surface grew with minute-cadence crons. | [ADR-0003](docs/decisions/ADR-0003-vercel-cron-over-inngest.md) |
+| Inngest | Vercel Cron + Bearer secret (12 jobs) | Jobs are idempotent and fit one execution; durability not yet load-bearing. **Known gap**: silent-failure surface grew with minute-cadence crons. | [ADR-0003](docs/decisions/ADR-0003-vercel-cron-over-inngest.md) |
 | Mailchimp | Postgres `newsletter_subscribers` source of truth + Mailchimp campaign surface (Sprint 13), two-way synced | One DSR surface, full CRM queryability, marketing keeps its tooling. | [ADR-0004](docs/decisions/ADR-0004-postgres-newsletter-with-mailchimp-campaigns.md) |
 
 ## Stack
@@ -36,7 +36,7 @@ Four choices in the stack diverge from the original brief. Don't try to "fix" th
 | Search | Postgres FTS baseline + Meilisearch progressive enhancement ([ADR-0001](docs/decisions/ADR-0001-postgres-fts-with-meilisearch-fallback.md)) |
 | Vector embeddings | pgvector inside Supabase Postgres + Voyage AI for embeddings |
 | LLM | Anthropic Claude (Haiku for tool calls, Sonnet for synthesis) — AI Concierge live |
-| Background jobs | Vercel Cron + Bearer secret, 13 scheduled jobs ([ADR-0003](docs/decisions/ADR-0003-vercel-cron-over-inngest.md)) |
+| Background jobs | Vercel Cron + Bearer secret, 12 scheduled jobs ([ADR-0003](docs/decisions/ADR-0003-vercel-cron-over-inngest.md)) |
 | Email | Resend (transactional) + Mailchimp (campaigns), Postgres source of truth ([ADR-0004](docs/decisions/ADR-0004-postgres-newsletter-with-mailchimp-campaigns.md)) |
 | WhatsApp | Meta WhatsApp Business Cloud API |
 | PDFs | @react-pdf/renderer (mortgage scenarios, valuation reports, analytics snapshots) |
@@ -74,12 +74,9 @@ app/
   (public)/                # public marketplace + auth pages
     layout.tsx             # PublicNav + main + PublicFooter
     page.tsx               # home
-    (auth)/                # sign-in, sign-up, verify-otp, forgot-password
-      _actions.ts          # server actions for auth
-  (account)/               # signed-in marketplace user routes
-    layout.tsx
-    account/page.tsx       # /account
-    account/saved/page.tsx # /account/saved
+    forgot-password/       # staff password recovery (Resend token link)
+  staff-invite/            # accept an invite / set a new password
+  _actions/auth.ts         # sign-in + sign-out, shared by both doors
   (admin)/                 # CMS — staff-only (auth-gated by middleware)
     layout.tsx             # CmsShell
     admin/page.tsx         # /admin dashboard
@@ -111,11 +108,16 @@ docs/
 
 We use three route groups under `app/`:
 
-- `(public)/` — marketplace pages + auth, no auth required.
-- `(account)/` — signed-in marketplace users (`/account/*`). Auth-gated in `proxy.ts`.
+- `(public)/` — the marketplace. No auth, no sign-in: **there are no customer accounts.**
+- `(staff-auth)/` — the staff door (`/admin/login`), reachable while signed out.
 - `(admin)/` — staff-only (`/admin/*`). Auth-gated **and** role-gated (`role ∈ {admin, editor, agent, marketing, support}` on the `staff` table).
 
-Inside `(public)/`, nested route group `(auth)/` groups the sign-in/sign-up/etc. pages without affecting URLs.
+Customer accounts were removed — see
+[ADR-0005](docs/decisions/ADR-0005-remove-customer-accounts.md). Anything still
+pointing at `/sign-in`, `/sign-up`, `/magic-link` or `/account/*` permanently
+redirects to `/admin/login`; `app/(account)/` and `app/(public)/(auth)/` no
+longer exist. Staff recover their password at `/forgot-password`, which issues
+a Resend link — Supabase Auth sends no email at all.
 
 ## Component conventions
 
@@ -160,14 +162,15 @@ All env vars are loaded via `lib/env.ts` (zod-validated). Don't read `process.en
 **Sprint 13 complete.** What's live in production today:
 
 - **Catalogue & search** — properties, developments, areas, developers, media assets (RLS on every table). Postgres FTS baseline; Meilisearch index synced daily for typo-tolerant search. pgvector + Voyage AI embeddings for semantic similarity.
-- **Public marketplace** — `/buy`, `/rent`, `/off-plan`, `/commercial`, `/p/[slug]`, filter bar with bed/bath/type/area/price + Sprint 4b extensions (ft², year, tenure, furnishing, amenities, verified-only, advisor) via the MoreFiltersDrawer, three views (grid / list / map), pagination, MapLibre map with Mapbox isochrone commute-time overlay, draw-area-on-map tool, saved properties, saved searches with daily/weekly/diff-frequency email alerts.
+- **Public marketplace** — `/buy`, `/rent`, `/off-plan`, `/commercial`, `/p/[slug]`, filter bar with bed/bath/type/area/price + Sprint 4b extensions (ft², year, tenure, furnishing, amenities, verified-only, advisor) via the MoreFiltersDrawer, three views (grid / list / map), pagination, MapLibre map with Mapbox isochrone commute-time overlay, draw-area-on-map tool.
 - **Editorial & content** — `/insights` blog with category routing, `/pages/[slug]` block-based editor, `/about`, `/agents`, `/agents/[slug]`, `/services` + 5 sub-pages, `/areas/[slug]` guides, `/developers/[slug]` profiles, `/contact`.
 - **AI Concierge** — `/concierge` route with Claude Haiku function-calling, streaming SSE, hand-off to human advisor.
 - **Tools** — `/tools/valuation` (DLD-comparable model + PDF download), `/tools/mortgage` (Central-Bank-rate aware + PDF), `/tools/compare`.
 - **Admin CMS** — properties (publishability gates, agent assignment, bulk reassign/off-market/archive), developments, deals (Kanban stages, documents, KYC), enquiries (auto-reply + escalation crons, threads, assignment), valuations, audit log + bulk-operations view, users + roles, settings (integrations panel for Meilisearch / Mapbox / Mailchimp / Resend), pages, blog, analytics with PDF export.
 - **Compliance** — PDPL DSR export + delete flows, cookie consent banner, all legal pages (`/legal/privacy|terms|cookies`).
 - **Integrations** — Meilisearch sync, Voyage embeddings backfill, Mapbox geocoding + isochrones, Mailchimp two-way sync via webhook, Sentry, PostHog (consent-gated, with sign-in identify), Vercel Analytics, syndication push to portals, DLD weekly import, BRN validation, permit expiry alerts.
-- **Infra** — 29 migrations, 46 vitest specs, 25 Playwright specs, 13 cron jobs, full CI gate.
+- **Infra** — 68 migrations, 80+ vitest specs, Playwright specs, 12 cron jobs, full CI gate.
+  **Known gap**: the crons have never run in production — no Edge Function deployed, `app_settings` empty, `CRON_SECRET` unset. See docs/FOLLOWUPS.md.
 
 See [docs/PROJECT_UNDERSTANDING.md](docs/PROJECT_UNDERSTANDING.md) for the full roadmap and what's next.
 

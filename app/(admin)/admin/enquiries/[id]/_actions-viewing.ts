@@ -199,7 +199,6 @@ export async function createViewing(input: {
 
   revalidatePath("/admin/enquiries");
   revalidatePath(`/admin/enquiries/${enquiry.id}`);
-  revalidatePath("/account/viewings");
 
   return { status: "ok", viewingId: viewing.id };
 }
@@ -241,7 +240,6 @@ export async function setViewingStatus(
 
   revalidatePath("/admin/enquiries");
   if (before?.enquiry_id) revalidatePath(`/admin/enquiries/${before.enquiry_id}`);
-  revalidatePath("/account/viewings");
 
   return { status: "ok" };
 }

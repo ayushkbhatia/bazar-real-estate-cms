@@ -167,7 +167,7 @@ export default async function AdminSettingsBackupsPage() {
           {[
             "Weekly full-DB snapshot list with restore button (admin-only)",
             "One-shot CSV / JSON exports per entity (properties, enquiries, deals, audit)",
-            "DSR export queue surface (separate from individual /account/data-export)",
+            "DSR export queue surface (bulk, beyond the per-subject tool at /admin/dsr)",
           ].map((b) => (
             <li key={b} className="text-[13.5px] text-bz-ink-2 leading-snug">
               · {b}

@@ -479,3 +479,17 @@ shows the trail.)
   brochure was requested without one existing, though; the enquiry just says
   "Brochure request". A flag on the enquiry, or hiding the button, are both
   defensible if that turns out to be noisy.
+
+- [email] Two orphaned templates and a dead CTA survived phase 5, found in phase 10.
+  `kycApprovedTemplate` / `kycRejectedTemplate` were supposed to go with the KYC
+  review; the scripted removal matched the first function and silently missed
+  the other two after the offsets shifted. `viewingReminderTemplate` has zero
+  callers — the viewing-reminders cron does not reference it — so a viewing
+  reminder is scheduled but no email is built. Worth deciding whether that cron
+  should send one or be removed.
+
+- [email] lib/email-templates.test.ts now asserts no template links at a removed
+  route (/account, /sign-in, /sign-up, /magic-link, /reset-password,
+  /verify-otp). It renders every exported template and greps the output. If a
+  future template legitimately needs one of those paths, that test is the thing
+  that will stop it.
