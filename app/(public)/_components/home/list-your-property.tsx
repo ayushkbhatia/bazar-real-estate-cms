@@ -71,9 +71,9 @@ export function ListYourProperty({
 
   return (
     <section className="px-4 md:px-12 py-14 md:py-20">
-      <div className="grid overflow-hidden rounded-2xl border border-bz-border bg-bz-surface md:grid-cols-[1.05fr_1fr]">
+      <div className="grid overflow-hidden rounded-2xl border border-bz-border bg-bz-surface md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
         {/* Form */}
-        <div className="p-6 md:p-14">
+        <div className="min-w-0 p-6 md:p-14">
           <div
             className="text-[11px] font-medium uppercase text-bz-accent"
             style={{ letterSpacing: "0.12em" }}
@@ -190,14 +190,22 @@ export function ListYourProperty({
           )}
         </div>
 
-        {/* Photo */}
-        <div className="relative min-h-[220px] bg-bz-ink md:min-h-0">
+        {/* Photo.
+            `minmax(0,…)` on the tracks above plus `min-w-0` on the form column
+            stop the form's min-content width from collapsing this track to a
+            sliver between 768px and ~1024px. `overflow-hidden` here (rather
+            than relying on the card's) is what actually clips the absolutely
+            positioned <Image> — WebKit does not reliably clip an abspos
+            descendant against an ancestor's border-radius, which is why the
+            bleed only showed once a real photo replaced PlaceholderImage
+            (that component brings its own `overflow-hidden`). */}
+        <div className="relative isolate min-w-0 aspect-[16/10] overflow-hidden bg-bz-ink md:aspect-auto md:h-full">
           {imageUrl ? (
             <Image
               src={imageUrl}
               alt={imageAlt ?? ""}
               fill
-              sizes="(max-width: 768px) 100vw, 50vw"
+              sizes="(max-width: 767px) 100vw, 48vw"
               className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (

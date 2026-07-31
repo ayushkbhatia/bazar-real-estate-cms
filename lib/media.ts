@@ -12,6 +12,52 @@ export const ALLOWED_MIME = new Set<string>([
 ]);
 
 /**
+ * Hero video gets its own, larger ceiling.
+ *
+ * It can afford one because it does not share the transport. Every other
+ * upload posts its bytes to a server action, so it is capped by
+ * `next.config.ts`'s `serverActions.bodySizeLimit` (12 MB, global — Next has
+ * no per-action override) and by the host's own request-body limit long before
+ * `MAX_UPLOAD_BYTES` gets a say. The hero video instead goes browser → Supabase
+ * Storage on a signed URL, so none of those layers apply and the real ceiling
+ * is the bucket's `file_size_limit` (set to 25 MB in migration 0070).
+ *
+ * Raising the bucket ceiling cannot loosen anything else: every other control
+ * still runs through `uploadMedia`, which rejects >10 MB before a byte reaches
+ * Storage.
+ */
+export const MAX_VIDEO_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB
+export const VIDEO_MIME = new Set<string>(["video/mp4", "video/webm"]);
+
+export type UploadKind = "standard" | "hero_video";
+
+export type UploadPolicy = {
+  maxBytes: number;
+  mime: ReadonlySet<string>;
+  /** Accepted-formats phrase, used verbatim in client + server error copy. */
+  accepts: string;
+};
+
+export const UPLOAD_POLICIES: Record<UploadKind, UploadPolicy> = {
+  standard: {
+    maxBytes: MAX_UPLOAD_BYTES,
+    mime: ALLOWED_MIME,
+    accepts: "JPG, PNG, WebP, AVIF, GIF or PDF",
+  },
+  hero_video: {
+    maxBytes: MAX_VIDEO_UPLOAD_BYTES,
+    mime: VIDEO_MIME,
+    accepts: "MP4 or WebM",
+  },
+};
+
+/** "25" for a round number of MB, "12.5" otherwise — for error copy. */
+export function megabytes(bytes: number): string {
+  const mb = bytes / 1024 / 1024;
+  return Number.isInteger(mb) ? String(mb) : mb.toFixed(1);
+}
+
+/**
  * Public URL for an object in the media bucket.
  * Works at build + render time without a Supabase client roundtrip.
  */

@@ -43,6 +43,7 @@ import {
   isListField,
   isSelectField,
   isToggleField,
+  isVideoField,
   type FieldDef,
   type ImageValue,
   type SimpleFieldDef,
@@ -75,6 +76,17 @@ const MASTER_ACTIONS: SectionActions = {
   reset: (id) => resetMasterPage(id as MasterPageKey) as Promise<SectionSaveResult>,
 };
 import { uploadMedia } from "../../../media/_actions";
+import {
+  createVideoUploadTicket,
+  finaliseVideoUpload,
+} from "../../../media/_video-actions";
+import {
+  MAX_VIDEO_UPLOAD_BYTES,
+  MEDIA_BUCKET,
+  VIDEO_MIME,
+  megabytes,
+} from "@/lib/media";
+import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
 export type MediaOption = {
   id: string;
@@ -690,12 +702,71 @@ function ScalarField({
     );
   }
 
+  if (isVideoField(field)) {
+    const v: ImageValue =
+      value && typeof value === "object"
+        ? (value as ImageValue)
+        : { media_id: null, alt: null, label: null };
+    const options = media.filter((m) => (m.mime ?? "").startsWith("video/"));
+    const picked = options.find((m) => m.id === v.media_id);
+    return (
+      <div className="flex flex-col gap-1.5">
+        <FieldLabel label={field.label} help={field.help} />
+        <div className="flex flex-col gap-2">
+          <select
+            className={fieldCls}
+            value={v.media_id ?? ""}
+            onChange={(e) =>
+              onChange({ ...v, media_id: e.target.value || null })
+            }
+          >
+            <option value="">Built-in video</option>
+            {options.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.filename}
+              </option>
+            ))}
+          </select>
+          {picked ? (
+            <video
+              key={picked.url}
+              src={picked.url}
+              muted
+              loop
+              playsInline
+              controls
+              preload="metadata"
+              className="w-full max-w-[320px] rounded border border-bz-border bg-bz-surface-2"
+            />
+          ) : null}
+          <div className="flex items-center gap-3 flex-wrap">
+            <VideoUploadButton
+              onUploaded={(m) => {
+                onMediaAdded(m);
+                onChange({ ...v, media_id: m.id });
+              }}
+            />
+            {v.media_id ? (
+              <button
+                type="button"
+                onClick={() => onChange({ ...v, media_id: null })}
+                className="inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink"
+              >
+                <X size={11} /> Use the built-in video
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isImageField(field)) {
     const v: ImageValue =
       value && typeof value === "object"
         ? (value as ImageValue)
         : { media_id: null, alt: null, label: null };
-    // PDFs share this list now, so filter them out of the image picker.
+    // PDFs and video share this list now, so filter them out of the picker.
     const imageOptions = media.filter(
       (m) => !m.mime || m.mime.startsWith("image/"),
     );
@@ -849,6 +920,111 @@ function UploadButton({
         ref={inputRef}
         type="file"
         accept={accept}
+        className="hidden"
+        onChange={(e) => {
+          void handle(e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
+    </>
+  );
+}
+
+/**
+ * Hero video upload. Unlike `UploadButton`, the bytes never touch the Next
+ * server: we ask for a signed upload URL, PUT the file straight to Supabase
+ * Storage, then record the `media_assets` row. That is what lets this control
+ * accept 25 MB while every other upload stays under the 10 MB / 12 MB
+ * server-action ceilings. See lib/media.ts.
+ */
+function VideoUploadButton({
+  onUploaded,
+}: {
+  onUploaded: (m: MediaOption) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function handle(file: File | undefined) {
+    if (!file) return;
+
+    // Checked again on the server and capped by the bucket itself; this is
+    // only so the operator finds out before waiting through the upload.
+    if (!VIDEO_MIME.has(file.type)) {
+      toast.error(
+        `Unsupported video type "${file.type || "unknown"}". Use MP4 or WebM.`,
+      );
+      return;
+    }
+    if (file.size > MAX_VIDEO_UPLOAD_BYTES) {
+      toast.error(
+        `"${file.name}" is ${megabytes(file.size)} MB — keep the video under ${megabytes(MAX_VIDEO_UPLOAD_BYTES)} MB.`,
+      );
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const ticket = await createVideoUploadTicket({
+        filename: file.name,
+        mime: file.type as "video/mp4" | "video/webm",
+        size_bytes: file.size,
+      });
+      if (ticket.status === "error") {
+        toast.error(ticket.message);
+        return;
+      }
+
+      const supabase = createSupabaseBrowserClient();
+      const { error } = await supabase.storage
+        .from(MEDIA_BUCKET)
+        .uploadToSignedUrl(ticket.storage_key, ticket.token, file, {
+          contentType: file.type,
+          cacheControl: "3600",
+        });
+      if (error) {
+        toast.error(`Upload failed: ${error.message}`);
+        return;
+      }
+
+      const done = await finaliseVideoUpload({
+        storage_key: ticket.storage_key,
+        filename: file.name,
+        mime: file.type as "video/mp4" | "video/webm",
+        size_bytes: file.size,
+      });
+      if (done.status === "error") {
+        toast.error(done.message);
+        return;
+      }
+
+      toast.success(`Uploaded "${file.name}" to the media library.`);
+      onUploaded({
+        id: done.id,
+        filename: file.name,
+        url: done.url,
+        mime: done.mime,
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => inputRef.current?.click()}
+        className="inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink disabled:opacity-50"
+      >
+        <Upload size={11} strokeWidth={1.8} />
+        {busy ? "Uploading…" : "Upload video"}
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="video/mp4,video/webm"
         className="hidden"
         onChange={(e) => {
           void handle(e.target.files?.[0]);

@@ -73,6 +73,22 @@ export type FileFieldDef = {
   accept?: string;
 };
 
+/**
+ * A video picked from the media library — the home hero background.
+ *
+ * Stores an `ImageValue` like the image and file kinds, so `attachImageUrls`
+ * resolves its public URL without special-casing. It is a distinct kind rather
+ * than a `file` with `accept: "video/"` because it uploads over a different
+ * transport: video bypasses the server action (and its 12 MB body limit) and
+ * goes browser → Storage on a signed URL. See lib/media.ts.
+ */
+export type VideoFieldDef = {
+  key: string;
+  label: string;
+  kind: "video";
+  help?: string;
+};
+
 export type ListFieldDef = {
   key: string;
   label: string;
@@ -102,6 +118,7 @@ export type FieldDef =
   | SimpleFieldDef
   | ImageFieldDef
   | FileFieldDef
+  | VideoFieldDef
   | ToggleFieldDef
   | SelectFieldDef
   | ListFieldDef;
@@ -118,6 +135,12 @@ export type ImageValue = {
    * asset or renaming the file doesn't break the page.
    */
   url?: string | null;
+  /**
+   * Resolved alongside `url`, and never stored either. Only the video field
+   * needs it, to give <source> a correct `type` instead of guessing from the
+   * file extension.
+   */
+  mime?: string | null;
 };
 
 export type ItemValue = string | boolean | null | ImageValue;
@@ -184,9 +207,15 @@ export function isFileField(f: FieldDef): f is FileFieldDef {
   return f.kind === "file";
 }
 
-/** Both kinds store a media reference, so both need URL resolution. */
-export function isMediaField(f: FieldDef): f is ImageFieldDef | FileFieldDef {
-  return f.kind === "image" || f.kind === "file";
+export function isVideoField(f: FieldDef): f is VideoFieldDef {
+  return f.kind === "video";
+}
+
+/** All three store a media reference, so all three need URL resolution. */
+export function isMediaField(
+  f: FieldDef,
+): f is ImageFieldDef | FileFieldDef | VideoFieldDef {
+  return f.kind === "image" || f.kind === "file" || f.kind === "video";
 }
 
 export function isListField(f: FieldDef): f is ListFieldDef {

@@ -25,14 +25,39 @@ export type HeroCopy = {
   subtitle?: string | null;
   link1?: { label?: string | null; href?: string | null };
   link2?: { label?: string | null; href?: string | null };
+  /**
+   * Background media picked in the master-page editor. Each part falls back
+   * independently to the clip that ships in /public, so uploading only a
+   * poster — or only a video — still renders a complete hero.
+   */
+  media?: {
+    videoUrl?: string | null;
+    videoMime?: string | null;
+    posterUrl?: string | null;
+  };
 };
 
+/** The clip that ships in /public, used until someone uploads one. */
+const BUILT_IN_VIDEO = "/hero/home-hero.mp4";
+const BUILT_IN_POSTER = "/hero/home-hero-poster.jpg";
+
+/** Last resort when a stored asset has lost its mime_type row. */
+function guessVideoMime(url: string): string {
+  return url.toLowerCase().endsWith(".webm") ? "video/webm" : "video/mp4";
+}
+
 export function HeroFullBleed({ copy }: { copy?: HeroCopy } = {}) {
+  const videoSrc = copy?.media?.videoUrl ?? BUILT_IN_VIDEO;
   return (
     <section className="relative min-h-[560px] md:h-[720px] bg-bz-ink overflow-hidden">
       <HeroVideoBg
-        src="/hero/home-hero.mp4"
-        poster="/hero/home-hero-poster.jpg"
+        src={videoSrc}
+        poster={copy?.media?.posterUrl ?? BUILT_IN_POSTER}
+        mimeType={
+          copy?.media?.videoUrl
+            ? (copy.media.videoMime ?? guessVideoMime(videoSrc))
+            : "video/mp4"
+        }
       />
       {/* Scrim: keeps the white headline + search legible over the footage. */}
       <div className="absolute inset-0 bg-gradient-to-t from-bz-ink/95 via-bz-ink/55 to-bz-ink/35" />

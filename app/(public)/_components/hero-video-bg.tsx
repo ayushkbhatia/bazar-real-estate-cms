@@ -38,9 +38,11 @@ function getServerSnapshot(): boolean {
 export function HeroVideoBg({
   src,
   poster,
+  mimeType = "video/mp4",
 }: {
   src: string;
   poster: string;
+  mimeType?: string;
 }) {
   const showVideo = useSyncExternalStore(
     subscribe,
@@ -57,6 +59,9 @@ export function HeroVideoBg({
       />
       {showVideo ? (
         <video
+          // Remount on a source change, otherwise swapping the CMS video
+          // leaves the previous clip playing until a hard reload.
+          key={src}
           autoPlay
           muted
           loop
@@ -66,7 +71,7 @@ export function HeroVideoBg({
           tabIndex={-1}
           className="absolute inset-0 h-full w-full object-cover"
         >
-          <source src={src} type="video/mp4" />
+          <source src={src} type={mimeType} />
         </video>
       ) : null}
     </div>

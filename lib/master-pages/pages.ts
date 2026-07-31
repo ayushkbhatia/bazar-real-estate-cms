@@ -6,6 +6,7 @@ import type {
   MasterPageDef,
   SectionValues,
   SimpleFieldDef,
+  VideoFieldDef,
 } from "./types";
 
 /**
@@ -54,6 +55,13 @@ const image = (key: string, label: string, help?: string): ImageFieldDef => ({
   key,
   label,
   kind: "image",
+  help,
+});
+
+const video = (key: string, label: string, help?: string): VideoFieldDef => ({
+  key,
+  label,
+  kind: "video",
   help,
 });
 
@@ -207,6 +215,16 @@ const HOME: MasterPageDef = {
         eyebrow(),
         heading({ key: "title", label: "Headline" }),
         body({ key: "subtitle", label: "Sub-headline" }),
+        video(
+          "video",
+          "Background video",
+          "MP4 or WebM, up to 25 MB. Aim for 10 seconds or less, 1080p, no audio — it loops silently behind the headline. Leave unset to keep the built-in clip.",
+        ),
+        image(
+          "poster",
+          "Poster image",
+          "Painted immediately, before the video loads, and shown instead of it on reduced-motion. Use a frame from the video.",
+        ),
         text("link_1_label", "First link label", { max: 60, optional: true }),
         link("link_1_href", "First link"),
         text("link_2_label", "Second link label", { max: 60, optional: true }),
@@ -214,6 +232,8 @@ const HOME: MasterPageDef = {
       ],
       defaults: {
         eyebrow: "Bazar · Abu Dhabi",
+        video: { media_id: null, alt: null, label: null },
+        poster: { media_id: null, alt: null, label: null },
         title: "Find a home worth keeping.",
         subtitle:
           "Curated marketplace and bespoke advisory for buyers, sellers, and investors across the United Arab Emirates.",
@@ -384,10 +404,21 @@ const HOME: MasterPageDef = {
       key: "who_we_are",
       label: "Who we are",
       description: "About the firm, with headline stats.",
-      fields: [eyebrow(), heading(), body({ max: 900 }), statList(4)],
+      fields: [
+        eyebrow(),
+        heading(),
+        body({ max: 900 }),
+        image("photo", "Photo", "Landscape works best — shown at 8:5."),
+        statList(4),
+      ],
       defaults: {
         eyebrow: "Who we are",
         heading: "About Bazar Real Estate",
+        photo: {
+          media_id: null,
+          alt: null,
+          label: "bazar abu dhabi office",
+        },
         body: "Established in 2005, Bazar Real Estate L.L.C. is a leading award-winning real estate agency in the UAE, recognized for its market expertise, professional excellence, and trusted presence in the region's ever-evolving property market.",
         stats: [
           { value: "20+", label: "Years in market" },

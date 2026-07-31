@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import type { SectionCopy } from "./section-copy";
@@ -18,15 +19,39 @@ export function WhoWeAre({
   heading = "About Bazar Real Estate",
   body = "Established in 2005, Bazar Real Estate L.L.C. is a leading award-winning real estate agency in the UAE, recognized for its market expertise, professional excellence, and trusted presence in the region's ever-evolving property market.",
   stats,
-}: SectionCopy & { stats?: [string, string][] } = {}) {
+  imageUrl,
+  imageAlt,
+  imageLabel,
+}: SectionCopy & {
+  stats?: [string, string][];
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+  imageLabel?: string | null;
+} = {}) {
   return (
     <section className="px-4 md:px-12 py-8 md:py-10">
-      <div className="grid items-center gap-8 md:grid-cols-[1fr_1.05fr] md:gap-16">
-        <div className="relative">
-          <PlaceholderImage
-            label="bazar abu dhabi office"
-            className="aspect-[8/5] w-full rounded-xl"
-          />
+      <div className="grid items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] md:gap-16">
+        <div className="relative min-w-0">
+          {/* The ratio + clipping live on this wrapper, not on the media
+              itself, so an uploaded photo of any shape crops the same way the
+              placeholder art did. The "2005" badge deliberately sits OUTSIDE
+              it — inside, `overflow-hidden` would clip its negative offset. */}
+          <div className="relative isolate aspect-[8/5] w-full overflow-hidden rounded-xl bg-bz-surface-2">
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={imageAlt ?? ""}
+                fill
+                sizes="(max-width: 767px) 100vw, 48vw"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <PlaceholderImage
+                label={imageLabel ?? "bazar abu dhabi office"}
+                className="absolute inset-0 h-full w-full"
+              />
+            )}
+          </div>
           <div className="absolute -right-3 bottom-6 rounded-lg border border-bz-border bg-bz-surface px-5 py-4 shadow-[0_4px_12px_rgba(0,0,0,0.06),0_16px_48px_rgba(0,0,0,0.08)] md:-right-6">
             <div className="serif text-[36px] md:text-[40px] leading-none tracking-tight">
               2005
