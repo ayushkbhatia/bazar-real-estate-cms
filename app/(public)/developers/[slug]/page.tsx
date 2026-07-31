@@ -15,6 +15,16 @@ export function generateStaticParams() {
   return DEVELOPERS.map((d) => ({ slug: d.slug }));
 }
 
+/** Fallback mark for a developer with no logo in the directory. */
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
 export const revalidate = 300;
 
 export async function generateMetadata({
@@ -24,11 +34,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const dir = getDeveloperDir(slug);
-  if (!dir) return { title: "Developer not found" };
+  const detail = dir ? null : await getDeveloperBySlug(slug);
+  const name = dir?.name ?? detail?.name;
+  if (!name) return { title: "Developer not found" };
   return {
-    title: `${dir.name} · Bazar Real Estate`,
-    description: dir.blurb,
-    alternates: { canonical: `/developers/${dir.slug}` },
+    title: `${name} · Bazar Real Estate`,
+    description: dir?.blurb ?? detail?.description ?? undefined,
+    alternates: { canonical: `/developers/${slug}` },
   };
 }
 
@@ -38,20 +50,22 @@ export default async function DeveloperProfilePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  // Identity (name / logo / descriptor) comes from the directory so every
-  // developer resolves even before it has a DB row.
+  // Identity resolves from either side. The directory carries the logo and
+  // descriptor for the 30 curated partners, so a developer listed there
+  // renders even before it has a DB row. A developer created in the CMS has
+  // the mirror problem — a row but no directory entry — and must resolve too,
+  // because app/sitemap.ts advertises every DB developer and a 404 on an
+  // advertised URL is a soft-404 against the whole section.
   const dir = getDeveloperDir(slug);
-  if (!dir) notFound();
-
-  // Enrich with the live catalogue when Supabase is configured and this
-  // developer has a matching row; otherwise the developments grid shows its
-  // empty state.
   const detail = await getDeveloperBySlug(slug);
+  if (!dir && !detail) notFound();
+
+  const name = dir?.name ?? detail?.name ?? "";
   const developments =
     detail && !detail.id.startsWith("seed:")
       ? await listDeveloperDevelopments(detail.id)
       : [];
-  const description = detail?.description ?? dir.blurb;
+  const description = detail?.description ?? dir?.blurb ?? null;
 
   return (
     <div className="bg-bz-bg">
@@ -70,15 +84,27 @@ export default async function DeveloperProfilePage({
       <section className="px-4 md:px-12 pt-8 pb-14 md:pb-16 border-b border-bz-border">
         <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 md:gap-12 items-center">
           <div className="flex items-center justify-center bg-white rounded-xl border border-bz-border w-[160px] h-[160px] md:w-[200px] md:h-[200px] p-7">
-            <Image
-              src={dir.logo}
-              alt={dir.name}
-              width={dir.w}
-              height={dir.h}
-              className="h-full w-full object-contain"
-              sizes="200px"
-              priority
-            />
+            {dir ? (
+              <Image
+                src={dir.logo}
+                alt={dir.name}
+                width={dir.w}
+                height={dir.h}
+                className="h-full w-full object-contain"
+                sizes="200px"
+                priority
+              />
+            ) : (
+              // Created in the CMS, so there is no trimmed logo PNG in
+              // /public/developers for it. Initials stand in until one is added
+              // to the directory.
+              <span
+                className="serif text-[44px] leading-none text-bz-ink-2"
+                aria-hidden="true"
+              >
+                {initials(name)}
+              </span>
+            )}
           </div>
           <div>
             <Eyebrow>Developer</Eyebrow>
@@ -86,7 +112,7 @@ export default async function DeveloperProfilePage({
               className="serif text-[40px] md:text-[64px] mt-3 font-normal leading-[1.02]"
               style={{ letterSpacing: "-0.025em" }}
             >
-              {dir.name}
+              {name}
             </h1>
             {description ? (
               <p className="mt-6 text-[16px] md:text-[17px] text-bz-ink-2 leading-relaxed max-w-[64ch]">
@@ -106,7 +132,7 @@ export default async function DeveloperProfilePage({
               className="serif text-[30px] md:text-[36px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.02em" }}
             >
-              {dir.name}&apos;s projects.
+              {name}&apos;s projects.
             </h2>
           </div>
           <Button asChild variant="outline">
@@ -117,7 +143,7 @@ export default async function DeveloperProfilePage({
         {developments.length === 0 ? (
           <div className="mt-10 py-16 text-center border border-dashed border-bz-border rounded-xl">
             <p className="text-[14px] text-bz-ink-2">
-              No developments published for {dir.name} yet.
+              No developments published for {name} yet.
             </p>
             <Button asChild variant="ghost" className="mt-4">
               <Link href="/off-plan">Explore the wider off-plan market</Link>

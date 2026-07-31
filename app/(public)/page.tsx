@@ -82,6 +82,9 @@ export default async function HomePage() {
   const faqV = v("faqs");
   const testimonialsV = v("testimonials");
   const listImage = img(listV, "image");
+  const whoImage = img(whoV, "photo");
+  const heroVideo = img(heroV, "video");
+  const heroPoster = img(heroV, "poster");
 
   // Listings curated in the home master page, in the order they were picked.
   // Anything that no longer resolves — unpublished, deleted — drops out, and
@@ -110,6 +113,11 @@ export default async function HomePage() {
           link2: {
             label: str(heroV, "link_2_label"),
             href: str(heroV, "link_2_href"),
+          },
+          media: {
+            videoUrl: heroVideo?.url ?? null,
+            videoMime: heroVideo?.mime ?? null,
+            posterUrl: heroPoster?.url ?? null,
           },
         }}
       />
@@ -257,6 +265,9 @@ export default async function HomePage() {
         heading={str(whoV, "heading")}
         body={str(whoV, "body")}
         stats={statPairs(whoV)}
+        imageUrl={whoImage?.url ?? null}
+        imageAlt={whoImage?.alt ?? null}
+        imageLabel={whoImage?.label ?? null}
       />
     ),
 

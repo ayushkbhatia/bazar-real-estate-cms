@@ -11,11 +11,12 @@ import { slugify } from "@/lib/slug";
 import type { MediaOption } from "../../../master/[key]/_editor";
 import { ImagePicker } from "../[slug]/_images-card";
 import { createDevelopmentPage } from "../_actions";
+import { createDeveloper } from "../../../../developers/_actions";
 
 type Option = { id: string; name: string };
 
 export function NewDevelopmentPageForm({
-  developers,
+  developers: initialDevelopers,
   areas,
   media: initialMedia,
 }: {
@@ -25,6 +26,7 @@ export function NewDevelopmentPageForm({
 }) {
   const router = useRouter();
   const [media, setMedia] = useState(initialMedia);
+  const [developers, setDevelopers] = useState(initialDevelopers);
   const [name, setName] = useState("");
   // Blank until touched, so it keeps tracking the name; typing pins it.
   const [slugTouched, setSlugTouched] = useState(false);
@@ -101,23 +103,20 @@ export function NewDevelopmentPageForm({
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="developer">Developer</Label>
-            <select
-              id="developer"
-              className={fieldCls}
-              value={developerId}
-              onChange={(e) => setDeveloperId(e.target.value)}
-            >
-              <option value="">Choose a developer</option>
-              {developers.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-            <FieldError message={errors.developer_id} />
-          </div>
+          <DeveloperField
+            developers={developers}
+            value={developerId}
+            onChange={setDeveloperId}
+            onCreated={(d) =>
+              setDevelopers((cur) =>
+                cur.some((x) => x.id === d.id)
+                  ? cur
+                  : [...cur, d].sort((a, b) => a.name.localeCompare(b.name)),
+              )
+            }
+            error={errors.developer_id}
+            fieldCls={fieldCls}
+          />
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="area">Area</Label>
             <select
@@ -167,6 +166,147 @@ export function NewDevelopmentPageForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+/**
+ * Developer picker with an inline "add one" escape hatch.
+ *
+ * A native <select> can't hold a free-text option, and the alternative — send
+ * the operator to a separate developer screen and back — loses the half-filled
+ * form. So the control stays a plain select and the create affordance sits
+ * beside its label: type a name, and the new developer is created, selected,
+ * and available in every other developer picker from then on.
+ */
+function DeveloperField({
+  developers,
+  value,
+  onChange,
+  onCreated,
+  error,
+  fieldCls,
+}: {
+  developers: Option[];
+  value: string;
+  onChange: (id: string) => void;
+  onCreated: (d: Option) => void;
+  error?: string;
+  fieldCls: string;
+}) {
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function add() {
+    const name = draft.trim();
+    if (name === "") return;
+    setBusy(true);
+    try {
+      const result = await createDeveloper({ name });
+      if (result.status === "error") {
+        toast.error(result.message);
+        return;
+      }
+      onCreated({ id: result.id, name: result.name });
+      onChange(result.id);
+      setDraft("");
+      setAdding(false);
+      toast.success(
+        result.created
+          ? `Added "${result.name}".`
+          : `"${result.name}" already exists — selected it.`,
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-baseline justify-between gap-2">
+        <Label htmlFor="developer">Developer</Label>
+        {adding ? null : (
+          <button
+            type="button"
+            onClick={() => setAdding(true)}
+            className="inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink"
+          >
+            <Plus size={11} strokeWidth={1.8} /> New developer
+          </button>
+        )}
+      </div>
+
+      <select
+        id="developer"
+        className={fieldCls}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      >
+        <option value="">Choose a developer</option>
+        {developers.map((d) => (
+          <option key={d.id} value={d.id}>
+            {d.name}
+          </option>
+        ))}
+      </select>
+
+      {adding ? (
+        <div className="flex flex-col gap-1.5 rounded border border-bz-border bg-bz-surface-2 p-2.5">
+          <div className="flex items-center gap-2">
+            <Input
+              aria-label="New developer name"
+              value={draft}
+              autoFocus
+              placeholder="e.g. Aldar Properties"
+              disabled={busy}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                // The control lives inside the project form; Enter here must
+                // add a developer, not submit the half-filled page.
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void add();
+                }
+                if (e.key === "Escape") {
+                  e.preventDefault();
+                  setAdding(false);
+                  setDraft("");
+                }
+              }}
+            />
+            <Button
+              type="button"
+              size="sm"
+              disabled={busy || draft.trim() === ""}
+              onClick={() => void add()}
+            >
+              {busy ? "Adding…" : "Add"}
+            </Button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                setAdding(false);
+                setDraft("");
+              }}
+              className="text-[11.5px] text-bz-muted hover:text-bz-ink disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          </div>
+          <span className="text-[11.5px] text-bz-muted">
+            Saved to the developer catalogue and reusable everywhere. Its public
+            page will live at{" "}
+            <span className="mono">
+              /developers/{slugify(draft) || "…"}
+            </span>
+            .
+          </span>
+        </div>
+      ) : null}
+
+      <FieldError message={error} />
+    </div>
   );
 }
 

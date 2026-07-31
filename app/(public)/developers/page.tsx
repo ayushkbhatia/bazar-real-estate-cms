@@ -1,8 +1,11 @@
+import * as React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { str } from "@/lib/master-pages";
 import { trimmedLogo } from "../_components/developer-logos";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
@@ -17,12 +20,50 @@ export const metadata: Metadata = {
 
 export const revalidate = 300;
 
-export default function DevelopersPage() {
+/** Newlines in the headline become line breaks; the tail renders in italic. */
+function heroTitle(
+  title: string | null,
+  emphasis: string | null,
+): React.ReactNode {
+  const lines = (title ?? "").split("\n");
   return (
-    <div className="bg-bz-bg">
-      {/* Hero */}
-      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-12">
-        <Eyebrow>Developers</Eyebrow>
+    <>
+      {lines.map((line, i) => (
+        <span key={i}>
+          {line}
+          {i < lines.length - 1 ? <br /> : null}
+        </span>
+      ))}
+      {emphasis ? (
+        <>
+          {" "}
+          <em className="italic">{emphasis}</em>
+        </>
+      ) : null}
+    </>
+  );
+}
+
+export default async function DevelopersPage() {
+  // Section copy and order come from /admin/pages/master/developers. Anything
+  // untouched falls back to the literals this page shipped with. The card grid
+  // itself is always the code-owned directory in `_data.ts`.
+  const content = await getMasterPageContent("developers");
+  const v = (key: string) => content.section(key)?.values ?? {};
+  const heroV = v("hero");
+  const dirV = v("directory");
+
+  const heroEyebrow = str(heroV, "eyebrow");
+  const heroSub = str(heroV, "sub");
+  const cardCta = str(dirV, "card_cta") ?? "View developments";
+
+  const nodes: Record<string, React.ReactNode> = {
+    hero: (
+      <section
+        key="hero"
+        className="px-4 md:px-12 pt-12 md:pt-20 pb-12"
+      >
+        {heroEyebrow ? <Eyebrow>{heroEyebrow}</Eyebrow> : null}
         <h1
           className="serif mt-3.5 max-w-[1000px]"
           style={{
@@ -31,24 +72,33 @@ export default function DevelopersPage() {
             lineHeight: 0.98,
           }}
         >
-          The developers
-          <br />
-          shaping <em className="italic">the UAE.</em>
+          {heroTitle(
+            str(heroV, "title") ?? "The developers\nshaping",
+            str(heroV, "title_emphasis"),
+          )}
         </h1>
-        <p className="text-[16px] md:text-[18px] text-bz-ink-2 max-w-[680px] leading-relaxed mt-5">
-          Direct relationships with the region&apos;s leading developers give
-          Bazar clients early access to landmark communities, new launches, and
-          off-plan opportunities.
-        </p>
+        {heroSub ? (
+          <p className="text-[16px] md:text-[18px] text-bz-ink-2 max-w-[680px] leading-relaxed mt-5">
+            {heroSub}
+          </p>
+        ) : null}
       </section>
+    ),
 
-      {/* Our partners — the master directory. Every UAE developer Bazar works
-          with, sorted alphabetically, each linking to its own profile. */}
-      <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border bg-bz-surface-2">
+    // Our partners — the master directory. Every UAE developer Bazar works
+    // with, sorted alphabetically, each linking to its own profile.
+    directory: (
+      <section
+        key="directory"
+        className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border bg-bz-surface-2"
+      >
         <SectionHead
-          eyebrow="Our partners"
-          title="Working with leading developers across the UAE."
-          sub="Access to established communities, new launches, luxury residences, and investment opportunities across Abu Dhabi, Dubai and the wider UAE."
+          eyebrow={str(dirV, "eyebrow") ?? "Our partners"}
+          title={
+            str(dirV, "heading") ??
+            "Working with leading developers across the UAE."
+          }
+          sub={str(dirV, "body")}
           size={44}
           className="mb-10 md:mb-12"
         />
@@ -105,7 +155,7 @@ export default function DevelopersPage() {
                     {d.blurb}
                   </p>
                   <div className="flex items-center gap-1.5 mt-4 text-[12.5px] font-medium text-bz-accent">
-                    View developments
+                    {cardCta}
                     <ArrowRight
                       size={13}
                       strokeWidth={1.8}
@@ -118,6 +168,14 @@ export default function DevelopersPage() {
           })}
         </div>
       </section>
+    ),
+  };
+
+  return (
+    <div className="bg-bz-bg">
+      {content.order.map((key) => (
+        <React.Fragment key={key}>{nodes[key] ?? null}</React.Fragment>
+      ))}
     </div>
   );
 }

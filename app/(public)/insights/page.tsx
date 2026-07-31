@@ -1,3 +1,4 @@
+import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
@@ -11,6 +12,8 @@ import {
   type ArticleListRow,
 } from "@/lib/queries/articles";
 import { listArticleCategories } from "@/lib/queries/article-categories";
+import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { str } from "@/lib/master-pages";
 import { mediaPublicUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import { NewsletterSignup } from "../_components/newsletter-signup";
@@ -64,9 +67,21 @@ function formatDate(iso: string | null): string {
   });
 }
 
+/**
+ * The empty-state sentence carries the filtered category inline, so it is
+ * stored as a template with a `{category}` token. With no filter the token and
+ * the space before it both drop out.
+ */
+function fillCategory(template: string, label: string): string {
+  return template.replace(/\s*\{category\}/g, label ? ` ${label}` : "");
+}
+
 export default async function InsightsIndexPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  const categories = await listArticleCategories();
+  const [categories, content] = await Promise.all([
+    listArticleCategories(),
+    getMasterPageContent("insights"),
+  ]);
   const category = categories.some((c) => c.slug === params.category)
     ? (params.category as string)
     : null;
@@ -82,101 +97,120 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
     countArticlesByCategory(),
   ]);
 
-  const [featured, ...rest] = rows;
+  // Section copy and order come from /admin/pages/master/insights. The
+  // articles themselves, the categories and the counts stay live — only the
+  // wording around them is editable.
+  const v = (key: string) => content.section(key)?.values ?? {};
+  const heroV = v("hero");
+  const featuredV = v("featured");
+  const chipsV = v("categories");
+  const gridV = v("articles");
 
-  return (
-    <div className="bg-bz-bg">
-      {/* Header */}
-      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-14 max-w-[1200px]">
-        <Eyebrow>Insights</Eyebrow>
+  // With the lead-article section switched off, the newest article stays in
+  // the grid rather than disappearing with the section that framed it.
+  const featuredEnabled = content.order.includes("featured");
+  const [newest, ...others] = rows;
+  const featured = featuredEnabled ? newest : null;
+  const rest = featuredEnabled ? others : rows;
+
+  const nodes: Record<string, React.ReactNode> = {
+    hero: (
+      <section
+        key="hero"
+        className="px-4 md:px-12 pt-12 md:pt-20 pb-14 max-w-[1200px]"
+      >
+        <Eyebrow>{str(heroV, "eyebrow") ?? "Insights"}</Eyebrow>
         <h1
           className="serif text-[42px] md:text-[80px] mt-3 font-normal"
           style={{ letterSpacing: "-0.03em", lineHeight: 0.98 }}
         >
-          The Bazar Brief.
+          {str(heroV, "heading") ?? "The Bazar Brief."}
         </h1>
         <p className="mt-6 text-[17px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-          Long-form market analysis, advisor field notes, and the occasional
-          contrarian take. One email every Wednesday.
+          {str(heroV, "body") ??
+            "Long-form market analysis, advisor field notes, and the occasional contrarian take. One email every Wednesday."}
         </p>
       </section>
+    ),
 
-      {/* Featured + editor's pick block */}
-      {featured ? (
-        <section className="px-4 md:px-12 pb-14 max-w-[1280px]">
-          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 items-start">
-            <Link
-              href={articleUrl(featured)}
-              className="group block"
-              aria-label={featured.title}
-            >
-              <div className="relative aspect-[16/10] rounded-lg overflow-hidden bg-bz-surface-2">
-                <ArticleHero
-                  row={featured}
-                  sizes="(min-width: 1024px) 720px, 100vw"
-                />
-              </div>
-              <div className="mt-5">
-                <Eyebrow>{featured.category_label}</Eyebrow>
-                <h2
-                  className="serif text-[28px] md:text-[40px] mt-3 leading-[1.05] group-hover:text-bz-accent transition-colors"
-                  style={{ letterSpacing: "-0.025em" }}
-                >
-                  {featured.title}
-                </h2>
-                {featured.excerpt ? (
-                  <p className="mt-4 text-[15.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-                    {featured.excerpt}
-                  </p>
+    featured: featured ? (
+      <section key="featured" className="px-4 md:px-12 pb-14 max-w-[1280px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 items-start">
+          <Link
+            href={articleUrl(featured)}
+            className="group block"
+            aria-label={featured.title}
+          >
+            <div className="relative aspect-[16/10] rounded-lg overflow-hidden bg-bz-surface-2">
+              <ArticleHero
+                row={featured}
+                sizes="(min-width: 1024px) 720px, 100vw"
+              />
+            </div>
+            <div className="mt-5">
+              <Eyebrow>{featured.category_label}</Eyebrow>
+              <h2
+                className="serif text-[28px] md:text-[40px] mt-3 leading-[1.05] group-hover:text-bz-accent transition-colors"
+                style={{ letterSpacing: "-0.025em" }}
+              >
+                {featured.title}
+              </h2>
+              {featured.excerpt ? (
+                <p className="mt-4 text-[15.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+                  {featured.excerpt}
+                </p>
+              ) : null}
+              <div className="mt-5 text-[12.5px] text-bz-muted flex items-center gap-2">
+                {featured.author ? (
+                  <>
+                    <span>{featured.author.display_name}</span>
+                    <span>·</span>
+                  </>
                 ) : null}
-                <div className="mt-5 text-[12.5px] text-bz-muted flex items-center gap-2">
-                  {featured.author ? (
-                    <>
-                      <span>{featured.author.display_name}</span>
-                      <span>·</span>
-                    </>
-                  ) : null}
-                  <span>{formatDate(featured.published_at)}</span>
-                  {featured.read_minutes ? (
-                    <>
-                      <span>·</span>
-                      <span>{featured.read_minutes} min read</span>
-                    </>
-                  ) : null}
-                </div>
+                <span>{formatDate(featured.published_at)}</span>
+                {featured.read_minutes ? (
+                  <>
+                    <span>·</span>
+                    <span>{featured.read_minutes} min read</span>
+                  </>
+                ) : null}
               </div>
-            </Link>
+            </div>
+          </Link>
 
-            <aside className="bg-bz-ink text-white rounded-lg p-8 sticky top-6">
-              <div
-                className="text-[11px] uppercase tracking-widest"
-                style={{ color: "oklch(0.65 0.005 80)" }}
-              >
-                Subscribe to the brief
-              </div>
-              <h3
-                className="serif text-[26px] mt-4 leading-tight"
-                style={{ letterSpacing: "-0.015em" }}
-              >
-                One email every Wednesday.
-              </h3>
-              <p
-                className="mt-3 text-[13.5px] leading-relaxed"
-                style={{ color: "oklch(0.72 0.005 80)" }}
-              >
-                A short briefing on the week&apos;s Abu Dhabi deals, advisor
-                commentary, and one chart worth sitting with.
-              </p>
-              <div className="mt-5">
-                <NewsletterSignup source="insights_header" variant="dark" />
-              </div>
-            </aside>
-          </div>
-        </section>
-      ) : null}
+          <aside className="bg-bz-ink text-white rounded-lg p-8 sticky top-6">
+            <div
+              className="text-[11px] uppercase tracking-widest"
+              style={{ color: "oklch(0.65 0.005 80)" }}
+            >
+              {str(featuredV, "eyebrow") ?? "Subscribe to the brief"}
+            </div>
+            <h3
+              className="serif text-[26px] mt-4 leading-tight"
+              style={{ letterSpacing: "-0.015em" }}
+            >
+              {str(featuredV, "heading") ?? "One email every Wednesday."}
+            </h3>
+            <p
+              className="mt-3 text-[13.5px] leading-relaxed"
+              style={{ color: "oklch(0.72 0.005 80)" }}
+            >
+              {str(featuredV, "body") ??
+                "A short briefing on the week's Abu Dhabi deals, advisor commentary, and one chart worth sitting with."}
+            </p>
+            <div className="mt-5">
+              <NewsletterSignup source="insights_header" variant="dark" />
+            </div>
+          </aside>
+        </div>
+      </section>
+    ) : null,
 
-      {/* Category chips */}
-      <section className="px-4 md:px-12 py-6 border-t border-bz-border">
+    categories: (
+      <section
+        key="categories"
+        className="px-4 md:px-12 py-6 border-t border-bz-border"
+      >
         <div className="flex gap-2 flex-wrap max-w-[1280px]">
           <Link
             href="/insights"
@@ -187,7 +221,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
                 : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
             )}
           >
-            All · {counts.total}
+            {str(chipsV, "all_label") ?? "All"} · {counts.total}
           </Link>
           {categories.map((c) => {
             const count = counts.byCategory[c.slug] ?? 0;
@@ -210,19 +244,29 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
           })}
         </div>
       </section>
+    ),
 
-      {/* Grid */}
-      <section className="px-4 md:px-12 pt-12 pb-24 max-w-[1280px]">
+    articles: (
+      <section
+        key="articles"
+        className="px-4 md:px-12 pt-12 pb-24 max-w-[1280px]"
+      >
         {rest.length === 0 && !featured ? (
           <div className="py-24 text-center max-w-[40ch] mx-auto">
             <p className="text-[15px] text-bz-ink-2">
-              We haven&apos;t published any{" "}
-              {selectedLabel ? `${selectedLabel.toLowerCase()} ` : ""}
-              insights yet.
+              {fillCategory(
+                str(gridV, "empty_body") ??
+                  "We haven't published any {category} insights yet.",
+                selectedLabel ? selectedLabel.toLowerCase() : "",
+              )}
             </p>
-            <Button asChild variant="outline" className="mt-6">
-              <Link href="/insights">View all categories</Link>
-            </Button>
+            {str(gridV, "empty_cta_label") ? (
+              <Button asChild variant="outline" className="mt-6">
+                <Link href={str(gridV, "empty_cta_href") ?? "/insights"}>
+                  {str(gridV, "empty_cta_label")}
+                </Link>
+              </Button>
+            ) : null}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-9 gap-y-14">
@@ -260,6 +304,14 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
           </div>
         )}
       </section>
+    ),
+  };
+
+  return (
+    <div className="bg-bz-bg">
+      {content.order.map((key) => (
+        <React.Fragment key={key}>{nodes[key] ?? null}</React.Fragment>
+      ))}
     </div>
   );
 }

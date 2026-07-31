@@ -1,12 +1,4 @@
-import type {
-  ImageFieldDef,
-  ToggleFieldDef,
-  ImageValue,
-  ListFieldDef,
-  MasterPageDef,
-  SectionValues,
-  SimpleFieldDef,
-} from "./types";
+import type { ImageValue, MasterPageDef, SectionValues } from "./types";
 
 /**
  * Section definitions for the four marketing master pages.
@@ -17,137 +9,31 @@ import type {
  * the component's own literal is only a fallback for callers that pass nothing.
  */
 
-const text = (
-  key: string,
-  label: string,
-  extra: Partial<SimpleFieldDef> = {},
-): SimpleFieldDef => ({ key, label, kind: "text", max: 160, ...extra });
+import {
+  text,
+  area,
+  link,
+  image,
+  video,
+  toggle,
+  eyebrow,
+  heading,
+  body,
+  ctaPair,
+  faqList,
+  tileList,
+  chipList,
+  statList,
+  propTypeList,
+} from "./fields";
+import { DEVELOPERS_PAGE } from "./sections/developers";
+import { SERVICES_PAGE } from "./sections/services";
+import { INSIGHTS_PAGE } from "./sections/insights";
+import { ABOUT_PAGE } from "./sections/about";
+import { CONTACT_PAGE } from "./sections/contact";
+import { QR_PAGE } from "./sections/qr";
+import { CONTACT_QR_PAGE } from "./sections/contact-qr";
 
-const area = (
-  key: string,
-  label: string,
-  extra: Partial<SimpleFieldDef> = {},
-): SimpleFieldDef => ({
-  key,
-  label,
-  kind: "textarea",
-  max: 600,
-  optional: true,
-  ...extra,
-});
-
-const link = (
-  key: string,
-  label: string,
-  extra: Partial<SimpleFieldDef> = {},
-): SimpleFieldDef => ({
-  key,
-  label,
-  kind: "link",
-  max: 240,
-  optional: true,
-  help: "Internal path (/buy/search) or full URL.",
-  ...extra,
-});
-
-const image = (key: string, label: string, help?: string): ImageFieldDef => ({
-  key,
-  label,
-  kind: "image",
-  help,
-});
-
-const toggle = (
-  key: string,
-  label: string,
-  help?: string,
-): ToggleFieldDef => ({ key, label, kind: "toggle", help });
-
-const eyebrow = (extra: Partial<SimpleFieldDef> = {}) =>
-  text("eyebrow", "Eyebrow", { max: 60, optional: true, ...extra });
-const heading = (extra: Partial<SimpleFieldDef> = {}) =>
-  text("heading", "Heading", { ...extra });
-const body = (extra: Partial<SimpleFieldDef> = {}) =>
-  area("body", "Body", { ...extra });
-const ctaPair = (labelDefault = "CTA label"): SimpleFieldDef[] => [
-  text("cta_label", labelDefault, { max: 60, optional: true }),
-  link("cta_href", "CTA link"),
-];
-
-const faqList = (max = 12): ListFieldDef => ({
-  key: "items",
-  label: "Questions",
-  kind: "list",
-  itemLabel: "question",
-  max,
-  fields: [
-    text("q", "Question", { max: 200 }),
-    area("a", "Answer", { max: 1200, optional: false }),
-  ],
-});
-
-const tileList = (key: string, label: string, max = 8): ListFieldDef => ({
-  key,
-  label,
-  kind: "list",
-  itemLabel: "tile",
-  max,
-  fields: [
-    text("name", "Title", { max: 80 }),
-    area("desc", "Description", { max: 200 }),
-    text("cta", "Link label", { max: 60, optional: true }),
-    link("href", "Link"),
-    image("image", "Image", "Falls back to the placeholder caption below."),
-    text("img", "Placeholder caption", { max: 80, optional: true }),
-  ],
-});
-
-const chipList = (key: string, label: string, max = 24): ListFieldDef => ({
-  key,
-  label,
-  kind: "list",
-  itemLabel: "chip",
-  max,
-  fields: [
-    text("label", "Label", { max: 60 }),
-    link("href", "Link"),
-  ],
-});
-
-const statList = (max = 4): ListFieldDef => ({
-  key: "stats",
-  label: "Stats",
-  kind: "list",
-  itemLabel: "stat",
-  max,
-  fields: [
-    text("value", "Value", { max: 40 }),
-    text("label", "Caption", { max: 60 }),
-  ],
-});
-
-const propTypeList = (
-  max = 8,
-  opts: { withImage?: boolean } = {},
-): ListFieldDef => ({
-  key: "items",
-  label: "Property types",
-  kind: "list",
-  itemLabel: "type",
-  max,
-  fields: [
-    text("name", "Name", { max: 80 }),
-    area("desc", "Description", { max: 240 }),
-    text("cta", "Link label", { max: 60, optional: true }),
-    link("href", "Link"),
-    ...(opts.withImage
-      ? [
-          image("image", "Image", "Falls back to the placeholder caption."),
-          text("img", "Placeholder caption", { max: 80, optional: true }),
-        ]
-      : []),
-  ],
-});
 
 // ── shared default content ──────────────────────────────────────────────
 // Mirrors AD_COMMUNITIES / SALE_PROP_TYPES in
@@ -207,6 +93,16 @@ const HOME: MasterPageDef = {
         eyebrow(),
         heading({ key: "title", label: "Headline" }),
         body({ key: "subtitle", label: "Sub-headline" }),
+        video(
+          "video",
+          "Background video",
+          "MP4 or WebM, up to 25 MB. Aim for 10 seconds or less, 1080p, no audio — it loops silently behind the headline. Leave unset to keep the built-in clip.",
+        ),
+        image(
+          "poster",
+          "Poster image",
+          "Painted immediately, before the video loads, and shown instead of it on reduced-motion. Use a frame from the video.",
+        ),
         text("link_1_label", "First link label", { max: 60, optional: true }),
         link("link_1_href", "First link"),
         text("link_2_label", "Second link label", { max: 60, optional: true }),
@@ -214,6 +110,8 @@ const HOME: MasterPageDef = {
       ],
       defaults: {
         eyebrow: "Bazar · Abu Dhabi",
+        video: { media_id: null, alt: null, label: null },
+        poster: { media_id: null, alt: null, label: null },
         title: "Find a home worth keeping.",
         subtitle:
           "Curated marketplace and bespoke advisory for buyers, sellers, and investors across the United Arab Emirates.",
@@ -384,10 +282,21 @@ const HOME: MasterPageDef = {
       key: "who_we_are",
       label: "Who we are",
       description: "About the firm, with headline stats.",
-      fields: [eyebrow(), heading(), body({ max: 900 }), statList(4)],
+      fields: [
+        eyebrow(),
+        heading(),
+        body({ max: 900 }),
+        image("photo", "Photo", "Landscape works best — shown at 8:5."),
+        statList(4),
+      ],
       defaults: {
         eyebrow: "Who we are",
         heading: "About Bazar Real Estate",
+        photo: {
+          media_id: null,
+          alt: null,
+          label: "bazar abu dhabi office",
+        },
         body: "Established in 2005, Bazar Real Estate L.L.C. is a leading award-winning real estate agency in the UAE, recognized for its market expertise, professional excellence, and trusted presence in the region's ever-evolving property market.",
         stats: [
           { value: "20+", label: "Years in market" },
@@ -1338,4 +1247,23 @@ const AREAS: MasterPageDef = {
   ],
 };
 
-export const MASTER_PAGES: MasterPageDef[] = [HOME, BUY, RENT, OFF_PLAN, AREAS];
+/**
+ * The five marketing pages above predate the `sections/` split and stay in
+ * this file. Everything added from Sprint 14 on lives in its own module —
+ * this file was already 1300 lines, and one page per module keeps a change to
+ * /about out of the diff for /buy.
+ */
+export const MASTER_PAGES: MasterPageDef[] = [
+  HOME,
+  BUY,
+  RENT,
+  OFF_PLAN,
+  AREAS,
+  DEVELOPERS_PAGE,
+  SERVICES_PAGE,
+  INSIGHTS_PAGE,
+  ABOUT_PAGE,
+  CONTACT_PAGE,
+  QR_PAGE,
+  CONTACT_QR_PAGE,
+];

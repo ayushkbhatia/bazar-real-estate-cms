@@ -20,6 +20,10 @@ const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[numb
   { path: "/agents", changeFrequency: "weekly", priority: 0.5 },
   { path: "/areas", changeFrequency: "weekly", priority: 0.5 },
   { path: "/developers", changeFrequency: "weekly", priority: 0.5 },
+  // The QR scan destination is a real contact surface, so it is indexable.
+  // /qr — the display page the code is printed on — deliberately is not: it
+  // carries robots noindex and would only compete with /contact.
+  { path: "/contact-us/qr", changeFrequency: "monthly", priority: 0.3 },
 ];
 
 function siteUrl(): string {

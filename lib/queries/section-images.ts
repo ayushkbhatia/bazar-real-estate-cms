@@ -31,15 +31,16 @@ export async function attachImageUrls(sections: ResolvedSection[]): Promise<void
     const supabase = createSupabasePublicClient();
     const { data } = await supabase
       .from("media_assets")
-      .select("id, storage_key")
+      .select("id, storage_key, mime_type")
       .in("id", ids as string[])
       .is("deleted_at", null);
-    const keyById = new Map((data ?? []).map((m) => [m.id, m.storage_key]));
+    const byId = new Map((data ?? []).map((m) => [m.id, m]));
     for (const image of images) {
-      const key = image.media_id ? keyById.get(image.media_id) : null;
+      const asset = image.media_id ? byId.get(image.media_id) : null;
       // A trashed or deleted asset falls back to the placeholder rather than
       // rendering a broken image.
-      image.url = key ? mediaPublicUrl(key) : null;
+      image.url = asset ? mediaPublicUrl(asset.storage_key) : null;
+      image.mime = asset?.mime_type ?? null;
     }
   } catch (error) {
     console.error("[master-pages] failed to resolve image urls", error);
