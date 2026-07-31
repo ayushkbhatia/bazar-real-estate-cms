@@ -26,6 +26,13 @@ describe("registry", () => {
       "rent",
       "off-plan",
       "areas",
+      "developers",
+      "services",
+      "insights",
+      "about",
+      "contact",
+      "qr",
+      "contact-qr",
     ]);
     for (const page of MASTER_PAGES) {
       const keys = page.sections.map((s) => s.key);

@@ -173,7 +173,19 @@ export type SectionDef = {
   dataNote?: string;
 };
 
-export type MasterPageKey = "home" | "buy" | "rent" | "off-plan" | "areas";
+export type MasterPageKey =
+  | "home"
+  | "buy"
+  | "rent"
+  | "off-plan"
+  | "areas"
+  | "developers"
+  | "services"
+  | "insights"
+  | "about"
+  | "contact"
+  | "qr"
+  | "contact-qr";
 
 export type MasterPageDef = {
   key: MasterPageKey;
