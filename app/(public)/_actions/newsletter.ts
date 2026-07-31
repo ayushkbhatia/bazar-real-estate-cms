@@ -1,6 +1,5 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import {
   generateConfirmationToken,
@@ -191,7 +190,6 @@ export async function confirmNewsletterToken(
     });
   }
 
-  revalidatePath("/account/newsletter");
   return { status: "ok", email: row.email };
 }
 
@@ -231,7 +229,6 @@ export async function unsubscribeNewsletterToken(
     void removeFromMailchimp(row.email);
   }
 
-  revalidatePath("/account/newsletter");
   return { status: "ok", email: row.email };
 }
 
@@ -242,36 +239,3 @@ export type AccountUnsubscribeResult =
   | { status: "ok"; message: string }
   | { status: "error"; message: string };
 
-export async function unsubscribeFromAccount(): Promise<AccountUnsubscribeResult> {
-  if (!isSupabaseConfigured)
-    return { status: "error", message: "Subscriptions are offline." };
-
-  const { createSupabaseServerClient } = await import("@/lib/supabase/server");
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { status: "error", message: "Sign in required." };
-
-  const admin = await adminSupabase();
-  if (!admin) return { status: "error", message: "Subscriptions are offline." };
-
-  const email = user.email?.toLowerCase();
-  if (!email)
-    return { status: "error", message: "Account has no email on file." };
-
-  const { error } = await admin
-    .from("newsletter_subscribers")
-    .update({
-      status: "unsubscribed",
-      unsubscribed_at: new Date().toISOString(),
-    })
-    .or(`account_id.eq.${user.id},email.eq.${email}`);
-  if (error) return { status: "error", message: error.message };
-
-  // BF-6: propagate to Mailchimp.
-  void removeFromMailchimp(email);
-
-  revalidatePath("/account/newsletter");
-  return { status: "ok", message: "Unsubscribed." };
-}

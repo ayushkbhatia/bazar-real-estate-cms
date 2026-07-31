@@ -31,7 +31,7 @@ export async function submitTourRequest(
     parsed.data;
 
   // Anonymous + signed-in both write. Signed-in fills account_id so the
-  // /account/saved Tour requests tab can read it back via listTourRequests.
+  // Staff read these from the enquiry side; there is no customer-facing view.
   const user = await getSessionUser();
   const preferred_window = `${preferred_date} at ${preferred_time}`;
   const id = await createTourRequest({

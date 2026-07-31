@@ -309,3 +309,75 @@ describe("staffPasswordResetTemplate", () => {
     ).toContain("valid for 14 days");
   });
 });
+
+describe("no template links at a removed route", () => {
+  /**
+   * Customer accounts are gone and /account/* is NOT in the redirect list, so
+   * any surviving link to it 404s in a real person's inbox. This caught four
+   * templates after the removal, one of them live (the day-7 valuation
+   * nurture, sent by a cron).
+   */
+  const DEAD_PREFIXES = [
+    "/account",
+    "/sign-in",
+    "/sign-up",
+    "/magic-link",
+    "/reset-password",
+    "/verify-otp",
+  ];
+
+  it("every rendered template avoids the removed customer routes", async () => {
+    const mod = await importModule();
+    const rendered: string[] = [];
+
+    // Render everything callable with a plausible payload; templates that need
+    // a shape we can't guess are skipped rather than silently passing.
+    for (const [name, fn] of Object.entries(mod)) {
+      if (typeof fn !== "function") continue;
+      try {
+        const out = (fn as (o: unknown) => unknown)({
+          name: "Test Person",
+          staffName: "Test Person",
+          inviteeName: "Test Person",
+          inviterName: "Admin",
+          senderName: "Admin",
+          staffDisplayName: "Admin",
+          body: "body",
+          message: "message",
+          email: "a@b.com",
+          role: "Administrator",
+          acceptUrl: "https://example.com/x",
+          resetUrl: "https://example.com/x",
+          token: "t",
+          valuationId: "v1",
+          estimateMid: 1_000_000,
+          propertyReference: "BAZ-1",
+          propertyTitle: "A home",
+          reference: "BAZ-1",
+          licenseKind: "brn",
+          expiresOn: "2026-01-01",
+          holderName: "Someone",
+          count: 1,
+          items: [],
+          agentName: "Someone",
+          startsAt: new Date().toISOString(),
+          subject: null,
+        });
+        if (out && typeof out === "object" && "html" in out) {
+          const o = out as { html: string; text: string; subject: string };
+          rendered.push(`${name}::${o.html}\n${o.text}`);
+        }
+      } catch {
+        /* shape we can't synthesise — not what this test is for */
+      }
+    }
+
+    expect(rendered.length).toBeGreaterThan(5);
+    for (const body of rendered) {
+      const [name] = body.split("::");
+      for (const dead of DEAD_PREFIXES) {
+        expect(body.includes(`"${dead}`) || body.includes(`${dead}/`), `${name} links at ${dead}`).toBe(false);
+      }
+    }
+  });
+});

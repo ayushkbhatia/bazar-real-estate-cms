@@ -152,7 +152,11 @@ though with 0 `dsr_requests` today there is nothing yet to lose.
 
 # Removal plan — customer accounts (`app/(account)/` + customer auth)
 
-**Status:** proposal, needs sign-off. Nothing in this plan is executed until §1 (decisions) and §2 (exemptions) are answered in writing.
+**Status: COMPLETE.** Executed 2026-07-30/31 across PRs #210, #211, #212, #213,
+#214, #216 and #218. All ten decisions resolved; see ADR-0005 for the summary
+and the reasoning that outlives this document.
+
+*(Original status: proposal, needs sign-off.)* Nothing in this plan is executed until §1 (decisions) and §2 (exemptions) are answered in writing.
 
 **Governing rule for the whole plan:** *app code first, schema last.* Every account table is read or written by surviving **public** or **staff** code, so any migration that lands before the app-side edit takes down the public marketplace or a cron. Schema destruction is Phase 9 and is optional.
 
@@ -468,6 +472,12 @@ If D10 goes the recommended way, Phase 7's "Keep" list shrinks: `/magic-link`, t
 
 ## 4. Explicitly DO NOT TOUCH
 
+> **Superseded in one place.** This list was written while Deals and KYC were
+> expected to survive. **D5/D6 later resolved to remove both**, so `lib/deals.ts`,
+> `lib/documents-storage.ts` and `app/api/documents/[id]/download/route.ts` were
+> deliberately deleted in Phase 5/6 and have been struck from the list below.
+> Everything else here was verified still present after Phase 10.
+
 - `app/(staff-auth)/` — the staff door, other than repointing its `/forgot-password` and `/sign-in` links.
 - `app/staff-invite/` and `lib/staff-invitations.ts` — staff onboarding.
 - `public.accounts`, `handle_new_user()`, `on_auth_user_created`, `on_auth_user_accept_invitation`.
@@ -477,7 +487,7 @@ If D10 goes the recommended way, Phase 7's "Keep" list shrinks: `/magic-link`, t
 - `megamenu_tabs` / `megamenu_columns` / `megamenu_links` — this is the **entire public nav** for every page; verified clean of account hrefs, needs **no** data migration.
 - `components/brand/public-footer.tsx`, `components/brand/mobile/*`, `mobile-tab-bar.tsx` — verified: zero `/account`, `/sign-in`, `/sign-up` links.
 - `app/_consent/`, `lib/consent.ts`, `lib/consent-cookie.ts` — cookie consent touches no database and has zero account coupling.
-- `lib/supabase/{server,browser,admin,public}.ts`, `lib/auth.ts::requireRole` (26 admin importers), `lib/audit.ts`, `lib/env.ts`, `lib/types/sprint-8.ts` (the file), `lib/deals.ts`, `lib/documents-storage.ts` (module), `app/api/documents/[id]/download/route.ts`, `lib/notifications.ts`, `app/api/notifications/*`, `app/api/shortlist/route.ts`.
+- `lib/supabase/{server,browser,admin,public}.ts`, `lib/auth.ts::requireRole` (26 admin importers), `lib/audit.ts`, `lib/env.ts`, `lib/types/sprint-8.ts` (the file), `lib/notifications.ts`, `app/api/notifications/*`, `app/api/shortlist/route.ts`.
 - The 12 surviving crons, especially `viewing-reminders` (staff-facing despite the name) and `post-valuation-nurture`.
 - `notifications_select_own` / `notifications_update_own`, `audit_log_staff_insert`, `licenses` holder policies — same `auth.uid()` shape as the account policies, entirely different owners. **Do not sweep `auth.uid()` policies by pattern.**
 - In tests: `lib/deals.test.ts:322-331` (path-traversal guard) and `lib/documents-storage.test.ts:32-42` (the only "anon gets nothing" test) both assert **through `ownerKind: 'account'`**. Re-point them at a surviving `ownerKind`; deleting them silently removes security coverage. Also false positives, leave alone: `lib/preferences/preferences.test.ts` (cookie-based), `lib/consent.test.ts`, `lib/schemas/newsletter.test.ts`, `lib/staff-invitations.test.ts:197` ("suspended account" is a staff row).

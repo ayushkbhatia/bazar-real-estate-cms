@@ -256,7 +256,7 @@ export function valuationNurtureDay7Template(opts: {
   estimateMid: number | null;
 }): { subject: string; text: string; html: string } {
   const subject = "How's the valuation landing?";
-  const url = `${siteUrl()}/account/profile`;
+  const url = `${siteUrl()}/contact`;
   const estLine = opts.estimateMid
     ? `Our advisor estimate landed at ${formatAedShort(opts.estimateMid)}.`
     : "";
@@ -273,7 +273,7 @@ export function valuationNurtureDay7Template(opts: {
     <p>Hi ${escape(opts.name)},</p>
     <p>It's been a week since we sent your Bazar valuation. ${escape(estLine)}</p>
     <p>If you'd like to talk through next steps — listing strategy, targeted off-market introductions, or a re-cut at a different price point — reply to this thread.</p>
-    <p style="margin-top:20px;font-size:13px"><a href="${url}" style="color:#005777">Open your Bazar account →</a></p>
+    <p style="margin-top:20px;font-size:13px"><a href="${url}" style="color:#005777">Talk to an advisor →</a></p>
   `);
 
   return { subject, text, html };
@@ -361,60 +361,6 @@ export function permitExpiryWarningTemplate(opts: {
   return { subject, text, html };
 }
 
-export function kycApprovedTemplate(opts: {
-  name: string;
-}): { subject: string; text: string; html: string } {
-  const subject = "Your Bazar account is now KYC-verified";
-  const url = `${siteUrl()}/account/profile`;
-
-  const text =
-    `Hi ${opts.name},\n\n` +
-    `Your KYC documents have been reviewed and approved. You can now ` +
-    `place offers and engage Bazar advisory services without further ` +
-    `verification.\n\n` +
-    `Account: ${url}\n\n— Bazar\n`;
-
-  const html = shell(`
-    <p>Hi ${escape(opts.name)},</p>
-    <p>Your KYC documents have been reviewed and <strong>approved</strong>. You can now place offers and engage Bazar advisory services without further verification.</p>
-    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#005777;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open your account</a></p>
-  `);
-
-  return { subject, text, html };
-}
-
-export function kycRejectedTemplate(opts: {
-  name: string;
-  reason: string;
-}): { subject: string; text: string; html: string } {
-  const subject = "Bazar KYC review — additional information needed";
-  const url = `${siteUrl()}/account/documents`;
-
-  const text =
-    `Hi ${opts.name},\n\n` +
-    `Your KYC review couldn't be completed. Reason: ${opts.reason}.\n\n` +
-    `Please upload an updated document at ${url} and we'll re-review ` +
-    `within one business day.\n\n— Bazar\n`;
-
-  const html = shell(`
-    <p>Hi ${escape(opts.name)},</p>
-    <p>Your KYC review couldn't be completed.</p>
-    <p style="margin-top:14px;padding:12px 16px;background:#fff;border-left:3px solid #B33A2A;color:#32312d"><strong>Reason:</strong> ${escape(opts.reason)}</p>
-    <p>Please upload an updated document and we'll re-review within one business day.</p>
-    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open document vault</a></p>
-  `);
-
-  return { subject, text, html };
-}
-
-/**
- * Password-reset link for an existing staff member, sent from the advisor
- * profile in the admin.
- *
- * Deliberately not Supabase's recovery email: that arrives from "Supabase Auth"
- * and its link resolves against the project's Site URL, which is the pair of
- * problems the staff invitation flow was rebuilt to avoid.
- */
 export function staffPasswordResetTemplate(opts: {
   staffName: string;
   resetUrl: string;
@@ -487,7 +433,7 @@ export function viewingReminderTemplate(opts: {
   agentName: string | null;
 }): { subject: string; text: string; html: string } {
   const subject = `Viewing tomorrow · ${opts.propertyReference}`;
-  const url = `${siteUrl()}/account/viewings`;
+  const url = `${siteUrl()}/contact`;
 
   const text =
     `Hi ${opts.name},\n\n` +

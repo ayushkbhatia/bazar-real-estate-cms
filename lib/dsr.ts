@@ -30,7 +30,7 @@ export function isTokenExpired(createdAt: Date, now: Date = new Date()): boolean
   return now.getTime() - createdAt.getTime() > DSR_TOKEN_TTL_MS;
 }
 
-/** Shape of the JSON archive returned by /account/data-export. */
+/** Shape of the JSON archive built for a data-subject access request. */
 export type DataExportPayload = {
   generated_at: string;
   account: Record<string, unknown> | null;
