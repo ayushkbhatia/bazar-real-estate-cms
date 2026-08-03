@@ -2,9 +2,12 @@ import { test, expect } from "@playwright/test";
 
 test("home → /buy → property detail", async ({ page }) => {
   await page.goto("/");
-  await expect(
-    page.getByRole("heading", { name: /find a home worth keeping/i }),
-  ).toBeVisible();
+  // The hero headline is CMS-owned since #222 — it has already been changed
+  // once from "Find a home worth keeping." to "Your Future Has an Address".
+  // Assert that a headline renders, not what it says.
+  const heroHeading = page.getByRole("heading", { level: 1 }).first();
+  await expect(heroHeading).toBeVisible();
+  await expect(heroHeading).not.toBeEmpty();
 
   // Featured listings come from Supabase. If they're not present, the page
   // shows a placeholder — we tolerate that locally and only assert on the

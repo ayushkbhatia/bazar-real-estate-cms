@@ -1,14 +1,24 @@
 import { test, expect } from "@playwright/test";
 
+/**
+ * /insights became an editable master page in #222, so its headline, intro and
+ * subscribe copy now live in the CMS. Asserting those literals made a routine
+ * copy edit break CI — which is exactly what happened: the headline was
+ * changed from "The Bazar Brief." to "Property Market Insights" and three
+ * specs went red on a page that renders perfectly.
+ *
+ * These specs assert STRUCTURE — that a headline exists, that articles link
+ * out, that filtering works. Copy is the editor's to change without asking a
+ * developer.
+ */
 test("public /insights renders the index and category chips", async ({
   page,
 }) => {
   await page.goto("/insights");
-  await expect(
-    page.getByRole("heading", { name: /the bazar brief/i }),
-  ).toBeVisible();
-  // Subscribe CTA panel (next to the featured article)
-  await expect(page.getByText(/subscribe to the brief/i)).toBeVisible();
+  // A headline exists and is non-empty. Its wording is CMS-owned.
+  const heading = page.getByRole("heading", { level: 1 }).first();
+  await expect(heading).toBeVisible();
+  await expect(heading).not.toBeEmpty();
   // Featured article from the seed should be linked into.
   const featuredLink = page
     .locator("a[href^='/insights/']")
@@ -39,7 +49,7 @@ test("admin /admin/blog redirects anon to staff login", async ({ page }) => {
 test("category filter narrows the index via query string", async ({ page }) => {
   await page.goto("/insights?category=market_report");
   await expect(
-    page.getByRole("heading", { name: /the bazar brief/i }),
+    page.getByRole("heading", { level: 1 }).first(),
   ).toBeVisible();
   // The market_report seed article should be reachable from this filtered view.
   const link = page.locator("a[href='/insights/saadiyat-q1-2026']").first();
