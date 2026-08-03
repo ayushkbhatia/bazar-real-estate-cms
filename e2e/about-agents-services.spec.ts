@@ -1,5 +1,9 @@
 import { test, expect } from "@playwright/test";
 
+// Headline copy on the master pages is CMS-owned since #222 — asserting the
+// literal turns a routine copy edit into a red build. Assert that an h1
+// renders; the page <title> stays hardcoded, so that assertion is still safe.
+
 // Coverage for the public marketing surface: /about, /agents +
 // /agents/[slug], /services + its five sub-pages. All shipped pre-Sprint-2;
 // these tests fill a gap in the existing e2e set (no spec covered them
@@ -10,10 +14,7 @@ test("/about renders with title set", async ({ page }) => {
   expect(response?.status()).toBe(200);
   await expect(page).toHaveTitle(/about bazar/i);
   await expect(
-    page.getByRole("heading", {
-      name: /a trusted name in uae real estate/i,
-      level: 1,
-    }),
+    page.getByRole("heading", { level: 1 }).first(),
   ).toBeVisible();
 });
 
@@ -56,10 +57,7 @@ test("/services renders with title set", async ({ page }) => {
   expect(response?.status()).toBe(200);
   await expect(page).toHaveTitle(/services/i);
   await expect(
-    page.getByRole("heading", {
-      name: /five practices,?\s*one bench of advisors/i,
-      level: 1,
-    }),
+    page.getByRole("heading", { level: 1 }).first(),
   ).toBeVisible();
 });
 
