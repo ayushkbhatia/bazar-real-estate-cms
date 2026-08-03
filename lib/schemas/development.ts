@@ -83,6 +83,152 @@ export const masterPlanSchema = z
 export type MasterPlanPin = z.infer<typeof masterPlanPinSchema>;
 export type MasterPlan = z.infer<typeof masterPlanSchema>;
 
+/**
+ * The four facts the project hero renders as its stat row: starting price,
+ * bedrooms, total units and handover.
+ *
+ * They live on the `developments` row, not in the section document, so the
+ * page editor never exposed them — the only place to set them was the record
+ * editor, which is a click away and easy to miss. The result was projects
+ * created through the "new project" form rendering "—" in all four hero slots
+ * with no obvious way to fix it.
+ *
+ * Required when creating, and required to publish. NOT NOT-NULL in Postgres:
+ * a draft is allowed to be incomplete (that is what draft means), and two
+ * existing rows predate this. The publish gate is what makes them effectively
+ * mandatory on anything the public can see.
+ */
+export const developmentHeroFactsSchema = z.object({
+  starting_price: z
+    .number({ error: "Starting price is required" })
+    .positive("Starting price must be more than zero")
+    .max(1_000_000_000),
+  bedrooms_text: z
+    .string()
+    .trim()
+    .min(1, "Bedrooms is required")
+    .max(40, "Keep bedrooms under 40 characters"),
+  total_units: z
+    .number({ error: "Total units is required" })
+    .int("Total units must be a whole number")
+    .positive("Total units must be more than zero")
+    .max(50_000),
+  handover_date: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Handover date is required"),
+});
+
+export type DevelopmentHeroFactsInput = z.infer<
+  typeof developmentHeroFactsSchema
+>;
+
+/**
+ * The same four facts, but each one optional.
+ *
+ * Editing an existing draft is allowed to be partial — someone filling in a
+ * project over two sittings should be able to save what they have. Format and
+ * range are still enforced on anything actually supplied, so a typo is caught
+ * at the point it is made rather than at publish time. Completeness is the
+ * publish gate's job, not this one's.
+ */
+export const developmentHeroFactsPartialSchema = z.object({
+  starting_price: z
+    .number()
+    .positive("Starting price must be more than zero")
+    .max(1_000_000_000)
+    .nullable(),
+  bedrooms_text: z
+    .string()
+    .trim()
+    .max(40, "Keep bedrooms under 40 characters")
+    .nullable(),
+  total_units: z
+    .number()
+    .int("Total units must be a whole number")
+    .positive("Total units must be more than zero")
+    .max(50_000)
+    .nullable(),
+  handover_date: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Use a valid date")
+    .nullable(),
+});
+
+/**
+ * Parse a number typed into one of the hero-fact inputs.
+ *
+ * Returns `null` for genuinely blank, and `NaN` for "they typed something we
+ * can't read" — the caller needs to tell those apart, because "required" is
+ * the wrong error message for `6.2M`.
+ *
+ * Thousands separators and a stray AED prefix are stripped rather than
+ * rejected: pasting `AED 6,200,000` out of a brochure is the single most
+ * likely way this field gets filled, and failing that paste with "Starting
+ * price is required" would be actively misleading.
+ */
+export function parseHeroFactNumber(raw: string): number | null | typeof NaN {
+  const trimmed = raw.trim();
+  if (trimmed === "") return null;
+  const cleaned = trimmed
+    .replace(/^aed\s*/i, "")
+    .replace(/,/g, "")
+    .replace(/\s/g, "");
+  if (cleaned === "" || !/^-?\d*\.?\d+$/.test(cleaned)) return Number.NaN;
+  const n = Number(cleaned);
+  return Number.isFinite(n) ? n : Number.NaN;
+}
+
+export type HeroFactsRow = {
+  starting_price: number | null;
+  bedrooms_text: string | null;
+  total_units: number | null;
+  handover_date: string | null;
+};
+
+export type HeroFactsGate = {
+  ok: boolean;
+  blockers: string[];
+  checks: { label: string; passed: boolean }[];
+};
+
+/**
+ * Pre-flight check for the hero stat row, mirroring the shape of
+ * `evaluatePublishability` in lib/publishability.ts so the UI can render both
+ * the same way.
+ *
+ * Verified against production before this became a publish gate: all eight
+ * published developments already satisfy it, so nothing that is live today is
+ * retroactively blocked. Only the two unpublished drafts fail — which is
+ * exactly the bug this fixes.
+ */
+export function evaluateDevelopmentHeroFacts(row: HeroFactsRow): HeroFactsGate {
+  const checks: { label: string; passed: boolean }[] = [];
+  const blockers: string[] = [];
+
+  const pricePassed =
+    typeof row.starting_price === "number" && row.starting_price > 0;
+  checks.push({ label: "Starting price is set", passed: pricePassed });
+  if (!pricePassed) blockers.push("Starting price is missing");
+
+  const bedsPassed = !!row.bedrooms_text && row.bedrooms_text.trim() !== "";
+  checks.push({ label: "Bedrooms is set", passed: bedsPassed });
+  if (!bedsPassed) blockers.push("Bedrooms is missing");
+
+  const unitsPassed =
+    typeof row.total_units === "number" && row.total_units > 0;
+  checks.push({ label: "Total units is set", passed: unitsPassed });
+  if (!unitsPassed) blockers.push("Total units is missing");
+
+  const handoverPassed =
+    !!row.handover_date && /^\d{4}-\d{2}-\d{2}$/.test(row.handover_date);
+  checks.push({ label: "Handover date is set", passed: handoverPassed });
+  if (!handoverPassed) blockers.push("Handover date is missing");
+
+  return { ok: blockers.length === 0, blockers, checks };
+}
+
 /** Admin edit form schema — single-tab today. */
 export const developmentEditSchema = z.object({
   name: z.string().min(3).max(120),
@@ -96,10 +242,15 @@ export const developmentEditSchema = z.object({
   developer_id: z.string().regex(UUID_SHAPE_RE, "Pick a developer"),
   area_id: uuidOrEmpty,
   handover_date: isoDateOrEmpty,
-  total_units: z.number().int().min(0).max(50_000).nullable().optional(),
+  // `.positive()`, not `.min(0)`. Zero used to be harmless here, but the hero
+  // schemas and the publish gate both read zero as "not set" — so a row saved
+  // with 0 became unpublishable AND unsaveable from the page editor, which
+  // resubmits all four facts together. Three definitions of the same field
+  // have to agree on zero, and "a project with 0 units" is not a real project.
+  total_units: z.number().int().positive().max(50_000).nullable().optional(),
   starting_price: z
     .number()
-    .min(0)
+    .positive()
     .max(1_000_000_000)
     .nullable()
     .optional(),

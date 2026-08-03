@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { slugify } from "@/lib/slug";
+import { parseHeroFactNumber } from "@/lib/schemas/development";
 import type { MediaOption } from "../../../master/[key]/_editor";
 import { ImagePicker } from "../[slug]/_images-card";
 import { createDevelopmentPage } from "../_actions";
@@ -35,6 +36,12 @@ export function NewDevelopmentPageForm({
   const [areaId, setAreaId] = useState("");
   const [tagline, setTagline] = useState("");
   const [heroId, setHeroId] = useState<string | null>(null);
+  // The hero stat row. Required — a project created without these renders
+  // "—" in all four hero slots, which is what used to happen.
+  const [price, setPrice] = useState("");
+  const [beds, setBeds] = useState("");
+  const [units, setUnits] = useState("");
+  const [handover, setHandover] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
 
@@ -42,8 +49,25 @@ export function NewDevelopmentPageForm({
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Same reasoning as the facts card: zod can't tell NaN from null, so a
+    // typo'd number would report as "required" rather than "not a number".
+    const unreadable: Record<string, string> = {};
+    if (Number.isNaN(parseHeroFactNumber(price)))
+      unreadable.starting_price = "Enter a number, e.g. 6200000.";
+    if (Number.isNaN(parseHeroFactNumber(units)))
+      unreadable.total_units = "Enter a whole number, e.g. 312.";
+    if (Object.keys(unreadable).length > 0) {
+      setErrors(unreadable);
+      return;
+    }
+
     setErrors({});
     startTransition(async () => {
+      const num = (v: string): number | null => {
+        const parsed = parseHeroFactNumber(v);
+        return parsed === null || Number.isNaN(parsed) ? null : parsed;
+      };
       const result = await createDevelopmentPage({
         name,
         slug: effectiveSlug,
@@ -51,6 +75,10 @@ export function NewDevelopmentPageForm({
         area_id: areaId || null,
         tagline: tagline.trim() || null,
         hero_image_id: heroId,
+        starting_price: num(price),
+        bedrooms_text: beds.trim() || null,
+        total_units: num(units),
+        handover_date: handover.trim() || null,
       });
       if (result.status === "error") {
         toast.error(result.message);
@@ -143,6 +171,74 @@ export function NewDevelopmentPageForm({
             placeholder="One line under the project name"
             onChange={(e) => setTagline(e.target.value)}
           />
+        </div>
+
+        <div className="flex flex-col gap-3 border-t border-bz-border pt-5">
+          <div>
+            <h2 className="text-[13px] font-medium">Key facts</h2>
+            <p className="text-[11.5px] text-bz-muted mt-0.5">
+              The four stats across the bottom of the page hero. All four are
+              required — without them the hero renders a dash in each slot.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="starting_price">Starting price (AED)</Label>
+              <Input
+                id="starting_price"
+                inputMode="numeric"
+                placeholder="6200000"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+              <span className="text-[11.5px] text-bz-muted">
+                Number only — the hero formats it as &ldquo;AED 6.2M&rdquo;.
+              </span>
+              <FieldError message={errors.starting_price} />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="bedrooms_text">Bedrooms</Label>
+              <Input
+                id="bedrooms_text"
+                placeholder="1–4 bed"
+                maxLength={40}
+                value={beds}
+                onChange={(e) => setBeds(e.target.value)}
+              />
+              <span className="text-[11.5px] text-bz-muted">
+                Free text, so ranges read naturally.
+              </span>
+              <FieldError message={errors.bedrooms_text} />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="total_units">Total units</Label>
+              <Input
+                id="total_units"
+                inputMode="numeric"
+                placeholder="312"
+                value={units}
+                onChange={(e) => setUnits(e.target.value)}
+              />
+              <FieldError message={errors.total_units} />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="handover_date">Handover</Label>
+              <Input
+                id="handover_date"
+                type="date"
+                value={handover}
+                onChange={(e) => setHandover(e.target.value)}
+              />
+              <span className="text-[11.5px] text-bz-muted">
+                Shown as a quarter, e.g. &ldquo;Q4 2027&rdquo;.
+              </span>
+              <FieldError message={errors.handover_date} />
+            </div>
+          </div>
         </div>
 
         <ImagePicker

@@ -16,6 +16,10 @@ import {
   subPageSlug,
 } from "@/lib/master-pages/subpages";
 import { developmentContentSchema } from "@/lib/schemas/development-content";
+import {
+  developmentHeroFactsPartialSchema,
+  developmentHeroFactsSchema,
+} from "@/lib/schemas/development";
 
 const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
 
@@ -178,6 +182,85 @@ export async function setDevelopmentImages(
   return { status: "ok", message: "Images saved." };
 }
 
+export type FactsResult =
+  | { status: "ok"; message: string }
+  | { status: "error"; message: string; fieldErrors?: Record<string, string> };
+
+/**
+ * The hero stat row — starting price, bedrooms, total units, handover.
+ *
+ * These sit on the `developments` row rather than in the section document, so
+ * the page editor had no way to reach them and the record editor was the only
+ * door. Saving them from the page editor is what the CMS user actually
+ * expects, since it is the hero of the page they are editing.
+ */
+export async function saveDevelopmentFacts(
+  slug: string,
+  facts: {
+    starting_price: number | null;
+    bedrooms_text: string | null;
+    total_units: number | null;
+    handover_date: string | null;
+  },
+): Promise<FactsResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PAGE_ROLES);
+
+  const { record, message } = await loadRecord(slug);
+  if (!record)
+    return { status: "error", message: message ?? "Development not found." };
+
+  // Partial on purpose: a draft can be filled in over more than one sitting.
+  // The publish gate is what enforces completeness before anything goes live.
+  const parsed = developmentHeroFactsPartialSchema.safeParse(facts);
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const key = String(issue.path[0] ?? "");
+      if (key && !fieldErrors[key]) fieldErrors[key] = issue.message;
+    }
+    return {
+      status: "error",
+      message: "Please fix the errors below.",
+      fieldErrors,
+    };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("developments")
+    .update({
+      starting_price: parsed.data.starting_price,
+      bedrooms_text: parsed.data.bedrooms_text,
+      total_units: parsed.data.total_units,
+      handover_date: parsed.data.handover_date,
+    })
+    .eq("id", record.id)
+    .select("id")
+    .maybeSingle();
+  if (error) return { status: "error", message: error.message };
+  if (!data)
+    return {
+      status: "error",
+      message: "Not saved — your account may not be allowed to edit this.",
+    };
+
+  await logAudit({
+    action: "development.facts_update",
+    target_kind: "development",
+    target_id: record.id,
+    before: null,
+    after: parsed.data,
+  });
+
+  revalidatePath(`/developments/${record.slug}`);
+  revalidatePath(`/admin/pages/sub/development/${record.slug}`);
+  revalidatePath("/admin/pages/sub/development");
+  revalidatePath("/developments");
+  return { status: "ok", message: "Key facts saved." };
+}
+
 export type CreateDevelopmentPageResult =
   | { status: "ok"; slug: string }
   | { status: "error"; message: string; fieldErrors?: Record<string, string> };
@@ -194,6 +277,11 @@ export async function createDevelopmentPage(input: {
   area_id: string | null;
   tagline: string | null;
   hero_image_id: string | null;
+  /** The hero stat row. Required — see developmentHeroFactsSchema. */
+  starting_price: number | null;
+  bedrooms_text: string | null;
+  total_units: number | null;
+  handover_date: string | null;
 }): Promise<CreateDevelopmentPageResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
@@ -222,6 +310,28 @@ export async function createDevelopmentPage(input: {
       fieldErrors: { developer_id: "Pick a developer" },
     };
 
+  // The hero stat row. Collected at creation so a new project never renders
+  // "—" in all four slots, which is what happened while these lived only in
+  // the record editor.
+  const facts = developmentHeroFactsSchema.safeParse({
+    starting_price: input.starting_price,
+    bedrooms_text: input.bedrooms_text,
+    total_units: input.total_units,
+    handover_date: input.handover_date,
+  });
+  if (!facts.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of facts.error.issues) {
+      const key = String(issue.path[0] ?? "");
+      if (key && !fieldErrors[key]) fieldErrors[key] = issue.message;
+    }
+    return {
+      status: "error",
+      message: "Please fix the errors below.",
+      fieldErrors,
+    };
+  }
+
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("developments")
@@ -233,6 +343,10 @@ export async function createDevelopmentPage(input: {
       tagline: input.tagline,
       hero_image_id: input.hero_image_id,
       status: "pre_launch" as const,
+      starting_price: facts.data.starting_price,
+      bedrooms_text: facts.data.bedrooms_text,
+      total_units: facts.data.total_units,
+      handover_date: facts.data.handover_date,
     })
     .select("id, slug")
     .maybeSingle();

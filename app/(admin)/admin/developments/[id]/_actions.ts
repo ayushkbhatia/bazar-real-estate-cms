@@ -5,6 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import {
   developmentEditSchema,
+  evaluateDevelopmentHeroFacts,
   normaliseDevelopmentInput,
 } from "@/lib/schemas/development";
 import { developmentUrl } from "@/lib/queries/developments";
@@ -119,9 +120,29 @@ export async function publishDevelopment(
   const supabase = await createSupabaseServerClient();
   const { data: before } = await supabase
     .from("developments")
-    .select("published_at, status")
+    .select(
+      "published_at, status, starting_price, bedrooms_text, total_units, handover_date",
+    )
     .eq("id", id)
     .maybeSingle();
+
+  // The hero renders these four as its stat row, and renders "—" for each one
+  // that is missing. Publishing in that state puts a visibly broken page in
+  // front of buyers, so it is blocked rather than warned about.
+  //
+  // Safe to enforce retroactively: every development published today already
+  // satisfies this, so nothing live is affected — only drafts that were
+  // created before the fields were collected.
+  // Fail closed. If the pre-read came back empty we cannot evaluate the gate,
+  // and publishing anyway would be the one outcome the gate exists to prevent.
+  if (!before) return { status: "error", message: "Development not found." };
+
+  const gate = evaluateDevelopmentHeroFacts(before);
+  if (!gate.ok)
+    return {
+      status: "error",
+      message: `Can't publish yet — ${gate.blockers.join(", ").toLowerCase()}. Add the key facts on the project page first.`,
+    };
 
   const { data, error } = await supabase
     .from("developments")

@@ -12,6 +12,7 @@ import {
   type SectionActions,
 } from "../../../master/[key]/_editor";
 import { DevelopmentImagesCard } from "./_images-card";
+import { DevelopmentFactsCard } from "./_facts-card";
 import {
   DevelopmentContentCard,
   type AdvisorOption,
@@ -71,7 +72,7 @@ async function fetchDevelopment(slug: string) {
   const { data } = await supabase
     .from("developments")
     .select(
-      "id, name, slug, status, published_at, hero_image_id, masterplan_id, payment_plan, meta, lead_advisor_id",
+      "id, name, slug, status, published_at, hero_image_id, masterplan_id, payment_plan, meta, lead_advisor_id, starting_price, bedrooms_text, total_units, handover_date",
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -174,6 +175,15 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
             .
           </p>
         )}
+
+        <DevelopmentFactsCard
+          slug={development.slug}
+          startingPrice={development.starting_price}
+          bedroomsText={development.bedrooms_text}
+          totalUnits={development.total_units}
+          handoverDate={development.handover_date}
+          published={development.published_at != null}
+        />
 
         <DevelopmentImagesCard
           slug={development.slug}
