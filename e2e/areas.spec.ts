@@ -1,12 +1,13 @@
 import { test, expect } from "@playwright/test";
 
+// Headline copy on the master pages is CMS-owned since #222 — asserting the
+// literal turns a routine copy edit into a red build. Assert that an h1
+// renders; the page <title> stays hardcoded, so that assertion is still safe.
+
 test("public /areas renders the neighbourhood index", async ({ page }) => {
   await page.goto("/areas");
   await expect(
-    page.getByRole("heading", {
-      name: /leading communities/i,
-      level: 1,
-    }),
+    page.getByRole("heading", { level: 1 }).first(),
   ).toBeVisible();
   // At least one area card should link into /areas/<slug>
   await expect(page.locator("a[href^='/areas/']").first()).toBeVisible();
