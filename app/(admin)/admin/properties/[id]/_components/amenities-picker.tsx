@@ -4,10 +4,12 @@ import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
+  addCustomAmenity,
   groupAmenities,
   orderAmenities,
   splitAmenities,
   valueOf,
+  MAX_AMENITY_LENGTH,
   type AmenityOption,
 } from "@/lib/amenities";
 
@@ -16,8 +18,13 @@ import {
  * design_handoff_bazar_amenities). Controlled — the property form owns the
  * value so its dirty-state and save logic stay in one place.
  *
- * Deliberately no free-text field: a fixed list is what makes the search
- * facet and the comparison table work.
+ * The taxonomy cards are the curated vocabulary — they're what the search
+ * facet and the comparison table are built on. The same box that filters them
+ * also adds a value the taxonomy doesn't have, because a lister shouldn't have
+ * to wait on an admin to describe what the property actually has. Anything
+ * typed that already exists in the taxonomy ticks that card instead of storing
+ * a second spelling of it; genuinely new values are stored as custom text and
+ * shown in their own block.
  */
 export function AmenitiesPicker({
   value,
@@ -29,6 +36,10 @@ export function AmenitiesPicker({
   onChange: (next: string[]) => void;
 }) {
   const [query, setQuery] = useState("");
+  const [notice, setNotice] = useState<{
+    tone: "info" | "error";
+    text: string;
+  } | null>(null);
 
   const { known, unknown } = useMemo(
     () => splitAmenities(value, options),
@@ -58,7 +69,31 @@ export function AmenitiesPicker({
     commit(next);
   }
 
+  /**
+   * Add whatever is in the box. Runs against the *whole* stored list (taxonomy
+   * values and customs alike) so the duplicate check covers both buckets.
+   */
+  function addCustom() {
+    const result = addCustomAmenity(value, query, options);
+    if (!result.ok) {
+      setNotice({ tone: "error", text: result.message });
+      return;
+    }
+    onChange(result.next);
+    setQuery("");
+    setNotice(
+      result.matched
+        ? {
+            tone: "info",
+            text: `“${result.matched.label}” is already an amenity — selected it for you.`,
+          }
+        : null,
+    );
+  }
+
   const q = query.trim().toLowerCase();
+  /** An exact taxonomy match doesn't need an "Add" button — its card is right there. */
+  const canAdd = q !== "" && !options.some((o) => o.label.toLowerCase() === q);
   const groups = groupAmenities(options)
     .map((g) => ({
       ...g,
@@ -85,18 +120,57 @@ export function AmenitiesPicker({
         ) : null}
       </div>
 
-      <div className="max-w-[280px]">
-        <label htmlFor="amenity-filter" className="sr-only">
-          Filter amenities
-        </label>
-        <input
-          id="amenity-filter"
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Filter amenities…"
-          className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent text-[12.5px]"
-        />
+      <div className="flex flex-col gap-1.5">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="w-full max-w-[280px]">
+            <label htmlFor="amenity-filter" className="sr-only">
+              Filter amenities, or type one to add
+            </label>
+            <input
+              id="amenity-filter"
+              type="search"
+              value={query}
+              maxLength={MAX_AMENITY_LENGTH}
+              aria-describedby={notice ? "amenity-add-notice" : undefined}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setNotice(null);
+              }}
+              onKeyDown={(e) => {
+                // The picker sits inside the property <form> — an unguarded
+                // Enter would submit the whole listing.
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addCustom();
+                }
+              }}
+              placeholder="Filter or add an amenity…"
+              className="bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent text-[12.5px]"
+            />
+          </div>
+          {canAdd ? (
+            <button
+              type="button"
+              onClick={addCustom}
+              className="text-[12px] text-bz-accent hover:underline"
+            >
+              Add &ldquo;{query.trim()}&rdquo;
+            </button>
+          ) : null}
+        </div>
+        {notice ? (
+          <p
+            id="amenity-add-notice"
+            role="status"
+            aria-live="polite"
+            className={cn(
+              "text-[11.5px]",
+              notice.tone === "error" ? "text-bz-danger" : "text-bz-muted",
+            )}
+          >
+            {notice.text}
+          </p>
+        ) : null}
       </div>
 
       {known.length > 0 ? (
@@ -122,9 +196,16 @@ export function AmenitiesPicker({
 
       {unknown.length > 0 ? (
         <div className="rounded border border-bz-border bg-bz-surface-2 px-3 py-2.5 flex flex-col gap-2">
+          <div className="flex items-baseline gap-2.5">
+            <h3 className="text-[12.5px] font-medium">Custom amenities</h3>
+            <span className="text-[11.5px] text-bz-muted tabular-nums">
+              {unknown.length}
+            </span>
+          </div>
           <p className="text-[11.5px] text-bz-muted">
-            Not in the amenity list — kept from before this picker existed.
-            Remove them, or ask an admin to add them under Settings → Fields.
+            Specific to this listing. They show on the property page, but
+            they&rsquo;re not search filters — ask an admin to add one under
+            Settings → Fields to make it filterable everywhere.
           </p>
           <div className="flex flex-wrap gap-1.5">
             {unknown.map((v) => (
@@ -207,10 +288,20 @@ export function AmenitiesPicker({
       })}
 
       {groups.length === 0 ? (
-        <p className="text-[12.5px] text-bz-muted">
-          No amenity matches &ldquo;{query}&rdquo;. Amenities are a fixed list —
-          request additions from an admin under Settings → Fields.
-        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-[12.5px] text-bz-muted">
+            No amenity matches &ldquo;{query}&rdquo;.
+          </p>
+          {canAdd ? (
+            <button
+              type="button"
+              onClick={addCustom}
+              className="text-[12px] text-bz-accent hover:underline"
+            >
+              Add it as a custom amenity
+            </button>
+          ) : null}
+        </div>
       ) : null}
     </div>
   );

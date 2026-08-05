@@ -19,10 +19,11 @@ import {
  * stable ids — but the taxonomy currently covers 13 of the 42 distinct values
  * in use, so switching storage today would strand the other 84 mentions
  * ("Private garden", "Tennis court", "Marina access"…). Until the taxonomy
- * covers the real vocabulary, the picker writes labels drawn *only* from the
- * taxonomy: agents still can't invent amenities, and the three surfaces still
- * share one source. Moving to codes is then a data backfill plus a change of
- * `valueOf` below, with no UI work.
+ * covers the real vocabulary, the picker writes labels. Anything typed that
+ * the taxonomy already knows resolves back to the taxonomy's own spelling (see
+ * `addCustomAmenity`), so the three surfaces still share one source; a genuinely
+ * new value is stored verbatim and rendered verbatim. Moving to codes is then a
+ * data backfill plus a change of `valueOf` below, with no UI work.
  */
 
 export type AmenityOption = {
@@ -102,6 +103,98 @@ export function orderAmenities(
   const selected = new Set(known);
   const ordered = options.map(valueOf).filter((v) => selected.has(v));
   return [...ordered, ...unknown];
+}
+
+/**
+ * Ceilings for a stored amenity list. These mirror `propertyAmenitiesSchema`
+ * in `lib/schemas/property.ts` — keep the two in step, the server re-validates
+ * with the schema and the client pre-checks with these.
+ */
+export const MAX_AMENITIES = 50;
+export const MAX_AMENITY_LENGTH = 50;
+
+/**
+ * Tidy a stored list: collapse runs of whitespace, trim, drop blanks, and
+ * de-duplicate case-insensitively (first spelling wins). Deliberately does
+ * *not* truncate over-long entries — the schema should surface that as a
+ * validation error rather than silently cutting an agent's text in half.
+ */
+export function normaliseAmenityList(values: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const raw of values) {
+    const value = raw.replace(/\s+/g, " ").trim();
+    if (value === "") continue;
+    const key = normalise(value);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(value);
+  }
+  return out;
+}
+
+export type AddAmenityResult =
+  | { ok: true; next: string[]; matched: AmenityOption | null }
+  | {
+      ok: false;
+      reason: "empty" | "too_long" | "duplicate" | "limit";
+      message: string;
+    };
+
+/**
+ * Add a free-text amenity to a listing's stored list.
+ *
+ * The taxonomy stays the curated vocabulary — it drives the search facet and
+ * the comparison table — but a lister needs to be able to describe a villa
+ * with a "Rooftop cinema" without waiting on an admin. So: if what they typed
+ * already exists in the taxonomy (by label or by code, case-insensitively) we
+ * select that entry instead of storing a second spelling of it, and only a
+ * genuinely new value is stored as free text.
+ */
+export function addCustomAmenity(
+  stored: string[],
+  raw: string,
+  options: AmenityOption[],
+): AddAmenityResult {
+  const value = raw.replace(/\s+/g, " ").trim();
+  if (value === "") {
+    return { ok: false, reason: "empty", message: "Type an amenity name." };
+  }
+  if (value.length > MAX_AMENITY_LENGTH) {
+    return {
+      ok: false,
+      reason: "too_long",
+      message: `Keep it to ${MAX_AMENITY_LENGTH} characters or fewer.`,
+    };
+  }
+
+  const matched =
+    options.find((o) => normalise(o.label) === normalise(value)) ??
+    options.find((o) => o.code === normalise(value).replace(/ /g, "_")) ??
+    null;
+  const candidate = matched ? valueOf(matched) : value;
+
+  if (stored.some((s) => normalise(s) === normalise(candidate))) {
+    return {
+      ok: false,
+      reason: "duplicate",
+      message: `“${candidate}” is already on this listing.`,
+    };
+  }
+  if (normaliseAmenityList(stored).length >= MAX_AMENITIES) {
+    return {
+      ok: false,
+      reason: "limit",
+      message: `Maximum ${MAX_AMENITIES} amenities.`,
+    };
+  }
+
+  // orderAmenities re-sorts taxonomy values and keeps custom ones at the end.
+  return {
+    ok: true,
+    next: orderAmenities([...stored, candidate], options),
+    matched,
+  };
 }
 
 /** Display label for a stored value — falls back to the value itself. */

@@ -2,7 +2,7 @@ import * as React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Check, MapPin, Navigation } from "lucide-react";
+import { ArrowRight, Check, Download, MapPin, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
@@ -195,6 +195,17 @@ export default async function AboutPage() {
 
   const heroPhoto = img(heroV, "photo");
 
+  // The company profile button renders only when a PDF actually resolves.
+  // A field nobody has touched and one whose asset was later trashed both come
+  // back with `url: null` from attachImageUrls, so this one check covers both
+  // and the hero never shows a dead link.
+  // Linked straight at the storage object on purpose. Supabase serves it
+  // `Content-Disposition: inline`, so the PDF opens in a new tab rather than
+  // saving to disk — the intended behaviour here. Readers who want a copy can
+  // save it from the viewer.
+  const profileUrl = img(heroV, "profile")?.url ?? null;
+  const profileLabel = str(heroV, "profile_label") ?? "Download company profile";
+
   const storyColumns = enabled(list<Item>(storyV, "columns"));
   const story =
     storyColumns.length > 0
@@ -283,6 +294,18 @@ export default async function AboutPage() {
                 <p className="mt-4">{str(heroV, "body_2")}</p>
               ) : null}
             </div>
+            {profileUrl ? (
+              <Button
+                asChild
+                className="mt-7 bg-bz-ink text-bz-bg hover:bg-bz-ink/90"
+              >
+                <a href={profileUrl} target="_blank" rel="noopener noreferrer">
+                  <Download size={15} strokeWidth={1.7} />
+                  {profileLabel}
+                  <span className="sr-only"> (PDF, opens in a new tab)</span>
+                </a>
+              </Button>
+            ) : null}
           </div>
           <div className="relative w-full" style={{ aspectRatio: "4/3" }}>
             <Photo

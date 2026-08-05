@@ -189,6 +189,71 @@ describe("<PropertyEditForm>", () => {
     );
   });
 
+  it("adds a custom amenity from the picker and saves it", async () => {
+    updatePropertyMock.mockResolvedValueOnce({ status: "ok", message: "Saved." });
+    const user = userEvent.setup();
+
+    render(
+      <PropertyEditForm
+        propertyId="abc"
+        initial={INITIAL}
+        reference="BAZ-AD-04891"
+        areas={[]}
+        developers={DEVELOPERS}
+        geo={null}
+        mapboxAvailable={false}
+        amenityOptions={AMENITY_OPTIONS}
+      />,
+    );
+
+    await user.click(screen.getByRole("tab", { name: /amenities/i }));
+    const box = screen.getByLabelText(/filter amenities, or type one to add/i);
+    await user.type(box, "Rooftop cinema");
+    await user.click(screen.getByRole("button", { name: /add “rooftop cinema”/i }));
+
+    // Shows in its own block, and the box resets ready for the next one.
+    expect(screen.getByText("Custom amenities")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Remove Rooftop cinema" }),
+    ).toBeInTheDocument();
+    expect(box).toHaveValue("");
+
+    await user.click(screen.getByRole("button", { name: /save/i }));
+    await waitFor(() => expect(updatePropertyMock).toHaveBeenCalledTimes(1));
+    expect(updatePropertyMock).toHaveBeenCalledWith(
+      "abc",
+      expect.objectContaining({
+        amenities: ["Pool", "Gym", "Rooftop cinema"],
+      }),
+    );
+  });
+
+  it("refuses a duplicate rather than storing a second spelling", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <PropertyEditForm
+        propertyId="abc"
+        initial={INITIAL}
+        reference="BAZ-AD-04891"
+        areas={[]}
+        developers={DEVELOPERS}
+        geo={null}
+        mapboxAvailable={false}
+        amenityOptions={AMENITY_OPTIONS}
+      />,
+    );
+
+    await user.click(screen.getByRole("tab", { name: /amenities/i }));
+    const box = screen.getByLabelText(/filter amenities, or type one to add/i);
+    // "pool" is already selected — Enter must not submit the listing either.
+    await user.type(box, "pool{Enter}");
+
+    expect(screen.getByText(/is already on this listing/i)).toBeInTheDocument();
+    expect(screen.queryByText("Custom amenities")).not.toBeInTheDocument();
+    expect(updatePropertyMock).not.toHaveBeenCalled();
+  });
+
   it("surfaces server-side field errors back into the form", async () => {
     updatePropertyMock.mockResolvedValueOnce({
       status: "error",
