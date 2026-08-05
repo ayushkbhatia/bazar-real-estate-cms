@@ -1,13 +1,14 @@
 import { test, expect } from "@playwright/test";
 
+// /developers is an editable master page since #222 — the headline was
+// changed to "Our Developer Partners Shaping the UAE" on 4 Aug. #225 made the
+// other master-page specs copy-agnostic but missed this one. Assert an h1
+// renders, not what it says.
 test("public /developers renders the directory", async ({ page }) => {
   await page.goto("/developers");
-  await expect(
-    page.getByRole("heading", {
-      name: /the developers\s*shaping\s*the uae/i,
-      level: 1,
-    }),
-  ).toBeVisible();
+  const heading = page.getByRole("heading", { level: 1 }).first();
+  await expect(heading).toBeVisible();
+  await expect(heading).not.toBeEmpty();
   // At least one developer card should link into /developers/<slug>
   await expect(page.locator("a[href^='/developers/']").first()).toBeVisible();
 });
