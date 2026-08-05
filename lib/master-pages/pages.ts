@@ -903,9 +903,17 @@ const OFF_PLAN: MasterPageDef = {
       label: "Project interest form",
       description: "Lead capture for a specific project brief.",
       dataNote:
-        "The form's copy and project picker live in the interest-form component.",
-      fields: [],
-      defaults: {},
+        "The form's fields and project picker come from the interest-form component; the project list is every published development.",
+      fields: [
+        image(
+          "image",
+          "Photo",
+          "Fills the right half of the card. Landscape renders work best. Leave unset for the placeholder art.",
+        ),
+      ],
+      defaults: {
+        image: emptyImage("off-plan development · architectural render"),
+      },
     },
     {
       key: "why",

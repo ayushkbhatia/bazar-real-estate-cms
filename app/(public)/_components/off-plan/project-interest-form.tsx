@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Image from "next/image";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
@@ -26,8 +27,16 @@ const TIMELINES = [
  */
 export function ProjectInterestForm({
   projects,
+  imageUrl,
+  imageAlt,
+  imageLabel,
 }: {
   projects: OffplanProjectOption[];
+  /** Resolved URL of the asset picked in the master-page editor. */
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+  /** Caption for the placeholder art, used when no asset is picked. */
+  imageLabel?: string | null;
 }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -79,9 +88,9 @@ export function ProjectInterestForm({
 
   return (
     <section className="px-4 md:px-12 py-14 md:py-20">
-      <div className="grid overflow-hidden rounded-2xl border border-bz-border bg-bz-surface md:grid-cols-[1.05fr_1fr]">
+      <div className="grid overflow-hidden rounded-2xl border border-bz-border bg-bz-surface md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
         {/* Form */}
-        <div className="p-6 md:p-14">
+        <div className="min-w-0 p-6 md:p-14">
           <div
             className="text-[11px] font-medium uppercase text-bz-accent"
             style={{ letterSpacing: "0.12em" }}
@@ -254,12 +263,28 @@ export function ProjectInterestForm({
           )}
         </div>
 
-        {/* Photo */}
-        <div className="relative min-h-[220px] bg-bz-ink md:min-h-0">
-          <PlaceholderImage
-            label="off-plan development · architectural render"
-            className="absolute inset-0 h-full w-full"
-          />
+        {/* Photo.
+            `overflow-hidden` and the ratio live here rather than on the card,
+            for the same reason as home/list-your-property: WebKit does not
+            reliably clip an absolutely-positioned <Image> against an
+            ancestor's border-radius, and PlaceholderImage brings its own
+            clipping — so the bleed only appears once a real photo is picked,
+            which is exactly what this change makes possible. */}
+        <div className="relative isolate min-w-0 aspect-[16/10] overflow-hidden bg-bz-ink md:aspect-auto md:h-full">
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={imageAlt ?? ""}
+              fill
+              sizes="(max-width: 767px) 100vw, 48vw"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <PlaceholderImage
+              label={imageLabel ?? "off-plan development · architectural render"}
+              className="absolute inset-0 h-full w-full"
+            />
+          )}
         </div>
       </div>
     </section>

@@ -93,7 +93,9 @@ export default async function NewProjectsPage({ searchParams }: PageProps) {
   const locations = content.section("locations")?.values ?? {};
   const why = content.section("why")?.values ?? {};
   const faq = content.section("faq")?.values ?? {};
+  const interest = content.section("interest_form")?.values ?? {};
   const heroImage = img(hero, "image");
+  const interestImage = img(interest, "image");
 
   const heroTitle = (str(hero, "title") ?? "").split("\n");
   const faqs = faqPairs(faq);
@@ -217,7 +219,13 @@ export default async function NewProjectsPage({ searchParams }: PageProps) {
 
     interest_form:
       options.length > 0 ? (
-        <ProjectInterestForm key="interest_form" projects={options} />
+        <ProjectInterestForm
+          key="interest_form"
+          projects={options}
+          imageUrl={interestImage?.url ?? null}
+          imageAlt={interestImage?.alt ?? null}
+          imageLabel={interestImage?.label ?? null}
+        />
       ) : null,
 
     faq:
