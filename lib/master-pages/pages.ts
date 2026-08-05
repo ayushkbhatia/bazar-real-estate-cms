@@ -1,3 +1,4 @@
+import { emptyImage } from "./types";
 import type { ImageValue, MasterPageDef, SectionValues } from "./types";
 
 /**
@@ -364,7 +365,7 @@ function buyRentSections(opts: {
   heroChips: { label: string; href: string | null }[];
   heroStats: { value: string; label: string }[];
   categoryTiles: Record<string, string | null | ImageValue>[];
-  propTypeItems: Record<string, string | null>[];
+  propTypeItems: Record<string, string | null | ImageValue>[];
   faqItems: { q: string; a: string }[];
 }): MasterPageDef["sections"] {
   return [
@@ -447,7 +448,12 @@ function buyRentSections(opts: {
       description: "Grid of property-type cards.",
       fields: [
         heading({ key: "prop_types_title", label: "Heading" }),
-        propTypeList(),
+        // Off-plan has offered per-card images since it shipped; buy and rent
+        // were left on placeholder art only, so the same grid looked unfinished
+        // on the two highest-traffic landings. PropTypeGrid already renders
+        // `imgUrl` and falls back to the placeholder caption, so this is opting
+        // the section in rather than building anything new.
+        propTypeList(8, { withImage: true }),
       ],
       defaults: { ...opts.propTypes, items: opts.propTypeItems },
     },
@@ -506,6 +512,17 @@ const RENT_TYPE_HREF: Record<string, string> = {
   "Commercial Properties": "/commercial",
 };
 
+/**
+ * `image` starts unset and `img` carries the placeholder caption, so an
+ * un-edited page renders exactly the striped placeholder art it did before —
+ * PropTypeGrid falls back to `img` (and then to the name) whenever no asset
+ * is picked. Uploading a photo in the editor is what swaps it.
+ */
+const propTypeImageDefaults = (name: string) => ({
+  image: emptyImage(name.toLowerCase()),
+  img: name.toLowerCase(),
+});
+
 const BUY_PROP_TYPE_ITEMS = SALE_PROP_TYPE_COPY.map(([name, desc]) => ({
   name,
   desc,
@@ -514,6 +531,7 @@ const BUY_PROP_TYPE_ITEMS = SALE_PROP_TYPE_COPY.map(([name, desc]) => ({
       ? "Browse commercial"
       : `Browse ${name.toLowerCase()}`,
   href: BUY_TYPE_HREF[name] ?? "/buy/search",
+  ...propTypeImageDefaults(name),
 }));
 
 const RENT_PROP_TYPE_ITEMS = SALE_PROP_TYPE_COPY.map(([name, desc]) => ({
@@ -521,6 +539,7 @@ const RENT_PROP_TYPE_ITEMS = SALE_PROP_TYPE_COPY.map(([name, desc]) => ({
   desc,
   cta: "View rentals",
   href: RENT_TYPE_HREF[name] ?? "/rent/search",
+  ...propTypeImageDefaults(name),
 }));
 
 const BUY: MasterPageDef = {

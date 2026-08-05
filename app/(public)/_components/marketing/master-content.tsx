@@ -89,12 +89,25 @@ export function buyRentContent(content: MasterPageContent): BuyRentContentProps 
       imgAlt: imageAltOf(t.image),
     })),
     propTypesTitle: str(types, "prop_types_title") ?? "",
-    propTypes: list<Record<string, unknown>>(types, "items").map((t) => ({
-      name: String(t.name ?? ""),
-      desc: String(t.desc ?? ""),
-      cta: String(t.cta ?? ""),
-      href: String(t.href ?? "#"),
-    })),
+    propTypes: list<Record<string, unknown>>(types, "items").map((t) => {
+      // `image.url` is resolved server-side by attachImageUrls from the
+      // stored media_id; `img` is the placeholder caption used when no asset
+      // is picked. Same shape as the home page's community cards.
+      const image = (t.image ?? null) as {
+        url?: string | null;
+        alt?: string | null;
+        label?: string | null;
+      } | null;
+      return {
+        name: String(t.name ?? ""),
+        desc: String(t.desc ?? ""),
+        cta: String(t.cta ?? ""),
+        href: String(t.href ?? "#"),
+        img: typeof t.img === "string" ? t.img : (image?.label ?? undefined),
+        imgUrl: image?.url ?? null,
+        imgAlt: image?.alt ?? null,
+      };
+    }),
     communitiesEyebrow: str(communities, "communities_eyebrow") ?? "",
     communitiesTitle: str(communities, "communities_title") ?? "",
     communitiesSub: str(communities, "communities_sub") ?? "",
