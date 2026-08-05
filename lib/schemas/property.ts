@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { UUID_SHAPE_RE } from "@/lib/uuid";
+import { normaliseAmenityList } from "@/lib/amenities";
 
 export const PROPERTY_MODES = ["buy", "rent", "off_plan", "commercial"] as const;
 export const PROPERTY_TYPES = [
@@ -269,12 +270,17 @@ export function normaliseEditInput(raw: Record<string, unknown>): unknown {
     }
   }
 
+  // Amenities can arrive as CSV (import), or as the array the picker writes.
+  // Either way the server tidies and de-duplicates rather than trusting the
+  // client — the picker now lets a lister type a custom value. Over-length
+  // entries are left intact so the schema reports them instead of truncating.
   if (typeof out.amenities === "string") {
-    out.amenities = (out.amenities as string)
-      .split(/[,\n]/)
-      .map((s) => s.trim())
-      .filter(Boolean);
-  } else if (!Array.isArray(out.amenities)) {
+    out.amenities = normaliseAmenityList((out.amenities as string).split(/[,\n]/));
+  } else if (Array.isArray(out.amenities)) {
+    out.amenities = normaliseAmenityList(
+      (out.amenities as unknown[]).filter((v): v is string => typeof v === "string"),
+    );
+  } else {
     out.amenities = [];
   }
 

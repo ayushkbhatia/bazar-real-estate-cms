@@ -1,10 +1,13 @@
 import { describe, it, expect } from "vitest";
 import {
+  addCustomAmenity,
   amenityLabel,
   groupAmenities,
+  normaliseAmenityList,
   orderAmenities,
   splitAmenities,
   toOptions,
+  MAX_AMENITIES,
 } from "./amenities";
 import type { AmenityTaxonomyEntry } from "./schemas/amenity-taxonomy";
 
@@ -100,5 +103,96 @@ describe("amenityLabel", () => {
     // A listing showing "Private garden" keeps showing it, rather than
     // vanishing from the public page because it predates the taxonomy.
     expect(amenityLabel("Private garden", OPTIONS)).toBe("Private garden");
+  });
+
+  it("prints a custom amenity verbatim and sorts it after the taxonomy", () => {
+    // The whole contract the public page relies on: a value an agent typed
+    // renders as itself and can't blank out.
+    expect(orderAmenities(["Rooftop cinema", "Pool"], OPTIONS)).toEqual([
+      "Pool",
+      "Rooftop cinema",
+    ]);
+    expect(amenityLabel("Rooftop cinema", OPTIONS)).toBe("Rooftop cinema");
+  });
+});
+
+describe("normaliseAmenityList", () => {
+  it("trims, collapses inner whitespace, and drops blanks", () => {
+    expect(normaliseAmenityList([" Pool ", "Rooftop   cinema", "", "  "])).toEqual([
+      "Pool",
+      "Rooftop cinema",
+    ]);
+  });
+
+  it("de-duplicates case-insensitively, keeping the first spelling", () => {
+    expect(normaliseAmenityList(["Pool", "pool ", "POOL"])).toEqual(["Pool"]);
+  });
+
+  it("leaves an over-long entry intact for the schema to reject", () => {
+    const long = "x".repeat(80);
+    expect(normaliseAmenityList([long])).toEqual([long]);
+  });
+});
+
+describe("addCustomAmenity", () => {
+  it("appends a genuinely new value after the taxonomy ones", () => {
+    const result = addCustomAmenity(["Gym", "Pool"], "  Rooftop   cinema ", OPTIONS);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.next).toEqual(["Pool", "Gym", "Rooftop cinema"]);
+    expect(result.matched).toBeNull();
+  });
+
+  it("selects the taxonomy card when the typed value already exists", () => {
+    // Typing "gym" must not store a second spelling of Gym.
+    const result = addCustomAmenity(["Pool"], "gym", OPTIONS);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.next).toEqual(["Pool", "Gym"]);
+    expect(result.matched?.code).toBe("gym");
+  });
+
+  it("resolves a taxonomy code as well as a label", () => {
+    const result = addCustomAmenity([], "spa", OPTIONS);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.next).toEqual(["Spa"]);
+    expect(result.matched?.code).toBe("spa");
+  });
+
+  it("rejects a case-insensitive duplicate of a custom value already stored", () => {
+    const result = addCustomAmenity(["Rooftop cinema"], "rooftop cinema", OPTIONS);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("duplicate");
+  });
+
+  it("rejects a duplicate of a taxonomy value already selected", () => {
+    const result = addCustomAmenity(["Pool"], "POOL", OPTIONS);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("duplicate");
+  });
+
+  it("rejects blank input", () => {
+    const result = addCustomAmenity(["Pool"], "   ", OPTIONS);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("empty");
+  });
+
+  it("rejects a value longer than the schema allows", () => {
+    const result = addCustomAmenity([], "x".repeat(51), OPTIONS);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("too_long");
+  });
+
+  it("rejects once the listing is at the cap", () => {
+    const full = Array.from({ length: MAX_AMENITIES }, (_, i) => `Custom ${i}`);
+    const result = addCustomAmenity(full, "One more", OPTIONS);
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.reason).toBe("limit");
   });
 });

@@ -320,4 +320,13 @@ describe("normaliseEditInput", () => {
         .amenities,
     ).toEqual([]);
   });
+
+  it("tidies and de-duplicates a custom amenity array from the picker", () => {
+    // The picker lets a lister type free text, so the server can't assume the
+    // array is already clean.
+    const out = normaliseEditInput({
+      amenities: ["Pool", "pool ", " Rooftop   cinema", "", 7],
+    }) as Record<string, unknown>;
+    expect(out.amenities).toEqual(["Pool", "Rooftop cinema"]);
+  });
 });

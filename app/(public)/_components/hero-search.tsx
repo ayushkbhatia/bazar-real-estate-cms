@@ -51,9 +51,13 @@ export function HeroSearch({ defaultMode = "off-plan" }: { defaultMode?: string 
   return (
     <form
       onSubmit={submit}
-      className="mt-8 w-full max-w-[880px] rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-1.5"
+      className="mt-8 w-full max-w-[880px] lg:max-w-[484px] rounded-xl bg-white/10 backdrop-blur-md border border-white/20 p-1.5"
     >
-      {/* Tabs */}
+      {/* Tabs — the row is intrinsically sized (~330px for the four labels at
+          12.5px). `shrink-0` + `whitespace-nowrap` pin each button to its own
+          width so the narrower lg card can never squeeze them; the trade-off is
+          that a fifth tab or a much longer label would overflow visibly rather
+          than shrink silently. Labels live in lib/hero-search-config.ts. */}
       <div className="flex gap-1 px-1 pt-1" role="tablist" aria-label="Search type">
         {HERO_TABS.map((t) => {
           const active = mode === t.value;
@@ -66,8 +70,8 @@ export function HeroSearch({ defaultMode = "off-plan" }: { defaultMode?: string 
               onClick={() => switchTab(t.value)}
               className={
                 active
-                  ? "h-8 px-3.5 rounded-md text-[12.5px] bg-white text-bz-ink font-medium"
-                  : "h-8 px-3.5 rounded-md text-[12.5px] text-white/80 hover:text-white transition-colors"
+                  ? "h-8 shrink-0 whitespace-nowrap px-3.5 rounded-md text-[12.5px] bg-white text-bz-ink font-medium"
+                  : "h-8 shrink-0 whitespace-nowrap px-3.5 rounded-md text-[12.5px] text-white/80 hover:text-white transition-colors"
               }
             >
               {t.label}

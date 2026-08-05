@@ -49,6 +49,20 @@ export const ABOUT_PAGE: MasterPageDef = {
         body({ key: "body_1", label: "First paragraph" }),
         body({ key: "body_2", label: "Second paragraph" }),
         image("photo", "Office photo", "Shown beside the headline, 4:3."),
+        // Declared inline because there is no `file()` builder — same shape as
+        // the development brochure (lib/master-pages/subpages.ts), which is
+        // the only other file field in the registry.
+        {
+          key: "profile",
+          label: "Company profile PDF",
+          kind: "file",
+          help: "Adds a download button under the intro copy. Leave it empty and no button renders. Max 10 MB.",
+        },
+        text("profile_label", "Profile button label", {
+          max: 60,
+          optional: true,
+          help: "Blank keeps “Download company profile”.",
+        }),
       ],
       defaults: {
         eyebrow: "About Bazar Real Estate",
@@ -65,6 +79,10 @@ export const ABOUT_PAGE: MasterPageDef = {
           alt: null,
           label: "bazar office · al bateen · abu dhabi",
         },
+        // No PDF ships with the page, so the button starts absent and /about
+        // renders exactly as it did before this field existed.
+        profile: { media_id: null, alt: null, label: null },
+        profile_label: null,
       },
     },
     {
