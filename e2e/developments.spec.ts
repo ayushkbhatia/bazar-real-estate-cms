@@ -4,8 +4,10 @@ test("developments index links to the Saadiyat Lagoons detail page", async ({
   page,
 }) => {
   await page.goto("/developments");
+  // /developments renders the off-plan master page's copy, which is editable
+  // in the CMS — assert a headline exists, not its wording.
   await expect(
-    page.getByRole("heading", { name: /new launches in abu dhabi/i }),
+    page.getByRole("heading", { level: 1 }).first(),
   ).toBeVisible();
 
   const card = page.getByRole("link", { name: /saadiyat lagoons/i }).first();

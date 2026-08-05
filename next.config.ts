@@ -86,6 +86,19 @@ const nextConfig: NextConfig = {
         destination: "/areas",
         permanent: true,
       },
+      // The QR landing lives at /contact-us/qr, so /contact-us reads like a
+      // real page and gets typed, trimmed off the end of the scanned URL, or
+      // guessed. It never existed — the contact page is /contact — so send it
+      // there rather than 404.
+      //
+      // Exact match only: Next.js does not treat `source` as a prefix, so
+      // /contact-us/qr is unaffected. e2e/contact-us-redirect.spec.ts pins
+      // that, because getting it wrong would break the scan destination.
+      {
+        source: "/contact-us",
+        destination: "/contact",
+        permanent: true,
+      },
       {
         source: "/communities/:slug*",
         destination: "/areas/:slug*",
