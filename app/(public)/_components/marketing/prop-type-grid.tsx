@@ -31,10 +31,33 @@ const colClass: Record<NonNullable<Props["cols"]>, string> = {
 };
 
 /**
+ * What `sizes` tells the browser has to match the slot the card actually
+ * occupies, because that is what picks the entry out of `srcset`.
+ *
+ * It used to be a fixed string ending in `20vw` — right for the five-column
+ * grid on /off-plan, and wrong everywhere else. At three columns a card is a
+ * third of the row, so /buy and /rent asked for an image sized for a 20vw slot
+ * and then stretched it across a 33vw one: the same upload looked sharp on
+ * /off-plan and soft on the other two.
+ *
+ * Deriving it from `cols` and rounding up keeps us on the generous side —
+ * these grids sit in a full-bleed container (`wide`), so the real card is
+ * `(100vw - padding - gaps) / cols`, always a little under this figure. The
+ * cost of being generous is a few KB; the cost of being short is a blurry
+ * card.
+ */
+function sizesFor(cols: NonNullable<Props["cols"]>): string {
+  return `(max-width: 640px) 100vw, (max-width: 1024px) 50vw, ${Math.ceil(
+    100 / cols,
+  )}vw`;
+}
+
+/**
  * Property-type cards (image + name + description + CTA). Responsive grid
  * (the handoff's `PropTypeGrid`).
  */
 export function PropTypeGrid({ items, cols = 3, aspect = "4/3" }: Props) {
+  const sizes = sizesFor(cols);
   return (
     <div className={cn("grid grid-cols-1 gap-5 md:gap-6", colClass[cols])}>
       {items.map((p) => {
@@ -46,7 +69,7 @@ export function PropTypeGrid({ items, cols = 3, aspect = "4/3" }: Props) {
                   src={p.imgUrl}
                   alt={p.imgAlt ?? p.name}
                   fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                  sizes={sizes}
                   className="absolute inset-0 h-full w-full object-cover"
                 />
               ) : (
