@@ -534,3 +534,22 @@ shows the trail.)
 - [storage] The `documents` bucket still exists, empty and policy-less.
   Postgres blocks deleting it via SQL; remove it through the Storage API or the
   dashboard. Nothing can read or write it in the meantime.
+
+- [legal] The Arabic privacy policy is delivered but not published.
+  The client's PDF is bilingual; only the English side shipped. There is no
+  i18n layer (no next-intl, no locale routing) and the Arabic does not
+  survive PDF text extraction cleanly, so it needs either a locale route
+  (/ar/legal/privacy, dir="rtl") or a copy-paste from the source .docx.
+  Source text + open questions: docs/drafts/PRIVACY_POLICY_DRAFT.md.
+
+- [legal] Terms and cookies still carry the "lawyer-drafted copy in progress"
+  banner and the dpo@ mailbox.
+  Privacy now has client-final text (banner off, info@ contact) via the new
+  LegalDocFrame `draft` / `contactEmail` / `dateLabel` props. When the client
+  sends final terms and cookie copy, pass the same props there.
+
+- [legal] The site's entity details contradict the published privacy policy.
+  The policy says "Bazar Real Estate L.L.C.", regulated by ADREC. The footer,
+  OG images, email templates, PDF headers and lib/queries/trust.ts
+  (`DLD_BROKER_PERMIT = "ORN 28041"`) still say "Bazar Real Estate Brokerage
+  LLC · ORN 28041 · DMT". Needs one client answer, then a sweep.

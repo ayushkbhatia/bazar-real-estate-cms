@@ -21,7 +21,7 @@ export default async function AccountDeletedPage({ searchParams }: PageProps) {
 
   const failure = reason && reason !== "ok"
     ? reason === "expired"
-      ? "This confirmation link has expired. Email dpo@bazarrealestate.ae to request deletion again."
+      ? "This confirmation link has expired. Email info@bazarrealestate.ae to request deletion again."
       : reason === "already_used"
         ? "This link has already been used. If you didn't expect this, contact dpo@bazar.ae."
         : reason === "not_found"

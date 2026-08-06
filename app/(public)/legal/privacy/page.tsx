@@ -4,409 +4,229 @@ import { LegalDocFrame } from "../_layout";
 export const metadata: Metadata = {
   title: "Privacy policy",
   description:
-    "How Bazar Real Estate collects, uses, and protects personal data, aligned with UAE PDPL (Federal Decree-Law 45/2021).",
+    "How Bazar Real Estate L.L.C. collects, uses, stores, discloses, and protects personal data, issued under UAE PDPL (Federal Decree-Law No. 45 of 2021).",
 };
 
+/**
+ * Client-supplied final text (bilingual PDF, English side), replacing the
+ * in-house draft. Copy is verbatim apart from typographic normalisation —
+ * do not rewrite it to match the product surface. Where the policy and the
+ * product disagree (it names Salesforce as the CRM; it is silent on the AI
+ * concierge, newsletter and valuation tools), the policy is the client's to
+ * change, not ours. See docs/FOLLOWUPS.md.
+ */
 export default function PrivacyPage() {
   return (
-    <LegalDocFrame active="privacy" title="Privacy policy" effective="22 May 2026">
+    <LegalDocFrame
+      active="privacy"
+      title="Privacy policy"
+      effective="6 August 2026"
+      dateLabel="Last updated"
+      contactEmail="info@bazarrealestate.ae"
+      draft={false}
+    >
       <h2>1. Introduction</h2>
       <p>
-        Bazar Real Estate Brokerage LLC (&quot;Bazar&quot;, &quot;we&quot;,
-        &quot;us&quot;) operates bazar.ae: a curated property marketplace and
-        advisory service across the United Arab Emirates. We are licensed by
-        the Abu Dhabi Department of Municipalities and Transport (ORN 28041).
+        Bazar Real Estate L.L.C. is a real estate brokerage licensed and
+        regulated in the Emirate of Abu Dhabi, United Arab Emirates,
+        headquartered in Al Bateen, Abu Dhabi, and regulated by the Abu Dhabi
+        Real Estate Centre (ADREC) and, where applicable, the Dubai Land
+        Department (DLD). This Privacy Policy explains how we collect, use,
+        store, disclose, and protect personal data when you visit our
+        website(s), submit an inquiry, contact us through WhatsApp or phone,
+        or otherwise interact with our services.
       </p>
       <p>
-        This policy explains what personal data we collect, why, how long we
-        keep it, who we share it with, and the rights you have over it. It
-        applies to everyone who browses bazar.ae, creates an account,
-        contacts us, or transacts with us — buyers, tenants, landlords,
-        sellers, and site visitors alike.
-      </p>
-      <p>
-        Our Data Protection Officer can be reached at{" "}
-        <a href="mailto:dpo@bazarrealestate.ae">dpo@bazarrealestate.ae</a> for
-        any question about this policy or your data.
+        This Policy is issued in accordance with UAE Federal Decree-Law No. 45
+        of 2021 on the Protection of Personal Data (the &quot;PDPL&quot;) and
+        its implementing regulations.
       </p>
 
-      <h2>2. Scope</h2>
-      <p>
-        This policy covers bazar.ae and the Bazar CMS. It does not cover
-        third-party sites we link to (developer microsites, portal
-        syndication targets, payment processors) — those are governed by
-        their own policies.
-      </p>
-
-      <h2>3. Information We Collect</h2>
-      <p>
-        <b>Information you give us directly</b>
-      </p>
+      <h2>2. What Personal Data We Collect</h2>
+      <p>We collect personal data through the following channels:</p>
       <ul>
         <li>
-          <b>Account details</b> — name, email, phone number, residency
-          status.
+          <b>Website contact and inquiry forms</b> — full name, phone number,
+          email address, and details of the property or service you are
+          interested in.
         </li>
         <li>
-          <b>Enquiries</b> — when you contact us about a listing, submit the
-          contact form, or message the AI concierge: your name, contact
-          details, message body, and the property or development referenced.
+          <b>WhatsApp integration</b> — your name, phone number, and the
+          content of messages exchanged with our team.
         </li>
         <li>
-          <b>Saved items</b> — properties and searches you save, and the
-          alert frequency you choose (daily / weekly / on-change).
+          <b>Call integration</b> — your phone number, call metadata (date,
+          time, duration), and, where legally permitted and disclosed to you,
+          call recordings for quality and training purposes.
         </li>
         <li>
-          <b>Viewing requests and deal documents</b> — once you progress to
-          an offer, identity documents and proof-of-funds for KYC, deal
-          notes, and any files you upload to a deal room.
+          <b>Third-party advertising and listing platforms</b> — when you
+          engage with our adverts or listings on Meta
+          (Facebook/Instagram), Google, LinkedIn, Property Finder, Bayut,
+          Dubizzle, or similar platforms, and submit an inquiry through them,
+          your name, contact details, and inquiry details are passed to us and
+          stored in our CRM.
         </li>
         <li>
-          <b>Valuation and mortgage tool inputs</b> — property address, size,
-          condition, and financial assumptions you enter to generate a
-          report.
+          <b>Cookies and similar tracking technologies</b> deployed via our
+          website and advertising pixels (see Section 6).
         </li>
         <li>
-          <b>Newsletter signup</b> — email address and, if you tell us, your
-          areas of interest.
-        </li>
-      </ul>
-      <p>
-        <b>Information we collect automatically</b>
-      </p>
-      <ul>
-        <li>
-          <b>Usage data</b> — pages viewed, search filters applied, device
-          and browser type, approximate location (IP-derived), referrer.
-        </li>
-        <li>
-          <b>Cookies and similar technologies</b> — see Section 6.
-        </li>
-      </ul>
-      <p>
-        <b>Information from third parties</b>
-      </p>
-      <ul>
-        <li>
-          Portal syndication partners and developers may pass us enquiry data
-          they collected on their own channels, where you&apos;ve consented
-          to that hand-off.
-        </li>
-        <li>
-          Public UAE property registries (e.g. DLD transaction data) used for
-          valuation comparables — this is not personal data about you
-          specifically.
+          <b>Documents you voluntarily provide</b> during a transaction (e.g.
+          Emirates ID, passport, income documentation), whether submitted via
+          the website, email, or in person.
         </li>
       </ul>
 
-      <h2>4. How We Use Your Information</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Purpose</th>
-            <th>Examples</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Deliver the service you asked for</td>
-            <td>
-              Responding to enquiries, scheduling viewings, progressing a
-              deal, sending the report you requested
-            </td>
-          </tr>
-          <tr>
-            <td>Run your account</td>
-            <td>Authentication, saved searches, alert emails</td>
-          </tr>
-          <tr>
-            <td>Legal and regulatory compliance</td>
-            <td>
-              AML/CFT checks and KYC record-keeping, audit logging,
-              DLD-related reporting
-            </td>
-          </tr>
-          <tr>
-            <td>Improve the product</td>
-            <td>
-              Aggregated/anonymised analytics on search and listing
-              performance
-            </td>
-          </tr>
-          <tr>
-            <td>Marketing (only with consent)</td>
-            <td>The Bazar Brief newsletter, campaign emails</td>
-          </tr>
-          <tr>
-            <td>Security</td>
-            <td>Fraud prevention, abuse detection, access logging</td>
-          </tr>
-        </tbody>
-      </table>
+      <h2>3. How We Use Your Data</h2>
       <p>
-        We do not use your data to make any decision with legal or similarly
-        significant effect about you without a human in the loop.
-      </p>
-
-      <h2>5. Legal Basis for Processing</h2>
-      <p>
-        Under UAE PDPL, we rely on one or more of the following bases for
-        each use above:
+        We process personal data for the following purposes, each with a
+        corresponding legal basis under the PDPL:
       </p>
       <ul>
         <li>
-          <b>Performance of a contract</b> — delivering the marketplace and
-          advisory service you&apos;ve asked for.
+          To respond to your inquiry and connect you with the relevant
+          property consultant — basis: performance of a contract /
+          pre-contractual steps taken at your request.
         </li>
         <li>
-          <b>Legal obligation</b> — AML/CFT record-keeping, regulatory
-          reporting.
+          To pass your inquiry to the property consultant responsible for the
+          relevant listing, location, or service area — basis: legitimate
+          interest in fulfilling your request efficiently.
         </li>
         <li>
-          <b>Legitimate interest</b> — product analytics, fraud prevention,
-          service improvement — balanced against your right to privacy, and
-          only where you wouldn&apos;t reasonably object.
+          To maintain records of client and lead interactions in our CRM
+          system (Salesforce) — basis: legitimate interest and, in relevant
+          cases, legal obligation (e.g. ADREC/DLD record-keeping
+          requirements).
         </li>
         <li>
-          <b>Consent</b> — newsletter emails, non-essential cookies, WhatsApp
-          messaging you initiate. You can withdraw consent at any time (see
-          Section 9).
+          To send you marketing communications about properties or services
+          that may interest you — basis: your consent, which you may withdraw
+          at any time (see Section 8).
+        </li>
+        <li>
+          To comply with applicable UAE laws and regulatory requirements,
+          including those of ADREC and DLD.
         </li>
       </ul>
 
-      <h2>6. Cookies</h2>
+      <h2>4. Who We Share Your Data With</h2>
       <p>
-        We use strictly-necessary cookies (session, security) without
-        asking, and analytics/marketing cookies only after you accept them
-        in the consent banner. Full detail — including current vendors and
-        retention — is in our{" "}
-        <a href="/legal/cookies">Cookie Policy</a>, which is part of this
-        policy by reference.
+        Access to your personal data within Bazar is restricted to authorized
+        personnel — namely, the property consultant(s) assigned to your
+        inquiry and relevant supervisory or administrative staff — on a
+        need-to-know basis.
       </p>
-
-      <h2>7. Who We Share It With</h2>
       <p>
-        We share personal data with the vendors that operate the service. We
-        do not sell personal data, and we do not share it with third parties
-        for their own marketing purposes.
+        We share personal data with the following categories of third parties:
       </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Vendor</th>
-            <th>Purpose</th>
-            <th>Data shared</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Supabase (EU, Frankfurt)</td>
-            <td>Database, authentication, file storage</td>
-            <td>All account and enquiry data</td>
-          </tr>
-          <tr>
-            <td>Resend (EU, Frankfurt)</td>
-            <td>Transactional email</td>
-            <td>Email address, message content</td>
-          </tr>
-          <tr>
-            <td>Vercel</td>
-            <td>Hosting</td>
-            <td>Request logs, IP address</td>
-          </tr>
-          <tr>
-            <td>Meta WhatsApp Business Cloud</td>
-            <td>Messaging</td>
-            <td>Only for users who message us on WhatsApp first</td>
-          </tr>
-          <tr>
-            <td>Anthropic (Claude)</td>
-            <td>AI concierge</td>
-            <td>Concierge conversation content</td>
-          </tr>
-          <tr>
-            <td>Meilisearch</td>
-            <td>Search</td>
-            <td>Publicly listed property attributes only (no personal data)</td>
-          </tr>
-          <tr>
-            <td>Mapbox</td>
-            <td>Geocoding, isochrones, maps</td>
-            <td>Addresses/coordinates you search</td>
-          </tr>
-          <tr>
-            <td>Mailchimp</td>
-            <td>Newsletter campaigns</td>
-            <td>Email address, subscription status</td>
-          </tr>
-          <tr>
-            <td>PostHog, Vercel Analytics</td>
-            <td>Product analytics</td>
-            <td>Only after cookie consent</td>
-          </tr>
-          <tr>
-            <td>Sentry</td>
-            <td>Error monitoring</td>
-            <td>
-              Technical error context; we scrub personal data from error
-              payloads where feasible
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <p>
-        We may also disclose data where required by UAE law, court order, or
-        regulator request (e.g. DLD, Central Bank AML reporting), or to a
-        successor entity in the event of a merger or acquisition of Bazar,
-        subject to equivalent privacy protections.
-      </p>
-
-      <h2>8. Cross-Border Transfers</h2>
-      <p>
-        Most processing happens within the European Economic Area
-        (Frankfurt). Where a vendor processes data outside the EEA or UAE
-        (for example, US-based observability tooling), we rely on standard
-        contractual clauses or the vendor&apos;s equivalent safeguard,
-        consistent with UAE PDPL&apos;s cross-border transfer requirements.
-      </p>
-
-      <h2>9. Your Rights Under UAE PDPL</h2>
-      <p>You have the right to:</p>
       <ul>
         <li>
-          <b>Access</b> the personal data we hold about you — write to{" "}
-          <a href="mailto:dpo@bazarrealestate.ae">dpo@bazarrealestate.ae</a>{" "}
-          and we will verify your identity and send a machine-readable copy.
+          Salesforce (our Customer Relationship Management platform), which
+          stores and processes inquiry and client data on our behalf under a
+          data processing agreement.
         </li>
         <li>
-          <b>Rectify</b> inaccurate data — write to{" "}
-          <a href="mailto:dpo@bazarrealestate.ae">dpo@bazarrealestate.ae</a>.
+          Advertising and listing platforms (Meta, Google, LinkedIn, Property
+          Finder, Bayut, Dubizzle) to the extent necessary to run campaigns
+          and receive inquiries generated through them — governed also by
+          those platforms&apos; own privacy policies.
         </li>
         <li>
-          <b>Erase</b> your data — write to{" "}
-          <a href="mailto:dpo@bazarrealestate.ae">dpo@bazarrealestate.ae</a>.
-          KYC records tied to a closed transaction are retained per Section
-          10 and anonymised where deletion isn&apos;t legally permitted.
+          Developers or landlords, where necessary to progress a specific
+          transaction you have inquired about, and only with your knowledge as
+          part of that transaction.
         </li>
         <li>
-          <b>Restrict or object to processing</b>, including direct
-          marketing — unsubscribe from the Bazar Brief, or contact us.
-        </li>
-        <li>
-          <b>Data portability</b> — request your data in a structured,
-          machine-readable format.
-        </li>
-        <li>
-          <b>Withdraw consent</b> at any time, without affecting processing
-          already carried out.
-        </li>
-        <li>
-          <b>Lodge a complaint</b> with the UAE Data Office if you believe
-          we&apos;ve mishandled your data.
+          Regulatory authorities (including ADREC and DLD), law enforcement,
+          or courts, where required by law.
         </li>
       </ul>
       <p>
-        We respond within 30 days. If we can&apos;t fully honour a request —
-        for example because of an AML retention obligation — we&apos;ll
-        explain why.
+        We do not sell, rent, or lease your personal data to any third party.
       </p>
 
-      <h2>10. Data Retention</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Retention</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Account data</td>
-            <td>
-              While your account is active, plus 30 days after deletion
-              request processing
-            </td>
-          </tr>
-          <tr>
-            <td>KYC / AML records</td>
-            <td>
-              7 years from the end of the relationship (UAE AML/CFT
-              requirement)
-            </td>
-          </tr>
-          <tr>
-            <td>Audit logs</td>
-            <td>7 years, immutable</td>
-          </tr>
-          <tr>
-            <td>Marketing analytics</td>
-            <td>13 months</td>
-          </tr>
-          <tr>
-            <td>Newsletter subscription</td>
-            <td>Until you unsubscribe or request deletion</td>
-          </tr>
-          <tr>
-            <td>Support/enquiry threads</td>
-            <td>
-              2 years after resolution, unless tied to an active or closed
-              deal (then per KYC retention)
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2>11. Security</h2>
+      <h2>5. Data Retention</h2>
       <p>
-        We encrypt data in transit (TLS 1.2+) and at rest (AES-256). CMS
-        access requires multi-factor authentication and is role-gated.
-        Production secrets are managed outside application code. We run
-        quarterly disaster-recovery tests. No system is 100% secure; if we
-        experience a breach affecting your data, we&apos;ll notify you and
-        the relevant authority as UAE PDPL requires.
+        We retain personal data collected through inquiries for a period of 12
+        months from the date of your last interaction with us, or for the
+        duration of an active transaction plus any period required by
+        ADREC/DLD record-keeping obligations, whichever is longer.
       </p>
 
-      <h2>12. Children&apos;s Privacy</h2>
+      <h2>6. Cookies and Tracking Technologies</h2>
       <p>
-        Bazar&apos;s services are intended for adults entering property
-        transactions. We do not knowingly collect data from anyone under 18.
-        If we learn we&apos;ve collected such data, we&apos;ll delete it.
+        Our website uses cookies and similar technologies, including
+        advertising pixels from Meta, Google, and LinkedIn, to operate the
+        site, analyze traffic, and measure the performance of our advertising
+        campaigns.
       </p>
 
-      <h2>13. Third-Party Links</h2>
+      <h2>7. Data Security</h2>
       <p>
-        Listings may link to developer microsites, portals, or payment
-        processors outside our control. Their privacy practices are governed
-        by their own policies — we encourage you to review them.
+        We implement appropriate technical and organizational measures
+        designed to protect personal data against unauthorized access, loss,
+        misuse, or alteration, including restricted internal access, secure
+        storage within our CRM, and confidentiality obligations on staff who
+        handle client data. No method of transmission or storage over the
+        internet is entirely secure, and we cannot guarantee absolute security
+        of information transmitted to us online.
       </p>
 
-      <h2>14. Marketing Communications</h2>
+      <h2>8. Your Rights</h2>
+      <p>Subject to the PDPL, you have the right to:</p>
+      <ul>
+        <li>Request access to the personal data we hold about you.</li>
+        <li>Request correction of inaccurate or incomplete data.</li>
+        <li>
+          Request deletion of your data, subject to our legal and regulatory
+          retention obligations.
+        </li>
+        <li>
+          Withdraw consent to marketing communications at any time, without
+          affecting the lawfulness of processing carried out before
+          withdrawal.
+        </li>
+        <li>
+          Object to certain processing carried out on the basis of legitimate
+          interest.
+        </li>
+      </ul>
       <p>
-        We only send marketing email (the Bazar Brief, campaigns) to those
-        who&apos;ve opted in via double opt-in. Every marketing email
-        includes a one-click unsubscribe. Transactional emails (viewing
-        confirmations, deal updates, account notices) are not marketing and
-        can&apos;t be opted out of while your account is active.
+        To exercise any of these rights, please contact us using the details
+        in Section 10.
       </p>
 
-      <h2>15. Changes to This Policy</h2>
+      <h2>9. International Transfers</h2>
       <p>
-        We will notify you of material changes by email and surface a
-        banner on sign-in. The effective date at the top of this page
-        reflects the latest revision. Continued use of bazar.ae after a
-        change takes effect means you accept the update.
+        If you interact with us from outside the UAE, or if we run marketing
+        campaigns directed at audiences in other countries, your personal data
+        may be transferred to and processed in the UAE.
       </p>
 
-      <h2>16. Contact Us</h2>
+      <h2>10. Contact Us</h2>
       <p>
-        Bazar Real Estate Brokerage LLC
-        <br />
-        Abu Dhabi, United Arab Emirates
-        <br />
-        ORN 28041
-        <br />
-        Data Protection Officer:{" "}
-        <a href="mailto:dpo@bazarrealestate.ae">dpo@bazarrealestate.ae</a>
+        If you have questions, concerns, or requests regarding this Privacy
+        Policy or your personal data, please contact:
+      </p>
+      <ul>
+        <li>
+          Email:{" "}
+          <a href="mailto:info@bazarrealestate.ae">info@bazarrealestate.ae</a>
+        </li>
+        <li>
+          Address: Sheikha Salama Building, Office 4, Zayed The First Street,
+          Al Bateen, Abu Dhabi, United Arab Emirates
+        </li>
+      </ul>
+
+      <h2>11. Changes to This Policy</h2>
+      <p>
+        We may update this Privacy Policy from time to time to reflect changes
+        in our practices or legal requirements. The &quot;Last updated&quot;
+        date at the top of this Policy indicates when it was last revised.
+        Material changes will be notified via our website.
       </p>
     </LegalDocFrame>
   );

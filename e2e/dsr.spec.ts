@@ -61,11 +61,12 @@ test("legal/privacy gives data subjects a working way to exercise their rights",
   page,
 }) => {
   await page.goto("/legal/privacy");
-  // PDPL requires a route to access/rectification/erasure. It is the DPO
-  // mailbox now, not a self-service page — but it must be present and
-  // clickable, which is the part that actually matters for compliance.
+  // PDPL requires a route to access/rectification/erasure. It is a mailbox
+  // now, not a self-service page — the client's final text names info@ (§10)
+  // — but it must be present and clickable, which is the part that actually
+  // matters for compliance.
   await expect(
-    page.getByRole("link", { name: "dpo@bazarrealestate.ae" }).first(),
+    page.getByRole("link", { name: "info@bazarrealestate.ae" }).first(),
   ).toBeVisible();
   // And it must not advertise the dead self-service routes.
   await expect(page.getByText("/account/data-export")).toHaveCount(0);

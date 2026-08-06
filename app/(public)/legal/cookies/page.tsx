@@ -115,7 +115,7 @@ export default function CookiesPage() {
         Some cookies above are set by vendors we use to run the Service
         (Supabase, PostHog, Vercel), not by Bazar directly. Their processing
         of data collected via cookies is also covered by our{" "}
-        <a href="/legal/privacy">Privacy Policy</a> vendor list.
+        <a href="/legal/privacy">Privacy Policy</a>.
       </p>
 
       <h2>5. Managing Your Preferences</h2>
