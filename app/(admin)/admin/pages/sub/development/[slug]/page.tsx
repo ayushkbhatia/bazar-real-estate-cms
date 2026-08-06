@@ -20,6 +20,7 @@ import {
 } from "./_content-card";
 import { saveDevelopmentPage, resetDevelopmentPage } from "../_actions";
 import { PublishCard } from "../../../../developments/_publish-card";
+import { DeleteDevelopmentCard } from "./_delete-card";
 import { getStaffRole } from "@/lib/auth";
 import { evaluateDevelopmentHeroFacts } from "@/lib/schemas/development";
 
@@ -45,6 +46,30 @@ async function fetchMedia(): Promise<MediaOption[]> {
     url: mediaPublicUrl(m.storage_key),
     mime: m.mime_type,
   }));
+}
+
+/**
+ * What would be left dangling by a delete. `enquiries.development_id` and
+ * `properties.development_id` are ON DELETE SET NULL, so these records survive
+ * but lose the link — worth saying out loud before the fact.
+ */
+async function fetchLinkCounts(developmentId: string) {
+  if (!isSupabaseConfigured) return { enquiries: 0, properties: 0 };
+  const supabase = await createSupabaseServerClient();
+  const [enquiries, properties] = await Promise.all([
+    supabase
+      .from("enquiries")
+      .select("id", { count: "exact", head: true })
+      .eq("development_id", developmentId),
+    supabase
+      .from("properties")
+      .select("id", { count: "exact", head: true })
+      .eq("development_id", developmentId),
+  ]);
+  return {
+    enquiries: enquiries.count ?? 0,
+    properties: properties.count ?? 0,
+  };
 }
 
 async function fetchContentOptions(excludeId: string) {
@@ -93,7 +118,7 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
   const development = await fetchDevelopment(slug);
   if (!development) notFound();
 
-  const [content, media, options, role] = await Promise.all([
+  const [content, media, options, role, links] = await Promise.all([
     getDevelopmentPageContent({
       name: development.name,
       slug: development.slug,
@@ -101,12 +126,13 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
     fetchMedia(),
     fetchContentOptions(development.id),
     getStaffRole(),
+    fetchLinkCounts(development.id),
   ]);
 
-  // Editing this page is open to marketing; taking a project live is not.
-  // The publish action enforces it too — this just stops the button being
-  // offered to someone it would 404 on.
-  const canPublish = role === "admin" || role === "editor";
+  // Editing this page is open to marketing; taking a project live — or
+  // deleting it — is not. Both actions enforce this too; this just stops the
+  // controls being offered to someone they would 404 on.
+  const canManage = role === "admin" || role === "editor";
   const heroFactsGate = evaluateDevelopmentHeroFacts({
     starting_price:
       development.starting_price != null
@@ -191,7 +217,7 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
           publishedAt={development.published_at}
           slug={development.slug}
           checks={heroFactsGate.checks}
-          canPublish={canPublish}
+          canPublish={canManage}
         />
 
         <DevelopmentFactsCard
@@ -248,6 +274,18 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
             }))}
           />
         </div>
+
+        {/* Last on the page on purpose — it is the one thing here that can't
+            be undone, so it should not sit next to anything routine. */}
+        <DeleteDevelopmentCard
+          developmentId={development.id}
+          name={development.name}
+          published={development.published_at != null}
+          enquiryCount={links.enquiries}
+          propertyCount={links.properties}
+          canDelete={canManage}
+          recordHref={`/admin/developments/${development.id}`}
+        />
       </div>
     </CmsShell>
   );

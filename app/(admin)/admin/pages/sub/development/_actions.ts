@@ -19,6 +19,12 @@ import { developmentContentSchema } from "@/lib/schemas/development-content";
 import { developmentHeroFactsPartialSchema } from "@/lib/schemas/development";
 
 const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
+/**
+ * Deleting a project is not an editing action. Marketing may write every word
+ * on the page but may not destroy the record behind it — the same line
+ * publishing draws.
+ */
+const DESTRUCTIVE_ROLES = ["admin", "editor"] as const;
 
 export type SubPageResult =
   | { status: "ok"; message: string }
@@ -471,4 +477,81 @@ export async function saveDevelopmentContent(
   revalidatePath(`/developments/${record.slug}`);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   return { status: "ok", message: "Saved." };
+}
+
+export type DeleteResult =
+  | { status: "ok"; message: string }
+  | { status: "error"; message: string };
+
+/**
+ * Permanently delete a project — the `developments` row and its page document.
+ *
+ * Guarded rather than merely confirmed, because the row is the parent of real
+ * data. Postgres cascades `development_media`, `development_units` and
+ * `floor_plans` (all of which belong to the project and are meaningless without
+ * it), but `enquiries.development_id` and `properties.development_id` are
+ * ON DELETE SET NULL — those records survive and quietly lose their link. That
+ * is a lead losing the project it asked about, so the caller is told the counts
+ * up front and the confirmation names them.
+ *
+ * A live project can't be deleted at all: unpublish it first. Removing a page
+ * out from under public traffic and search results should be a deliberate two
+ * steps, not one, and unpublishing is the reversible half.
+ */
+export async function deleteDevelopment(
+  id: string,
+  /** Typed by the operator; must match the project name exactly. */
+  confirmation: string,
+): Promise<DeleteResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(DESTRUCTIVE_ROLES);
+
+  const supabase = await createSupabaseServerClient();
+  const { data: record, error: readError } = await supabase
+    .from("developments")
+    .select("id, name, slug, published_at")
+    .eq("id", id)
+    .maybeSingle();
+  if (readError) return { status: "error", message: readError.message };
+  if (!record) return { status: "error", message: "Project not found." };
+
+  if (record.published_at)
+    return {
+      status: "error",
+      message:
+        "This project is live. Unpublish it first — deleting a published page would break its public URL without warning.",
+    };
+
+  if (confirmation.trim() !== record.name)
+    return {
+      status: "error",
+      message: "The name you typed doesn't match, so nothing was deleted.",
+    };
+
+  // Snapshot before the row is gone: the audit entry is the only record that
+  // this project ever existed.
+  await logAudit({
+    action: "development.delete",
+    target_kind: "development",
+    target_id: record.id,
+    before: { name: record.name, slug: record.slug },
+    after: null,
+  });
+
+  // The page document is keyed by slug, not a foreign key, so nothing cascades
+  // to it — delete it explicitly or it lingers as an orphan that a project
+  // recreated under the same slug would silently inherit.
+  await supabase
+    .from("pages")
+    .delete()
+    .eq("slug", subPageSlug("development", record.slug));
+
+  const { error } = await supabase.from("developments").delete().eq("id", id);
+  if (error) return { status: "error", message: error.message };
+
+  revalidatePath("/admin/pages/sub");
+  revalidatePath("/admin/pages/sub/development");
+  revalidatePath("/developments");
+  return { status: "ok", message: `Deleted "${record.name}".` };
 }
