@@ -28,7 +28,7 @@ export const metadata: Metadata = {
  * one printed from production, and reading the request would force this route
  * out of ISR into dynamic rendering.
  */
-const DEFAULT_QR_URL = "https://www.bazarrealestate.ae/contact-us/qr";
+const DEFAULT_QR_URL = "https://www.bazarrealestate.ae/contact-qr";
 
 /** `qrcode` emits a bare `<svg viewBox=…>`, so the sizing classes go on here. */
 async function renderQrSvg(url: string): Promise<string | null> {
