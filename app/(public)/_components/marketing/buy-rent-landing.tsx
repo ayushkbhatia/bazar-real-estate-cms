@@ -172,7 +172,18 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           "px-4 md:px-12 pt-12 md:pt-20 pb-14 md:pb-[72px]",
           // Only becomes a media hero once a photo is picked. Without one the
           // section keeps its original plain treatment exactly.
-          heroImage && "relative isolate overflow-hidden text-white",
+          //
+          // `bg-bz-navy` is never seen. `isolate` makes this a stacking
+          // context, so the section's own background paints first and both
+          // -z-10 children — the photo and the scrim — cover it completely.
+          // It earns its place twice over: it is what shows in the moment
+          // before the photo decodes, instead of the cream page background
+          // flashing behind white type, and it is the only background an
+          // automated contrast checker can see. Axe cannot evaluate a
+          // background-image or a gradient, so it walks up to the nearest
+          // opaque ancestor colour; without this it found the page's #faf8f5
+          // and read the headline as white-on-cream at 1.05:1.
+          heroImage && "relative isolate overflow-hidden bg-bz-navy text-white",
         )}
       >
         {heroImage ? (

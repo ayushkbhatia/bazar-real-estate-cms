@@ -29,7 +29,12 @@ export function PreferencesPopover() {
           variant="ghost"
           size="sm"
           aria-label="Change currency and area unit"
-          className="h-9 gap-1.5 text-[13px] text-bz-ink-2 hover:text-bz-ink"
+          // Carries its own surface because it does not sit on the page — it
+          // is fixed to the viewport and floats over whatever scrolls beneath.
+          // On a cream page dark ink was fine; over a media hero, a navy band
+          // or the footer it was dark-on-dark. The pill makes it legible
+          // against anything without needing to know what it is over.
+          className="h-9 gap-1.5 rounded-full border border-bz-border bg-bz-surface/95 px-3 text-[13px] text-bz-ink-2 shadow-sm backdrop-blur-sm hover:bg-bz-surface hover:text-bz-ink"
         >
           <Coins size={13} strokeWidth={1.6} />
           <span className="mono tracking-tight">{prefs.currency}</span>
