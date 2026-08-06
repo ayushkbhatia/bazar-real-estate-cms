@@ -68,7 +68,7 @@ export const CONTACT_QR_PAGE: MasterPageDef = {
         image(
           "logo",
           "Logo",
-          "Shown at the top of the card. Falls back to the Bazar wordmark when empty.",
+          "Shown at the top of the card. Falls back to the Bazar logo when empty.",
         ),
         text("name", "Company name", {
           max: 80,

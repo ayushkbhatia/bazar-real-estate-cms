@@ -54,8 +54,10 @@ export type CardBlock = "card" | "details" | "follow";
 
 export type ContactCardProps = {
   blocks: CardBlock[];
+  /** Not drawn on the card — it is the logo's alt text and the saved contact's name. */
   name: string;
-  logoUrl: string | null;
+  /** Always set: the CMS image when one is uploaded, the bundled logo otherwise. */
+  logoUrl: string;
   logoAlt: string;
   tagline: Bilingual;
   saveLabel: Bilingual;
@@ -117,25 +119,27 @@ export function ContactCard(props: ContactCardProps) {
   const blocks: Record<CardBlock, React.ReactNode> = {
     card: (
       <div key="card">
+        {/*
+          The logo is the card's heading — there is no wordmark in type above
+          it, so the company name lives in the alt text.
+
+          Sized for the stacked lockup: mark over "BAZAR" over "REAL ESTATE",
+          where the third line is a tenth of the height and goes unreadable in
+          the 92px slot a horizontal wordmark would need. `object-contain`
+          means a wide logo uploaded from the CMS still fits, it just sits
+          shorter inside the box.
+        */}
         <h1 className="flex flex-col items-center">
-          {props.logoUrl ? (
-            <span className="relative block h-[92px] w-full max-w-[240px]">
-              <Image
-                src={props.logoUrl}
-                alt={props.logoAlt}
-                fill
-                sizes="240px"
-                className="object-contain"
-                priority
-              />
-            </span>
-          ) : (
-            <span className="flex flex-col items-center leading-none">
-              <span className="serif text-[38px] tracking-tight">
-                {props.name}
-              </span>
-            </span>
-          )}
+          <span className="relative block h-[148px] w-full max-w-[260px]">
+            <Image
+              src={props.logoUrl}
+              alt={props.logoAlt}
+              fill
+              sizes="260px"
+              className="object-contain"
+              priority
+            />
+          </span>
         </h1>
 
         {pick(props.tagline, lang) ? (
