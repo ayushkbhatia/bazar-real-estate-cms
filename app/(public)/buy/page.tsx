@@ -13,6 +13,7 @@ import { LeadBand } from "../_components/marketing/lead-band";
 import type { BuyCategory } from "../_components/marketing/buy-category-explorer";
 import { searchRedirectTarget } from "../_components/search-redirect";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { str } from "@/lib/master-pages";
 import { buyRentContent } from "../_components/marketing/master-content";
 
 export const revalidate = 300;
@@ -77,6 +78,10 @@ export default async function BuyPage({ searchParams }: PageProps) {
   // lib/master-pages, which are this page's original copy.
   const c = buyRentContent(content);
 
+  // Map section copy — blank fields fall through to BuyPropertiesMap's own
+  // defaults, which are this section's original strings.
+  const map = content.section("map")?.values ?? {};
+
   // The hero chips drive the interactive featured grid, so their labels double
   // as category keys.
   const categories: BuyCategory[] = (c.chips ?? []).map((label) => ({
@@ -111,7 +116,13 @@ export default async function BuyPage({ searchParams }: PageProps) {
       sectionOrder={c.sectionOrder}
       mapSlot={
         mapAreas.length > 0 ? (
-          <BuyPropertiesMap areas={mapAreas} dots={dots} />
+          <BuyPropertiesMap
+            areas={mapAreas}
+            dots={dots}
+            eyebrow={str(map, "eyebrow") ?? undefined}
+            heading={str(map, "heading") ?? undefined}
+            body={str(map, "body")}
+          />
         ) : null
       }
       leadBand={

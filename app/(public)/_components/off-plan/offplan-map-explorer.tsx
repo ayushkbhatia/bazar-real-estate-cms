@@ -65,10 +65,19 @@ export function OffplanMapExplorer({
   areas,
   dots,
   groups,
+  eyebrow = "On the map",
+  heading = "Explore new projects across Abu Dhabi.",
+  body = "Zoom into a community and tap a project to open its details — or pick an area below to filter the launches.",
 }: {
   areas: AreaPin[];
   dots: AreaDot[];
   groups: OffplanGroupView[];
+  /** Section eyebrow — editable from the /off-plan master page. */
+  eyebrow?: string;
+  /** Section heading. */
+  heading?: string;
+  /** Intro paragraph under the heading; omitted when blank. */
+  body?: string | null;
 }) {
   const [focusSlug, setFocusSlug] = useState<string | null>(null);
   const [frameRef, mapReady] = useNearViewport<HTMLDivElement>();
@@ -86,17 +95,18 @@ export function OffplanMapExplorer({
     <section className="px-4 md:px-12 py-14 md:py-20 border-t border-bz-border">
       <div className="mb-8 flex flex-col gap-5 md:mb-9 md:flex-row md:items-end md:justify-between">
         <div>
-          <Eyebrow>On the map</Eyebrow>
+          <Eyebrow>{eyebrow}</Eyebrow>
           <h2
             className="serif mt-3 font-normal text-bz-ink"
             style={{ fontSize: fluid(40), letterSpacing: "-0.025em", lineHeight: 1.04 }}
           >
-            Explore new projects across Abu Dhabi.
+            {heading}
           </h2>
-          <p className="mt-4 max-w-[52ch] text-[15px] md:text-[16px] text-bz-ink-2 leading-relaxed">
-            Zoom into a community and tap a project to open its details — or
-            pick an area below to filter the launches.
-          </p>
+          {body ? (
+            <p className="mt-4 max-w-[52ch] text-[15px] md:text-[16px] text-bz-ink-2 leading-relaxed">
+              {body}
+            </p>
+          ) : null}
         </div>
       </div>
 

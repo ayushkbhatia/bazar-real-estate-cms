@@ -126,9 +126,18 @@ const HOME: MasterPageDef = {
       key: "area_map",
       label: "Area map",
       description: "Interactive map of Abu Dhabi communities.",
-      dataNote: "Pins come from published areas and listings.",
-      fields: [],
-      defaults: {},
+      dataNote:
+        "Pins come from published areas and listings — only the copy above the map is editable here.",
+      fields: [
+        eyebrow(),
+        heading(),
+        body({ max: 400 }),
+      ],
+      defaults: {
+        eyebrow: "Where to live",
+        heading: "Find your area first. The home follows.",
+        body: null,
+      },
     },
     {
       key: "location_browsing",
@@ -356,6 +365,7 @@ function buyRentSections(opts: {
   hero: Vals;
   form: Vals;
   featured: Vals;
+  map: Vals;
   lead: Vals;
   ways: Vals;
   propTypes: Vals;
@@ -415,9 +425,14 @@ function buyRentSections(opts: {
       key: "map",
       label: "Map",
       description: "Interactive map of listings by community.",
-      dataNote: "Pins come from published areas and listings.",
-      fields: [],
-      defaults: {},
+      dataNote:
+        "Pins come from published areas and listings — only the copy above the map is editable here.",
+      fields: [
+        eyebrow(),
+        heading(),
+        body({ max: 400 }),
+      ],
+      defaults: opts.map,
     },
     {
       key: "lead_band",
@@ -571,6 +586,12 @@ const BUY: MasterPageDef = {
       featured_cta: "Browse all for sale",
       featured_cta_href: "/buy/search",
     },
+    map: {
+      eyebrow: "On the map",
+      heading: "Buy across Abu Dhabi's communities.",
+      body:
+        "Zoom into an area and tap a property to open its details — or pick a community below to focus the map.",
+    },
     lead: {
       eyebrow: "Talk to an advisor",
       title: "Tell us what you're after.",
@@ -696,6 +717,12 @@ const RENT: MasterPageDef = {
       featured_title: "Featured properties for rent",
       featured_cta: "Browse all for rent",
       featured_cta_href: "/rent/search",
+    },
+    map: {
+      // /rent renders AreaMapHome rather than the buy map, so its copy differs.
+      eyebrow: "Rental areas",
+      heading: "Rent by area. Start with the map.",
+      body: null,
     },
     lead: {
       eyebrow: "Get matched",
@@ -842,9 +869,19 @@ const OFF_PLAN: MasterPageDef = {
       key: "map",
       label: "Map explorer",
       description: "Map of off-plan projects by community.",
-      dataNote: "Pins come from published developments.",
-      fields: [],
-      defaults: {},
+      dataNote:
+        "Pins come from published developments — only the copy above the map is editable here.",
+      fields: [
+        eyebrow(),
+        heading(),
+        body({ max: 400 }),
+      ],
+      defaults: {
+        eyebrow: "On the map",
+        heading: "Explore new projects across Abu Dhabi.",
+        body:
+          "Zoom into a community and tap a project to open its details — or pick an area below to filter the launches.",
+      },
     },
     {
       key: "launches",
@@ -1040,9 +1077,18 @@ const AREAS: MasterPageDef = {
       key: "area_map",
       label: "Area map",
       description: "Interactive map of Abu Dhabi communities.",
-      dataNote: "Pins come from published areas and listings.",
-      fields: [],
-      defaults: {},
+      dataNote:
+        "Pins come from published areas and listings — only the copy above the map is editable here.",
+      fields: [
+        eyebrow(),
+        heading(),
+        body({ max: 400 }),
+      ],
+      defaults: {
+        eyebrow: "Where to live",
+        heading: "Find your area first. The home follows.",
+        body: null,
+      },
     },
     {
       key: "area_spotlights",

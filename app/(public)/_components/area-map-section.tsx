@@ -11,7 +11,16 @@
 import { listAreaPins, listAreaListingDots } from "@/lib/queries/area-map";
 import { AreaMapHome } from "./area-map/area-map-home";
 
-export async function AreaMapSection() {
+export async function AreaMapSection({
+  eyebrow,
+  heading,
+  body,
+}: {
+  /** Master-page copy. `null`/omitted → the component's own defaults. */
+  eyebrow?: string | null;
+  heading?: string | null;
+  body?: string | null;
+} = {}) {
   const [abuDhabi, dubai, dots] = await Promise.all([
     listAreaPins("abu-dhabi"),
     listAreaPins("dubai"),
@@ -23,5 +32,13 @@ export async function AreaMapSection() {
   // nothing rather than an empty frame.
   if (areas.length === 0) return null;
 
-  return <AreaMapHome areas={areas} dots={dots} />;
+  return (
+    <AreaMapHome
+      areas={areas}
+      dots={dots}
+      eyebrow={eyebrow}
+      heading={heading}
+      body={body}
+    />
+  );
 }
