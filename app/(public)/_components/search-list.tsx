@@ -29,6 +29,7 @@ import { CommuteTimeTool } from "./commute-time-tool";
 import { ListingCardPriced } from "./listing-card-priced";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
+type Form = Database["public"]["Enums"]["property_form"];
 
 const MODE_COPY: Record<
   Mode,
@@ -56,6 +57,77 @@ const MODE_COPY: Record<
   },
 };
 
+/**
+ * Completion-form copy for the sale sub-routes (/buy/ready, /buy/resale).
+ * When a `form` is passed this replaces MODE_COPY so each route gets its own
+ * h1 — a shared heading is what made "Ready and Resale both point at /buy"
+ * invisible for 27 migrations.
+ *
+ * `ready_new` is PROVENANCE, not age: it means the developer's first sale,
+ * never previously owned. Never describe it as "recently built".
+ *
+ * Partial because `off_plan` is declared in the enum but is not yet written
+ * or backfilled — off-plan is still expressed as `mode = 'off_plan'`, and we
+ * deliberately keep only one writable spelling of that concept.
+ */
+const FORM_COPY: Partial<
+  Record<Form, { eyebrow: string; title: string; lede: string }>
+> = {
+  ready_new: {
+    eyebrow: "Ready · new",
+    title: "Ready homes, never lived in",
+    lede: "Completed, handed over, and bought direct from the developer — a first sale with no previous owner on the title.",
+  },
+  resale: {
+    eyebrow: "Resale",
+    title: "Resale homes",
+    lede: "Completed homes bought from the current owner, with established communities, real service-charge history and a negotiable price.",
+  },
+};
+
+/**
+ * Empty state for the form sub-routes. A bare "0 properties" is a dead end on
+ * a route this narrow, so we always offer the two widening moves: all sale
+ * stock, and off-plan.
+ */
+function FormEmptyState({
+  form,
+  activeCount,
+}: {
+  form: Form;
+  activeCount: number;
+}) {
+  const label = form === "resale" ? "resale" : "ready, never-lived-in";
+  return (
+    <div className="py-16 md:py-20 max-w-[52ch] mx-auto text-center">
+      <p className="serif text-[22px] md:text-[26px] text-bz-ink">
+        {activeCount > 0
+          ? `No ${label} homes match those filters`
+          : `No ${label} homes are listed right now`}
+      </p>
+      <p className="mt-3 text-[14px] text-bz-muted">
+        {activeCount > 0
+          ? "Try widening the price range or clearing a filter — or step up to the full sale catalogue, where our advisors can flag matching stock before it publishes."
+          : "Our sale catalogue moves quickly. Browse everything currently for sale, or look at what is still under construction."}
+      </p>
+      <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
+        <Link
+          href="/buy/search"
+          className="inline-flex items-center h-9 px-4 rounded-md bg-bz-navy text-bz-bg text-[13px] font-medium"
+        >
+          All properties for sale
+        </Link>
+        <Link
+          href="/off-plan"
+          className="inline-flex items-center h-9 px-4 rounded-md border border-bz-border text-bz-ink-2 text-[13px] hover:border-bz-border-strong"
+        >
+          Browse off-plan
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 function badgeFor(row: ListingRow):
   | { label: string; kind: "ink" | "accent" }
   | undefined {
@@ -79,11 +151,18 @@ async function fetchAreas(): Promise<AreaOption[]> {
 
 export async function SearchList({
   mode,
+  form,
   filters,
   view = "grid",
   searchParams,
 }: {
   mode: Mode;
+  /**
+   * Optional completion-form narrowing for sale stock (/buy/ready,
+   * /buy/resale). Omitted by every other caller, which keeps showing the
+   * whole mode.
+   */
+  form?: Form;
   filters: PropertyFilters;
   view?: SearchView;
   searchParams: Record<string, string | string[] | undefined>;
@@ -92,10 +171,10 @@ export async function SearchList({
   const offset = (page - 1) * PAGE_SIZE;
 
   const [{ rows, total }, areas] = await Promise.all([
-    listPublishedProperties({ mode, filters, limit: PAGE_SIZE, offset }),
+    listPublishedProperties({ mode, form, filters, limit: PAGE_SIZE, offset }),
     fetchAreas(),
   ]);
-  const copy = MODE_COPY[mode];
+  const copy = (form ? FORM_COPY[form] : undefined) ?? MODE_COPY[mode];
 
   const selectedArea =
     filters.area && areas.length
@@ -152,11 +231,15 @@ export async function SearchList({
         </div>
 
         {rows.length === 0 ? (
-          <div className="py-20 text-center text-bz-muted">
-            {activeCount > 0
-              ? "No properties match those filters. Try widening the price range or clearing a filter."
-              : "No properties to show yet — seed the database to see real listings."}
-          </div>
+          form ? (
+            <FormEmptyState form={form} activeCount={activeCount} />
+          ) : (
+            <div className="py-20 text-center text-bz-muted">
+              {activeCount > 0
+                ? "No properties match those filters. Try widening the price range or clearing a filter."
+                : "No properties to show yet — seed the database to see real listings."}
+            </div>
+          )
         ) : view === "map" ? (
           <div className="rounded-lg overflow-hidden border border-bz-border h-[70vh] md:h-[640px]">
             <MapViewClient

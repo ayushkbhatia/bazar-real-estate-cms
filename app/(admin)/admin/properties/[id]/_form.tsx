@@ -9,6 +9,13 @@ import { toast } from "sonner";
 import {
   propertyEditSchema,
   type PropertyEditInput,
+  formForMode,
+  isSaleMode,
+  PROPERTY_FORMS,
+  PROPERTY_FORM_HELP,
+  PROPERTY_FORM_HINTS,
+  PROPERTY_FORM_LABELS,
+  PROPERTY_MODE_LABELS,
   PROPERTY_MODES,
   PROPERTY_TYPES,
   TENURES,
@@ -68,13 +75,6 @@ const TYPE_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
   commercial_villa: "Commercial villa",
 };
 
-const MODE_LABELS: Record<(typeof PROPERTY_MODES)[number], string> = {
-  buy: "For sale",
-  rent: "For rent",
-  off_plan: "Off-plan",
-  commercial: "Commercial",
-};
-
 const TENURE_LABELS: Record<(typeof TENURES)[number], string> = {
   freehold: "Freehold",
   leasehold: "Leasehold",
@@ -96,6 +96,7 @@ const FIELD_TAB: Partial<Record<keyof PropertyEditInput, string>> = {
   short_description: "overview",
   type: "overview",
   mode: "overview",
+  property_form: "overview",
   developer_id: "overview",
   price_aed: "pricing",
   service_charge_per_ft2: "pricing",
@@ -152,6 +153,8 @@ export function PropertyEditForm({
 
   const type = watch("type");
   const mode = watch("mode");
+  const propertyForm = watch("property_form") ?? null;
+  const showPropertyForm = isSaleMode(mode);
   const developerId = watch("developer_id") ?? "";
   const tenure = watch("tenure") ?? null;
   const furnishing = watch("furnishing") ?? null;
@@ -210,6 +213,18 @@ export function PropertyEditForm({
         ? message
         : "Some fields need fixing before saving.",
     );
+  };
+
+  /** Mode and property form are coupled: rent rows must have a null form
+   *  (DB CHECK `properties_form_rent_null_ck`) and the picker is hidden
+   *  outside sale modes. Clear the value on the way out so we never save a
+   *  combination the operator can no longer see or fix. */
+  const onModeChange = (next: PropertyEditInput["mode"]) => {
+    setValue("mode", next, { shouldDirty: true });
+    setValue("property_form", formForMode(next, propertyForm), {
+      shouldDirty: true,
+    });
+    setServerFieldErrors((prev) => ({ ...prev, property_form: "" }));
   };
 
   /** Save the developer as soon as it's picked — the publish gate reads it
@@ -312,9 +327,7 @@ export function PropertyEditForm({
               <Select
                 value={mode}
                 onValueChange={(v) =>
-                  setValue("mode", v as PropertyEditInput["mode"], {
-                    shouldDirty: true,
-                  })
+                  onModeChange(v as PropertyEditInput["mode"])
                 }
               >
                 <SelectTrigger id="mode">
@@ -323,7 +336,7 @@ export function PropertyEditForm({
                 <SelectContent>
                   {PROPERTY_MODES.map((m) => (
                     <SelectItem key={m} value={m}>
-                      {MODE_LABELS[m]}
+                      {PROPERTY_MODE_LABELS[m]}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -333,6 +346,47 @@ export function PropertyEditForm({
               />
             </div>
           </div>
+
+          {showPropertyForm ? (
+            <div className="flex flex-col gap-1.5 max-w-md">
+              <Label htmlFor="property_form">Property form</Label>
+              <Select
+                value={propertyForm ?? UNSET}
+                onValueChange={(v) =>
+                  setValue(
+                    "property_form",
+                    v === UNSET
+                      ? null
+                      : (v as NonNullable<PropertyEditInput["property_form"]>),
+                    { shouldDirty: true },
+                  )
+                }
+              >
+                <SelectTrigger id="property_form">
+                  <SelectValue placeholder="Not set" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={UNSET}>Not set</SelectItem>
+                  {PROPERTY_FORMS.map((f) => (
+                    <SelectItem key={f} value={f}>
+                      {PROPERTY_FORM_LABELS[f]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <span className="text-[11.5px] text-bz-muted">
+                {propertyForm
+                  ? PROPERTY_FORM_HINTS[propertyForm]
+                  : PROPERTY_FORM_HELP}
+              </span>
+              <FieldError
+                message={
+                  errors.property_form?.message ??
+                  serverFieldErrors.property_form
+                }
+              />
+            </div>
+          ) : null}
 
           <div className="flex flex-col gap-1.5 max-w-md">
             <Label htmlFor="developer_id">Developer</Label>

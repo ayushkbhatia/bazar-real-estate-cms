@@ -1,8 +1,22 @@
+import type { Database } from "@/db/types";
+
+type PropertyForm = Database["public"]["Enums"]["property_form"];
+type PropertyMode = Database["public"]["Enums"]["property_mode"];
+
+/** Modes that are sold rather than let. Only these are split into the
+ *  /buy/ready and /buy/resale routes, so only these need a form. */
+const SALE_MODES = ["buy", "commercial"] as const;
+
 export type PublishabilityInput = {
   status: string;
   /** Optional so callers that don't track the developer (e.g. the bulk-publish
    *  path) are unaffected; the gate only applies when a value is supplied. */
   has_developer?: boolean;
+  /** Optional pair, same precedent as `has_developer`: the sale-form check
+   *  only runs when the caller supplies BOTH values. The bulk path selects
+   *  neither column, so it is unaffected. */
+  mode?: PropertyMode;
+  property_form?: PropertyForm | null;
   listing_permit_no: string | null;
   listing_permit_expires_at: string | null; // ISO date
   slug: string | null;
@@ -42,6 +56,22 @@ export function evaluatePublishability(
     const developerPassed = input.has_developer === true;
     checks.push({ label: "Developer is set", passed: developerPassed });
     if (!developerPassed) blockers.push("Developer is missing");
+  }
+
+  // A sale listing with no form belongs to neither /buy/ready nor
+  // /buy/resale — it would publish and then be invisible on both. Rentals
+  // must keep the column NULL (DB check `properties_form_rent_null_ck`), and
+  // off-plan is still expressed through `mode`, so neither is gated here.
+  if (input.mode !== undefined && input.property_form !== undefined) {
+    const isSale = (SALE_MODES as readonly string[]).includes(input.mode);
+    if (isSale) {
+      const formPassed = input.property_form != null;
+      checks.push({ label: "Sale form is set", passed: formPassed });
+      if (!formPassed)
+        blockers.push(
+          "Sale form is missing — set it to Ready (new) or Resale in the Overview tab, or the listing shows on neither /buy/ready nor /buy/resale",
+        );
+    }
   }
 
   const titlePassed = !!(input.title && input.title.trim().length >= 3);

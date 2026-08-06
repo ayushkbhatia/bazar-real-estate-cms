@@ -8,6 +8,13 @@ import { toast } from "sonner";
 import {
   propertyCreateSchema,
   type PropertyCreateInput,
+  formForMode,
+  isSaleMode,
+  PROPERTY_FORMS,
+  PROPERTY_FORM_HELP,
+  PROPERTY_FORM_HINTS,
+  PROPERTY_FORM_LABELS,
+  PROPERTY_MODE_LABELS,
   PROPERTY_MODES,
   PROPERTY_TYPES,
 } from "@/lib/schemas/property";
@@ -44,12 +51,7 @@ const TYPE_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
   commercial_villa: "Commercial villa",
 };
 
-const MODE_LABELS: Record<(typeof PROPERTY_MODES)[number], string> = {
-  buy: "For sale",
-  rent: "For rent",
-  off_plan: "Off-plan",
-  commercial: "Commercial",
-};
+const UNSET = "__unset__";
 
 const DEFAULTS: PropertyCreateInput = {
   title: "",
@@ -58,6 +60,7 @@ const DEFAULTS: PropertyCreateInput = {
   price_aed: 0,
   beds: 1,
   baths: 1,
+  property_form: null,
 };
 
 export function NewPropertyForm() {
@@ -79,6 +82,16 @@ export function NewPropertyForm() {
 
   const type = watch("type");
   const mode = watch("mode");
+  const propertyForm = watch("property_form") ?? null;
+  const showForm = isSaleMode(mode);
+
+  /** Changing mode can invalidate the form value — a rent row with a form is
+   *  rejected by the DB CHECK, and the picker is hidden outside sale modes.
+   *  Clear it here rather than shipping a value the operator can't see. */
+  const onModeChange = (next: PropertyCreateInput["mode"]) => {
+    setValue("mode", next);
+    setValue("property_form", formForMode(next, propertyForm));
+  };
 
   const onSubmit = (values: PropertyCreateInput) => {
     setServerFieldErrors({});
@@ -139,7 +152,7 @@ export function NewPropertyForm() {
             <Select
               value={mode}
               onValueChange={(v) =>
-                setValue("mode", v as PropertyCreateInput["mode"])
+                onModeChange(v as PropertyCreateInput["mode"])
               }
             >
               <SelectTrigger id="mode">
@@ -148,7 +161,7 @@ export function NewPropertyForm() {
               <SelectContent>
                 {PROPERTY_MODES.map((m) => (
                   <SelectItem key={m} value={m}>
-                    {MODE_LABELS[m]}
+                    {PROPERTY_MODE_LABELS[m]}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -158,6 +171,46 @@ export function NewPropertyForm() {
             />
           </div>
         </div>
+
+        {showForm ? (
+          <div className="flex flex-col gap-1.5 max-w-sm">
+            <Label htmlFor="property_form">Property form</Label>
+            <Select
+              value={propertyForm ?? UNSET}
+              onValueChange={(v) =>
+                setValue(
+                  "property_form",
+                  v === UNSET
+                    ? null
+                    : (v as NonNullable<PropertyCreateInput["property_form"]>),
+                )
+              }
+            >
+              <SelectTrigger id="property_form">
+                <SelectValue placeholder="Not set" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={UNSET}>Not set</SelectItem>
+                {PROPERTY_FORMS.map((f) => (
+                  <SelectItem key={f} value={f}>
+                    {PROPERTY_FORM_LABELS[f]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-[11.5px] text-bz-muted">
+              {propertyForm
+                ? PROPERTY_FORM_HINTS[propertyForm]
+                : PROPERTY_FORM_HELP}
+            </span>
+            <FieldError
+              message={
+                errors.property_form?.message ??
+                serverFieldErrors.property_form
+              }
+            />
+          </div>
+        ) : null}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
           <div className="flex flex-col gap-1.5">

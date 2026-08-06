@@ -1947,6 +1947,7 @@ export type Database = {
           plot_ft2: number | null
           price_aed: number
           price_history: Json
+          property_form: Database["public"]["Enums"]["property_form"] | null
           published_at: string | null
           reference: string
           search_text: unknown
@@ -2000,6 +2001,7 @@ export type Database = {
           plot_ft2?: number | null
           price_aed: number
           price_history?: Json
+          property_form?: Database["public"]["Enums"]["property_form"] | null
           published_at?: string | null
           reference: string
           search_text?: unknown
@@ -2053,6 +2055,7 @@ export type Database = {
           plot_ft2?: number | null
           price_aed?: number
           price_history?: Json
+          property_form?: Database["public"]["Enums"]["property_form"] | null
           published_at?: string | null
           reference?: string
           search_text?: unknown
@@ -2802,7 +2805,6 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["staff_role"]
       }
-      deal_buyer_account: { Args: { deal_id: string }; Returns: string }
       functions_base_url: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
@@ -2938,6 +2940,7 @@ export type Database = {
         | "lead_reassigned"
         | "system"
       page_status: "draft" | "published"
+      property_form: "off_plan" | "ready_new" | "resale"
       property_furnishing: "unfurnished" | "semi" | "fully"
       property_media_role:
         | "hero"
@@ -3270,6 +3273,7 @@ export const Constants = {
         "system",
       ],
       page_status: ["draft", "published"],
+      property_form: ["off_plan", "ready_new", "resale"],
       property_furnishing: ["unfurnished", "semi", "fully"],
       property_media_role: [
         "hero",

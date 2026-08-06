@@ -10,6 +10,7 @@ import {
   type PublishabilityResult,
 } from "@/lib/publishability";
 import { logAudit } from "@/lib/audit";
+import { friendlyPropertyConstraintError } from "@/lib/property-constraints";
 import { requireRole } from "@/lib/auth";
 import { randomUUID } from "node:crypto";
 import {
@@ -34,6 +35,8 @@ async function revalidatePropertyPaths(propertyId: string) {
   if (data?.status === "published") {
     revalidatePath(propertyUrl(data));
     revalidatePath("/buy");
+    revalidatePath("/buy/ready");
+    revalidatePath("/buy/resale");
     revalidatePath("/buy/search");
     revalidatePath("/rent");
     revalidatePath("/rent/search");
@@ -103,6 +106,14 @@ export async function updateProperty(
         fieldErrors: { slug: "Already in use" },
       };
     }
+    const friendly = friendlyPropertyConstraintError(error);
+    if (friendly) {
+      return {
+        status: "error",
+        message: friendly.message,
+        fieldErrors: friendly.fieldErrors,
+      };
+    }
     return { status: "error", message: error.message };
   }
   if (!data) {
@@ -141,6 +152,8 @@ export async function updateProperty(
   if (data.status === "published") {
     revalidatePath(propertyUrl(data));
     revalidatePath("/buy");
+    revalidatePath("/buy/ready");
+    revalidatePath("/buy/resale");
     revalidatePath("/buy/search");
     revalidatePath("/rent");
     revalidatePath("/rent/search");
@@ -696,7 +709,7 @@ async function loadPublishabilityFor(propertyId: string): Promise<{
   const { data: p, error } = await supabase
     .from("properties")
     .select(
-      "id, slug, reference, status, title, price_aed, developer_id, listing_permit_no, listing_permit_expires_at",
+      "id, slug, reference, status, title, price_aed, developer_id, mode, property_form, listing_permit_no, listing_permit_expires_at",
     )
     .eq("id", propertyId)
     .maybeSingle();
@@ -707,6 +720,8 @@ async function loadPublishabilityFor(propertyId: string): Promise<{
   const result = evaluatePublishability({
     status: p.status,
     has_developer: p.developer_id != null,
+    mode: p.mode,
+    property_form: p.property_form,
     listing_permit_no: p.listing_permit_no,
     listing_permit_expires_at: p.listing_permit_expires_at,
     slug: p.slug,

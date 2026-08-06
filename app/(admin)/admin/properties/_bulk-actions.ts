@@ -17,6 +17,7 @@ import {
   listPropertiesByIdsForBulk,
   type BulkPropertyRow,
 } from "@/lib/queries/properties-bulk";
+import { isSaleMode } from "@/lib/schemas/property";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { requireRole } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
@@ -46,17 +47,42 @@ export async function bulkUpdateProperties(
   }
   await requireRole(PROPERTY_ROLES);
 
+  // A bulk patch can set mode, and `properties_form_rent_null_ck` forbids a
+  // rent row carrying a completion form. Selecting a mix of sale listings and
+  // switching them to rent would otherwise fail the whole batch with a raw
+  // 23514 that means nothing to an operator. Clearing the form alongside the
+  // mode is also the correct write: a rental has no completion form.
+  //
+  // Done here rather than in lib/queries/properties-bulk.ts because that file
+  // is shared and applies the patch verbatim.
+  const patched =
+    input.patch.mode !== undefined && !isSaleMode(input.patch.mode)
+      ? { ...input, patch: { ...input.patch, property_form: null } }
+      : input;
+
   const supabase = await createSupabaseServerClient();
   // The Supabase generated client type is structurally compatible with
   // BulkUpdateClient, but the deeply-typed PostgrestFilterBuilder triggers
   // ts2589 here. Cast through unknown — the runtime contract is honoured.
   const client = supabase as unknown as BulkUpdateClient;
-  const result = await applyBulkUpdate(client, input, logAudit);
+  const result = await applyBulkUpdate(client, patched, logAudit);
 
   if (result.status === "ok" && result.succeeded.length > 0) {
     revalidatePath("/admin/properties");
-    if (input.patch.status !== undefined) {
+    // Anything that moves a row between public collections has to invalidate
+    // them. `status` was the only trigger before, which silently missed a
+    // mode-only patch (buy → rent moves the row between two indexes) and
+    // would miss a form-only patch (ready ⇄ resale) too. The local widening
+    // keeps `property_form` honoured the moment the patch schema accepts it.
+    const patch: typeof input.patch & { property_form?: unknown } = input.patch;
+    const touchesPublicCollections =
+      patch.status !== undefined ||
+      patch.mode !== undefined ||
+      patch.property_form !== undefined;
+    if (touchesPublicCollections) {
       revalidatePath("/buy");
+      revalidatePath("/buy/ready");
+      revalidatePath("/buy/resale");
       revalidatePath("/buy/search");
       revalidatePath("/rent");
       revalidatePath("/rent/search");
@@ -361,6 +387,8 @@ export async function bulkArchiveProperties(
   if (afterRows.length > 0) {
     revalidatePath("/admin/properties");
     revalidatePath("/buy");
+    revalidatePath("/buy/ready");
+    revalidatePath("/buy/resale");
     revalidatePath("/buy/search");
     revalidatePath("/rent");
     revalidatePath("/rent/search");

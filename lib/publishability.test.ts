@@ -54,6 +54,87 @@ describe("evaluatePublishability", () => {
     expect(res.checks.some((c) => c.label.includes("Developer"))).toBe(false);
   });
 
+  describe("sale form", () => {
+    it("blocks a sale listing with no form, with an actionable blocker", () => {
+      for (const mode of ["buy", "commercial"] as const) {
+        const res = evaluatePublishability({
+          ...base(),
+          mode,
+          property_form: null,
+        });
+        expect(res.ok).toBe(false);
+        const blocker = res.blockers.find((b) => b.startsWith("Sale form"));
+        expect(blocker).toBeDefined();
+        // Actionable: names both choices and the consequence.
+        expect(blocker).toMatch(/Ready \(new\)/);
+        expect(blocker).toMatch(/Resale/);
+        expect(blocker).toMatch(/buy\/ready/);
+        expect(blocker).toMatch(/buy\/resale/);
+        expect(
+          res.checks.find((c) => c.label === "Sale form is set")?.passed,
+        ).toBe(false);
+      }
+    });
+
+    it("passes a sale listing that has a form", () => {
+      for (const form of ["ready_new", "resale"] as const) {
+        const res = evaluatePublishability({
+          ...base(),
+          mode: "buy",
+          property_form: form,
+        });
+        expect(res.ok).toBe(true);
+        expect(
+          res.checks.find((c) => c.label === "Sale form is set")?.passed,
+        ).toBe(true);
+      }
+    });
+
+    it("leaves rentals unaffected — no check, no blocker", () => {
+      const res = evaluatePublishability({
+        ...base(),
+        mode: "rent",
+        property_form: null,
+      });
+      expect(res.ok).toBe(true);
+      expect(res.blockers).toEqual([]);
+      expect(res.checks.some((c) => c.label === "Sale form is set")).toBe(false);
+    });
+
+    it("leaves off-plan unaffected — mode still expresses off-plan", () => {
+      const res = evaluatePublishability({
+        ...base(),
+        mode: "off_plan",
+        property_form: null,
+      });
+      expect(res.ok).toBe(true);
+      expect(res.checks.some((c) => c.label === "Sale form is set")).toBe(false);
+    });
+
+    it("skips the check entirely when the caller doesn't track the fields", () => {
+      // The bulk-publish path selects neither `mode` nor `property_form`.
+      const res = evaluatePublishability(base());
+      expect(res.ok).toBe(true);
+      expect(res.checks.some((c) => c.label === "Sale form is set")).toBe(false);
+
+      // …and half-supplied is still a skip, never a false block.
+      const modeOnly = evaluatePublishability({ ...base(), mode: "buy" });
+      expect(modeOnly.ok).toBe(true);
+      expect(modeOnly.checks.some((c) => c.label === "Sale form is set")).toBe(
+        false,
+      );
+
+      const formOnly = evaluatePublishability({
+        ...base(),
+        property_form: null,
+      });
+      expect(formOnly.ok).toBe(true);
+      expect(formOnly.checks.some((c) => c.label === "Sale form is set")).toBe(
+        false,
+      );
+    });
+  });
+
   it("blocks when permit is missing or expired", () => {
     const noPermit = evaluatePublishability({
       ...base(),

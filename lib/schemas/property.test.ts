@@ -9,6 +9,13 @@ import {
   propertyEditSchema,
   propertyCreateSchema,
   normaliseEditInput,
+  formForMode,
+  isSaleMode,
+  toSelectableForm,
+  PROPERTY_FORMS,
+  PROPERTY_FORM_HINTS,
+  PROPERTY_FORM_LABELS,
+  PROPERTY_MODES,
 } from "./property";
 
 describe("propertyOverviewSchema", () => {
@@ -328,5 +335,229 @@ describe("normaliseEditInput", () => {
       amenities: ["Pool", "pool ", " Rooftop   cinema", "", 7],
     }) as Record<string, unknown>;
     expect(out.amenities).toEqual(["Pool", "Rooftop cinema"]);
+  });
+});
+
+// --- Property form (provenance) -------------------------------------------
+//
+// `ready_new` means "developer first sale, never previously owned" — it is
+// provenance, not age. `off_plan` exists in the Postgres enum but is
+// deliberately not selectable: mode='off_plan' already says that.
+
+const BASE_OVERVIEW = {
+  title: "Saadiyat · 3-bed garden villa",
+  type: "villa",
+  developer_id: "11111111-1111-1111-1111-111111111111",
+} as const;
+
+describe("PROPERTY_FORMS", () => {
+  it("offers exactly the two ownership-history forms", () => {
+    expect(PROPERTY_FORMS).toEqual(["ready_new", "resale"]);
+  });
+
+  it("does not offer off_plan even though the DB enum has it", () => {
+    expect(PROPERTY_FORMS).not.toContain("off_plan");
+  });
+
+  it("labels every selectable form", () => {
+    for (const form of PROPERTY_FORMS) {
+      expect(PROPERTY_FORM_LABELS[form]).toBeTruthy();
+      expect(PROPERTY_FORM_HINTS[form]).toBeTruthy();
+    }
+    expect(PROPERTY_FORM_LABELS.ready_new).toBe("Ready (new)");
+  });
+
+  it("spells out that Ready (new) is about never having been owned", () => {
+    expect(PROPERTY_FORM_HINTS.ready_new).toMatch(/never previously owned/i);
+  });
+});
+
+describe("isSaleMode", () => {
+  it("treats buy and commercial as sale modes", () => {
+    expect(isSaleMode("buy")).toBe(true);
+    expect(isSaleMode("commercial")).toBe(true);
+  });
+
+  it("excludes rent and off_plan", () => {
+    expect(isSaleMode("rent")).toBe(false);
+    expect(isSaleMode("off_plan")).toBe(false);
+  });
+
+  it("is safe on null/undefined/garbage", () => {
+    expect(isSaleMode(null)).toBe(false);
+    expect(isSaleMode(undefined)).toBe(false);
+    expect(isSaleMode("nonsense")).toBe(false);
+  });
+});
+
+describe("toSelectableForm", () => {
+  it("passes through the two selectable forms", () => {
+    expect(toSelectableForm("ready_new")).toBe("ready_new");
+    expect(toSelectableForm("resale")).toBe("resale");
+  });
+
+  it("collapses off_plan to null so the picker never has to render it", () => {
+    expect(toSelectableForm("off_plan")).toBeNull();
+  });
+
+  it("collapses empty, null, undefined, and unknown values to null", () => {
+    expect(toSelectableForm("")).toBeNull();
+    expect(toSelectableForm(null)).toBeNull();
+    expect(toSelectableForm(undefined)).toBeNull();
+    expect(toSelectableForm("READY_NEW")).toBeNull();
+  });
+});
+
+describe("formForMode", () => {
+  it("keeps the form on sale modes", () => {
+    expect(formForMode("buy", "resale")).toBe("resale");
+    expect(formForMode("commercial", "ready_new")).toBe("ready_new");
+  });
+
+  it("clears the form when the mode moves to rent", () => {
+    expect(formForMode("rent", "resale")).toBeNull();
+  });
+
+  it("clears the form when the mode moves to off_plan", () => {
+    expect(formForMode("off_plan", "ready_new")).toBeNull();
+  });
+
+  it("stays null when there was no form to begin with", () => {
+    expect(formForMode("buy", null)).toBeNull();
+    expect(formForMode("buy", undefined)).toBeNull();
+  });
+});
+
+describe("property_form validation", () => {
+  it("accepts a form on a buy listing", () => {
+    const res = propertyOverviewSchema.safeParse({
+      ...BASE_OVERVIEW,
+      mode: "buy",
+      property_form: "ready_new",
+    });
+    expect(res.success).toBe(true);
+  });
+
+  it("accepts a form on a commercial listing", () => {
+    const res = propertyOverviewSchema.safeParse({
+      ...BASE_OVERVIEW,
+      mode: "commercial",
+      property_form: "resale",
+    });
+    expect(res.success).toBe(true);
+  });
+
+  it("rejects a form on a rent listing, flagged on property_form", () => {
+    const res = propertyOverviewSchema.safeParse({
+      ...BASE_OVERVIEW,
+      mode: "rent",
+      property_form: "resale",
+    });
+    expect(res.success).toBe(false);
+    if (!res.success) {
+      const issue = res.error.issues.find(
+        (i) => i.path[0] === "property_form",
+      );
+      expect(issue?.message).toMatch(/rent/i);
+    }
+  });
+
+  it("accepts a null form on every mode", () => {
+    for (const mode of PROPERTY_MODES) {
+      expect(
+        propertyOverviewSchema.safeParse({
+          ...BASE_OVERVIEW,
+          mode,
+          property_form: null,
+        }).success,
+      ).toBe(true);
+    }
+  });
+
+  it("accepts an omitted form on every mode", () => {
+    for (const mode of PROPERTY_MODES) {
+      expect(
+        propertyOverviewSchema.safeParse({ ...BASE_OVERVIEW, mode }).success,
+      ).toBe(true);
+    }
+  });
+
+  it("rejects off_plan as a property_form value", () => {
+    const res = propertyOverviewSchema.safeParse({
+      ...BASE_OVERVIEW,
+      mode: "buy",
+      property_form: "off_plan",
+    });
+    expect(res.success).toBe(false);
+  });
+
+  it("applies the same rule on the full edit schema", () => {
+    const base = {
+      ...BASE_OVERVIEW,
+      price_aed: 3_200_000,
+      beds: 3,
+      baths: 4,
+      amenities: [],
+      slug: "saadiyat-3-bed-garden-villa",
+    };
+    expect(
+      propertyEditSchema.safeParse({
+        ...base,
+        mode: "buy",
+        property_form: "resale",
+      }).success,
+    ).toBe(true);
+    expect(
+      propertyEditSchema.safeParse({
+        ...base,
+        mode: "rent",
+        property_form: "resale",
+      }).success,
+    ).toBe(false);
+    expect(
+      propertyEditSchema.safeParse({
+        ...base,
+        mode: "rent",
+        property_form: null,
+      }).success,
+    ).toBe(true);
+  });
+
+  it("applies the same rule on the create schema", () => {
+    const base = {
+      title: "New listing",
+      type: "apartment",
+      price_aed: 1_000_000,
+      beds: 2,
+      baths: 2,
+    };
+    expect(
+      propertyCreateSchema.safeParse({
+        ...base,
+        mode: "buy",
+        property_form: "ready_new",
+      }).success,
+    ).toBe(true);
+    expect(
+      propertyCreateSchema.safeParse({
+        ...base,
+        mode: "rent",
+        property_form: "ready_new",
+      }).success,
+    ).toBe(false);
+    expect(
+      propertyCreateSchema.safeParse({ ...base, mode: "rent" }).success,
+    ).toBe(true);
+  });
+
+  it("normalises a blank form field to null before validation", () => {
+    const out = normaliseEditInput({ property_form: "" }) as Record<
+      string,
+      unknown
+    >;
+    expect(out.property_form).toBeNull();
+
+    const missing = normaliseEditInput({}) as Record<string, unknown>;
+    expect(missing.property_form).toBeNull();
   });
 });
