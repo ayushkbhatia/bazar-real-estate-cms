@@ -8,9 +8,12 @@ import {
   developmentUrl,
   getDevelopmentForAdmin,
 } from "@/lib/queries/developments";
-import type { DevelopmentEditInput } from "@/lib/schemas/development";
+import {
+  evaluateDevelopmentHeroFacts,
+  type DevelopmentEditInput,
+} from "@/lib/schemas/development";
 import { DevelopmentEditForm } from "./_form";
-import { PublishCard } from "./_publish-card";
+import { PublishCard } from "../_publish-card";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +69,14 @@ export default async function AdminDevelopmentEditPage({ params }: PageProps) {
   };
 
   const isPublished = development.published_at != null;
+  // The same gate the publish action enforces, evaluated here so the card can
+  // name what is outstanding instead of failing on click.
+  const heroFactsGate = evaluateDevelopmentHeroFacts({
+    starting_price: initial.starting_price ?? null,
+    bedrooms_text: initial.bedrooms_text ?? null,
+    total_units: initial.total_units ?? null,
+    handover_date: initial.handover_date ?? null,
+  });
 
   return (
     <CmsShell
@@ -120,6 +131,9 @@ export default async function AdminDevelopmentEditPage({ params }: PageProps) {
           <PublishCard
             developmentId={development.id}
             publishedAt={development.published_at}
+            slug={development.slug}
+            checks={heroFactsGate.checks}
+            fixHref={`/admin/pages/sub/development/${development.slug}`}
           />
         </aside>
       </div>
