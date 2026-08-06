@@ -167,6 +167,13 @@ export type SectionDef = {
    */
   locked?: boolean;
   /**
+   * Whether the section is on for a page nobody has edited yet. Defaults to
+   * true — a section declared in code shows up. Set false for one the page
+   * keeps but doesn't lead with: the editor still sees it, with its copy and
+   * its defaults intact, and can switch it back on.
+   */
+  defaultEnabled?: boolean;
+  /**
    * Content the section pulls from elsewhere (listings, developments, areas),
    * named so the editor can say what is *not* editable here.
    */
