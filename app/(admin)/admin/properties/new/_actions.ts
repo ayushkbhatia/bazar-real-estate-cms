@@ -9,6 +9,7 @@ import {
   type PropertyCreateInput,
 } from "@/lib/schemas/property";
 import { generatePropertyReference, slugify } from "@/lib/slug";
+import { friendlyPropertyConstraintError } from "@/lib/property-constraints";
 import { requireRole } from "@/lib/auth";
 
 const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
@@ -32,6 +33,10 @@ function normaliseCreateInput(raw: Record<string, unknown>): unknown {
       if (!Number.isNaN(n)) out[k] = n;
     }
   }
+  // Absent / blank property form is null, not undefined — the column is
+  // nullable and rent listings must be null.
+  if (out.property_form === "" || out.property_form === undefined)
+    out.property_form = null;
   return out;
 }
 
@@ -103,6 +108,13 @@ export async function createProperty(
     }
 
     if (error) {
+      const friendly = friendlyPropertyConstraintError(error);
+      if (friendly)
+        return {
+          status: "error",
+          message: friendly.message,
+          fieldErrors: friendly.fieldErrors,
+        };
       return { status: "error", message: error.message };
     }
   }

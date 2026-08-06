@@ -65,6 +65,31 @@ describe("<PublishCard>", () => {
     expect(screen.getByText(/Pick a developer in the/i)).toBeInTheDocument();
   });
 
+  it("blocks and explains when a sale listing has no form", () => {
+    render(
+      <PublishCard
+        propertyId="abc"
+        status="draft"
+        input={{ ...READY_INPUT, mode: "buy", property_form: null }}
+      />,
+    );
+    expect(screen.getByRole("button", { name: /publish/i })).toBeDisabled();
+    expect(screen.getByText("Sale form is set")).toBeInTheDocument();
+    expect(screen.getByText(/Choose Ready \(new\) or Resale/i)).toBeInTheDocument();
+  });
+
+  it("does not show a form check on a rental", () => {
+    render(
+      <PublishCard
+        propertyId="abc"
+        status="draft"
+        input={{ ...READY_INPUT, mode: "rent", property_form: null }}
+      />,
+    );
+    expect(screen.getByRole("button", { name: /publish/i })).toBeEnabled();
+    expect(screen.queryByText("Sale form is set")).not.toBeInTheDocument();
+  });
+
   it("blocks and explains when the listing permit is missing or expired", () => {
     const { unmount } = render(
       <PublishCard

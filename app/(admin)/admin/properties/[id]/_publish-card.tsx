@@ -66,6 +66,9 @@ export function PublishCard({ propertyId, status, input }: Props) {
   const developerCheckFailing = checks.some(
     (c) => !c.passed && c.label.toLowerCase().includes("developer"),
   );
+  const formCheckFailing = checks.some(
+    (c) => !c.passed && c.label.toLowerCase().includes("sale form"),
+  );
 
   function onPublish() {
     startPublishing(async () => {
@@ -144,6 +147,13 @@ export function PublishCard({ propertyId, status, input }: Props) {
             Pick a developer in the{" "}
             <span className="text-bz-ink-2">Overview</span> tab — it saves as
             soon as you choose one.
+          </p>
+        ) : null}
+        {formCheckFailing ? (
+          <p className="mt-2 text-[11.5px] text-bz-muted">
+            Choose Ready (new) or Resale in the{" "}
+            <span className="text-bz-ink-2">Overview</span> tab — without it the
+            listing shows on neither Ready nor Resale.
           </p>
         ) : null}
         {permitCheckFailing ? (

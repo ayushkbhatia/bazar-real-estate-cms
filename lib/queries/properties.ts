@@ -7,9 +7,10 @@ import type { Database } from "@/db/types";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
 type Status = Database["public"]["Enums"]["property_status"];
+type Form = Database["public"]["Enums"]["property_form"];
 
 const LISTING_FIELDS =
-  "id, reference, slug, title, short_description, price_aed, mode, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text))";
+  "id, reference, slug, title, short_description, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text))";
 
 const DETAIL_FIELDS =
   "id, reference, slug, title, short_description, description, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, service_charge_per_ft2, amenities, flags, dld_plot_number, listing_permit_no, address_line, floor, published_at, created_at, updated_at, areas:area_id(name, slug), developments:development_id(name, slug), property_media(role, sort_order, media:media_assets(storage_key, filename, alt_text))";
@@ -46,6 +47,8 @@ export type ListingRow = {
   short_description: string | null;
   price_aed: number;
   mode: Mode;
+  /** Buy-side completion form; null for rentals and unclassified sale stock. */
+  property_form: Form | null;
   status: Status;
   type: Database["public"]["Enums"]["property_type"];
   beds: number;
@@ -101,6 +104,8 @@ async function resolveAreaId(
 /** List published listings for the public marketplace. */
 export async function listPublishedProperties(opts: {
   mode?: Mode;
+  /** Narrows sale stock to one completion form — drives /buy/ready and /buy/resale. */
+  form?: Form;
   filters?: PropertyFilters;
   limit?: number;
   offset?: number;
@@ -115,6 +120,7 @@ export async function listPublishedProperties(opts: {
     .is("deleted_at", null);
 
   if (opts.mode) query = query.eq("mode", opts.mode);
+  if (opts.form) query = query.eq("property_form", opts.form);
 
   const filters = opts.filters;
   if (filters) {

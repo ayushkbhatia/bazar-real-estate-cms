@@ -3,6 +3,73 @@ import { UUID_SHAPE_RE } from "@/lib/uuid";
 import { normaliseAmenityList } from "@/lib/amenities";
 
 export const PROPERTY_MODES = ["buy", "rent", "off_plan", "commercial"] as const;
+export type PropertyMode = (typeof PROPERTY_MODES)[number];
+
+/** Single source of truth for mode labels — both the create sheet and the
+ *  property editor read this instead of keeping their own copies. */
+export const PROPERTY_MODE_LABELS: Record<PropertyMode, string> = {
+  buy: "For sale",
+  rent: "For rent",
+  off_plan: "Off-plan",
+  commercial: "Commercial",
+};
+
+/** Property form — the *provenance* of a sale listing.
+ *
+ *  The Postgres enum `public.property_form` also carries 'off_plan', but that
+ *  value is deliberately NOT offered here: off-plan is already expressed by
+ *  `mode = 'off_plan'`, and two writable spellings of one concept is a trap.
+ *  So the only selectable forms are the two that describe ownership history.
+ */
+export const PROPERTY_FORMS = ["ready_new", "resale"] as const;
+export type PropertyForm = (typeof PROPERTY_FORMS)[number];
+
+export const PROPERTY_FORM_LABELS: Record<PropertyForm, string> = {
+  ready_new: "Ready (new)",
+  resale: "Resale",
+};
+
+/** Operator-facing one-liners. "Ready (new)" is about never-having-been-owned,
+ *  not about the building being recently finished — say so in the UI. */
+export const PROPERTY_FORM_HINTS: Record<PropertyForm, string> = {
+  ready_new:
+    "Completed and sold directly by the developer — never previously owned. Not about how recently it was built.",
+  resale: "Previously owned; being sold on by the current owner.",
+};
+
+/** Shown under the picker before anything is chosen. */
+export const PROPERTY_FORM_HELP =
+  "How this home is coming to market. Ready (new): the developer's first sale, never previously owned. Resale: previously owned.";
+
+/** Modes that may carry a property form. Rent must not: the DB CHECK
+ *  `properties_form_rent_null_ck` rejects a rent row with a non-null form,
+ *  and off-plan says the same thing through `mode` already. */
+const SALE_MODES: readonly PropertyMode[] = ["buy", "commercial"];
+
+export function isSaleMode(mode: string | null | undefined): boolean {
+  return SALE_MODES.includes(mode as PropertyMode);
+}
+
+/** Narrow any stored/loaded value to a form the pickers can actually show.
+ *  'off_plan', unknown strings, and empty strings all collapse to null. */
+export function toSelectableForm(
+  value: string | null | undefined,
+): PropertyForm | null {
+  return PROPERTY_FORMS.includes(value as PropertyForm)
+    ? (value as PropertyForm)
+    : null;
+}
+
+/** What the form value must become for a given mode — null outside sale
+ *  modes. Used by the pickers when the operator switches mode, so we never
+ *  submit a combination the DB constraint would reject. */
+export function formForMode(
+  mode: string | null | undefined,
+  form: string | null | undefined,
+): PropertyForm | null {
+  return isSaleMode(mode) ? toSelectableForm(form) : null;
+}
+
 export const PROPERTY_TYPES = [
   "apartment",
   "villa",
@@ -36,6 +103,14 @@ const uuidOrEmpty = z
   .transform((v) => (v ? v : null))
   .nullable()
   .optional();
+/** No `""` member and no transform on purpose: keeping the input and output
+ *  types identical is what lets `zodResolver` type-check against
+ *  `PropertyEditInput` / `PropertyCreateInput`. Blank strings are folded to
+ *  null by the normalisers before they ever reach the schema. */
+const propertyFormField = z
+  .enum(PROPERTY_FORMS, { message: "Pick Ready (new) or Resale" })
+  .nullable()
+  .optional();
 const isoDateOrEmpty = z
   .union([z.string().date(), z.literal(""), z.null()])
   .transform((v) => (v ? v : null))
@@ -51,7 +126,7 @@ const isoDateOrEmpty = z
  *  loading `initial` values, the action that constructs update objects)
  *  compile without changes. Migration 0020 defaults them to
  *  false/null at the database layer. */
-export const propertyOverviewSchema = z.object({
+const propertyOverviewFields = z.object({
   title: z.string().min(3, "Title is too short").max(160, "Title is too long"),
   short_description: z
     .string()
@@ -71,7 +146,30 @@ export const propertyOverviewSchema = z.object({
     .nullable()
     .optional(),
   featured_on_homepage: z.boolean().optional(),
+  /** Sale-listing provenance. Null for rent (DB CHECK) and for anything the
+   *  lister hasn't classified yet. */
+  property_form: propertyFormField,
 });
+
+/** Shared rule, applied to every schema that carries both `mode` and
+ *  `property_form`: rent listings must not carry a form. Mirrors the DB CHECK
+ *  `properties_form_rent_null_ck`, so an operator sees a field error instead
+ *  of a raw Postgres 23514. */
+function refineRentHasNoForm(
+  val: { mode?: string | null; property_form?: string | null },
+  ctx: z.RefinementCtx,
+) {
+  if (val.mode === "rent" && val.property_form != null) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["property_form"],
+      message: "Rent listings cannot have a property form.",
+    });
+  }
+}
+
+export const propertyOverviewSchema =
+  propertyOverviewFields.superRefine(refineRentHasNoForm);
 
 /** Pricing tab. */
 export const propertyPricingSchema = z.object({
@@ -187,28 +285,32 @@ export const propertySeoSchema = z.object({
  *  Compliance lives in PublishCard with its own immediate-save UI; it is
  *  not part of this form.
  */
-export const propertyEditSchema = propertyOverviewSchema
+export const propertyEditSchema = propertyOverviewFields
   .merge(propertyPricingSchema)
   .merge(propertyDetailsSchema)
   .merge(propertyLocationSchema)
   .merge(propertyAmenitiesSchema)
-  .merge(propertySeoSchema);
+  .merge(propertySeoSchema)
+  .superRefine(refineRentHasNoForm);
 
 export type PropertyEditInput = z.infer<typeof propertyEditSchema>;
 
 /** Minimal payload for creating a new property — fields the staff member
  *  fills in the "New property" sheet. The rest is filled with defaults. */
-export const propertyCreateSchema = z.object({
-  title: z.string().min(3, "Title is too short").max(160, "Title is too long"),
-  type: z.enum(PROPERTY_TYPES),
-  mode: z.enum(PROPERTY_MODES),
-  price_aed: z
-    .number({ message: "Price is required" })
-    .positive("Price must be positive")
-    .max(1_000_000_000),
-  beds: z.number().int().min(0).max(50),
-  baths: z.number().int().min(0).max(50),
-});
+export const propertyCreateSchema = z
+  .object({
+    title: z.string().min(3, "Title is too short").max(160, "Title is too long"),
+    type: z.enum(PROPERTY_TYPES),
+    mode: z.enum(PROPERTY_MODES),
+    price_aed: z
+      .number({ message: "Price is required" })
+      .positive("Price must be positive")
+      .max(1_000_000_000),
+    beds: z.number().int().min(0).max(50),
+    baths: z.number().int().min(0).max(50),
+    property_form: propertyFormField,
+  })
+  .superRefine(refineRentHasNoForm);
 
 export type PropertyCreateInput = z.infer<typeof propertyCreateSchema>;
 
@@ -231,6 +333,7 @@ const NULLABLE_TEXT_FIELDS = [
   "meta_title",
   "meta_description",
   "advisor_note",
+  "property_form",
 ] as const;
 
 const NULLABLE_NUMBER_FIELDS = [

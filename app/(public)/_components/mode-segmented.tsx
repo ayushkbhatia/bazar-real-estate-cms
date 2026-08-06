@@ -11,6 +11,23 @@ const MODES = [
 ] as const;
 
 /**
+ * Which pill owns the current pathname.
+ *
+ * Buy also owns its completion-form sub-routes (/buy/ready, /buy/resale):
+ * those are still the Buy transaction mode, narrowed on a second axis. An
+ * exact `pathname === path` test left the whole strip with nothing selected
+ * and nothing aria-checked on those routes.
+ *
+ * Deliberately no Ready/Resale pills here — this strip is the transaction
+ * mode axis, and putting completion forms in it re-conflates the two.
+ */
+function isActivePath(pathname: string, path: string): boolean {
+  if (pathname === path) return true;
+  if (path === "/buy/search") return pathname.startsWith("/buy/");
+  return false;
+}
+
+/**
  * Sprint 4 (backfilled): mode segmented control rendered inside the
  * filter bar on /buy /rent /off-plan /commercial. Switches between modes
  * while preserving every other filter in the querystring.
@@ -33,7 +50,7 @@ export function ModeSegmented() {
       className="inline-flex rounded-md border border-bz-border bg-bz-bg p-0.5"
     >
       {MODES.map(({ value, label, path }) => {
-        const active = pathname === path;
+        const active = isActivePath(pathname, path);
         return (
           <button
             key={value}

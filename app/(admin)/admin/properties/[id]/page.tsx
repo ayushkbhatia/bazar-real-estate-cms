@@ -11,7 +11,10 @@ import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
 import { toOptions } from "@/lib/amenities";
 import { PresenceBanner } from "@/lib/realtime/presence-banner";
 import { PresencePile } from "@/lib/realtime/presence-pile";
-import { type PropertyEditInput } from "@/lib/schemas/property";
+import {
+  toSelectableForm,
+  type PropertyEditInput,
+} from "@/lib/schemas/property";
 import {
   PropertyEditForm,
   type AreaOption,
@@ -34,7 +37,7 @@ async function fetchPropertyForEdit(id: string) {
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, reference, slug, title, short_description, type, mode, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, assigned_agent_id, geo",
+      "id, reference, slug, title, short_description, type, mode, property_form, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, assigned_agent_id, geo",
     )
     .eq("id", id)
     .maybeSingle();
@@ -156,6 +159,10 @@ export default async function PropertyEditPage({ params }: PageProps) {
     short_description: property.short_description,
     type: property.type,
     mode: property.mode,
+    // 'off_plan' exists in the DB enum but is not offered in the picker, so
+    // narrow anything unselectable to null rather than seeding the form with
+    // a value it can't render.
+    property_form: toSelectableForm(property.property_form),
     price_aed: Number(property.price_aed),
     service_charge_per_ft2:
       property.service_charge_per_ft2 != null
@@ -213,6 +220,8 @@ export default async function PropertyEditPage({ params }: PageProps) {
   const publishInput: PublishInput = {
     status: property.status,
     has_developer: initial.developer_id !== "",
+    mode: property.mode,
+    property_form: property.property_form,
     listing_permit_no: property.listing_permit_no,
     listing_permit_expires_at: property.listing_permit_expires_at,
     slug: property.slug,
