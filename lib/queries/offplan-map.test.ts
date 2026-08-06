@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildOffplanMap } from "./offplan-map";
+import { buildOffplanMap, parseGroupLimit } from "./offplan-map";
 import type { DevelopmentIndexRow } from "./developments";
 
 /** Minimal published-development row for the pure transform. */
@@ -95,5 +95,20 @@ describe("buildOffplanMap", () => {
     expect(groups.map((g) => g.slug)).not.toContain("nowhere");
     // …but they remain selectable in the form (the whole catalogue).
     expect(options).toHaveLength(6);
+  });
+});
+
+describe("parseGroupLimit", () => {
+  it("reads a positive whole number", () => {
+    expect(parseGroupLimit("12")).toBe(12);
+    expect(parseGroupLimit("  6 ")).toBe(6);
+  });
+
+  it("treats anything that isn't one as no cap, so a rail is never empty", () => {
+    // The master-page editor has no number field, so this is free text and an
+    // editor can type whatever they like into it.
+    for (const bad of [null, undefined, "", "   ", "0", "-3", "twelve", "3.5", "1e3"]) {
+      expect(parseGroupLimit(bad), `${JSON.stringify(bad)} should mean no cap`).toBeNull();
+    }
   });
 });

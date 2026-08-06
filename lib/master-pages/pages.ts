@@ -880,19 +880,35 @@ const OFF_PLAN: MasterPageDef = {
     {
       key: "map",
       label: "Map explorer",
-      description: "Map of off-plan projects by community.",
+      description:
+        "Map of off-plan projects by community, and the per-area project rails beneath it.",
       dataNote:
-        "Pins come from published developments — only the copy above the map is editable here.",
+        "Pins and project cards come from published developments — an area's rail fills itself as projects are published to it. The copy and the two rail settings below are what's editable here.",
       fields: [
         eyebrow(),
         heading(),
         body({ max: 400 }),
+        text("group_limit", "Projects per area", {
+          max: 3,
+          optional: true,
+          help: "How many cards each area's rail holds, e.g. 12. Leave blank to include every published project — the rail scrolls either way.",
+        }),
+        text("group_cta_label", "Area link label", {
+          max: 60,
+          optional: true,
+          help: 'Shown beside each area heading. Leave blank for "View all in <area>".',
+        }),
       ],
       defaults: {
         eyebrow: "On the map",
         heading: "Explore new projects across Abu Dhabi.",
         body:
           "Zoom into a community and tap a project to open its details — or pick an area below to filter the launches.",
+        // Blank on purpose: every project an area has published keeps showing,
+        // exactly as before the rail existed. The cap is there for whoever
+        // wants one, not imposed on a page that never had one.
+        group_limit: null,
+        group_cta_label: null,
       },
     },
     {
