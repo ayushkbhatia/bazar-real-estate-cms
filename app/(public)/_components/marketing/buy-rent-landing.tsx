@@ -183,7 +183,7 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           // background-image or a gradient, so it walks up to the nearest
           // opaque ancestor colour; without this it found the page's #faf8f5
           // and read the headline as white-on-cream at 1.05:1.
-          heroImage && "relative isolate overflow-hidden bg-bz-navy text-white",
+          heroImage && "relative isolate overflow-hidden bg-bz-navy",
         )}
       >
         {heroImage ? (
@@ -229,7 +229,14 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
             heroWrap,
           )}
         >
-          <div>
+          {/* The light copy belongs to this column, not to the section. On the
+              section it also cascaded into the enquiry card beside it, whose
+              own surface stays white — leaving that card's heading, its field
+              labels and the visitor's typed input white-on-white. Axe reports
+              that as `incomplete` ("1:1 contrast ratio with the background")
+              rather than a violation, so it survived the a11y spec; see
+              e2e/hero-media-contrast.spec.ts. */}
+          <div className={heroImage ? "text-white" : undefined}>
             {/* /80 rather than /70: at 11px this is the first thing to go, and
                 the lighter scrim gives it less to sit on than it used to. */}
             <Eyebrow className={heroImage ? "text-white/80" : undefined}>
