@@ -73,7 +73,11 @@ export function BrochureGate({
         phone: phone.trim(),
         source: "brochure",
         development_id: developmentId,
-        brief_raw: `Brochure request — ${developmentName}.`,
+        // `message` — not `brief_raw`. The server action validates against
+        // enquirySchema and maps message → enquiries.brief_raw itself; sending
+        // the column name failed the "Tell us a bit more" check and lost the
+        // lead at the last step.
+        message: `Brochure request — ${developmentName}.`,
       });
       if (result.status === "error") {
         toast.error(result.message);

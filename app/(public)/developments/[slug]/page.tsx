@@ -2,7 +2,7 @@ import * as React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { Calendar, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ import { PaymentPlanCalculator } from "./_payment-plan";
 import { UnitsTable } from "./_units-table";
 import { LeadAdvisorBanner } from "./_components/lead-advisor-banner";
 import { BrochureGate } from "./_components/brochure-gate";
+import { InterestDialog } from "./_components/interest-dialog";
 import { DevelopmentFaq } from "./_components/development-faq";
 import { DeveloperProjectsStrip } from "./_components/developer-projects-strip";
 import { NearbyDevelopments } from "./_components/nearby-developments";
@@ -647,17 +648,21 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   label={`Payment plan · ${development.payment_plan.name}`}
                 />
               ) : null}
-              <div className="ml-auto flex gap-2 items-end">
+              {/* Wraps on narrow screens — "Register your interest" is a wider
+                  label than the dead "Book a viewing" button it replaced, and
+                  the pair ran off the right edge at 375px. */}
+              <div className="w-full md:w-auto md:ml-auto flex flex-wrap gap-2 items-end">
                 <BrochureGate
                   developmentName={development.name}
                   developmentId={development.id}
                   brochureUrl={brochure?.url ?? null}
                   buttonLabel={sv("hero", "brochure_label")}
                 />
-                <Button className="bg-white text-bz-ink hover:bg-white/90">
-                  <Calendar size={14} strokeWidth={1.6} />
-                  Book a viewing
-                </Button>
+                <InterestDialog
+                  developmentName={development.name}
+                  developmentId={development.id}
+                  buttonLabel={sv("hero", "interest_label")}
+                />
               </div>
             </div>
           </div>
