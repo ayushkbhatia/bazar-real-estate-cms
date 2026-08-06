@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
-import { buildOffplanMap } from "@/lib/queries/offplan-map";
+import { buildOffplanMap, parseGroupLimit } from "@/lib/queries/offplan-map";
 import { searchRedirectTarget } from "../_components/search-redirect";
 import { MHero } from "../_components/marketing/m-hero";
 import { SectionHead } from "../_components/marketing/section-head";
@@ -91,6 +91,11 @@ export default async function NewProjectsPage({ searchParams }: PageProps) {
   const types = content.section("prop_types")?.values ?? {};
   const launches = content.section("launches")?.values ?? {};
   const mapCopy = content.section("map")?.values ?? {};
+  // Rail settings from the master page. A blank cap means every published
+  // project in the area stays on the rail, which is what the page did before
+  // the rail existed.
+  const groupLimit = parseGroupLimit(str(mapCopy, "group_limit"));
+  const groupCtaLabel = str(mapCopy, "group_cta_label");
   const locations = content.section("locations")?.values ?? {};
   const why = content.section("why")?.values ?? {};
   const faq = content.section("faq")?.values ?? {};
@@ -160,14 +165,14 @@ export default async function NewProjectsPage({ searchParams }: PageProps) {
           groups={groups.map((g) => ({
             slug: g.slug,
             name: g.name,
+            // The true published total, not the number of cards on the rail —
+            // it is what makes the "view all" link mean something.
             count: g.count,
-            cards: (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {g.projects.map((d) => (
-                  <DevelopmentCard key={d.id} d={d} />
-                ))}
-              </div>
+            cards: (groupLimit ? g.projects.slice(0, groupLimit) : g.projects).map(
+              (d) => <DevelopmentCard key={d.id} d={d} />,
             ),
+            viewAllHref: `/off-plan/search?area=${encodeURIComponent(g.slug)}`,
+            viewAllLabel: groupCtaLabel,
           }))}
         />
       ) : null,

@@ -154,3 +154,21 @@ export function buildOffplanMap(
 
   return { pins, dots, groups, options };
 }
+
+/**
+ * How many cards an area's rail should hold, read from the "Projects per area"
+ * field on the New Projects master page.
+ *
+ * The field is free text because the master-page editor has no number kind, so
+ * anything that isn't a positive whole number — blank, "0", "twelve", "-3" —
+ * means "no cap" rather than an empty rail. `count` on the group stays the
+ * true total either way, so an area capped at 12 still reads "30 projects" and
+ * still links out to the rest.
+ */
+export function parseGroupLimit(value: string | null | undefined): number | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!/^\d+$/.test(trimmed)) return null;
+  const n = Number(trimmed);
+  return Number.isSafeInteger(n) && n > 0 ? n : null;
+}

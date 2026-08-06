@@ -16,9 +16,9 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MapPin } from "lucide-react";
 import { AreaMapLazy } from "../area-map/area-map-lazy";
 import { AreaChips } from "../area-map/area-chips";
+import { ProjectCarousel } from "./project-carousel";
 import { fluid } from "../marketing/fluid";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { AreaPin, AreaDot } from "@/lib/queries/area-map";
@@ -26,9 +26,17 @@ import type { AreaPin, AreaDot } from "@/lib/queries/area-map";
 export type OffplanGroupView = {
   slug: string;
   name: string;
+  /** Published projects in the area — may exceed the number of cards shown. */
   count: number;
-  /** Server-rendered grid of DevelopmentCards for this area. */
-  cards: React.ReactNode;
+  /**
+   * Server-rendered DevelopmentCards, one node per project. An array rather
+   * than a single grid node because the rail has to lay the cards out itself:
+   * it sizes each one to the column count and snaps between them.
+   */
+  cards: React.ReactNode[];
+  /** "View all" target for the area, when one resolves. */
+  viewAllHref?: string | null;
+  viewAllLabel?: string | null;
 };
 
 const COUNT_NOUN = { singular: "project", plural: "projects" };
@@ -145,24 +153,17 @@ export function OffplanMapExplorer({
         ) : null}
       </div>
 
-      {/* Projects, grouped by area */}
+      {/* Projects, grouped by area — one rail each, however many there are */}
       <div className="mt-12 md:mt-14 flex flex-col gap-12 md:gap-14">
         {visibleGroups.map((g) => (
-          <div key={g.slug}>
-            <div className="mb-6 flex items-center gap-3 border-b border-bz-border pb-4">
-              <MapPin size={16} strokeWidth={1.7} className="text-bz-accent" />
-              <h3
-                className="serif text-[22px] md:text-[26px]"
-                style={{ letterSpacing: "-0.015em" }}
-              >
-                {g.name}
-              </h3>
-              <span className="mono text-[12px] text-bz-muted">
-                {g.count} {g.count === 1 ? "project" : "projects"}
-              </span>
-            </div>
-            {g.cards}
-          </div>
+          <ProjectCarousel
+            key={g.slug}
+            name={g.name}
+            count={g.count}
+            items={g.cards}
+            viewAllHref={g.viewAllHref}
+            viewAllLabel={g.viewAllLabel}
+          />
         ))}
       </div>
     </section>

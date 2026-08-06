@@ -382,6 +382,23 @@ describe("New Projects master page", () => {
     expect(picker.optionsKey).toBe("developments");
   });
 
+  it("exposes the per-area rail settings on the map section", () => {
+    // The editor renders straight from the registry, so a field being here is
+    // what puts it in /admin/pages/master/off-plan.
+    const map = offPlan.sections.find((s) => s.key === "map")!;
+    const keys = map.fields.map((f) => f.key);
+    expect(keys).toContain("group_limit");
+    expect(keys).toContain("group_cta_label");
+  });
+
+  it("leaves the rail uncapped out of the box", () => {
+    // Blank means every published project in an area stays on its rail —
+    // the page shows exactly what it showed before the rail existed.
+    const map = offPlan.sections.find((s) => s.key === "map")!;
+    expect(map.defaults.group_limit).toBeNull();
+    expect(map.defaults.group_cta_label).toBeNull();
+  });
+
   it("gives every property type an image field", () => {
     const types = offPlan.sections.find((s) => s.key === "prop_types")!;
     const list = types.fields.find((f) => f.key === "items");
