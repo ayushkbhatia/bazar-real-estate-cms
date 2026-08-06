@@ -6,6 +6,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { articleUrl } from "@/lib/queries/articles";
 import { listArticleCategories } from "@/lib/queries/article-categories";
+import { mediaPublicUrl } from "@/lib/media";
+import type { MediaOption } from "../../pages/master/[key]/_editor";
 import { type ArticleEditInput } from "@/lib/schemas/article";
 import { ArticleEditForm } from "./_form";
 import { ArticlePublishCard } from "./_publish-card";
@@ -28,11 +30,35 @@ async function fetchArticle(id: string) {
   return data;
 }
 
+/**
+ * Images offered by the cover picker. Same shape and source as the
+ * development sub-page's picker — the library's live image assets, newest
+ * first. PDFs are excluded here: an article cover is always an image.
+ */
+async function fetchMedia(): Promise<MediaOption[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("media_assets")
+    .select("id, filename, storage_key, mime_type")
+    .is("deleted_at", null)
+    .like("mime_type", "image/%")
+    .order("created_at", { ascending: false })
+    .limit(300);
+  return (data ?? []).map((m) => ({
+    id: m.id,
+    filename: m.filename,
+    url: mediaPublicUrl(m.storage_key),
+    mime: m.mime_type,
+  }));
+}
+
 export default async function ArticleEditPage({ params }: PageProps) {
   const { id } = await params;
-  const [article, categories] = await Promise.all([
+  const [article, categories, media] = await Promise.all([
     fetchArticle(id),
     listArticleCategories(),
+    fetchMedia(),
   ]);
   if (!article) notFound();
 
@@ -84,6 +110,7 @@ export default async function ArticleEditPage({ params }: PageProps) {
             articleId={article.id}
             initial={initial}
             categories={categories}
+            media={media}
           />
         </div>
         <aside className="sticky top-6">
