@@ -19,6 +19,10 @@ import {
   type NeighbourOption,
 } from "./_content-card";
 import { saveDevelopmentPage, resetDevelopmentPage } from "../_actions";
+import { PublishCard } from "../../../../developments/_publish-card";
+import { DeleteDevelopmentCard } from "./_delete-card";
+import { getStaffRole } from "@/lib/auth";
+import { evaluateDevelopmentHeroFacts } from "@/lib/schemas/development";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +46,30 @@ async function fetchMedia(): Promise<MediaOption[]> {
     url: mediaPublicUrl(m.storage_key),
     mime: m.mime_type,
   }));
+}
+
+/**
+ * What would be left dangling by a delete. `enquiries.development_id` and
+ * `properties.development_id` are ON DELETE SET NULL, so these records survive
+ * but lose the link — worth saying out loud before the fact.
+ */
+async function fetchLinkCounts(developmentId: string) {
+  if (!isSupabaseConfigured) return { enquiries: 0, properties: 0 };
+  const supabase = await createSupabaseServerClient();
+  const [enquiries, properties] = await Promise.all([
+    supabase
+      .from("enquiries")
+      .select("id", { count: "exact", head: true })
+      .eq("development_id", developmentId),
+    supabase
+      .from("properties")
+      .select("id", { count: "exact", head: true })
+      .eq("development_id", developmentId),
+  ]);
+  return {
+    enquiries: enquiries.count ?? 0,
+    properties: properties.count ?? 0,
+  };
 }
 
 async function fetchContentOptions(excludeId: string) {
@@ -90,14 +118,30 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
   const development = await fetchDevelopment(slug);
   if (!development) notFound();
 
-  const [content, media, options] = await Promise.all([
+  const [content, media, options, role, links] = await Promise.all([
     getDevelopmentPageContent({
       name: development.name,
       slug: development.slug,
     }),
     fetchMedia(),
     fetchContentOptions(development.id),
+    getStaffRole(),
+    fetchLinkCounts(development.id),
   ]);
+
+  // Editing this page is open to marketing; taking a project live — or
+  // deleting it — is not. Both actions enforce this too; this just stops the
+  // controls being offered to someone they would 404 on.
+  const canManage = role === "admin" || role === "editor";
+  const heroFactsGate = evaluateDevelopmentHeroFacts({
+    starting_price:
+      development.starting_price != null
+        ? Number(development.starting_price)
+        : null,
+    bedrooms_text: development.bedrooms_text,
+    total_units: development.total_units,
+    handover_date: development.handover_date,
+  });
 
   const meta = (development.meta as Record<string, unknown> | null) ?? {};
   const contentInitial = {
@@ -162,19 +206,19 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
       }
     >
       <div className="flex flex-col gap-5 max-w-[860px]">
-        {development.published_at ? null : (
-          <p className="rounded-md border border-bz-border bg-bz-surface-2 px-3 py-2 text-[12.5px] text-bz-ink-2">
-            This project isn&apos;t published yet, so the page is only visible
-            here. Publish it from{" "}
-            <Link
-              href={`/admin/developments/${development.id}`}
-              className="underline underline-offset-2"
-            >
-              the development record
-            </Link>
-            .
-          </p>
-        )}
+        {/*
+          Publishing lives here as well as on the record. This is the screen
+          that owns the four hero facts the gate checks, so sending someone
+          elsewhere to flip the switch was asking them to leave the page they
+          had just finished filling in.
+        */}
+        <PublishCard
+          developmentId={development.id}
+          publishedAt={development.published_at}
+          slug={development.slug}
+          checks={heroFactsGate.checks}
+          canPublish={canManage}
+        />
 
         <DevelopmentFactsCard
           slug={development.slug}
@@ -230,6 +274,18 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
             }))}
           />
         </div>
+
+        {/* Last on the page on purpose — it is the one thing here that can't
+            be undone, so it should not sit next to anything routine. */}
+        <DeleteDevelopmentCard
+          developmentId={development.id}
+          name={development.name}
+          published={development.published_at != null}
+          enquiryCount={links.enquiries}
+          propertyCount={links.properties}
+          canDelete={canManage}
+          recordHref={`/admin/developments/${development.id}`}
+        />
       </div>
     </CmsShell>
   );

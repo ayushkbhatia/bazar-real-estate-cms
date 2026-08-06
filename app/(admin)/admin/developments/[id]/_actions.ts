@@ -27,6 +27,10 @@ async function revalidateDevelopmentPaths(developmentId: string) {
     .select("slug, published_at")
     .eq("id", developmentId)
     .maybeSingle();
+  // The project page editor publishes too, so its own route has to refresh —
+  // otherwise publishing from there leaves the card showing "draft".
+  if (data?.slug)
+    revalidatePath(`/admin/pages/sub/development/${data.slug}`);
   if (data?.published_at) {
     revalidatePath(developmentUrl(data));
     revalidatePath("/developments");

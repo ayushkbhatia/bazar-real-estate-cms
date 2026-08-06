@@ -5,6 +5,7 @@ import {
   filterUnits,
   type DevelopmentUnit,
 } from "./development-utils";
+import { DETAIL_FIELDS } from "./developments";
 
 function makeUnit(over: Partial<DevelopmentUnit>): DevelopmentUnit {
   return {
@@ -86,6 +87,26 @@ describe("developmentUrl", () => {
   it("builds /developments/<slug>", () => {
     expect(developmentUrl({ slug: "saadiyat-lagoons" })).toBe(
       "/developments/saadiyat-lagoons",
+    );
+  });
+});
+
+describe("development detail media joins", () => {
+  /**
+   * The site plan uploaded in the CMS never appeared on the public page: the
+   * admin saves it to `developments.masterplan_id`, but the page looked for a
+   * `development_media` row tagged `masterplan` — a row nothing writes, so the
+   * lookup always came back empty and rendered placeholder art instead.
+   *
+   * Nothing errored, which is why it went unnoticed. This pins the join so the
+   * two halves can't drift apart again silently.
+   */
+  it("joins both images from the columns the CMS writes", () => {
+    expect(DETAIL_FIELDS).toContain(
+      "hero:hero_image_id(storage_key, filename, alt_text)",
+    );
+    expect(DETAIL_FIELDS).toContain(
+      "masterplan:masterplan_id(storage_key, filename, alt_text)",
     );
   });
 });

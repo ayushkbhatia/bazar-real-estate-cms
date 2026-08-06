@@ -17,7 +17,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { formatStartingPrice, quarterLabel } from "@/lib/schemas/development";
+import {
+  evaluateDevelopmentHeroFacts,
+  formatStartingPrice,
+  quarterLabel,
+} from "@/lib/schemas/development";
 import { listDevelopmentSubPages } from "@/lib/queries/subpages";
 
 export const dynamic = "force-dynamic";
@@ -47,6 +51,25 @@ const STATUS_LABELS: Record<string, string> = {
 export default async function DevelopmentSubPagesIndex() {
   const rows = await listDevelopmentSubPages();
   const live = rows.filter((r) => r.published_at !== null).length;
+  const drafts = rows.length - live;
+
+  // What each draft still needs before it can go live — the same gate the
+  // publish action enforces. Shown here so a half-finished project can be
+  // picked back up without opening it to find out what is missing.
+  const outstanding = new Map<string, number>(
+    rows
+      .filter((r) => r.published_at === null)
+      .map((r) => [
+        r.id,
+        evaluateDevelopmentHeroFacts({
+          starting_price:
+            r.starting_price != null ? Number(r.starting_price) : null,
+          bedrooms_text: r.bedrooms_text,
+          total_units: r.total_units,
+          handover_date: r.handover_date,
+        }).blockers.length,
+      ]),
+  );
 
   return (
     <CmsShell
@@ -85,7 +108,7 @@ export default async function DevelopmentSubPagesIndex() {
 
         <div className="text-[12.5px] text-bz-muted">
           {rows.length} {rows.length === 1 ? "project" : "projects"} · {live}{" "}
-          live
+          live · {drafts} {drafts === 1 ? "draft" : "drafts"}
         </div>
 
         <div className="bg-bz-surface border border-bz-border rounded-lg overflow-x-auto">
@@ -147,8 +170,21 @@ export default async function DevelopmentSubPagesIndex() {
                           {STATUS_LABELS[row.status] ?? row.status}
                         </span>
                         {row.published_at ? null : (
-                          <span className="text-[11px] text-bz-muted-2">
-                            Not live
+                          <span className="inline-flex items-center gap-1.5">
+                            <span className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium bg-bz-surface-3 text-bz-ink-2">
+                              Draft
+                            </span>
+                            {/* Named here so an unfinished project can be
+                                picked up without opening it first. */}
+                            {(outstanding.get(row.id) ?? 0) > 0 ? (
+                              <span className="text-[11px] text-bz-muted-2">
+                                {outstanding.get(row.id)} to add
+                              </span>
+                            ) : (
+                              <span className="text-[11px] text-bz-muted-2">
+                                ready to publish
+                              </span>
+                            )}
                           </span>
                         )}
                       </span>

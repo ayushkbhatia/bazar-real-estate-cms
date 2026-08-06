@@ -71,3 +71,27 @@ export async function requireRole(
   if (!allowedRoles.includes(data.role as StaffRole)) notFound();
   return { user, staff: data as StaffRow, supabase };
 }
+
+/**
+ * The signed-in staff member's role, or null.
+ *
+ * Unlike `requireRole` this never throws — it is for screens that are already
+ * gated and now need to decide what a given role may *do* on them, such as
+ * whether to offer a publish button. Rendering a control the action will
+ * refuse is worse than not rendering it: `requireRole` answers with a 404,
+ * which reads as a broken page rather than a permission boundary.
+ */
+export async function getStaffRole(): Promise<StaffRole | null> {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data } = await supabase
+    .from("staff")
+    .select("role, status")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (!data || data.status !== "active") return null;
+  return data.role as StaffRole;
+}

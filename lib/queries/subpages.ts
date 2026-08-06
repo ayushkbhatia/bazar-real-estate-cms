@@ -160,6 +160,7 @@ export type SubPageRow = {
   handover_date: string | null;
   total_units: number | null;
   starting_price: number | null;
+  bedrooms_text: string | null;
   /** Whether a section document has been saved for it. */
   edited: boolean;
 };
@@ -174,7 +175,7 @@ export async function listDevelopmentSubPages(
     supabase
       .from("developments")
       .select(
-        "id, name, slug, status, published_at, hero_image_id, handover_date, total_units, starting_price, developers:developer_id(name), areas:area_id(name)",
+        "id, name, slug, status, published_at, hero_image_id, handover_date, total_units, starting_price, bedrooms_text, developers:developer_id(name), areas:area_id(name)",
       )
       .order("name", { ascending: true }),
     supabase
@@ -197,6 +198,7 @@ export async function listDevelopmentSubPages(
     handover_date: string | null;
     total_units: number | null;
     starting_price: number | null;
+    bedrooms_text: string | null;
     developers: { name: string } | null;
     areas: { name: string } | null;
   };
@@ -213,6 +215,7 @@ export async function listDevelopmentSubPages(
     handover_date: r.handover_date,
     total_units: r.total_units,
     starting_price: r.starting_price,
+    bedrooms_text: r.bedrooms_text,
     edited: editedSlugs.has(r.slug),
   }));
 }
