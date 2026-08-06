@@ -15,7 +15,7 @@ const NEW_PAGES: [string, string][] = [
   ["about", "/about"],
   ["contact", "/contact"],
   ["qr", "/qr"],
-  ["contact-qr", "/contact-us/qr"],
+  ["contact-qr", "/contact-qr"],
 ];
 
 describe("Sprint 14 master pages", () => {
@@ -55,7 +55,7 @@ describe("QR page", () => {
     expect(section).toBeDefined();
     const resolved = resolveSections(qr, null).find((s) => s.key === "qr_code");
     expect(str(resolved!.values, "url")).toBe(
-      "https://www.bazarrealestate.ae/contact-us/qr",
+      "https://www.bazarrealestate.ae/contact-qr",
     );
   });
 
@@ -65,7 +65,7 @@ describe("QR page", () => {
 
   it("points at a route the site actually serves", () => {
     const target = getMasterPage("contact-qr");
-    expect(target?.path).toBe("/contact-us/qr");
+    expect(target?.path).toBe("/contact-qr");
   });
 });
 

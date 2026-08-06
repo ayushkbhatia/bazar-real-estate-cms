@@ -64,7 +64,7 @@ export const QR_PAGE: MasterPageDef = {
         ),
       ],
       defaults: {
-        url: "https://www.bazarrealestate.ae/contact-us/qr",
+        url: "https://www.bazarrealestate.ae/contact-qr",
         heading: "Talk to Bazar Real Estate",
         caption: "Opens our contact page.",
         instruction:

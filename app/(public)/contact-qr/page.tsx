@@ -10,8 +10,8 @@ import {
   Phone,
 } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { EnquiryForm } from "../../_components/enquiry-form";
-import { fluid } from "../../_components/marketing/fluid";
+import { EnquiryForm } from "../_components/enquiry-form";
+import { fluid } from "../_components/marketing/fluid";
 import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { list, str } from "@/lib/master-pages";
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: "Contact Bazar Real Estate",
   description:
     "You've scanned our code — call, WhatsApp, or email a Bazar advisor in Abu Dhabi, or send a short brief and we'll come back to you.",
-  alternates: { canonical: "/contact-us/qr" },
+  alternates: { canonical: "/contact-qr" },
 };
 
 export const revalidate = 300;

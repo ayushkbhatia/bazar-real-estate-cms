@@ -2,7 +2,7 @@ import type { MasterPageDef } from "../types";
 import { area, body, chipList, eyebrow, heading, link, text } from "../fields";
 
 /**
- * /contact-us/qr — the scan destination.
+ * /contact-qr — the scan destination.
  *
  * Where someone lands after scanning the printed QR code on a card, a window,
  * or an office wall. Almost every visitor arrives on a phone, seconds after
@@ -16,7 +16,7 @@ import { area, body, chipList, eyebrow, heading, link, text } from "../fields";
 export const CONTACT_QR_PAGE: MasterPageDef = {
   key: "contact-qr",
   label: "QR landing (contact)",
-  path: "/contact-us/qr",
+  path: "/contact-qr",
   description:
     "The page people land on after scanning the printed QR code — built for a phone, tap-to-call first.",
   sections: [
