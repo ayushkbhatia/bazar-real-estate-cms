@@ -111,6 +111,7 @@ const SECTIONS: { title: string; links: { label: string; href: string }[] }[] =
       title: "Legal",
       links: [
         { label: "Privacy policy", href: "/legal/privacy" },
+        { label: "سياسة الخصوصية (Arabic privacy policy)", href: "/ar/legal/privacy" },
         { label: "Terms of use", href: "/legal/terms" },
         { label: "Cookie policy", href: "/legal/cookies" },
       ],

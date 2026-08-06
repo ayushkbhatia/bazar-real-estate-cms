@@ -5,6 +5,13 @@ export const metadata: Metadata = {
   title: "Privacy policy",
   description:
     "How Bazar Real Estate L.L.C. collects, uses, stores, discloses, and protects personal data, issued under UAE PDPL (Federal Decree-Law No. 45 of 2021).",
+  alternates: {
+    canonical: "/legal/privacy",
+    languages: {
+      en: "/legal/privacy",
+      ar: "/ar/legal/privacy",
+    },
+  },
 };
 
 /**
@@ -24,6 +31,11 @@ export default function PrivacyPage() {
       dateLabel="Last updated"
       contactEmail="info@bazarrealestate.ae"
       draft={false}
+      translation={{
+        label: "العربية",
+        href: "/ar/legal/privacy",
+        locale: "ar",
+      }}
     >
       <h2>1. Introduction</h2>
       <p>

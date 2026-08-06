@@ -535,12 +535,16 @@ shows the trail.)
   Postgres blocks deleting it via SQL; remove it through the Storage API or the
   dashboard. Nothing can read or write it in the meantime.
 
-- [legal] The Arabic privacy policy is delivered but not published.
-  The client's PDF is bilingual; only the English side shipped. There is no
-  i18n layer (no next-intl, no locale routing) and the Arabic does not
-  survive PDF text extraction cleanly, so it needs either a locale route
-  (/ar/legal/privacy, dir="rtl") or a copy-paste from the source .docx.
-  Source text + open questions: docs/drafts/PRIVACY_POLICY_DRAFT.md.
+- [legal] /ar/legal/privacy is the only Arabic page on the site.
+  It is a one-off locale route, not an i18n layer: the surrounding nav and
+  footer stay English, and LegalDocFrame flips direction/typeface off a
+  `locale` prop. If a second Arabic page is ever needed, that is the moment
+  to bring in next-intl rather than copy the pattern a third time.
+
+- [legal] §2's Arabic heading reads "البيانات الشخصية التي بجمعها".
+  The English heading is "What Personal Data We Collect", so this looks like
+  a typo for "نجمعها" in the client's source document. Published verbatim —
+  their text, their call. Worth raising when the retention placeholder is.
 
 - [legal] Terms and cookies still carry the "lawyer-drafted copy in progress"
   banner and the dpo@ mailbox.
