@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CategorySelect } from "../_category-select";
+import { ImagePicker } from "../../pages/sub/development/[slug]/_images-card";
+import type { MediaOption } from "../../pages/master/[key]/_editor";
 import { ArticleEditor } from "../_article-editor";
 import { updateArticle } from "./_actions";
 
@@ -27,13 +29,18 @@ export type ArticleEditFormProps = {
   articleId: string;
   initial: ArticleEditInput;
   categories: ArticleCategoryRow[];
+  media: MediaOption[];
 };
 
 export function ArticleEditForm({
   articleId,
   initial,
   categories,
+  media: initialMedia,
 }: ArticleEditFormProps) {
+  // Uploads land in the library, so the freshly uploaded asset has to appear
+  // in this list straight away rather than after a refresh.
+  const [media, setMedia] = useState<MediaOption[]>(initialMedia);
   const [pending, startTransition] = useTransition();
   const [serverFieldErrors, setServerFieldErrors] = useState<
     Record<string, string>
@@ -117,6 +124,18 @@ export function ArticleEditForm({
           />
           <FieldError message={errors.excerpt?.message} />
         </div>
+
+        <ImagePicker
+          label="Cover image"
+          help="Heads the article and is used on the /insights cards and social previews. Landscape works best. Without one the article falls back to placeholder art."
+          value={watch("hero_image_id") ?? null}
+          media={media}
+          onChange={(id) =>
+            setValue("hero_image_id", id, { shouldDirty: true })
+          }
+          onUploaded={(m) => setMedia((cur) => [m, ...cur])}
+        />
+        <FieldError message={errors.hero_image_id?.message} />
       </div>
 
       <div className="bg-bz-surface border border-bz-border rounded-lg p-6 flex flex-col gap-3">
