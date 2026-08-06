@@ -73,6 +73,7 @@ export default async function HomePage() {
   // the components ship with.
   const v = (key: string) => content.section(key)?.values ?? {};
   const heroV = v("hero");
+  const areaMapV = v("area_map");
   const locationV = v("location_browsing");
   const offPlanV = v("off_plan_projects");
   const featuredV = v("featured_properties");
@@ -123,7 +124,14 @@ export default async function HomePage() {
       />
     ),
 
-    area_map: <AreaMapSection key="area_map" />,
+    area_map: (
+      <AreaMapSection
+        key="area_map"
+        eyebrow={str(areaMapV, "eyebrow")}
+        heading={str(areaMapV, "heading")}
+        body={str(areaMapV, "body")}
+      />
+    ),
 
     location_browsing: (
       <LocationBrowsing

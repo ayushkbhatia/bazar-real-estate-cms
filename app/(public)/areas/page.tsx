@@ -52,6 +52,7 @@ export default async function AreasPage() {
 
   const heroV = v("hero");
   const cardsV = v("area_cards");
+  const areaMapV = v("area_map");
   const spotlightsV = v("area_spotlights");
   const listV = v("list_your_property");
   const typesV = v("community_types");
@@ -104,7 +105,14 @@ export default async function AreasPage() {
       />
     ),
 
-    area_map: <AreaMapSection key="area_map" />,
+    area_map: (
+      <AreaMapSection
+        key="area_map"
+        eyebrow={str(areaMapV, "eyebrow")}
+        heading={str(areaMapV, "heading")}
+        body={str(areaMapV, "body")}
+      />
+    ),
 
     area_spotlights: (
       <AreaSpotlights

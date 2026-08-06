@@ -12,7 +12,18 @@
 import { listAreaPins, listAreaListingDots } from "@/lib/queries/area-map";
 import { AreaMapHome } from "../area-map/area-map-home";
 
-export async function RentAreaMap() {
+export async function RentAreaMap({
+  eyebrow = "Rental areas",
+  heading = "Rent by area. Start with the map.",
+  body = null,
+}: {
+  /** Section eyebrow — editable from the /rent master page. */
+  eyebrow?: string;
+  /** Section heading. */
+  heading?: string;
+  /** Optional paragraph under the heading; nothing renders when blank. */
+  body?: string | null;
+} = {}) {
   const [abuDhabi, dubai, dots] = await Promise.all([
     listAreaPins("abu-dhabi"),
     listAreaPins("dubai"),
@@ -28,8 +39,9 @@ export async function RentAreaMap() {
     <AreaMapHome
       areas={areas}
       dots={dots}
-      eyebrow="Rental areas"
-      heading="Rent by area. Start with the map."
+      eyebrow={eyebrow}
+      heading={heading}
+      body={body ?? undefined}
       allHref="/rent/search"
       allLabel="All rentals"
     />

@@ -90,6 +90,7 @@ export default async function NewProjectsPage({ searchParams }: PageProps) {
   const hero = content.section("hero")?.values ?? {};
   const types = content.section("prop_types")?.values ?? {};
   const launches = content.section("launches")?.values ?? {};
+  const mapCopy = content.section("map")?.values ?? {};
   const locations = content.section("locations")?.values ?? {};
   const why = content.section("why")?.values ?? {};
   const faq = content.section("faq")?.values ?? {};
@@ -153,6 +154,9 @@ export default async function NewProjectsPage({ searchParams }: PageProps) {
           key="map"
           areas={pins}
           dots={dots}
+          eyebrow={str(mapCopy, "eyebrow") ?? undefined}
+          heading={str(mapCopy, "heading") ?? undefined}
+          body={str(mapCopy, "body")}
           groups={groups.map((g) => ({
             slug: g.slug,
             name: g.name,

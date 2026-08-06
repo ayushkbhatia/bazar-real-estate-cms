@@ -7,6 +7,7 @@ import { LeadBand } from "../_components/marketing/lead-band";
 import { listingRowToCard } from "../_components/marketing/map-listing";
 import { searchRedirectTarget } from "../_components/search-redirect";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { str } from "@/lib/master-pages";
 import { buyRentContent } from "../_components/marketing/master-content";
 
 export const revalidate = 300;
@@ -38,6 +39,10 @@ export default async function RentPage({ searchParams }: PageProps) {
   // Copy, links, images and section order come from /admin/pages/master/rent.
   const c = buyRentContent(content);
 
+  // Map section copy — blank fields fall through to RentAreaMap's own defaults,
+  // which are this section's original strings.
+  const map = content.section("map")?.values ?? {};
+
   return (
     <BuyRentLanding
       eyebrow={c.eyebrow}
@@ -54,7 +59,13 @@ export default async function RentPage({ searchParams }: PageProps) {
       featuredCta={c.featuredCta}
       featuredCtaHref={c.featuredCtaHref}
       sectionOrder={c.sectionOrder}
-      mapSlot={<RentAreaMap />}
+      mapSlot={
+        <RentAreaMap
+          eyebrow={str(map, "eyebrow") ?? undefined}
+          heading={str(map, "heading") ?? undefined}
+          body={str(map, "body")}
+        />
+      }
       mapAbove
       leadBand={
         <LeadBand

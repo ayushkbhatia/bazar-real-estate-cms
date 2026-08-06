@@ -85,17 +85,24 @@ function useNearViewport<T extends Element>(
 export function AreaMapHome({
   areas,
   dots,
-  eyebrow = "Where to live",
-  heading = "Find your area first. The home follows.",
+  eyebrow,
+  heading,
+  body,
   allHref = "/areas",
   allLabel = "All areas",
 }: {
   areas: AreaPin[];
   dots: AreaDot[];
-  /** Section eyebrow — overridden per surface (e.g. rental areas). */
-  eyebrow?: string;
-  /** Section heading. */
-  heading?: string;
+  /**
+   * Section eyebrow — overridden per surface (e.g. rental areas). `null`
+   * (what a blank master-page field resolves to) falls back to the default,
+   * so callers can pass a resolved value straight through.
+   */
+  eyebrow?: string | null;
+  /** Section heading. `null` → default. */
+  heading?: string | null;
+  /** Optional paragraph under the heading. Nothing renders when blank. */
+  body?: string | null;
   /** "All …" link target + label (defaults to the areas index). */
   allHref?: string;
   allLabel?: string;
@@ -113,10 +120,15 @@ export function AreaMapHome({
     <section className="bg-bz-bg px-4 py-12 md:px-12 md:py-20">
       <div className="mb-8 flex flex-col gap-5 md:mb-9 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="eyebrow">{eyebrow}</div>
+          <div className="eyebrow">{eyebrow ?? "Where to live"}</div>
           <h2 className="serif mt-2 text-3xl tracking-tight md:text-4xl">
-            {heading}
+            {heading ?? "Find your area first. The home follows."}
           </h2>
+          {body ? (
+            <p className="mt-4 max-w-[52ch] text-[15px] md:text-[16px] text-bz-ink-2 leading-relaxed">
+              {body}
+            </p>
+          ) : null}
         </div>
         <div className="flex items-center gap-4">
           <EmirateToggle
