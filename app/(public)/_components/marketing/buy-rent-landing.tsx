@@ -172,7 +172,16 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           "px-4 md:px-12 pt-12 md:pt-20 pb-14 md:pb-[72px]",
           // Only becomes a media hero once a photo is picked. Without one the
           // section keeps its original plain treatment exactly.
-          heroImage && "relative isolate overflow-hidden text-white",
+          //
+          // `bg-bz-ink` is load-bearing, not decoration. The photo and its
+          // scrim are -z-10 siblings rather than a CSS background, so without
+          // a dark colour on the section itself the white copy would sit on
+          // the page's near-white surface for as long as the image takes to
+          // load — and permanently if it 404s. It is also what lets a contrast
+          // checker resolve these colours at all: axe reads the nearest
+          // painted background, and an <img> behind the text is not one.
+          heroImage &&
+            "relative isolate overflow-hidden bg-bz-ink text-white",
         )}
       >
         {heroImage ? (
