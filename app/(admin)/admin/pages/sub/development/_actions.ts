@@ -16,10 +16,7 @@ import {
   subPageSlug,
 } from "@/lib/master-pages/subpages";
 import { developmentContentSchema } from "@/lib/schemas/development-content";
-import {
-  developmentHeroFactsPartialSchema,
-  developmentHeroFactsSchema,
-} from "@/lib/schemas/development";
+import { developmentHeroFactsPartialSchema } from "@/lib/schemas/development";
 
 const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
 
@@ -267,8 +264,20 @@ export type CreateDevelopmentPageResult =
 
 /**
  * "Add development page" — creates the record the page is built from. It starts
- * unpublished (`published_at` null) so a half-filled project never appears on
- * the public site; publishing stays in the developments editor.
+ * unpublished (`published_at` null), so a half-filled project never reaches the
+ * public site, and the publish gate is what decides when it may.
+ *
+ * Only name, slug and developer are required here, and only because a row
+ * cannot exist without them (`developer_id` is NOT NULL; the slug is the page's
+ * address). The four hero facts are deliberately *not* required at this point.
+ *
+ * They used to be, via the strict `developmentHeroFactsSchema`, and that was
+ * the bug: someone who didn't yet know the handover date couldn't create
+ * anything at all, so the whole half-filled form was lost the moment they
+ * navigated away. `saveDevelopmentFacts` has always accepted partial facts on
+ * the grounds that "a draft can be filled in over more than one sitting" —
+ * creation now agrees with it. Anything supplied is still format-checked, so a
+ * typo is caught where it is made; completeness stays the publish gate's job.
  */
 export async function createDevelopmentPage(input: {
   name: string;
@@ -277,7 +286,7 @@ export async function createDevelopmentPage(input: {
   area_id: string | null;
   tagline: string | null;
   hero_image_id: string | null;
-  /** The hero stat row. Required — see developmentHeroFactsSchema. */
+  /** The hero stat row. Optional here — the publish gate requires it, not this. */
   starting_price: number | null;
   bedrooms_text: string | null;
   total_units: number | null;
@@ -310,10 +319,9 @@ export async function createDevelopmentPage(input: {
       fieldErrors: { developer_id: "Pick a developer" },
     };
 
-  // The hero stat row. Collected at creation so a new project never renders
-  // "—" in all four slots, which is what happened while these lived only in
-  // the record editor.
-  const facts = developmentHeroFactsSchema.safeParse({
+  // Partial: whatever is known now, checked for format, the rest filled in
+  // later from the project page. See the note above the function.
+  const facts = developmentHeroFactsPartialSchema.safeParse({
     starting_price: input.starting_price,
     bedrooms_text: input.bedrooms_text,
     total_units: input.total_units,

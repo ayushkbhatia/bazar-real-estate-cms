@@ -19,6 +19,9 @@ import {
   type NeighbourOption,
 } from "./_content-card";
 import { saveDevelopmentPage, resetDevelopmentPage } from "../_actions";
+import { PublishCard } from "../../../../developments/_publish-card";
+import { getStaffRole } from "@/lib/auth";
+import { evaluateDevelopmentHeroFacts } from "@/lib/schemas/development";
 
 export const dynamic = "force-dynamic";
 
@@ -90,14 +93,29 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
   const development = await fetchDevelopment(slug);
   if (!development) notFound();
 
-  const [content, media, options] = await Promise.all([
+  const [content, media, options, role] = await Promise.all([
     getDevelopmentPageContent({
       name: development.name,
       slug: development.slug,
     }),
     fetchMedia(),
     fetchContentOptions(development.id),
+    getStaffRole(),
   ]);
+
+  // Editing this page is open to marketing; taking a project live is not.
+  // The publish action enforces it too — this just stops the button being
+  // offered to someone it would 404 on.
+  const canPublish = role === "admin" || role === "editor";
+  const heroFactsGate = evaluateDevelopmentHeroFacts({
+    starting_price:
+      development.starting_price != null
+        ? Number(development.starting_price)
+        : null,
+    bedrooms_text: development.bedrooms_text,
+    total_units: development.total_units,
+    handover_date: development.handover_date,
+  });
 
   const meta = (development.meta as Record<string, unknown> | null) ?? {};
   const contentInitial = {
@@ -162,19 +180,19 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
       }
     >
       <div className="flex flex-col gap-5 max-w-[860px]">
-        {development.published_at ? null : (
-          <p className="rounded-md border border-bz-border bg-bz-surface-2 px-3 py-2 text-[12.5px] text-bz-ink-2">
-            This project isn&apos;t published yet, so the page is only visible
-            here. Publish it from{" "}
-            <Link
-              href={`/admin/developments/${development.id}`}
-              className="underline underline-offset-2"
-            >
-              the development record
-            </Link>
-            .
-          </p>
-        )}
+        {/*
+          Publishing lives here as well as on the record. This is the screen
+          that owns the four hero facts the gate checks, so sending someone
+          elsewhere to flip the switch was asking them to leave the page they
+          had just finished filling in.
+        */}
+        <PublishCard
+          developmentId={development.id}
+          publishedAt={development.published_at}
+          slug={development.slug}
+          checks={heroFactsGate.checks}
+          canPublish={canPublish}
+        />
 
         <DevelopmentFactsCard
           slug={development.slug}

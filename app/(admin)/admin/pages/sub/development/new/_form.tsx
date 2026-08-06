@@ -85,7 +85,7 @@ export function NewDevelopmentPageForm({
         if (result.fieldErrors) setErrors(result.fieldErrors);
         return;
       }
-      toast.success("Project page created.");
+      toast.success("Draft saved — you can finish it whenever.");
       router.push(`/admin/pages/sub/development/${result.slug}`);
     });
   }
@@ -175,10 +175,16 @@ export function NewDevelopmentPageForm({
 
         <div className="flex flex-col gap-3 border-t border-bz-border pt-5">
           <div>
-            <h2 className="text-[13px] font-medium">Key facts</h2>
+            <h2 className="text-[13px] font-medium">
+              Key facts{" "}
+              <span className="font-normal text-bz-muted">
+                — optional for now
+              </span>
+            </h2>
             <p className="text-[11.5px] text-bz-muted mt-0.5">
-              The four stats across the bottom of the page hero. All four are
-              required — without them the hero renders a dash in each slot.
+              The four stats across the bottom of the page hero. Fill in what
+              you know; the draft saves either way and you can add the rest
+              later. All four are needed before the project can go live.
             </p>
           </div>
 
@@ -253,12 +259,12 @@ export function NewDevelopmentPageForm({
 
       <div className="flex items-center gap-3">
         <p className="text-[12px] text-bz-muted mr-auto">
-          The page starts unpublished — nothing appears on the public site until
-          you publish the project.
+          Saves as a draft — nothing reaches the public site until you publish
+          it, and you can pick it back up from the Developments list.
         </p>
         <Button type="submit" disabled={pending}>
           <Plus size={14} strokeWidth={1.8} />
-          {pending ? "Creating…" : "Create page"}
+          {pending ? "Saving…" : "Save draft"}
         </Button>
       </div>
     </form>
