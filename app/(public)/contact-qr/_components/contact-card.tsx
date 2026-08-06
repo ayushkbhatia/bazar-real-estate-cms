@@ -13,6 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { SocialIcon } from "./social-icons";
+import styles from "./contact-card.module.css";
 
 /**
  * The /contact-qr card.
@@ -107,6 +108,12 @@ export function ContactCard(props: ContactCardProps) {
 
   const rtl = lang === "ar";
 
+  // Appended to every node whose text is Arabic. Empty on the English face so
+  // the Latin side keeps the brand's Geist and its `.eyebrow` tracking.
+  const ar = rtl ? ` ${styles.arabic}` : "";
+  // The eyebrow labels, which need a size nudge on top of the face swap.
+  const arLabel = rtl ? ` ${styles.arabic} ${styles.arabicLabel}` : "";
+
   const blocks: Record<CardBlock, React.ReactNode> = {
     card: (
       <div key="card">
@@ -133,7 +140,7 @@ export function ContactCard(props: ContactCardProps) {
 
         {pick(props.tagline, lang) ? (
           <p
-            className="mt-3 text-center text-[13.5px] leading-relaxed text-bz-navy"
+            className={`mt-3 text-center text-[13.5px] leading-relaxed text-bz-navy${ar}`}
             lang={lang}
           >
             {pick(props.tagline, lang)}
@@ -147,7 +154,12 @@ export function ContactCard(props: ContactCardProps) {
           className="mt-5 flex min-h-[56px] w-full items-center justify-center gap-3 rounded-xl bg-bz-navy px-5 text-[16px] font-medium text-white transition-opacity hover:opacity-90"
         >
           <UserPlus size={19} strokeWidth={1.8} aria-hidden="true" />
-          {pick(props.saveLabel, lang)}
+          <span
+            className={rtl ? `${styles.arabic} ${styles.arabicStrong}` : ""}
+            lang={lang}
+          >
+            {pick(props.saveLabel, lang)}
+          </span>
         </a>
       </div>
     ),
@@ -165,7 +177,10 @@ export function ContactCard(props: ContactCardProps) {
               </span>
               <span className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
                 {label ? (
-                  <span className="eyebrow whitespace-nowrap" lang={lang}>
+                  <span
+                    className={`eyebrow whitespace-nowrap${arLabel}`}
+                    lang={lang}
+                  >
                     {label}:
                   </span>
                 ) : null}
@@ -176,7 +191,9 @@ export function ContactCard(props: ContactCardProps) {
                   1103 691 50 971+), so those values carry their own direction.
                 */}
                 <span
-                  className="text-[15px] font-medium leading-snug break-words"
+                  className={`text-[15px] font-medium leading-snug break-words${
+                    row.kind === "office" ? ar : ""
+                  }`}
                   dir={row.kind === "office" ? undefined : "ltr"}
                   lang={row.kind === "office" ? lang : undefined}
                 >
@@ -212,7 +229,7 @@ export function ContactCard(props: ContactCardProps) {
         {props.socials.length > 0 ? (
           <>
             {pick(props.followLabel, lang) ? (
-              <div className="eyebrow text-center" lang={lang}>
+              <div className={`eyebrow text-center${arLabel}`} lang={lang}>
                 {pick(props.followLabel, lang)}
               </div>
             ) : null}
@@ -242,13 +259,15 @@ export function ContactCard(props: ContactCardProps) {
             className="mt-5 flex min-h-[50px] w-full items-center justify-center gap-2 rounded-xl border border-bz-border bg-bz-surface-2 px-5 text-[14.5px] font-medium text-bz-navy transition-colors hover:border-bz-navy"
           >
             <MapPin size={16} strokeWidth={1.8} aria-hidden="true" />
-            {pick(props.mapLabel, lang)}
+            <span className={ar.trim()} lang={lang}>
+              {pick(props.mapLabel, lang)}
+            </span>
           </a>
         ) : null}
 
         {pick(props.footerNote, lang) ? (
           <p
-            className="mt-5 text-center text-[11.5px] text-bz-muted"
+            className={`mt-5 text-center text-[11.5px] text-bz-muted${ar}`}
             lang={lang}
           >
             {pick(props.footerNote, lang)}

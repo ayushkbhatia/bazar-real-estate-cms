@@ -8,6 +8,7 @@ import { fluid } from "../_components/marketing/fluid";
 import { list, str } from "@/lib/master-pages";
 import { ContactCard } from "./_components/contact-card";
 import { loadContactQrContent } from "./_content";
+import { bukra } from "./_fonts";
 
 export const metadata: Metadata = {
   title: "Contact Bazar Real Estate",
@@ -107,7 +108,9 @@ export default async function ContactQrPage() {
 
   return (
     <div className="bg-bz-bg">
-      <div className="px-4 py-8 md:py-12">
+      {/* `bukra.variable` defines --font-bukra here; the card reads it for its
+          Arabic nodes only (see contact-card.module.css). */}
+      <div className={`${bukra.variable} px-4 py-8 md:py-12`}>
         <ContactCard
           blocks={data.blocks}
           name={data.name}

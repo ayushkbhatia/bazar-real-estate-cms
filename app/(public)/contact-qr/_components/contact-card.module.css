@@ -1,0 +1,47 @@
+/*
+ * The Arabic face of the contact card.
+ *
+ * Applied per-node rather than to the card root: the phone numbers, the email,
+ * the URL and the EN/AR toggle are Latin on both sides of the card and stay in
+ * the brand's Geist.
+ *
+ * Unlayered on purpose. `.eyebrow` lives in @layer components, so an unlayered
+ * rule of equal specificity wins — which is what lets `letter-spacing: normal`
+ * below actually land on the row labels.
+ */
+.arabic {
+  font-family: var(--font-bukra), system-ui, sans-serif;
+  /*
+   * Tracking is what made the Arabic look broken. Arabic is cursive: the
+   * letters in a word are joined, and letter-spacing prises those joins apart
+   * into a row of disconnected marks. `.eyebrow` sets 0.12em, so the labels
+   * were the worst of it, but nothing Arabic should carry tracking.
+   */
+  letter-spacing: normal;
+  /*
+   * Arabic needs more room between lines than Latin — its ascenders and the
+   * dots below the baseline collide at the tighter Latin leading. No font-size
+   * here on purpose: an `em` bump would resolve against the parent and wipe out
+   * each node's own size (the 11px `.eyebrow` labels became 17px).
+   */
+  line-height: 1.75;
+}
+
+/*
+ * The row labels and the "follow" caption. `.eyebrow` is 11px uppercase, which
+ * is a Latin device — Arabic has no case, so the label loses the size it was
+ * borrowing from capitals and reads a step too small. A couple of pixels back
+ * puts it level with the English face.
+ */
+.arabicLabel {
+  font-size: 12.5px;
+}
+
+/*
+ * The one place the bold cut earns its download: the primary action. Bukra
+ * Regular against a navy fill reads lighter than Geist Medium does, so the
+ * Arabic button would otherwise sit quieter than the English one.
+ */
+.arabicStrong {
+  font-weight: 700;
+}
