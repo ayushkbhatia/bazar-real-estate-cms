@@ -17,6 +17,35 @@ describe("enquirySchema", () => {
     }
   });
 
+  it("accepts a development interest registration", () => {
+    const res = enquirySchema.safeParse({
+      name: "Ayush Bhatia",
+      email: "lead@example.com",
+      phone: "+971501234567",
+      message: "I'd like to register my interest in Bayviews Saadiyat.",
+      source: "development_interest",
+      development_id: "22222222-2222-2222-2222-222222222222",
+    });
+    expect(res.success).toBe(true);
+    if (res.success) {
+      expect(res.data.development_id).toBe(
+        "22222222-2222-2222-2222-222222222222",
+      );
+    }
+  });
+
+  // The brochure gate posted `brief_raw` — the column name — instead of
+  // `message`, so every request failed validation and no lead was stored.
+  it("rejects a payload that carries the column name instead of message", () => {
+    const res = enquirySchema.safeParse({
+      name: "Ayush Bhatia",
+      email: "lead@example.com",
+      brief_raw: "Brochure request — Bayviews Saadiyat.",
+      source: "brochure",
+    });
+    expect(res.success).toBe(false);
+  });
+
   it("rejects when neither email nor phone is supplied", () => {
     const res = enquirySchema.safeParse({
       name: "Ayush",

@@ -127,12 +127,18 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
         "Brochure button label",
         "Blank keeps “Download brochure”.",
       ),
+      optionalText(
+        "interest_label",
+        "Interest button label",
+        "Blank keeps “Register your interest”. Opens the enquiry form for this project.",
+      ),
     ],
     defaults: {
       heading: null,
       intro: null,
       brochure: { media_id: null, alt: null, label: null },
       brochure_label: null,
+      interest_label: null,
     },
   }),
   section("subnav", "Sub-navigation", "Sticky anchor links down the page.", {

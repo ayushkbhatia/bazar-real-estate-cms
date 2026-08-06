@@ -14,6 +14,8 @@ export const ENQUIRY_SOURCES = [
   "whatsapp_inbound",
   // Brochure request from a development page (0066).
   "brochure",
+  // "Register your interest" on a development hero (0075).
+  "development_interest",
 ] as const;
 
 export const ENQUIRY_TIMELINES = [

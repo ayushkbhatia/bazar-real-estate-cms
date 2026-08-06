@@ -22,8 +22,19 @@ type Props = {
   source: Source;
   propertyId?: string | null;
   propertyReference?: string | null;
+  /** Stamps the enquiry with the project it came from (development pages). */
+  developmentId?: string | null;
   defaultName?: string;
   defaultEmail?: string;
+  /**
+   * Pre-fills the message box. Wins over the propertyReference default so a
+   * caller can frame the brief in its own words ("register my interest in …").
+   */
+  defaultMessage?: string;
+  /** Overrides the submit button's resting label. */
+  submitLabel?: string;
+  /** Overrides the confirmation heading shown after a successful send. */
+  successTitle?: string;
   /** Toggle the "intent" segmented control (contact page only). */
   showIntent?: boolean;
   /** Tighter copy + layout when rendered inside the property-page sidebar. */
@@ -67,8 +78,12 @@ export function EnquiryForm({
   source,
   propertyId,
   propertyReference,
+  developmentId,
   defaultName,
   defaultEmail,
+  defaultMessage,
+  submitLabel,
+  successTitle,
   showIntent,
   compact,
   className,
@@ -92,11 +107,14 @@ export function EnquiryForm({
       name: defaultName ?? "",
       email: defaultEmail ?? "",
       phone: "",
-      message: propertyReference
-        ? `I'd like to know more about ${propertyReference}.`
-        : "",
+      message:
+        defaultMessage ??
+        (propertyReference
+          ? `I'd like to know more about ${propertyReference}.`
+          : ""),
       source,
       property_id: propertyId ?? null,
+      development_id: developmentId ?? null,
       intent: null,
     },
   });
@@ -126,7 +144,9 @@ export function EnquiryForm({
           className,
         )}
       >
-        <div className="font-medium text-[14px]">Thank you.</div>
+        <div className="font-medium text-[14px]">
+          {successTitle ?? "Thank you."}
+        </div>
         <p className="text-[13px] mt-1.5 leading-relaxed text-bz-ink-2">
           We&apos;ve received your brief. An advisor will reach out within
           2 hours during business hours, and by next morning otherwise.
@@ -240,7 +260,9 @@ export function EnquiryForm({
 
       <Button type="submit" disabled={pending} className="mt-1">
         <Send size={14} strokeWidth={1.8} />
-        {pending ? "Sending…" : compact ? "Send enquiry" : "Submit"}
+        {pending
+          ? "Sending…"
+          : (submitLabel ?? (compact ? "Send enquiry" : "Submit"))}
       </Button>
       <p className="text-[11.5px] text-bz-muted -mt-1">
         By submitting you agree to be contacted by a Bazar advisor.

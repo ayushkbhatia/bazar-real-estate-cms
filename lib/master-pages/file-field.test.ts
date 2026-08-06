@@ -41,6 +41,10 @@ describe("the development hero carries a brochure", () => {
     expect(keys).toContain("brochure_label");
   });
 
+  it("offers a label for the register-your-interest button beside it", () => {
+    expect(hero.fields.map((f) => f.key)).toContain("interest_label");
+  });
+
   it("defaults to no PDF, so nothing is promised until one is set", () => {
     const resolved = resolveSections(def as MasterPageDef, null);
     const heroValues = resolved.find((s) => s.key === "hero")!.values;

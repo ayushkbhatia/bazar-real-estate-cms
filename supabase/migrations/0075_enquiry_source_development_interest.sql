@@ -1,0 +1,22 @@
+-- 0075_enquiry_source_development_interest.sql
+-- Add 'development_interest' to enquiry_source.
+--
+-- The development hero's second CTA was a "Book a viewing" button that did
+-- nothing — no handler, no dialog, no record. Off-plan projects rarely have
+-- anything to view anyway, so the slot is now a lead-capture CTA: "Register
+-- your interest" opens the contact-page enquiry form, tailored to the project.
+--
+-- It needs a source of its own. Filing these under 'contact_page' would hide
+-- which project drew the lead in the aggregate, and under 'brochure' would
+-- conflate "send me the PDF" with "I want in" — two very different intents for
+-- whoever works the queue.
+--
+-- `enquiries.development_id` already exists (0001), so provenance has somewhere
+-- to live without further schema changes.
+--
+-- Adding an enum value is backward-compatible. Nothing switches exhaustively
+-- over enquiry_source in the app — the admin filters render whatever they are
+-- given — but lib/schemas/enquiry.ts keeps its own ENQUIRY_SOURCES list, which
+-- is updated alongside this.
+
+alter type public.enquiry_source add value if not exists 'development_interest';

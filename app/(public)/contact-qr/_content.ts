@@ -19,6 +19,15 @@ import type {
  * from drifting out of step with what the card shows.
  */
 
+/**
+ * The logo the card falls back to. Bundled rather than seeded into the media
+ * library so the card looks right on a fresh database — local, preview and the
+ * client's own environment after handover all render the same head without
+ * anyone having to upload anything first. Uploading a logo in
+ * /admin/pages/master/contact-qr still wins.
+ */
+const BUNDLED_LOGO = "/brand/bazar-logo.png";
+
 /** `tel:` wants digits and an optional `+`, not the spacing an editor types. */
 function telHref(display: string): string {
   return `tel:${display.replace(/[^\d+]/g, "")}`;
@@ -60,7 +69,7 @@ export type ContactQrContent = {
   /** Card stacks to render, in the editor's order. */
   blocks: CardBlock[];
   name: string;
-  logoUrl: string | null;
+  logoUrl: string;
   logoAlt: string;
   tagline: Bilingual;
   saveLabel: Bilingual;
@@ -175,7 +184,7 @@ export async function loadContactQrContent(): Promise<ContactQrContent> {
       (CARD_BLOCKS as string[]).includes(key),
     ),
     name,
-    logoUrl: logo?.url ?? null,
+    logoUrl: logo?.url ?? BUNDLED_LOGO,
     logoAlt: logo?.alt ?? name,
     tagline: bi(cardV, "tagline"),
     saveLabel: bi(cardV, "save_label"),
