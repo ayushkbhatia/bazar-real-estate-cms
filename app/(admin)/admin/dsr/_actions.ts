@@ -13,7 +13,7 @@ import { approxJsonByteSize, exportFilename, generateDsrToken } from "@/lib/dsr"
  *
  * The self-service pages at /account/data-export and /account/data-deletion
  * went with the customer-account surface. The obligation did not: the privacy
- * notice now directs subjects to dpo@bazarrealestate.ae, and this is where a
+ * notice directs subjects to info@bazarrealestate.ae, and this is where a
  * staff member fulfils what arrives there.
  *
  * Admin-only. Both actions write a `dsr_requests` row — that table is the

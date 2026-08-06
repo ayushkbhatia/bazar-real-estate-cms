@@ -534,3 +534,26 @@ shows the trail.)
 - [storage] The `documents` bucket still exists, empty and policy-less.
   Postgres blocks deleting it via SQL; remove it through the Storage API or the
   dashboard. Nothing can read or write it in the meantime.
+
+- [legal] /ar/legal/privacy is the only Arabic page on the site.
+  It is a one-off locale route, not an i18n layer: the surrounding nav and
+  footer stay English, and LegalDocFrame flips direction/typeface off a
+  `locale` prop. If a second Arabic page is ever needed, that is the moment
+  to bring in next-intl rather than copy the pattern a third time.
+
+- [legal] §2's Arabic heading reads "البيانات الشخصية التي بجمعها".
+  The English heading is "What Personal Data We Collect", so this looks like
+  a typo for "نجمعها" in the client's source document. Published verbatim —
+  their text, their call. Worth raising when the retention placeholder is.
+
+- [legal] Terms and cookies still carry the "lawyer-drafted copy in progress"
+  banner and the dpo@ mailbox.
+  Privacy now has client-final text (banner off, info@ contact) via the new
+  LegalDocFrame `draft` / `contactEmail` / `dateLabel` props. When the client
+  sends final terms and cookie copy, pass the same props there.
+
+- [legal] The site's entity details contradict the published privacy policy.
+  The policy says "Bazar Real Estate L.L.C.", regulated by ADREC. The footer,
+  OG images, email templates, PDF headers and lib/queries/trust.ts
+  (`DLD_BROKER_PERMIT = "ORN 28041"`) still say "Bazar Real Estate Brokerage
+  LLC · ORN 28041 · DMT". Needs one client answer, then a sweep.

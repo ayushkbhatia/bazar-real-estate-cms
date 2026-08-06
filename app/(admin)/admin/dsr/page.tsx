@@ -14,9 +14,9 @@ export const dynamic = "force-dynamic";
  *
  * Subjects used to serve themselves at /account/data-export and
  * /account/data-deletion. Those pages went with the customer-account surface;
- * the legal duty did not. The privacy notice now points at
- * dpo@bazarrealestate.ae, and this page is where what arrives there gets
- * answered.
+ * the legal duty did not. The privacy notice points at
+ * info@bazarrealestate.ae (§10 of the client's final text), and this page is
+ * where what arrives there gets answered.
  */
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleString("en-GB", {
@@ -44,7 +44,7 @@ export default async function AdminDsrPage() {
       <div className="flex flex-col gap-8 max-w-[860px]">
         <p className="text-[13px] leading-relaxed text-bz-ink-2 max-w-[70ch]">
           Requests reach us at{" "}
-          <span className="mono">dpo@bazarrealestate.ae</span> — the address the
+          <span className="mono">info@bazarrealestate.ae</span> — the address the
           privacy notice publishes. Verify the requester, then build their
           archive or erase their data here. Both are recorded as evidence the
           request was handled.
