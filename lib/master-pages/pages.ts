@@ -393,10 +393,22 @@ function buyRentSections(opts: {
           help: "Rendered in italic at the end of the headline.",
         }),
         body({ key: "sub", label: "Sub-headline" }),
+        image(
+          "image",
+          "Background image",
+          "Fills the whole hero behind the headline and form, with a dark scrim over it so the text stays legible. Landscape, at least 2000px wide. Leave unset to keep the plain background.",
+        ),
         chipList("chips", "Quick-filter chips", 8),
         statList(3),
       ],
-      defaults: { ...opts.hero, chips: opts.heroChips, stats: opts.heroStats },
+      defaults: {
+        ...opts.hero,
+        // Unset by default: the hero keeps its current plain treatment until
+        // someone picks a photo, so neither landing changes on deploy.
+        image: emptyImage(null),
+        chips: opts.heroChips,
+        stats: opts.heroStats,
+      },
     },
     {
       key: "hero_form",

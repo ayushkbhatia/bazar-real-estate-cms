@@ -14,6 +14,8 @@ export type BuyRentContentProps = {
   eyebrow: string;
   title: React.ReactNode;
   sub: string;
+  heroImageUrl: string | null;
+  heroImageAlt: string | null;
   formTitle: string;
   formSub: string;
   featuredTitle: string;
@@ -64,11 +66,14 @@ export function buyRentContent(content: MasterPageContent): BuyRentContentProps 
 
   const heroChips = list<{ label?: string; href?: string }>(hero, "chips");
   const leadImage = img(lead, "image");
+  const heroImage = img(hero, "image");
 
   return {
     eyebrow: str(hero, "eyebrow") ?? "",
     title: heroTitle(str(hero, "title"), str(hero, "title_emphasis")),
     sub: str(hero, "sub") ?? "",
+    heroImageUrl: heroImage?.url ?? null,
+    heroImageAlt: heroImage?.alt ?? null,
     stats: statPairs(hero),
     chips: heroChips.map((c) => c.label ?? ""),
     chipHrefs: heroChips.map((c) => c.href || undefined),
