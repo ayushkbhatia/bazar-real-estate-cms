@@ -219,8 +219,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           alt: m.media?.alt_text ?? `${development.name} render ${i + 1}`,
           caption: null as string | null,
         }));
-  const masterplanMedia =
-    media.find((m) => m.role === "masterplan")?.media ?? null;
+  // From the `masterplan_id` column, which is where the CMS's Page images card
+  // saves the site plan. It used to be looked up in `development_media` under
+  // the `masterplan` role — a row nothing creates, so the upload never showed.
+  const masterplanMedia = development.masterplan;
 
   const availableUnits = units.filter((u) => u.status === "available");
   const calculatorUnits = availableUnits.map((u) => ({

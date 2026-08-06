@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import {
   NavigationMenu,
@@ -64,13 +64,88 @@ const PANEL_CONTENT_CLASS =
   "rounded-none! ring-0! bg-bz-bg! p-0! overflow-visible! " +
   "shadow-[0_12px_32px_-12px_rgba(0,0,0,0.18)]!";
 
+/**
+ * True once the document has scrolled past `offset` px. rAF-coalesced so a
+ * fling doesn't queue a setState per scroll event, and seeded on mount so a
+ * restored scroll position (back/forward nav, anchor link) starts correct.
+ */
+function useScrolled(offset: number): boolean {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    let frame = 0;
+    const read = () => {
+      frame = 0;
+      setScrolled(window.scrollY > offset);
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(read);
+    };
+
+    read();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [offset]);
+
+  return scrolled;
+}
+
 export function PublicMegaNav({ data, footerSlot }: Props) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  // Controlled Radix value — we only need "is a panel open", but the
+  // header's opacity depends on it, so the state has to live up here.
+  const [openTab, setOpenTab] = useState("");
+  const scrolled = useScrolled(8);
+
+  // Opaque whenever something is docked to the bar: the megamenu panel
+  // and the mobile drawer are solid `bg-bz-bg`, so a see-through header
+  // above them reads as a seam rather than an effect.
+  const solid = openTab !== "" || mobileOpen;
 
   return (
     <>
-      <header className="sticky top-0 z-40 h-[72px] px-6 md:px-12 flex items-center gap-6 border-b border-bz-border bg-bz-bg relative">
+      <header
+        className={cn(
+          // No `relative` alongside `sticky` — cn()'s tailwind-merge treats
+          // them as the same conflict group and would drop one. Sticky is
+          // itself a positioned element, so it anchors the blur layer.
+          "sticky top-0 z-40 h-[72px] px-6 md:px-12 flex items-center gap-6",
+          "border-b transition-[border-color,box-shadow] duration-200 ease-out motion-reduce:transition-none",
+          // Nothing to separate from at the very top of the document —
+          // the rule and the lift fade in once content slides under.
+          scrolled || solid ? "border-bz-border" : "border-transparent",
+          scrolled &&
+            !solid &&
+            "shadow-[0_1px_20px_-10px_color-mix(in_oklab,var(--bz-ink)_45%,transparent)]",
+        )}
+      >
+        {/*
+          The frosted pane is a child rather than a class on <header>
+          on purpose: `backdrop-filter` establishes a containing block
+          for fixed-position descendants, and the megamenu panel is a
+          `position: fixed` descendant that must stay full-bleed against
+          the viewport (see PANEL_CONTENT_CLASS). Blurring in a sibling
+          layer keeps that escape hatch intact.
+
+          Blur stays mounted in both states and only the alpha animates —
+          transitioning `backdrop-filter` itself is janky, and at full
+          opacity the blur is invisible anyway.
+        */}
+        <div
+          aria-hidden
+          className={cn(
+            "absolute inset-0 -z-10 pointer-events-none bg-bz-bg",
+            "transition-colors duration-200 ease-out motion-reduce:transition-none",
+            "supports-[backdrop-filter]:backdrop-blur-xl supports-[backdrop-filter]:backdrop-saturate-150",
+            !solid && "supports-[backdrop-filter]:bg-bz-bg/72",
+          )}
+        />
+
         <Link href="/" className="flex items-center">
           <Wordmark />
         </Link>
@@ -81,7 +156,11 @@ export function PublicMegaNav({ data, footerSlot }: Props) {
             gutters the header needs ~1205px, so md and lg both overflow
             the viewport. */}
         <div className="hidden xl:flex flex-1 justify-center">
-          <NavigationMenu viewport={false}>
+          <NavigationMenu
+            viewport={false}
+            value={openTab}
+            onValueChange={setOpenTab}
+          >
             <NavigationMenuList className="gap-1">
               {data.tabs.map((tab) => {
                 const active = isActive(pathname, tab);
@@ -108,8 +187,15 @@ export function PublicMegaNav({ data, footerSlot }: Props) {
 
                 return (
                   // `static` releases the absolute-positioning anchor so
-                  // the panel resolves against the `relative` header above.
-                  <NavigationMenuItem key={tab.id} className="static">
+                  // the panel resolves against the sticky header above.
+                  // `value` is explicit because the root is controlled —
+                  // Radix's auto-generated ids would still work, but the
+                  // tab id keeps the open state readable and stable.
+                  <NavigationMenuItem
+                    key={tab.id}
+                    value={tab.id}
+                    className="static"
+                  >
                     <NavigationMenuTrigger
                       className={cn(
                         "h-9 px-3 text-[13.5px] font-normal bg-transparent hover:bg-bz-surface-2 data-[state=open]:bg-bz-surface-2",

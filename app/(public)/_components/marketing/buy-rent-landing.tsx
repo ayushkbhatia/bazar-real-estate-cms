@@ -173,15 +173,17 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           // Only becomes a media hero once a photo is picked. Without one the
           // section keeps its original plain treatment exactly.
           //
-          // `bg-bz-ink` is load-bearing, not decoration. The photo and its
-          // scrim are -z-10 siblings rather than a CSS background, so without
-          // a dark colour on the section itself the white copy would sit on
-          // the page's near-white surface for as long as the image takes to
-          // load — and permanently if it 404s. It is also what lets a contrast
-          // checker resolve these colours at all: axe reads the nearest
-          // painted background, and an <img> behind the text is not one.
-          heroImage &&
-            "relative isolate overflow-hidden bg-bz-ink text-white",
+          // `bg-bz-navy` is never seen. `isolate` makes this a stacking
+          // context, so the section's own background paints first and both
+          // -z-10 children — the photo and the scrim — cover it completely.
+          // It earns its place twice over: it is what shows in the moment
+          // before the photo decodes, instead of the cream page background
+          // flashing behind white type, and it is the only background an
+          // automated contrast checker can see. Axe cannot evaluate a
+          // background-image or a gradient, so it walks up to the nearest
+          // opaque ancestor colour; without this it found the page's #faf8f5
+          // and read the headline as white-on-cream at 1.05:1.
+          heroImage && "relative isolate overflow-hidden bg-bz-navy text-white",
         )}
       >
         {heroImage ? (
@@ -197,12 +199,26 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
             {/* Two layered gradients rather than one: the horizontal pass
                 carries the desktop layout, where the copy sits left and the
                 form card right, and the vertical pass does the work on mobile
-                once those two stack. Either alone leaves a corner unreadable. */}
+                once those two stack. Either alone leaves a corner unreadable.
+
+                They multiply where they overlap, so the corner values are not
+                the numbers below: the copy side lands around 56% black at the
+                top and 63% at the foot, the photo side in the low twenties.
+                The first pass ran 80–86% down the copy side, which held type
+                easily but flattened the photograph into a dark panel — you
+                could not tell what the picture was of.
+
+                Worst case for legibility is a near-white photograph, where
+                56% black leaves white type at about 4.9:1 and the sub-copy at
+                6.5:1 — both above AA. The 11px eyebrow is the weak point at
+                that extreme and depends on the editor not picking a blown-out
+                image, which was true before this change too, with more margin.
+                Anything darker than paper-white clears comfortably. */}
             <div
               className="absolute inset-0 -z-10"
               style={{
                 background:
-                  "linear-gradient(90deg, rgba(0,0,0,.74) 0%, rgba(0,0,0,.46) 55%, rgba(0,0,0,.30) 100%), linear-gradient(180deg, rgba(0,0,0,.22) 0%, rgba(0,0,0,.46) 100%)",
+                  "linear-gradient(90deg, rgba(0,0,0,.52) 0%, rgba(0,0,0,.26) 55%, rgba(0,0,0,.10) 100%), linear-gradient(180deg, rgba(0,0,0,.08) 0%, rgba(0,0,0,.22) 100%)",
               }}
             />
           </>
@@ -214,7 +230,9 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           )}
         >
           <div>
-            <Eyebrow className={heroImage ? "text-white/70" : undefined}>
+            {/* /80 rather than /70: at 11px this is the first thing to go, and
+                the lighter scrim gives it less to sit on than it used to. */}
+            <Eyebrow className={heroImage ? "text-white/80" : undefined}>
               {p.eyebrow}
             </Eyebrow>
             <h1
@@ -254,7 +272,7 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
                     <div
                       className={cn(
                         "text-[12.5px] mt-0.5",
-                        heroImage ? "text-white/70" : "text-bz-muted",
+                        heroImage ? "text-white/80" : "text-bz-muted",
                       )}
                     >
                       {l}
