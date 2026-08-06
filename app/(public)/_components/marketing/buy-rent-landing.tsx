@@ -173,28 +173,30 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           // Only becomes a media hero once a photo is picked. Without one the
           // section keeps its original plain treatment exactly.
           //
-          // `bg-bz-navy` is never seen. `isolate` makes this a stacking
-          // context, so the section's own background paints first and both
-          // -z-10 children — the photo and the scrim — cover it completely.
-          // It earns its place twice over: it is what shows in the moment
-          // before the photo decodes, instead of the cream page background
-          // flashing behind white type, and it is the only background an
-          // automated contrast checker can see. Axe cannot evaluate a
-          // background-image or a gradient, so it walks up to the nearest
-          // opaque ancestor colour; without this it found the page's #faf8f5
-          // and read the headline as white-on-cream at 1.05:1.
-          heroImage && "relative isolate overflow-hidden bg-bz-navy",
+          // `bg-bz-navy` is never seen once the photo decodes — the image and
+          // the scrim cover it — but it is what shows in the moment before,
+          // instead of the cream page background flashing behind white type.
+          // It no longer has to double as the thing axe measures against:
+          // the photo and scrim now paint in front of this background rather
+          // than behind it (see below), so axe reaches them directly.
+          heroImage && "relative overflow-hidden bg-bz-navy",
         )}
       >
         {heroImage ? (
           <>
+            {/* Photo and scrim stack on paint order rather than on a negative
+                z-index. Behind the section they sat below the opaque page
+                wrapper in axe's background stack, so it stopped at #faf8f5 two
+                levels up and read every white string here as white-on-cream.
+                As ordinary positioned siblings they land where they belong,
+                and the copy column below is positioned to paint over them. */}
             <Image
               src={heroImage}
               alt={p.heroImageAlt ?? ""}
               fill
               sizes="100vw"
               priority
-              className="-z-10 object-cover"
+              className="object-cover"
             />
             {/* Two layered gradients rather than one: the horizontal pass
                 carries the desktop layout, where the copy sits left and the
@@ -215,7 +217,7 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
                 image, which was true before this change too, with more margin.
                 Anything darker than paper-white clears comfortably. */}
             <div
-              className="absolute inset-0 -z-10"
+              className="absolute inset-0"
               style={{
                 background:
                   "linear-gradient(90deg, rgba(0,0,0,.52) 0%, rgba(0,0,0,.26) 55%, rgba(0,0,0,.10) 100%), linear-gradient(180deg, rgba(0,0,0,.08) 0%, rgba(0,0,0,.22) 100%)",
@@ -226,6 +228,9 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
         <div
           className={cn(
             "grid grid-cols-1 lg:grid-cols-[1fr_460px] gap-10 lg:gap-16 items-center",
+            // Positioned so the copy paints over the scrim, which is itself a
+            // positioned sibling. Only needed on the media variant.
+            heroImage && "relative",
             heroWrap,
           )}
         >
