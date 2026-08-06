@@ -84,7 +84,7 @@ test("contact form rejects when no email or phone is supplied", async ({ page })
   await page.goto("/contact");
   await page.getByLabel(/^name$/i).fill("Playwright Tester");
   await page.getByLabel(/tell us more/i).fill("Need help.");
-  await page.getByRole("button", { name: /send brief/i }).click();
+  await page.getByRole("button", { name: /^submit$/i }).click();
   await expect(
     page.getByText(/need at least an email or a phone number/i),
   ).toBeVisible();

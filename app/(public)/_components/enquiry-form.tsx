@@ -42,12 +42,18 @@ const INTENT_LABELS: Record<
   manage: "Manage",
 };
 
+/**
+ * What the picker offers. Deliberately narrower than ENQUIRY_INTENTS: Invest
+ * and Manage were dropped from the form because Bazar does not want those
+ * enquiries, but they stay in the schema and in INTENT_LABELS above so a
+ * stale browser tab submitting one still validates, and so any historical
+ * enquiry carrying one still renders a label in the admin rather than a raw
+ * value. (Verified none exist today, but the cost of keeping them is zero.)
+ */
 const INTENT_VALUES: NonNullable<EnquiryInput["intent"]>[] = [
   "buy",
   "sell",
   "rent",
-  "invest",
-  "manage",
 ];
 
 function FieldError({ message }: { message?: string }) {
@@ -234,7 +240,7 @@ export function EnquiryForm({
 
       <Button type="submit" disabled={pending} className="mt-1">
         <Send size={14} strokeWidth={1.8} />
-        {pending ? "Sending…" : compact ? "Send enquiry" : "Send brief"}
+        {pending ? "Sending…" : compact ? "Send enquiry" : "Submit"}
       </Button>
       <p className="text-[11.5px] text-bz-muted -mt-1">
         By submitting you agree to be contacted by a Bazar advisor.
