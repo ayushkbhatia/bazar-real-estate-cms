@@ -38,9 +38,13 @@ describe("Sprint 14 master pages", () => {
     for (const [key] of NEW_PAGES) {
       const def = getMasterPage(key) as MasterPageDef;
       const resolved = resolveSections(def, null);
-      // Same count, same order, all enabled — the un-edited page.
+      // Same count, same order — the un-edited page. Every section is on
+      // unless its definition says otherwise, and a section that ships off
+      // still appears in the editor with its copy intact.
       expect(resolved.map((s) => s.key)).toEqual(def.sections.map((s) => s.key));
-      expect(resolved.every((s) => s.enabled)).toBe(true);
+      expect(resolved.map((s) => s.enabled)).toEqual(
+        def.sections.map((s) => s.defaultEnabled ?? true),
+      );
     }
   });
 });
@@ -66,6 +70,65 @@ describe("QR page", () => {
   it("points at a route the site actually serves", () => {
     const target = getMasterPage("contact-qr");
     expect(target?.path).toBe("/contact-qr");
+  });
+});
+
+describe("contact card (/contact-qr)", () => {
+  const card = getMasterPage("contact-qr") as MasterPageDef;
+  const resolved = resolveSections(card, null);
+  const on = (key: string) => resolved.find((s) => s.key === key)!;
+
+  it("ships the card, its details and the follow row, and nothing else", () => {
+    expect(resolved.filter((s) => s.enabled).map((s) => s.key)).toEqual([
+      "card",
+      "details",
+      "follow",
+    ]);
+  });
+
+  it("keeps the enquiry form and explore links available but off", () => {
+    expect(on("enquiry_form").enabled).toBe(false);
+    expect(on("explore").enabled).toBe(false);
+    // Off, not gone: the copy is still there for whoever turns them back on.
+    expect(str(on("enquiry_form").values, "heading")).toBe(
+      "Tell us what you're after.",
+    );
+  });
+
+  it("lets an editor switch a default-off section back on", () => {
+    const stored = resolveSections(card, [
+      { key: "explore", enabled: true, values: {} },
+    ]);
+    expect(stored.find((s) => s.key === "explore")!.enabled).toBe(true);
+  });
+
+  it("cannot lose the card or its details — both are locked", () => {
+    const stored = resolveSections(card, [
+      { key: "card", enabled: false, values: {} },
+      { key: "details", enabled: false, values: {} },
+    ]);
+    expect(stored.find((s) => s.key === "card")!.enabled).toBe(true);
+    expect(stored.find((s) => s.key === "details")!.enabled).toBe(true);
+  });
+
+  it("gives every label an Arabic twin, so the toggle never shows a hole", () => {
+    for (const section of card.sections) {
+      const arKeys = section.fields
+        .map((f) => f.key)
+        .filter((k) => k.endsWith("_ar"));
+      for (const key of arKeys) {
+        expect(
+          str(section.defaults, key),
+          `${section.key}.${key} has no Arabic default`,
+        ).toBeTruthy();
+      }
+    }
+  });
+
+  it("hides WhatsApp until someone configures a number for it", () => {
+    // The mobile number already reaches WhatsApp; a second row for the same
+    // number is noise, so this one is opt-in.
+    expect(str(on("details").values, "whatsapp_number")).toBeNull();
   });
 });
 

@@ -81,7 +81,11 @@ export function resolveSections(
       key: sectionDef.key,
       def: sectionDef,
       // Locked sections can't be switched off, whatever storage claims.
-      enabled: sectionDef.locked ? true : (s?.enabled ?? true),
+      // Anything else takes the stored flag, then the section's own default —
+      // which is how a section ships off but stays editable.
+      enabled: sectionDef.locked
+        ? true
+        : (s?.enabled ?? sectionDef.defaultEnabled ?? true),
       values: mergeValues(sectionDef, s?.values ?? null),
     };
   });
