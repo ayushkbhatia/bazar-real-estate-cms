@@ -48,6 +48,8 @@ export default async function RentPage({ searchParams }: PageProps) {
       eyebrow={c.eyebrow}
       title={c.title}
       sub={c.sub}
+      heroImageUrl={c.heroImageUrl}
+      heroImageAlt={c.heroImageAlt}
       wide
       chips={c.chips}
       chipHrefs={c.chipHrefs}

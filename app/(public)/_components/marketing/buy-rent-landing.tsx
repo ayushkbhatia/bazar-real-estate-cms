@@ -1,5 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { ListingCardProps } from "@/components/brand/listing-card";
@@ -37,6 +38,9 @@ export type BuyRentLandingProps = {
    */
   categories?: BuyCategory[];
   stats?: [string, string][];
+  /** Resolved URL of the hero background picked in the master-page editor. */
+  heroImageUrl?: string | null;
+  heroImageAlt?: string | null;
   /**
    * Let every section span the full viewport width (no 1200px cap). Opt-in
    * so /rent keeps its existing constrained layout untouched.
@@ -114,6 +118,7 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
   // constrained widths so /rent renders exactly as before.
   const wrap = p.wide ? "" : "max-w-[1200px]";
   const heroWrap = p.wide ? "" : "max-w-[1280px]";
+  const heroImage = p.heroImageUrl ?? null;
 
   const heroChips = interactive ? (
     <HeroCategoryChips categories={p.categories!} />
@@ -163,8 +168,36 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
     hero: (
       <section
         key="hero"
-        className="px-4 md:px-12 pt-12 md:pt-20 pb-14 md:pb-[72px]"
+        className={cn(
+          "px-4 md:px-12 pt-12 md:pt-20 pb-14 md:pb-[72px]",
+          // Only becomes a media hero once a photo is picked. Without one the
+          // section keeps its original plain treatment exactly.
+          heroImage && "relative isolate overflow-hidden text-white",
+        )}
       >
+        {heroImage ? (
+          <>
+            <Image
+              src={heroImage}
+              alt={p.heroImageAlt ?? ""}
+              fill
+              sizes="100vw"
+              priority
+              className="-z-10 object-cover"
+            />
+            {/* Two layered gradients rather than one: the horizontal pass
+                carries the desktop layout, where the copy sits left and the
+                form card right, and the vertical pass does the work on mobile
+                once those two stack. Either alone leaves a corner unreadable. */}
+            <div
+              className="absolute inset-0 -z-10"
+              style={{
+                background:
+                  "linear-gradient(90deg, rgba(0,0,0,.74) 0%, rgba(0,0,0,.46) 55%, rgba(0,0,0,.30) 100%), linear-gradient(180deg, rgba(0,0,0,.22) 0%, rgba(0,0,0,.46) 100%)",
+              }}
+            />
+          </>
+        ) : null}
         <div
           className={cn(
             "grid grid-cols-1 lg:grid-cols-[1fr_460px] gap-10 lg:gap-16 items-center",
@@ -172,7 +205,9 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
           )}
         >
           <div>
-            <Eyebrow>{p.eyebrow}</Eyebrow>
+            <Eyebrow className={heroImage ? "text-white/70" : undefined}>
+              {p.eyebrow}
+            </Eyebrow>
             <h1
               className="serif mt-3.5"
               style={{
@@ -183,12 +218,22 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
             >
               {p.title}
             </h1>
-            <p className="text-[16px] md:text-[17px] text-bz-ink-2 max-w-[520px] leading-relaxed mt-5">
+            <p
+              className={cn(
+                "text-[16px] md:text-[17px] max-w-[520px] leading-relaxed mt-5",
+                heroImage ? "text-white/85" : "text-bz-ink-2",
+              )}
+            >
               {p.sub}
             </p>
             {heroChips}
             {p.stats && p.stats.length > 0 ? (
-              <div className="flex flex-wrap gap-8 md:gap-12 mt-10 pt-8 border-t border-bz-border">
+              <div
+                className={cn(
+                  "flex flex-wrap gap-8 md:gap-12 mt-10 pt-8 border-t",
+                  heroImage ? "border-white/25" : "border-bz-border",
+                )}
+              >
                 {p.stats.map(([v, l]) => (
                   <div key={l}>
                     <div
@@ -197,7 +242,12 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
                     >
                       {v}
                     </div>
-                    <div className="text-[12.5px] text-bz-muted mt-0.5">
+                    <div
+                      className={cn(
+                        "text-[12.5px] mt-0.5",
+                        heroImage ? "text-white/70" : "text-bz-muted",
+                      )}
+                    >
                       {l}
                     </div>
                   </div>

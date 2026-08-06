@@ -103,6 +103,8 @@ export default async function BuyPage({ searchParams }: PageProps) {
       eyebrow={c.eyebrow}
       title={c.title}
       sub={c.sub}
+      heroImageUrl={c.heroImageUrl}
+      heroImageAlt={c.heroImageAlt}
       wide
       categories={categories}
       formTitle={c.formTitle}
