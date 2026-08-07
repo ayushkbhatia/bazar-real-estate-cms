@@ -12,13 +12,6 @@ import {
 import { logAudit } from "@/lib/audit";
 import { friendlyPropertyConstraintError } from "@/lib/property-constraints";
 import { requireRole } from "@/lib/auth";
-import { randomUUID } from "node:crypto";
-import {
-  ALLOWED_MIME,
-  MAX_UPLOAD_BYTES,
-  MEDIA_BUCKET,
-  storageKey,
-} from "@/lib/media";
 
 const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
@@ -337,76 +330,48 @@ export type UploadPhotoResult =
   | { status: "error"; message: string };
 
 /**
- * Upload one image straight from the property editor: stores the file, records
- * it in `media_assets` (so it appears in the shared media library), and
- * attaches it to this property as a `gallery` image. The hero picker calls
- * this per file, then promotes the first upload to hero via `setPropertyHero`
- * when the listing has none yet.
+ * Attach one already-uploaded library asset to this property as a photo.
+ *
+ * The bytes get to Storage through the shared `uploadToLibrary` helper, which
+ * uploads browser → Storage on a signed URL and returns the `media_assets` id;
+ * this action does the property half. The editor used to take the file itself,
+ * but a server action's payload is a Vercel Function request body and Vercel
+ * refuses those over 4.5 MB — listing photos straight off a camera failed with
+ * a platform 413 the app never saw. See app/(admin)/admin/media/
+ * _upload-actions.ts.
+ *
+ * The hero picker calls this per file, then promotes the first upload to hero
+ * via `setPropertyHero` when the listing has none yet.
  */
-export async function uploadPropertyPhoto(
+export async function attachPropertyPhoto(
   propertyId: string,
-  formData: FormData,
+  mediaId: string,
 ): Promise<UploadPhotoResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
   await requireRole(PROPERTY_ROLES);
 
-  const file = formData.get("file");
-  if (!(file instanceof File))
-    return { status: "error", message: "No file provided." };
-  if (file.size === 0) return { status: "error", message: "File is empty." };
-  if (file.size > MAX_UPLOAD_BYTES)
-    return {
-      status: "error",
-      message: `"${file.name}" is too large — max ${Math.floor(
-        MAX_UPLOAD_BYTES / 1024 / 1024,
-      )} MB.`,
-    };
-  if (!file.type.startsWith("image/") || !ALLOWED_MIME.has(file.type))
-    return {
-      status: "error",
-      message: `"${file.name}" isn't a supported image (use JPG, PNG, WebP, AVIF, or GIF).`,
-    };
-
   const supabase = await createSupabaseServerClient();
-  const key = storageKey({
-    folder: "listings",
-    filename: file.name,
-    uuid: randomUUID(),
-  });
-  const buffer = Buffer.from(await file.arrayBuffer());
-
-  const upload = await supabase.storage
-    .from(MEDIA_BUCKET)
-    .upload(key, buffer, {
-      contentType: file.type,
-      cacheControl: "3600",
-      upsert: false,
-    });
-  if (upload.error)
-    return { status: "error", message: `Upload failed: ${upload.error.message}` };
 
   const asset = await supabase
     .from("media_assets")
-    .insert({
-      filename: file.name,
-      mime_type: file.type,
-      size_bytes: file.size,
-      storage_key: key,
-      alt_text: null,
-      folder: "listings",
-    })
     .select("id, storage_key, filename, mime_type")
+    .eq("id", mediaId)
+    .is("deleted_at", null)
     .maybeSingle();
 
-  if (asset.error || !asset.data) {
-    // Roll back the orphaned storage object.
-    await supabase.storage.from(MEDIA_BUCKET).remove([key]);
+  if (asset.error || !asset.data)
     return {
       status: "error",
-      message: asset.error?.message ?? "Failed to record the upload.",
+      message: asset.error?.message ?? "That file isn't in the media library.",
     };
-  }
+
+  // Listing photos are images. PDFs belong to the library, not the gallery.
+  if (!asset.data.mime_type.startsWith("image/"))
+    return {
+      status: "error",
+      message: `"${asset.data.filename}" isn't an image, so it can't be a listing photo.`,
+    };
 
   // Attach to the property. The primary key is (property_id, media_id), so a
   // photo has exactly one role. When the listing has no hero yet, the first
@@ -451,7 +416,7 @@ export async function uploadPropertyPhoto(
     before: null,
     after: {
       media_id: asset.data.id,
-      filename: file.name,
+      filename: asset.data.filename,
       role: becameHero ? "hero" : "gallery",
     },
   });

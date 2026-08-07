@@ -1,7 +1,25 @@
 import { env } from "@/lib/env";
 
 export const MEDIA_BUCKET = "media";
-export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
+
+/**
+ * Every upload — image, PDF, hero video — goes browser → Supabase Storage on a
+ * short-lived signed URL, so this ceiling is real rather than aspirational.
+ *
+ * It did not used to be. Uploads posted their bytes to the `uploadMedia`
+ * server action, which made them a Vercel Function request body, and Vercel
+ * caps that at 4.5 MB — over it the platform returns `413
+ * FUNCTION_PAYLOAD_TOO_LARGE` before the function runs, on every plan, with no
+ * way to raise it. So a "10 MB" limit meant 4.5 MB in production and 10 MB on
+ * a dev machine, where no such cap exists: uploads that worked locally failed
+ * for the admin team, with an error the app never got to phrase.
+ *
+ * Direct-to-Storage removes that layer, and the ceiling that binds is the
+ * `media` bucket's own `file_size_limit` — 25 MB, set in migration 0070.
+ * Keep this constant and that limit in step; the bucket is what actually
+ * refuses oversized bytes, this is what tells the operator why.
+ */
+export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB
 export const ALLOWED_MIME = new Set<string>([
   "image/jpeg",
   "image/png",
@@ -12,24 +30,24 @@ export const ALLOWED_MIME = new Set<string>([
 ]);
 
 /**
- * Hero video gets its own, larger ceiling.
- *
- * It can afford one because it does not share the transport. Every other
- * upload posts its bytes to a server action, so it is capped by
- * `next.config.ts`'s `serverActions.bodySizeLimit` (12 MB, global — Next has
- * no per-action override) and by the host's own request-body limit long before
- * `MAX_UPLOAD_BYTES` gets a say. The hero video instead goes browser → Supabase
- * Storage on a signed URL, so none of those layers apply and the real ceiling
- * is the bucket's `file_size_limit` (set to 25 MB in migration 0070).
- *
- * Raising the bucket ceiling cannot loosen anything else: every other control
- * still runs through `uploadMedia`, which rejects >10 MB before a byte reaches
- * Storage.
+ * Hero video shares the ceiling now that every control shares the transport.
+ * Kept as its own constant because the two are separate policy decisions that
+ * happen to agree — a smaller video cap would not imply a smaller image cap.
  */
 export const MAX_VIDEO_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB
 export const VIDEO_MIME = new Set<string>(["video/mp4", "video/webm"]);
 
 export type UploadKind = "standard" | "hero_video";
+
+/** Every folder the media library will mint a key under. */
+export const UPLOAD_FOLDERS = [
+  "listings",
+  "brand",
+  "blog",
+  "team",
+  "documents",
+] as const;
+export type UploadFolder = (typeof UPLOAD_FOLDERS)[number];
 
 export type UploadPolicy = {
   maxBytes: number;
@@ -97,9 +115,22 @@ export function safeFilename(filename: string): string {
 
 /** Build a storage key under a given folder + a random uuid suffix. */
 export function storageKey(opts: {
-  folder: "listings" | "brand" | "blog" | "team" | "documents";
+  folder: UploadFolder;
   filename: string;
   uuid: string;
 }): string {
   return `${opts.folder}/${opts.uuid}-${safeFilename(opts.filename)}`;
+}
+
+/**
+ * Does this key look like one `createUploadTicket` minted — `<folder>/<uuid>-`?
+ *
+ * The finalise action re-checks the key the browser echoes back, so a caller
+ * can't point a `media_assets` row at an arbitrary object elsewhere in the
+ * bucket. Lives here so the pattern is stated once, next to `storageKey`.
+ */
+export function isMintedKey(key: string, folder: UploadFolder): boolean {
+  return new RegExp(
+    `^${folder}/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-`,
+  ).test(key);
 }

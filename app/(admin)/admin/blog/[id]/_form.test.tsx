@@ -7,13 +7,15 @@ import type { ArticleEditInput } from "@/lib/schemas/article";
 vi.mock("./_actions", () => ({
   updateArticle: vi.fn(async () => ({ status: "ok" as const, slug: "x" })),
 }));
-// The picker uploads through the media library's server action.
-vi.mock("../../media/_actions", () => ({
-  uploadMedia: vi.fn(async () => ({
+// The picker uploads through the shared direct-to-Storage helper.
+vi.mock("../../media/_upload-client", () => ({
+  uploadToLibrary: vi.fn(async () => ({
     status: "ok" as const,
     id: "new",
     storage_key: "k",
+    filename: "f.jpg",
     url: "/u",
+    mime: "image/jpeg",
   })),
 }));
 // TipTap needs a real editor surface; the body editor is not what is under

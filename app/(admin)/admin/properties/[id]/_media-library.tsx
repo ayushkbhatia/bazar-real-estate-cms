@@ -28,8 +28,9 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { mediaPublicUrl } from "@/lib/media";
+import { uploadToLibrary } from "../../media/_upload-client";
 import {
-  uploadPropertyPhoto,
+  attachPropertyPhoto,
   setPropertyHero,
   detachPropertyPhoto,
   reorderPropertyMedia,
@@ -94,9 +95,17 @@ export function PropertyMediaLibrary({ propertyId, initial }: Props) {
     try {
       for (let i = 0; i < files.length; i++) {
         setUploadMsg(`Uploading ${i + 1} of ${files.length}…`);
-        const fd = new FormData();
-        fd.set("file", files[i]);
-        const res = await uploadPropertyPhoto(propertyId, fd);
+        // Two steps, because the bytes bypass the Next server: into the shared
+        // library first, then attached to this listing. Sequential so the
+        // first photo of an empty listing reliably becomes the hero.
+        const uploaded = await uploadToLibrary(files[i], {
+          folder: "listings",
+        });
+        if (uploaded.status === "error") {
+          toast.error(uploaded.message);
+          continue;
+        }
+        const res = await attachPropertyPhoto(propertyId, uploaded.id);
         if (res.status === "ok") added++;
         else toast.error(res.message);
       }

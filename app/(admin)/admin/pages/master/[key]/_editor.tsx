@@ -75,18 +75,7 @@ const MASTER_ACTIONS: SectionActions = {
     saveMasterPage(id as MasterPageKey, sections) as Promise<SectionSaveResult>,
   reset: (id) => resetMasterPage(id as MasterPageKey) as Promise<SectionSaveResult>,
 };
-import { uploadMedia } from "../../../media/_actions";
-import {
-  createVideoUploadTicket,
-  finaliseVideoUpload,
-} from "../../../media/_video-actions";
-import {
-  MAX_VIDEO_UPLOAD_BYTES,
-  MEDIA_BUCKET,
-  VIDEO_MIME,
-  megabytes,
-} from "@/lib/media";
-import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { uploadToLibrary } from "../../../media/_upload-client";
 
 export type MediaOption = {
   id: string;
@@ -866,9 +855,9 @@ function ScalarField({
 
 /**
  * Upload straight from a section's image field. Goes through the same
- * `uploadMedia` action the media library uses, so the file lands in Storage
- * *and* gets a `media_assets` row — the section stores that row's id, which is
- * what keeps section images visible to the library's usage index.
+ * `uploadToLibrary` helper the media library uses, so the file lands in
+ * Storage *and* gets a `media_assets` row — the section stores that row's id,
+ * which is what keeps section images visible to the library's usage index.
  */
 function UploadButton({
   onUploaded,
@@ -885,10 +874,7 @@ function UploadButton({
   async function handle(file: File | undefined) {
     if (!file) return;
     setBusy(true);
-    const form = new FormData();
-    form.set("file", file);
-    form.set("folder", "brand");
-    const result = await uploadMedia(form);
+    const result = await uploadToLibrary(file, { folder: "brand" });
     setBusy(false);
     if (result.status === "error") {
       toast.error(result.message);
@@ -901,7 +887,7 @@ function UploadButton({
       id: result.id,
       filename: file.name,
       url: result.url,
-      mime: file.type,
+      mime: result.mime,
     });
   }
 
@@ -931,11 +917,8 @@ function UploadButton({
 }
 
 /**
- * Hero video upload. Unlike `UploadButton`, the bytes never touch the Next
- * server: we ask for a signed upload URL, PUT the file straight to Supabase
- * Storage, then record the `media_assets` row. That is what lets this control
- * accept 25 MB while every other upload stays under the 10 MB / 12 MB
- * server-action ceilings. See lib/media.ts.
+ * Hero video upload. Same transport as `UploadButton` — the difference is the
+ * policy it uploads under (`hero_video`: MP4/WebM, marketing roles and up).
  */
 function VideoUploadButton({
   onUploaded,
@@ -948,50 +931,11 @@ function VideoUploadButton({
   async function handle(file: File | undefined) {
     if (!file) return;
 
-    // Checked again on the server and capped by the bucket itself; this is
-    // only so the operator finds out before waiting through the upload.
-    if (!VIDEO_MIME.has(file.type)) {
-      toast.error(
-        `Unsupported video type "${file.type || "unknown"}". Use MP4 or WebM.`,
-      );
-      return;
-    }
-    if (file.size > MAX_VIDEO_UPLOAD_BYTES) {
-      toast.error(
-        `"${file.name}" is ${megabytes(file.size)} MB — keep the video under ${megabytes(MAX_VIDEO_UPLOAD_BYTES)} MB.`,
-      );
-      return;
-    }
-
     setBusy(true);
     try {
-      const ticket = await createVideoUploadTicket({
-        filename: file.name,
-        mime: file.type as "video/mp4" | "video/webm",
-        size_bytes: file.size,
-      });
-      if (ticket.status === "error") {
-        toast.error(ticket.message);
-        return;
-      }
-
-      const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase.storage
-        .from(MEDIA_BUCKET)
-        .uploadToSignedUrl(ticket.storage_key, ticket.token, file, {
-          contentType: file.type,
-          cacheControl: "3600",
-        });
-      if (error) {
-        toast.error(`Upload failed: ${error.message}`);
-        return;
-      }
-
-      const done = await finaliseVideoUpload({
-        storage_key: ticket.storage_key,
-        filename: file.name,
-        mime: file.type as "video/mp4" | "video/webm",
-        size_bytes: file.size,
+      const done = await uploadToLibrary(file, {
+        folder: "brand",
+        kind: "hero_video",
       });
       if (done.status === "error") {
         toast.error(done.message);
