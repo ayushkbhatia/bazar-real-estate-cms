@@ -6,7 +6,7 @@ import { getArticleCategoryLabels } from "@/lib/queries/article-categories";
 import type { Database } from "@/db/types";
 
 /**
- * A category slug. Categories are a runtime-editable taxonomy (migration 0055),
+ * A category slug. Categories are a runtime-editable taxonomy (migration 0055c),
  * so this is an open `string` rather than a fixed enum. Use `category_label`
  * for display and `getArticleCategoryLabels()` to resolve arbitrary slugs.
  */

@@ -1,4 +1,9 @@
--- 0055_article_categories_table.sql
+-- 0055c_article_categories_table.sql
+--
+-- Suffixed after the fact — see the header of 0055a_nav_megamenu_edits.sql.
+-- Last of the three by authoring time (17:24). This is the one referenced by
+-- name in lib/schemas/article.ts, lib/queries/articles.ts and the
+-- "apply migration 0055c" error in admin/blog/_category-actions.ts.
 -- Make blog "types" (categories) editable from the CMS at runtime.
 --
 -- articles.category was a Postgres enum (article_category). An enum cannot be

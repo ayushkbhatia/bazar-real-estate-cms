@@ -1,4 +1,7 @@
--- 0055_property_developer.sql
+-- 0055b_property_developer.sql
+--
+-- Suffixed after the fact — see the header of 0055a_nav_megamenu_edits.sql.
+-- Second of the three by authoring time (17:16).
 -- Property listing wizard — make Developer a first-class, capturable field.
 --
 -- Until now a property's developer was only reachable indirectly and optionally

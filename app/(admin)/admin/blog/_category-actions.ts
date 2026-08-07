@@ -86,12 +86,12 @@ export async function createArticleCategory(
         message: "A category with that slug already exists.",
       };
     }
-    // 42P01 = undefined_table: migration 0055 not applied in this environment.
+    // 42P01 = undefined_table: migration 0055c not applied in this environment.
     if (error.code === "42P01") {
       return {
         status: "error",
         message:
-          "Category storage isn't set up yet — apply migration 0055, then retry.",
+          "Category storage isn't set up yet — apply migration 0055c, then retry.",
       };
     }
     return { status: "error", message: error.message };
