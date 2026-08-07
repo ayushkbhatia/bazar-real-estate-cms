@@ -9,6 +9,7 @@ import { ConsentProvider } from "./_consent/consent-provider";
 import { CookieBanner } from "./_consent/cookie-banner";
 import { VercelAnalyticsGate } from "./_consent/analytics-gate";
 import { organizationJsonLd } from "@/lib/jsonld";
+import { env } from "@/lib/env";
 import "./globals.css";
 
 const geist = Geist({
@@ -30,8 +31,18 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+/**
+ * Every canonical, OG and Twitter URL on the site resolves against this. It was
+ * hardcoded to the project's original vercel.app host, which no longer resolves
+ * — production is www.bazarrealestate.ae — so the live site was publishing
+ * canonicals and share cards pointing at a 404. Read the same env var that
+ * robots.ts, sitemap.ts and the transactional emails already use, so there is
+ * one place to change the host.
+ */
+const SITE_URL = env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://bazar-real-estate-cms.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Bazar Real Estate — Abu Dhabi, properly understood",
     template: "%s · Bazar",

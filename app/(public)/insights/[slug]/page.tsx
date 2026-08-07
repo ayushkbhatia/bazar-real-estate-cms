@@ -65,7 +65,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
   // Sprint 5d: JSON-LD + breadcrumb structured data.
   const siteUrl = (
-    env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app"
+    env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
   ).replace(/\/+$/, "");
   const ldArticle = articleJsonLd(
     {

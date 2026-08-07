@@ -3,7 +3,7 @@ import { env } from "@/lib/env";
 
 export default function robots(): MetadataRoute.Robots {
   const base = (
-    env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app"
+    env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
   ).replace(/\/+$/, "");
 
   return {

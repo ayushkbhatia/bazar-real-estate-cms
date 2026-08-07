@@ -28,7 +28,7 @@ import {
 
 function siteUrl(): string {
   return (
-    env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app"
+    env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
   ).replace(/\/+$/, "");
 }
 

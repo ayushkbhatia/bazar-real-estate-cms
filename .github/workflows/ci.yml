@@ -15,7 +15,7 @@ env:
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
   SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-  NEXT_PUBLIC_SITE_URL: https://bazar-real-estate-cms.vercel.app
+  NEXT_PUBLIC_SITE_URL: https://www.bazarrealestate.ae
 
 jobs:
   lint-test-build:
@@ -69,7 +69,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_SITE_URL: https://bazar-real-estate-cms.vercel.app
+          NEXT_PUBLIC_SITE_URL: https://www.bazarrealestate.ae
 
       - name: Upload Playwright report on failure
         if: failure()
@@ -100,7 +100,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_SITE_URL: https://bazar-real-estate-cms.vercel.app
+          NEXT_PUBLIC_SITE_URL: https://www.bazarrealestate.ae
 
       # The detail-page audit target has to be resolved, not hard-coded: the
       # catalogue is editor-owned, and naming a listing means the job 404s the
@@ -135,7 +135,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_SITE_URL: https://bazar-real-estate-cms.vercel.app
+          NEXT_PUBLIC_SITE_URL: https://www.bazarrealestate.ae
 
       - name: Upload Lighthouse report on failure
         if: failure()

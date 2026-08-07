@@ -85,7 +85,7 @@ export default async function AgentProfilePage({
   )}`;
 
   const siteBase = (
-    env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app"
+    env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
   ).replace(/\/+$/, "");
   const agentLd = realEstateAgentJsonLd({
     slug: agent.slug,

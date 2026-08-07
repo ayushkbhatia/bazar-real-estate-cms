@@ -7,7 +7,7 @@ Pair this with [PROJECT_UNDERSTANDING.md](PROJECT_UNDERSTANDING.md) for the arch
 
 ## 1. What you're inheriting
 
-A working Next.js 16 luxury marketplace and operations CMS. The public site renders Bazar's catalogue, advisor team, editorial blog, and proprietary tools. The admin CMS manages listings, deals, enquiries, agents, and analytics. Both deploy from `main` to https://bazar-real-estate-cms.vercel.app via Vercel.
+A working Next.js 16 luxury marketplace and operations CMS. The public site renders Bazar's catalogue, advisor team, editorial blog, and proprietary tools. The admin CMS manages listings, deals, enquiries, agents, and analytics. Both deploy from `main` to https://www.bazarrealestate.ae via Vercel.
 
 The current production database contains **demo content** sized to make the marketplace feel complete on demo day:
 
@@ -248,7 +248,7 @@ The seeded `@bazar.ae` advisors don't have access to admin — their role is `ag
 | Cross-session follow-ups noted during sprints | [FOLLOWUPS.md](FOLLOWUPS.md) |
 | Design source-of-truth (mockups, copy, entity shapes) | `/Users/ayushkbhatia/Downloads/design_handoff_bazar_website_cms/` — not in repo |
 | Repo | https://github.com/ayushkbhatia/bazar-real-estate-cms |
-| Production | https://bazar-real-estate-cms.vercel.app (will become bazar.ae) |
+| Production | https://www.bazarrealestate.ae (will become bazar.ae) |
 | Database | Supabase project (project ref in `.env.local` as `SUPABASE_PROJECT_REF`) |
 
 ---

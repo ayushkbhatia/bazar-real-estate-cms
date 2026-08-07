@@ -153,7 +153,7 @@ All env vars are loaded via `lib/env.ts` (zod-validated). Don't read `process.en
 
 ## Deploy flow
 
-- `main` branch auto-deploys to production: https://bazar-real-estate-cms.vercel.app
+- `main` branch auto-deploys to production: https://www.bazarrealestate.ae
 - Pull requests get preview deployments.
 - Once env vars are set in Vercel for production + preview, Supabase + Sentry + PostHog will activate automatically.
 
@@ -177,5 +177,5 @@ See [docs/PROJECT_UNDERSTANDING.md](docs/PROJECT_UNDERSTANDING.md) for the full 
 ## Repo
 
 - Code: https://github.com/ayushkbhatia/bazar-real-estate-cms (private)
-- Production: https://bazar-real-estate-cms.vercel.app
+- Production: https://www.bazarrealestate.ae
 - Vercel project: `ayushkbhatia-7383s-projects/bazar-real-estate-cms`
