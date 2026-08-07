@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured, env } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/property-utils";
+import { developmentUrl } from "@/lib/queries/development-utils";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
 import { listDevelopers } from "@/lib/queries/developers-extras";
 import { listArticleCategories } from "@/lib/queries/article-categories";
@@ -25,6 +26,21 @@ const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[numb
   // carries robots noindex and would only compete with /contact.
   { path: "/contact-qr", changeFrequency: "monthly", priority: 0.3 },
 ];
+
+/**
+ * Regenerate hourly.
+ *
+ * Without this the sitemap is a build-time snapshot: Next.js prerenders it
+ * once and serves that file until the next deploy. Publishing is a CMS action
+ * with no deploy behind it, so the two drift apart — this file was advertising
+ * 66 property URLs while the database held 4, most of them 404 to a crawler.
+ *
+ * An hour is the trade: fresh enough that a newly published listing is
+ * discoverable the same morning, rare enough that the query below (which can
+ * pull thousands of rows) runs at most once an hour no matter how often
+ * crawlers ask.
+ */
+export const revalidate = 3600;
 
 function siteUrl(): string {
   return (env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app").replace(/\/+$/, "");
@@ -93,19 +109,57 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const supabase = createSupabasePublicClient();
-    const { data } = await supabase
-      .from("properties")
-      .select("slug, reference, updated_at, status")
-      .eq("status", "published")
-      .is("deleted_at", null)
-      .limit(5000);
+    // Developments and articles were missing from the sitemap entirely — not
+    // stale, absent. Every off-plan project page and every published article
+    // was indexable, linked from the site's own navigation, and advertised
+    // nowhere. They are queried directly rather than through the list helpers
+    // because those reshape rows and attach labels the sitemap has no use for.
+    const [properties, developments, articles] = await Promise.all([
+      supabase
+        .from("properties")
+        .select("slug, reference, updated_at, status")
+        .eq("status", "published")
+        .is("deleted_at", null)
+        .limit(5000),
+      supabase
+        .from("developments")
+        .select("slug, updated_at")
+        .not("published_at", "is", null)
+        .limit(1000),
+      supabase
+        .from("articles")
+        .select("slug, updated_at")
+        .eq("status", "published")
+        .is("deleted_at", null)
+        .limit(2000),
+    ]);
 
-    const propertyEntries: MetadataRoute.Sitemap = (data ?? []).map((p) => ({
-      url: `${base}${propertyUrl(p)}`,
-      lastModified: p.updated_at ? new Date(p.updated_at) : now,
+    const propertyEntries: MetadataRoute.Sitemap = (properties.data ?? []).map(
+      (p) => ({
+        url: `${base}${propertyUrl(p)}`,
+        lastModified: p.updated_at ? new Date(p.updated_at) : now,
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      }),
+    );
+
+    const developmentEntries: MetadataRoute.Sitemap = (
+      developments.data ?? []
+    ).map((d) => ({
+      url: `${base}${developmentUrl(d)}`,
+      lastModified: d.updated_at ? new Date(d.updated_at) : now,
       changeFrequency: "weekly" as const,
       priority: 0.8,
     }));
+
+    const articleEntries: MetadataRoute.Sitemap = (articles.data ?? []).map(
+      (a) => ({
+        url: `${base}/insights/${a.slug}`,
+        lastModified: a.updated_at ? new Date(a.updated_at) : now,
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+      }),
+    );
 
     return [
       ...staticEntries,
@@ -113,9 +167,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...areaEntries,
       ...developerEntries,
       ...propertyEntries,
+      ...developmentEntries,
+      ...articleEntries,
     ];
   } catch (err) {
-    console.error("[sitemap] property fetch failed", err);
+    console.error("[sitemap] catalogue fetch failed", err);
     return [...staticEntries, ...categoryEntries, ...areaEntries, ...developerEntries];
   }
 }
