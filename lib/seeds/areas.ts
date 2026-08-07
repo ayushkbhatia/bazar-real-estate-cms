@@ -400,9 +400,10 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
     ],
   },
   // ─────────────────────────────────────────────────────────────────────
-  // Sprint 15 additions — 14 area stubs to close the megamenu 404s. Each
-  // entry carries the minimum content needed for the page to render
-  // (`getAreaGuide` returns null without a seed entry); editorial fields
+  // Sprint 15 additions — 14 area stubs written when a missing seed entry
+  // still meant a 404. `getAreaProfile` now renders any area that exists in
+  // the database, so these are pure editorial enrichment: stats, schools and
+  // position copy layered over the catalogue row. Editorial fields
   // (commute_chips, lifestyle_prose, dining_picks) are intentionally
   // omitted so the page surfaces neutral empty states until the client
   // fills them in through the admin CMS at handover.

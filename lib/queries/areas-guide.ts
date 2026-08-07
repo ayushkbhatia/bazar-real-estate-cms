@@ -1,36 +1,16 @@
 /**
- * Area guides — narrative + stats overlay on the `areas` table.
+ * The area index — one entry per top-level area with its live listing count,
+ * behind the `/areas` card grid, the home-page location tiles, the off-plan
+ * area filter and the sitemap.
  *
- * /areas/[slug] reads `getAreaGuide(slug)`. /areas (index) reads
- * `listAreasWithCounts()` to render the mosaic with per-area listing
- * counts.
+ * One area resolved for its own page is `lib/queries/area-profile.ts`.
  *
- * Falls back to `lib/seeds/areas.ts` when Supabase is offline or the
- * area_guides table is empty.
+ * Falls back to `lib/seeds/areas.ts` when Supabase is offline.
  */
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { SEED_AREA_GUIDES } from "@/lib/seeds/areas";
-import type {
-  AreaGuideRow,
-  AreaGuideSchool,
-  AreaGuideAmenity,
-  AreaGuideStat,
-} from "@/lib/types/sprint-8";
-
-export type AreaGuide = {
-  area_id: string | null;
-  slug: string;
-  name: string;
-  intro_md: string;
-  stats: AreaGuideStat;
-  schools: AreaGuideSchool[];
-  amenities: AreaGuideAmenity[];
-  related_area_slugs: string[];
-  hero_image: { storage_key: string; alt_text: string | null } | null;
-  published_at: string | null;
-};
 
 export type AreaIndexEntry = {
   id: string;
@@ -39,80 +19,6 @@ export type AreaIndexEntry = {
   listing_count: number;
   guide_published: boolean;
 };
-
-// ─────────────────────────────────────────────────────────────────────
-// getAreaGuide
-// ─────────────────────────────────────────────────────────────────────
-export async function getAreaGuide(slug: string): Promise<AreaGuide | null> {
-  if (!slug) return null;
-  if (isSupabaseConfigured) {
-    try {
-      const sb = createSupabasePublicClient();
-      // Resolve area_id from slug first (areas table is in db/types.ts).
-      const { data: area } = await sb
-        .from("areas")
-        .select("id, slug, name")
-        .eq("slug", slug)
-        .maybeSingle();
-      if (area) {
-        const { data: guide } = await sb
-          .from("area_guides")
-          .select("*")
-          .eq("area_id", area.id)
-          .not("published_at", "is", null)
-          .maybeSingle();
-        if (guide) {
-          const g = guide as AreaGuideRow;
-          return {
-            area_id: area.id,
-            slug: area.slug,
-            name: area.name,
-            intro_md: g.intro_md ?? "",
-            stats: g.stats ?? {},
-            schools: g.schools ?? [],
-            amenities: g.amenities ?? [],
-            related_area_slugs: [],
-            hero_image: null,
-            published_at: g.published_at,
-          };
-        }
-      }
-    } catch {
-      // fall through to seed
-    }
-  }
-  return seedAreaGuide(slug);
-}
-
-function seedAreaGuide(slug: string): AreaGuide | null {
-  const seed = SEED_AREA_GUIDES.find((g) => g.slug === slug);
-  if (!seed) return null;
-  return {
-    area_id: null,
-    slug: seed.slug,
-    name: seed.name,
-    intro_md: seed.intro,
-    stats: {
-      medianApt: seed.stats.median_apt_aed_per_ft2,
-      medianVilla: seed.stats.median_villa_aed_per_ft2,
-      daysOnMarket: seed.stats.avg_dom_days,
-      yoyChange: seed.stats.yoy_change_pct,
-    },
-    schools: seed.schools.map((s) => ({
-      name: s.name,
-      kind: "school" as const,
-      distance_km: s.distance_km,
-    })),
-    amenities: seed.amenities.map((label) => ({
-      name: label,
-      kind: "mall" as const,
-      distance_km: 0,
-    })),
-    related_area_slugs: seed.similar_areas,
-    hero_image: null,
-    published_at: new Date().toISOString(),
-  };
-}
 
 // ─────────────────────────────────────────────────────────────────────
 // listAreasWithCounts

@@ -557,3 +557,15 @@ shows the trail.)
   OG images, email templates, PDF headers and lib/queries/trust.ts
   (`DLD_BROKER_PERMIT = "ORN 28041"`) still say "Bazar Real Estate Brokerage
   LLC · ORN 28041 · DMT". Needs one client answer, then a sweep.
+
+- [areas] Area pins and stats still read `lib/seeds/areas.ts`, not `area_guides`.
+  `getAreaProfile` merges the published `area_guides` overlay for the detail
+  page, but `lib/queries/area-map.ts#seedStatsForSlug` (map flyouts) does not,
+  so a CMS-created area pins with a listing count and no figures. Swap it for
+  the profile resolver once the client populates `area_guides` at handover.
+
+- [areas] Nothing puts a new area into the megamenu's Areas tab.
+  The tab is curated DB rows edited by data migration (see the megamenu docs),
+  by design — but an area added from the property wizard is reachable from
+  /areas and search only. Worth a "feature in nav" toggle on the area record if
+  the client asks.

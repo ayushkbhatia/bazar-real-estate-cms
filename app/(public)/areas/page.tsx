@@ -8,6 +8,7 @@ import { WhyBand } from "../_components/marketing/why-band";
 import { AreaMapSection } from "../_components/area-map-section";
 import { ListYourProperty } from "../_components/home/list-your-property";
 import { AreaCards } from "./_components/area-cards";
+import { AreaDirectory } from "./_components/area-directory";
 import { AreaSpotlights } from "./_components/area-spotlights";
 import { CommunityTypes } from "./_components/community-types";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
@@ -52,6 +53,7 @@ export default async function AreasPage() {
 
   const heroV = v("hero");
   const cardsV = v("area_cards");
+  const allAreasV = v("all_areas");
   const areaMapV = v("area_map");
   const spotlightsV = v("area_spotlights");
   const listV = v("list_your_property");
@@ -102,6 +104,15 @@ export default async function AreasPage() {
           slug: s(c.slug),
           ...imageProps(c.image),
         }))}
+      />
+    ),
+
+    all_areas: (
+      <AreaDirectory
+        key="all_areas"
+        eyebrow={str(allAreasV, "eyebrow")}
+        heading={str(allAreasV, "heading")}
+        body={str(allAreasV, "body")}
       />
     ),
 

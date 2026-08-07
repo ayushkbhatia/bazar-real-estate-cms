@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getAreaGuide } from "@/lib/queries/areas-guide";
-import { getSeedAreaGuideBySlug } from "@/lib/seeds/areas";
+import { getAreaProfile } from "@/lib/queries/area-profile";
 
 export const runtime = "edge";
 export const alt = "Bazar community guide";
@@ -8,22 +7,21 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 /**
- * Sprint 11 — composed OG image for /areas/[slug]. Pulls the
- * canonical name + median price strip from the seed (the DB layer's
- * stats jsonb is editorial and Sprint 12 wires DLD ingestion). Falls
- * back to "Abu Dhabi" when nothing matches the slug.
+ * Sprint 11 — composed OG image for /areas/[slug]. Reads the same resolved
+ * profile the page does, so an area created in the CMS gets its real name and
+ * intro rather than the "Abu Dhabi" placeholder. The price strip only draws
+ * when someone has published figures for the area.
  */
 export default async function CommunityOpenGraph({
   params,
 }: {
   params: { slug: string };
 }) {
-  const guide = await getAreaGuide(params.slug);
-  const seed = getSeedAreaGuideBySlug(params.slug);
-  const name = guide?.name ?? seed?.name ?? "Abu Dhabi";
-  const intro = seed?.intro ?? guide?.intro_md ?? "";
-  const medianApt = seed?.stats.median_apt_aed_per_ft2;
-  const yoy = seed?.stats.yoy_change_pct;
+  const profile = await getAreaProfile(params.slug);
+  const name = profile?.name ?? "Abu Dhabi";
+  const intro = profile?.intro ?? "";
+  const medianApt = profile?.stats?.medianAptPerFt2 ?? null;
+  const yoy = profile?.stats?.yoyChangePct ?? null;
 
   return new ImageResponse(
     (
@@ -128,7 +126,7 @@ export default async function CommunityOpenGraph({
               <div>
                 Median apt {medianApt.toLocaleString()} AED/ft²
               </div>
-              {yoy !== undefined ? (
+              {yoy !== null ? (
                 <div style={{ marginTop: 4, color: yoy >= 0 ? "#3e8343" : "#B33A2A" }}>
                   YoY {yoy >= 0 ? "+" : ""}
                   {yoy}%

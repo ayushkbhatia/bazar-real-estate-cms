@@ -9,12 +9,11 @@
  *   · listAreaPins(emirate)      → one pin per area (centroid + count + stats)
  *   · listAreaListingDots(opts)  → one lightweight dot per published listing
  *
- * Stats + tags come from the seed area guides (lib/seeds/areas.ts) — the
- * same source /areas/[slug] renders via getAreaGuide today, because the
- * `area_guides` table isn't provisioned in this Supabase project yet. When
- * the client provisions it at handover, swap `seedStatsForSlug` for
- * `getAreaGuide` so pins track the DB guide and the two surfaces stay in
- * lockstep.
+ * Stats + tags come from the seed area guides (lib/seeds/areas.ts), so an
+ * area created in the CMS pins with a count but no figures. `getAreaProfile`
+ * (lib/queries/area-profile.ts) already merges the `area_guides` overlay for
+ * the detail page — swap `seedStatsForSlug` for it once the client populates
+ * that table at handover, and the two surfaces stay in lockstep.
  */
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";

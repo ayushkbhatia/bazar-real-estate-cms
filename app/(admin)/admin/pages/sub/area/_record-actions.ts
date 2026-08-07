@@ -12,10 +12,11 @@ import {
   areaEditSchema,
   normaliseAreaInput,
   parentError,
+  AREA_EDIT_ROLES,
   type AreaKind,
 } from "@/lib/schemas/area";
 
-const AREA_ROLES = ["admin", "editor", "marketing"] as const;
+const AREA_ROLES = AREA_EDIT_ROLES;
 
 export type AreaSaveResult =
   | { status: "ok"; message: string }
@@ -81,6 +82,20 @@ export async function updateArea(
     .eq("id", id)
     .maybeSingle();
 
+  // Same flat-URL rule as create: no two areas may share a public link.
+  const { data: clash } = await supabase
+    .from("areas")
+    .select("id")
+    .eq("slug", input.slug)
+    .neq("id", id)
+    .limit(1);
+  if (clash && clash.length > 0)
+    return {
+      status: "error",
+      message: "Please fix the errors below.",
+      fieldErrors: { slug: "Another area already uses this link." },
+    };
+
   const { data, error } = await supabase
     .from("areas")
     .update({
@@ -135,8 +150,16 @@ export async function updateArea(
   return { status: "ok", message: "Saved." };
 }
 
+/** The created row, so a caller that can't navigate away can use it in place. */
+export type CreatedArea = {
+  id: string;
+  name: string;
+  slug: string;
+  kind: AreaKind;
+};
+
 export type CreateAreaResult =
-  | { status: "ok"; id: string }
+  | { status: "ok"; id: string; area: CreatedArea }
   | { status: "error"; message: string; fieldErrors?: Record<string, string> };
 
 export async function createArea(raw: {
@@ -144,6 +167,14 @@ export async function createArea(raw: {
   slug: string;
   kind: string;
   parent_id: string | null;
+  /**
+   * Optional map centroid. The property wizard offers the listing's own pin
+   * here, which is usually the only coordinate anyone has for a brand-new
+   * area — and it's what puts the area on the maps.
+   */
+  geo?: { lat: number; lng: number } | null;
+  /** Optional opening paragraph, used as the guide intro until one is written. */
+  description?: string | null;
 }): Promise<CreateAreaResult> {
   if (!isSupabaseConfigured)
     return { status: "error", message: "Supabase env vars are not set." };
@@ -176,6 +207,23 @@ export async function createArea(raw: {
     };
 
   const supabase = await createSupabaseServerClient();
+
+  // `areas` only constrains (parent_id, slug), but /areas/<slug> is a flat
+  // URL space — two areas under different parents would collide on one public
+  // page. 0076 makes the slug globally unique; this check gives the editor a
+  // field-level message either way.
+  const { data: clash } = await supabase
+    .from("areas")
+    .select("id")
+    .eq("slug", input.slug)
+    .limit(1);
+  if (clash && clash.length > 0)
+    return {
+      status: "error",
+      message: "Please fix the errors below.",
+      fieldErrors: { slug: "Another area already uses this link." },
+    };
+
   const { data, error } = await supabase
     .from("areas")
     .insert({
@@ -183,15 +231,17 @@ export async function createArea(raw: {
       slug: input.slug,
       kind: input.kind,
       parent_id: input.parent_id ?? null,
+      geo: raw.geo ?? null,
+      description: raw.description?.trim() || null,
     })
-    .select("id")
+    .select("id, name, slug, kind")
     .maybeSingle();
 
   if (error) {
     if (error.code === "23505")
       return {
         status: "error",
-        message: "That slug is already used under the same parent.",
+        message: "That link is already in use.",
         fieldErrors: { slug: "Already in use" },
       };
     return { status: "error", message: error.message };
@@ -212,7 +262,20 @@ export async function createArea(raw: {
 
   revalidatePath("/admin/pages/sub/area");
   revalidatePath("/areas");
-  return { status: "ok", id: data.id };
+  // The public guide exists from this moment — clear its path and the
+  // sitemap so it's crawlable without waiting for the next ISR window.
+  revalidatePath(`/areas/${input.slug}`);
+  revalidatePath("/sitemap.xml");
+  return {
+    status: "ok",
+    id: data.id,
+    area: {
+      id: data.id,
+      name: data.name,
+      slug: data.slug,
+      kind: data.kind as AreaKind,
+    },
+  };
 }
 
 /** Used by the create wizard so it can land on the new record's editor. */
