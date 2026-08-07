@@ -1,4 +1,11 @@
--- 0055_nav_megamenu_edits.sql
+-- 0055a_nav_megamenu_edits.sql
+--
+-- Suffixed after the fact: #171, #169 and #170 merged within 30 minutes of
+-- each other and each claimed 0055, leaving three files on one number. The
+-- a/b/c order is the order they were authored (this one first, 16:54), and
+-- follows the 0056a-d convention already in this directory. The three are
+-- independent — nav data, a properties column, a blog taxonomy table — so
+-- the suffix restores a unique sequence without changing any behaviour.
 -- Client nav edits across three megamenu tabs. Content-only except for Rent,
 -- which pairs with a generic renderer change in components/brand/megamenu-panel.tsx
 -- (right-column headings get the serif title treatment when the tab carries no

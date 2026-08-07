@@ -3,7 +3,7 @@ import { UUID_SHAPE_RE } from "@/lib/uuid";
 
 /**
  * Article categories ("blog types") are a runtime-editable taxonomy stored in
- * the `article_categories` table (migration 0055). Editors add new types from
+ * the `article_categories` table (migration 0055c). Editors add new types from
  * the blog editor without a deploy.
  *
  * The list below is the *seed* set — the seven categories that shipped as the
