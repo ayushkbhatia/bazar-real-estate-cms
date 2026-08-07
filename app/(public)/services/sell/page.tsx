@@ -1,234 +1,154 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, Building2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { CalendarDays, Check } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import { EnquiryForm } from "../../_components/enquiry-form";
+import { listLeadAreaOptions } from "@/lib/queries/lead-routing";
+import { getPublicSiteSettings } from "@/lib/queries/site-settings";
 import { fluid } from "../../_components/marketing/fluid";
-import { SectionHead } from "../../_components/marketing/section-head";
-import { WhyBand } from "../../_components/marketing/why-band";
+import { SELL_FAQ, SELL_TRUST_POINTS } from "./_content";
+import { getSellHeroStats, getTransactionSpark } from "./_data";
+import { FaqAccordion } from "./_components/faq-accordion";
+import { ListPropertyForm } from "./_components/list-property-form";
+import { PricingResources } from "./_components/pricing-resources";
 
 export const metadata: Metadata = {
-  title: "List Your Property with Bazar",
+  title: "Sell or rent out your property in Abu Dhabi | Bazar",
   description:
-    "Looking to sell or rent your property in Abu Dhabi? Our experts support you every step of the way — with market insight, professional exposure, and dedicated support.",
+    "Tell us about your property and we'll match you with the senior Bazar advisor who covers your community — ADREC-licensed, no upfront fees, one point of contact from valuation through to transfer.",
   alternates: { canonical: "/services/sell" },
 };
 
-const LIST_TYPES = [
-  "Apartments",
-  "Villas",
-  "Townhouses",
-  "Penthouses",
-  "Commercial Properties",
-  "Offices",
-  "Retail Spaces",
-  "Warehouses",
-  "Land",
-];
+const DEFAULT_DESK_PHONE = "+971 2 632 2223";
 
-const SUPPORT: [string, string][] = [
-  ["Review the property", "Location, condition, and rental potential."],
-  ["Set rental guidance", "Market-based pricing support."],
-  ["Prepare the listing", "Clear details and professional presentation."],
-  ["Manage enquiries", "Filtering suitable tenant interest."],
-  ["Arrange viewings", "Viewing coordination and updates."],
-  ["Support leasing", "Guidance through the tenancy process."],
-];
+// The hero rail counts live rows and the transactions card reads DLD data, so
+// the page is static-with-refresh rather than frozen at build time.
+export const revalidate = 3600;
 
-const GUIDE_TEASERS: [string, string, string, string][] = [
-  [
-    "For Landlords",
-    "How to Rent Out Your Property",
-    "Prepare, price, list, and register your tenancy the right way.",
-    "/guides/how-to-rent-out",
-  ],
-  [
-    "For Landlords",
-    "Property Management",
-    "What professional management covers and how it protects your asset.",
-    "/guides/property-management",
-  ],
-  [
-    "For Tenants",
-    "Abu Dhabi Rental Process",
-    "A step-by-step guide from budget to move-in and renewal.",
-    "/guides/rental-process",
-  ],
-];
+export default async function ListYourPropertyPage() {
+  const [areas, stats, spark, settings] = await Promise.all([
+    listLeadAreaOptions(),
+    getSellHeroStats(),
+    getTransactionSpark(),
+    getPublicSiteSettings(),
+  ]);
 
-export default function ListYourPropertyPage() {
+  const deskPhone = settings.brand.contact_phone?.trim() || DEFAULT_DESK_PHONE;
+
+  // The page is an SEO landing target for "sell my property Abu Dhabi", so the
+  // FAQ ships as structured data as well as an accordion.
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: SELL_FAQ.map(([question, answer]) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: { "@type": "Answer", text: answer },
+    })),
+  };
+
   return (
     <div className="bg-bz-bg">
-      {/* Hero + lead form */}
-      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-14 md:pb-[72px]">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_480px] gap-10 lg:gap-16 items-center max-w-[1280px]">
-          <div>
-            <Eyebrow>List Your Property</Eyebrow>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+
+      {/* Hero — pitch left, form right. Stacks form-first on mobile: an owner
+          on a phone should land on the first question, not on the pitch. */}
+      <section className="px-4 md:px-12 pt-10 md:pt-[72px] pb-14 md:pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-10 lg:gap-[72px] items-start max-w-[1280px]">
+          <div className="order-2 lg:order-1 lg:pt-2">
+            <Eyebrow>Owners · Abu Dhabi &amp; Al Ain</Eyebrow>
             <h1
               className="serif mt-3.5"
               style={{
-                fontSize: fluid(76),
+                fontSize: fluid(64),
                 letterSpacing: "-0.03em",
-                lineHeight: 0.97,
+                lineHeight: 1.02,
               }}
             >
-              Your journey
+              Sell or rent out,
               <br />
-              starts <em className="italic">here.</em>
+              with one advisor <em className="italic">accountable.</em>
             </h1>
-            <p className="text-[16px] md:text-[17px] text-bz-ink-2 max-w-[500px] leading-relaxed mt-5">
-              Looking to sell or rent your property in Abu Dhabi? Our real estate
-              experts are here to support you every step of the way — with market
-              insight, professional exposure, and dedicated support.
+            <p className="text-[16px] md:text-[17px] text-bz-ink-2 leading-relaxed mt-5 max-w-[480px]">
+              Tell us about the property. We match you with the senior Bazar
+              advisor who covers your community — the same person runs it from
+              valuation through to transfer.
             </p>
-            <div className="flex flex-wrap gap-8 md:gap-12 mt-11 pt-8 border-t border-bz-border">
-              {[
-                ["Sell · Rent · Manage", "one dedicated team"],
-                ["Multi-channel", "professional exposure"],
-              ].map(([v, l]) => (
-                <div key={l}>
-                  <div
-                    className="serif"
-                    style={{ fontSize: fluid(24), letterSpacing: "-0.02em" }}
-                  >
-                    {v}
+
+            <ul className="flex flex-col gap-3.5 mt-8">
+              {SELL_TRUST_POINTS.map(([title, detail]) => (
+                <li key={title} className="flex gap-3 items-start">
+                  <span className="size-[26px] shrink-0 mt-0.5 rounded-full bg-bz-accent-soft text-bz-accent inline-flex items-center justify-center">
+                    <Check size={14} strokeWidth={2} />
+                  </span>
+                  <div>
+                    <div className="text-[14px] font-medium">{title}</div>
+                    <div className="text-[12.5px] text-bz-muted mt-0.5 leading-snug">
+                      {detail}
+                    </div>
                   </div>
-                  <div className="text-[12.5px] text-bz-muted mt-1">{l}</div>
-                </div>
+                </li>
               ))}
-            </div>
-          </div>
-          <div className="rounded-lg border border-bz-border bg-bz-surface p-6 md:p-8 bz-shadow-1">
-            <div
-              className="serif text-[24px] md:text-[26px]"
-              style={{ letterSpacing: "-0.015em" }}
-            >
-              Tell us about your property
-            </div>
-            <p className="text-[13.5px] text-bz-muted mt-1.5">
-              Sell, rent, or hand it to us to manage — pick what you&apos;re
-              looking to do below.
-            </p>
-            <EnquiryForm source="contact_page" showIntent className="mt-5" />
-          </div>
-        </div>
-      </section>
+            </ul>
 
-      {/* What we help landlords list */}
-      <section className="px-4 md:px-12 py-14 md:py-18 border-t border-bz-border">
-        <div className="max-w-[1200px]">
-          <SectionHead
-            eyebrow="What we help landlords list"
-            title="Every property type, listed properly."
-            size={40}
-            className="mb-8"
-          />
-          <div className="flex flex-wrap gap-2.5">
-            {LIST_TYPES.map((t) => (
-              <span
-                key={t}
-                className="inline-flex items-center gap-2.5 h-11 px-5 rounded-full bg-bz-surface border border-bz-border text-[15px]"
-              >
-                <Building2 size={16} strokeWidth={1.7} className="text-bz-accent" />
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How we support landlords */}
-      <section className="px-4 md:px-12 py-14 md:py-18 border-t border-bz-border bg-bz-surface-2">
-        <div className="max-w-[1200px]">
-          <SectionHead
-            eyebrow="How we support landlords"
-            title="From review to leasing."
-            size={40}
-            className="mb-9"
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SUPPORT.map(([t, d], i) => (
-              <div
-                key={t}
-                className="rounded-lg border border-bz-border bg-bz-surface p-7"
-              >
-                <div className="serif text-bz-accent text-[32px]" style={{ letterSpacing: "-0.02em" }}>
-                  {String(i + 1).padStart(2, "0")}
-                </div>
-                <div
-                  className="serif text-[22px] mt-3"
-                  style={{ letterSpacing: "-0.01em" }}
-                >
-                  {t}
-                </div>
-                <p className="text-[13.5px] text-bz-ink-2 leading-relaxed mt-2">
-                  {d}
-                </p>
+            {stats.length > 0 ? (
+              <div className="flex flex-wrap gap-8 md:gap-9 mt-10 pt-6 border-t border-bz-border">
+                {stats.map((s) => (
+                  <div key={s.label}>
+                    <div
+                      className="serif text-[26px] md:text-[30px]"
+                      style={{ letterSpacing: "-0.02em" }}
+                    >
+                      {s.value}
+                    </div>
+                    <div className="text-[11.5px] text-bz-muted mt-1 max-w-[130px] leading-snug">
+                      {s.label}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : null}
+          </div>
+
+          <div className="order-1 lg:order-2">
+            <ListPropertyForm areas={areas} deskPhone={deskPhone} />
           </div>
         </div>
       </section>
 
-      <WhyBand
-        title="Access, exposure, and a team that does the work."
-        body="Bazar Real Estate gives landlords access to market insight, professional exposure across major UAE portals and channels, and dedicated support designed to make the leasing process smoother — from the first review to a signed, registered tenancy."
-        stats={[
-          ["Portals + direct", "marketing exposure"],
-          ["Sell · Rent · Manage", "one point of contact"],
-        ]}
-      />
+      <PricingResources spark={spark} />
 
-      {/* Guides teaser */}
-      <section className="px-4 md:px-12 py-14 md:py-20">
-        <div className="max-w-[1200px]">
-          <div className="flex flex-wrap justify-between items-end gap-4 mb-8">
-            <SectionHead
-              eyebrow="Before you list"
-              title="Landlord & tenant guides."
-              size={40}
-            />
-            <Button asChild variant="outline">
-              <Link href="/guides">
-                All guides
-                <ArrowRight size={15} strokeWidth={1.7} />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {GUIDE_TEASERS.map(([k, t, d, href]) => (
-              <Link
-                key={t}
-                href={href}
-                className="group flex flex-col rounded-lg border border-bz-border bg-bz-surface overflow-hidden hover:border-bz-ink transition-colors"
+      <section className="px-4 md:px-12 py-16 md:py-20 md:pb-24">
+        <div className="grid grid-cols-1 lg:grid-cols-[0.62fr_1.38fr] gap-10 lg:gap-[72px] items-start max-w-[1280px]">
+          <div>
+            <Eyebrow>Questions</Eyebrow>
+            <h2
+              className="serif text-[30px] md:text-[40px] mt-2.5 leading-[1.1]"
+              style={{ letterSpacing: "-0.025em" }}
+            >
+              Frequently asked
+            </h2>
+            <p className="text-[14px] text-bz-ink-2 mt-3.5 leading-relaxed">
+              Not covered here? Call the desk on{" "}
+              <a
+                href={`tel:${deskPhone.replace(/\s+/g, "")}`}
+                className="text-bz-ink font-medium underline underline-offset-4 decoration-bz-taupe"
               >
-                <div className="relative w-full" style={{ aspectRatio: "16/9" }}>
-                  <PlaceholderImage
-                    label={t.toLowerCase()}
-                    className="absolute inset-0 h-full w-full"
-                  />
-                </div>
-                <div className="p-6">
-                  <div className="eyebrow">{k}</div>
-                  <div
-                    className="serif text-[22px] mt-2 leading-tight"
-                    style={{ letterSpacing: "-0.01em" }}
-                  >
-                    {t}
-                  </div>
-                  <p className="text-[13px] text-bz-muted leading-relaxed mt-2">
-                    {d}
-                  </p>
-                  <div className="flex items-center gap-2 mt-4 text-[13px] font-medium text-bz-accent">
-                    Read guide
-                    <ArrowRight size={14} strokeWidth={1.8} />
-                  </div>
-                </div>
-              </Link>
-            ))}
+                {deskPhone}
+              </a>{" "}
+              — you&apos;ll get an advisor, not a call centre.
+            </p>
+            <a
+              href="/contact"
+              className="mt-5 h-11 px-4 rounded border border-bz-border inline-flex items-center gap-2 text-[13px] transition-colors hover:bg-bz-surface-2"
+            >
+              <CalendarDays size={15} strokeWidth={1.7} />
+              Book a consultation
+            </a>
           </div>
+
+          <FaqAccordion items={SELL_FAQ} />
         </div>
       </section>
     </div>
