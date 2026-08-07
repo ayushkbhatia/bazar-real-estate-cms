@@ -569,3 +569,30 @@ shows the trail.)
   by design — but an area added from the property wizard is reachable from
   /areas and search only. Worth a "feature in nav" toggle on the area record if
   the client asks.
+
+- [sell] The /services/sell FAQ is code copy, not CMS copy.
+  `app/(public)/services/sell/_content.ts` holds fee figures, notice periods
+  and procedure claims (2% transfer fee, NOC AED 500–5,000, twelve months'
+  vacancy notice, Tawtheeq, ADREC, DMT) that the design handoff flags for
+  compliance sign-off. They live in one file so a correction is a one-line
+  edit, but a correction still needs a deploy. Move them into the master-pages
+  editor when the client wants to own the copy.
+
+- [sell] Advisor coverage still comes from `lib/seeds/agents.ts`.
+  `lib/queries/lead-routing.ts` matches an owner lead to an advisor in three
+  passes: the CMS rules at /admin/settings/routing, then the seed roster's
+  `areas`, then the CMS fallback agent. Only six of the twelve live advisors
+  have seed coverage, and `staff` has no coverage column — so most areas rely
+  on an admin writing a routing rule. Either add coverage to `staff` (and an
+  editor for it) or populate the rules table at handover.
+
+- [sell] The enquiry detail pane doesn't render the qualification payload.
+  An owner lead stores its answers in `enquiries.inferred_constraints`
+  (category, type, bedrooms, ft², furnishing, urgency, call window). The desk
+  reads them from the first message of the thread, which carries the same
+  brief — but "About this lead" could show them structurally.
+
+- [sell] The transactions card has no data to draw.
+  `dld_comparables` is empty in production, so the card falls back to a
+  figure-free state rather than inventing a trend. It renders the real
+  24-month Saadiyat sparkline the moment the DLD import runs.

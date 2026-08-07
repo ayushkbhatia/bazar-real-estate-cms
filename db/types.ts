@@ -2870,6 +2870,7 @@ export type Database = {
         | "whatsapp_inbound"
         | "brochure"
         | "development_interest"
+        | "list_property"
       enquiry_status:
         | "new"
         | "qualified"
@@ -3196,6 +3197,7 @@ export const Constants = {
         "whatsapp_inbound",
         "brochure",
         "development_interest",
+        "list_property",
       ],
       enquiry_status: [
         "new",

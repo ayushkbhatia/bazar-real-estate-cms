@@ -16,6 +16,8 @@ export const ENQUIRY_SOURCES = [
   "brochure",
   // "Register your interest" on a development hero (0075).
   "development_interest",
+  // Owner lead from the /services/sell qualification form (0077).
+  "list_property",
 ] as const;
 
 export const ENQUIRY_TIMELINES = [
