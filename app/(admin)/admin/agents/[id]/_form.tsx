@@ -105,6 +105,59 @@ export function AgentEditForm({
         <FieldError message={errors.brn?.message ?? serverErrors.brn} />
       </div>
 
+      <div className="rounded-lg border border-bz-border bg-bz-surface p-5">
+        <div className="text-[11px] uppercase tracking-wider text-bz-ink-2">
+          Public contact
+        </div>
+        <p className="mt-1.5 text-[12.5px] text-bz-muted max-w-[62ch]">
+          Shown as Call / WhatsApp / Email on every listing this advisor is
+          assigned to, and on their public profile. Each button is hidden while
+          its field is blank — leave one empty and visitors just get the
+          enquiry form. This is not the login address.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div>
+            <Label htmlFor="public_email">Email</Label>
+            <Input
+              id="public_email"
+              type="email"
+              placeholder="advisor@bazar.ae"
+              {...register("public_email")}
+            />
+            <FieldError
+              message={errors.public_email?.message ?? serverErrors.public_email}
+            />
+          </div>
+          <div>
+            <Label htmlFor="public_phone">Phone</Label>
+            <Input
+              id="public_phone"
+              type="tel"
+              placeholder="+971 2 555 0000"
+              {...register("public_phone")}
+            />
+            <FieldError
+              message={errors.public_phone?.message ?? serverErrors.public_phone}
+            />
+          </div>
+          <div>
+            <Label htmlFor="whatsapp">WhatsApp</Label>
+            <Input
+              id="whatsapp"
+              type="tel"
+              placeholder="+971 50 123 4567"
+              {...register("whatsapp")}
+            />
+            <FieldError
+              message={errors.whatsapp?.message ?? serverErrors.whatsapp}
+            />
+            <p className="text-[11.5px] text-bz-muted mt-1">
+              Falls back to Phone when blank.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div>
         <Label htmlFor="bio">Bio</Label>
         <textarea

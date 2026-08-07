@@ -12,7 +12,9 @@ export function AdvisorNote({
   advisorName,
 }: {
   note: string;
-  advisorName: string;
+  /** Omitted when the listing has no publicly-visible assigned advisor —
+   *  the note then stands unattributed rather than crediting a seed name. */
+  advisorName?: string | null;
 }) {
   return (
     <div className="border-l-2 border-bz-accent pl-6 py-2">
@@ -23,9 +25,11 @@ export function AdvisorNote({
       >
         &ldquo;{note}&rdquo;
       </blockquote>
-      <div className="mt-4 text-[12.5px] text-bz-muted">
-        — {advisorName}
-      </div>
+      {advisorName ? (
+        <div className="mt-4 text-[12.5px] text-bz-muted">
+          — {advisorName}
+        </div>
+      ) : null}
     </div>
   );
 }

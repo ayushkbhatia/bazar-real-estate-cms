@@ -3,19 +3,27 @@
 import { useState } from "react";
 import { Share2, Send, Check } from "lucide-react";
 import { CompareButton } from "@/components/brand/compare-button";
+import { PropertyEnquiryDialog } from "./enquiry-dialog";
 
 /**
  * Sprint 4c: Save / Share / Add-to-compare / Send-to-advisor action row
  * pinned above the gallery on the property detail page.
+ *
+ * "Send to advisor" opens the enquiry dialog. It used to scroll the sidebar
+ * card into view and stop there — no enquiry, and on mobile the target sits
+ * below the similar-listings rail, so the button looked broken.
  */
 export function PropertyActionRow({
   propertyId,
   reference,
   title,
+  advisorName,
 }: {
   propertyId: string;
   reference: string;
   title: string;
+  /** Named in the dialog copy when the listing has an assigned advisor. */
+  advisorName?: string | null;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -39,12 +47,6 @@ export function PropertyActionRow({
     } catch {
       /* ignore */
     }
-  }
-
-  function sendToAdvisor() {
-    document
-      .getElementById("send-brief")
-      ?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
   return (
@@ -71,14 +73,20 @@ export function PropertyActionRow({
             </>
           )}
         </button>
-        <button
-          type="button"
-          onClick={sendToAdvisor}
-          className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-bz-ink text-bz-bg text-[12.5px] hover:bg-bz-ink-2 transition-colors"
+        <PropertyEnquiryDialog
+          propertyId={propertyId}
+          propertyReference={reference}
+          propertyTitle={title}
+          advisorName={advisorName}
         >
-          <Send size={13} strokeWidth={1.7} />
-          Send to advisor
-        </button>
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-bz-ink text-bz-bg text-[12.5px] hover:bg-bz-ink-2 transition-colors"
+          >
+            <Send size={13} strokeWidth={1.7} />
+            Send to advisor
+          </button>
+        </PropertyEnquiryDialog>
       </div>
     </div>
   );

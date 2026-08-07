@@ -48,7 +48,7 @@ export async function updateAgentAction(
   const { data: before } = await supabase
     .from("staff")
     .select(
-      "display_name, slug, title, brn, bio, photo_url, languages, specialties, credentials",
+      "display_name, slug, title, brn, bio, photo_url, languages, specialties, credentials, public_email, public_phone, whatsapp",
     )
     .eq("user_id", userId)
     .maybeSingle();
@@ -65,6 +65,9 @@ export async function updateAgentAction(
       languages: parsed.data.languages,
       specialties: parsed.data.specialties,
       credentials: parsed.data.credentials,
+      public_email: parsed.data.public_email ?? null,
+      public_phone: parsed.data.public_phone ?? null,
+      whatsapp: parsed.data.whatsapp ?? null,
     })
     .eq("user_id", userId);
 
