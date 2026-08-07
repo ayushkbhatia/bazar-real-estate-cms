@@ -7,7 +7,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { articleUrl } from "@/lib/queries/articles";
 import { listArticleCategories } from "@/lib/queries/article-categories";
 import { mediaPublicUrl } from "@/lib/media";
-import type { MediaOption } from "../../pages/master/[key]/_editor";
+import type { BlogMediaOption } from "../_image-insert-dialog";
 import { type ArticleEditInput } from "@/lib/schemas/article";
 import { ArticleEditForm } from "./_form";
 import { ArticlePublishCard } from "./_publish-card";
@@ -31,11 +31,14 @@ async function fetchArticle(id: string) {
 }
 
 /**
- * Images offered by the cover picker. Same shape and source as the
- * development sub-page's picker — the library's live image assets, newest
- * first. PDFs are excluded here: an article cover is always an image.
+ * Images offered by the cover picker and the body's insert dialog. The
+ * library's live image assets, newest first. PDFs are excluded: neither an
+ * article cover nor an in-body figure is ever a document.
+ *
+ * `storage_key` rides along because the body persists it rather than the URL —
+ * see lib/tiptap/figure-image.ts.
  */
-async function fetchMedia(): Promise<MediaOption[]> {
+async function fetchMedia(): Promise<BlogMediaOption[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
@@ -50,6 +53,7 @@ async function fetchMedia(): Promise<MediaOption[]> {
     filename: m.filename,
     url: mediaPublicUrl(m.storage_key),
     mime: m.mime_type,
+    storage_key: m.storage_key,
   }));
 }
 

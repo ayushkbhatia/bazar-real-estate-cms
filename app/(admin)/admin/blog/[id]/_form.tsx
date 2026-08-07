@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CategorySelect } from "../_category-select";
 import { ImagePicker } from "../../pages/sub/development/[slug]/_images-card";
-import type { MediaOption } from "../../pages/master/[key]/_editor";
+import type { BlogMediaOption } from "../_image-insert-dialog";
 import { ArticleEditor } from "../_article-editor";
 import { updateArticle } from "./_actions";
 
@@ -29,7 +29,7 @@ export type ArticleEditFormProps = {
   articleId: string;
   initial: ArticleEditInput;
   categories: ArticleCategoryRow[];
-  media: MediaOption[];
+  media: BlogMediaOption[];
 };
 
 export function ArticleEditForm({
@@ -40,7 +40,7 @@ export function ArticleEditForm({
 }: ArticleEditFormProps) {
   // Uploads land in the library, so the freshly uploaded asset has to appear
   // in this list straight away rather than after a refresh.
-  const [media, setMedia] = useState<MediaOption[]>(initialMedia);
+  const [media, setMedia] = useState<BlogMediaOption[]>(initialMedia);
   const [pending, startTransition] = useTransition();
   const [serverFieldErrors, setServerFieldErrors] = useState<
     Record<string, string>
@@ -143,10 +143,12 @@ export function ArticleEditForm({
         <ArticleEditor
           defaultValue={initial.body_html ?? ""}
           onChange={setBodyHtml}
+          media={media}
+          onMediaUploaded={(m) => setMedia((cur) => [m, ...cur])}
         />
         <span className="text-[11.5px] text-bz-muted">
-          Heading 2, heading 3, bold, italic, lists, links, and blockquotes.
-          We&apos;ll auto-derive reading time on save.
+          Heading 2, heading 3, bold, italic, lists, links, blockquotes, and
+          images. We&apos;ll auto-derive reading time on save.
         </span>
       </div>
 

@@ -11,6 +11,7 @@ import {
   getRelatedArticles,
 } from "@/lib/queries/articles";
 import { categoryToUrlSlug } from "@/lib/schemas/article";
+import { sanitizeArticleHtml } from "@/lib/article-html";
 import { mediaPublicUrl } from "@/lib/media";
 import { articleJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
@@ -194,9 +195,17 @@ export default async function ArticleDetailPage({ params }: PageProps) {
       </div>
 
       <div className="px-4 md:px-12 py-16 max-w-[760px] mx-auto">
+        {/*
+          Sanitised again on the way out, not just on the way in. Rows written
+          before the save path sanitised — seeds, migrations, direct SQL —
+          never passed through it, and this is the only point every one of
+          them has in common with the browser.
+        */}
         <div
           className="bz-prose text-[17.5px] leading-[1.7] text-bz-ink"
-          dangerouslySetInnerHTML={{ __html: article.body_html }}
+          dangerouslySetInnerHTML={{
+            __html: sanitizeArticleHtml(article.body_html),
+          }}
         />
       </div>
 

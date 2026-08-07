@@ -9,6 +9,7 @@ import {
   normaliseArticleEditInput,
   readingMinutes,
 } from "@/lib/schemas/article";
+import { sanitizeArticleHtml } from "@/lib/article-html";
 import { logAudit } from "@/lib/audit";
 import { requireRole } from "@/lib/auth";
 
@@ -53,14 +54,19 @@ export async function updateArticle(
     .maybeSingle();
 
   const { meta_title, meta_description, ...rest } = parsed.data;
-  const excerpt = deriveExcerpt(rest.excerpt, rest.body_html);
+  // The body arrives as an opaque string, so the editor's extension whitelist
+  // constrains nothing here. Sanitise before anything reads it — the excerpt
+  // and reading time are derived from this same value.
+  const body_html = sanitizeArticleHtml(rest.body_html);
+  const excerpt = deriveExcerpt(rest.excerpt, body_html);
 
   const { data, error } = await supabase
     .from("articles")
     .update({
       ...rest,
+      body_html,
       excerpt,
-      read_minutes: readingMinutes(rest.body_html),
+      read_minutes: readingMinutes(body_html),
       seo: {
         meta_title: meta_title ?? null,
         meta_description: meta_description ?? null,

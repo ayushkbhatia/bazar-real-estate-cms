@@ -172,7 +172,13 @@ export function deriveExcerpt(
 ): string | null {
   const cleaned = (excerpt ?? "").trim();
   if (cleaned) return cleaned.slice(0, maxChars);
-  const text = stripHtml(bodyHtml);
+  // Image captions are dropped first. An article that opens with a figure
+  // would otherwise take its social preview and meta description from the
+  // caption — "Aerial view of the marina, 2026" reads as a stray fragment
+  // where a summary of the piece belongs.
+  const text = stripHtml(
+    bodyHtml.replace(/<figcaption[\s\S]*?<\/figcaption>/gi, " "),
+  );
   if (!text) return null;
   if (text.length <= maxChars) return text;
   const cut = text.slice(0, maxChars);

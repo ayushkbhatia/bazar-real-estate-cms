@@ -266,7 +266,7 @@
      Reset and rhythm are anchored on the same element list so the two
      selectors tie on specificity and source order decides — a bare
      `.bz-prose p { margin: 0 }` outranks `> * + *` and flattens every gap. */
-  .bz-prose :is(p, h2, h3, ul, ol, blockquote, table, figure, pre) {
+  .bz-prose :is(p, h2, h3, ul, ol, blockquote, table, figure, pre, figcaption) {
     margin: 0;
   }
   .bz-prose > :is(p, h2, h3, ul, ol, blockquote, table, figure, pre, hr) + * {
@@ -338,6 +338,28 @@
   }
   .bz-prose strong {
     font-weight: 600;
+  }
+  /* In-body images. `height: auto` keeps the aspect ratio when the intrinsic
+     `width`/`height` attributes get capped by the column — without it the
+     attributes win and a wide image renders squashed. */
+  .bz-prose figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    background: var(--bz-surface-2);
+  }
+  .bz-prose figcaption {
+    margin-top: 0.7em;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--bz-muted);
+  }
+  /* The node always writes a `<figcaption>`, so it round-trips through the
+     editor whether or not it has text in it. An empty one must not leave a
+     gap under the image on the public page. */
+  .bz-prose figcaption:empty {
+    display: none;
   }
   .bz-prose code {
     font-family: var(--bz-font-mono);
@@ -424,6 +446,34 @@
     border: 0;
     border-top: 1px solid var(--bz-border);
     margin: 1.5em 0;
+  }
+  .tiptap figure {
+    margin: 1.2em 0;
+  }
+  .tiptap figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    background: var(--bz-surface-2);
+  }
+  /* The caption is the node's editable content, so unlike the public page it
+     stays visible while empty — otherwise there would be nowhere to click to
+     write one. The placeholder marks it as optional. */
+  .tiptap figure figcaption {
+    margin-top: 0.5em;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--bz-muted);
+    min-height: 1.5em;
+  }
+  .tiptap figure figcaption:empty::before {
+    content: "Add a caption…";
+    color: var(--bz-muted-2);
+  }
+  .tiptap figure.ProseMirror-selectednode img {
+    outline: 2px solid var(--bz-accent);
+    outline-offset: 2px;
   }
 }
 
