@@ -108,7 +108,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
       {/* Breadcrumb */}
       <nav
         aria-label="Breadcrumb"
-        className="px-4 md:px-12 pt-8 max-w-[900px] mx-auto text-[12px] text-bz-muted flex flex-wrap items-center gap-1.5"
+        className="px-4 md:px-12 pt-8 max-w-[760px] mx-auto text-[12px] text-bz-muted flex flex-wrap items-center gap-1.5"
       >
         <Link href="/" className="text-bz-teal hover:text-bz-navy">
           Home
@@ -126,7 +126,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         </Link>
       </nav>
 
-      <header className="px-4 md:px-12 pt-8 pb-12 max-w-[900px] mx-auto">
+      <header className="px-4 md:px-12 pt-8 pb-12 max-w-[760px] mx-auto">
         <Eyebrow>
           {categoryLabel}
           {article.read_minutes ? ` · ${article.read_minutes} min read` : ""}
@@ -138,7 +138,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           {article.title}
         </h1>
         {article.excerpt ? (
-          <p className="mt-6 text-[18px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+          <p className="mt-6 text-[18px] text-bz-ink-2 leading-relaxed">
             {article.excerpt}
           </p>
         ) : null}
@@ -172,14 +172,15 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         </div>
       </header>
 
-      <div className="px-4 md:px-12 max-w-[1024px] mx-auto">
+      {/* Same measure as the body below, so the cover and the copy share one column. */}
+      <div className="px-4 md:px-12 max-w-[760px] mx-auto">
         <div className="relative aspect-[21/9] rounded overflow-hidden bg-bz-surface-2">
           {heroSrc ? (
             <Image
               src={heroSrc}
               alt={article.hero?.alt_text ?? article.title}
               fill
-              sizes="(min-width: 1024px) 1000px, 100vw"
+              sizes="(min-width: 760px) 664px, 100vw"
               priority
               className="object-cover"
             />

@@ -262,12 +262,29 @@
     );
   }
 
-  /* Editorial body — used by /insights/[slug] for Tiptap-rendered HTML */
-  .bz-prose > * + * {
+  /* Editorial body — used by /insights/[slug] for Tiptap-rendered HTML.
+     Reset and rhythm are anchored on the same element list so the two
+     selectors tie on specificity and source order decides — a bare
+     `.bz-prose p { margin: 0 }` outranks `> * + *` and flattens every gap. */
+  .bz-prose :is(p, h2, h3, ul, ol, blockquote, table, figure, pre) {
+    margin: 0;
+  }
+  .bz-prose > :is(p, h2, h3, ul, ol, blockquote, table, figure, pre, hr) + * {
     margin-top: 1.25em;
   }
-  .bz-prose p {
-    margin: 0;
+  /* A paragraph opening under its heading stays tight to it. */
+  .bz-prose > :is(h2, h3) + * {
+    margin-top: 0.5em;
+  }
+  /* Tiptap writes a deliberate blank line as a bare `<p></p>`. It has no
+     content to give it height, so state one line's worth and let the spacer
+     carry the whole gap rather than stacking its margin on the next block.
+     `:empty` only — a `> br:only-child` test also matches `<p>text<br></p>`,
+     because `:only-child` counts elements and ignores the text node. */
+  .bz-prose > p:empty {
+    margin-top: 0;
+    min-height: 1.7em;
+    min-height: 1lh;
   }
   .bz-prose h2 {
     font-family: var(--bz-font-serif);
