@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { MediaOption } from "../pages/master/[key]/_editor";
-import { uploadMedia } from "../media/_actions";
+import { uploadToLibrary } from "../media/_upload-client";
 
 /**
  * A library image plus the storage key the article body persists.
@@ -121,12 +121,9 @@ function ImageInsertForm({
   async function upload(file: File | undefined) {
     if (!file) return;
     setUploading(true);
-    const form = new FormData();
-    form.set("file", file);
     // Body images live under `blog/` so the media library stays sortable by
     // where a file is actually used.
-    form.set("folder", "blog");
-    const result = await uploadMedia(form);
+    const result = await uploadToLibrary(file, { folder: "blog" });
     setUploading(false);
     if (result.status === "error") {
       toast.error(result.message);
