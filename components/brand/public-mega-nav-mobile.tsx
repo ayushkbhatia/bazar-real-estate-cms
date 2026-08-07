@@ -204,7 +204,7 @@ function TabsList({
         {footerSlot}
         <Button asChild size="sm">
           <Link href="/services/sell" onClick={onClose}>
-            List a property
+            List Your Property
           </Link>
         </Button>
       </div>

@@ -217,7 +217,7 @@ export function PublicMegaNav({ data, footerSlot }: Props) {
         {/* Right cluster */}
         <div className="hidden xl:flex gap-2 items-center">
           <Button asChild size="sm">
-            <Link href="/services/sell">List a property</Link>
+            <Link href="/services/sell">List Your Property</Link>
           </Button>
         </div>
 
