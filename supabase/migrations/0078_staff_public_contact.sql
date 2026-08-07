@@ -1,4 +1,13 @@
--- 0077_staff_public_contact.sql
+-- 0078_staff_public_contact.sql
+--
+-- Numbered 0077 when it was written; renamed after the fact because
+-- 0077_enquiry_source_list_property.sql landed on main while this was in
+-- review, leaving two files on the same number. 0078 is also the true
+-- order: the applied records are 20260807135504 (enquiry_source_list_
+-- property) then 20260807135537 (this one). Already applied to the project
+-- under the name `staff_public_contact`, so the rename is cosmetic — it
+-- only restores a unique, correctly-ordered sequence for a replay onto a
+-- fresh database.
 -- Publishable contact details for an advisor.
 --
 -- The property page's advisor card offers Call / WhatsApp / Email, but
