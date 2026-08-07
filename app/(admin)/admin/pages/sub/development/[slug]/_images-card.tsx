@@ -7,7 +7,7 @@ import { Save, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import type { MediaOption } from "../../../master/[key]/_editor";
-import { uploadMedia } from "../../../../media/_actions";
+import { uploadToLibrary } from "../../../../media/_upload-client";
 import { setDevelopmentImages } from "../_actions";
 
 /**
@@ -114,10 +114,7 @@ export function ImagePicker({
   async function upload(file: File | undefined) {
     if (!file) return;
     setBusy(true);
-    const form = new FormData();
-    form.set("file", file);
-    form.set("folder", "brand");
-    const result = await uploadMedia(form);
+    const result = await uploadToLibrary(file, { folder: "brand" });
     setBusy(false);
     if (result.status === "error") {
       toast.error(result.message);

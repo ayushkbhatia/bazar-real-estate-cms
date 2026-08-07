@@ -24,8 +24,13 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      // Allow image uploads through server actions (default 1MB is too small).
-      bodySizeLimit: "12mb",
+      // No file bytes travel through a server action any more — uploads go
+      // browser → Supabase Storage on a signed URL (app/(admin)/admin/media/
+      // _upload-actions.ts). This is headroom for large JSON payloads (page
+      // section trees), and it is deliberately under Vercel's own 4.5 MB
+      // request-body cap: a limit above that is fiction in production and only
+      // hides the failure until deploy.
+      bodySizeLimit: "4mb",
     },
   },
   // Sprint 13: portals expect `.xml` extensions in feed URLs. We host

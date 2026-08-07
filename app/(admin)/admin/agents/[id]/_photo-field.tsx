@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
-import { uploadMedia } from "../../media/_actions";
+import { uploadToLibrary } from "../../media/_upload-client";
 
 export type PhotoOption = { id: string; filename: string; url: string };
 
@@ -39,10 +39,7 @@ export function AgentPhotoField({
   async function upload(file: File | undefined) {
     if (!file) return;
     setBusy(true);
-    const form = new FormData();
-    form.set("file", file);
-    form.set("folder", "team");
-    const result = await uploadMedia(form);
+    const result = await uploadToLibrary(file, { folder: "team" });
     setBusy(false);
     if (result.status === "error") {
       toast.error(result.message);

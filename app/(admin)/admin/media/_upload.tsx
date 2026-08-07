@@ -4,10 +4,11 @@ import { useRef, useState, useTransition } from "react";
 import { Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { uploadMedia } from "./_actions";
+import { MAX_UPLOAD_BYTES, megabytes, type UploadFolder } from "@/lib/media";
+import { uploadToLibrary } from "./_upload-client";
 
 type Props = {
-  folder?: "listings" | "brand" | "blog" | "team" | "documents";
+  folder?: UploadFolder;
 };
 
 export function MediaUploader({ folder = "listings" }: Props) {
@@ -23,11 +24,8 @@ export function MediaUploader({ folder = "listings" }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
     setFilename(file.name);
-    const formData = new FormData();
-    formData.set("file", file);
-    formData.set("folder", folder);
     startTransition(async () => {
-      const result = await uploadMedia(formData);
+      const result = await uploadToLibrary(file, { folder });
       if (result.status === "ok") {
         toast.success(`Uploaded ${file.name}`);
         setFilename(null);
@@ -55,7 +53,8 @@ export function MediaUploader({ folder = "listings" }: Props) {
         {pending ? `Uploading ${filename ?? "…"}…` : "Upload media"}
       </Button>
       <span className="text-[12px] text-bz-muted">
-        Folder: <span className="mono">{folder}</span> · max 10 MB
+        Folder: <span className="mono">{folder}</span> · max{" "}
+        {megabytes(MAX_UPLOAD_BYTES)} MB
       </span>
     </div>
   );
