@@ -558,14 +558,6 @@ shows the trail.)
   (`DLD_BROKER_PERMIT = "ORN 28041"`) still say "Bazar Real Estate Brokerage
   LLC · ORN 28041 · DMT". Needs one client answer, then a sweep.
 
-- [db] Migration `0076_areas_slug_globally_unique.sql` is written but not applied.
-  `areas` only constrains `(parent_id, slug)`, so two areas under different
-  parents can both claim `/areas/<slug>`. `createArea` / `updateArea` now
-  pre-check the slug table-wide and reject collisions with a field error, so
-  the app is safe either way — but the index is the real guarantee. Apply via
-  the Supabase MCP `apply_migration` tool, then `npm run db:types`. The
-  migration de-duplicates any existing collisions before adding the index.
-
 - [areas] Area pins and stats still read `lib/seeds/areas.ts`, not `area_guides`.
   `getAreaProfile` merges the published `area_guides` overlay for the detail
   page, but `lib/queries/area-map.ts#seedStatsForSlug` (map flyouts) does not,
