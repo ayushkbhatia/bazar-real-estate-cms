@@ -11,6 +11,7 @@ import {
   getRelatedArticles,
 } from "@/lib/queries/articles";
 import { categoryToUrlSlug } from "@/lib/schemas/article";
+import { renderArticleBody } from "@/lib/article-body";
 import { mediaPublicUrl } from "@/lib/media";
 import { articleJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
@@ -108,7 +109,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
       {/* Breadcrumb */}
       <nav
         aria-label="Breadcrumb"
-        className="px-4 md:px-12 pt-8 max-w-[900px] mx-auto text-[12px] text-bz-muted flex flex-wrap items-center gap-1.5"
+        className="px-4 md:px-12 pt-8 max-w-[760px] mx-auto text-[12px] text-bz-muted flex flex-wrap items-center gap-1.5"
       >
         <Link href="/" className="text-bz-teal hover:text-bz-navy">
           Home
@@ -126,7 +127,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         </Link>
       </nav>
 
-      <header className="px-4 md:px-12 pt-8 pb-12 max-w-[900px] mx-auto">
+      <header className="px-4 md:px-12 pt-8 pb-12 max-w-[760px] mx-auto">
         <Eyebrow>
           {categoryLabel}
           {article.read_minutes ? ` · ${article.read_minutes} min read` : ""}
@@ -138,7 +139,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           {article.title}
         </h1>
         {article.excerpt ? (
-          <p className="mt-6 text-[18px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+          <p className="mt-6 text-[18px] text-bz-ink-2 leading-relaxed">
             {article.excerpt}
           </p>
         ) : null}
@@ -172,14 +173,15 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         </div>
       </header>
 
-      <div className="px-4 md:px-12 max-w-[1024px] mx-auto">
+      {/* Same measure as the body below, so the cover and the copy share one column. */}
+      <div className="px-4 md:px-12 max-w-[760px] mx-auto">
         <div className="relative aspect-[21/9] rounded overflow-hidden bg-bz-surface-2">
           {heroSrc ? (
             <Image
               src={heroSrc}
               alt={article.hero?.alt_text ?? article.title}
               fill
-              sizes="(min-width: 1024px) 1000px, 100vw"
+              sizes="(min-width: 760px) 664px, 100vw"
               priority
               className="object-cover"
             />
@@ -193,10 +195,16 @@ export default async function ArticleDetailPage({ params }: PageProps) {
       </div>
 
       <div className="px-4 md:px-12 py-16 max-w-[760px] mx-auto">
-        <div
-          className="bz-prose text-[17.5px] leading-[1.7] text-bz-ink"
-          dangerouslySetInnerHTML={{ __html: article.body_html }}
-        />
+        {/*
+          Parsed to React rather than injected as HTML, so in-body images can
+          be `next/image`. Sanitising happens inside renderArticleBody — rows
+          written before the save path sanitised (seeds, migrations, direct
+          SQL) never passed through it, and this is the only point every one
+          of them has in common with the browser.
+        */}
+        <div className="bz-prose text-[17.5px] leading-[1.7] text-bz-ink">
+          {renderArticleBody(article.body_html)}
+        </div>
       </div>
 
       {related.length > 0 ? (

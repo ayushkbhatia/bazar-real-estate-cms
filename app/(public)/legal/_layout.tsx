@@ -140,14 +140,7 @@ export function LegalDocFrame({
         </div>
       ) : null}
 
-      {/*
-        `.bz-prose p { margin: 0 }` outranks `.bz-prose > * + *`, so runs of
-        paragraphs collapse into one block. Legal copy is mostly such runs —
-        restore the gap here (utilities layer beats components) rather than
-        reflowing every other bz-prose surface. Paragraphs directly under a
-        heading keep their tight setting.
-      */}
-      <article className="bz-prose text-[15.5px] leading-[1.7] text-bz-ink mt-10 [&>:is(p,ul,ol,table)+p]:mt-[1.25em]">
+      <article className="bz-prose text-[15.5px] leading-[1.7] text-bz-ink mt-10">
         {children}
       </article>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
@@ -12,17 +13,27 @@ import {
   ListOrdered,
   Quote,
   Link as LinkIcon,
+  Image as ImageIcon,
   Minus,
   Undo2,
   Redo2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FigureImage } from "@/lib/tiptap/figure-image";
+import {
+  ImageInsertDialog,
+  type BlogMediaOption,
+} from "./_image-insert-dialog";
 
 type ArticleEditorProps = {
   /** Initial HTML — should be the persisted value from the DB. */
   defaultValue: string;
   /** Called with the latest HTML after every change. */
   onChange: (html: string) => void;
+  /** Library images offered by the insert dialog. */
+  media: BlogMediaOption[];
+  /** Bubbles a fresh upload up so the picker lists it without a refresh. */
+  onMediaUploaded: (m: BlogMediaOption) => void;
 };
 
 function ToolbarBtn({
@@ -58,7 +69,13 @@ function ToolbarBtn({
   );
 }
 
-function Toolbar({ editor }: { editor: Editor | null }) {
+function Toolbar({
+  editor,
+  onInsertImage,
+}: {
+  editor: Editor | null;
+  onInsertImage: () => void;
+}) {
   if (!editor) return null;
 
   function setLink() {
@@ -140,6 +157,13 @@ function Toolbar({ editor }: { editor: Editor | null }) {
         <LinkIcon size={13} strokeWidth={1.8} />
       </ToolbarBtn>
       <ToolbarBtn
+        ariaLabel="Insert image"
+        active={editor.isActive("figureImage")}
+        onClick={onInsertImage}
+      >
+        <ImageIcon size={13} strokeWidth={1.8} />
+      </ToolbarBtn>
+      <ToolbarBtn
         ariaLabel="Horizontal rule"
         onClick={() => editor.chain().focus().setHorizontalRule().run()}
       >
@@ -168,7 +192,10 @@ function Toolbar({ editor }: { editor: Editor | null }) {
 export function ArticleEditor({
   defaultValue,
   onChange,
+  media,
+  onMediaUploaded,
 }: ArticleEditorProps) {
+  const [pickerOpen, setPickerOpen] = useState(false);
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -179,6 +206,7 @@ export function ArticleEditor({
         autolink: true,
         HTMLAttributes: { rel: "noopener noreferrer" },
       }),
+      FigureImage,
     ],
     content: defaultValue || "<p></p>",
     editorProps: {
@@ -195,8 +223,21 @@ export function ArticleEditor({
 
   return (
     <div className="border border-bz-border rounded bg-bz-bg overflow-hidden">
-      <Toolbar editor={editor} />
+      <Toolbar editor={editor} onInsertImage={() => setPickerOpen(true)} />
       <EditorContent editor={editor} />
+      <ImageInsertDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        media={media}
+        onUploaded={onMediaUploaded}
+        onInsert={({ src, mediaKey, alt, width, height, caption }) => {
+          editor
+            ?.chain()
+            .focus()
+            .setFigureImage({ src, mediaKey, alt, width, height, caption })
+            .run();
+        }}
+      />
     </div>
   );
 }

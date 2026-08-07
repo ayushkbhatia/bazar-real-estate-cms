@@ -262,12 +262,29 @@
     );
   }
 
-  /* Editorial body — used by /insights/[slug] for Tiptap-rendered HTML */
-  .bz-prose > * + * {
+  /* Editorial body — used by /insights/[slug] for Tiptap-rendered HTML.
+     Reset and rhythm are anchored on the same element list so the two
+     selectors tie on specificity and source order decides — a bare
+     `.bz-prose p { margin: 0 }` outranks `> * + *` and flattens every gap. */
+  .bz-prose :is(p, h2, h3, ul, ol, blockquote, table, figure, pre, figcaption) {
+    margin: 0;
+  }
+  .bz-prose > :is(p, h2, h3, ul, ol, blockquote, table, figure, pre, hr) + * {
     margin-top: 1.25em;
   }
-  .bz-prose p {
-    margin: 0;
+  /* A paragraph opening under its heading stays tight to it. */
+  .bz-prose > :is(h2, h3) + * {
+    margin-top: 0.5em;
+  }
+  /* Tiptap writes a deliberate blank line as a bare `<p></p>`. It has no
+     content to give it height, so state one line's worth and let the spacer
+     carry the whole gap rather than stacking its margin on the next block.
+     `:empty` only — a `> br:only-child` test also matches `<p>text<br></p>`,
+     because `:only-child` counts elements and ignores the text node. */
+  .bz-prose > p:empty {
+    margin-top: 0;
+    min-height: 1.7em;
+    min-height: 1lh;
   }
   .bz-prose h2 {
     font-family: var(--bz-font-serif);
@@ -321,6 +338,28 @@
   }
   .bz-prose strong {
     font-weight: 600;
+  }
+  /* In-body images. `height: auto` keeps the aspect ratio when the intrinsic
+     `width`/`height` attributes get capped by the column — without it the
+     attributes win and a wide image renders squashed. */
+  .bz-prose figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    background: var(--bz-surface-2);
+  }
+  .bz-prose figcaption {
+    margin-top: 0.7em;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--bz-muted);
+  }
+  /* The node always writes a `<figcaption>`, so it round-trips through the
+     editor whether or not it has text in it. An empty one must not leave a
+     gap under the image on the public page. */
+  .bz-prose figcaption:empty {
+    display: none;
   }
   .bz-prose code {
     font-family: var(--bz-font-mono);
@@ -407,6 +446,34 @@
     border: 0;
     border-top: 1px solid var(--bz-border);
     margin: 1.5em 0;
+  }
+  .tiptap figure {
+    margin: 1.2em 0;
+  }
+  .tiptap figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    background: var(--bz-surface-2);
+  }
+  /* The caption is the node's editable content, so unlike the public page it
+     stays visible while empty — otherwise there would be nowhere to click to
+     write one. The placeholder marks it as optional. */
+  .tiptap figure figcaption {
+    margin-top: 0.5em;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--bz-muted);
+    min-height: 1.5em;
+  }
+  .tiptap figure figcaption:empty::before {
+    content: "Add a caption…";
+    color: var(--bz-muted-2);
+  }
+  .tiptap figure.ProseMirror-selectednode img {
+    outline: 2px solid var(--bz-accent);
+    outline-offset: 2px;
   }
 }
 
