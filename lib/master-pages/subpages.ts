@@ -187,6 +187,21 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
     defaults: { heading: null, intro: null, images: [] },
   }),
   section("features", "Features", "Amenity and finish highlights."),
+  section(
+    "unit-plans",
+    "Units & floor plans",
+    "Unit-type buttons and the layouts under each.",
+    {
+      dataNote:
+        "Types and layouts come from the project's unit types — edit them in “Units & floor plans” above. Up to four layouts show per type.",
+      fields: [
+        optionalText("eyebrow", "Eyebrow", "Blank keeps “Units”."),
+        optionalText("heading", "Heading", "Blank keeps “Unit types & layouts”."),
+        optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
+      ],
+      defaults: { eyebrow: null, heading: null, intro: null },
+    },
+  ),
   section("location", "Location", "Map and surroundings."),
   section("nearby", "Nearby developments", "Map of other projects in the area.", {
     dataNote: "Projects come from the same area's published developments.",

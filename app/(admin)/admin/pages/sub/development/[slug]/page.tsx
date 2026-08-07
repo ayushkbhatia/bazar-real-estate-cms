@@ -18,6 +18,8 @@ import {
   type AdvisorOption,
   type NeighbourOption,
 } from "./_content-card";
+import { DevelopmentUnitPlansCard } from "./_unit-plans-card";
+import { listUnitTypesForAdmin } from "@/lib/queries/development-unit-plans";
 import { saveDevelopmentPage, resetDevelopmentPage } from "../_actions";
 import { PublishCard } from "../../../../developments/_publish-card";
 import { DeleteDevelopmentCard } from "./_delete-card";
@@ -118,7 +120,7 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
   const development = await fetchDevelopment(slug);
   if (!development) notFound();
 
-  const [content, media, options, role, links] = await Promise.all([
+  const [content, media, options, role, links, unitTypes] = await Promise.all([
     getDevelopmentPageContent({
       name: development.name,
       slug: development.slug,
@@ -127,6 +129,7 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
     fetchContentOptions(development.id),
     getStaffRole(),
     fetchLinkCounts(development.id),
+    listUnitTypesForAdmin(development.id),
   ]);
 
   // Editing this page is open to marketing; taking a project live — or
@@ -243,6 +246,16 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
           neighbours={options.neighbours}
           advisors={options.advisors}
           mapboxAvailable={isMapboxConfigured}
+        />
+
+        {/* Its own card rather than a row inside Page content: unit types and
+            their layouts are separate tables, and the tree is tall enough that
+            folding it away matters. */}
+        <DevelopmentUnitPlansCard
+          slug={development.slug}
+          initial={unitTypes}
+          media={media}
+          bedroomsText={development.bedrooms_text}
         />
 
         <div className="flex flex-col gap-3">

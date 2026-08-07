@@ -41,12 +41,31 @@ describe("development sub-pages", () => {
       "floor-plans",
       "renders",
       "features",
+      "unit-plans",
       "location",
       "developer",
       "faq",
     ]) {
       expect(keys).toContain(expected);
     }
+  });
+
+  it("puts units & floor plans between the features and the map", () => {
+    // The design places the unit-type buttons under Named features and above
+    // the map. An editor can move it afterwards; this is where it starts, and
+    // migration 0079 splices it into the same slot in already-saved documents.
+    const keys = DEVELOPMENT_SECTIONS.map((s) => s.key);
+    expect(keys.indexOf("unit-plans")).toBe(keys.indexOf("features") + 1);
+    expect(keys.indexOf("unit-plans")).toBe(keys.indexOf("location") - 1);
+  });
+
+  it("lets the units & floor plans section be hidden and moved", () => {
+    const def = DEVELOPMENT_SECTIONS.find((s) => s.key === "unit-plans")!;
+    expect(def.locked).toBeUndefined();
+    const resolved = resolveSections(developmentPageDef(record), [
+      { key: "unit-plans", enabled: false, values: {} },
+    ]);
+    expect(resolved.find((s) => s.key === "unit-plans")!.enabled).toBe(false);
   });
 
   it("starts every copy field blank, so the template's wording is used", () => {

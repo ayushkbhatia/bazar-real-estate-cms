@@ -809,6 +809,59 @@ export type Database = {
           },
         ]
       }
+      development_unit_types: {
+        Row: {
+          beds: number | null
+          blurb: string | null
+          created_at: string
+          development_id: string
+          enabled: boolean
+          id: string
+          label: string
+          price_from_aed: number | null
+          size_from_ft2: number | null
+          size_to_ft2: number | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          beds?: number | null
+          blurb?: string | null
+          created_at?: string
+          development_id: string
+          enabled?: boolean
+          id?: string
+          label: string
+          price_from_aed?: number | null
+          size_from_ft2?: number | null
+          size_to_ft2?: number | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          beds?: number | null
+          blurb?: string | null
+          created_at?: string
+          development_id?: string
+          enabled?: boolean
+          id?: string
+          label?: string
+          price_from_aed?: number | null
+          size_from_ft2?: number | null
+          size_to_ft2?: number | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "development_unit_types_development_id_fkey"
+            columns: ["development_id"]
+            isOneToOne: false
+            referencedRelation: "developments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       development_units: {
         Row: {
           beds: number | null
@@ -1216,35 +1269,47 @@ export type Database = {
       floor_plans: {
         Row: {
           area_ft2: number | null
+          baths: number | null
           beds: number | null
           created_at: string
+          description: string | null
           development_id: string
+          enabled: boolean
           id: string
           label: string
           media_id: string | null
           sort_order: number
+          unit_type_id: string | null
           updated_at: string
         }
         Insert: {
           area_ft2?: number | null
+          baths?: number | null
           beds?: number | null
           created_at?: string
+          description?: string | null
           development_id: string
+          enabled?: boolean
           id?: string
           label: string
           media_id?: string | null
           sort_order?: number
+          unit_type_id?: string | null
           updated_at?: string
         }
         Update: {
           area_ft2?: number | null
+          baths?: number | null
           beds?: number | null
           created_at?: string
+          description?: string | null
           development_id?: string
+          enabled?: boolean
           id?: string
           label?: string
           media_id?: string | null
           sort_order?: number
+          unit_type_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1260,6 +1325,13 @@ export type Database = {
             columns: ["media_id"]
             isOneToOne: false
             referencedRelation: "media_assets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "floor_plans_unit_type_id_fkey"
+            columns: ["unit_type_id"]
+            isOneToOne: false
+            referencedRelation: "development_unit_types"
             referencedColumns: ["id"]
           },
         ]

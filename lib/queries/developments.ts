@@ -84,6 +84,12 @@ export type FloorPlan = {
   beds: number | null;
   area_ft2: number | null;
   media: HeroMedia;
+  /**
+   * Set once a plan is filed under a unit type (Sprint 14). The legacy flat
+   * "Floor plans" section skips those — they render in "Units & floor plans"
+   * instead, and showing the same drawing twice on one page reads as a bug.
+   */
+  unit_type_id: string | null;
 };
 
 export type DevelopmentMedia = {
@@ -245,7 +251,7 @@ export async function listFloorPlans(
   const { data, error } = await supabase
     .from("floor_plans")
     .select(
-      "id, label, beds, area_ft2, media:media_id(storage_key, filename, alt_text)",
+      "id, label, beds, area_ft2, unit_type_id, media:media_id(storage_key, filename, alt_text)",
     )
     .eq("development_id", developmentId)
     .order("sort_order", { ascending: true });
@@ -258,6 +264,7 @@ export async function listFloorPlans(
       beds: (raw.beds as number | null) ?? null,
       area_ft2: (raw.area_ft2 as number | null) ?? null,
       media: pickHero(raw.media),
+      unit_type_id: (raw.unit_type_id as string | null) ?? null,
     };
   });
 }
