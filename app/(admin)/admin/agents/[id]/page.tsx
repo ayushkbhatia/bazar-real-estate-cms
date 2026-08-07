@@ -43,7 +43,7 @@ export default async function AdminAgentEditPage({
   const { data, error } = await supabase
     .from("staff")
     .select(
-      "user_id, display_name, slug, title, brn, bio, photo_url, languages, specialties, credentials, role, status",
+      "user_id, display_name, slug, title, brn, bio, photo_url, languages, specialties, credentials, role, status, public_email, public_phone, whatsapp",
     )
     .eq("user_id", id)
     .maybeSingle();
@@ -65,6 +65,9 @@ export default async function AdminAgentEditPage({
     languages: Array.isArray(data.languages) ? (data.languages as string[]) : [],
     specialties: data.specialties ?? [],
     credentials: data.credentials ?? [],
+    public_email: data.public_email ?? "",
+    public_phone: data.public_phone ?? "",
+    whatsapp: data.whatsapp ?? "",
   };
 
   return (

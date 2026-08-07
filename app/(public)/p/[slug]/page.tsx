@@ -19,13 +19,13 @@ import {
   formatPriceAED,
   getPropertyExistenceByReference,
   getPublishedPropertyByReference,
-  
   getSimilarProperties,
   propertyUrl,
+  type PropertyDetail,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
-import { withAgentPhoto } from "@/lib/queries/agent-photos";
+import { getAdvisorByUserId } from "@/lib/queries/property-advisor";
 import { amenityLabel, orderAmenities, toOptions } from "@/lib/amenities";
 import {
   propertyJsonLd,
@@ -34,61 +34,101 @@ import {
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { env } from "@/lib/env";
 
+type PropertyExtras = {
+  geo: { lat: number; lng: number } | null;
+  assignedAgentId: string | null;
+  permitExpiresAt: string | null;
+};
+
 /**
- * The shared detail query (`DETAIL_FIELDS`) doesn't select `geo`, so we fetch
- * the map coordinates route-locally rather than editing that shared file. RLS
- * still gates the read to published listings.
+ * Columns the shared detail query (`DETAIL_FIELDS`) doesn't select, fetched
+ * route-locally rather than editing that shared file. RLS still gates the
+ * read to published listings.
+ *
+ * `assigned_agent_id` is the one that matters most: it's how the page finds
+ * the advisor staff actually put on the listing.
  */
-async function fetchPropertyGeo(
-  id: string,
-): Promise<{ lat: number; lng: number } | null> {
+async function fetchPropertyExtras(id: string): Promise<PropertyExtras> {
+  const empty: PropertyExtras = {
+    geo: null,
+    assignedAgentId: null,
+    permitExpiresAt: null,
+  };
   try {
     const supabase = await createSupabaseServerClient();
     const { data } = await supabase
       .from("properties")
-      .select("geo")
+      .select("geo, assigned_agent_id, listing_permit_expires_at")
       .eq("id", id)
       .maybeSingle();
-    const g = (data?.geo ?? null) as { lat?: unknown; lng?: unknown } | null;
-    if (g && typeof g.lat === "number" && typeof g.lng === "number") {
-      return { lat: g.lat, lng: g.lng };
-    }
-    return null;
+    if (!data) return empty;
+    const g = (data.geo ?? null) as { lat?: unknown; lng?: unknown } | null;
+    return {
+      geo:
+        g && typeof g.lat === "number" && typeof g.lng === "number"
+          ? { lat: g.lat, lng: g.lng }
+          : null,
+      assignedAgentId: data.assigned_agent_id ?? null,
+      permitExpiresAt: data.listing_permit_expires_at ?? null,
+    };
   } catch {
-    return null;
+    return empty;
   }
 }
 
+type GalleryMediaRow = { storage_key: string; alt: string | null };
+
 /**
- * Gallery images attached to the property (role `gallery`), ordered.
+ * Gallery images and the floor plan attached to the property, ordered.
  * Fetched route-locally because the shared detail query reduces
  * `property_media` down to just the hero.
+ *
+ * The floor plan comes from the same table (role `floor_plan`, uploaded on
+ * the admin Media tab). The page used to hardcode `hasFloorPlan={false}` and
+ * `imageUrl={null}`, so an uploaded plan was never shown.
  */
-async function fetchGalleryMedia(
-  id: string,
-): Promise<{ storage_key: string; alt: string | null }[]> {
+async function fetchPropertyMedia(id: string): Promise<{
+  gallery: GalleryMediaRow[];
+  floorPlan: GalleryMediaRow | null;
+}> {
   try {
     const supabase = await createSupabaseServerClient();
     const { data } = await supabase
       .from("property_media")
-      .select("sort_order, media:media_assets(storage_key, alt_text)")
+      .select("role, sort_order, media:media_assets(storage_key, alt_text)")
       .eq("property_id", id)
-      .eq("role", "gallery")
+      .in("role", ["gallery", "floor_plan"])
       .order("sort_order", { ascending: true });
-    return (data ?? [])
-      .map((r) => {
-        const m = (r as { media: { storage_key?: string; alt_text?: string | null } | null }).media;
-        return m?.storage_key
-          ? { storage_key: m.storage_key, alt: m.alt_text ?? null }
-          : null;
-      })
-      .filter((x): x is { storage_key: string; alt: string | null } => x !== null);
+    const rows = (data ?? []).map((r) => {
+      const row = r as {
+        role: string;
+        media: { storage_key?: string; alt_text?: string | null } | null;
+      };
+      return row.media?.storage_key
+        ? {
+            role: row.role,
+            storage_key: row.media.storage_key,
+            alt: row.media.alt_text ?? null,
+          }
+        : null;
+    });
+    const present = rows.filter(
+      (x): x is { role: string } & GalleryMediaRow => x !== null,
+    );
+    return {
+      gallery: present
+        .filter((r) => r.role === "gallery")
+        .map(({ storage_key, alt }) => ({ storage_key, alt })),
+      floorPlan:
+        present
+          .filter((r) => r.role === "floor_plan")
+          .map(({ storage_key, alt }) => ({ storage_key, alt }))[0] ?? null,
+    };
   } catch {
-    return [];
+    return { gallery: [], floorPlan: null };
   }
 }
 import { EnquiryForm } from "../../_components/enquiry-form";
-import { SEED_AGENTS } from "@/lib/seeds/agents";
 import { Gallery, type GalleryImage } from "./_components/gallery";
 import { GalleryTabs } from "./_components/gallery-tabs";
 import { FloorPlanSection } from "./_components/floor-plan-section";
@@ -96,15 +136,13 @@ import { MapEmbed } from "./_components/map-embed";
 import { PropertyActionRow } from "./_components/action-row";
 import { PriceBlock } from "./_components/price-block";
 import { AdvisorNote } from "./_components/advisor-note";
-import { TrueCostBlock } from "./_components/true-cost-block";
+import {
+  SpecificationTable,
+  type SpecRow,
+} from "./_components/specification";
 import { AgentCard } from "./_components/agent-card";
 import { ScheduleViewing } from "./_components/schedule-viewing";
-import { ViewingCta } from "./_components/viewing-cta";
 import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
-import {
-  MarketContextBlock,
-  reportableType,
-} from "../../_components/market-context-link";
 import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
 import { PropertyFaq } from "./_components/property-faq";
 
@@ -194,8 +232,15 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   ]);
 
   const amenityOptions = toOptions(amenityTaxonomy);
-  const geo = await fetchPropertyGeo(property.id);
-  const galleryMedia = await fetchGalleryMedia(property.id);
+  const [extras, media] = await Promise.all([
+    fetchPropertyExtras(property.id),
+    fetchPropertyMedia(property.id),
+  ]);
+  const geo = extras.geo;
+  const galleryMedia = media.gallery;
+  const floorPlanUrl = media.floorPlan
+    ? mediaPublicUrl(media.floorPlan.storage_key)
+    : null;
 
   const priceAed = formatPriceAED(property.price_aed);
   const aedPerFt =
@@ -229,14 +274,48 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     });
   }
 
-  // Sprint 4c: pick a lead advisor from the seed set by area overlap.
-  // Sprint 9 swaps to property.assigned_agent_id → real staff lookup.
-  const leadAdvisor = (await withAgentPhoto(
-    SEED_AGENTS.find((a) => a.areas.includes(property.areas?.slug ?? "")) ??
-      SEED_AGENTS[0],
-  ))!;
+  // The advisor staff assigned in the admin editor. Null when the listing is
+  // unassigned, or the assignee isn't a publicly-visible active agent — the
+  // advisor card and contact rail then drop out rather than falling back to a
+  // seeded name, which is what this page used to do.
+  const leadAdvisor = await getAdvisorByUserId(extras.assignedAgentId);
 
   const advisorNoteCopy = property.short_description ?? property.description;
+
+  // Everything the listing stores that the key-facts tiles above don't
+  // already show. Empty values are dropped, not rendered as em-dashes.
+  const specRows: SpecRow[] = [
+    property.developments
+      ? { label: "Development", value: property.developments.name }
+      : null,
+    property.furnishing
+      ? { label: "Furnishing", value: FURNISHING_LABEL[property.furnishing] }
+      : null,
+    property.floor != null ? { label: "Floor", value: String(property.floor) } : null,
+    property.parking_bays != null
+      ? { label: "Parking", value: `${property.parking_bays} bay${property.parking_bays === 1 ? "" : "s"}` }
+      : null,
+    property.plot_ft2
+      ? { label: "Plot size", value: `${property.plot_ft2.toLocaleString()} ft²` }
+      : null,
+    // Deliberately no AED/ft² row — the price block in the header band
+    // already carries it, and repeating it here reads as filler.
+    property.view ? { label: "View", value: property.view } : null,
+    property.orientation
+      ? { label: "Orientation", value: titleCase(property.orientation) }
+      : null,
+    property.service_charge_per_ft2
+      ? {
+          label: "Service charge",
+          value: `AED ${property.service_charge_per_ft2.toLocaleString()} / ft²`,
+          note: "Per year",
+        }
+      : null,
+    { label: "Listing type", value: MODE_LABEL[property.mode] },
+    property.published_at
+      ? { label: "Listed", value: formatListedDate(property.published_at) }
+      : null,
+  ].filter((r): r is SpecRow => r !== null);
 
   const siteUrl = (
     env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app"
@@ -306,13 +385,13 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         propertyId={property.id}
         reference={property.reference}
         title={property.title}
+        advisorName={leadAdvisor?.display_name}
       />
 
       <div className="mt-4">
         <GalleryTabs
-          hasFloorPlan={false}
-          hasVideo={false}
-          hasVirtualTour={false}
+          floorPlanUrl={floorPlanUrl}
+          reference={property.reference}
         >
           <Gallery images={galleryImages} reference={property.reference} />
         </GalleryTabs>
@@ -401,7 +480,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           {advisorNoteCopy ? (
             <AdvisorNote
               note={advisorNoteCopy}
-              advisorName={leadAdvisor.display_name}
+              advisorName={leadAdvisor?.display_name}
             />
           ) : null}
 
@@ -432,7 +511,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           {/* Floor plan section */}
           <FloorPlanSection
-            imageUrl={null}
+            imageUrl={floorPlanUrl}
             beds={property.beds}
             baths={property.baths}
             builtUpFt2={property.built_up_ft2}
@@ -468,32 +547,29 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             ) : null}
           </div>
 
-          {/* True cost */}
-          <TrueCostBlock priceAed={property.price_aed} />
+          {/* Specification — replaces the old "True cost of buying" block */}
+          <SpecificationTable
+            rows={specRows}
+            permitNo={property.listing_permit_no}
+            permitExpiry={
+              extras.permitExpiresAt
+                ? formatListedDate(extras.permitExpiresAt)
+                : null
+            }
+            plotNumber={property.dld_plot_number}
+          />
         </div>
 
         {/* Sidebar — sticky on desktop, folds inline on mobile */}
         <aside className="lg:sticky lg:top-6 self-start space-y-4">
-          <AgentCard agent={leadAdvisor} />
-
-          {/* T1-A cleanup: market context block in the sidebar — links to
-              the report that matches this property's area + type. */}
-          {property.areas?.slug ? (
-            <MarketContextBlock
-              area_slug={property.areas.slug}
-              area_name={property.areas.name}
-              property_type={reportableType(property.type)}
-              variant="card"
+          {leadAdvisor ? (
+            <AgentCard
+              advisor={leadAdvisor}
+              propertyId={property.id}
+              propertyReference={property.reference}
+              propertyTitle={property.title}
             />
           ) : null}
-
-          {/* T2-C: video tour + live viewing dual CTA above the existing
-              schedule-viewing form. The "Live viewing" pill anchor-jumps
-              down to the form so we keep the existing flow intact. */}
-          <ViewingCta
-            propertyReference={property.reference}
-            propertyTitle={property.title}
-          />
 
           <div id="schedule-viewing" className="scroll-mt-24">
             <ScheduleViewing
@@ -506,7 +582,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             id="send-brief"
             className="bg-bz-surface border border-bz-border rounded-lg p-5 scroll-mt-24"
           >
-            <Eyebrow>Send a brief</Eyebrow>
+            <Eyebrow>Enquire about this property</Eyebrow>
             <h4 className="serif text-[18px] mt-2 leading-tight mb-4">
               Ask anything about{" "}
               <span className="mono text-[14px]">{property.reference}</span>.
@@ -515,6 +591,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               source="property_page"
               propertyId={property.id}
               propertyReference={property.reference}
+              submitLabel="Send enquiry"
               compact
             />
             {/* T1-E cleanup: secondary CTA — visitors who own elsewhere
@@ -525,24 +602,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               </div>
               <ValuationLeadGate triggerLabel="Get a free valuation report" />
             </div>
-            <div className="mt-4 pt-3 border-t border-bz-border space-y-1 text-[11.5px] text-bz-muted">
-              {property.listing_permit_no ? (
-                <div>
-                  Permit:{" "}
-                  <span className="mono text-bz-ink-2">
-                    {property.listing_permit_no}
-                  </span>
-                </div>
-              ) : null}
-              {property.dld_plot_number ? (
-                <div>
-                  Plot:{" "}
-                  <span className="mono text-bz-ink-2">
-                    {property.dld_plot_number}
-                  </span>
-                </div>
-              ) : null}
-            </div>
+            {/* Permit + DLD plot moved into the Specification block, which
+                now carries the full compliance line. */}
           </div>
         </aside>
       </section>
@@ -602,13 +663,15 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       {/* T2-D: floating advisor contact rail. Fades in past the hero on
           desktop, slides up as a mobile bottom dock.
           T2-D cleanup: adds Email + Call-me-back to the action set. */}
-      <AdvisorContactRail
-        advisorName={leadAdvisor.display_name}
-        advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone ?? null}
-        advisorEmail={leadAdvisor.email ?? null}
-        contextRef={property.reference}
-        kind="property"
-      />
+      {leadAdvisor ? (
+        <AdvisorContactRail
+          advisorName={leadAdvisor.display_name}
+          advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone}
+          advisorEmail={leadAdvisor.email}
+          contextRef={property.reference}
+          kind="property"
+        />
+      ) : null}
     </article>
   );
 }
@@ -638,6 +701,35 @@ function titleCase(s: string): string {
     .split("_")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
+}
+
+const FURNISHING_LABEL: Record<
+  NonNullable<PropertyDetail["furnishing"]>,
+  string
+> = {
+  unfurnished: "Unfurnished",
+  semi: "Semi-furnished",
+  fully: "Fully furnished",
+};
+
+const MODE_LABEL: Record<PropertyDetail["mode"], string> = {
+  buy: "For sale",
+  rent: "For rent",
+  off_plan: "Off-plan",
+  commercial: "Commercial",
+};
+
+/** `2026-08-07` / ISO timestamp → `7 Aug 2026`. Fixed en-GB locale so the
+ *  server-rendered string matches on the client. */
+function formatListedDate(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 }
 
 /** Server-side helper — kept outside the render body so the React Compiler

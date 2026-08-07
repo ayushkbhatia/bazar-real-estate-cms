@@ -2363,6 +2363,8 @@ export type Database = {
           joined_at: string | null
           languages: Json
           photo_url: string | null
+          public_email: string | null
+          public_phone: string | null
           role: Database["public"]["Enums"]["staff_role"]
           slug: string
           specialties: string[]
@@ -2370,6 +2372,7 @@ export type Database = {
           title: string | null
           updated_at: string
           user_id: string
+          whatsapp: string | null
         }
         Insert: {
           bio?: string | null
@@ -2380,6 +2383,8 @@ export type Database = {
           joined_at?: string | null
           languages?: Json
           photo_url?: string | null
+          public_email?: string | null
+          public_phone?: string | null
           role?: Database["public"]["Enums"]["staff_role"]
           slug: string
           specialties?: string[]
@@ -2387,6 +2392,7 @@ export type Database = {
           title?: string | null
           updated_at?: string
           user_id: string
+          whatsapp?: string | null
         }
         Update: {
           bio?: string | null
@@ -2397,6 +2403,8 @@ export type Database = {
           joined_at?: string | null
           languages?: Json
           photo_url?: string | null
+          public_email?: string | null
+          public_phone?: string | null
           role?: Database["public"]["Enums"]["staff_role"]
           slug?: string
           specialties?: string[]
@@ -2404,6 +2412,7 @@ export type Database = {
           title?: string | null
           updated_at?: string
           user_id?: string
+          whatsapp?: string | null
         }
         Relationships: []
       }
@@ -2870,6 +2879,7 @@ export type Database = {
         | "whatsapp_inbound"
         | "brochure"
         | "development_interest"
+        | "list_property"
       enquiry_status:
         | "new"
         | "qualified"
@@ -3196,6 +3206,7 @@ export const Constants = {
         "whatsapp_inbound",
         "brochure",
         "development_interest",
+        "list_property",
       ],
       enquiry_status: [
         "new",

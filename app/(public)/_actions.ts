@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import {
@@ -18,6 +19,56 @@ import {
   rateLimitMessage,
 } from "@/lib/rate-limit";
 import type { Database } from "@/db/types";
+
+type ServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
+
+/** The advisor assigned to a listing, or null. Never throws — a lead that
+ *  can't be routed is still a lead worth keeping. */
+async function resolvePropertyAgent(
+  supabase: ServerClient,
+  propertyId: string | null,
+): Promise<string | null> {
+  if (!propertyId) return null;
+  try {
+    const { data } = await supabase
+      .from("properties")
+      .select("assigned_agent_id")
+      .eq("id", propertyId)
+      .maybeSingle();
+    return data?.assigned_agent_id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Settings → Lead routing → fallback advisor. Null when unset.
+ *
+ * Read with the service-role client: `site_settings` has no `anon` SELECT
+ * policy (only `site_settings_staff_read`, gated on `is_staff()`), and the
+ * caller here is an anonymous visitor submitting a form. Going through the
+ * request-scoped client would return null every time and the fallback would
+ * silently never fire. Nothing from the row reaches the response — only the
+ * agent id, and only as a column on the enquiry being written.
+ */
+async function resolveFallbackAgent(): Promise<string | null> {
+  const admin = createAdminClient();
+  if (!admin) return null;
+  try {
+    const { data } = await admin
+      .from("site_settings")
+      .select("lead_routing")
+      .eq("id", 1)
+      .maybeSingle();
+    const routing = (data?.lead_routing ?? null) as {
+      fallback_agent_id?: unknown;
+    } | null;
+    const id = routing?.fallback_agent_id;
+    return typeof id === "string" && id !== "" ? id : null;
+  } catch {
+    return null;
+  }
+}
 
 export type CreateEnquiryResult =
   | { status: "ok"; id: string }
@@ -83,6 +134,15 @@ export async function createEnquiry(
     submitted_via: "web",
   };
 
+  // Route the lead to whoever owns the listing. Every property enquiry landed
+  // unassigned before this, so the agent named on the page never saw their own
+  // leads — they sat in the unassigned pool waiting for manual triage.
+  // Falls back to the routing default in Settings when the listing has no
+  // agent, and to null (the old behaviour) when neither is set.
+  const assignedAgentId =
+    (await resolvePropertyAgent(supabase, data.property_id ?? null)) ??
+    (await resolveFallbackAgent());
+
   const insertPayload: Database["public"]["Tables"]["enquiries"]["Insert"] = {
     name: data.name,
     email: data.email ?? null,
@@ -95,6 +155,7 @@ export async function createEnquiry(
     budget_min: data.budget_min ?? null,
     budget_max: data.budget_max ?? null,
     account_id: user?.id ?? null,
+    assigned_agent_id: assignedAgentId,
     inferred_constraints:
       inferred as unknown as Database["public"]["Tables"]["enquiries"]["Insert"]["inferred_constraints"],
   };

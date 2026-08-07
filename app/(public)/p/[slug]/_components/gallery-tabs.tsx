@@ -1,42 +1,43 @@
 "use client";
 
 import { useState } from "react";
-import { Camera, LayoutGrid, Video, Eye, Map } from "lucide-react";
+import { Camera, LayoutGrid, Map } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { PlaceholderImage } from "@/components/brand/placeholder-image";
 
-type TabKey = "photos" | "floor_plan" | "video" | "virtual_tour" | "map";
-
-const TABS: { key: TabKey; label: string; icon: React.ElementType }[] = [
-  { key: "photos", label: "Photos", icon: Camera },
-  { key: "floor_plan", label: "Floor plan", icon: LayoutGrid },
-  { key: "video", label: "Video", icon: Video },
-  { key: "virtual_tour", label: "Virtual tour", icon: Eye },
-  { key: "map", label: "Map", icon: Map },
-];
+type PanelKey = "photos" | "floor_plan";
 
 /**
- * Sprint 4c (backfilled): gallery tab strip on the property detail page.
- * Sits above the gallery and switches between Photos / Floor plan /
- * Video / Virtual tour / Map views.
+ * Gallery tab strip on the property detail page.
  *
- * `children` is the active panel — typically the existing 5-tile gallery
- * for the photos tab. The other tabs render placeholder copy until
- * Sprint 7c (Media tab) seeds floor plans + video URLs into the
- * property_media table.
+ * Photos and Floor plan swap the panel below. **Map is not a panel** — it
+ * scrolls to the Location section further down the page, which already
+ * renders a real MapLibre embed on the listing's coordinates. It used to
+ * open a fourth panel drawing a `map · mapbox · sprint 12` placeholder, so
+ * the page showed an empty grey box while a working map sat below it.
+ *
+ * Video and Virtual tour are gone entirely: both roles exist in
+ * `property_media_role` but nothing in the admin ever wrote one, so the tabs
+ * only ever rendered "no walk-through video uploaded yet" copy naming an
+ * unshipped sprint.
  */
 export function GalleryTabs({
   children,
-  hasFloorPlan,
-  hasVideo,
-  hasVirtualTour,
+  floorPlanUrl,
+  reference,
 }: {
   children: React.ReactNode;
-  hasFloorPlan?: boolean;
-  hasVideo?: boolean;
-  hasVirtualTour?: boolean;
+  /** The uploaded floor plan (media role `floor_plan`), or null. */
+  floorPlanUrl?: string | null;
+  reference: string;
 }) {
-  const [active, setActive] = useState<TabKey>("photos");
+  const [active, setActive] = useState<PanelKey>("photos");
+
+  function scrollToLocation() {
+    document
+      .getElementById("location")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 
   return (
     <div className="px-4 md:px-12">
@@ -45,100 +46,95 @@ export function GalleryTabs({
         aria-label="Gallery views"
         className="border-b border-bz-border flex gap-5 mb-4 overflow-x-auto"
       >
-        {TABS.map(({ key, label, icon: Icon }) => {
-          const isActive = active === key;
-          const available =
-            key === "photos" ||
-            (key === "floor_plan" && hasFloorPlan) ||
-            (key === "video" && hasVideo) ||
-            (key === "virtual_tour" && hasVirtualTour) ||
-            key === "map";
-          return (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setActive(key)}
-              className={cn(
-                "py-2.5 inline-flex items-center gap-1.5 text-[13.5px] border-b-2 -mb-px transition-colors",
-                isActive
-                  ? "border-bz-teal text-bz-teal"
-                  : "border-transparent text-bz-muted hover:text-bz-ink-2",
-              )}
-            >
-              <Icon size={13} strokeWidth={1.7} />
-              {label}
-              {!available ? (
-                <span className="text-[10px] mono text-bz-muted ml-1">·</span>
-              ) : null}
-            </button>
-          );
-        })}
+        <TabButton
+          icon={Camera}
+          label="Photos"
+          isActive={active === "photos"}
+          onClick={() => setActive("photos")}
+        />
+        <TabButton
+          icon={LayoutGrid}
+          label="Floor plan"
+          isActive={active === "floor_plan"}
+          onClick={() => setActive("floor_plan")}
+        />
+        {/* Not a tab — a jump link. role="tab" would lie to screen readers
+            about a panel that never appears. */}
+        <button
+          type="button"
+          onClick={scrollToLocation}
+          className="py-2.5 inline-flex items-center gap-1.5 text-[13.5px] border-b-2 -mb-px border-transparent text-bz-muted hover:text-bz-ink-2 transition-colors"
+        >
+          <Map size={13} strokeWidth={1.7} />
+          Map
+        </button>
       </div>
 
       {active === "photos" ? (
         children
-      ) : active === "floor_plan" ? (
-        <FloorPlanPanel hasFloorPlan={hasFloorPlan} />
-      ) : active === "video" ? (
-        <VideoPanel hasVideo={hasVideo} />
-      ) : active === "virtual_tour" ? (
-        <VirtualTourPanel hasVirtualTour={hasVirtualTour} />
       ) : (
-        <MapPanel />
+        <FloorPlanPanel url={floorPlanUrl ?? null} reference={reference} />
       )}
     </div>
   );
 }
 
-function FloorPlanPanel({ hasFloorPlan }: { hasFloorPlan?: boolean }) {
-  return (
-    <div className="rounded-lg border border-bz-border bg-bz-surface aspect-[16/9] flex items-center justify-center">
-      {hasFloorPlan ? (
-        <PlaceholderImage
-          label="floor plan"
-          className="w-full h-full rounded-lg"
-        />
-      ) : (
-        <p className="text-[13.5px] text-bz-muted text-center max-w-[42ch]">
-          The advisor hasn&apos;t uploaded a floor plan yet. Send a brief and
-          we&apos;ll attach one to the reply.
-        </p>
-      )}
-    </div>
-  );
-}
-
-function VideoPanel({ hasVideo }: { hasVideo?: boolean }) {
-  return (
-    <div className="rounded-lg border border-bz-border bg-bz-surface-2 aspect-[16/9] flex items-center justify-center text-bz-muted text-[13.5px]">
-      {hasVideo
-        ? "Video tour loading…"
-        : "No walk-through video uploaded yet. Sprint 7c adds video uploads to the property editor."}
-    </div>
-  );
-}
-
-function VirtualTourPanel({
-  hasVirtualTour,
+function TabButton({
+  icon: Icon,
+  label,
+  isActive,
+  onClick,
 }: {
-  hasVirtualTour?: boolean;
+  icon: React.ElementType;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
 }) {
   return (
-    <div className="rounded-lg border border-bz-border bg-bz-surface-2 aspect-[16/9] flex items-center justify-center text-bz-muted text-[13.5px]">
-      {hasVirtualTour
-        ? "Virtual tour loading…"
-        : "No virtual tour uploaded yet. Matterport-style embeds activate once the URL field lands in Sprint 7c."}
-    </div>
+    <button
+      type="button"
+      role="tab"
+      aria-selected={isActive}
+      onClick={onClick}
+      className={cn(
+        "py-2.5 inline-flex items-center gap-1.5 text-[13.5px] border-b-2 -mb-px transition-colors",
+        isActive
+          ? "border-bz-teal text-bz-teal"
+          : "border-transparent text-bz-muted hover:text-bz-ink-2",
+      )}
+    >
+      <Icon size={13} strokeWidth={1.7} />
+      {label}
+    </button>
   );
 }
 
-function MapPanel() {
+function FloorPlanPanel({
+  url,
+  reference,
+}: {
+  url: string | null;
+  reference: string;
+}) {
+  if (!url) {
+    return (
+      <div className="rounded-lg border border-bz-border bg-bz-surface aspect-[16/9] flex items-center justify-center">
+        <p className="text-[13.5px] text-bz-muted text-center max-w-[42ch] px-6">
+          No floor plan attached to this listing yet. Enquire and the advisor
+          will send one back.
+        </p>
+      </div>
+    );
+  }
   return (
-    <PlaceholderImage
-      label="map · mapbox · sprint 12"
-      className="w-full aspect-[16/9] rounded-lg"
-    />
+    <div className="relative rounded-lg border border-bz-border bg-bz-surface aspect-[16/9] overflow-hidden">
+      <Image
+        src={url}
+        alt={`Floor plan for ${reference}`}
+        fill
+        sizes="(min-width: 768px) 1100px, 100vw"
+        className="object-contain p-4"
+      />
+    </div>
   );
 }

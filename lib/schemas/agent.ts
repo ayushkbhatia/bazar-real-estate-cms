@@ -18,6 +18,17 @@ export const agentEditSchema = z.object({
   title: z.string().max(120).nullable().optional(),
   brn: z.string().max(64).nullable().optional(),
   bio: z.string().max(2000).nullable().optional(),
+  // Publishable contact details (migration 0077). These render the Call /
+  // WhatsApp / Email actions on the advisor's listings; each action is
+  // hidden when its field is blank, so leaving them empty is a valid state.
+  public_email: z
+    .string()
+    .email("Use a valid email or leave blank")
+    .max(160)
+    .nullable()
+    .optional(),
+  public_phone: z.string().max(40).nullable().optional(),
+  whatsapp: z.string().max(40).nullable().optional(),
   photo_url: z
     .string()
     .url("Use a full URL or leave blank")
@@ -35,10 +46,29 @@ export function normaliseAgentEdit(
   raw: Record<string, unknown>,
 ): Record<string, unknown> {
   const out: Record<string, unknown> = { ...raw };
-  for (const k of ["display_name", "slug", "title", "brn", "bio", "photo_url"] as const) {
+  for (const k of [
+    "display_name",
+    "slug",
+    "title",
+    "brn",
+    "bio",
+    "photo_url",
+    "public_email",
+    "public_phone",
+    "whatsapp",
+  ] as const) {
+    // Trim first, then blank → null. Doing it the other way round (the
+    // original order) wrote null and then immediately overwrote it with
+    // `"".trim()`, so an empty field still reached the schema as "" — fine
+    // for the nullable text fields, fatal for `public_email`, which is
+    // validated as an email address.
     const v = out[k];
-    if (v === "" || v === undefined) out[k] = null;
-    if (typeof v === "string") out[k] = v.trim();
+    if (typeof v === "string") {
+      const trimmed = v.trim();
+      out[k] = trimmed === "" ? null : trimmed;
+    } else if (v === undefined) {
+      out[k] = null;
+    }
   }
   // Required fields can't be null.
   if (out.display_name == null) out.display_name = "";

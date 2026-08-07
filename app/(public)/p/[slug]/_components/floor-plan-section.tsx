@@ -51,8 +51,8 @@ export function FloorPlanSection({
               className="text-bz-muted-2 mx-auto mb-3"
             />
             <p className="text-[13.5px] text-bz-ink-2 leading-relaxed">
-              No floor plan attached yet. Send a brief and the advisor will
-              email one back — typically within 2 hours.
+              No floor plan attached yet. Enquire about this property and the
+              advisor will email one back — typically within 2 hours.
             </p>
           </div>
         </div>
