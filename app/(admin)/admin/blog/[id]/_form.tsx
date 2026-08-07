@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -16,7 +17,8 @@ import { CategorySelect } from "../_category-select";
 import { ImagePicker } from "../../pages/sub/development/[slug]/_images-card";
 import type { BlogMediaOption } from "../_image-insert-dialog";
 import { ArticleEditor } from "../_article-editor";
-import { updateArticle } from "./_actions";
+import { publishArticle, updateArticle } from "./_actions";
+import { PUBLISH_INTENT } from "./_intent";
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
@@ -38,6 +40,7 @@ export function ArticleEditForm({
   categories,
   media: initialMedia,
 }: ArticleEditFormProps) {
+  const router = useRouter();
   // Uploads land in the library, so the freshly uploaded asset has to appear
   // in this list straight away rather than after a refresh.
   const [media, setMedia] = useState<BlogMediaOption[]>(initialMedia);
@@ -60,18 +63,39 @@ export function ArticleEditForm({
 
   const category = watch("category");
 
-  const onSubmit = (values: ArticleEditInput) => {
+  const onSubmit = (
+    values: ArticleEditInput,
+    event?: React.BaseSyntheticEvent,
+  ) => {
+    // Which button submitted. The sidebar's Publish is associated with this
+    // form by id, so it arrives here as the submitter rather than as a
+    // separate action — that is what makes publishing save first.
+    const submitter = (event?.nativeEvent as SubmitEvent | undefined)
+      ?.submitter as HTMLButtonElement | null | undefined;
+    const alsoPublish = submitter?.value === PUBLISH_INTENT;
+
     setServerFieldErrors({});
     startTransition(async () => {
       const result = await updateArticle(articleId, {
         ...values,
         body_html: bodyHtml,
       });
-      if (result.status === "ok") {
-        toast.success(result.message ?? "Saved.");
-      } else {
+      if (result.status !== "ok") {
         toast.error(result.message);
         if (result.fieldErrors) setServerFieldErrors(result.fieldErrors);
+        return;
+      }
+      if (!alsoPublish) {
+        toast.success(result.message ?? "Saved.");
+        return;
+      }
+      // Only now is the row the reader would get the row the author sees.
+      const published = await publishArticle(articleId);
+      if (published.status === "ok") {
+        toast.success(published.message);
+        router.refresh();
+      } else {
+        toast.error(published.message);
       }
     });
   };

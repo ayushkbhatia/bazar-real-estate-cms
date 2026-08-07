@@ -6,7 +6,10 @@ import type { ArticleEditInput } from "@/lib/schemas/article";
 
 vi.mock("./_actions", () => ({
   updateArticle: vi.fn(async () => ({ status: "ok" as const, slug: "x" })),
+  publishArticle: vi.fn(),
 }));
+// The form refreshes the route after publishing, so it needs a router.
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
 // The picker uploads through the shared direct-to-Storage helper.
 vi.mock("../../media/_upload-client", () => ({
   uploadToLibrary: vi.fn(async () => ({

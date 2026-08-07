@@ -5,11 +5,8 @@ import { CheckCircle2, RefreshCw, Archive } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import {
-  archiveArticle,
-  publishArticle,
-  unpublishArticle,
-} from "./_actions";
+import { archiveArticle, unpublishArticle } from "./_actions";
+import { PUBLISH_INTENT } from "./_intent";
 import type { ArticleStatus } from "@/lib/queries/articles";
 
 export type PublishCardProps = {
@@ -130,9 +127,20 @@ export function ArticlePublishCard({
             </a>
           </>
         ) : (
+          /*
+            Submits the edit form rather than publishing straight away, and the
+            form publishes once the save lands (see PUBLISH_INTENT in _form).
+            Publishing on its own reads the row back from the database, so
+            everything typed since the last save was invisible to it — writing
+            a new article and pressing Publish reported "Body is empty",
+            because as far as the server was concerned it was.
+          */
           <Button
+            type="submit"
+            form="article-edit-form"
+            name="intent"
+            value={PUBLISH_INTENT}
             disabled={pending}
-            onClick={() => runAction(() => publishArticle(articleId))}
           >
             <CheckCircle2 size={14} strokeWidth={1.8} />
             Publish
