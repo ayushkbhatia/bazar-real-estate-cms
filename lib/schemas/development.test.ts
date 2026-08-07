@@ -6,6 +6,7 @@ import {
   normaliseDevelopmentInput,
   paymentPlanSchema,
   quarterLabel,
+  splitPaymentPlan,
 } from "./development";
 
 describe("formatStartingPrice", () => {
@@ -140,6 +141,90 @@ describe("paymentPlanSchema", () => {
       milestones: [],
     });
     expect(r.success).toBe(false);
+  });
+
+  /**
+   * The regression this schema exists to prevent. `DevelopmentContentCard`
+   * writes an explicit `null` into every optional field left blank, and the
+   * reader falls back to `null` on a parse failure — so the stricter shape
+   * didn't drop one field, it dropped the whole plan, silently, on every
+   * project saved from the page editor. This is a verbatim row from the
+   * `developments` table.
+   */
+  it("parses a plan exactly as the page editor saves it", () => {
+    const r = paymentPlanSchema.safeParse({
+      name: "50/50 Payment Plan",
+      milestones: [
+        { label: "Booking", timing: null, percent: 5 },
+        { label: "During Construction", timing: null, percent: 45 },
+        { label: "On Handover", timing: null, percent: 50 },
+      ],
+      handover_pct: null,
+      construction_pct: null,
+      post_handover_pct: null,
+      post_handover_months: null,
+    });
+    expect(r.success).toBe(true);
+    if (!r.success) return;
+    // Nulls normalise away rather than leaking into the render.
+    expect(r.data.milestones[0].timing).toBe("");
+    expect(r.data.construction_pct).toBeUndefined();
+    expect(r.data.post_handover_months).toBeUndefined();
+  });
+
+  it("accepts a timing string up to the editor's 60-char cap", () => {
+    const r = paymentPlanSchema.safeParse({
+      name: "Long timings",
+      milestones: [{ percent: 100, label: "Handover", timing: "x".repeat(60) }],
+    });
+    expect(r.success).toBe(true);
+  });
+});
+
+describe("splitPaymentPlan", () => {
+  it("counts instalments either side of handover", () => {
+    const plan = paymentPlanSchema.parse({
+      name: "60/40 post-handover",
+      milestones: [
+        { percent: 10, label: "Booking", timing: "Today" },
+        { percent: 10, label: "Foundations", timing: "Q1 2027" },
+        { percent: 20, label: "Handover", timing: "Q1 2028" },
+        { percent: 30, label: "12mo post", timing: "Q1 2029" },
+        { percent: 30, label: "24mo post", timing: "Q1 2030" },
+      ],
+    });
+    const split = splitPaymentPlan(plan);
+    expect(split.handoverIdx).toBe(2);
+    expect(split.constructionPct).toBe(20);
+    expect(split.handoverPct).toBe(20);
+    expect(split.postHandoverPct).toBe(60);
+    expect(split.constructionCount).toBe(2);
+    expect(split.postHandoverCount).toBe(2);
+    expect(split.handoverTiming).toBe("Q1 2028");
+  });
+
+  it("falls back to the explicit percentages when no milestone names handover", () => {
+    const plan = paymentPlanSchema.parse({
+      name: "Unlabelled",
+      milestones: [
+        { percent: 50, label: "Booking" },
+        { percent: 50, label: "Later" },
+      ],
+      construction_pct: 60,
+      handover_pct: 40,
+    });
+    const split = splitPaymentPlan(plan);
+    expect(split.handoverIdx).toBe(-1);
+    expect(split.constructionPct).toBe(60);
+    expect(split.handoverPct).toBe(40);
+    expect(split.postHandoverPct).toBe(0);
+    expect(split.constructionCount).toBe(2);
+    expect(split.handoverTiming).toBeNull();
+  });
+
+  it("is empty for a missing plan", () => {
+    expect(splitPaymentPlan(null).handoverIdx).toBe(-1);
+    expect(splitPaymentPlan(null).constructionPct).toBe(0);
   });
 });
 
