@@ -18,14 +18,6 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 
 export type SpecRow = { label: string; value: string; note?: string };
 
-/** Two per visual row on ≥sm, one on mobile. Pairing them here keeps the
- *  divider rules trivial instead of nth-child arithmetic in class names. */
-function pairs(rows: SpecRow[]): SpecRow[][] {
-  const out: SpecRow[][] = [];
-  for (let i = 0; i < rows.length; i += 2) out.push(rows.slice(i, i + 2));
-  return out;
-}
-
 export function SpecificationTable({
   rows,
   permitNo,
@@ -51,38 +43,35 @@ export function SpecificationTable({
       </h3>
 
       {rows.length > 0 ? (
-        <dl className="overflow-hidden rounded-lg border border-bz-border bg-bz-surface">
-          {pairs(rows).map((pair, i, all) => (
+        /* A `<dl>` may only wrap each dt/dd group in a *single* `<div>` —
+           nesting them two deep fails axe's definition-list and dlitem
+           rules. So the grid lives on the `<dl>` itself and each row is one
+           flat div. The 1px rules are the `gap-px` showing the container
+           colour through, which needs no last-row arithmetic. */
+        <dl className="grid grid-cols-1 sm:grid-cols-2 gap-px overflow-hidden rounded-lg border border-bz-border bg-bz-border">
+          {rows.map((r, i) => (
             <div
-              key={pair[0].label}
-              className={
-                i < all.length - 1
-                  ? "grid grid-cols-1 sm:grid-cols-2 border-b border-bz-border"
-                  : "grid grid-cols-1 sm:grid-cols-2"
-              }
+              key={r.label}
+              className={[
+                "flex items-baseline justify-between gap-4 px-4 py-3 bg-bz-surface",
+                // An odd final row spans the full width, so the grid never
+                // leaves an empty cell showing the divider colour as a block.
+                rows.length % 2 === 1 && i === rows.length - 1
+                  ? "sm:col-span-2"
+                  : "",
+              ].join(" ")}
             >
-              {pair.map((r, j) => (
-                <div
-                  key={r.label}
-                  className={
-                    j === 0 && pair.length > 1
-                      ? "flex items-baseline justify-between gap-4 px-4 py-3 border-b border-bz-border sm:border-b-0 sm:border-r"
-                      : "flex items-baseline justify-between gap-4 px-4 py-3"
-                  }
-                >
-                  <dt className="text-[13.5px] text-bz-muted shrink-0">
-                    {r.label}
-                  </dt>
-                  <dd className="text-[14px] text-bz-ink text-right">
-                    {r.value}
-                    {r.note ? (
-                      <span className="block text-[11.5px] text-bz-muted mt-0.5">
-                        {r.note}
-                      </span>
-                    ) : null}
-                  </dd>
-                </div>
-              ))}
+              <dt className="text-[13.5px] text-bz-muted shrink-0">
+                {r.label}
+              </dt>
+              <dd className="text-[14px] text-bz-ink text-right">
+                {r.value}
+                {r.note ? (
+                  <span className="block text-[11.5px] text-bz-muted mt-0.5">
+                    {r.note}
+                  </span>
+                ) : null}
+              </dd>
             </div>
           ))}
         </dl>

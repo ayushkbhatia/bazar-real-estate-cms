@@ -41,25 +41,25 @@ export function GalleryTabs({
 
   return (
     <div className="px-4 md:px-12">
-      <div
-        role="tablist"
-        aria-label="Gallery views"
-        className="border-b border-bz-border flex gap-5 mb-4 overflow-x-auto"
-      >
-        <TabButton
-          icon={Camera}
-          label="Photos"
-          isActive={active === "photos"}
-          onClick={() => setActive("photos")}
-        />
-        <TabButton
-          icon={LayoutGrid}
-          label="Floor plan"
-          isActive={active === "floor_plan"}
-          onClick={() => setActive("floor_plan")}
-        />
-        {/* Not a tab — a jump link. role="tab" would lie to screen readers
-            about a panel that never appears. */}
+      <div className="border-b border-bz-border flex gap-5 mb-4 overflow-x-auto">
+        {/* The tablist holds only real tabs. Map is a jump link, and a
+            `role="tablist"` whose children aren't all `role="tab"` fails
+            axe's aria-required-children — so it sits outside the group
+            rather than inside it pretending to be a tab. */}
+        <div role="tablist" aria-label="Gallery views" className="flex gap-5">
+          <TabButton
+            icon={Camera}
+            label="Photos"
+            isActive={active === "photos"}
+            onClick={() => setActive("photos")}
+          />
+          <TabButton
+            icon={LayoutGrid}
+            label="Floor plan"
+            isActive={active === "floor_plan"}
+            onClick={() => setActive("floor_plan")}
+          />
+        </div>
         <button
           type="button"
           onClick={scrollToLocation}
