@@ -26,6 +26,18 @@ test("/areas/saadiyat-island renders the area guide", async ({ page }) => {
   await expect(page.getByText(/yoy change/i)).toBeVisible();
 });
 
+test("public /areas indexes every area, not just the card grid", async ({
+  page,
+}) => {
+  await page.goto("/areas");
+  // The curated grid is eight cards plus two spotlights. The A–Z directory
+  // below them lists the whole catalogue, which is what makes an area added
+  // in the CMS reachable — assert on the count rather than the CMS-owned
+  // heading copy.
+  const links = page.locator("a[href^='/areas/']");
+  expect(await links.count()).toBeGreaterThan(15);
+});
+
 test("/areas/<unknown> 404s", async ({ page }) => {
   const response = await page.goto("/areas/this-area-does-not-exist");
   expect(response?.status()).toBe(404);

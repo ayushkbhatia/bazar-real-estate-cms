@@ -1102,6 +1102,20 @@ const AREAS: MasterPageDef = {
       defaults: { cards: [] },
     },
     {
+      key: "all_areas",
+      label: "All areas",
+      description:
+        "The complete A–Z index of every area and sub-community in the catalogue.",
+      dataNote:
+        "Generated from the catalogue — an area added in the CMS appears here automatically. Only the copy above the list is editable.",
+      fields: [eyebrow(), heading(), body({ max: 400 })],
+      defaults: {
+        eyebrow: "Every community",
+        heading: "The full Abu Dhabi index.",
+        body: "Every area and sub-community we cover, with the number of homes listed in each right now.",
+      },
+    },
+    {
       key: "area_map",
       label: "Area map",
       description: "Interactive map of Abu Dhabi communities.",

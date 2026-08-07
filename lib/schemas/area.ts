@@ -21,6 +21,14 @@ export const AREA_KINDS = [
 ] as const;
 export type AreaKind = (typeof AREA_KINDS)[number];
 
+/**
+ * Who may create or edit an area. Lives here rather than beside the actions
+ * so screens that merely *offer* the control (the property wizard) can check
+ * it too — `requireRole` answers a refusal with a 404, which reads as a broken
+ * page rather than a permission boundary.
+ */
+export const AREA_EDIT_ROLES = ["admin", "editor", "marketing"] as const;
+
 export const AREA_KIND_LABELS: Record<AreaKind, string> = {
   emirate: "Emirate",
   area: "Area",

@@ -15,6 +15,7 @@ import {
   toSelectableForm,
   type PropertyEditInput,
 } from "@/lib/schemas/property";
+import { AREA_EDIT_ROLES } from "@/lib/schemas/area";
 import {
   PropertyEditForm,
   type AreaOption,
@@ -205,6 +206,10 @@ export default async function PropertyEditPage({ params }: PageProps) {
 
   // Used by presence — null when the viewer isn't on the staff table.
   const me = await currentStaffRow();
+  // Agents may edit a listing but not the catalogue behind it, so the
+  // "New area" control only appears for roles the action will accept.
+  const canCreateArea =
+    !!me && (AREA_EDIT_ROLES as readonly string[]).includes(me.role);
   const presenceSelf = me
     ? {
         user_id: me.user_id,
@@ -281,6 +286,7 @@ export default async function PropertyEditPage({ params }: PageProps) {
             geo={geo}
             mapboxAvailable={isMapboxConfigured}
             amenityOptions={toOptions(taxonomy)}
+            canCreateArea={canCreateArea}
           />
         </div>
         <aside className="sticky top-6 flex flex-col gap-6">

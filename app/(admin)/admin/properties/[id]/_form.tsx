@@ -37,6 +37,7 @@ import { cn } from "@/lib/utils";
 import { setPropertyDeveloper, updateProperty } from "./_actions";
 import { LocationPicker } from "./_components/location-picker";
 import { AmenitiesPicker } from "./_components/amenities-picker";
+import { NewAreaDialog } from "./_components/new-area-dialog";
 import type { AmenityOption } from "@/lib/amenities";
 
 export type AreaOption = { id: string; name: string; kind: string };
@@ -52,6 +53,12 @@ type Props = {
   mapboxAvailable: boolean;
   /** Amenity taxonomy, resolved server-side. */
   amenityOptions: AmenityOption[];
+  /**
+   * Whether this staff member's role may add areas. False hides the "New
+   * area" control — the server action would answer with a 404, which reads
+   * as a broken page rather than a permission boundary.
+   */
+  canCreateArea?: boolean;
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -131,6 +138,7 @@ export function PropertyEditForm({
   geo,
   mapboxAvailable,
   amenityOptions,
+  canCreateArea = false,
 }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -172,13 +180,19 @@ export function PropertyEditForm({
     }
   }, [title, slug, setValue]);
 
+  // Areas can be added from inside this tab, so the picker's options are
+  // local state seeded from the server list rather than the prop itself —
+  // a router.refresh() mid-edit would drop unsaved fields.
+  const [areaOptions, setAreaOptions] = useState<AreaOption[]>(areas);
+  useEffect(() => setAreaOptions(areas), [areas]);
+
   const sortedAreas = useMemo(
     () =>
-      [...areas].sort((a, b) => {
+      [...areaOptions].sort((a, b) => {
         if (a.kind !== b.kind) return a.kind.localeCompare(b.kind);
         return a.name.localeCompare(b.name);
       }),
-    [areas],
+    [areaOptions],
   );
 
   const onSubmit = (values: PropertyEditInput) => {
@@ -694,7 +708,22 @@ export function PropertyEditForm({
           />
 
           <div className="border-t border-bz-border pt-5 flex flex-col gap-1.5 max-w-md">
-            <Label htmlFor="area_id">Area</Label>
+            <div className="flex items-center justify-between gap-3">
+              <Label htmlFor="area_id">Area</Label>
+              {canCreateArea ? (
+                <NewAreaDialog
+                  areas={areaOptions}
+                  propertyGeo={geo}
+                  onCreated={(area) => {
+                    setAreaOptions((prev) => [
+                      ...prev.filter((a) => a.id !== area.id),
+                      { id: area.id, name: area.name, kind: area.kind },
+                    ]);
+                    setValue("area_id", area.id, { shouldDirty: true });
+                  }}
+                />
+              ) : null}
+            </div>
             <Select
               value={areaId ?? UNSET}
               onValueChange={(v) =>
@@ -719,7 +748,11 @@ export function PropertyEditForm({
               </SelectContent>
             </Select>
             <span className="text-[11.5px] text-bz-muted">
-              Sub-community and building pickers come in Phase 1.1d.
+              Drives the public area filter and the listing&apos;s place on
+              /areas.
+              {canCreateArea
+                ? " Missing one? Add it without leaving this page."
+                : ""}
             </span>
             <FieldError
               message={errors.area_id?.message ?? serverFieldErrors.area_id}
