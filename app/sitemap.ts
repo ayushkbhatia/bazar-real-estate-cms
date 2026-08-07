@@ -43,7 +43,7 @@ const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[numb
 export const revalidate = 3600;
 
 function siteUrl(): string {
-  return (env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app").replace(/\/+$/, "");
+  return (env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae").replace(/\/+$/, "");
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

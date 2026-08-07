@@ -2,7 +2,7 @@ import "server-only";
 import { headers } from "next/headers";
 import { env } from "@/lib/env";
 
-const PRODUCTION_FALLBACK = "https://bazar-real-estate-cms.vercel.app";
+const PRODUCTION_FALLBACK = "https://www.bazarrealestate.ae";
 
 /**
  * The origin to build emailed links from.

@@ -318,7 +318,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   ].filter((r): r is SpecRow => r !== null);
 
   const siteUrl = (
-    env.NEXT_PUBLIC_SITE_URL ?? "https://bazar-real-estate-cms.vercel.app"
+    env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
   ).replace(/\/+$/, "");
 
   const jsonLd = propertyJsonLd(property, heroPublicUrl);

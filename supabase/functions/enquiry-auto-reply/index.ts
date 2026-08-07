@@ -46,7 +46,7 @@ declare const Deno: any;
 
 function siteUrl(): string {
   const u = Deno.env.get("NEXT_PUBLIC_SITE_URL");
-  return (u ?? "https://bazar-real-estate-cms.vercel.app").replace(/\/+$/, "");
+  return (u ?? "https://www.bazarrealestate.ae").replace(/\/+$/, "");
 }
 
 function escape(s: string): string {
