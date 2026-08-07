@@ -1,74 +1,140 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
-test("developments index links to the Saadiyat Lagoons detail page", async ({
+/**
+ * These specs run against the live CMS, so they must not name a project.
+ *
+ * They used to hard-code `saadiyat-lagoons`, and all three failed the moment an
+ * editor unpublished it — a red build caused by a content decision, with no
+ * commit behind it and nothing wrong with the code. Each spec now discovers a
+ * project from the index and asserts on the shape of the page instead. A spec
+ * whose data no longer exists anywhere skips with a reason rather than failing.
+ */
+async function firstProjectSlug(page: Page): Promise<string | null> {
+  await page.goto("/developments");
+  const card = page.locator('a[href^="/developments/"]').first();
+  if ((await card.count()) === 0) return null;
+  const href = await card.getAttribute("href");
+  return href?.replace("/developments/", "") ?? null;
+}
+
+/** Walk the index looking for a project whose page satisfies `predicate`. */
+async function findProjectWhere(
+  page: Page,
+  predicate: (page: Page) => Promise<boolean>,
+  limit = 8,
+): Promise<string | null> {
+  await page.goto("/developments");
+  const hrefs = await page
+    .locator('a[href^="/developments/"]')
+    .evaluateAll((links) =>
+      Array.from(
+        new Set(
+          links
+            .map((l) => l.getAttribute("href") ?? "")
+            .filter((h) => /^\/developments\/[^/]+$/.test(h)),
+        ),
+      ),
+    );
+  for (const href of hrefs.slice(0, limit)) {
+    await page.goto(href);
+    if (await predicate(page)) return href.replace("/developments/", "");
+  }
+  return null;
+}
+
+test("developments index links through to a project detail page", async ({
   page,
 }) => {
+  const slug = await firstProjectSlug(page);
+  test.skip(!slug, "No published developments in the CMS.");
+
   await page.goto("/developments");
   // /developments renders the off-plan master page's copy, which is editable
   // in the CMS — assert a headline exists, not its wording.
-  await expect(
-    page.getByRole("heading", { level: 1 }).first(),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
 
-  const card = page.getByRole("link", { name: /saadiyat lagoons/i }).first();
-  await expect(card).toBeVisible();
-  await card.click();
-
-  await expect(page).toHaveURL(/\/developments\/saadiyat-lagoons$/);
+  await page.locator(`a[href="/developments/${slug}"]`).first().click();
+  await expect(page).toHaveURL(new RegExp(`/developments/${slug}$`));
+  await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
 });
 
-test("off-plan detail page renders hero + payment plan + units", async ({
+test("a project page with a payment plan renders the cash-flow timeline", async ({
   page,
 }) => {
-  await page.goto("/developments/saadiyat-lagoons");
+  const slug = await findProjectWhere(page, async (p) =>
+    p.locator("#payment-plan").count().then((n) => n > 0),
+  );
+  test.skip(!slug, "No published project has a payment plan configured.");
 
-  // Hero
-  await expect(
-    page.getByRole("heading", { name: /^saadiyat lagoons$/i, level: 1 }),
-  ).toBeVisible();
-  await expect(page.getByText(/bazar exclusive/i).first()).toBeVisible();
+  await page.goto(`/developments/${slug}`);
+  const section = page.locator("#payment-plan");
 
-  // Payment plan section + 7 timeline milestones
+  // Header — the heading is editor-overridable, so assert the eyebrow's
+  // fixed prefix rather than the H2's wording.
+  await expect(section.getByText(/^Payment plan · /)).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: /cash flow timeline/i }),
-  ).toBeVisible();
-  await expect(page.locator("text=Booking")).toBeVisible();
-  await expect(page.locator("text=Handover").first()).toBeVisible();
-
-  // Calculator picks the first available unit and shows AED math
-  await expect(page.locator("text=AED 6.2M").first()).toBeVisible();
-
-  // Units table with all 8 seed units. Scope to the table cells so we don't
-  // match the identical text in the <select> dropdown in the payment-plan
-  // calculator (options inside a closed select are present in the DOM but
-  // not visible).
-  await expect(
-    // Tolerate either apostrophe: the heading is editor-overridable, and a
-    // curly one crept in during the sub-pages refactor and broke this test.
-    page.getByRole("heading", { name: /what['’]s left/i }),
-  ).toBeVisible();
-  const table = page.locator("table");
-  await expect(table.getByRole("cell", { name: /^Villa A$/ })).toBeVisible();
-  await expect(table.getByRole("cell", { name: /^Villa F$/ })).toBeVisible();
-  await expect(
-    table.getByRole("cell", { name: /^Townhouse$/ }).first(),
+    section.getByRole("heading", { level: 2 }),
   ).toBeVisible();
 
-  // Status pills — Villa E + the first townhouse are seeded as 'held'.
-  await expect(page.getByText(/^Held$/).first()).toBeVisible();
+  // The schedule renders one row per milestone, in one of the two layouts.
+  // Whichever is hidden at this viewport contributes no visible rows.
+  const rows = section.locator("ol > li:visible");
+  expect(await rows.count()).toBeGreaterThan(0);
+  // Every visible row carries a percentage.
+  await expect(rows.first()).toContainText(/\d+%/);
+
+  // The calculator's unit picker, and the PDF button that prices off it.
+  await expect(
+    section.getByRole("combobox", { name: /pick a unit type to price/i }),
+  ).toBeVisible();
+  await expect(
+    section.getByRole("button", { name: /custom plan as pdf/i }),
+  ).toBeVisible();
+
+  // The sub-nav offers the anchor only when the section actually rendered.
+  await expect(page.locator('a[href="#payment-plan"]')).toBeVisible();
 });
 
-test("unit filter narrows the table to townhouses", async ({ page }) => {
-  await page.goto("/developments/saadiyat-lagoons");
+test("the payment-plan section survives a narrow viewport", async ({
+  page,
+}) => {
+  const slug = await findProjectWhere(page, async (p) =>
+    p.locator("#payment-plan").count().then((n) => n > 0),
+  );
+  test.skip(!slug, "No published project has a payment plan configured.");
 
-  // Click the "Townhouses" filter chip; expected to show 2 rows from the seed.
+  // The handoff is explicit that the horizontal timeline must flip to the
+  // vertical treatment rather than compress. Below `xl` exactly one layout
+  // may be visible, and the section must not push the page sideways.
+  await page.setViewportSize({ width: 393, height: 900 });
+  await page.goto(`/developments/${slug}`);
+
+  const section = page.locator("#payment-plan");
+  await expect(section.locator("ol:visible")).toHaveCount(1);
+
+  const overflows = await page.evaluate(
+    () => document.documentElement.scrollWidth > window.innerWidth + 1,
+  );
+  expect(overflows).toBe(false);
+});
+
+test("unit filter narrows the table", async ({ page }) => {
+  const slug = await findProjectWhere(page, async (p) =>
+    p
+      .getByRole("button", { name: /townhouses ·/i })
+      .count()
+      .then((n) => n > 0),
+  );
+  test.skip(!slug, "No published project has unit inventory loaded.");
+
+  await page.goto(`/developments/${slug}`);
   await page.getByRole("button", { name: /townhouses ·/i }).click();
   const table = page.locator("table");
   await expect(
-    table.getByRole("cell", { name: /^Townhouse$/ }).first(),
+    table.getByRole("cell", { name: /^Townhouse/ }).first(),
   ).toBeVisible();
-  // Villa rows should disappear from the table (but the calculator's <select>
-  // option for Villa A may still exist — scope to the table).
+  // Villa rows leave the table (the calculator's <select> may still hold an
+  // option for one, so scope the assertion to the table).
   await expect(table.getByRole("cell", { name: /^Villa A$/ })).toHaveCount(0);
 });
 

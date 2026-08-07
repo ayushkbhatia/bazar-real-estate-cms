@@ -6,6 +6,7 @@ import {
   milestoneTotal,
   paymentPlanSchema,
 } from "./development-content";
+import { paymentPlanSchema as readPaymentPlanSchema } from "./development";
 
 const VALID = {
   payment_plan: {
@@ -118,5 +119,73 @@ describe("development content", () => {
       developmentContentSchema.safeParse({ ...VALID, payment_plan: null })
         .success,
     ).toBe(true);
+  });
+});
+
+/**
+ * The two payment-plan schemas sit on opposite ends of the same jsonb column:
+ * this file's validates what the page editor saves, `development.ts`'s
+ * validates what the public page reads back. They drifted once — the writer
+ * emitted `null` for blank optional fields, the reader only accepted absent —
+ * and because the reader discards a plan it can't parse, every project
+ * configured through the editor lost its timeline, hero stat and FAQ entry
+ * with no error raised anywhere. Anything the writer accepts, the reader must.
+ */
+describe("write/read payment plan compatibility", () => {
+  const cases: Record<string, unknown> = {
+    "all optionals blank, as the editor saves them": {
+      name: "50/50 Payment Plan",
+      milestones: [
+        { label: "Booking", timing: null, percent: 5 },
+        { label: "On Handover", timing: null, percent: 95 },
+      ],
+      construction_pct: null,
+      handover_pct: null,
+      post_handover_pct: null,
+      post_handover_months: null,
+    },
+    "every field at the editor's maximum length": {
+      name: "n".repeat(60),
+      milestones: [
+        { label: "l".repeat(60), timing: "t".repeat(60), percent: 100 },
+      ],
+      construction_pct: 100,
+      handover_pct: 100,
+      post_handover_pct: 100,
+      post_handover_months: 120,
+    },
+    "the twelve-milestone ceiling": {
+      name: "Twelve stages",
+      milestones: Array.from({ length: 12 }, (_, i) => ({
+        label: `Stage ${i + 1}`,
+        timing: null,
+        percent: 0,
+      })),
+      construction_pct: null,
+      handover_pct: null,
+      post_handover_pct: null,
+      post_handover_months: null,
+    },
+  };
+
+  for (const [name, plan] of Object.entries(cases)) {
+    it(`the reader accepts ${name}`, () => {
+      // Sanity: the writer accepts it, so the reader has to.
+      expect(paymentPlanSchema.safeParse(plan).success).toBe(true);
+      const read = readPaymentPlanSchema.safeParse(plan);
+      expect(read.success).toBe(true);
+    });
+  }
+
+  it("a blank milestone label is caught on the way in, not lost on the way out", () => {
+    // The one asymmetry we want: the writer is *stricter*. `blankMilestone()`
+    // has an empty label, which the editor rejects at save time with a visible
+    // error — much better than the page quietly dropping the plan later.
+    expect(
+      paymentPlanSchema.safeParse({
+        name: "Unfinished",
+        milestones: [blankMilestone()],
+      }).success,
+    ).toBe(false);
   });
 });

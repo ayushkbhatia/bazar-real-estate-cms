@@ -166,6 +166,18 @@ function shapeDetail(raw: Record<string, unknown>): DevelopmentDetail {
   const facts = developmentFactsSchema.safeParse(raw.facts ?? {});
   const masterPlan = masterPlanSchema.safeParse(raw.master_plan ?? {});
   const paymentPlan = paymentPlanSchema.safeParse(raw.payment_plan ?? null);
+  // A stored plan that fails to parse is dropped, and dropping it takes the
+  // timeline, the hero stat and the FAQ entry with it. That used to happen
+  // silently — say so, so the next shape drift is one log line rather than a
+  // support ticket. A genuinely absent plan is not a failure worth reporting.
+  if (!paymentPlan.success && raw.payment_plan != null) {
+    console.warn(
+      `[developments] payment_plan on "${raw.slug}" did not match the schema and was dropped:`,
+      paymentPlan.error.issues
+        .map((i) => `${i.path.join(".") || "plan"}: ${i.message}`)
+        .join("; "),
+    );
+  }
 
   const dev = (raw.developers as Record<string, unknown> | null) ?? null;
 

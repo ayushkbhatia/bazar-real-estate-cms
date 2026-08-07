@@ -102,6 +102,33 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_SITE_URL: https://bazar-real-estate-cms.vercel.app
 
+      # The detail-page audit target has to be resolved, not hard-coded: the
+      # catalogue is editor-owned, and naming a listing means the job 404s the
+      # day it is unpublished. Read straight from Supabase rather than the app,
+      # since lhci starts the server itself. No published property just means
+      # two URLs get audited instead of three.
+      - name: Resolve a published property for the detail-page audit
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          json=$(curl -sf \
+            "$SUPABASE_URL/rest/v1/properties?select=slug,reference&status=eq.published&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY") || true
+          slug=$(printf '%s' "$json" | sed -n 's/.*"slug":"\([^"]*\)".*/\1/p')
+          # The route segment is "<slug>-<reference>", not the slug alone —
+          # app/(public)/p/[slug] parses the reference back out of it and looks
+          # the property up by that. The bare slug 404s.
+          ref=$(printf '%s' "$json" | sed -n 's/.*"reference":"\([^"]*\)".*/\1/p' \
+            | tr '[:upper:]' '[:lower:]')
+          if [ -n "$slug" ] && [ -n "$ref" ]; then
+            echo "LHCI_DETAIL_URL=http://127.0.0.1:3100/p/$slug-$ref" >> "$GITHUB_ENV"
+            echo "Auditing property detail: /p/$slug-$ref"
+          else
+            echo "No published property found — auditing / and /buy only."
+          fi
+
       - name: Run Lighthouse CI
         run: npx lhci autorun --config=./lighthouserc.cjs
         env:

@@ -2,10 +2,8 @@ import * as React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { Download } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import { Button } from "@/components/ui/button";
 import { mediaPublicUrl } from "@/lib/media";
 import { getDevelopmentPageContent } from "@/lib/queries/subpages";
 import { withAgentPhoto } from "@/lib/queries/agent-photos";
@@ -26,7 +24,7 @@ import {
   formatStartingPrice,
   quarterLabel,
 } from "@/lib/schemas/development";
-import { PaymentPlanCalculator } from "./_payment-plan";
+import { PaymentPlanSection, type CalculatorUnit } from "./_payment-plan";
 import { UnitsTable } from "./_units-table";
 import { LeadAdvisorBanner } from "./_components/lead-advisor-banner";
 import { BrochureGate } from "./_components/brochure-gate";
@@ -225,11 +223,26 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const masterplanMedia = development.masterplan;
 
   const availableUnits = units.filter((u) => u.status === "available");
-  const calculatorUnits = availableUnits.map((u) => ({
-    id: u.id,
-    label: `${u.unit_type}${u.beds ? ` · ${u.beds}-bed` : ""}${u.built_up_ft2 ? ` · ${u.built_up_ft2.toLocaleString()} ft²` : ""}`,
-    price_aed: u.price_aed ?? development.starting_price ?? 0,
-  }));
+  // Most projects carry a payment plan but no unit inventory, and the
+  // calculator priced entirely off units showed "—" in every figure for them.
+  // The starting price is the number those projects publish, so it stands in
+  // as a single pricing option — labelled as the floor, not as a unit.
+  const calculatorUnits: CalculatorUnit[] =
+    availableUnits.length > 0
+      ? availableUnits.map((u) => ({
+          id: u.id,
+          label: `${u.unit_type}${u.beds ? ` · ${u.beds}-bed` : ""}${u.built_up_ft2 ? ` · ${u.built_up_ft2.toLocaleString()} ft²` : ""}`,
+          price_aed: u.price_aed ?? development.starting_price ?? 0,
+        }))
+      : development.starting_price
+        ? [
+            {
+              id: "starting-price",
+              label: `From ${formatStartingPrice(development.starting_price)}`,
+              price_aed: development.starting_price,
+            },
+          ]
+        : [];
 
   const nodes: Record<string, React.ReactNode> = {
     "overview": (
@@ -319,30 +332,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       </section>
     ),
     "payment-plan": development.payment_plan ? (
-        <section
+        <PaymentPlanSection
           id="payment-plan"
-          className="px-4 md:px-12 py-16 bg-bz-surface-2 scroll-mt-16"
-        >
-          <div className="flex justify-between items-end flex-wrap gap-4 mb-6">
-            <div>
-              <Eyebrow>Payment plan · {development.payment_plan.name}</Eyebrow>
-              <h2
-                className="serif text-[28px] md:text-[40px] mt-2"
-                style={{ letterSpacing: "-0.02em" }}
-              >
-                {sv("payment-plan", "heading") ?? "Cash flow timeline"}
-              </h2>
-            </div>
-            <Button variant="outline" size="sm">
-              <Download size={14} strokeWidth={1.6} />
-              Custom plan as PDF
-            </Button>
-          </div>
-          <PaymentPlanCalculator
-            plan={development.payment_plan}
-            units={calculatorUnits}
-          />
-        </section>
+          plan={development.payment_plan}
+          heading={sv("payment-plan", "heading") ?? "Cash flow timeline"}
+          developmentName={development.name}
+          units={calculatorUnits}
+        />
     ) : null,
     "units": units.length > 0 ? (
         <section id="units" className="px-4 md:px-12 py-16 scroll-mt-16">
@@ -645,9 +641,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 label="Handover"
               />
               {development.payment_plan ? (
+                // "60/40 Payment Plan" → value "60/40", label "Payment plan".
+                // The label used to repeat the whole plan name after the
+                // value's first word, which read as a stutter.
                 <HeroStat
                   value={development.payment_plan.name.split(" ")[0]}
-                  label={`Payment plan · ${development.payment_plan.name}`}
+                  label="Payment plan"
                 />
               ) : null}
               {/* Wraps on narrow screens — "Register your interest" is a wider

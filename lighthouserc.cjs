@@ -15,10 +15,19 @@ module.exports = {
       // step; this command only starts the already-built app.
       startServerCommand: "npm run start -- --port 3100",
       startServerReadyPattern: "Ready in",
+      // The property detail page is the heaviest template we have, so it is
+      // worth auditing — but its URL is editor-owned. This used to name a
+      // seed listing; when the client replaced the catalogue the row stopped
+      // existing, lhci got a 404, and the job failed before it scored
+      // anything ("unable to reliably load the page you requested").
+      //
+      // The CI job resolves a currently-published property and passes it in.
+      // Locally, `npx lhci autorun` audits the two stable routes unless you
+      // set LHCI_DETAIL_URL yourself.
       url: [
         "http://127.0.0.1:3100/",
         "http://127.0.0.1:3100/buy",
-        "http://127.0.0.1:3100/p/mamsha-3-bed-beachfront-apartment-baz-ad-04891",
+        ...(process.env.LHCI_DETAIL_URL ? [process.env.LHCI_DETAIL_URL] : []),
       ],
       numberOfRuns: 3,
       settings: {

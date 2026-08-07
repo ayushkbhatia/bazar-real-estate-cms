@@ -31,20 +31,54 @@ const isoDateOrEmpty = z
   .nullable()
   .optional();
 
-/** Payment-plan jsonb shape stored on `developments.payment_plan`. */
+/**
+ * Payment-plan jsonb shape stored on `developments.payment_plan`.
+ *
+ * Every optional field here is `nullish`, not merely `optional`, because the
+ * page editor writes an explicit `null` for anything left blank — a milestone
+ * with no date saves `timing: null`, and a plan whose buckets are implied by
+ * its milestones saves all four percentage fields as `null`. The reader
+ * `safeParse`s and falls back to `null` on failure, so the stricter shape
+ * didn't reject one field, it discarded the whole plan: the timeline, the hero
+ * stat and the FAQ entry all disappeared with no error anywhere. `timing`'s
+ * ceiling matches the editor's 60 for the same reason.
+ *
+ * Anything the editor can save must parse here. See
+ * `lib/schemas/development-content.ts` for the write side.
+ */
+const optionalPercent = z
+  .number()
+  .min(0)
+  .max(100)
+  .nullable()
+  .transform((v) => v ?? undefined)
+  .optional();
+
 export const paymentPlanMilestoneSchema = z.object({
   percent: z.number().min(0).max(100),
   label: z.string().min(1).max(80),
-  timing: z.string().max(40).optional().default(""),
+  timing: z
+    .string()
+    .max(60)
+    .nullable()
+    .transform((v) => v ?? "")
+    .optional(),
 });
 
 export const paymentPlanSchema = z.object({
   name: z.string().min(1).max(80),
   milestones: z.array(paymentPlanMilestoneSchema).min(1).max(12),
-  construction_pct: z.number().min(0).max(100).optional(),
-  handover_pct: z.number().min(0).max(100).optional(),
-  post_handover_pct: z.number().min(0).max(100).optional(),
-  post_handover_months: z.number().int().min(0).max(120).optional(),
+  construction_pct: optionalPercent,
+  handover_pct: optionalPercent,
+  post_handover_pct: optionalPercent,
+  post_handover_months: z
+    .number()
+    .int()
+    .min(0)
+    .max(120)
+    .nullable()
+    .transform((v) => v ?? undefined)
+    .optional(),
 });
 
 export type PaymentPlan = z.infer<typeof paymentPlanSchema>;
@@ -323,13 +357,35 @@ export type PaymentBreakdown = {
   postHandover: number;
 };
 
-export function computePaymentBreakdown(
-  plan: PaymentPlan | null,
-  priceAed: number,
-): PaymentBreakdown {
-  if (!plan || plan.milestones.length === 0) {
-    return { total: priceAed, construction: 0, handover: 0, postHandover: 0 };
-  }
+/**
+ * Where the plan divides into construction / handover / post-handover, and
+ * how many instalments land in each. The percentages drive the calculator's
+ * figures; the counts drive its captions ("40% · 4 instalments").
+ */
+export type PaymentPlanSplit = {
+  /** Index of the handover milestone, or -1 when the plan doesn't name one. */
+  handoverIdx: number;
+  constructionPct: number;
+  handoverPct: number;
+  postHandoverPct: number;
+  constructionCount: number;
+  postHandoverCount: number;
+  /** The handover milestone's `timing`, when it has one. */
+  handoverTiming: string | null;
+};
+
+export function splitPaymentPlan(plan: PaymentPlan | null): PaymentPlanSplit {
+  const empty: PaymentPlanSplit = {
+    handoverIdx: -1,
+    constructionPct: 0,
+    handoverPct: 0,
+    postHandoverPct: 0,
+    constructionCount: 0,
+    postHandoverCount: 0,
+    handoverTiming: null,
+  };
+  if (!plan || plan.milestones.length === 0) return empty;
+
   // We treat the LAST pre-handover ("Handover") milestone as the handover
   // slice. Everything before it = construction. Everything after = post.
   // The milestone whose `label` contains "Handover" is the divider; if it's
@@ -346,21 +402,48 @@ export function computePaymentBreakdown(
     if (earlier >= 0) handoverIdx = earlier;
   }
 
+  if (handoverIdx < 0) {
+    return {
+      ...empty,
+      constructionPct: plan.construction_pct ?? 0,
+      handoverPct: plan.handover_pct ?? 0,
+      postHandoverPct: plan.post_handover_pct ?? 0,
+      // No named handover row, so every milestone is a pre-handover
+      // instalment as far as the caption is concerned.
+      constructionCount: plan.milestones.length,
+    };
+  }
+
   let constructionPct = 0;
   let handoverPct = 0;
   let postHandoverPct = 0;
-  if (handoverIdx >= 0) {
-    for (let i = 0; i < plan.milestones.length; i++) {
-      const pct = plan.milestones[i].percent;
-      if (i < handoverIdx) constructionPct += pct;
-      else if (i === handoverIdx) handoverPct += pct;
-      else postHandoverPct += pct;
-    }
-  } else {
-    constructionPct = plan.construction_pct ?? 0;
-    handoverPct = plan.handover_pct ?? 0;
-    postHandoverPct = plan.post_handover_pct ?? 0;
+  for (let i = 0; i < plan.milestones.length; i++) {
+    const pct = plan.milestones[i].percent;
+    if (i < handoverIdx) constructionPct += pct;
+    else if (i === handoverIdx) handoverPct += pct;
+    else postHandoverPct += pct;
   }
+
+  return {
+    handoverIdx,
+    constructionPct,
+    handoverPct,
+    postHandoverPct,
+    constructionCount: handoverIdx,
+    postHandoverCount: plan.milestones.length - handoverIdx - 1,
+    handoverTiming: plan.milestones[handoverIdx].timing || null,
+  };
+}
+
+export function computePaymentBreakdown(
+  plan: PaymentPlan | null,
+  priceAed: number,
+): PaymentBreakdown {
+  if (!plan || plan.milestones.length === 0) {
+    return { total: priceAed, construction: 0, handover: 0, postHandover: 0 };
+  }
+  const { constructionPct, handoverPct, postHandoverPct } =
+    splitPaymentPlan(plan);
 
   return {
     total: priceAed,
