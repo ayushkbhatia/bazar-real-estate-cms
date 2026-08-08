@@ -34,6 +34,11 @@ import { DeveloperProjectsStrip } from "./_components/developer-projects-strip";
 import { NearbyDevelopments } from "./_components/nearby-developments";
 import { FeatureBlocks } from "./_components/feature-blocks";
 import { FloorplanGate } from "./_components/floorplan-gate";
+import { UnitFloorPlans } from "./_components/unit-floor-plans";
+import {
+  listUnitTypesForPage,
+  placeholderUnitTypes,
+} from "@/lib/queries/development-unit-plans";
 import { MapEmbed } from "../../p/[slug]/_components/map-embed";
 import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
 import {
@@ -99,6 +104,7 @@ const ANCHORED_SECTIONS = new Set([
   "floor-plans",
   "renders",
   "features",
+  "unit-plans",
   "location",
   "developer",
   "faq",
@@ -109,14 +115,23 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const development = await getPublishedDevelopmentBySlug(slug);
   if (!development) notFound();
 
-  const [content, units, floorPlans, media, meta, siblingsByDeveloper, siblingsInArea] =
-    await Promise.all([
+  const [
+    content,
+    units,
+    floorPlans,
+    unitTypes,
+    media,
+    meta,
+    siblingsByDeveloper,
+    siblingsInArea,
+  ] = await Promise.all([
       getDevelopmentPageContent({
         name: development.name,
         slug: development.slug,
       }),
       listDevelopmentUnits(development.id),
       listFloorPlans(development.id),
+      listUnitTypesForPage(development.id),
       listDevelopmentMedia(development.id),
       getDevelopmentMeta(development.id),
       development.developer_id
@@ -221,6 +236,18 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   // saves the site plan. It used to be looked up in `development_media` under
   // the `masterplan` role — a row nothing creates, so the upload never showed.
   const masterplanMedia = development.masterplan;
+
+  const legacyFloorPlans = floorPlans.filter((fp) => fp.unit_type_id === null);
+
+  // A project with no unit-type records still gets the section, built from the
+  // bedroom range it publishes. Migration 0081 seeds real, editable rows for
+  // everything in the catalogue, so in practice this covers a project created
+  // since — the page says something true about it rather than leaving a hole,
+  // and it fills itself in the moment someone opens the CMS card.
+  const unitTypeCards =
+    unitTypes.length > 0
+      ? unitTypes
+      : placeholderUnitTypes(development.bedrooms_text);
 
   const availableUnits = units.filter((u) => u.status === "available");
   // Most projects carry a payment plan but no unit inventory, and the
@@ -359,7 +386,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           <UnitsTable units={units} />
         </section>
     ) : null,
-    "floor-plans": floorPlans.length > 0 ? (
+    // Only the plans nobody has filed under a unit type. The rest render in
+    // "Units & floor plans" below the features, and one drawing appearing
+    // twice on the same page reads as a bug rather than as emphasis.
+    "floor-plans": legacyFloorPlans.length > 0 ? (
         <section
           id="floor-plans"
           className="px-4 md:px-12 pb-16 scroll-mt-16"
@@ -372,7 +402,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             {sv("floor-plans", "heading") ?? "How the units lay out"}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
-            {floorPlans.map((fp) =>
+            {legacyFloorPlans.map((fp) =>
               meta?.floorplan_gated ? (
                 // T2-B: gated when `development.meta.floorplan_gated === true`.
                 // Renders a blurred preview behind a lead modal; the request
@@ -464,6 +494,21 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           developmentSlug={development.slug}
           blocks={featureBlocks}
           amenitiesFallback={development.amenities}
+        />
+      </section>
+    ),
+    // Unit-type buttons and their layouts. Sits between the named features and
+    // the map by default; the page editor can move or hide it like any other.
+    "unit-plans": (
+      <section id="unit-plans" className="scroll-mt-16 border-t border-bz-border">
+        <UnitFloorPlans
+          types={unitTypeCards}
+          developmentName={development.name}
+          developmentSlug={development.slug}
+          gated={meta?.floorplan_gated === true}
+          eyebrow={sv("unit-plans", "eyebrow")}
+          heading={sv("unit-plans", "heading")}
+          intro={sv("unit-plans", "intro")}
         />
       </section>
     ),
