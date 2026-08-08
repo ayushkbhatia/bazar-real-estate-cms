@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════
--- 0080 · Retrofit unit types + placeholder layouts onto every development
+-- 0081 · Retrofit unit types + placeholder layouts onto every development
 -- ═══════════════════════════════════════════════════════════════════════
 --
 -- The section is universal, so every project already on the site needs
@@ -14,7 +14,7 @@
 -- would put "Layout A / Layout B" placeholder cards straight onto six live
 -- project pages. The version in this branch filters that section to plans with
 -- no unit type, which is what makes the seed invisible until it belongs
--- somewhere. 0078 (schema) and 0079 (section order) are safe to run early;
+-- somewhere. 0079 (schema) and 0080 (section order) are safe to run early;
 -- this one is not.
 --
 -- The same rules live in TypeScript (`lib/schemas/development-unit-plans.ts`,
@@ -96,4 +96,4 @@ where not exists (
   select 1 from public.floor_plans f where f.unit_type_id = t.id
 );
 
--- Section placement is migration 0079's job; it can run early, this can't.
+-- Section placement is migration 0080's job; it can run early, this can't.

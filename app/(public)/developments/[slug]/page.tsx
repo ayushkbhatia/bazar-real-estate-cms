@@ -240,7 +240,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const legacyFloorPlans = floorPlans.filter((fp) => fp.unit_type_id === null);
 
   // A project with no unit-type records still gets the section, built from the
-  // bedroom range it publishes. Migration 0079 seeds real, editable rows for
+  // bedroom range it publishes. Migration 0081 seeds real, editable rows for
   // everything in the catalogue, so in practice this covers a project created
   // since — the page says something true about it rather than leaving a hole,
   // and it fills itself in the moment someone opens the CMS card.

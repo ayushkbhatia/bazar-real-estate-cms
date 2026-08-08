@@ -143,7 +143,7 @@ export async function listUnitTypesForPage(
 /**
  * Placeholder cards for a project that has no unit types stored.
  *
- * Migration 0079 seeds real, editable rows for everything in the catalogue
+ * Migration 0081 seeds real, editable rows for everything in the catalogue
  * when the feature ships, so in practice this covers a project created
  * afterwards — or one whose types were all deleted. Deriving from
  * `bedrooms_text` means even those pages say something true about the project

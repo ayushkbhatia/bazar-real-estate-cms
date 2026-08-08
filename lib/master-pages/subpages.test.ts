@@ -53,7 +53,7 @@ describe("development sub-pages", () => {
   it("puts units & floor plans between the features and the map", () => {
     // The design places the unit-type buttons under Named features and above
     // the map. An editor can move it afterwards; this is where it starts, and
-    // migration 0079 splices it into the same slot in already-saved documents.
+    // migration 0080 splices it into the same slot in already-saved documents.
     const keys = DEVELOPMENT_SECTIONS.map((s) => s.key);
     expect(keys.indexOf("unit-plans")).toBe(keys.indexOf("features") + 1);
     expect(keys.indexOf("unit-plans")).toBe(keys.indexOf("location") - 1);

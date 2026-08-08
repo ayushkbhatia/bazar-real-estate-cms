@@ -11,7 +11,7 @@ import { uuidLike } from "@/lib/uuid";
  * string; and the same records will be wanted by search and by the concierge,
  * neither of which should have to parse a page document to find them.
  *
- * See `supabase/migrations/0078_development_unit_types.sql` for why this is a
+ * See `supabase/migrations/0079_development_unit_types.sql` for why this is a
  * separate table from `development_units` (that one is sales inventory).
  */
 
@@ -137,7 +137,7 @@ export const UNIT_TYPE_CHOICES: { beds: number; label: string }[] = [
  *  - nothing parseable falls back to 1-3 Bedroom — the commonest shape here,
  *    offered as a starting point rather than a claim.
  *
- * Mirrored in SQL by `supabase/migrations/0079_backfill_unit_types.sql`, which
+ * Mirrored in SQL by `supabase/migrations/0081_backfill_unit_types.sql`, which
  * seeds the same set once for the projects that predate the feature. This is
  * the copy that stays live: it backs both the CMS's "add the suggested unit
  * types" button and the public page's fallback for a project with no records.
