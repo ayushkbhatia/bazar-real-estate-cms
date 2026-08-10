@@ -8,6 +8,9 @@ type Props = {
   development: DevelopmentDetail;
   /** Custom-curated FAQ from `development.meta.faq` overrides the synth set. */
   curated?: FaqEntry[];
+  /** Sub-page overrides. Blank keeps the built-in copy. */
+  heading?: string | null;
+  intro?: string | null;
 };
 
 /**
@@ -16,7 +19,12 @@ type Props = {
  * present (CMS-curated), it wins; otherwise we synthesise a default set from
  * the development's own facts so every page surfaces something useful.
  */
-export function DevelopmentFaq({ development, curated }: Props) {
+export function DevelopmentFaq({
+  development,
+  curated,
+  heading,
+  intro,
+}: Props) {
   const entries: FaqEntry[] = curated?.length ? curated : synthFaq(development);
   if (!entries.length) return null;
 
@@ -41,8 +49,13 @@ export function DevelopmentFaq({ development, curated }: Props) {
         className="serif text-[36px] mt-2 leading-tight max-w-[28ch]"
         style={{ letterSpacing: "-0.02em" }}
       >
-        Frequently asked, plainly answered.
+        {heading ?? "Frequently asked, plainly answered."}
       </h2>
+      {intro ? (
+        <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+          {intro}
+        </p>
+      ) : null}
 
       <div className="mt-9 grid grid-cols-1 gap-2 max-w-[860px]">
         {entries.map((e, i) => (

@@ -8,6 +8,9 @@ type Props = {
   blocks: NamedFeatureBlock[] | null | undefined;
   /** Fallback amenities to synthesise blocks from if `blocks` is empty. */
   amenitiesFallback?: string[];
+  /** Sub-page overrides. Blank keeps the built-in copy. */
+  heading?: string | null;
+  intro?: string | null;
 };
 
 /**
@@ -25,6 +28,8 @@ export function FeatureBlocks({
   developmentSlug,
   blocks,
   amenitiesFallback,
+  heading,
+  intro,
 }: Props) {
   const items = blocks?.length
     ? blocks
@@ -38,8 +43,15 @@ export function FeatureBlocks({
         className="serif text-[36px] mt-2 leading-tight max-w-[28ch]"
         style={{ letterSpacing: "-0.02em" }}
       >
-        Named features
+        {heading ?? "Named features"}
       </h2>
+      {/* The section has never carried a standfirst, so it only appears once
+          someone writes one — a blank field leaves the markup as it was. */}
+      {intro ? (
+        <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+          {intro}
+        </p>
+      ) : null}
       <div className="mt-12 flex flex-col gap-16">
         {items.map((b, i) => (
           <FeatureRow

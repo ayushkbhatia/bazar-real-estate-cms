@@ -224,7 +224,6 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     (m) => (m.role === "render" || m.role === "gallery") && m.media,
   );
 
-  const rendersValues = content.section("renders")?.values ?? {};
   const galleryTiles =
     curatedRenders.length > 0
       ? curatedRenders
@@ -272,6 +271,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           ]
         : [];
 
+  const overviewBody = sv("overview", "intro") ?? development.vision;
+
   const nodes: Record<string, React.ReactNode> = {
     "overview": (
       <section
@@ -284,13 +285,16 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             className="serif text-[30px] md:text-[44px] mt-3 leading-[1.1]"
             style={{ letterSpacing: "-0.025em" }}
           >
-            {development.area?.name
-              ? `A community within ${development.area.name}.`
-              : "About this development"}
+            {sv("overview", "heading") ??
+              (development.area?.name
+                ? `A community within ${development.area.name}.`
+                : "About this development")}
           </h2>
-          {development.vision ? (
+          {/* The built-in copy here is the project's own vision statement, so
+              an override stands in for it rather than stacking on top. */}
+          {overviewBody ? (
             <div className="mt-6 space-y-4">
-              {development.vision.split("\n\n").map((para, i) => (
+              {overviewBody.split("\n\n").map((para, i) => (
                 <p
                   key={i}
                   className="text-[16px] text-bz-ink-2 leading-[1.7]"
@@ -323,6 +327,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         >
           {sv("master-plan", "heading") ?? "The site"}
         </h2>
+        {sv("master-plan", "intro") ? (
+          <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+            {sv("master-plan", "intro")}
+          </p>
+        ) : null}
         <div className="relative mt-6 rounded-lg overflow-hidden aspect-[21/9] bg-bz-surface-2">
           {masterplanMedia ? (
             <Image
@@ -364,6 +373,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           id="payment-plan"
           plan={development.payment_plan}
           heading={sv("payment-plan", "heading") ?? "Cash flow timeline"}
+          intro={sv("payment-plan", "intro")}
           developmentName={development.name}
           units={calculatorUnits}
         />
@@ -382,6 +392,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               >
                 {sv("units", "heading") ?? "What's left"}
               </h2>
+              {sv("units", "intro") ? (
+                <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+                  {sv("units", "intro")}
+                </p>
+              ) : null}
             </div>
           </div>
           <UnitsTable units={units} />
@@ -402,6 +417,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           >
             {sv("floor-plans", "heading") ?? "How the units lay out"}
           </h2>
+          {sv("floor-plans", "intro") ? (
+            <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+              {sv("floor-plans", "intro")}
+            </p>
+          ) : null}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
             {legacyFloorPlans.map((fp) =>
               meta?.floorplan_gated ? (
@@ -454,13 +474,20 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     ) : null,
     "renders": galleryTiles.length > 0 ? (
         <section id="renders" className="px-4 md:px-12 pb-16 scroll-mt-16">
-          <Eyebrow>{str(rendersValues, "eyebrow") ?? "The vision"}</Eyebrow>
+          {/* Was reading an "eyebrow" field the renders section never
+              declared, so this always fell through to the literal. */}
+          <Eyebrow>The vision</Eyebrow>
           <h2
             className="serif text-[36px] mt-2"
             style={{ letterSpacing: "-0.02em" }}
           >
-            {str(rendersValues, "heading") ?? "Renders & inspiration"}
+            {sv("renders", "heading") ?? "Renders & inspiration"}
           </h2>
+          {sv("renders", "intro") ? (
+            <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+              {sv("renders", "intro")}
+            </p>
+          ) : null}
           <div className="grid mt-6 gap-3 grid-cols-1 md:grid-cols-[2fr_1fr_1fr] md:grid-rows-[320px_320px]">
             {galleryTiles.slice(0, 5).map((tile, i) => (
               <div
@@ -495,6 +522,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           developmentSlug={development.slug}
           blocks={featureBlocks}
           amenitiesFallback={development.amenities}
+          heading={sv("features", "heading")}
+          intro={sv("features", "intro")}
         />
       </section>
     ),
@@ -523,7 +552,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           {sv("location", "heading") ?? `Where ${development.name} sits.`}
         </h2>
         <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-          Master-plan position + commute times to key Abu Dhabi destinations.
+          {sv("location", "intro") ??
+            "Master-plan position + commute times to key Abu Dhabi destinations."}
         </p>
         {meta?.coords ? (
           <MapEmbed
@@ -553,6 +583,22 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     "developer": development.developer_profile ? (
         <section id="developer" className="px-4 md:px-12 pb-16 scroll-mt-16">
           <Eyebrow>Developer</Eyebrow>
+          {/* The card below is built from the developer's own record, so an
+              override introduces a section heading above it rather than
+              overwriting the partner's name and profile copy. */}
+          {sv("developer", "heading") ? (
+            <h2
+              className="serif text-[32px] mt-2 leading-tight"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              {sv("developer", "heading")}
+            </h2>
+          ) : null}
+          {sv("developer", "intro") ? (
+            <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+              {sv("developer", "intro")}
+            </p>
+          ) : null}
           <div className="mt-3 rounded-xl border border-bz-border bg-bz-surface p-6 md:p-9 grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-12 items-center">
             <div>
               <div
@@ -581,16 +627,25 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <DeveloperProjectsStrip
           developerName={development.developer.name}
           siblings={siblingsByDeveloper}
+          heading={sv("other-projects", "heading")}
+          intro={sv("other-projects", "intro")}
         />
     ) : null,
     // DevelopmentFaq carries its own `id="faq"` anchor.
     "faq": (
-        <DevelopmentFaq development={development} curated={meta?.faq} />
+        <DevelopmentFaq
+          development={development}
+          curated={meta?.faq}
+          heading={sv("faq", "heading")}
+          intro={sv("faq", "intro")}
+        />
     ),
     "advisor": (
         <LeadAdvisorBanner
         agent={leadAdvisor}
         developmentName={development.name}
+        heading={sv("advisor", "heading")}
+        intro={sv("advisor", "intro")}
         />
     ),
   };

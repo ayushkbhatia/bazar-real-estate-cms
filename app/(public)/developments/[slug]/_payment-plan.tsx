@@ -39,12 +39,15 @@ export function PaymentPlanSection({
   id,
   plan,
   heading,
+  intro,
   developmentName,
   units,
 }: {
   id: string;
   plan: PaymentPlan;
   heading: string;
+  /** Sub-page override. Blank leaves the section without a standfirst. */
+  intro?: string | null;
   developmentName: string;
   units: CalculatorUnit[];
 }) {
@@ -175,6 +178,11 @@ export function PaymentPlanSection({
           >
             {heading}
           </h2>
+          {intro ? (
+            <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+              {intro}
+            </p>
+          ) : null}
         </div>
         <Button
           variant="outline"
