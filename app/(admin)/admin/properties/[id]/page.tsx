@@ -154,6 +154,19 @@ export default async function PropertyEditPage({ params }: PageProps) {
     .assigned_agent_id;
   const agentOptions = await withCurrentAgent(activeAgents, assignedAgentId);
 
+  // The floor plan is media too, but it isn't a gallery photo: it has its own
+  // card in the Details tab, and leaving it in the grid would let it be dragged
+  // into the gallery order or starred into the hero slot.
+  const floorPlanRow = media.find((m) => m.role === "floor_plan") ?? null;
+  const galleryMedia = media.filter((m) => m.role !== "floor_plan");
+  const floorPlan = floorPlanRow
+    ? {
+        id: floorPlanRow.id,
+        storage_key: floorPlanRow.storage_key,
+        alt_text: floorPlanRow.alt_text,
+      }
+    : null;
+
   const seo = (property.seo as Record<string, unknown> | null) ?? {};
 
   const initial: PropertyEditInput = {
@@ -279,10 +292,14 @@ export default async function PropertyEditPage({ params }: PageProps) {
               self={presenceSelf}
             />
           ) : null}
-          <PropertyMediaLibrary propertyId={property.id} initial={media} />
+          <PropertyMediaLibrary
+            propertyId={property.id}
+            initial={galleryMedia}
+          />
           <PropertyEditForm
             propertyId={property.id}
             initial={initial}
+            floorPlan={floorPlan}
             reference={property.reference}
             areas={areas}
             developers={developers}

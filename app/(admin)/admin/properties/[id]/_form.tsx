@@ -36,6 +36,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { setPropertyDeveloper, updateProperty } from "./_actions";
 import { LocationPicker } from "./_components/location-picker";
+import {
+  FloorPlanCard,
+  type FloorPlanItem,
+} from "./_components/floor-plan-card";
 import { AmenitiesPicker } from "./_components/amenities-picker";
 import { NewAreaDialog } from "./_components/new-area-dialog";
 import { NewDeveloperDialog } from "./_components/new-developer-dialog";
@@ -52,6 +56,11 @@ type Props = {
   developers: DeveloperOption[];
   geo: { lat: number; lng: number } | null;
   mapboxAvailable: boolean;
+  /**
+   * The listing's floor plan, if one is attached. Not part of the form values:
+   * it's a media reference persisted by its own action, like the map pin.
+   */
+  floorPlan?: FloorPlanItem | null;
   /** Amenity taxonomy, resolved server-side. */
   amenityOptions: AmenityOption[];
   /**
@@ -140,6 +149,7 @@ export function PropertyEditForm({
   developers,
   geo,
   mapboxAvailable,
+  floorPlan = null,
   amenityOptions,
   canCreateArea = false,
   canCreateDeveloper = false,
@@ -719,6 +729,11 @@ export function PropertyEditForm({
               />
             </div>
           </div>
+
+          {/* Floor plan — saves on upload, not on submit (same as the map pin
+              below), because it writes a property_media row rather than a
+              column on `properties`. */}
+          <FloorPlanCard propertyId={propertyId} initial={floorPlan} />
         </TabsContent>
 
         {/* LOCATION */}
