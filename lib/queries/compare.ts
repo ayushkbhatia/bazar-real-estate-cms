@@ -1,5 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { COMPARE_CAP } from "@/lib/compare-store";
 import type { Database } from "@/db/types";
 
 const COMPARE_FIELDS =
@@ -52,20 +53,26 @@ export type ComparableProperty = {
 };
 
 /**
- * Fetch up to 4 properties by id for the compare tool. Preserves the
- * caller's id order so cards line up with the URL.
+ * Fetch properties by id for the compare tool. Preserves the caller's id
+ * order so cards line up with the URL.
+ *
+ * `limit` defaults to the compare table's four columns, which is what every
+ * compare-side caller wants. The shortlist drawer reuses this query to
+ * hydrate its rows and passes `SHORTLIST_CAP` instead — it lists everything
+ * saved, and only a chosen subset of that goes on to the table.
  *
  * RLS: properties has a public-read policy for `status = 'published'`,
  * so anon visitors can build a comparison without signing in.
  */
 export async function getComparableProperties(
   ids: string[],
+  limit: number = COMPARE_CAP,
 ): Promise<ComparableProperty[]> {
   if (!isSupabaseConfigured || ids.length === 0) return [];
 
   const clean = Array.from(
     new Set(ids.filter((id) => /^[0-9a-f-]{36}$/i.test(id))),
-  ).slice(0, 4);
+  ).slice(0, limit);
   if (clean.length === 0) return [];
 
   const supabase = await createSupabaseServerClient();

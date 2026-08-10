@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Plus, Heart, Clock, Search } from "lucide-react";
 import {
   Sheet,
@@ -11,40 +12,110 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { COMPARE_CAP, loadCompareIds } from "@/lib/compare-store";
+import { formatAed } from "@/lib/compare";
 
 /**
  * Sprint 5b (backfilled): picker drawer for empty compare slots.
- * Three tabs — Saved, Recently viewed, Search. Today only Search is
- * wired (just a link to /buy); Sprint 9 wires Saved + Recently viewed
- * The saved / recent tabs were backed by customer accounts, which have been
- * removed; both now point people at search.
+ *
+ * Three tabs — Saved, Recently viewed, Search. Saved and Recently viewed
+ * were originally backed by customer accounts; when those were removed
+ * ([ADR-0005](docs/decisions/ADR-0005-remove-customer-accounts.md)) both were
+ * reduced to a link to /buy, and the whole component stopped being mounted
+ * anywhere.
+ *
+ * Saved is real again: the shortlist holds up to `SHORTLIST_CAP` ids in
+ * localStorage, which is exactly the list this tab always wanted. It reads
+ * them, hydrates through `/api/shortlist`, and hides anything already in the
+ * comparison. Recently viewed still has no client-side source — nothing
+ * records views since the accounts removal — so it keeps its honest empty
+ * state rather than pretending.
  */
+type SavedItem = {
+  id: string;
+  reference: string;
+  slug: string;
+  title: string;
+  price_aed: number | null;
+  beds: number;
+  baths: number;
+  area_name: string | null;
+  hero_url: string | null;
+  hero_alt: string | null;
+};
+
 export function PickerDrawer({
-  onPick,
+  requestedIds = [],
+  children,
 }: {
-  onPick?: (propertyId: string) => void;
+  /** Ids already in the comparison — excluded from Saved, and the base the
+   *  picked id is appended to. */
+  requestedIds?: string[];
+  /** Trigger override. The default is a full-size dashed panel meant to *be*
+   *  the empty slot; a caller that already draws its own dashed card passes
+   *  something compact so the two don't nest. */
+  children?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"saved" | "recent" | "search">("saved");
+  const [saved, setSaved] = useState<SavedItem[] | null>(null);
 
-  // Picker is wired to fire onPick when Sprint 9 lands the saved + recent
-  // lookups. Reference here to keep the prop in the contract.
-  void onPick;
+  // Lazy: only read localStorage and hit the API once the drawer is actually
+  // open. `saved === null` means "not fetched yet" and drives the loading
+  // line, which is why this doesn't initialise to [].
+  useEffect(() => {
+    if (!open) return;
+    const ids = loadCompareIds();
+    if (ids.length === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSaved([]);
+      return;
+    }
+    let cancelled = false;
+    fetch(`/api/shortlist?ids=${encodeURIComponent(ids.join(","))}`)
+      .then((r) => (r.ok ? r.json() : { items: [] }))
+      .then((data: { items: SavedItem[] }) => {
+        if (!cancelled) setSaved(data.items ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setSaved([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
+
+  // Anything already on the table is not worth offering again.
+  const candidates = (saved ?? []).filter(
+    (item) => !requestedIds.includes(item.id),
+  );
+  const slotsLeft = COMPARE_CAP - requestedIds.length;
+
+  /** Appending to the URL is the whole interaction — the page reads `ids`. */
+  function hrefWith(id: string): string {
+    const next = [...requestedIds, id].slice(0, COMPARE_CAP);
+    return `/tools/compare?ids=${encodeURIComponent(next.join(","))}`;
+  }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button
-          type="button"
-          className="inline-flex items-center justify-center w-full h-full min-h-[180px] rounded-lg border-2 border-dashed border-bz-border bg-bz-surface text-bz-muted hover:border-bz-border-strong hover:text-bz-ink-2 transition-colors"
-        >
-          <div className="text-center">
-            <Plus size={20} strokeWidth={1.5} className="mx-auto mb-1.5" />
-            <span className="text-[12.5px]">Add to compare</span>
-          </div>
-        </button>
+        {children ?? (
+          <button
+            type="button"
+            className="inline-flex items-center justify-center w-full h-full min-h-[180px] rounded-lg border-2 border-dashed border-bz-border bg-bz-surface text-bz-muted hover:border-bz-border-strong hover:text-bz-ink-2 transition-colors"
+          >
+            <div className="text-center">
+              <Plus size={20} strokeWidth={1.5} className="mx-auto mb-1.5" />
+              <span className="text-[12.5px]">Add to compare</span>
+            </div>
+          </button>
+        )}
       </SheetTrigger>
-      <SheetContent side="right" className="w-[400px] overflow-y-auto">
+      <SheetContent
+        side="right"
+        className="data-[side=right]:w-full sm:w-[400px] overflow-y-auto"
+      >
         <SheetHeader>
           <SheetTitle>Add to compare</SheetTitle>
         </SheetHeader>
@@ -58,6 +129,11 @@ export function PickerDrawer({
             <TabBtn active={tab === "saved"} onClick={() => setTab("saved")}>
               <Heart size={12} strokeWidth={1.7} />
               Saved
+              {candidates.length > 0 ? (
+                <span className="mono text-[10.5px] text-bz-muted">
+                  {candidates.length}
+                </span>
+              ) : null}
             </TabBtn>
             <TabBtn active={tab === "recent"} onClick={() => setTab("recent")}>
               <Clock size={12} strokeWidth={1.7} />
@@ -71,23 +147,96 @@ export function PickerDrawer({
 
           <div className="mt-6">
             {tab === "saved" ? (
-              <EmptyPanel
-                title="No saved listings yet"
-                body="Pick listings from search to bring them into compare."
-                href="/buy"
-                cta="Browse listings"
-              />
+              saved === null ? (
+                <p className="py-10 text-center text-[12.5px] text-bz-ink-2 italic">
+                  Loading your shortlist…
+                </p>
+              ) : candidates.length === 0 ? (
+                <EmptyPanel
+                  title={
+                    (saved?.length ?? 0) > 0
+                      ? "Everything saved is already here"
+                      : "No saved listings yet"
+                  }
+                  body={
+                    (saved?.length ?? 0) > 0
+                      ? "Shortlist another listing and it'll show up in this tab."
+                      : "Hit the shortlist icon on any listing card and it'll show up here."
+                  }
+                  href="/buy"
+                  cta="Browse listings"
+                />
+              ) : (
+                <>
+                  <p className="text-[11.5px] text-bz-muted">
+                    {slotsLeft === 1
+                      ? "One slot left."
+                      : `${slotsLeft} slots left.`}{" "}
+                    Pick one to add it to the comparison.
+                  </p>
+                  <ul className="mt-3 flex flex-col divide-y divide-bz-border">
+                    {candidates.map((item) => (
+                      <li key={item.id}>
+                        {/* Plain <a>, deliberately not next/link: a
+                            client-side navigation on this route leaves the
+                            re-rendered slot grid without its client
+                            components, so the *next* empty slot would come
+                            back with a dead picker and the visitor would
+                            have to reload to add a fourth. The same thing
+                            happens through the pre-existing per-card remove
+                            control, so it's the route rather than this
+                            drawer — see the hydration-error entry in
+                            docs/FOLLOWUPS.md. A full load is cheap here
+                            (the page is already `force-dynamic`) and is
+                            correct regardless of how that's resolved. */}
+                        <a
+                          href={hrefWith(item.id)}
+                          className="flex gap-3 py-3 group"
+                        >
+                          <span className="relative w-16 h-16 rounded-md overflow-hidden bg-bz-surface-2 shrink-0 block">
+                            {item.hero_url ? (
+                              <Image
+                                src={item.hero_url}
+                                alt={item.hero_alt ?? item.title}
+                                fill
+                                sizes="64px"
+                                className="object-cover"
+                              />
+                            ) : null}
+                          </span>
+                          <span className="flex-1 min-w-0 block">
+                            <span className="block text-[13px] font-medium text-bz-ink truncate group-hover:text-bz-accent transition-colors">
+                              {item.title}
+                            </span>
+                            <span className="block text-[11.5px] text-bz-ink-2 mt-0.5 truncate">
+                              {item.area_name ?? "United Arab Emirates"}
+                            </span>
+                            <span className="mt-1 flex items-baseline justify-between gap-2">
+                              <span className="mono text-[12px] text-bz-ink">
+                                {formatAed(item.price_aed)}
+                              </span>
+                              <span className="text-[11px] text-bz-ink-2">
+                                {item.beds}b · {item.baths}ba
+                              </span>
+                            </span>
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )
             ) : tab === "recent" ? (
               <EmptyPanel
                 title="Nothing viewed yet"
-                body="Listings you open will not be remembered — pick them from search instead."
+                body="Listings you open aren't remembered — shortlist them instead and they'll appear under Saved."
                 href="/buy"
                 cta="Browse listings"
               />
             ) : (
               <EmptyPanel
                 title="Search the marketplace"
-                body="Open the full search to find a listing, then hit the Compare icon on its card to add it here."
+                body="Open the full search to find a listing, then hit the shortlist icon on its card to bring it here."
                 href="/buy"
                 cta="Open search"
               />

@@ -11,8 +11,8 @@ export type FeaturedCardProps = ListingCardProps & { priceAed: number | null };
 
 /**
  * Map a curated `ListingRow` onto `ListingCard` props for the marketing
- * featured rows. Static heart (no `propertyId`) so the section needs no
- * SavedIdsProvider context.
+ * featured rows. `propertyId` is what makes the card's shortlist button
+ * appear — the store behind it is localStorage, so no provider is needed.
  *
  * `price` stays the AED string so SSR matches first paint; `priceAed` and the
  * raw ft² `area` let `ListingCardPriced` re-render both in the visitor's
@@ -20,6 +20,7 @@ export type FeaturedCardProps = ListingCardProps & { priceAed: number | null };
  */
 export function listingRowToCard(row: ListingRow): FeaturedCardProps {
   return {
+    propertyId: row.id,
     price: formatPriceAED(row.price_aed),
     priceAed: row.price_aed,
     title: row.title,

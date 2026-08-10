@@ -31,6 +31,49 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [shortlist] Two listing surfaces still can't be shortlisted.
+  The card-level shortlist button is now default-on for anything rendering
+  `ListingCard` with a `propertyId`, but two surfaces draw their own markup
+  and were left alone: the MapLibre marker popup
+  (`app/(public)/_components/map-view.tsx`, built with `setHTML()` — a
+  string, so no React button can mount without reworking it into a portal),
+  and the concierge chat result card
+  (`app/(public)/concierge/_components/inline-card.tsx`, which is
+  text-only, carries no property id, and is deliberately two lines tall).
+  "Done" is either both wired up or a decision recorded that they stay out.
+
+- [compare] `/tools/compare` breaks its own client components on soft nav.
+  Two symptoms, near-certainly one cause. (1) The route throws "Hydration
+  failed because the server rendered HTML didn't match the client" on a
+  plain `?ids=<two published ids>` load. (2) After any *client-side*
+  navigation within the route, client components inside the re-rendered
+  slot grid never mount — the server-rendered markup around them is fine
+  (the dashed empty-slot card and its text render), but the interactive
+  child is absent from the DOM while still present in the RSC payload.
+  Reproduce (2) without any of the shortlist work by clicking a per-card
+  remove control: the slot count updates and the picker trigger vanishes.
+  Neither is from this branch — both reproduce with the picker changes
+  stashed. The picker sidesteps it by navigating with a plain `<a>`
+  (see the comment in `picker-drawer.tsx`); that workaround should come out
+  once this is fixed. "Done" is a clean console plus client components
+  surviving a soft nav on that route.
+
+- [shortlist] "Recently viewed" in the compare picker has no source.
+  `app/(public)/tools/compare/_components/picker-drawer.tsx` — the Saved tab
+  now reads the real shortlist, but nothing in the app records views since
+  customer accounts were removed
+  ([ADR-0005](docs/decisions/ADR-0005-remove-customer-accounts.md)), so that
+  tab keeps an honest empty state next to a working one. Either give it a
+  localStorage-backed source or drop the tab; leaving a permanently-empty
+  tab beside a live one is the worst of the three.
+
+- [shortlist] Eviction at `SHORTLIST_CAP` is still silent.
+  `components/brand/compare-button.tsx` drops the oldest id when you save
+  past the cap (`next = [...ids.slice(1), propertyId]`) with no toast and no
+  visible change on the card that fell out. Much harder to reach now the cap
+  is 25 rather than 4, so this is a polish item, not the correctness problem
+  it was — but a visitor who does hit it still gets no explanation.
+
 - [developments] Click-test the units & floor plans admin card.
   `app/(admin)/admin/pages/sub/development/[slug]/_unit-plans-card.tsx` (~450
   lines) shipped in #263 without ever being exercised in a browser — the

@@ -4,15 +4,20 @@ import { useEffect, useState } from "react";
 import { Scale, Check } from "lucide-react";
 import {
   COMPARE_STORAGE_KEY,
-  COMPARE_CAP,
+  SHORTLIST_CAP,
   loadCompareIds,
   saveCompareIds,
 } from "@/lib/compare-store";
 
 /**
- * Sprint 4b: "Add to compare" button rendered on every listing card.
- * Stores the comparison set in localStorage so the user can build it up
- * across pages, then click into /tools/compare?ids=… to view side-by-side.
+ * Sprint 4b: shortlist button rendered on every listing card. Stores the
+ * saved set in localStorage so the visitor can build it up across pages,
+ * then works through it in the shortlist drawer — where they pick which
+ * ones go to /tools/compare?ids=… side-by-side.
+ *
+ * Bounded by `SHORTLIST_CAP`, not `COMPARE_CAP`: this button saves, it
+ * doesn't fill compare slots. It used to enforce the compare limit of 4,
+ * which made a fifth save silently evict the first.
  *
  * No server state — Sprint 8 adds a `comparisons` table; Sprint 9 syncs
  * the localStorage set into it for cross-device persistence.
@@ -58,7 +63,7 @@ export function CompareButton({ propertyId }: { propertyId: string }) {
     if (ids.includes(propertyId)) {
       next = ids.filter((id) => id !== propertyId);
     } else {
-      if (ids.length >= COMPARE_CAP) {
+      if (ids.length >= SHORTLIST_CAP) {
         // Replace the oldest to respect cap.
         next = [...ids.slice(1), propertyId];
       } else {
@@ -74,11 +79,11 @@ export function CompareButton({ propertyId }: { propertyId: string }) {
     <button
       type="button"
       onClick={toggle}
-      aria-label={active ? "Remove from compare" : "Add to compare"}
+      aria-label={active ? "Remove from shortlist" : "Save to shortlist"}
       title={
         active
-          ? `Remove from compare (${count}/${COMPARE_CAP})`
-          : `Add to compare (${count}/${COMPARE_CAP})`
+          ? `Remove from shortlist (${count}/${SHORTLIST_CAP})`
+          : `Save to shortlist (${count}/${SHORTLIST_CAP})`
       }
       className={
         active

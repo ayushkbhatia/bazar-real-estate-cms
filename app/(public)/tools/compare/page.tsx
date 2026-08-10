@@ -19,6 +19,7 @@ import { propertyUrl } from "@/lib/queries/property-utils";
 import { mediaPublicUrl } from "@/lib/media";
 import { SnapRail } from "@/components/brand/mobile";
 import { CompareToolbar } from "./compare-toolbar";
+import { PickerDrawer } from "./_components/picker-drawer";
 import { InvestmentMetrics } from "./_components/investment-metrics";
 import { VerdictBand } from "./_components/verdict-band";
 
@@ -401,11 +402,23 @@ function EmptySlot({
       <p className="text-[11px] text-center max-w-[160px]">
         {isUnresolved
           ? "It may be off-market or no longer published."
-          : "Pull from saved, search, or paste a Bazar link"}
+          : "Pull one in from your shortlist, or go find another"}
       </p>
-      <Button asChild variant="outline" size="sm" className="mt-2">
-        <Link href="/buy">Browse</Link>
-      </Button>
+      {/* An unresolved slot already holds an id, so there's nothing to add
+          into — only the genuinely empty ones get the picker. */}
+      {isUnresolved ? (
+        <Button asChild variant="outline" size="sm" className="mt-2">
+          <Link href="/buy">Browse</Link>
+        </Button>
+      ) : (
+        <div className="mt-2">
+          <PickerDrawer requestedIds={requestedIds}>
+            <Button variant="outline" size="sm">
+              Add from shortlist
+            </Button>
+          </PickerDrawer>
+        </div>
+      )}
     </article>
   );
 }
