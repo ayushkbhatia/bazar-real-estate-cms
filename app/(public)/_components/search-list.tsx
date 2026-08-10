@@ -324,7 +324,6 @@ export async function SearchList({
                     priority={index < 2}
                     propertyId={row.id}
                     verified={Boolean((row.flags as Record<string, unknown> | null)?.verified)}
-                    compareEnabled
                   />
                 </Link>
               );
@@ -360,7 +359,6 @@ export async function SearchList({
                       priority={priority}
                       propertyId={row.id}
                       verified={Boolean((row.flags as Record<string, unknown> | null)?.verified)}
-                      compareEnabled
                     />
                   </Link>
                 );

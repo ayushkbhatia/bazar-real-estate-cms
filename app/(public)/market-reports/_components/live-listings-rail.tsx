@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
+import { CompareButton } from "@/components/brand/compare-button";
 import { Button } from "@/components/ui/button";
 import {
   formatPrice,
@@ -85,6 +86,12 @@ export function LiveListingsRail({
                       className="absolute inset-0 w-full h-full"
                     />
                   )}
+                  {/* This rail predates `ListingCard` and draws its own
+                      media, so it doesn't inherit the card's shortlist
+                      button — mount it explicitly, same position. */}
+                  <div className="absolute top-3 right-3 z-10">
+                    <CompareButton propertyId={r.id} />
+                  </div>
                 </div>
                 <div className="p-4">
                   <div className="serif text-[18px] leading-tight truncate group-hover:text-bz-accent transition-colors">

@@ -31,6 +31,25 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [shortlist] Two listing surfaces still can't be shortlisted.
+  The card-level shortlist button is now default-on for anything rendering
+  `ListingCard` with a `propertyId`, but two surfaces draw their own markup
+  and were left alone: the MapLibre marker popup
+  (`app/(public)/_components/map-view.tsx`, built with `setHTML()` — a
+  string, so no React button can mount without reworking it into a portal),
+  and the concierge chat result card
+  (`app/(public)/concierge/_components/inline-card.tsx`, which is
+  text-only, carries no property id, and is deliberately two lines tall).
+  "Done" is either both wired up or a decision recorded that they stay out.
+
+- [shortlist] `COMPARE_CAP` is 4 and eviction is silent.
+  `components/brand/compare-button.tsx` drops the oldest id when you save a
+  5th (`next = [...ids.slice(1), propertyId]`) with no toast and no visible
+  change on the card that just fell out. Tolerable when the button lived
+  only on search results; now that it's on every card the ceiling gets hit
+  far sooner. Either raise the shortlist cap and keep 4 as a compare-only
+  slice, or tell the user what happened.
+
 - [developments] Click-test the units & floor plans admin card.
   `app/(admin)/admin/pages/sub/development/[slug]/_unit-plans-card.tsx` (~450
   lines) shipped in #263 without ever being exercised in a browser — the

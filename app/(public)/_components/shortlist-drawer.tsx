@@ -181,13 +181,28 @@ export function ShortlistDrawer() {
         <button
           type="button"
           aria-label={`Shortlist (${ids.length})`}
-          className="fixed left-4 bottom-6 z-40 hidden md:inline-flex items-center gap-2 h-11 px-4 rounded-full bg-bz-ink text-bz-bg shadow-lg hover:bg-bz-ink/90 text-[13px]"
+          // Mobile sits above the floating-CTA dock (which is fixed to
+          // bottom-0 and ~64px tall over the safe-area inset), so the two
+          // don't overlap. Desktop keeps the original bottom-left corner,
+          // opposite the desktop CTA column at bottom-right.
+          className="fixed left-3 md:left-4 bottom-[calc(var(--bz-bar-safe)+64px)] md:bottom-6 z-40 inline-flex items-center gap-2 h-11 px-4 rounded-full bg-bz-ink text-bz-bg shadow-lg hover:bg-bz-ink/90 text-[13px]"
         >
           <Scale size={14} strokeWidth={1.8} />
           <span>Shortlist · {ids.length}</span>
         </button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-full sm:max-w-md p-0 flex flex-col">
+      {/* `data-[side=left]:w-full` rather than a bare `w-full`: the sheet
+          primitive sets its width through `data-[side=left]:w-3/4`, and an
+          attribute-qualified selector outranks a plain class, so a plain
+          `w-full` loses and the panel renders three-quarter width with the
+          page showing through beside it. Matching the modifier both wins on
+          specificity and lets tailwind-merge drop the base. Desktop width is
+          unaffected — the primitive's `data-[side=left]:sm:max-w-sm` caps it
+          there, and outranks anything unqualified we'd add here. */}
+      <SheetContent
+        side="left"
+        className="data-[side=left]:w-full p-0 flex flex-col"
+      >
         <SheetHeader className="px-6 pt-6 pb-3 border-b border-bz-border">
           <SheetTitle className="serif text-[24px] leading-tight">
             Your shortlist

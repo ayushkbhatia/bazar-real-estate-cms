@@ -646,7 +646,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                   }
                   heroAlt={row.hero?.alt_text ?? row.title}
                   propertyId={row.id}
-                  compareEnabled
                 />
               </Link>
             ))}

@@ -35,12 +35,19 @@ export type ListingCardProps = {
   heroSrc?: string | null;
   /** Alt text for the hero image (filename, alt_text, or human label). */
   heroAlt?: string;
-  /** Identifies the listing for the compare tool. */
+  /** Identifies the listing for the shortlist/compare set. Passing this is
+   *  all a surface needs to do — the shortlist button renders itself. */
   propertyId?: string;
   /** Sprint 4b: surfaces a Bazar-Verified badge in the bottom-left of media. */
   verified?: boolean;
-  /** Sprint 4b: render an "Add to compare" button on the media. */
-  compareEnabled?: boolean;
+  /**
+   * Shortlist ("Add to compare") button on the media. Defaults to **on**
+   * wherever `propertyId` is set, so every listing surface — existing or
+   * added later — carries it without opting in. Pass `false` only for a
+   * surface where saving makes no sense (e.g. the compare table's own
+   * cards, which already have their own remove control).
+   */
+  shortlistEnabled?: boolean;
   /** Sprint 4b: top-right corner status pill — price-drop, just-listed, etc. */
   diff?: ListingCardDiff;
   /** Hint Next/Image to preload this hero — pass true for the first card
@@ -70,7 +77,7 @@ function Media({
   priority,
   propertyId,
   verified,
-  compareEnabled,
+  shortlistEnabled = true,
   diff,
 }: {
   imgLabel?: string;
@@ -83,7 +90,7 @@ function Media({
   priority?: boolean;
   propertyId?: string;
   verified?: boolean;
-  compareEnabled?: boolean;
+  shortlistEnabled?: boolean;
   diff?: ListingCardDiff;
 }) {
   const aspectClass = cn(
@@ -127,17 +134,19 @@ function Media({
         </div>
       ) : null}
 
-      {/* Right column: compare button */}
-      <div
-        className={cn(
-          "absolute right-3 z-10 flex flex-col gap-2",
-          diff ? "top-[48px]" : "top-3",
-        )}
-      >
-        {compareEnabled && propertyId ? (
+      {/* Right column: shortlist button. Rendered on every card that knows
+          its property id — no per-surface opt-in, so a page added later
+          inherits it. */}
+      {shortlistEnabled && propertyId ? (
+        <div
+          className={cn(
+            "absolute right-3 z-10 flex flex-col gap-2",
+            diff ? "top-[48px]" : "top-3",
+          )}
+        >
           <CompareButton propertyId={propertyId} />
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
       {/* Bottom-left: Bazar Verified pill */}
       {verified ? (
@@ -194,7 +203,7 @@ export function ListingCard({
   heroAlt,
   propertyId,
   verified,
-  compareEnabled,
+  shortlistEnabled,
   diff,
   priority,
   variant = "default",
@@ -215,7 +224,7 @@ export function ListingCard({
             priority={priority}
             propertyId={propertyId}
             verified={verified}
-            compareEnabled={compareEnabled}
+            shortlistEnabled={shortlistEnabled}
             diff={diff}
           />
         </div>
@@ -259,7 +268,7 @@ export function ListingCard({
             priority={priority}
             propertyId={propertyId}
             verified={verified}
-            compareEnabled={compareEnabled}
+            shortlistEnabled={shortlistEnabled}
             diff={diff}
           />
         </div>
@@ -306,7 +315,7 @@ export function ListingCard({
         heroAlt={heroAlt}
         propertyId={propertyId}
         verified={verified}
-        compareEnabled={compareEnabled}
+        shortlistEnabled={shortlistEnabled}
         diff={diff}
       />
       <div className="p-4 flex flex-col gap-2 flex-1">
