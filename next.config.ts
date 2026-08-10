@@ -21,6 +21,14 @@ const nextConfig: NextConfig = {
           },
         ]
       : [],
+    // How long the optimizer keeps an optimized variant before going back to
+    // Supabase Storage for the original. Every one of those refetches is
+    // billed as Supabase Cached Egress (Smart CDN), and the originals in the
+    // `media` bucket average ~1.4 MB, so a short TTL is expensive: the org
+    // blew its 5 GB/cycle cached-egress quota on the free plan. 31 days is
+    // safe because the URL contains the storage object path — replacing an
+    // asset means a new path, which misses the cache and re-optimizes.
+    minimumCacheTTL: 2678400,
   },
   experimental: {
     serverActions: {
