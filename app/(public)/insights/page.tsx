@@ -28,6 +28,18 @@ export const metadata: Metadata = {
 
 const PAGE_SIZE = 24;
 
+/**
+ * Column count follows the viewport rather than a fixed breakpoint ladder:
+ * one card per 280px track, so a wide monitor gets more cards instead of wider
+ * ones and there is no width at which the grid stops filling the page. The
+ * 280px floor is chosen to reproduce the old 1/2/3-column ladder at its
+ * breakpoints (2-up from 640, 3-up from 1024) and keep going past it.
+ * `min(280px, 100%)` stops a track outgrowing its container on a narrow phone,
+ * which would otherwise push the grid wider than the viewport.
+ */
+const ARTICLE_GRID_COLUMNS =
+  "grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))]";
+
 type PageProps = {
   searchParams: Promise<{ category?: string }>;
 };
@@ -115,10 +127,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
 
   const nodes: Record<string, React.ReactNode> = {
     hero: (
-      <section
-        key="hero"
-        className="px-4 md:px-12 pt-12 md:pt-20 pb-14 max-w-[1200px]"
-      >
+      <section key="hero" className="px-4 md:px-12 pt-12 md:pt-20 pb-14">
         <Eyebrow>{str(heroV, "eyebrow") ?? "Insights"}</Eyebrow>
         <h1
           className="serif text-[42px] md:text-[80px] mt-3 font-normal"
@@ -134,17 +143,29 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
     ),
 
     featured: featured ? (
-      <section key="featured" className="px-4 md:px-12 pb-14 max-w-[1280px]">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 items-start">
+      <section key="featured" className="px-4 md:px-12 pb-14">
+        {/* Past xl the subscribe rail stops growing so the lead article — not
+            the newsletter box — absorbs the extra width on a wide monitor. At
+            lg there is no spare width to absorb, and capping the rail there
+            would flatten the 1.4:1 split into two near-equal columns. */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,440px)] gap-10 items-start">
           <Link
             href={articleUrl(featured)}
             className="group block"
             aria-label={featured.title}
           >
-            <div className="relative aspect-[16/10] rounded-lg overflow-hidden bg-bz-surface-2">
+            {/* The lead column keeps all the width the aside doesn't take, so
+                the image flattens as it widens — at 16:10 a full-width lead on
+                a large monitor would push the headline off the first screen.
+                Past 2xl the ratio stops being the right control (a 2560px
+                column is 850px tall even at 21:9), so height is capped against
+                the viewport instead and the crop just gets wider. Note the
+                ratio has to be dropped to do that: `aspect-ratio` plus a height
+                clamp shrinks the *width* to match and leaves a gap beside it. */}
+            <div className="relative aspect-[16/10] lg:aspect-[2/1] xl:aspect-[21/9] 2xl:aspect-auto 2xl:h-[min(52vh,640px)] rounded-lg overflow-hidden bg-bz-surface-2">
               <ArticleHero
                 row={featured}
-                sizes="(min-width: 1024px) 720px, 100vw"
+                sizes="(min-width: 1280px) calc(100vw - 576px), (min-width: 1024px) 58vw, 100vw"
               />
             </div>
             <div className="mt-5">
@@ -211,7 +232,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
         key="categories"
         className="px-4 md:px-12 py-6 border-t border-bz-border"
       >
-        <div className="flex gap-2 flex-wrap max-w-[1280px]">
+        <div className="flex gap-2 flex-wrap">
           <Link
             href="/insights"
             className={cn(
@@ -247,10 +268,7 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
     ),
 
     articles: (
-      <section
-        key="articles"
-        className="px-4 md:px-12 pt-12 pb-24 max-w-[1280px]"
-      >
+      <section key="articles" className="px-4 md:px-12 pt-12 pb-24">
         {rest.length === 0 && !featured ? (
           <div className="py-24 text-center max-w-[40ch] mx-auto">
             <p className="text-[15px] text-bz-ink-2">
@@ -269,14 +287,14 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
             ) : null}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-9 gap-y-14">
+          <div className={cn("grid gap-9 gap-y-14", ARTICLE_GRID_COLUMNS)}>
             {rest.map((row) => (
               <article key={row.id} className="group">
                 <Link href={articleUrl(row)} className="block">
                   <div className="relative aspect-[4/3] rounded overflow-hidden bg-bz-surface-2">
                     <ArticleHero
                       row={row}
-                      sizes="(min-width: 1280px) 380px, (min-width: 768px) 33vw, 100vw"
+                      sizes="(min-width: 640px) 400px, 100vw"
                     />
                   </div>
                   <div className="eyebrow mt-3.5">
