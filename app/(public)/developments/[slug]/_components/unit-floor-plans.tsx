@@ -6,6 +6,12 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import type { UnitTypeCard } from "@/lib/queries/development-unit-plans";
 import { FloorplanGate } from "./floorplan-gate";
+import {
+  formatArea,
+  formatAreaRange,
+  usePreferences,
+} from "@/lib/preferences";
+import type { AreaUnit } from "@/lib/preferences";
 
 /**
  * Units and their layouts — the row of unit-type buttons above the map.
@@ -38,9 +44,11 @@ export function UnitFloorPlans({
   eyebrow: string | null;
 }) {
   const [activeId, setActiveId] = useState(types[0]?.id ?? null);
+  const { prefs } = usePreferences();
   if (types.length === 0) return null;
 
   const active = types.find((t) => t.id === activeId) ?? types[0]!;
+  const summary = summaryLine(active, prefs.area_unit);
 
   return (
     <div className="px-4 md:px-12 py-16">
@@ -92,17 +100,15 @@ export function UnitFloorPlans({
         aria-labelledby={`unit-tab-${active.id}`}
         className="mt-7"
       >
-        {active.blurb || summaryLine(active) ? (
+        {active.blurb || summary ? (
           <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2 mb-6">
             {active.blurb ? (
               <p className="text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[62ch]">
                 {active.blurb}
               </p>
             ) : null}
-            {summaryLine(active) ? (
-              <span className="mono text-[12px] text-bz-muted">
-                {summaryLine(active)}
-              </span>
+            {summary ? (
+              <span className="mono text-[12px] text-bz-muted">{summary}</span>
             ) : null}
           </div>
         ) : null}
@@ -155,7 +161,7 @@ export function UnitFloorPlans({
                 <div className="mt-3">
                   <div className="text-[14px] font-medium">{plan.label}</div>
                   <div className="text-[11.5px] text-bz-ink-2 mono mt-0.5">
-                    {planStats(plan)}
+                    {planStats(plan, prefs.area_unit)}
                   </div>
                 </div>
                 {plan.description ? (
@@ -172,30 +178,31 @@ export function UnitFloorPlans({
   );
 }
 
-/** "1,240 – 1,480 ft² · from AED 2,400,000", dropping whatever isn't set. */
-function summaryLine(type: UnitTypeCard): string | null {
+/** "1,240 – 1,480 ft² · from AED 2,400,000", dropping whatever isn't set.
+ *  Sizes render in the visitor's area unit; the price stays AED because the
+ *  rest of this section quotes AED and mixing the two here reads as a typo. */
+function summaryLine(type: UnitTypeCard, unit: AreaUnit): string | null {
   const parts: string[] = [];
-  const { size_from_ft2: from, size_to_ft2: to } = type;
-  if (from != null && to != null && from !== to) {
-    parts.push(`${from.toLocaleString()} – ${to.toLocaleString()} ft²`);
-  } else if (from != null || to != null) {
-    parts.push(`${(from ?? to)!.toLocaleString()} ft²`);
-  }
+  const size = formatAreaRange(type.size_from_ft2, type.size_to_ft2, unit);
+  if (size) parts.push(size);
   if (type.price_from_aed != null) {
     parts.push(`from AED ${type.price_from_aed.toLocaleString()}`);
   }
   return parts.length ? parts.join(" · ") : null;
 }
 
-function planStats(plan: {
-  beds: number | null;
-  baths: number | null;
-  area_ft2: number | null;
-}): string {
+function planStats(
+  plan: {
+    beds: number | null;
+    baths: number | null;
+    area_ft2: number | null;
+  },
+  unit: AreaUnit,
+): string {
   const parts: string[] = [];
   if (plan.beds != null) parts.push(plan.beds === 0 ? "Studio" : `${plan.beds} bed`);
   if (plan.baths != null) parts.push(`${plan.baths} bath`);
-  if (plan.area_ft2 != null) parts.push(`${plan.area_ft2.toLocaleString()} ft²`);
+  if (plan.area_ft2 != null) parts.push(formatArea(plan.area_ft2, unit));
   return parts.length ? parts.join(" · ") : "—";
 }
 

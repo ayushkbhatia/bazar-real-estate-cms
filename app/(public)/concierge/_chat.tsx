@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import type { ConciergeBrief, BriefChip } from "@/lib/concierge/brief";
 import { formatBriefForWhatsApp } from "@/lib/concierge/handoff";
 import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
+import { formatArea, usePreferences } from "@/lib/preferences";
 
 type UiMessage = {
   id: string;
@@ -519,6 +520,7 @@ function ResultCard({
   score?: Score;
 }) {
   const value = score?.score ?? null;
+  const { prefs } = usePreferences();
   return (
     <div className="rounded-lg border border-bz-border bg-bz-surface p-4">
       <div className="flex gap-3 items-start">
@@ -532,7 +534,7 @@ function ResultCard({
               <div className="text-[11.5px] text-bz-muted mt-0.5 truncate">
                 {formatAed(property.price_aed)} · {property.beds} bd ·{" "}
                 {property.built_up_ft2
-                  ? `${property.built_up_ft2} ft²`
+                  ? formatArea(property.built_up_ft2, prefs.area_unit)
                   : property.type}
               </div>
               <div className="text-[11px] text-bz-muted mt-1">

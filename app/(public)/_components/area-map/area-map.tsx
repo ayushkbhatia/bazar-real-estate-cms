@@ -41,6 +41,11 @@ import {
 } from "lucide-react";
 import type { AreaPin, AreaDot } from "@/lib/queries/area-map";
 import { pastelMapStyle } from "../map-style";
+import {
+  areaUnitLabel,
+  formatPricePerArea,
+  usePreferences,
+} from "@/lib/preferences";
 
 // City overviews — where the camera sits per emirate (matches the handoff).
 const CITIES: Record<
@@ -526,10 +531,12 @@ function Flyout({
   onClose: () => void;
   onZoomToListings: () => void;
 }) {
+  const { prefs } = usePreferences();
   const emirateLabel = CITIES[area.emirate]?.label ?? "Abu Dhabi";
+  // Stored AED/ft²; shown in the visitor's currency per their area unit.
   const median =
     area.medianPerFt2 != null
-      ? `AED ${area.medianPerFt2.toLocaleString("en-US")}`
+      ? formatPricePerArea(area.medianPerFt2, prefs).replace(/\/(ft²|m²)$/, "")
       : "—";
   const yoy =
     area.yoyChange != null
@@ -539,7 +546,7 @@ function Flyout({
     countNoun.plural.charAt(0).toUpperCase() + countNoun.plural.slice(1);
   const stats: [string, string][] = [
     [String(area.count), countLabel],
-    [median, "Median /ft²"],
+    [median, `Median /${areaUnitLabel(prefs.area_unit)}`],
     [yoy, "YoY"],
   ];
 

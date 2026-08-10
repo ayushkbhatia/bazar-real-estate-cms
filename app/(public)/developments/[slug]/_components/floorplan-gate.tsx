@@ -32,6 +32,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { mediaPublicUrl } from "@/lib/media";
+import { formatArea, usePreferences } from "@/lib/preferences";
 
 type Props = {
   developmentName: string;
@@ -50,6 +51,7 @@ type Props = {
 };
 
 export function FloorplanGate({ developmentName, developmentSlug, plan }: Props) {
+  const { prefs } = usePreferences();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -202,7 +204,7 @@ export function FloorplanGate({ developmentName, developmentSlug, plan }: Props)
         <div>
           <div className="text-[14px] font-medium">{plan.label}</div>
           <div className="text-[11.5px] text-bz-ink-2">
-            {plan.area_ft2 ? `${plan.area_ft2.toLocaleString()} ft²` : "—"}
+            {formatArea(plan.area_ft2, prefs.area_unit)}
           </div>
         </div>
       </div>

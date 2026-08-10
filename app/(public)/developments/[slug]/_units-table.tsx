@@ -8,6 +8,7 @@ import {
   type DevelopmentUnit,
   type UnitFilter,
 } from "@/lib/queries/development-utils";
+import { AreaText } from "../../_components/area-text";
 
 function formatAed(n: number | null): string {
   if (n == null) return "—";
@@ -82,10 +83,10 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
                   <td className="px-4 py-3 font-medium">{u.unit_type}</td>
                   <td className="px-2 py-3">{u.beds ?? "—"}</td>
                   <td className="px-2 py-3 mono">
-                    {u.built_up_ft2 ? `${u.built_up_ft2.toLocaleString()} ft²` : "—"}
+                    <AreaText ft2={u.built_up_ft2} />
                   </td>
                   <td className="px-2 py-3 mono">
-                    {u.plot_ft2 ? `${u.plot_ft2.toLocaleString()} ft²` : "—"}
+                    <AreaText ft2={u.plot_ft2} />
                   </td>
                   <td className="px-2 py-3">{u.lagoon_access ?? "—"}</td>
                   <td className="px-2 py-3">{u.orientation ?? "—"}</td>

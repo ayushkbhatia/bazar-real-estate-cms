@@ -18,12 +18,27 @@ export {
   type Preferences,
 } from "./types";
 
-export { getRate, convertFromAed } from "./rates";
+export {
+  getRate,
+  convertFromAed,
+  setLiveRates,
+  resetLiveRates,
+  AED_PER_USD,
+  USD_PER_AED,
+  STATIC_RATES,
+  type FxRates,
+} from "./rates";
 export {
   formatPrice,
   formatPricePerArea,
   formatArea,
+  formatAreaValue,
+  formatAreaRange,
+  areaUnitLabel,
+  convertArea,
+  toFt2,
   currencySymbol,
+  FT2_PER_M2,
 } from "./formatters";
 
 export { PreferencesProvider, usePreferences } from "./provider";

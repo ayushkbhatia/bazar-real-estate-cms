@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ListingCard, type ListingCardProps } from "@/components/brand/listing-card";
+import type { ListingCardProps } from "@/components/brand/listing-card";
+import { ListingCardPriced } from "../listing-card-priced";
 import { SectionHead } from "./section-head";
 
 type Props = {
@@ -9,7 +10,9 @@ type Props = {
   title: React.ReactNode;
   ctaLabel?: string;
   ctaHref?: string;
-  items: ListingCardProps[];
+  /** `priceAed` is optional so older call sites still compile; without it the
+   *  card falls back to the server-rendered AED string. */
+  items: (ListingCardProps & { priceAed?: number | null })[];
 };
 
 /**
@@ -42,10 +45,10 @@ export function FeaturedListings({
         {items.map((p, i) =>
           p.href ? (
             <Link key={p.href} href={p.href} className="block">
-              <ListingCard {...p} priority={i === 0} />
+              <ListingCardPriced {...p} priority={i === 0} />
             </Link>
           ) : (
-            <ListingCard key={i} {...p} priority={i === 0} />
+            <ListingCardPriced key={i} {...p} priority={i === 0} />
           ),
         )}
       </div>

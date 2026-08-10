@@ -13,6 +13,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useSyncExternalStore,
 } from "react";
@@ -22,6 +23,7 @@ import {
   type Currency,
   type Preferences,
 } from "./types";
+import { setLiveRates } from "./rates";
 import { PREFS_COOKIE, PREFS_COOKIE_MAX_AGE, encodePrefs, decodePrefs } from "./cookie";
 
 type Ctx = {
@@ -111,6 +113,33 @@ function subscribe(callback: () => void): () => void {
   };
 }
 
+/**
+ * Pull the live EUR rate once per page load and push it into the rates
+ * module, then nudge subscribers so anything already rendered with the
+ * static fallback re-formats.
+ *
+ * Module-level so it runs at most once per document even though the
+ * provider can in principle mount more than once (dual-tree chrome). The
+ * fetch is cheap and heavily cached, but a double-mount refetch would show
+ * up in the network panel and invite a bug report.
+ */
+let fxRequested = false;
+
+async function loadFxRates(onLoaded: () => void) {
+  if (fxRequested) return;
+  fxRequested = true;
+  try {
+    const res = await fetch("/api/fx");
+    if (!res.ok) return;
+    const body: { rates?: Record<string, number> } = await res.json();
+    if (!body?.rates) return;
+    setLiveRates(body.rates);
+    onLoaded();
+  } catch {
+    // Offline or blocked — STATIC_RATES already covers this.
+  }
+}
+
 export function PreferencesProvider({
   children,
 }: {
@@ -125,6 +154,10 @@ export function PreferencesProvider({
     readClientPrefs,
     getServerSnapshot,
   );
+
+  useEffect(() => {
+    void loadFxRates(notifySubscribers);
+  }, []);
 
   const setPrefs = useCallback((patch: Partial<Preferences>) => {
     const current = readClientPrefs();

@@ -624,3 +624,23 @@ shows the trail.)
   (fresh checkout), so this only bites locally. Adding `.claude/**` to both
   ignore lists is the fix; left alone here because other sessions are actively
   working in those trees.
+
+- [prefs] `NEXT_PUBLIC_FX_USD_PER_AED` is declared but no longer read.
+  ADR-0006 made the USD rate an exact constant (`1 / 3.6725`) because the AED
+  is pegged — an env override for a peg is the wrong knob. `usdPerAed()` and
+  the schema entry still sit in `lib/env.ts`, a shared file, so removal was
+  left for whoever is next in there. Drop both plus the `.env.example` line.
+
+- [prefs] Admin CMS and the PDF exports still hard-code ft².
+  The public marketplace now honours the ft²/m² toggle end to end, but the
+  admin property editor, valuations screens, and unit-plans card render ft²
+  regardless. That is arguably right for staff — the schema unit is ft² and an
+  editor typing into a field wants to know which unit it stores — but it should
+  be a decision rather than an oversight. Same for `lib/pdf/valuation-pdf.tsx`
+  and `lib/pdf/compare-pdf.tsx`, which take no `prefs`.
+
+- [prefs] `/tools/valuation` and `/tools/mortgage` price in AED only.
+  Both wizards format with their own local `formatAed`, so the currency
+  preference does nothing there. The valuation wizard also collects built-up
+  area in ft² with a fixed label. Converting the input needs care: the estimate
+  model is calibrated in AED/ft², so only the display layer should move.

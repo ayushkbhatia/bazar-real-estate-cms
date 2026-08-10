@@ -6,14 +6,22 @@ import {
 } from "@/lib/queries/properties";
 import type { ListingCardProps } from "@/components/brand/listing-card";
 
+/** `ListingCardProps` plus the raw AED price the client wrapper re-formats. */
+export type FeaturedCardProps = ListingCardProps & { priceAed: number | null };
+
 /**
  * Map a curated `ListingRow` onto `ListingCard` props for the marketing
  * featured rows. Static heart (no `propertyId`) so the section needs no
  * SavedIdsProvider context.
+ *
+ * `price` stays the AED string so SSR matches first paint; `priceAed` and the
+ * raw ft² `area` let `ListingCardPriced` re-render both in the visitor's
+ * chosen currency and area unit after hydration.
  */
-export function listingRowToCard(row: ListingRow): ListingCardProps {
+export function listingRowToCard(row: ListingRow): FeaturedCardProps {
   return {
     price: formatPriceAED(row.price_aed),
+    priceAed: row.price_aed,
     title: row.title,
     location: row.areas?.name ?? "United Arab Emirates",
     beds: row.beds,

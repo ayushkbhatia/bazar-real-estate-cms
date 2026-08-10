@@ -15,6 +15,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { TENURES, FURNISHINGS } from "@/lib/filters/property";
+import {
+  areaUnitLabel,
+  convertArea,
+  toFt2,
+  usePreferences,
+  type AreaUnit,
+} from "@/lib/preferences";
 
 /**
  * Facet options come from the shared amenity taxonomy rather than a list
@@ -28,15 +35,38 @@ import { TENURES, FURNISHINGS } from "@/lib/filters/property";
  */
 const AMENITIES = toOptions().map((o) => o.label);
 
+/**
+ * The `ft2_min` / `ft2_max` query params are always ft² — a shared search URL
+ * has to mean the same thing whatever unit the recipient prefers. These two
+ * convert only at the input boundary, and round to whole units so a value
+ * typed in m² doesn't come back as 114.99999.
+ */
+function ft2ParamToInput(raw: string, unit: AreaUnit): string {
+  if (!raw) return "";
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return "";
+  return String(Math.round(convertArea(n, unit)));
+}
+
+function inputToFt2Param(raw: string, unit: AreaUnit): string {
+  if (!raw) return "";
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return "";
+  return String(Math.round(toFt2(n, unit)));
+}
+
 export function MoreFiltersDrawer() {
   const router = useRouter();
   const sp = useSearchParams();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
+  const { prefs } = usePreferences();
+  const unit = prefs.area_unit;
+
   const initial = {
-    ft2_min: sp.get("ft2_min") ?? "",
-    ft2_max: sp.get("ft2_max") ?? "",
+    ft2_min: ft2ParamToInput(sp.get("ft2_min") ?? "", unit),
+    ft2_max: ft2ParamToInput(sp.get("ft2_max") ?? "", unit),
     year_min: sp.get("year_min") ?? "",
     year_max: sp.get("year_max") ?? "",
     tenure: sp.get("tenure") ?? "",
@@ -67,8 +97,8 @@ export function MoreFiltersDrawer() {
       if (v) params.set(k, v);
       else params.delete(k);
     }
-    setOrDelete("ft2_min", state.ft2_min);
-    setOrDelete("ft2_max", state.ft2_max);
+    setOrDelete("ft2_min", inputToFt2Param(state.ft2_min, unit));
+    setOrDelete("ft2_max", inputToFt2Param(state.ft2_max, unit));
     setOrDelete("year_min", state.year_min);
     setOrDelete("year_max", state.year_max);
     setOrDelete("tenure", state.tenure);
@@ -129,9 +159,9 @@ export function MoreFiltersDrawer() {
         </SheetHeader>
 
         <div className="px-6 py-4 flex flex-col gap-6">
-          {/* Area ft² */}
+          {/* Area — labelled in the visitor's unit, stored as ft² */}
           <div>
-            <Label>Area (ft²)</Label>
+            <Label>Area ({areaUnitLabel(unit)})</Label>
             <div className="grid grid-cols-2 gap-3 mt-1.5">
               <Input
                 type="number"
