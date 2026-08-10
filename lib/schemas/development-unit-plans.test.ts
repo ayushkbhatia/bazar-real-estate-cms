@@ -36,7 +36,8 @@ describe("deriveUnitTypeSeeds", () => {
 
   it("ignores digits that are part of a longer number", () => {
     // "1313" is a typo in the live data, not a 1- and 3-bedroom range. Reading
-    // it as one is what a bare /[1-7]/ would do.
+    // it as one is what a bare /[1-9]/ would do — the lookarounds are what
+    // stop it, which is why widening the digit range was safe.
     expect(labels("1313")).toEqual(["1 Bedroom", "2 Bedroom", "3 Bedroom"]);
   });
 
@@ -45,10 +46,11 @@ describe("deriveUnitTypeSeeds", () => {
     expect(labels("")).toEqual(["1 Bedroom", "2 Bedroom", "3 Bedroom"]);
   });
 
-  it("never provisions past 7 bedrooms", () => {
-    for (const t of deriveUnitTypeSeeds("1 - 9")) {
-      expect(t.beds).toBeLessThanOrEqual(7);
-    }
+  it("reads a range past what the brief provisioned for", () => {
+    // Used to stop at 7 and so read "1 - 9" as a lone 1-bed project.
+    expect(deriveUnitTypeSeeds("1 - 9").map((t) => t.beds)).toEqual([
+      1, 2, 3, 4, 5, 6, 7, 8, 9,
+    ]);
   });
 
   it("labels a studio as a studio", () => {
@@ -112,6 +114,28 @@ describe("unitPlansSchema", () => {
             label: `Layout ${i}`,
           })),
         },
+      ],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("puts no ceiling on bedrooms or bathrooms", () => {
+    // The editor that hit "Too big: expected number to be <=9" was entering a
+    // real bathroom count, not a typo. Neither field is capped now.
+    const type = blankUnitType("Penthouse", 12);
+    const result = unitPlansSchema.safeParse({
+      unit_types: [
+        { ...type, plans: [{ ...type.plans[0]!, beds: 14, baths: 16 }] },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("still rejects a count that would overflow the column", () => {
+    const type = blankUnitType("1 Bedroom", 1);
+    const result = unitPlansSchema.safeParse({
+      unit_types: [
+        { ...type, plans: [{ ...type.plans[0]!, baths: 99_999_999_999 }] },
       ],
     });
     expect(result.success).toBe(false);
