@@ -21,13 +21,23 @@ export const MAX_PLANS_SHOWN = 4;
 export const MAX_PLANS_PER_TYPE = 8;
 export const MAX_UNIT_TYPES = 10;
 
+/**
+ * Not a product limit. Bedroom and bathroom counts are deliberately uncapped —
+ * a villa floor can carry more baths than anyone provisions for up front, and
+ * an editor blocked by a guessed ceiling has no way around it. This is the
+ * `int4` ceiling of the columns behind them, so a mistyped 99999999999 fails
+ * in the editor with a readable message instead of a raw Postgres 22003 from
+ * the insert.
+ */
+const INT4_MAX = 2_147_483_647;
+
 export const floorPlanSchema = z.object({
   /** Null for a row that hasn't been saved yet. */
   id: uuidLike().nullable(),
   label: z.string().min(1, "Give the layout a name").max(80),
   description: z.string().max(600).nullable(),
-  beds: z.number().int().min(0).max(7).nullable(),
-  baths: z.number().int().min(0).max(9).nullable(),
+  beds: z.number().int().min(0).max(INT4_MAX).nullable(),
+  baths: z.number().int().min(0).max(INT4_MAX).nullable(),
   area_ft2: z.number().int().min(0).max(1_000_000).nullable(),
   /** Media asset id — the plan drawing, picked from the media library. */
   media_id: uuidLike().nullable(),
@@ -39,7 +49,7 @@ export type FloorPlanInput = z.infer<typeof floorPlanSchema>;
 export const unitTypeSchema = z.object({
   id: uuidLike().nullable(),
   label: z.string().min(1, "Name the unit type").max(60),
-  beds: z.number().int().min(0).max(7).nullable(),
+  beds: z.number().int().min(0).max(INT4_MAX).nullable(),
   blurb: z.string().max(600).nullable(),
   size_from_ft2: z.number().int().min(0).max(1_000_000).nullable(),
   size_to_ft2: z.number().int().min(0).max(1_000_000).nullable(),
@@ -118,7 +128,11 @@ export function unitTypeLabel(beds: number): string {
   return beds === 0 ? "Studio" : `${beds} Bedroom`;
 }
 
-/** Everything the brief provisions for, for the "add a unit type" menu. */
+/**
+ * One-click shortcuts for the "add a unit type" menu — the counts almost every
+ * project sells. Not a limit: the menu's "Something else" chip adds a type with
+ * a free-text label, and the bedroom field on the type takes any number.
+ */
 export const UNIT_TYPE_CHOICES: { beds: number; label: string }[] = [
   0, 1, 2, 3, 4, 5, 6, 7,
 ].map((beds) => ({ beds, label: unitTypeLabel(beds) }));
@@ -131,8 +145,10 @@ export const UNIT_TYPE_CHOICES: { beds: number; label: string }[] = [
  * The stored strings are hand-typed and inconsistent — "1–4 bed", "1 - 3",
  * "Studios, 1 - 4", and one "1313" that is plainly a typo. So:
  *
- *  - only standalone digits 1-7 count, which is what keeps "1313" from
- *    reading as a 1-bed and a 3-bed;
+ *  - only *standalone* single digits count, which is what keeps "1313" from
+ *    reading as a 1-bed and a 3-bed. The guard is the lookarounds, not the
+ *    digit range, so widening the range past what the brief provisioned for
+ *    costs nothing;
  *  - "studio" anywhere adds a studio type;
  *  - nothing parseable falls back to 1-3 Bedroom — the commonest shape here,
  *    offered as a starting point rather than a claim.
@@ -147,7 +163,7 @@ export function deriveUnitTypeSeeds(bedroomsText: string | null): {
   label: string;
 }[] {
   const text = bedroomsText ?? "";
-  const numbers = [...text.matchAll(/(?:^|[^0-9])([1-7])(?![0-9])/g)].map((m) =>
+  const numbers = [...text.matchAll(/(?:^|[^0-9])([1-9])(?![0-9])/g)].map((m) =>
     Number(m[1]),
   );
 

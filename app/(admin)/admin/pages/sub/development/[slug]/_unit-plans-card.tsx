@@ -312,21 +312,22 @@ export function DevelopmentUnitPlansCard({
                       <Label htmlFor={`ut_beds_${i}`} className="text-[11px]">
                         Bedrooms
                       </Label>
-                      <select
+                      {/* A number, not a dropdown of the counts we guessed at:
+                          a project can sell an 8-bedroom villa, and 0 is a
+                          studio. Blank means "doesn't map to a bedroom count"
+                          — a penthouse or a duplex sold by name. */}
+                      <input
                         id={`ut_beds_${i}`}
+                        type="number"
+                        min={0}
+                        step={1}
                         className={fieldCls}
                         value={type.beds ?? ""}
+                        placeholder="Not a bedroom count"
                         onChange={(e) =>
                           setType(i, { beds: numberOrNull(e.target.value) })
                         }
-                      >
-                        <option value="">Not a bedroom count</option>
-                        {UNIT_TYPE_CHOICES.map((c) => (
-                          <option key={c.beds} value={c.beds}>
-                            {c.label}
-                          </option>
-                        ))}
-                      </select>
+                      />
                     </div>
                     <div className="flex flex-col gap-1">
                       <Label htmlFor={`ut_from_${i}`} className="text-[11px]">
@@ -457,8 +458,12 @@ export function DevelopmentUnitPlansCard({
                         </div>
 
                         <div className="grid grid-cols-3 gap-2">
+                          {/* No max on either: a layout carries as many beds
+                              and baths as it carries. */}
                           <input
                             type="number"
+                            min={0}
+                            step={1}
                             className={fieldCls}
                             value={plan.beds ?? ""}
                             placeholder="Beds"
@@ -469,6 +474,8 @@ export function DevelopmentUnitPlansCard({
                           />
                           <input
                             type="number"
+                            min={0}
+                            step={1}
                             className={fieldCls}
                             value={plan.baths ?? ""}
                             placeholder="Baths"
