@@ -12,11 +12,23 @@ const OPTIONS: { value: SearchView; label: string; Icon: React.ElementType }[] =
   { value: "map", label: "Map", Icon: Map },
 ];
 
-export function ViewToggle() {
+/**
+ * `defaultView` is what the server rendered when the URL carried no `view`
+ * param — `grid` on desktop, `list` on a phone (see `resolveSearchView`).
+ * Both uses below depend on it: the highlighted radio, and the fact that
+ * choosing the default *clears* the param instead of writing it. Hard-coding
+ * `grid` here would leave the phone toggle showing Grid over a list, and
+ * tapping Grid would strip `?view=` straight back to the list.
+ */
+export function ViewToggle({
+  defaultView = "grid",
+}: {
+  defaultView?: SearchView;
+}) {
   const [view, setView] = useQueryState(
     "view",
     parseAsStringEnum<SearchView>(["grid", "list", "map"])
-      .withDefault("grid")
+      .withDefault(defaultView)
       // shallow:false re-fetches the RSC (SearchList branches on `view`
       // server-side) so the switched view renders without a manual refresh —
       // matching SortDropdown / FilterBar.
@@ -35,7 +47,7 @@ export function ViewToggle() {
           type="button"
           role="radio"
           aria-checked={view === value}
-          onClick={() => setView(value === "grid" ? null : value)}
+          onClick={() => setView(value === defaultView ? null : value)}
           className={
             view === value
               ? "inline-flex items-center gap-1.5 h-7 px-2.5 rounded text-[12px] font-medium bg-bz-navy text-bz-bg"

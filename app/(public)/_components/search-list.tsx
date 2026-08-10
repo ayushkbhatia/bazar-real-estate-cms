@@ -20,7 +20,8 @@ import { FilterBar, type AreaOption } from "./filter-bar";
 import type { MapPin } from "./map-view";
 import { MapViewClient } from "./map-view-client";
 import { SortDropdown } from "./sort-dropdown";
-import { ViewToggle, type SearchView } from "./view-toggle";
+import { ViewToggle } from "./view-toggle";
+import { resolveSearchView } from "./search-view";
 import { MoreFiltersDrawer } from "./more-filters-drawer";
 import { Pagination } from "./pagination";
 import { ModeSegmented } from "./mode-segmented";
@@ -149,11 +150,36 @@ async function fetchAreas(): Promise<AreaOption[]> {
   return data.map((d) => ({ slug: d.slug, name: d.name }));
 }
 
+/**
+ * Breakpoint override for `ListingCard`'s `row` variant, applied here rather
+ * than in the component because `components/brand/*` is shared chrome.
+ *
+ * The variant hard-codes a 280px media column next to a `flex-1` text column
+ * with no `min-w-0`. That was fine while list view was an opt-in on desktop;
+ * as the phone default it leaves ~60px for the text and pushes the card past
+ * the viewport. So: shrink the media column, let the text column shrink below
+ * its content width, tighten the padding, and let the beds/baths/ft² row wrap
+ * instead of clipping. Everything is back to the component's own numbers at
+ * `md:` and up, so desktop list view is untouched.
+ */
+const ROW_CARD_RESPONSIVE = [
+  "[&>div:first-child]:w-[116px]",
+  "sm:[&>div:first-child]:w-[200px]",
+  "md:[&>div:first-child]:w-[280px]",
+  "[&>div:last-child]:min-w-0",
+  "[&>div:last-child]:px-3.5",
+  "[&>div:last-child]:py-3",
+  "md:[&>div:last-child]:px-[22px]",
+  "md:[&>div:last-child]:py-[18px]",
+  "[&>div:last-child>div:last-child]:flex-wrap",
+  "[&>div:last-child>div:last-child]:gap-x-3",
+  "[&>div:last-child>div:last-child]:gap-y-1",
+].join(" ");
+
 export async function SearchList({
   mode,
   form,
   filters,
-  view = "grid",
   searchParams,
 }: {
   mode: Mode;
@@ -164,9 +190,12 @@ export async function SearchList({
    */
   form?: Form;
   filters: PropertyFilters;
-  view?: SearchView;
   searchParams: Record<string, string | string[] | undefined>;
 }) {
+  // Resolved here, not per-route: all six callers were parsing `view` out of
+  // the same search params with the same six lines, and the device-dependent
+  // default made that a sixfold chance of drift.
+  const { view, defaultView } = await resolveSearchView(searchParams);
   const page = filters.page && filters.page > 0 ? filters.page : 1;
   const offset = (page - 1) * PAGE_SIZE;
 
@@ -226,7 +255,7 @@ export async function SearchList({
           <div className="flex items-center gap-3 flex-wrap">
             <MoreFiltersDrawer />
             <SortDropdown />
-            <ViewToggle />
+            <ViewToggle defaultView={defaultView} />
           </div>
         </div>
 
@@ -277,6 +306,7 @@ export async function SearchList({
                 >
                   <ListingCardPriced
                     variant="row"
+                    className={ROW_CARD_RESPONSIVE}
                     price={formatPriceAED(row.price_aed)}
                     priceAed={row.price_aed}
                     title={row.title}
