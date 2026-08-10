@@ -68,7 +68,7 @@ export function DsrConsole({
     }
     if (
       !confirm(
-        `Erase every personal-data field held for ${email}?\n\nThis cannot be undone. Enquiries, tour requests, valuations and mortgage enquiries are kept with their personal fields wiped (7-year AML duty); the newsletter subscription is deleted outright.\n\nOnly do this once you have verified the requester's identity.`,
+        `Erase every personal-data field held for ${email}?\n\nThis cannot be undone. Enquiries, valuations and mortgage enquiries are kept with their personal fields wiped (7-year AML duty); the newsletter subscription is deleted outright.\n\nOnly do this once you have verified the requester's identity.`,
       )
     )
       return;
@@ -102,8 +102,8 @@ export function DsrConsole({
           />
           <p className="text-[11.5px] text-bz-muted">
             The address the request came from. Everything Bazar holds is keyed
-            to it — enquiries and their message threads, tour and valuation
-            requests, mortgage enquiries, and the newsletter list.
+            to it — enquiries and their message threads, valuation requests,
+            mortgage enquiries, and the newsletter list.
           </p>
         </div>
 

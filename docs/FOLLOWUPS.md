@@ -544,7 +544,7 @@ shows the trail.)
 - [db] anonymise_account covers less than 0037 claims.
   The live definition scrubs accounts, enquiries, messages, viewings,
   newsletter_subscribers and reviews only. 0037 said it was extended to
-  valuation_requests, mortgage_inquiries, tour_requests and others — those
+  valuation_requests, mortgage_inquiries and others — those
   statements are not in the deployed function, so 0037 looks never to have been
   applied. `anonymise_by_email` (0067) does cover them, so the email-keyed path
   is the more complete one. Worth reconciling.
