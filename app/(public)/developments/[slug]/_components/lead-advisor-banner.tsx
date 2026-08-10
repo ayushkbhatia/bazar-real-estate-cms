@@ -12,9 +12,18 @@ import type { SeedAgent } from "@/lib/seeds/agents";
 export function LeadAdvisorBanner({
   agent,
   developmentName,
+  heading,
+  intro,
 }: {
   agent: SeedAgent;
   developmentName: string;
+  /**
+   * Sub-page overrides. The banner itself is built from the advisor's own
+   * record — name, title, pull quote — so these sit above the card rather
+   * than replacing any of it, and only appear once someone writes them.
+   */
+  heading?: string | null;
+  intro?: string | null;
 }) {
   const waUrl = `https://wa.me/${agent.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
     `Hi ${agent.display_name.split(" ")[0]}, I'd like to book a site visit at ${developmentName}.`,
@@ -24,6 +33,23 @@ export function LeadAdvisorBanner({
       id="advisor"
       className="px-4 md:px-12 py-16 scroll-mt-24"
     >
+      {heading || intro ? (
+        <div className="mb-6">
+          {heading ? (
+            <h2
+              className="serif text-[32px] leading-tight"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              {heading}
+            </h2>
+          ) : null}
+          {intro ? (
+            <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+              {intro}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
       <div className="rounded-lg overflow-hidden bg-bz-ink text-white grid grid-cols-1 md:grid-cols-[280px_1fr_auto] gap-10 items-center px-6 md:px-10 py-8 md:py-10">
         {agent.photo_url ? (
           <div className="relative w-[200px] h-[240px] overflow-hidden rounded-md">
