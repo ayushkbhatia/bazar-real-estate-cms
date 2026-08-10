@@ -42,14 +42,25 @@ quick grep can show "what's outstanding in my area."
   text-only, carries no property id, and is deliberately two lines tall).
   "Done" is either both wired up or a decision recorded that they stay out.
 
-- [shortlist] Wire the compare page's "Saved" picker tab to the shortlist.
-  `app/(public)/tools/compare/_components/picker-drawer.tsx` offers Saved /
-  Recently viewed / Search for filling an empty compare slot. Saved and
-  Recently viewed were backed by customer accounts, which are gone
-  ([ADR-0005](docs/decisions/ADR-0005-remove-customer-accounts.md)), so both
-  now just link to `/buy`. The shortlist is real again and holds up to 25,
-  which is exactly what that tab wanted — it can read `loadCompareIds()` and
-  hydrate through `/api/shortlist`. Recently viewed still has no source.
+- [compare] `/tools/compare` throws a React hydration error on load.
+  "Hydration failed because the server rendered HTML didn't match the
+  client." Reproduces on a plain `?ids=<two published ids>` load. It is
+  **not** from the shortlist work — verified by stashing the picker changes
+  and reloading, where it still fires — so it predates this branch and was
+  simply never noticed. Undiagnosed: the console message is truncated and
+  the offending subtree wasn't narrowed down. Suspects worth eliminating
+  first are the toolbar's client/server boundary and anything in the slot
+  grid rendering differently between passes. "Done" is a clean console on
+  that route.
+
+- [shortlist] "Recently viewed" in the compare picker has no source.
+  `app/(public)/tools/compare/_components/picker-drawer.tsx` — the Saved tab
+  now reads the real shortlist, but nothing in the app records views since
+  customer accounts were removed
+  ([ADR-0005](docs/decisions/ADR-0005-remove-customer-accounts.md)), so that
+  tab keeps an honest empty state next to a working one. Either give it a
+  localStorage-backed source or drop the tab; leaving a permanently-empty
+  tab beside a live one is the worst of the three.
 
 - [shortlist] Eviction at `SHORTLIST_CAP` is still silent.
   `components/brand/compare-button.tsx` drops the oldest id when you save
