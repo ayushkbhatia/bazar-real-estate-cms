@@ -49,7 +49,7 @@ function guessVideoMime(url: string): string {
 export function HeroFullBleed({ copy }: { copy?: HeroCopy } = {}) {
   const videoSrc = copy?.media?.videoUrl ?? BUILT_IN_VIDEO;
   return (
-    <section className="relative min-h-[560px] md:h-[720px] bg-bz-ink overflow-hidden">
+    <section className="relative bg-bz-ink overflow-hidden">
       <HeroVideoBg
         src={videoSrc}
         poster={copy?.media?.posterUrl ?? BUILT_IN_POSTER}
@@ -61,7 +61,14 @@ export function HeroFullBleed({ copy }: { copy?: HeroCopy } = {}) {
       />
       {/* Scrim: keeps the white headline + search legible over the footage. */}
       <div className="absolute inset-0 bg-gradient-to-t from-bz-ink/95 via-bz-ink/55 to-bz-ink/35" />
-      <div className="relative h-full px-4 md:px-12 flex flex-col justify-end pb-10 md:pb-16 pt-24 md:pt-0 text-white">
+      {/* The min-height lives here, not on the section: the section used to be
+          a hard `md:h-[720px]`, which the content outgrew once the search form
+          gained its tabs — `overflow-hidden` then clipped the eyebrow and left
+          the headline ~10px under the sticky 72px navbar. A min-height on the
+          inner column keeps the bottom-anchored layout for short copy while
+          letting a tall stack push the section (and the video behind it)
+          taller instead of cropping it. */}
+      <div className="relative min-h-[560px] md:min-h-[720px] px-4 md:px-12 flex flex-col justify-end pb-10 md:pb-16 pt-24 md:pt-16 text-white">
         <Eyebrow className="text-white/60 mb-4">
           {copy?.eyebrow ?? "Bazar · Abu Dhabi"}
         </Eyebrow>
