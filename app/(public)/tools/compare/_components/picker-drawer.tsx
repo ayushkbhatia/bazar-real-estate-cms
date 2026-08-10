@@ -177,9 +177,20 @@ export function PickerDrawer({
                   <ul className="mt-3 flex flex-col divide-y divide-bz-border">
                     {candidates.map((item) => (
                       <li key={item.id}>
-                        <Link
+                        {/* Plain <a>, deliberately not next/link: a
+                            client-side navigation on this route leaves the
+                            re-rendered slot grid without its client
+                            components, so the *next* empty slot would come
+                            back with a dead picker and the visitor would
+                            have to reload to add a fourth. The same thing
+                            happens through the pre-existing per-card remove
+                            control, so it's the route rather than this
+                            drawer — see the hydration-error entry in
+                            docs/FOLLOWUPS.md. A full load is cheap here
+                            (the page is already `force-dynamic`) and is
+                            correct regardless of how that's resolved. */}
+                        <a
                           href={hrefWith(item.id)}
-                          onClick={() => setOpen(false)}
                           className="flex gap-3 py-3 group"
                         >
                           <span className="relative w-16 h-16 rounded-md overflow-hidden bg-bz-surface-2 shrink-0 block">
@@ -209,7 +220,7 @@ export function PickerDrawer({
                               </span>
                             </span>
                           </span>
-                        </Link>
+                        </a>
                       </li>
                     ))}
                   </ul>

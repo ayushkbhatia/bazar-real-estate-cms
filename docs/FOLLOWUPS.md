@@ -42,16 +42,21 @@ quick grep can show "what's outstanding in my area."
   text-only, carries no property id, and is deliberately two lines tall).
   "Done" is either both wired up or a decision recorded that they stay out.
 
-- [compare] `/tools/compare` throws a React hydration error on load.
-  "Hydration failed because the server rendered HTML didn't match the
-  client." Reproduces on a plain `?ids=<two published ids>` load. It is
-  **not** from the shortlist work — verified by stashing the picker changes
-  and reloading, where it still fires — so it predates this branch and was
-  simply never noticed. Undiagnosed: the console message is truncated and
-  the offending subtree wasn't narrowed down. Suspects worth eliminating
-  first are the toolbar's client/server boundary and anything in the slot
-  grid rendering differently between passes. "Done" is a clean console on
-  that route.
+- [compare] `/tools/compare` breaks its own client components on soft nav.
+  Two symptoms, near-certainly one cause. (1) The route throws "Hydration
+  failed because the server rendered HTML didn't match the client" on a
+  plain `?ids=<two published ids>` load. (2) After any *client-side*
+  navigation within the route, client components inside the re-rendered
+  slot grid never mount — the server-rendered markup around them is fine
+  (the dashed empty-slot card and its text render), but the interactive
+  child is absent from the DOM while still present in the RSC payload.
+  Reproduce (2) without any of the shortlist work by clicking a per-card
+  remove control: the slot count updates and the picker trigger vanishes.
+  Neither is from this branch — both reproduce with the picker changes
+  stashed. The picker sidesteps it by navigating with a plain `<a>`
+  (see the comment in `picker-drawer.tsx`); that workaround should come out
+  once this is fixed. "Done" is a clean console plus client components
+  surviving a soft nav on that route.
 
 - [shortlist] "Recently viewed" in the compare picker has no source.
   `app/(public)/tools/compare/_components/picker-drawer.tsx` — the Saved tab
