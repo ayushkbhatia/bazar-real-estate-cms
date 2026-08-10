@@ -16,6 +16,7 @@ import {
   Menu,
   Settings,
   ClipboardCheck,
+  PhoneCall,
   ScrollText,
   ShieldCheck,
   MoreHorizontal,
@@ -68,6 +69,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
     items: [
       { label: "Blog editor", href: "/admin/blog", icon: FileText },
       { label: "Pages & blocks", href: "/admin/pages", icon: Layers },
+      { label: "Floating CTAs", href: "/admin/floating-ctas", icon: PhoneCall },
       { label: "Megamenu", href: "/admin/megamenu", icon: Menu },
       { label: "Content assets", href: "/admin/content-assets", icon: Mails },
     ],
@@ -102,7 +104,14 @@ function activeCmsTab(pathname: string | null): string {
     return "catalogue";
   if (["/admin/enquiries", "/admin/valuations"].some((m) => p.startsWith(m)))
     return "inbox";
-  if (["/admin/blog", "/admin/pages", "/admin/content-assets"].some((m) => p.startsWith(m)))
+  if (
+    [
+      "/admin/blog",
+      "/admin/pages",
+      "/admin/floating-ctas",
+      "/admin/content-assets",
+    ].some((m) => p.startsWith(m))
+  )
     return "content";
   return "more";
 }

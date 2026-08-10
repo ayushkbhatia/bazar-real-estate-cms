@@ -40,7 +40,7 @@ import {
   placeholderUnitTypes,
 } from "@/lib/queries/development-unit-plans";
 import { MapEmbed } from "../../p/[slug]/_components/map-embed";
-import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
+import { FloatingCtaTarget } from "../../_components/floating-cta-context";
 import {
   getDevelopmentMeta,
   listOtherDevelopmentsByDeveloper,
@@ -742,10 +742,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           <React.Fragment key={key}>{nodes[key]}</React.Fragment>
         ))}
 
-      {/* T2-D: floating advisor contact rail — same component used on
-          property detail. Desktop sticky / mobile bottom-dock.
-          T2-D cleanup: adds Email + Call-me-back to the action set. */}
-      <AdvisorContactRail
+      {/* The floating CTA rail is mounted once in the public layout. This
+          publishes the project's lead advisor to it, so the buttons route to
+          that person and the draft message names the project. Renders nothing. */}
+      <FloatingCtaTarget
         advisorName={leadAdvisor.display_name}
         advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone ?? null}
         advisorEmail={leadAdvisor.email ?? null}
