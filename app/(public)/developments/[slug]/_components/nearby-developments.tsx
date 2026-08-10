@@ -10,28 +10,42 @@ import { quarterLabel } from "@/lib/schemas/development";
 type Props = {
   areaName: string;
   nearby: DevelopmentIndexRow[];
+  /** Sub-page overrides. Blank keeps the area-aware template copy. */
+  eyebrow?: string | null;
+  heading?: string | null;
+  intro?: string | null;
 };
 
 /**
  * "Future developments around this property" — for v1 we list other published
  * developments in the same area. Geographic radius search (using
  * `areas.geo`) is a follow-up once geo data is consistently populated.
+ *
+ * All three lines of copy are overridable from the development's sub-page
+ * editor. They default rather than fall back to a stored string so a hundred
+ * project pages don't each carry a copy of the same sentence.
  */
-export function NearbyDevelopments({ areaName, nearby }: Props) {
+export function NearbyDevelopments({
+  areaName,
+  nearby,
+  eyebrow,
+  heading,
+  intro,
+}: Props) {
   if (!nearby.length) return null;
 
   return (
     <section className="px-4 md:px-12 py-16 scroll-mt-16 border-t border-bz-border bg-bz-surface-2">
-      <Eyebrow>Future developments around · {areaName}</Eyebrow>
+      <Eyebrow>{eyebrow ?? `Future developments around · ${areaName}`}</Eyebrow>
       <h2
         className="serif text-[32px] mt-2 leading-tight max-w-[28ch]"
         style={{ letterSpacing: "-0.02em" }}
       >
-        Future neighbours
+        {heading ?? "Future neighbours"}
       </h2>
       <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[58ch]">
-        Other off-plan and recently-handed-over projects within {areaName}.
-        Useful for shaping a return profile that accounts for new supply.
+        {intro ??
+          `Other off-plan and recently-handed-over projects within ${areaName}. Useful for shaping a return profile that accounts for new supply.`}
       </p>
 
       <ul className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">

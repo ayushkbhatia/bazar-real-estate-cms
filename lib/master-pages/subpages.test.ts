@@ -222,6 +222,34 @@ describe("reordering and gallery", () => {
     // everything else — it was invisible to the editor before.
     expect(DEVELOPMENT_SECTIONS.map((s) => s.key)).toContain("nearby");
   });
+
+  it("lets an editor override all three lines of the future-neighbours copy", () => {
+    // The section carried heading/intro fields the page never read, and no
+    // eyebrow field at all, so the whole block was effectively hardcoded.
+    const nearby = DEVELOPMENT_SECTIONS.find((s) => s.key === "nearby")!;
+    expect(nearby.fields.map((f) => f.key)).toEqual([
+      "eyebrow",
+      "heading",
+      "intro",
+    ]);
+    const resolved = resolveSections(def, [
+      {
+        key: "nearby",
+        enabled: true,
+        values: {
+          eyebrow: "What's next door",
+          heading: "Coming up around you",
+          intro: "Three projects breaking ground within walking distance.",
+        },
+      },
+    ]);
+    const values = resolved.find((s) => s.key === "nearby")!.values;
+    expect(str(values, "eyebrow")).toBe("What's next door");
+    expect(str(values, "heading")).toBe("Coming up around you");
+    expect(str(values, "intro")).toBe(
+      "Three projects breaking ground within walking distance.",
+    );
+  });
 });
 
 describe("area sub-pages", () => {
