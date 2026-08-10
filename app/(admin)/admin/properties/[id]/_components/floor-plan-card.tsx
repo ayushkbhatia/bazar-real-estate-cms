@@ -132,11 +132,15 @@ export function FloorPlanCard({
       {item ? (
         <div className="flex flex-col gap-3">
           <div className="relative aspect-[16/10] max-w-[480px] rounded-md overflow-hidden border border-bz-border bg-bz-surface">
+            {/* Same q100 as the public render. This preview is where the
+                operator decides whether the upload survived, so it should not
+                be the one place showing them WebP artefacts on the labels. */}
             <Image
               src={mediaPublicUrl(item.storage_key)}
               alt={item.alt_text ?? "Floor plan"}
               fill
               sizes="480px"
+              quality={100}
               className="object-contain p-3"
             />
           </div>

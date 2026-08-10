@@ -1,8 +1,7 @@
-import Image from "next/image";
 import { LayoutGrid, Maximize2, BedDouble } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { AreaText } from "../../../_components/area-text";
+import { FloorPlanViewer } from "./floor-plan-viewer";
 
 /**
  * Sprint 4c (backfilled): floor plan section on the property detail page.
@@ -34,15 +33,14 @@ export function FloorPlanSection({
       </h3>
 
       {imageUrl ? (
-        <div className="relative aspect-[16/10] rounded-lg overflow-hidden border border-bz-border bg-bz-surface">
-          <Image
-            src={imageUrl}
-            alt={`Floor plan for ${reference}`}
-            fill
-            sizes="(min-width: 1024px) 720px, 100vw"
-            className="object-contain p-4"
-          />
-        </div>
+        <FloorPlanViewer
+          src={imageUrl}
+          alt={`Floor plan for ${reference}`}
+          // The section sits in the detail grid: `px-4 md:px-12` page padding,
+          // then `lg:grid-cols-[1fr_360px]` with a `gap-12`. So above lg the
+          // slot is 100vw − 96 − 360 − 48. Measured 936px at a 1440 viewport.
+          sizes="(min-width: 1024px) calc(100vw - 504px), (min-width: 768px) calc(100vw - 96px), calc(100vw - 32px)"
+        />
       ) : (
         <div className="relative aspect-[16/10] rounded-lg overflow-hidden border border-dashed border-bz-border bg-bz-surface flex items-center justify-center">
           <div className="text-center max-w-[44ch] px-6">
@@ -94,8 +92,3 @@ function FactPill({
     </div>
   );
 }
-
-// Use a no-op import so this file owns the placeholder fallback path
-// without bringing in the brand component unnecessarily. (Kept under the
-// component so tree-shaking removes it when unused.)
-void PlaceholderImage;
