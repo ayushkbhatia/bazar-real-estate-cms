@@ -1,13 +1,11 @@
 import * as React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
 import { buildOffplanMap, parseGroupLimit } from "@/lib/queries/offplan-map";
-import { searchRedirectTarget } from "../_components/search-redirect";
 import { MHero } from "../_components/marketing/m-hero";
 import { SectionHead } from "../_components/marketing/section-head";
 import { PropTypeGrid } from "../_components/marketing/prop-type-grid";
@@ -37,17 +35,12 @@ export const metadata: Metadata = {
 
 export const revalidate = 300;
 
-type PageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-};
-
 const SECTION = "px-4 md:px-12 py-14 md:py-20 border-t border-bz-border";
 
-export default async function NewProjectsPage({ searchParams }: PageProps) {
-  const raw = await searchParams;
-  const target = searchRedirectTarget("/off-plan", raw);
-  if (target) redirect(target);
-
+// Old deep-links (/off-plan?type=apartment) are redirected to /off-plan/search
+// by proxy.ts. No `searchParams` here — reading it would make the route fully
+// dynamic and discard the `revalidate = 300` above.
+export default async function NewProjectsPage() {
   const [content, developments, areaCounts] = await Promise.all([
     getMasterPageContent("off-plan"),
     listPublishedDevelopments(),

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getPublishedMegamenu } from "./megamenu";
 import { listPublishedProperties } from "./properties";
 import { propertyUrl } from "./property-utils";
@@ -18,14 +19,23 @@ import type { Megamenu, MegamenuFeaturedTile } from "@/lib/schemas/megamenu";
  *
  * Falls back to the DB-seeded tiles when Supabase is unconfigured or no rent
  * listings resolve.
+ *
+ * Mounted in the public layout, so this runs for every public request.
+ * `cache()` collapses it to one round-trip per render (matching its neighbour
+ * `listFloatingCtas`), and the two queries are issued together rather than in
+ * sequence — the featured-rent tiles don't depend on the menu, so waiting for
+ * one before starting the other only added latency to every page in the site.
  */
-export async function getPublishedMegamenuHydrated(): Promise<Megamenu> {
-  const menu = await getPublishedMegamenu();
+export const getPublishedMegamenuHydrated = cache(async (): Promise<Megamenu> => {
+  const [menu, rent] = await Promise.all([
+    getPublishedMegamenu(),
+    listPublishedProperties({ mode: "rent", limit: 2 }),
+  ]);
 
   const rentTab = menu.tabs.find((t) => t.slug === "rent");
   if (!rentTab) return menu;
 
-  const { rows } = await listPublishedProperties({ mode: "rent", limit: 2 });
+  const { rows } = rent;
   if (rows.length === 0) return menu; // keep the seeded fallback tiles
 
   const tiles: MegamenuFeaturedTile[] = rows.slice(0, 2).map((row, i) => ({
@@ -42,4 +52,4 @@ export async function getPublishedMegamenuHydrated(): Promise<Megamenu> {
 
   rentTab.featured = tiles;
   return menu;
-}
+});

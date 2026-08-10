@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import {
   listExclusiveProperties,
   listNewThisWeek,
@@ -11,7 +10,6 @@ import { listingRowToCard } from "../_components/marketing/map-listing";
 import { BuyPropertiesMap } from "../_components/marketing/buy-properties-map";
 import { LeadBand } from "../_components/marketing/lead-band";
 import type { BuyCategory } from "../_components/marketing/buy-category-explorer";
-import { searchRedirectTarget } from "../_components/search-redirect";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
 import { buyRentContent } from "../_components/marketing/master-content";
@@ -25,16 +23,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/buy" },
 };
 
-type PageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-};
-
-export default async function BuyPage({ searchParams }: PageProps) {
-  const raw = await searchParams;
-  // Old deep-links (/buy?type=apartment) → the relocated search route.
-  const target = searchRedirectTarget("/buy", raw);
-  if (target) redirect(target);
-
+// Old deep-links (/buy?type=apartment) are redirected to the relocated search
+// route by proxy.ts. Deliberately no `searchParams` here: reading it — even
+// just to await it — makes the route fully dynamic and silently discards the
+// `revalidate = 300` above, which is what took this page out of the CDN.
+export default async function BuyPage() {
   const [
     content,
     exclusiveRows,

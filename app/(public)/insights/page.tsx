@@ -12,6 +12,7 @@ import {
   type ArticleListRow,
 } from "@/lib/queries/articles";
 import { listArticleCategories } from "@/lib/queries/article-categories";
+import { categoryToUrlSlug } from "@/lib/schemas/article";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
 import { mediaPublicUrl } from "@/lib/media";
@@ -39,10 +40,6 @@ const PAGE_SIZE = 24;
  */
 const ARTICLE_GRID_COLUMNS =
   "grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))]";
-
-type PageProps = {
-  searchParams: Promise<{ category?: string }>;
-};
 
 function ArticleHero({
   row,
@@ -88,24 +85,23 @@ function fillCategory(template: string, label: string): string {
   return template.replace(/\s*\{category\}/g, label ? ` ${label}` : "");
 }
 
-export default async function InsightsIndexPage({ searchParams }: PageProps) {
-  const params = await searchParams;
+/**
+ * The unfiltered index. Filtering by category lives on
+ * `/insights/category/[cat]` — its own statically-generated route with its own
+ * metadata — and the chips below link straight there. This page used to accept
+ * `?category=` as a second way to reach the same content, which both duplicated
+ * the archive under a non-canonical URL and, because reading `searchParams`
+ * forces dynamic rendering, discarded the `revalidate = 300` above and kept
+ * /insights out of the CDN. proxy.ts redirects the old querystring form.
+ */
+export default async function InsightsIndexPage() {
   const [categories, content] = await Promise.all([
     listArticleCategories(),
     getMasterPageContent("insights"),
   ]);
-  const category = categories.some((c) => c.slug === params.category)
-    ? (params.category as string)
-    : null;
-  const selectedLabel = category
-    ? categories.find((c) => c.slug === category)?.label ?? ""
-    : "";
 
   const [{ rows }, counts] = await Promise.all([
-    listPublishedArticles({
-      limit: PAGE_SIZE,
-      category: category ?? undefined,
-    }),
+    listPublishedArticles({ limit: PAGE_SIZE }),
     countArticlesByCategory(),
   ]);
 
@@ -233,30 +229,25 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
         className="px-4 md:px-12 py-6 border-t border-bz-border"
       >
         <div className="flex gap-2 flex-wrap">
+          {/* "All" is always the active chip here — this route is the
+              unfiltered index, and each category chip navigates away to its
+              own archive page. */}
           <Link
             href="/insights"
-            className={cn(
-              "h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors",
-              !category
-                ? "bg-bz-navy text-bz-bg border-bz-navy"
-                : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
-            )}
+            className="h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors bg-bz-navy text-bz-bg border-bz-navy"
           >
             {str(chipsV, "all_label") ?? "All"} · {counts.total}
           </Link>
           {categories.map((c) => {
             const count = counts.byCategory[c.slug] ?? 0;
-            if (count === 0 && c.slug !== category) return null;
-            const active = category === c.slug;
+            if (count === 0) return null;
             return (
               <Link
                 key={c.slug}
-                href={`/insights?category=${c.slug}`}
+                href={`/insights/category/${categoryToUrlSlug(c.slug)}`}
                 className={cn(
                   "h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors",
-                  active
-                    ? "bg-bz-navy text-bz-bg border-bz-navy"
-                    : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
+                  "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
                 )}
               >
                 {c.label} · {count}
@@ -275,7 +266,9 @@ export default async function InsightsIndexPage({ searchParams }: PageProps) {
               {fillCategory(
                 str(gridV, "empty_body") ??
                   "We haven't published any {category} insights yet.",
-                selectedLabel ? selectedLabel.toLowerCase() : "",
+                // Never filtered on this route, so the `{category}` token
+                // always collapses. The category archives fill it in.
+                "",
               )}
             </p>
             {str(gridV, "empty_cta_label") ? (

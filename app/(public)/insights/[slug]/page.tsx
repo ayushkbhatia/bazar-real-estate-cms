@@ -14,10 +14,35 @@ import { categoryToUrlSlug } from "@/lib/schemas/article";
 import { renderArticleBody } from "@/lib/article-body";
 import { mediaPublicUrl } from "@/lib/media";
 import { articleJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
-import { env } from "@/lib/env";
+import { env, isSupabaseConfigured } from "@/lib/env";
+import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { ChevronRight } from "lucide-react";
 
 export const revalidate = 300;
+
+/**
+ * Prerender every published article. `/insights/category/[cat]` and
+ * `/insights/author/[slug]` already did this; the article itself did not, which
+ * left the one page a reader actually lands on as the only `ƒ (Dynamic)` route
+ * in the section — served `no-store`, `revalidate` above inert.
+ * `dynamicParams` stays true so newly published articles still resolve.
+ */
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("articles")
+      .select("slug")
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .limit(2000);
+    return (data ?? []).map((a) => ({ slug: a.slug }));
+  } catch (err) {
+    console.error("[insights/[slug]] generateStaticParams failed", err);
+    return [];
+  }
+}
 
 type PageProps = { params: Promise<{ slug: string }> };
 

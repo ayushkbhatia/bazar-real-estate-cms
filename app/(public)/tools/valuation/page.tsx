@@ -11,7 +11,14 @@ export const metadata: Metadata = {
     "An instant data-backed range from our model, then a senior advisor reviews and sends you a refined valuation within 24 hours. Free, no obligation.",
 };
 
-export const dynamic = "force-dynamic";
+/**
+ * The wizard and the lead gate are both client components, and the only
+ * server-side read is the area list — cookie-free and slow-moving. The
+ * `force-dynamic` this replaces dated from the tool's first sprint and nothing
+ * on the page required it; it made this the slowest route on the site, at
+ * ~5s TTFB, for content that is identical for every visitor.
+ */
+export const revalidate = 3600;
 
 export default async function ValuationPage() {
   const areas = await listAreaOptions();

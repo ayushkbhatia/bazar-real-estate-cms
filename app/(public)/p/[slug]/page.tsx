@@ -31,8 +31,14 @@ import {
   propertyJsonLd,
   breadcrumbListJsonLd,
 } from "@/lib/jsonld";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { env } from "@/lib/env";
+// Cookie-free client on purpose: everything this route reads is public, and
+// `createSupabaseServerClient` calls `cookies()`, which opts the whole route
+// into dynamic rendering and discards the `revalidate = 60` below. Anonymous
+// visitors already resolved these reads under the anon role, so the RLS result
+// is unchanged — signed-in staff now see the same page the public sees, which
+// is what a public listing page should show anyway.
+import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { env, isSupabaseConfigured } from "@/lib/env";
 
 type PropertyExtras = {
   geo: { lat: number; lng: number } | null;
@@ -55,7 +61,7 @@ async function fetchPropertyExtras(id: string): Promise<PropertyExtras> {
     permitExpiresAt: null,
   };
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabasePublicClient();
     const { data } = await supabase
       .from("properties")
       .select("geo, assigned_agent_id, listing_permit_expires_at")
@@ -93,7 +99,7 @@ async function fetchPropertyMedia(id: string): Promise<{
   floorPlan: GalleryMediaRow | null;
 }> {
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabasePublicClient();
     const { data } = await supabase
       .from("property_media")
       .select("role, sort_order, media:media_assets(storage_key, alt_text)")
@@ -148,6 +154,36 @@ import { PropertyFaq } from "./_components/property-faq";
 import { AreaText, PricePerAreaText } from "../../_components/area-text";
 
 export const revalidate = 60;
+
+/**
+ * Prerender the published catalogue at build time.
+ *
+ * Without this the route is `ƒ (Dynamic)` and Vercel serves it with
+ * `no-store` — every listing view was a cold server render plus a round-trip
+ * to Supabase, which measured ~4s TTFB in production on the site's most
+ * visited pages. `dynamicParams` stays at its default of `true`, so a listing
+ * published after the deploy still renders on demand and is then cached for
+ * `revalidate` seconds; this only decides what is warm on day one.
+ *
+ * Returning `[]` on failure is deliberate: a Supabase hiccup during a build
+ * should cost warm pages, never the build itself.
+ */
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("properties")
+      .select("slug, reference")
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .limit(5000);
+    return (data ?? []).map((p) => ({ slug: propertyUrl(p).replace("/p/", "") }));
+  } catch (err) {
+    console.error("[p/[slug]] generateStaticParams failed", err);
+    return [];
+  }
+}
 
 type PageProps = { params: Promise<{ slug: string }> };
 
