@@ -83,9 +83,10 @@ type GalleryMediaRow = { storage_key: string; alt: string | null };
  * Fetched route-locally because the shared detail query reduces
  * `property_media` down to just the hero.
  *
- * The floor plan comes from the same table (role `floor_plan`, uploaded on
- * the admin Media tab). The page used to hardcode `hasFloorPlan={false}` and
- * `imageUrl={null}`, so an uploaded plan was never shown.
+ * The floor plan comes from the same table (role `floor_plan`, uploaded from
+ * the Floor plan card in the admin editor's Details tab). The page used to
+ * hardcode `hasFloorPlan={false}` and `imageUrl={null}`, so an uploaded plan
+ * was never shown.
  */
 async function fetchPropertyMedia(id: string): Promise<{
   gallery: GalleryMediaRow[];

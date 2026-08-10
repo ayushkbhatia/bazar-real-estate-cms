@@ -546,6 +546,163 @@ export async function detachPropertyPhoto(
   return { status: "ok", message: "Photo removed." };
 }
 
+export type FloorPlanResult =
+  | { status: "ok"; message: string; media: PropertyFloorPlan }
+  | { status: "error"; message: string };
+
+export type PropertyFloorPlan = {
+  /** media_assets.id */
+  id: string;
+  storage_key: string;
+  alt_text: string | null;
+};
+
+/**
+ * Attach one image as this property's floor plan (`property_media.role =
+ * 'floor_plan'`).
+ *
+ * A listing has exactly one plan: both public render sites — the "Unit layout"
+ * section and the gallery's Floor plan tab — take the first `floor_plan` row,
+ * so a second one would be invisible. Attaching replaces whatever was there,
+ * detaching only the old link; the asset itself stays in the shared library.
+ *
+ * Kept separate from `attachPropertyPhoto` on purpose: that one owns the
+ * gallery's "first upload becomes hero" rule, which must not apply here.
+ */
+export async function setPropertyFloorPlan(
+  propertyId: string,
+  mediaId: string,
+): Promise<FloorPlanResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
+
+  if (!UUID_RE.test(propertyId) || !UUID_RE.test(mediaId))
+    return { status: "error", message: "Invalid id." };
+
+  const supabase = await createSupabaseServerClient();
+
+  const asset = await supabase
+    .from("media_assets")
+    .select("id, storage_key, filename, mime_type, alt_text")
+    .eq("id", mediaId)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (asset.error || !asset.data)
+    return {
+      status: "error",
+      message: asset.error?.message ?? "That file isn't in the media library.",
+    };
+
+  // The public page renders the plan through next/image, so a PDF would break
+  // it. Plans arrive as JPG/PNG/WebP exports.
+  if (!asset.data.mime_type.startsWith("image/"))
+    return {
+      status: "error",
+      message: `"${asset.data.filename}" isn't an image, so it can't be the floor plan.`,
+    };
+
+  // property_media is keyed on (property_id, media_id), so one asset holds one
+  // role. Re-purposing a photo already in the gallery would silently pull it
+  // out of the gallery (or drop the hero) — refuse instead.
+  const existingLink = await supabase
+    .from("property_media")
+    .select("role")
+    .eq("property_id", propertyId)
+    .eq("media_id", mediaId)
+    .maybeSingle();
+  if (existingLink.data && existingLink.data.role !== "floor_plan")
+    return {
+      status: "error",
+      message: `"${asset.data.filename}" is already attached to this listing as the ${existingLink.data.role === "hero" ? "hero" : "gallery"} image. Upload the plan as its own file.`,
+    };
+
+  const { data: previous } = await supabase
+    .from("property_media")
+    .select("media_id")
+    .eq("property_id", propertyId)
+    .eq("role", "floor_plan");
+  const stale = (previous ?? [])
+    .map((r) => r.media_id)
+    .filter((id) => id !== mediaId);
+  if (stale.length > 0) {
+    const { error } = await supabase
+      .from("property_media")
+      .delete()
+      .eq("property_id", propertyId)
+      .in("media_id", stale);
+    if (error) return { status: "error", message: error.message };
+  }
+
+  const { error } = await supabase.from("property_media").upsert(
+    {
+      property_id: propertyId,
+      media_id: mediaId,
+      role: "floor_plan",
+      sort_order: 0,
+    },
+    { onConflict: "property_id,media_id" },
+  );
+  if (error)
+    return {
+      status: "error",
+      message: `Saved to the library, but couldn't attach the floor plan: ${error.message}`,
+    };
+
+  await logAudit({
+    action: "property.floor_plan_set",
+    target_kind: "property",
+    target_id: propertyId,
+    before: stale.length > 0 ? { media_id: stale[0] } : null,
+    after: { media_id: mediaId, filename: asset.data.filename },
+  });
+  revalidatePath("/admin/media");
+  await revalidatePropertyPaths(propertyId);
+
+  return {
+    status: "ok",
+    message: "Floor plan saved.",
+    media: {
+      id: asset.data.id,
+      storage_key: asset.data.storage_key,
+      alt_text: asset.data.alt_text,
+    },
+  };
+}
+
+/**
+ * Remove the floor plan from this property. Drops only the property_media
+ * link — the image stays in the shared media library, as with any detach.
+ */
+export async function clearPropertyFloorPlan(
+  propertyId: string,
+): Promise<HeroResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
+
+  if (!UUID_RE.test(propertyId))
+    return { status: "error", message: "Invalid property id." };
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("property_media")
+    .delete()
+    .eq("property_id", propertyId)
+    .eq("role", "floor_plan");
+  if (error) return { status: "error", message: error.message };
+
+  await logAudit({
+    action: "property.floor_plan_clear",
+    target_kind: "property",
+    target_id: propertyId,
+    before: null,
+    after: null,
+  });
+  await revalidatePropertyPaths(propertyId);
+  return { status: "ok", message: "Floor plan removed." };
+}
+
 /**
  * Persist a new photo order. `orderedMediaIds` is the full list of this
  * property's attached media in display order; each row's sort_order is set to
