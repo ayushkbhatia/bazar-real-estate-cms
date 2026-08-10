@@ -21,7 +21,7 @@ function props(over: Partial<ListingCardProps> = {}): ListingCardProps {
 }
 
 const shortlistButton = () =>
-  screen.queryByRole("button", { name: /^(add to|remove from) compare$/i });
+  screen.queryByRole("button", { name: /^(save to|remove from) shortlist$/i });
 
 describe("ListingCard shortlist button", () => {
   beforeEach(() => {

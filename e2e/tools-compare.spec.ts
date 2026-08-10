@@ -7,9 +7,14 @@ import { propertyPaths } from "./_helpers";
  * failed on a build with nothing wrong in it.
  *
  * The compare tool takes ids, and an id isn't in any URL, so we visit two
- * published detail pages and take the id from each page's own "Add to
- * compare" control. That keeps the spec tied to whatever is published rather
- * than to two rows that happened to exist when it was written.
+ * published detail pages and take the id from each page's own "Save to
+ * shortlist" control. That keeps the spec tied to whatever is published
+ * rather than to two rows that happened to exist when it was written.
+ *
+ * The control is the shortlist button, not a compare button: saving and
+ * comparing were one action capped at 4, and are now a 25-item shortlist
+ * feeding a 4-column table. Two saves still put two ids in the store, which
+ * is all this helper needs.
  */
 async function compareUrlForTwo(page: Page): Promise<string | null> {
   const paths = await propertyPaths(page, 2);
@@ -18,12 +23,12 @@ async function compareUrlForTwo(page: Page): Promise<string | null> {
   for (const path of paths) {
     await page.goto(path);
     const add = page.getByRole("button", {
-      name: /^(add to|remove from) compare$/i,
+      name: /^(save to|remove from) shortlist$/i,
     });
     if ((await add.count()) === 0) return null;
     // Only add it if it isn't already in the set.
     const label = await add.first().getAttribute("aria-label");
-    if (/^add to compare$/i.test(label ?? "")) await add.first().click();
+    if (/^save to shortlist$/i.test(label ?? "")) await add.first().click();
   }
 
   // COMPARE_STORAGE_KEY in lib/compare-store.ts. Kept as a literal because no

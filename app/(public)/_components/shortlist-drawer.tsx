@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import {
   COMPARE_CAP,
   COMPARE_STORAGE_KEY,
+  SHORTLIST_CAP,
   loadCompareIds,
   saveCompareIds,
 } from "@/lib/compare-store";
@@ -90,6 +91,12 @@ export function ShortlistDrawer() {
   );
   const [rawItems, setItems] = useState<ShortlistItem[]>([]);
   const [loading, setLoading] = useState(false);
+  // Which of the shortlist goes to the compare table. The shortlist holds up
+  // to `SHORTLIST_CAP`; the table holds four columns, so with more than four
+  // saved *something* has to choose — and letting it silently take the first
+  // four is the behaviour splitting the caps was meant to kill. The visitor
+  // picks. `null` = untouched, see `compareIds` below.
+  const [picked, setPicked] = useState<string[] | null>(null);
 
   // Drop stale items when the id set empties without needing a setState in
   // the subscription effect (which would trip
@@ -138,9 +145,33 @@ export function ShortlistDrawer() {
 
   const clearAll = useCallback(() => {
     saveCompareIds([]);
+    setPicked(null);
   }, []);
 
-  const compareHref = `/tools/compare?ids=${encodeURIComponent(ids.join(","))}`;
+  // `compareIds` is derived, not synced: `picked === null` means "hasn't
+  // touched the checkboxes" and falls back to the first four, so the
+  // one-click path stays intact for a small shortlist. Filtering against
+  // `ids` on every render is what keeps a removed listing from lingering in
+  // the selection, and avoids a reconciling effect (which
+  // `react-hooks/set-state-in-effect` would reject anyway).
+  const compareIds = (picked ?? ids.slice(0, COMPARE_CAP)).filter((id) =>
+    ids.includes(id),
+  );
+  const compareFull = compareIds.length >= COMPARE_CAP;
+
+  // Plain function, not `useCallback`: it closes over the derived
+  // `compareIds`, and the React Compiler infers a narrower dependency set
+  // than a hand-written `[ids]`, which trips
+  // `react-hooks/preserve-manual-memoization`. The compiler memoizes it.
+  function togglePicked(id: string) {
+    if (compareIds.includes(id)) {
+      setPicked(compareIds.filter((x) => x !== id));
+    } else if (!compareFull) {
+      setPicked([...compareIds, id]);
+    }
+  }
+
+  const compareHref = `/tools/compare?ids=${encodeURIComponent(compareIds.join(","))}`;
   const whatsappMessage = items.length
     ? `Hi — I'd like to talk about these ${items.length} on bazar.ae:\n\n` +
       items
@@ -208,7 +239,7 @@ export function ShortlistDrawer() {
             Your shortlist
           </SheetTitle>
           <SheetDescription>
-            {ids.length} of {COMPARE_CAP} · saved to this browser
+            {ids.length} of {SHORTLIST_CAP} · saved to this browser
           </SheetDescription>
         </SheetHeader>
 
@@ -221,8 +252,26 @@ export function ShortlistDrawer() {
             </p>
           ) : (
             <ul className="flex flex-col gap-4">
-              {items.map((item) => (
+              {items.map((item) => {
+                const inCompare = compareIds.includes(item.id);
+                return (
                 <li key={item.id} className="flex gap-3">
+                  <label className="flex items-center shrink-0 self-stretch cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={inCompare}
+                      disabled={!inCompare && compareFull}
+                      onChange={() => togglePicked(item.id)}
+                      className="w-4 h-4 accent-bz-accent disabled:cursor-not-allowed disabled:opacity-40"
+                      aria-label={
+                        inCompare
+                          ? `Remove ${item.title} from the comparison`
+                          : compareFull
+                            ? `Comparison is full — deselect one to add ${item.title}`
+                            : `Add ${item.title} to the comparison`
+                      }
+                    />
+                  </label>
                   <Link
                     href={`/p/${item.slug}-${item.reference}`}
                     className="block relative w-20 h-20 rounded-md overflow-hidden bg-bz-surface-2 shrink-0"
@@ -265,19 +314,37 @@ export function ShortlistDrawer() {
                     <Trash2 size={14} strokeWidth={1.7} />
                   </button>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           )}
         </div>
 
         <div className="px-6 py-4 border-t border-bz-border flex flex-col gap-2">
-          <Button asChild disabled={items.length < 2}>
-            <Link href={compareHref}>
+          {/* The table takes four columns, so say which four are going and
+              let the count move as the visitor ticks boxes. `asChild` on a
+              disabled Button still renders a live <Link>, so the
+              under-two-selected case has to render as plain text instead. */}
+          {compareIds.length < 2 ? (
+            <Button disabled>
               <Scale size={14} strokeWidth={1.7} />
-              Compare side-by-side
-              <ArrowRight size={14} strokeWidth={1.7} className="ml-auto" />
-            </Link>
-          </Button>
+              Select 2 to compare
+            </Button>
+          ) : (
+            <Button asChild>
+              <Link href={compareHref}>
+                <Scale size={14} strokeWidth={1.7} />
+                Compare {compareIds.length} side-by-side
+                <ArrowRight size={14} strokeWidth={1.7} className="ml-auto" />
+              </Link>
+            </Button>
+          )}
+          {items.length > COMPARE_CAP ? (
+            <p className="text-[11.5px] text-bz-ink-2 -mt-0.5">
+              Tick up to {COMPARE_CAP} to put side by side. Everything else
+              stays on your shortlist.
+            </p>
+          ) : null}
           {whatsappHref ? (
             <Button asChild variant="outline">
               <a href={whatsappHref} target="_blank" rel="noopener noreferrer">

@@ -41,7 +41,7 @@ export type ListingCardProps = {
   /** Sprint 4b: surfaces a Bazar-Verified badge in the bottom-left of media. */
   verified?: boolean;
   /**
-   * Shortlist ("Add to compare") button on the media. Defaults to **on**
+   * Shortlist ("Save to shortlist") button on the media. Defaults to **on**
    * wherever `propertyId` is set, so every listing surface — existing or
    * added later — carries it without opting in. Pass `false` only for a
    * surface where saving makes no sense (e.g. the compare table's own

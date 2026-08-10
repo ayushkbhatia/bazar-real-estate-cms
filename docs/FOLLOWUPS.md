@@ -42,13 +42,21 @@ quick grep can show "what's outstanding in my area."
   text-only, carries no property id, and is deliberately two lines tall).
   "Done" is either both wired up or a decision recorded that they stay out.
 
-- [shortlist] `COMPARE_CAP` is 4 and eviction is silent.
-  `components/brand/compare-button.tsx` drops the oldest id when you save a
-  5th (`next = [...ids.slice(1), propertyId]`) with no toast and no visible
-  change on the card that just fell out. Tolerable when the button lived
-  only on search results; now that it's on every card the ceiling gets hit
-  far sooner. Either raise the shortlist cap and keep 4 as a compare-only
-  slice, or tell the user what happened.
+- [shortlist] Wire the compare page's "Saved" picker tab to the shortlist.
+  `app/(public)/tools/compare/_components/picker-drawer.tsx` offers Saved /
+  Recently viewed / Search for filling an empty compare slot. Saved and
+  Recently viewed were backed by customer accounts, which are gone
+  ([ADR-0005](docs/decisions/ADR-0005-remove-customer-accounts.md)), so both
+  now just link to `/buy`. The shortlist is real again and holds up to 25,
+  which is exactly what that tab wanted — it can read `loadCompareIds()` and
+  hydrate through `/api/shortlist`. Recently viewed still has no source.
+
+- [shortlist] Eviction at `SHORTLIST_CAP` is still silent.
+  `components/brand/compare-button.tsx` drops the oldest id when you save
+  past the cap (`next = [...ids.slice(1), propertyId]`) with no toast and no
+  visible change on the card that fell out. Much harder to reach now the cap
+  is 25 rather than 4, so this is a polish item, not the correctness problem
+  it was — but a visitor who does hit it still gets no explanation.
 
 - [developments] Click-test the units & floor plans admin card.
   `app/(admin)/admin/pages/sub/development/[slug]/_unit-plans-card.tsx` (~450

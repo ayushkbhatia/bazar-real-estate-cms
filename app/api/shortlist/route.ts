@@ -9,6 +9,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getComparableProperties } from "@/lib/queries/compare";
+import { SHORTLIST_CAP } from "@/lib/compare-store";
 import { mediaPublicUrl } from "@/lib/media";
 
 export const runtime = "nodejs";
@@ -20,12 +21,14 @@ export async function GET(req: NextRequest) {
     .split(",")
     .map((s) => s.trim())
     .filter((s) => /^[0-9a-f-]{36}$/i.test(s))
-    .slice(0, 4);
+    .slice(0, SHORTLIST_CAP);
   if (ids.length === 0) {
     return NextResponse.json({ items: [] });
   }
 
-  const rows = await getComparableProperties(ids);
+  // The drawer lists the whole shortlist, not a compare set, so it opts out
+  // of the query's four-column default.
+  const rows = await getComparableProperties(ids, SHORTLIST_CAP);
   const items = rows.map((r) => ({
     id: r.id,
     reference: r.reference,
