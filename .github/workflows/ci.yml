@@ -25,6 +25,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Before setup-node, because it needs nothing but bash and this is the
+      # cheapest possible way to fail a branch that rebased onto a renumbered
+      # migration. Costs about a second. Invoked directly rather than through
+      # `npm run db:check` so it doesn't depend on whatever npm the runner
+      # image happens to ship; the npm script is there for local use.
+      - name: Migration numbering
+        run: bash scripts/check-migrations.sh
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
