@@ -48,8 +48,36 @@ import {
   listOtherDevelopmentsInArea,
 } from "@/lib/queries/development-extras";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
+import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { isSupabaseConfigured } from "@/lib/env";
 
 export const revalidate = 60;
+
+/**
+ * Prerender every published development. Without `generateStaticParams` the
+ * route is `ƒ (Dynamic)` and Vercel serves it `no-store`, so `revalidate` above
+ * never applies and each project page is a cold render per visit.
+ * `dynamicParams` stays true, so a project published after the deploy still
+ * resolves and is cached on first request.
+ *
+ * `/off-plan/[slug]` re-exports this alongside the page itself — both URLs
+ * surface the same record, so both warm the same way.
+ */
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("developments")
+      .select("slug")
+      .not("published_at", "is", null)
+      .limit(1000);
+    return (data ?? []).map((d) => ({ slug: d.slug }));
+  } catch (err) {
+    console.error("[developments/[slug]] generateStaticParams failed", err);
+    return [];
+  }
+}
 
 type PageProps = { params: Promise<{ slug: string }> };
 

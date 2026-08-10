@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { listNewThisWeek } from "@/lib/queries/curated-listings";
 import { BuyRentLanding } from "../_components/marketing/buy-rent-landing";
 import { RentAreaMap } from "../_components/marketing/rent-area-map";
 import { LeadBand } from "../_components/marketing/lead-band";
 import { listingRowToCard } from "../_components/marketing/map-listing";
-import { searchRedirectTarget } from "../_components/search-redirect";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
 import { buyRentContent } from "../_components/marketing/master-content";
@@ -19,17 +17,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "/rent" },
 };
 
-type PageProps = {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
-};
-
-
-
-export default async function RentPage({ searchParams }: PageProps) {
-  const raw = await searchParams;
-  const target = searchRedirectTarget("/rent", raw);
-  if (target) redirect(target);
-
+// Old deep-links (/rent?beds=2) are redirected to /rent/search by proxy.ts.
+// No `searchParams` here — reading it would make the route fully dynamic and
+// discard the `revalidate` above. See lib/filters/search-redirect.ts.
+export default async function RentPage() {
   const [content, rows] = await Promise.all([
     getMasterPageContent("rent"),
     listNewThisWeek({ limit: 4 }),

@@ -21,4 +21,7 @@ export const revalidate = 60;
 export {
   default,
   generateMetadata,
+  // Not route-segment config but a plain function, so unlike `revalidate` it
+  // re-exports cleanly — the same published-development list warms both URLs.
+  generateStaticParams,
 } from "../../developments/[slug]/page";
