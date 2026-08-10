@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DualRangeSlider } from "./dual-range-slider";
 import { formatPriceAED } from "@/lib/queries/property-utils";
+import { areaUnitLabel, formatArea, usePreferences } from "@/lib/preferences";
 import {
   HERO_TABS,
   buildHeroSearchUrl,
@@ -15,6 +16,7 @@ import {
 const EMPTY_RANGE: Range = { min: null, max: null };
 
 export function HeroSearch({ defaultMode = "off-plan" }: { defaultMode?: string }) {
+  const { prefs } = usePreferences();
   const router = useRouter();
   const [mode, setMode] = useState(
     HERO_TABS.some((t) => t.value === defaultMode) ? defaultMode : "off-plan",
@@ -139,7 +141,7 @@ export function HeroSearch({ defaultMode = "off-plan" }: { defaultMode?: string 
           ) : tab.size ? (
             <div className="flex flex-col gap-1">
               <span className="text-[11px] font-medium text-bz-muted">
-                Size (ft²)
+                Size ({areaUnitLabel(prefs.area_unit)})
               </span>
               <div className="px-1 pt-1.5">
                 <DualRangeSlider
@@ -148,7 +150,7 @@ export function HeroSearch({ defaultMode = "off-plan" }: { defaultMode?: string 
                   max={tab.size.max}
                   step={tab.size.step}
                   initial={size}
-                  format={(n) => `${n.toLocaleString("en-US")} ft²`}
+                  format={(n) => formatArea(n, prefs.area_unit)}
                   onChange={setSize}
                 />
               </div>

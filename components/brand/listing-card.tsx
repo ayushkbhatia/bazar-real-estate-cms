@@ -20,6 +20,13 @@ export type ListingCardProps = {
   beds: number | string;
   baths: number | string;
   area: number | string;
+  /**
+   * Unit glyph rendered after `area`. Defaults to "ft²" — the schema unit —
+   * so every existing call site is unchanged. Client wrappers
+   * (`ListingCardPriced`, `SimilarCard`) pass "m²" along with a converted
+   * `area` when the visitor has picked metric.
+   */
+  areaUnit?: string;
   badge?: string;
   badgeKind?: "ink" | "accent" | "success" | "warn" | "danger";
   imgLabel?: string;
@@ -178,6 +185,7 @@ export function ListingCard({
   beds,
   baths,
   area,
+  areaUnit = "ft²",
   badge,
   badgeKind = "ink",
   imgLabel,
@@ -223,7 +231,7 @@ export function ListingCard({
             <div className="flex gap-3 text-[12px] text-bz-muted">
               <span>{beds} bd</span>
               <span>{baths} ba</span>
-              <span>{area} ft²</span>
+              <span>{area} {areaUnit}</span>
             </div>
           </div>
         </div>
@@ -274,7 +282,7 @@ export function ListingCard({
           <div className="flex gap-3 mt-2 text-[12px] text-bz-muted">
             <span>{beds} bedrooms</span>
             <span>{baths} bathrooms</span>
-            <span>{area} ft²</span>
+            <span>{area} {areaUnit}</span>
           </div>
         </div>
       </article>
@@ -313,7 +321,7 @@ export function ListingCard({
             <Bath size={14} strokeWidth={1.6} /> {baths}
           </span>
           <span className="flex items-center gap-1">
-            <Maximize2 size={14} strokeWidth={1.6} /> {area} ft²
+            <Maximize2 size={14} strokeWidth={1.6} /> {area} {areaUnit}
           </span>
         </div>
       </div>

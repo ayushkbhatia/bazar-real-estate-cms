@@ -7,6 +7,7 @@ vi.mock("next/navigation", () => ({
 
 import { HeroSearch } from "./hero-search";
 import { HERO_TABS } from "@/lib/hero-search-config";
+import { PreferencesProvider } from "@/lib/preferences";
 
 /**
  * The hero card was narrowed to 55% of its former desktop width. These specs
@@ -21,7 +22,13 @@ const FULL_WIDTH_PX = 880;
 const NARROW_WIDTH_PX = 484;
 
 function renderCard() {
-  const { container } = render(<HeroSearch />);
+  // The size slider labels itself in the visitor's area unit, so the hero
+  // reads `usePreferences` and needs the provider the public layout supplies.
+  const { container } = render(
+    <PreferencesProvider>
+      <HeroSearch />
+    </PreferencesProvider>,
+  );
   const form = container.querySelector("form");
   if (!form) throw new Error("hero search form not found");
   return form;

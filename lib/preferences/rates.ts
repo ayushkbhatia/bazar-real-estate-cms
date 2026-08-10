@@ -1,36 +1,37 @@
 /**
- * FX rates. Static by design.
+ * FX rates. Two currencies, one of them a peg — so there is nothing to fetch.
  *
- * The AED is pegged to the USD at 3.6725 AED/USD and has been since 1997, so
- * USD conversion is a constant, not a market rate. A daily cron once existed to
- * pull ECB rates, but it only ever wrote to module memory that nothing read —
- * these constants were always what the site used. The cron was removed rather
- * than wired up, because there is nothing for it to do.
+ * Every price in the schema is stored in AED, so rates here are expressed as
+ * "units of X per 1 AED".
  *
- * Rates are expressed as "units of X per 1 AED" (AED → other), because every
- * price in the schema is stored in AED.
+ * The AED has been pegged to the USD at **3.6725 AED/USD** since 1997. There
+ * is no market rate to look up, no daily drift, and no env var: `USD_PER_AED`
+ * is the exact reciprocal and is the only conversion the site performs.
+ * (It previously came from `NEXT_PUBLIC_FX_USD_PER_AED`, defaulting to a
+ * rounded 0.272 — 0.08% low, and a knob nobody should be able to turn.)
  *
- * CAVEAT: the EUR is NOT pegged to the AED — it floats against the dollar, so
- * the figure below drifts. It is a display convenience on a marketplace that
- * prices in AED, not a quote. If EUR accuracy ever matters, it needs a live
- * source; USD never will.
+ * EUR was offered briefly and removed: it floats, so it would have needed a
+ * live source, a refresh path, and a stale-value story for a number that is
+ * only ever decorative on a marketplace that prices in AED. See
+ * docs/decisions/ADR-0006-currency-aed-usd-only.md before adding a third
+ * currency — that ADR records what shipping a floating one actually costs.
  */
 
-import { usdPerAed } from "@/lib/env";
 import type { Currency } from "./types";
 
-/** USD is the peg (1 / 3.6725). EUR is approximated at ~0.92 EUR/USD. */
-const FALLBACK_RATES: Record<Currency, number> = {
+/** The CBUAE peg. Fixed since 1997. */
+export const AED_PER_USD = 3.6725;
+
+/** Exact reciprocal of the peg — 1 AED in USD. */
+export const USD_PER_AED = 1 / AED_PER_USD;
+
+export const RATES: Record<Currency, number> = {
   AED: 1,
-  USD: 0.272,
-  EUR: 0.25, // ≈ 0.272 USD/AED × 0.92 EUR/USD
+  USD: USD_PER_AED,
 };
 
 export function getRate(currency: Currency): number {
-  if (currency === "AED") return 1;
-  if (currency === "USD") return usdPerAed();
-  if (currency === "EUR") return FALLBACK_RATES.EUR;
-  return 1;
+  return RATES[currency] ?? 1;
 }
 
 /** Convert AED → target currency. Always returns a positive finite number. */

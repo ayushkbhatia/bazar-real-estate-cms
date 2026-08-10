@@ -4,7 +4,12 @@ import {
   ListingCard,
   type ListingCardProps,
 } from "@/components/brand/listing-card";
-import { formatPrice, usePreferences } from "@/lib/preferences";
+import {
+  areaUnitLabel,
+  formatAreaValue,
+  formatPrice,
+  usePreferences,
+} from "@/lib/preferences";
 
 /**
  * T1-B cleanup: thin client wrapper around the brand-locked ListingCard
@@ -24,5 +29,15 @@ export function SimilarCard({ priceAed, ...props }: Props) {
   const { prefs } = usePreferences();
   const price =
     priceAed != null ? formatPrice(priceAed, prefs) : props.price;
-  return <ListingCard {...props} price={price} />;
+  const numericArea = typeof props.area === "number" ? props.area : null;
+  const area =
+    numericArea != null ? formatAreaValue(numericArea, prefs.area_unit) : props.area;
+  return (
+    <ListingCard
+      {...props}
+      price={price}
+      area={area}
+      areaUnit={areaUnitLabel(prefs.area_unit)}
+    />
+  );
 }

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { LayoutGrid, Maximize2, BedDouble } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
+import { AreaText } from "../../../_components/area-text";
 
 /**
  * Sprint 4c (backfilled): floor plan section on the property detail page.
@@ -65,7 +66,7 @@ export function FloorPlanSection({
         <FactPill
           icon={<Maximize2 size={13} strokeWidth={1.6} />}
           label="Built-up"
-          value={builtUpFt2 ? `${builtUpFt2.toLocaleString()} ft²` : "—"}
+          value={<AreaText ft2={builtUpFt2} />}
         />
       </div>
     </section>
@@ -79,7 +80,7 @@ function FactPill({
 }: {
   icon: React.ReactNode;
   label: string;
-  value: string;
+  value: React.ReactNode;
 }) {
   return (
     <div className="flex items-center gap-2 px-3 py-2 rounded border border-bz-border bg-bz-bg">

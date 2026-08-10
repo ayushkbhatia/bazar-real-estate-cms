@@ -16,7 +16,9 @@ import { Eyebrow } from "@/components/brand/eyebrow";
  * there is nothing to say beyond the key-facts tiles above.
  */
 
-export type SpecRow = { label: string; value: string; note?: string };
+/** `value` is a ReactNode so rows can carry a client-side unit-aware
+ *  renderer (`<AreaText>`) rather than a baked-in "ft²" string. */
+export type SpecRow = { label: string; value: React.ReactNode; note?: string };
 
 export function SpecificationTable({
   rows,

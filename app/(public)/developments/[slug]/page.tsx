@@ -41,6 +41,7 @@ import {
 } from "@/lib/queries/development-unit-plans";
 import { MapEmbed } from "../../p/[slug]/_components/map-embed";
 import { FloatingCtaTarget } from "../../_components/floating-cta-context";
+import { AreaText } from "../../_components/area-text";
 import {
   getDevelopmentMeta,
   listOtherDevelopmentsByDeveloper,
@@ -441,7 +442,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                     <div>
                       <div className="text-[14px] font-medium">{fp.label}</div>
                       <div className="text-[11.5px] text-bz-ink-2">
-                        {fp.area_ft2 ? `${fp.area_ft2.toLocaleString()} ft²` : "—"}
+                        <AreaText ft2={fp.area_ft2} />
                       </div>
                     </div>
                   </div>

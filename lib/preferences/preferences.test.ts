@@ -1,15 +1,27 @@
 import { describe, expect, it } from "vitest";
 import { decodePrefs, encodePrefs } from "./cookie";
-import { formatArea, formatPrice, formatPricePerArea } from "./formatters";
-import { convertFromAed, getRate } from "./rates";
-import { DEFAULT_PREFERENCES, isAreaUnit, isCurrency } from "./types";
+import {
+  areaUnitLabel,
+  convertArea,
+  formatArea,
+  formatAreaRange,
+  formatAreaValue,
+  formatPrice,
+  formatPricePerArea,
+  toFt2,
+} from "./formatters";
+import { AED_PER_USD, convertFromAed, getRate } from "./rates";
+import { CURRENCIES, DEFAULT_PREFERENCES, isAreaUnit, isCurrency } from "./types";
 
 describe("preferences/types", () => {
   it("type guards accept valid values", () => {
     expect(isCurrency("AED")).toBe(true);
     expect(isCurrency("USD")).toBe(true);
-    expect(isCurrency("EUR")).toBe(true);
     expect(isCurrency("GBP")).toBe(false);
+    // EUR was offered briefly and removed — see ADR-0006. An old cookie
+    // carrying it must decode to the AED default, not resurrect the option.
+    expect(isCurrency("EUR")).toBe(false);
+    expect(CURRENCIES).toEqual(["AED", "USD"]);
     expect(isCurrency(null)).toBe(false);
     expect(isAreaUnit("ft2")).toBe(true);
     expect(isAreaUnit("m2")).toBe(true);
@@ -37,9 +49,17 @@ describe("preferences/cookie", () => {
   });
 
   it("partial values fall back to defaults", () => {
-    expect(decodePrefs("c=EUR")).toEqual({
-      currency: "EUR",
-      area_unit: "ft2",
+    expect(decodePrefs("a=m2")).toEqual({
+      currency: "AED",
+      area_unit: "m2",
+      locale: "en",
+    });
+  });
+
+  it("a stale EUR cookie decodes to the AED default", () => {
+    expect(decodePrefs("c=EUR&a=m2")).toEqual({
+      currency: "AED",
+      area_unit: "m2",
       locale: "en",
     });
   });
@@ -68,11 +88,11 @@ describe("preferences/rates", () => {
     expect(Number.isFinite(usd)).toBe(true);
   });
 
-  it("EUR is roughly USD * 0.92", () => {
-    const usd = convertFromAed(1_000_000, "USD");
-    const eur = convertFromAed(1_000_000, "EUR");
-    expect(eur).toBeLessThan(usd);
-    expect(eur).toBeGreaterThan(usd * 0.85);
+  it("USD is the exact peg, not a rounded approximation", () => {
+    expect(AED_PER_USD).toBe(3.6725);
+    expect(getRate("USD")).toBe(1 / 3.6725);
+    // 3.6725 AED buys exactly one dollar.
+    expect(convertFromAed(3.6725, "USD")).toBeCloseTo(1, 12);
   });
 
   it("handles non-finite gracefully", () => {
@@ -82,12 +102,11 @@ describe("preferences/rates", () => {
 });
 
 describe("preferences/formatters", () => {
-  it("formatPrice renders AED, USD, EUR with compact M/K", () => {
+  it("formatPrice renders AED and USD with compact M/K", () => {
     expect(formatPrice(4_200_000, { currency: "AED" })).toBe("AED 4.20M");
     expect(formatPrice(750_000, { currency: "AED" })).toBe("AED 750K");
     expect(formatPrice(500, { currency: "AED" })).toBe("AED 500");
     expect(formatPrice(4_200_000, { currency: "USD" })).toMatch(/^\$ \d+\.\d{2}M$/);
-    expect(formatPrice(4_200_000, { currency: "EUR" })).toMatch(/^€ \d+\.\d{2}M$/);
   });
 
   it("formatPrice handles nullish input", () => {
@@ -98,6 +117,40 @@ describe("preferences/formatters", () => {
   it("formatArea converts ft² to m² when requested", () => {
     expect(formatArea(1000, "ft2")).toBe("1,000 ft²");
     expect(formatArea(1000, "m2")).toMatch(/^9[2-3] m²$/); // 1000 ft² ≈ 92.9 m²
+  });
+
+  it("formatArea handles nullish input", () => {
+    expect(formatArea(null)).toBe("—");
+    expect(formatArea(undefined, "m2")).toBe("—");
+  });
+
+  it("areaUnitLabel returns the glyph for each unit", () => {
+    expect(areaUnitLabel("ft2")).toBe("ft²");
+    expect(areaUnitLabel("m2")).toBe("m²");
+    expect(areaUnitLabel()).toBe("ft²");
+  });
+
+  it("formatAreaValue omits the unit so markup can render it separately", () => {
+    expect(formatAreaValue(1000, "ft2")).toBe("1,000");
+    expect(formatAreaValue(1000, "m2")).toBe("93");
+    expect(formatAreaValue(null, "m2")).toBe("—");
+  });
+
+  it("convertArea and toFt2 round-trip", () => {
+    const m2 = convertArea(2325, "m2");
+    expect(m2).toBeCloseTo(216, 0);
+    expect(toFt2(m2, "m2")).toBeCloseTo(2325, 6);
+    // ft² is the storage unit, so both are identity there.
+    expect(convertArea(2325, "ft2")).toBe(2325);
+    expect(toFt2(2325, "ft2")).toBe(2325);
+  });
+
+  it("formatAreaRange collapses, converts, and drops empties", () => {
+    expect(formatAreaRange(1240, 1480, "ft2")).toBe("1,240 – 1,480 ft²");
+    expect(formatAreaRange(1240, 1240, "ft2")).toBe("1,240 ft²");
+    expect(formatAreaRange(1240, null, "ft2")).toBe("1,240 ft²");
+    expect(formatAreaRange(null, null, "ft2")).toBeNull();
+    expect(formatAreaRange(1076.39, null, "m2")).toBe("100 m²");
   });
 
   it("formatPricePerArea reflects both currency and unit", () => {

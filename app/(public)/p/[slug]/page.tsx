@@ -145,6 +145,7 @@ import { AgentCard } from "./_components/agent-card";
 import { FloatingCtaTarget } from "../../_components/floating-cta-context";
 import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
 import { PropertyFaq } from "./_components/property-faq";
+import { AreaText, PricePerAreaText } from "../../_components/area-text";
 
 export const revalidate = 60;
 
@@ -284,7 +285,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   // Everything the listing stores that the key-facts tiles above don't
   // already show. Empty values are dropped, not rendered as em-dashes.
-  const specRows: SpecRow[] = [
+  const specRows: SpecRow[] = ([
     property.developments
       ? { label: "Development", value: property.developments.name }
       : null,
@@ -296,7 +297,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       ? { label: "Parking", value: `${property.parking_bays} bay${property.parking_bays === 1 ? "" : "s"}` }
       : null,
     property.plot_ft2
-      ? { label: "Plot size", value: `${property.plot_ft2.toLocaleString()} ft²` }
+      ? { label: "Plot size", value: <AreaText ft2={property.plot_ft2} /> }
       : null,
     // Deliberately no AED/ft² row — the price block in the header band
     // already carries it, and repeating it here reads as filler.
@@ -307,7 +308,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     property.service_charge_per_ft2
       ? {
           label: "Service charge",
-          value: `AED ${property.service_charge_per_ft2.toLocaleString()} / ft²`,
+          value: (
+            <PricePerAreaText aedPerFt2={property.service_charge_per_ft2} />
+          ),
           note: "Per year",
         }
       : null,
@@ -315,7 +318,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     property.published_at
       ? { label: "Listed", value: formatListedDate(property.published_at) }
       : null,
-  ].filter((r): r is SpecRow => r !== null);
+  ] as (SpecRow | null)[]).filter((r): r is SpecRow => r !== null);
 
   const siteUrl = (
     env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
@@ -452,9 +455,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           <FactTile
             icon={<Maximize2 size={16} strokeWidth={1.6} />}
             label="Built-up"
-            value={
-              property.built_up_ft2 ? `${property.built_up_ft2} ft²` : "—"
-            }
+            value={<AreaText ft2={property.built_up_ft2} />}
           />
           <FactTile
             icon={<Home size={16} strokeWidth={1.6} />}
@@ -676,7 +677,7 @@ function FactTile({
 }: {
   icon: React.ReactNode;
   label: string;
-  value: string;
+  value: React.ReactNode;
 }) {
   return (
     <div className="border border-bz-border rounded-lg p-4 bg-bz-surface">
