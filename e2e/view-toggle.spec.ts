@@ -11,7 +11,10 @@ import { test, expect } from "@playwright/test";
 test("view toggle switches grid → map → list without a refresh", async ({
   page,
 }) => {
-  await page.goto("/buy/search");
+  // /off-plan/search, not /buy/search: everything published is off-plan, so
+  // the sale route returns nothing and this spec skipped itself away — a
+  // dormant guard over exactly the code path it exists to protect.
+  await page.goto("/off-plan/search");
 
   // Default grid view shows property-card links; map view replaces them with
   // pins. If the DB has no listings, there's nothing to switch — skip.
