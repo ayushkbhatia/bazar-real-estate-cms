@@ -280,7 +280,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         className="px-4 md:px-12 py-16 grid grid-cols-1 md:grid-cols-2 gap-16 scroll-mt-16"
       >
         <div>
-          <Eyebrow>Overview</Eyebrow>
+          <Eyebrow>{sv("overview", "eyebrow") ?? "Overview"}</Eyebrow>
           <h2
             className="serif text-[30px] md:text-[44px] mt-3 leading-[1.1]"
             style={{ letterSpacing: "-0.025em" }}
@@ -320,7 +320,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     ),
     "master-plan": (
       <section id="master-plan" className="px-4 md:px-12 pb-16 scroll-mt-16">
-        <Eyebrow>Master plan</Eyebrow>
+        <Eyebrow>{sv("master-plan", "eyebrow") ?? "Master plan"}</Eyebrow>
         <h2
           className="serif text-[36px] mt-2"
           style={{ letterSpacing: "-0.02em" }}
@@ -372,6 +372,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <PaymentPlanSection
           id="payment-plan"
           plan={development.payment_plan}
+          eyebrow={sv("payment-plan", "eyebrow")}
           heading={sv("payment-plan", "heading") ?? "Cash flow timeline"}
           intro={sv("payment-plan", "intro")}
           developmentName={development.name}
@@ -383,8 +384,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           <div className="flex justify-between items-end flex-wrap gap-4 mb-6">
             <div>
               <Eyebrow>
-                Available units · {availableUnits.length} of{" "}
-                {development.total_units ?? units.length} remaining
+                {sv("units", "eyebrow") ??
+                  `Available units · ${availableUnits.length} of ${development.total_units ?? units.length} remaining`}
               </Eyebrow>
               <h2
                 className="serif text-[28px] md:text-[40px] mt-2"
@@ -410,7 +411,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           id="floor-plans"
           className="px-4 md:px-12 pb-16 scroll-mt-16"
         >
-          <Eyebrow>Floor plans</Eyebrow>
+          <Eyebrow>{sv("floor-plans", "eyebrow") ?? "Floor plans"}</Eyebrow>
           <h2
             className="serif text-[36px] mt-2"
             style={{ letterSpacing: "-0.02em" }}
@@ -474,9 +475,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     ) : null,
     "renders": galleryTiles.length > 0 ? (
         <section id="renders" className="px-4 md:px-12 pb-16 scroll-mt-16">
-          {/* Was reading an "eyebrow" field the renders section never
-              declared, so this always fell through to the literal. */}
-          <Eyebrow>The vision</Eyebrow>
+          <Eyebrow>{sv("renders", "eyebrow") ?? "The vision"}</Eyebrow>
           <h2
             className="serif text-[36px] mt-2"
             style={{ letterSpacing: "-0.02em" }}
@@ -522,6 +521,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           developmentSlug={development.slug}
           blocks={featureBlocks}
           amenitiesFallback={development.amenities}
+          eyebrow={sv("features", "eyebrow")}
           heading={sv("features", "heading")}
           intro={sv("features", "intro")}
         />
@@ -544,7 +544,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     ),
     "location": (
       <section id="location" className="px-4 md:px-12 pb-16 scroll-mt-16">
-        <Eyebrow>Location</Eyebrow>
+        <Eyebrow>{sv("location", "eyebrow") ?? "Location"}</Eyebrow>
         <h2
           className="serif text-[32px] mt-2 leading-tight"
           style={{ letterSpacing: "-0.018em" }}
@@ -582,7 +582,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     ),
     "developer": development.developer_profile ? (
         <section id="developer" className="px-4 md:px-12 pb-16 scroll-mt-16">
-          <Eyebrow>Developer</Eyebrow>
+          <Eyebrow>{sv("developer", "eyebrow") ?? "Developer"}</Eyebrow>
           {/* The card below is built from the developer's own record, so an
               override introduces a section heading above it rather than
               overwriting the partner's name and profile copy. */}
@@ -627,6 +627,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <DeveloperProjectsStrip
           developerName={development.developer.name}
           siblings={siblingsByDeveloper}
+          eyebrow={sv("other-projects", "eyebrow")}
           heading={sv("other-projects", "heading")}
           intro={sv("other-projects", "intro")}
         />
@@ -636,6 +637,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <DevelopmentFaq
           development={development}
           curated={meta?.faq}
+          eyebrow={sv("faq", "eyebrow")}
           heading={sv("faq", "heading")}
           intro={sv("faq", "intro")}
         />
@@ -644,6 +646,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <LeadAdvisorBanner
         agent={leadAdvisor}
         developmentName={development.name}
+        eyebrow={sv("advisor", "eyebrow")}
         heading={sv("advisor", "heading")}
         intro={sv("advisor", "intro")}
         />

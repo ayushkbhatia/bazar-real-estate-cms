@@ -1,4 +1,4 @@
-import type { MasterPageDef, SectionDef } from "./types";
+import type { FieldDef, MasterPageDef, SectionDef } from "./types";
 
 /**
  * Sub-pages: templated pages that exist once per database record, rather than
@@ -117,6 +117,37 @@ function section(
   };
 }
 
+/**
+ * A section whose eyebrow, heading and intro are all overridable — the shape
+ * every block on a project page has. It sits alongside `section()` rather than
+ * replacing it because the area template's page reads only heading and intro;
+ * declaring an eyebrow there would put a third dead field in front of an
+ * editor, which is the problem this whole run has been unpicking.
+ *
+ * `eyebrowDefault` is quoted back in the field's help text, so an editor can
+ * see what they are replacing — including the ones the page assembles from the
+ * record, written here with the moving part in angle brackets.
+ */
+function copySection(
+  key: string,
+  label: string,
+  description: string,
+  eyebrowDefault: string,
+  opts: Partial<SectionDef> & { extraFields?: FieldDef[] } = {},
+): SectionDef {
+  const { extraFields = [], defaults = {}, ...rest } = opts;
+  return section(key, label, description, {
+    fields: [
+      optionalText("eyebrow", "Eyebrow", `Blank keeps “${eyebrowDefault}”.`),
+      optionalText("heading", "Heading", "Blank keeps the built-in heading."),
+      optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
+      ...extraFields,
+    ],
+    defaults: { eyebrow: null, heading: null, intro: null, ...defaults },
+    ...rest,
+  });
+}
+
 export const DEVELOPMENT_SECTIONS: SectionDef[] = [
   section("hero", "Hero", "Cover image, name, headline stats and the brochure.", {
     locked: true,
@@ -156,87 +187,131 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
     fields: [],
     defaults: {},
   }),
-  section("overview", "Overview", "Project summary and key facts."),
-  section("master-plan", "Master plan", "Site plan image and description."),
-  section("payment-plan", "Payment plan", "Instalment schedule and calculator.", {
-    dataNote: "The schedule comes from the development record.",
-  }),
-  section("units", "Units", "Availability table.", {
-    dataNote: "Rows come from the development's units.",
-  }),
-  section("floor-plans", "Floor plans", "Layouts, gated behind a lead form.", {
-    dataNote: "Plans come from the development's floor-plan records.",
-  }),
-  section("renders", "Renders", "Gallery of project imagery.", {
-    dataNote:
-      "Leave the gallery empty to show the images attached to the development record (roles render/gallery).",
-    fields: [
-      optionalText("heading", "Heading", "Blank keeps the built-in heading."),
-      optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
-      {
-        key: "images",
-        label: "Gallery",
-        kind: "list",
-        itemLabel: "image",
-        max: 12,
-        help: "Adding one takes over the whole gallery, in this order.",
-        fields: [
-          { key: "enabled", label: "Show this image", kind: "toggle" },
-          { key: "image", label: "Image", kind: "image" },
-          {
-            key: "caption",
-            label: "Caption",
-            kind: "text",
-            max: 120,
-            optional: true,
-          },
-        ],
-      },
-    ],
-    defaults: { heading: null, intro: null, images: [] },
-  }),
-  section("features", "Features", "Amenity and finish highlights."),
-  section(
+  copySection(
+    "overview",
+    "Overview",
+    "Project summary and key facts.",
+    "Overview",
+  ),
+  copySection(
+    "master-plan",
+    "Master plan",
+    "Site plan image and description.",
+    "Master plan",
+  ),
+  copySection(
+    "payment-plan",
+    "Payment plan",
+    "Instalment schedule and calculator.",
+    "Payment plan · <plan name>",
+    { dataNote: "The schedule comes from the development record." },
+  ),
+  copySection(
+    "units",
+    "Units",
+    "Availability table.",
+    "Available units · <n> of <total> remaining",
+    { dataNote: "Rows come from the development's units." },
+  ),
+  copySection(
+    "floor-plans",
+    "Floor plans",
+    "Layouts, gated behind a lead form.",
+    "Floor plans",
+    { dataNote: "Plans come from the development's floor-plan records." },
+  ),
+  copySection(
+    "renders",
+    "Renders",
+    "Gallery of project imagery.",
+    "The vision",
+    {
+      dataNote:
+        "Leave the gallery empty to show the images attached to the development record (roles render/gallery).",
+      extraFields: [
+        {
+          key: "images",
+          label: "Gallery",
+          kind: "list",
+          itemLabel: "image",
+          max: 12,
+          help: "Adding one takes over the whole gallery, in this order.",
+          fields: [
+            { key: "enabled", label: "Show this image", kind: "toggle" },
+            { key: "image", label: "Image", kind: "image" },
+            {
+              key: "caption",
+              label: "Caption",
+              kind: "text",
+              max: 120,
+              optional: true,
+            },
+          ],
+        },
+      ],
+      defaults: { images: [] },
+    },
+  ),
+  copySection(
+    "features",
+    "Features",
+    "Amenity and finish highlights.",
+    "Within <project name>",
+  ),
+  copySection(
     "unit-plans",
     "Units & floor plans",
     "Unit-type buttons and the layouts under each.",
+    "Units",
     {
       dataNote:
         "Types and layouts come from the project's unit types — edit them in “Units & floor plans” above. Up to four layouts show per type.",
-      fields: [
-        optionalText("eyebrow", "Eyebrow", "Blank keeps “Units”."),
-        optionalText("heading", "Heading", "Blank keeps “Unit types & layouts”."),
-        optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
-      ],
-      defaults: { eyebrow: null, heading: null, intro: null },
     },
   ),
-  section("location", "Location", "Map and surroundings."),
-  section(
+  copySection("location", "Location", "Map and surroundings.", "Location"),
+  copySection(
     "nearby",
     "Future neighbours",
     "Other projects going up around this one.",
+    "Future developments around · <area>",
     {
       dataNote:
         "Projects come from the neighbours picked in Page content — or, left empty, the same area's published developments.",
-      fields: [
-        optionalText(
-          "eyebrow",
-          "Eyebrow",
-          "Blank keeps “Future developments around · <area>”.",
-        ),
-        optionalText("heading", "Heading", "Blank keeps “Future neighbours”."),
-        optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
-      ],
-      defaults: { eyebrow: null, heading: null, intro: null },
     },
   ),
-  section("developer", "Developer", "Profile of the developer behind it."),
-  section("other-projects", "Other projects", "Siblings by the same developer.", {
-    dataNote: "Cards come from the developer's other published projects.",
-  }),
-  section("faq", "FAQs", "Questions, with FAQPage schema for search."),
-  section("advisor", "Advisor banner", "Lead advisor contact prompt."),
+  copySection(
+    "developer",
+    "Developer",
+    "Profile of the developer behind it.",
+    "Developer",
+    {
+      dataNote:
+        "The card itself — name, founding year, profile copy — comes from the developer record.",
+    },
+  ),
+  copySection(
+    "other-projects",
+    "Other projects",
+    "Siblings by the same developer.",
+    "Other projects by <developer>",
+    { dataNote: "Cards come from the developer's other published projects." },
+  ),
+  copySection(
+    "faq",
+    "FAQs",
+    "Questions, with FAQPage schema for search.",
+    "FAQ",
+  ),
+  copySection(
+    "advisor",
+    "Advisor banner",
+    "Lead advisor contact prompt.",
+    "Lead advisor",
+    {
+      dataNote:
+        "The banner — advisor, photo, pull quote — comes from the advisor's team record.",
+    },
+  ),
 ];
 
 /**

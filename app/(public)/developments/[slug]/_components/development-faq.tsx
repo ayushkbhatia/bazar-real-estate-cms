@@ -9,6 +9,7 @@ type Props = {
   /** Custom-curated FAQ from `development.meta.faq` overrides the synth set. */
   curated?: FaqEntry[];
   /** Sub-page overrides. Blank keeps the built-in copy. */
+  eyebrow?: string | null;
   heading?: string | null;
   intro?: string | null;
 };
@@ -22,6 +23,7 @@ type Props = {
 export function DevelopmentFaq({
   development,
   curated,
+  eyebrow,
   heading,
   intro,
 }: Props) {
@@ -44,7 +46,7 @@ export function DevelopmentFaq({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
       />
-      <Eyebrow>FAQ</Eyebrow>
+      <Eyebrow>{eyebrow ?? "FAQ"}</Eyebrow>
       <h2
         className="serif text-[36px] mt-2 leading-tight max-w-[28ch]"
         style={{ letterSpacing: "-0.02em" }}

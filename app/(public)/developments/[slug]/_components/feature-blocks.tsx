@@ -9,6 +9,7 @@ type Props = {
   /** Fallback amenities to synthesise blocks from if `blocks` is empty. */
   amenitiesFallback?: string[];
   /** Sub-page overrides. Blank keeps the built-in copy. */
+  eyebrow?: string | null;
   heading?: string | null;
   intro?: string | null;
 };
@@ -28,6 +29,7 @@ export function FeatureBlocks({
   developmentSlug,
   blocks,
   amenitiesFallback,
+  eyebrow,
   heading,
   intro,
 }: Props) {
@@ -38,7 +40,7 @@ export function FeatureBlocks({
 
   return (
     <section className="px-4 md:px-12 py-16 scroll-mt-16 border-t border-bz-border">
-      <Eyebrow>Within {developmentName}</Eyebrow>
+      <Eyebrow>{eyebrow ?? `Within ${developmentName}`}</Eyebrow>
       <h2
         className="serif text-[36px] mt-2 leading-tight max-w-[28ch]"
         style={{ letterSpacing: "-0.02em" }}
