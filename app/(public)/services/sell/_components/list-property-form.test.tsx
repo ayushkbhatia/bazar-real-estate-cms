@@ -2,7 +2,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ListPropertyForm } from "./list-property-form";
+import { ListPropertyForm, type SellFormCopy } from "./list-property-form";
 
 const submitListingLead = vi.fn(async (_input: unknown) => ({
   status: "ok" as const,
@@ -38,8 +38,33 @@ const AREAS = [
   },
 ];
 
-function renderForm() {
-  return render(<ListPropertyForm areas={AREAS} deskPhone="+971 2 632 2223" />);
+function renderForm(copy?: SellFormCopy) {
+  return render(
+    <ListPropertyForm
+      areas={AREAS}
+      deskPhone="+971 2 632 2223"
+      copy={copy}
+    />,
+  );
+}
+
+/** Drive the two steps and submit. Leaves the confirmation on screen. */
+async function submitBrief(user: ReturnType<typeof userEvent.setup>) {
+  await user.type(
+    screen.getByRole("combobox", { name: /location/i }),
+    "Saadiyat Island",
+  );
+  await user.keyboard("{Escape}");
+  await user.click(screen.getByRole("button", { name: /^apartment$/i }));
+  await user.click(screen.getByRole("button", { name: /^2$/ }));
+  await user.click(screen.getByRole("button", { name: /^continue$/i }));
+
+  await user.type(screen.getByLabelText(/^full name/i), "Aisha Al Nuaimi");
+  await user.type(screen.getByLabelText(/^mobile/i), "501234567");
+  await user.type(screen.getByLabelText(/^email/i), "aisha@example.com");
+  await user.click(
+    screen.getByRole("button", { name: /match me with an advisor/i }),
+  );
 }
 
 beforeEach(() => {
@@ -140,5 +165,60 @@ describe("ListPropertyForm", () => {
       await screen.findByText(/mariam will call you this afternoon/i),
     ).toBeInTheDocument();
     expect(screen.getByText(/BZ-SL-48210/)).toBeInTheDocument();
+  });
+
+  describe("the confirmation badge", () => {
+    /** Same lead, but nobody covers the area — the desk picks it up. */
+    const noAdvisor = () =>
+      submitListingLead.mockResolvedValueOnce({
+        status: "ok" as const,
+        reference: "BZ-SL-48211",
+        summary: "For sale · Saadiyat Island · Apartment · 2 bed",
+        callWindow: "afternoon" as const,
+        advisor: null,
+      } as never);
+
+    it("draws the uploaded logo when the desk picks the lead up", async () => {
+      const user = userEvent.setup();
+      noAdvisor();
+      renderForm({
+        deskAvatarUrl: "https://cdn.example.com/bazar-logo.png",
+        deskAvatarAlt: "Bazar Real Estate",
+        deskInitials: "BZ",
+      });
+
+      await submitBrief(user);
+
+      const logo = await screen.findByAltText("Bazar Real Estate");
+      expect(logo).toBeInTheDocument();
+      // The monogram is what the logo replaced, so it must be gone.
+      expect(screen.queryByText("BZ")).not.toBeInTheDocument();
+    });
+
+    it("keeps the monogram when no logo is uploaded", async () => {
+      const user = userEvent.setup();
+      noAdvisor();
+      renderForm({ deskAvatarUrl: null, deskInitials: "BZ" });
+
+      await submitBrief(user);
+
+      expect(await screen.findByText("BZ")).toBeInTheDocument();
+    });
+
+    it("leaves a matched advisor their own initials, logo or not", async () => {
+      const user = userEvent.setup();
+      renderForm({
+        deskAvatarUrl: "https://cdn.example.com/bazar-logo.png",
+        deskAvatarAlt: "Bazar Real Estate",
+      });
+
+      await submitBrief(user);
+
+      // The logo stands in for the desk, never for a named person.
+      expect(await screen.findByText("MA")).toBeInTheDocument();
+      expect(
+        screen.queryByAltText("Bazar Real Estate"),
+      ).not.toBeInTheDocument();
+    });
   });
 });
