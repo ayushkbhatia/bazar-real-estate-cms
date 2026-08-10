@@ -11,9 +11,17 @@ import { quarterLabel } from "@/lib/schemas/development";
 type Props = {
   developerName: string;
   siblings: DevelopmentIndexRow[];
+  /** Sub-page overrides. Blank keeps the built-in copy. */
+  heading?: string | null;
+  intro?: string | null;
 };
 
-export function DeveloperProjectsStrip({ developerName, siblings }: Props) {
+export function DeveloperProjectsStrip({
+  developerName,
+  siblings,
+  heading,
+  intro,
+}: Props) {
   if (!siblings.length) return null;
   return (
     <section className="px-4 md:px-12 py-16 scroll-mt-16 border-t border-bz-border">
@@ -24,8 +32,13 @@ export function DeveloperProjectsStrip({ developerName, siblings }: Props) {
             className="serif text-[32px] mt-2"
             style={{ letterSpacing: "-0.02em" }}
           >
-            More from this developer
+            {heading ?? "More from this developer"}
           </h2>
+          {intro ? (
+            <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+              {intro}
+            </p>
+          ) : null}
         </div>
       </div>
       <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
