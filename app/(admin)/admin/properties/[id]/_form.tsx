@@ -38,6 +38,7 @@ import { setPropertyDeveloper, updateProperty } from "./_actions";
 import { LocationPicker } from "./_components/location-picker";
 import { AmenitiesPicker } from "./_components/amenities-picker";
 import { NewAreaDialog } from "./_components/new-area-dialog";
+import { NewDeveloperDialog } from "./_components/new-developer-dialog";
 import type { AmenityOption } from "@/lib/amenities";
 
 export type AreaOption = { id: string; name: string; kind: string };
@@ -59,6 +60,8 @@ type Props = {
    * as a broken page rather than a permission boundary.
    */
   canCreateArea?: boolean;
+  /** Same, for the developer catalogue. */
+  canCreateDeveloper?: boolean;
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -139,6 +142,7 @@ export function PropertyEditForm({
   mapboxAvailable,
   amenityOptions,
   canCreateArea = false,
+  canCreateDeveloper = false,
 }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -185,6 +189,16 @@ export function PropertyEditForm({
   // a router.refresh() mid-edit would drop unsaved fields.
   const [areaOptions, setAreaOptions] = useState<AreaOption[]>(areas);
   useEffect(() => setAreaOptions(areas), [areas]);
+
+  // Same for developers, which are added from the Overview tab.
+  const [developerOptions, setDeveloperOptions] =
+    useState<DeveloperOption[]>(developers);
+  useEffect(() => setDeveloperOptions(developers), [developers]);
+
+  const sortedDevelopers = useMemo(
+    () => [...developerOptions].sort((a, b) => a.name.localeCompare(b.name)),
+    [developerOptions],
+  );
 
   const sortedAreas = useMemo(
     () =>
@@ -403,13 +417,26 @@ export function PropertyEditForm({
           ) : null}
 
           <div className="flex flex-col gap-1.5 max-w-md">
-            <Label htmlFor="developer_id">Developer</Label>
+            <div className="flex items-center justify-between gap-3">
+              <Label htmlFor="developer_id">Developer</Label>
+              {canCreateDeveloper ? (
+                <NewDeveloperDialog
+                  onCreated={(developer) => {
+                    setDeveloperOptions((prev) => [
+                      ...prev.filter((d) => d.id !== developer.id),
+                      developer,
+                    ]);
+                    onDeveloperChange(developer.id);
+                  }}
+                />
+              ) : null}
+            </div>
             <Select value={developerId} onValueChange={onDeveloperChange}>
               <SelectTrigger id="developer_id">
                 <SelectValue placeholder="Choose a developer" />
               </SelectTrigger>
               <SelectContent>
-                {developers.map((d) => (
+                {sortedDevelopers.map((d) => (
                   <SelectItem key={d.id} value={d.id}>
                     {d.name}
                   </SelectItem>

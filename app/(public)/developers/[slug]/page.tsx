@@ -9,10 +9,16 @@ import {
   getDeveloperBySlug,
   listDeveloperDevelopments,
 } from "@/lib/queries/developers-extras";
-import { DEVELOPERS, getDeveloperDir } from "../_data";
+import { findDirectoryEntry, listDirectory } from "../_directory";
 
-export function generateStaticParams() {
-  return DEVELOPERS.map((d) => ({ slug: d.slug }));
+/**
+ * Both sources, not just the code-owned one: a developer created in the CMS is
+ * advertised by the sitemap the moment it exists, so it has to be a known
+ * param rather than relying on the dynamic fallback.
+ */
+export async function generateStaticParams() {
+  const directory = await listDirectory();
+  return directory.map((d) => ({ slug: d.slug }));
 }
 
 /** Fallback mark for a developer with no logo in the directory. */
@@ -33,14 +39,19 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const dir = getDeveloperDir(slug);
-  const detail = dir ? null : await getDeveloperBySlug(slug);
-  const name = dir?.name ?? detail?.name;
+  const [entry, detail] = await Promise.all([
+    findDirectoryEntry(slug),
+    getDeveloperBySlug(slug),
+  ]);
+  const name = entry?.name ?? detail?.name;
   if (!name) return { title: "Developer not found" };
   return {
     title: `${name} · Bazar Real Estate`,
-    description: dir?.blurb ?? detail?.description ?? undefined,
-    alternates: { canonical: `/developers/${slug}` },
+    description: detail?.description ?? entry?.blurb ?? undefined,
+    // A developer the catalogue also carries is reachable at two slugs — the
+    // shipped `modon` and the row's `modon-properties`. The grid links to the
+    // row, and only the row's page has the projects, so that is the canonical.
+    alternates: { canonical: `/developers/${entry?.slug ?? slug}` },
   };
 }
 
@@ -56,16 +67,26 @@ export default async function DeveloperProfilePage({
   // the mirror problem — a row but no directory entry — and must resolve too,
   // because app/sitemap.ts advertises every DB developer and a 404 on an
   // advertised URL is a soft-404 against the whole section.
-  const dir = getDeveloperDir(slug);
-  const detail = await getDeveloperBySlug(slug);
-  if (!dir && !detail) notFound();
+  const [entry, detail] = await Promise.all([
+    findDirectoryEntry(slug),
+    getDeveloperBySlug(slug),
+  ]);
+  if (!entry && !detail) notFound();
 
-  const name = dir?.name ?? detail?.name ?? "";
+  const name = detail?.name ?? entry?.name ?? "";
   const developments =
     detail && !detail.id.startsWith("seed:")
       ? await listDeveloperDevelopments(detail.id)
       : [];
-  const description = detail?.description ?? dir?.blurb ?? null;
+  const description = detail?.description ?? entry?.blurb ?? null;
+  // Shipped art first — it is optically normalised against the rest of the
+  // set — then whatever the operator uploaded on the record.
+  const logo =
+    entry?.trimmed ??
+    (entry?.master ? { src: entry.master.src, w: entry.master.w, h: entry.master.h } : null) ??
+    (detail?.logo_url ?? entry?.uploaded
+      ? { src: (detail?.logo_url ?? entry?.uploaded)!, w: 200, h: 200 }
+      : null);
 
   return (
     <div className="bg-bz-bg">
@@ -84,20 +105,19 @@ export default async function DeveloperProfilePage({
       <section className="px-4 md:px-12 pt-8 pb-14 md:pb-16 border-b border-bz-border">
         <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 md:gap-12 items-center">
           <div className="flex items-center justify-center bg-white rounded-xl border border-bz-border w-[160px] h-[160px] md:w-[200px] md:h-[200px] p-7">
-            {dir ? (
+            {logo ? (
               <Image
-                src={dir.logo}
-                alt={dir.name}
-                width={dir.w}
-                height={dir.h}
+                src={logo.src}
+                alt={name}
+                width={logo.w}
+                height={logo.h}
                 className="h-full w-full object-contain"
                 sizes="200px"
                 priority
               />
             ) : (
-              // Created in the CMS, so there is no trimmed logo PNG in
-              // /public/developers for it. Initials stand in until one is added
-              // to the directory.
+              // No art on either side. Initials stand in until a logo is
+              // uploaded on the developer's record.
               <span
                 className="serif text-[44px] leading-none text-bz-ink-2"
                 aria-hidden="true"

@@ -229,13 +229,15 @@ export async function countSubPagesByKind(): Promise<
 > {
   if (!isSupabaseConfigured) return {};
   const supabase = createSupabasePublicClient();
-  const [developments, areas] = await Promise.all([
+  const [developments, areas, developers] = await Promise.all([
     supabase.from("developments").select("id", { count: "exact", head: true }),
     supabase.from("areas").select("id", { count: "exact", head: true }),
+    supabase.from("developers").select("id", { count: "exact", head: true }),
   ]);
   return {
     development: developments.count ?? 0,
     area: areas.count ?? 0,
+    developer: developers.count ?? 0,
   };
 }
 

@@ -10,6 +10,7 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { mediaPublicUrl } from "@/lib/media";
 import { SEED_DEVELOPERS } from "@/lib/seeds/developers";
 import type {
   DeveloperProfileRow,
@@ -48,7 +49,19 @@ export type DeveloperListEntry = {
   name: string;
   founded_year: number | null;
   description: string | null;
+  /** Public URL of the uploaded logo, or null to fall back to a mark. */
+  logo_url: string | null;
 };
+
+const LIST_COLUMNS =
+  "id, slug, name, founded_year, description, logo:logo_id(storage_key)";
+
+/** PostgREST returns an embedded row as an object or a one-element array. */
+function firstStorageKey(value: unknown): string | null {
+  const single = Array.isArray(value) ? value[0] : value;
+  const key = (single as { storage_key?: unknown } | null)?.storage_key;
+  return typeof key === "string" ? key : null;
+}
 
 // ─────────────────────────────────────────────────────────────────────
 // listDevelopers
@@ -59,16 +72,20 @@ export async function listDevelopers(): Promise<DeveloperListEntry[]> {
     const sb = createSupabasePublicClient();
     const { data, error } = await sb
       .from("developers")
-      .select("id, slug, name, founded_year, description")
+      .select(LIST_COLUMNS)
       .order("name", { ascending: true });
     if (error || !data || data.length === 0) return seedDeveloperList();
-    return data.map((r) => ({
-      id: r.id,
-      slug: r.slug,
-      name: r.name,
-      founded_year: r.founded_year,
-      description: r.description,
-    }));
+    return data.map((r) => {
+      const key = firstStorageKey(r.logo);
+      return {
+        id: r.id,
+        slug: r.slug,
+        name: r.name,
+        founded_year: r.founded_year,
+        description: r.description,
+        logo_url: key ? mediaPublicUrl(key) : null,
+      };
+    });
   } catch {
     return seedDeveloperList();
   }
@@ -81,7 +98,79 @@ function seedDeveloperList(): DeveloperListEntry[] {
     name: s.name,
     founded_year: s.founded_year,
     description: s.blurb,
+    logo_url: null,
   }));
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// listDeveloperRecords — the admin catalogue view
+// ─────────────────────────────────────────────────────────────────────
+
+export type DeveloperRecordRow = DeveloperListEntry & {
+  logo_id: string | null;
+  /** Published + draft developments filed under this developer. */
+  development_count: number;
+  /** Properties filed under it — what makes the row load-bearing. */
+  property_count: number;
+};
+
+/**
+ * Every developer with the counts that say whether it is in use.
+ *
+ * Three roundtrips whatever the catalogue size: the rows, then one pass over
+ * `developments` and one over `properties` tallied in memory. A `count()` per
+ * developer would be ~35 queries today and grows with every row staff add.
+ */
+export async function listDeveloperRecords(): Promise<DeveloperRecordRow[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    const sb = createSupabasePublicClient();
+    const [{ data: rows }, { data: developments }, { data: properties }] =
+      await Promise.all([
+        sb
+          .from("developers")
+          .select(`${LIST_COLUMNS}, logo_id`)
+          .order("name", { ascending: true }),
+        sb.from("developments").select("developer_id"),
+        sb.from("properties").select("developer_id"),
+      ]);
+    if (!rows) return [];
+
+    const tally = (list: { developer_id: string | null }[] | null) => {
+      const out = new Map<string, number>();
+      for (const r of list ?? []) {
+        if (r.developer_id) out.set(r.developer_id, (out.get(r.developer_id) ?? 0) + 1);
+      }
+      return out;
+    };
+    const devCounts = tally(developments);
+    const propCounts = tally(properties);
+
+    return rows.map((r) => {
+      const key = firstStorageKey(r.logo);
+      return {
+        id: r.id,
+        slug: r.slug,
+        name: r.name,
+        founded_year: r.founded_year,
+        description: r.description,
+        logo_url: key ? mediaPublicUrl(key) : null,
+        logo_id: r.logo_id,
+        development_count: devCounts.get(r.id) ?? 0,
+        property_count: propCounts.get(r.id) ?? 0,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+/** One developer record for the editor. Null when the id matches nothing. */
+export async function getDeveloperRecord(
+  id: string,
+): Promise<DeveloperRecordRow | null> {
+  const rows = await listDeveloperRecords();
+  return rows.find((r) => r.id === id) ?? null;
 }
 
 // ─────────────────────────────────────────────────────────────────────
@@ -121,7 +210,10 @@ export async function getDeveloperBySlug(
           name: dev.name,
           founded_year: dev.founded_year,
           description: dev.description,
-          logo_url: logoSingle?.storage_key ?? null,
+          // A storage key is not something a caller can put in an `src`, and
+          // this used to hand one back raw — every consumer would have had to
+          // know about buckets. Resolve it here, like the area hero does.
+          logo_url: logoSingle ? mediaPublicUrl(logoSingle.storage_key) : null,
           bio: p?.bio ?? null,
           headquarters: p?.headquarters ?? null,
           website: p?.website ?? null,

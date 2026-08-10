@@ -6,10 +6,9 @@ import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
-import { trimmedLogo } from "../_components/developer-logos";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
-import { DEVELOPERS_SORTED } from "./_data";
+import { initials, listDirectory } from "./_directory";
 
 export const metadata: Metadata = {
   title: "Developers · Bazar Real Estate",
@@ -47,8 +46,12 @@ function heroTitle(
 export default async function DevelopersPage() {
   // Section copy and order come from /admin/pages/master/developers. Anything
   // untouched falls back to the literals this page shipped with. The card grid
-  // itself is always the code-owned directory in `_data.ts`.
-  const content = await getMasterPageContent("developers");
+  // is the code-owned directory merged with the live catalogue, so a developer
+  // added in the CMS appears here without an editor step.
+  const [content, directory] = await Promise.all([
+    getMasterPageContent("developers"),
+    listDirectory(),
+  ]);
   const v = (key: string) => content.section(key)?.values ?? {};
   const heroV = v("hero");
   const dirV = v("directory");
@@ -103,69 +106,88 @@ export default async function DevelopersPage() {
           className="mb-10 md:mb-12"
         />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
-          {DEVELOPERS_SORTED.map((d) => {
-            // Unlike the home-page marquee, a developer with no trimmed asset
-            // still has to appear here — this grid is the master directory, so
-            // it falls back to the padded master canvas rather than skipping.
-            const trimmed = trimmedLogo(d.slug);
-            return (
-              <Link
-                key={d.slug}
-                href={`/developers/${d.slug}`}
-                className="group flex flex-col rounded-lg border border-bz-border bg-bz-surface overflow-hidden hover:border-bz-border-strong transition-colors"
-              >
-                <div className="flex items-center justify-center px-5 min-h-[140px] md:min-h-[152px]">
-                  {trimmed ? (
-                    // Fitting the trimmed art into a box that bounds both axes
-                    // is what evens out optical weight across the set — wide
-                    // wordmarks cap on width, tall lockups on height. Same box
-                    // as `DeveloperMarquee`, so both developer surfaces
-                    // normalise identically. See `developer-logos`.
-                    // `max-w-full` keeps the box inside the card on narrow
-                    // two-column viewports, where it is the tighter bound.
-                    <Image
-                      src={trimmed.src}
-                      alt={d.name}
-                      width={trimmed.w}
-                      height={trimmed.h}
-                      className="w-[132px] h-12 md:w-40 md:h-14 max-w-full object-contain"
-                      sizes="160px"
-                    />
-                  ) : (
-                    // The master PNGs are square canvases with padding baked
-                    // in, so they need a taller box to carry comparable weight.
-                    <Image
-                      src={d.logo}
-                      alt={d.name}
-                      width={d.w}
-                      height={d.h}
-                      className="h-20 md:h-24 w-auto object-contain"
-                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
-                    />
-                  )}
-                </div>
-                <div className="flex flex-col flex-1 p-5 border-t border-bz-border">
-                  <div
-                    className="serif text-[19px] leading-tight"
-                    style={{ letterSpacing: "-0.01em" }}
+          {directory.map((d) => (
+            <Link
+              key={d.slug}
+              href={`/developers/${d.slug}`}
+              className="group flex flex-col rounded-lg border border-bz-border bg-bz-surface overflow-hidden hover:border-bz-border-strong transition-colors"
+            >
+              <div className="flex items-center justify-center px-5 min-h-[140px] md:min-h-[152px]">
+                {d.trimmed ? (
+                  // Fitting the trimmed art into a box that bounds both axes
+                  // is what evens out optical weight across the set — wide
+                  // wordmarks cap on width, tall lockups on height. Same box
+                  // as `DeveloperMarquee`, so both developer surfaces
+                  // normalise identically. See `developer-logos`.
+                  // `max-w-full` keeps the box inside the card on narrow
+                  // two-column viewports, where it is the tighter bound.
+                  <Image
+                    src={d.trimmed.src}
+                    alt={d.name}
+                    width={d.trimmed.w}
+                    height={d.trimmed.h}
+                    className="w-[132px] h-12 md:w-40 md:h-14 max-w-full object-contain"
+                    sizes="160px"
+                  />
+                ) : d.master ? (
+                  // The master PNGs are square canvases with padding baked
+                  // in, so they need a taller box to carry comparable weight.
+                  <Image
+                    src={d.master.src}
+                    alt={d.name}
+                    width={d.master.w}
+                    height={d.master.h}
+                    className="h-20 md:h-24 w-auto object-contain"
+                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
+                  />
+                ) : d.uploaded ? (
+                  // Added in the CMS with a logo uploaded to the media
+                  // library. No trimmed variant exists for it, so it gets the
+                  // padded-canvas box.
+                  <Image
+                    src={d.uploaded}
+                    alt={d.name}
+                    width={240}
+                    height={240}
+                    className="h-20 md:h-24 w-auto object-contain"
+                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
+                  />
+                ) : (
+                  // No art at all — initials keep the card the same height as
+                  // its neighbours instead of collapsing the row.
+                  <span
+                    className="serif text-[34px] leading-none text-bz-ink-2"
+                    aria-hidden="true"
                   >
-                    {d.name}
-                  </div>
+                    {initials(d.name)}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col flex-1 p-5 border-t border-bz-border">
+                <div
+                  className="serif text-[19px] leading-tight"
+                  style={{ letterSpacing: "-0.01em" }}
+                >
+                  {d.name}
+                </div>
+                {d.blurb ? (
                   <p className="text-[12px] text-bz-ink-2 leading-snug mt-1.5 flex-1">
                     {d.blurb}
                   </p>
-                  <div className="flex items-center gap-1.5 mt-4 text-[12.5px] font-medium text-bz-accent">
-                    {cardCta}
-                    <ArrowRight
-                      size={13}
-                      strokeWidth={1.8}
-                      className="transition-transform group-hover:translate-x-0.5"
-                    />
-                  </div>
+                ) : (
+                  <p className="flex-1" />
+                )}
+                <div className="flex items-center gap-1.5 mt-4 text-[12.5px] font-medium text-bz-accent">
+                  {cardCta}
+                  <ArrowRight
+                    size={13}
+                    strokeWidth={1.8}
+                    className="transition-transform group-hover:translate-x-0.5"
+                  />
                 </div>
-              </Link>
-            );
-          })}
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
     ),
