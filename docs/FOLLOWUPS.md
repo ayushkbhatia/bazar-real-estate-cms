@@ -596,3 +596,21 @@ shows the trail.)
   `dld_comparables` is empty in production, so the card falls back to a
   figure-free state rather than inventing a trend. It renders the real
   24-month Saadiyat sparkline the moment the DLD import runs.
+
+- [developers] The catalogue and the shipped directory disagree about slugs.
+  `app/(public)/developers/_data.ts` ships `modon` / `imkan` / `sobha`; the
+  `developers` rows those listings actually reference are `modon-properties`,
+  `imkan-properties`, `sobha-realty`. The grid now merges on the normalised
+  name (`developerNameKey`) so neither is listed twice, and the superseded slug
+  canonicalises to the row — but the real fix is to align the two, then retire
+  `_data.ts` in favour of the catalogue plus uploaded logos. Logos are the only
+  thing keeping it: the 30 trimmed PNGs in `/public/developers` have no DB
+  equivalent for the launch partners.
+
+- [infra] `npm run lint` and `npm run test:run` walk `.claude/worktrees/`.
+  Neither `vitest.config.ts` nor `eslint.config.mjs` ignores it, so a local run
+  from the repo root picks up every sibling worktree — 613 test files instead of
+  109, and an ENOENT when another session's tree changes mid-run. CI is clean
+  (fresh checkout), so this only bites locally. Adding `.claude/**` to both
+  ignore lists is the fix; left alone here because other sessions are actively
+  working in those trees.

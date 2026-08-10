@@ -14,7 +14,7 @@ import type { MasterPageDef, SectionDef } from "./types";
 
 export const SUBPAGE_SLUG_PREFIX = "subpage/";
 
-export type SubPageKind = "development" | "area";
+export type SubPageKind = "development" | "area" | "developer";
 
 /**
  * Sub-page kinds, rendered as blocks on the Pages index the same way master
@@ -50,6 +50,15 @@ export const SUBPAGE_KINDS: SubPageKindDef[] = [
     description:
       "One project page per development, built from a shared template.",
     itemLabel: "project page",
+  },
+  {
+    kind: "developer",
+    label: "Developers",
+    publicPath: "/developers",
+    adminPath: "/admin/pages/sub/developer",
+    description:
+      "One profile per developer partner — the catalogue every listing and project files under.",
+    itemLabel: "developer",
   },
 ];
 

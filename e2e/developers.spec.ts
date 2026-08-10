@@ -28,6 +28,39 @@ test("/developers/aldar renders the developer profile", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("the directory lists a developer that only exists in the catalogue", async ({
+  page,
+}) => {
+  await page.goto("/developers");
+  // `national-holding` has no shipped logo in /public/developers — it is a row
+  // staff added, so it appears here only because the grid merges the catalogue
+  // in. Its card carries no image, which is the case the merge exists for.
+  const card = page.locator("a[href='/developers/national-holding']");
+  await expect(card).toBeVisible();
+  await expect(card.locator("img")).toHaveCount(0);
+});
+
+test("a developer carried by both sources is listed once", async ({ page }) => {
+  await page.goto("/developers");
+  // The shipped directory calls it `modon`, the catalogue row `modon-properties`.
+  // Merging on the normalised name is what stops two MODON cards rendering.
+  await expect(
+    page.locator("a[href='/developers/modon-properties']"),
+  ).toHaveCount(1);
+  await expect(page.locator("a[href='/developers/modon']")).toHaveCount(0);
+});
+
+test("the superseded developer slug still renders, canonical to the row", async ({
+  page,
+}) => {
+  await page.goto("/developers/modon");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.locator("link[rel=canonical]")).toHaveAttribute(
+    "href",
+    /\/developers\/modon-properties$/,
+  );
+});
+
 test("/developers/<unknown> 404s", async ({ page }) => {
   const response = await page.goto("/developers/this-developer-does-not-exist");
   expect(response?.status()).toBe(404);

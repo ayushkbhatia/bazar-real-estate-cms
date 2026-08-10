@@ -16,6 +16,7 @@ import {
   type PropertyEditInput,
 } from "@/lib/schemas/property";
 import { AREA_EDIT_ROLES } from "@/lib/schemas/area";
+import { DEVELOPER_EDIT_ROLES } from "@/lib/schemas/developer";
 import {
   PropertyEditForm,
   type AreaOption,
@@ -210,6 +211,8 @@ export default async function PropertyEditPage({ params }: PageProps) {
   // "New area" control only appears for roles the action will accept.
   const canCreateArea =
     !!me && (AREA_EDIT_ROLES as readonly string[]).includes(me.role);
+  const canCreateDeveloper =
+    !!me && (DEVELOPER_EDIT_ROLES as readonly string[]).includes(me.role);
   const presenceSelf = me
     ? {
         user_id: me.user_id,
@@ -287,6 +290,7 @@ export default async function PropertyEditPage({ params }: PageProps) {
             mapboxAvailable={isMapboxConfigured}
             amenityOptions={toOptions(taxonomy)}
             canCreateArea={canCreateArea}
+            canCreateDeveloper={canCreateDeveloper}
           />
         </div>
         <aside className="sticky top-6 flex flex-col gap-6">
