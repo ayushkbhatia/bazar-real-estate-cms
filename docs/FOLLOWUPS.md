@@ -31,6 +31,24 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [developments] Click-test the units & floor plans admin card.
+  `app/(admin)/admin/pages/sub/development/[slug]/_unit-plans-card.tsx` (~450
+  lines) shipped in #263 without ever being exercised in a browser — the
+  agent that wrote it had no staff credentials for `/admin/*`. Its server
+  actions (`_unit-actions.ts`), the schema and both RLS directions are
+  verified against the database; the UI is not. Walk one project through
+  save, reorder, hide, the media-library picker, add/remove a layout, and
+  deleting a unit type (which cascades its layouts). All 19 projects now
+  carry seeded records to edit, so there is plenty to click. "Done" is
+  either a clean pass or bugs filed.
+
+- [infra] Consider running the migration-number check as a pre-commit hook.
+  `scripts/check-migrations.sh` runs in CI and via `npm run db:check`, which
+  catches a duplicate ordering key at push time. A hook would catch it at
+  rebase time instead, which is when it is actually cheap to fix. Not done
+  now because the repo has no hook infrastructure at all and adding husky
+  for one check is a poor trade.
+
 - [megamenu] Media library picker for featured tiles.
   `megamenu_featured_tiles.media_asset_id` is in the schema (FK to
   `media_assets`) but the admin editor at `app/(admin)/admin/navigation/
