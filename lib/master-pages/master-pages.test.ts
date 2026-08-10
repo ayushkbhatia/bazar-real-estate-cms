@@ -31,6 +31,7 @@ describe("registry", () => {
       "insights",
       "about",
       "contact",
+      "sell",
       "qr",
       "contact-qr",
     ]);

@@ -32,6 +32,7 @@ import { SERVICES_PAGE } from "./sections/services";
 import { INSIGHTS_PAGE } from "./sections/insights";
 import { ABOUT_PAGE } from "./sections/about";
 import { CONTACT_PAGE } from "./sections/contact";
+import { SELL_PAGE } from "./sections/sell";
 import { QR_PAGE } from "./sections/qr";
 import { CONTACT_QR_PAGE } from "./sections/contact-qr";
 
@@ -1379,6 +1380,7 @@ export const MASTER_PAGES: MasterPageDef[] = [
   INSIGHTS_PAGE,
   ABOUT_PAGE,
   CONTACT_PAGE,
+  SELL_PAGE,
   QR_PAGE,
   CONTACT_QR_PAGE,
 ];
