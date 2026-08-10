@@ -81,6 +81,18 @@ describe("sell master page", () => {
     expect(cards.every((c) => c.image?.media_id === null)).toBe(true);
   });
 
+  it("offers the desk badge as an image, falling back to a monogram", () => {
+    const field = sell.sections
+      .find((s) => s.key === "confirmation")
+      ?.fields.find((f) => f.key === "desk_avatar");
+    expect(field?.kind).toBe("image");
+    // No logo picked by default, and `label` is what the badge draws instead —
+    // the same "BZ" monogram the page rendered before this was an image field.
+    const badge = values("confirmation").desk_avatar as ImageValue;
+    expect(badge.media_id).toBeNull();
+    expect(badge.label).toBe("BZ");
+  });
+
   it("carries the placeholders the confirmation screen fills in", () => {
     const confirmation = values("confirmation");
     // The advisor and the call window are only known after routing, so they

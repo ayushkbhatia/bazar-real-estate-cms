@@ -10,6 +10,7 @@ import {
   useState,
   useTransition,
 } from "react";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -74,14 +75,26 @@ export type SellFormCopy = Partial<{
   summaryDesk: string | null;
   deskName: string | null;
   deskRole: string | null;
+  /** Monogram drawn in the round badge while no logo is picked. */
   deskInitials: string | null;
+  /** Logo for the round badge. Resolved from the picked media asset. */
+  deskAvatarUrl: string | null;
+  deskAvatarAlt: string | null;
   callLabel: string | null;
   stepsLabel: string | null;
   steps: [string, string][];
   anotherLabel: string | null;
 }>;
 
-const FALLBACK_COPY = {
+type ResolvedCopy = {
+  [K in keyof Required<SellFormCopy>]: K extends "steps"
+    ? [string, string][]
+    : K extends "deskAvatarUrl" | "deskAvatarAlt"
+      ? string | null
+      : string;
+};
+
+const FALLBACK_COPY: ResolvedCopy = {
   step1Label: "Your property",
   step2Label: "Your details",
   continueLabel: "Continue",
@@ -104,6 +117,8 @@ const FALLBACK_COPY = {
   deskName: "Bazar advisory desk",
   deskRole: "Abu Dhabi · Sell, rent and management",
   deskInitials: "BZ",
+  deskAvatarUrl: null,
+  deskAvatarAlt: null,
   callLabel: "Call now",
   stepsLabel: "What happens next",
   steps: [
@@ -118,14 +133,10 @@ const FALLBACK_COPY = {
     ],
   ] as [string, string][],
   anotherLabel: "Submit another property",
-} as const;
-
-type ResolvedCopy = {
-  [K in keyof typeof FALLBACK_COPY]: (typeof FALLBACK_COPY)[K];
 };
 
 function resolveCopy(copy: SellFormCopy | undefined): ResolvedCopy {
-  const pick = <K extends keyof typeof FALLBACK_COPY>(key: K) => {
+  const pick = <K extends keyof ResolvedCopy>(key: K) => {
     const value = copy?.[key];
     if (key === "steps") {
       return (Array.isArray(value) && value.length > 0
@@ -155,6 +166,8 @@ function resolveCopy(copy: SellFormCopy | undefined): ResolvedCopy {
     summaryDesk: pick("summaryDesk"),
     deskName: pick("deskName"),
     deskRole: pick("deskRole"),
+    deskAvatarUrl: pick("deskAvatarUrl"),
+    deskAvatarAlt: pick("deskAvatarAlt"),
     deskInitials: pick("deskInitials"),
     callLabel: pick("callLabel"),
     stepsLabel: pick("stepsLabel"),
@@ -810,9 +823,23 @@ function Confirmed({
       </p>
 
       <div className="flex flex-wrap gap-3.5 items-center mt-6 p-4 border border-bz-border rounded-lg">
-        <span className="size-[52px] rounded-full bg-bz-accent text-bz-accent-fg serif text-[18px] inline-flex items-center justify-center shrink-0">
-          {advisor?.initials ?? copy.deskInitials}
-        </span>
+        {/* A matched advisor keeps their own monogram — the logo stands in for
+            the desk, not for a named person. */}
+        {!advisor && copy.deskAvatarUrl ? (
+          <span className="relative size-[52px] rounded-full overflow-hidden bg-bz-surface-2 border border-bz-border shrink-0">
+            <Image
+              src={copy.deskAvatarUrl}
+              alt={copy.deskAvatarAlt ?? copy.deskName}
+              fill
+              sizes="52px"
+              className="object-cover"
+            />
+          </span>
+        ) : (
+          <span className="size-[52px] rounded-full bg-bz-accent text-bz-accent-fg serif text-[18px] inline-flex items-center justify-center shrink-0">
+            {advisor?.initials ?? copy.deskInitials}
+          </span>
+        )}
         <div className="flex-1 min-w-[140px]">
           <div className="text-[15px] font-medium">
             {advisor?.name ?? copy.deskName}

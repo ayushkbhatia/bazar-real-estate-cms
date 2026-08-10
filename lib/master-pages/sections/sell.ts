@@ -19,6 +19,7 @@
  * Every `defaults` value is the copy the page rendered before it became
  * editable, so an un-edited page renders byte-identically to before.
  */
+import { emptyImage } from "../types";
 import type { MasterPageDef } from "../types";
 import {
   text,
@@ -179,7 +180,11 @@ export const SELL_PAGE: MasterPageDef = {
         area("summary_desk", "Summary tail · no advisor matched", { max: 240 }),
         text("desk_name", "Desk fallback · name", { max: 80 }),
         text("desk_role", "Desk fallback · role line", { max: 120 }),
-        text("desk_initials", "Desk fallback · initials", { max: 4 }),
+        image(
+          "desk_avatar",
+          "Desk fallback · badge",
+          "Fills the round badge when no advisor is matched — a square logo works best, and it is cropped to a circle. Leave unset to keep the “BZ” monogram.",
+        ),
         text("call_label", "Call button", { max: 60 }),
         text("steps_label", "Timeline heading", { max: 80 }),
         {
@@ -206,7 +211,9 @@ export const SELL_PAGE: MasterPageDef = {
           "— with the Abu Dhabi desk, who will put the right advisor on it.",
         desk_name: "Bazar advisory desk",
         desk_role: "Abu Dhabi · Sell, rent and management",
-        desk_initials: "BZ",
+        // `label` is the monogram the badge falls back to while no logo is
+        // picked, which is what the page drew before this was an image field.
+        desk_avatar: emptyImage("BZ"),
         call_label: "Call now",
         steps_label: "What happens next",
         steps: [

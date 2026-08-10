@@ -260,7 +260,11 @@ export default async function ListYourPropertyPage() {
                 summaryDesk: str(confirmV, "summary_desk"),
                 deskName: str(confirmV, "desk_name"),
                 deskRole: str(confirmV, "desk_role"),
-                deskInitials: str(confirmV, "desk_initials"),
+                // The image field's `label` carries the monogram the badge
+                // falls back to while no logo is picked.
+                deskInitials: img(confirmV, "desk_avatar")?.label ?? null,
+                deskAvatarUrl: img(confirmV, "desk_avatar")?.url ?? null,
+                deskAvatarAlt: img(confirmV, "desk_avatar")?.alt ?? null,
                 callLabel: str(confirmV, "call_label"),
                 stepsLabel: str(confirmV, "steps_label"),
                 steps: list<{
