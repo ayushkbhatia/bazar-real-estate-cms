@@ -545,6 +545,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <NearbyDevelopments
           areaName={development.area?.name ?? "this area"}
           nearby={neighbours}
+          eyebrow={sv("nearby", "eyebrow")}
+          heading={sv("nearby", "heading")}
+          intro={sv("nearby", "intro")}
         />
     ),
     "developer": development.developer_profile ? (

@@ -212,9 +212,25 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
     },
   ),
   section("location", "Location", "Map and surroundings."),
-  section("nearby", "Nearby developments", "Map of other projects in the area.", {
-    dataNote: "Projects come from the same area's published developments.",
-  }),
+  section(
+    "nearby",
+    "Future neighbours",
+    "Other projects going up around this one.",
+    {
+      dataNote:
+        "Projects come from the neighbours picked in Page content — or, left empty, the same area's published developments.",
+      fields: [
+        optionalText(
+          "eyebrow",
+          "Eyebrow",
+          "Blank keeps “Future developments around · <area>”.",
+        ),
+        optionalText("heading", "Heading", "Blank keeps “Future neighbours”."),
+        optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
+      ],
+      defaults: { eyebrow: null, heading: null, intro: null },
+    },
+  ),
   section("developer", "Developer", "Profile of the developer behind it."),
   section("other-projects", "Other projects", "Siblings by the same developer.", {
     dataNote: "Cards come from the developer's other published projects.",
