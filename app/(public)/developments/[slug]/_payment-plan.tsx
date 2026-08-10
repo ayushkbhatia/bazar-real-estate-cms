@@ -38,6 +38,7 @@ function formatAed(n: number): string {
 export function PaymentPlanSection({
   id,
   plan,
+  eyebrow,
   heading,
   intro,
   developmentName,
@@ -45,6 +46,8 @@ export function PaymentPlanSection({
 }: {
   id: string;
   plan: PaymentPlan;
+  /** Sub-page override. Blank keeps “Payment plan · <plan name>”. */
+  eyebrow?: string | null;
   heading: string;
   /** Sub-page override. Blank leaves the section without a standfirst. */
   intro?: string | null;
@@ -171,7 +174,7 @@ export function PaymentPlanSection({
     >
       <div className="flex justify-between items-end flex-wrap gap-4 mb-6 md:mb-8">
         <div>
-          <Eyebrow>Payment plan · {plan.name}</Eyebrow>
+          <Eyebrow>{eyebrow ?? `Payment plan · ${plan.name}`}</Eyebrow>
           <h2
             className="serif text-[28px] md:text-[40px] mt-2"
             style={{ letterSpacing: "-0.02em" }}

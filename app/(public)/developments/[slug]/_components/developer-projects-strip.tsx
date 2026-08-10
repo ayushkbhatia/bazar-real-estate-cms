@@ -12,6 +12,7 @@ type Props = {
   developerName: string;
   siblings: DevelopmentIndexRow[];
   /** Sub-page overrides. Blank keeps the built-in copy. */
+  eyebrow?: string | null;
   heading?: string | null;
   intro?: string | null;
 };
@@ -19,6 +20,7 @@ type Props = {
 export function DeveloperProjectsStrip({
   developerName,
   siblings,
+  eyebrow,
   heading,
   intro,
 }: Props) {
@@ -27,7 +29,7 @@ export function DeveloperProjectsStrip({
     <section className="px-4 md:px-12 py-16 scroll-mt-16 border-t border-bz-border">
       <div className="flex items-end justify-between flex-wrap gap-3 mb-6">
         <div>
-          <Eyebrow>Other projects by {developerName}</Eyebrow>
+          <Eyebrow>{eyebrow ?? `Other projects by ${developerName}`}</Eyebrow>
           <h2
             className="serif text-[32px] mt-2"
             style={{ letterSpacing: "-0.02em" }}

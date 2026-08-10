@@ -12,6 +12,7 @@ import type { SeedAgent } from "@/lib/seeds/agents";
 export function LeadAdvisorBanner({
   agent,
   developmentName,
+  eyebrow,
   heading,
   intro,
 }: {
@@ -22,6 +23,7 @@ export function LeadAdvisorBanner({
    * record — name, title, pull quote — so these sit above the card rather
    * than replacing any of it, and only appear once someone writes them.
    */
+  eyebrow?: string | null;
   heading?: string | null;
   intro?: string | null;
 }) {
@@ -69,7 +71,7 @@ export function LeadAdvisorBanner({
           />
         )}
         <div>
-          <Eyebrow className="text-white/60">Lead advisor</Eyebrow>
+          <Eyebrow className="text-white/60">{eyebrow ?? "Lead advisor"}</Eyebrow>
           <Link
             href={`/agents/${agent.slug}`}
             className="block mt-2 serif text-[32px] leading-tight hover:text-bz-accent-soft transition-colors"

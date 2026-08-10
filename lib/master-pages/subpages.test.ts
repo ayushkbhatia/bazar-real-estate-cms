@@ -223,6 +223,29 @@ describe("reordering and gallery", () => {
     expect(DEVELOPMENT_SECTIONS.map((s) => s.key)).toContain("nearby");
   });
 
+  it("gives every content section an overridable eyebrow", () => {
+    // The eyebrow is the one line of a section an editor could never touch.
+    // Hero has no eyebrow to override (it leads with the tagline pill) and
+    // sub-navigation has no copy at all.
+    for (const s of DEVELOPMENT_SECTIONS) {
+      if (s.key === "hero" || s.key === "subnav") continue;
+      expect(
+        s.fields.map((f) => f.key).slice(0, 3),
+        `${s.key} should lead with eyebrow/heading/intro`,
+      ).toEqual(["eyebrow", "heading", "intro"]);
+    }
+  });
+
+  it("keeps the eyebrow off the area template", () => {
+    // Area guides render their own eyebrow from the hero section only, so
+    // declaring one per section there would put a dead field in front of an
+    // editor — the exact problem the development template just shed.
+    for (const s of AREA_SECTIONS) {
+      if (s.key === "hero") continue;
+      expect(s.fields.map((f) => f.key)).not.toContain("eyebrow");
+    }
+  });
+
   it("lets an editor override all three lines of the future-neighbours copy", () => {
     // The section carried heading/intro fields the page never read, and no
     // eyebrow field at all, so the whole block was effectively hardcoded.
