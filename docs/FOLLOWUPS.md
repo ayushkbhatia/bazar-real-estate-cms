@@ -588,14 +588,6 @@ shows the trail.)
   /areas and search only. Worth a "feature in nav" toggle on the area record if
   the client asks.
 
-- [sell] The /services/sell FAQ is code copy, not CMS copy.
-  `app/(public)/services/sell/_content.ts` holds fee figures, notice periods
-  and procedure claims (2% transfer fee, NOC AED 500–5,000, twelve months'
-  vacancy notice, Tawtheeq, ADREC, DMT) that the design handoff flags for
-  compliance sign-off. They live in one file so a correction is a one-line
-  edit, but a correction still needs a deploy. Move them into the master-pages
-  editor when the client wants to own the copy.
-
 - [sell] Advisor coverage still comes from `lib/seeds/agents.ts`.
   `lib/queries/lead-routing.ts` matches an owner lead to an advisor in three
   passes: the CMS rules at /admin/settings/routing, then the seed roster's

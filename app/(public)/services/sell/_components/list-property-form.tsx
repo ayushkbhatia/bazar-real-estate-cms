@@ -48,11 +48,145 @@ import { submitListingLead, type ListPropertyAdvisor } from "../_actions";
 const DRAFT_KEY = "bazar:list-property:draft";
 const MAX_SUGGESTIONS = 5;
 
+/**
+ * Every string on the card that isn't a question, an option or a validation
+ * message — all editable from Pages → List your property. Each is optional and
+ * falls back to the literal below, which is the copy the form shipped with:
+ * the master-page registry holds the same values as its defaults, so the two
+ * only diverge if someone edits one and not the other.
+ */
+export type SellFormCopy = Partial<{
+  step1Label: string | null;
+  step2Label: string | null;
+  continueLabel: string | null;
+  reassurance: string | null;
+  detailsTitle: string | null;
+  detailsSub: string | null;
+  consentLabel: string | null;
+  submitLabel: string | null;
+  submitPendingLabel: string | null;
+  backLabel: string | null;
+  editLabel: string | null;
+  referenceLabel: string | null;
+  headingMatched: string | null;
+  headingDesk: string | null;
+  summaryMatched: string | null;
+  summaryDesk: string | null;
+  deskName: string | null;
+  deskRole: string | null;
+  deskInitials: string | null;
+  callLabel: string | null;
+  stepsLabel: string | null;
+  steps: [string, string][];
+  anotherLabel: string | null;
+}>;
+
+const FALLBACK_COPY = {
+  step1Label: "Your property",
+  step2Label: "Your details",
+  continueLabel: "Continue",
+  reassurance:
+    "Takes about two minutes. Nothing is published without your written go-ahead.",
+  detailsTitle: "Where should the advisor reach you?",
+  detailsSub:
+    "Your details go to one advisor only. We don't sell them on, and you won't be added to a mailing list.",
+  consentLabel:
+    "I agree that Bazar Real Estate may contact me about this property by phone, WhatsApp and email.",
+  submitLabel: "Match me with an advisor",
+  submitPendingLabel: "Matching…",
+  backLabel: "Back",
+  editLabel: "Edit",
+  referenceLabel: "Matched · reference",
+  headingMatched: "{advisor} will call you {when}.",
+  headingDesk: "An advisor will call you {when}.",
+  summaryMatched: "— assigned to the advisor who covers your community.",
+  summaryDesk: "— with the Abu Dhabi desk, who will put the right advisor on it.",
+  deskName: "Bazar advisory desk",
+  deskRole: "Abu Dhabi · Sell, rent and management",
+  deskInitials: "BZ",
+  callLabel: "Call now",
+  stepsLabel: "What happens next",
+  steps: [
+    ["Today", "{advisor} calls to confirm the details and answer anything outstanding."],
+    [
+      "Within 48 hours",
+      "Free valuation visit, photography brief and a pricing recommendation.",
+    ],
+    [
+      "Day 3–5",
+      "Form A signed, listing goes live across Bazar and the UAE portals.",
+    ],
+  ] as [string, string][],
+  anotherLabel: "Submit another property",
+} as const;
+
+type ResolvedCopy = {
+  [K in keyof typeof FALLBACK_COPY]: (typeof FALLBACK_COPY)[K];
+};
+
+function resolveCopy(copy: SellFormCopy | undefined): ResolvedCopy {
+  const pick = <K extends keyof typeof FALLBACK_COPY>(key: K) => {
+    const value = copy?.[key];
+    if (key === "steps") {
+      return (Array.isArray(value) && value.length > 0
+        ? value
+        : FALLBACK_COPY.steps) as ResolvedCopy[K];
+    }
+    return (typeof value === "string" && value.trim() !== ""
+      ? value
+      : FALLBACK_COPY[key]) as ResolvedCopy[K];
+  };
+  return {
+    step1Label: pick("step1Label"),
+    step2Label: pick("step2Label"),
+    continueLabel: pick("continueLabel"),
+    reassurance: pick("reassurance"),
+    detailsTitle: pick("detailsTitle"),
+    detailsSub: pick("detailsSub"),
+    consentLabel: pick("consentLabel"),
+    submitLabel: pick("submitLabel"),
+    submitPendingLabel: pick("submitPendingLabel"),
+    backLabel: pick("backLabel"),
+    editLabel: pick("editLabel"),
+    referenceLabel: pick("referenceLabel"),
+    headingMatched: pick("headingMatched"),
+    headingDesk: pick("headingDesk"),
+    summaryMatched: pick("summaryMatched"),
+    summaryDesk: pick("summaryDesk"),
+    deskName: pick("deskName"),
+    deskRole: pick("deskRole"),
+    deskInitials: pick("deskInitials"),
+    callLabel: pick("callLabel"),
+    stepsLabel: pick("stepsLabel"),
+    steps: pick("steps"),
+    anotherLabel: pick("anotherLabel"),
+  };
+}
+
+/**
+ * The advisor and the call window are only known once the lead has been
+ * routed, so the confirmation copy carries them as placeholders rather than as
+ * text an editor could type. An unknown token is left alone rather than
+ * blanked, so a typo reads as a typo instead of losing the sentence.
+ */
+function fillTokens(
+  template: string,
+  tokens: { advisor?: string; when?: string },
+): string {
+  return template
+    .replace(/\{advisor\}/g, tokens.advisor ?? "")
+    .replace(/\{when\}/g, tokens.when ?? "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 type Props = {
   /** The areas index the location field autocompletes against. */
   areas: LeadAreaOption[];
   /** Fallback line for "Call now" when no advisor covers the area. */
   deskPhone: string | null;
+  /** Editable copy from the master page. Omitted, the form uses its own. */
+  copy?: SellFormCopy;
 };
 
 type Confirmation = {
@@ -73,7 +207,8 @@ const STEP1_FIELDS = [
   "urgency",
 ] as const;
 
-export function ListPropertyForm({ areas, deskPhone }: Props) {
+export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
+  const c = useMemo(() => resolveCopy(copy), [copy]);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
@@ -219,13 +354,13 @@ export function ListPropertyForm({ areas, deskPhone }: Props) {
 
   return (
     <div className="rounded-lg border border-bz-border bg-bz-surface overflow-hidden">
-      <StepHeader step={step} />
+      <StepHeader step={step} labels={[c.step1Label, c.step2Label]} />
 
       <p aria-live="polite" className="sr-only">
         {step === 1
-          ? "Step 1 of 2 — your property"
+          ? `Step 1 of 2 — ${c.step1Label}`
           : step === 2
-            ? "Step 2 of 2 — your details"
+            ? `Step 2 of 2 — ${c.step2Label}`
             : "Enquiry sent. You are matched with an advisor."}
       </p>
 
@@ -408,12 +543,11 @@ export function ListPropertyForm({ areas, deskPhone }: Props) {
             onClick={goToStep2}
             className="mt-7 w-full h-12 rounded bg-bz-accent text-bz-accent-fg text-[14.5px] font-medium inline-flex items-center justify-center gap-2 transition-colors hover:bg-bz-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
           >
-            Continue
+            {c.continueLabel}
             <ArrowRight size={16} strokeWidth={1.7} />
           </button>
           <p className="text-[11.5px] text-bz-muted mt-3 text-center leading-relaxed">
-            Takes about two minutes. Nothing is published without your written
-            go-ahead.
+            {c.reassurance}
           </p>
         </div>
 
@@ -426,7 +560,7 @@ export function ListPropertyForm({ areas, deskPhone }: Props) {
               onClick={() => setStep(1)}
               className="h-9 px-3 rounded text-[13px] text-bz-ink-2 hover:bg-bz-surface-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
             >
-              Edit
+              {c.editLabel}
             </button>
           </div>
 
@@ -434,11 +568,10 @@ export function ListPropertyForm({ areas, deskPhone }: Props) {
             className="serif text-[24px] md:text-[26px] mt-6"
             style={{ letterSpacing: "-0.02em" }}
           >
-            Where should the advisor reach you?
+            {c.detailsTitle}
           </h3>
           <p className="text-[13px] text-bz-ink-2 mt-1.5 leading-relaxed">
-            Your details go to one advisor only. We don&apos;t sell them on, and
-            you won&apos;t be added to a mailing list.
+            {c.detailsSub}
           </p>
 
           <FieldShell
@@ -516,10 +649,7 @@ export function ListPropertyForm({ areas, deskPhone }: Props) {
               {...register("consent")}
               className="mt-0.5 size-4 accent-[var(--bz-navy)]"
             />
-            <span>
-              I agree that Bazar Real Estate may contact me about this property
-              by phone, WhatsApp and email.
-            </span>
+            <span>{c.consentLabel}</span>
           </label>
           {errors.consent?.message ? (
             <p role="alert" className="text-[12px] text-bz-danger mt-1.5">
@@ -543,14 +673,14 @@ export function ListPropertyForm({ areas, deskPhone }: Props) {
               className="h-12 px-4 rounded text-[14px] text-bz-ink-2 inline-flex items-center gap-2 hover:bg-bz-surface-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
             >
               <ArrowLeft size={15} strokeWidth={1.7} />
-              Back
+              {c.backLabel}
             </button>
             <button
               type="submit"
               disabled={pending}
               className="flex-1 h-12 rounded bg-bz-accent text-bz-accent-fg text-[14.5px] font-medium transition-colors hover:bg-bz-accent-hover disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
             >
-              {pending ? "Matching…" : "Match me with an advisor"}
+              {pending ? c.submitPendingLabel : c.submitLabel}
             </button>
           </div>
         </div>
@@ -560,6 +690,7 @@ export function ListPropertyForm({ areas, deskPhone }: Props) {
         <Confirmed
           confirmation={confirmation}
           deskPhone={deskPhone}
+          copy={c}
           onAnother={startAnother}
         />
       ) : null}
@@ -569,10 +700,16 @@ export function ListPropertyForm({ areas, deskPhone }: Props) {
 
 /* ── step header ─────────────────────────────────────────────────── */
 
-function StepHeader({ step }: { step: 1 | 2 | 3 }) {
+function StepHeader({
+  step,
+  labels,
+}: {
+  step: 1 | 2 | 3;
+  labels: [string, string];
+}) {
   const tabs: [string, string][] = [
-    ["01", "Your property"],
-    ["02", "Your details"],
+    ["01", labels[0]],
+    ["02", labels[1]],
   ];
   return (
     <div className="flex border-b border-bz-border">
@@ -628,29 +765,24 @@ function StepHeader({ step }: { step: 1 | 2 | 3 }) {
 function Confirmed({
   confirmation,
   deskPhone,
+  copy,
   onAnother,
 }: {
   confirmation: Confirmation;
   deskPhone: string | null;
+  copy: ResolvedCopy;
   onAnother: () => void;
 }) {
   const { advisor } = confirmation;
   const firstName = advisor?.name.split(" ")[0] ?? null;
   const phone = advisor?.phone ?? deskPhone;
-  const nextSteps: [string, string][] = [
-    [
-      "Today",
-      `${firstName ?? "Your advisor"} calls to confirm the details and answer anything outstanding.`,
-    ],
-    [
-      "Within 48 hours",
-      "Free valuation visit, photography brief and a pricing recommendation.",
-    ],
-    [
-      "Day 3–5",
-      "Form A signed, listing goes live across Bazar and the UAE portals.",
-    ],
-  ];
+  // "Your advisor" rather than a blank when nobody is matched: the timeline
+  // still describes a call that will happen, just not by name.
+  const advisorToken = firstName ?? "Your advisor";
+  const nextSteps: [string, string][] = copy.steps.map(([when, what]) => [
+    when,
+    fillTokens(what, { advisor: advisorToken }),
+  ]);
 
   return (
     <div className="p-6 md:p-7">
@@ -659,7 +791,7 @@ function Confirmed({
           <Check size={16} strokeWidth={2} />
         </span>
         <span className="eyebrow" style={{ color: "var(--bz-accent)" }}>
-          Matched · reference {confirmation.reference}
+          {copy.referenceLabel} {confirmation.reference}
         </span>
       </div>
 
@@ -667,29 +799,28 @@ function Confirmed({
         className="serif text-[26px] md:text-[30px] mt-4 leading-[1.15]"
         style={{ letterSpacing: "-0.025em" }}
       >
-        {firstName
-          ? `${firstName} will call you ${confirmation.callPhrase}.`
-          : `An advisor will call you ${confirmation.callPhrase}.`}
+        {fillTokens(firstName ? copy.headingMatched : copy.headingDesk, {
+          advisor: firstName ?? "",
+          when: confirmation.callPhrase,
+        })}
       </h3>
       <p className="text-[14px] text-bz-ink-2 mt-2.5 leading-relaxed">
-        {confirmation.summary}
-        {advisor
-          ? " — assigned to the advisor who covers your community."
-          : " — with the Abu Dhabi desk, who will put the right advisor on it."}
+        {confirmation.summary}{" "}
+        {advisor ? copy.summaryMatched : copy.summaryDesk}
       </p>
 
       <div className="flex flex-wrap gap-3.5 items-center mt-6 p-4 border border-bz-border rounded-lg">
         <span className="size-[52px] rounded-full bg-bz-accent text-bz-accent-fg serif text-[18px] inline-flex items-center justify-center shrink-0">
-          {advisor?.initials ?? "BZ"}
+          {advisor?.initials ?? copy.deskInitials}
         </span>
         <div className="flex-1 min-w-[140px]">
           <div className="text-[15px] font-medium">
-            {advisor?.name ?? "Bazar advisory desk"}
+            {advisor?.name ?? copy.deskName}
           </div>
           <div className="text-[12px] text-bz-muted mt-0.5">
             {[advisor?.title, formatLicence(advisor?.brn)]
               .filter(Boolean)
-              .join(" · ") || "Abu Dhabi · Sell, rent and management"}
+              .join(" · ") || copy.deskRole}
           </div>
         </div>
         {phone ? (
@@ -698,12 +829,12 @@ function Confirmed({
             className="h-11 px-4 rounded border border-bz-border text-[13px] inline-flex items-center gap-2 hover:bg-bz-surface-2 transition-colors"
           >
             <Phone size={14} strokeWidth={1.7} />
-            Call now
+            {copy.callLabel}
           </a>
         ) : null}
       </div>
 
-      <div className="eyebrow mt-6">What happens next</div>
+      <div className="eyebrow mt-6">{copy.stepsLabel}</div>
       <ol className="mt-3">
         {nextSteps.map(([when, what], i) => (
           <li
@@ -736,7 +867,7 @@ function Confirmed({
         onClick={onAnother}
         className="mt-6 h-11 px-4 -ml-4 rounded text-[13px] text-bz-ink-2 hover:bg-bz-surface-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
       >
-        Submit another property
+        {copy.anotherLabel}
       </button>
     </div>
   );
