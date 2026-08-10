@@ -37,7 +37,6 @@ export type DataExportPayload = {
   saved_properties: Array<Record<string, unknown>>;
   saved_searches: Array<Record<string, unknown>>;
   enquiries: Array<Record<string, unknown>>;
-  viewings: Array<Record<string, unknown>>;
   messages: Array<Record<string, unknown>>;
   newsletter_subscription: Record<string, unknown> | null;
   notes: string[];
@@ -52,7 +51,6 @@ export function buildDataExport(input: {
   saved_properties?: Array<Record<string, unknown>>;
   saved_searches?: Array<Record<string, unknown>>;
   enquiries?: Array<Record<string, unknown>>;
-  viewings?: Array<Record<string, unknown>>;
   messages?: Array<Record<string, unknown>>;
   newsletter_subscription?: Record<string, unknown> | null;
   now?: () => Date;
@@ -65,7 +63,6 @@ export function buildDataExport(input: {
     saved_properties: input.saved_properties ?? [],
     saved_searches: input.saved_searches ?? [],
     enquiries: input.enquiries ?? [],
-    viewings: input.viewings ?? [],
     messages: input.messages ?? [],
     newsletter_subscription: input.newsletter_subscription ?? null,
     notes: [

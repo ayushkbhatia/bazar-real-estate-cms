@@ -42,7 +42,6 @@ describe("buildDataExport", () => {
     expect(archive.saved_properties).toEqual([]);
     expect(archive.saved_searches).toEqual([]);
     expect(archive.enquiries).toEqual([]);
-    expect(archive.viewings).toEqual([]);
     expect(archive.messages).toEqual([]);
     expect(archive.newsletter_subscription).toBeNull();
     expect(archive.account).toBeNull();

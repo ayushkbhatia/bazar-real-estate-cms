@@ -44,32 +44,6 @@ export type RecentlyViewedRow = {
 };
 
 // ─────────────────────────────────────────────────────────────────────
-// 0017 — tour_requests
-// ─────────────────────────────────────────────────────────────────────
-export type TourRequestStatus =
-  | "pending"
-  | "contacted"
-  | "scheduled"
-  | "completed"
-  | "cancelled";
-
-export type TourRequestRow = {
-  id: string;
-  property_id: string;
-  account_id: string | null;
-  full_name: string | null;
-  email: string | null;
-  phone: string | null;
-  preferred_window: string | null;
-  message: string | null;
-  status: TourRequestStatus;
-  assigned_agent_id: string | null;
-  scheduled_at: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-// ─────────────────────────────────────────────────────────────────────
 // 0018 — area_guides
 // ─────────────────────────────────────────────────────────────────────
 export type AreaGuideStat = {

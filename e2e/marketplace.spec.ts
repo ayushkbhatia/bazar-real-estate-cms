@@ -110,10 +110,9 @@ test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
   test.skip(!path, "No published properties in the marketplace.");
   await page.goto(path!);
 
-  // Scoped to the enquiry form by its own fields. A property page carries
-  // more than one form — the viewing request above it also has a name and a
-  // phone — and matching on label text alone picked up whichever the page
-  // happened to render first.
+  // Scoped to the enquiry form by its own fields. Other forms can render on
+  // the page (the valuation lead gate), and matching on label text alone
+  // picked up whichever the page happened to render first.
   const form = page.locator("form").filter({ has: page.locator("[name='message']") });
   await expect(form).toBeVisible();
 

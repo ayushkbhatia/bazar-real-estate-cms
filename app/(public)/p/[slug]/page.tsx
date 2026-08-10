@@ -141,7 +141,6 @@ import {
   type SpecRow,
 } from "./_components/specification";
 import { AgentCard } from "./_components/agent-card";
-import { ScheduleViewing } from "./_components/schedule-viewing";
 import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
 import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
 import { PropertyFaq } from "./_components/property-faq";
@@ -570,13 +569,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               propertyTitle={property.title}
             />
           ) : null}
-
-          <div id="schedule-viewing" className="scroll-mt-24">
-            <ScheduleViewing
-              propertyId={property.id}
-              propertyReference={property.reference}
-            />
-          </div>
 
           <div
             id="send-brief"

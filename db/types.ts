@@ -1266,6 +1266,57 @@ export type Database = {
           },
         ]
       }
+      floating_ctas: {
+        Row: {
+          color: string | null
+          created_at: string
+          destination: string | null
+          enabled: boolean
+          id: string
+          key: string
+          kind: string
+          label: string
+          message_template: string | null
+          scope: string
+          sort_order: number
+          subject_template: string | null
+          updated_at: string
+          use_advisor_contact: boolean
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          destination?: string | null
+          enabled?: boolean
+          id?: string
+          key: string
+          kind: string
+          label: string
+          message_template?: string | null
+          scope?: string
+          sort_order?: number
+          subject_template?: string | null
+          updated_at?: string
+          use_advisor_contact?: boolean
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          destination?: string | null
+          enabled?: boolean
+          id?: string
+          key?: string
+          kind?: string
+          label?: string
+          message_template?: string | null
+          scope?: string
+          sort_order?: number
+          subject_template?: string | null
+          updated_at?: string
+          use_advisor_contact?: boolean
+        }
+        Relationships: []
+      }
       floor_plans: {
         Row: {
           area_ft2: number | null
@@ -2541,76 +2592,6 @@ export type Database = {
           },
         ]
       }
-      tour_requests: {
-        Row: {
-          account_id: string | null
-          assigned_agent_id: string | null
-          created_at: string
-          email: string | null
-          full_name: string | null
-          id: string
-          message: string | null
-          phone: string | null
-          preferred_window: string | null
-          property_id: string
-          scheduled_at: string | null
-          status: Database["public"]["Enums"]["tour_request_status"]
-          updated_at: string
-        }
-        Insert: {
-          account_id?: string | null
-          assigned_agent_id?: string | null
-          created_at?: string
-          email?: string | null
-          full_name?: string | null
-          id?: string
-          message?: string | null
-          phone?: string | null
-          preferred_window?: string | null
-          property_id: string
-          scheduled_at?: string | null
-          status?: Database["public"]["Enums"]["tour_request_status"]
-          updated_at?: string
-        }
-        Update: {
-          account_id?: string | null
-          assigned_agent_id?: string | null
-          created_at?: string
-          email?: string | null
-          full_name?: string | null
-          id?: string
-          message?: string | null
-          phone?: string | null
-          preferred_window?: string | null
-          property_id?: string
-          scheduled_at?: string | null
-          status?: Database["public"]["Enums"]["tour_request_status"]
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tour_requests_account_id_fkey"
-            columns: ["account_id"]
-            isOneToOne: false
-            referencedRelation: "accounts"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "tour_requests_assigned_agent_id_fkey"
-            columns: ["assigned_agent_id"]
-            isOneToOne: false
-            referencedRelation: "staff"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "tour_requests_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       valuation_requests: {
         Row: {
           account_id: string | null
@@ -3056,12 +3037,6 @@ export type Database = {
       review_subject_kind: "agent" | "area" | "development"
       staff_role: "admin" | "editor" | "agent" | "marketing" | "support"
       staff_status: "active" | "on_leave" | "onboarding" | "suspended"
-      tour_request_status:
-        | "pending"
-        | "contacted"
-        | "scheduled"
-        | "completed"
-        | "cancelled"
       valuation_condition:
         | "original"
         | "lightly_refreshed"
@@ -3394,13 +3369,6 @@ export const Constants = {
       review_subject_kind: ["agent", "area", "development"],
       staff_role: ["admin", "editor", "agent", "marketing", "support"],
       staff_status: ["active", "on_leave", "onboarding", "suspended"],
-      tour_request_status: [
-        "pending",
-        "contacted",
-        "scheduled",
-        "completed",
-        "cancelled",
-      ],
       valuation_condition: [
         "original",
         "lightly_refreshed",

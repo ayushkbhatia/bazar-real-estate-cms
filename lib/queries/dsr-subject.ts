@@ -7,8 +7,8 @@ import { buildDataExport, type DataExportPayload } from "@/lib/dsr";
  *
  * With customer accounts removed, everything Bazar holds about a person hangs
  * off their email address rather than an `accounts` row: enquiries and their
- * message threads, tour requests, valuation requests, mortgage enquiries and
- * the newsletter list.
+ * message threads, valuation requests, mortgage enquiries and the newsletter
+ * list.
  *
  * Service-role throughout — the subject has no session, and a staff member is
  * acting on their behalf after verifying identity over email. RLS would hide
@@ -18,7 +18,6 @@ import { buildDataExport, type DataExportPayload } from "@/lib/dsr";
 export type SubjectTally = {
   enquiries: number;
   messages: number;
-  tour_requests: number;
   valuation_requests: number;
   mortgage_inquiries: number;
   newsletter: number;
@@ -34,7 +33,6 @@ export type SubjectRecord = {
 const EMPTY: SubjectTally = {
   enquiries: 0,
   messages: 0,
-  tour_requests: 0,
   valuation_requests: 0,
   mortgage_inquiries: 0,
   newsletter: 0,
@@ -57,15 +55,11 @@ export async function getSubjectByEmail(
   if (!admin) return null;
 
   try {
-    const [enquiries, tours, valuations, mortgages, newsletter] =
+    const [enquiries, valuations, mortgages, newsletter] =
       await Promise.all([
         admin
           .from("enquiries")
           .select("id, name, email, phone, brief_raw, source, status, created_at")
-          .ilike("email", email),
-        admin
-          .from("tour_requests")
-          .select("*")
           .ilike("email", email),
         admin
           .from("valuation_requests")
@@ -110,7 +104,6 @@ export async function getSubjectByEmail(
     const tally: SubjectTally = {
       enquiries: enquiryRows.length,
       messages: messageRows.length,
-      tour_requests: (tours.data ?? []).length,
       valuation_requests: (valuations.data ?? []).length,
       mortgage_inquiries: (mortgages.data ?? []).length,
       newsletter: newsletter.data ? 1 : 0,
@@ -127,7 +120,6 @@ export async function getSubjectByEmail(
         account: { email },
         enquiries: enquiryRows as Record<string, unknown>[],
         messages: messageRows,
-        viewings: (tours.data ?? []) as Record<string, unknown>[],
         newsletter_subscription:
           (newsletter.data as Record<string, unknown> | null) ?? null,
       }),
