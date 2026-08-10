@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Camera, LayoutGrid, Map } from "lucide-react";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { FloorPlanViewer } from "./floor-plan-viewer";
 
 type PanelKey = "photos" | "floor_plan";
 
@@ -127,14 +127,12 @@ function FloorPlanPanel({
     );
   }
   return (
-    <div className="relative rounded-lg border border-bz-border bg-bz-surface aspect-[16/9] overflow-hidden">
-      <Image
-        src={url}
-        alt={`Floor plan for ${reference}`}
-        fill
-        sizes="(min-width: 768px) 1100px, 100vw"
-        className="object-contain p-4"
-      />
-    </div>
+    <FloorPlanViewer
+      src={url}
+      alt={`Floor plan for ${reference}`}
+      // Full width of the tab strip's own container — `px-4 md:px-12`, no max
+      // width on the page. Measured 1344px at a 1440 viewport.
+      sizes="(min-width: 768px) calc(100vw - 96px), calc(100vw - 32px)"
+    />
   );
 }

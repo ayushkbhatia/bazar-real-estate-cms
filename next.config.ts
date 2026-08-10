@@ -29,6 +29,14 @@ const nextConfig: NextConfig = {
     // safe because the URL contains the storage object path — replacing an
     // asset means a new path, which misses the cache and re-optimizes.
     minimumCacheTTL: 2678400,
+    // Next 16 allowlists `quality`: anything not in this array is a 400 from
+    // the optimizer, so `quality={100}` needs the value declared here.
+    //
+    // 75 stays the default for photography, where the WebP artefacts land in
+    // texture nobody reads. Floor plans are the opposite — hairline walls and
+    // 10px dimension labels, which q75 smears (measured 38 dB PSNR against the
+    // source, and the ringing is visible at 1:1). 100 is for those.
+    qualities: [75, 100],
   },
   experimental: {
     serverActions: {
