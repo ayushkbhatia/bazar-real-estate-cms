@@ -141,7 +141,7 @@ import {
   type SpecRow,
 } from "./_components/specification";
 import { AgentCard } from "./_components/agent-card";
-import { AdvisorContactRail } from "../../_components/advisor-contact-rail";
+import { FloatingCtaTarget } from "../../_components/floating-cta-context";
 import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
 import { PropertyFaq } from "./_components/property-faq";
 
@@ -652,14 +652,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         </section>
       ) : null}
 
-      {/* T2-D: floating advisor contact rail. Fades in past the hero on
-          desktop, slides up as a mobile bottom dock.
-          T2-D cleanup: adds Email + Call-me-back to the action set. */}
+      {/* The floating CTA rail is mounted once in the public layout. This
+          publishes the listing's advisor to it, so the buttons route to that
+          person and the draft message names the reference. Renders nothing. */}
       {leadAdvisor ? (
-        <AdvisorContactRail
+        <FloatingCtaTarget
           advisorName={leadAdvisor.display_name}
-          advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone}
-          advisorEmail={leadAdvisor.email}
+          advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone ?? null}
+          advisorEmail={leadAdvisor.email ?? null}
           contextRef={property.reference}
           kind="property"
         />

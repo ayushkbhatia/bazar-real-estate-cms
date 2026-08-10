@@ -1,19 +1,29 @@
 import { PublicMegaNav } from "@/components/brand/public-mega-nav";
 import { PublicFooter } from "@/components/brand/public-footer";
 import { getPublishedMegamenuHydrated } from "@/lib/queries/megamenu-hydrate";
+import { listFloatingCtas } from "@/lib/queries/floating-ctas";
+import { getAdvisorWhatsAppNumber } from "@/lib/whatsapp";
 import { PreferencesPopover } from "./_components/preferences-popover";
 import { MobilePreferences } from "./_components/mobile-preferences";
 import { ShortlistDrawer } from "./_components/shortlist-drawer";
 import { FooterTrust } from "./_components/footer-trust";
+import { FloatingCtaProvider } from "./_components/floating-cta-context";
+import { FloatingCtaRail } from "./_components/floating-cta-rail";
 
 export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const megamenu = await getPublishedMegamenuHydrated();
+  const [megamenu, floatingCtas] = await Promise.all([
+    getPublishedMegamenuHydrated(),
+    listFloatingCtas(),
+  ]);
   return (
-    <>
+    // The provider wraps `children` as well as the rail: a detail page deep in
+    // the tree publishes its advisor upward through it, which is how one
+    // site-wide rail still routes to the person handling that listing.
+    <FloatingCtaProvider>
       {/*
         Desktop preferences float as a sibling to the megamenu; the
         mobile equivalent is injected into the hamburger-drawer footer
@@ -31,13 +41,22 @@ export default async function PublicLayout({
         T3-B: floating shortlist drawer.  Self-renders nothing until the
         user has at least one shortlisted property, so the corner stays
         clean for fresh visitors.  Sits bottom-left so it doesn't fight
-        with the advisor-contact rail at bottom-right.
+        with the floating CTA rail at bottom-right.
       */}
       <ShortlistDrawer />
+      {/* Floating contact CTAs, from `floating_ctas` (see
+          /admin/floating-ctas). Mounted here rather than per page so
+          WhatsApp floats site-wide; the rail itself decides which buttons
+          a given page earns. The env number is resolved server-side so the
+          client component never reaches into `lib/env`. */}
+      <FloatingCtaRail
+        ctas={floatingCtas}
+        fallbackPhone={getAdvisorWhatsAppNumber()}
+      />
       {/* T1.5 quick win: single-line trust signal above the global footer.
           Wraps the locked PublicFooter rather than editing it. */}
       <FooterTrust />
       <PublicFooter />
-    </>
+    </FloatingCtaProvider>
   );
 }
