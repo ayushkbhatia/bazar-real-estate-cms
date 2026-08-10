@@ -10,7 +10,7 @@ import {
 
 /**
  * Wraps ListingCard so the price *and* the area re-format client-side from
- * the visitor's preferences (currency: USD / EUR / AED, area: ft² / m²) once
+ * the visitor's preferences (currency: AED / USD, area: ft² / m²) once
  * hydration completes.
  *
  * The parent route passes both a server-side AED-formatted `price` string

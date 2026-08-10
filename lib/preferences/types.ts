@@ -6,23 +6,21 @@
  * so the cookie shape doesn't need to change when AR lands.
  */
 
-export type Currency = "AED" | "USD" | "EUR";
+export type Currency = "AED" | "USD";
 export type AreaUnit = "ft2" | "m2";
 export type Locale = "en";
 
-export const CURRENCIES: readonly Currency[] = ["AED", "USD", "EUR"] as const;
+export const CURRENCIES: readonly Currency[] = ["AED", "USD"] as const;
 export const AREA_UNITS: readonly AreaUnit[] = ["ft2", "m2"] as const;
 
 export const CURRENCY_LABEL: Record<Currency, string> = {
   AED: "AED · UAE Dirham",
   USD: "USD · US Dollar",
-  EUR: "EUR · Euro",
 };
 
 export const CURRENCY_SYMBOL: Record<Currency, string> = {
   AED: "AED",
   USD: "$",
-  EUR: "€",
 };
 
 export const AREA_UNIT_LABEL: Record<AreaUnit, string> = {

@@ -15,8 +15,8 @@ import {
  * T1-B cleanup: now a client component that respects the user's currency
  * preference.  Headline price re-formats through `formatPrice`; the
  * "AED/ft²" sub-line stays in the schema unit so it's directly comparable
- * to other listings.  The secondary-currency equivalent (USD by default,
- * EUR or AED depending on the preference) sits next to it.
+ * to other listings.  The other of the two currencies sits next to it as a
+ * cross-check.
  *
  * Server passes `formattedAed` as the SSR fallback to avoid hydration
  * flicker before client preferences resolve.
@@ -38,10 +38,9 @@ export function PriceBlock({
   const headline =
     prefs.currency === "AED" ? formattedAed : formatPrice(priceAed, prefs);
 
-  // Surface the "other major" currency as a sanity-check line. When the
-  // user has AED selected we still show the USD equivalent; when they
-  // have USD or EUR we show AED so they can cross-check against the
-  // canonical schema number.
+  // Surface the other currency as a sanity-check line. With AED selected we
+  // show the USD equivalent; with USD selected we show AED, the canonical
+  // schema number.
   const otherCurrency = prefs.currency === "AED" ? "USD" : "AED";
   const otherValue = convertFromAed(priceAed, otherCurrency);
   const otherLabel =

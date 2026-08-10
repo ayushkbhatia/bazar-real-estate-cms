@@ -641,6 +641,7 @@ shows the trail.)
 
 - [prefs] `/tools/valuation` and `/tools/mortgage` price in AED only.
   Both wizards format with their own local `formatAed`, so the currency
-  preference does nothing there. The valuation wizard also collects built-up
-  area in ft² with a fixed label. Converting the input needs care: the estimate
-  model is calibrated in AED/ft², so only the display layer should move.
+  preference does nothing there — a USD-preferring visitor still sees AED.
+  The valuation wizard also collects built-up area in ft² with a fixed label.
+  Converting the input needs care: the estimate model is calibrated in AED/ft²,
+  so only the display layer should move.

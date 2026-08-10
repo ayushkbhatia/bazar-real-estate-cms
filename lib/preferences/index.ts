@@ -21,12 +21,9 @@ export {
 export {
   getRate,
   convertFromAed,
-  setLiveRates,
-  resetLiveRates,
   AED_PER_USD,
   USD_PER_AED,
-  STATIC_RATES,
-  type FxRates,
+  RATES,
 } from "./rates";
 export {
   formatPrice,

@@ -58,7 +58,7 @@ export function formatAreaValue(
 /**
  * Format a price stored in AED for display in the user's currency.
  *
- * Compact: prices ≥ 1M show as "AED 4.20M" / "$1.14M" / "€1.05M"
+ * Compact: prices ≥ 1M show as "AED 4.20M" / "$1.14M"
  * Mid: 1K → "AED 750K"
  * Below 1K: locale-grouped, e.g. "AED 500"
  */
