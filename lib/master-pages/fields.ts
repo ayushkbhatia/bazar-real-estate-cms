@@ -129,6 +129,51 @@ export const statList = (max = 4): ListFieldDef => ({
   ],
 });
 
+/**
+ * A grid of value cards — the shape both service landings use for their
+ * "what we do" sections. Every card carries its own visibility toggle, so an
+ * editor can drop one for a season without deleting the copy and retyping it
+ * later.
+ */
+export const cardList = (
+  key: string,
+  label: string,
+  opts: {
+    itemLabel?: string;
+    max?: number;
+    help?: string;
+    descMax?: number;
+    /** Adds an image picker + placeholder caption to every card. */
+    withImage?: boolean;
+    /** Adds a CTA label + link to every card. */
+    withLink?: boolean;
+  } = {},
+): ListFieldDef => ({
+  key,
+  label,
+  kind: "list",
+  itemLabel: opts.itemLabel ?? "card",
+  max: opts.max ?? 8,
+  help: opts.help,
+  fields: [
+    toggle("enabled", "Show this card"),
+    text("name", "Title", { max: 80 }),
+    area("desc", "Description", { max: opts.descMax ?? 240, optional: false }),
+    ...(opts.withLink
+      ? [
+          text("cta", "Link label", { max: 60, optional: true }),
+          link("href", "Link"),
+        ]
+      : []),
+    ...(opts.withImage
+      ? [
+          image("image", "Image", "Falls back to the placeholder caption below."),
+          text("img", "Placeholder caption", { max: 80, optional: true }),
+        ]
+      : []),
+  ],
+});
+
 export const propTypeList = (
   max = 8,
   opts: { withImage?: boolean } = {},

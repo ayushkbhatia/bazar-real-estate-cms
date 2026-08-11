@@ -33,6 +33,8 @@ import { INSIGHTS_PAGE } from "./sections/insights";
 import { ABOUT_PAGE } from "./sections/about";
 import { CONTACT_PAGE } from "./sections/contact";
 import { SELL_PAGE } from "./sections/sell";
+import { PROPERTY_MANAGEMENT_PAGE } from "./sections/property-management";
+import { PROPERTY_CONSULTATION_PAGE } from "./sections/property-consultation";
 import { QR_PAGE } from "./sections/qr";
 import { CONTACT_QR_PAGE } from "./sections/contact-qr";
 
@@ -1530,6 +1532,8 @@ export const MASTER_PAGES: MasterPageDef[] = [
   ABOUT_PAGE,
   CONTACT_PAGE,
   SELL_PAGE,
+  PROPERTY_MANAGEMENT_PAGE,
+  PROPERTY_CONSULTATION_PAGE,
   QR_PAGE,
   CONTACT_QR_PAGE,
 ];

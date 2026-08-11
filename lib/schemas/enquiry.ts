@@ -18,6 +18,9 @@ export const ENQUIRY_SOURCES = [
   "development_interest",
   // Owner lead from the /services/sell qualification form (0077).
   "list_property",
+  // The two service landings' lead forms (0088).
+  "property_management",
+  "property_consultation",
 ] as const;
 
 export const ENQUIRY_TIMELINES = [
