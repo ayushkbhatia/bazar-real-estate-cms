@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
 import { buildOffplanMap, parseGroupLimit } from "@/lib/queries/offplan-map";
+import { getDevelopmentCoordsBulk } from "@/lib/queries/development-extras";
 import { MHero } from "../_components/marketing/m-hero";
 import { SectionHead } from "../_components/marketing/section-head";
 import { PropTypeGrid } from "../_components/marketing/prop-type-grid";
@@ -62,7 +63,17 @@ export default async function NewProjectsPage() {
     .filter((d): d is (typeof developments)[number] => d !== undefined);
   const featuredDevs =
     picked.length > 0 ? picked : developments.slice(0, OFFPLAN_LAUNCH_COUNT);
-  const { pins, dots, groups, options } = buildOffplanMap(developments);
+  // Each project's own pin (Pages → Developments → <project> → Location) is
+  // what puts it in the right spot on the map; an unplaced project still falls
+  // back to its area centroid. Fetched here rather than folded into
+  // INDEX_FIELDS so the other consumers of that list don't carry `meta`.
+  const projectCoords = await getDevelopmentCoordsBulk(
+    developments.map((d) => d.id),
+  );
+  const { pins, dots, groups, options } = buildOffplanMap(
+    developments,
+    projectCoords,
+  );
   const countBySlug = new Map(
     areaCounts.map((a) => [a.name, { slug: a.slug, count: a.listing_count }]),
   );

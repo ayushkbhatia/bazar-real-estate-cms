@@ -83,6 +83,68 @@ describe("buildOffplanMap", () => {
     });
   });
 
+  it("puts a project on its own CMS pin, not on the area ring", () => {
+    const { dots } = buildOffplanMap(rows, {
+      "1": { lat: 24.5384, lng: 54.4183 },
+    });
+    const bulgari = dots.find((d) => d.slug === "bulgari")!;
+    expect(bulgari.lat).toBeCloseTo(24.5384, 4);
+    expect(bulgari.lng).toBeCloseTo(54.4183, 4);
+  });
+
+  it("keeps fanning the projects that have no pin yet", () => {
+    const { dots } = buildOffplanMap(rows, {
+      "1": { lat: 24.5384, lng: 54.4183 },
+    });
+    const rest = dots.filter((d) => ["mandarin", "bayviews"].includes(d.slug));
+    // Two un-pinned projects → a two-point ring, not three points minus one.
+    expect(rest.map((d) => d.lng)).toEqual([54.435 + 0.011, 54.435 - 0.011]);
+    expect(new Set(rest.map((d) => `${d.lng},${d.lat}`)).size).toBe(2);
+  });
+
+  it("moves the area pin onto the cluster its projects actually sit in", () => {
+    const { pins } = buildOffplanMap(rows, {
+      "4": { lat: 24.5186, lng: 54.6024 },
+    });
+    const yas = pins.find((p) => p.slug === "yas-island")!;
+    expect(yas.lat).toBeCloseTo(24.5186, 4);
+    expect(yas.lng).toBeCloseTo(54.6024, 4);
+    // Untouched areas keep the centroid they had before.
+    const saadiyat = pins.find((p) => p.slug === "saadiyat-island")!;
+    expect(saadiyat.lng).toBeCloseTo(54.435, 6);
+    expect(saadiyat.lat).toBeCloseTo(24.545, 6);
+  });
+
+  it("maps an area with no known centroid once a project is pinned there", () => {
+    const extra = dev({
+      id: "7",
+      slug: "placed",
+      name: "Placed",
+      area: { name: "Nowhere", slug: "nowhere" },
+    });
+    const { pins, dots, groups } = buildOffplanMap([...rows, extra], {
+      "7": { lat: 24.41, lng: 54.51 },
+    });
+    expect(dots.find((d) => d.slug === "placed")?.lat).toBeCloseTo(24.41, 4);
+    expect(pins.find((p) => p.slug === "nowhere")?.lng).toBeCloseTo(54.51, 4);
+    expect(groups.map((g) => g.slug)).toContain("nowhere");
+  });
+
+  it("ignores a malformed or out-of-range pin and falls back to the ring", () => {
+    const { dots } = buildOffplanMap(rows, {
+      "4": { lat: 999, lng: 54.6 },
+      "1": { lat: Number.NaN, lng: 54.4 },
+    });
+    const solaya = dots.find((d) => d.slug === "solaya")!;
+    expect(solaya.lng).toBeCloseTo(54.605, 3);
+    expect(solaya.lat).toBeCloseTo(24.488, 3);
+    // Bulgari is back on the three-project Saadiyat ring.
+    expect(dots.find((d) => d.slug === "bulgari")!.lng).toBeCloseTo(
+      54.435 + 0.011,
+      6,
+    );
+  });
+
   it("drops projects with no area or an unknown centroid from the map", () => {
     const { pins, dots, groups, options } = buildOffplanMap([
       ...rows,

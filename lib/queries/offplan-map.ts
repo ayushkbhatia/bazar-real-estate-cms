@@ -2,18 +2,20 @@
  * Off-plan map data — turns the published developments into the three
  * serialisable shapes the New Projects map section needs:
  *
- *   · pins   → one AreaPin per area that has ≥1 published project
- *              (count = number of projects, placed at the area centroid)
- *   · dots   → one AreaDot per project, fanned out on a small ring around
- *              its area centroid so co-located projects don't stack
+ *   · pins   → one AreaPin per area that has ≥1 placeable published project
+ *              (count = number of projects, placed at the mean of its dots)
+ *   · dots   → one AreaDot per project, at the pin dropped on the project in
+ *              the CMS (`meta.coords`) when it has one; otherwise fanned out
+ *              on a small ring around its area centroid so co-located
+ *              projects don't stack
  *   · groups → the same projects grouped by area (sorted), for the cards
  *              listed underneath the map
  *
- * This is a PURE transform of the rows already fetched by
- * `listPublishedDevelopments()` — no extra Supabase round-trip and no
- * dependency on a per-development `geo` column (the developments table has
- * none; a project is located via its area). Reusing the same hand-verified
- * area centroids as the home map keeps the two surfaces in lockstep.
+ * This is a PURE transform: the rows come from `listPublishedDevelopments()`
+ * and the per-project pins from `getDevelopmentCoordsBulk()` — the caller
+ * fetches both. A project's own pin is the truth when set; the hand-verified
+ * area centroids (shared with the home map) are only the fallback for a
+ * project nobody has placed yet.
  */
 
 import { areaTag, type AreaPin, type AreaDot } from "@/lib/queries/area-map";
@@ -54,6 +56,16 @@ export type OffplanAreaGroup = {
   projects: DevelopmentIndexRow[];
 };
 
+/**
+ * Per-development pin, keyed by development id — the shape
+ * `getDevelopmentCoordsBulk()` returns. A `null` (or a missing key) means the
+ * project has no pin in the CMS and falls back to its area centroid.
+ */
+export type OffplanCoordsById = Record<
+  string,
+  { lat: number; lng: number } | null | undefined
+>;
+
 export type OffplanProjectOption = {
   id: string;
   name: string;
@@ -88,8 +100,26 @@ function ringPoint(
   };
 }
 
+/** A CMS pin is only usable if it's two finite numbers in range. */
+function validPin(
+  c: { lat: number; lng: number } | null | undefined,
+): { lat: number; lng: number } | null {
+  if (!c) return null;
+  const { lat, lng } = c;
+  if (typeof lat !== "number" || typeof lng !== "number") return null;
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return null;
+  return { lat, lng };
+}
+
 export function buildOffplanMap(
   developments: DevelopmentIndexRow[],
+  /**
+   * Pins dropped on each project in the CMS (Pages → Developments → Location).
+   * Omit and every project falls back to the area-centroid ring, which is what
+   * the map did before projects could be placed individually.
+   */
+  coordsById: OffplanCoordsById = {},
 ): OffplanMapData {
   // Group projects by area slug, preserving input order (published_at desc).
   const byArea = new Map<
@@ -110,25 +140,27 @@ export function buildOffplanMap(
 
   for (const [slug, { name, projects }] of byArea) {
     const centroid = AREA_CENTROIDS[slug];
-    if (!centroid) continue; // unknown centroid → skip on the map
 
-    pins.push({
-      id: `offplan-area:${slug}`,
-      slug,
-      name,
-      emirate: EMIRATE,
-      tag: areaTag(slug),
-      lng: centroid.lng,
-      lat: centroid.lat,
-      count: projects.length,
-      // Price stats aren't meaningful for a project count — leave blank.
-      medianPerFt2: null,
-      yoyChange: null,
-    });
+    // Projects the CMS has placed sit exactly where they were pinned; the rest
+    // fan out on the area's ring. The ring is sized to the un-pinned projects
+    // only, so it stays evenly spaced as projects get placed one by one.
+    const pinned = projects.map((d) => validPin(coordsById[d.id]));
+    const unplacedCount = pinned.filter((p) => p === null).length;
 
+    // Nothing to draw: no project pin and no centroid to fall back to.
+    if (unplacedCount === projects.length && !centroid) continue;
+
+    const areaDots: AreaDot[] = [];
+    let ringIndex = 0;
     projects.forEach((d, i) => {
-      const pt = ringPoint(centroid, i, projects.length);
-      dots.push({
+      const own = pinned[i];
+      // An un-pinned project in an area with no centroid can't be placed at
+      // all — it still gets a card in the rail below the map, just no dot.
+      if (!own && !centroid) return;
+      const pt = own
+        ? { lng: own.lng, lat: own.lat }
+        : ringPoint(centroid!, ringIndex++, unplacedCount);
+      areaDots.push({
         slug: d.slug,
         reference: d.slug,
         lng: pt.lng,
@@ -139,6 +171,32 @@ export function buildOffplanMap(
         meta: d.developer ? `${d.developer.name} · ${name}` : name,
       });
     });
+
+    // The area pin sits at the mean of its projects' dots, so the bubble lands
+    // on the cluster it counts. With nothing pinned the ring is symmetric and
+    // the mean is the centroid — i.e. exactly where the pin used to sit.
+    const anchor = areaDots.reduce(
+      (acc, d) => ({
+        lng: acc.lng + d.lng / areaDots.length,
+        lat: acc.lat + d.lat / areaDots.length,
+      }),
+      { lng: 0, lat: 0 },
+    );
+
+    pins.push({
+      id: `offplan-area:${slug}`,
+      slug,
+      name,
+      emirate: EMIRATE,
+      tag: areaTag(slug),
+      lng: anchor.lng,
+      lat: anchor.lat,
+      count: projects.length,
+      // Price stats aren't meaningful for a project count — leave blank.
+      medianPerFt2: null,
+      yoyChange: null,
+    });
+    dots.push(...areaDots);
 
     groups.push({ slug, name, count: projects.length, projects });
   }
