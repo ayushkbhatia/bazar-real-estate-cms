@@ -13,6 +13,7 @@ import { shippedLogo } from "@/lib/developers/shipped-logo";
 import { isUuidLike } from "@/lib/uuid";
 import type { MediaOption } from "../../pages/master/[key]/_editor";
 import { DeveloperRecordForm } from "./_form";
+import { DeveloperPublishCard } from "./_publish-card";
 import { DeveloperLogoCard } from "./_logo-card";
 
 export const dynamic = "force-dynamic";
@@ -90,14 +91,19 @@ export default async function DeveloperRecordPage({ params }: PageProps) {
         </span>
       }
       primary={
-        <Link
-          href={`/developers/${record.slug}`}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
-        >
-          View page <ExternalLink size={12} />
-        </Link>
+        // A draft profile 404s, so the link would be a broken promise.
+        record.published ? (
+          <Link
+            href={`/developers/${record.slug}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
+          >
+            View page <ExternalLink size={12} />
+          </Link>
+        ) : (
+          <span className="text-[12.5px] text-bz-muted-2">Not public</span>
+        )
       }
     >
       <div className="flex flex-col gap-6 max-w-3xl">
@@ -108,6 +114,15 @@ export default async function DeveloperRecordPage({ params }: PageProps) {
           {record.development_count === 1 ? "project" : "projects"} filed under
           this developer. Changing the link moves the public page.
         </p>
+
+        <DeveloperPublishCard
+          id={record.id}
+          name={record.name}
+          slug={record.slug}
+          published={record.published}
+          developmentCount={record.development_count}
+          propertyCount={record.property_count}
+        />
 
         <DeveloperRecordForm
           initial={{
