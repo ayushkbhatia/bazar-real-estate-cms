@@ -6,7 +6,6 @@ import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import { Button } from "@/components/ui/button";
 import { listSeedAgentsByArea } from "@/lib/seeds/agents";
 import { withAgentPhotos } from "@/lib/queries/agent-photos";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
@@ -16,33 +15,30 @@ import {
   type AreaProfile,
 } from "@/lib/queries/area-profile";
 import { listAreaPins, listAreaListingDots, type AreaPin } from "@/lib/queries/area-map";
-import {
-  listPublishedProperties,
-  formatPriceAED,
-  propertyUrl,
-  type ListingRow,
-} from "@/lib/queries/properties";
-import { mediaPublicUrl } from "@/lib/media";
+import { listPublishedProperties } from "@/lib/queries/properties";
 import { getAreaHeroImage, getAreaPageContent } from "@/lib/queries/subpages";
-import { str } from "@/lib/master-pages";
+import { str, list, type SectionValues } from "@/lib/master-pages";
 import { parseFilters } from "@/lib/filters/property";
 import { placeJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
 import { LifestyleDossier } from "./_components/lifestyle-dossier";
+import {
+  AreaCommunities,
+  AreaFinalCta,
+  AreaLandmarks,
+  AreaLeadBand,
+  AreaNearby,
+  AreaStatsBand,
+  AreaWhy,
+  type BandItem,
+  type BandStat,
+} from "./_components/area-bands";
+import { AreaFaq, type AreaFaqEntry } from "./_components/area-faq";
+import { AreaLeadForm } from "./_components/area-lead-form";
+import { AreaListingsBand } from "./_components/area-listings-band";
 import { AreaMapDetail } from "../../_components/area-map/area-map-detail";
-import { ListingCardPriced } from "../../_components/listing-card-priced";
-import { CarouselGrid } from "@/components/brand/mobile";
 import { AreaReportsRail } from "../../_components/market-context-link";
 import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
-
-function badgeFor(row: ListingRow):
-  | { label: string; kind: "ink" | "accent" }
-  | undefined {
-  if (row.flags?.exclusive) return { label: "Exclusive", kind: "ink" };
-  if (row.flags?.vacant_on_transfer)
-    return { label: "Vacant on transfer", kind: "accent" };
-  return undefined;
-}
 
 /**
  * An area the CMS created has a centroid but no inventory yet, so
@@ -67,6 +63,28 @@ function withOwnPin(pins: AreaPin[], profile: AreaProfile): AreaPin[] {
       yoyChange: profile.stats?.yoyChangePct ?? null,
     },
   ];
+}
+
+/** A list row is live unless it was explicitly switched off, and needs a name. */
+function liveItems(values: SectionValues, key = "items"): BandItem[] {
+  return list<BandItem>(values, key).filter(
+    (i) => i.enabled !== false && (i.name ?? "").trim() !== "",
+  );
+}
+
+function liveStats(values: SectionValues): BandStat[] {
+  return list<{ enabled?: boolean; value?: string; label?: string }>(
+    values,
+    "stats",
+  )
+    .filter((s) => s.enabled !== false && (s.value ?? "").trim() !== "")
+    .map((s) => ({ value: s.value!, label: s.label ?? "" }));
+}
+
+function liveFaq(values: SectionValues): AreaFaqEntry[] {
+  return list<{ q?: string; a?: string }>(values, "items")
+    .filter((e) => (e.q ?? "").trim() !== "" && (e.a ?? "").trim() !== "")
+    .map((e) => ({ q: e.q!, a: e.a! }));
 }
 
 export async function generateStaticParams() {
@@ -102,22 +120,25 @@ export default async function CommunityProfilePage({
   if (!profile) notFound();
 
   const advisors = await withAgentPhotos(listSeedAgentsByArea(profile.slug));
+  const areaFilters = parseFilters({ area: slug });
 
-  const [content, heroImage, rawPins, dots, listings, directory] =
+  const [content, heroImage, rawPins, dots, saleStock, rentStock, directory] =
     await Promise.all([
       getAreaPageContent({ name: profile.name, slug: profile.slug }),
       getAreaHeroImage(profile.slug),
       listAreaPins(),
       listAreaListingDots({ areaSlug: slug }),
-      listPublishedProperties({
-        filters: parseFilters({ area: slug }),
-        limit: 6,
-      }),
+      // Sale stock is everything that isn't a tenancy — ready, resale,
+      // off-plan and commercial all belong under "for sale". Filtering in
+      // memory keeps it to one roundtrip instead of one per mode.
+      listPublishedProperties({ filters: areaFilters, limit: 24 }),
+      listPublishedProperties({ mode: "rent", filters: areaFilters, limit: 6 }),
       listAreaDirectory(),
     ]);
   const pins = withOwnPin(rawPins, profile);
   const focusPin = pins.find((p) => p.slug === profile.slug) ?? null;
-  const listingRows = listings.rows;
+  const saleRows = saleStock.rows.filter((r) => r.mode !== "rent").slice(0, 6);
+  const rentRows = rentStock.rows;
 
   // Related areas by slug — named from the live catalogue, falling back to
   // the pin set so a seed-only relation still resolves.
@@ -149,12 +170,15 @@ export default async function CommunityProfilePage({
 
   // Copy overrides from /admin/pages/sub/area/<slug>. Blank fields fall
   // through to the guide copy that ships with the area.
-  const sv = (key: string, field: string) =>
-    str(content.section(key)?.values ?? {}, field);
+  const values = (key: string): SectionValues =>
+    content.section(key)?.values ?? {};
+  const sv = (key: string, field: string) => str(values(key), field);
 
   const heroIntro = sv("hero", "intro") ?? profile.intro;
   const heroPosition = sv("hero", "position") ?? profile.position;
   const stats = profile.stats;
+  const buyHref = `/buy/search?area=${profile.slug}`;
+  const rentHref = `/rent/search?area=${profile.slug}`;
 
   const nodes: Record<string, React.ReactNode> = {
     "hero": (
@@ -208,23 +232,21 @@ export default async function CommunityProfilePage({
       </section>
       </>
     ),
-    "map": (
-      <>
-      {/* Interactive map band — deep-linked to this area with its listing
-          dots. Self-hides for areas with no coordinates on record. */}
-      {focusPin ? (
-        <section className="px-4 md:px-12 pb-14 max-w-[1280px]">
-          <div className="relative h-[420px] md:h-[520px] overflow-hidden rounded-md border border-bz-border bg-bz-surface">
-            <AreaMapDetail areas={pins} dots={dots} areaSlug={profile.slug} />
-          </div>
-        </section>
-      ) : null}
-      </>
-    ),
     "stats": (
       <>
-      {/* Stats — hidden until someone publishes figures for this area. */}
-      {stats ? (
+      {/* Market statistics. The editorial figures typed into the CMS win;
+          without them the band falls back to the medians on the guide
+          record, and hides entirely when there is neither. */}
+      {liveStats(values("stats")).length > 0 ? (
+        <AreaStatsBand
+          heading={
+            sv("stats", "heading") ?? `${profile.name} property market at a glance`
+          }
+          intro={sv("stats", "intro")}
+          stats={liveStats(values("stats"))}
+          footnote={str(values("stats"), "footnote")}
+        />
+      ) : stats ? (
         <section className="border-y border-bz-border bg-bz-surface">
           <div className="px-4 md:px-12 py-10 max-w-[1280px]">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
@@ -262,6 +284,145 @@ export default async function CommunityProfilePage({
         </section>
       ) : null}
       </>
+    ),
+    "map": (
+      <>
+      {/* Interactive map band — deep-linked to this area with its listing
+          dots. Self-hides for areas with no coordinates on record. */}
+      {focusPin ? (
+        <section className="px-4 md:px-12 py-14 max-w-[1280px]">
+          <Eyebrow>Location</Eyebrow>
+          <h2
+            className="serif text-[28px] md:text-[34px] mt-2 leading-tight"
+            style={{ letterSpacing: "-0.02em" }}
+          >
+            {sv("map", "heading") ?? `Find ${profile.name} on the map.`}
+          </h2>
+          {sv("map", "intro") ? (
+            <p className="mt-3 text-[15.5px] text-bz-ink-2 leading-relaxed max-w-[68ch]">
+              {sv("map", "intro")}
+            </p>
+          ) : null}
+          {sv("map", "detail") ? (
+            <p className="mt-2 text-[15.5px] text-bz-ink-2 leading-relaxed max-w-[68ch]">
+              {sv("map", "detail")}
+            </p>
+          ) : null}
+          <div className="mt-7 relative h-[420px] md:h-[520px] overflow-hidden rounded-md border border-bz-border bg-bz-surface">
+            <AreaMapDetail areas={pins} dots={dots} areaSlug={profile.slug} />
+          </div>
+        </section>
+      ) : null}
+      </>
+    ),
+    "landmarks": (
+      <AreaLandmarks
+        heading={sv("landmarks", "heading") ?? "Landmarks & attractions"}
+        intro={sv("landmarks", "intro")}
+        items={liveItems(values("landmarks"))}
+        footnote={str(values("landmarks"), "footnote")}
+      />
+    ),
+    "communities": (
+      <AreaCommunities
+        heading={sv("communities", "heading") ?? `Explore ${profile.name}`}
+        intro={sv("communities", "intro")}
+        items={liveItems(values("communities"))}
+        footnote={str(values("communities"), "footnote")}
+      />
+    ),
+    "listings": (
+      <AreaListingsBand
+        eyebrow="For sale"
+        heading={
+          sv("listings", "heading") ?? `Properties for sale in ${profile.name}`
+        }
+        intro={sv("listings", "intro")}
+        rows={saleRows}
+        ctaLabel={sv("listings", "cta_label") ?? "View all properties for sale"}
+        ctaHref={sv("listings", "cta_href") ?? buyHref}
+        emptyBody={`No published sale listings in ${profile.name} right now — an advisor can tell you what is coming to market.`}
+        emptyHref="/contact"
+        emptyLabel="Talk to an advisor"
+      />
+    ),
+    "rentals": (
+      <AreaListingsBand
+        eyebrow="To rent"
+        heading={
+          sv("rentals", "heading") ?? `Properties for rent in ${profile.name}`
+        }
+        intro={sv("rentals", "intro")}
+        rows={rentRows}
+        ctaLabel={sv("rentals", "cta_label") ?? "View all properties for rent"}
+        ctaHref={sv("rentals", "cta_href") ?? rentHref}
+        emptyBody={
+          sv("rentals", "empty_body") ??
+          `Looking to rent in ${profile.name}? Speak with our team about current and upcoming availability.`
+        }
+        emptyHref="/contact"
+        emptyLabel="Enquire about rentals"
+        tone="surface"
+      />
+    ),
+    "nearby": (
+      <AreaNearby
+        heading={sv("nearby", "heading") ?? "Connected to Abu Dhabi"}
+        intro={sv("nearby", "intro")}
+        items={liveItems(values("nearby"))}
+        footnote={str(values("nearby"), "footnote")}
+      />
+    ),
+    "why": (
+      <AreaWhy
+        heading={sv("why", "heading") ?? `Why choose ${profile.name}?`}
+        intro={sv("why", "intro")}
+        items={liveItems(values("why"))}
+      />
+    ),
+    "lead-form": (
+      <AreaLeadBand
+        heading={
+          sv("lead-form", "heading") ??
+          `Looking for a property in ${profile.name}?`
+        }
+        intro={
+          sv("lead-form", "intro") ??
+          "Get a free property consultation and discover available opportunities that match your requirements."
+        }
+      >
+        <AreaLeadForm
+          areaName={profile.name}
+          submitLabel={sv("lead-form", "cta_label")}
+        />
+      </AreaLeadBand>
+    ),
+    "faq": (
+      <AreaFaq
+        heading={
+          sv("faq", "heading") ??
+          `Frequently asked questions about ${profile.name}`
+        }
+        intro={sv("faq", "intro")}
+        entries={liveFaq(values("faq"))}
+      />
+    ),
+    "final-cta": (
+      <AreaFinalCta
+        heading={sv("final-cta", "heading") ?? `Find your property in ${profile.name}`}
+        intro={
+          sv("final-cta", "intro") ??
+          "Explore opportunities to buy, rent or invest with trusted property guidance from Bazar Real Estate."
+        }
+        primary={{
+          label: sv("final-cta", "cta_label") ?? "Explore properties",
+          href: sv("final-cta", "cta_href") ?? buyHref,
+        }}
+        secondary={{
+          label: sv("final-cta", "cta2_label") ?? "Get a free consultation",
+          href: sv("final-cta", "cta2_href") ?? "/contact",
+        }}
+      />
     ),
     "schools": (
       <>
@@ -366,74 +527,6 @@ export default async function CommunityProfilePage({
       {/* T3-E: lifestyle dossier — commute chips, prose, dining picks.
           Seed-shaped, so it only draws for editorially-enriched areas. */}
       {profile.seed ? <LifestyleDossier area={profile.seed} /> : null}
-      </>
-    ),
-    "listings": (
-      <>
-      {/* Listings teaser */}
-      <section className="border-t border-bz-border bg-bz-surface">
-        <div className="px-4 md:px-12 py-16 max-w-[1280px]">
-          <div className="flex items-end justify-between gap-8 flex-wrap">
-            <div>
-              <Eyebrow>Available now</Eyebrow>
-              <h2
-                className="serif text-[32px] mt-2 leading-tight"
-                style={{ letterSpacing: "-0.015em" }}
-              >
-                Listings in {profile.name}.
-              </h2>
-            </div>
-            <Button asChild variant="outline">
-              <Link href={`/buy?area=${profile.slug}`}>View all listings</Link>
-            </Button>
-          </div>
-          {listingRows.length > 0 ? (
-            <div className="mt-8">
-                <CarouselGrid cols={3}>
-                  {listingRows.map((row, index) => {
-                    const badge = badgeFor(row);
-                    return (
-                      <Link
-                        key={row.reference}
-                        href={propertyUrl(row)}
-                        className="block"
-                      >
-                        <ListingCardPriced
-                          price={formatPriceAED(row.price_aed)}
-                          priceAed={row.price_aed}
-                          title={row.title}
-                          location={row.areas?.name ?? profile.name}
-                          beds={row.beds}
-                          baths={row.baths}
-                          area={row.built_up_ft2 ?? 0}
-                          badge={badge?.label}
-                          badgeKind={badge?.kind}
-                          imgLabel={row.reference}
-                          heroSrc={
-                            row.hero
-                              ? mediaPublicUrl(row.hero.storage_key)
-                              : null
-                          }
-                          heroAlt={row.hero?.alt_text ?? row.title}
-                          priority={index === 0}
-                          propertyId={row.id}
-                        />
-                      </Link>
-                    );
-                  })}
-                </CarouselGrid>
-            </div>
-          ) : (
-            <div className="mt-8 py-12 text-center text-[14px] text-bz-muted border border-dashed border-bz-border rounded-md">
-              No published listings in {profile.name} right now.{" "}
-              <Link href="/buy" className="text-bz-accent hover:underline">
-                Browse all properties
-              </Link>
-              .
-            </div>
-          )}
-        </div>
-      </section>
       </>
     ),
     "advisors": (
@@ -541,7 +634,7 @@ export default async function CommunityProfilePage({
   );
 }
 
-/** One figure in the stats band. An absent value renders an em-dash. */
+/** One figure in the fallback stats band. An absent value renders an em-dash. */
 function Stat({
   label,
   value,

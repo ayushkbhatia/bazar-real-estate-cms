@@ -1,4 +1,10 @@
-import type { FieldDef, MasterPageDef, SectionDef } from "./types";
+import type {
+  FieldDef,
+  MasterPageDef,
+  SectionDef,
+  SimpleFieldDef,
+  ToggleFieldDef,
+} from "./types";
 
 /**
  * Sub-pages: templated pages that exist once per database record, rather than
@@ -370,11 +376,86 @@ export function developmentPageDef(record: {
 // ────────────────────────────────────────────────────────────────────────
 // Areas — community guide pages under /areas/<slug>
 // ────────────────────────────────────────────────────────────────────────
+
+/**
+ * Shorthands for the area template's list fields. They are declared here
+ * rather than in `./fields` because the area guide wants its own lengths —
+ * a market-statistic caption ("Off-Plan Apartment Sale Index — Jun 2026")
+ * runs past what the marketing pages' `statList` allows.
+ */
+const optionalLink = (
+  key: string,
+  label: string,
+  help?: string,
+): SimpleFieldDef => ({
+  key,
+  label,
+  kind: "link",
+  max: 240,
+  optional: true,
+  help: help ?? "Internal path (/buy/search?area=…) or full URL.",
+});
+
+const showToggle = (label: string): ToggleFieldDef => ({
+  key: "enabled",
+  label,
+  kind: "toggle",
+});
+
+const footnote = (help: string): SimpleFieldDef => ({
+  key: "footnote",
+  label: "Footnote",
+  kind: "textarea",
+  max: 400,
+  optional: true,
+  help,
+});
+
+/**
+ * A section whose heading and intro are overridable, plus whatever else it
+ * declares. Every band on the guide has this floor.
+ */
+function areaSection(
+  key: string,
+  label: string,
+  description: string,
+  extra: Partial<SectionDef> & { extraFields?: FieldDef[] } = {},
+): SectionDef {
+  const { extraFields = [], defaults = {}, fields, ...rest } = extra;
+  return {
+    key,
+    label,
+    description,
+    fields: fields ?? [
+      optionalText("heading", "Heading", "Blank keeps the built-in heading."),
+      optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
+      ...extraFields,
+    ],
+    defaults: { heading: null, intro: null, ...defaults },
+    ...rest,
+  };
+}
+
+/**
+ * The thirteen bands of a Bazar area guide, in the order they render.
+ *
+ * Copy is an **override**, never a default: a field left blank falls back to
+ * what the page builds from the area record and its guide seed, so a newly
+ * created area gets a working page before anyone writes a word. Per-area copy
+ * lives in the section document (`pages.blocks` under `subpage/area/<slug>`),
+ * which is what the CMS editor reads and writes — that is why the defaults
+ * below are all null.
+ *
+ * The six sections after `final-cta` predate this structure. They still render
+ * and are still editable, but ship switched off so a new area follows the
+ * thirteen-band template unless someone opts back in.
+ */
 export const AREA_SECTIONS: SectionDef[] = [
+  // 1 ── Hero
   {
     key: "hero",
     label: "Hero",
-    description: "Eyebrow, area name and the opening paragraph.",
+    description: "Eyebrow, area name, the opening paragraph and the position line.",
     locked: true,
     dataNote:
       "Blank fields use the guide copy that ships with the area. The cover image is set in Page images below.",
@@ -382,32 +463,371 @@ export const AREA_SECTIONS: SectionDef[] = [
       optionalText("eyebrow", "Eyebrow", "Blank keeps “Community guide · …”."),
       optionalText("heading", "Heading", "Blank uses the area name."),
       optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
-      optionalText("position", "Position line", "The small mono line below."),
+      optionalText(
+        "position",
+        "Position line",
+        "The small mono line below — “Located 15–20 minutes from Downtown Abu Dhabi.”",
+      ),
     ],
     defaults: { eyebrow: null, heading: null, intro: null, position: null },
   },
-  section("hero-image", "Cover image", "Wide image under the intro.", {
-    dataNote: "Set the image in Page images below.",
-    fields: [],
-    defaults: {},
+
+  // 2 ── Cover image
+  areaSection("hero-image", "Cover image", "Wide image under the intro.", {
+    dataNote:
+      "Pick the image in Page images above — it is the area record's cover, shared with the /areas grid.",
+    fields: [
+      {
+        key: "brief",
+        label: "Image brief",
+        kind: "textarea",
+        max: 400,
+        optional: true,
+        help: "Not shown on the page. A note for whoever sources the photo — “wide aerial showing the coastline, waterfront and skyline behind”.",
+      },
+    ],
+    defaults: { brief: null },
   }),
-  section("map", "Map", "Interactive map focused on this area.", {
+
+  // 3 ── Property market statistics
+  areaSection(
+    "stats",
+    "Property market statistics",
+    "Headline index figures for the area.",
+    {
+      dataNote:
+        "Leave the list empty and the band falls back to the medians on the area's guide record.",
+      extraFields: [
+        {
+          key: "stats",
+          label: "Figures",
+          kind: "list",
+          itemLabel: "figure",
+          max: 8,
+          help: "Each tile is a value and its caption — “AED 1,713 / sq. ft.” over “Property Sale Price Index”.",
+          fields: [
+            showToggle("Show this figure"),
+            { key: "value", label: "Value", kind: "text", max: 48 },
+            { key: "label", label: "Caption", kind: "text", max: 90 },
+          ],
+        },
+        footnote("Dated the figures — “Sale data: June 2026 | Rental data: May 2026.”"),
+      ],
+      defaults: { stats: [], footnote: null },
+    },
+  ),
+
+  // 4 ── Map
+  areaSection("map", "Map", "Interactive map focused on this area.", {
     dataNote: "Pins come from the area's coordinates and live listings.",
+    extraFields: [
+      optionalBody(
+        "detail",
+        "Location detail",
+        "The line under the intro — how the area sits against the rest of the city.",
+      ),
+    ],
+    defaults: { detail: null },
   }),
-  section("stats", "Stats", "Median prices, yield and days on market."),
-  section("schools", "Schools & amenities", "Nearby schools and facilities."),
-  section("reports", "Market reports", "Rail linking to the area's reports.", {
+
+  // 5 ── Landmarks & attractions
+  areaSection(
+    "landmarks",
+    "Landmarks & attractions",
+    "The destinations that define the area, each with a photo.",
+    {
+      extraFields: [
+        {
+          key: "items",
+          label: "Landmarks",
+          kind: "list",
+          itemLabel: "landmark",
+          max: 12,
+          help: "Switch one off to hide it without losing the entry.",
+          fields: [
+            showToggle("Show this landmark"),
+            { key: "name", label: "Name", kind: "text", max: 90 },
+            {
+              key: "image",
+              label: "Photo",
+              kind: "image",
+              help: "Falls back to the placeholder caption below.",
+            },
+            {
+              key: "img",
+              label: "Placeholder caption",
+              kind: "text",
+              max: 80,
+              optional: true,
+            },
+            optionalLink("href", "Link"),
+          ],
+        },
+        footnote(
+          "The supporting line under the grid — “53.5 km of coastline, 16 km of beaches…”.",
+        ),
+      ],
+      defaults: { items: [], footnote: null },
+    },
+  ),
+
+  // 6 ── Communities / developments
+  areaSection(
+    "communities",
+    "Communities & developments",
+    "The residential communities inside this area.",
+    {
+      extraFields: [
+        {
+          key: "items",
+          label: "Communities",
+          kind: "list",
+          itemLabel: "community",
+          max: 16,
+          help: "Point one at its project page and the card becomes a link.",
+          fields: [
+            showToggle("Show this community"),
+            { key: "name", label: "Name", kind: "text", max: 90 },
+            {
+              key: "desc",
+              label: "Description",
+              kind: "textarea",
+              max: 240,
+              optional: true,
+            },
+            optionalLink("href", "Link"),
+            {
+              key: "image",
+              label: "Image",
+              kind: "image",
+              help: "Falls back to the placeholder caption below.",
+            },
+            {
+              key: "img",
+              label: "Placeholder caption",
+              kind: "text",
+              max: 80,
+              optional: true,
+            },
+          ],
+        },
+        footnote("The supporting line under the grid."),
+      ],
+      defaults: { items: [], footnote: null },
+    },
+  ),
+
+  // 7 ── Properties for sale
+  areaSection(
+    "listings",
+    "Properties for sale",
+    "Live sale stock in this area, with a link to the full search.",
+    {
+      dataNote: "Cards come from published listings for sale — they aren't picked here.",
+      extraFields: [
+        {
+          key: "cta_label",
+          label: "CTA label",
+          kind: "text",
+          max: 60,
+          optional: true,
+          help: "Blank keeps “View all properties for sale”.",
+        },
+        optionalLink("cta_href", "CTA link", "Blank links to the area's sale search."),
+      ],
+      defaults: { cta_label: null, cta_href: null },
+    },
+  ),
+
+  // 8 ── Properties for rent
+  areaSection(
+    "rentals",
+    "Properties for rent",
+    "Live rental stock in this area, with a link to the full search.",
+    {
+      dataNote: "Cards come from published rental listings — they aren't picked here.",
+      extraFields: [
+        {
+          key: "cta_label",
+          label: "CTA label",
+          kind: "text",
+          max: 60,
+          optional: true,
+          help: "Blank keeps “View all properties for rent”.",
+        },
+        optionalLink("cta_href", "CTA link", "Blank links to the area's rental search."),
+        optionalBody(
+          "empty_body",
+          "Copy when nothing is listed",
+          "Shown instead of the cards while the area has no published rentals — “Speak with our team about current and upcoming availability.”",
+        ),
+      ],
+      defaults: { cta_label: null, cta_href: null, empty_body: null },
+    },
+  ),
+
+  // 9 ── Nearby destinations
+  areaSection(
+    "nearby",
+    "Nearby destinations",
+    "Drive times to the places buyers ask about.",
+    {
+      extraFields: [
+        {
+          key: "items",
+          label: "Destinations",
+          kind: "list",
+          itemLabel: "destination",
+          max: 10,
+          fields: [
+            showToggle("Show this destination"),
+            { key: "name", label: "Destination", kind: "text", max: 90 },
+            {
+              key: "time",
+              label: "Distance / time",
+              kind: "text",
+              max: 60,
+              optional: true,
+              help: "“approx. 20 min”, “directly opposite the island”.",
+            },
+            optionalLink("href", "Link"),
+          ],
+        },
+        footnote("Any caveat — “travel times vary by starting point and traffic”."),
+      ],
+      defaults: { items: [], footnote: null },
+    },
+  ),
+
+  // 10 ── Why choose this area
+  areaSection(
+    "why",
+    "Why choose this area",
+    "The five reasons to live or invest here.",
+    {
+      extraFields: [
+        {
+          key: "items",
+          label: "Reasons",
+          kind: "list",
+          itemLabel: "reason",
+          max: 8,
+          fields: [
+            showToggle("Show this reason"),
+            { key: "name", label: "Title", kind: "text", max: 90 },
+            {
+              key: "desc",
+              label: "Description",
+              kind: "textarea",
+              max: 300,
+              optional: true,
+            },
+          ],
+        },
+      ],
+      defaults: { items: [] },
+    },
+  ),
+
+  // 11 ── Lead generation form
+  areaSection(
+    "lead-form",
+    "Lead generation form",
+    "Consultation request, stamped with this area.",
+    {
+      dataNote:
+        "The fields themselves — name, phone, email, intent, property type, budget, message — aren't editable here.",
+      extraFields: [
+        {
+          key: "cta_label",
+          label: "Submit button label",
+          kind: "text",
+          max: 60,
+          optional: true,
+          help: "Blank keeps “Request a free consultation”.",
+        },
+      ],
+      defaults: { cta_label: null },
+    },
+  ),
+
+  // 12 ── FAQs
+  areaSection("faq", "FAQs", "Questions, with FAQPage schema for search.", {
+    extraFields: [
+      {
+        key: "items",
+        label: "Questions",
+        kind: "list",
+        itemLabel: "question",
+        max: 12,
+        fields: [
+          { key: "q", label: "Question", kind: "text", max: 200 },
+          {
+            key: "a",
+            label: "Answer",
+            kind: "textarea",
+            max: 1200,
+            optional: false,
+          },
+        ],
+      },
+    ],
+    defaults: { items: [] },
+  }),
+
+  // 13 ── Final CTA
+  areaSection("final-cta", "Final CTA", "The closing band at the foot of the guide.", {
+    extraFields: [
+      {
+        key: "cta_label",
+        label: "First button label",
+        kind: "text",
+        max: 60,
+        optional: true,
+        help: "Blank keeps “Explore properties”.",
+      },
+      optionalLink("cta_href", "First button link"),
+      {
+        key: "cta2_label",
+        label: "Second button label",
+        kind: "text",
+        max: 60,
+        optional: true,
+        help: "Blank keeps “Get a free consultation”.",
+      },
+      optionalLink("cta2_href", "Second button link"),
+    ],
+    defaults: {
+      cta_label: null,
+      cta_href: null,
+      cta2_label: null,
+      cta2_href: null,
+    },
+  }),
+
+  // ── Older bands, kept and still editable, but off unless switched on ──
+  areaSection("schools", "Schools & amenities", "Nearby schools and facilities.", {
+    defaultEnabled: false,
+    dataNote: "Both columns come from the area's guide record.",
+  }),
+  areaSection("reports", "Market reports", "Rail linking to the area's reports.", {
+    defaultEnabled: false,
     dataNote: "Reports come from the market-report records.",
   }),
-  section("valuation", "Valuation prompt", "Lead capture for owners."),
-  section("lifestyle", "Lifestyle dossier", "Commute chips, prose, dining."),
-  section("listings", "Listings", "Properties for sale in this area.", {
-    dataNote: "Cards come from published listings.",
+  areaSection("valuation", "Valuation prompt", "Lead capture for owners.", {
+    defaultEnabled: false,
   }),
-  section("advisors", "Advisors", "Advisors who cover this area.", {
+  areaSection("lifestyle", "Lifestyle dossier", "Commute chips, prose, dining.", {
+    defaultEnabled: false,
+    dataNote: "Drawn from the area's guide seed, so it only draws for enriched areas.",
+  }),
+  areaSection("advisors", "Advisors", "Advisors who cover this area.", {
+    defaultEnabled: false,
     dataNote: "Advisors come from the team records.",
   }),
-  section("similar", "Similar areas", "Links to comparable communities."),
+  areaSection("similar", "Similar areas", "Links to comparable communities.", {
+    defaultEnabled: false,
+  }),
 ];
 
 export function areaPageDef(record: {

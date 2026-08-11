@@ -15,15 +15,26 @@ test("public /areas renders the neighbourhood index", async ({ page }) => {
 
 test("/areas/saadiyat-island renders the area guide", async ({ page }) => {
   await page.goto("/areas/saadiyat-island");
-  // Pin to the h1; the page also has h2s like "Listings in Saadiyat Island."
-  // and "Who to talk to about Saadiyat" that would otherwise trip Playwright's
-  // strict-mode multi-match check.
+  // Pin to the h1; the page also has h2s like "Properties for sale in
+  // Saadiyat Island" that would otherwise trip Playwright's strict-mode
+  // multi-match check.
   await expect(
     page.getByRole("heading", { level: 1, name: /saadiyat island/i }),
   ).toBeVisible();
-  // The stats grid should surface the four headline figures
-  await expect(page.getByText(/median apt \/ ft²/i)).toBeVisible();
-  await expect(page.getByText(/yoy change/i)).toBeVisible();
+
+  // These run against the live CMS, so the assertions have to survive an
+  // editor's copy change and the market-statistics band being either the
+  // editorial figures typed into the CMS or the medians on the guide record.
+  await expect(
+    page.getByText(/median apt \/ ft²|sale price index/i).first(),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /properties for sale/i }).first(),
+  ).toBeVisible();
+  // Deliberately nothing on the map band. Its heading is CMS-owned — this area
+  // currently overrides it to "Location" — and the band hides itself for an
+  // area with no coordinates, so any assertion on it is a copy edit away from
+  // reddening main.
 });
 
 test("public /areas indexes every area, not just the card grid", async ({

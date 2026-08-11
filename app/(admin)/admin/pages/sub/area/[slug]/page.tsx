@@ -119,10 +119,14 @@ export default async function AreaSubPage({ params }: PageProps) {
           <div>
             <h2 className="text-[13.5px] font-medium">Sections</h2>
             <p className="text-[12.5px] text-bz-muted mt-1 leading-relaxed">
-              Drag to reorder, switch sections off to hide them on this
-              area&apos;s guide, and override a heading or intro where the
-              built-in copy doesn&apos;t fit. Blank fields keep the
-              template&apos;s wording.
+              The guide runs hero → cover image → market statistics → map →
+              landmarks → communities → for sale → for rent → nearby → why here
+              → lead form → FAQs → final CTA. Drag to reorder, switch a section
+              off to hide it, and edit any heading, figure, landmark, community
+              or question in place. A blank field falls back to what the page
+              builds from the area record, so an empty section hides rather than
+              rendering blank. The six sections below the final CTA predate this
+              structure and ship switched off — turn one back on if you want it.
             </p>
           </div>
           <MasterPageEditor
