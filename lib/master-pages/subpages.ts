@@ -282,7 +282,7 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
   copySection("location", "Location", "Map and surroundings.", "Location"),
   copySection(
     "nearby",
-    "Future neighbours",
+    "Nearby Developments",
     "Other projects going up around this one.",
     "Future developments around · <area>",
     {
