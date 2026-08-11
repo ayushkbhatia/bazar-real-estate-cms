@@ -14,7 +14,7 @@ import {
 /**
  * T1-B cleanup: thin client wrapper around the brand-locked ListingCard
  * that re-formats the price through the user's currency preference. Used
- * by the "Similar properties" rail on `/p/[slug]`. The card itself stays
+ * by the "Nearby Properties" rail on `/p/[slug]`. The card itself stays
  * a brand component — we just intercept the price string before passing
  * it down.
  *
