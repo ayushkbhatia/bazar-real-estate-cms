@@ -15,6 +15,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 // has been removed along with customer accounts.
 import { signOutAction } from "@/app/_actions/auth";
 import { isSupabaseConfigured } from "@/lib/env";
+import { useAdminSession } from "@/app/(admin)/_components/admin-session";
 
 type StaffSummary = {
   display_name: string;
@@ -28,12 +29,29 @@ type StaffSummary = {
  * Sprint 3 replaces the hardcoded "Mariam Al-Hashimi · Admin" placeholder.
  */
 export function CmsUserPile() {
-  const [summary, setSummary] = useState<StaffSummary | null>(null);
-  const [email, setEmail] = useState<string | null>(null);
+  // Inside /admin the layout already resolved this server-side, and the shell
+  // mounts this component twice — so without the seed each navigation ran two
+  // browser `getUser()` calls plus two `staff` selects for a name the page was
+  // rendered with. Outside the provider the mount-time load below still runs.
+  const session = useAdminSession();
+  const seeded = session?.staff
+    ? {
+        display_name: session.staff.display_name,
+        title: session.staff.title,
+        role: session.staff.role,
+      }
+    : null;
+
+  const [summary, setSummary] = useState<StaffSummary | null>(seeded);
+  const [email, setEmail] = useState<string | null>(session?.email ?? null);
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
     if (!isSupabaseConfigured) return;
+    // Seeded from the server — nothing to fetch. The auth-state subscription
+    // below is still worth keeping so a sign-out in another tab updates this
+    // one, but it costs nothing until it fires.
+    if (session?.userId) return;
     const supabase = createSupabaseBrowserClient();
     let cancelled = false;
 
@@ -71,7 +89,7 @@ export function CmsUserPile() {
       cancelled = true;
       sub.subscription.unsubscribe();
     };
-  }, []);
+  }, [session?.userId]);
 
   const initials = (summary?.display_name ?? email ?? "·")
     .split(" ")

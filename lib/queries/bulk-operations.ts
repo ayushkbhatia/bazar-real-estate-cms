@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/env";
 
@@ -46,9 +47,8 @@ export async function logBulkOperation(entry: {
   if (!isSupabaseConfigured) return;
   try {
     const supabase = await createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Request-cached: the caller almost always resolved the same user already.
+    const user = await getCurrentUser();
     if (!user) return;
     // Cast through unknown — db/types.ts is regenerated separately from
     // migrations, so bulk_operations isn't in the generated types yet.

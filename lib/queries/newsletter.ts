@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured, env } from "@/lib/env";
 import type { Database } from "@/db/types";
@@ -45,9 +46,8 @@ export async function listNewsletterSubscribers(opts: {
 export async function getMyNewsletterSubscription(): Promise<NewsletterRow | null> {
   if (!isSupabaseConfigured) return null;
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Request-cached: the caller almost always resolved the same user already.
+  const user = await getCurrentUser();
   if (!user) return null;
 
   // Try account_id match first; then fall back to email match.

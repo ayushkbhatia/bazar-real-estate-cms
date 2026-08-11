@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { notFound, redirect } from "next/navigation";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -20,6 +21,57 @@ export type StaffRow = {
 };
 
 /**
+ * The signed-in user for this request, or null.
+ *
+ * `supabase.auth.getUser()` is a network round-trip to Supabase Auth, and an
+ * admin request asks the same question repeatedly: the proxy, the layout's
+ * role gate, the page's own gate, and any query helper that resolves the
+ * caller all wanted it independently. On /admin/settings that was five hops
+ * before the page ran its own query, three of them identical.
+ *
+ * `cache()` collapses them to one per request. It is React's per-request
+ * memoisation, not a data cache — nothing crosses a request boundary, which
+ * is the only correct shape here. Never reach for `unstable_cache` or
+ * `"use cache"` on this: those are cross-request and keyed on arguments, and
+ * cookies are not part of the key, so one signed-in user's identity would be
+ * served to another.
+ *
+ * Deliberately not guarded by `isSupabaseConfigured` — `createSupabaseServerClient`
+ * throws in that case, which is the existing behaviour of every caller here.
+ * The guards live in the query helpers that genuinely tolerate a
+ * half-configured local environment.
+ */
+export const getCurrentUser = cache(async (): Promise<User | null> => {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return user;
+});
+
+/**
+ * The current user's staff row, whatever its status, or null.
+ *
+ * Status is deliberately *not* filtered here. Three callers want three
+ * different things from this row: `requireRole` and `getStaffRole` require
+ * `active`, while `currentStaffRow` needs the row as stored — presence
+ * identity and the "can this person create an area?" checks read a suspended
+ * member's row and must keep seeing it. Filtering centrally would silently
+ * change those.
+ */
+export const getCurrentStaffRow = cache(async (): Promise<StaffRow | null> => {
+  const user = await getCurrentUser();
+  if (!user) return null;
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("staff")
+    .select("user_id, display_name, role, status, photo_url, title")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  return (data as StaffRow | null) ?? null;
+});
+
+/**
  * Require a signed-in user.
  *
  * Resolves to `{ user, supabase }`. Throws a redirect to `/sign-in` when
@@ -35,12 +87,13 @@ export async function requireSignedIn(): Promise<{
   user: User;
   supabase: SupabaseClient<Database>;
 }> {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Uncached on purpose: it throws a redirect, so memoising it would cache
+  // control flow rather than data. The expensive half — the `getUser()` hop —
+  // is cached underneath. Building the client is local work, no round-trip.
+  const user = await getCurrentUser();
   // /sign-in is gone with customer accounts; the staff door is the only one.
   if (!user) redirect("/admin/login");
+  const supabase = await createSupabaseServerClient();
   return { user, supabase };
 }
 
@@ -61,15 +114,11 @@ export async function requireRole(
   supabase: SupabaseClient<Database>;
 }> {
   const { user, supabase } = await requireSignedIn();
-  const { data, error } = await supabase
-    .from("staff")
-    .select("user_id, display_name, role, status, photo_url, title")
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (error || !data) notFound();
-  if (data.status !== "active") notFound();
-  if (!allowedRoles.includes(data.role as StaffRole)) notFound();
-  return { user, staff: data as StaffRow, supabase };
+  const staff = await getCurrentStaffRow();
+  if (!staff) notFound();
+  if (staff.status !== "active") notFound();
+  if (!allowedRoles.includes(staff.role)) notFound();
+  return { user, staff, supabase };
 }
 
 /**
@@ -82,16 +131,7 @@ export async function requireRole(
  * which reads as a broken page rather than a permission boundary.
  */
 export async function getStaffRole(): Promise<StaffRole | null> {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data } = await supabase
-    .from("staff")
-    .select("role, status")
-    .eq("user_id", user.id)
-    .maybeSingle();
-  if (!data || data.status !== "active") return null;
-  return data.role as StaffRole;
+  const staff = await getCurrentStaffRow();
+  if (!staff || staff.status !== "active") return null;
+  return staff.role;
 }

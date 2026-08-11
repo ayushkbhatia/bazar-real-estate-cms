@@ -88,7 +88,7 @@ lib/
   utils.ts                 # cn() helper
   posthog.tsx              # client analytics provider (no-op without keys)
   supabase/
-    server.ts              # server client (cookies-aware) + getSessionUser
+    server.ts              # server client (cookies-aware)
     browser.ts             # browser client
     proxy.ts               # session refresh + auth gating (Next.js 16 convention)
 db/

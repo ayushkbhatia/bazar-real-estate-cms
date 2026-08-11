@@ -8,6 +8,18 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { fetchInboxKpis } from "@/lib/queries/enquiries";
 import { PipelineBarChart } from "./_components/pipeline-bar-chart";
 import { ActivityFeed } from "./_components/activity-feed";
+import type { Database } from "@/db/types";
+
+/** The `enquiry_status` enum, from the generated schema so it cannot drift. */
+const ENQUIRY_STATUSES: readonly Database["public"]["Enums"]["enquiry_status"][] =
+  [
+    "new",
+    "qualified",
+    "viewing_scheduled",
+    "offer",
+    "closed_won",
+    "closed_lost",
+  ] as const;
 
 async function fetchKpis() {
   if (!isSupabaseConfigured)
@@ -39,14 +51,23 @@ async function fetchKpis() {
         .from("properties")
         .select("id", { count: "exact", head: true })
         .is("deleted_at", null),
-      supabase.from("enquiries").select("status"),
+      // One `head: true` count per status instead of pulling every enquiry
+      // row back to tally them in memory. The old query had no `limit`, so the
+      // dashboard's cost grew with the enquiry table forever to produce six
+      // integers. Postgres counts these without returning rows, and the six
+      // run inside the same `Promise.all` as the property counts above.
+      Promise.all(
+        ENQUIRY_STATUSES.map((status) =>
+          supabase
+            .from("enquiries")
+            .select("id", { count: "exact", head: true })
+            .eq("status", status)
+            .then(({ count }) => [status, count ?? 0] as const),
+        ),
+      ),
     ]);
 
-    const pipeline: Record<string, number> = {};
-    for (const row of (pipelineRes.data as { status: string }[] | null) ??
-      []) {
-      pipeline[row.status] = (pipeline[row.status] ?? 0) + 1;
-    }
+    const pipeline: Record<string, number> = Object.fromEntries(pipelineRes);
     return { active, drafts, total, pipeline };
   } catch (e) {
     console.error("[admin/dashboard] kpis", e);

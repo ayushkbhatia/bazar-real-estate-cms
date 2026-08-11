@@ -10,6 +10,7 @@ import {
   setChimeEnabled,
 } from "./chime";
 import { usePostgresChanges } from "./use-postgres-changes";
+import { useAdminSession } from "@/app/(admin)/_components/admin-session";
 
 function subscribeToChimePreference(callback: () => void): () => void {
   window.addEventListener("bz-chime-changed", callback);
@@ -45,11 +46,15 @@ export function NotificationsChime({
     readChimePreference,
     readChimePreferenceSSR,
   );
-  const [userId, setUserId] = useState<string | null>(userIdProp ?? null);
+  // The admin layout resolves the user server-side, so inside /admin the
+  // self-fetch below never runs. An explicit prop still wins.
+  const session = useAdminSession();
+  const seededUserId = userIdProp ?? session?.userId ?? null;
+  const [userId, setUserId] = useState<string | null>(seededUserId);
 
-  // Self-fetch userId when not passed (same shape as the bell).
+  // Self-fetch userId when nothing seeded us (same shape as the bell).
   useEffect(() => {
-    if (userIdProp !== undefined) return;
+    if (seededUserId) return;
     let cancelled = false;
     fetch("/api/notifications/recent", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
@@ -71,7 +76,7 @@ export function NotificationsChime({
     return () => {
       cancelled = true;
     };
-  }, [userIdProp]);
+  }, [seededUserId]);
 
   // Subscribe to the user's notifications. The refresh fired by the hook is
   // harmless (the bell does its own refresh too) — what we actually use is

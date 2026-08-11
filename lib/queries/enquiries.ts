@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
 import type { Database } from "@/db/types";
 
@@ -57,9 +58,8 @@ export async function listEnquiries(filter: ListFilter = {}): Promise<{
 }> {
   if (!isSupabaseConfigured) return { rows: [], total: 0 };
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Request-cached: the caller almost always resolved the same user already.
+  const user = await getCurrentUser();
 
   let query = supabase
     .from("enquiries")
@@ -209,9 +209,8 @@ export async function getEnquiryById(
 export async function listEnquiriesForUser(): Promise<EnquiryListRow[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Request-cached: the caller almost always resolved the same user already.
+  const user = await getCurrentUser();
   if (!user) return [];
 
   const { data, error } = await supabase

@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getCurrentStaffRow } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
 import type { StaffRole, StaffStatus } from "@/lib/schemas/staff";
 
@@ -183,35 +184,31 @@ export async function getStaffAuthMeta(
   }
 }
 
-/** True if the current session belongs to an admin. */
+/**
+ * True if the current session belongs to an admin.
+ *
+ * Reads the request-cached staff row rather than issuing its own
+ * `getUser()` + `staff` select. Ten admin pages `await` this as a gate before
+ * fetching anything, so on its own it added two serialised network hops ahead
+ * of the real work on each of them — and the layout had already asked the
+ * same question.
+ */
 export async function currentUserIsAdmin(): Promise<boolean> {
   if (!isSupabaseConfigured) return false;
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return false;
-  const { data } = await supabase
-    .from("staff")
-    .select("role, status")
-    .eq("user_id", user.id)
-    .maybeSingle();
-  return data?.role === "admin" && data?.status === "active";
+  const staff = await getCurrentStaffRow();
+  return staff?.role === "admin" && staff?.status === "active";
 }
 
-/** Resolve the current user's staff row (null if not staff). Useful for
- *  the topbar profile widget too. */
+/**
+ * Resolve the current user's staff row (null if not staff). Useful for
+ * the topbar profile widget too.
+ *
+ * Returns the row whatever its status — unlike `currentUserIsAdmin` and
+ * `getStaffRole`, which require `active`. Callers here use it for identity
+ * and for the `canCreateArea` / `canCreateDeveloper` checks, which read a
+ * suspended member's row and would change behaviour if it were filtered.
+ */
 export async function currentStaffRow() {
   if (!isSupabaseConfigured) return null;
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data } = await supabase
-    .from("staff")
-    .select("user_id, display_name, role, status, photo_url, title")
-    .eq("user_id", user.id)
-    .maybeSingle();
-  return data;
+  return getCurrentStaffRow();
 }

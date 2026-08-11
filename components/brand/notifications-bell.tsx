@@ -11,6 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useAdminSession } from "@/app/(admin)/_components/admin-session";
 
 export type BellNotification = {
   id: string;
@@ -51,13 +52,22 @@ function relativeTime(iso: string): string {
 }
 
 export function NotificationsBell({
-  initial = [],
-  unreadCount = 0,
-  userId: userIdProp = null,
+  initial,
+  unreadCount,
+  userId: userIdProp,
 }: BellProps) {
-  const [rows, setRows] = useState<BellNotification[]>(initial);
-  const [unread, setUnread] = useState(unreadCount);
-  const [userId, setUserId] = useState<string | null>(userIdProp);
+  // The admin layout resolves all three of these on the server and hands them
+  // down, so the mount-time fetch below never runs inside /admin. Explicit
+  // props still win — they're how a caller overrides the shared session — and
+  // the self-fetch remains the fallback for any mount outside the provider.
+  const session = useAdminSession();
+  const seededRows = initial ?? session?.notifications ?? [];
+  const seededUnread = unreadCount ?? session?.unread ?? 0;
+  const seededUserId = userIdProp ?? session?.userId ?? null;
+
+  const [rows, setRows] = useState<BellNotification[]>(seededRows);
+  const [unread, setUnread] = useState(seededUnread);
+  const [userId, setUserId] = useState<string | null>(seededUserId);
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   // Per-instance suffix so two concurrent bells (the CMS shell renders one
@@ -68,9 +78,11 @@ export function NotificationsBell({
   // boundary. A unique topic per mount keeps each subscription independent.
   const instanceId = useId();
 
-  // Self-populate on mount when no SSR props were passed.
+  // Self-populate on mount only when nothing seeded us — no prop and no admin
+  // session. Inside /admin the layout always seeds, so this is dead weight
+  // there; it stays for any mount outside the provider.
   useEffect(() => {
-    if (userIdProp) return;
+    if (seededUserId) return;
     let cancelled = false;
     fetch("/api/notifications/recent", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
@@ -92,7 +104,7 @@ export function NotificationsBell({
     return () => {
       cancelled = true;
     };
-  }, [userIdProp]);
+  }, [seededUserId]);
 
   // Subscribe to Realtime inserts/updates for this user's notifications.
   useEffect(() => {
