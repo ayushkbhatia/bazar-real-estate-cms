@@ -275,7 +275,10 @@ function CtaRow({
 
       {expanded ? (
         <div className="border-t border-bz-border p-3 grid gap-3 md:grid-cols-2">
-          <Field label="Button text">
+          <Field
+            label="Button text"
+            hint="Phones share one row between the buttons, so keep this short — past about 10 characters it clips when three are showing."
+          >
             <input
               className={fieldCls}
               value={cta.label}

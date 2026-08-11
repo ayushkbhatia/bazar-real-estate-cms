@@ -88,13 +88,20 @@ export function FloatingCtaRail({
         ))}
       </div>
 
-      {/* Mobile dock */}
+      {/*
+        Mobile dock. The buttons float directly over the page rather than
+        inside a tray: a dark `bg-bz-ink/95` wrapper used to sit behind them,
+        which read as a thick black border around the one tinted button and
+        made the untinted ones look like part of the bar instead of buttons
+        of their own. Each pill now carries its own fill and shadow, exactly
+        as on desktop.
+      */}
       <div
         className={`md:hidden fixed inset-x-0 bottom-0 z-40 px-3 pt-2 pb-bar-safe transition-transform ${
           visible ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        <div className="flex gap-2 rounded-full bg-bz-ink/95 text-bz-bg p-1.5 shadow-xl backdrop-blur">
+        <div className="flex gap-2">
           {resolved.map((cta) => (
             <CtaLink key={cta.id} cta={cta} compact />
           ))}
@@ -112,12 +119,16 @@ function CtaLink({ cta, compact }: { cta: ResolvedCta; compact?: boolean }) {
     ? { backgroundColor: cta.color, color: readableForeground(cta.color) }
     : undefined;
 
+  // Mobile shares one row, so every button takes an equal share of it and the
+  // set reads as one control. Both variants are h-11 and both carry a border —
+  // transparent on a tinted fill — so a green pill and a plain one are the
+  // same box to the pixel rather than differing by the border's two pixels.
   const base = compact
-    ? "flex-1 flex items-center justify-center gap-2 h-10 rounded-full text-[13px] min-w-0"
-    : "flex items-center gap-2 h-11 px-4 rounded-full shadow-md text-[13px]";
-  const untinted = compact
-    ? "bg-white/10 text-bz-bg hover:bg-white/20"
-    : "bg-bz-surface border border-bz-border hover:bg-bz-surface-2 text-bz-ink";
+    ? "flex-1 min-w-0 justify-center gap-1.5 h-11 px-2 text-[12.5px] shadow-lg"
+    : "gap-2 h-11 px-4 text-[13px] shadow-md";
+  const fill = cta.color
+    ? "border-transparent hover:opacity-90"
+    : "bg-bz-surface border-bz-border hover:bg-bz-surface-2 text-bz-ink";
 
   return (
     <a
@@ -125,7 +136,7 @@ function CtaLink({ cta, compact }: { cta: ResolvedCta; compact?: boolean }) {
       {...(cta.external
         ? { target: "_blank", rel: "noopener noreferrer" }
         : null)}
-      className={`${base} ${cta.color ? "hover:opacity-90" : untinted}`}
+      className={`flex items-center rounded-full border ${base} ${fill}`}
       style={style}
       aria-label={cta.ariaLabel}
     >
