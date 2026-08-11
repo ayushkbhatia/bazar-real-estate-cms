@@ -570,6 +570,49 @@ const RENT_PROP_TYPE_ITEMS = SALE_PROP_TYPE_COPY.map(([name, desc]) => ({
   ...propTypeImageDefaults(name),
 }));
 
+/**
+ * Commercial has its own type vocabulary — the residential list (apartments,
+ * villas, townhouses, penthouses) says nothing to someone looking for a floor
+ * of offices. These map onto the commercial members of `PROPERTY_TYPES`.
+ */
+const COMMERCIAL_PROP_TYPE_COPY: [string, string, string][] = [
+  [
+    "Offices",
+    "Fitted and shell-and-core office floors across Abu Dhabi's business districts, from single suites to whole-floor requirements.",
+    "office",
+  ],
+  [
+    "Retail",
+    "Street-front units, mall space and F&B pitches in the catchments where footfall actually is.",
+    "retail",
+  ],
+  [
+    "Showrooms",
+    "High-visibility showroom and light-industrial space with the access and ceiling heights those uses need.",
+    "commercial",
+  ],
+  [
+    "Whole buildings",
+    "Full-building acquisitions and leasebacks for occupiers and investors buying income rather than a unit.",
+    "building",
+  ],
+  [
+    "Land",
+    "Plots with the zoning and permitted use confirmed before you commit to a design.",
+    "land",
+  ],
+];
+
+const COMMERCIAL_PROP_TYPE_ITEMS = COMMERCIAL_PROP_TYPE_COPY.map(
+  ([name, desc, type]) => ({
+    name,
+    desc,
+    cta: `Browse ${name.toLowerCase()}`,
+    href: `/commercial/search?type=${type}`,
+    ...propTypeImageDefaults(name),
+  }),
+);
+
 const BUY: MasterPageDef = {
   key: "buy",
   label: "Buy",
@@ -788,6 +831,111 @@ const RENT: MasterPageDef = {
       {
         q: "Can Bazar help with location recommendations?",
         a: "Yes. We can suggest areas based on your budget, lifestyle, commute, and property needs.",
+      },
+    ],
+  }),
+};
+
+// ────────────────────────────────────────────────────────────────────────
+// Commercial
+// ────────────────────────────────────────────────────────────────────────
+/**
+ * `/commercial` used to be landing and search in one file, which is why it was
+ * the last marketing route that could never be cached — it read `searchParams`
+ * on every request. Registering it here gives it the same editable landing the
+ * other three have, with search relocated to `/commercial/search`.
+ */
+const COMMERCIAL: MasterPageDef = {
+  key: "commercial",
+  label: "Commercial",
+  path: "/commercial",
+  description:
+    "The commercial landing page. Search itself lives at /commercial/search.",
+  sections: buyRentSections({
+    hero: {
+      eyebrow: "Commercial Property",
+      title: "Office, retail and\nindustrial space,",
+      title_emphasis: "advised properly.",
+      sub: "Leases and freeholds across Abu Dhabi's business districts — sized to how your business actually works, with an advisor who reads the lease before you sign it.",
+    },
+    heroChips: [
+      { label: "Offices", href: "/commercial/search?type=office" },
+      { label: "Retail", href: "/commercial/search?type=retail" },
+      { label: "Showrooms", href: "/commercial/search?type=commercial" },
+      { label: "Whole buildings", href: "/commercial/search?type=building" },
+      { label: "Land", href: "/commercial/search?type=land" },
+    ],
+    heroStats: [
+      { value: "Lease", label: "& freehold" },
+      { value: "Fit-out", label: "guidance included" },
+      { value: "Abu Dhabi", label: "business districts" },
+    ],
+    form: {
+      form_title: "Find commercial space",
+      form_sub:
+        "Tell us the use, the headcount and the timing — we'll come back with options that fit, not a list to wade through.",
+    },
+    featured: {
+      featured_title: "Available commercial space",
+      featured_cta: "Browse all commercial",
+      featured_cta_href: "/commercial/search",
+    },
+    map: {
+      eyebrow: "Business districts",
+      heading: "Where Abu Dhabi does business.",
+      body: null,
+    },
+    lead: {
+      eyebrow: "Get matched",
+      title: "Tell us what your business needs.",
+      sub: "Share the use, approximate area and move-in date — an advisor will send you matched commercial options, usually within one business day.",
+      image: {
+        media_id: null,
+        alt: null,
+        label: "Abu Dhabi commercial districts",
+      },
+    },
+    ways: { ways_eyebrow: "", ways_title: "" },
+    categoryTiles: [],
+    propTypes: { prop_types_title: "Space for every kind of operation." },
+    propTypeItems: COMMERCIAL_PROP_TYPE_ITEMS,
+    communities: {
+      communities_eyebrow: "Commercial districts",
+      communities_title: "Abu Dhabi's established business addresses.",
+      communities_sub:
+        "From the financial free-zone on Al Maryah to the mixed-use towers on Al Reem, the right address depends on who needs to reach you.",
+      communities_cta: "Explore locations",
+      communities_cta_href: "/areas",
+    },
+    why: {
+      why_title: "A commercial search is a business decision, not a listing search.",
+      why_body:
+        "Fit-out liability, service charge, permitted use and the escalation clause matter more than the headline rent. Bazar advises on the whole cost of occupying a space, so the lease you sign is the one you thought you were signing.",
+      stats: [
+        { value: "Whole-cost", label: "Not headline rent" },
+        { value: "Lease review", label: "Before you commit" },
+      ],
+    },
+    faq: {
+      faq_eyebrow: "Commercial with Bazar",
+      faq_title: "Questions, answered.",
+    },
+    faqItems: [
+      {
+        q: "Do you handle both leasing and sales?",
+        a: "Yes. We advise on commercial leases and on freehold acquisitions, including whole buildings and land with confirmed permitted use.",
+      },
+      {
+        q: "Can you help with fit-out?",
+        a: "We advise on what the fit-out will realistically cost and who carries it under the lease, and can introduce contractors we have worked with.",
+      },
+      {
+        q: "What is the difference between shell-and-core and fitted space?",
+        a: "Shell-and-core is delivered as a bare structure with services brought to the floor; fitted space is ready to occupy. The rent difference rarely reflects the true cost difference, which is what we help you work out.",
+      },
+      {
+        q: "Which areas should I be looking at?",
+        a: "It depends on who has to reach you — clients, staff or freight. Tell us the use and we will shortlist the districts that fit rather than the ones with the most availability.",
       },
     ],
   }),
@@ -1373,6 +1521,7 @@ export const MASTER_PAGES: MasterPageDef[] = [
   HOME,
   BUY,
   RENT,
+  COMMERCIAL,
   OFF_PLAN,
   AREAS,
   DEVELOPERS_PAGE,

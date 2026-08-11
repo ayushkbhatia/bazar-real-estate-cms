@@ -7,7 +7,7 @@ const MODES = [
   { value: "buy", label: "Buy", path: "/buy/search" },
   { value: "rent", label: "Rent", path: "/rent/search" },
   { value: "off_plan", label: "Off-plan", path: "/off-plan/search" },
-  { value: "commercial", label: "Commercial", path: "/commercial" },
+  { value: "commercial", label: "Commercial", path: "/commercial/search" },
 ] as const;
 
 /**
@@ -28,9 +28,14 @@ function isActivePath(pathname: string, path: string): boolean {
 }
 
 /**
- * Sprint 4 (backfilled): mode segmented control rendered inside the
- * filter bar on /buy /rent /off-plan /commercial. Switches between modes
- * while preserving every other filter in the querystring.
+ * Sprint 4 (backfilled): mode segmented control rendered inside the filter bar
+ * on the four search routes. Switches between modes while preserving every
+ * other filter in the querystring.
+ *
+ * Every pill points at a `…/search` route. Commercial used to point at
+ * `/commercial`, which became the marketing landing — leaving it there would
+ * have sent each mode switch through a 307 and left `isActivePath` unable to
+ * mark Commercial selected once you were on it.
  */
 export function ModeSegmented() {
   const router = useRouter();

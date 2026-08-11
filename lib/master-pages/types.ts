@@ -184,6 +184,7 @@ export type MasterPageKey =
   | "home"
   | "buy"
   | "rent"
+  | "commercial"
   | "off-plan"
   | "areas"
   | "developers"
