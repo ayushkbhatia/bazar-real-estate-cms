@@ -678,7 +678,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             className="serif text-[26px] md:text-[32px] font-normal mt-2 mb-8"
             style={{ letterSpacing: "-0.02em" }}
           >
-            Similar properties
+            Nearby Properties
           </h2>
           <CarouselGrid cols={4}>
             {similar.map((row) => (
