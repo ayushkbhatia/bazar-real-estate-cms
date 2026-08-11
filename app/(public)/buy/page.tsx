@@ -9,6 +9,8 @@ import { BuyRentLanding } from "../_components/marketing/buy-rent-landing";
 import { listingRowToCard } from "../_components/marketing/map-listing";
 import { BuyPropertiesMap } from "../_components/marketing/buy-properties-map";
 import { LeadBand } from "../_components/marketing/lead-band";
+import { FormRenderer } from "../_components/forms/form-renderer";
+import { getForms } from "@/lib/queries/forms";
 import type { BuyCategory } from "../_components/marketing/buy-category-explorer";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
@@ -71,6 +73,12 @@ export default async function BuyPage() {
   // lib/master-pages, which are this page's original copy.
   const c = buyRentContent(content);
 
+  // The two lead forms on this page. Fields, order, button and confirmation
+  // come from /admin/forms; a form switched off there drops its card rather
+  // than leaving a heading over an empty box.
+  const resolved = await getForms(["buy_hero_enquiry", "buy_lead_band"]);
+  const forms = { hero: resolved["buy_hero_enquiry"]!, band: resolved["buy_lead_band"]! };
+
   // Map section copy — blank fields fall through to BuyPropertiesMap's own
   // defaults, which are this section's original strings.
   const map = content.section("map")?.values ?? {};
@@ -100,6 +108,16 @@ export default async function BuyPage() {
       heroImageAlt={c.heroImageAlt}
       wide
       categories={categories}
+      heroForm={
+        forms.hero.enabled ? (
+          <FormRenderer
+            form={forms.hero}
+            className="mt-5"
+            successStyle="soft"
+            allowAnother
+          />
+        ) : null
+      }
       formTitle={c.formTitle}
       formSub={c.formSub}
       featured={featured}
@@ -122,6 +140,15 @@ export default async function BuyPage() {
       }
       leadBand={
         <LeadBand
+          form={
+            forms.band.enabled ? (
+              <FormRenderer
+                form={forms.band}
+                successStyle="soft"
+                allowAnother
+              />
+            ) : null
+          }
           eyebrow={c.lead.eyebrow}
           title={c.lead.title}
           sub={c.lead.sub}

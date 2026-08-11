@@ -24,7 +24,7 @@ import {
 import type { Database } from "@/db/types";
 
 export type ServiceLeadResult =
-  | { status: "ok"; advisorName: string | null }
+  | { status: "ok"; advisorName: string | null; enquiryId: string | null }
   | {
       status: "error";
       message: string;
@@ -178,5 +178,9 @@ export async function submitServiceLead(
     });
   });
 
-  return { status: "ok", advisorName: advisor?.displayName ?? null };
+  return {
+    status: "ok",
+    advisorName: advisor?.displayName ?? null,
+    enquiryId: row.id,
+  };
 }

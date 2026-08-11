@@ -16,6 +16,7 @@ import {
   Menu,
   Settings,
   ClipboardCheck,
+  FormInput,
   PhoneCall,
   ScrollText,
   ShieldCheck,
@@ -69,6 +70,7 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
     items: [
       { label: "Blog editor", href: "/admin/blog", icon: FileText },
       { label: "Pages & blocks", href: "/admin/pages", icon: Layers },
+      { label: "Forms", href: "/admin/forms", icon: FormInput },
       { label: "Floating CTAs", href: "/admin/floating-ctas", icon: PhoneCall },
       { label: "Megamenu", href: "/admin/megamenu", icon: Menu },
       { label: "Content assets", href: "/admin/content-assets", icon: Mails },
@@ -108,6 +110,7 @@ function activeCmsTab(pathname: string | null): string {
     [
       "/admin/blog",
       "/admin/pages",
+      "/admin/forms",
       "/admin/floating-ctas",
       "/admin/content-assets",
     ].some((m) => p.startsWith(m))

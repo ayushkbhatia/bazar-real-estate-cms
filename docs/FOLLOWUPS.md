@@ -31,6 +31,31 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [forms] Wire the two bespoke lead forms to the shared renderer.
+  `/services/sell` (two-step owner wizard) and the valuation report gate (OTP)
+  are registered in the Forms Manager as `control: "copy"`: their visibility,
+  their wording and their responses are managed, but their field lists are
+  read-only because the components draw their own inputs. Expressing them
+  through `FormRenderer` needs two things it doesn't have — a `step` on
+  `FormFieldDef`, and a way for a handler to interrupt between validation and
+  submit. "Done" is flipping both to `control: "full"` with no visible change
+  to either page.
+
+- [forms] Newsletter signups on the home teaser and article sidebar don't read
+  their CMS copy.
+  `NewsletterSignup` takes an optional `form` prop and only /insights passes
+  it, so the other two surfaces still show the built-in "Subscribe". They log
+  their submissions either way. "Done" is threading the form through
+  `insights-teaser.tsx` and `insights/[slug]/_components/article-rail.tsx`, or
+  giving each surface its own registry entry if the client wants them worded
+  differently.
+
+- [forms] `forms.notify_emails` is stored and edited but nothing sends to it.
+  The Settings tab accepts extra recipients per form; the submit path doesn't
+  read them yet — routing still comes entirely from Settings → Lead routing.
+  "Done" is either sending on submit (see `lib/email.ts`) or removing the
+  field. Don't leave it looking live.
+
 - [services] `/services/consulting` and `/services/consultation` both exist.
   The first is the old seed-driven "Consulting" page (senior-advisor hours,
   AED 950/hr) and is no longer linked from the megamenu; the second is the

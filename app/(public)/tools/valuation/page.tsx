@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getForm } from "@/lib/queries/forms";
 import { Check } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { listAreaOptions } from "@/lib/queries/areas";
@@ -21,7 +22,10 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function ValuationPage() {
-  const areas = await listAreaOptions();
+  const [areas, gateForm] = await Promise.all([
+    listAreaOptions(),
+    getForm("valuation_report_gate"),
+  ]);
 
   return (
     <div className="bg-bz-bg">
@@ -65,7 +69,12 @@ export default async function ValuationPage() {
             report directly. The wizard still runs the instant estimate for
             anyone who wants the dopamine first. */}
         <div className="mt-8 inline-flex gap-3 items-center">
-          <ValuationLeadGate triggerLabel="Skip to advisor-prepared report" />
+          {gateForm.enabled ? (
+            <ValuationLeadGate
+              form={gateForm}
+              triggerLabel="Skip to advisor-prepared report"
+            />
+          ) : null}
           <span className="text-[12.5px] text-bz-muted">
             Already know your figures? Get the report straight to your inbox.
           </span>

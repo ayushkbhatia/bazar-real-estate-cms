@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getForm } from "@/lib/queries/forms";
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
@@ -95,9 +96,10 @@ function fillCategory(template: string, label: string): string {
  * /insights out of the CDN. proxy.ts redirects the old querystring form.
  */
 export default async function InsightsIndexPage() {
-  const [categories, content] = await Promise.all([
+  const [categories, content, newsletterForm] = await Promise.all([
     listArticleCategories(),
     getMasterPageContent("insights"),
+    getForm("insights_newsletter"),
   ]);
 
   const [{ rows }, counts] = await Promise.all([
@@ -216,7 +218,11 @@ export default async function InsightsIndexPage() {
                 "A short briefing on the week's Abu Dhabi deals, advisor commentary, and one chart worth sitting with."}
             </p>
             <div className="mt-5">
-              <NewsletterSignup source="insights_header" variant="dark" />
+              <NewsletterSignup
+                source="insights_header"
+                variant="dark"
+                form={newsletterForm}
+              />
             </div>
           </aside>
         </div>

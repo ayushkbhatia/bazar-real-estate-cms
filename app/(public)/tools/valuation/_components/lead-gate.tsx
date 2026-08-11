@@ -22,8 +22,16 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { ResolvedForm } from "@/lib/forms/types";
 
 type Props = {
+  /**
+   * The `valuation_report_gate` form from /admin/forms. Optional so the gate
+   * still renders on a surface that hasn't been wired yet; when supplied, its
+   * heading, blurb, button and small print are the editor's. The inputs stay
+   * in code — the OTP step in the middle is behaviour, not copy.
+   */
+  form?: ResolvedForm;
   /** Midpoint AED estimate from the wizard, used in the confirmation copy. */
   valuationAed?: number | null;
   /** Short one-liner about the property, used to pre-fill the brief. */
@@ -35,6 +43,7 @@ type Props = {
 type Step = "form" | "verify" | "done";
 
 export function ValuationLeadGate({
+  form,
   valuationAed,
   propertySummary,
   triggerLabel = "Get the full advisor report",
@@ -137,11 +146,11 @@ export function ValuationLeadGate({
           <>
             <DialogHeader>
               <DialogTitle className="serif text-[26px] leading-tight">
-                Get the full advisor report
+                {form?.copy.title ?? "Get the full advisor report"}
               </DialogTitle>
               <DialogDescription className="text-bz-ink-2">
-                A Bazar advisor reviews the instant estimate against the latest
-                comparables and sends you the prepared PDF within 24 hours.
+                {form?.copy.subtitle ??
+                  "A Bazar advisor reviews the instant estimate against the latest comparables and sends you the prepared PDF within 24 hours."}
               </DialogDescription>
             </DialogHeader>
             <form className="grid gap-4 mt-3" onSubmit={handleIssue}>
@@ -200,12 +209,16 @@ export function ValuationLeadGate({
                 ) : (
                   <Mail size={14} strokeWidth={1.7} />
                 )}
-                Email me a code
+                {loading
+                  ? (form?.copy.pending_label ?? "Sending…")
+                  : (form?.copy.submit_label ?? "Email me a code")}
               </Button>
-              <p className="text-[11.5px] text-bz-muted">
-                We use your email for the verification code and the report
-                delivery. See our privacy notice for what happens next.
-              </p>
+              {form?.copy.consent_note === null ? null : (
+                <p className="text-[11.5px] text-bz-muted">
+                  {form?.copy.consent_note ??
+                    "We use your email for the verification code and the report delivery. See our privacy notice for what happens next."}
+                </p>
+              )}
             </form>
           </>
         )}

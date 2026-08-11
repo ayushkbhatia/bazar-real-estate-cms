@@ -4,7 +4,6 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { ListingCardProps } from "@/components/brand/listing-card";
-import { EnquiryForm } from "../enquiry-form";
 import { fluid } from "./fluid";
 import { SectionHead } from "./section-head";
 import { FeaturedListings } from "./featured-listings";
@@ -48,6 +47,13 @@ export type BuyRentLandingProps = {
   wide?: boolean;
   formTitle: string;
   formSub: string;
+  /**
+   * The hero's lead card. Supplied by the page (a `<ManagedForm>`), so the
+   * fields come from the Forms Manager rather than from here. Null when an
+   * editor has switched the form off — the hero then runs full width instead
+   * of leaving a headed card with nothing in it.
+   */
+  heroForm?: React.ReactNode;
   featured: ListingCardProps[];
   /** Per-category featured lists, keyed by `BuyCategory.key`. */
   featuredByCategory?: Record<string, ListingCardProps[]>;
@@ -227,7 +233,8 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
         ) : null}
         <div
           className={cn(
-            "grid grid-cols-1 lg:grid-cols-[1fr_460px] gap-10 lg:gap-16 items-center",
+            "grid grid-cols-1 gap-10 lg:gap-16 items-center",
+            p.heroForm ? "lg:grid-cols-[1fr_460px]" : "lg:grid-cols-1",
             // Positioned so the copy paints over the scrim, which is itself a
             // positioned sibling. Only needed on the media variant.
             heroImage && "relative",
@@ -294,18 +301,20 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
               </div>
             ) : null}
           </div>
-          <div className="rounded-lg border border-bz-border bg-bz-surface p-6 md:p-8 bz-shadow-1">
-            <div
-              className="serif text-[24px] md:text-[26px]"
-              style={{ letterSpacing: "-0.015em" }}
-            >
-              {p.formTitle}
+          {p.heroForm ? (
+            <div className="rounded-lg border border-bz-border bg-bz-surface p-6 md:p-8 bz-shadow-1">
+              <div
+                className="serif text-[24px] md:text-[26px]"
+                style={{ letterSpacing: "-0.015em" }}
+              >
+                {p.formTitle}
+              </div>
+              <p className="text-[13.5px] text-bz-muted mt-2 leading-relaxed">
+                {p.formSub}
+              </p>
+              {p.heroForm}
             </div>
-            <p className="text-[13.5px] text-bz-muted mt-2 leading-relaxed">
-              {p.formSub}
-            </p>
-            <EnquiryForm source="contact_page" showIntent className="mt-5" />
-          </div>
+          ) : null}
         </div>
       </section>
     ),

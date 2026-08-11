@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getForm } from "@/lib/queries/forms";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { CalendarDays, Check } from "lucide-react";
@@ -28,13 +29,15 @@ const DEFAULT_DESK_PHONE = "+971 2 632 2223";
 export const revalidate = 3600;
 
 export default async function ListYourPropertyPage() {
-  const [areas, liveStats, spark, settings, content] = await Promise.all([
-    listLeadAreaOptions(),
-    getSellHeroStats(),
-    getTransactionSpark(),
-    getPublicSiteSettings(),
-    getMasterPageContent("sell"),
-  ]);
+  const [areas, liveStats, spark, settings, content, listForm] =
+    await Promise.all([
+      listLeadAreaOptions(),
+      getSellHeroStats(),
+      getTransactionSpark(),
+      getPublicSiteSettings(),
+      getMasterPageContent("sell"),
+      getForm("services_sell_list_property"),
+    ]);
 
   const v = (key: string) => content.section(key)?.values ?? {};
   const heroV = v("hero");
@@ -238,6 +241,9 @@ export default async function ListYourPropertyPage() {
           </div>
 
           <div className="order-1 lg:order-2">
+            {/* Switched off at /admin/forms ⇒ the column collapses rather than
+                showing a heading over nothing. */}
+            {listForm.enabled ? (
             <ListPropertyForm
               areas={areas}
               deskPhone={deskPhone}
@@ -277,6 +283,7 @@ export default async function ListYourPropertyPage() {
                 anotherLabel: str(confirmV, "another_label"),
               }}
             />
+            ) : null}
           </div>
         </div>
       </section>
