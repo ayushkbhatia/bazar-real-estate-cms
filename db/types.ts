@@ -2933,6 +2933,8 @@ export type Database = {
         | "brochure"
         | "development_interest"
         | "list_property"
+        | "property_management"
+        | "property_consultation"
       enquiry_status:
         | "new"
         | "qualified"
@@ -3254,6 +3256,8 @@ export const Constants = {
         "brochure",
         "development_interest",
         "list_property",
+        "property_management",
+        "property_consultation",
       ],
       enquiry_status: [
         "new",

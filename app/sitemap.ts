@@ -16,6 +16,11 @@ const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[numb
   { path: "/commercial", changeFrequency: "weekly", priority: 0.6 },
   { path: "/about", changeFrequency: "monthly", priority: 0.5 },
   { path: "/services", changeFrequency: "monthly", priority: 0.5 },
+  // The two service landings that are lead-capture pages in their own right,
+  // and search targets ("property management Abu Dhabi"). The remaining
+  // /services/* routes are covered by the index above.
+  { path: "/services/manage", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/services/consultation", changeFrequency: "monthly", priority: 0.6 },
   { path: "/insights", changeFrequency: "daily", priority: 0.7 },
   { path: "/contact", changeFrequency: "monthly", priority: 0.5 },
   { path: "/agents", changeFrequency: "weekly", priority: 0.5 },

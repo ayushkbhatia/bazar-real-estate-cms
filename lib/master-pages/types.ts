@@ -193,6 +193,8 @@ export type MasterPageKey =
   | "about"
   | "contact"
   | "sell"
+  | "manage"
+  | "consultation"
   | "qr"
   | "contact-qr";
 

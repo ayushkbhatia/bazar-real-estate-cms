@@ -51,11 +51,43 @@ function relative(iso: string | null): string {
   return `${Math.floor(days / 365)}y ago`;
 }
 
+function MasterPageCard({
+  page,
+}: {
+  page: (typeof MASTER_PAGES)[number];
+}) {
+  return (
+    <li>
+      <Link
+        href={`/admin/pages/master/${page.key}`}
+        className="flex h-full flex-col gap-1 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
+      >
+        <span className="text-[13.5px] font-medium">{page.label}</span>
+        <span className="mono text-[11px] text-bz-muted">{page.path}</span>
+        <span className="mt-1 text-[11.5px] text-bz-muted-2">
+          {page.sections.length} sections
+        </span>
+      </Link>
+    </li>
+  );
+}
+
 export default async function AdminPagesPage() {
   const [{ rows, total }, subPageCounts] = await Promise.all([
     listAllPagesForAdmin({ limit: 200 }),
     countSubPagesByKind(),
   ]);
+
+  // The service landings are split out of the top-level grid. They are the
+  // same kind of page and the same editor, but they sit under /services in the
+  // site — grouping them keeps the top grid to the routes in the main nav
+  // instead of mixing sixteen cards of two different depths.
+  const servicePages = MASTER_PAGES.filter((p) =>
+    p.path.startsWith("/services/"),
+  );
+  const topLevelPages = MASTER_PAGES.filter(
+    (p) => !p.path.startsWith("/services/"),
+  );
 
   return (
     <CmsShell
@@ -75,30 +107,36 @@ export default async function AdminPagesPage() {
           <div>
             <h2 className="text-[14px] font-medium">Master pages</h2>
             <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
-              The marketing pages. Reorder their sections, hide the ones you
-              don&apos;t need, and edit copy, links and images without touching
-              code.
+              The top-level marketing routes. Reorder their sections, hide the
+              ones you don&apos;t need, and edit copy, links and images without
+              touching code.
             </p>
           </div>
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {MASTER_PAGES.map((p) => (
-              <li key={p.key}>
-                <Link
-                  href={`/admin/pages/master/${p.key}`}
-                  className="flex h-full flex-col gap-1 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
-                >
-                  <span className="text-[13.5px] font-medium">{p.label}</span>
-                  <span className="mono text-[11px] text-bz-muted">
-                    {p.path}
-                  </span>
-                  <span className="mt-1 text-[11.5px] text-bz-muted-2">
-                    {p.sections.length} sections
-                  </span>
-                </Link>
-              </li>
+            {topLevelPages.map((p) => (
+              <MasterPageCard key={p.key} page={p} />
             ))}
           </ul>
         </section>
+
+        {servicePages.length > 0 ? (
+          <section className="flex flex-col gap-3 border-t border-bz-border pt-6">
+            <div>
+              <h2 className="text-[14px] font-medium">Service pages</h2>
+              <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
+                The individual service landings under{" "}
+                <span className="mono">/services</span>. Same editor as the
+                master pages above — reorder sections, hide them, and edit copy,
+                links and images.
+              </p>
+            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {servicePages.map((p) => (
+                <MasterPageCard key={p.key} page={p} />
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <section className="flex flex-col gap-3 border-t border-bz-border pt-6">
           <div>
