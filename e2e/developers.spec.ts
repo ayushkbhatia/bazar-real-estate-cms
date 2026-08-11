@@ -14,7 +14,8 @@ test("public /developers renders the directory", async ({ page }) => {
 });
 
 test("/developers/aldar renders the developer profile", async ({ page }) => {
-  await page.goto("/developers/aldar");
+  const response = await page.goto("/developers/aldar");
+  test.skip(response?.status() === 404, "Aldar is unpublished in the CMS.");
   // Pin to the h1; the current developments grid may render h3s that mention
   // Aldar by name (e.g. "Aldar Mamsha Phase 2") which would otherwise trip
   // Playwright's strict-mode multi-match check.
@@ -31,7 +32,8 @@ test("/developers/aldar renders the developer profile", async ({ page }) => {
 test("the profile renders project cards and the developer's listings", async ({
   page,
 }) => {
-  await page.goto("/developers/aldar");
+  const response = await page.goto("/developers/aldar");
+  test.skip(response?.status() === 404, "Aldar is unpublished in the CMS.");
 
   // Projects use the same card as /off-plan — the giveaway is the
   // From / Bedrooms / Handover strip, which the old bespoke tile had not.
@@ -46,32 +48,55 @@ test("the profile renders project cards and the developer's listings", async ({
   await expect(page.locator("a[href^='/p/']").first()).toBeVisible();
 });
 
-test("the directory lists a developer that only exists in the catalogue", async ({
-  page,
-}) => {
+// These specs run against the live CMS database, so anything that names one
+// developer is a spec an editor can redden by unpublishing it — which is
+// exactly what happened once the unpublish control shipped. They assert the
+// invariant instead, and skip rather than fail when the row they need is
+// currently draft.
+
+test("every developer the grid links to actually resolves", async ({ page }) => {
   await page.goto("/developers");
-  // `national-holding` has no shipped logo in /public/developers — it is a row
-  // staff added, so it appears here only because the grid merges the catalogue
-  // in. Its card carries no image, which is the case the merge exists for.
-  const card = page.locator("a[href='/developers/national-holding']");
-  await expect(card).toBeVisible();
-  await expect(card.locator("img")).toHaveCount(0);
+  const hrefs = [
+    ...new Set(
+      await page.locator("a[href^='/developers/']").evaluateAll((els) =>
+        els.map((e) => e.getAttribute("href")!).filter(Boolean),
+      ),
+    ),
+  ];
+  expect(hrefs.length).toBeGreaterThan(0);
+
+  // A draft developer must leave the grid at the same moment its page starts
+  // 404-ing. A card pointing at a dead page is the failure this guards.
+  const dead: string[] = [];
+  for (const href of hrefs) {
+    const res = await page.request.get(href);
+    if (res.status() >= 400) dead.push(`${href} → ${res.status()}`);
+  }
+  expect(dead, `Grid links to pages that do not resolve:\n  ${dead.join("\n  ")}`)
+    .toEqual([]);
 });
 
 test("a developer carried by both sources is listed once", async ({ page }) => {
   await page.goto("/developers");
   // The shipped directory calls it `modon`, the catalogue row `modon-properties`.
   // Merging on the normalised name is what stops two MODON cards rendering.
-  await expect(
-    page.locator("a[href='/developers/modon-properties']"),
-  ).toHaveCount(1);
+  const merged = page.locator("a[href='/developers/modon-properties']");
+  test.skip(
+    (await merged.count()) === 0,
+    "MODON is unpublished in the CMS — nothing to assert about its card.",
+  );
+  await expect(merged).toHaveCount(1);
   await expect(page.locator("a[href='/developers/modon']")).toHaveCount(0);
 });
 
 test("the superseded developer slug still renders, canonical to the row", async ({
   page,
 }) => {
-  await page.goto("/developers/modon");
+  const response = await page.goto("/developers/modon");
+  test.skip(
+    response?.status() === 404,
+    "MODON is unpublished in the CMS — its superseded slug 404s by design.",
+  );
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.locator("link[rel=canonical]")).toHaveAttribute(
     "href",
