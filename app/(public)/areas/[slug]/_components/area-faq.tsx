@@ -37,7 +37,7 @@ export function AreaFaq({
   return (
     <section
       id="faq"
-      className="px-4 md:px-12 py-14 md:py-16 max-w-[1280px] border-t border-bz-border scroll-mt-16"
+      className="px-4 md:px-12 py-14 md:py-16 border-t border-bz-border scroll-mt-16"
     >
       <script
         type="application/ld+json"

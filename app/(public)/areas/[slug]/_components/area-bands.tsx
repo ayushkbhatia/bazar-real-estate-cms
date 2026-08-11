@@ -31,7 +31,32 @@ export type BandItem = {
   image?: BandImage;
 };
 
-const SECTION = "px-4 md:px-12 max-w-[1280px]";
+const SECTION = "px-4 md:px-12";
+
+/**
+ * The card grid every gallery band uses.
+ *
+ * Auto-fill on a 360px track rather than a breakpoint ladder, the same move
+ * /insights made in #270: the card keeps its size and the column count follows
+ * the viewport instead of three cards stretching across a 2560px monitor. 360px
+ * puts three across at 1280–1536 — the width the design is drawn at, and where
+ * these read as proper cards rather than thumbnails — then four at 1600 and
+ * five at 1920. The `min(…, 100%)` guard stops a track outgrowing its container
+ * on a narrow phone and pushing the grid past the viewport.
+ */
+export const CARD_TRACK =
+  "lg:grid-cols-[repeat(auto-fill,minmax(min(360px,100%),1fr))]";
+
+const CARD_GRID = `grid gap-x-6 gap-y-9 grid-cols-1 sm:grid-cols-2 ${CARD_TRACK}`;
+
+/**
+ * Matches CARD_GRID's track so `next/image` requests a sensibly sized file.
+ * The track is `minmax(360px, 1fr)`, so a column stretches past 360px until
+ * there is room for another — a flat `360px` here under-requests and the photo
+ * renders soft in a 470px card.
+ */
+const CARD_SIZES =
+  "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1600px) 33vw, 25vw";
 
 /** Eyebrow + serif heading + optional intro, at the guide's rhythm. */
 export function BandHead({
@@ -160,27 +185,30 @@ export function AreaLandmarks({
   return (
     <section className={`${SECTION} py-14 md:py-16 border-t border-bz-border`}>
       <BandHead eyebrow="Landmarks & attractions" heading={heading} intro={intro} />
-      <ul className="mt-9 grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-8">
+      <ul className={`mt-9 ${CARD_GRID}`}>
         {items.map((item) => {
           const body = (
             <>
               {item.image?.url ? (
-                <div className="relative w-full aspect-[4/3] overflow-hidden rounded-md">
+                <div className="relative w-full aspect-[16/11] overflow-hidden rounded-xl">
                   <Image
                     src={item.image.url}
                     alt={item.image.alt ?? item.name ?? ""}
                     fill
-                    sizes="(max-width: 768px) 50vw, 25vw"
-                    className="object-cover"
+                    sizes={CARD_SIZES}
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                   />
                 </div>
               ) : (
                 <PlaceholderImage
                   label={item.img ?? item.name ?? ""}
-                  className="w-full aspect-[4/3] rounded-md"
+                  className="w-full aspect-[16/11] rounded-xl"
                 />
               )}
-              <div className="mt-3 text-[14.5px] text-bz-ink leading-snug group-hover:text-bz-teal transition-colors">
+              <div
+                className="serif mt-3.5 leading-tight text-bz-ink group-hover:text-bz-teal transition-colors"
+                style={{ fontSize: fluid(22), letterSpacing: "-0.015em" }}
+              >
                 {item.name}
               </div>
             </>
@@ -205,86 +233,117 @@ export function AreaLandmarks({
 
 // ── 6 · Communities & developments ──────────────────────────────────────
 
+/**
+ * The area's residential communities, in two passes.
+ *
+ * `projects` are server-rendered `DevelopmentCard`s for the published projects
+ * filed under this area — the same card the /off-plan rails use, with live
+ * price, bedroom and handover data behind it. They lead, because a project we
+ * actually have a page for is worth more to a visitor than a name.
+ *
+ * `items` are the editorial community list from the CMS. Most areas name
+ * communities that have no project record — Nawayef Village, Al Bandar — and
+ * dropping them to make room for the cards would lose real content. The page
+ * filters out any whose name matches a card above, so the band never says the
+ * same thing twice.
+ */
 export function AreaCommunities({
   heading,
   intro,
   items,
+  projects = [],
+  projectsTotal = 0,
+  viewAllHref,
   footnote,
 }: {
   heading?: string | null;
   intro?: string | null;
   items: BandItem[];
+  projects?: React.ReactNode[];
+  projectsTotal?: number;
+  viewAllHref?: string;
   footnote?: string | null;
 }) {
-  if (items.length === 0) return null;
-  const anyArt = items.some((i) => i.image?.url || i.img);
+  if (items.length === 0 && projects.length === 0) return null;
   return (
     <section className="border-t border-bz-border bg-bz-surface">
       <div className={`${SECTION} py-14 md:py-16`}>
-        <BandHead eyebrow="Communities" heading={heading} intro={intro} />
-        <ul
-          className={
-            anyArt
-              ? "mt-9 grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-9"
-              : "mt-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-          }
-        >
-          {items.map((item) => {
-            const inner = anyArt ? (
-              <>
-                {item.image?.url ? (
-                  <div className="relative w-full aspect-[3/2] overflow-hidden rounded-md">
-                    <Image
-                      src={item.image.url}
-                      alt={item.image.alt ?? item.name ?? ""}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 33vw"
-                      className="object-cover"
-                    />
-                  </div>
-                ) : (
-                  <PlaceholderImage
-                    label={item.img ?? item.name ?? ""}
-                    className="w-full aspect-[3/2] rounded-md"
-                  />
-                )}
-                <div className="mt-3 text-[15px] text-bz-ink group-hover:text-bz-teal transition-colors">
-                  {item.name}
-                </div>
-                {item.desc ? (
-                  <p className="mt-1.5 text-[13px] text-bz-ink-2 leading-relaxed">
-                    {item.desc}
-                  </p>
-                ) : null}
-              </>
-            ) : (
-              <>
-                <div className="text-[15px] text-bz-ink group-hover:text-bz-teal transition-colors">
-                  {item.name}
-                </div>
-                {item.desc ? (
-                  <p className="mt-1.5 text-[13px] text-bz-ink-2 leading-relaxed">
-                    {item.desc}
-                  </p>
-                ) : null}
-              </>
-            );
-            const boxed = anyArt
-              ? ""
-              : "rounded-md border border-bz-border bg-bz-bg p-4 hover:border-bz-teal transition-colors h-full";
-            return (
-              <li key={item.name}>
-                {item.href ? (
-                  <Link href={item.href} className={`group block ${boxed}`}>
-                    {inner}
-                  </Link>
-                ) : (
-                  <div className={`group ${boxed}`}>{inner}</div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <BandHead eyebrow="Communities" heading={heading} intro={intro} />
+          {projects.length > 0 && viewAllHref ? (
+            <Button asChild variant="outline">
+              <Link href={viewAllHref}>
+                {projectsTotal > projects.length
+                  ? `View all ${projectsTotal} projects`
+                  : "View all projects"}
+              </Link>
+            </Button>
+          ) : null}
+        </div>
+
+        {projects.length > 0 ? (
+          <div className={`mt-9 ${CARD_GRID}`}>
+            {projects.map((card, i) => (
+              <React.Fragment key={i}>{card}</React.Fragment>
+            ))}
+          </div>
+        ) : null}
+
+        {items.length > 0 ? (
+          <>
+            {projects.length > 0 ? (
+              <h3 className="mt-14 text-[11px] uppercase tracking-wider text-bz-muted">
+                Other communities in this area
+              </h3>
+            ) : null}
+            <ul className={`${projects.length > 0 ? "mt-5" : "mt-9"} ${CARD_GRID}`}>
+              {items.map((item) => {
+                const inner = (
+                  <>
+                    {item.image?.url ? (
+                      <div className="relative w-full aspect-[16/11] overflow-hidden rounded-xl">
+                        <Image
+                          src={item.image.url}
+                          alt={item.image.alt ?? item.name ?? ""}
+                          fill
+                          sizes={CARD_SIZES}
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                        />
+                      </div>
+                    ) : (
+                      <PlaceholderImage
+                        label={item.img ?? item.name ?? ""}
+                        className="w-full aspect-[16/11] rounded-xl"
+                      />
+                    )}
+                    <div
+                      className="serif mt-3.5 leading-tight text-bz-ink group-hover:text-bz-teal transition-colors"
+                      style={{ fontSize: fluid(22), letterSpacing: "-0.015em" }}
+                    >
+                      {item.name}
+                    </div>
+                    {item.desc ? (
+                      <p className="mt-1.5 text-[13.5px] text-bz-ink-2 leading-relaxed">
+                        {item.desc}
+                      </p>
+                    ) : null}
+                  </>
+                );
+                return (
+                  <li key={item.name}>
+                    {item.href ? (
+                      <Link href={item.href} className="group block">
+                        {inner}
+                      </Link>
+                    ) : (
+                      <div className="group">{inner}</div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </>
+        ) : null}
         <Footnote>{footnote}</Footnote>
       </div>
     </section>

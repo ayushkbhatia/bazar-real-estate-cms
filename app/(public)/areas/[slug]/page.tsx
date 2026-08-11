@@ -16,10 +16,11 @@ import {
   type AreaProfile,
 } from "@/lib/queries/area-profile";
 import { listAreaPins, listAreaListingDots, type AreaPin } from "@/lib/queries/area-map";
-import { listPublishedProperties } from "@/lib/queries/properties";
+import { getAreaInventory } from "@/lib/queries/area-inventory";
+import { developmentUrl } from "@/lib/queries/developments";
+import { communityKey } from "@/lib/queries/community-key";
 import { getAreaHeroImage, getAreaPageContent } from "@/lib/queries/subpages";
 import { str, list, type SectionValues } from "@/lib/master-pages";
-import { parseFilters } from "@/lib/filters/property";
 import { placeJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
 import { LifestyleDossier } from "./_components/lifestyle-dossier";
@@ -37,6 +38,7 @@ import {
 import { AreaFaq, type AreaFaqEntry } from "./_components/area-faq";
 import { AreaLeadForm } from "./_components/area-lead-form";
 import { AreaListingsBand } from "./_components/area-listings-band";
+import { DevelopmentCard } from "../../_components/marketing/development-card";
 import { AreaMapDetail } from "../../_components/area-map/area-map-detail";
 import { AreaReportsRail } from "../../_components/market-context-link";
 import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
@@ -134,29 +136,28 @@ export default async function CommunityProfilePage({
   if (!profile) notFound();
 
   const advisors = await withAgentPhotos(listSeedAgentsByArea(profile.slug));
-  const areaFilters = parseFilters({ area: slug });
+  // Forms Manager copy for the two lead surfaces on this page (#309).
   const [gateForm, leadForm] = await Promise.all([
     getForm("valuation_report_gate"),
     getForm("areas_guide_consultation"),
   ]);
 
-  const [content, heroImage, rawPins, dots, saleStock, rentStock, directory] =
+  const [content, heroImage, rawPins, dots, inventory, directory] =
     await Promise.all([
       getAreaPageContent({ name: profile.name, slug: profile.slug }),
       getAreaHeroImage(profile.slug),
       listAreaPins(),
       listAreaListingDots({ areaSlug: slug }),
-      // Sale stock is everything that isn't a tenancy — ready, resale,
-      // off-plan and commercial all belong under "for sale". Filtering in
-      // memory keeps it to one roundtrip instead of one per mode.
-      listPublishedProperties({ filters: areaFilters, limit: 24 }),
-      listPublishedProperties({ mode: "rent", filters: areaFilters, limit: 6 }),
+      // Sale, rental and project stock across this area *and its
+      // sub-communities* — a villa filed under Saadiyat Lagoons belongs on the
+      // Saadiyat Island guide. Six of each.
+      getAreaInventory(slug, 6),
       listAreaDirectory(),
     ]);
   const pins = withOwnPin(rawPins, profile);
   const focusPin = pins.find((p) => p.slug === profile.slug) ?? null;
-  const saleRows = saleStock.rows.filter((r) => r.mode !== "rent").slice(0, 6);
-  const rentRows = rentStock.rows;
+  const saleRows = inventory.forSale;
+  const rentRows = inventory.forRent;
 
   // Related areas by slug — named from the live catalogue, falling back to
   // the pin set so a seed-only relation still resolves.
@@ -192,6 +193,26 @@ export default async function CommunityProfilePage({
     content.section(key)?.values ?? {};
   const sv = (key: string, field: string) => str(values(key), field);
 
+  // The communities band leads with project cards, so the editorial list drops
+  // any entry a card already covers and points the rest at their project page
+  // where one exists but didn't make the six shown.
+  const shownProjectKeys = new Set(
+    inventory.developments.slice(0, 6).map((d) => communityKey(d.name)),
+  );
+  const projectByKey = new Map(
+    inventory.developments.map((d) => [communityKey(d.name), d] as const),
+  );
+  const editorialCommunities = liveItems(values("communities")).flatMap(
+    (item) => {
+      const key = communityKey(item.name ?? "");
+      if (shownProjectKeys.has(key)) return [];
+      const project = projectByKey.get(key);
+      return [
+        project ? { ...item, href: item.href ?? developmentUrl(project) } : item,
+      ];
+    },
+  );
+
   const heroIntro = sv("hero", "intro") ?? profile.intro;
   const heroPosition = sv("hero", "position") ?? profile.position;
   const stats = profile.stats;
@@ -202,7 +223,7 @@ export default async function CommunityProfilePage({
     "hero": (
       <>
       {/* Hero */}
-      <section className="px-4 md:px-12 pt-8 pb-12 max-w-[1280px]">
+      <section className="px-4 md:px-12 pt-8 pb-12">
         <Eyebrow>
           {sv("hero", "eyebrow") ??
             (profile.vibe
@@ -229,7 +250,7 @@ export default async function CommunityProfilePage({
     "hero-image": (
       <>
       {/* Hero image */}
-      <section className="px-4 md:px-12 pb-14 max-w-[1280px]">
+      <section className="px-4 md:px-12 pb-14">
         {heroImage ? (
           <div className="relative w-full aspect-[21/9] overflow-hidden rounded-md">
             <Image
@@ -266,7 +287,7 @@ export default async function CommunityProfilePage({
         />
       ) : stats ? (
         <section className="border-y border-bz-border bg-bz-surface">
-          <div className="px-4 md:px-12 py-10 max-w-[1280px]">
+          <div className="px-4 md:px-12 py-10">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
               <Stat
                 label="Median apt / ft²"
@@ -308,7 +329,7 @@ export default async function CommunityProfilePage({
       {/* Interactive map band — deep-linked to this area with its listing
           dots. Self-hides for areas with no coordinates on record. */}
       {focusPin ? (
-        <section className="px-4 md:px-12 py-14 max-w-[1280px]">
+        <section className="px-4 md:px-12 py-14">
           <Eyebrow>Location</Eyebrow>
           <h2
             className="serif text-[28px] md:text-[34px] mt-2 leading-tight"
@@ -345,7 +366,12 @@ export default async function CommunityProfilePage({
       <AreaCommunities
         heading={sv("communities", "heading") ?? `Explore ${profile.name}`}
         intro={sv("communities", "intro")}
-        items={liveItems(values("communities"))}
+        items={editorialCommunities}
+        projects={inventory.developments
+          .slice(0, 6)
+          .map((d) => <DevelopmentCard key={d.id} d={d} />)}
+        projectsTotal={inventory.developmentTotal}
+        viewAllHref={`/off-plan/search?area=${profile.slug}`}
         footnote={str(values("communities"), "footnote")}
       />
     ),
@@ -447,7 +473,7 @@ export default async function CommunityProfilePage({
       <>
       {/* Schools + amenities — each column drops when it has nothing. */}
       {profile.schools.length > 0 || profile.amenities.length > 0 ? (
-        <section className="px-4 md:px-12 py-16 max-w-[1280px]">
+        <section className="px-4 md:px-12 py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             {profile.schools.length > 0 ? (
               <div>
@@ -520,7 +546,7 @@ export default async function CommunityProfilePage({
       {/* T1-E cleanup: lead-gate surfaced on the area page — owners of
           property in this community are the highest-intent valuation
           lead source. */}
-      <section className="px-4 md:px-12 py-12 max-w-[1280px] border-t border-bz-border bg-bz-surface-2">
+      <section className="px-4 md:px-12 py-12 border-t border-bz-border bg-bz-surface-2">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center">
           <div>
             <Eyebrow>Own property in {profile.name}?</Eyebrow>
@@ -557,7 +583,7 @@ export default async function CommunityProfilePage({
       <>
       {/* Advisors who cover this area */}
       {advisors.length > 0 ? (
-        <section className="px-4 md:px-12 py-16 max-w-[1280px]">
+        <section className="px-4 md:px-12 py-16">
           <Eyebrow>Advisors who cover this area</Eyebrow>
           <h2
             className="serif text-[32px] mt-2 leading-tight"
@@ -608,7 +634,7 @@ export default async function CommunityProfilePage({
       {/* Similar areas */}
       {similar.length > 0 ? (
         <section className="border-t border-bz-border bg-bz-surface">
-          <div className="px-4 md:px-12 py-12 max-w-[1280px]">
+          <div className="px-4 md:px-12 py-12">
             <Eyebrow>Similar areas</Eyebrow>
             <div className="mt-5 flex flex-wrap gap-3">
               {similar.map((s) => (
@@ -639,7 +665,7 @@ export default async function CommunityProfilePage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsLd) }}
       />
       {/* Crumb */}
-      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
+      <div className="px-4 md:px-12 pt-10">
         <Link
           href="/areas"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
