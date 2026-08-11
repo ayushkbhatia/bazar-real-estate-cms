@@ -25,7 +25,10 @@ export async function GET() {
       { headers: { "content-type": "application/json" } },
     );
   }
-  const { rows, unread } = await listRecentNotifications(10);
+  // Hand the resolved user over rather than letting the helper look it up
+  // again: `cache()` does not memoise in a Route Handler, so without this the
+  // one endpoint costs two round-trips to Supabase Auth.
+  const { rows, unread } = await listRecentNotifications(10, user);
   return new Response(
     JSON.stringify({ rows, unread, userId: user.id }),
     { headers: { "content-type": "application/json", "cache-control": "no-store" } },

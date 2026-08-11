@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/nextjs";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
 
 export type AuditEntry = {
@@ -23,9 +24,8 @@ export async function logAudit(entry: AuditEntry): Promise<void> {
   if (!isSupabaseConfigured) return;
   try {
     const supabase = await createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Request-cached: the caller almost always resolved the same user already.
+    const user = await getCurrentUser();
     if (!user) return; // nothing to do for anonymous; RLS would block anyway
 
     type Json =

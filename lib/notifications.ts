@@ -1,6 +1,7 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
 
 export type NotificationKind =
@@ -84,9 +85,8 @@ export async function markNotificationRead(id: string): Promise<void> {
 export async function markAllNotificationsRead(): Promise<void> {
   if (!isSupabaseConfigured) return;
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Request-cached: the caller almost always resolved the same user already.
+  const user = await getCurrentUser();
   if (!user) return;
   await supabase
     .from("notifications")
@@ -95,16 +95,23 @@ export async function markAllNotificationsRead(): Promise<void> {
     .is("read_at", null);
 }
 
-/** List the current user's most-recent notifications + a separate
- *  unread count. */
+/**
+ * List the current user's most-recent notifications + a separate unread count.
+ *
+ * `forUser` lets a caller that has already resolved the user hand it over.
+ * That matters for the API route: React's `cache()` only memoises inside a
+ * request render, and a Route Handler is not one — so there the route's own
+ * `getUser()` and this one are two separate round-trips to Supabase Auth, not
+ * one memoised call. Server Components can keep omitting it and get the
+ * cached user for free.
+ */
 export async function listRecentNotifications(
   limit = 10,
+  forUser?: { id: string } | null,
 ): Promise<{ rows: NotificationRow[]; unread: number }> {
   if (!isSupabaseConfigured) return { rows: [], unread: 0 };
   const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = forUser ?? (await getCurrentUser());
   if (!user) return { rows: [], unread: 0 };
 
   const [recent, unread] = await Promise.all([

@@ -65,7 +65,21 @@ function channelLabel(channel: string): string {
 
 export default async function EnquiryDetailPage({ params }: PageProps) {
   const { id } = await params;
-  const enquiry = await getEnquiryById(id);
+
+  // The enquiry decides whether this page 404s, so it is awaited first. The
+  // other three reads depend on nothing but the request, so they start in
+  // parallel with it rather than in three further waves behind it.
+  //
+  // `Promise.all` and not `allSettled`: `listPublishedAssets` already returns
+  // `[]` on failure and `currentStaffRow` returns null, so neither rejects. A
+  // rejection here would turn a missing enquiry into a 500 instead of the
+  // 404 below.
+  const [enquiry, me, emailAssets, whatsappAssets] = await Promise.all([
+    getEnquiryById(id),
+    currentStaffRow(),
+    listPublishedAssets("email"),
+    listPublishedAssets("whatsapp"),
+  ]);
   if (!enquiry) notFound();
   const now = serverNow();
 
@@ -80,16 +94,10 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
     });
   }
 
-  // For presence — null when the viewer isn't staff (auth middleware
-  // already gated the route, but the row may briefly be missing).
-  const me = await currentStaffRow();
-
-  // Outreach library for the composer. An empty list is fine — the advisor
-  // writes from scratch.
-  const [emailAssets, whatsappAssets] = await Promise.all([
-    listPublishedAssets("email"),
-    listPublishedAssets("whatsapp"),
-  ]);
+  // `me` is for presence — null when the viewer isn't staff (the proxy
+  // already gated the route, but the row may briefly be missing). The asset
+  // lists are the outreach library for the composer; empty is fine, the
+  // advisor writes from scratch. Both resolved above.
   const assetName = new Map(
     [...emailAssets, ...whatsappAssets].map((a) => [a.id, a.name]),
   );
