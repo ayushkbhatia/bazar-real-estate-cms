@@ -9,6 +9,7 @@ import {
   type ListingRow,
 } from "@/lib/queries/properties";
 import { ListingCardPriced } from "../../../_components/listing-card-priced";
+import { CARD_TRACK } from "./area-bands";
 import { fluid } from "../../../_components/marketing/fluid";
 
 function badgeFor(row: ListingRow):
@@ -61,7 +62,7 @@ export function AreaListingsBand({
           : "border-t border-bz-border"
       }
     >
-      <div className="px-4 md:px-12 py-14 md:py-16 max-w-[1280px]">
+      <div className="px-4 md:px-12 py-14 md:py-16">
         <div className="flex items-end justify-between gap-8 flex-wrap">
           <div className="max-w-[68ch]">
             <Eyebrow>{eyebrow}</Eyebrow>
@@ -86,7 +87,7 @@ export function AreaListingsBand({
 
         {rows.length > 0 ? (
           <div className="mt-9">
-            <CarouselGrid cols={3}>
+            <CarouselGrid cols={3} className={CARD_TRACK}>
               {rows.map((row, index) => {
                 const badge = badgeFor(row);
                 return (
