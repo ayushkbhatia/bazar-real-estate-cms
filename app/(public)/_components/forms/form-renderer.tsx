@@ -18,6 +18,7 @@
  */
 
 import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Check, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ import {
 import { activeFields, renderFormCopy, visibleFields } from "@/lib/forms/resolve";
 import { buildFormSchema, normaliseSubmission } from "@/lib/forms/validate";
 import { optionsFor } from "@/lib/forms/submission";
+import { buildSearchRedirect } from "@/lib/forms/search";
 import { DualRangeSlider } from "../dual-range-slider";
 import { submitForm, type FormSubmitContext } from "../../_actions/forms";
 
@@ -117,6 +119,7 @@ export function FormRenderer({
   const stacked = form.def.variant === "stacked";
   const style = successStyle ?? (stacked ? "note" : "soft");
 
+  const router = useRouter();
   const [values, setValues] = useState<Values>(() =>
     initialValues(form, tokens),
   );
@@ -193,6 +196,11 @@ export function FormRenderer({
         setValues(initialValues(form, tokens));
         if (successToast) toast.success(successToast);
         onSuccess?.();
+        // Navigation last, and only once the lead is filed. A form that
+        // promises results owes the visitor results; a push that doesn't
+        // land costs them a page, never us the enquiry.
+        const next = buildSearchRedirect(form, normalised, dynamicOptions);
+        if (next) router.push(next);
         return;
       }
       setFormError(result.message);
