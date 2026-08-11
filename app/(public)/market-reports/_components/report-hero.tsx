@@ -5,14 +5,24 @@ import {
   quarterLabel,
   type Snapshot,
 } from "@/lib/queries/market-reports";
-import { formatPrice, formatPricePerArea, type Preferences } from "@/lib/preferences";
+import {
+  AreaUnitText,
+  PriceText,
+  PricePerAreaUnitText,
+} from "../../_components/area-text";
 
 type Props = {
   snapshot: Snapshot;
-  prefs: Preferences;
 };
 
-export function ReportHero({ snapshot, prefs }: Props) {
+/**
+ * Currency and area-unit figures render through the client leaves in
+ * `_components/area-text`, not from a server-read cookie. Reading `bz_prefs`
+ * server-side would opt this whole route into dynamic rendering and discard
+ * its `revalidate` — the same trade `app/layout.tsx` and every listing card
+ * already make.
+ */
+export function ReportHero({ snapshot }: Props) {
   const yoyPct = snapshot.yoy_change != null
     ? Math.round(snapshot.yoy_change * 1000) / 10 // one decimal
     : null;
@@ -41,11 +51,18 @@ export function ReportHero({ snapshot, prefs }: Props) {
       <div className="grid grid-cols-2 gap-4">
         <Tile
           eyebrow="Median price"
-          value={formatPrice(snapshot.median_price_aed, prefs)}
+          value={<PriceText aed={snapshot.median_price_aed} />}
         />
         <Tile
-          eyebrow={`Median ${prefs.area_unit === "m2" ? "AED/m²" : "AED/ft²"}`}
-          value={formatPricePerArea(snapshot.median_aed_per_ft2, prefs)}
+          eyebrow={
+            <>
+              Median AED/
+              <AreaUnitText />
+            </>
+          }
+          value={
+            <PricePerAreaUnitText aedPerFt2={snapshot.median_aed_per_ft2} />
+          }
         />
         <Tile
           eyebrow="YoY change"
@@ -76,8 +93,8 @@ function Tile({
   value,
   icon,
 }: {
-  eyebrow: string;
-  value: string;
+  eyebrow: React.ReactNode;
+  value: React.ReactNode;
   icon?: React.ReactNode;
 }) {
   return (

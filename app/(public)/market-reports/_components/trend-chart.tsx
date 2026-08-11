@@ -3,11 +3,10 @@ import {
   quarterLabel,
   type TrendPoint,
 } from "@/lib/queries/market-reports";
-import { formatPrice, type Preferences } from "@/lib/preferences";
+import { PriceText } from "../../_components/area-text";
 
 type Props = {
   trend: TrendPoint[];
-  prefs: Preferences;
 };
 
 /**
@@ -15,11 +14,14 @@ type Props = {
  * charting library — the chart is small, the data set is small, and inline
  * SVG keeps the page render cost low.
  *
- * Values stay in AED through scale calculations; `formatPrice` does the
- * currency conversion at display time so axis labels honour the user's
- * preferences.
+ * Values stay in AED through scale calculations and only the axis *labels*
+ * convert, via the client `PriceText` leaf. AED→USD is a single linear factor,
+ * so the curve geometry is currency-independent and the plotted line is
+ * pixel-identical either way — swapping label text after hydration cannot move
+ * it. Reading the currency from a server cookie instead would make this whole
+ * route dynamic and discard its `revalidate`.
  */
-export function TrendChart({ trend, prefs }: Props) {
+export function TrendChart({ trend }: Props) {
   const validValues = trend.filter(
     (p): p is TrendPoint & { median_price_aed: number } =>
       p.median_price_aed != null && p.median_price_aed > 0,
@@ -85,7 +87,10 @@ export function TrendChart({ trend, prefs }: Props) {
         className="serif text-[28px] mt-2"
         style={{ letterSpacing: "-0.018em" }}
       >
-        Median price, {prefs.currency}
+        {/* Unit-neutral on purpose: the currency lives on the axis labels,
+            which swap after hydration. A currency in the heading would make
+            that swap the most conspicuous thing on the page. */}
+        Median price
       </h2>
 
       <div className="mt-6 overflow-x-auto">
@@ -115,7 +120,7 @@ export function TrendChart({ trend, prefs }: Props) {
               textAnchor="end"
               className="text-[10px] fill-bz-muted"
             >
-              {formatPrice(aed, prefs)}
+              <PriceText aed={aed} />
             </text>
           ))}
 

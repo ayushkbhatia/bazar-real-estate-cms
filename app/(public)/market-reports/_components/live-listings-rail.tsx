@@ -5,11 +5,7 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { CompareButton } from "@/components/brand/compare-button";
 import { Button } from "@/components/ui/button";
-import {
-  formatPrice,
-  formatArea,
-  type Preferences,
-} from "@/lib/preferences";
+import { AreaText, PriceText } from "../../_components/area-text";
 import type { LiveListing } from "@/lib/queries/market-reports-listings";
 import type { PropertyTypeSlug } from "@/lib/queries/market-reports";
 import { propertyTypeLabel } from "@/lib/queries/market-reports";
@@ -19,7 +15,6 @@ type Props = {
   area_name: string;
   property_type: PropertyTypeSlug;
   rows: LiveListing[];
-  prefs: Preferences;
 };
 
 /**
@@ -34,7 +29,6 @@ export function LiveListingsRail({
   area_name,
   property_type,
   rows,
-  prefs,
 }: Props) {
   const browseAllHref = `/buy?area=${encodeURIComponent(area_slug)}&type=${encodeURIComponent(property_type)}`;
 
@@ -102,11 +96,11 @@ export function LiveListingsRail({
                   </div>
                   <div className="mt-3 flex items-baseline justify-between gap-2">
                     <span className="mono text-[13.5px] text-bz-ink">
-                      {formatPrice(r.price_aed, prefs)}
+                      <PriceText aed={r.price_aed} />
                     </span>
                     <span className="text-[11px] text-bz-ink-2">
                       {r.beds}b · {r.baths}ba ·{" "}
-                      {formatArea(r.built_up_ft2, prefs.area_unit)}
+                      <AreaText ft2={r.built_up_ft2} />
                     </span>
                   </div>
                 </div>

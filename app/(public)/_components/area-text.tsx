@@ -19,6 +19,8 @@ import {
   currencySymbol,
   formatArea,
   formatAreaRange,
+  formatPrice,
+  formatPricePerArea,
   FT2_PER_M2,
   usePreferences,
 } from "@/lib/preferences";
@@ -54,6 +56,54 @@ export function AreaRangeText({
 export function AreaUnitText() {
   const { prefs } = usePreferences();
   return <>{areaUnitLabel(prefs.area_unit)}</>;
+}
+
+/** "AED 2.40M" — a price stored in AED, shown in the visitor's currency. */
+export function PriceText({
+  aed,
+  fallback = "—",
+}: {
+  aed: number | null | undefined;
+  fallback?: string;
+}) {
+  const { prefs } = usePreferences();
+  if (aed == null || !Number.isFinite(aed)) return <>{fallback}</>;
+  return <>{formatPrice(aed, prefs)}</>;
+}
+
+/** "AED 1,850/ft²" — rate and unit together, for a standalone figure. */
+export function PricePerAreaUnitText({
+  aedPerFt2,
+  fallback = "—",
+}: {
+  aedPerFt2: number | null | undefined;
+  fallback?: string;
+}) {
+  const { prefs } = usePreferences();
+  if (aedPerFt2 == null || !Number.isFinite(aedPerFt2)) return <>{fallback}</>;
+  return <>{formatPricePerArea(aedPerFt2, prefs)}</>;
+}
+
+/**
+ * "AED 1,850" — the same rate as `PricePerAreaText` but with no trailing unit,
+ * for a table whose column header already carries it.
+ */
+export function PricePerAreaValueText({
+  aedPerFt2,
+  fallback = "—",
+}: {
+  aedPerFt2: number | null | undefined;
+  fallback?: string;
+}) {
+  const { prefs } = usePreferences();
+  if (aedPerFt2 == null || !Number.isFinite(aedPerFt2)) return <>{fallback}</>;
+  const inCurrency = convertFromAed(aedPerFt2, prefs.currency);
+  const value = prefs.area_unit === "m2" ? inCurrency * FT2_PER_M2 : inCurrency;
+  return (
+    <>
+      {currencySymbol(prefs.currency)} {Math.round(value).toLocaleString()}
+    </>
+  );
 }
 
 /**
