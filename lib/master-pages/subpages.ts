@@ -149,11 +149,21 @@ function copySection(
 }
 
 export const DEVELOPMENT_SECTIONS: SectionDef[] = [
-  section("hero", "Hero", "Cover image, name, headline stats and the brochure.", {
+  section("hero", "Hero", "Banner image, name, headline stats and the brochure.", {
     locked: true,
     dataNote:
-      "The cover image and stats come from the development record — edit them in Page images below.",
+      "The headline stats come from the development record — edit them in Key facts above.",
     fields: [
+      {
+        key: "image",
+        label: "Hero banner",
+        kind: "image",
+        // The cover image is composed for a card — roughly 4:3, subject in the
+        // middle. The hero is a 640px-tall full-bleed band, so that same file
+        // gets cropped to within an inch of its life. Leaving this empty keeps
+        // the old behaviour rather than blanking the top of a live page.
+        help: "The full-width band at the top of this project page. Landscape works best — 2400×960 or wider. Blank falls back to the cover image from Page images below.",
+      },
       optionalText("heading", "Headline", "Blank uses the project name."),
       optionalBody("intro", "Standfirst", "Blank uses the tagline."),
       {
@@ -174,6 +184,7 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
       ),
     ],
     defaults: {
+      image: { media_id: null, alt: null, label: null },
       heading: null,
       intro: null,
       brochure: { media_id: null, alt: null, label: null },
