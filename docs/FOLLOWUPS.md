@@ -31,14 +31,16 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
-- [e2e] `developers.spec.ts` asserts a slug whose visibility an editor owns.
-  The test hard-codes `national-holding` and expects its card on /developers.
-  On 2026-08-11 an editor set `published_at` to null in the CMS and every open
-  PR went red with no commit behind it — CI reads the live production project,
-  so editorial state is a CI input. "Done" is asserting the *shape* (any
-  catalogue-only developer renders a card with no image) rather than a
-  particular row, so the client can unpublish anything without breaking the
-  build. Same hazard applies to any spec naming a specific slug.
+- [e2e] Other specs still assert named slugs whose visibility an editor owns.
+  CI runs against the live production project, so editorial state is a CI
+  input: on 2026-08-11 an editor unpublished `national-holding` and every open
+  PR went red with no commit behind it. `developers.spec.ts` was rewritten to
+  assert the *shape* (a logo-less card still renders its name and link), but
+  `modon-properties`, `/developers/modon` and `/developers/aldar` are still
+  named directly, and `marketplace.spec.ts` leans on there being published
+  stock. "Done" is auditing the suite for hard-coded slugs and asserting
+  behaviour instead, so the client can unpublish anything without breaking the
+  build.
 
 - [forms] Wire the two bespoke lead forms to the shared renderer.
   `/services/sell` (two-step owner wizard) and the valuation report gate (OTP)

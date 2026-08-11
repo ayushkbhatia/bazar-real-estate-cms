@@ -46,16 +46,41 @@ test("the profile renders project cards and the developer's listings", async ({
   await expect(page.locator("a[href^='/p/']").first()).toBeVisible();
 });
 
-test("the directory lists a developer that only exists in the catalogue", async ({
-  page,
-}) => {
+test("a card with no shipped art still renders as a card", async ({ page }) => {
   await page.goto("/developers");
-  // `national-holding` has no shipped logo in /public/developers — it is a row
-  // staff added, so it appears here only because the grid merges the catalogue
-  // in. Its card carries no image, which is the case the merge exists for.
-  const card = page.locator("a[href='/developers/national-holding']");
-  await expect(card).toBeVisible();
-  await expect(card.locator("img")).toHaveCount(0);
+
+  // This used to name `national-holding` — a row staff added, with no logo in
+  // /public/developers, which is exactly the case the catalogue merge exists
+  // for. Then an editor unpublished it and every open PR went red with no
+  // commit behind it: CI runs against the live production project, so which
+  // developers are published is editorial state, not test state.
+  //
+  // So assert the behaviour instead of the row. Whether any given developer is
+  // on the page is the client's call; that every card renders its name and
+  // either real art or its initials — rather than collapsing to an empty box
+  // or a broken image — is ours, and holds however many are published. The
+  // merge's precedence rules are unit-tested in _directory.test.ts, where a
+  // fixed set of rows is the right thing to have.
+  const cards = page.locator("a[href^='/developers/']");
+  await expect(cards.first()).toBeVisible();
+
+  const count = await cards.count();
+  for (let i = 0; i < count; i++) {
+    const card = cards.nth(i);
+    // Every card names its developer, art or no art.
+    await expect(card).not.toBeEmpty();
+
+    const images = card.locator("img");
+    if ((await images.count()) === 0) {
+      // The initials stand in for the logo and hold the row's height, so the
+      // grid doesn't collapse around a logo-less entry.
+      await expect(card.locator("span[aria-hidden='true']")).toHaveCount(1);
+    } else {
+      // A card that does carry art must carry a real source — an empty `src`
+      // is what a half-merged entry used to render.
+      await expect(images.first()).toHaveAttribute("src", /\S/);
+    }
+  }
 });
 
 test("a developer carried by both sources is listed once", async ({ page }) => {
