@@ -17,6 +17,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { listDeveloperRecords } from "@/lib/queries/developers-extras";
+import { cn } from "@/lib/utils";
+import { DeveloperPublishToggle } from "./_publish-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +42,7 @@ function initials(name: string): string {
  */
 export default async function DeveloperSubPagesIndex() {
   const rows = await listDeveloperRecords();
-  const withLogo = rows.filter((r) => r.logo_url !== null).length;
+  const live = rows.filter((r) => r.published).length;
   const inUse = rows.filter(
     (r) => r.property_count > 0 || r.development_count > 0,
   ).length;
@@ -81,7 +83,8 @@ export default async function DeveloperSubPagesIndex() {
 
         <div className="text-[12.5px] text-bz-muted">
           {rows.length} {rows.length === 1 ? "developer" : "developers"} ·{" "}
-          {withLogo} with a logo
+          {live} live
+          {rows.length - live > 0 ? ` · ${rows.length - live} draft` : ""}
           {inUse > 0 ? ` · ${inUse} with listings or projects` : ""}
         </div>
 
@@ -90,6 +93,7 @@ export default async function DeveloperSubPagesIndex() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[38%]">Developer</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Founded</TableHead>
                 <TableHead>Projects</TableHead>
                 <TableHead>Listings</TableHead>
@@ -100,7 +104,7 @@ export default async function DeveloperSubPagesIndex() {
               {rows.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="text-center py-16 text-bz-muted"
                   >
                     No developers yet — start one with{" "}
@@ -146,6 +150,18 @@ export default async function DeveloperSubPagesIndex() {
                         </span>
                       </Link>
                     </TableCell>
+                    <TableCell>
+                      <span
+                        className={cn(
+                          "inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium",
+                          row.published
+                            ? "bg-[oklch(0.94_0.04_145)] text-[oklch(0.35_0.08_145)]"
+                            : "bg-bz-surface-2 text-bz-muted",
+                        )}
+                      >
+                        {row.published ? "Live" : "Draft"}
+                      </span>
+                    </TableCell>
                     <TableCell className="mono text-[12.5px] text-bz-ink-2">
                       {row.founded_year ?? "—"}
                     </TableCell>
@@ -164,14 +180,29 @@ export default async function DeveloperSubPagesIndex() {
                         >
                           <Database size={12} /> Record
                         </Link>
-                        <Link
-                          href={`/developers/${row.slug}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-1 text-[12px] text-bz-muted hover:text-bz-ink"
-                        >
-                          View <ExternalLink size={12} />
-                        </Link>
+                        <DeveloperPublishToggle
+                          id={row.id}
+                          name={row.name}
+                          published={row.published}
+                          developmentCount={row.development_count}
+                          propertyCount={row.property_count}
+                        />
+                        {row.published ? (
+                          <Link
+                            href={`/developers/${row.slug}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-[12px] text-bz-muted hover:text-bz-ink"
+                          >
+                            View <ExternalLink size={12} />
+                          </Link>
+                        ) : (
+                          // The page 404s while it is draft, so a "View" link
+                          // here would just be a broken promise.
+                          <span className="text-[12px] text-bz-muted-2">
+                            Not public
+                          </span>
+                        )}
                       </span>
                     </TableCell>
                   </TableRow>

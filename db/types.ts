@@ -734,6 +734,7 @@ export type Database = {
           id: string
           logo_id: string | null
           name: string
+          published_at: string | null
           slug: string
           stats: Json | null
           updated_at: string
@@ -745,6 +746,7 @@ export type Database = {
           id?: string
           logo_id?: string | null
           name: string
+          published_at?: string | null
           slug: string
           stats?: Json | null
           updated_at?: string
@@ -756,6 +758,7 @@ export type Database = {
           id?: string
           logo_id?: string | null
           name?: string
+          published_at?: string | null
           slug?: string
           stats?: Json | null
           updated_at?: string

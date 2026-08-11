@@ -19,6 +19,7 @@ const row = (over: Partial<DeveloperListEntry> = {}): DeveloperListEntry => ({
   founded_year: null,
   description: null,
   logo_url: null,
+  published: true,
   ...over,
 });
 
@@ -136,6 +137,28 @@ describe("mergeDirectory", () => {
       ],
     );
     expect(out).toHaveLength(2);
+  });
+});
+
+describe("publish state", () => {
+  it("carries a draft row's state onto the merged entry", () => {
+    const out = mergeDirectory([partner], [row({ slug: "aldar", published: false })]);
+    expect(out[0].published).toBe(false);
+  });
+
+  it("keeps a shipped entry with no row published", () => {
+    // Nothing can unpublish what has no row, so the grid must not drop it.
+    expect(mergeDirectory([partner], [])[0].published).toBe(true);
+  });
+
+  it("does not let a seed fallback row mark a partner draft", () => {
+    // `seed:` rows appear when the table is unreachable. Treating one as the
+    // source of publish state would blank the grid during an outage.
+    const out = mergeDirectory(
+      [partner],
+      [row({ id: "seed:aldar", slug: "aldar", published: false })],
+    );
+    expect(out[0].published).toBe(true);
   });
 });
 

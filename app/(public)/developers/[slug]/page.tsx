@@ -78,6 +78,9 @@ export default async function DeveloperProfilePage({
     getDeveloperBySlug(slug),
   ]);
   if (!entry && !detail) notFound();
+  // Draft: off the grid, off the sitemap, and gone from its own URL. Anything
+  // less and "unpublish" would leave a page anyone with the link could reach.
+  if (entry && !entry.published) notFound();
 
   const name = detail?.name ?? entry?.name ?? "";
   const developerId =
