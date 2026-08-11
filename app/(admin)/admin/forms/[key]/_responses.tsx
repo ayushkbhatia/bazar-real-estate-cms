@@ -7,7 +7,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { SubmissionRow } from "@/lib/queries/forms";
-import type { FormSubmissionStatus } from "@/lib/forms/types";
+import type { FormFieldDef, FormSubmissionStatus } from "@/lib/forms/types";
+import { formatRangeLabel } from "@/lib/forms/types";
 import { setSubmissionStatus } from "../_actions";
 
 const FILTERS: { key: FormSubmissionStatus | "all"; label: string }[] = [
@@ -27,9 +28,19 @@ function formatWhen(iso: string): string {
   });
 }
 
-function displayValue(value: unknown): string {
+/**
+ * One stored answer, as a person reads it.
+ *
+ * A slider stores `"150000:400000"`, which is the right thing to keep — it is
+ * evidence — and the wrong thing to show. The field list is passed in rather
+ * than inferred from the string's shape, because a typed answer that happens
+ * to contain a colon and two numbers is not a range and must not be reformatted
+ * into one.
+ */
+function displayValue(value: unknown, field?: FormFieldDef): string {
   if (value === null || value === undefined || value === "") return "—";
   if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (field?.type === "range") return formatRangeLabel(field, value) || "Any";
   return String(value);
 }
 
@@ -44,14 +55,21 @@ function displayValue(value: unknown): string {
 export function ResponsesTable({
   formName,
   formKey,
+  fields,
   rows,
   error,
 }: {
   formName: string;
   formKey: string;
+  /** The form as it stands, so a slider's answer reads as a band. */
+  fields: FormFieldDef[];
   rows: SubmissionRow[];
   error: string | null;
 }) {
+  const fieldByKey = useMemo(
+    () => new Map(fields.map((f) => [f.key, f])),
+    [fields],
+  );
   const [filter, setFilter] = useState<FormSubmissionStatus | "all">("all");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -118,7 +136,7 @@ export function ResponsesTable({
       statusOf(row),
       row.source_path ?? "",
       row.enquiry_id ?? "",
-      ...columns.keys.map((key) => displayValue(row.data[key])),
+      ...columns.keys.map((key) => displayValue(row.data[key], fieldByKey.get(key))),
     ];
   }
 
@@ -178,7 +196,7 @@ export function ResponsesTable({
           const isOpen = expanded === row.id;
           const summary = columns.keys
             .slice(0, 3)
-            .map((key) => displayValue(row.data[key]))
+            .map((key) => displayValue(row.data[key], fieldByKey.get(key)))
             .filter((v) => v !== "—")
             .join(" · ");
 
@@ -235,7 +253,7 @@ export function ResponsesTable({
                     <div key={key}>
                       <dt className="eyebrow">{row.labels[key] ?? key}</dt>
                       <dd className="text-[12.5px] text-bz-ink-2 whitespace-pre-wrap leading-relaxed">
-                        {displayValue(row.data[key])}
+                        {displayValue(row.data[key], fieldByKey.get(key))}
                       </dd>
                     </div>
                   ))}

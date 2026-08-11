@@ -426,25 +426,108 @@ export const FORM_DEFS: FormDef[] = [
     name: "Rent a property",
     surface: "Rent",
     path: "/rent",
-    description: "The enquiry card beside the Rent hero.",
+    description:
+      "The rental brief beside the Rent hero: where, what and how much, then who. Branches on Category the way the Buy brief branches on Property Purpose — residential picks from homes and says how many bedrooms, commercial picks from offices and land and doesn't.",
     group: "master",
     handler: "enquiry",
     control: "full",
     variant: "stacked",
     enquirySource: "contact_page",
+    // Nobody fills in a form on /rent to buy. The page states the intent
+    // rather than offering a control with one honest answer.
+    defaultIntent: "rent",
     headingSource: {
       pageKey: "rent",
       sectionKey: "hero_form",
       note: "The card's heading and sub-copy.",
     },
-    copy: copy({ ...ENQUIRY_SUCCESS, submit_label: "Submit" }),
-    fields: enquiryFields({
-      intent: true,
-      messageLabel: "Tell us more",
-      messagePlaceholder: "Tell us about your brief — area, budget, timeline.",
-      messageRows: 5,
-      paired: true,
+    briefPrefix: "Rental brief — {category|Residential} in {location|Abu Dhabi}.",
+    searchRedirect: {
+      path: "/rent/search",
+      bind: {
+        // Picked off the suggestions → that community's slug; typed → free text.
+        location: [{ param: "area", textParam: "q" }],
+        property_type: [{ param: "type" }],
+        commercial_type: [{ param: "type" }],
+        // The search page takes one bed count, so the lower handle is what
+        // travels: "3 – 5 bedrooms" searches from three up. The pair stays on
+        // the lead, which is where the nuance is worth keeping.
+        bedrooms: [{ param: "beds", part: "min" }],
+        budget: [
+          { param: "price_min", part: "min" },
+          { param: "price_max", part: "max" },
+        ],
+      },
+    },
+    copy: copy({
+      ...ENQUIRY_SUCCESS,
+      submit_label: "Find Rentals",
+      pending_label: "Finding…",
+      success_title: "Thanks — we've got your brief.",
+      success_body:
+        "We're showing you the matching rentals now. An advisor will follow up with anything that isn't listed yet.",
     }),
+    fields: [
+      field("location", "Location", "text", "custom", {
+        placeholder: "Type here",
+        optionSource: "areas",
+        note: "Suggests communities on file and accepts anything typed — a tower or a street the catalogue doesn't have yet is still a lead.",
+      }),
+      field("category", "Category", "chips", "custom", {
+        required: true,
+        options: options(
+          ["Residential", "residential"],
+          ["Commercial", "commercial"],
+        ),
+        note: "Decides which Property Type list is shown and whether Bedrooms is asked. Both type fields name this one in “Show only when”.",
+      }),
+      // Two fields, one label — the same split the Buy brief uses. The
+      // stored values are the catalogue's own type slugs rather than the
+      // labels, because this form's answers become search filters and
+      // `?type=Retail%20Space` matches nothing.
+      field("property_type", "Property Type", "select", "custom", {
+        placeholder: "Any residential type",
+        options: options(
+          ["Apartment", "apartment"],
+          ["Townhouse", "townhouse"],
+          ["Villa", "villa"],
+          ["Penthouse", "penthouse"],
+        ),
+        showWhen: { field: "category", values: ["residential"] },
+        note: "Only asked when Category is Residential.",
+      }),
+      field("commercial_type", "Property Type", "select", "custom", {
+        placeholder: "Any commercial type",
+        options: options(
+          ["Land", "land"],
+          ["Office", "office"],
+          ["Building", "building"],
+          ["Retail Space", "retail"],
+          ["Commercial Villa", "commercial_villa"],
+        ),
+        showWhen: { field: "category", values: ["commercial"] },
+        note: "Only asked when Category is Commercial. Shares its label with the residential dropdown — the visitor only ever sees one.",
+      }),
+      field("bedrooms", "Bedrooms", "range", "custom", {
+        min: 1,
+        max: 6,
+        step: 1,
+        showWhen: { field: "category", values: ["residential"] },
+        help: "Drag both ends. The top of the scale means six or more.",
+        note: "Only asked when Category is Residential.",
+      }),
+      field("budget", "Expected Price", "range", "budget_band", {
+        min: 20000,
+        max: 1000000,
+        step: 5000,
+        unit: "AED",
+        help: "Annual rent. The top of the scale means “and above”.",
+      }),
+      firstName(),
+      lastName(),
+      email({ required: true }),
+      dialPhone(),
+    ],
   },
   {
     key: "rent_lead_band",

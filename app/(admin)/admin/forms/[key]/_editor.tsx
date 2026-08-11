@@ -359,6 +359,7 @@ export function FormEditor({
         <ResponsesTable
           formName={def.name}
           formKey={form.key}
+          fields={form.fields}
           rows={submissions}
           error={submissionsError}
         />

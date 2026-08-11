@@ -164,6 +164,37 @@ swap pills for a slider without migrating the answers it already collected.
 - `formatRangeLabel` is what a human reads: `Up to AED 3,000,000`,
   `AED 8,000,000+`, `AED 4,000,000 – AED 8,000,000`.
 
+## Forms that go somewhere
+
+`FormDef.searchRedirect` binds answers to search-page query params, so a button
+that says "Find Rentals" finds rentals. `/rent`'s brief is the first to use it:
+the enquiry is filed, then the visitor lands on `/rent/search` with their own
+answers applied as filters.
+
+```ts
+searchRedirect: {
+  path: "/rent/search",
+  bind: {
+    location: [{ param: "area", textParam: "q" }],
+    bedrooms: [{ param: "beds", part: "min" }],
+    budget: [{ param: "price_min", part: "min" }, { param: "price_max", part: "max" }],
+  },
+}
+```
+
+- **The lead is written first, always.** A push that never lands costs the
+  visitor a page, never the desk an enquiry.
+- **`textParam` is for a box that suggests without constraining.** A location
+  matching a community on file travels as that community's slug; one that
+  doesn't travels as free text, because a slug invented from typing matches no
+  property at all.
+- **Nothing is sent for an answer nobody gave.** A slider handle still parked
+  at its end parses to `null`, and a question hidden by `showWhen` is skipped —
+  a commercial tenant's unasked bedroom answer must not filter their results.
+- Bindings are checked against the field list in `registry.test.ts`: a binding
+  naming a field the form doesn't ask is a filter that silently never applies,
+  which is the worst kind, because the search still returns results.
+
 ## Adding a form
 
 1. Declare it in `lib/forms/registry.ts` with the fields the page renders

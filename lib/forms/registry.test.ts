@@ -153,6 +153,47 @@ describe("the forms as they render today", () => {
     expect(form.copy.success_title).toBe("Thanks — we've got it.");
   });
 
+  it("keeps the rent brief's ten questions, and the three that branch on Category", () => {
+    const form = defaultForm("rent_hero_enquiry")!;
+    expect(form.fields.map((f) => f.key)).toEqual([
+      "location",
+      "category",
+      "property_type",
+      "commercial_type",
+      "bedrooms",
+      "budget",
+      "first_name",
+      "last_name",
+      "email",
+      "phone",
+    ]);
+    expect(form.fields[2]!.showWhen).toEqual({
+      field: "category",
+      values: ["residential"],
+    });
+    expect(form.fields[3]!.showWhen).toEqual({
+      field: "category",
+      values: ["commercial"],
+    });
+    expect(form.fields[4]!.showWhen?.values).toEqual(["residential"]);
+    // The price slider fills both budget columns through the mapping that
+    // already parsed "min:max".
+    expect(form.fields[5]!.mapping).toBe("budget_band");
+    expect(form.fields[5]!.unit).toBe("AED");
+    expect(form.copy.submit_label).toBe("Find Rentals");
+  });
+
+  it("binds a redirect only to fields the form actually asks", () => {
+    // A binding naming a field nobody answers is a filter that silently never
+    // applies — the worst kind, because the search still returns results.
+    for (const def of FORM_DEFS) {
+      const keys = new Set(def.fields.map((f) => f.key));
+      for (const key of Object.keys(def.searchRedirect?.bind ?? {})) {
+        expect(keys, `${def.key}.${key}`).toContain(key);
+      }
+    }
+  });
+
   it("keeps the contact enquiry's field order and confirmation", () => {
     const form = defaultForm("contact_enquiry")!;
     expect(form.fields.map((f) => f.key)).toEqual([

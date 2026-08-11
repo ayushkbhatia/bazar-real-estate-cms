@@ -768,8 +768,7 @@ const RENT: MasterPageDef = {
     ],
     form: {
       form_title: "Rent a Property",
-      form_sub:
-        "Tell us what you're looking for and our team will find the right rental for you.",
+      form_sub: "Find Your Next Rental Property in Abu Dhabi",
     },
     featured: {
       featured_title: "Featured properties for rent",

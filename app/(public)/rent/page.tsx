@@ -5,6 +5,7 @@ import { RentAreaMap } from "../_components/marketing/rent-area-map";
 import { LeadBand } from "../_components/marketing/lead-band";
 import { FormRenderer } from "../_components/forms/form-renderer";
 import { getForms } from "@/lib/queries/forms";
+import { listAreaOptions } from "@/lib/queries/areas";
 import { listingRowToCard } from "../_components/marketing/map-listing";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
@@ -23,9 +24,10 @@ export const metadata: Metadata = {
 // No `searchParams` here — reading it would make the route fully dynamic and
 // discard the `revalidate` above. See lib/filters/search-redirect.ts.
 export default async function RentPage() {
-  const [content, rows] = await Promise.all([
+  const [content, rows, areas] = await Promise.all([
     getMasterPageContent("rent"),
     listNewThisWeek({ limit: 4 }),
+    listAreaOptions(),
   ]);
   const featured = rows.slice(0, 4).map(listingRowToCard);
 
@@ -37,6 +39,18 @@ export default async function RentPage() {
   // than leaving a heading over an empty box.
   const resolved = await getForms(["rent_hero_enquiry", "rent_lead_band"]);
   const forms = { hero: resolved["rent_hero_enquiry"]!, band: resolved["rent_lead_band"]! };
+
+  // The location box suggests communities on file and accepts anything typed.
+  // The label is what the visitor reads and what the advisor gets; the slug is
+  // what the search redirect filters on when the two match. Keyed off the
+  // field's `optionSource` rather than its name, so renaming the field in
+  // /admin/forms doesn't quietly empty its suggestions.
+  const areaOptions = areas.map((a) => ({ label: a.name, value: a.slug }));
+  const heroOptions = Object.fromEntries(
+    forms.hero.fields
+      .filter((f) => f.optionSource === "areas")
+      .map((f) => [f.key, areaOptions]),
+  );
 
   // Map section copy — blank fields fall through to RentAreaMap's own defaults,
   // which are this section's original strings.
@@ -57,6 +71,7 @@ export default async function RentPage() {
         forms.hero.enabled ? (
           <FormRenderer
             form={forms.hero}
+            dynamicOptions={heroOptions}
             className="mt-5"
             successStyle="soft"
             allowAnother

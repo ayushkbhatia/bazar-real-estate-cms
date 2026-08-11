@@ -344,6 +344,33 @@ export const FORM_GROUP_LABELS: Record<FormGroup, string> = {
   dialog: "Dialogs & tools",
 };
 
+/**
+ * How one answer becomes one search filter.
+ *
+ * `part` picks a side of a range; `textParam` is the escape hatch for a box
+ * that suggests without constraining — a location matching a community on file
+ * travels as that community's slug, and one that doesn't travels as free text,
+ * because a slug invented from typing matches no property at all.
+ */
+export type FormSearchBinding = {
+  param: string;
+  part?: "value" | "min" | "max";
+  textParam?: string;
+};
+
+/**
+ * Where a form sends the visitor once the lead is filed.
+ *
+ * A button that says "Find Rentals" has to find rentals. The lead is written
+ * first and the navigation happens after, so a push that never lands costs the
+ * visitor a page, never the desk an enquiry.
+ */
+export type FormSearchRedirect = {
+  path: string;
+  /** Field key → the params its answer sets. */
+  bind: Record<string, FormSearchBinding[]>;
+};
+
 export type FormHeadingSource = {
   pageKey: MasterPageKey;
   sectionKey: string;
@@ -375,6 +402,8 @@ export type FormDef = {
    * answered intent field always wins — this is the floor, not an override.
    */
   defaultIntent?: "buy" | "sell" | "rent" | "invest" | "manage";
+  /** Where the visitor goes once the lead is filed. See `FormSearchRedirect`. */
+  searchRedirect?: FormSearchRedirect;
   /** Newsletter forms only. */
   newsletterSource?: string;
   headingSource?: FormHeadingSource;
