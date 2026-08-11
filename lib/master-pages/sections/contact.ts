@@ -2,13 +2,17 @@
  * /contact — the enquiry page.
  *
  * The contact-details rail is the point of this page and the thing a client is
- * most likely to change, so the phone numbers, email address, opening hours and
- * office address are all plain editable fields. They are stored as separate
- * strings rather than as the rendered markup: the page builds the `tel:` and
- * `mailto:` links from the numbers itself (stripping spaces), and the address
- * is one line per line in a textarea, rendered with line breaks. The three
- * icons (phone, envelope, pin) stay in code — a stored value can't carry a
- * component.
+ * most likely to change, so the phone numbers, email address and office address
+ * are all plain editable fields. They are stored as separate strings rather
+ * than as the rendered markup: the page builds the `tel:` and `mailto:` links
+ * from the numbers itself (stripping spaces), and the address is one line per
+ * line in a textarea, rendered with line breaks. The icons (phone, envelope,
+ * pin, clock) stay in code — a stored value can't carry a component.
+ *
+ * Opening hours are a list, one row per day, holding 24-hour times rather than
+ * a sentence: the page reads them back to say whether the office is open right
+ * now and when it next opens or closes. Free text still renders verbatim, it
+ * just drops out of that calculation — see _components/hours.ts.
  *
  * The "How can we help?" tiles ARE a list field: the editor genuinely owns the
  * whole set of nine. Each tile names its icon by an allowlisted keyword
@@ -20,7 +24,16 @@
  * editable, so an un-edited page renders byte-identically to before.
  */
 import type { MasterPageDef } from "../types";
-import { text, area, link, eyebrow, heading, body } from "../fields";
+import {
+  text,
+  area,
+  link,
+  image,
+  toggle,
+  eyebrow,
+  heading,
+  body,
+} from "../fields";
 
 export const CONTACT_PAGE: MasterPageDef = {
   key: "contact",
@@ -32,7 +45,8 @@ export const CONTACT_PAGE: MasterPageDef = {
     {
       key: "hero",
       label: "Hero",
-      description: "Eyebrow, headline and standfirst at the top of the page.",
+      description:
+        "Eyebrow, headline and standfirst at the top of the page, with the photo beside them.",
       locked: true,
       fields: [
         eyebrow(),
@@ -43,6 +57,11 @@ export const CONTACT_PAGE: MasterPageDef = {
           help: "Rendered in italic at the end of the headline.",
         }),
         body({ key: "subtitle", label: "Sub-headline" }),
+        image(
+          "photo",
+          "Hero image",
+          "Shown beside the headline at 4:3. Left empty, the striped placeholder shows instead.",
+        ),
       ],
       defaults: {
         eyebrow: "Contact",
@@ -50,24 +69,29 @@ export const CONTACT_PAGE: MasterPageDef = {
         title_emphasis: "property.",
         subtitle:
           "Get in touch with Bazar Real Estate for buying, selling, renting, listing, or investment enquiries across Abu Dhabi and the UAE.",
+        photo: {
+          media_id: null,
+          alt: null,
+          label: "bazar office · al bateen · abu dhabi",
+        },
       },
     },
     {
       key: "contact_details",
       label: "Contact details",
       description:
-        "Phone numbers, email address, opening hours and the office address.",
+        "Phone numbers, email address, the office address and the opening-hours panel.",
       locked: true,
       dataNote:
-        "The phone and email links are built from the values below — write the number the way it should read on the page and the tap-to-call link follows.",
+        "The phone and email links are built from the values below — write the number the way it should read on the page and the tap-to-call link follows. The open/closed line above the hours is worked out from the times, on Abu Dhabi time.",
       fields: [
         text("phone_label", "Phone · heading", { max: 80 }),
         text("phone_1", "Phone · first number", { max: 40 }),
         text("phone_2", "Phone · second number", { max: 40, optional: true }),
-        text("phone_note", "Opening hours", {
+        text("phone_note", "Phone · small print", {
           max: 120,
           optional: true,
-          help: "Small print under the numbers.",
+          help: "Small print under the numbers. The opening hours have their own panel below — don't repeat them here.",
         }),
         text("email_label", "Email · heading", { max: 80 }),
         text("email", "Email address", { max: 160 }),
@@ -82,12 +106,37 @@ export const CONTACT_PAGE: MasterPageDef = {
           max: 120,
           optional: true,
         }),
+        text("hours_label", "Opening hours · heading", { max: 80 }),
+        {
+          key: "hours",
+          label: "Opening hours",
+          kind: "list",
+          itemLabel: "day",
+          max: 7,
+          help: "One row per day, in the order they should read. Delete every row to hide the panel.",
+          fields: [
+            text("day", "Day", { max: 20 }),
+            text("open", "Opens", {
+              max: 40,
+              optional: true,
+              help: "24-hour clock — 09:00 renders as 9 AM. Anything else (“By appointment”) renders as written and is left out of the open/closed line.",
+            }),
+            text("close", "Closes", { max: 40, optional: true }),
+            toggle(
+              "open_day",
+              "Open this day",
+              "Switch off for a day the office is shut — the row then reads “Closed”.",
+            ),
+          ],
+        },
       ],
       defaults: {
         phone_label: "Call us / message us",
         phone_1: "+971 2 632 2223",
         phone_2: "+971 50 691 1103",
-        phone_note: "Mon–Sat 9am–7pm GST",
+        // Was "Mon–Sat 9am–7pm GST" — the hours panel below states this now,
+        // and two copies of the office hours can disagree.
+        phone_note: null,
         email_label: "Email us",
         email: "info@bazarrealestate.ae",
         email_note: "We reply within 2 hours on business days",
@@ -95,6 +144,18 @@ export const CONTACT_PAGE: MasterPageDef = {
         address:
           "Sheikha Salama Building, Office 4\nZayed The First Street, Al Bateen\nAbu Dhabi, United Arab Emirates",
         office_note: null,
+        hours_label: "Opening hours",
+        // The hours the live page already quotes (Monday–Sunday, 9AM–7PM GST),
+        // one row per day so the panel can say what today's are.
+        hours: [
+          { day: "Monday", open: "09:00", close: "19:00", open_day: true },
+          { day: "Tuesday", open: "09:00", close: "19:00", open_day: true },
+          { day: "Wednesday", open: "09:00", close: "19:00", open_day: true },
+          { day: "Thursday", open: "09:00", close: "19:00", open_day: true },
+          { day: "Friday", open: "09:00", close: "19:00", open_day: true },
+          { day: "Saturday", open: "09:00", close: "19:00", open_day: true },
+          { day: "Sunday", open: "09:00", close: "19:00", open_day: true },
+        ],
       },
     },
     {

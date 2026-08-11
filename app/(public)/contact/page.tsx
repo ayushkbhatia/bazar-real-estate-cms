@@ -1,5 +1,6 @@
 import * as React from "react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Mail,
@@ -19,13 +20,16 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { EnquiryForm } from "../_components/enquiry-form";
 import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
 import { HqMap } from "./_components/hq-map";
+import { OpeningHours } from "./_components/opening-hours";
+import type { HoursRow } from "./_components/hours";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
-import { list, str } from "@/lib/master-pages";
+import { img, list, str } from "@/lib/master-pages";
 
 export const metadata: Metadata = {
   title: "Contact Bazar Real Estate",
@@ -192,6 +196,24 @@ export default async function ContactPage() {
     },
   ].filter((row) => row.body !== null);
 
+  // One row per day. A row with no day name can't be labelled or ordered, so
+  // it is dropped rather than rendered blank.
+  const hoursRows: HoursRow[] = list<Record<string, unknown>>(detailsV, "hours")
+    .map((row) => ({
+      day: typeof row.day === "string" ? row.day.trim() : "",
+      open: typeof row.open === "string" && row.open.trim() ? row.open.trim() : null,
+      close:
+        typeof row.close === "string" && row.close.trim()
+          ? row.close.trim()
+          : null,
+      // Absent reads as open — a row added by an older editor shouldn't
+      // silently close the office.
+      openDay: row.open_day !== false,
+    }))
+    .filter((row) => row.day !== "");
+
+  const heroPhoto = img(heroV, "photo");
+
   const helpItems = (() => {
     const stored = list<Record<string, unknown>>(helpV, "items")
       .map((item) => ({
@@ -204,24 +226,50 @@ export default async function ContactPage() {
   })();
 
   const nodes: Record<string, React.ReactNode> = {
+    /* Hero — copy left, office photo right, stacked on small screens. */
     hero: (
       <section key="hero" className="px-4 md:px-12 pt-12 md:pt-20 pb-8">
-        <Eyebrow>{str(heroV, "eyebrow") ?? "Contact"}</Eyebrow>
-        <h1
-          className="serif mt-3.5"
-          style={{
-            fontSize: fluid(88),
-            letterSpacing: "-0.03em",
-            lineHeight: 0.97,
-          }}
-        >
-          {str(heroV, "title") ?? "Let's talk"}{" "}
-          <em className="italic">{str(heroV, "title_emphasis") ?? "property."}</em>
-        </h1>
-        <p className="text-[16px] md:text-[18px] text-bz-ink-2 max-w-[680px] leading-relaxed mt-5">
-          {str(heroV, "subtitle") ??
-            "Get in touch with Bazar Real Estate for buying, selling, renting, listing, or investment enquiries across Abu Dhabi and the UAE."}
-        </p>
+        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-14 items-center">
+          <div>
+            <Eyebrow>{str(heroV, "eyebrow") ?? "Contact"}</Eyebrow>
+            <h1
+              className="serif mt-3.5"
+              style={{
+                fontSize: fluid(72),
+                letterSpacing: "-0.03em",
+                lineHeight: 0.97,
+              }}
+            >
+              {str(heroV, "title") ?? "Let's talk"}{" "}
+              <em className="italic">
+                {str(heroV, "title_emphasis") ?? "property."}
+              </em>
+            </h1>
+            <p className="text-[16px] md:text-[18px] text-bz-ink-2 max-w-[620px] leading-relaxed mt-5">
+              {str(heroV, "subtitle") ??
+                "Get in touch with Bazar Real Estate for buying, selling, renting, listing, or investment enquiries across Abu Dhabi and the UAE."}
+            </p>
+          </div>
+          {/* The ratio and rounding sit on the wrapper, so an uploaded image
+              of any shape crops exactly where the placeholder sat. */}
+          <div className="relative w-full" style={{ aspectRatio: "4/3" }}>
+            {heroPhoto?.url ? (
+              <Image
+                src={heroPhoto.url}
+                alt={heroPhoto.alt ?? ""}
+                fill
+                priority
+                sizes="(max-width: 1023px) 100vw, 46vw"
+                className="absolute inset-0 h-full w-full rounded-xl object-cover"
+              />
+            ) : (
+              <PlaceholderImage
+                label={heroPhoto?.label ?? "bazar office · al bateen · abu dhabi"}
+                className="absolute inset-0 h-full w-full rounded-xl"
+              />
+            )}
+          </div>
+        </div>
       </section>
     ),
 
@@ -241,6 +289,12 @@ export default async function ContactPage() {
             </div>
           </div>
         ))}
+        {hoursRows.length > 0 ? (
+          <OpeningHours
+            label={str(detailsV, "hours_label") ?? "Opening hours"}
+            rows={hoursRows}
+          />
+        ) : null}
       </div>
     ),
 
