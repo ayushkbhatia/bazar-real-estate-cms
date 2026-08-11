@@ -167,15 +167,22 @@ describe("reordering and gallery", () => {
     ]);
   });
 
-  it("gives the renders section an add/remove gallery", () => {
+  it("gives the renders section an add/remove gallery per half", () => {
     const renders = DEVELOPMENT_SECTIONS.find((s) => s.key === "renders")!;
-    const gallery = renders.fields.find((f) => f.key === "images");
-    expect(gallery?.kind).toBe("list");
-    if (gallery?.kind !== "list") return;
-    expect(gallery.fields.some((f) => f.kind === "image")).toBe(true);
-    expect(gallery.fields.some((f) => f.kind === "toggle")).toBe(true);
-    // Empty ⇒ the development record's own media still shows.
-    expect(renders.defaults.images).toEqual([]);
+    for (const key of ["interior_images", "exterior_images"]) {
+      const gallery = renders.fields.find((f) => f.key === key);
+      expect(gallery?.kind, key).toBe("list");
+      if (gallery?.kind !== "list") continue;
+      expect(gallery.fields.some((f) => f.kind === "image")).toBe(true);
+      expect(gallery.fields.some((f) => f.kind === "toggle")).toBe(true);
+      // Empty ⇒ that half drops out, and (for exteriors) the development
+      // record's own media still shows.
+      expect(renders.defaults[key]).toEqual([]);
+    }
+    // The single undifferentiated gallery is gone — migration 0090 moved its
+    // contents to the exterior half. Leaving the key declared would put a
+    // third, unread list in front of an editor.
+    expect(renders.fields.map((f) => f.key)).not.toContain("images");
   });
 
   it("stores gallery images as asset ids, in order, with their switches", () => {
@@ -184,7 +191,7 @@ describe("reordering and gallery", () => {
         key: "renders",
         enabled: true,
         values: {
-          images: [
+          exterior_images: [
             {
               enabled: true,
               caption: " Pool deck ",
@@ -196,17 +203,48 @@ describe("reordering and gallery", () => {
               image: { media_id: "bbbb", alt: null, label: null },
             },
           ],
+          interior_images: [
+            {
+              enabled: true,
+              caption: null,
+              image: { media_id: "cccc", alt: "Living room", label: null },
+            },
+          ],
         },
       },
     ]);
     expect(result.ok).toBe(true);
     if (!result.ok) return;
-    const images = result.sections.find((s) => s.key === "renders")!.values
-      .images as Record<string, Record<string, unknown> | unknown>[];
+    const values = result.sections.find((s) => s.key === "renders")!.values;
+    const images = values.exterior_images as Record<string, unknown>[];
     expect(images).toHaveLength(2);
     expect((images[0].image as Record<string, unknown>).media_id).toBe("aaaa");
     expect(images[0].caption).toBe("Pool deck");
     expect(images[1].enabled).toBe(false);
+    // The two halves are stored apart, so neither can bleed into the other.
+    const interior = values.interior_images as Record<string, unknown>[];
+    expect(interior).toHaveLength(1);
+    expect((interior[0].image as Record<string, unknown>).media_id).toBe("cccc");
+  });
+
+  it("keeps a stored gallery out of the other half", () => {
+    // The interior half starts empty on every project in the catalogue, and a
+    // read that fell through to the exterior list would quietly show the same
+    // images twice.
+    const resolved = resolveSections(def, [
+      {
+        key: "renders",
+        enabled: true,
+        values: {
+          exterior_images: [
+            { enabled: true, caption: null, image: { media_id: "aaaa", alt: null, label: null } },
+          ],
+        },
+      },
+    ]);
+    const values = resolved.find((s) => s.key === "renders")!.values;
+    expect(values.interior_images).toEqual([]);
+    expect(values.exterior_images).toHaveLength(1);
   });
 
   it("no longer offers a market-context section", () => {

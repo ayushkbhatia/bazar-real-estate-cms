@@ -35,6 +35,7 @@ import { DeveloperProjectsStrip } from "./_components/developer-projects-strip";
 import { NearbyDevelopments } from "./_components/nearby-developments";
 import { FeatureBlocks } from "./_components/feature-blocks";
 import { FloorplanGate } from "./_components/floorplan-gate";
+import { RendersGallery, type RenderTile } from "./_components/renders-gallery";
 import { UnitFloorPlans } from "./_components/unit-floor-plans";
 import {
   listUnitTypesForPage,
@@ -237,37 +238,52 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     name: development.name,
   });
 
-  // A gallery curated in the sub-page editor wins over the record's media.
-  const curatedRenders = list<Record<string, unknown>>(
-    content.section("renders")?.values ?? {},
-    "images",
-  )
-    .filter((i) => i.enabled !== false)
-    .map((i) => {
-      const image = (i.image ?? null) as {
-        url?: string | null;
-        alt?: string | null;
-      } | null;
-      return {
-        url: image?.url ?? null,
-        alt: image?.alt ?? null,
-        caption: typeof i.caption === "string" ? i.caption : null,
-      };
-    })
-    .filter((i) => i.url !== null);
+  // Two galleries curated in the sub-page editor — interiors and exteriors —
+  // rendered side by side in one section. Either can be left empty; the half
+  // that has imagery then spans the width.
+  const curatedRenders = (key: string): RenderTile[] =>
+    list<Record<string, unknown>>(
+      content.section("renders")?.values ?? {},
+      key,
+    )
+      .filter((i) => i.enabled !== false)
+      .map((i) => {
+        const image = (i.image ?? null) as {
+          url?: string | null;
+          alt?: string | null;
+        } | null;
+        return {
+          url: image?.url ?? null,
+          alt: image?.alt ?? null,
+          caption: typeof i.caption === "string" ? i.caption : null,
+        };
+      })
+      // A trashed asset resolves to a null url; drop it rather than draw a hole.
+      .filter((i): i is RenderTile => i.url !== null);
 
   const renderMedia = media.filter(
     (m) => (m.role === "render" || m.role === "gallery") && m.media,
   );
 
-  const galleryTiles =
-    curatedRenders.length > 0
-      ? curatedRenders
-      : renderMedia.map((m, i) => ({
-          url: m.media ? mediaPublicUrl(m.media.storage_key) : null,
-          alt: m.media?.alt_text ?? `${development.name} render ${i + 1}`,
-          caption: null as string | null,
-        }));
+  const interiorTiles = curatedRenders("interior_images");
+  // The record's own media has no interior/exterior split — nothing in the CMS
+  // writes `development_media` — so it stands in for the exteriors, which is
+  // what those images have always been.
+  const curatedExterior = curatedRenders("exterior_images");
+  const exteriorTiles: RenderTile[] =
+    curatedExterior.length > 0
+      ? curatedExterior
+      : renderMedia.flatMap((m, i) =>
+          m.media
+            ? [
+                {
+                  url: mediaPublicUrl(m.media.storage_key),
+                  alt: m.media.alt_text ?? `${development.name} render ${i + 1}`,
+                  caption: null,
+                },
+              ]
+            : [],
+        );
   // From the `masterplan_id` column, which is where the CMS's Page images card
   // saves the site plan. It used to be looked up in `development_media` under
   // the `masterplan` role — a row nothing creates, so the upload never showed.
@@ -509,47 +525,20 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </div>
         </section>
     ) : null,
-    "renders": galleryTiles.length > 0 ? (
-        <section id="renders" className="px-4 md:px-12 pb-16 scroll-mt-16">
-          <Eyebrow>{sv("renders", "eyebrow") ?? "The vision"}</Eyebrow>
-          <h2
-            className="serif text-[36px] mt-2"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            {sv("renders", "heading") ?? "Renders & inspiration"}
-          </h2>
-          {sv("renders", "intro") ? (
-            <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-              {sv("renders", "intro")}
-            </p>
-          ) : null}
-          <div className="grid mt-6 gap-3 grid-cols-1 md:grid-cols-[2fr_1fr_1fr] md:grid-rows-[320px_320px]">
-            {galleryTiles.slice(0, 5).map((tile, i) => (
-              <div
-                key={`${tile.url ?? "placeholder"}-${i}`}
-                className={`relative rounded-lg overflow-hidden aspect-[16/9] md:aspect-auto ${
-                  i === 0 ? "md:row-span-2" : ""
-                }`}
-              >
-                {tile.url ? (
-                  <Image
-                    src={tile.url}
-                    alt={tile.alt ?? `${development.name} render ${i + 1}`}
-                    fill
-                    sizes={i === 0 ? "50vw" : "25vw"}
-                    className="object-cover"
-                  />
-                ) : (
-                  <PlaceholderImage
-                    label={`render-${i + 1}`}
-                    className="absolute inset-0 w-full h-full"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
+    "renders":
+      interiorTiles.length + exteriorTiles.length > 0 ? (
+        <section id="renders" className="scroll-mt-16">
+          <RendersGallery
+            eyebrow={sv("renders", "eyebrow")}
+            heading={sv("renders", "heading")}
+            intro={sv("renders", "intro")}
+            interiorHeading={sv("renders", "interior_heading")}
+            exteriorHeading={sv("renders", "exterior_heading")}
+            interior={interiorTiles}
+            exterior={exteriorTiles}
+          />
         </section>
-    ) : null,
+      ) : null,
     "features": (
       <section id="features" className="scroll-mt-16">
         <FeatureBlocks

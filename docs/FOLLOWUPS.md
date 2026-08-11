@@ -758,3 +758,13 @@ shows the trail.)
   session work in #293 is guarded by unit assertions rather than a real
   navigation, and why RLS changes are verified with SQL probes rather than the
   suite. Seeding a staff session in CI would unlock both.
+- [developments] `development_media` is empty, and nothing writes it.
+  The renders section falls back to the development record's own media (roles
+  `render`/`gallery`) when the exterior gallery is empty, but the table has
+  zero rows across all 20 developments and no CMS surface creates any — the
+  Page images card writes `hero_image_id`/`masterplan_id` on the row instead.
+  So the fallback is unreachable in practice. Either give the table an editor
+  or delete the join table and the fallback with it; leaving it half-wired is
+  what made the masterplan lookup fail before (see `lib/queries/developments.ts`).
+  Bears on the interior/exterior split: record media stands in for exteriors
+  only, because a role enum with no writer can never express "interior".

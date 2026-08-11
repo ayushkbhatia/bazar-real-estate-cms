@@ -93,6 +93,25 @@ const optionalBody = (key: string, label: string, help: string) => ({
 });
 
 /**
+ * A pick-and-order image list. Two of these make the renders split; keeping the
+ * shape in one place is what stops the interior and exterior halves drifting
+ * apart field by field.
+ */
+const gallery = (key: string, label: string, help: string): FieldDef => ({
+  key,
+  label,
+  kind: "list" as const,
+  itemLabel: "image",
+  max: 12,
+  help,
+  fields: [
+    { key: "enabled", label: "Show this image", kind: "toggle" },
+    { key: "image", label: "Image", kind: "image" },
+    { key: "caption", label: "Caption", kind: "text", max: 120, optional: true },
+  ],
+});
+
+/**
  * Copy fields on a sub-page are *overrides*, not defaults: left blank, the
  * section renders whatever the template builds from the record (usually the
  * development's own name, area and numbers). That keeps a hundred-odd project
@@ -234,33 +253,39 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
   copySection(
     "renders",
     "Renders",
-    "Gallery of project imagery.",
+    "Interior and exterior imagery, side by side in one section.",
     "The vision",
     {
       dataNote:
-        "Leave the gallery empty to show the images attached to the development record (roles render/gallery).",
+        "Leave the exterior gallery empty to show the images attached to the development record (roles render/gallery). A gallery with nothing in it drops its half of the split, and the other one spans the width.",
       extraFields: [
-        {
-          key: "images",
-          label: "Gallery",
-          kind: "list",
-          itemLabel: "image",
-          max: 12,
-          help: "Adding one takes over the whole gallery, in this order.",
-          fields: [
-            { key: "enabled", label: "Show this image", kind: "toggle" },
-            { key: "image", label: "Image", kind: "image" },
-            {
-              key: "caption",
-              label: "Caption",
-              kind: "text",
-              max: 120,
-              optional: true,
-            },
-          ],
-        },
+        optionalText(
+          "interior_heading",
+          "Interior column heading",
+          "Blank keeps “Interior”.",
+        ),
+        gallery(
+          "interior_images",
+          "Interior renders",
+          "Shown in the left half. Order here is order on the page.",
+        ),
+        optionalText(
+          "exterior_heading",
+          "Exterior column heading",
+          "Blank keeps “Exterior”.",
+        ),
+        gallery(
+          "exterior_images",
+          "Exterior renders",
+          "Shown in the right half. Adding one takes over from the development record's own media.",
+        ),
       ],
-      defaults: { images: [] },
+      defaults: {
+        interior_heading: null,
+        interior_images: [],
+        exterior_heading: null,
+        exterior_images: [],
+      },
     },
   ),
   copySection(
