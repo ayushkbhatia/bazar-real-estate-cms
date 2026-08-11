@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { EnquiryForm } from "../_components/enquiry-form";
+import { ManagedForm } from "../_components/forms/managed-form";
 import { fluid } from "../_components/marketing/fluid";
 import { list, str } from "@/lib/master-pages";
 import { ContactCard } from "./_components/contact-card";
@@ -58,7 +58,12 @@ export default async function ContactQrPage() {
               "A few lines is plenty — area, budget, timeline. An advisor will come back to you shortly."}
           </p>
           <div className="mt-6">
-            <EnquiryForm source="contact_page" compact />
+            <ManagedForm
+              formKey="contact_qr_enquiry"
+              successStyle="soft"
+              allowAnother
+              toastErrors
+            />
           </div>
         </div>
       </section>

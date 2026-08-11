@@ -1,6 +1,7 @@
 import * as React from "react";
 import type { Metadata } from "next";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { getForm } from "@/lib/queries/forms";
 import { img, list, str, type SectionValues } from "@/lib/master-pages";
 import { SERVICE_FORM_ANCHOR } from "@/lib/master-pages/sections/property-management";
 import { CONSULTATION_INTENTS } from "@/lib/master-pages/sections/property-consultation";
@@ -48,7 +49,10 @@ function interestOptions(values: SectionValues): InterestOption[] {
 }
 
 export default async function PropertyConsultationPage() {
-  const content = await getMasterPageContent("consultation");
+  const [content, leadForm] = await Promise.all([
+    getMasterPageContent("consultation"),
+    getForm("services_consultation_lead"),
+  ]);
 
   const v = (key: string) => content.section(key)?.values ?? {};
   const heroV = v("hero");
@@ -76,7 +80,7 @@ export default async function PropertyConsultationPage() {
         formAnchor={SERVICE_FORM_ANCHOR}
         form={
           <ServiceLeadForm
-            kind="consultation"
+            form={leadForm}
             interestOptions={interestOptions(formV)}
             copy={{
               title: str(formV, "form_title"),

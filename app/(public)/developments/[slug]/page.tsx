@@ -1,6 +1,7 @@
 import * as React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getForms } from "@/lib/queries/forms";
 import Image from "next/image";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
@@ -145,6 +146,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const development = await getPublishedDevelopmentBySlug(slug);
   if (!development) notFound();
+
+  // The two hero lead forms. Fields, copy and button come from /admin/forms.
+  const leadForms = await getForms([
+    "development_interest",
+    "development_brochure",
+  ]);
 
   const [
     content,
@@ -785,17 +792,23 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   label than the dead "Book a viewing" button it replaced, and
                   the pair ran off the right edge at 375px. */}
               <div className="w-full md:w-auto md:ml-auto flex flex-wrap gap-2 items-end">
+                {leadForms.development_brochure!.enabled ? (
                 <BrochureGate
+                  form={leadForms.development_brochure!}
                   developmentName={development.name}
                   developmentId={development.id}
                   brochureUrl={brochure?.url ?? null}
                   buttonLabel={sv("hero", "brochure_label")}
                 />
+                ) : null}
+                {leadForms.development_interest!.enabled ? (
                 <InterestDialog
+                  form={leadForms.development_interest!}
                   developmentName={development.name}
                   developmentId={development.id}
                   buttonLabel={sv("hero", "interest_label")}
                 />
+                ) : null}
               </div>
             </div>
           </div>

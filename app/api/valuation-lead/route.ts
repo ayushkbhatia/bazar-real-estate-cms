@@ -19,6 +19,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
 import { issueOtp, verifyOtp } from "@/lib/otp";
+import { recordFormSubmission, withLabels } from "@/lib/forms/record";
 import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
@@ -146,12 +147,44 @@ export async function POST(req: NextRequest) {
           : "") +
         (data.property_summary ? `Property: ${data.property_summary}\n` : "") +
         (data.intent ? `Intent: ${data.intent}` : "");
-      await supabase.from("enquiries").insert({
-        name: data.name ?? "Valuation lead",
-        email: data.email,
-        phone: data.phone ?? null,
-        brief_raw: briefRaw,
-        source: "valuation" as const,
+      const { data: enquiryRow } = await supabase
+        .from("enquiries")
+        .insert({
+          name: data.name ?? "Valuation lead",
+          email: data.email,
+          phone: data.phone ?? null,
+          brief_raw: briefRaw,
+          source: "valuation" as const,
+        })
+        .select("id")
+        .maybeSingle();
+
+      // The report gate collects its details behind an emailed code, so it
+      // never goes through `submitForm`. Logging here keeps /admin/forms →
+      // Responses complete, and records only the verified submissions —
+      // an unfinished OTP is not a response.
+      await recordFormSubmission({
+        formKey: "valuation_report_gate",
+        sourcePath: "/tools/valuation",
+        enquiryId: enquiryRow?.id ?? null,
+        data: withLabels(
+          {
+            email: data.email,
+            name: data.name ?? null,
+            phone: data.phone ?? null,
+            intent: data.intent ?? null,
+            valuation_aed: data.valuation_aed ?? null,
+            property_summary: data.property_summary ?? null,
+          },
+          {
+            email: "Email",
+            name: "Name",
+            phone: "Phone",
+            intent: "Why are you valuing?",
+            valuation_aed: "Instant estimate (AED)",
+            property_summary: "Property",
+          },
+        ),
       });
     } catch (err) {
       // Enqueue failure shouldn't block the success response — log + continue.

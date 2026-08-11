@@ -3,6 +3,8 @@ import { listFeaturedByType } from "@/lib/queries/curated-listings";
 import { BuyRentLanding } from "../_components/marketing/buy-rent-landing";
 import { RentAreaMap } from "../_components/marketing/rent-area-map";
 import { LeadBand } from "../_components/marketing/lead-band";
+import { FormRenderer } from "../_components/forms/form-renderer";
+import { getForms } from "@/lib/queries/forms";
 import { listingRowToCard } from "../_components/marketing/map-listing";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
@@ -34,6 +36,12 @@ export default async function CommercialPage() {
   // in lib/master-pages, which are this page's original copy.
   const c = buyRentContent(content);
 
+  // The two lead forms on this page. Fields, order, button and confirmation
+  // come from /admin/forms; a form switched off there drops its card rather
+  // than leaving a heading over an empty box.
+  const resolved = await getForms(["commercial_hero_enquiry", "commercial_lead_band"]);
+  const forms = { hero: resolved["commercial_hero_enquiry"]!, band: resolved["commercial_lead_band"]! };
+
   // Map section copy — blank fields fall through to RentAreaMap's own defaults.
   const map = content.section("map")?.values ?? {};
 
@@ -48,6 +56,16 @@ export default async function CommercialPage() {
       chips={c.chips}
       chipHrefs={c.chipHrefs}
       stats={c.stats}
+      heroForm={
+        forms.hero.enabled ? (
+          <FormRenderer
+            form={forms.hero}
+            className="mt-5"
+            successStyle="soft"
+            allowAnother
+          />
+        ) : null
+      }
       formTitle={c.formTitle}
       formSub={c.formSub}
       featured={featured}
@@ -65,6 +83,15 @@ export default async function CommercialPage() {
       mapAbove
       leadBand={
         <LeadBand
+          form={
+            forms.band.enabled ? (
+              <FormRenderer
+                form={forms.band}
+                successStyle="soft"
+                allowAnother
+              />
+            ) : null
+          }
           eyebrow={c.lead.eyebrow}
           title={c.lead.title}
           sub={c.lead.sub}

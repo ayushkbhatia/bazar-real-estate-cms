@@ -11,7 +11,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { EnquiryForm } from "@/app/(public)/_components/enquiry-form";
+import type { ResolvedForm } from "@/lib/forms/types";
+import { renderFormCopy } from "@/lib/forms/resolve";
+import { FormRenderer } from "@/app/(public)/_components/forms/form-renderer";
 
 /**
  * "Register your interest" on a development hero.
@@ -27,16 +29,26 @@ import { EnquiryForm } from "@/app/(public)/_components/enquiry-form";
  * queue can tell which project drew the lead.
  */
 export function InterestDialog({
+  form,
   developmentName,
   developmentId,
   buttonLabel,
 }: {
+  /** Resolved from /admin/forms by the project page. */
+  form: ResolvedForm;
   developmentName: string;
   /** Stamped on the enquiry so the admin knows which project page it came from. */
   developmentId: string | null;
   buttonLabel?: string | null;
 }) {
   const [open, setOpen] = useState(false);
+  const tokens = { project: developmentName };
+  // The dialog header owns the title and the blurb, so the body must not
+  // render them a second time.
+  const body: ResolvedForm = {
+    ...form,
+    copy: { ...form.copy, title: null, subtitle: null },
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -50,21 +62,20 @@ export function InterestDialog({
         <DialogHeader>
           {/* pr-8 keeps a long project name clear of the close button. */}
           <DialogTitle className="serif text-[22px] font-normal pr-8">
-            Express your interest in {developmentName}
+            {renderFormCopy(form.copy.title, tokens)}
           </DialogTitle>
           <DialogDescription>
-            Leave your details and the advisor for {developmentName} will come
-            back with pricing, availability and the payment plan.
+            {renderFormCopy(form.copy.subtitle, tokens)}
           </DialogDescription>
         </DialogHeader>
 
-        <EnquiryForm
-          source="development_interest"
-          developmentId={developmentId}
-          defaultMessage={`I'd like to register my interest in ${developmentName}.`}
-          submitLabel="Register my interest"
-          successTitle="Interest registered."
-          compact
+        <FormRenderer
+          form={body}
+          tokens={tokens}
+          context={{ developmentId, developmentName }}
+          successStyle="soft"
+          allowAnother
+          toastErrors
         />
       </DialogContent>
     </Dialog>

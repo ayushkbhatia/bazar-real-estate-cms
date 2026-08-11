@@ -12,6 +12,7 @@ import { AreaDirectory } from "./_components/area-directory";
 import { AreaSpotlights } from "./_components/area-spotlights";
 import { CommunityTypes } from "./_components/community-types";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { getForm } from "@/lib/queries/forms";
 import {
   faqPairs,
   img,
@@ -48,7 +49,10 @@ function imageProps(value: unknown): {
 const s = (v: unknown): string | null => (typeof v === "string" ? v : null);
 
 export default async function AreasPage() {
-  const content = await getMasterPageContent("areas");
+  const [content, listForm] = await Promise.all([
+    getMasterPageContent("areas"),
+    getForm("areas_list_property"),
+  ]);
   const v = (key: string) => content.section(key)?.values ?? {};
 
   const heroV = v("hero");
@@ -146,9 +150,10 @@ export default async function AreasPage() {
       />
     ),
 
-    list_your_property: (
+    list_your_property: listForm.enabled ? (
       <ListYourProperty
         key="list_your_property"
+        form={listForm}
         eyebrow={str(listV, "eyebrow")}
         heading={str(listV, "heading")}
         body={str(listV, "body")}
@@ -156,7 +161,7 @@ export default async function AreasPage() {
         imageAlt={listImage?.alt ?? null}
         imageLabel={listImage?.label ?? null}
       />
-    ),
+    ) : null,
 
     community_types: (
       <CommunityTypes

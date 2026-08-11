@@ -1,6 +1,7 @@
 import * as React from "react";
 import type { Metadata } from "next";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { getForm } from "@/lib/queries/forms";
 import { img, str } from "@/lib/master-pages";
 import { SERVICE_FORM_ANCHOR } from "@/lib/master-pages/sections/property-management";
 import { SERVICE_PROPERTY_TYPES } from "@/lib/schemas/service-lead";
@@ -28,9 +29,10 @@ export const revalidate = 3600;
 const SECTION = "px-4 md:px-12 py-14 md:py-[72px] border-t border-bz-border";
 
 export default async function PropertyManagementPage() {
-  const [content, areas] = await Promise.all([
+  const [content, areas, leadForm] = await Promise.all([
     getMasterPageContent("manage"),
     listLeadAreaOptions(),
+    getForm("services_manage_lead"),
   ]);
 
   const v = (key: string) => content.section(key)?.values ?? {};
@@ -58,7 +60,7 @@ export default async function PropertyManagementPage() {
         formAnchor={SERVICE_FORM_ANCHOR}
         form={
           <ServiceLeadForm
-            kind="management"
+            form={leadForm}
             areas={areas.map((a) => a.name)}
             propertyTypes={SERVICE_PROPERTY_TYPES}
             copy={{

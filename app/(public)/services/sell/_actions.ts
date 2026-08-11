@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { recordFormSubmission, withLabels } from "@/lib/forms/record";
 import { headers } from "next/headers";
 import * as Sentry from "@sentry/nextjs";
 import { createClient } from "@supabase/supabase-js";
@@ -182,6 +183,50 @@ export async function submitListingLead(
   }
 
   revalidatePath("/admin/enquiries");
+
+  // The owner wizard draws its own fields (two steps, conditional bedrooms,
+  // a UAE-format mobile), so it doesn't go through `submitForm` — but its
+  // answers still belong in /admin/forms → Responses alongside every other
+  // form's. Best-effort: the lead is already written.
+  await recordFormSubmission({
+    formKey: "services_sell_list_property",
+    sourcePath: "/services/sell",
+    enquiryId: row.id,
+    data: withLabels(
+      {
+        intent: data.intent,
+        location: data.location,
+        category: data.category,
+        property_type: data.property_type,
+        bedrooms: data.bedrooms ?? null,
+        area_sqft: data.area_sqft ?? null,
+        furnishing: data.furnishing ?? null,
+        urgency: data.urgency ?? null,
+        name: data.name,
+        mobile: phone ?? data.mobile,
+        email: data.email,
+        call_window: data.call_window,
+        consent: true,
+        reference,
+      },
+      {
+        intent: "I want to",
+        location: "Where is the property?",
+        category: "Category",
+        property_type: "Property type",
+        bedrooms: "Bedrooms",
+        area_sqft: "Built-up area",
+        furnishing: "Furnishing",
+        urgency: "How soon?",
+        name: "Your name",
+        mobile: "Mobile",
+        email: "Email",
+        call_window: "Best time to call",
+        consent: "Consent to be contacted",
+        reference: "Reference",
+      },
+    ),
+  });
 
   // Fire-and-forget confirmation. No-op without RESEND_API_KEY.
   const tpl = enquiryReceivedTemplate({

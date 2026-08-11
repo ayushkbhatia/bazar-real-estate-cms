@@ -19,15 +19,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { EnquiryForm } from "../../../_components/enquiry-form";
+import type { ResolvedForm } from "@/lib/forms/types";
+import { FormRenderer } from "../../../_components/forms/form-renderer";
 
 export function PropertyEnquiryDialog({
+  form,
   propertyId,
   propertyReference,
   propertyTitle,
   advisorName,
   children,
 }: {
+  /** Resolved from /admin/forms by the listing page. */
+  form: ResolvedForm;
   propertyId: string;
   propertyReference: string;
   propertyTitle: string;
@@ -59,12 +63,13 @@ export function PropertyEnquiryDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="mt-2">
-          <EnquiryForm
-            source="property_page"
-            propertyId={propertyId}
-            propertyReference={propertyReference}
-            submitLabel="Send enquiry"
-            compact
+          <FormRenderer
+            form={{ ...form, copy: { ...form.copy, title: null, subtitle: null } }}
+            tokens={{ reference: propertyReference }}
+            context={{ propertyId, propertyReference }}
+            successStyle="soft"
+            allowAnother
+            toastErrors
           />
         </div>
       </DialogContent>

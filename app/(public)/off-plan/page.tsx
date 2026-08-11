@@ -16,6 +16,7 @@ import { WhyBand } from "../_components/marketing/why-band";
 import { Faq } from "../_components/marketing/faq";
 import { AD_AREAS } from "../_components/marketing/ad-data";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { getForm } from "@/lib/queries/forms";
 import { OFFPLAN_LAUNCH_COUNT } from "../_components/marketing/counts";
 import {
   faqPairs,
@@ -42,10 +43,11 @@ const SECTION = "px-4 md:px-12 py-14 md:py-20 border-t border-bz-border";
 // by proxy.ts. No `searchParams` here — reading it would make the route fully
 // dynamic and discard the `revalidate = 300` above.
 export default async function NewProjectsPage() {
-  const [content, developments, areaCounts] = await Promise.all([
+  const [content, developments, areaCounts, interestForm] = await Promise.all([
     getMasterPageContent("off-plan"),
     listPublishedDevelopments(),
     listAreasWithCounts(),
+    getForm("offplan_project_interest"),
   ]);
   // Curated in the New Projects master page; a pick that no longer resolves
   // (unpublished, renamed, deleted) is dropped rather than rendered as a card
@@ -231,9 +233,10 @@ export default async function NewProjectsPage() {
     ),
 
     interest_form:
-      options.length > 0 ? (
+      options.length > 0 && interestForm.enabled ? (
         <ProjectInterestForm
           key="interest_form"
+          form={interestForm}
           projects={options}
           imageUrl={interestImage?.url ?? null}
           imageAlt={interestImage?.alt ?? null}
