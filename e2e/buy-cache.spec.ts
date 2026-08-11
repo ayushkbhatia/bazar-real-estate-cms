@@ -33,10 +33,14 @@ test("/about serves a cached response on the second request", async ({
   ).toContain(cacheHeader);
 });
 
-test("/buy/search is no longer force-dynamic", async ({ request }) => {
-  // Two requests should both return 200; the route is revalidate=60 with
-  // dynamic params, so it renders per-URL but with the per-user SSR fetches
-  // lifted to the client. (Search relocated from /buy to /buy/search.)
+test("/buy/search renders anonymously without an auth round-trip", async ({
+  request,
+}) => {
+  // /buy/search is deliberately dynamic — it reads `searchParams`, which is
+  // the whole point of a search route, so it can never be cached. What this
+  // guards is the data layer: the per-user SSR fetches were lifted to the
+  // client, so an anonymous GET must not touch Supabase Auth.
+  // (Search relocated from /buy to /buy/search.)
   const a = await request.get("/buy/search");
   expect(a.status()).toBe(200);
   const b = await request.get("/buy/search");
@@ -45,9 +49,7 @@ test("/buy/search is no longer force-dynamic", async ({ request }) => {
   // The page rendered without any user session — assert that the response
   // body doesn't crash, and that the response header doesn't claim to need
   // a Supabase auth-token cookie refresh (which would indicate per-user
-  // state was rendered server-side). force-dynamic with getSessionUser()
-  // would have set a cookie refresh; revalidate=60 with no auth path
-  // should not.
+  // state was rendered server-side).
   const setCookie = b.headers()["set-cookie"];
   expect(
     setCookie ?? "",

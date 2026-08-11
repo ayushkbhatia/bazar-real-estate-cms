@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { SearchList } from "../../_components/search-list";
 import { parseFilters } from "@/lib/filters/property";
 
-export const revalidate = 60;
+// A search route: it reads `searchParams`, which makes the whole route
+// dynamic, so a `revalidate` here would be silently discarded. Saying
+// force-dynamic keeps the config honest about what Next.js actually does.
+export const dynamic = "force-dynamic";
 
 /**
  * Ready (new) = the developer's FIRST SALE — completed, handed over, never

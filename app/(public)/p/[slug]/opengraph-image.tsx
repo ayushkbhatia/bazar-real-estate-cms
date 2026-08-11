@@ -3,25 +3,54 @@ import {
   extractReferenceFromSlug,
   formatPriceAED,
   getPublishedPropertyByReference,
+  propertyUrl,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
+import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { isSupabaseConfigured } from "@/lib/env";
 
-export const runtime = "edge";
 export const alt = "Bazar property listing";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+/** Same param set as the page this image belongs to. */
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("properties")
+      .select("slug, reference")
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .limit(5000);
+    return (data ?? []).map((p) => ({ slug: propertyUrl(p).replace("/p/", "") }));
+  } catch (err) {
+    console.error("[p/[slug]/opengraph-image] generateStaticParams failed", err);
+    return [];
+  }
+}
 
 /**
  * Sprint 4c (backfilled): composed OG image for property detail pages.
  * Renders a 1200×630 card with the hero on the left, listing metadata
  * on the right, brand wordmark + ORN footer.
+ *
+ * `params` is a Promise in Next.js 16, exactly as in the sibling `page.tsx`.
+ * It used to be typed as a plain object and read synchronously, so
+ * `extractReferenceFromSlug(undefined)` threw and this route answered 500 in
+ * production. The listing page overrides `openGraph.images` with the property
+ * hero, so the breakage was invisible in share previews — but the route is
+ * reachable directly. The read is cookie-free, so the edge runtime is gone
+ * too; it was the only thing keeping this route out of the prerender.
  */
 export default async function PropertyOpenGraph({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const ref = extractReferenceFromSlug(params.slug);
+  const { slug } = await params;
+  const ref = extractReferenceFromSlug(slug);
   const property = ref ? await getPublishedPropertyByReference(ref) : null;
 
   const title = property?.title ?? "Bazar Real Estate";
@@ -47,7 +76,9 @@ export default async function PropertyOpenGraph({
           fontFamily: "system-ui, sans-serif",
         }}
       >
-        <div style={{ width: 540, height: 630, position: "relative" }}>
+        <div
+          style={{ display: "flex", width: 540, height: 630, position: "relative" }}
+        >
           {heroSrc ? (
             <img
               src={heroSrc}
@@ -77,7 +108,10 @@ export default async function PropertyOpenGraph({
             color: "#ffffff",
           }}
         >
-          <div>
+          {/* Satori requires an explicit `display` on any element with more
+              than one child — without it `next/og` aborts mid-stream and the
+              route answers 500 rather than a PNG. */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
             <div
               style={{
                 fontSize: 14,
@@ -108,11 +142,10 @@ export default async function PropertyOpenGraph({
                 marginTop: 18,
               }}
             >
-              {area}
-              {property?.reference ? ` · ${property.reference}` : ""}
+              {property?.reference ? `${area} · ${property.reference}` : area}
             </div>
           </div>
-          <div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
             <div
               style={{
                 fontSize: 44,

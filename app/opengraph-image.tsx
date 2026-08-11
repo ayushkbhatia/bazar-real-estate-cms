@@ -1,6 +1,8 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+// No edge runtime: the card is constant JSX with no per-request input, and
+// `runtime = "edge"` was the only thing stopping Next.js prerendering it to a
+// static PNG at build time.
 export const alt = "Bazar Real Estate — Abu Dhabi, properly understood";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
