@@ -173,6 +173,113 @@ export async function getDeveloperRecord(
   return rows.find((r) => r.id === id) ?? null;
 }
 
+/** Same, by public slug — what the record editor's URL carries. */
+export async function getDeveloperRecordBySlug(
+  slug: string,
+): Promise<DeveloperRecordRow | null> {
+  const rows = await listDeveloperRecords();
+  return rows.find((r) => r.slug === slug) ?? null;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// listDeveloperListings
+// ─────────────────────────────────────────────────────────────────────
+
+export type DeveloperListing = {
+  id: string;
+  reference: string;
+  slug: string;
+  title: string;
+  price_aed: number;
+  beds: number;
+  baths: number;
+  built_up_ft2: number | null;
+  flags: Record<string, unknown> | null;
+  area: { name: string; slug: string } | null;
+  hero: { storage_key: string; alt_text: string | null } | null;
+};
+
+/**
+ * Published listings filed under one developer.
+ *
+ * Deliberately its own query rather than a filter on `listPublishedProperties`:
+ * that function's module is shared with several in-flight branches, and the
+ * profile page needs a narrower row than the search grid does. The select
+ * mirrors the card's props — anything the card doesn't render isn't fetched.
+ */
+export async function listDeveloperListings(
+  developerId: string,
+  limit = 6,
+): Promise<DeveloperListing[]> {
+  if (!isSupabaseConfigured || !developerId || developerId.startsWith("seed:")) {
+    return [];
+  }
+  try {
+    const sb = createSupabasePublicClient();
+    const { data, error } = await sb
+      .from("properties")
+      .select(
+        // `properties` has three FKs into `areas` (area, sub-community, building),
+        // so the embed has to name the constraint — the bare alias is ambiguous.
+        "id, reference, slug, title, price_aed, beds, baths, built_up_ft2, flags, published_at, areas!properties_area_id_fkey(name, slug), property_media(role, media:media_assets(storage_key, alt_text))",
+      )
+      .eq("developer_id", developerId)
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .order("published_at", { ascending: false })
+      .limit(limit);
+    if (error || !data) return [];
+
+    return data.map((r) => {
+      const areaArr = r.areas as
+        | { name: string; slug: string }
+        | { name: string; slug: string }[]
+        | null;
+      const joins = (r.property_media ?? []) as {
+        role: string;
+        media: { storage_key: string; alt_text: string | null } | null;
+      }[];
+      const hero = joins.find((j) => j.role === "hero" && j.media)?.media ?? null;
+      return {
+        id: r.id,
+        reference: r.reference,
+        slug: r.slug,
+        title: r.title,
+        price_aed: Number(r.price_aed) || 0,
+        beds: r.beds,
+        baths: r.baths,
+        built_up_ft2: r.built_up_ft2,
+        flags: (r.flags as Record<string, unknown> | null) ?? null,
+        area: (Array.isArray(areaArr) ? areaArr[0] : areaArr) ?? null,
+        hero,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+/** How many published listings this developer has, for the "view all" link. */
+export async function countDeveloperListings(
+  developerId: string,
+): Promise<number> {
+  if (!isSupabaseConfigured || !developerId || developerId.startsWith("seed:")) {
+    return 0;
+  }
+  try {
+    const sb = createSupabasePublicClient();
+    const { count } = await sb
+      .from("properties")
+      .select("id", { head: true, count: "exact" })
+      .eq("developer_id", developerId)
+      .eq("status", "published")
+      .is("deleted_at", null);
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
 // ─────────────────────────────────────────────────────────────────────
 // getDeveloperBySlug
 // ─────────────────────────────────────────────────────────────────────

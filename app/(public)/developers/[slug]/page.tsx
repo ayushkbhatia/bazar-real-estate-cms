@@ -6,10 +6,16 @@ import { ArrowLeft } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import {
+  countDeveloperListings,
   getDeveloperBySlug,
-  listDeveloperDevelopments,
+  listDeveloperListings,
 } from "@/lib/queries/developers-extras";
-import { findDirectoryEntry, listDirectory } from "../_directory";
+import { listPublishedDevelopments } from "@/lib/queries/developments";
+import { mediaPublicUrl } from "@/lib/media";
+import { formatPriceAED, propertyUrl } from "@/lib/queries/property-utils";
+import { DevelopmentCard } from "../../_components/marketing/development-card";
+import { ListingCardPriced } from "../../_components/listing-card-priced";
+import { entryLogo, findDirectoryEntry, listDirectory } from "../_directory";
 
 /**
  * Both sources, not just the code-owned one: a developer created in the CMS is
@@ -74,19 +80,22 @@ export default async function DeveloperProfilePage({
   if (!entry && !detail) notFound();
 
   const name = detail?.name ?? entry?.name ?? "";
-  const developments =
-    detail && !detail.id.startsWith("seed:")
-      ? await listDeveloperDevelopments(detail.id)
-      : [];
+  const developerId =
+    detail && !detail.id.startsWith("seed:") ? detail.id : null;
+  const [developments, listings, listingTotal] = await Promise.all([
+    developerId
+      ? listPublishedDevelopments({ developerId })
+      : Promise.resolve([]),
+    developerId ? listDeveloperListings(developerId, 9) : Promise.resolve([]),
+    developerId ? countDeveloperListings(developerId) : Promise.resolve(0),
+  ]);
   const description = detail?.description ?? entry?.blurb ?? null;
-  // Shipped art first — it is optically normalised against the rest of the
-  // set — then whatever the operator uploaded on the record.
-  const logo =
-    entry?.trimmed ??
-    (entry?.master ? { src: entry.master.src, w: entry.master.w, h: entry.master.h } : null) ??
-    (detail?.logo_url ?? entry?.uploaded
-      ? { src: (detail?.logo_url ?? entry?.uploaded)!, w: 200, h: 200 }
-      : null);
+  // Upload first, then the shipped art. An uploaded logo reaches the entry via
+  // the directory merge; `detail.logo_url` covers a slug the merge didn't
+  // fold (the superseded directory slug), so both paths land on the same mark.
+  const logo = entryLogo(
+    entry && detail?.logo_url ? { ...entry, uploaded: detail.logo_url } : entry,
+  );
 
   return (
     <div className="bg-bz-bg">
@@ -170,39 +179,78 @@ export default async function DeveloperProfilePage({
             </Button>
           </div>
         ) : (
+          // The same card /off-plan and /developments render — cover image,
+          // tagline pill, and the From / Bedrooms / Handover strip. This
+          // section used to draw a bespoke text-only tile, so a project looked
+          // materially thinner here than everywhere else it appears.
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {developments.map((d) => (
-              <Link
-                key={d.id}
-                href={`/developments/${d.slug}`}
-                className="group block rounded-lg border border-bz-border bg-bz-surface p-6 hover:border-bz-border-strong transition-colors"
-              >
-                <h3
-                  className="serif text-[22px] leading-tight group-hover:text-bz-accent transition-colors"
-                  style={{ letterSpacing: "-0.012em" }}
-                >
-                  {d.name}
-                </h3>
-                {d.area ? (
-                  <div className="mt-2 text-[12.5px] text-bz-ink-2">
-                    {d.area.name}
-                  </div>
-                ) : null}
-                {d.starting_price ? (
-                  <div className="mt-3 mono text-[12px] text-bz-ink">
-                    From AED {d.starting_price.toLocaleString()}
-                  </div>
-                ) : null}
-                {d.handover_date ? (
-                  <div className="mt-1 text-[11px] text-bz-ink-2">
-                    Handover · {d.handover_date}
-                  </div>
-                ) : null}
-              </Link>
+              <DevelopmentCard key={d.id} d={d} />
             ))}
           </div>
         )}
       </section>
+
+      {/* Listings filed under this developer */}
+      {listings.length > 0 ? (
+        <section className="px-4 md:px-12 pb-14 md:pb-20">
+          <div className="flex items-end justify-between gap-8 flex-wrap">
+            <div>
+              <Eyebrow>Associated listings</Eyebrow>
+              <h2
+                className="serif text-[30px] md:text-[36px] mt-2 leading-tight"
+                style={{ letterSpacing: "-0.02em" }}
+              >
+                Properties from this developer.
+              </h2>
+            </div>
+            {/* No "view all" link: the search has no developer facet, so one
+                would drop the visitor into unfiltered results. State the count
+                instead until that filter exists. */}
+            {listingTotal > listings.length ? (
+              <span className="text-[12.5px] text-bz-muted">
+                Showing {listings.length} of {listingTotal}
+              </span>
+            ) : null}
+          </div>
+
+          <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {listings.map((row, index) => (
+              <Link
+                key={row.id}
+                href={propertyUrl(row)}
+                className="block"
+              >
+                <ListingCardPriced
+                  price={formatPriceAED(row.price_aed)}
+                  priceAed={row.price_aed}
+                  title={row.title}
+                  location={row.area?.name ?? "United Arab Emirates"}
+                  beds={row.beds}
+                  baths={row.baths}
+                  area={row.built_up_ft2 ?? 0}
+                  badge={
+                    row.flags?.exclusive
+                      ? "Exclusive"
+                      : row.flags?.vacant_on_transfer
+                        ? "Vacant on transfer"
+                        : undefined
+                  }
+                  badgeKind={row.flags?.exclusive ? "ink" : "accent"}
+                  imgLabel={row.reference}
+                  heroSrc={
+                    row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                  }
+                  heroAlt={row.hero?.alt_text ?? row.title}
+                  priority={index < 2}
+                  propertyId={row.id}
+                  verified={Boolean(row.flags?.verified)}
+                />
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

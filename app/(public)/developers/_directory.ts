@@ -1,11 +1,11 @@
 /**
  * The developer directory the public pages render.
  *
- * Two sources have to become one list. `_data.ts` is the code-owned set of
- * launch partners — it carries the trimmed logo art, which lives in
- * /public/developers and can't come out of the database. The `developers`
- * table is what every property and project actually references, and it grows
- * whenever staff add a partner from the CMS.
+ * Two sources have to become one list. `lib/developers/directory-data.ts` is
+ * the code-owned set of launch partners — it carries the trimmed logo art,
+ * which lives in /public/developers and can't come out of the database. The
+ * `developers` table is what every property and project actually references,
+ * and it grows whenever staff add a partner from the CMS.
  *
  * Merging on slug is what stops a developer added in the CMS from being
  * invisible on /developers while its profile page, its listings and the
@@ -19,8 +19,8 @@ import {
   type DeveloperListEntry,
 } from "@/lib/queries/developers-extras";
 import { developerNameKey } from "@/lib/schemas/developer";
-import { trimmedLogo, type TrimmedLogo } from "../_components/developer-logos";
-import { DEVELOPERS, type DeveloperDir } from "./_data";
+import { trimmedLogo, type TrimmedLogo } from "@/lib/developers/logos";
+import { DEVELOPERS, type DeveloperDir } from "@/lib/developers/directory-data";
 
 export type DirectoryEntry = {
   slug: string;
@@ -159,6 +159,23 @@ export async function findDirectoryEntry(
   // to it instead of leaving two URLs competing for the same developer.
   const key = developerNameKey(dir.name);
   return merged.find((d) => developerNameKey(d.name) === key) ?? fromDir(dir);
+}
+
+/**
+ * The logo a surface should draw for one entry, or null for initials.
+ *
+ * Upload first. It used to come last, behind the shipped PNGs, which made the
+ * logo field on the record editor a no-op for exactly the 30 developers most
+ * likely to want a refreshed mark — the operator uploaded one, saved, and the
+ * page kept drawing the file baked into the repo.
+ */
+export function entryLogo(
+  entry: DirectoryEntry | null,
+): { src: string; w: number; h: number } | null {
+  if (!entry) return null;
+  if (entry.uploaded) return { src: entry.uploaded, w: 240, h: 240 };
+  if (entry.trimmed) return entry.trimmed;
+  return entry.master;
 }
 
 /** Initials mark for a developer with no logo art of any kind. */

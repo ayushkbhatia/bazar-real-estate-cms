@@ -28,6 +28,24 @@ test("/developers/aldar renders the developer profile", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("the profile renders project cards and the developer's listings", async ({
+  page,
+}) => {
+  await page.goto("/developers/aldar");
+
+  // Projects use the same card as /off-plan — the giveaway is the
+  // From / Bedrooms / Handover strip, which the old bespoke tile had not.
+  const projects = page.locator("a[href^='/developments/']");
+  await expect(projects.first()).toBeVisible();
+  await expect(page.getByText("Handover").first()).toBeVisible();
+
+  // Associated listings — property cards linking into /p/<slug>.
+  await expect(
+    page.getByRole("heading", { level: 2, name: /properties from this developer/i }),
+  ).toBeVisible();
+  await expect(page.locator("a[href^='/p/']").first()).toBeVisible();
+});
+
 test("the directory lists a developer that only exists in the catalogue", async ({
   page,
 }) => {

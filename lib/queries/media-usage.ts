@@ -318,11 +318,17 @@ export async function buildMediaUsageIndex(
     }),
 
     source("developers", async () => {
-      type Row = { id: string; name: string; logo_id: string | null };
+      type Row = {
+        id: string;
+        name: string;
+        slug: string;
+        logo_id: string | null;
+      };
       const found = await inChunks<Row>("developers", (batch) =>
         supabase
           .from("developers")
-          .select("id, name, logo_id")
+          // `slug` addresses the record editor — see the route comment there.
+          .select("id, name, slug, logo_id")
           .in("logo_id", batch),
       );
       for (const r of found) {
@@ -331,7 +337,7 @@ export async function buildMediaUsageIndex(
           id: r.id,
           label: r.name,
           role: "Logo",
-          href: `/admin/developers/${r.id}`,
+          href: `/admin/developers/${r.slug}`,
           live: true,
           internal: false,
         });
@@ -343,13 +349,13 @@ export async function buildMediaUsageIndex(
         developer_id: string;
         published_at: string | null;
         hero_image_id: string | null;
-        developers: { name: string } | null;
+        developers: { name: string; slug: string } | null;
       };
       const found = await inChunks<Row>("developer_profiles", (batch) =>
         supabase
           .from("developer_profiles")
           .select(
-            "developer_id, published_at, hero_image_id, developers:developer_id(name)",
+            "developer_id, published_at, hero_image_id, developers:developer_id(name, slug)",
           )
           .in("hero_image_id", batch),
       );
@@ -359,7 +365,7 @@ export async function buildMediaUsageIndex(
           id: r.developer_id,
           label: r.developers?.name ?? "Developer profile",
           role: "Hero",
-          href: `/admin/developers/${r.developer_id}`,
+          href: `/admin/developers/${r.developers?.slug ?? r.developer_id}`,
           live: r.published_at !== null,
           internal: false,
         });

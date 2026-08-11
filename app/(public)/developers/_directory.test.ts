@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { mergeDirectory, initials } from "./_directory";
-import { DEVELOPERS, type DeveloperDir } from "./_data";
+import { entryLogo, mergeDirectory, initials } from "./_directory";
+import { DEVELOPERS, type DeveloperDir } from "@/lib/developers/directory-data";
 import type { DeveloperListEntry } from "@/lib/queries/developers-extras";
 
 const partner: DeveloperDir = {
@@ -136,6 +136,32 @@ describe("mergeDirectory", () => {
       ],
     );
     expect(out).toHaveLength(2);
+  });
+});
+
+describe("entryLogo", () => {
+  const base = mergeDirectory([partner], [])[0];
+
+  it("prefers an uploaded logo over the shipped art", () => {
+    // The whole point of the record editor's logo field. Before this, an
+    // operator could upload a mark for a launch partner, save, and watch the
+    // page keep drawing the PNG baked into the repo.
+    const withUpload = { ...base, uploaded: "https://cdn.example/new.png" };
+    expect(entryLogo(withUpload)?.src).toBe("https://cdn.example/new.png");
+  });
+
+  it("falls back to the trimmed art, then the padded master canvas", () => {
+    expect(entryLogo(base)?.src).toBe("/developers/trimmed/aldar.png");
+    expect(entryLogo({ ...base, trimmed: null })?.src).toBe(
+      "/developers/aldar.png",
+    );
+  });
+
+  it("returns null when there is no art at all, so initials draw", () => {
+    expect(
+      entryLogo({ ...base, trimmed: null, master: null, uploaded: null }),
+    ).toBeNull();
+    expect(entryLogo(null)).toBeNull();
   });
 });
 

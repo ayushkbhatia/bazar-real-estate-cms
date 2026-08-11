@@ -64,7 +64,7 @@ export function NewDeveloperDialog({
             action: {
               label: "Open record",
               onClick: () =>
-                window.open(`/admin/developers/${result.id}`, "_blank"),
+                window.open(`/admin/developers/${result.slug}`, "_blank"),
             },
           },
         );

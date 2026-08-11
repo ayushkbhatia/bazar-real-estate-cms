@@ -118,7 +118,7 @@ export default async function DeveloperSubPagesIndex() {
                   <TableRow key={row.id}>
                     <TableCell>
                       <Link
-                        href={`/admin/developers/${row.id}`}
+                        href={`/admin/developers/${row.slug}`}
                         className="flex items-center gap-3 hover:text-bz-accent transition-colors"
                       >
                         <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded border border-bz-border bg-white">
@@ -158,7 +158,7 @@ export default async function DeveloperSubPagesIndex() {
                     <TableCell className="text-right">
                       <span className="inline-flex items-center justify-end gap-3">
                         <Link
-                          href={`/admin/developers/${row.id}`}
+                          href={`/admin/developers/${row.slug}`}
                           className="inline-flex items-center gap-1 text-[12px] text-bz-muted hover:text-bz-ink"
                           title="Name, link, logo, founding year, description"
                         >

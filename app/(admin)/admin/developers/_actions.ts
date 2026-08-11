@@ -259,7 +259,10 @@ export async function updateDeveloper(
   });
 
   revalidateDeveloper(data.slug, before?.slug ?? null);
-  revalidatePath(`/admin/developers/${id}`);
+  // The record editor is addressed by slug, so a rename moves it too.
+  revalidatePath(`/admin/developers/${data.slug}`);
+  if (before?.slug && before.slug !== data.slug)
+    revalidatePath(`/admin/developers/${before.slug}`);
   return { status: "ok", message: "Saved.", slug: data.slug };
 }
 
@@ -301,6 +304,6 @@ export async function setDeveloperLogo(
   });
 
   revalidateDeveloper(data.slug);
-  revalidatePath(`/admin/developers/${id}`);
+  revalidatePath(`/admin/developers/${data.slug}`);
   return { status: "ok", message: "Logo saved.", slug: data.slug };
 }

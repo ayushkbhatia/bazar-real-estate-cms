@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { DEVELOPERS_SORTED } from "../developers/_data";
-import { trimmedLogo, type TrimmedLogo } from "./developer-logos";
+import { DEVELOPERS_SORTED } from "@/lib/developers/directory-data";
+import { trimmedLogo, type TrimmedLogo } from "@/lib/developers/logos";
 
 /**
  * "Our Developers" — a continuous logo marquee of the UAE developers Bazar
