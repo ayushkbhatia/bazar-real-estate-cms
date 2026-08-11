@@ -133,6 +133,20 @@ export function extractLead(
       case "budget_max":
         lead.budgetMax = typeof raw === "number" ? raw : null;
         break;
+      case "budget_band": {
+        // One pill, two columns. The option value carries the bounds as
+        // "min:max" with either side blank for open-ended, so an editor can
+        // add "AED 30M+" without anyone touching this file. The label is what
+        // the advisor reads; the bounds are what lead scoring uses.
+        const [min, max] = value.split(":");
+        lead.budgetMin = min ? Number(min) : null;
+        lead.budgetMax = max ? Number(max) : null;
+        if (!Number.isFinite(lead.budgetMin ?? 0)) lead.budgetMin = null;
+        if (!Number.isFinite(lead.budgetMax ?? 0)) lead.budgetMax = null;
+        const label = optionLabel(field, value, dynamic);
+        if (label) lead.extras.push({ key: field.key, label: field.label, display: label });
+        break;
+      }
       case "development_id":
         lead.developmentId = value || null;
         break;

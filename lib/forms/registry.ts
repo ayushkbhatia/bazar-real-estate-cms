@@ -755,6 +755,68 @@ export const FORM_DEFS: FormDef[] = [
     }),
   },
 
+  {
+    key: "areas_guide_consultation",
+    name: "Request a free consultation",
+    surface: "Area guide",
+    path: "/areas",
+    description:
+      "The consultation form in every area guide's sidebar. Asks two things the generic enquiry form doesn't — property type and budget band — and stamps the brief with the community.",
+    group: "sub",
+    handler: "enquiry",
+    control: "full",
+    variant: "compact",
+    enquirySource: "property_consultation",
+    briefPrefix: "Area: {area}.",
+    copy: copy({
+      submit_label: "Request a free consultation",
+      pending_label: "Sending…",
+      ...ENQUIRY_SUCCESS,
+      success_body:
+        "We've received your brief for {area}. An advisor will reach out within 2 hours during business hours, and by next morning otherwise.",
+    }),
+    fields: [
+      fullName({ label: "Full name", width: "half" }),
+      phone({ label: "Phone number", width: "half" }),
+      email({ label: "Email address" }),
+      field("intent", "I'm interested in", "chips", "intent", {
+        options: [
+          { label: "Buying", value: "buy", intent: "buy" },
+          { label: "Renting", value: "rent", intent: "rent" },
+          { label: "Investing", value: "invest", intent: "invest" },
+          { label: "Selling", value: "sell", intent: "sell" },
+        ],
+      }),
+      field("property_type", "Property type", "chips", "custom", {
+        options: options(
+          "Apartment",
+          "Villa",
+          "Townhouse",
+          "Penthouse",
+          "Plot / land",
+          "Commercial",
+        ),
+      }),
+      // Bounds ride in the option value as "min:max", blank meaning open-ended
+      // — see the `budget_band` case in lib/forms/submission.ts.
+      field("budget", "Budget", "chips", "budget_band", {
+        options: options(
+          ["Under AED 1M", ":1000000"],
+          ["AED 1M – 2M", "1000000:2000000"],
+          ["AED 2M – 4M", "2000000:4000000"],
+          ["AED 4M – 8M", "4000000:8000000"],
+          ["AED 8M – 15M", "8000000:15000000"],
+          ["AED 15M+", "15000000:"],
+        ),
+      }),
+      message("Message", {
+        required: false,
+        rows: 4,
+        placeholder: "What are you looking for in {area}?",
+      }),
+    ],
+  },
+
   // ───────────────────────── dialogs & tools ──────────────────────────
   {
     key: "valuation_report_gate",

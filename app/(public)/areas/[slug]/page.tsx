@@ -135,7 +135,10 @@ export default async function CommunityProfilePage({
 
   const advisors = await withAgentPhotos(listSeedAgentsByArea(profile.slug));
   const areaFilters = parseFilters({ area: slug });
-  const gateForm = await getForm("valuation_report_gate");
+  const [gateForm, leadForm] = await Promise.all([
+    getForm("valuation_report_gate"),
+    getForm("areas_guide_consultation"),
+  ]);
 
   const [content, heroImage, rawPins, dots, saleStock, rentStock, directory] =
     await Promise.all([
@@ -407,6 +410,7 @@ export default async function CommunityProfilePage({
         }
       >
         <AreaLeadForm
+          form={leadForm}
           areaName={profile.name}
           submitLabel={sv("lead-form", "cta_label")}
         />

@@ -230,7 +230,7 @@ export function FormRenderer({
             {row.map((f) => (
               <FieldControl
                 key={f.key}
-                field={f}
+                field={withTokens(f, tokens)}
                 stacked={stacked}
                 value={values[f.key]}
                 error={errors[f.key]}
@@ -242,7 +242,7 @@ export function FormRenderer({
         ) : (
           <FieldControl
             key={row[0]?.key ?? index}
-            field={row[0]!}
+            field={withTokens(row[0]!, tokens)}
             stacked={stacked}
             value={values[row[0]!.key]}
             error={errors[row[0]!.key]}
@@ -271,6 +271,25 @@ export function FormRenderer({
       ) : null}
     </form>
   );
+}
+
+/**
+ * Labels, placeholders and hints take the same `{token}` substitution the copy
+ * does — the area guide's message box asks "What are you looking for in
+ * {area}?", and an editor rewriting it must be able to keep the community's
+ * name in the sentence.
+ */
+function withTokens(
+  field: FormFieldDef,
+  tokens: Record<string, string | null | undefined>,
+): FormFieldDef {
+  if (Object.keys(tokens).length === 0) return field;
+  return {
+    ...field,
+    label: renderFormCopy(field.label, tokens) ?? field.label,
+    placeholder: renderFormCopy(field.placeholder ?? null, tokens),
+    help: renderFormCopy(field.help ?? null, tokens),
+  };
 }
 
 /** Adjacent half-width fields share a row; everything else spans. */
