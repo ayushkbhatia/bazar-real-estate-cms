@@ -85,6 +85,46 @@ describe("buildFormBrief", () => {
     expect(brief).toContain("Two bedrooms, sea view.");
   });
 
+  it("writes the mortgage scenario into the brief the page supplied it with", () => {
+    const form = defaultForm("mortgage_preapproval")!;
+    const values = {
+      name: "Omar Haddad",
+      phone: "+971 50 111 2222",
+      email: "omar@example.com",
+      stage: "comparing",
+      timeline: "three_months",
+      message: "Self-employed, two years of accounts.",
+    };
+    const scenario = "Property price: AED 4,200,000\nMonthly payment: AED 17,065";
+    const brief = buildFormBrief(form, extractLead(form, values), values, {
+      scenario,
+    });
+    expect(brief).toContain("Mortgage pre-approval request.");
+    expect(brief).toContain("Property price: AED 4,200,000");
+    expect(brief).toContain("Monthly payment: AED 17,065");
+    expect(brief).toContain("Self-employed, two years of accounts.");
+    // The qualifier reads as its label, not as the value it is stored under.
+    expect(brief).toContain("Where are you up to?: Comparing banks");
+  });
+
+  it("leaves no token behind when a mortgage lead arrives without a scenario", () => {
+    // A hand-rolled POST, or the form re-rendered somewhere that isn't the
+    // calculator. The brief must still read as a sentence.
+    const form = defaultForm("mortgage_preapproval")!;
+    const values = {
+      name: "Omar Haddad",
+      phone: "+971 50 111 2222",
+      email: "omar@example.com",
+      stage: "",
+      timeline: "",
+      message: "",
+    };
+    const brief = buildFormBrief(form, extractLead(form, values), values, {
+      scenario: null,
+    });
+    expect(brief).toBe("Mortgage pre-approval request.");
+  });
+
   it("falls back to the wording an unanswered dropdown needs", () => {
     const form = defaultForm("offplan_project_interest")!;
     const values = { note: "", project: "", timeline: "now" };

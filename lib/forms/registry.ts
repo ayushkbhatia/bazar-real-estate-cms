@@ -819,6 +819,54 @@ export const FORM_DEFS: FormDef[] = [
 
   // ───────────────────────── dialogs & tools ──────────────────────────
   {
+    key: "mortgage_preapproval",
+    name: "Start your pre-approval",
+    surface: "Mortgage calculator",
+    path: "/tools/mortgage",
+    description:
+      "The pre-approval request under the mortgage calculator. Every submission arrives with the scenario the visitor built — price, deposit, loan, term, rate, monthly and cash to close — already written into the brief, so the desk can quote without asking them to repeat themselves.",
+    group: "dialog",
+    handler: "enquiry",
+    control: "full",
+    variant: "compact",
+    enquirySource: "mortgage",
+    // The scenario is supplied by the page at submit time, not typed by the
+    // visitor — see `scenario` on `FormSubmitContext`. Prefilling the message
+    // box instead would freeze the numbers at the moment the form mounted and
+    // let a stray slider drag desynchronise the brief from what's on screen.
+    briefPrefix: "Mortgage pre-approval request.\n{scenario|}\n",
+    copy: copy({
+      title: "Start your pre-approval",
+      subtitle:
+        "We send the scenario above to our mortgage desk. An advisor comes back with what our partner banks will actually lend.",
+      submit_label: "Request pre-approval",
+      pending_label: "Sending…",
+      success_title: "Your scenario is with the mortgage desk.",
+      success_body:
+        "An advisor will come back within one business day with the rates our partner banks can hold, and the documents they'll need from you.",
+    }),
+    fields: [
+      fullName({ label: "Full name", width: "half" }),
+      phone({ label: "Phone number", required: true, width: "half" }),
+      email({ label: "Email address", required: true }),
+      field("stage", "Where are you up to?", "chips", "custom", {
+        options: options(
+          ["Haven't started", "not_started"],
+          ["Comparing banks", "comparing"],
+          ["Offer in hand", "offer_in_hand"],
+        ),
+      }),
+      timelineChips({ label: "Buying timeline" }),
+      message("Anything we should know?", {
+        required: false,
+        rows: 3,
+        placeholder:
+          "Self-employed, buying off-plan, rate you've been quoted elsewhere…",
+        note: "The calculator's scenario is attached to every submission automatically — visitors never have to retype their numbers here.",
+      }),
+    ],
+  },
+  {
     key: "valuation_report_gate",
     name: "Get the full advisor report",
     surface: "Valuation tool",

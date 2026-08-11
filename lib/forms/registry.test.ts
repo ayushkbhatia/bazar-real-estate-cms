@@ -150,6 +150,34 @@ describe("the forms as they render today", () => {
     expect(form.copy.submit_label).toBe("Register interest");
   });
 
+  it("asks the mortgage desk's six questions and files them as a mortgage lead", () => {
+    const def = getFormDef("mortgage_preapproval")!;
+    const form = defaultForm("mortgage_preapproval")!;
+    expect(form.fields.map((f) => f.key)).toEqual([
+      "name",
+      "phone",
+      "email",
+      "stage",
+      "timeline",
+      "message",
+    ]);
+    // A pre-approval cannot be chased anonymously, so both routes are required
+    // here where the generic enquiry form takes either.
+    expect(form.fields[1]!.required).toBe(true);
+    expect(form.fields[2]!.required).toBe(true);
+    expect(def.enquirySource).toBe("mortgage");
+    expect(form.copy.submit_label).toBe("Request pre-approval");
+  });
+
+  it("carries the calculator's scenario in the brief, not in a field", () => {
+    // The numbers are supplied by the page at submit time. If they were a
+    // field an editor could delete them, and every mortgage lead would arrive
+    // saying nothing more than that someone wants a mortgage.
+    const def = getFormDef("mortgage_preapproval")!;
+    expect(def.briefPrefix).toContain("{scenario|}");
+    expect(def.fields.some((f) => f.key === "scenario")).toBe(false);
+  });
+
   it("cannot switch the contact page's enquiry box off", () => {
     expect(getFormDef("contact_enquiry")?.alwaysOn).toBe(true);
     // `resolveForm` is the enforcement point, so a stored `enabled: false`

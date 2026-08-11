@@ -23,6 +23,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import type { ResolvedForm } from "@/lib/forms/types";
+import { FormRenderer } from "@/app/(public)/_components/forms/form-renderer";
 import { DbrGauge } from "./_components/dbr-gauge";
 import {
   affordability,
@@ -71,7 +73,11 @@ function parseAedInput(s: string): number {
   return Number.isFinite(n) ? Math.round(n) : 0;
 }
 
-export function MortgageCalculator() {
+export function MortgageCalculator({
+  preApprovalForm,
+}: {
+  preApprovalForm: ResolvedForm;
+}) {
   const [price, setPrice] = useState(4_200_000);
   const [downPct, setDownPct] = useState(0.25);
   const [annualRatePct, setAnnualRatePct] = useState(4.25);
@@ -141,6 +147,44 @@ export function MortgageCalculator() {
     termYears,
   ]);
 
+  /**
+   * The scenario, once, as label/value pairs.
+   *
+   * The recap the visitor reads and the block the advisor reads are rendered
+   * from this same array on purpose: two hand-written copies of the same six
+   * numbers would drift the first time anyone adds a line to one of them.
+   */
+  const scenarioLines: [label: string, value: string][] = useMemo(
+    () => [
+      ["Property price", formatAed(price)],
+      [
+        "Deposit",
+        `${formatPct(downPct)} · ${formatAed(Math.round(price * downPct))}`,
+      ],
+      ["Loan amount", formatAed(summary.principalAed)],
+      ["Term", `${termYears} years at ${annualRatePct}% ${mortgageType}`],
+      ["Monthly payment", formatAed(summary.monthlyPaymentAed)],
+      ["Cash to close", formatAed(closing.totalAed)],
+    ],
+    [
+      price,
+      downPct,
+      summary.principalAed,
+      summary.monthlyPaymentAed,
+      termYears,
+      annualRatePct,
+      mortgageType,
+      closing.totalAed,
+    ],
+  );
+
+  // Read at submit time, not at mount time — see `scenario` on
+  // `FormSubmitContext`. Nudging the price slider after typing an email must
+  // update the brief without resetting the form.
+  const scenarioBrief = scenarioLines
+    .map(([label, value]) => `${label}: ${value}`)
+    .join("\n");
+
   // Pre-fill the WhatsApp handoff with the user's current scenario so the
   // mortgage team opens the chat already knowing what to quote.
   const waMessage = [
@@ -153,6 +197,10 @@ export function MortgageCalculator() {
     `Monthly: ${formatAed(summary.monthlyPaymentAed)}`,
   ].join("\n");
   const waLink = buildMortgageWhatsAppLink(waMessage);
+
+  // Switched off in /admin/forms ⇒ the band falls back to the WhatsApp-and-
+  // advisor row it was before the form existed, rather than to an empty column.
+  const showPreApprovalForm = preApprovalForm.enabled;
 
   return (
     <>
@@ -521,13 +569,23 @@ export function MortgageCalculator() {
       </div>
     </section>
 
-    {/* ── Pre-approval CTA — wa.me deep link with the current scenario ── */}
+    {/* ── Pre-approval — the lead form, with wa.me and the desk beside it ── */}
     <section className="px-4 md:px-12 pb-12 md:pb-24">
-      <div className="bg-bz-accent-soft rounded-xl p-6 md:p-8 flex flex-wrap items-center justify-between gap-6">
+      <div
+        className={cn(
+          "bg-bz-accent-soft rounded-xl p-6 md:p-8 gap-6",
+          showPreApprovalForm
+            ? "grid items-start gap-8 lg:grid-cols-[1fr_minmax(0,430px)] lg:gap-12 [&>*]:min-w-0"
+            : "flex flex-wrap items-center justify-between",
+        )}
+      >
         <div>
           <Eyebrow className="text-bz-accent">Ready to make it real?</Eyebrow>
           <h2
-            className="serif text-[26px] mt-1.5"
+            className={cn(
+              "serif mt-1.5",
+              showPreApprovalForm ? "text-[26px] md:text-[32px] leading-[1.1]" : "text-[26px]",
+            )}
             style={{ letterSpacing: "-0.015em" }}
           >
             Get pre-approved with our preferred lenders.
@@ -535,31 +593,88 @@ export function MortgageCalculator() {
           <p className="text-[13.5px] text-bz-ink-2 mt-1.5">
             Soft credit pull · 24-hour response · 5 partner banks
           </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button asChild variant="outline">
-            <Link href="/contact">
-              <Calendar size={14} strokeWidth={1.6} />
-              Talk to advisor
-            </Link>
-          </Button>
-          {waLink ? (
-            <Button asChild data-testid="pre-approval-cta">
-              <a href={waLink} target="_blank" rel="noopener noreferrer">
-                <MessageCircle size={14} strokeWidth={1.6} />
-                Pre-approval via WhatsApp
-                <ArrowRight size={14} strokeWidth={1.6} />
-              </a>
-            </Button>
-          ) : (
-            <Button asChild data-testid="pre-approval-cta">
-              <Link href="/contact?source=mortgage">
-                Start pre-approval
-                <ArrowRight size={14} strokeWidth={1.6} />
+
+          {showPreApprovalForm ? (
+            <>
+              {/* The visitor should be able to see what they're sending. */}
+              <div
+                className="mt-6 rounded-lg border border-bz-border bg-bz-surface p-5"
+                data-testid="pre-approval-scenario"
+              >
+                <Eyebrow>Attached to your request</Eyebrow>
+                <dl className="mt-3.5 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
+                  {scenarioLines.map(([label, value]) => (
+                    <div key={label}>
+                      <dt className="text-[11.5px] text-bz-muted">{label}</dt>
+                      <dd className="mono text-[13.5px] text-bz-ink mt-0.5">
+                        {value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                <p className="text-[11.5px] text-bz-muted mt-4 pt-3.5 border-t border-bz-border">
+                  Adjust anything above and this updates before you send — no
+                  need to retype your numbers.
+                </p>
+              </div>
+
+              <p className="text-[13px] text-bz-ink-2 mt-6">
+                Rather talk it through first?
+              </p>
+            </>
+          ) : null}
+
+          <div
+            className={cn(
+              "flex flex-wrap gap-2",
+              showPreApprovalForm && "mt-2.5",
+            )}
+          >
+            <Button asChild variant="outline">
+              <Link href="/contact">
+                <Calendar size={14} strokeWidth={1.6} />
+                Talk to advisor
               </Link>
             </Button>
-          )}
+            {waLink ? (
+              <Button
+                asChild
+                variant={showPreApprovalForm ? "outline" : "default"}
+                data-testid="pre-approval-cta"
+              >
+                <a href={waLink} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle size={14} strokeWidth={1.6} />
+                  Pre-approval via WhatsApp
+                  <ArrowRight size={14} strokeWidth={1.6} />
+                </a>
+              </Button>
+            ) : (
+              <Button
+                asChild
+                variant={showPreApprovalForm ? "outline" : "default"}
+                data-testid="pre-approval-cta"
+              >
+                <Link href="/contact?source=mortgage">
+                  Start pre-approval
+                  <ArrowRight size={14} strokeWidth={1.6} />
+                </Link>
+              </Button>
+            )}
+          </div>
         </div>
+
+        {showPreApprovalForm ? (
+          <div
+            className="rounded-lg border border-bz-border bg-bz-surface p-6 md:p-7"
+            data-testid="pre-approval-form"
+          >
+            <FormRenderer
+              form={preApprovalForm}
+              context={{ scenario: scenarioBrief }}
+              successStyle="serif"
+            />
+          </div>
+        ) : null}
       </div>
     </section>
     </>
