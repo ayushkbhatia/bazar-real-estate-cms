@@ -34,6 +34,11 @@ export type DirectoryEntry = {
   uploaded: string | null;
   /** True when the row exists in Postgres — i.e. listings can reference it. */
   inCatalogue: boolean;
+  /**
+   * False only when a catalogue row exists and is draft. A shipped entry with
+   * no row is published by definition — there is nothing to unpublish.
+   */
+  published: boolean;
 };
 
 function fromDir(d: DeveloperDir): DirectoryEntry {
@@ -45,6 +50,7 @@ function fromDir(d: DeveloperDir): DirectoryEntry {
     master: { src: d.logo, w: d.w, h: d.h },
     uploaded: null,
     inCatalogue: false,
+    published: true,
   };
 }
 
@@ -96,6 +102,9 @@ export function mergeDirectory(
         blurb: row.description ?? existing.blurb,
         uploaded: row.logo_url,
         inCatalogue: existing.inCatalogue || inCatalogue,
+        // A shipped entry is only draft once a row says so — otherwise
+        // unpublishing MODON would leave its shipped card on the grid.
+        published: inCatalogue ? row.published : existing.published,
       });
       keyToSlug.set(developerNameKey(row.name), row.slug);
       continue;
@@ -109,6 +118,7 @@ export function mergeDirectory(
       master: null,
       uploaded: row.logo_url,
       inCatalogue,
+      published: inCatalogue ? row.published : true,
     });
     keyToSlug.set(developerNameKey(row.name), row.slug);
   }
@@ -117,12 +127,12 @@ export function mergeDirectory(
 }
 
 /**
- * Every developer worth showing, alphabetical.
+ * Every developer, published and draft, alphabetical.
  *
  * Falls back to the code-owned set alone when Supabase is unreachable, so the
  * grid never empties out.
  */
-export async function listDirectory(): Promise<DirectoryEntry[]> {
+export async function listAllDirectory(): Promise<DirectoryEntry[]> {
   let rows: DeveloperListEntry[] = [];
   try {
     rows = await listDevelopers();
@@ -130,6 +140,11 @@ export async function listDirectory(): Promise<DirectoryEntry[]> {
     rows = [];
   }
   return mergeDirectory(DEVELOPERS, rows);
+}
+
+/** Every developer the public should see. Drafts are dropped. */
+export async function listDirectory(): Promise<DirectoryEntry[]> {
+  return (await listAllDirectory()).filter((d) => d.published);
 }
 
 /**
@@ -146,7 +161,9 @@ export async function listDirectory(): Promise<DirectoryEntry[]> {
 export async function findDirectoryEntry(
   slug: string,
 ): Promise<DirectoryEntry | null> {
-  const merged = await listDirectory();
+  // Drafts included: the profile page decides what to do with one, and the
+  // superseded-slug lookup below has to find them either way.
+  const merged = await listAllDirectory();
   const hit = merged.find((d) => d.slug === slug);
   if (hit) return hit;
 

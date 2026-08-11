@@ -267,6 +267,57 @@ export async function updateDeveloper(
 }
 
 /**
+ * Publish or unpublish a developer.
+ *
+ * Draft removes it from /developers, from the sitemap, and from its own URL.
+ * It deliberately stays pickable in the CMS: properties and projects reference
+ * the row, and yanking it out of those pickers would strand their attribution.
+ * Nothing on a listing links to a developer profile, so this leaves no dead
+ * links behind.
+ */
+export async function setDeveloperPublished(
+  id: string,
+  published: boolean,
+): Promise<DeveloperSaveResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(DEVELOPER_ROLES);
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("developers")
+    .update({ published_at: published ? new Date().toISOString() : null })
+    .eq("id", id)
+    .select("slug, name")
+    .maybeSingle();
+
+  if (error) return { status: "error", message: error.message };
+  if (!data)
+    return {
+      status: "error",
+      message: "Not saved — your account may not be allowed to edit developers.",
+    };
+
+  await logAudit({
+    action: published ? "developer.publish" : "developer.unpublish",
+    target_kind: "developer",
+    target_id: id,
+    before: { published: !published },
+    after: { published },
+  });
+
+  revalidateDeveloper(data.slug);
+  revalidatePath(`/admin/developers/${data.slug}`);
+  return {
+    status: "ok",
+    message: published
+      ? `${data.name} is live on /developers.`
+      : `${data.name} moved to draft — it's off /developers.`,
+    slug: data.slug,
+  };
+}
+
+/**
  * The logo, set separately from the rest of the record.
  *
  * It saves on its own — same split as the area cover image — so picking an

@@ -51,10 +51,16 @@ export type DeveloperListEntry = {
   description: string | null;
   /** Public URL of the uploaded logo, or null to fall back to a mark. */
   logo_url: string | null;
+  /**
+   * False means draft — off the public grid, off the sitemap, 404 on its own
+   * page. It stays pickable in the CMS so existing listings keep their
+   * attribution rather than silently losing a developer.
+   */
+  published: boolean;
 };
 
 const LIST_COLUMNS =
-  "id, slug, name, founded_year, description, logo:logo_id(storage_key)";
+  "id, slug, name, founded_year, description, published_at, logo:logo_id(storage_key)";
 
 /** PostgREST returns an embedded row as an object or a one-element array. */
 function firstStorageKey(value: unknown): string | null {
@@ -84,6 +90,7 @@ export async function listDevelopers(): Promise<DeveloperListEntry[]> {
         founded_year: r.founded_year,
         description: r.description,
         logo_url: key ? mediaPublicUrl(key) : null,
+        published: r.published_at !== null,
       };
     });
   } catch {
@@ -99,6 +106,8 @@ function seedDeveloperList(): DeveloperListEntry[] {
     founded_year: s.founded_year,
     description: s.blurb,
     logo_url: null,
+    // Nothing can unpublish a seed row — there is no row to unpublish.
+    published: true,
   }));
 }
 
@@ -155,6 +164,7 @@ export async function listDeveloperRecords(): Promise<DeveloperRecordRow[]> {
         founded_year: r.founded_year,
         description: r.description,
         logo_url: key ? mediaPublicUrl(key) : null,
+        published: r.published_at !== null,
         logo_id: r.logo_id,
         development_count: devCounts.get(r.id) ?? 0,
         property_count: propCounts.get(r.id) ?? 0,

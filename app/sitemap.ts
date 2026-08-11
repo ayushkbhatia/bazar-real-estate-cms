@@ -95,7 +95,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
     listDevelopers()
       .then((rows) =>
-        rows.map<MetadataRoute.Sitemap[number]>((r) => ({
+        // A draft developer 404s, so advertising it here would be a soft-404
+        // against the whole section.
+        rows.filter((r) => r.published).map<MetadataRoute.Sitemap[number]>((r) => ({
           url: `${base}/developers/${r.slug}`,
           lastModified: now,
           changeFrequency: "weekly",
