@@ -30,6 +30,15 @@ import { test, expect } from "@playwright/test";
 type HrefRow = { href: string | null };
 
 test("every megamenu link returns a non-404 response", async ({ request }) => {
+  // This test renders ~66 pages, and twenty of them are `force-dynamic` search
+  // routes that run a full property query per request. Against a freshly
+  // started server with a cold cache that does not fit in the default 30s, and
+  // the failure was misleading: the timeout disposed the request context
+  // mid-crawl, the remaining GETs threw, and the spec reported "Megamenu has
+  // dead links" for pages that were fine. Give it a budget that matches what
+  // it actually does.
+  test.setTimeout(180_000);
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   test.skip(
@@ -73,16 +82,26 @@ test("every megamenu link returns a non-404 response", async ({ request }) => {
     "expected the published megamenu to expose at least 30 internal links",
   ).toBeGreaterThan(30);
 
-  // Hit each href in parallel through the running app and capture failures.
-  // GET (not HEAD) because Next.js dynamic routes don't always implement
-  // HEAD; maxRedirects=3 absorbs trailing-slash and locale redirects.
+  // Hit each href through the running app and capture failures. GET (not HEAD)
+  // because Next.js dynamic routes don't always implement HEAD; maxRedirects=3
+  // absorbs trailing-slash and locale redirects.
+  //
+  // In batches rather than all at once: firing ~66 uncached SSR renders at a
+  // single Node process makes every one of them slower, so the unbounded
+  // version was competing with its own timeout. Eight at a time keeps the
+  // server responsive and still finishes in a few seconds warm.
   const toCheck = [...hrefs];
-  const results = await Promise.all(
-    toCheck.map(async (href) => {
-      const response = await request.get(href, { maxRedirects: 3 });
-      return { href, status: response.status() };
-    }),
-  );
+  const results: { href: string; status: number }[] = [];
+  const BATCH = 8;
+  for (let i = 0; i < toCheck.length; i += BATCH) {
+    const batch = await Promise.all(
+      toCheck.slice(i, i + BATCH).map(async (href) => {
+        const response = await request.get(href, { maxRedirects: 3 });
+        return { href, status: response.status() };
+      }),
+    );
+    results.push(...batch);
+  }
 
   const dead = results.filter((r) => r.status === 404);
   expect(
