@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import { getForm } from "@/lib/queries/forms";
 import { MortgageCalculator } from "./mortgage-calculator";
 
 export const metadata: Metadata = {
@@ -8,7 +9,12 @@ export const metadata: Metadata = {
     "All-in mortgage maths for Abu Dhabi: monthly payment, true cash to close (DLD, trustee, valuation, advisory), affordability check against Central Bank UAE DBR rules, and side-by-side scenario compare.",
 };
 
-export default function MortgagePage() {
+export default async function MortgagePage() {
+  // Resolved here rather than inside the calculator because `getForm` is a
+  // server read and the calculator is a client component — a `ResolvedForm` is
+  // plain JSON and crosses the boundary intact, the same way the dialogs do it.
+  const preApprovalForm = await getForm("mortgage_preapproval");
+
   return (
     <div className="bg-bz-bg">
       <section className="px-4 md:px-12 pt-12 md:pt-20 pb-6">
@@ -27,7 +33,7 @@ export default function MortgagePage() {
         </p>
       </section>
 
-      <MortgageCalculator />
+      <MortgageCalculator preApprovalForm={preApprovalForm} />
     </div>
   );
 }

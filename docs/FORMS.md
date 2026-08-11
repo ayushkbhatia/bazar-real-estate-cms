@@ -90,6 +90,33 @@ morning is legible in the advisor's inbox this afternoon.
 read at the time. Renaming a question next month must not silently relabel the
 answers people already gave to the old one.
 
+## When the page knows more than the visitor typed
+
+A form sitting under a tool has context no field can hold. The mortgage
+pre-approval form is the case: the advisor needs the price, deposit, loan,
+term, rate and monthly the visitor spent five minutes arriving at, and asking
+them to retype it is how you lose the lead.
+
+That travels as `scenario` on `FormSubmitContext`, and reaches the brief as the
+`{scenario}` token in `briefPrefix` — alongside `{project}` and `{reference}`,
+which do the same job for the development and property dialogs. It also lands
+in `form_submissions.data._scenario`, labelled, so Responses is as complete as
+the inbox.
+
+Two things it is deliberately not:
+
+- **Not a pre-filled message box.** A prefill is frozen when the form mounts.
+  Nudge the price slider afterwards and the brief and the screen disagree —
+  and re-keying the form to resync it would wipe a half-typed email address.
+  A context value is read at the moment the button is pressed.
+- **Not a field.** An editor who deleted it would turn every mortgage lead
+  into "someone wants a mortgage", and the manager gives no hint that the
+  field was load-bearing. `locked` would prevent the deletion but still show a
+  box the visitor can't usefully edit.
+
+The value is trimmed to 800 characters server-side, because a hand-rolled POST
+reaches this the same way the page does.
+
 ## Adding a form
 
 1. Declare it in `lib/forms/registry.ts` with the fields the page renders

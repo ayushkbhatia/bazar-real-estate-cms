@@ -38,7 +38,22 @@ export type FormSubmitContext = {
   propertyReference?: string | null;
   /** The page the visitor was on, slug included. */
   path?: string | null;
+  /**
+   * The state of the tool the form sits under, in the visitor's own units —
+   * the mortgage calculator's price, deposit, term, rate and monthly today.
+   *
+   * It reaches the brief as `{scenario}` rather than as a pre-filled message
+   * box because the two have different lifetimes: a prefill is frozen when the
+   * form mounts, while this is read at the moment the button is pressed, so
+   * the advisor always sees the numbers that were on screen. It is not a field
+   * either — nobody should be able to delete it in the manager and quietly
+   * turn every mortgage lead into "someone wants a mortgage".
+   */
+  scenario?: string | null;
 };
+
+/** Long enough for any tool's recap, short enough to keep a brief readable. */
+const MAX_SCENARIO = 800;
 
 /**
  * The one entry point for every CMS-managed form.
@@ -91,13 +106,22 @@ export async function submitForm(
 
   const values = parsed.data as Record<string, unknown>;
   const lead = extractLead(form, values, dynamic);
+  const scenario = (context.scenario ?? "").trim().slice(0, MAX_SCENARIO) || null;
   const tokens = {
     project: context.developmentName ?? null,
     reference: context.propertyReference ?? null,
+    scenario,
   };
 
   const sourcePath = context.path ?? form.def.path;
   const data = buildSubmissionData(form, values);
+  // Responses has to be as complete as the brief, so the scenario rides along
+  // as an underscore-prefixed answer with its own frozen label — the same
+  // shape `_labels` already uses, and the same shape the table already reads.
+  if (scenario) {
+    data._scenario = scenario;
+    (data._labels as Record<string, string>)._scenario = "Scenario";
+  }
 
   switch (form.def.handler) {
     case "newsletter": {

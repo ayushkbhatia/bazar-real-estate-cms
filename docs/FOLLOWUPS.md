@@ -815,3 +815,14 @@ shows the trail.)
   key. Route the routing lookup through the service-role or cookie-aware client
   (it runs inside a form submit, so it is already dynamic), and split the
   display columns onto the narrow public read the way `getPublicBranding` does.
+
+- [tools/mortgage] `DbrGauge` hydrates with a mismatch. The SVG arc `d` differs
+  between server and client in the last float digit
+  (`A 90 90 0 0 1 29.859997586257165 43.6051415340002` vs `…43.60514153400021`),
+  so React logs "A tree hydrated but some attributes of the server rendered
+  HTML didn't match" on every load of /tools/mortgage. Cosmetically invisible —
+  the arc is the same arc — but it is a real hydration error in the console and
+  it fires the dev overlay's issue badge. Round the computed path coordinates
+  to a fixed precision (`.toFixed(3)`) where the arc is built, in
+  `app/(public)/tools/mortgage/_components/dbr-gauge.tsx`. Pre-existing; spotted
+  while adding the pre-approval form.
