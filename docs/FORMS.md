@@ -117,6 +117,53 @@ Two things it is deliberately not:
 The value is trimmed to 800 characters server-side, because a hand-rolled POST
 reaches this the same way the page does.
 
+## Branching: questions that depend on answers
+
+A field may carry a `showWhen` — "ask this only when *that* field answers one of
+these". The Buy hero's brief is the only form using it today: **Property
+Purpose** decides whether the visitor is offered apartments or retail space,
+and whether they are asked about bedrooms at all.
+
+```ts
+field("bedrooms", "Number of Bedrooms", "select", "custom", {
+  options: options(["1 Bedroom", "1"], …),
+  showWhen: { field: "purpose", values: ["residential"] },
+})
+```
+
+Three rules, and each is enforced where it can actually be seen:
+
+| rule | enforced in |
+|---|---|
+| the shape is `{field, values}` with at least one value | `0098`'s column check |
+| the target exists, comes **earlier**, and has fixed answers | `formSaveSchema` — only it holds the whole list |
+| an unreachable condition hides the field | `activeFields` — never "shows it anyway" |
+
+`activeFields(form, values)` is the list the renderer draws, the schema
+validates and the submission is read through. All three use it, so a visitor is
+never held to a question they weren't shown — and an answer given *before* they
+changed their mind (bedrooms, then switching to commercial) is dropped in
+`normaliseSubmission` rather than filed on the lead.
+
+The two property-type dropdowns are **separate fields sharing a label**, not one
+field whose options swap. An editor adding "Duplex" shouldn't have to work out
+which half of a merged list they're in, and only one is ever on screen.
+
+## Range sliders
+
+`type: "range"` renders the dual-handle slider the search filters use, and
+submits one string: `"min:max"`, either side blank for open-ended. That is
+exactly the shape a `budget_band` pill's option value already carried, so both
+land in `enquiries.budget_min` / `budget_max` through one code path — a form can
+swap pills for a slider without migrating the answers it already collected.
+
+- `min` / `max` are the ends of the scale, `step` the drag increment, `unit` the
+  prefix on each number ("AED 2,500,000"). All four are editable.
+- Both handles parked at the ends is a **blank** answer, not `0:0` — no budget
+  on the lead, no budget line in the brief.
+- `formatRangeLabel` is what a human reads: `Up to AED 3,000,000`,
+  `AED 8,000,000+`, `AED 4,000,000 – AED 8,000,000`.
+
 ## Adding a form
 
 1. Declare it in `lib/forms/registry.ts` with the fields the page renders

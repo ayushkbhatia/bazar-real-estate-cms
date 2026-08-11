@@ -84,6 +84,42 @@ describe("form registry", () => {
     }
   });
 
+  it("points every condition backwards, at a field with fixed answers", () => {
+    // Visibility resolves in one pass down the list. A condition on a later
+    // field, on a free-text field, or on an answer that field can't give would
+    // hide the question forever — silently, and only in production.
+    for (const def of FORM_DEFS) {
+      def.fields.forEach((field, index) => {
+        const condition = field.showWhen;
+        if (!condition) return;
+        const at = def.fields.findIndex((f) => f.key === condition.field);
+        const where = `${def.key}.${field.key}`;
+        expect(at, where).toBeGreaterThanOrEqual(0);
+        expect(at, where).toBeLessThan(index);
+        const controller = def.fields[at]!;
+        expect(hasOptions(controller.type), where).toBe(true);
+        const offered = (controller.options ?? []).map(
+          (o) => o.value || o.label,
+        );
+        for (const value of condition.values) {
+          expect(offered, `${where} → ${value}`).toContain(value);
+        }
+      });
+    }
+  });
+
+  it("gives every slider a scale to slide along", () => {
+    for (const def of FORM_DEFS) {
+      for (const field of def.fields.filter((f) => f.type === "range")) {
+        const where = `${def.key}.${field.key}`;
+        expect(field.min, where).not.toBeNull();
+        expect(field.max, where).not.toBeNull();
+        expect(field.max!, where).toBeGreaterThan(field.min!);
+        expect(field.step ?? 0, where).toBeGreaterThan(0);
+      }
+    }
+  });
+
   it("only marks a field locked when the handler needs it", () => {
     // A locked field can't be deleted or switched off, so the bar is "the
     // submission is impossible without it", not "we'd rather keep it".
@@ -176,6 +212,72 @@ describe("the forms as they render today", () => {
     const def = getFormDef("mortgage_preapproval")!;
     expect(def.briefPrefix).toContain("{scenario|}");
     expect(def.fields.some((f) => f.key === "scenario")).toBe(false);
+  });
+
+  it("asks the Buy hero's brief in the order the design specifies", () => {
+    const form = defaultForm("buy_hero_enquiry")!;
+    expect(form.fields.map((f) => f.key)).toEqual([
+      "name",
+      "phone",
+      "email",
+      "purpose",
+      "property_type",
+      "commercial_type",
+      "bedrooms",
+      "property_status",
+      "location",
+      "budget",
+      "message",
+    ]);
+    expect(form.fields.map((f) => f.label)).toEqual([
+      "Full Name",
+      "Phone Number",
+      "Email Address",
+      "Property Purpose",
+      "Property Type",
+      "Property Type",
+      "Number of Bedrooms",
+      "Property Status",
+      "Preferred Location",
+      "Budget Range",
+      "Message",
+    ]);
+    expect(form.copy.submit_label).toBe("Find My Property");
+  });
+
+  it("offers the two property-type lists the design draws", () => {
+    const form = defaultForm("buy_hero_enquiry")!;
+    const labels = (key: string) =>
+      form.fields.find((f) => f.key === key)!.options?.map((o) => o.label);
+    expect(labels("purpose")).toEqual(["Residential", "Commercial"]);
+    expect(labels("property_type")).toEqual([
+      "Apartment",
+      "Townhouse",
+      "Villa",
+      "Penthouse",
+    ]);
+    expect(labels("commercial_type")).toEqual([
+      "Land",
+      "Office",
+      "Building",
+      "Retail Space",
+      "Commercial Villa",
+    ]);
+    expect(labels("bedrooms")).toEqual([
+      "1 Bedroom",
+      "2 Bedrooms",
+      "3 Bedrooms",
+      "4 Bedrooms",
+      "5 Bedrooms",
+      "6+ Bedrooms",
+    ]);
+    expect(labels("property_status")).toEqual(["Off-Plan", "Ready", "Resale"]);
+  });
+
+  it("still files a Buy lead as a buy, with no intent control to ask", () => {
+    const def = getFormDef("buy_hero_enquiry")!;
+    expect(def.fields.some((f) => f.mapping === "intent")).toBe(false);
+    expect(def.defaultIntent).toBe("buy");
   });
 
   it("cannot switch the contact page's enquiry box off", () => {

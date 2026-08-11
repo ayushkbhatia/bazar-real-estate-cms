@@ -170,8 +170,21 @@ export async function saveForm(raw: FormSaveInput): Promise<SaveFormResult> {
       options: (field.optionSource ? [] : (field.options ?? [])) as never,
       option_source: field.optionSource ?? null,
       rows: field.type === "textarea" ? (field.rows ?? 4) : null,
-      min_value: field.type === "number" ? (field.min ?? null) : null,
-      max_value: field.type === "number" ? (field.max ?? null) : null,
+      // `min_value` / `max_value` are the ends of a scale, which a number box
+      // and a slider both have; `step` and `unit` are the slider's alone.
+      // Nulled outside their type so a field retyped from slider to text
+      // doesn't keep an invisible scale that reappears if it is typed back.
+      min_value:
+        field.type === "number" || field.type === "range"
+          ? (field.min ?? null)
+          : null,
+      max_value:
+        field.type === "number" || field.type === "range"
+          ? (field.max ?? null)
+          : null,
+      step: field.type === "range" ? (field.step ?? null) : null,
+      unit: field.type === "range" ? orNull(field.unit) : null,
+      show_when: (field.showWhen ?? null) as never,
       locked: def.fields.some((f) => f.key === field.key && f.locked),
       position: (index + 1) * 10,
     }));

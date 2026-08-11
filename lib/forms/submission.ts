@@ -9,7 +9,8 @@
  */
 
 import type { FormFieldDef, FormOption, ResolvedForm } from "./types";
-import { renderFormCopy, visibleFields } from "./resolve";
+import { formatRangeLabel, parseRangeValue } from "./types";
+import { activeFields, renderFormCopy } from "./resolve";
 
 export type DynamicOptions = Record<string, FormOption[]>;
 
@@ -33,6 +34,24 @@ export function optionLabel(
     (o) => (o.value || o.label) === value,
   );
   return match?.label ?? value;
+}
+
+/**
+ * An answer as a human reads it, whatever asked for it.
+ *
+ * A stored value is not always presentable: an option carries a label, a range
+ * carries two numbers joined by a colon. Everything that writes for a person —
+ * the brief, the extras lines, the brief's `{field}` tokens — goes through
+ * here so `budget: "1000000:3000000"` never reaches an advisor's inbox as
+ * itself.
+ */
+export function displayValue(
+  field: FormFieldDef,
+  value: string,
+  dynamic: DynamicOptions = {},
+): string {
+  if (field.type === "range") return formatRangeLabel(field, value);
+  return optionLabel(field, value, dynamic);
 }
 
 /** The `intent` an option tags the lead with, when it declares one. */
@@ -79,7 +98,7 @@ export function extractLead(
   values: Record<string, unknown>,
   dynamic: DynamicOptions = {},
 ): ExtractedLead {
-  const fields = visibleFields(form);
+  const fields = activeFields(form, values);
   const lead: ExtractedLead = {
     name: "",
     email: "",
@@ -134,16 +153,15 @@ export function extractLead(
         lead.budgetMax = typeof raw === "number" ? raw : null;
         break;
       case "budget_band": {
-        // One pill, two columns. The option value carries the bounds as
-        // "min:max" with either side blank for open-ended, so an editor can
-        // add "AED 30M+" without anyone touching this file. The label is what
-        // the advisor reads; the bounds are what lead scoring uses.
-        const [min, max] = value.split(":");
-        lead.budgetMin = min ? Number(min) : null;
-        lead.budgetMax = max ? Number(max) : null;
-        if (!Number.isFinite(lead.budgetMin ?? 0)) lead.budgetMin = null;
-        if (!Number.isFinite(lead.budgetMax ?? 0)) lead.budgetMax = null;
-        const label = optionLabel(field, value, dynamic);
+        // One answer, two columns. The value carries the bounds as "min:max"
+        // with either side blank for open-ended — whether it came from a pill
+        // an editor typed ("AED 30M+" is `30000000:`) or from both handles of
+        // a slider. The label is what the advisor reads; the bounds are what
+        // lead scoring uses.
+        const { min, max } = parseRangeValue(value);
+        lead.budgetMin = min;
+        lead.budgetMax = max;
+        const label = displayValue(field, value, dynamic);
         if (label) lead.extras.push({ key: field.key, label: field.label, display: label });
         break;
       }
@@ -165,7 +183,7 @@ export function extractLead(
             ? raw === true
               ? "Yes"
               : ""
-            : optionLabel(field, value, dynamic) || value;
+            : displayValue(field, value, dynamic) || value;
         if (display) {
           lead.extras.push({ key: field.key, label: field.label, display });
         }
@@ -198,10 +216,10 @@ export function buildFormBrief(
   // the owner card, `{project}` on the off-plan one — and always by the label
   // a visitor saw, never by the value we happen to store it under.
   const fieldTokens: Record<string, string> = {};
-  for (const field of visibleFields(form)) {
+  for (const field of activeFields(form, rawValues)) {
     const value = str(rawValues[field.key]);
     if (!value) continue;
-    fieldTokens[field.key] = optionLabel(field, value, dynamic) || value;
+    fieldTokens[field.key] = displayValue(field, value, dynamic) || value;
   }
 
   const prefix = renderFormCopy(form.def.briefPrefix ?? null, {
@@ -220,6 +238,10 @@ export function buildFormBrief(
 /**
  * What gets written to `form_submissions.data` — every answer, plus the labels
  * as they read at the time. See the migration for why the labels are frozen.
+ *
+ * Only the questions the visitor was actually asked. A conditional branch they
+ * never saw has no answer and no label: recording it as null would put a
+ * question in the record that was never on their screen.
  */
 export function buildSubmissionData(
   form: ResolvedForm,
@@ -227,7 +249,7 @@ export function buildSubmissionData(
 ): Record<string, unknown> {
   const labels: Record<string, string> = {};
   const data: Record<string, unknown> = {};
-  for (const field of visibleFields(form)) {
+  for (const field of activeFields(form, values)) {
     labels[field.key] = field.label;
     data[field.key] = values[field.key] ?? null;
   }

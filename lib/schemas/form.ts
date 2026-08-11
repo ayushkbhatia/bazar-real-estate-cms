@@ -28,6 +28,20 @@ const optionSchema = z.object({
   intent: z.string().trim().max(20).nullable().optional(),
 });
 
+/** "Ask this only when <field> answers one of <values>." */
+const conditionSchema = z.object({
+  field: z
+    .string()
+    .trim()
+    .min(1, "Pick the question this one depends on")
+    .max(40)
+    .regex(FIELD_KEY_RE),
+  values: z
+    .array(z.string().trim().min(1).max(80))
+    .min(1, "Pick at least one answer that reveals this field")
+    .max(MAX_FIELD_OPTIONS),
+});
+
 export const formFieldSchema = z.object({
   key: z
     .string()
@@ -50,6 +64,9 @@ export const formFieldSchema = z.object({
   rows: z.number().int().min(2).max(12).nullable().optional(),
   min: z.number().int().nullable().optional(),
   max: z.number().int().nullable().optional(),
+  step: z.number().int().positive("A slider's step has to be above zero").nullable().optional(),
+  unit: z.string().trim().max(12).nullable().optional(),
+  showWhen: conditionSchema.nullable().optional(),
   locked: z.boolean().optional(),
 });
 
@@ -111,6 +128,57 @@ export const formSaveSchema = z
           message: "Minimum can't exceed maximum",
         });
       }
+
+      // A slider with no scale has nothing to drag along — the same failure as
+      // a dropdown with no options, caught in the same place.
+      if (field.type === "range" && (field.min == null || field.max == null)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["fields", index, "min"],
+          message: `"${field.label}" needs a minimum and a maximum to slide between`,
+        });
+      }
+    });
+
+    /*
+     * A condition can only point backwards.
+     *
+     * Visibility is resolved in one pass down the list, so a field depending on
+     * an answer further down would be deciding whether to show itself from a
+     * question the visitor hasn't reached. Rejecting it here is the only place
+     * that can see the whole list: the column check in 0098 validates the
+     * shape of one row, and the resolver just treats an unreachable condition
+     * as unmet.
+     */
+    const positions = new Map(value.fields.map((f, i) => [f.key, i]));
+    value.fields.forEach((field, index) => {
+      const condition = field.showWhen;
+      if (!condition) return;
+      const at = positions.get(condition.field);
+      if (at === undefined) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["fields", index, "showWhen"],
+          message: `"${field.label}" depends on a field that isn't on this form any more`,
+        });
+        return;
+      }
+      if (at >= index) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["fields", index, "showWhen"],
+          message: `"${field.label}" has to come after the question it depends on`,
+        });
+        return;
+      }
+      const controller = value.fields[at]!;
+      if (!hasOptions(controller.type)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["fields", index, "showWhen"],
+          message: `"${controller.label}" has no fixed answers, so nothing can depend on it`,
+        });
+      }
     });
 
     // One field per mapping, except `custom`. Two fields both claiming to be
@@ -151,8 +219,13 @@ export function blankField(type: FormFieldType, index: number): FormFieldSaveInp
       : [],
     optionSource: null,
     rows: type === "textarea" ? 4 : null,
-    min: null,
-    max: null,
+    // A new slider arrives with a scale rather than with two blanks, so the
+    // first save doesn't fail on a field the editor hasn't looked at yet.
+    min: type === "range" ? 0 : null,
+    max: type === "range" ? 5_000_000 : null,
+    step: type === "range" ? 100_000 : null,
+    unit: null,
+    showWhen: null,
     locked: false,
   };
 }

@@ -14,7 +14,8 @@
 
 import { z } from "zod";
 import type { FormFieldDef, ResolvedForm } from "./types";
-import { visibleFields } from "./resolve";
+import { parseRangeValue, rangeBounds } from "./types";
+import { activeFields, visibleFields } from "./resolve";
 
 const MAX_TEXT = 200;
 const MAX_LONG_TEXT = 2000;
@@ -57,6 +58,22 @@ function fieldSchema(
       if (field.max != null)
         base = base.max(field.max, `${label} looks too large`);
       return field.required ? base : base.nullable().optional();
+    }
+
+    case "range": {
+      // "min:max", either side blank for open-ended. Both blank is the whole
+      // string blank, which is a range nobody touched — an answer, not an
+      // error, unless the editor made the question required.
+      const bounds = rangeBounds(field);
+      const base = z.string().trim().refine((raw) => {
+        const { min, max } = parseRangeValue(raw);
+        if (min == null && max == null) return false;
+        if (min != null && (min < bounds.min || min > bounds.max)) return false;
+        if (max != null && (max < bounds.min || max > bounds.max)) return false;
+        if (min != null && max != null && min > max) return false;
+        return true;
+      }, `Pick a ${label.toLowerCase()}`);
+      return field.required ? base : z.union([base, z.literal("")]).optional();
     }
 
     case "email": {
@@ -121,8 +138,16 @@ function fieldSchema(
 export function buildFormSchema(
   form: ResolvedForm,
   dynamic: Record<string, { label: string; value: string }[]> = {},
+  /**
+   * The answers so far, which decide which conditional questions are being
+   * asked. Pass the output of `normaliseSubmission` — it has already dropped
+   * everything the visitor isn't being shown, so an omitted `values` yields a
+   * schema that ignores the conditionals rather than one that demands answers
+   * to questions nobody saw.
+   */
+  values: Record<string, unknown> = {},
 ): z.ZodType<Record<string, unknown>> {
-  const fields = visibleFields(form);
+  const fields = activeFields(form, values);
   const shape: Record<string, z.ZodTypeAny> = {};
   for (const field of fields) shape[field.key] = fieldSchema(field, dynamic);
 
@@ -157,35 +182,45 @@ export function buildFormSchema(
  * blanks (not undefined), numbers parse, text trims, email lowercases. Runs on
  * the server before the schema so the browser's shapes and a raw POST's shapes
  * converge before anything is judged.
+ *
+ * It also decides what the submission *is*. Every switched-on field is coerced
+ * first, because a condition is read off a sibling's answer and that answer has
+ * to be in its final shape before it can be compared; only then are the fields
+ * the visitor isn't being asked dropped. That ordering is what keeps a stale
+ * answer — bedrooms picked before switching the brief to commercial — out of
+ * the lead entirely, rather than merely out of the form.
  */
 export function normaliseSubmission(
   form: ResolvedForm,
   raw: Record<string, unknown>,
 ): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
+  const all: Record<string, unknown> = {};
   for (const field of visibleFields(form)) {
     const value = raw[field.key];
     switch (field.type) {
       case "checkbox":
-        out[field.key] = value === true || value === "true" || value === "on";
+        all[field.key] = value === true || value === "true" || value === "on";
         break;
       case "number": {
         if (value === "" || value == null) {
-          out[field.key] = null;
+          all[field.key] = null;
           break;
         }
         const digits = String(value).replace(/[^\d.-]/g, "");
         const n = Number(digits);
-        out[field.key] = Number.isFinite(n) ? Math.trunc(n) : null;
+        all[field.key] = Number.isFinite(n) ? Math.trunc(n) : null;
         break;
       }
       case "email":
-        out[field.key] = String(value ?? "").trim().toLowerCase();
+        all[field.key] = String(value ?? "").trim().toLowerCase();
         break;
       default:
-        out[field.key] = typeof value === "string" ? value.trim() : (value ?? "");
+        all[field.key] = typeof value === "string" ? value.trim() : (value ?? "");
     }
   }
+
+  const out: Record<string, unknown> = {};
+  for (const field of activeFields(form, all)) out[field.key] = all[field.key];
   return out;
 }
 

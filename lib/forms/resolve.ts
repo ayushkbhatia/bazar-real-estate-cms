@@ -115,9 +115,58 @@ export function defaultForm(key: string): ResolvedForm | null {
   return resolveForm(key, null, null);
 }
 
-/** Fields the public form actually renders, in order. */
+/** Fields the editor has switched on, in order. Conditions are not applied. */
 export function visibleFields(form: ResolvedForm): FormFieldDef[] {
   return form.fields.filter((f) => f.enabled);
+}
+
+/**
+ * Fields the form is actually asking, given the answers so far.
+ *
+ * `visibleFields` minus every conditional whose controlling answer doesn't
+ * reveal it. This is the list the renderer draws, the list the schema
+ * validates, and the list a submission is read through — all three have to
+ * agree, or a visitor gets held to a question they were never shown.
+ *
+ * Conditions are resolved in order and a field can only depend on one before
+ * it, so a chain collapses correctly in a single pass: hide the purpose
+ * selector and everything hanging off it goes with it, rather than becoming
+ * required-but-invisible.
+ */
+export function activeFields(
+  form: ResolvedForm,
+  values: Record<string, unknown>,
+): FormFieldDef[] {
+  const out: FormFieldDef[] = [];
+  const shown = new Set<string>();
+  for (const field of visibleFields(form)) {
+    if (!conditionMet(field.showWhen ?? null, values, shown)) continue;
+    shown.add(field.key);
+    out.push(field);
+  }
+  return out;
+}
+
+/**
+ * Whether a condition's controlling answer reveals the field.
+ *
+ * `shown` is the set of fields already established as asked. A condition
+ * pointing at a field that isn't being asked — because it is switched off, was
+ * deleted, or is itself hidden — fails rather than passing by default: an
+ * orphaned condition means the branch it belonged to is gone.
+ */
+function conditionMet(
+  condition: FormFieldDef["showWhen"] | null,
+  values: Record<string, unknown>,
+  shown: Set<string>,
+): boolean {
+  if (!condition || !condition.field) return true;
+  if (!shown.has(condition.field)) return false;
+  const answer = values[condition.field];
+  const given = Array.isArray(answer)
+    ? answer.map((v) => String(v))
+    : [String(answer ?? "")];
+  return given.some((v) => condition.values.includes(v));
 }
 
 /** The field carrying a given mapping, or null. */

@@ -13,6 +13,7 @@
  */
 
 import {
+  budgetRange,
   dialPhone,
   email,
   field,
@@ -99,6 +100,89 @@ function listPropertyFields(): FormFieldDef[] {
         { label: "Rent Your Property", value: "rent", intent: "rent" },
         { label: "Manage Your Property", value: "manage", intent: "manage" },
       ],
+    }),
+  ];
+}
+
+/**
+ * The Buy hero's property brief.
+ *
+ * The only branching form on the site. "Property Purpose" is asked fourth and
+ * everything under it depends on the answer: a residential brief is offered
+ * homes and a bedroom count, a commercial one is offered land, offices and
+ * retail space and is not asked about bedrooms at all — a warehouse does not
+ * have three of them.
+ *
+ * The two type dropdowns are separate fields rather than one field whose
+ * options switch, because an editor has to be able to add "Duplex" to the
+ * residential list without reasoning about which half of a merged list they
+ * are in. They share a label on purpose: the visitor sees one question, and
+ * only one of them is ever on screen.
+ */
+function propertySearchFields(): FormFieldDef[] {
+  return [
+    fullName({ label: "Full Name" }),
+    phone({ label: "Phone Number" }),
+    email({ label: "Email Address" }),
+    field("purpose", "Property Purpose", "chips", "custom", {
+      required: true,
+      options: options(
+        ["Residential", "residential"],
+        ["Commercial", "commercial"],
+      ),
+    }),
+    field("property_type", "Property Type", "select", "custom", {
+      placeholder: "Any residential type",
+      options: options("Apartment", "Townhouse", "Villa", "Penthouse"),
+      showWhen: { field: "purpose", values: ["residential"] },
+      note: "Only asked when Property Purpose is Residential.",
+    }),
+    field("commercial_type", "Property Type", "select", "custom", {
+      placeholder: "Any commercial type",
+      options: options(
+        "Land",
+        "Office",
+        "Building",
+        "Retail Space",
+        "Commercial Villa",
+      ),
+      showWhen: { field: "purpose", values: ["commercial"] },
+      note: "Only asked when Property Purpose is Commercial. Shares its label with the residential dropdown — the visitor only ever sees one.",
+    }),
+    field("bedrooms", "Number of Bedrooms", "select", "custom", {
+      placeholder: "Any",
+      options: options(
+        ["1 Bedroom", "1"],
+        ["2 Bedrooms", "2"],
+        ["3 Bedrooms", "3"],
+        ["4 Bedrooms", "4"],
+        ["5 Bedrooms", "5"],
+        ["6+ Bedrooms", "6_plus"],
+      ),
+      showWhen: { field: "purpose", values: ["residential"] },
+      note: "Only asked when Property Purpose is Residential.",
+    }),
+    field("property_status", "Property Status", "chips", "custom", {
+      options: options(
+        ["Off-Plan", "off_plan"],
+        ["Ready", "ready"],
+        ["Resale", "resale"],
+      ),
+    }),
+    field("location", "Preferred Location", "text", "custom", {
+      placeholder: "Saadiyat Island, Al Reem, Yas…",
+    }),
+    budgetRange(),
+    // Not required: the nine questions above are the brief now, and holding a
+    // qualified lead back over a free-text box they have nothing to add to
+    // loses the lead, not the paragraph. Still locked — `createEnquiry` files
+    // a brief either way, and a form with nowhere to say "penthouse, sea
+    // view, by March" is a worse form.
+    message("Message", {
+      placeholder: "Anything else we should know?",
+      rows: 4,
+      required: false,
+      locked: true,
     }),
   ];
 }
@@ -285,28 +369,31 @@ export const FORM_DEFS: FormDef[] = [
   },
   {
     key: "buy_hero_enquiry",
-    name: "Find your next property",
+    name: "Start your property search",
     surface: "Buy",
     path: "/buy",
-    description: "The enquiry card beside the Buy hero.",
+    description:
+      "The brief beside the Buy hero — contact details, then what they're looking for. Branches on Property Purpose: residential asks about bedrooms, commercial doesn't.",
     group: "master",
     handler: "enquiry",
     control: "full",
     variant: "stacked",
     enquirySource: "contact_page",
+    // No Buy·Sell·Rent control on this one — a form on /buy is a buying lead,
+    // and the question it asks instead is what kind of property.
+    defaultIntent: "buy",
     headingSource: {
       pageKey: "buy",
       sectionKey: "hero_form",
       note: "The card's heading and sub-copy.",
     },
-    copy: copy({ ...ENQUIRY_SUCCESS, submit_label: "Submit" }),
-    fields: enquiryFields({
-      intent: true,
-      messageLabel: "Tell us more",
-      messagePlaceholder: "Tell us about your brief — area, budget, timeline.",
-      messageRows: 5,
-      paired: true,
+    briefPrefix: "Property search — {purpose|Residential}.",
+    copy: copy({
+      ...ENQUIRY_SUCCESS,
+      submit_label: "Find My Property",
+      pending_label: "Searching…",
     }),
+    fields: propertySearchFields(),
   },
   {
     key: "buy_lead_band",

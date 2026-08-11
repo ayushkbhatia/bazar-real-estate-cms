@@ -1445,7 +1445,10 @@ export type Database = {
           position: number
           required: boolean
           rows: number | null
+          show_when: Json | null
+          step: number | null
           type: string
+          unit: string | null
           updated_at: string
           width: string
         }
@@ -1467,7 +1470,10 @@ export type Database = {
           position?: number
           required?: boolean
           rows?: number | null
+          show_when?: Json | null
+          step?: number | null
           type: string
+          unit?: string | null
           updated_at?: string
           width?: string
         }
@@ -1489,7 +1495,10 @@ export type Database = {
           position?: number
           required?: boolean
           rows?: number | null
+          show_when?: Json | null
+          step?: number | null
           type?: string
+          unit?: string | null
           updated_at?: string
           width?: string
         }

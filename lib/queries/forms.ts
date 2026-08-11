@@ -24,6 +24,7 @@ import {
   resolveForm,
   type FormCopy,
   type FormDef,
+  type FormFieldCondition,
   type FormFieldType,
   type FormFieldMapping,
   type FormOption,
@@ -41,7 +42,7 @@ export function isMissingTableError(
 
 const FORM_COLUMNS = "id, key, enabled, copy, notify_emails";
 const FIELD_COLUMNS =
-  "id, form_id, key, label, type, mapping, placeholder, help, required, enabled, width, options, option_source, rows, min_value, max_value, locked, position";
+  "id, form_id, key, label, type, mapping, placeholder, help, required, enabled, width, options, option_source, rows, min_value, max_value, step, unit, show_when, locked, position";
 
 type FormRow = Database["public"]["Tables"]["forms"]["Row"];
 type FieldRow = Database["public"]["Tables"]["form_fields"]["Row"];
@@ -64,6 +65,26 @@ function parseOptions(value: Json | null): FormOption[] {
   return out;
 }
 
+/**
+ * jsonb → a visibility condition, or null.
+ *
+ * Same posture as `parseOptions`: anything malformed is dropped rather than
+ * thrown on. A condition that fails to parse leaves the field unconditional,
+ * which shows a question that should have been hidden — the safe direction.
+ * The opposite default would silently delete a question from a live form.
+ */
+function parseCondition(value: Json | null): FormFieldCondition | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const record = value as Record<string, unknown>;
+  const field = typeof record.field === "string" ? record.field.trim() : "";
+  if (!field) return null;
+  const values = Array.isArray(record.values)
+    ? record.values.filter((v): v is string => typeof v === "string")
+    : [];
+  if (values.length === 0) return null;
+  return { field, values };
+}
+
 function toStoredField(row: FieldRow): StoredField {
   return {
     key: row.key,
@@ -80,6 +101,9 @@ function toStoredField(row: FieldRow): StoredField {
     rows: row.rows,
     min: row.min_value,
     max: row.max_value,
+    step: row.step,
+    unit: row.unit,
+    showWhen: parseCondition(row.show_when),
     locked: row.locked,
     position: row.position,
   };
