@@ -1,4 +1,4 @@
--- 0090_developers_publishing_and_backfill.sql
+-- 0093_developers_publishing_and_backfill.sql
 -- Developers: give the catalogue a publish state, and a row per shipped partner.
 --
 -- Two problems, one cause. `/developers` renders the code-owned directory in
