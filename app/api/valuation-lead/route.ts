@@ -19,7 +19,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
 import { issueOtp, verifyOtp } from "@/lib/otp";
-import { recordFormSubmission, withLabels } from "@/lib/forms/record";
+import { captureFormSubmission, withLabels } from "@/lib/forms/record";
 import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
       // never goes through `submitForm`. Logging here keeps /admin/forms →
       // Responses complete, and records only the verified submissions —
       // an unfinished OTP is not a response.
-      await recordFormSubmission({
+      await captureFormSubmission({
         formKey: "valuation_report_gate",
         sourcePath: "/tools/valuation",
         enquiryId: enquiryRow?.id ?? null,

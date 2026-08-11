@@ -54,3 +54,42 @@ export async function firstPropertyPath(page: Page): Promise<string | null> {
   const paths = await propertyPaths(page, 1);
   return paths[0] ?? null;
 }
+
+/**
+ * An area guide, taken from the index that links to them.
+ *
+ * The A–Z directory below the curated grid lists the whole catalogue, so this
+ * finds a guide whether or not the eight featured cards have been re-picked.
+ */
+export async function firstAreaPath(page: Page): Promise<string | null> {
+  await page.goto("/areas");
+  const paths = await page
+    .locator("a[href^='/areas/']")
+    .evaluateAll((links) =>
+      Array.from(
+        new Set(
+          links
+            .map((l) => l.getAttribute("href") ?? "")
+            .filter((h) => /^\/areas\/[^/?#]+$/.test(h)),
+        ),
+      ),
+    );
+  return paths[0] ?? null;
+}
+
+/**
+ * An article category, taken from the chips on the insights index.
+ *
+ * The taxonomy is a runtime-editable table, so the categories that exist today
+ * are whatever an editor has kept — naming one here is the same trap as naming
+ * a property.
+ */
+export async function firstCategoryPath(page: Page): Promise<string | null> {
+  await page.goto("/insights");
+  const chip = page.locator("a[href^='/insights/category/']").first();
+  // `count()` resolves immediately; reading an attribute off a locator that
+  // matches nothing waits out the full timeout instead, so a taxonomy with no
+  // categories would present as a 30s hang rather than a null.
+  if ((await chip.count()) === 0) return null;
+  return (await chip.getAttribute("href")) ?? null;
+}

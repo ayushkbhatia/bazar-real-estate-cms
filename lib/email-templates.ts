@@ -67,6 +67,77 @@ export function enquiryReceivedTemplate(opts: {
   return { subject, text, html };
 }
 
+/**
+ * Internal notification for a form submission.
+ *
+ * Goes to the addresses an editor typed into /admin/forms → Settings, on top
+ * of whatever lead routing already did. It is a heads-up, not the working
+ * copy: the lead itself lives in Enquiries and the full answers in Responses,
+ * both linked below. Answers are included in full because the whole reason a
+ * form has extra questions is that someone wants to read the answers.
+ */
+export function formSubmissionTemplate(opts: {
+  formName: string;
+  surface: string;
+  formKey: string;
+  /** Ordered [label, value] pairs, already resolved for display. */
+  answers: [string, string][];
+  sourcePath: string | null;
+  enquiryId: string | null;
+}): { subject: string; text: string; html: string } {
+  const subject = `New ${opts.formName} submission · ${opts.surface}`;
+  const manageUrl = `${siteUrl()}/admin/forms/${opts.formKey}`;
+  const enquiryUrl = opts.enquiryId
+    ? `${siteUrl()}/admin/enquiries/${opts.enquiryId}`
+    : null;
+
+  const rows = opts.answers.length
+    ? opts.answers
+    : ([["(no answers)", "—"]] as [string, string][]);
+
+  const text =
+    `${opts.formName} — ${opts.surface}
+` +
+    (opts.sourcePath ? `Sent from ${opts.sourcePath}
+` : "") +
+    `
+` +
+    rows.map(([label, value]) => `${label}: ${value}`).join("\n") +
+    `
+
+` +
+    (enquiryUrl ? `Open the enquiry: ${enquiryUrl}
+` : "") +
+    `All responses: ${manageUrl}
+
+` +
+    `— Bazar
+`;
+
+  const html = shell(`
+    <p style="margin:0 0 4px"><strong>${escape(opts.formName)}</strong></p>
+    <p style="margin:0;font-size:13px;color:#99896e">${escape(opts.surface)}${
+      opts.sourcePath ? ` · ${escape(opts.sourcePath)}` : ""
+    }</p>
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top:20px;background:#fff;border:1px solid #E5E5DF;border-radius:6px">
+      ${rows
+        .map(
+          ([label, value]) => `<tr>
+        <td style="padding:10px 14px;border-bottom:1px solid #F0F0EA;font-size:12px;color:#99896e;white-space:nowrap;vertical-align:top">${escape(label)}</td>
+        <td style="padding:10px 14px;border-bottom:1px solid #F0F0EA;font-size:14px;color:#32312d">${escape(value).replace(/\n/g, "<br>")}</td>
+      </tr>`,
+        )
+        .join("")}
+    </table>
+    <p style="margin-top:20px;font-size:13px">
+      ${enquiryUrl ? `<a href="${enquiryUrl}" style="color:#005777">Open the enquiry</a> · ` : ""}
+      <a href="${manageUrl}" style="color:#005777">All responses</a>
+    </p>
+  `);
+
+  return { subject, text, html };
+}
+
 export function staffReplyTemplate(opts: {
   name: string;
   body: string;

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { recordFormSubmission, withLabels } from "@/lib/forms/record";
+import { captureFormSubmission, withLabels } from "@/lib/forms/record";
 import { headers } from "next/headers";
 import * as Sentry from "@sentry/nextjs";
 import { createClient } from "@supabase/supabase-js";
@@ -188,7 +188,7 @@ export async function submitListingLead(
   // a UAE-format mobile), so it doesn't go through `submitForm` — but its
   // answers still belong in /admin/forms → Responses alongside every other
   // form's. Best-effort: the lead is already written.
-  await recordFormSubmission({
+  await captureFormSubmission({
     formKey: "services_sell_list_property",
     sourcePath: "/services/sell",
     enquiryId: row.id,

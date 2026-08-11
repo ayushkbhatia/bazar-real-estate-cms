@@ -8,7 +8,7 @@ import {
   extractLead,
   type DynamicOptions,
 } from "@/lib/forms/submission";
-import { recordFormSubmission } from "@/lib/forms/record";
+import { captureFormSubmission } from "@/lib/forms/record";
 import {
   buildFormSchema,
   fieldErrorsFrom,
@@ -108,7 +108,7 @@ export async function submitForm(
       if (result.status === "error") {
         return { status: "error", message: result.message };
       }
-      // No `recordFormSubmission` here: `subscribeToNewsletter` logs its own,
+      // No `captureFormSubmission` here: `subscribeToNewsletter` logs its own,
       // so every signup — including the two surfaces that still call it
       // directly — lands in Responses exactly once.
       return {
@@ -144,7 +144,7 @@ export async function submitForm(
           fieldErrors: result.fieldErrors,
         };
       }
-      await recordFormSubmission({
+      await captureFormSubmission({
         formKey,
         data,
         enquiryId: result.enquiryId ?? null,
@@ -175,7 +175,7 @@ export async function submitForm(
           fieldErrors: result.fieldErrors,
         };
       }
-      await recordFormSubmission({
+      await captureFormSubmission({
         formKey,
         data,
         enquiryId: result.id,
