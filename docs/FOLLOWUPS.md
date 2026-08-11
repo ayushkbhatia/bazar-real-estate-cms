@@ -56,6 +56,28 @@ quick grep can show "what's outstanding in my area."
   keep it as a distinct service, or redirect it at the new page and drop the
   seed entry.
 
+- [areas] Thirteen area guides have no market statistics.
+  The area-guide restructure gave every area the thirteen-band template, but
+  only the eleven areas in the content deck came with sale and rental index
+  figures. The other thirteen (Al Raha, ADGM, Corniche, Zayed City, Mussafah,
+  KIZAD, Nurai Island, Al Raha Gardens, Hidd Al Saadiyat, Mamsha Al Saadiyat,
+  Saadiyat Lagoons, Saadiyat Reserve, Yas Acres) carry either a structural
+  statistic or nothing, and the band hides itself where there is nothing —
+  see the header of `supabase/migrations/0092_area_guide_content_researched.sql`
+  for why nothing was invented. Done looks like: index figures typed into
+  /admin/pages/sub/area/<slug> → Property market statistics, with the month
+  they belong to in the footnote. No code change needed.
+  `lib/master-pages/area-guide-content.test.ts` guards the "no invented index"
+  rule for the migration file, not for CMS edits.
+
+- [areas] Landmark and community photos are all placeholders.
+  0091 and 0092 seed every landmark and community row with an empty image
+  reference and a placeholder caption, so the grids draw brand placeholder art
+  rather than photography. Each row has an image picker in the CMS. Done looks
+  like: photos attached for at least the eleven deck areas. The cover-image
+  brief written by the content deck is stored per area under the Cover image
+  section ("Image brief"), so whoever sources them has the art direction.
+
 - [shortlist] Two listing surfaces still can't be shortlisted.
   The card-level shortlist button is now default-on for anything rendering
   `ListingCard` with a `propertyId`, but two surfaces draw their own markup

@@ -315,11 +315,17 @@ export function parseStoredSections(raw: unknown): StoredSection[] | null {
   return out.length > 0 ? out : null;
 }
 
-/** Defaults as a storable document — used by "reset page". */
+/**
+ * Defaults as a storable document — used by "reset page".
+ *
+ * `enabled` follows the section's own default rather than being forced on, so
+ * a reset returns the page to how it ships. Without that, resetting an area
+ * guide switched every legacy band back on — the opposite of a reset.
+ */
 export function defaultDocument(def: MasterPageDef): StoredSection[] {
   return def.sections.map((s) => ({
     key: s.key,
-    enabled: true,
+    enabled: s.locked ? true : (s.defaultEnabled ?? true),
     values: { ...s.defaults },
   }));
 }

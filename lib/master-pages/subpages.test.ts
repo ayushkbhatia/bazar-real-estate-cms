@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
+  defaultDocument,
+  isListField,
   parseStoredSections,
   resolveSections,
   str,
@@ -334,21 +336,61 @@ describe("area sub-pages", () => {
     );
   });
 
-  it("mirrors the guide template", () => {
+  /** The thirteen bands of the guide, in the order the brief lays them out. */
+  const GUIDE_ORDER = [
+    "hero",
+    "hero-image",
+    "stats",
+    "map",
+    "landmarks",
+    "communities",
+    "listings",
+    "rentals",
+    "nearby",
+    "why",
+    "lead-form",
+    "faq",
+    "final-cta",
+  ];
+
+  /** Bands that predate the restructure — still editable, but off by default. */
+  const LEGACY = [
+    "schools",
+    "reports",
+    "valuation",
+    "lifestyle",
+    "advisors",
+    "similar",
+  ];
+
+  it("mirrors the guide template, in page order", () => {
     const keys = AREA_SECTIONS.map((s) => s.key);
     expect(new Set(keys).size).toBe(keys.length);
-    for (const expected of [
-      "hero",
-      "hero-image",
-      "map",
-      "stats",
-      "schools",
-      "lifestyle",
-      "listings",
-      "advisors",
-      "similar",
-    ]) {
-      expect(keys).toContain(expected);
+    expect(keys).toEqual([...GUIDE_ORDER, ...LEGACY]);
+  });
+
+  it("ships the older bands switched off, so a new area follows the template", () => {
+    for (const key of LEGACY) {
+      expect(
+        AREA_SECTIONS.find((s) => s.key === key)?.defaultEnabled,
+        key,
+      ).toBe(false);
+    }
+    const resolved = resolveSections(areaDef, null);
+    expect(
+      resolved.filter((s) => s.enabled).map((s) => s.key),
+    ).toEqual(GUIDE_ORDER);
+  });
+
+  it("keeps the older bands editable rather than deleting them", () => {
+    // Switched off is not gone: an editor can turn any of them back on, and
+    // the fields have to still be there when they do.
+    for (const key of LEGACY) {
+      const section = AREA_SECTIONS.find((s) => s.key === key)!;
+      expect(section.fields.map((f) => f.key), key).toEqual([
+        "heading",
+        "intro",
+      ]);
     }
   });
 
@@ -359,7 +401,46 @@ describe("area sub-pages", () => {
         expect(str(section.values, field.key)).toBeNull();
       }
     }
-    expect(resolved.every((s) => s.enabled)).toBe(true);
+  });
+
+  it("gives every band that renders a list somewhere to hold it", () => {
+    const withLists: Record<string, string> = {
+      stats: "stats",
+      landmarks: "items",
+      communities: "items",
+      nearby: "items",
+      why: "items",
+      faq: "items",
+    };
+    for (const [key, listKey] of Object.entries(withLists)) {
+      const field = AREA_SECTIONS.find((s) => s.key === key)!.fields.find(
+        (f) => f.key === listKey,
+      );
+      expect(field?.kind, key).toBe("list");
+    }
+  });
+
+  it("offers a photo per landmark and per community", () => {
+    for (const key of ["landmarks", "communities"]) {
+      const field = AREA_SECTIONS.find((s) => s.key === key)!.fields.find(
+        isListField,
+      );
+      expect(
+        field!.fields.some((f) => f.kind === "image"),
+        key,
+      ).toBe(true);
+      // Switching a row off has to be possible without deleting it.
+      expect(
+        field!.fields.some((f) => f.key === "enabled" && f.kind === "toggle"),
+        key,
+      ).toBe(true);
+    }
+  });
+
+  it("resets to the template rather than switching every legacy band on", () => {
+    const doc = defaultDocument(areaDef);
+    const on = doc.filter((s) => s.enabled).map((s) => s.key);
+    expect(on).toEqual(GUIDE_ORDER);
   });
 
   it("reorders and hides sections, but keeps the hero", () => {
