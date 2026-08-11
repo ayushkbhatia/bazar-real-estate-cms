@@ -46,27 +46,66 @@ test("admin /admin/blog redirects anon to staff login", async ({ page }) => {
   await expect(page).toHaveURL(/\/admin\/login/);
 });
 
-test("category filter narrows the index via query string", async ({ page }) => {
+test("a category chip opens that category's archive", async ({ page }) => {
   // Pick a category off the index rather than assuming `market_report` still
   // has a published article behind it — naming the seed article here is what
   // broke this when the editorial catalogue was pruned to 11 of 25.
+  //
+  // The chips point at `/insights/category/<slug>`. They used to carry
+  // `?category=`, which #283 removed: reading `searchParams` forced the index
+  // to render dynamically and kept it off the CDN, and the querystring was a
+  // second URL serving the archive's content. This spec asserted the old shape
+  // and went red on that PR.
   await page.goto("/insights");
-  const categoryHref = await page
-    .locator("a[href*='category=']")
-    .first()
-    .getAttribute("href");
-  test.skip(!categoryHref, "No categories offered on the insights index.");
+  const chip = page.locator("a[href^='/insights/category/']").first();
+  // `count()` resolves immediately; reading an attribute off a locator that
+  // matches nothing waits out the full timeout instead, so the skip below
+  // could never be reached — that is how a removed URL shape presented as a
+  // 30s timeout rather than a skip.
+  test.skip(
+    (await chip.count()) === 0,
+    "No categories offered on the insights index.",
+  );
 
+  const categoryHref = await chip.getAttribute("href");
   await page.goto(categoryHref!);
   await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
 
-  // A filtered view either lists articles or says it has none — both are
-  // correct; silently rendering nothing at all is not.
-  const articles = page.locator("a[href^='/insights/']");
+  // An archive either lists articles or says it has none — both are correct;
+  // silently rendering nothing at all is not. Category URLs are excluded so a
+  // page showing only its own chip bar doesn't read as a page full of results.
+  const articles = page.locator(
+    "a[href^='/insights/']:not([href^='/insights/category/'])",
+  );
   const count = await articles.count();
   if (count === 0) {
     await expect(page.getByText(/no (articles|posts)/i).first()).toBeVisible();
   } else {
     await expect(articles.first()).toBeVisible();
   }
+});
+
+test("the legacy ?category= link still reaches the archive", async ({
+  page,
+}) => {
+  // #283 promised existing links and bookmarks keep working via a proxy
+  // redirect. `lib/filters/search-redirect.test.ts` covers the mapping; this
+  // covers the redirect actually being wired into the request path.
+  //
+  // The category is taken from a live chip and converted back to the
+  // querystring's underscore form, so this round-trips whatever the catalogue
+  // currently holds instead of naming a slug that a retired category would
+  // take down with it.
+  await page.goto("/insights");
+  const chip = page.locator("a[href^='/insights/category/']").first();
+  test.skip(
+    (await chip.count()) === 0,
+    "No categories offered on the insights index.",
+  );
+  const archiveHref = (await chip.getAttribute("href"))!;
+  const legacySlug = archiveHref.split("/").pop()!.replace(/-/g, "_");
+
+  await page.goto(`/insights?category=${legacySlug}`);
+  await expect(page).toHaveURL(new RegExp(`${archiveHref}$`));
+  await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
 });
