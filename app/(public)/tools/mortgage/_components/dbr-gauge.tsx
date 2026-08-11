@@ -3,6 +3,23 @@
  * <= 50%; mortgage stress tests typically aim <= 35%. This is a static SVG
  * arc — no client interactivity needed.
  */
+
+/**
+ * Three decimal places on a 200-unit-wide viewBox — under a thousandth of a
+ * pixel at any size this renders at, so nothing moves.
+ *
+ * The rounding is not cosmetic. `Math.sin` and `Math.cos` are not required to
+ * be correctly rounded, so Node and the browser can disagree in the last
+ * significant digit (43.6051415340002 against 43.60514153400021), and that
+ * digit reaches the DOM inside the path's `d` string. React compares the
+ * attribute, finds the two spellings different, and logs a hydration mismatch
+ * on every load of /tools/mortgage. Quantising here means both engines have to
+ * be off by more than a thousandth before the strings can differ at all.
+ */
+function coord(n: number): string {
+  return n.toFixed(3);
+}
+
 export function DbrGauge({
   monthlyPaymentAed,
   monthlyIncomeAed,
@@ -55,7 +72,7 @@ export function DbrGauge({
           />
           {/* Filled arc */}
           <path
-            d={`M 10 100 A 90 90 0 ${largeArc} 1 ${endX} ${endY}`}
+            d={`M 10 100 A 90 90 0 ${largeArc} 1 ${coord(endX)} ${coord(endY)}`}
             stroke={band.color}
             strokeWidth="12"
             fill="none"
