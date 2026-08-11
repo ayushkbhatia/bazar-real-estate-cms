@@ -25,7 +25,12 @@ import { FILTER_PARAM_KEYS } from "./property-keys";
 const SEARCH_KEYS = new Set<string>([...FILTER_PARAM_KEYS, "view"]);
 
 /** Landing routes whose `…/search` sub-route absorbs old filter deep-links. */
-export const SEARCH_LANDING_BASES = ["/buy", "/rent", "/off-plan"] as const;
+export const SEARCH_LANDING_BASES = [
+  "/buy",
+  "/rent",
+  "/off-plan",
+  "/commercial",
+] as const;
 
 /**
  * `/buy?type=apartment` → `/buy/search?type=apartment`, keeping old deep-links

@@ -81,16 +81,27 @@ describe("legacyQueryRedirect", () => {
     expect(legacyQueryRedirect("/off-plan", qs("beds=2"))).toBe(
       "/off-plan/search?beds=2",
     );
+    // /commercial joined the landings when its search moved to a sub-route;
+    // the home hero's Commercial tab still emits /commercial?type=office.
+    expect(legacyQueryRedirect("/commercial", qs("type=office"))).toBe(
+      "/commercial/search?type=office",
+    );
   });
 
   it("does not touch the search routes themselves", () => {
     // Otherwise /buy/search?beds=2 would redirect to itself forever.
     expect(legacyQueryRedirect("/buy/search", qs("beds=2"))).toBeNull();
+    expect(legacyQueryRedirect("/commercial/search", qs("beds=2"))).toBeNull();
+  });
+
+  it("leaves a bare landing on the landing", () => {
+    // The marketing page is the destination for a link with no filters.
+    expect(legacyQueryRedirect("/commercial", qs(""))).toBeNull();
+    expect(legacyQueryRedirect("/commercial", qs("utm_source=ig"))).toBeNull();
   });
 
   it("passes through everything else untouched", () => {
     expect(legacyQueryRedirect("/", qs("beds=2"))).toBeNull();
-    expect(legacyQueryRedirect("/commercial", qs("beds=2"))).toBeNull();
     expect(legacyQueryRedirect("/p/some-listing-baz-ad-01", qs(""))).toBeNull();
   });
 });
