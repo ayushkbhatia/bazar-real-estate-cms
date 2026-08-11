@@ -68,7 +68,7 @@ export function DevelopmentImagesCard({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <ImagePicker
           label="Cover image"
-          help="The full-width hero at the top of the project page."
+          help="The card art wherever this project is listed — off-plan, the home page, search. Also the hero band at the top of the project page, unless the Hero section below carries its own banner."
           value={hero}
           media={media}
           onChange={(id) => {

@@ -13,6 +13,7 @@ import {
   withFeatureImages,
 } from "@/lib/queries/development-content";
 import { img, list, str } from "@/lib/master-pages";
+import { resolveHeroImage } from "./_hero-image";
 import {
   developmentUrl,
   getPublishedDevelopmentBySlug,
@@ -219,15 +220,22 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const sv = (key: string, field: string) =>
     str(content.section(key)?.values ?? {}, field);
 
-  const heroUrl = development.hero
-    ? mediaPublicUrl(development.hero.storage_key)
-    : null;
-
   // Brochure PDF picked in the sub-page editor. `attachImageUrls` has already
   // resolved the media_id into a public URL — a file field stores the same
   // shape as an image field precisely so that works.
   const heroValues = content.section("hero")?.values ?? {};
   const brochure = img(heroValues, "brochure");
+
+  // The hero band prefers its own wide crop, uploaded in the Hero section, and
+  // falls back to the record's cover image — see _hero-image.ts.
+  const hero = resolveHeroImage({
+    banner: img(heroValues, "image"),
+    coverUrl: development.hero
+      ? mediaPublicUrl(development.hero.storage_key)
+      : null,
+    coverAlt: development.hero?.alt_text ?? null,
+    name: development.name,
+  });
 
   // A gallery curated in the sub-page editor wins over the record's media.
   const curatedRenders = list<Record<string, unknown>>(
@@ -693,10 +701,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     <article className="bg-bz-bg pb-24 md:pb-0">
       {/* Hero */}
       <section className="relative h-[640px] text-white overflow-hidden">
-        {heroUrl ? (
+        {hero.url ? (
           <Image
-            src={heroUrl}
-            alt={development.hero?.alt_text ?? development.name}
+            src={hero.url}
+            alt={hero.alt}
             fill
             sizes="100vw"
             priority
