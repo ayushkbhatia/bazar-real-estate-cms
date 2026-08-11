@@ -176,7 +176,16 @@ export type FormFieldDef = {
   type: FormFieldType;
   mapping: FormFieldMapping;
   placeholder?: string | null;
+  /** Visitor-facing hint, rendered under the input on the public page. */
   help?: string | null;
+  /**
+   * Editor-facing note, shown only in /admin/forms.
+   *
+   * Distinct from `help` because `help` is copy — it appears on the page, in
+   * front of customers. "The options are edited in Pages & blocks" is a fact
+   * about the CMS and belongs nowhere near the public site.
+   */
+  note?: string | null;
   required: boolean;
   enabled: boolean;
   width: FormFieldWidth;

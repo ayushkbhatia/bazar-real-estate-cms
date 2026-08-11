@@ -252,7 +252,7 @@ export const FORM_DEFS: FormDef[] = [
         placeholder: "you@email.com",
         required: true,
         locked: true,
-        help: "The only field a newsletter signup can carry.",
+        note: "The only field a newsletter signup can carry.",
       }),
     ],
   },
@@ -596,7 +596,7 @@ export const FORM_DEFS: FormDef[] = [
       }),
       field("bedrooms", "Bedrooms", "select", "custom", {
         options: options("Studio", "1", "2", "3", "4", "5", "6", "7", "8+"),
-        help: "Hidden for land and commercial plots.",
+        note: "Hidden for land and commercial plots.",
       }),
       field("area_sqft", "Built-up area", "number", "custom", {
         placeholder: "1,450",
@@ -622,7 +622,7 @@ export const FORM_DEFS: FormDef[] = [
         placeholder: "50 123 4567",
         required: true,
         locked: true,
-        help: "UAE numbers only — validated against the national format.",
+        note: "UAE numbers only — validated against the national format.",
       }),
       email({ required: true, locked: true }),
       field("call_window", "Best time to call", "chips", "custom", {
@@ -669,9 +669,11 @@ export const FORM_DEFS: FormDef[] = [
       ...serviceContactFields(),
       field("location", "Property Location", "text", "custom", {
         placeholder: "Community or building",
+        // The suggestions are a datalist, not a dropdown — the list covers the
+        // communities on file and an owner whose building isn't on it still has
+        // to be able to type it. No helper text: the page never had any.
         optionSource: "areas",
         width: "half",
-        help: "Suggestions come from the communities on file; anything can be typed.",
       }),
       field("property_type", "Property Type", "select", "custom", {
         placeholder: "Select a type",
@@ -716,7 +718,7 @@ export const FORM_DEFS: FormDef[] = [
       ...serviceContactFields(),
       field("interest", "I'm Interested In", "chips", "custom", {
         optionSource: "consultation_interests",
-        help: "The options are edited on the Property consultation page in Pages & blocks.",
+        note: "The options are edited on the Property consultation page in Pages & blocks.",
       }),
       message("Message", {
         required: false,

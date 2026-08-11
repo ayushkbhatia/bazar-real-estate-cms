@@ -60,6 +60,7 @@ function toSaveField(field: ResolvedForm["fields"][number]): FormFieldSaveInput 
     mapping: field.mapping,
     placeholder: field.placeholder ?? null,
     help: field.help ?? null,
+    note: field.note ?? null,
     required: field.required,
     enabled: field.enabled,
     width: field.width,
@@ -708,11 +709,17 @@ function FieldDetail({
 
       <Text
         label="Helper text"
-        help="A line under the input. Leave blank for none."
+        help="Shown to the visitor under the input. Leave blank for none."
         value={field.help ?? ""}
         disabled={disabled}
         onChange={(v) => onChange({ help: v || null })}
       />
+
+      {field.note ? (
+        <p className="text-[11.5px] text-bz-muted-2 rounded border border-bz-border bg-bz-surface p-2.5">
+          {field.note}
+        </p>
+      ) : null}
 
       <div className="flex flex-wrap items-center gap-4">
         <Check

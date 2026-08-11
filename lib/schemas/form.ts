@@ -40,6 +40,8 @@ export const formFieldSchema = z.object({
   mapping: z.enum(FORM_FIELD_MAPPINGS),
   placeholder: z.string().trim().max(120).nullable().optional(),
   help: z.string().trim().max(240).nullable().optional(),
+  /** Registry-authored, re-attached on read — accepted here and not stored. */
+  note: z.string().trim().max(400).nullable().optional(),
   required: z.boolean(),
   enabled: z.boolean(),
   width: z.enum(["full", "half"]),
@@ -140,6 +142,7 @@ export function blankField(type: FormFieldType, index: number): FormFieldSaveInp
     mapping: "custom",
     placeholder: null,
     help: null,
+    note: null,
     required: false,
     enabled: true,
     width: "full",

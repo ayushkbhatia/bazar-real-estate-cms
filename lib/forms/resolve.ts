@@ -51,9 +51,17 @@ function mergeFields(
 ): FormFieldDef[] {
   if (!stored || stored.length === 0) return def.fields.map((f) => ({ ...f }));
 
+  // `note` is editor-facing guidance written in code, not content an editor
+  // owns, so it is always taken from the registry rather than from storage —
+  // otherwise the first save would silently drop it.
+  const notes = new Map(def.fields.map((f) => [f.key, f.note ?? null]));
+
   const ordered = [...stored]
     .sort((a, b) => a.position - b.position)
-    .map(({ position: _position, ...field }) => field);
+    .map(({ position: _position, ...field }) => ({
+      ...field,
+      note: notes.get(field.key) ?? null,
+    }));
 
   const byKey = new Map(ordered.map((f) => [f.key, f]));
   const missingLocked = def.fields.filter(
@@ -65,7 +73,7 @@ function mergeFields(
   // blindly would drop a re-attached email box below the message box.
   if (missingLocked.length === 0) return ordered;
 
-  const out = [...ordered];
+  const out: FormFieldDef[] = [...ordered];
   for (const field of missingLocked) {
     const registryIndex = def.fields.findIndex((f) => f.key === field.key);
     const before = def.fields
