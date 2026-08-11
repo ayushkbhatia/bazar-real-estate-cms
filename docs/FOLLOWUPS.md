@@ -31,23 +31,6 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
-- [services] Apply `0089_megamenu_property_consultation.sql` once
-  /services/consultation is live.
-  The Services megamenu's "Property Consultation" column links to
-  /services/manage. The migration repoints it, and is deliberately *not*
-  applied yet: run it before the route deploys and the live menu points at a
-  404. The nav is also editable at /admin/megamenu, so an editor can do it by
-  hand instead — "done" is either way, plus deleting this entry.
-
-- [services] The Property Management megamenu item duplicates its column
-  heading.
-  Every other column in the Services panel has a heading plus a one-line
-  description under it; "Property Management" has the heading twice, because
-  the item label was edited to the heading's text at some point. 0047 seeded
-  it as "Managing properties with ongoing care and professional service."
-  One field at /admin/megamenu — left alone deliberately, since it is
-  editor-owned content and not this PR's to decide.
-
 - [services] `/services/consulting` and `/services/consultation` both exist.
   The first is the old seed-driven "Consulting" page (senior-advisor hours,
   AED 950/hr) and is no longer linked from the megamenu; the second is the
