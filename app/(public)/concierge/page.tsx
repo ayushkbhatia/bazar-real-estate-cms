@@ -10,7 +10,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/concierge" },
 };
 
-export const dynamic = "force-dynamic";
+// Nothing on this route is per-request: the chat is a client component and
+// `isAnthropicConfigured` is a build-time env boolean, so the page can be
+// prerendered. Note the consequence — the "Coming soon" fallback below is
+// baked at build, so adding ANTHROPIC_API_KEY in Vercel needs a redeploy to
+// take effect here (the /api/concierge handler picks it up immediately).
+export const revalidate = 3600;
 
 export default function ConciergePage() {
   if (!isAnthropicConfigured) {

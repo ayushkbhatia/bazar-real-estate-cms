@@ -1,23 +1,37 @@
 import { ImageResponse } from "next/og";
 import { getAreaProfile } from "@/lib/queries/area-profile";
+import { listAreasWithCounts } from "@/lib/queries/areas-guide";
 
-export const runtime = "edge";
 export const alt = "Bazar community guide";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+/** Same param set as the page this image belongs to. */
+export async function generateStaticParams() {
+  const entries = await listAreasWithCounts();
+  return entries.map((e) => ({ slug: e.slug }));
+}
 
 /**
  * Sprint 11 — composed OG image for /areas/[slug]. Reads the same resolved
  * profile the page does, so an area created in the CMS gets its real name and
  * intro rather than the "Abu Dhabi" placeholder. The price strip only draws
  * when someone has published figures for the area.
+ *
+ * `params` is a Promise in Next.js 16, exactly as in the sibling `page.tsx`.
+ * It used to be typed as a plain object and read synchronously, so
+ * `params.slug` was undefined and `getAreaProfile` never resolved a profile —
+ * production served every area's share card as a 200 with a zero-byte body.
+ * The read is cookie-free, so the edge runtime is gone too; it was the only
+ * thing keeping this route out of the prerender.
  */
 export default async function CommunityOpenGraph({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const profile = await getAreaProfile(params.slug);
+  const { slug } = await params;
+  const profile = await getAreaProfile(slug);
   const name = profile?.name ?? "Abu Dhabi";
   const intro = profile?.intro ?? "";
   const medianApt = profile?.stats?.medianAptPerFt2 ?? null;
@@ -59,7 +73,7 @@ export default async function CommunityOpenGraph({
               maxWidth: 900,
             }}
           >
-            {name}.
+            {`${name}.`}
           </div>
           {intro ? (
             <div
@@ -89,8 +103,14 @@ export default async function CommunityOpenGraph({
             paddingTop: 24,
           }}
         >
+          {/* Satori requires an explicit `display` on any element with more
+              than one child — without it `next/og` aborts mid-stream and the
+              route answers 200 with a zero-byte body. */}
           <div
             style={{
+              display: "flex",
+              alignItems: "baseline",
+              gap: 8,
               fontFamily: "Georgia, serif",
               fontStyle: "italic",
               fontSize: 28,
@@ -98,7 +118,7 @@ export default async function CommunityOpenGraph({
               letterSpacing: "-0.01em",
             }}
           >
-            Bazar{" "}
+            <span>Bazar</span>
             <span
               style={{
                 fontFamily: "system-ui, sans-serif",
@@ -123,13 +143,10 @@ export default async function CommunityOpenGraph({
                 color: "#5a5a55",
               }}
             >
-              <div>
-                Median apt {medianApt.toLocaleString()} AED/ft²
-              </div>
+              <div>{`Median apt ${medianApt.toLocaleString()} AED/ft²`}</div>
               {yoy !== null ? (
                 <div style={{ marginTop: 4, color: yoy >= 0 ? "#3e8343" : "#B33A2A" }}>
-                  YoY {yoy >= 0 ? "+" : ""}
-                  {yoy}%
+                  {`YoY ${yoy >= 0 ? "+" : ""}${yoy}%`}
                 </div>
               ) : null}
             </div>

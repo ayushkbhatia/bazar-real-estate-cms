@@ -1,21 +1,48 @@
 import { ImageResponse } from "next/og";
 import { getPublishedArticleBySlug } from "@/lib/queries/articles";
 import { mediaPublicUrl } from "@/lib/media";
+import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { isSupabaseConfigured } from "@/lib/env";
 
-export const runtime = "edge";
 export const alt = "Bazar insights article";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+/** Same param set as the page this image belongs to. */
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
+  if (!isSupabaseConfigured) return [];
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("articles")
+      .select("slug")
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .limit(2000);
+    return (data ?? []).map((a) => ({ slug: a.slug }));
+  } catch (err) {
+    console.error("[insights/[slug]/opengraph-image] generateStaticParams failed", err);
+    return [];
+  }
+}
+
 /**
  * Sprint 5d (backfilled): composed OG image for insights articles.
+ *
+ * `params` is a Promise in Next.js 16, exactly as in the sibling `page.tsx`.
+ * It used to be typed as a plain object and read synchronously, which made
+ * `params.slug` undefined: production served every article's share card as a
+ * 200 with a zero-byte body. The route reads through the cookie-free client,
+ * so it also no longer needs the edge runtime — which was the only reason it
+ * could not be prerendered.
  */
 export default async function ArticleOpenGraph({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const article = await getPublishedArticleBySlug(params.slug);
+  const { slug } = await params;
+  const article = await getPublishedArticleBySlug(slug);
 
   const title = article?.title ?? "The Bazar Brief";
   const category = article?.category_label ?? "Insights";
@@ -47,7 +74,10 @@ export default async function ArticleOpenGraph({
               justifyContent: "space-between",
             }}
           >
-            <div>
+            {/* Satori requires an explicit `display` on any element with more
+                than one child — without it `next/og` aborts mid-stream and the
+                route answers 200 with a zero-byte body. */}
+            <div style={{ display: "flex", flexDirection: "column" }}>
               <div
                 style={{
                   fontSize: 14,
@@ -81,7 +111,7 @@ export default async function ArticleOpenGraph({
                 color: "#7a7568",
               }}
             >
-              <span>{authorName} · The Bazar Brief</span>
+              <span>{`${authorName} · The Bazar Brief`}</span>
               <span>bazar.ae</span>
             </div>
           </div>
