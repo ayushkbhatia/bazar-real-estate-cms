@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState, type ReactNode } from "react";
 import Image from "next/image";
-import { Upload, X } from "lucide-react";
+import { Crop, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -13,8 +13,18 @@ import {
   type LogoStyle,
 } from "@/lib/schemas/site-settings";
 import { uploadToLibrary } from "../media/_upload-client";
+import { trimTransparentPadding, type TrimResult } from "./_trim-client";
 
 export type LogoOption = { id: string; filename: string; url: string };
+
+/** What actually happened to the file, so the toast does not overstate it. */
+function trimNote(trim: Extract<TrimResult, { status: "trimmed" }>): string {
+  const padding = Math.round((1 - trim.coverage) * 100);
+  const size = `Now ${trim.width}×${trim.height}.`;
+  return padding >= 2
+    ? `Cropped ${padding}% transparent padding. ${size}`
+    : `Resized for the web. ${size}`;
+}
 
 /**
  * Shared picker behind both brand-image fields.
@@ -56,21 +66,72 @@ function BrandImagePicker({
   const picked = library.find((o) => o.url === value);
   const isExternal = value !== "" && !picked;
 
-  async function upload(file: File | undefined) {
-    if (!file) return;
-    setBusy(true);
+  async function store(file: File, note?: string) {
     const result = await uploadToLibrary(file, { folder: "brand" });
-    setBusy(false);
     if (result.status === "error") {
       toast.error(result.message);
-      return;
+      return false;
     }
-    toast.success(`Uploaded "${file.name}" to the media library.`);
+    toast.success(
+      note
+        ? `Uploaded "${file.name}". ${note}`
+        : `Uploaded "${file.name}" to the media library.`,
+    );
     setLibrary((cur) => [
       { id: result.id, filename: file.name, url: result.url },
       ...cur,
     ]);
     onChange(result.url);
+    return true;
+  }
+
+  /**
+   * Brand art is exported on an artboard, so most uploads carry a wide
+   * transparent margin. `object-contain` fits that whole canvas, which is what
+   * makes a logo look small in a box that is not small — and for the favicon,
+   * drawn by the browser at 16px, sizing cannot compensate at all. So the
+   * padding comes off here, once, and every surface downstream draws ink
+   * rather than air. Art that already fills its canvas is uploaded untouched.
+   */
+  async function upload(file: File | undefined) {
+    if (!file) return;
+    setBusy(true);
+    const trim = await trimTransparentPadding(file, file.name);
+    if (trim.status === "trimmed") {
+      const pct = Math.round((1 - trim.coverage) * 100);
+      await store(trim.file, `Trimmed ${pct}% transparent padding.`);
+    } else {
+      await store(file);
+    }
+    setBusy(false);
+  }
+
+  /** Same trim, for a file that is already in the library. */
+  async function trimCurrent() {
+    if (!value) return;
+    setBusy(true);
+    const name = picked?.filename ?? "logo.png";
+    const trim = await trimTransparentPadding(value, name);
+    setBusy(false);
+
+    if (trim.status === "error") {
+      toast.error(trim.message);
+      return;
+    }
+    if (trim.status === "unchanged") {
+      toast.info(
+        trim.reason === "already-tight"
+          ? "No transparent padding to trim — this file already fills its canvas."
+          : trim.reason === "blank"
+            ? "That image is fully transparent."
+            : "That file is not a raster image.",
+      );
+      return;
+    }
+
+    setBusy(true);
+    await store(trim.file, trimNote(trim));
+    setBusy(false);
   }
 
   return (
@@ -138,13 +199,24 @@ function BrandImagePicker({
               {busy ? "Uploading…" : "Upload new"}
             </button>
             {value ? (
-              <button
-                type="button"
-                onClick={() => onChange("")}
-                className="inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink"
-              >
-                <X size={11} /> Remove
-              </button>
+              <>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void trimCurrent()}
+                  className="inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink disabled:opacity-50"
+                  title="Crop the transparent margin off this file and save the result as a new asset."
+                >
+                  <Crop size={11} strokeWidth={1.8} /> Trim padding
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange("")}
+                  className="inline-flex items-center gap-1 text-[11.5px] text-bz-muted hover:text-bz-ink"
+                >
+                  <X size={11} /> Remove
+                </button>
+              </>
             ) : null}
           </div>
 
@@ -204,10 +276,11 @@ export function LogoField({
       error={error}
       help={
         <>
-          PNG, WebP or AVIF with a transparent background. The top bar scales it
-          to 32px tall, so anything above ~256px on the long edge is only
-          weight. SVG is not accepted — the media library rejects it because an
-          SVG can carry script.
+          PNG, WebP or AVIF with a transparent background. The top bar draws it
+          44px tall, so anything above ~256px on the long edge is only weight.
+          Artboard padding is cropped off on upload — export it however you
+          like. SVG is not accepted: the media library rejects it because an SVG
+          can carry script.
         </>
       }
     >
@@ -267,8 +340,10 @@ export function FaviconField({
       help={
         <>
           Square PNG, 512×512 or smaller. This is read at 16px in a tab strip,
-          so a full lockup turns to mud — use the mark alone, with generous
-          padding trimmed off. Browsers cache favicons hard: expect to
+          so a full lockup turns to mud — use the mark alone. Artboard padding
+          is cropped off on upload, which matters more here than anywhere: the
+          browser fixes the size, so margin in the file is the one thing that
+          makes a favicon small. Browsers cache favicons hard — expect to
           hard-refresh, or to see the old one for a while.
         </>
       }
