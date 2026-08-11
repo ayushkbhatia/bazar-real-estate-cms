@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,7 +36,23 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { setPropertyDeveloper, updateProperty } from "./_actions";
-import { LocationPicker } from "./_components/location-picker";
+/**
+ * `maplibre-gl` and its stylesheet are about a megabyte of JavaScript, and
+ * this picker only renders inside the Location tab — the form opens on
+ * Overview, so most edits never show it. Loading it on demand keeps that
+ * weight off every property edit. `_form.tsx` is already a client component,
+ * so `ssr: false` is legal here without a wrapper; the public map does the
+ * same thing via `app/(public)/_components/map-view-client.tsx`.
+ */
+const LocationPicker = dynamic(
+  () => import("./_components/location-picker").then((m) => m.LocationPicker),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-[320px] rounded-lg bg-bz-surface-2 animate-pulse" />
+    ),
+  },
+);
 import {
   FloorPlanCard,
   type FloorPlanItem,

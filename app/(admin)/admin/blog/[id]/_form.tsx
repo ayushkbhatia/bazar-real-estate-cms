@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,9 +17,31 @@ import { Label } from "@/components/ui/label";
 import { CategorySelect } from "../_category-select";
 import { ImagePicker } from "../../pages/sub/development/[slug]/_images-card";
 import type { BlogMediaOption } from "../_image-insert-dialog";
-import { ArticleEditor } from "../_article-editor";
 import { publishArticle, updateArticle } from "./_actions";
 import { PUBLISH_INTENT } from "./_intent";
+
+/**
+ * TipTap is five packages and ~380 kB, and unlike the rest of this form it is
+ * not needed to render the page — title, slug, category and the publish
+ * controls are all usable while it arrives.
+ *
+ * The skeleton reserves the editor's height so nothing below it jumps when the
+ * real surface mounts. This is the one lazy boundary here that defers rather
+ * than removes work: the editor is always visible on this route, so it always
+ * loads — just after the form is interactive rather than before.
+ */
+const ArticleEditor = dynamic(
+  () => import("../_article-editor").then((m) => m.ArticleEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="w-full h-[420px] rounded-lg bg-bz-surface-2 animate-pulse"
+        aria-hidden
+      />
+    ),
+  },
+);
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;

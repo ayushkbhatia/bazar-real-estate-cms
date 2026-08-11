@@ -14,7 +14,10 @@ import {
   FunnelChart,
   PublishedOverTimeChart,
   ViewingsByStatusChart,
-} from "./_charts";
+  // Lazy boundary, not `./_charts` directly — see _charts-lazy.tsx. Keeps the
+  // recharts bundle off the initial load; the KPI row above still renders
+  // server-side.
+} from "./_charts-lazy";
 import { AnalyticsRangePicker } from "./_range-picker";
 
 export const dynamic = "force-dynamic";
