@@ -87,6 +87,19 @@ function liveFaq(values: SectionValues): AreaFaqEntry[] {
     .map((e) => ({ q: e.q!, a: e.a! }));
 }
 
+/**
+ * The guide is prerendered per area, and its content comes from the CMS — so
+ * without this it is built once and never rebuilt. Saving in the admin still
+ * worked, because the server action calls `revalidatePath` on the running
+ * deployment; anything that writes the section document out of band (a data
+ * migration seeding the guides, an editor working straight against Postgres)
+ * had no way to reach the page at all short of a redeploy.
+ *
+ * 300s matches /areas, /developers/[slug] and the marketing master pages.
+ * This route was the only CMS-driven page missing the setting.
+ */
+export const revalidate = 300;
+
 export async function generateStaticParams() {
   const entries = await listAreasWithCounts();
   return entries.map((e) => ({ slug: e.slug }));
