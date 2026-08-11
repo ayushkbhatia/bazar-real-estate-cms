@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { AgentCard } from "./agent-card";
 import type { PropertyAdvisor } from "@/lib/queries/property-advisor";
+import { defaultForm } from "@/lib/forms";
 
 // The card renders a dialog trigger; the dialog itself pulls in the enquiry
 // server action, which isn't what these assertions are about.
@@ -27,6 +28,7 @@ const BASE: PropertyAdvisor = {
 function renderCard(advisor: Partial<PropertyAdvisor>) {
   return render(
     <AgentCard
+      enquiryForm={defaultForm("property_enquiry")!}
       advisor={{ ...BASE, ...advisor }}
       propertyId="prop-1"
       propertyReference="BAZ-AD-00001"

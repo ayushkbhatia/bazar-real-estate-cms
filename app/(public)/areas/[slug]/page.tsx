@@ -1,4 +1,5 @@
 import * as React from "react";
+import { getForm } from "@/lib/queries/forms";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -134,6 +135,10 @@ export default async function CommunityProfilePage({
 
   const advisors = await withAgentPhotos(listSeedAgentsByArea(profile.slug));
   const areaFilters = parseFilters({ area: slug });
+  const [gateForm, leadForm] = await Promise.all([
+    getForm("valuation_report_gate"),
+    getForm("areas_guide_consultation"),
+  ]);
 
   const [content, heroImage, rawPins, dots, saleStock, rentStock, directory] =
     await Promise.all([
@@ -405,6 +410,7 @@ export default async function CommunityProfilePage({
         }
       >
         <AreaLeadForm
+          form={leadForm}
           areaName={profile.name}
           submitLabel={sv("lead-form", "cta_label")}
         />
@@ -530,7 +536,12 @@ export default async function CommunityProfilePage({
               hours.
             </p>
           </div>
-          <ValuationLeadGate triggerLabel={`Value my ${profile.name} property`} />
+          {gateForm.enabled ? (
+            <ValuationLeadGate
+              form={gateForm}
+              triggerLabel={`Value my ${profile.name} property`}
+            />
+          ) : null}
         </div>
       </section>
       </>

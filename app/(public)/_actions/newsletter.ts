@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { recordFormSubmission, withLabels } from "@/lib/forms/record";
 import {
   generateConfirmationToken,
   newsletterSignupSchema,
@@ -120,6 +121,15 @@ export async function subscribeToNewsletter(
     // Don't reveal the error directly; the row exists and they can retry.
     console.warn("[newsletter] confirm send failed", send.message);
   }
+
+  // Logged for /admin/forms → Responses so the signup box shows a response
+  // count alongside every other form. `newsletter_subscribers` stays the list
+  // of record — this is the record of the *submission*, not of consent.
+  await recordFormSubmission({
+    formKey: "insights_newsletter",
+    sourcePath: `newsletter:${source}`,
+    data: withLabels({ email }, { email: "Email" }),
+  });
 
   return {
     status: "ok",

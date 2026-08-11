@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import { EnquiryForm } from "../_components/enquiry-form";
+import { ManagedForm } from "../_components/forms/managed-form";
 import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
@@ -311,7 +311,13 @@ export default async function ContactPage() {
             "Tell us what you're looking for, and our team will get back to you shortly."}
         </p>
         <div className="mt-6">
-          <EnquiryForm source="contact_page" showIntent />
+          <ManagedForm
+            formKey="contact_enquiry"
+            successStyle="soft"
+            allowAnother
+            successToast="Enquiry sent — we'll be in touch within 2 hours."
+            toastErrors
+          />
         </div>
         <ContactWhatsAppLink
           label={str(formV, "whatsapp_label") ?? "WhatsApp us instead"}

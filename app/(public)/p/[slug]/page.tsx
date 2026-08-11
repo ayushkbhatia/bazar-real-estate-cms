@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getForm } from "@/lib/queries/forms";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import {
@@ -135,7 +136,7 @@ async function fetchPropertyMedia(id: string): Promise<{
     return { gallery: [], floorPlan: null };
   }
 }
-import { EnquiryForm } from "../../_components/enquiry-form";
+import { FormRenderer } from "../../_components/forms/form-renderer";
 import { Gallery, type GalleryImage } from "./_components/gallery";
 import { GalleryTabs } from "./_components/gallery-tabs";
 import { FloorPlanSection } from "./_components/floor-plan-section";
@@ -259,13 +260,17 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   // No session lookup: with customer accounts gone the property page is the
   // same for everyone, which keeps it out of dynamic rendering.
-  const [amenityTaxonomy, similar] = await Promise.all([
+  const [amenityTaxonomy, similar, enquiryForm, valuationGate] =
+    await Promise.all([
     listAmenitiesTaxonomy(),
     getSimilarProperties(
       property.id,
       property.areas?.slug ?? null,
       property.mode,
     ),
+    // The listing enquiry dialog — fields and copy come from /admin/forms.
+    getForm("property_enquiry"),
+    getForm("valuation_report_gate"),
   ]);
 
   const amenityOptions = toOptions(amenityTaxonomy);
@@ -421,6 +426,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
       {/* Action row */}
       <PropertyActionRow
+        enquiryForm={enquiryForm}
         propertyId={property.id}
         reference={property.reference}
         title={property.title}
@@ -601,6 +607,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         <aside className="lg:sticky lg:top-6 self-start space-y-4">
           {leadAdvisor ? (
             <AgentCard
+              enquiryForm={enquiryForm}
               advisor={leadAdvisor}
               propertyId={property.id}
               propertyReference={property.reference}
@@ -617,12 +624,19 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               Ask anything about{" "}
               <span className="mono text-[14px]">{property.reference}</span>.
             </h4>
-            <EnquiryForm
-              source="property_page"
-              propertyId={property.id}
-              propertyReference={property.reference}
-              submitLabel="Send enquiry"
-              compact
+            <FormRenderer
+              form={{
+                ...enquiryForm,
+                copy: { ...enquiryForm.copy, title: null, subtitle: null },
+              }}
+              tokens={{ reference: property.reference }}
+              context={{
+                propertyId: property.id,
+                propertyReference: property.reference,
+              }}
+              successStyle="soft"
+              allowAnother
+              toastErrors
             />
             {/* T1-E cleanup: secondary CTA — visitors who own elsewhere
                 in the same area are a high-intent valuation source. */}
@@ -630,7 +644,12 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               <div className="text-[11px] uppercase tracking-wider text-bz-ink-2 mb-2">
                 Own elsewhere in {property.areas?.name ?? "this area"}?
               </div>
-              <ValuationLeadGate triggerLabel="Get a free valuation report" />
+              {valuationGate.enabled ? (
+                <ValuationLeadGate
+                  form={valuationGate}
+                  triggerLabel="Get a free valuation report"
+                />
+              ) : null}
             </div>
             {/* Permit + DLD plot moved into the Specification block, which
                 now carries the full compliance line. */}

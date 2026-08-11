@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import { EnquiryForm } from "../enquiry-form";
 import { fluid } from "./fluid";
 
 /**
@@ -13,6 +12,7 @@ export function LeadBand({
   eyebrow = "Get in touch",
   title,
   sub,
+  form,
   image,
   imageUrl,
   imageAlt,
@@ -20,6 +20,8 @@ export function LeadBand({
   eyebrow?: string;
   title: React.ReactNode;
   sub: string;
+  /** The lead form itself — a `<ManagedForm>` supplied by the page. */
+  form: React.ReactNode;
   /** Caption for the placeholder art, used when no asset is picked. */
   image: string;
   /** Resolved URL of the asset chosen in the master-page editor. */
@@ -45,7 +47,7 @@ export function LeadBand({
           <p className="mt-3 max-w-[46ch] text-[14.5px] text-bz-ink-2 leading-relaxed">
             {sub}
           </p>
-          <EnquiryForm source="contact_page" showIntent className="mt-8" />
+          <div className="mt-8">{form}</div>
         </div>
 
         {/* Photo — same clipping + track fix as

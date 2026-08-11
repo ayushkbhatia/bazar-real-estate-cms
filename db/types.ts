@@ -432,6 +432,42 @@ export type Database = {
         }
         Relationships: []
       }
+      backup_area_subpages_20260811: {
+        Row: {
+          blocks: Json | null
+          created_at: string | null
+          id: string | null
+          published_at: string | null
+          seo: Json | null
+          slug: string | null
+          status: Database["public"]["Enums"]["page_status"] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          blocks?: Json | null
+          created_at?: string | null
+          id?: string | null
+          published_at?: string | null
+          seo?: Json | null
+          slug?: string | null
+          status?: Database["public"]["Enums"]["page_status"] | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          blocks?: Json | null
+          created_at?: string | null
+          id?: string | null
+          published_at?: string | null
+          seo?: Json | null
+          slug?: string | null
+          status?: Database["public"]["Enums"]["page_status"] | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       bulk_operations: {
         Row: {
           action: Database["public"]["Enums"]["bulk_action_kind"]
@@ -1389,6 +1425,157 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      form_fields: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          form_id: string
+          help: string | null
+          id: string
+          key: string
+          label: string
+          locked: boolean
+          mapping: string
+          max_value: number | null
+          min_value: number | null
+          option_source: string | null
+          options: Json
+          placeholder: string | null
+          position: number
+          required: boolean
+          rows: number | null
+          type: string
+          updated_at: string
+          width: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          form_id: string
+          help?: string | null
+          id?: string
+          key: string
+          label: string
+          locked?: boolean
+          mapping?: string
+          max_value?: number | null
+          min_value?: number | null
+          option_source?: string | null
+          options?: Json
+          placeholder?: string | null
+          position?: number
+          required?: boolean
+          rows?: number | null
+          type: string
+          updated_at?: string
+          width?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          form_id?: string
+          help?: string | null
+          id?: string
+          key?: string
+          label?: string
+          locked?: boolean
+          mapping?: string
+          max_value?: number | null
+          min_value?: number | null
+          option_source?: string | null
+          options?: Json
+          placeholder?: string | null
+          position?: number
+          required?: boolean
+          rows?: number | null
+          type?: string
+          updated_at?: string
+          width?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_fields_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "forms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      form_submissions: {
+        Row: {
+          created_at: string
+          data: Json
+          enquiry_id: string | null
+          form_key: string
+          id: string
+          read_at: string | null
+          read_by: string | null
+          source_path: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          enquiry_id?: string | null
+          form_key: string
+          id?: string
+          read_at?: string | null
+          read_by?: string | null
+          source_path?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          enquiry_id?: string | null
+          form_key?: string
+          id?: string
+          read_at?: string | null
+          read_by?: string | null
+          source_path?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "form_submissions_enquiry_id_fkey"
+            columns: ["enquiry_id"]
+            isOneToOne: false
+            referencedRelation: "enquiries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forms: {
+        Row: {
+          copy: Json
+          created_at: string
+          enabled: boolean
+          id: string
+          key: string
+          notify_emails: string[]
+          updated_at: string
+        }
+        Insert: {
+          copy?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key: string
+          notify_emails?: string[]
+          updated_at?: string
+        }
+        Update: {
+          copy?: Json
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key?: string
+          notify_emails?: string[]
+          updated_at?: string
+        }
+        Relationships: []
       }
       integrations: {
         Row: {

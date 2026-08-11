@@ -1,28 +1,21 @@
-"use client";
-
-import { useState, useTransition } from "react";
-import { Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import { createEnquiry } from "../../_actions";
+import type { ResolvedForm } from "@/lib/forms/types";
+import { FormRenderer } from "../forms/form-renderer";
 import type { SectionCopy } from "./section-copy";
 
-const PURPOSES = [
-  { label: "Sell Your Property", intent: "sell" as const },
-  { label: "Rent Your Property", intent: "rent" as const },
-  { label: "Manage Your Property", intent: "manage" as const },
-];
-
-const DIAL_CODES = ["+971", "+966", "+44", "+1"];
-
 /**
- * Home "List your property" (handoff §4). Split card: lead-gen form + photo.
- * Submits through the shared `createEnquiry` server action (source
- * "contact_page"); the chosen purpose rides in `intent` + the message, so
- * no schema/DB change is needed.
+ * Home / Areas "List your property" (handoff §4). Split card: lead-gen form +
+ * photo. The fields, their order, the button and the confirmation come from
+ * the Forms Manager (`/admin/forms`); the card around them is page copy and
+ * stays in Pages & blocks. Submits through `submitForm`, which files it as an
+ * enquiry exactly as this card always did.
+ *
+ * A server component now — the state it used to hold moved into
+ * `FormRenderer` along with the inputs.
  */
 export function ListYourProperty({
+  form,
   eyebrow = "List your property",
   heading = "List your property",
   body = "Looking to sell or rent? We'll handle the process for you.",
@@ -30,45 +23,11 @@ export function ListYourProperty({
   imageAlt,
   imageLabel,
 }: SectionCopy & {
+  form: ResolvedForm;
   imageUrl?: string | null;
   imageAlt?: string | null;
   imageLabel?: string | null;
-} = {}) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [dial, setDial] = useState("+971");
-  const [phone, setPhone] = useState("");
-  const [purpose, setPurpose] = useState(PURPOSES[0]);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [formError, setFormError] = useState<string | null>(null);
-  const [done, setDone] = useState(false);
-  const [pending, startTransition] = useTransition();
-
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    setErrors({});
-    setFormError(null);
-    const name = `${firstName} ${lastName}`.trim();
-    const phoneFull = phone.trim() ? `${dial} ${phone.trim()}` : "";
-    startTransition(async () => {
-      const res = await createEnquiry({
-        name,
-        email,
-        phone: phoneFull,
-        message: `List my property — ${purpose.label}.`,
-        intent: purpose.intent,
-        source: "contact_page",
-      });
-      if (res.status === "ok") {
-        setDone(true);
-      } else {
-        setFormError(res.message);
-        if (res.fieldErrors) setErrors(res.fieldErrors);
-      }
-    });
-  }
-
+}) {
   return (
     <section className="px-4 md:px-12 py-14 md:py-20">
       <div className="grid overflow-hidden rounded-2xl border border-bz-border bg-bz-surface md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
@@ -87,107 +46,7 @@ export function ListYourProperty({
             {body}
           </p>
 
-          {done ? (
-            <div className="mt-8 flex items-start gap-3 rounded-lg border border-bz-border bg-bz-surface-2 p-5">
-              <Check size={18} className="mt-0.5 text-bz-accent" />
-              <div>
-                <div className="text-[15px] font-medium">Thanks — we&apos;ve got it.</div>
-                <p className="mt-1 text-[13.5px] text-bz-ink-2">
-                  An advisor will be in touch shortly about listing your
-                  property.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={submit} className="mt-8 flex flex-col gap-4" noValidate>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <LabeledInput
-                  label="First name"
-                  value={firstName}
-                  onChange={setFirstName}
-                  placeholder="First name"
-                />
-                <LabeledInput
-                  label="Last name"
-                  value={lastName}
-                  onChange={setLastName}
-                  placeholder="Last name"
-                />
-              </div>
-              <LabeledInput
-                label="Email"
-                type="email"
-                value={email}
-                onChange={setEmail}
-                placeholder="you@email.com"
-                error={errors.email}
-              />
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[12px] font-medium text-bz-ink-2">
-                  Phone number
-                </label>
-                <div className="flex gap-2">
-                  <select
-                    aria-label="Dialing code"
-                    value={dial}
-                    onChange={(e) => setDial(e.target.value)}
-                    className="h-11 w-[92px] shrink-0 rounded-md border border-bz-border bg-bz-surface px-2 text-[13.5px] outline-none focus:border-bz-accent"
-                  >
-                    {DIAL_CODES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    inputMode="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="50 000 0000"
-                    className="h-11 w-full rounded-md border border-bz-border bg-bz-surface px-3 text-[13.5px] outline-none focus:border-bz-accent"
-                  />
-                </div>
-                {errors.phone ? (
-                  <span className="text-[12px] text-bz-danger">{errors.phone}</span>
-                ) : null}
-              </div>
-
-              <fieldset className="mt-1">
-                <legend className="mb-2 text-[12px] font-medium text-bz-ink-2">
-                  Property purpose
-                </legend>
-                <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-                  {PURPOSES.map((p) => {
-                    const on = purpose.label === p.label;
-                    return (
-                      <button
-                        key={p.label}
-                        type="button"
-                        aria-pressed={on}
-                        onClick={() => setPurpose(p)}
-                        className={[
-                          "h-11 rounded-md px-4 text-[13.5px] transition-colors sm:h-9",
-                          on
-                            ? "border border-bz-navy bg-bz-navy text-bz-bg"
-                            : "border border-bz-border-strong bg-bz-surface text-bz-ink-2 hover:bg-bz-surface-2",
-                        ].join(" ")}
-                      >
-                        {p.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
-
-              {formError ? (
-                <p className="text-[13px] text-bz-danger">{formError}</p>
-              ) : null}
-
-              <Button type="submit" disabled={pending} className="mt-2 h-11 self-start px-6">
-                {pending ? "Submitting…" : "Submit"}
-              </Button>
-            </form>
-          )}
+          <FormRenderer form={form} className="mt-8" />
         </div>
 
         {/* Photo.
@@ -217,35 +76,5 @@ export function ListYourProperty({
         </div>
       </div>
     </section>
-  );
-}
-
-function LabeledInput({
-  label,
-  value,
-  onChange,
-  placeholder,
-  type = "text",
-  error,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  type?: string;
-  error?: string;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[12px] font-medium text-bz-ink-2">{label}</label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="h-11 rounded-md border border-bz-border bg-bz-surface px-3 text-[13.5px] outline-none focus:border-bz-accent"
-      />
-      {error ? <span className="text-[12px] text-bz-danger">{error}</span> : null}
-    </div>
   );
 }

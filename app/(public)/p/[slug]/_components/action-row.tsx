@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Share2, Send, Check } from "lucide-react";
 import { CompareButton } from "@/components/brand/compare-button";
+import type { ResolvedForm } from "@/lib/forms/types";
 import { PropertyEnquiryDialog } from "./enquiry-dialog";
 
 /**
@@ -14,11 +15,14 @@ import { PropertyEnquiryDialog } from "./enquiry-dialog";
  * below the similar-listings rail, so the button looked broken.
  */
 export function PropertyActionRow({
+  enquiryForm,
   propertyId,
   reference,
   title,
   advisorName,
 }: {
+  /** Resolved from /admin/forms by the listing page. */
+  enquiryForm: ResolvedForm;
   propertyId: string;
   reference: string;
   title: string;
@@ -74,6 +78,7 @@ export function PropertyActionRow({
           )}
         </button>
         <PropertyEnquiryDialog
+          form={enquiryForm}
           propertyId={propertyId}
           propertyReference={reference}
           propertyTitle={title}

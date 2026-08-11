@@ -5,6 +5,7 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import type { PropertyAdvisor } from "@/lib/queries/property-advisor";
+import type { ResolvedForm } from "@/lib/forms/types";
 import { PropertyEnquiryDialog } from "./enquiry-dialog";
 
 /**
@@ -20,11 +21,14 @@ import { PropertyEnquiryDialog } from "./enquiry-dialog";
  * which keeps the card actionable in the meantime.
  */
 export function AgentCard({
+  enquiryForm,
   advisor,
   propertyId,
   propertyReference,
   propertyTitle,
 }: {
+  /** Resolved from /admin/forms by the listing page. */
+  enquiryForm: ResolvedForm;
   advisor: PropertyAdvisor;
   propertyId: string;
   propertyReference: string;
@@ -127,6 +131,7 @@ export function AgentCard({
       ) : null}
 
       <PropertyEnquiryDialog
+        form={enquiryForm}
         propertyId={propertyId}
         propertyReference={propertyReference}
         propertyTitle={propertyTitle}

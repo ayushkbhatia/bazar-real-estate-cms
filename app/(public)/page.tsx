@@ -26,6 +26,7 @@ import { PartnerEcosystemSection } from "./_components/partner-ecosystem-section
 import { HomeFaqs } from "./_components/home/home-faqs";
 import { HomeTestimonials } from "./_components/home/home-testimonials";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { getForm } from "@/lib/queries/forms";
 import { listPropertiesByReference } from "@/lib/queries/featured-properties";
 import { HOME_FEATURED_LISTING_COUNT } from "./_components/home/section-copy";
 import { faqPairs, img, list, statPairs, str } from "@/lib/master-pages";
@@ -49,10 +50,11 @@ function badgeFor(row: ListingRow):
 }
 
 export default async function HomePage() {
-  const [{ rows: latest }, settings, content] = await Promise.all([
+  const [{ rows: latest }, settings, content, listForm] = await Promise.all([
     listPublishedProperties({ mode: "buy", limit: HOME_FEATURED_LISTING_COUNT }),
     getPublicSiteSettings(),
     getMasterPageContent("home"),
+    getForm("home_list_property"),
   ]);
 
   // Hero variant is driven entirely by site_settings now — the page used to
@@ -246,9 +248,10 @@ export default async function HomePage() {
       </section>
     ),
 
-    list_your_property: (
+    list_your_property: listForm.enabled ? (
       <ListYourProperty
         key="list_your_property"
+        form={listForm}
         eyebrow={str(listV, "eyebrow")}
         heading={str(listV, "heading")}
         body={str(listV, "body")}
@@ -256,7 +259,7 @@ export default async function HomePage() {
         imageAlt={listImage?.alt ?? null}
         imageLabel={listImage?.label ?? null}
       />
-    ),
+    ) : null,
 
     mortgage_calculator: (
       <MortgageCalculatorSection
