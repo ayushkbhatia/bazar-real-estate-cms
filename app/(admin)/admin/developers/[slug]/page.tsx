@@ -1,18 +1,23 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { mediaPublicUrl } from "@/lib/media";
-import { getDeveloperRecord } from "@/lib/queries/developers-extras";
+import {
+  getDeveloperRecord,
+  getDeveloperRecordBySlug,
+} from "@/lib/queries/developers-extras";
+import { shippedLogo } from "@/lib/developers/shipped-logo";
+import { isUuidLike } from "@/lib/uuid";
 import type { MediaOption } from "../../pages/master/[key]/_editor";
 import { DeveloperRecordForm } from "./_form";
 import { DeveloperLogoCard } from "./_logo-card";
 
 export const dynamic = "force-dynamic";
 
-type PageProps = { params: Promise<{ id: string }> };
+type PageProps = { params: Promise<{ slug: string }> };
 
 async function fetchMedia(): Promise<MediaOption[]> {
   if (!isSupabaseConfigured) return [];
@@ -35,17 +40,34 @@ async function fetchMedia(): Promise<MediaOption[]> {
 /**
  * One developer's record — the facts behind /developers/<slug>.
  *
- * The counterpart to the areas record editor. A developer is referenced by
- * every property and project filed under it, so the page states that count
- * before the operator renames or re-links anything.
+ * Addressed by slug, not id. A raw uuid in the address bar is unreadable, gives
+ * an operator no way to tell one developer's record from another in a browser
+ * history or a pasted link, and matches nothing else in the CMS — the area and
+ * development editors are both `/…/<slug>`. Links minted before this change
+ * still work: a uuid-shaped param resolves the row and redirects to its slug.
  */
 export default async function DeveloperRecordPage({ params }: PageProps) {
-  const { id } = await params;
+  const { slug } = await params;
+
+  if (isUuidLike(slug)) {
+    const byId = await getDeveloperRecord(slug);
+    if (!byId) notFound();
+    redirect(`/admin/developers/${byId.slug}`);
+  }
+
   const [record, media] = await Promise.all([
-    getDeveloperRecord(id),
+    getDeveloperRecordBySlug(slug),
     fetchMedia(),
   ]);
   if (!record) notFound();
+
+  // The launch partners carry their marks in /public/developers, not in the
+  // database, so the picker looked empty for every one of them. Show the
+  // shipped file as the current logo; uploading replaces it.
+  const shipped = shippedLogo({ slug: record.slug, name: record.name });
+  const shippedSrc = shipped
+    ? (shipped.trimmed ?? shipped.master).src
+    : null;
 
   return (
     <CmsShell
@@ -101,6 +123,7 @@ export default async function DeveloperRecordPage({ params }: PageProps) {
           developerId={record.id}
           media={media}
           logoId={record.logo_id}
+          shippedLogoUrl={shippedSrc}
         />
       </div>
     </CmsShell>

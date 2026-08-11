@@ -129,16 +129,22 @@ function shapeIndexRow(raw: Record<string, unknown>): DevelopmentIndexRow {
 }
 
 /** List all published developments for the public index. */
-export async function listPublishedDevelopments(): Promise<
-  DevelopmentIndexRow[]
-> {
+export async function listPublishedDevelopments(
+  opts: {
+    /** Narrow to one developer — powers the profile page's projects grid. */
+    developerId?: string;
+  } = {},
+): Promise<DevelopmentIndexRow[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = createSupabasePublicClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("developments")
     .select(INDEX_FIELDS)
-    .not("published_at", "is", null)
-    .order("published_at", { ascending: false });
+    .not("published_at", "is", null);
+  if (opts.developerId) query = query.eq("developer_id", opts.developerId);
+  const { data, error } = await query.order("published_at", {
+    ascending: false,
+  });
   if (error || !data) {
     if (error) console.error("[listPublishedDevelopments]", error);
     return [];

@@ -8,7 +8,7 @@ import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
-import { initials, listDirectory } from "./_directory";
+import { entryLogo, initials, listDirectory } from "./_directory";
 
 export const metadata: Metadata = {
   title: "Developers · Bazar Real Estate",
@@ -106,51 +106,40 @@ export default async function DevelopersPage() {
           className="mb-10 md:mb-12"
         />
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
-          {directory.map((d) => (
+          {directory.map((d) => {
+            const logo = entryLogo(d);
+            // Trimmed art is optically normalised, so it gets the tight box
+            // that bounds both axes — wide wordmarks cap on width, tall
+            // lockups on height. Same box as `DeveloperMarquee`, so both
+            // developer surfaces normalise identically. Anything else (a
+            // padded master canvas, an uploaded file) carries its padding
+            // inside the frame and needs a taller box for comparable weight.
+            const tight = d.uploaded === null && d.trimmed !== null;
+            return (
             <Link
               key={d.slug}
               href={`/developers/${d.slug}`}
               className="group flex flex-col rounded-lg border border-bz-border bg-bz-surface overflow-hidden hover:border-bz-border-strong transition-colors"
             >
               <div className="flex items-center justify-center px-5 min-h-[140px] md:min-h-[152px]">
-                {d.trimmed ? (
-                  // Fitting the trimmed art into a box that bounds both axes
-                  // is what evens out optical weight across the set — wide
-                  // wordmarks cap on width, tall lockups on height. Same box
-                  // as `DeveloperMarquee`, so both developer surfaces
-                  // normalise identically. See `developer-logos`.
-                  // `max-w-full` keeps the box inside the card on narrow
-                  // two-column viewports, where it is the tighter bound.
+                {logo ? (
                   <Image
-                    src={d.trimmed.src}
+                    src={logo.src}
                     alt={d.name}
-                    width={d.trimmed.w}
-                    height={d.trimmed.h}
-                    className="w-[132px] h-12 md:w-40 md:h-14 max-w-full object-contain"
-                    sizes="160px"
-                  />
-                ) : d.master ? (
-                  // The master PNGs are square canvases with padding baked
-                  // in, so they need a taller box to carry comparable weight.
-                  <Image
-                    src={d.master.src}
-                    alt={d.name}
-                    width={d.master.w}
-                    height={d.master.h}
-                    className="h-20 md:h-24 w-auto object-contain"
-                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
-                  />
-                ) : d.uploaded ? (
-                  // Added in the CMS with a logo uploaded to the media
-                  // library. No trimmed variant exists for it, so it gets the
-                  // padded-canvas box.
-                  <Image
-                    src={d.uploaded}
-                    alt={d.name}
-                    width={240}
-                    height={240}
-                    className="h-20 md:h-24 w-auto object-contain"
-                    sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
+                    width={logo.w}
+                    height={logo.h}
+                    className={
+                      tight
+                        ? // `max-w-full` keeps the box inside the card on narrow
+                          // two-column viewports, where it is the tighter bound.
+                          "w-[132px] h-12 md:w-40 md:h-14 max-w-full object-contain"
+                        : "h-20 md:h-24 w-auto max-w-full object-contain"
+                    }
+                    sizes={
+                      tight
+                        ? "160px"
+                        : "(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
+                    }
                   />
                 ) : (
                   // No art at all — initials keep the card the same height as
@@ -187,7 +176,8 @@ export default async function DevelopersPage() {
                 </div>
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
       </section>
     ),

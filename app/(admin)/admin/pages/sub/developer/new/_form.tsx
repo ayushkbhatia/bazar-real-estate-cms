@@ -39,7 +39,7 @@ export function NewDeveloperForm() {
           ? `${result.name} added — /developers/${result.slug} is live.`
           : `"${result.name}" already existed — opening it.`,
       );
-      router.push(`/admin/developers/${result.id}`);
+      router.push(`/admin/developers/${result.slug}`);
     });
   }
 

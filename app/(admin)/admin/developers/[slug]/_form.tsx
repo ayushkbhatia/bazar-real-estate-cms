@@ -50,6 +50,11 @@ export function DeveloperRecordForm({ initial }: { initial: DeveloperRecord }) {
       if (result.status === "ok") {
         toast.success(result.message);
         setDirty(false);
+        // The editor is addressed by slug, so renaming moves this page too —
+        // staying put would leave the operator on a URL that now 404s.
+        if (result.slug !== form.slug || result.slug !== initial.slug) {
+          router.replace(`/admin/developers/${result.slug}`);
+        }
         router.refresh();
       } else {
         toast.error(result.message);
