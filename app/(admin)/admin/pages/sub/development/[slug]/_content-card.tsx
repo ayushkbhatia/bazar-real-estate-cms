@@ -371,7 +371,7 @@ export function DevelopmentContentCard({
       <div className="flex flex-col gap-3 border-t border-bz-border pt-4">
         <div className="flex items-center gap-3">
           <h3 className="text-[12.5px] font-medium mr-auto">
-            Future neighbours
+            Nearby Developments
           </h3>
           <span className="text-[11.5px] text-bz-muted">
             {form.nearby_ids.length}/3

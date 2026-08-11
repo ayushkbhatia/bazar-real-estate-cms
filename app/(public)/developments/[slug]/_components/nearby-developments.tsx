@@ -41,7 +41,7 @@ export function NearbyDevelopments({
         className="serif text-[32px] mt-2 leading-tight max-w-[28ch]"
         style={{ letterSpacing: "-0.02em" }}
       >
-        {heading ?? "Future neighbours"}
+        {heading ?? "Nearby Developments"}
       </h2>
       <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[58ch]">
         {intro ??

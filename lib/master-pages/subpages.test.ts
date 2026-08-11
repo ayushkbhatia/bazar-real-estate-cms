@@ -263,6 +263,14 @@ describe("reordering and gallery", () => {
     expect(DEVELOPMENT_SECTIONS.map((s) => s.key)).toContain("nearby");
   });
 
+  it("calls the section Nearby Developments in the editor", () => {
+    // The section key stays `nearby` — it's what saved documents are filed
+    // under — but the label an editor reads has to match the heading the
+    // page prints, or the section is unfindable from the live page.
+    const nearby = DEVELOPMENT_SECTIONS.find((s) => s.key === "nearby")!;
+    expect(nearby.label).toBe("Nearby Developments");
+  });
+
   it("gives every content section an overridable eyebrow", () => {
     // The eyebrow is the one line of a section an editor could never touch.
     // Hero has no eyebrow to override (it leads with the tagline pill) and
@@ -286,7 +294,7 @@ describe("reordering and gallery", () => {
     }
   });
 
-  it("lets an editor override all three lines of the future-neighbours copy", () => {
+  it("lets an editor override all three lines of the nearby-developments copy", () => {
     // The section carried heading/intro fields the page never read, and no
     // eyebrow field at all, so the whole block was effectively hardcoded.
     const nearby = DEVELOPMENT_SECTIONS.find((s) => s.key === "nearby")!;
