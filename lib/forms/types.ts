@@ -41,6 +41,7 @@ export type EnquirySource = (typeof ENQUIRY_SOURCES)[number];
  *   radio       one value from a stacked list
  *   checkbox    a single boolean — consent, opt-in
  *   number      integer, with optional min/max
+ *   range       two handles over a scale, submitted as "min:max"
  */
 export const FORM_FIELD_TYPES = [
   "text",
@@ -53,6 +54,7 @@ export const FORM_FIELD_TYPES = [
   "radio",
   "checkbox",
   "number",
+  "range",
 ] as const;
 
 export type FormFieldType = (typeof FORM_FIELD_TYPES)[number];
@@ -68,6 +70,7 @@ export const FORM_FIELD_TYPE_LABELS: Record<FormFieldType, string> = {
   radio: "Radio list",
   checkbox: "Checkbox",
   number: "Number",
+  range: "Range slider",
 };
 
 /** Types that carry a list of options. */
@@ -171,6 +174,28 @@ export type FormOption = {
 
 export type FormFieldWidth = "full" | "half";
 
+/**
+ * The answer that reveals a field.
+ *
+ * The Buy hero asks "Property Purpose" first and then branches: a residential
+ * brief is offered apartments and bedrooms, a commercial one is offered retail
+ * space and no bedrooms at all. Modelling that as a condition on the field
+ * rather than as a condition on each *option* keeps one concept — an editor
+ * who can hide a question behind an answer can build both branches, and the
+ * bedrooms question needs the same primitive anyway.
+ *
+ * `field` must name a field *earlier* in the list. That is enforced in
+ * `formSaveSchema`, not here, because it is a property of the whole list; a
+ * condition pointing forwards or at itself would make visibility depend on an
+ * answer that hasn't been asked for yet.
+ */
+export type FormFieldCondition = {
+  /** The key of an earlier field on the same form. */
+  field: string;
+  /** Any one of these answers reveals this field. */
+  values: string[];
+};
+
 export type FormFieldDef = {
   /** Stable handle. Used as the submission key and the input name. */
   key: string;
@@ -195,9 +220,15 @@ export type FormFieldDef = {
   optionSource?: FormOptionSource | null;
   /** textarea only. */
   rows?: number | null;
-  /** number only. */
+  /** number and range — the ends of the scale. */
   min?: number | null;
   max?: number | null;
+  /** range only — how far one drag tick moves. */
+  step?: number | null;
+  /** range only — rendered before each number ("AED 2,500,000"). */
+  unit?: string | null;
+  /** Null ⇒ always asked, which is every field but the Buy hero's branches. */
+  showWhen?: FormFieldCondition | null;
   /**
    * A field the form cannot function without — the email box on a newsletter
    * signup, the brief on an enquiry. The editor may relabel it, but not
@@ -206,6 +237,66 @@ export type FormFieldDef = {
    */
   locked?: boolean;
 };
+
+// ── range values ─────────────────────────────────────────────────────────
+
+/**
+ * A range answer is one string, `"min:max"`, with either side blank for
+ * open-ended — exactly the shape a `budget_band` pill's option value already
+ * carried before sliders existed. Keeping them identical means a form that
+ * swaps its budget pills for a slider (or back) files its leads into the same
+ * two columns with no second code path and no migration of past answers.
+ */
+export function parseRangeValue(value: unknown): {
+  min: number | null;
+  max: number | null;
+} {
+  if (typeof value !== "string" || !value.includes(":"))
+    return { min: null, max: null };
+  const [rawMin, rawMax] = value.split(":");
+  const num = (raw: string | undefined) => {
+    if (!raw || !raw.trim()) return null;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : null;
+  };
+  return { min: num(rawMin), max: num(rawMax) };
+}
+
+/** Both ends open means "no answer", which is a blank string, not "0:0". */
+export function formatRangeValue(
+  min: number | null,
+  max: number | null,
+): string {
+  if (min == null && max == null) return "";
+  return `${min ?? ""}:${max ?? ""}`;
+}
+
+/** The scale a slider runs over, with the fallbacks a half-configured field needs. */
+export function rangeBounds(field: FormFieldDef): {
+  min: number;
+  max: number;
+  step: number;
+} {
+  const min = field.min ?? 0;
+  const max = field.max != null && field.max > min ? field.max : min + 1;
+  const step = field.step != null && field.step > 0 ? field.step : 1;
+  return { min, max, step };
+}
+
+/**
+ * What a range reads as to a human — on the slider, in the advisor's brief and
+ * in Responses. An open end is spelled out ("Up to AED 5,000,000") rather than
+ * shown as a bound the visitor never chose.
+ */
+export function formatRangeLabel(field: FormFieldDef, value: unknown): string {
+  const { min, max } = parseRangeValue(value);
+  if (min == null && max == null) return "";
+  const prefix = field.unit ? `${field.unit} ` : "";
+  const num = (n: number) => `${prefix}${n.toLocaleString("en-US")}`;
+  if (min == null) return `Up to ${num(max!)}`;
+  if (max == null) return `${num(min)}+`;
+  return `${num(min)} – ${num(max)}`;
+}
 
 /** Copy the manager owns, as opposed to the page copy in Pages & blocks. */
 export type FormCopy = {
@@ -274,6 +365,16 @@ export type FormDef = {
   variant: FormVariant;
   /** The `enquiries.source` a submission is filed under. */
   enquirySource?: EnquirySource;
+  /**
+   * What the lead is filed as when no field on the form asks.
+   *
+   * A form on /buy is a buying lead whether or not it carries a Buy·Sell·Rent
+   * control, and the Buy hero's brief deliberately doesn't: it asks what kind
+   * of property, not what kind of transaction. Without this the routing rules
+   * and the desk's filters would see `intent: null` on every one of them. An
+   * answered intent field always wins — this is the floor, not an override.
+   */
+  defaultIntent?: "buy" | "sell" | "rent" | "invest" | "manage";
   /** Newsletter forms only. */
   newsletterSource?: string;
   headingSource?: FormHeadingSource;

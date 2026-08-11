@@ -29,9 +29,16 @@ import type {
   FormOption,
   ResolvedForm,
 } from "@/lib/forms/types";
-import { renderFormCopy, visibleFields } from "@/lib/forms/resolve";
+import {
+  formatRangeLabel,
+  formatRangeValue,
+  parseRangeValue,
+  rangeBounds,
+} from "@/lib/forms/types";
+import { activeFields, renderFormCopy, visibleFields } from "@/lib/forms/resolve";
 import { buildFormSchema, normaliseSubmission } from "@/lib/forms/validate";
 import { optionsFor } from "@/lib/forms/submission";
+import { DualRangeSlider } from "../dual-range-slider";
 import { submitForm, type FormSubmitContext } from "../../_actions/forms";
 
 export type FormRendererProps = {
@@ -110,7 +117,6 @@ export function FormRenderer({
   const stacked = form.def.variant === "stacked";
   const style = successStyle ?? (stacked ? "note" : "soft");
 
-  const fields = useMemo(() => visibleFields(form), [form]);
   const [values, setValues] = useState<Values>(() =>
     initialValues(form, tokens),
   );
@@ -118,6 +124,15 @@ export function FormRenderer({
   const [formError, setFormError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
+  // Bumped after "Send another". The slider holds its handle positions in its
+  // own state, so clearing `values` alone would leave it showing a range the
+  // form no longer has an answer for; remounting the tree is the honest reset.
+  const [attempt, setAttempt] = useState(0);
+
+  // What the form is asking right now. A branching form re-reads this on every
+  // keystroke — the Buy hero swaps its property-type dropdown and drops its
+  // bedroom question the moment the purpose control changes.
+  const fields = useMemo(() => activeFields(form, values), [form, values]);
 
   // Blank strings from the page's own editor mean "not set" and fall through
   // to the manager's value, the same way an unset master-page field does.
@@ -150,7 +165,11 @@ export function FormRenderer({
     setFormError(null);
 
     const normalised = normaliseSubmission(form, values);
-    const parsed = buildFormSchema(form, dynamicOptions).safeParse(normalised);
+    const parsed = buildFormSchema(
+      form,
+      dynamicOptions,
+      normalised,
+    ).safeParse(normalised);
     if (!parsed.success) {
       const next: Record<string, string> = {};
       for (const issue of parsed.error.issues) {
@@ -188,7 +207,14 @@ export function FormRenderer({
         style={style}
         title={copy.successTitle}
         body={copy.successBody}
-        onAnother={allowAnother ? () => setDone(false) : null}
+        onAnother={
+          allowAnother
+            ? () => {
+                setAttempt((n) => n + 1);
+                setDone(false);
+              }
+            : null
+        }
         className={className}
       />
     );
@@ -196,6 +222,7 @@ export function FormRenderer({
 
   return (
     <form
+      key={attempt}
       onSubmit={onSubmit}
       noValidate
       className={cn(
@@ -504,6 +531,10 @@ function FieldControl({
       );
       break;
 
+    case "range":
+      control = <RangeField field={field} value={text} onChange={onChange} />;
+      break;
+
     case "number":
       control = stacked ? (
         <input
@@ -583,6 +614,49 @@ function FieldControl({
       {control}
       {help}
       <FieldError message={error} stacked={stacked} />
+    </div>
+  );
+}
+
+/**
+ * Two handles over a scale, submitted as one `"min:max"` string.
+ *
+ * Wraps the slider the search filters already use, so the budget control on a
+ * lead form drags like the budget control on /buy/search rather than like a
+ * second thing that happens to do the same job.
+ *
+ * A handle parked at its end of the scale means "no bound that side", not
+ * "zero" — the slider reports it as null and the value carries a blank half.
+ * Both ends parked is a blank string, which is the answer of a visitor who
+ * never touched it: no budget on the lead, no budget line in the brief.
+ */
+function RangeField({
+  field,
+  value,
+  onChange,
+}: {
+  field: FormFieldDef;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const bounds = rangeBounds(field);
+  const current = parseRangeValue(value);
+  const summary = formatRangeLabel(field, value);
+  const prefix = field.unit ? `${field.unit} ` : "";
+
+  return (
+    <div className="flex flex-col gap-1">
+      <DualRangeSlider
+        min={bounds.min}
+        max={bounds.max}
+        step={bounds.step}
+        initial={current}
+        format={(n) => `${prefix}${n.toLocaleString("en-US")}`}
+        onChange={(range) => onChange(formatRangeValue(range.min, range.max))}
+      />
+      <span className="text-[12px] text-bz-ink-2" aria-live="polite">
+        {summary || "Any budget"}
+      </span>
     </div>
   );
 }

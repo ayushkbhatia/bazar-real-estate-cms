@@ -95,7 +95,9 @@ export async function submitForm(
   const dynamic = await loadDynamicOptions(form);
 
   const normalised = normaliseSubmission(form, rawValues);
-  const parsed = buildFormSchema(form, dynamic).safeParse(normalised);
+  const parsed = buildFormSchema(form, dynamic, normalised).safeParse(
+    normalised,
+  );
   if (!parsed.success) {
     return {
       status: "error",
@@ -184,7 +186,10 @@ export async function submitForm(
         email: lead.email,
         phone: lead.phone,
         message: brief,
-        intent: normaliseIntent(lead.intent),
+        // An answered intent field wins; `defaultIntent` is what a form that
+        // doesn't ask still knows about itself — the Buy hero's brief is a
+        // buying lead whether or not it carries a Buy·Sell·Rent control.
+        intent: normaliseIntent(lead.intent ?? form.def.defaultIntent ?? null),
         timeline: lead.timeline,
         budget_min: lead.budgetMin,
         budget_max: lead.budgetMax,

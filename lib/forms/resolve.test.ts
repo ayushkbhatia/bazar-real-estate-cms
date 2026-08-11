@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  activeFields,
   defaultForm,
   renderFormCopy,
   resolveForm,
@@ -126,6 +127,67 @@ describe("visibleFields", () => {
     expect(visibleFields(form).map((f: FormFieldDef) => f.key)).toEqual([
       "email",
     ]);
+  });
+});
+
+describe("activeFields", () => {
+  const buy = () => defaultForm("buy_hero_enquiry")!;
+
+  it("asks only the residential branch when the purpose is residential", () => {
+    const keys = activeFields(buy(), { purpose: "residential" }).map(
+      (f) => f.key,
+    );
+    expect(keys).toContain("property_type");
+    expect(keys).toContain("bedrooms");
+    expect(keys).not.toContain("commercial_type");
+  });
+
+  it("swaps the type list and drops bedrooms for a commercial brief", () => {
+    // A warehouse does not have three of them.
+    const keys = activeFields(buy(), { purpose: "commercial" }).map(
+      (f) => f.key,
+    );
+    expect(keys).toContain("commercial_type");
+    expect(keys).not.toContain("property_type");
+    expect(keys).not.toContain("bedrooms");
+  });
+
+  it("asks neither branch before the purpose is answered", () => {
+    const keys = activeFields(buy(), {}).map((f) => f.key);
+    expect(keys).toEqual([
+      "name",
+      "phone",
+      "email",
+      "purpose",
+      "property_status",
+      "location",
+      "budget",
+      "message",
+    ]);
+  });
+
+  it("takes a whole branch down with the field it hangs off", () => {
+    // A condition pointing at a question that isn't being asked — switched
+    // off, deleted, or hidden itself — fails rather than passing by default.
+    const form = resolveForm("buy_hero_enquiry", null, [
+      stored({ key: "purpose", type: "chips", enabled: false, position: 10 }),
+      stored({
+        key: "bedrooms",
+        type: "select",
+        showWhen: { field: "purpose", values: ["residential"] },
+        position: 20,
+      }),
+    ])!;
+    expect(activeFields(form, { purpose: "residential" }).map((f) => f.key)).not.toContain(
+      "bedrooms",
+    );
+  });
+
+  it("leaves unconditional forms exactly as visibleFields sees them", () => {
+    const form = defaultForm("contact_enquiry")!;
+    expect(activeFields(form, {}).map((f) => f.key)).toEqual(
+      visibleFields(form).map((f) => f.key),
+    );
   });
 });
 

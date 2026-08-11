@@ -141,6 +141,26 @@ export function timelineChips(extras: Extras = {}): FormFieldDef {
   });
 }
 
+/**
+ * The dual-handle budget slider.
+ *
+ * Mapped `budget_band` rather than to `budget_min` + `budget_max` as two
+ * fields: the slider is one question with one answer, and `budget_band`
+ * already knows how to split a `"min:max"` string across both columns. The
+ * defaults are the Abu Dhabi residential range in 250k steps — all four are
+ * editable in /admin/forms, which is the point of them being columns.
+ */
+export function budgetRange(extras: Extras = {}): FormFieldDef {
+  return field("budget", "Budget Range", "range", "budget_band", {
+    min: 0,
+    max: 20_000_000,
+    step: 250_000,
+    unit: "AED",
+    help: "Drag either handle. Leave it alone if you'd rather not say.",
+    ...extras,
+  });
+}
+
 export function recordSelect(
   key: string,
   label: string,

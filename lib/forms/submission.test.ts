@@ -263,6 +263,112 @@ describe("buildFormSchema", () => {
   });
 });
 
+describe("the Buy hero's branching brief", () => {
+  const buy = () => defaultForm("buy_hero_enquiry")!;
+
+  const residential = {
+    name: "Layla Hassan",
+    phone: "+971 50 111 2222",
+    email: "layla@example.com",
+    purpose: "residential",
+    property_type: "Villa",
+    commercial_type: "Office",
+    bedrooms: "4",
+    property_status: "ready",
+    location: "Saadiyat Island",
+    budget: "4000000:8000000",
+    message: "Sea view if possible.",
+  };
+
+  it("drops the branch the visitor changed their mind out of", () => {
+    // `commercial_type` was answered before the purpose flipped. It is not on
+    // their screen, so it is not in the submission and not in the lead.
+    const values = normaliseSubmission(buy(), residential);
+    expect(values).not.toHaveProperty("commercial_type");
+    expect(values.property_type).toBe("Villa");
+    expect(buildFormSchema(buy(), {}, values).safeParse(values).success).toBe(
+      true,
+    );
+  });
+
+  it("won't take a residential answer on a commercial brief", () => {
+    const values = normaliseSubmission(buy(), {
+      ...residential,
+      purpose: "commercial",
+      commercial_type: "Retail Space",
+    });
+    expect(values.commercial_type).toBe("Retail Space");
+    expect(values).not.toHaveProperty("bedrooms");
+    expect(values).not.toHaveProperty("property_type");
+  });
+
+  it("splits the budget slider across both columns", () => {
+    const values = normaliseSubmission(buy(), residential);
+    const lead = extractLead(buy(), values);
+    expect(lead.budgetMin).toBe(4_000_000);
+    expect(lead.budgetMax).toBe(8_000_000);
+  });
+
+  it("files no budget at all when nobody moved a handle", () => {
+    const values = normaliseSubmission(buy(), { ...residential, budget: "" });
+    const lead = extractLead(buy(), values);
+    expect(lead.budgetMin).toBeNull();
+    expect(lead.budgetMax).toBeNull();
+    expect(lead.extras.map((e) => e.key)).not.toContain("budget");
+  });
+
+  it("writes the brief an advisor can act on without opening the CMS", () => {
+    const values = normaliseSubmission(buy(), residential);
+    const brief = buildFormBrief(buy(), extractLead(buy(), values), values);
+    expect(brief).toContain("Property search — Residential.");
+    expect(brief).toContain("Sea view if possible.");
+    expect(brief).toContain("Property Type: Villa");
+    expect(brief).toContain("Number of Bedrooms: 4 Bedrooms");
+    expect(brief).toContain("Budget Range: AED 4,000,000 – AED 8,000,000");
+    // The branch they didn't take contributes nothing.
+    expect(brief).not.toContain("Office");
+  });
+
+  it("spells out an open end rather than inventing a bound", () => {
+    const open = normaliseSubmission(buy(), {
+      ...residential,
+      budget: ":3000000",
+    });
+    const brief = buildFormBrief(buy(), extractLead(buy(), open), open);
+    expect(brief).toContain("Budget Range: Up to AED 3,000,000");
+    expect(extractLead(buy(), open).budgetMin).toBeNull();
+  });
+
+  it("records only the questions that were on the screen", () => {
+    const values = normaliseSubmission(buy(), residential);
+    const data = buildSubmissionData(buy(), values);
+    expect(data).not.toHaveProperty("commercial_type");
+    expect((data._labels as Record<string, string>).property_type).toBe(
+      "Property Type",
+    );
+    expect(data._labels).not.toHaveProperty("commercial_type");
+  });
+
+  it("rejects a budget outside the scale the editor set", () => {
+    const values = normaliseSubmission(buy(), {
+      ...residential,
+      budget: "0:99000000",
+    });
+    expect(buildFormSchema(buy(), {}, values).safeParse(values).success).toBe(
+      false,
+    );
+  });
+
+  it("still needs the purpose, since everything else hangs off it", () => {
+    const values = normaliseSubmission(buy(), { ...residential, purpose: "" });
+    const parsed = buildFormSchema(buy(), {}, values).safeParse(values);
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      expect(fieldErrorsFrom(parsed.error)).toHaveProperty("purpose");
+    }
+  });
+});
+
 describe("normaliseSubmission", () => {
   it("coerces a checkbox, a number and an address", () => {
     const base = defaultForm("contact_enquiry")!;

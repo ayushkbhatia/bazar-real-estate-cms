@@ -26,6 +26,7 @@ import {
   FORM_FIELD_MAPPING_LABELS,
   FORM_OPTION_SOURCE_LABELS,
   hasOptions,
+  type FormFieldCondition,
   type FormFieldType,
   type FormFieldMapping,
   type ResolvedForm,
@@ -73,6 +74,9 @@ function toSaveField(field: ResolvedForm["fields"][number]): FormFieldSaveInput 
     rows: field.rows ?? null,
     min: field.min ?? null,
     max: field.max ?? null,
+    step: field.step ?? null,
+    unit: field.unit ?? null,
+    showWhen: field.showWhen ?? null,
     locked: field.locked ?? false,
   };
 }
@@ -167,6 +171,7 @@ export function FormEditor({
       toast.error(`"${field.label}" has a fixed type — the handler needs it.`);
       return;
     }
+    const seed = blankField(type, index);
     setField(index, {
       type,
       // Switching into a list type with nothing to list would save a dead
@@ -176,7 +181,22 @@ export function FormEditor({
           ? [{ label: "First option", value: "first_option", intent: null }]
           : field.options,
       rows: type === "textarea" ? (field.rows ?? 4) : null,
+      // A slider needs a scale to be saveable at all, so retyping into one
+      // borrows the same defaults a brand-new slider gets.
+      min: type === "range" ? (field.min ?? seed.min) : field.min,
+      max: type === "range" ? (field.max ?? seed.max) : field.max,
+      step: type === "range" ? (field.step ?? seed.step) : null,
+      unit: type === "range" ? field.unit : null,
     });
+
+    // Anything depending on this field's answers depended on it having some.
+    if (!hasOptions(type)) {
+      setFields((prev) =>
+        prev.map((f) =>
+          f.showWhen?.field === field.key ? { ...f, showWhen: null } : f,
+        ),
+      );
+    }
   }
 
   function save() {
@@ -562,6 +582,9 @@ function FieldsTab({
                   {field.mapping !== "custom"
                     ? ` · ${FORM_FIELD_MAPPING_LABELS[field.mapping]}`
                     : ""}
+                  {field.showWhen
+                    ? ` · only when ${field.showWhen.field} is ${field.showWhen.values.join(" or ")}`
+                    : ""}
                 </span>
               </button>
               {field.locked ? (
@@ -610,6 +633,12 @@ function FieldsTab({
             {open === index ? (
               <FieldDetail
                 field={field}
+                // Only the questions asked *before* this one, and only the
+                // ones with a fixed set of answers — a condition needs
+                // something to match against, and something already answered.
+                candidates={fields
+                  .slice(0, index)
+                  .filter((f) => hasOptions(f.type) && !f.optionSource)}
                 editable={editable}
                 onChange={(patch) => onChange(index, patch)}
                 onChangeType={(type) => onChangeType(index, type)}
@@ -641,11 +670,13 @@ function FieldsTab({
 
 function FieldDetail({
   field,
+  candidates,
   editable,
   onChange,
   onChangeType,
 }: {
   field: FormFieldSaveInput;
+  candidates: FormFieldSaveInput[];
   editable: boolean;
   onChange: (patch: Partial<FormFieldSaveInput>) => void;
   onChangeType: (type: FormFieldType) => void;
@@ -748,7 +779,7 @@ function FieldDetail({
             />
           </label>
         ) : null}
-        {field.type === "number" ? (
+        {field.type === "number" || field.type === "range" ? (
           <>
             <label className="flex items-center gap-2 text-[12px] text-bz-ink-2">
               Min
@@ -780,7 +811,51 @@ function FieldDetail({
             </label>
           </>
         ) : null}
+        {field.type === "range" ? (
+          <>
+            <label className="flex items-center gap-2 text-[12px] text-bz-ink-2">
+              Step
+              <input
+                type="number"
+                min={1}
+                className={cn(fieldCls, "w-28")}
+                value={field.step ?? ""}
+                disabled={disabled}
+                onChange={(e) =>
+                  onChange({
+                    step: e.target.value === "" ? null : Number(e.target.value),
+                  })
+                }
+              />
+            </label>
+            <label className="flex items-center gap-2 text-[12px] text-bz-ink-2">
+              Unit
+              <input
+                className={cn(fieldCls, "w-20")}
+                placeholder="AED"
+                value={field.unit ?? ""}
+                disabled={disabled}
+                onChange={(e) => onChange({ unit: e.target.value || null })}
+              />
+            </label>
+          </>
+        ) : null}
       </div>
+
+      {field.type === "range" ? (
+        <p className="text-[11.5px] text-bz-muted-2">
+          Both handles are submitted as one answer. A handle left at its end of
+          the scale means “no limit that side”; both left alone means the
+          visitor didn&apos;t say, and nothing is filed against the lead.
+        </p>
+      ) : null}
+
+      <ConditionEditor
+        condition={field.showWhen ?? null}
+        candidates={candidates}
+        disabled={disabled}
+        onChange={(showWhen) => onChange({ showWhen })}
+      />
 
       {field.optionSource ? (
         <p className="text-[12px] text-bz-muted-2 rounded border border-bz-border bg-bz-surface p-2.5">
@@ -797,6 +872,99 @@ function FieldDetail({
           showIntent={field.mapping === "intent"}
           onChange={(options) => onChange({ options })}
         />
+      ) : null}
+    </div>
+  );
+}
+
+/**
+ * "Ask this only when …".
+ *
+ * The candidate list is the questions above this one that have a fixed set of
+ * answers, so the two ways to build a broken branch — depending on a question
+ * asked later, or on one that can be answered with anything — aren't offered
+ * rather than being rejected on save. A field whose condition can't be met is
+ * never shown, so this control has to be hard to get wrong.
+ */
+function ConditionEditor({
+  condition,
+  candidates,
+  disabled,
+  onChange,
+}: {
+  condition: FormFieldCondition | null;
+  candidates: FormFieldSaveInput[];
+  disabled: boolean;
+  onChange: (condition: FormFieldCondition | null) => void;
+}) {
+  const controller = condition
+    ? candidates.find((f) => f.key === condition.field)
+    : null;
+
+  if (candidates.length === 0) {
+    return condition ? (
+      <p className="text-[11.5px] text-bz-danger rounded border border-bz-danger/40 bg-bz-surface p-2.5">
+        This field depends on <span className="mono">{condition.field}</span>,
+        which is no longer a question with fixed answers above it. Clear the
+        condition or put that question back — the field is hidden until then.
+      </p>
+    ) : null;
+  }
+
+  return (
+    <div className="flex flex-col gap-2 rounded border border-bz-border bg-bz-surface p-2.5">
+      <Label className="text-[12px]">Only ask this when…</Label>
+      <select
+        className={fieldCls}
+        value={condition?.field ?? ""}
+        disabled={disabled}
+        onChange={(e) => {
+          const key = e.target.value;
+          if (!key) return onChange(null);
+          onChange({ field: key, values: [] });
+        }}
+      >
+        <option value="">Always ask it</option>
+        {candidates.map((f) => (
+          <option key={f.key} value={f.key}>
+            {f.label}
+          </option>
+        ))}
+      </select>
+
+      {condition && controller ? (
+        <>
+          <span className="text-[11.5px] text-bz-muted-2">
+            …is answered with any of:
+          </span>
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+            {(controller.options ?? []).map((option) => {
+              const value = option.value || option.label;
+              const on = condition.values.includes(value);
+              return (
+                <Check
+                  key={value}
+                  label={option.label}
+                  checked={on}
+                  disabled={disabled}
+                  onChange={(next) =>
+                    onChange({
+                      ...condition,
+                      values: next
+                        ? [...condition.values, value]
+                        : condition.values.filter((v) => v !== value),
+                    })
+                  }
+                />
+              );
+            })}
+          </div>
+          {condition.values.length === 0 ? (
+            <span className="text-[11.5px] text-bz-danger">
+              Pick at least one answer, or this field is never asked.
+            </span>
+          ) : null}
+        </>
       ) : null}
     </div>
   );
