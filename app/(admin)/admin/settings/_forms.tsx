@@ -35,6 +35,11 @@ import {
   updateEmailTemplate,
   updateLeadRouting,
 } from "./_actions";
+import {
+  FaviconField,
+  LogoField,
+  type LogoOption,
+} from "./_brand-image-fields";
 
 export type AgentOption = { user_id: string; display_name: string };
 export type AreaOption = { slug: string; name: string };
@@ -42,12 +47,21 @@ export type AreaOption = { slug: string; name: string };
 // ───────────────────────────────────────────────────────────────
 // Brand & identity
 // ───────────────────────────────────────────────────────────────
-export function BrandForm({ initial }: { initial: BrandSettingsInput }) {
+export function BrandForm({
+  initial,
+  logoOptions = [],
+}: {
+  initial: BrandSettingsInput;
+  logoOptions?: LogoOption[];
+}) {
   const form = useForm<BrandSettingsInput>({
     resolver: zodResolver(brandSettingsSchema),
     defaultValues: initial,
   });
   const [pending, startTransition] = useTransition();
+  const logoUrl = form.watch("logo_url");
+  const logoStyle = form.watch("logo_style");
+  const faviconUrl = form.watch("favicon_url");
 
   function onSubmit(values: BrandSettingsInput) {
     startTransition(async () => {
@@ -63,11 +77,40 @@ export function BrandForm({ initial }: { initial: BrandSettingsInput }) {
   }
 
   return (
-    <SectionCard title="Brand & identity" subtitle="Public-facing name, tagline, and footer contact info.">
+    <SectionCard
+      title="Brand & identity"
+      subtitle="Logo, favicon, public-facing name, tagline, and footer contact info."
+    >
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
+        <LogoField
+          value={logoUrl ?? ""}
+          style={logoStyle ?? "mark_and_name"}
+          options={logoOptions}
+          onChange={(url) =>
+            form.setValue("logo_url", url === "" ? null : url, {
+              shouldDirty: true,
+              shouldValidate: true,
+            })
+          }
+          onStyleChange={(style) =>
+            form.setValue("logo_style", style, { shouldDirty: true })
+          }
+          error={form.formState.errors.logo_url?.message}
+        />
+        <FaviconField
+          value={faviconUrl ?? ""}
+          options={logoOptions}
+          onChange={(url) =>
+            form.setValue("favicon_url", url === "" ? null : url, {
+              shouldDirty: true,
+              shouldValidate: true,
+            })
+          }
+          error={form.formState.errors.favicon_url?.message}
+        />
         <Field
           label="Brand name"
           error={form.formState.errors.brand_name?.message}

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Wordmark } from "./wordmark";
+import { Wordmark, type BrandLogo } from "./wordmark";
 import { MegamenuTile } from "./megamenu-tile";
 import { cn } from "@/lib/utils";
 import type {
@@ -36,6 +36,8 @@ import type {
 
 type Props = {
   data: Megamenu;
+  /** CMS-uploaded brand logo, mirrored from the desktop header. */
+  logo?: BrandLogo | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   /** Rendered in the L1 footer above the Saved / List / Sign-in CTAs. */
@@ -145,11 +147,13 @@ function TabPanel({
 
 function TabsList({
   data,
+  logo,
   onPick,
   onClose,
   footerSlot,
 }: {
   data: Megamenu;
+  logo?: BrandLogo | null;
   onPick: (tab: MegamenuTab) => void;
   onClose: () => void;
   footerSlot?: React.ReactNode;
@@ -157,7 +161,7 @@ function TabsList({
   return (
     <div className="flex flex-col h-full">
       <div className="h-[60px] px-5 flex items-center border-b border-bz-border bg-bz-bg shrink-0">
-        <Wordmark />
+        <Wordmark logo={logo} />
       </div>
 
       <ScrollArea className="flex-1 min-h-0">
@@ -214,6 +218,7 @@ function TabsList({
 
 export function PublicMegaNavMobile({
   data,
+  logo = null,
   open,
   onOpenChange,
   footerSlot,
@@ -252,6 +257,7 @@ export function PublicMegaNavMobile({
         ) : (
           <TabsList
             data={data}
+            logo={logo}
             onPick={(tab) => setActiveTabId(tab.id)}
             onClose={() => onOpenChange(false)}
             footerSlot={footerSlot}

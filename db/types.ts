@@ -2618,10 +2618,13 @@ export type Database = {
           contact_email: string | null
           contact_phone: string | null
           email_templates: Json
+          favicon_url: string | null
           hero_variant: string
           id: number
           integrations: Json
           lead_routing: Json
+          logo_style: string
+          logo_url: string | null
           orn: string | null
           updated_at: string
           updated_by: string | null
@@ -2633,10 +2636,13 @@ export type Database = {
           contact_email?: string | null
           contact_phone?: string | null
           email_templates?: Json
+          favicon_url?: string | null
           hero_variant?: string
           id?: number
           integrations?: Json
           lead_routing?: Json
+          logo_style?: string
+          logo_url?: string | null
           orn?: string | null
           updated_at?: string
           updated_by?: string | null
@@ -2648,10 +2654,13 @@ export type Database = {
           contact_email?: string | null
           contact_phone?: string | null
           email_templates?: Json
+          favicon_url?: string | null
           hero_variant?: string
           id?: number
           integrations?: Json
           lead_routing?: Json
+          logo_style?: string
+          logo_url?: string | null
           orn?: string | null
           updated_at?: string
           updated_by?: string | null

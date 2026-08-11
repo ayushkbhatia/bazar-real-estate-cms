@@ -6,6 +6,8 @@ import {
   displaySettingsSchema,
   emailTemplatesSchema,
   leadRoutingSettingsSchema,
+  LOGO_STYLES,
+  type LogoStyle,
   type SiteSettings,
 } from "@/lib/schemas/site-settings";
 
@@ -13,6 +15,9 @@ const DEFAULTS: SiteSettings = {
   brand: {
     brand_name: "Bazar Real Estate",
     brand_tagline: "Abu Dhabi, properly understood.",
+    logo_url: null,
+    logo_style: "mark_and_name",
+    favicon_url: null,
     orn: null,
     contact_email: null,
     contact_phone: null,
@@ -33,6 +38,9 @@ function shape(raw: Record<string, unknown> | null | undefined): SiteSettings {
   const brand = brandSettingsSchema.safeParse({
     brand_name: raw.brand_name ?? DEFAULTS.brand.brand_name,
     brand_tagline: raw.brand_tagline ?? DEFAULTS.brand.brand_tagline,
+    logo_url: raw.logo_url ?? null,
+    logo_style: raw.logo_style ?? DEFAULTS.brand.logo_style,
+    favicon_url: raw.favicon_url ?? null,
     orn: raw.orn ?? null,
     contact_email: raw.contact_email ?? null,
     contact_phone: raw.contact_phone ?? null,
@@ -64,12 +72,66 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   const { data, error } = await supabase
     .from("site_settings")
     .select(
-      "brand_name, brand_tagline, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
+      "brand_name, brand_tagline, logo_url, logo_style, favicon_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
     )
     .eq("id", 1)
     .maybeSingle();
   if (error || !data) return DEFAULTS;
   return shape(data as unknown as Record<string, unknown>);
+}
+
+/** The subset of `site_settings` an anon key may read (0096, 0097). */
+export type PublicBranding = {
+  brand_name: string;
+  brand_tagline: string | null;
+  logo_url: string | null;
+  logo_style: LogoStyle;
+  favicon_url: string | null;
+};
+
+const BRANDING_DEFAULTS: PublicBranding = {
+  brand_name: DEFAULTS.brand.brand_name,
+  brand_tagline: DEFAULTS.brand.brand_tagline ?? null,
+  logo_url: null,
+  logo_style: "mark_and_name",
+  favicon_url: null,
+};
+
+/**
+ * Branding for the public chrome — the top bar's logo, above all.
+ *
+ * Separate from `getPublicSiteSettings` because of what 0096 could safely
+ * open up. `site_settings` is one row holding both public copy and internal
+ * wiring (`lead_routing` carries staff user ids), and RLS grants rows, not
+ * columns — so the anon read is scoped by column grants instead, and asking
+ * for an ungranted column is a permission error that fails the *whole* select.
+ * This function therefore names only the granted columns. The wide read next
+ * to it still asks for `lead_routing`, so under an anon key it still answers
+ * from DEFAULTS, exactly as it has since 0010.
+ */
+export async function getPublicBranding(): Promise<PublicBranding> {
+  if (!isSupabaseConfigured) return BRANDING_DEFAULTS;
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("site_settings")
+      .select("brand_name, brand_tagline, logo_url, logo_style, favicon_url")
+      .eq("id", 1)
+      .maybeSingle();
+    if (!data) return BRANDING_DEFAULTS;
+    const style = data.logo_style as string | null;
+    return {
+      brand_name: data.brand_name ?? BRANDING_DEFAULTS.brand_name,
+      brand_tagline: data.brand_tagline ?? null,
+      logo_url: data.logo_url ?? null,
+      logo_style: (LOGO_STYLES as readonly string[]).includes(style ?? "")
+        ? (style as LogoStyle)
+        : "mark_and_name",
+      favicon_url: data.favicon_url ?? null,
+    };
+  } catch {
+    return BRANDING_DEFAULTS;
+  }
 }
 
 /** Public read for the marketplace pages — uses the cookie-free public
@@ -81,7 +143,7 @@ export async function getPublicSiteSettings(): Promise<SiteSettings> {
     const { data } = await supabase
       .from("site_settings")
       .select(
-        "brand_name, brand_tagline, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
+        "brand_name, brand_tagline, logo_url, logo_style, favicon_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
       )
       .eq("id", 1)
       .maybeSingle();
