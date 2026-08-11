@@ -1,19 +1,15 @@
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { Comparable } from "@/lib/queries/market-reports";
 import {
-  formatPrice,
-  formatArea,
-  convertFromAed,
-  currencySymbol,
-  type Preferences,
-} from "@/lib/preferences";
+  AreaText,
+  AreaUnitText,
+  PriceText,
+  PricePerAreaValueText,
+} from "../../_components/area-text";
 
 type Props = {
   rows: Comparable[];
-  prefs: Preferences;
 };
-
-const FT2_PER_M2 = 10.7639;
 
 function fmtDate(s: string): string {
   // YYYY-MM-DD → "12 Mar 2026"
@@ -26,17 +22,12 @@ function fmtDate(s: string): string {
   });
 }
 
-function fmtPerArea(
-  aedPerFt2: number | null,
-  prefs: Preferences,
-): string {
-  if (aedPerFt2 == null || !Number.isFinite(aedPerFt2)) return "—";
-  const inCurrency = convertFromAed(aedPerFt2, prefs.currency);
-  const final = prefs.area_unit === "m2" ? inCurrency * FT2_PER_M2 : inCurrency;
-  return `${currencySymbol(prefs.currency)} ${Math.round(final).toLocaleString()}`;
-}
-
-export function ComparablesTable({ rows, prefs }: Props) {
+/**
+ * Currency and area-unit figures render through the client leaves in
+ * `_components/area-text`, not from a server-read cookie — reading `bz_prefs`
+ * server-side would make this route dynamic and discard its `revalidate`.
+ */
+export function ComparablesTable({ rows }: Props) {
   return (
     <section className="px-4 md:px-12 py-12 border-b border-bz-border">
       <Eyebrow>What&apos;s selling · DLD recorded</Eyebrow>
@@ -67,7 +58,7 @@ export function ComparablesTable({ rows, prefs }: Props) {
                 <th className="px-4 py-3 font-medium">Area</th>
                 <th className="px-4 py-3 font-medium text-right">Price</th>
                 <th className="px-4 py-3 font-medium text-right">
-                  Per {prefs.area_unit === "m2" ? "m²" : "ft²"}
+                  Per <AreaUnitText />
                 </th>
               </tr>
             </thead>
@@ -87,13 +78,13 @@ export function ComparablesTable({ rows, prefs }: Props) {
                       {r.bedrooms != null ? r.bedrooms : "—"}
                     </td>
                     <td className="px-4 py-3 mono text-[12px]">
-                      {formatArea(r.built_up_ft2, prefs.area_unit)}
+                      <AreaText ft2={r.built_up_ft2} />
                     </td>
                     <td className="px-4 py-3 text-right mono">
-                      {formatPrice(r.price_aed, prefs)}
+                      <PriceText aed={r.price_aed} />
                     </td>
                     <td className="px-4 py-3 text-right mono text-bz-muted">
-                      {fmtPerArea(perFt2, prefs)}
+                      <PricePerAreaValueText aedPerFt2={perFt2} />
                     </td>
                   </tr>
                 );

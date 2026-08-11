@@ -13,8 +13,12 @@ import {
   reportPath,
   type PropertyTypeSlug,
 } from "@/lib/queries/market-reports";
-import { readPreferencesFromCookie } from "@/lib/preferences/server";
 import { listLiveComparables } from "@/lib/queries/market-reports-listings";
+import {
+  currentReportQuarter,
+  listReportableAreas,
+  quarterToSlug,
+} from "@/lib/queries/market-reports";
 import { ReportHero } from "../../../_components/report-hero";
 import { TrendChart } from "../../../_components/trend-chart";
 import { ComparablesTable } from "../../../_components/comparables-table";
@@ -27,6 +31,41 @@ export const revalidate = 3600;
 type PageProps = {
   params: Promise<{ area: string; type: string; quarter: string }>;
 };
+
+/**
+ * Prerender the current quarter's full cross-product — the exact set the
+ * index at /market-reports already links (see its area × type map). Roughly
+ * 30 reportable areas × 4 property types.
+ *
+ * Until now this route read the visitor's currency/unit preference from a
+ * cookie, which made it dynamic and silently discarded the `revalidate`
+ * above, so every report was a cold render. Those figures now come from the
+ * client leaves in `_components/area-text`, the same way listing cards and
+ * /p/[slug] have always done it.
+ *
+ * `dynamicParams` stays at its default, so older quarters — and the new
+ * current quarter once it rolls over — still render on demand and cache from
+ * then on. Returning `[]` on failure keeps a Supabase hiccup from failing the
+ * build; it costs warm pages, not the deploy.
+ */
+export async function generateStaticParams(): Promise<
+  { area: string; type: string; quarter: string }[]
+> {
+  try {
+    const quarter = currentReportQuarter();
+    const areas = await listReportableAreas({ quarter });
+    return areas.flatMap((a) =>
+      PROPERTY_TYPES.map((type) => ({
+        area: a.slug,
+        type,
+        quarter: quarterToSlug(quarter),
+      })),
+    );
+  } catch (err) {
+    console.error("[market-reports/[area]/[type]/[quarter]] gSP failed", err);
+    return [];
+  }
+}
 
 function isValidType(s: string): s is PropertyTypeSlug {
   return (PROPERTY_TYPES as readonly string[]).includes(s);
@@ -60,10 +99,11 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
   const quarter = quarterFromSlug(qSlug);
   if (!quarter) notFound();
 
-  const [snapshot, prefs] = await Promise.all([
-    getSnapshot({ area_slug: area, property_type: type, quarter }),
-    readPreferencesFromCookie(),
-  ]);
+  const snapshot = await getSnapshot({
+    area_slug: area,
+    property_type: type,
+    quarter,
+  });
   if (!snapshot) notFound();
 
   const [trend, comparables, liveListings] = await Promise.all([
@@ -116,19 +156,18 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
         </div>
       </div>
 
-      <ReportHero snapshot={snapshot} prefs={prefs} />
-      <TrendChart trend={trend} prefs={prefs} />
+      <ReportHero snapshot={snapshot} />
+      <TrendChart trend={trend} />
       {/* T1-A cleanup: market velocity strip (transaction count proxy
           for DOM — DLD doesn't publish listing-to-close intervals). */}
       <VelocityStrip trend={trend} />
-      <ComparablesTable rows={comparables} prefs={prefs} />
+      <ComparablesTable rows={comparables} />
       {/* T1-A cleanup: live comparables rail bridges report → marketplace. */}
       <LiveListingsRail
         area_slug={snapshot.area_slug}
         area_name={snapshot.area_name}
         property_type={type}
         rows={liveListings}
-        prefs={prefs}
       />
 
       {/* Advisor commentary */}
