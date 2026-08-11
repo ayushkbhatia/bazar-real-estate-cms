@@ -39,18 +39,36 @@ const sizeMap = {
  *
  * A mark is boxed square; a full lockup gets a wide box and is pinned left so
  * a narrow logo does not float away from the nav.
+ *
+ * `md` is 44px inside the 72px header. The first pass used 32px, which was
+ * timid on its own and looked far worse than that in practice: an export with
+ * generous artboard padding spends most of the box on transparency, so the
+ * visible glyph was about a third of the height it appeared to be allotted.
+ * The padding itself is dealt with at upload (see the settings field's trim);
+ * this is the size the trimmed art deserves.
  */
-const logoBoxMap: Record<"sm" | "md" | "lg", Record<LogoStyle, string>> = {
-  sm: { mark_and_name: "h-6 w-6", logo_only: "h-6 w-[120px]" },
-  md: { mark_and_name: "h-8 w-8", logo_only: "h-8 w-[160px]" },
-  lg: { mark_and_name: "h-10 w-10", logo_only: "h-10 w-[200px]" },
+const logoBoxMap: Record<"sm" | "md" | "lg", string> = {
+  sm: "h-8 w-8",
+  md: "h-11 w-11",
+  lg: "h-14 w-14",
 };
 
-/** Widest the box ever gets, so the optimizer picks a sane variant. */
+/**
+ * A lockup keeps the same heights but sizes its width from the art. `min-w`
+ * reserves a floor so the header does not jump when the image decodes, and
+ * `max-w` stops an unexpectedly wide export from crowding the nav.
+ */
+const logoOnlyHeightMap: Record<"sm" | "md" | "lg", string> = {
+  sm: "h-8 min-w-8 max-w-[140px]",
+  md: "h-11 min-w-11 max-w-[190px]",
+  lg: "h-14 min-w-14 max-w-[240px]",
+};
+
+/** Widest the logo ever gets, so the optimizer picks a sane variant. */
 const logoSizesMap: Record<"sm" | "md" | "lg", string> = {
-  sm: "120px",
-  md: "160px",
-  lg: "200px",
+  sm: "140px",
+  md: "190px",
+  lg: "240px",
 };
 
 export function Wordmark({
@@ -73,27 +91,43 @@ export function Wordmark({
       )}
     >
       {logo ? (
-        <span
-          className={cn(
-            "relative block shrink-0",
-            logoBoxMap[size][logo.style],
-          )}
-        >
+        logoOnly ? (
+          // A lockup's width is whatever its art says. Pinning it to a fixed
+          // wide box left a square mark stranded at the left of 190px of dead
+          // space, which then shoved the centred nav off-centre; letting the
+          // width follow the height keeps the slot honest for both shapes.
+          // `min-w` still reserves enough to stop the row jumping on decode.
           <Image
             src={logo.url}
-            // Decorative when the name is spelled out beside it — announcing
-            // "Bazar" twice is noise for a screen reader.
-            alt={logoOnly ? (logo.name ?? "Bazar") : ""}
-            aria-hidden={logoOnly ? undefined : true}
-            fill
+            alt={logo.name ?? "Bazar"}
+            // Hints for the optimizer only — the CSS below decides the drawn
+            // size, so no server-side knowledge of the real ratio is needed.
+            width={480}
+            height={120}
             sizes={logoSizesMap[size]}
             className={cn(
-              "object-contain",
-              logoOnly ? "object-left" : "object-center",
+              "w-auto shrink-0 object-contain object-left",
+              logoOnlyHeightMap[size],
             )}
             priority
           />
-        </span>
+        ) : (
+          <span
+            className={cn("relative block shrink-0", logoBoxMap[size])}
+          >
+            <Image
+              src={logo.url}
+              // Decorative when the name is spelled out beside it — announcing
+              // "Bazar" twice is noise for a screen reader.
+              alt=""
+              aria-hidden
+              fill
+              sizes={logoSizesMap[size]}
+              className="object-contain object-center"
+              priority
+            />
+          </span>
+        )
       ) : null}
 
       {logoOnly ? null : (
