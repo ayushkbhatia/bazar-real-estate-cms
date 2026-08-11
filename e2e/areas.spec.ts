@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { firstAreaPath } from "./_helpers";
 
 // Headline copy on the master pages is CMS-owned since #222 — asserting the
 // literal turns a routine copy edit into a red build. Assert that an h1
@@ -13,14 +14,20 @@ test("public /areas renders the neighbourhood index", async ({ page }) => {
   await expect(page.locator("a[href^='/areas/']").first()).toBeVisible();
 });
 
-test("/areas/saadiyat-island renders the area guide", async ({ page }) => {
-  await page.goto("/areas/saadiyat-island");
+test("an area guide renders its bands", async ({ page }) => {
+  // This used to name Saadiyat Island. Areas are editor-owned — one can be
+  // renamed, re-slugged or removed from the CMS — so the spec takes whichever
+  // guide the index currently links to and asserts the template around it.
+  const path = await firstAreaPath(page);
+  test.skip(!path, "No areas published.");
+  await page.goto(path!);
+
   // Pin to the h1; the page also has h2s like "Properties for sale in
-  // Saadiyat Island" that would otherwise trip Playwright's strict-mode
-  // multi-match check.
-  await expect(
-    page.getByRole("heading", { level: 1, name: /saadiyat island/i }),
-  ).toBeVisible();
+  // <area>" that would otherwise trip Playwright's strict-mode multi-match
+  // check.
+  const heading = page.getByRole("heading", { level: 1 }).first();
+  await expect(heading).toBeVisible();
+  await expect(heading).not.toBeEmpty();
 
   // These run against the live CMS, so the assertions have to survive an
   // editor's copy change and the market-statistics band being either the

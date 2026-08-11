@@ -68,8 +68,17 @@ already owned that lead type:
 | `newsletter` | `subscribeToNewsletter` → double opt-in |
 | `list_property`, `valuation` | bespoke components; they call their own actions |
 
-Every path also writes a `form_submissions` row via `recordFormSubmission`, so
-Responses is complete regardless of which component drew the form.
+Every path also calls `captureFormSubmission`, which writes the
+`form_submissions` row **and** emails whoever is on that form's notification
+list (Settings tab). One function for both, because two would drift the moment
+a sixth form path is added and only half of it is copied. Both halves are
+best-effort and run after the lead is written — a bounced address must never
+turn a captured lead into an error the visitor sees.
+
+Notifications are additive to Settings → Lead routing, not a replacement:
+routing decides which advisor *owns* the lead, the list is "also tell these
+people". Empty by default, which costs one column read on a round trip the
+submission log is making anyway.
 
 **Mappings** are how a field's answer finds its column. `name`, `email`,
 `phone`, `message`, `intent`, `timeline`, `development_id` and friends land in

@@ -31,16 +31,12 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
-- [e2e] Other specs still assert named slugs whose visibility an editor owns.
-  CI runs against the live production project, so editorial state is a CI
-  input: on 2026-08-11 an editor unpublished `national-holding` and every open
-  PR went red with no commit behind it. `developers.spec.ts` was rewritten to
-  assert the *shape* (a logo-less card still renders its name and link), but
-  `modon-properties`, `/developers/modon` and `/developers/aldar` are still
-  named directly, and `marketplace.spec.ts` leans on there being published
-  stock. "Done" is auditing the suite for hard-coded slugs and asserting
-  behaviour instead, so the client can unpublish anything without breaking the
-  build.
+- [e2e] Two developer specs skip rather than assert when their subject is draft.
+  `developers.spec.ts` guards `/developers/aldar` and the MODON dedup case with
+  `test.skip` on a 404, which is honest but means the merge-dedup invariant
+  goes unchecked whenever MODON is unpublished. "Done" is discovering a
+  both-sources developer from the grid the way `_helpers.ts` discovers
+  properties, areas and categories, so the assertion always runs.
 
 - [forms] Wire the two bespoke lead forms to the shared renderer.
   `/services/sell` (two-step owner wizard) and the valuation report gate (OTP)
@@ -60,12 +56,6 @@ quick grep can show "what's outstanding in my area."
   `insights-teaser.tsx` and `insights/[slug]/_components/article-rail.tsx`, or
   giving each surface its own registry entry if the client wants them worded
   differently.
-
-- [forms] `forms.notify_emails` is stored and edited but nothing sends to it.
-  The Settings tab accepts extra recipients per form; the submit path doesn't
-  read them yet — routing still comes entirely from Settings → Lead routing.
-  "Done" is either sending on submit (see `lib/email.ts`) or removing the
-  field. Don't leave it looking live.
 
 - [services] `/services/consulting` and `/services/consultation` both exist.
   The first is the old seed-driven "Consulting" page (senior-advisor hours,

@@ -1,25 +1,31 @@
 import "server-only";
 import * as Sentry from "@sentry/nextjs";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { notifyFormRecipients } from "./notify";
 
 /**
- * The submission log.
+ * The submission log, and the notification that rides with it.
  *
  * Called from every public form path — the shared renderer's action and the
  * four bespoke handlers (owner wizard, service leads, newsletter, valuation
  * gate) — so /admin/forms → Responses is complete regardless of which
  * component drew the form.
  *
+ * It also emails whoever is on the form's notification list — one call site
+ * for both, because two would drift the moment someone adds a sixth form path
+ * and copies only half of it.
+ *
  * Best-effort, and deliberately so: this runs *after* the lead has been
- * written, and a logging failure must never turn a captured lead into an error
- * message. Failures go to Sentry and the visitor sees their confirmation.
+ * written, and neither a logging failure nor a bounced address may turn a
+ * captured lead into an error message. Failures go to Sentry and the visitor
+ * sees their confirmation.
  *
  * Writes through the service-role client for the same reason the anonymous
  * enquiry insert does — `form_submissions` has no anon policy, on purpose (see
- * migration 0091), so there is no path for anyone to write rows here except
+ * migration 0094), so there is no path for anyone to write rows here except
  * through a form that actually ran.
  */
-export async function recordFormSubmission(entry: {
+export async function captureFormSubmission(entry: {
   formKey: string;
   /** Answers keyed by field key, plus `_labels`. */
   data: Record<string, unknown>;
@@ -37,13 +43,17 @@ export async function recordFormSubmission(entry: {
     });
     if (error) {
       // A missing table is the expected state between merging this and
-      // applying 0091; it is not worth an alert, and the lead itself landed.
+      // applying 0094; it is not worth an alert, and the lead itself landed.
+      // Nothing to notify either — the recipient list lives in the same
+      // migration — so this returns rather than falling through.
       if (error.code === "42P01" || error.code === "PGRST205") return;
       Sentry.captureException(error, {
         tags: { component: "forms/record" },
         contexts: { form: { key: entry.formKey } },
       });
     }
+
+    await notifyFormRecipients(admin, entry);
   } catch (err) {
     Sentry.captureException(err, {
       tags: { component: "forms/record" },

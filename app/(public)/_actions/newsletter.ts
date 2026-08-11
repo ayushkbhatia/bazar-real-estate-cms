@@ -1,7 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
-import { recordFormSubmission, withLabels } from "@/lib/forms/record";
+import { captureFormSubmission, withLabels } from "@/lib/forms/record";
 import {
   generateConfirmationToken,
   newsletterSignupSchema,
@@ -125,7 +125,7 @@ export async function subscribeToNewsletter(
   // Logged for /admin/forms → Responses so the signup box shows a response
   // count alongside every other form. `newsletter_subscribers` stays the list
   // of record — this is the record of the *submission*, not of consent.
-  await recordFormSubmission({
+  await captureFormSubmission({
     formKey: "insights_newsletter",
     sourcePath: `newsletter:${source}`,
     data: withLabels({ email }, { email: "Email" }),

@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { firstPropertyPath } from "./_helpers";
 
 /**
  * Axe-core accessibility scan for the same three routes Lighthouse CI checks.
@@ -13,14 +15,13 @@ import AxeBuilder from "@axe-core/playwright";
  * `playwright-report/` artifact uploaded on failure.
  */
 
+// Fixed public routes — these exist regardless of what the catalogue holds.
+// The property detail scan is separate, below, because naming a listing here
+// meant the scan quietly moved to a 404 page the day that listing was archived.
 const ROUTES = [
   { path: "/", label: "home" },
   { path: "/buy", label: "buy landing" },
   { path: "/buy/search", label: "buy search" },
-  {
-    path: "/p/mamsha-3-bed-beachfront-apartment-baz-ad-04891",
-    label: "property detail",
-  },
 ] as const;
 
 // Rules we explicitly opt out of with a documented reason. Keep this list
@@ -34,51 +35,61 @@ const DISABLED_RULES: string[] = [
 
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 
+async function scan(page: Page, path: string) {
+  await page.goto(path);
+
+  // Dismiss the consent banner so it doesn't compete for focus during
+  // scans — its own a11y is covered separately below.
+  const bannerButton = page.getByRole("dialog", { name: /cookies/i }).getByRole("button", {
+    name: /^reject all$/i,
+  });
+  if (await bannerButton.isVisible().catch(() => false)) {
+    await bannerButton.click();
+    await expect(page.getByRole("dialog", { name: /cookies/i })).toBeHidden();
+  }
+
+  const accessibilityScanResults = await new AxeBuilder({ page })
+    .withTags(TAGS)
+    .disableRules(DISABLED_RULES)
+    .analyze();
+
+  if (accessibilityScanResults.violations.length > 0) {
+    // Surface a concise readable summary in the report instead of a wall
+    // of JSON. Each violation includes the rule id, impact, and nodes.
+    console.log(
+      `Axe violations on ${path}:`,
+      JSON.stringify(
+        accessibilityScanResults.violations.map((v) => ({
+          id: v.id,
+          impact: v.impact,
+          help: v.help,
+          nodes: v.nodes.length,
+          targets: v.nodes.flatMap((n) => n.target).slice(0, 3),
+        })),
+        null,
+        2,
+      ),
+    );
+  }
+
+  expect(accessibilityScanResults.violations).toEqual([]);
+}
+
 for (const route of ROUTES) {
   test(`a11y: ${route.label} (${route.path}) has no axe violations`, async ({
     page,
   }) => {
-    await page.goto(route.path);
-
-    // Dismiss the consent banner so it doesn't compete for focus during
-    // scans — its own a11y is covered separately below.
-    const bannerButton = page.getByRole("dialog", { name: /cookies/i }).getByRole("button", {
-      name: /^reject all$/i,
-    });
-    if (await bannerButton.isVisible().catch(() => false)) {
-      await bannerButton.click();
-      await expect(
-        page.getByRole("dialog", { name: /cookies/i }),
-      ).toBeHidden();
-    }
-
-    const accessibilityScanResults = await new AxeBuilder({ page })
-      .withTags(TAGS)
-      .disableRules(DISABLED_RULES)
-      .analyze();
-
-    if (accessibilityScanResults.violations.length > 0) {
-      // Surface a concise readable summary in the report instead of a wall
-      // of JSON. Each violation includes the rule id, impact, and nodes.
-      console.log(
-        `Axe violations on ${route.path}:`,
-        JSON.stringify(
-          accessibilityScanResults.violations.map((v) => ({
-            id: v.id,
-            impact: v.impact,
-            help: v.help,
-            nodes: v.nodes.length,
-            targets: v.nodes.flatMap((n) => n.target).slice(0, 3),
-          })),
-          null,
-          2,
-        ),
-      );
-    }
-
-    expect(accessibilityScanResults.violations).toEqual([]);
+    await scan(page, route.path);
   });
 }
+
+test("a11y: property detail has no axe violations", async ({ page }) => {
+  // Whichever listing is published right now. A scan pointed at an archived
+  // slug passes cleanly against the 404 page and tells you nothing.
+  const path = await firstPropertyPath(page);
+  test.skip(!path, "No published properties to scan.");
+  await scan(page, path!);
+});
 
 test("a11y: cookie banner itself is keyboard-accessible", async ({ page }) => {
   await page.goto("/");
