@@ -2,6 +2,7 @@ import { PublicMegaNav } from "@/components/brand/public-mega-nav";
 import { PublicFooter } from "@/components/brand/public-footer";
 import { getPublishedMegamenuHydrated } from "@/lib/queries/megamenu-hydrate";
 import { listFloatingCtas } from "@/lib/queries/floating-ctas";
+import { getPublicBranding } from "@/lib/queries/site-settings";
 import { getAdvisorWhatsAppNumber } from "@/lib/whatsapp";
 import { PreferencesPopover } from "./_components/preferences-popover";
 import { MobilePreferences } from "./_components/mobile-preferences";
@@ -15,10 +16,20 @@ export default async function PublicLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [megamenu, floatingCtas] = await Promise.all([
+  const [megamenu, floatingCtas, branding] = await Promise.all([
     getPublishedMegamenuHydrated(),
     listFloatingCtas(),
+    getPublicBranding(),
   ]);
+  // Resolved here rather than inside the nav so the brand component stays a
+  // presentational client component with no data dependency of its own.
+  const logo = branding.logo_url
+    ? {
+        url: branding.logo_url,
+        style: branding.logo_style,
+        name: branding.brand_name,
+      }
+    : null;
   return (
     // The provider wraps `children` as well as the rail: a detail page deep in
     // the tree publishes its advisor upward through it, which is how one
@@ -29,7 +40,11 @@ export default async function PublicLayout({
         mobile equivalent is injected into the hamburger-drawer footer
         via `footerSlot` (the brand nav stays free of app-level imports).
       */}
-      <PublicMegaNav data={megamenu} footerSlot={<MobilePreferences />} />
+      <PublicMegaNav
+        data={megamenu}
+        logo={logo}
+        footerSlot={<MobilePreferences />}
+      />
       {/* Gate matches PublicMegaNav's xl breakpoint — below it the drawer
           carries the preferences entry via footerSlot, so an md gate here
           would render both controls at once between 768 and 1279. */}

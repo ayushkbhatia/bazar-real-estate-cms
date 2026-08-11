@@ -74,7 +74,11 @@ export async function updateBrandSettings(
       after: parsed.data,
     });
     revalidatePath("/admin/settings");
-    revalidatePath("/");
+    // "layout", not the default "page": the logo renders in the (public)
+    // layout's top bar, so every public route holds a cached copy of it.
+    // Revalidating "/" alone would swap the logo on the homepage and leave
+    // every other page on the old one until its own cache expired.
+    revalidatePath("/", "layout");
     return { status: "ok", message: "Brand settings saved." };
   }
   return result;

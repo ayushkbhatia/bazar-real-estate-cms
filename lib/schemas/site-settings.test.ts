@@ -7,6 +7,9 @@ import {
   HERO_VARIANTS,
   HERO_VARIANT_DESCRIPTION,
   HERO_VARIANT_LABEL,
+  LOGO_STYLES,
+  LOGO_STYLE_DESCRIPTION,
+  LOGO_STYLE_LABEL,
   brandSettingsSchema,
   displaySettingsSchema,
   emailTemplateOverrideSchema,
@@ -41,6 +44,74 @@ describe("brandSettingsSchema", () => {
   it("trims brand_name", () => {
     const r = brandSettingsSchema.safeParse({ brand_name: "  Bazar  " });
     expect(r.success && r.data.brand_name).toBe("Bazar");
+  });
+
+  it("coerces an empty logo_url to null", () => {
+    const r = brandSettingsSchema.safeParse({ brand_name: "Bazar", logo_url: "" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.logo_url).toBeNull();
+  });
+
+  it("accepts an absolute logo URL and a same-origin path", () => {
+    for (const logo_url of [
+      "https://cdn.example.com/logo.png",
+      "/brand/logo.png",
+    ]) {
+      const r = brandSettingsSchema.safeParse({ brand_name: "Bazar", logo_url });
+      expect(r.success).toBe(true);
+    }
+  });
+
+  it("rejects a logo_url that is neither http(s) nor a path", () => {
+    // `javascript:` is the one that matters — the value lands in an <img src>.
+    for (const logo_url of [
+      "javascript:alert(1)",
+      "data:image/svg+xml;base64,AAAA",
+      "cdn.example.com/logo.png",
+    ]) {
+      const r = brandSettingsSchema.safeParse({ brand_name: "Bazar", logo_url });
+      expect(r.success).toBe(false);
+    }
+  });
+
+  it("validates favicon_url on the same rules as logo_url", () => {
+    const ok = brandSettingsSchema.safeParse({
+      brand_name: "Bazar",
+      favicon_url: "https://cdn.example.com/icon.png",
+    });
+    expect(ok.success).toBe(true);
+
+    const cleared = brandSettingsSchema.safeParse({
+      brand_name: "Bazar",
+      favicon_url: "",
+    });
+    expect(cleared.success && cleared.data.favicon_url).toBeNull();
+
+    // The favicon URL is emitted into <link rel="icon"> in the root layout.
+    const bad = brandSettingsSchema.safeParse({
+      brand_name: "Bazar",
+      favicon_url: "javascript:alert(1)",
+    });
+    expect(bad.success).toBe(false);
+  });
+
+  it("accepts both logo styles and rejects anything else", () => {
+    for (const logo_style of LOGO_STYLES) {
+      const r = brandSettingsSchema.safeParse({ brand_name: "Bazar", logo_style });
+      expect(r.success).toBe(true);
+    }
+    const bad = brandSettingsSchema.safeParse({
+      brand_name: "Bazar",
+      logo_style: "stacked",
+    });
+    expect(bad.success).toBe(false);
+  });
+
+  it("logo style labels + descriptions cover every style", () => {
+    for (const s of LOGO_STYLES) {
+      expect(LOGO_STYLE_LABEL[s].length).toBeGreaterThan(2);
+      expect(LOGO_STYLE_DESCRIPTION[s].length).toBeGreaterThan(10);
+    }
   });
 });
 

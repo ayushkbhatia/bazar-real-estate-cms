@@ -33,10 +33,67 @@ export const ACCENT_TOKEN_HEX: Record<AccentToken, string> = {
   ink: "#1a1a1a",
 };
 
+/**
+ * What the uploaded logo file actually is.
+ *
+ * A monogram and a finished lockup want opposite treatment in the top bar —
+ * one sits beside the "Bazar" wordmark, the other has the name drawn into it
+ * already and must replace the text or the name appears twice. The navbar
+ * cannot tell them apart from the bytes, so the operator says which.
+ */
+export const LOGO_STYLES = ["mark_and_name", "logo_only"] as const;
+export type LogoStyle = (typeof LOGO_STYLES)[number];
+
+export const LOGO_STYLE_LABEL: Record<LogoStyle, string> = {
+  mark_and_name: "Mark + wordmark",
+  logo_only: "Logo only",
+};
+
+export const LOGO_STYLE_DESCRIPTION: Record<LogoStyle, string> = {
+  mark_and_name: "The logo sits to the left of the Bazar wordmark. Best for a square icon or monogram.",
+  logo_only: "The logo replaces the Bazar wordmark. Use when the file already contains the name.",
+};
+
+/**
+ * A stored image reference — a media-library public URL, an external CDN URL,
+ * or a same-origin path.
+ *
+ * Not `z.string().url()`: a path like /brand/logo.png is a legitimate value and
+ * fails that check. What matters is that it resolves as an image source and is
+ * not a `javascript:` or `data:` payload, since it lands in an `<img src>` and
+ * in a `<link rel="icon">`. So the shape is asserted directly. Empty string
+ * (the "cleared" state the select emits) becomes null.
+ */
+function assetUrl() {
+  return z
+    .union([
+      z.literal(""),
+      z
+        .string()
+        .trim()
+        .max(600)
+        .refine(
+          (v) => /^https?:\/\//i.test(v) || v.startsWith("/"),
+          "Enter an https:// URL or a path starting with /",
+        ),
+    ])
+    .transform((v) => (v === "" ? null : v))
+    .nullable()
+    .optional();
+}
+
 /** Brand & identity section. */
 export const brandSettingsSchema = z.object({
   brand_name: z.string().trim().min(2).max(80),
   brand_tagline: z.string().trim().max(160).nullable().optional(),
+  logo_url: assetUrl(),
+  favicon_url: assetUrl(),
+  // `.optional()` rather than `.default()`: a zod default makes the *input*
+  // type optional and the output required, and react-hook-form's resolver
+  // types reject that asymmetry. The column is `not null default
+  // 'mark_and_name'`, so an omitted value leaves the stored one alone —
+  // readers fill the gap from DEFAULTS.
+  logo_style: z.enum(LOGO_STYLES).optional(),
   orn: z.string().trim().max(40).nullable().optional(),
   contact_email: z
     .union([z.literal(""), z.string().email("Enter a valid email")])

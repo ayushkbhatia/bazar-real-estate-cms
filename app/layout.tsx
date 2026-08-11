@@ -9,6 +9,7 @@ import { ConsentProvider } from "./_consent/consent-provider";
 import { CookieBanner } from "./_consent/cookie-banner";
 import { VercelAnalyticsGate } from "./_consent/analytics-gate";
 import { organizationJsonLd } from "@/lib/jsonld";
+import { getPublicBranding } from "@/lib/queries/site-settings";
 import { env } from "@/lib/env";
 import "./globals.css";
 
@@ -41,20 +42,50 @@ const jetbrainsMono = JetBrains_Mono({
  */
 const SITE_URL = env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: "Bazar Real Estate — Abu Dhabi, properly understood",
-    template: "%s · Bazar",
-  },
-  description:
-    "Bespoke real estate advisory and a curated marketplace for buyers, sellers, and investors across the United Arab Emirates.",
-  openGraph: {
-    type: "website",
-    locale: "en_AE",
-    siteName: "Bazar Real Estate",
-  },
-};
+/** Shipped fallback, served from /public. Used whenever the CMS has no icon. */
+const DEFAULT_FAVICON = "/favicon.ico";
+
+/**
+ * `generateMetadata`, not a static `metadata` export, because the favicon is
+ * CMS-editable (/admin/settings/brand) and therefore a database read.
+ *
+ * The icon links are declared here rather than through the `app/favicon.ico`
+ * file convention — that convention emits its own `<link rel="icon">` which
+ * cannot be turned off, so the CMS icon and the shipped default would both be
+ * in the head with the winner left to browser heuristics. The .ico now lives
+ * in /public: still served at /favicon.ico for the implicit request browsers
+ * make anyway, but no longer injecting a tag that competes with this one.
+ *
+ * `getPublicBranding` uses the cookie-free anon client, so this does not opt
+ * routes into dynamic rendering — the value is baked at build and busted by
+ * the `revalidatePath("/", "layout")` in the brand settings action.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const { favicon_url } = await getPublicBranding();
+  const icon = favicon_url ?? DEFAULT_FAVICON;
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: "Bazar Real Estate — Abu Dhabi, properly understood",
+      template: "%s · Bazar",
+    },
+    description:
+      "Bespoke real estate advisory and a curated marketplace for buyers, sellers, and investors across the United Arab Emirates.",
+    openGraph: {
+      type: "website",
+      locale: "en_AE",
+      siteName: "Bazar Real Estate",
+    },
+    icons: {
+      icon,
+      shortcut: icon,
+      // Home-screen bookmarks want a bigger square than a tab strip does. We
+      // only have one uploaded file, so it serves both; iOS scales it.
+      apple: icon,
+    },
+  };
+}
 
 // `viewport-fit=cover` is required for env(safe-area-inset-*) to report
 // non-zero on notched / home-indicator devices — the mobile sticky bars

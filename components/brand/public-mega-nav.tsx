@@ -13,7 +13,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import { Wordmark } from "./wordmark";
+import { Wordmark, type BrandLogo } from "./wordmark";
 import { MegamenuPanel } from "./megamenu-panel";
 import { PublicMegaNavMobile } from "./public-mega-nav-mobile";
 import { cn } from "@/lib/utils";
@@ -33,6 +33,11 @@ import type { Megamenu, MegamenuTab } from "@/lib/schemas/megamenu";
 
 type Props = {
   data: Megamenu;
+  /**
+   * CMS-uploaded brand logo (/admin/settings/brand), resolved by the
+   * (public) layout. Null keeps the type-only wordmark.
+   */
+  logo?: BrandLogo | null;
   /**
    * Optional node rendered in the mobile drawer footer (e.g. the
    * currency/area-unit preferences entry). Injected by the (public)
@@ -94,7 +99,7 @@ function useScrolled(offset: number): boolean {
   return scrolled;
 }
 
-export function PublicMegaNav({ data, footerSlot }: Props) {
+export function PublicMegaNav({ data, logo = null, footerSlot }: Props) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   // Controlled Radix value — we only need "is a panel open", but the
@@ -146,8 +151,10 @@ export function PublicMegaNav({ data, footerSlot }: Props) {
           )}
         />
 
-        <Link href="/" className="flex items-center">
-          <Wordmark />
+        {/* shrink-0 so the logo keeps its box when the trigger row is wide —
+            without it the flex row steals width from the brand first. */}
+        <Link href="/" aria-label="Bazar — home" className="flex items-center shrink-0">
+          <Wordmark logo={logo} />
         </Link>
 
         {/* Desktop nav — hidden below xl, replaced by hamburger.
@@ -244,6 +251,7 @@ export function PublicMegaNav({ data, footerSlot }: Props) {
 
       <PublicMegaNavMobile
         data={data}
+        logo={logo}
         open={mobileOpen}
         onOpenChange={setMobileOpen}
         footerSlot={footerSlot}
