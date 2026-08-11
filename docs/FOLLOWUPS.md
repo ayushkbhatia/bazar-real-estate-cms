@@ -713,3 +713,48 @@ shows the trail.)
   The valuation wizard also collects built-up area in ft² with a fixed label.
   Converting the input needs care: the estimate model is calibrated in AED/ft²,
   so only the display layer should move.
+
+- [perf] The dashboard pipeline chart runs six count queries instead of one.
+  `app/(admin)/admin/page.tsx` used to `select` every `enquiries` row to tally
+  six integers in memory, with no `limit`, so its cost grew with the table
+  forever. That is now six `head: true` counts inside the existing
+  `Promise.all`, which is bounded but still six round-trips. One grouped
+  `count(*) ... group by status` in an RPC would be a single trip; it needs a
+  migration to add the function, which is why it was not folded into the perf
+  pass.
+
+- [perf] `CmsShell` is imported by 43 admin pages rather than mounted in the
+  layout. That is the real reason the admin chrome remounts on every
+  navigation — the sidebar, topbar and both notification trees are rebuilt per
+  page instead of persisting across the segment. The session provider added in
+  #293 removes the per-navigation *fetching* (four `/api/notifications/recent`
+  calls and two browser `getUser()` calls per nav, now zero), but not the
+  remount itself. Hoisting the shell into `app/(admin)/layout.tsx` is a
+  43-file change and a real UX improvement — it belongs in its own PR, not a
+  performance one.
+
+- [db] Revisit `unused_index` once the database has seen representative
+  traffic. Migration `0085` deliberately added ~30 indexes that the planner
+  will not use at current row counts — they exist for the FK delete path
+  (deleting one media asset scanned thirteen child tables before). They will
+  show up as `unused_index` in the advisor and must not be dropped on that
+  basis. A sane rule when revisiting: non-constraint, non-partial, zero scans,
+  on a table above ~10k rows. Nothing qualifies today.
+
+- [db] The 47 `multiple_permissive_policies` warnings are deliberately open.
+  Each is the same shape — a broad public-read policy OR'd with a staff
+  policy. Consolidating them is a security change wearing a performance
+  costume: merging two independently reviewable grants into one boolean is a
+  fresh chance to widen access, and the failure mode is silent (nothing
+  errors, drafts just become publicly readable). Postgres already ORs
+  permissive policies into a single qual, so the saving is one OR branch. If
+  it is ever done it needs its own PR with per-table role reasoning and a
+  security review.
+
+- [test] The admin CMS has no end-to-end coverage of authenticated behaviour.
+  `e2e/admin-rbac.spec.ts` says so in its own header: without service-role
+  credentials CI cannot seed a staff session, so the suite asserts the
+  anonymous redirect paths and nothing past the login wall. That is why the
+  session work in #293 is guarded by unit assertions rather than a real
+  navigation, and why RLS changes are verified with SQL probes rather than the
+  suite. Seeding a staff session in CI would unlock both.
