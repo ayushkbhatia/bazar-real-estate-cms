@@ -368,6 +368,7 @@ function FieldControl({
       control = (
         <textarea
           id={id}
+          name={field.key}
           value={text}
           rows={field.rows ?? 4}
           placeholder={field.placeholder ?? undefined}
@@ -386,6 +387,7 @@ function FieldControl({
       control = (
         <select
           id={id}
+          name={field.key}
           value={text}
           onChange={(e) => onChange(e.target.value)}
           className={cn(
@@ -477,6 +479,7 @@ function FieldControl({
         <label className="flex items-start gap-2 text-[13px] text-bz-ink-2">
           <input
             id={id}
+            name={field.key}
             type="checkbox"
             checked={value === true}
             onChange={(e) => onChange(e.target.checked)}
@@ -491,6 +494,7 @@ function FieldControl({
       control = (
         <DialPhone
           id={id}
+          name={field.key}
           value={text}
           options={options}
           placeholder={field.placeholder ?? undefined}
@@ -504,6 +508,7 @@ function FieldControl({
       control = stacked ? (
         <input
           id={id}
+          name={field.key}
           inputMode="numeric"
           value={text}
           placeholder={field.placeholder ?? undefined}
@@ -513,6 +518,7 @@ function FieldControl({
       ) : (
         <Input
           id={id}
+          name={field.key}
           inputMode="numeric"
           value={text}
           placeholder={field.placeholder ?? undefined}
@@ -542,6 +548,7 @@ function FieldControl({
       const listId = options.length > 0 ? `${id}-list` : undefined;
       const shared = {
         id,
+        name: field.key,
         type: inputType,
         inputMode: field.type === "tel" ? ("tel" as const) : undefined,
         autoComplete,
@@ -586,9 +593,13 @@ function FieldControl({
  * The split is presentational: `enquiries.phone` is a single column and the
  * desk dials what it is given, so joining here keeps one canonical value and
  * spares the server from having to know that two inputs meant one number.
+ *
+ * Only the number carries the field's `name`; the dial-code select is a
+ * control over that one value, not a second answer.
  */
 function DialPhone({
   id,
+  name,
   value,
   options,
   placeholder,
@@ -596,6 +607,7 @@ function DialPhone({
   onChange,
 }: {
   id: string;
+  name: string;
   value: string;
   options: FormOption[];
   placeholder?: string;
@@ -631,6 +643,7 @@ function DialPhone({
       </select>
       <input
         id={id}
+        name={name}
         inputMode="tel"
         autoComplete="tel"
         value={national}
