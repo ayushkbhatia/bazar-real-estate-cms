@@ -58,9 +58,26 @@ export function DualRangeSlider({
     <div>
       <div className="relative h-6">
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1 rounded-full bg-bz-surface-2" />
+        {/*
+          Logical inset, not left/right.
+
+          Native range inputs already mirror themselves under dir="rtl" — a
+          value of 25 sits 25% from the LEFT in LTR and 25% from the RIGHT in
+          RTL, measured directly rather than assumed. So the thumbs were never
+          the problem; this band was. Pinned to physical left/right it stayed
+          put while the thumbs flipped, leaving the fill and the handles
+          travelling in opposite directions on the home hero.
+
+          Using the inline axis puts the band on the same axis the browser
+          already uses for the thumbs, which is why this needs no direction
+          flag and no JS: it is correct in both directions by construction.
+        */}
         <div
           className="absolute top-1/2 -translate-y-1/2 h-1 rounded-full bg-bz-teal"
-          style={{ left: `${loPct}%`, right: `${100 - hiPct}%` }}
+          style={{
+            insetInlineStart: `${loPct}%`,
+            insetInlineEnd: `${100 - hiPct}%`,
+          }}
         />
         <input
           type="range"
