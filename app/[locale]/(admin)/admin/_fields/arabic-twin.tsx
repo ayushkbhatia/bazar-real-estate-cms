@@ -33,7 +33,16 @@ export function ArabicTwin({
   onChange: (v: string) => void;
 }) {
   const filled = value.trim().length > 0;
-  const [open, setOpen] = useState(filled);
+  // Always collapsed on mount, including when a translation already exists.
+  //
+  // This started as `useState(filled)` — open the ones that have content — and
+  // watching the real editor changed my mind. On a fully translated page that
+  // reopens every field at once and doubles the page height for everyone,
+  // which is the exact cost the collapse was introduced to avoid. The badge
+  // beside the label already answers "is this translated?" at a glance, which
+  // is what a translator actually scans for; opening it is a separate
+  // intention.
+  const [open, setOpen] = useState(false);
   const max = arMax(field);
 
   return (
