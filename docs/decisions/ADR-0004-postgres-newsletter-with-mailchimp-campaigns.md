@@ -34,7 +34,7 @@ shouldn't rebuild any of that in-house.
    emits a confirmation email through **Resend**, and a confirm route
    flips the row to `confirmed`. Unsubscribes flip it to
    `unsubscribed`. DSR delete cascades through this table.
-   ([app/(public)/_actions/newsletter.ts](../../app/(public)/_actions/newsletter.ts))
+   ([app/[locale]/(public)/_actions/newsletter.ts](../../app/[locale]/(public)/_actions/newsletter.ts))
 
 2. **Mailchimp is the campaign surface.** Every Postgres state change
    syncs to Mailchimp through `lib/mailchimp.ts`. A `/api/webhooks/mailchimp`

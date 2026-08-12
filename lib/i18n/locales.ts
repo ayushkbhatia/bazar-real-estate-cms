@@ -72,16 +72,15 @@ export function localeUrl(path: string, locale: Locale): string {
 /**
  * The cache key `revalidatePath()` needs for `path` in `locale`.
  *
- * NOT the same thing as `localeUrl`. Once the `[locale]` segment lands in P1,
- * Next prerenders English to `/en/buy` even though it is *served* at `/buy` —
- * so the revalidation key carries the segment for every locale, including the
- * default. Until then there is no segment and the key is the path itself.
+ * NOT the same thing as `localeUrl`. Next prerenders English to `/en/buy` even
+ * though it is *served* at `/buy`, so the revalidation key carries the segment
+ * for every locale, including the default.
  *
- * P1 changes this function body and nothing else. That is the entire reason
- * `revalidateLocalised` exists and ships a phase early: 79 public call sites
- * are already routed through here before the paths they name stop existing.
+ * This is the line P0 existed to make safe: 79 public call sites were routed
+ * through `revalidateLocalised` a phase early, so flipping it here is a
+ * one-function change rather than a sweep — and the paths those call sites
+ * name never stop existing from their point of view.
  */
-export function revalidateKey(path: string, _locale: Locale): string {
-  // P1: return path === "/" ? `/${_locale}` : `/${_locale}${path}`;
-  return path;
+export function revalidateKey(path: string, locale: Locale): string {
+  return path === "/" ? `/${locale}` : `/${locale}${path}`;
 }

@@ -42,8 +42,28 @@ function hasSupabaseSession(request: NextRequest): boolean {
   return request.cookies.getAll().some((c) => c.name.startsWith("sb-"));
 }
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+/**
+ * How the response is minted. Defaults to passing the request straight
+ * through, which is what every caller wanted before locale routing existed.
+ *
+ * It has to be a factory rather than a ready-made response, because `setAll`
+ * below re-creates the response *after* mutating the request cookies — so a
+ * caller that wants a rewrite has to be able to express it twice. Pass a
+ * plain response and a token refresh silently drops the rewrite: the visitor
+ * lands on `/buy` with `[locale]` resolved to `"buy"`, i.e. the home page,
+ * and only while signed in. Nothing in the e2e suite covers that path
+ * (`hasSupabaseSession` short-circuits anonymous visitors before the client
+ * is ever constructed, and every spec is anonymous), so it would ship.
+ */
+type ResponseFactory = (request: NextRequest) => NextResponse;
+
+const passThrough: ResponseFactory = (request) => NextResponse.next({ request });
+
+export async function updateSession(
+  request: NextRequest,
+  makeResponse: ResponseFactory = passThrough,
+) {
+  let supabaseResponse = makeResponse(request);
 
   // If Supabase isn't configured yet, skip auth handling entirely.
   if (!isSupabaseConfigured) return supabaseResponse;
@@ -80,7 +100,11 @@ export async function updateSession(request: NextRequest) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value),
           );
-          supabaseResponse = NextResponse.next({ request });
+          // Re-mint through the same factory, so a rewrite survives a token
+          // refresh. This callback only fires when Supabase rotates the
+          // session, which is why the bug it guards against is invisible in
+          // testing and shows up as an occasional wrong page in production.
+          supabaseResponse = makeResponse(request);
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options),
           );

@@ -174,7 +174,7 @@ In rough priority order. None of these block launch but all are worth addressing
 | Gap | Where | Effort |
 |---|---|---|
 | **Imagery** — load real photography (see §4) | media_assets / property_media | 1-2 days |
-| **`/agents/[slug]` reviews section** — 26 approved reviews are seeded but no UI surfaces them. The query layer (`lib/queries/reviews-by-subject.ts`) and the section in `app/(public)/agents/[slug]/page.tsx` both need adding. | Agent profile page | ~2 hours |
+| **`/agents/[slug]` reviews section** — 26 approved reviews are seeded but no UI surfaces them. The query layer (`lib/queries/reviews-by-subject.ts`) and the section in `app/[locale]/(public)/agents/[slug]/page.tsx` both need adding. | Agent profile page | ~2 hours |
 | **`/agents/[slug]` Active listings** — page shows "Listings linked to advisors land in Sprint 9" but properties already have `assigned_agent_id` populated. Wire a query and render `<ListingCard>`. | Agent profile page | ~2 hours |
 | **`/admin/agents` photo upload** — current form is a `photo_url` text input. Per [docs/FOLLOWUPS.md](FOLLOWUPS.md), real Storage upload was deferred. | Admin agent form | ~3 hours |
 | **`/admin/properties` CSV import** — the import button is a stub (Sprint 10). For Bazar to load their own listings post-handover, this needs the server-side CSV validator + Postgres upsert. | Admin properties list | ~1 day |

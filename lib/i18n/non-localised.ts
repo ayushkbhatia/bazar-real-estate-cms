@@ -20,6 +20,12 @@
  *
  * `/admin` is deliberately absent. The CMS lives under `[locale]` and renders
  * as English; it is `/ar/admin` that gets redirected away, in the proxy.
+ *
+ * `/staff-invite` is absent for a subtler reason: it is a *page*, and a page
+ * outside `[locale]` would have no root layout to render into now that the
+ * root layout is the locale one. It lives under the segment and is simply
+ * never linked in Arabic — English-only content and no-locale-segment are
+ * different things, and only the second belongs in this list.
  */
 export const NON_LOCALISED = new RegExp(
   [
@@ -28,7 +34,6 @@ export const NON_LOCALISED = new RegExp(
     "^/sso(/|$)",
     "^/sold(/|$)",
     "^/contact-qr/vcard$",
-    "^/staff-invite(/|$)",
     // Root metadata routes. sitemap.xml and robots.txt carry a dot and are
     // already excluded by the matcher; opengraph-image is not.
     "^/opengraph-image",

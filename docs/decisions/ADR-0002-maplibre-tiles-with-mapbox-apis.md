@@ -22,7 +22,7 @@ equivalent at the same quality.
 **Split the choice by surface:**
 
 1. **Map rendering** uses **MapLibre GL JS** with OpenStreetMap raster
-   tiles ([app/(public)/_components/map-view.tsx](../../app/(public)/_components/map-view.tsx)).
+   tiles ([app/[locale]/(public)/_components/map-view.tsx](../../app/[locale]/(public)/_components/map-view.tsx)).
    No vendor account, no API key. Every map on the marketplace, the
    property detail page, the development detail page, and the
    draw-area-tool runs on this.

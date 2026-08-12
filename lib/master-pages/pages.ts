@@ -41,7 +41,7 @@ import { CONTACT_QR_PAGE } from "./sections/contact-qr";
 
 // ── shared default content ──────────────────────────────────────────────
 // Mirrors AD_COMMUNITIES / SALE_PROP_TYPES in
-// app/(public)/_components/marketing/ad-data.ts — the copy the pages render
+// app/[locale]/(public)/_components/marketing/ad-data.ts — the copy the pages render
 // today. Change both together.
 const AD_COMMUNITY_CHIPS = [
   "Al Reem Island",

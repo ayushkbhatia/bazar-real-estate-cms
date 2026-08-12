@@ -9,7 +9,7 @@ import { uuidLike } from "@/lib/uuid";
  *
  * The public-side renderer consumes `Megamenu` (the shaped tree) from
  * `lib/queries/megamenu.ts`. The admin editor uses the *EditInput schemas to
- * validate writes before they hit `app/(admin)/admin/navigation/_actions.ts`.
+ * validate writes before they hit `app/[locale]/(admin)/admin/navigation/_actions.ts`.
  */
 
 // ───────────────────────────────────────────────────────────────

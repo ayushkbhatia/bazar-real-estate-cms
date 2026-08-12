@@ -3,7 +3,7 @@
  *
  * `signInAction` is the single sign-in path for BOTH doors: the customer page
  * at /sign-in and the staff page at /admin/login
- * (app/(staff-auth)/admin/login/_form.tsx imports it from here). It had no test
+ * (app/[locale]/(staff-auth)/admin/login/_form.tsx imports it from here). It had no test
  * at all, and no Playwright project authenticates — so the staff door could be
  * broken with the whole CI gate staying green.
  *

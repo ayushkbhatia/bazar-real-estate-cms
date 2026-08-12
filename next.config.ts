@@ -39,6 +39,12 @@ const nextConfig: NextConfig = {
     qualities: [75, 100],
   },
   experimental: {
+    // The root layout is `app/[locale]/layout.tsx`, a top-level dynamic
+    // segment, so a URL that matches no route (`/fr/buy`, a typo'd path) has
+    // no locale to resolve and therefore no layout to render `not-found.tsx`
+    // into. Next names this exact case as the reason `global-not-found`
+    // exists. Serves `app/global-not-found.tsx`.
+    globalNotFound: true,
     serverActions: {
       // No file bytes travel through a server action any more — uploads go
       // browser → Supabase Storage on a signed URL (app/(admin)/admin/media/

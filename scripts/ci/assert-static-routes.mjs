@@ -35,6 +35,23 @@ const REPO_ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", 
 const MANIFEST = path.join(REPO_ROOT, ".next", "prerender-manifest.json");
 const BASELINE = path.join(REPO_ROOT, "scripts", "ci", "route-render-baseline.json");
 
+/**
+ * Strip the locale segment so a route compares against its pre-`[locale]`
+ * baseline. `/[locale]/buy` and `/buy` are the same route serving the same URL
+ * — the key changed, the behaviour must not.
+ *
+ * Metadata image routes carry a content hash derived from their file path
+ * (`opengraph-image-j7a4v5`), so the move renamed them too. Normalise that off
+ * as well, or every OG route reads as deleted-and-re-added and the guard goes
+ * quiet on exactly the routes it just caught a regression in.
+ */
+function normaliseRoute(srcRoute) {
+  return srcRoute
+    .replace(/^\/\[locale\]/, "")
+    .replace(/(opengraph-image|twitter-image|icon|apple-icon)-[a-z0-9]+$/i, "$1")
+    || "/";
+}
+
 /** srcRoute -> { revalidate } for everything the build prerendered. */
 function readPrerenderedRoutes() {
   if (!existsSync(MANIFEST)) {
@@ -48,7 +65,7 @@ function readPrerenderedRoutes() {
   const bySrc = new Map();
 
   for (const [url, entry] of Object.entries(manifest.routes ?? {})) {
-    const src = entry.srcRoute ?? url;
+    const src = normaliseRoute(entry.srcRoute ?? url);
     if (!bySrc.has(src)) bySrc.set(src, new Set());
     bySrc.get(src).add(entry.initialRevalidateSeconds ?? false);
   }
@@ -91,7 +108,15 @@ if (!existsSync(BASELINE)) {
   process.exit(2);
 }
 
-const baseline = JSON.parse(readFileSync(BASELINE, "utf8")).routes ?? {};
+// Normalise the baseline through the same function. It was captured before the
+// `[locale]` move, so its keys carry the pre-move shape — including the old
+// metadata-image hashes. Comparing raw would report every OG route as both
+// deleted and added, which is how a guard stops guarding.
+const baseline = Object.fromEntries(
+  Object.entries(JSON.parse(readFileSync(BASELINE, "utf8")).routes ?? {}).map(
+    ([route, value]) => [normaliseRoute(route), value],
+  ),
+);
 
 const wentDynamic = [];
 const revalidateChanged = [];

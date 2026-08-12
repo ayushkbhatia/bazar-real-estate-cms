@@ -9,7 +9,7 @@ import { pickPostSignInPath } from "@/lib/auth-redirect";
 /**
  * Sign-in and sign-out — shared by BOTH doors.
  *
- * These used to live in app/(public)/(auth)/_actions.ts, which the staff login
+ * These used to live in app/[locale]/(public)/(auth)/_actions.ts, which the staff login
  * form imported across route groups. That group is being deleted along with the
  * customer-account surface, so anything the staff door depends on had to move
  * somewhere neutral first: deleting the customer auth pages would otherwise

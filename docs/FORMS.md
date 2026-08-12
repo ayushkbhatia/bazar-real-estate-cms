@@ -56,7 +56,7 @@ is a no-op for the public site until someone opens the manager.
 
 ## Where a submission goes
 
-`submitForm` (`app/(public)/_actions/forms.ts`) re-resolves the form
+`submitForm` (`app/[locale]/(public)/_actions/forms.ts`) re-resolves the form
 server-side — the browser's copy of the field list is never trusted — validates
 against the same schema the browser used, then hands off to whichever action
 already owned that lead type:

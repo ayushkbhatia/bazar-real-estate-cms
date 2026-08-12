@@ -29,12 +29,12 @@ staff door at `/admin/login`.
 Removal was not a subtree deletion. A read-only audit found the account surface
 was a **cross-cut**:
 
-- `app/(public)/_components/filter-bar.tsx` and
+- `app/[locale]/(public)/_components/filter-bar.tsx` and
   `components/brand/save-button.tsx` imported server actions from
   `app/(account)/_actions`, so deleting the account tree broke the **public**
   build.
-- `app/(staff-auth)/admin/login/_form.tsx` imported `signInAction` from
-  `app/(public)/(auth)/_actions`, so deleting the customer auth pages broke
+- `app/[locale]/(staff-auth)/admin/login/_form.tsx` imported `signInAction` from
+  `app/[locale]/(public)/(auth)/_actions`, so deleting the customer auth pages broke
   **staff sign-in**.
 - `deals.buyer_account_id` is `not null references accounts(user_id)`, so with
   no customer accounts **no new deal could ever be opened** — silently, with no

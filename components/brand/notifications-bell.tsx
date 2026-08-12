@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useAdminSession } from "@/app/(admin)/_components/admin-session";
+import { useAdminSession } from "@/app/[locale]/(admin)/_components/admin-session";
 
 export type BellNotification = {
   id: string;

@@ -75,7 +75,7 @@ than a special case to migrate.
 Rejected: **a polymorphic `content_translations` ledger.** Its main
 justification was that adding columns to `properties` would cost extra queries
 on the detail route. That turned out to be false — `fetchPropertyExtras` in
-`app/(public)/p/[slug]/page.tsx` is a documented escape hatch that already
+`app/[locale]/(public)/p/[slug]/page.tsx` is a documented escape hatch that already
 fires on every render and already selects columns the shared field list omits,
 so twin columns cost zero additional round-trips. The ledger also cannot
 address a list item stably by `field_path`, and it makes an Arabic full-text

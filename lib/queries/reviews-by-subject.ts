@@ -1,7 +1,7 @@
 /**
  * Approved reviews for a subject (typically an agent).
  *
- * Used by `app/(public)/agents/[slug]/page.tsx` to surface advisor
+ * Used by `app/[locale]/(public)/agents/[slug]/page.tsx` to surface advisor
  * testimonials. RLS policy `reviews_public_read` already filters to
  * status='approved', but we keep the predicate explicit so the query
  * is self-documenting.

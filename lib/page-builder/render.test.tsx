@@ -5,7 +5,7 @@ import { BLOCK_DEFS, newBlockInstance } from "./catalogue";
 import { resolveDocument } from "./document";
 import { EMPTY_LANDING_DATA, type LandingData } from "./data";
 import { presetBlocks, PRESETS } from "./presets";
-import { BlockNode, LandingRenderer } from "@/app/(public)/lp/[slug]/_render";
+import { BlockNode, LandingRenderer } from "@/app/[locale]/(public)/lp/[slug]/_render";
 import type { BlockDef } from "./types";
 import type { ListingRow } from "@/lib/queries/properties";
 import type { SectionValues } from "@/lib/master-pages";
@@ -23,12 +23,12 @@ import type { SectionValues } from "@/lib/master-pages";
 
 // The blocks reach for the two async server pieces the renderer composes.
 // Neither belongs in jsdom, and neither is what this spec is testing.
-vi.mock("@/app/(public)/_components/forms/form-renderer", () => ({
+vi.mock("@/app/[locale]/(public)/_components/forms/form-renderer", () => ({
   FormRenderer: ({ form }: { form: { key: string } }) => (
     <div data-testid="form">{form.key}</div>
   ),
 }));
-vi.mock("@/app/(public)/_components/home/off-plan-projects", () => ({
+vi.mock("@/app/[locale]/(public)/_components/home/off-plan-projects", () => ({
   OffPlanProjects: ({ heading }: { heading?: string }) => (
     <section data-testid="off-plan">{heading}</section>
   ),

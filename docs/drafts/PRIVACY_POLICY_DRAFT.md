@@ -2,7 +2,7 @@
 
 **Status:** SUPERSEDES the in-house draft that lived at this path. This is
 the client-supplied text, delivered as a bilingual PDF (English + Arabic)
-and shipped to `app/(public)/legal/privacy/page.tsx`. Treat this file as the
+and shipped to `app/[locale]/(public)/legal/privacy/page.tsx`. Treat this file as the
 source of truth for that page: if the page and this file drift, the page is
 wrong.
 
@@ -10,7 +10,7 @@ wrong.
 this is the ship date and needs client confirmation.
 
 **Arabic:** shipped at `/ar/legal/privacy` from
-`app/(public)/ar/legal/privacy/page.tsx`. Reconstructed from the PDF by
+`app/[locale]/(public)/ar/legal/privacy/page.tsx`. Reconstructed from the PDF by
 glyph position (right-to-left per line), because the embedded font maps
 lam-alef ligatures to their two letters in visual order — a plain text
 extract turns الإمارات into اإلمارات and ٤٥ into ٥٤. Headings were read back
