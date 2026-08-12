@@ -6,6 +6,11 @@ import {
 } from "@/lib/queries/landing-pages";
 import { attachImageUrls } from "@/lib/queries/section-images";
 import { resolveDocument } from "@/lib/page-builder";
+import {
+  DEFAULT_LOCALE,
+  isEnabledLocale,
+  type Locale,
+} from "@/lib/i18n/locales";
 import { loadLandingData } from "@/lib/page-builder/data";
 import { LandingRenderer } from "./_render";
 
@@ -26,7 +31,7 @@ import { LandingRenderer } from "./_render";
  */
 export const revalidate = 300;
 
-type PageProps = { params: Promise<{ slug: string }> };
+type PageProps = { params: Promise<{ slug: string; locale: string }> };
 
 /**
  * Prerender a bounded window of the most recent campaigns; `dynamicParams`
@@ -63,13 +68,16 @@ export async function generateMetadata({
 }
 
 export default async function LandingPage({ params }: PageProps) {
-  const { slug } = await params;
+  const { slug, locale: rawLocale } = await params;
   const page = await getPublishedLandingBySlug(slug);
   // A draft or deleted page is invisible to the anon client by RLS, so this is
   // the 404 for both.
   if (!page) notFound();
 
-  const blocks = resolveDocument(page.blocks);
+  // Fold to the route's locale. Every adapter and the 16-arm render switch
+  // below keep reading `values.title` — they never learn Arabic exists.
+  const locale: Locale = isEnabledLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+  const blocks = resolveDocument(page.blocks, locale);
   // One media query for every picked image on the page, whatever the depth.
   await attachImageUrls(blocks);
   const data = await loadLandingData(blocks);

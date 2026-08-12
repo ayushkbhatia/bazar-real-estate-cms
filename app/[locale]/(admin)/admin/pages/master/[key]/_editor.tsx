@@ -31,6 +31,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { arKey } from "@/lib/master-pages";
 import type {
   MasterPageKey,
   SectionDef,
@@ -378,6 +379,14 @@ function SectionRow({
                 seeds={seeds}
                 onChange={(v) =>
                   onValues({ ...section.values, [field.key]: v })
+                }
+                arValue={
+                  typeof section.values[arKey(field.key)] === "string"
+                    ? (section.values[arKey(field.key)] as string)
+                    : ""
+                }
+                onArChange={(v) =>
+                  onValues({ ...section.values, [arKey(field.key)]: v })
                 }
               />
             ))

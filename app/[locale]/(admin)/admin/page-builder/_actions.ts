@@ -343,7 +343,9 @@ export async function publishLandingPage(id: string): Promise<LandingResult> {
     metaDescription:
       typeof seo?.meta_description === "string" ? seo.meta_description : null,
     noindex: row.noindex,
-    blocks: resolveDocument(draft),
+    // Bilingual: folding here would publish the English fold and
+    // silently drop every Arabic value from the live document.
+    blocks: resolveDocument(draft, "bilingual"),
     knownFormKeys: FORM_KEYS,
     enabledFormKeys: await enabledFormKeys(supabase),
   });

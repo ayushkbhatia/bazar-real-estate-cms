@@ -1,5 +1,9 @@
 import { MASTER_PAGES } from "./pages";
 import { withArabicTwinsDeep } from "./twins";
+
+// The twin helpers are part of the public surface of this module — the admin
+// field editor derives its Arabic inputs from them.
+export * from "./twins";
 import { applyLocale } from "./i18n";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import {

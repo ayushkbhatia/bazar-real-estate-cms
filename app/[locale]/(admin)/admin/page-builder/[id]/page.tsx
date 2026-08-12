@@ -107,7 +107,8 @@ export default async function LandingEditorPage({ params }: PageProps) {
     metaDescription:
       typeof seo.meta_description === "string" ? seo.meta_description : null,
     noindex: page.noindex,
-    blocks: resolveDocument(page.draft),
+    blocks: // Bilingual: the editor needs both sides of every field at once.
+    resolveDocument(page.draft, "bilingual"),
     knownFormKeys: FORM_KEYS,
     enabledFormKeys: forms.missingTable
       ? [...FORM_KEYS]

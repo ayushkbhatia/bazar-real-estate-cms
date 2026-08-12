@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { arKey } from "@/lib/master-pages";
 import type { SectionValues } from "@/lib/master-pages";
 import {
   getBlockDef,
@@ -352,6 +353,14 @@ function BlockRow({
               onMediaAdded={onMediaAdded}
               seeds={seeds}
               onChange={(v) => onValues({ ...block.values, [field.key]: v })}
+              arValue={
+                typeof block.values[arKey(field.key)] === "string"
+                  ? (block.values[arKey(field.key)] as string)
+                  : ""
+              }
+              onArChange={(v) =>
+                onValues({ ...block.values, [arKey(field.key)]: v })
+              }
             />
           ))}
         </div>

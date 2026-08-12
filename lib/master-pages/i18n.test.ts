@@ -225,3 +225,55 @@ describe("twin derivation is idempotent", () => {
     }
   });
 });
+
+describe("acceptance: a field added next month inherits Arabic", () => {
+  it("derives a twin for a field the registry has never seen", () => {
+    // This is the phase's acceptance criterion, kept as a test rather than a
+    // one-off check: the value of deriving twins is that nobody has to
+    // remember, so the thing worth pinning is what happens to a field written
+    // by someone who has never read any of this.
+    const brandNew: FieldDef[] = [
+      {
+        key: "closing_pitch",
+        label: "Closing pitch",
+        kind: "textarea",
+        max: 200,
+      },
+    ];
+    const withTwins = withArabicTwinsDeep(brandNew);
+
+    // Immediately after its English sibling, not in a block at the end — a
+    // translator should never have to hold the pairing in their head.
+    expect(withTwins.map((f) => f.key)).toEqual([
+      "closing_pitch",
+      "closing_pitch_ar",
+    ]);
+
+    const twin = withTwins[1] as { max?: number; optional?: boolean };
+    // Arabic runs longer than English for the same content.
+    expect(twin.max).toBe(300);
+    // Never required: a blank twin falls back to English at render time, so
+    // requiring it would block publishing a page that renders perfectly.
+    expect(twin.optional).toBe(true);
+  });
+
+  it("reaches into a new list's sub-fields", () => {
+    const listy: FieldDef[] = [
+      {
+        key: "faqs",
+        label: "FAQs",
+        kind: "list",
+        itemLabel: "question",
+        max: 8,
+        fields: [
+          { key: "q", label: "Question", kind: "text" },
+          { key: "a", label: "Answer", kind: "textarea" },
+        ],
+      },
+    ];
+    const [list] = withArabicTwinsDeep(listy) as [
+      Extract<FieldDef, { kind: "list" }>,
+    ];
+    expect(list.fields.map((f) => f.key)).toEqual(["q", "q_ar", "a", "a_ar"]);
+  });
+});
