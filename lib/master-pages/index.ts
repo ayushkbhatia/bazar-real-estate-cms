@@ -1,4 +1,7 @@
 import { MASTER_PAGES } from "./pages";
+import { withArabicTwinsDeep } from "./twins";
+import { applyLocale } from "./i18n";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import {
   isMediaField,
   isListField,
@@ -59,6 +62,18 @@ export function isMasterPageKey(key: string): key is MasterPageKey {
 export function resolveSections(
   def: MasterPageDef,
   stored: StoredSection[] | null,
+  /**
+   * Fold the result down to one language. Defaults to English, so every
+   * existing caller and spec is unaffected until it opts in.
+   *
+   * Folding here rather than in the renderers is the whole point: all 473
+   * `str(...)` calls and 63 adapter functions keep reading `values.title` and
+   * never learn Arabic exists. `applyLocale` also guarantees the output has no
+   * `_ar` key, so a renderer cannot read the storage shape by accident.
+   *
+   * Pass "bilingual" for the EDITOR, which needs both sides at once.
+   */
+  locale: Locale | "bilingual" = DEFAULT_LOCALE,
 ): ResolvedSection[] {
   const byKey = new Map((stored ?? []).map((s) => [s.key, s]));
   const ordered: SectionDef[] = [];
@@ -77,6 +92,7 @@ export function resolveSections(
 
   return ordered.map((sectionDef) => {
     const s = byKey.get(sectionDef.key);
+    const merged = mergeValues(sectionDef, s?.values ?? null);
     return {
       key: sectionDef.key,
       def: sectionDef,
@@ -86,7 +102,10 @@ export function resolveSections(
       enabled: sectionDef.locked
         ? true
         : (s?.enabled ?? sectionDef.defaultEnabled ?? true),
-      values: mergeValues(sectionDef, s?.values ?? null),
+      values:
+        locale === "bilingual"
+          ? merged
+          : applyLocale(merged, locale, `${sectionDef.key}.`).values,
     };
   });
 }
@@ -103,7 +122,10 @@ export function mergeValues(
   stored: SectionValues | null,
 ): SectionValues {
   const out: SectionValues = {};
-  for (const field of def.fields) {
+  // Twins are derived, not declared, so they are not in `def.fields` — without
+  // this the Arabic value is dropped on every read and the editor shows an
+  // empty box over stored content.
+  for (const field of withArabicTwinsDeep(def.fields)) {
     const value = stored?.[field.key];
     out[field.key] =
       value === undefined || value === null
@@ -230,7 +252,11 @@ export function validateFieldValues(
   issues: ValidationIssue[],
 ): SectionValues {
   const values: SectionValues = {};
-  for (const field of fields) {
+  // Deep, not shallow. The list branch below iterates `field.fields`, so a
+  // shallow pass would keep `title_ar` but silently strip `items[].q_ar` on
+  // the first save — the editor types Arabic into an FAQ, presses save, sees
+  // "Saved.", and the Arabic is gone.
+  for (const field of withArabicTwinsDeep(fields)) {
     const value = (incoming as Record<string, unknown>)[field.key];
     if (isListField(field)) {
       const arr = Array.isArray(value) ? value : [];
@@ -298,9 +324,21 @@ export function normaliseScalar(
       return { media_id: null, alt: null, label: null };
     }
     const v = value as Record<string, unknown>;
+    // Rebuilt key by key with no spread, so anything not named here is
+    // destroyed on save. `alt_ar` is the Arabic alt text — write-only data
+    // loss without it, on the one surface an English-reading editor is least
+    // likely to re-check.
+    //
+    // Emitted only when it has a value, rather than always as null. Every
+    // image in every section document carries one of these, and a null key on
+    // all of them is pure jsonb weight for content that has no Arabic. It also
+    // keeps the stored shape byte-identical for English-only pages, so this
+    // change rewrites nothing already in the database.
+    const altAr = trimOrNull(v.alt_ar);
     return {
       media_id: trimOrNull(v.media_id),
       alt: trimOrNull(v.alt),
+      ...(altAr === null ? {} : { alt_ar: altAr }),
       label: trimOrNull(v.label),
     };
   }
