@@ -133,6 +133,24 @@ const propertyOverviewFields = z.object({
     .max(320, "Keep it under 320 characters")
     .nullable()
     .optional(),
+  /* Arabic twins. Optional and nullable in every case — blank falls back to
+   * the English in place, which is the site-wide rule, so a missing
+   * translation must never be a validation error.
+   *
+   * The caps are 1.5x their English siblings, matching `arMax` in the master
+   * pages. Arabic runs longer than English for the same content often enough
+   * that the English cap rejects a correct translation, and a rejected
+   * translation is a field that silently stays English. */
+  title_ar: z
+    .string()
+    .max(240, "Keep the Arabic title under 240 characters")
+    .nullable()
+    .optional(),
+  short_description_ar: z
+    .string()
+    .max(480, "Keep the Arabic summary under 480 characters")
+    .nullable()
+    .optional(),
   type: z.enum(PROPERTY_TYPES),
   mode: z.enum(PROPERTY_MODES),
   // Developer is a required section of the listing wizard. The column is
@@ -321,6 +339,11 @@ export type PropertyCreateInput = z.infer<typeof propertyCreateSchema>;
  */
 const NULLABLE_TEXT_FIELDS = [
   "short_description",
+  // Without these two the editor's empty Arabic box submits "" and Postgres
+  // stores an empty string rather than NULL — which reads as "translated to
+  // nothing" everywhere downstream instead of "not translated".
+  "title_ar",
+  "short_description_ar",
   "view",
   "orientation",
   "address_line",

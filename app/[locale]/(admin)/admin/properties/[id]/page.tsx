@@ -39,7 +39,12 @@ async function fetchPropertyForEdit(id: string) {
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "id, reference, slug, title, short_description, type, mode, property_form, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, assigned_agent_id, geo",
+      // title_ar and short_description_ar are not optional here. `normaliseEditInput`
+      // maps an undefined nullable text field to null, so a form that never
+      // loaded them writes null over them on the next save of any other field
+      // — the editor sees a success toast and the Arabic is gone. Pinned by
+      // _form.arabic.test.ts.
+      "id, reference, slug, title, title_ar, short_description, short_description_ar, type, mode, property_form, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, floor, address_line, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, assigned_agent_id, geo",
     )
     .eq("id", id)
     .maybeSingle();

@@ -57,6 +57,8 @@ import {
   FloorPlanCard,
   type FloorPlanItem,
 } from "./_components/floor-plan-card";
+import { ArabicTwin } from "../../_fields/arabic-twin";
+import { TranslateButton } from "./_translate-button";
 import { AmenitiesPicker } from "./_components/amenities-picker";
 import { NewAreaDialog } from "./_components/new-area-dialog";
 import { NewDeveloperDialog } from "./_components/new-developer-dialog";
@@ -323,11 +325,25 @@ export function PropertyEditForm({
           value="overview"
           className="bg-bz-surface border border-bz-border rounded-lg p-6 mt-6 flex flex-col gap-5"
         >
+          <TranslateButton
+            propertyId={propertyId}
+            onTranslated={(field, text) =>
+              // Not dirty: the action already wrote it, so there is nothing
+              // outstanding for Save to do.
+              setValue(field as "title_ar", text, { shouldDirty: false })
+            }
+          />
+
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="title">Title</Label>
             <Input id="title" {...register("title")} />
             <FieldError
               message={errors.title?.message ?? serverFieldErrors.title}
+            />
+            <ArabicTwin
+              field={{ key: "title_ar", label: "Title", kind: "text", max: 160 }}
+              value={watch("title_ar") ?? ""}
+              onChange={(v) => setValue("title_ar", v, { shouldDirty: true })}
             />
           </div>
 
@@ -346,6 +362,18 @@ export function PropertyEditForm({
               message={
                 errors.short_description?.message ??
                 serverFieldErrors.short_description
+              }
+            />
+            <ArabicTwin
+              field={{
+                key: "short_description_ar",
+                label: "Short description",
+                kind: "textarea",
+                max: 320,
+              }}
+              value={watch("short_description_ar") ?? ""}
+              onChange={(v) =>
+                setValue("short_description_ar", v, { shouldDirty: true })
               }
             />
           </div>
