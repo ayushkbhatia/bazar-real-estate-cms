@@ -24,6 +24,7 @@ export async function OffPlanProjects({
   ctaLabel = "All developments",
   ctaHref = "/developments",
   featuredSlugs,
+  developments: prefetched,
 }: SectionCopy & {
   /**
    * Project pages chosen in the home master page, in display order. Empty ⇒
@@ -31,8 +32,14 @@ export async function OffPlanProjects({
    * before it was editable.
    */
   featuredSlugs?: string[];
+  /**
+   * Rows the caller has already fetched. The page builder can put several of
+   * these on one page, and `listPublishedDevelopments` is not React-cached, so
+   * letting each instance fetch for itself would be one round-trip per section.
+   */
+  developments?: Awaited<ReturnType<typeof listPublishedDevelopments>>;
 } = {}) {
-  const developments = await listPublishedDevelopments();
+  const developments = prefetched ?? (await listPublishedDevelopments());
 
   // A pick that no longer resolves — unpublished, renamed, deleted — is
   // dropped rather than rendering a card that links nowhere.

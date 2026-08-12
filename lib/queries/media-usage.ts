@@ -267,6 +267,52 @@ export async function buildMediaUsageIndex(
       }
     }),
 
+    /**
+     * Campaign landing pages.
+     *
+     * Registering this source is not optional. Without it `deriveMediaState`
+     * returns "unused" for every image a marketing manager picked, `canTrash`
+     * says yes, and the library offers a delete button that punches a hole in a
+     * live campaign page — discovered in month two, after the trash window has
+     * closed.
+     *
+     * Both documents are walked. An asset used only in the draft is still very
+     * much in use; it is what the next publish will put on the page.
+     */
+    source("landing_pages", async () => {
+      type Row = {
+        id: string;
+        title: string;
+        slug: string;
+        status: string;
+        blocks: unknown;
+        draft_blocks: unknown;
+      };
+      const res = await supabase
+        .from("landing_pages")
+        .select("id, title, slug, status, blocks, draft_blocks")
+        .is("deleted_at", null)
+        .limit(1000);
+      for (const r of rows<Row>(res, "landing_pages")) {
+        const live = new Set(collectMediaIds(r.blocks));
+        const draft = new Set(collectMediaIds(r.draft_blocks));
+        for (const mediaId of new Set([...live, ...draft])) {
+          if (!ids.includes(mediaId)) continue;
+          add(mediaId, {
+            kind: "landing_page",
+            id: r.id,
+            label: r.title,
+            role: live.has(mediaId) ? "Section image" : "Section image (draft)",
+            href: `/admin/page-builder/${r.id}`,
+            // Only the published document is on a public surface. An image that
+            // exists only in the draft is "attached", not "live".
+            live: r.status === "published" && live.has(mediaId),
+            internal: false,
+          });
+        }
+      }
+    }),
+
     // ── Catalogue chrome ────────────────────────────────────────────────
     source("areas", async () => {
       type Row = { id: string; name: string; hero_image_id: string | null };

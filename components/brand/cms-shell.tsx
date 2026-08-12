@@ -12,6 +12,7 @@ import {
   Inbox,
   FileText,
   Layers,
+  LayoutTemplate,
   Mails,
   Menu,
   Settings,
@@ -70,6 +71,11 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
     items: [
       { label: "Blog editor", href: "/admin/blog", icon: FileText },
       { label: "Pages & blocks", href: "/admin/pages", icon: Layers },
+      {
+        label: "Page builder",
+        href: "/admin/page-builder",
+        icon: LayoutTemplate,
+      },
       { label: "Forms", href: "/admin/forms", icon: FormInput },
       { label: "Floating CTAs", href: "/admin/floating-ctas", icon: PhoneCall },
       { label: "Megamenu", href: "/admin/megamenu", icon: Menu },
@@ -110,6 +116,10 @@ function activeCmsTab(pathname: string | null): string {
     [
       "/admin/blog",
       "/admin/pages",
+      // Before "/admin/pages" would match it — it doesn't ("page-builder"
+      // diverges at the hyphen) — so this needs its own entry or the mobile
+      // tab bar falls through to "More".
+      "/admin/page-builder",
       "/admin/forms",
       "/admin/floating-ctas",
       "/admin/content-assets",

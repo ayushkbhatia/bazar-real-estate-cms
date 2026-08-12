@@ -91,6 +91,63 @@ test("a11y: property detail has no axe violations", async ({ page }) => {
   await scan(page, path!);
 });
 
+/**
+ * Landing pages, discovered rather than named.
+ *
+ * Two scans, and the second is the point. Everywhere else this suite asserts
+ * only on axe `violations`; here it additionally asserts that `incomplete` is
+ * empty for `color-contrast`, scoped to /lp/ alone.
+ *
+ * Why only here: axe reports text sitting on an image or a scrim as
+ * *incomplete*, not as a violation — "Element has a 1:1 contrast ratio with the
+ * background" — which is the hole e2e/hero-media-contrast.spec.ts:14 exists to
+ * plug elsewhere. On a landing page every colour choice is a closed `select`
+ * paired with type colours that pass against it, so an `incomplete` here really
+ * does mean something went wrong rather than "axe couldn't tell". Asserting it
+ * globally would light up routes where the ambiguity is genuine.
+ */
+async function landingPaths(
+  request: import("@playwright/test").APIRequestContext,
+  baseURL: string,
+): Promise<string[]> {
+  const response = await request.get(`${baseURL}/sitemap.xml`);
+  if (!response.ok()) return [];
+  const xml = await response.text();
+  return [...xml.matchAll(/<loc>[^<]*?(\/lp\/[a-z0-9-]+)<\/loc>/g)].map((m) => m[1]);
+}
+
+test("a11y: landing page has no axe violations", async ({ page, request, baseURL }) => {
+  const paths = await landingPaths(request, baseURL ?? "");
+  test.skip(paths.length === 0, "No landing pages published to scan.");
+  await scan(page, paths[0]);
+});
+
+test("a11y: landing page has no unresolved contrast", async ({
+  page,
+  request,
+  baseURL,
+}) => {
+  const paths = await landingPaths(request, baseURL ?? "");
+  test.skip(paths.length === 0, "No landing pages published to scan.");
+  await page.goto(paths[0]);
+  const results = await new AxeBuilder({ page })
+    .withTags(TAGS)
+    .disableRules(DISABLED_RULES)
+    .analyze();
+  const unresolved = results.incomplete.filter((r) => r.id === "color-contrast");
+  if (unresolved.length > 0) {
+    console.log(
+      `Unresolved contrast on ${paths[0]}:`,
+      JSON.stringify(
+        unresolved.flatMap((r) => r.nodes.flatMap((n) => n.target)).slice(0, 6),
+        null,
+        2,
+      ),
+    );
+  }
+  expect(unresolved).toEqual([]);
+});
+
 test("a11y: cookie banner itself is keyboard-accessible", async ({ page }) => {
   await page.goto("/");
 

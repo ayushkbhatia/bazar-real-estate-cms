@@ -1622,6 +1622,62 @@ export type Database = {
         }
         Relationships: []
       }
+      landing_pages: {
+        Row: {
+          blocks: Json
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          draft_blocks: Json | null
+          id: string
+          noindex: boolean
+          published_at: string | null
+          seo: Json | null
+          slug: string
+          status: Database["public"]["Enums"]["page_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          blocks?: Json
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          draft_blocks?: Json | null
+          id?: string
+          noindex?: boolean
+          published_at?: string | null
+          seo?: Json | null
+          slug: string
+          status?: Database["public"]["Enums"]["page_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          blocks?: Json
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          draft_blocks?: Json | null
+          id?: string
+          noindex?: boolean
+          published_at?: string | null
+          seo?: Json | null
+          slug?: string
+          status?: Database["public"]["Enums"]["page_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "landing_pages_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       licenses: {
         Row: {
           created_at: string
