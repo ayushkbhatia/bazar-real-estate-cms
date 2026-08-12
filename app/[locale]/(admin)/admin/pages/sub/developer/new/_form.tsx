@@ -68,7 +68,7 @@ export function NewDeveloperForm() {
       </div>
 
       <div className="flex items-center gap-3">
-        <p className="text-[12px] text-bz-muted mr-auto">
+        <p className="text-[12px] text-bz-muted me-auto">
           You&apos;ll land on the record next, where the logo, founding year and
           description live.
         </p>

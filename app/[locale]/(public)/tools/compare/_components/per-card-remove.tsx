@@ -38,7 +38,7 @@ export function PerCardRemove({
       type="button"
       onClick={remove}
       aria-label="Remove from comparison"
-      className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/85 text-bz-ink-2 hover:bg-white hover:text-bz-ink flex items-center justify-center transition-colors z-10"
+      className="absolute top-2 end-2 w-7 h-7 rounded-full bg-white/85 text-bz-ink-2 hover:bg-white hover:text-bz-ink flex items-center justify-center transition-colors z-10"
     >
       <X size={13} strokeWidth={1.8} />
     </button>

@@ -155,7 +155,7 @@ export function DsrConsole({
           <Search size={13} strokeWidth={1.8} />
           Before you act
         </div>
-        <ul className="mt-2 list-disc pl-4 flex flex-col gap-1.5">
+        <ul className="mt-2 list-disc ps-4 flex flex-col gap-1.5">
           <li>
             Verify the requester actually controls the address — reply to it and
             get a confirmation before erasing anything.

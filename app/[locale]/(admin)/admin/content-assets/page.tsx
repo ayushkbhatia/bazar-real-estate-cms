@@ -139,7 +139,7 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
                 <TableHead>Category</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Follows with</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-end">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -209,7 +209,7 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
                           "—"
                         )}
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-end">
                         <AssetRowActions
                           id={row.id}
                           name={row.name}

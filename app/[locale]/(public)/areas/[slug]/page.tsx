@@ -760,7 +760,7 @@ function Stat({
       >
         {value ?? "—"}
         {value && unit ? (
-          <span className="mono text-[14px] text-bz-muted ml-1.5">{unit}</span>
+          <span className="mono text-[14px] text-bz-muted ms-1.5">{unit}</span>
         ) : null}
       </div>
     </div>

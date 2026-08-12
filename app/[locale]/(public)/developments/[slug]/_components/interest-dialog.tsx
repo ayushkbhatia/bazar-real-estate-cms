@@ -61,7 +61,7 @@ export function InterestDialog({
       <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           {/* pr-8 keeps a long project name clear of the close button. */}
-          <DialogTitle className="serif text-[22px] font-normal pr-8">
+          <DialogTitle className="serif text-[22px] font-normal pe-8">
             {renderFormCopy(form.copy.title, tokens)}
           </DialogTitle>
           <DialogDescription>

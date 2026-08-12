@@ -60,7 +60,7 @@ function MobileColumn({ column }: { column: MegamenuColumn }) {
               <span>
                 {item.label}
                 {item.badge_label ? (
-                  <span className="ml-2 text-[10.5px] uppercase tracking-wider text-bz-muted">
+                  <span className="ms-2 text-[10.5px] uppercase tracking-wider text-bz-muted">
                     {item.badge_label}
                   </span>
                 ) : null}
@@ -185,7 +185,7 @@ function TabsList({
                   <button
                     type="button"
                     onClick={() => onPick(tab)}
-                    className="w-full px-5 py-4 text-left hover:bg-bz-surface-2"
+                    className="w-full px-5 py-4 text-start hover:bg-bz-surface-2"
                   >
                     {Inner}
                   </button>

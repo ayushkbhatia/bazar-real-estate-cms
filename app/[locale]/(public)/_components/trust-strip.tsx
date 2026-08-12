@@ -67,7 +67,7 @@ export async function TrustStrip() {
         </div>
 
         {/* Permit */}
-        <div className="md:justify-self-end md:text-right">
+        <div className="md:justify-self-end md:text-end">
           <div className="text-[11px] uppercase tracking-wider text-bz-ink-2">
             DLD broker permit
           </div>

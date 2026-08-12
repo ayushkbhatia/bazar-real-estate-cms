@@ -40,7 +40,7 @@ export function DevelopmentCard({ d }: { d: Development }) {
           />
         )}
         {d.tagline ? (
-          <span className="absolute top-3.5 left-3.5 inline-flex items-center h-[24px] px-2.5 rounded-full text-[11px] font-medium bg-bz-navy text-bz-bg">
+          <span className="absolute top-3.5 start-3.5 inline-flex items-center h-[24px] px-2.5 rounded-full text-[11px] font-medium bg-bz-navy text-bz-bg">
             {d.tagline}
           </span>
         ) : null}

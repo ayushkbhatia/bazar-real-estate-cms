@@ -44,7 +44,7 @@ export function AreaImagesCard({
   return (
     <section className="rounded-lg border border-bz-border bg-bz-surface p-4 flex flex-col gap-4">
       <div className="flex items-center gap-3">
-        <div className="mr-auto">
+        <div className="me-auto">
           <h2 className="text-[13.5px] font-medium">Page images</h2>
           <p className="text-[11.5px] text-bz-muted">
             Pick from the media library or upload — uploads are added to the

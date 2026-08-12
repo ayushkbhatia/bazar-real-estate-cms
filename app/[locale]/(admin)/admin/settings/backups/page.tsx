@@ -138,9 +138,9 @@ export default async function AdminSettingsBackupsPage() {
           <table className="w-full text-[13px]">
             <thead className="bg-bz-bg text-bz-muted text-[11.5px] uppercase tracking-wider">
               <tr>
-                <th className="text-left px-3 py-2 font-normal">Entity</th>
-                <th className="text-left px-3 py-2 font-normal">Period</th>
-                <th className="text-left px-3 py-2 font-normal">Why</th>
+                <th className="text-start px-3 py-2 font-normal">Entity</th>
+                <th className="text-start px-3 py-2 font-normal">Period</th>
+                <th className="text-start px-3 py-2 font-normal">Why</th>
               </tr>
             </thead>
             <tbody>

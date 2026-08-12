@@ -62,7 +62,7 @@ export function AuditDiffView({
       </Eyebrow>
       <div className="mt-3 rounded-md border border-bz-border bg-bz-surface overflow-x-auto">
         <table className="w-full text-[12.5px] min-w-[480px]">
-          <thead className="text-left text-[10.5px] uppercase tracking-wider text-bz-muted">
+          <thead className="text-start text-[10.5px] uppercase tracking-wider text-bz-muted">
             <tr>
               <th className="px-3 py-2 font-medium">Field</th>
               <th className="px-3 py-2 font-medium">Before</th>

@@ -60,7 +60,7 @@ export function AddBlock({
                         onAdd(def);
                         setOpen(false);
                       }}
-                      className="w-full h-full text-left rounded-lg border border-bz-border bg-bz-surface hover:border-bz-teal transition-colors px-3.5 py-3"
+                      className="w-full h-full text-start rounded-lg border border-bz-border bg-bz-surface hover:border-bz-teal transition-colors px-3.5 py-3"
                     >
                       <span className="text-[13px] font-medium">
                         {def.label}

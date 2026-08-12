@@ -40,7 +40,7 @@ export default async function LandingPreviewPage({ params }: PageProps) {
         <span className="inline-flex items-center h-[22px] px-2 rounded-full bg-[oklch(0.95_0.05_85)] text-[oklch(0.38_0.09_75)] text-[11px] font-medium">
           Preview
         </span>
-        <span className="text-[12.5px] text-bz-muted mr-auto truncate">
+        <span className="text-[12.5px] text-bz-muted me-auto truncate">
           {page.title}
           {page.hasDraft ? " · unpublished changes" : ""}
           {unknown > 0

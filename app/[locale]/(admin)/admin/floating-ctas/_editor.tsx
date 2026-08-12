@@ -181,7 +181,7 @@ export function FloatingCtasEditor({
         <span className="text-[12px] text-bz-muted">
           {ctas.length} of {MAX_FLOATING_CTAS}
         </span>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ms-auto flex items-center gap-2">
           {dirty ? (
             <span className="text-[12px] text-bz-muted">Unsaved changes</span>
           ) : null}
@@ -227,7 +227,7 @@ function CtaRow({
         <button
           type="button"
           onClick={onToggle}
-          className="flex items-center gap-2 min-w-0 flex-1 text-left"
+          className="flex items-center gap-2 min-w-0 flex-1 text-start"
           aria-expanded={expanded}
         >
           <Preview cta={cta} />

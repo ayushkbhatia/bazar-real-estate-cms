@@ -39,13 +39,13 @@ export function DmtComparables({
         </span>
       </div>
       <table className="w-full text-[12.5px]">
-        <thead className="text-left text-[10.5px] uppercase tracking-wider text-bz-muted">
+        <thead className="text-start text-[10.5px] uppercase tracking-wider text-bz-muted">
           <tr>
             <th className="px-4 py-2 font-medium">Ref</th>
             <th className="px-3 py-2 font-medium">Date</th>
             <th className="px-3 py-2 font-medium">Unit</th>
-            <th className="px-3 py-2 font-medium text-right">Price</th>
-            <th className="px-3 py-2 font-medium text-right">
+            <th className="px-3 py-2 font-medium text-end">Price</th>
+            <th className="px-3 py-2 font-medium text-end">
               <CurrencySymbolText />/<AreaUnitText />
             </th>
           </tr>
@@ -62,10 +62,10 @@ export function DmtComparables({
                 })}
               </td>
               <td className="px-3 py-2 text-bz-ink-2">{c.unit}</td>
-              <td className="px-3 py-2 mono text-bz-ink text-right">
+              <td className="px-3 py-2 mono text-bz-ink text-end">
                 <PriceText aed={c.price_aed} />
               </td>
-              <td className="px-3 py-2 mono text-bz-ink-2 text-right">
+              <td className="px-3 py-2 mono text-bz-ink-2 text-end">
                 <PricePerAreaValueText
                   aedPerFt2={Math.round(c.price_aed / c.ft2)}
                 />

@@ -22,7 +22,7 @@ export function InvestmentMetrics({ rows }: { rows: Metric[] }) {
         </div>
       </div>
       <table className="w-full text-[13.5px]">
-        <thead className="text-left text-[11.5px] uppercase tracking-wider text-bz-muted">
+        <thead className="text-start text-[11.5px] uppercase tracking-wider text-bz-muted">
           <tr>
             <th className="px-5 py-3 font-medium">Reference</th>
             <th className="px-3 py-3 font-medium">Gross yield</th>

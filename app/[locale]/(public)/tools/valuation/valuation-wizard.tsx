@@ -834,7 +834,7 @@ function ProgressStrip({ current }: { current: number }) {
                 <Check
                   size={14}
                   strokeWidth={2}
-                  className="ml-auto text-bz-success"
+                  className="ms-auto text-bz-success"
                 />
               ) : null}
             </div>

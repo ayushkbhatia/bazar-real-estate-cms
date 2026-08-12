@@ -67,10 +67,10 @@ export default async function AdminDsrPage() {
               <table className="w-full text-[12.5px]">
                 <thead className="text-bz-muted">
                   <tr className="border-b border-bz-border">
-                    <th className="text-left font-medium px-4 py-2.5">Subject</th>
-                    <th className="text-left font-medium px-4 py-2.5">Kind</th>
-                    <th className="text-left font-medium px-4 py-2.5">Status</th>
-                    <th className="text-left font-medium px-4 py-2.5">Handled</th>
+                    <th className="text-start font-medium px-4 py-2.5">Subject</th>
+                    <th className="text-start font-medium px-4 py-2.5">Kind</th>
+                    <th className="text-start font-medium px-4 py-2.5">Status</th>
+                    <th className="text-start font-medium px-4 py-2.5">Handled</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -799,7 +799,7 @@ export function PropertyEditForm({
                 {sortedAreas.map((a) => (
                   <SelectItem key={a.id} value={a.id}>
                     {a.name}
-                    <span className="ml-2 text-[11px] text-bz-muted">
+                    <span className="ms-2 text-[11px] text-bz-muted">
                       · {a.kind}
                     </span>
                   </SelectItem>
@@ -897,7 +897,7 @@ export function PropertyEditForm({
       </Tabs>
 
       <div className="flex items-center justify-end gap-3 sticky bottom-0 bg-bz-bg pt-3 pb-2">
-        <span className="text-[12px] text-bz-muted mr-auto">
+        <span className="text-[12px] text-bz-muted me-auto">
           Editing <span className="mono text-bz-ink-2">{reference}</span>
           {isDirty ? " · unsaved changes" : null}
         </span>

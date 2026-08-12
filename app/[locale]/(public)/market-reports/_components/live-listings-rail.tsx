@@ -83,7 +83,7 @@ export function LiveListingsRail({
                   {/* This rail predates `ListingCard` and draws its own
                       media, so it doesn't inherit the card's shortlist
                       button — mount it explicitly, same position. */}
-                  <div className="absolute top-3 right-3 z-10">
+                  <div className="absolute top-3 end-3 z-10">
                     <CompareButton propertyId={r.id} />
                   </div>
                 </div>

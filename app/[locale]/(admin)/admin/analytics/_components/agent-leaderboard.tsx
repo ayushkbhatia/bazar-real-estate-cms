@@ -59,7 +59,7 @@ export function AgentLeaderboard({ rows }: { rows: Row[] }) {
                     </div>
                   ) : null}
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="text-end flex-shrink-0">
                   <div className="mono text-[13px] text-bz-ink">
                     AED {(r.closedAed / 1_000_000).toFixed(1)}M
                   </div>

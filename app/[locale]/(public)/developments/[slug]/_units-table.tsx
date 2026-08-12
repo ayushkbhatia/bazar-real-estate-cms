@@ -55,7 +55,7 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
       <div className="rounded-lg border border-bz-border bg-bz-surface overflow-hidden">
         <table className="w-full text-[13px]">
           <thead>
-            <tr className="text-left text-[11px] text-bz-muted uppercase tracking-wider">
+            <tr className="text-start text-[11px] text-bz-muted uppercase tracking-wider">
               <th className="px-4 py-3">Type</th>
               <th className="px-2 py-3">Beds</th>
               <th className="px-2 py-3">Built-up</th>
@@ -66,7 +66,7 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
                 Price · {currencySymbol(prefs.currency)}
               </th>
               <th className="px-2 py-3">Plot #</th>
-              <th className="px-4 py-3 text-right">Action</th>
+              <th className="px-4 py-3 text-end">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -105,7 +105,7 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
                   <td className="px-2 py-3 mono text-[12px] text-bz-muted">
                     {u.plot_number ?? "—"}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-end">
                     {u.status === "available" ? (
                       <Button size="sm" variant="default">
                         Reserve

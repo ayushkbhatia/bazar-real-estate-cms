@@ -314,7 +314,7 @@
   }
   .bz-prose ul,
   .bz-prose ol {
-    padding-left: 1.5em;
+    padding-inline-start: 1.5em;
     display: flex;
     flex-direction: column;
     gap: 0.5em;
@@ -326,8 +326,8 @@
     list-style: decimal;
   }
   .bz-prose blockquote {
-    border-left: 3px solid var(--bz-accent);
-    padding-left: 1.25em;
+    border-inline-start: 3px solid var(--bz-accent);
+    padding-inline-start: 1.25em;
     color: var(--bz-ink-2);
     font-style: italic;
   }
@@ -378,7 +378,7 @@
   .bz-prose td {
     border: 1px solid var(--bz-border);
     padding: 0.6em 0.8em;
-    text-align: left;
+    text-align: start;
     vertical-align: top;
   }
   .bz-prose th {
@@ -391,7 +391,7 @@
     content: attr(data-placeholder);
     color: var(--bz-muted-2);
     pointer-events: none;
-    float: left;
+    float: inline-start;
     height: 0;
   }
   .tiptap h2 {
@@ -420,7 +420,7 @@
   }
   .tiptap ul,
   .tiptap ol {
-    padding-left: 1.5em;
+    padding-inline-start: 1.5em;
   }
   .tiptap ul {
     list-style: disc;
@@ -429,8 +429,8 @@
     list-style: decimal;
   }
   .tiptap blockquote {
-    border-left: 3px solid var(--bz-accent);
-    padding-left: 1em;
+    border-inline-start: 3px solid var(--bz-accent);
+    padding-inline-start: 1em;
     color: var(--bz-ink-2);
     font-style: italic;
   }
@@ -525,7 +525,7 @@
   /* Attribution / credit — required, do not remove. */
   .bzmap__credit {
     position: absolute;
-    right: 10px;
+    inset-inline-end: 10px;
     bottom: 8px;
     z-index: 3;
     font-size: 10px;
@@ -541,7 +541,7 @@
   .bzmap__ctrls {
     position: absolute;
     top: 16px;
-    right: 16px;
+    inset-inline-end: 16px;
     z-index: 4;
     display: flex;
     flex-direction: column;
@@ -659,7 +659,7 @@
   .bzmap-flyout {
     position: absolute;
     top: 18px;
-    left: 18px;
+    inset-inline-start: 18px;
     z-index: 7;
     width: 316px;
     max-width: calc(100% - 36px);
@@ -674,7 +674,7 @@
   .bzmap-flyout__close {
     position: absolute;
     top: 10px;
-    right: 10px;
+    inset-inline-end: 10px;
     z-index: 2;
     width: 30px;
     height: 30px;
@@ -712,7 +712,7 @@
     padding: 12px 14px;
   }
   .bzmap-flyout__stats > div + div {
-    border-left: 1px solid var(--bz-border);
+    border-inline-start: 1px solid var(--bz-border);
   }
 
   /* Hint pill */
@@ -738,7 +738,7 @@
   /* Legend */
   .bzmap-legend {
     position: absolute;
-    left: 18px;
+    inset-inline-start: 18px;
     bottom: 16px;
     z-index: 4;
     display: flex;
@@ -816,8 +816,8 @@
     .bzmap-flyout {
       top: auto;
       bottom: 12px;
-      left: 12px;
-      right: 12px;
+      inset-inline-start: 12px;
+      inset-inline-end: 12px;
       width: auto;
       max-width: none;
     }
@@ -839,4 +839,80 @@
 }
 [data-slot="table-row"]:hover {
   background-color: var(--bz-accent-soft);
+}
+
+/* ─── RTL: the cases logical properties cannot reach ───────────────────
+   Unlayered on purpose, same reason as the M20/M21 block above: Tailwind v4
+   emits every utility inside `@layer utilities`, and per CSS cascade layers an
+   unlayered normal declaration out-cascades any layered one regardless of
+   specificity. The built-in `rtl:` variant would NOT do here — v4 compiles it
+   to `&:where(…)`, which has zero specificity, so the winner would be
+   Tailwind's internal utility ordering rather than a contract.
+
+   Everything below is inert until a locale sets dir="rtl" (P3), and inert
+   inside /admin permanently — the proxy redirects /ar/admin away, so the CMS
+   is never RTL. That is what keeps the blast radius of this block small.
+
+   The utilities themselves were converted to logical forms in P2 and are held
+   there by lib/rtl/no-physical-utilities.test.ts, so this block deliberately
+   does NOT re-map utility classes. It handles only what a logical property
+   cannot express. */
+
+/* 1 · Radix resolves `data-motion` against the READING direction once
+   DirectionProvider is mounted, but the animation keyed off it is physical by
+   nature: content entering "from the end" travels from the physical left in
+   RTL. Flip the distance, not the attribute. */
+[dir="rtl"] [data-slot="navigation-menu-content"][data-motion="from-end"] {
+  --tw-enter-translate-x: -13rem;
+}
+[dir="rtl"] [data-slot="navigation-menu-content"][data-motion="from-start"] {
+  --tw-enter-translate-x: 13rem;
+}
+[dir="rtl"] [data-slot="navigation-menu-content"][data-motion="to-end"] {
+  --tw-exit-translate-x: -13rem;
+}
+[dir="rtl"] [data-slot="navigation-menu-content"][data-motion="to-start"] {
+  --tw-exit-translate-x: 13rem;
+}
+
+/* 2 · Directional icons. lucide ships a stable `.lucide-<name>` class, so one
+   rule covers every call site — including the chevrons rendered inside shadcn
+   primitives, which no wrapper component could reach.
+
+   Tailwind v4 writes `translate-x-*` / `rotate-*` to the standalone
+   `translate` and `rotate` properties rather than to `transform`, so
+   `transform: scaleX(-1)` composes with them instead of overwriting them.
+
+   NOT flipped, deliberately: `arrow-up-right` and friends are the
+   external-link glyph, which Material and Apple both leave unmirrored; and
+   media transport controls, where the arrow means "play", not "forward". */
+[dir="rtl"]
+  :is(
+    .lucide-chevron-right, .lucide-chevron-left,
+    .lucide-chevrons-right, .lucide-chevrons-left,
+    .lucide-arrow-right, .lucide-arrow-left,
+    .lucide-arrow-big-right, .lucide-arrow-big-left,
+    .lucide-move-right, .lucide-move-left,
+    .lucide-corner-down-right, .lucide-corner-down-left,
+    .lucide-undo, .lucide-redo, .lucide-reply, .lucide-forward,
+    .lucide-log-out, .lucide-log-in,
+    .lucide-panel-left, .lucide-panel-right,
+    .lucide-list-ordered, .lucide-indent-increase, .lucide-indent-decrease
+  ) {
+  transform: scaleX(-1);
+}
+/* Escape hatch for an icon that must not flip, and for components that swap
+   the glyph itself rather than mirroring it (carousel, gallery, lightbox) —
+   without this they would flip twice and come back. */
+[dir="rtl"] .rtl-keep {
+  transform: none;
+}
+
+/* 3 · Never mirror a map. Geography is not a reading direction: a flipped
+   canvas would put Saadiyat west of the mainland. The GL container carries
+   dir="ltr" in the components; this stops MapLibre's own injected controls
+   from inheriting a flip through that fence. Our chrome (.bzmap-*) is React
+   and mirrors normally through the logical properties above. */
+[dir="rtl"] .bzmap__gl .maplibregl-ctrl-group {
+  direction: ltr;
 }

@@ -394,7 +394,7 @@ export function AreaMap({
 
   return (
     <div className={`bzmap ${className ?? ""}`.trim()}>
-      <div ref={containerRef} className="bzmap__gl" />
+      <div ref={containerRef} className="bzmap__gl" dir="ltr" />
       <div className="bzmap__credit">© OpenStreetMap · © CARTO</div>
 
       {map && (

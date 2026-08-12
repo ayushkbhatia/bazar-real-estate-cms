@@ -110,7 +110,7 @@ export function AddressTypeahead({
       <Search
         size={14}
         strokeWidth={1.7}
-        className="absolute left-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
+        className="absolute start-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
       />
       <input
         type="text"
@@ -119,10 +119,10 @@ export function AddressTypeahead({
         onChange={(e) => onChange(e.target.value)}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 120)}
-        className="w-full h-10 pl-9 pr-3 rounded-md border border-bz-border bg-bz-bg text-[14px] outline-none focus:border-bz-accent"
+        className="w-full h-10 ps-9 pe-3 rounded-md border border-bz-border bg-bz-bg text-[14px] outline-none focus:border-bz-accent"
       />
       {open && suggestions.length > 0 ? (
-        <ul className="absolute z-10 top-[42px] left-0 right-0 max-h-[240px] overflow-y-auto rounded-md border border-bz-border bg-bz-bg shadow-md text-[13px]">
+        <ul className="absolute z-10 top-[42px] start-0 end-0 max-h-[240px] overflow-y-auto rounded-md border border-bz-border bg-bz-bg shadow-md text-[13px]">
           {suggestions.map((s) => (
             <li key={s.id}>
               <button
@@ -132,7 +132,7 @@ export function AddressTypeahead({
                   onChange(s.label);
                   setOpen(false);
                 }}
-                className="w-full text-left flex items-center gap-2 px-3 py-2 hover:bg-bz-surface text-bz-ink-2 hover:text-bz-ink transition-colors"
+                className="w-full text-start flex items-center gap-2 px-3 py-2 hover:bg-bz-surface text-bz-ink-2 hover:text-bz-ink transition-colors"
               >
                 <MapPin
                   size={12}

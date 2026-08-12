@@ -184,7 +184,7 @@ export function CmsShell({
   return (
     <div className="h-full min-h-dvh-safe md:grid md:grid-cols-[240px_1fr] md:min-h-screen">
       {/* Desktop sidebar (≥ md) */}
-      <aside className="hidden md:flex bg-bz-surface border-r border-bz-border flex-col py-5 px-3.5 gap-1">
+      <aside className="hidden md:flex bg-bz-surface border-e border-bz-border flex-col py-5 px-3.5 gap-1">
         <div className="px-2.5 pb-5">
           <Link href="/admin" className="flex items-center">
             <Wordmark sublabel="CMS" size="sm" />

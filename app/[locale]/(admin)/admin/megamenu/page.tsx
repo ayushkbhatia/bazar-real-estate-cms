@@ -48,7 +48,7 @@ export default async function MegamenuIndex() {
                 <TableHead>Opens</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Position</TableHead>
-                <TableHead className="text-right">Edit</TableHead>
+                <TableHead className="text-end">Edit</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -93,7 +93,7 @@ export default async function MegamenuIndex() {
                     <TableCell className="mono text-[12.5px] text-bz-muted">
                       {tab.position}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-end">
                       <Link
                         href={`/admin/megamenu/${tab.slug}`}
                         className="inline-flex items-center gap-1 text-[12px] text-bz-muted hover:text-bz-ink"

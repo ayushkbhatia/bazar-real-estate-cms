@@ -31,7 +31,7 @@ export function ServiceValueGrid({ items, cols = 4, dark }: Props) {
         <div
           key={item.name}
           className={cn(
-            "border-t pt-5 pb-1 sm:pr-6",
+            "border-t pt-5 pb-1 sm:pe-6",
             dark ? "border-white/25" : "border-bz-border",
           )}
         >

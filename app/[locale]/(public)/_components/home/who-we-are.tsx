@@ -52,7 +52,7 @@ export function WhoWeAre({
               />
             )}
           </div>
-          <div className="absolute -right-3 bottom-6 rounded-lg border border-bz-border bg-bz-surface px-5 py-4 shadow-[0_4px_12px_rgba(0,0,0,0.06),0_16px_48px_rgba(0,0,0,0.08)] md:-right-6">
+          <div className="absolute -end-3 bottom-6 rounded-lg border border-bz-border bg-bz-surface px-5 py-4 shadow-[0_4px_12px_rgba(0,0,0,0.06),0_16px_48px_rgba(0,0,0,0.08)] md:-end-6">
             <div className="serif text-[36px] md:text-[40px] leading-none tracking-tight">
               2005
             </div>

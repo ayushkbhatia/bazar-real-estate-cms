@@ -28,7 +28,7 @@ export function AddChip({
 
   if (editing) {
     return (
-      <div className="inline-flex items-center gap-1 rounded-full bg-bz-surface border border-bz-border h-7 pl-2.5 pr-0.5">
+      <div className="inline-flex items-center gap-1 rounded-full bg-bz-surface border border-bz-border h-7 ps-2.5 pe-0.5">
         <input
           type="text"
           value={value}

@@ -463,7 +463,7 @@ export function AreaLeadBand({
   return (
     <section className={`${SECTION} py-14 md:py-16 border-t border-bz-border`}>
       <div className="grid overflow-hidden rounded-2xl border border-bz-border bg-bz-surface md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <div className="min-w-0 p-6 md:p-11 md:border-r border-bz-border">
+        <div className="min-w-0 p-6 md:p-11 md:border-e border-bz-border">
           <Eyebrow>Free consultation</Eyebrow>
           <h2
             className="serif mt-2 font-normal leading-tight"

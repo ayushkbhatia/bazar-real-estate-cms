@@ -153,7 +153,7 @@ export function FloorPlanLightbox({
       }}
       className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
     >
-      <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+      <div className="absolute top-4 end-4 flex items-center gap-2 z-10">
         <button
           type="button"
           onClick={() => setZoomed((z) => !z)}
@@ -185,7 +185,7 @@ export function FloorPlanLightbox({
             type="button"
             onClick={prev}
             aria-label="Previous layout"
-            className="absolute left-4 z-10 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
+            className="absolute start-4 z-10 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
           >
             <ChevronLeft size={20} strokeWidth={1.8} />
           </button>
@@ -193,7 +193,7 @@ export function FloorPlanLightbox({
             type="button"
             onClick={next}
             aria-label="Next layout"
-            className="absolute right-4 z-10 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
+            className="absolute end-4 z-10 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
           >
             <ChevronRight size={20} strokeWidth={1.8} />
           </button>

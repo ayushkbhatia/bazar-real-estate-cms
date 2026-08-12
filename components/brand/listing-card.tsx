@@ -104,7 +104,7 @@ function Media({
     <>
       {/* Top-left: status badge (Exclusive, Vacant on transfer, etc.) */}
       {badge ? (
-        <div className="absolute top-3 left-3 z-10 flex gap-1.5">
+        <div className="absolute top-3 start-3 z-10 flex gap-1.5">
           <span
             className={cn(
               "inline-flex items-center gap-1 h-[22px] px-2 rounded-full text-[11px] font-medium",
@@ -118,7 +118,7 @@ function Media({
 
       {/* Top-right: diff badge above save/compare actions (price drop, etc.) */}
       {diff ? (
-        <div className="absolute top-3 right-3 z-20">
+        <div className="absolute top-3 end-3 z-20">
           <span
             className={cn(
               "inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium",
@@ -140,7 +140,7 @@ function Media({
       {shortlistEnabled && propertyId ? (
         <div
           className={cn(
-            "absolute right-3 z-10 flex flex-col gap-2",
+            "absolute end-3 z-10 flex flex-col gap-2",
             diff ? "top-[48px]" : "top-3",
           )}
         >
@@ -150,7 +150,7 @@ function Media({
 
       {/* Bottom-left: Bazar Verified pill */}
       {verified ? (
-        <div className="absolute bottom-3 left-3 z-10">
+        <div className="absolute bottom-3 start-3 z-10">
           <span className="inline-flex items-center gap-1 h-[22px] px-2 rounded-full text-[11px] font-medium bg-white/92 text-bz-accent">
             <ShieldCheck size={11} strokeWidth={2.2} />
             Bazar Verified

@@ -258,7 +258,7 @@ export function NewDevelopmentPageForm({
       </div>
 
       <div className="flex items-center gap-3">
-        <p className="text-[12px] text-bz-muted mr-auto">
+        <p className="text-[12px] text-bz-muted me-auto">
           Saves as a draft — nothing reaches the public site until you publish
           it, and you can pick it back up from the Developments list.
         </p>

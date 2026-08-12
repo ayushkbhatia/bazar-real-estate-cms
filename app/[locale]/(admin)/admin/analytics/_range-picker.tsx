@@ -23,7 +23,7 @@ export function AnalyticsRangePicker({
 
   return (
     <div className="inline-flex items-center bg-bz-surface border border-bz-border rounded overflow-hidden h-9 text-[12.5px]">
-      <span className="px-2.5 text-bz-muted-2 uppercase tracking-wider text-[10.5px] border-r border-bz-border">
+      <span className="px-2.5 text-bz-muted-2 uppercase tracking-wider text-[10.5px] border-e border-bz-border">
         Range
       </span>
       {ANALYTICS_RANGES.map((r) => {

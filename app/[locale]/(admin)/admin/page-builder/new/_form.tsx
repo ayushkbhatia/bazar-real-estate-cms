@@ -116,7 +116,7 @@ export function NewLandingForm() {
                   onClick={() => setPreset(p.key)}
                   aria-pressed={active}
                   className={cn(
-                    "w-full text-left rounded-lg border px-3.5 py-3 transition-colors",
+                    "w-full text-start rounded-lg border px-3.5 py-3 transition-colors",
                     active
                       ? "border-bz-teal bg-bz-surface-2"
                       : "border-bz-border hover:border-bz-muted-2",

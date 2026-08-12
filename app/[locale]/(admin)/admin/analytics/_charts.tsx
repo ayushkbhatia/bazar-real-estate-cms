@@ -184,14 +184,14 @@ export function FunnelChart({ data }: { data: FunnelStage[] }) {
             </span>
             <div className="flex-1 relative h-7 bg-bz-surface-2 rounded">
               <div
-                className="absolute top-0 left-0 h-full bg-bz-ink rounded"
+                className="absolute top-0 start-0 h-full bg-bz-ink rounded"
                 style={{ width: `${Math.max(share, 2)}%` }}
               />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11.5px] text-bz-ink-2 mono">
+              <span className="absolute end-2 top-1/2 -translate-y-1/2 text-[11.5px] text-bz-ink-2 mono">
                 {stage.count}
               </span>
             </div>
-            <span className="text-[10.5px] text-bz-muted w-[60px] text-right">
+            <span className="text-[10.5px] text-bz-muted w-[60px] text-end">
               {dropOff != null && dropOff > 0
                 ? `−${dropOff}%`
                 : i === 0

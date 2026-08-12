@@ -238,7 +238,7 @@ export function LocationPicker({
             <div className="relative flex-1">
               <Search
                 size={13}
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-bz-muted"
+                className="absolute start-2.5 top-1/2 -translate-y-1/2 text-bz-muted"
               />
               <Input
                 value={query}
@@ -250,7 +250,7 @@ export function LocationPicker({
                   }
                 }}
                 placeholder="Search an address or place…"
-                className="pl-8"
+                className="ps-8"
               />
             </div>
             <Button type="button" variant="outline" onClick={() => void runSearch()} disabled={searching}>
@@ -264,7 +264,7 @@ export function LocationPicker({
                   <button
                     type="button"
                     onClick={() => pickResult(r.center)}
-                    className="flex w-full flex-col items-start px-3 py-2 text-left hover:bg-bz-surface-2"
+                    className="flex w-full flex-col items-start px-3 py-2 text-start hover:bg-bz-surface-2"
                   >
                     <span className="text-[13px] text-bz-ink">{r.label}</span>
                     <span className="text-[11.5px] text-bz-muted truncate">{r.sub}</span>

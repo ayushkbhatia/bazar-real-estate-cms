@@ -131,7 +131,7 @@ export function FilterBar({ areas }: Props) {
     <>
       {/* Beds */}
       <div className={cn("flex items-center gap-1", stacked && "flex-wrap")}>
-        <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
+        <span className="text-[11.5px] uppercase tracking-wider text-bz-muted me-1">
           Beds
         </span>
         {BED_OPTIONS.map((n) => {
@@ -160,7 +160,7 @@ export function FilterBar({ areas }: Props) {
 
       {/* Baths */}
       <div className={cn("flex items-center gap-1", stacked && "flex-wrap")}>
-        <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
+        <span className="text-[11.5px] uppercase tracking-wider text-bz-muted me-1">
           Baths
         </span>
         {BATH_OPTIONS.map((n) => {
@@ -277,14 +277,14 @@ export function FilterBar({ areas }: Props) {
           <span className="sr-only">Search</span>
           <Search
             size={14}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
+            className="absolute start-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
           />
           <Input
             type="search"
             placeholder="Search Mamsha, Saadiyat, sea view…"
             value={qInput}
             onChange={(e) => onQChange(e.target.value)}
-            className="w-full md:w-[260px] h-9 pl-8 text-[13px]"
+            className="w-full md:w-[260px] h-9 ps-8 text-[13px]"
             aria-label="Search properties"
           />
         </label>
@@ -304,7 +304,7 @@ export function FilterBar({ areas }: Props) {
         {/* Desktop inline controls */}
         <div className="hidden md:flex md:flex-1 md:flex-wrap md:items-center md:gap-3">
           {controls(false)}
-          <div className="ml-auto flex items-center gap-2">{saveClear}</div>
+          <div className="ms-auto flex items-center gap-2">{saveClear}</div>
         </div>
       </div>
 
@@ -394,7 +394,7 @@ function PriceRangeInputs({
 
   return (
     <div className={cn("flex items-center gap-1", stacked && "w-full")}>
-      <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
+      <span className="text-[11.5px] uppercase tracking-wider text-bz-muted me-1">
         Price
       </span>
       <Input

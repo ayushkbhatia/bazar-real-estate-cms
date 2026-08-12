@@ -118,7 +118,7 @@ export function EligibilityChecker({
                     onClick={() => choose(c.value)}
                     aria-pressed={current === c.value}
                     className={cn(
-                      "w-full text-left p-3 rounded-md border transition-colors",
+                      "w-full text-start p-3 rounded-md border transition-colors",
                       current === c.value
                         ? "border-bz-navy bg-bz-navy/5"
                         : "border-bz-border bg-bz-bg hover:border-bz-ink/40",
@@ -204,7 +204,7 @@ function OutcomeCard({
           <div className="text-[11px] uppercase tracking-wider text-bz-ink-2 mb-2">
             What to do next
           </div>
-          <ol className="flex flex-col gap-2 list-decimal pl-5">
+          <ol className="flex flex-col gap-2 list-decimal ps-5">
             {outcome.nextSteps.map((s, i) => (
               <li key={i} className="text-[14px] text-bz-ink leading-relaxed">
                 {s}

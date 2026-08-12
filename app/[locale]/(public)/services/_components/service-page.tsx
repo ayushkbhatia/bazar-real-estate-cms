@@ -152,7 +152,7 @@ export function ServicePage({ service }: { service: SeedService }) {
           {next ? (
             <Link
               href={`/services/${next.slug}`}
-              className="group inline-flex items-center gap-2 text-[13px] text-bz-ink-2 hover:text-bz-accent transition-colors text-right"
+              className="group inline-flex items-center gap-2 text-[13px] text-bz-ink-2 hover:text-bz-accent transition-colors text-end"
             >
               <span>
                 <span className="text-bz-muted text-[11px] uppercase tracking-wider block">

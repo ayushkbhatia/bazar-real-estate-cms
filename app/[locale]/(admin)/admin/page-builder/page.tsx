@@ -64,7 +64,7 @@ function PageTable({ rows }: { rows: LandingListRow[] }) {
             <TableHead className="w-[110px]">Status</TableHead>
             <TableHead className="w-[90px]">Sections</TableHead>
             <TableHead className="w-[110px]">Updated</TableHead>
-            <TableHead className="w-[52px] text-right">
+            <TableHead className="w-[52px] text-end">
               <span className="sr-only">Actions</span>
             </TableHead>
           </TableRow>
@@ -80,12 +80,12 @@ function PageTable({ rows }: { rows: LandingListRow[] }) {
                   {row.title}
                 </Link>
                 {row.has_draft ? (
-                  <span className="ml-2 inline-flex items-center h-[20px] px-2 rounded-full bg-[oklch(0.95_0.05_85)] text-[oklch(0.38_0.09_75)] text-[10.5px] font-medium">
+                  <span className="ms-2 inline-flex items-center h-[20px] px-2 rounded-full bg-[oklch(0.95_0.05_85)] text-[oklch(0.38_0.09_75)] text-[10.5px] font-medium">
                     Unpublished changes
                   </span>
                 ) : null}
                 {row.noindex ? (
-                  <span className="ml-2 text-[10.5px] text-bz-muted-2">
+                  <span className="ms-2 text-[10.5px] text-bz-muted-2">
                     no-index
                   </span>
                 ) : null}
@@ -114,7 +114,7 @@ function PageTable({ rows }: { rows: LandingListRow[] }) {
               <TableCell className="text-[12.5px] text-bz-muted">
                 {relative(row.updated_at)}
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="text-end">
                 <RowActions
                   id={row.id}
                   slug={row.slug}

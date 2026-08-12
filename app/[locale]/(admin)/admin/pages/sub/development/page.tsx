@@ -122,7 +122,7 @@ export default async function DevelopmentSubPagesIndex() {
                 <TableHead>Handover</TableHead>
                 <TableHead>Units</TableHead>
                 <TableHead>From</TableHead>
-                <TableHead className="text-right">Edit</TableHead>
+                <TableHead className="text-end">Edit</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -204,7 +204,7 @@ export default async function DevelopmentSubPagesIndex() {
                     <TableCell className="mono text-[12.5px] font-medium">
                       {formatStartingPrice(row.starting_price)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-end">
                       <span className="inline-flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/pages/sub/development/${row.slug}`}

@@ -70,11 +70,11 @@ export default async function AdminSettingsApiPage() {
             <table className="w-full text-[13px]">
               <thead className="bg-bz-bg text-bz-muted text-[11.5px] uppercase tracking-wider">
                 <tr>
-                  <th className="text-left px-3 py-2 font-normal">Name</th>
-                  <th className="text-left px-3 py-2 font-normal">Prefix</th>
-                  <th className="text-left px-3 py-2 font-normal">Role</th>
-                  <th className="text-left px-3 py-2 font-normal">Status</th>
-                  <th className="text-left px-3 py-2 font-normal">Last used</th>
+                  <th className="text-start px-3 py-2 font-normal">Name</th>
+                  <th className="text-start px-3 py-2 font-normal">Prefix</th>
+                  <th className="text-start px-3 py-2 font-normal">Role</th>
+                  <th className="text-start px-3 py-2 font-normal">Status</th>
+                  <th className="text-start px-3 py-2 font-normal">Last used</th>
                 </tr>
               </thead>
               <tbody>
@@ -108,11 +108,11 @@ export default async function AdminSettingsApiPage() {
             <table className="w-full text-[13px]">
               <thead className="bg-bz-bg text-bz-muted text-[11.5px] uppercase tracking-wider">
                 <tr>
-                  <th className="text-left px-3 py-2 font-normal">Name</th>
-                  <th className="text-left px-3 py-2 font-normal">Target</th>
-                  <th className="text-left px-3 py-2 font-normal">Events</th>
-                  <th className="text-left px-3 py-2 font-normal">Status</th>
-                  <th className="text-left px-3 py-2 font-normal">Last success</th>
+                  <th className="text-start px-3 py-2 font-normal">Name</th>
+                  <th className="text-start px-3 py-2 font-normal">Target</th>
+                  <th className="text-start px-3 py-2 font-normal">Events</th>
+                  <th className="text-start px-3 py-2 font-normal">Status</th>
+                  <th className="text-start px-3 py-2 font-normal">Last success</th>
                 </tr>
               </thead>
               <tbody>

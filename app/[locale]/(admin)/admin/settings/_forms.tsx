@@ -202,7 +202,7 @@ export function DisplayForm({ initial }: { initial: DisplaySettingsInput }) {
                     form.setValue("hero_variant", v, { shouldDirty: true })
                   }
                   className={cn(
-                    "text-left p-4 rounded-lg border transition-colors",
+                    "text-start p-4 rounded-lg border transition-colors",
                     active
                       ? "border-bz-ink bg-bz-surface-2"
                       : "border-bz-border bg-bz-surface hover:border-bz-ink-2",
@@ -224,7 +224,7 @@ export function DisplayForm({ initial }: { initial: DisplaySettingsInput }) {
         <div>
           <Label className="text-[12px] text-bz-ink-2 font-normal mb-2 block">
             Accent token{" "}
-            <span className="text-bz-muted-2 ml-1">
+            <span className="text-bz-muted-2 ms-1">
               (brand teal locked for the launch palette)
             </span>
           </Label>
@@ -437,7 +437,7 @@ export function EmailTemplatesEditor({
       subtitle="Overrides for the system-generated transactional emails. Leave empty to use the bundled default."
     >
       <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-5 min-h-[280px]">
-        <nav className="flex flex-col gap-1 md:border-r border-bz-border md:pr-3">
+        <nav className="flex flex-col gap-1 md:border-e border-bz-border md:pe-3">
           {EMAIL_TEMPLATE_KEYS.map((k) => {
             const isActive = active === k;
             const hasOverride = overrides[k] != null;
@@ -447,7 +447,7 @@ export function EmailTemplatesEditor({
                 type="button"
                 onClick={() => setActive(k)}
                 className={cn(
-                  "text-left px-2.5 py-2 rounded text-[13px] flex items-center justify-between transition-colors",
+                  "text-start px-2.5 py-2 rounded text-[13px] flex items-center justify-between transition-colors",
                   isActive
                     ? "bg-bz-navy text-bz-bg"
                     : "text-bz-ink-2 hover:bg-bz-surface-2",

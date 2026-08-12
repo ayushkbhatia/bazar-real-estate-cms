@@ -33,7 +33,7 @@ export function DataSourceToggle({
             onClick={() => onChange(s.value)}
             aria-pressed={active}
             className={cn(
-              "p-3 rounded-md border text-left transition-colors",
+              "p-3 rounded-md border text-start transition-colors",
               active
                 ? "border-bz-ink bg-bz-bg"
                 : "border-bz-border bg-bz-bg hover:border-bz-border-strong",

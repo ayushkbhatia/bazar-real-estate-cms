@@ -147,7 +147,7 @@ export function MoreFiltersDrawer() {
           <SlidersHorizontal size={13} strokeWidth={1.7} />
           More filters
           {activeCount > 0 ? (
-            <span className="ml-1 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-bz-navy text-bz-bg text-[10px] font-medium">
+            <span className="ms-1 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-bz-navy text-bz-bg text-[10px] font-medium">
               {activeCount}
             </span>
           ) : null}
@@ -282,7 +282,7 @@ export function MoreFiltersDrawer() {
                   >
                     {a}
                     {active ? (
-                      <X size={10} strokeWidth={2} className="ml-1" />
+                      <X size={10} strokeWidth={2} className="ms-1" />
                     ) : null}
                   </button>
                 );

@@ -36,7 +36,7 @@ export function AmenitiesGrid({
               onClick={() => toggle(a.label)}
               aria-pressed={active}
               className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-md border text-[13px] transition-colors text-left",
+                "flex items-center gap-2 px-3 py-2 rounded-md border text-[13px] transition-colors text-start",
                 active
                   ? "border-bz-navy bg-bz-navy text-bz-bg"
                   : "border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong",

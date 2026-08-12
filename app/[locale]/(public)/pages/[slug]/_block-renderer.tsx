@@ -69,7 +69,7 @@ function StripBlock({
     <section
       className={cn(
         "px-4 md:px-12 py-12 md:py-20 max-w-[1024px] mx-auto",
-        block.align === "center" ? "text-center" : "text-left",
+        block.align === "center" ? "text-center" : "text-start",
       )}
     >
       {block.eyebrow ? <Eyebrow>{block.eyebrow}</Eyebrow> : null}

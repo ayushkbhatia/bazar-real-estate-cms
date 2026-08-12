@@ -498,9 +498,9 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                     setValue("area_sqft", parseAreaSqft(next));
                   }}
                   placeholder="0"
-                  className="mono w-full h-11 rounded border border-bz-border bg-bz-surface px-3 pr-11 text-[14px] transition-colors focus:border-bz-teal outline-none"
+                  className="mono w-full h-11 rounded border border-bz-border bg-bz-surface px-3 pe-11 text-[14px] transition-colors focus:border-bz-teal outline-none"
                 />
-                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[12px] text-bz-muted pointer-events-none">
+                <span className="absolute end-3.5 top-1/2 -translate-y-1/2 text-[12px] text-bz-muted pointer-events-none">
                   ft²
                 </span>
               </div>
@@ -611,7 +611,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
               error={errors.mobile?.message}
             >
               <div className="flex">
-                <span className="mono inline-flex items-center h-11 px-3 rounded-l border border-r-0 border-bz-border bg-bz-surface-2 text-[12.5px] text-bz-ink-2">
+                <span className="mono inline-flex items-center h-11 px-3 rounded-s border border-e-0 border-bz-border bg-bz-surface-2 text-[12.5px] text-bz-ink-2">
                   +971
                 </span>
                 <input
@@ -620,7 +620,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                   inputMode="tel"
                   autoComplete="tel-national"
                   placeholder="50 000 0000"
-                  className="mono w-full h-11 rounded-r border border-bz-border bg-bz-surface px-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
+                  className="mono w-full h-11 rounded-e border border-bz-border bg-bz-surface px-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
                 />
               </div>
             </FieldShell>
@@ -763,7 +763,7 @@ function StepHeader({
               <Check
                 size={15}
                 strokeWidth={2}
-                className="ml-auto text-bz-success"
+                className="ms-auto text-bz-success"
               />
             ) : null}
           </div>
@@ -892,7 +892,7 @@ function Confirmed({
       <button
         type="button"
         onClick={onAnother}
-        className="mt-6 h-11 px-4 -ml-4 rounded text-[13px] text-bz-ink-2 hover:bg-bz-surface-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
+        className="mt-6 h-11 px-4 -ms-4 rounded text-[13px] text-bz-ink-2 hover:bg-bz-surface-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
       >
         {copy.anotherLabel}
       </button>
@@ -969,7 +969,7 @@ function LocationField({
         <MapPin
           size={16}
           strokeWidth={1.6}
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
+          className="absolute start-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
         />
         <input
           id="lp-location"
@@ -1007,14 +1007,14 @@ function LocationField({
             }
           }}
           placeholder="Building, community or area"
-          className="w-full h-11 rounded border border-bz-border bg-bz-surface pl-9 pr-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
+          className="w-full h-11 rounded border border-bz-border bg-bz-surface ps-9 pe-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
         />
         {showList ? (
           <ul
             id={listId}
             role="listbox"
             aria-label="Matching areas"
-            className="absolute top-[calc(100%+4px)] left-0 right-0 z-20 rounded border border-bz-border bg-bz-surface overflow-hidden"
+            className="absolute top-[calc(100%+4px)] start-0 end-0 z-20 rounded border border-bz-border bg-bz-surface overflow-hidden"
           >
             {matches.map((option, i) => (
               <li
@@ -1036,7 +1036,7 @@ function LocationField({
               >
                 <MapPin size={14} strokeWidth={1.6} className="text-bz-muted-2" />
                 {option.name}
-                <span className="ml-auto text-[11px] text-bz-muted">
+                <span className="ms-auto text-[11px] text-bz-muted">
                   {option.context}
                 </span>
               </li>
@@ -1102,7 +1102,7 @@ function FieldShell({
         className="block text-[12.5px] font-medium text-bz-ink mb-2"
       >
         {label}
-        {required ? <span className="text-bz-muted-2 ml-0.5">*</span> : null}
+        {required ? <span className="text-bz-muted-2 ms-0.5">*</span> : null}
       </Tag>
       {children}
       {error ? (

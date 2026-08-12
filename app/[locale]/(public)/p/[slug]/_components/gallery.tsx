@@ -100,7 +100,7 @@ function Tile({
         <PlaceholderImage label={slot.label} className="w-full h-full" />
       )}
       {overlay ? (
-        <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-bz-ink/85 text-bz-bg text-[11.5px] font-medium">
+        <span className="absolute bottom-3 end-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-bz-ink/85 text-bz-bg text-[11.5px] font-medium">
           <Camera size={12} strokeWidth={1.7} />
           {overlay}
         </span>
@@ -152,7 +152,7 @@ function Lightbox({
         type="button"
         onClick={onClose}
         aria-label="Close gallery"
-        className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
+        className="absolute top-4 end-4 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
       >
         <X size={18} strokeWidth={1.8} />
       </button>
@@ -160,7 +160,7 @@ function Lightbox({
         type="button"
         onClick={prev}
         aria-label="Previous photo"
-        className="absolute left-4 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
+        className="absolute start-4 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
       >
         <ChevronLeft size={20} strokeWidth={1.8} />
       </button>
@@ -168,7 +168,7 @@ function Lightbox({
         type="button"
         onClick={next}
         aria-label="Next photo"
-        className="absolute right-4 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
+        className="absolute end-4 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
       >
         <ChevronRight size={20} strokeWidth={1.8} />
       </button>

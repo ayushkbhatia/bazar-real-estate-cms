@@ -152,7 +152,7 @@ export default async function AgentProfilePage({
               </p>
             ) : null}
             <blockquote
-              className="serif italic text-[20px] mt-8 pl-5 border-l-2 border-bz-accent text-bz-ink leading-relaxed max-w-[56ch]"
+              className="serif italic text-[20px] mt-8 ps-5 border-s-2 border-bz-accent text-bz-ink leading-relaxed max-w-[56ch]"
               style={{ letterSpacing: "-0.005em" }}
             >
               &ldquo;{pullQuote}&rdquo;

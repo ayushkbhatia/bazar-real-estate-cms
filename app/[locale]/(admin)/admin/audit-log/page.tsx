@@ -102,7 +102,7 @@ export default async function AuditLogPage({ searchParams }: PageProps) {
           <div>
             {total.toLocaleString()} entr{total === 1 ? "y" : "ies"}
             {pages > 1 ? (
-              <span className="ml-2">
+              <span className="ms-2">
                 · page {page + 1} of {pages}
               </span>
             ) : null}
@@ -118,7 +118,7 @@ export default async function AuditLogPage({ searchParams }: PageProps) {
         <div className="bg-bz-surface border border-bz-border rounded-lg overflow-x-auto">
           <table className="w-full text-[13px] min-w-[720px]">
             <thead>
-              <tr className="text-left text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
+              <tr className="text-start text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
                 <th className="px-4 py-3 w-[16%]">When</th>
                 <th className="px-3 py-3 w-[20%]">Actor</th>
                 <th className="px-3 py-3 w-[22%]">Action</th>
@@ -266,7 +266,7 @@ async function BulkOperationsView({
             {total.toLocaleString()} bulk{" "}
             {total === 1 ? "operation" : "operations"}
             {pages > 1 ? (
-              <span className="ml-2">
+              <span className="ms-2">
                 · page {page + 1} of {pages}
               </span>
             ) : null}
@@ -282,7 +282,7 @@ async function BulkOperationsView({
         <div className="bg-bz-surface border border-bz-border rounded-lg overflow-x-auto">
           <table className="w-full text-[13px] min-w-[720px]">
             <thead>
-              <tr className="text-left text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
+              <tr className="text-start text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
                 <th className="px-4 py-3 w-[16%]">When</th>
                 <th className="px-3 py-3 w-[22%]">Actor</th>
                 <th className="px-3 py-3 w-[18%]">Action</th>

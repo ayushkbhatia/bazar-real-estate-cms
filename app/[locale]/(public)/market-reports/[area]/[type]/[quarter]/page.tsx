@@ -147,7 +147,7 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
         <span className="text-bz-navy">{propertyTypeLabel(type)}s</span>
         <span>›</span>
         <span className="text-bz-navy">{quarterLabel(quarter)}</span>
-        <div className="ml-auto">
+        <div className="ms-auto">
           <ReportDownload
             area_slug={snapshot.area_slug}
             property_type={type}

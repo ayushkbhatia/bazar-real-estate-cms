@@ -66,7 +66,7 @@ export function SpecificationTable({
               <dt className="text-[13.5px] text-bz-muted shrink-0">
                 {r.label}
               </dt>
-              <dd className="text-[14px] text-bz-ink text-right">
+              <dd className="text-[14px] text-bz-ink text-end">
                 {r.value}
                 {r.note ? (
                   <span className="block text-[11.5px] text-bz-muted mt-0.5">

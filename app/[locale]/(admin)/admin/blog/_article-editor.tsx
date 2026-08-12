@@ -169,7 +169,7 @@ function Toolbar({
       >
         <Minus size={13} strokeWidth={1.8} />
       </ToolbarBtn>
-      <div className="ml-auto flex gap-1">
+      <div className="ms-auto flex gap-1">
         <ToolbarBtn
           ariaLabel="Undo"
           disabled={!editor.can().undo()}

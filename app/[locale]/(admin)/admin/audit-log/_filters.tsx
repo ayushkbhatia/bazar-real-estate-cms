@@ -40,13 +40,13 @@ export function AuditLogFilters({
       <div className="relative">
         <Search
           size={13}
-          className="absolute left-2.5 top-1/2 -translate-y-1/2 text-bz-muted"
+          className="absolute start-2.5 top-1/2 -translate-y-1/2 text-bz-muted"
         />
         <input
           type="search"
           defaultValue={initial.q ?? ""}
           placeholder="Free-text (action / target_id)"
-          className="h-8 pl-7 pr-2.5 bg-bz-surface border border-bz-border rounded text-[12.5px] outline-none focus:border-bz-accent w-[260px]"
+          className="h-8 ps-7 pe-2.5 bg-bz-surface border border-bz-border rounded text-[12.5px] outline-none focus:border-bz-accent w-[260px]"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               setParam("q", (e.currentTarget.value ?? "").trim() || null);
@@ -122,7 +122,7 @@ function SelectFilter({
 }) {
   return (
     <div className="inline-flex items-center bg-bz-surface border border-bz-border rounded overflow-hidden h-8">
-      <span className="px-2 text-bz-muted-2 uppercase tracking-wider text-[10.5px] border-r border-bz-border">
+      <span className="px-2 text-bz-muted-2 uppercase tracking-wider text-[10.5px] border-e border-bz-border">
         {label}
       </span>
       <select
@@ -152,7 +152,7 @@ function DateFilter({
 }) {
   return (
     <div className="inline-flex items-center bg-bz-surface border border-bz-border rounded overflow-hidden h-8">
-      <span className="px-2 text-bz-muted-2 uppercase tracking-wider text-[10.5px] border-r border-bz-border">
+      <span className="px-2 text-bz-muted-2 uppercase tracking-wider text-[10.5px] border-e border-bz-border">
         {label}
       </span>
       <input

@@ -127,7 +127,7 @@ export function DeveloperRecordForm({ initial }: { initial: DeveloperRecord }) {
       </section>
 
       <div className="flex items-center justify-end gap-3 sticky bottom-0 bg-bz-bg pt-3 pb-2">
-        <span className="text-[12px] text-bz-muted mr-auto">
+        <span className="text-[12px] text-bz-muted me-auto">
           {dirty ? "Unsaved changes" : "All changes saved"}
         </span>
         <Button type="submit" disabled={pending || !dirty}>

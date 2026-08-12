@@ -54,7 +54,7 @@ export function ArticleTagsChips({
           </span>
         ))}
       </div>
-      <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-dashed border-bz-border bg-bz-bg h-7 pl-2.5 pr-0.5">
+      <div className="mt-2 inline-flex items-center gap-1 rounded-full border border-dashed border-bz-border bg-bz-bg h-7 ps-2.5 pe-0.5">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}

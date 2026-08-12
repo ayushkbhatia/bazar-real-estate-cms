@@ -525,8 +525,8 @@ export function MortgageCalculator({
               {closing.lines.map((line) => (
                 <tr key={line.key} className="border-b border-bz-border">
                   <td className="py-2.5 text-bz-ink">{line.label}</td>
-                  <td className="py-2.5 text-right mono">{formatAed(line.amountAed)}</td>
-                  <td className="py-2.5 text-right text-[11.5px] text-bz-muted">
+                  <td className="py-2.5 text-end mono">{formatAed(line.amountAed)}</td>
+                  <td className="py-2.5 text-end text-[11.5px] text-bz-muted">
                     {line.note}
                   </td>
                 </tr>
@@ -536,12 +536,12 @@ export function MortgageCalculator({
                   Total cash needed at close
                 </td>
                 <td
-                  className="py-3 px-2 text-right mono text-[16px] font-medium text-bz-navy"
+                  className="py-3 px-2 text-end mono text-[16px] font-medium text-bz-navy"
                   data-testid="cash-to-close-total"
                 >
                   {formatAed(closing.totalAed)}
                 </td>
-                <td className="py-3 px-2 text-right text-[11px] text-bz-muted">
+                <td className="py-3 px-2 text-end text-[11px] text-bz-muted">
                   {formatPct(closing.pctOfPrice)} of price
                 </td>
               </tr>

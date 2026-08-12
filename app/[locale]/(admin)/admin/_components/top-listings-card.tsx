@@ -56,7 +56,7 @@ export function TopListingsCard({ rows }: { rows: Row[] }) {
                 <span className="text-[13px] text-bz-ink flex-1 truncate">
                   {r.title}
                 </span>
-                <span className="text-[11.5px] text-bz-muted text-right flex-shrink-0">
+                <span className="text-[11.5px] text-bz-muted text-end flex-shrink-0">
                   <span className="mono">{r.views.toLocaleString()}</span> v ·{" "}
                   <span className="mono">{r.enquiries}</span> enq
                 </span>

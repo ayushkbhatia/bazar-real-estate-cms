@@ -136,7 +136,7 @@ export function DevelopmentUnitPlansCard({
   return (
     <section className="rounded-lg border border-bz-border bg-bz-surface p-4 flex flex-col gap-4">
       <div className="flex items-center gap-3">
-        <div className="mr-auto">
+        <div className="me-auto">
           <h2 className="text-[13.5px] font-medium">Units &amp; floor plans</h2>
           <p className="text-[11.5px] text-bz-muted">
             One button per unit type on the project page; pressing it shows that
@@ -225,7 +225,7 @@ export function DevelopmentUnitPlansCard({
                 <button
                   type="button"
                   onClick={() => setOpen(expanded ? null : i)}
-                  className="flex-1 min-w-0 text-left"
+                  className="flex-1 min-w-0 text-start"
                 >
                   <span className="text-[13px] font-medium">
                     {type.label.trim() || "Untitled unit type"}
@@ -398,7 +398,7 @@ export function DevelopmentUnitPlansCard({
 
                   {/* ── Layouts ─────────────────────────────────────── */}
                   <div className="flex items-center gap-2 pt-1">
-                    <h4 className="text-[12px] font-medium mr-auto">Layouts</h4>
+                    <h4 className="text-[12px] font-medium me-auto">Layouts</h4>
                     <span className="text-[11px] text-bz-muted">
                       {type.plans.length}/{MAX_PLANS_PER_TYPE}
                     </span>

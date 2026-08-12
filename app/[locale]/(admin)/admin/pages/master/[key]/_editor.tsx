@@ -175,7 +175,7 @@ export function MasterPageEditor({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
-        <p className="text-[12.5px] text-bz-muted mr-auto">
+        <p className="text-[12.5px] text-bz-muted me-auto">
           {sections.length} sections
           {hiddenCount > 0 ? ` · ${hiddenCount} hidden` : ""}
           {usingDefaults ? " · never edited — showing the copy from code" : ""}
@@ -304,7 +304,7 @@ function SectionRow({
         <button
           type="button"
           onClick={onToggleExpand}
-          className="flex-1 min-w-0 text-left"
+          className="flex-1 min-w-0 text-start"
         >
           <span className="text-[13.5px] font-medium">{section.def.label}</span>
           <span className="block text-[11.5px] text-bz-muted truncate">
