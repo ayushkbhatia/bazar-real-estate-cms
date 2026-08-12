@@ -13,14 +13,18 @@ const NAV: { slug: LegalDocSlug; label: string }[] = [
 ];
 
 /**
- * Instrument Serif and Geist carry no Arabic glyphs, so an Arabic doc set in
- * them falls back per-glyph and looks accidental. Name the Arabic faces the
- * platform actually ships instead — no new webfont, and nothing to configure
- * at handover.
+ * Arabic typography is no longer handled here.
+ *
+ * This frame used to set an inline `fontFamily` naming a system Arabic stack,
+ * which was right when it was the only Arabic surface on the site. It is now
+ * actively harmful: an inline style beats a stylesheet rule, so this page
+ * would keep rendering in a per-device system face while every other Arabic
+ * page uses the loaded webfont — the one inconsistency a reader would notice,
+ * on the page a client checks first.
+ *
+ * The `:lang(ar)` block in globals.css owns it now, including the `.serif`
+ * suppression this file used to do by hand.
  */
-const ARABIC_STACK =
-  '"Noto Naskh Arabic", "Geeza Pro", "Al Bayan", "Segoe UI", Tahoma, serif';
-
 export function LegalDocFrame({
   active,
   title,
@@ -54,7 +58,6 @@ export function LegalDocFrame({
       className="px-12 py-16 max-w-[1100px] mx-auto"
       lang={isArabic ? "ar" : undefined}
       dir={isArabic ? "rtl" : undefined}
-      style={isArabic ? { fontFamily: ARABIC_STACK } : undefined}
     >
       <Eyebrow>{isArabic ? "قانوني" : "Legal"}</Eyebrow>
       <h1
@@ -62,7 +65,7 @@ export function LegalDocFrame({
           "text-[56px] font-normal mt-2 leading-[1.05] max-w-[18ch]",
           // Instrument Serif has no Arabic coverage, so .serif would only
           // trigger a fallback we did not choose.
-          isArabic ? "leading-[1.3]" : "serif",
+          "serif",
         )}
         style={isArabic ? undefined : { letterSpacing: "-0.025em" }}
       >

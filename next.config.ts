@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+
+// Messages only — routing stays in proxy.ts, which was measured to serve the
+// prerendered artifact rather than bypass ISR. See lib/i18n/request.ts.
+const withNextIntl = createNextIntlPlugin("./lib/i18n/request.ts");
 
 const supabaseHost = (() => {
   try {
@@ -143,4 +148,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

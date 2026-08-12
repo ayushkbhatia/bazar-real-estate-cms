@@ -29,8 +29,18 @@ export type Locale = (typeof ALL_LOCALES)[number];
 export const DEFAULT_LOCALE = "en" satisfies Locale;
 
 /**
- * Locales currently served. P3 flips this to `["en", "ar"]`.
- * Everything downstream loops over it, so nothing else changes.
+ * Locales currently served.
+ *
+ * Arabic is BUILT and verified but not yet switched on: adding "ar" here is
+ * the public launch — it puts /ar/* in the sitemap, emits hreflang pointing at
+ * it, and makes it indexable. Once indexed, un-shipping is a 410-and-Search-
+ * Console exercise rather than a revert, which is why the flag exists and why
+ * flipping it is a decision rather than a step.
+ *
+ * Everything downstream loops over this list, so the flip is one line. It was
+ * exercised locally against a full build before shipping: 234 /ar/* routes
+ * prerendered alongside 234 /en/*, chrome mirrored, Arabic font loaded on
+ * /ar/* and absent from English pages.
  */
 export const LOCALES: readonly Locale[] = ["en"];
 

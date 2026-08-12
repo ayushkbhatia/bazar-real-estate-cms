@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -53,7 +53,11 @@ function sourceFiles(): string[] {
     .trim()
     .split("\n")
     .filter(Boolean)
-    .filter((f) => !f.endsWith(".test.ts") && !f.endsWith(".test.tsx"));
+    .filter((f) => !f.endsWith(".test.ts") && !f.endsWith(".test.tsx"))
+    // `git ls-files` reads the index, which still lists a file deleted from
+    // the working tree until the deletion is staged. Without this the guard
+    // throws ENOENT mid-refactor instead of reporting what it found.
+    .filter((f) => existsSync(path.join(REPO_ROOT, f)));
 }
 
 /** Strip comments so a docblock mentioning `mr-2` is not a violation. */
