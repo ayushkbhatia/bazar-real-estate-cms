@@ -1737,11 +1737,13 @@ export type Database = {
       media_assets: {
         Row: {
           alt_text: string | null
+          alt_text_ar: string | null
           created_at: string
           deleted_at: string | null
           filename: string
           folder: Database["public"]["Enums"]["media_folder"]
           height: number | null
+          i18n: Json
           id: string
           mime_type: string
           size_bytes: number | null
@@ -1753,11 +1755,13 @@ export type Database = {
         }
         Insert: {
           alt_text?: string | null
+          alt_text_ar?: string | null
           created_at?: string
           deleted_at?: string | null
           filename: string
           folder?: Database["public"]["Enums"]["media_folder"]
           height?: number | null
+          i18n?: Json
           id?: string
           mime_type: string
           size_bytes?: number | null
@@ -1769,11 +1773,13 @@ export type Database = {
         }
         Update: {
           alt_text?: string | null
+          alt_text_ar?: string | null
           created_at?: string
           deleted_at?: string | null
           filename?: string
           folder?: Database["public"]["Enums"]["media_folder"]
           height?: number | null
+          i18n?: Json
           id?: string
           mime_type?: string
           size_bytes?: number | null
@@ -2313,6 +2319,7 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           description: string | null
+          description_ar: string | null
           developer_id: string | null
           development_id: string | null
           dld_plot_number: string | null
@@ -2322,6 +2329,7 @@ export type Database = {
           floor: number | null
           furnishing: Database["public"]["Enums"]["property_furnishing"] | null
           geo: Json | null
+          i18n: Json
           id: string
           listing_permit_expires_at: string | null
           listing_permit_no: string | null
@@ -2335,15 +2343,18 @@ export type Database = {
           published_at: string | null
           reference: string
           search_text: unknown
+          search_text_ar: unknown
           seo: Json | null
           service_charge_per_ft2: number | null
           short_description: string | null
+          short_description_ar: string | null
           slug: string
           sold_at: string | null
           status: Database["public"]["Enums"]["property_status"]
           sub_community_id: string | null
           tenure: Database["public"]["Enums"]["property_tenure"] | null
           title: string
+          title_ar: string | null
           type: Database["public"]["Enums"]["property_type"]
           unit_number: string | null
           updated_at: string
@@ -2367,6 +2378,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           description?: string | null
+          description_ar?: string | null
           developer_id?: string | null
           development_id?: string | null
           dld_plot_number?: string | null
@@ -2376,6 +2388,7 @@ export type Database = {
           floor?: number | null
           furnishing?: Database["public"]["Enums"]["property_furnishing"] | null
           geo?: Json | null
+          i18n?: Json
           id?: string
           listing_permit_expires_at?: string | null
           listing_permit_no?: string | null
@@ -2389,15 +2402,18 @@ export type Database = {
           published_at?: string | null
           reference: string
           search_text?: unknown
+          search_text_ar?: unknown
           seo?: Json | null
           service_charge_per_ft2?: number | null
           short_description?: string | null
+          short_description_ar?: string | null
           slug: string
           sold_at?: string | null
           status?: Database["public"]["Enums"]["property_status"]
           sub_community_id?: string | null
           tenure?: Database["public"]["Enums"]["property_tenure"] | null
           title: string
+          title_ar?: string | null
           type: Database["public"]["Enums"]["property_type"]
           unit_number?: string | null
           updated_at?: string
@@ -2421,6 +2437,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           description?: string | null
+          description_ar?: string | null
           developer_id?: string | null
           development_id?: string | null
           dld_plot_number?: string | null
@@ -2430,6 +2447,7 @@ export type Database = {
           floor?: number | null
           furnishing?: Database["public"]["Enums"]["property_furnishing"] | null
           geo?: Json | null
+          i18n?: Json
           id?: string
           listing_permit_expires_at?: string | null
           listing_permit_no?: string | null
@@ -2443,15 +2461,18 @@ export type Database = {
           published_at?: string | null
           reference?: string
           search_text?: unknown
+          search_text_ar?: unknown
           seo?: Json | null
           service_charge_per_ft2?: number | null
           short_description?: string | null
+          short_description_ar?: string | null
           slug?: string
           sold_at?: string | null
           status?: Database["public"]["Enums"]["property_status"]
           sub_community_id?: string | null
           tenure?: Database["public"]["Enums"]["property_tenure"] | null
           title?: string
+          title_ar?: string | null
           type?: Database["public"]["Enums"]["property_type"]
           unit_number?: string | null
           updated_at?: string
@@ -3680,4 +3701,3 @@ export const Constants = {
     },
   },
 } as const
-
