@@ -87,6 +87,17 @@ export async function translateField(input: {
    * on every record.
    */
   overrides?: Record<number, string>;
+  /**
+   * Extra checks on the raw output, run beside the standard ones and folded
+   * into the same retry.
+   *
+   * This exists for the HTML path: a block of rich text carries `⟦mN⟧`
+   * formatting markers as well as content sentinels, and a dropped `<strong>`
+   * deserves the same second chance a dropped price gets. Keeping it a
+   * parameter rather than teaching `validate` about markup keeps the validator
+   * ignorant of HTML, which is the reason it is easy to reason about.
+   */
+  extraIssues?: (output: string) => string[];
 }): Promise<TranslateResult> {
   const source = input.text.trim();
   const model = modelFor(input.kind);
@@ -118,7 +129,13 @@ export async function translateField(input: {
 
     const out = textOf(response);
     lastRaw = out;
-    lastIssues = validate(masked, out, { maxLength: input.maxLength });
+    lastIssues = [
+      ...validate(masked, out, { maxLength: input.maxLength }),
+      ...(input.extraIssues?.(out) ?? []).map((detail) => ({
+        code: "markup" as const,
+        detail,
+      })),
+    ];
 
     if (lastIssues.length === 0) {
       return {

@@ -32,6 +32,7 @@ Write the Arabic of Gulf property marketing: Modern Standard Arabic as it is act
 Rules:
 - Output ONLY the translation. No preamble, no explanation, no quotation marks around it, no alternatives.
 - Placeholders like ⟦0⟧ are protected content — prices, permit numbers, references, phone numbers, measurements. Reproduce each one EXACTLY as it appears, once. Move them where Arabic word order requires. Never translate, renumber, add or drop one.
+- Placeholders like ⟦m0⟧ are formatting markers (bold, italic, a link). Reproduce each one EXACTLY, once. Move them to wrap the words they should emphasise in Arabic — they mark emphasis, not position. An opening marker must still come before its closing marker.
 - Never invent a number, a measurement, a date, or a fact that is not in the English.
 - Use Western digits (0-9) for any number you write, matching the site's convention.
 - Do not leave English words in the Arabic.`;

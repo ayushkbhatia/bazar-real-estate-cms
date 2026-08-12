@@ -680,6 +680,17 @@ shows the trail.)
     same PR, that page renders in a different, per-device system face from
     every other Arabic page.
 
+- [properties] `properties.description` has no editor, and no data.
+  `_tabs/description.tsx` exports `PropertyDescriptionTab` — a full Tiptap
+  editor with a bold/italic/list/link toolbar — and **nothing imports it**. Its
+  own comment says "Sprint 9 wires autosave through this onChange callback",
+  which never happened. Consequence: the long description cannot be edited in
+  the CMS at all, and `select count(*) ... where description <> ''` over the 18
+  published rows returns **0**. The public property page does render it
+  (`p/[slug]/page.tsx:528`), so this is a real content surface that has been
+  dark since Sprint 7c. Either mount the tab (it looks complete) or delete it —
+  a working editor nobody can reach is worse than neither.
+
 - [i18n] Masked measurement units come back Latin in the Arabic.
   Observed on the first live run (BAZ-AD-06055): "216 sqm" is masked whole, so
   the Arabic sentence reads "…تقدّم 216 sqm من المعيشة الراقية". That is the
