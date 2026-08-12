@@ -7,7 +7,8 @@ import {
   developmentUrl,
   listPublishedDevelopments,
 } from "@/lib/queries/developments";
-import { formatStartingPrice, quarterLabel } from "@/lib/schemas/development";
+import { quarterLabel } from "@/lib/schemas/development";
+import { PriceText } from "../_components/area-text";
 import { mediaPublicUrl } from "@/lib/media";
 
 export const metadata: Metadata = {
@@ -110,7 +111,7 @@ function DevelopmentCard({
         ) : null}
         <div className="mt-5 pt-5 border-t border-bz-border grid grid-cols-3 gap-4">
           <Stat
-            value={formatStartingPrice(d.starting_price)}
+            value={<PriceText aed={d.starting_price} />}
             label="From"
           />
           <Stat
@@ -127,7 +128,13 @@ function DevelopmentCard({
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Stat({
+  value,
+  label,
+}: {
+  value: React.ReactNode;
+  label: string;
+}) {
   return (
     <div>
       <div

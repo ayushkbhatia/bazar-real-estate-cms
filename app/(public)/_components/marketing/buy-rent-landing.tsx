@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import type { ListingCardProps } from "@/components/brand/listing-card";
+import type { FeaturedCardProps } from "./map-listing";
 import { fluid } from "./fluid";
 import { SectionHead } from "./section-head";
 import { FeaturedListings } from "./featured-listings";
@@ -54,9 +54,9 @@ export type BuyRentLandingProps = {
    * of leaving a headed card with nothing in it.
    */
   heroForm?: React.ReactNode;
-  featured: ListingCardProps[];
+  featured: FeaturedCardProps[];
   /** Per-category featured lists, keyed by `BuyCategory.key`. */
-  featuredByCategory?: Record<string, ListingCardProps[]>;
+  featuredByCategory?: Record<string, FeaturedCardProps[]>;
   /** Per-category "browse all" CTA hrefs, keyed by `BuyCategory.key`. */
   featuredCtaHrefByCategory?: Record<string, string>;
   featuredTitle: string;

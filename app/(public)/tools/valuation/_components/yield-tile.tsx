@@ -1,9 +1,14 @@
 import { Eyebrow } from "@/components/brand/eyebrow";
+import { PriceText, PricePerAreaText } from "../../../_components/area-text";
 
 /**
  * Sprint 5b (backfilled): rent + gross-yield estimate tile for the
  * valuation wizard. Sprint 12 swaps the placeholder calc for a real
  * DLD rental-yield lookup.
+ *
+ * `annualRentAedPerFt2` stays an AED/ft² model input — only the two display
+ * lines follow the visitor's preferences. The yield itself is a ratio, so it
+ * is unit-independent by construction.
  */
 export function YieldTile({
   priceAed,
@@ -26,10 +31,10 @@ export function YieldTile({
           className="serif text-[28px] mt-1 leading-none text-bz-navy"
           style={{ letterSpacing: "-0.015em" }}
         >
-          AED {(annualRent / 1000).toFixed(0)}k
+          <PriceText aed={annualRent} />
         </div>
         <div className="mono text-[10.5px] text-bz-muted mt-1.5">
-          ~ {annualRentAedPerFt2.toLocaleString()} AED/ft² · area median
+          ~ <PricePerAreaText aedPerFt2={annualRentAedPerFt2} /> · area median
         </div>
       </div>
       <div className="rounded-md border border-bz-border bg-bz-surface p-4">

@@ -11,7 +11,7 @@
  */
 
 import { createContext, useContext, useState } from "react";
-import type { ListingCardProps } from "@/components/brand/listing-card";
+import type { FeaturedCardProps } from "./map-listing";
 import { FeaturedListings } from "./featured-listings";
 
 export type BuyCategory = { key: string; label: string };
@@ -86,8 +86,8 @@ export function CategoryFeatured({
   ctaHref,
   ctaHrefByCategory,
 }: {
-  byCategory: Record<string, ListingCardProps[]>;
-  fallback: ListingCardProps[];
+  byCategory: Record<string, FeaturedCardProps[]>;
+  fallback: FeaturedCardProps[];
   title: string;
   ctaLabel: string;
   ctaHref: string;

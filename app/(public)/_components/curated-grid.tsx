@@ -4,7 +4,6 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { mediaPublicUrl } from "@/lib/media";
 import {
-  formatPriceAED,
   propertyUrl,
   type ListingRow,
 } from "@/lib/queries/properties";
@@ -82,7 +81,6 @@ export function CuratedGrid({
                     className="block"
                   >
                     <ListingCardPriced
-                      price={formatPriceAED(row.price_aed)}
                       priceAed={row.price_aed}
                       title={row.title}
                       location={row.areas?.name ?? "United Arab Emirates"}

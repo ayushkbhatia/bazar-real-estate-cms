@@ -15,6 +15,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { PROPERTY_TYPES } from "@/lib/schemas/property";
 import { filterParsers } from "@/lib/filters/property";
+import {
+  currencySymbol,
+  inputToPriceParam,
+  priceParamToInput,
+  usePreferences,
+  type Currency,
+} from "@/lib/preferences";
 import { cn } from "@/lib/utils";
 
 const TYPE_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
@@ -67,7 +74,11 @@ export function FilterBar({ areas }: Props) {
     useQueryStates(filterParsers, {
       shallow: false, // re-fetch the RSC page on change
     });
+  const { prefs } = usePreferences();
   const [pending, startTransition] = useTransition();
+  // Bumped by Clear all, to force the price boxes to re-seed. See the `key`
+  // on PriceRangeInputs below.
+  const [clearToken, setClearToken] = useState(0);
 
   // Local search-input state — debounced so we don't fire a page reload per
   // keystroke. Browser Back/Forward will leave the input value stale until
@@ -99,6 +110,7 @@ export function FilterBar({ areas }: Props) {
 
   function clearAll() {
     setQInput("");
+    setClearToken((n) => n + 1);
     startTransition(() => {
       void setState({
         q: null,
@@ -221,38 +233,17 @@ export function FilterBar({ areas }: Props) {
       ) : null}
 
       {/* Price */}
-      <div className={cn("flex items-center gap-1", stacked && "w-full")}>
-        <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
-          Price
-        </span>
-        <Input
-          type="number"
-          placeholder="Min AED"
-          value={price_min ?? ""}
-          min={0}
-          step={10000}
-          onChange={(e) =>
-            commit({
-              price_min: e.target.value === "" ? null : Number(e.target.value),
-            })
-          }
-          className={cn("h-9 text-[13px]", stacked ? "flex-1" : "w-[140px]")}
-        />
-        <span className="text-bz-muted">–</span>
-        <Input
-          type="number"
-          placeholder="Max AED"
-          value={price_max ?? ""}
-          min={0}
-          step={10000}
-          onChange={(e) =>
-            commit({
-              price_max: e.target.value === "" ? null : Number(e.target.value),
-            })
-          }
-          className={cn("h-9 text-[13px]", stacked ? "flex-1" : "w-[140px]")}
-        />
-      </div>
+      <PriceRangeInputs
+        // Remounting is how the boxes re-seed: on a currency switch, and on
+        // Clear all. Both change what the input should read, and neither is a
+        // keystroke, so a fresh mount beats reconciling state mid-edit.
+        key={`${prefs.currency}:${clearToken}`}
+        currency={prefs.currency}
+        priceMin={price_min}
+        priceMax={price_max}
+        stacked={stacked}
+        onCommit={commit}
+      />
     </>
   );
 
@@ -348,6 +339,85 @@ export function FilterBar({ areas }: Props) {
           {controls(true)}
         </div>
       </BottomSheet>
+    </div>
+  );
+}
+
+/**
+ * The price bounds, typed in whatever currency the visitor picked.
+ *
+ * `price_min` / `price_max` stay AED in the URL — a shared search link has to
+ * mean the same thing to both parties, and `lib/queries/properties.ts` reads
+ * them as AED. So the conversion happens only here, at the boundary, exactly
+ * as `more-filters-drawer.tsx` does for ft².
+ *
+ * The typed value lives in local state and commits on a debounce, rather than
+ * being derived from the URL each keystroke: round-tripping a half-typed
+ * number through two conversions and a router push makes the box fight the
+ * typist. Same reasoning as `qInput` above.
+ *
+ * Nothing here writes a param the visitor did not touch. That matters —
+ * USD → AED → USD is exact, but AED → USD → AED can shift by up to 2 AED, so
+ * pushing an untouched bound back through the converters would quietly edit
+ * someone else's shared search.
+ */
+function PriceRangeInputs({
+  currency,
+  priceMin,
+  priceMax,
+  stacked,
+  onCommit,
+}: {
+  currency: Currency;
+  priceMin: number | null;
+  priceMax: number | null;
+  stacked: boolean;
+  onCommit: (patch: { price_min?: number | null; price_max?: number | null }) => void;
+}) {
+  const seed = (n: number | null) =>
+    n == null ? "" : priceParamToInput(String(n), currency);
+  const [minInput, setMinInput] = useState(() => seed(priceMin));
+  const [maxInput, setMaxInput] = useState(() => seed(priceMax));
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function onChange(which: "price_min" | "price_max", raw: string) {
+    if (which === "price_min") setMinInput(raw);
+    else setMaxInput(raw);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      const param = inputToPriceParam(raw.trim(), currency);
+      onCommit({ [which]: param === "" ? null : Number(param) });
+    }, 300);
+  }
+
+  const symbol = currencySymbol(currency);
+
+  return (
+    <div className={cn("flex items-center gap-1", stacked && "w-full")}>
+      <span className="text-[11.5px] uppercase tracking-wider text-bz-muted mr-1">
+        Price
+      </span>
+      <Input
+        type="number"
+        placeholder={`Min ${symbol}`}
+        aria-label={`Minimum price in ${currency}`}
+        value={minInput}
+        min={0}
+        step={10000}
+        onChange={(e) => onChange("price_min", e.target.value)}
+        className={cn("h-9 text-[13px]", stacked ? "flex-1" : "w-[140px]")}
+      />
+      <span className="text-bz-muted">–</span>
+      <Input
+        type="number"
+        placeholder={`Max ${symbol}`}
+        aria-label={`Maximum price in ${currency}`}
+        value={maxInput}
+        min={0}
+        step={10000}
+        onChange={(e) => onChange("price_max", e.target.value)}
+        className={cn("h-9 text-[13px]", stacked ? "flex-1" : "w-[140px]")}
+      />
     </div>
   );
 }

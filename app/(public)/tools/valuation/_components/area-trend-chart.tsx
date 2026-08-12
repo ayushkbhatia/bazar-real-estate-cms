@@ -1,9 +1,19 @@
 import { Eyebrow } from "@/components/brand/eyebrow";
+import {
+  AreaUnitText,
+  CurrencySymbolText,
+  PricePerAreaValueText,
+} from "../../../_components/area-text";
 
 /**
  * Sprint 5b (backfilled): 24-month area trend chart for the valuation
  * wizard. Pure inline SVG — no chart library dep. Sprint 9 swaps the
  * seed series for real DLD area aggregates.
+ *
+ * Only the three footer figures follow the visitor's preferences; the SVG
+ * geometry does not change. AED→USD and ft²→m² are each a single linear
+ * factor, so the curve's shape is unit-independent — the same argument
+ * `market-reports/_components/trend-chart.tsx` makes for its axis.
  */
 export function AreaTrendChart({
   area = "Saadiyat Island",
@@ -111,18 +121,22 @@ export function AreaTrendChart({
       <div className="mt-2 flex justify-between text-[11px] text-bz-muted">
         <span>
           Low{" "}
-          <span className="mono text-bz-ink-2">{minV.toLocaleString()}</span>
+          <span className="mono text-bz-ink-2">
+            <PricePerAreaValueText aedPerFt2={minV} />
+          </span>
         </span>
         <span>
           High{" "}
-          <span className="mono text-bz-ink-2">{maxV.toLocaleString()}</span>
+          <span className="mono text-bz-ink-2">
+            <PricePerAreaValueText aedPerFt2={maxV} />
+          </span>
         </span>
         <span>
           Latest{" "}
           <span className="mono text-bz-ink-2">
-            {lastPoint.aedPerFt2.toLocaleString()}
+            <PricePerAreaValueText aedPerFt2={lastPoint.aedPerFt2} />
           </span>{" "}
-          AED/ft²
+          <CurrencySymbolText />/<AreaUnitText />
         </span>
       </div>
     </div>

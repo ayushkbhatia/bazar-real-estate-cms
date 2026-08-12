@@ -39,10 +39,11 @@ import {
   Search,
   X,
 } from "lucide-react";
-import type { AreaPin, AreaDot } from "@/lib/queries/area-map";
+import { dotMeta, type AreaPin, type AreaDot } from "@/lib/queries/area-map";
 import { pastelMapStyle } from "../map-style";
 import {
   areaUnitLabel,
+  formatPrice,
   formatPricePerArea,
   usePreferences,
 } from "@/lib/preferences";
@@ -110,10 +111,11 @@ function dotsToFeatureCollection(dots: AreaDot[]): GeoJSON.FeatureCollection {
       properties: {
         slug: d.slug,
         reference: d.reference,
-        price: d.price,
         priceAed: d.priceAed,
         title: d.title,
-        meta: d.meta,
+        beds: d.beds,
+        builtUpFt2: d.builtUpFt2,
+        metaText: d.metaText,
       },
     })),
   };
@@ -301,15 +303,19 @@ export function AreaMap({
           if (!f || f.geometry.type !== "Point") return;
           const [lng, lat] = f.geometry.coordinates as [number, number];
           const p = f.properties as Record<string, unknown>;
+          // MapLibre round-trips feature properties through its tile encoder,
+          // which does not reliably preserve `null` — hence the explicit
+          // nullish checks rather than trusting the value back out.
           setDot({
             lng,
             lat,
             slug: String(p.slug),
             reference: String(p.reference),
-            price: String(p.price),
-            priceAed: Number(p.priceAed),
+            priceAed: Number(p.priceAed) || 0,
             title: String(p.title),
-            meta: String(p.meta),
+            beds: p.beds == null ? null : Number(p.beds),
+            builtUpFt2: p.builtUpFt2 == null ? null : Number(p.builtUpFt2),
+            metaText: p.metaText ? String(p.metaText) : null,
           });
         });
         // Click on empty map closes any open dot popup.
@@ -629,6 +635,7 @@ function DotPopupCard({
   ctaLabel: string;
   onClose: () => void;
 }) {
+  const { prefs } = usePreferences();
   const p = map.project([dot.lng, dot.lat]);
   return (
     <div className="bzmap-popup" style={{ left: p.x, top: p.y }}>
@@ -643,13 +650,15 @@ function DotPopupCard({
           <X size={14} />
         </button>
         <div className="serif" style={{ fontSize: 19, letterSpacing: "-0.015em" }}>
-          {dot.price}
+          {dot.priceAed > 0
+            ? formatPrice(dot.priceAed, prefs)
+            : "Price on request"}
         </div>
         <div style={{ fontSize: 12, color: "var(--bz-ink-2)", marginTop: 3 }}>
           {dot.title}
         </div>
         <div style={{ fontSize: 11, color: "var(--bz-muted)", marginTop: 2 }}>
-          {dot.meta}
+          {dot.metaText ?? dotMeta(dot.beds, dot.builtUpFt2, prefs.area_unit)}
         </div>
         <Link
           href={href}

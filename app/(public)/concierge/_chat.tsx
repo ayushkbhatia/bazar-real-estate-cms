@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import type { ConciergeBrief, BriefChip } from "@/lib/concierge/brief";
 import { formatBriefForWhatsApp } from "@/lib/concierge/handoff";
 import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
-import { formatArea, usePreferences } from "@/lib/preferences";
+import { formatArea, formatPrice, usePreferences } from "@/lib/preferences";
 
 type UiMessage = {
   id: string;
@@ -66,12 +66,6 @@ let tickCounter = 0;
 function nextTick(): number {
   tickCounter += 1;
   return tickCounter;
-}
-
-function formatAed(n: number): string {
-  if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `AED ${(n / 1_000).toFixed(0)}K`;
-  return `AED ${n.toLocaleString()}`;
 }
 
 export function ConciergeChat() {
@@ -532,7 +526,7 @@ function ResultCard({
                 {property.title}
               </div>
               <div className="text-[11.5px] text-bz-muted mt-0.5 truncate">
-                {formatAed(property.price_aed)} · {property.beds} bd ·{" "}
+                {formatPrice(property.price_aed, prefs)} · {property.beds} bd ·{" "}
                 {property.built_up_ft2
                   ? formatArea(property.built_up_ft2, prefs.area_unit)
                   : property.type}

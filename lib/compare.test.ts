@@ -2,8 +2,6 @@ import { describe, it, expect } from "vitest";
 import type { ComparableProperty } from "@/lib/queries/compare";
 import {
   buildAttributeGroups,
-  formatAed,
-  formatFt2,
   listedDays,
   modeLabel,
   rowDiffers,
@@ -44,25 +42,6 @@ function p(
   };
 }
 
-describe("formatAed", () => {
-  it("formats millions to 2 d.p., thousands to whole K", () => {
-    expect(formatAed(4_200_000)).toBe("AED 4.20M");
-    expect(formatAed(750_000)).toBe("AED 750K");
-    expect(formatAed(500)).toBe("AED 500");
-  });
-  it("returns em-dash for null", () => {
-    expect(formatAed(null)).toBe("—");
-  });
-});
-
-describe("formatFt2", () => {
-  it("includes thousands separators and the ft² suffix", () => {
-    expect(formatFt2(2_180)).toBe("2,180 ft²");
-  });
-  it("returns em-dash for null", () => {
-    expect(formatFt2(null)).toBe("—");
-  });
-});
 
 describe("modeLabel", () => {
   it("disambiguates buy as 'Buy · resale' for the comparison table", () => {
@@ -161,7 +140,9 @@ describe("buildAttributeGroups", () => {
     expect(tenure.differs).toBe(false);
   });
 
-  it("renders price per ft² when built-up is set, em-dash when missing", () => {
+  // Money and areas travel as raw numbers tagged with their storage unit —
+  // the page renders them in the visitor's currency and area unit.
+  it("carries price per area as a raw AED/ft² figure, null when unknown", () => {
     const groups = buildAttributeGroups(
       [
         p({ price_aed: 4_200_000, built_up_ft2: 2_180 }),
@@ -172,8 +153,41 @@ describe("buildAttributeGroups", () => {
     const ppf = groups
       .find((g) => g.key === "price_terms")!
       .rows.find((r) => r.key === "ppf")!;
-    expect(ppf.values[0]).toBe("AED 1,927");
-    expect(ppf.values[1]).toBeNull();
+    expect(ppf.values[0]).toEqual({ kind: "aedPerFt2", value: 1_927 });
+    expect(ppf.values[1]).toEqual({ kind: "aedPerFt2", value: null });
+  });
+
+  it("tags the money and area cells with their storage unit", () => {
+    const groups = buildAttributeGroups([p({ price_aed: 4_200_000 })], NOW);
+    const rowFor = (group: string, key: string) =>
+      groups.find((g) => g.key === group)!.rows.find((r) => r.key === key)!;
+    expect(rowFor("price_terms", "asking_price").values[0]).toEqual({
+      kind: "aed",
+      value: 4_200_000,
+    });
+    expect(rowFor("price_terms", "service_charge").values[0]).toEqual({
+      kind: "aedPerFt2",
+      value: 16,
+      per: "yr",
+    });
+    expect(rowFor("specifications", "built_up").values[0]).toEqual({
+      kind: "ft2",
+      value: 2_180,
+    });
+  });
+
+  // Diffing the rendered string made 4,201,000 and 4,204,000 read as
+  // identical ("AED 4.20M" both) and would have made the highlight depend on
+  // the visitor's currency.
+  it("diffs money on the raw figure, not on its rounded label", () => {
+    const groups = buildAttributeGroups(
+      [p({ price_aed: 4_201_000 }), p({ id: "x", price_aed: 4_204_000 })],
+      NOW,
+    );
+    const ask = groups
+      .find((g) => g.key === "price_terms")!
+      .rows.find((r) => r.key === "asking_price")!;
+    expect(ask.differs).toBe(true);
   });
 
   it("produces one boolean row per unioned amenity", () => {

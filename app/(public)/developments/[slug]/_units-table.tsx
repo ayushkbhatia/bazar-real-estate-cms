@@ -9,13 +9,16 @@ import {
   type UnitFilter,
 } from "@/lib/queries/development-utils";
 import { AreaText } from "../../_components/area-text";
-
-function formatAed(n: number | null): string {
-  if (n == null) return "—";
-  return n.toLocaleString();
-}
+// The price column header carries the currency glyph, so the cells render
+// bare grouped digits rather than repeating "AED"/"$" on every row.
+import {
+  convertFromAed,
+  currencySymbol,
+  usePreferences,
+} from "@/lib/preferences";
 
 export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
+  const { prefs } = usePreferences();
   const [filter, setFilter] = useState<UnitFilter>("all");
   const counts = useMemo(() => countUnitsByFilter(units), [units]);
   const shown = useMemo(() => filterUnits(units, filter), [units, filter]);
@@ -59,7 +62,9 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
               <th className="px-2 py-3">Plot</th>
               <th className="px-2 py-3">Lagoon access</th>
               <th className="px-2 py-3">Orientation</th>
-              <th className="px-2 py-3">Price · AED</th>
+              <th className="px-2 py-3">
+                Price · {currencySymbol(prefs.currency)}
+              </th>
               <th className="px-2 py-3">Plot #</th>
               <th className="px-4 py-3 text-right">Action</th>
             </tr>
@@ -91,7 +96,11 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
                   <td className="px-2 py-3">{u.lagoon_access ?? "—"}</td>
                   <td className="px-2 py-3">{u.orientation ?? "—"}</td>
                   <td className="px-2 py-3 mono font-medium">
-                    {formatAed(u.price_aed)}
+                    {u.price_aed == null
+                      ? "—"
+                      : Math.round(
+                          convertFromAed(u.price_aed, prefs.currency),
+                        ).toLocaleString("en-US")}
                   </td>
                   <td className="px-2 py-3 mono text-[12px] text-bz-muted">
                     {u.plot_number ?? "—"}

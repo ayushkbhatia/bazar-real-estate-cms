@@ -1,4 +1,4 @@
-import type { ListingCardProps } from "@/components/brand/listing-card";
+import type { FeaturedCardProps } from "./map-listing";
 import { faqPairs, img, list, statPairs, str } from "@/lib/master-pages";
 import type { MasterPageContent } from "@/lib/queries/master-pages";
 import type { CategoryTile } from "./category-tiles";
@@ -50,7 +50,7 @@ export type BuyRentContentProps = {
 
 /** `featured` listings are always live data; only the copy is editable. */
 export type FeaturedInput = {
-  featured: ListingCardProps[];
+  featured: FeaturedCardProps[];
 };
 
 export function buyRentContent(content: MasterPageContent): BuyRentContentProps {

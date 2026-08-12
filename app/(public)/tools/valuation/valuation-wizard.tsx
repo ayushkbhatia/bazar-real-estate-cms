@@ -35,6 +35,20 @@ import {
   formatRangeAed,
   type ValuationCondition,
 } from "@/lib/valuation";
+// The model behind this wizard is calibrated in AED/ft² — `built_up_ft2`
+// stays ft² and the estimate stays AED. Inputs convert at the boundary and
+// output converts at the point of render; nothing in `lib/valuation.ts` moves.
+import {
+  areaUnitLabel,
+  convertArea,
+  convertFromAed,
+  currencySymbol,
+  formatArea,
+  formatPricePerArea,
+  formatPricePerAreaValue,
+  toFt2,
+  usePreferences,
+} from "@/lib/preferences";
 import type { AreaOption } from "@/lib/queries/areas";
 import type { Database } from "@/db/types";
 import { submitValuation } from "./_actions";
@@ -153,6 +167,7 @@ function FieldError({ message }: { message?: string }) {
 }
 
 export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
+  const { prefs } = usePreferences();
   const [state, setState] = useState<FormState>(DEFAULT_STATE);
   const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -274,7 +289,7 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
           <CollapsedStep
             n="02"
             label="Specifications"
-            summary={`${PROPERTY_TYPE_LABELS[state.property_type]} · ${state.beds} bed · ${state.baths} bath · ${state.built_up_ft2.toLocaleString()} ft²${
+            summary={`${PROPERTY_TYPE_LABELS[state.property_type]} · ${state.beds} bed · ${state.baths} bath · ${formatArea(state.built_up_ft2, prefs.area_unit)}${
               state.floor != null ? ` · Floor ${state.floor}` : ""
             }`}
             onEdit={() => setStep(1)}
@@ -458,6 +473,7 @@ function Step2({
   update: <K extends keyof FormState>(k: K, v: FormState[K]) => void;
   errors: Record<string, string>;
 }) {
+  const { prefs } = usePreferences();
   return (
     <div className="mt-5 flex flex-col gap-4">
       <fieldset>
@@ -518,15 +534,22 @@ function Step2({
         </fieldset>
       </div>
       <fieldset>
-        <Label htmlFor="built_up">Built-up area · ft²</Label>
+        <Label htmlFor="built_up">
+          Built-up area · {areaUnitLabel(prefs.area_unit)}
+        </Label>
         <Input
           id="built_up"
           className="mt-1.5 mono"
           inputMode="numeric"
-          value={state.built_up_ft2.toLocaleString()}
+          value={Math.round(
+            convertArea(state.built_up_ft2, prefs.area_unit),
+          ).toLocaleString("en-US")}
           onChange={(e) => {
             const cleaned = e.target.value.replace(/[^0-9]/g, "");
-            update("built_up_ft2", Number(cleaned) || 0);
+            update(
+              "built_up_ft2",
+              Math.round(toFt2(Number(cleaned) || 0, prefs.area_unit)),
+            );
           }}
         />
         <FieldError message={errors.built_up_ft2} />
@@ -855,6 +878,9 @@ function LivePreview({
   areas: AreaOption[];
   estimate: ReturnType<typeof estimateValuation>;
 }) {
+  const { prefs } = usePreferences();
+  const rangeValue = (aed: number) =>
+    formatRangeAed(convertFromAed(aed, prefs.currency));
   const area = areas.find((a) => a.id === state.area_id);
   const propertyLine = [
     state.building_name || area?.name || "Property",
@@ -885,12 +911,14 @@ function LivePreview({
         <div className="text-[13px] font-medium">{propertyLine}</div>
         <div className="text-[11.5px] text-bz-muted mt-0.5">
           {state.beds} bed · {state.baths} ba ·{" "}
-          {state.built_up_ft2.toLocaleString()} ft²
+          {formatArea(state.built_up_ft2, prefs.area_unit)}
           {state.floor != null ? ` · Floor ${state.floor}` : ""}
         </div>
 
         <div className="mt-6">
-          <Eyebrow>Estimated market value · AED</Eyebrow>
+          <Eyebrow>
+            Estimated market value · {currencySymbol(prefs.currency)}
+          </Eyebrow>
           {estimate ? (
             <>
               <div
@@ -898,15 +926,14 @@ function LivePreview({
                 style={{ letterSpacing: "-0.025em" }}
                 data-testid="preview-range"
               >
-                {formatRangeAed(estimate.lowAed)} –{" "}
-                {formatRangeAed(estimate.highAed)}
+                {rangeValue(estimate.lowAed)} – {rangeValue(estimate.highAed)}
               </div>
               <div className="text-[12px] text-bz-muted mt-1">
                 Midpoint{" "}
                 <span className="text-bz-navy font-medium">
-                  AED {formatRangeAed(estimate.midAed)}
+                  {currencySymbol(prefs.currency)} {rangeValue(estimate.midAed)}
                 </span>{" "}
-                · AED {estimate.pricePerFt2Used.toLocaleString()}/ft²
+                · {formatPricePerArea(estimate.pricePerFt2Used, prefs)}
               </div>
             </>
           ) : (
@@ -922,9 +949,14 @@ function LivePreview({
           <Eyebrow>What goes into the estimate</Eyebrow>
           <ul className="mt-3 flex flex-col gap-2 text-[12px] text-bz-ink-2">
             <li className="flex justify-between">
-              <span>Area baseline (AED/ft²)</span>
+              <span>
+                Area baseline ({currencySymbol(prefs.currency)}/
+                {areaUnitLabel(prefs.area_unit)})
+              </span>
               <span className="mono">
-                {estimate ? estimate.basis.baselinePpf.toLocaleString() : "—"}
+                {estimate
+                  ? formatPricePerAreaValue(estimate.basis.baselinePpf, prefs)
+                  : "—"}
               </span>
             </li>
             <li className="flex justify-between">
@@ -1001,6 +1033,9 @@ function SubmittedConfirmation({
   estimate: { lowAed: number; midAed: number; highAed: number } | null;
   valuationId: string | null;
 }) {
+  const { prefs } = usePreferences();
+  const rangeValue = (aed: number) =>
+    formatRangeAed(convertFromAed(aed, prefs.currency));
   return (
     <section
       className="px-4 md:px-12 pb-12 md:pb-24"
@@ -1028,11 +1063,11 @@ function SubmittedConfirmation({
               style={{ letterSpacing: "-0.025em" }}
               data-testid="confirmation-range"
             >
-              {formatRangeAed(estimate.lowAed)} –{" "}
-              {formatRangeAed(estimate.highAed)}
+              {rangeValue(estimate.lowAed)} – {rangeValue(estimate.highAed)}
             </div>
             <div className="text-[12.5px] text-bz-muted mt-1">
-              midpoint AED {formatRangeAed(estimate.midAed)}
+              midpoint {currencySymbol(prefs.currency)}{" "}
+              {rangeValue(estimate.midAed)}
             </div>
             {valuationId ? (
               <a

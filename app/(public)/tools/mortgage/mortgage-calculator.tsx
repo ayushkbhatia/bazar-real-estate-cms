@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useCallback, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -35,6 +35,16 @@ import {
   type BuyerStatus,
   type MortgageType,
 } from "@/lib/mortgage";
+import {
+  convertFromAed,
+  currencySymbol,
+  DEFAULT_PREFERENCES,
+  formatMoneyValue,
+  formatPrice,
+  toAed,
+  usePreferences,
+  type Preferences,
+} from "@/lib/preferences";
 
 const PRICE_MIN = 500_000;
 const PRICE_MAX = 50_000_000;
@@ -55,10 +65,15 @@ const BUYER_STATUSES: { value: BuyerStatus; label: string }[] = [
 
 const TERM_OPTIONS = [25, 20, 15, 10] as const;
 
-function formatAed(n: number): string {
-  if (!Number.isFinite(n)) return "AED 0";
-  return `AED ${n.toLocaleString(undefined, { maximumFractionDigits: 0 })}`;
-}
+/**
+ * Money in the visitor's currency.
+ *
+ * All state in this component stays AED, because `lib/mortgage.ts` is
+ * AED-denominated rather than merely AED-scaled: `minDownPaymentPct` turns on
+ * the CBUAE LTV tier at AED 5,000,000, and `STATUTORY` carries flat dirham fee
+ * schedules (trustee office, NOC, valuation). Converting the model's inputs
+ * would move a statutory threshold. Only what reaches the screen converts.
+ */
 
 function formatPct(p: number): string {
   if (!Number.isFinite(p)) return "0%";
@@ -67,7 +82,8 @@ function formatPct(p: number): string {
   return `${v.toFixed(1)}%`;
 }
 
-function parseAedInput(s: string): number {
+/** Strip grouping and currency glyphs from a typed figure. */
+function parseMoneyInput(s: string): number {
   const cleaned = s.replace(/[^0-9.]/g, "");
   const n = Number(cleaned);
   return Number.isFinite(n) ? Math.round(n) : 0;
@@ -78,6 +94,17 @@ export function MortgageCalculator({
 }: {
   preApprovalForm: ResolvedForm;
 }) {
+  const { prefs } = usePreferences();
+  /** An AED figure, rendered in the visitor's currency. */
+  const formatAed = (n: number) =>
+    Number.isFinite(n) ? formatMoneyValue(n, prefs) : formatMoneyValue(0, prefs);
+  /** An AED figure as bare digits, for an input the visitor types into. */
+  const toInput = (n: number) =>
+    Math.round(convertFromAed(n, prefs.currency)).toLocaleString("en-US");
+  /** What they typed, back to AED for the model. */
+  const fromInput = (raw: string) =>
+    Math.round(toAed(parseMoneyInput(raw), prefs.currency));
+
   const [price, setPrice] = useState(4_200_000);
   const [downPct, setDownPct] = useState(0.25);
   const [annualRatePct, setAnnualRatePct] = useState(4.25);
@@ -148,24 +175,29 @@ export function MortgageCalculator({
   ]);
 
   /**
-   * The scenario, once, as label/value pairs.
+   * The scenario, once, as label/value pairs — built for a given currency.
    *
-   * The recap the visitor reads and the block the advisor reads are rendered
-   * from this same array on purpose: two hand-written copies of the same six
-   * numbers would drift the first time anyone adds a line to one of them.
+   * The recap the visitor reads and the block the advisor reads come from this
+   * one builder on purpose: two hand-written copies of the same six numbers
+   * would drift the first time anyone adds a line to one of them. They differ
+   * only in what they are rendered *in* — the visitor sees their own currency,
+   * the advisor always sees AED (see `advisorLines` below).
    */
-  const scenarioLines: [label: string, value: string][] = useMemo(
-    () => [
-      ["Property price", formatAed(price)],
-      [
-        "Deposit",
-        `${formatPct(downPct)} · ${formatAed(Math.round(price * downPct))}`,
-      ],
-      ["Loan amount", formatAed(summary.principalAed)],
-      ["Term", `${termYears} years at ${annualRatePct}% ${mortgageType}`],
-      ["Monthly payment", formatAed(summary.monthlyPaymentAed)],
-      ["Cash to close", formatAed(closing.totalAed)],
-    ],
+  const buildScenarioLines = useCallback(
+    (p: Preferences): [label: string, value: string][] => {
+      const money = (n: number) => formatMoneyValue(n, p);
+      return [
+        ["Property price", money(price)],
+        [
+          "Deposit",
+          `${formatPct(downPct)} · ${money(Math.round(price * downPct))}`,
+        ],
+        ["Loan amount", money(summary.principalAed)],
+        ["Term", `${termYears} years at ${annualRatePct}% ${mortgageType}`],
+        ["Monthly payment", money(summary.monthlyPaymentAed)],
+        ["Cash to close", money(closing.totalAed)],
+      ];
+    },
     [
       price,
       downPct,
@@ -178,23 +210,40 @@ export function MortgageCalculator({
     ],
   );
 
+  const scenarioLines = useMemo(
+    () => buildScenarioLines(prefs),
+    [buildScenarioLines, prefs],
+  );
+
+  /**
+   * The same scenario pinned to AED, for everything that leaves the browser.
+   * A Bazar mortgage advisor reads these and quotes in dirhams; a brief saying
+   * "$1.14M" makes the desk convert back, and an error in that direction is a
+   * commercial one.
+   */
+  const advisorLines = useMemo(
+    () => buildScenarioLines(DEFAULT_PREFERENCES),
+    [buildScenarioLines],
+  );
+
   // Read at submit time, not at mount time — see `scenario` on
   // `FormSubmitContext`. Nudging the price slider after typing an email must
   // update the brief without resetting the form.
-  const scenarioBrief = scenarioLines
+  const scenarioBrief = advisorLines
     .map(([label, value]) => `${label}: ${value}`)
     .join("\n");
 
   // Pre-fill the WhatsApp handoff with the user's current scenario so the
   // mortgage team opens the chat already knowing what to quote.
+  const aed = (n: number) => formatMoneyValue(n, DEFAULT_PREFERENCES);
   const waMessage = [
     `Hi Bazar — I'd like to start a mortgage pre-approval.`,
     ``,
-    `Property price: ${formatAed(price)}`,
-    `Down payment: ${formatPct(downPct)} (${formatAed(Math.round(price * downPct))})`,
+    `Property price: ${aed(price)}`,
+    `Down payment: ${formatPct(downPct)} (${aed(Math.round(price * downPct))})`,
     `Term: ${termYears} years`,
     `Rate target: ${annualRatePct}%`,
-    `Monthly: ${formatAed(summary.monthlyPaymentAed)}`,
+    `Monthly: ${aed(summary.monthlyPaymentAed)}`,
   ].join("\n");
   const waLink = buildMortgageWhatsAppLink(waMessage);
 
@@ -210,17 +259,19 @@ export function MortgageCalculator({
         <Eyebrow>Scenario</Eyebrow>
 
         <fieldset className="mt-5">
-          <Label htmlFor="price">Property price · AED</Label>
+          <Label htmlFor="price">
+            Property price · {currencySymbol(prefs.currency)}
+          </Label>
           <Input
             id="price"
             inputMode="numeric"
             className="mt-1.5 mono text-[18px] h-12"
-            value={price.toLocaleString()}
+            value={toInput(price)}
             onChange={(e) => {
-              const next = parseAedInput(e.target.value);
+              const next = fromInput(e.target.value);
               setPrice(Math.max(PRICE_MIN, Math.min(PRICE_MAX, next)));
             }}
-            aria-label="Property price in AED"
+            aria-label={`Property price in ${prefs.currency}`}
           />
           <input
             type="range"
@@ -232,9 +283,10 @@ export function MortgageCalculator({
             className="w-full mt-3 accent-bz-accent"
             aria-label="Property price slider"
           />
+          {/* Slider bounds and step stay AED; only the ticks convert. */}
           <div className="flex justify-between text-[11px] text-bz-muted mt-1">
-            <span>500K</span>
-            <span>10M</span>
+            <span>{formatPrice(PRICE_MIN, prefs)}</span>
+            <span>{formatPrice(10_000_000, prefs)}</span>
           </div>
         </fieldset>
 
@@ -265,7 +317,13 @@ export function MortgageCalculator({
             <p className="text-[12px] text-bz-warning mt-1.5">
               Below the {formatPct(minDown)} minimum for{" "}
               {BUYER_STATUSES.find((b) => b.value === buyerStatus)?.label}
-              {price >= 5_000_000 ? " on properties at or above AED 5M." : "."}
+              {price >= 5_000_000
+                ? ` on properties at or above AED 5M${
+                    prefs.currency === "AED"
+                      ? ""
+                      : ` (${formatPrice(5_000_000, prefs)})`
+                  }.`
+                : "."}
             </p>
           ) : null}
         </fieldset>
@@ -365,16 +423,16 @@ export function MortgageCalculator({
 
         <Eyebrow>Optional</Eyebrow>
         <fieldset className="mt-3">
-          <Label htmlFor="income">Annual income · AED</Label>
+          <Label htmlFor="income">
+            Annual income · {currencySymbol(prefs.currency)}
+          </Label>
           <Input
             id="income"
             inputMode="numeric"
             className="mt-1.5"
-            value={annualIncome.toLocaleString()}
-            onChange={(e) =>
-              setAnnualIncome(Math.max(0, parseAedInput(e.target.value)))
-            }
-            aria-label="Annual income in AED"
+            value={toInput(annualIncome)}
+            onChange={(e) => setAnnualIncome(Math.max(0, fromInput(e.target.value)))}
+            aria-label={`Annual income in ${prefs.currency}`}
           />
           <p className="text-[11.5px] text-bz-muted mt-1">
             For affordability check · DBR &lt;50% guideline
@@ -489,6 +547,13 @@ export function MortgageCalculator({
               </tr>
             </tbody>
           </table>
+          {prefs.currency !== "AED" ? (
+            <p className="mt-3 text-[11.5px] text-bz-muted leading-relaxed">
+              Statutory fees — DLD transfer, trustee office, NOC, valuation —
+              are set in AED. Figures here convert at the fixed 3.6725 AED/USD
+              peg, so they are exact, not indicative.
+            </p>
+          ) : null}
         </div>
 
         {/* Amortization chart */}

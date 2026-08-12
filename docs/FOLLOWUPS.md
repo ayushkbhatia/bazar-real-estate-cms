@@ -730,20 +730,16 @@ shows the trail.)
   the schema entry still sit in `lib/env.ts`, a shared file, so removal was
   left for whoever is next in there. Drop both plus the `.env.example` line.
 
-- [prefs] Admin CMS and the PDF exports still hard-code ft².
-  The public marketplace now honours the ft²/m² toggle end to end, but the
-  admin property editor, valuations screens, and unit-plans card render ft²
-  regardless. That is arguably right for staff — the schema unit is ft² and an
-  editor typing into a field wants to know which unit it stores — but it should
-  be a decision rather than an oversight. Same for `lib/pdf/valuation-pdf.tsx`
-  and `lib/pdf/compare-pdf.tsx`, which take no `prefs`.
+- [prefs] The PDF exports for valuation and compare take no `prefs`.
+  `lib/pdf/market-report-pdf.tsx` already threads `readPreferencesFromCookie()`
+  through its API route, and API routes have no `revalidate` to lose by reading
+  a cookie — so this is cheap. `lib/pdf/valuation-pdf.tsx`,
+  `lib/pdf/compare-pdf.tsx` and `lib/pdf/payment-plan-pdf.tsx` are still
+  AED/ft²-only and inconsistent with it.
 
-- [prefs] `/tools/valuation` and `/tools/mortgage` price in AED only.
-  Both wizards format with their own local `formatAed`, so the currency
-  preference does nothing there — a USD-preferring visitor still sees AED.
-  The valuation wizard also collects built-up area in ft² with a fixed label.
-  Converting the input needs care: the estimate model is calibrated in AED/ft²,
-  so only the display layer should move.
+  Admin CMS staying AED/ft² is now a decision, not an oversight: staff edit
+  `price_aed` and `built_up_ft2` directly, and showing a field in a unit other
+  than the one it stores invites data-entry errors.
 
 - [perf] The dashboard pipeline chart runs six count queries instead of one.
   `app/(admin)/admin/page.tsx` used to `select` every `enquiries` row to tally

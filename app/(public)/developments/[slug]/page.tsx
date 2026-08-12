@@ -22,10 +22,7 @@ import {
   listDevelopmentUnits,
   listFloorPlans,
 } from "@/lib/queries/developments";
-import {
-  formatStartingPrice,
-  quarterLabel,
-} from "@/lib/schemas/development";
+import { quarterLabel } from "@/lib/schemas/development";
 import { PaymentPlanSection, type CalculatorUnit } from "./_payment-plan";
 import { UnitsTable } from "./_units-table";
 import { LeadAdvisorBanner } from "./_components/lead-advisor-banner";
@@ -44,7 +41,7 @@ import {
 } from "@/lib/queries/development-unit-plans";
 import { MapEmbed } from "../../p/[slug]/_components/map-embed";
 import { FloatingCtaTarget } from "../../_components/floating-cta-context";
-import { AreaText } from "../../_components/area-text";
+import { AreaText, PriceText } from "../../_components/area-text";
 import {
   getDevelopmentMeta,
   listOtherDevelopmentsByDeveloper,
@@ -313,19 +310,27 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   // calculator priced entirely off units showed "—" in every figure for them.
   // The starting price is the number those projects publish, so it stands in
   // as a single pricing option — labelled as the floor, not as a unit.
+  // Raw fields, not a finished label: the dropdown text carries an area unit
+  // and a price, and only the client knows which the visitor wants.
   const calculatorUnits: CalculatorUnit[] =
     availableUnits.length > 0
       ? availableUnits.map((u) => ({
           id: u.id,
-          label: `${u.unit_type}${u.beds ? ` · ${u.beds}-bed` : ""}${u.built_up_ft2 ? ` · ${u.built_up_ft2.toLocaleString()} ft²` : ""}`,
           price_aed: u.price_aed ?? development.starting_price ?? 0,
+          unitType: u.unit_type,
+          beds: u.beds,
+          builtUpFt2: u.built_up_ft2,
+          isStartingPrice: false,
         }))
       : development.starting_price
         ? [
             {
               id: "starting-price",
-              label: `From ${formatStartingPrice(development.starting_price)}`,
               price_aed: development.starting_price,
+              unitType: null,
+              beds: null,
+              builtUpFt2: null,
+              isStartingPrice: true,
             },
           ]
         : [];
@@ -760,7 +765,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               style={{ borderTop: "1px solid rgba(255,255,255,.2)" }}
             >
               <HeroStat
-                value={formatStartingPrice(development.starting_price)}
+                value={<PriceText aed={development.starting_price} />}
                 label="Starting price"
               />
               <HeroStat
@@ -856,7 +861,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   );
 }
 
-function HeroStat({ value, label }: { value: string; label: string }) {
+function HeroStat({
+  value,
+  label,
+}: {
+  value: React.ReactNode;
+  label: string;
+}) {
   return (
     <div>
       <div

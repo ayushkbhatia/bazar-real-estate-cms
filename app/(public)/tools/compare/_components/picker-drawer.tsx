@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { COMPARE_CAP, loadCompareIds } from "@/lib/compare-store";
-import { formatAed } from "@/lib/compare";
+import { formatPrice, usePreferences } from "@/lib/preferences";
 
 /**
  * Sprint 5b (backfilled): picker drawer for empty compare slots.
@@ -56,6 +56,7 @@ export function PickerDrawer({
    *  something compact so the two don't nest. */
   children?: React.ReactNode;
 }) {
+  const { prefs } = usePreferences();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"saved" | "recent" | "search">("saved");
   const [saved, setSaved] = useState<SavedItem[] | null>(null);
@@ -213,7 +214,7 @@ export function PickerDrawer({
                             </span>
                             <span className="mt-1 flex items-baseline justify-between gap-2">
                               <span className="mono text-[12px] text-bz-ink">
-                                {formatAed(item.price_aed)}
+                                {formatPrice(item.price_aed, prefs)}
                               </span>
                               <span className="text-[11px] text-bz-ink-2">
                                 {item.beds}b · {item.baths}ba

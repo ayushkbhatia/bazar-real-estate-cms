@@ -11,10 +11,14 @@ import {
 } from "@/lib/queries/compare";
 import {
   buildAttributeGroups,
-  formatAed,
   type CellValue,
   type AttributeRow,
 } from "@/lib/compare";
+import {
+  AreaText,
+  PriceText,
+  PricePerAreaText,
+} from "../../_components/area-text";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { mediaPublicUrl } from "@/lib/media";
 import { SnapRail } from "@/components/brand/mobile";
@@ -294,6 +298,24 @@ function MobileAttrRow({
 
 function renderCell(value: CellValue) {
   if (value === null) return <span>—</span>;
+  // Money and areas arrive as raw AED / ft² tagged with their unit; these
+  // leaves are client components that render them in the visitor's currency
+  // and area unit. The page itself stays a server component.
+  if (typeof value === "object") {
+    switch (value.kind) {
+      case "aed":
+        return <PriceText aed={value.value} />;
+      case "ft2":
+        return <AreaText ft2={value.value} />;
+      case "aedPerFt2":
+        return (
+          <PricePerAreaText
+            aedPerFt2={value.value}
+            suffix={value.per === "yr" ? " / yr" : ""}
+          />
+        );
+    }
+  }
   if (value === true) {
     return (
       <span className="text-bz-success inline-flex items-center gap-1.5">
@@ -358,7 +380,7 @@ function PropertyCard({
           className="serif text-[20px] text-bz-navy"
           style={{ letterSpacing: "-0.01em" }}
         >
-          {formatAed(property.price_aed)}
+          <PriceText aed={property.price_aed} />
         </div>
         <div className="text-[13px] text-bz-ink-2 mt-0.5">
           <Link

@@ -30,7 +30,11 @@ import {
   loadCompareIds,
   saveCompareIds,
 } from "@/lib/compare-store";
-import { formatAed } from "@/lib/compare";
+import {
+  DEFAULT_PREFERENCES,
+  formatPrice,
+  usePreferences,
+} from "@/lib/preferences";
 import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
 
 type ShortlistItem = {
@@ -80,6 +84,7 @@ function subscribeCompare(callback: () => void): () => void {
 }
 
 export function ShortlistDrawer() {
+  const { prefs } = usePreferences();
   const [open, setOpen] = useState(false);
   // `useSyncExternalStore` is the React-blessed bridge to localStorage —
   // gives us cross-tab + in-tab updates without the setState-in-effect
@@ -172,12 +177,16 @@ export function ShortlistDrawer() {
   }
 
   const compareHref = `/tools/compare?ids=${encodeURIComponent(compareIds.join(","))}`;
+  // The two hand-off payloads below quote AED regardless of what the visitor
+  // is looking at — `DEFAULT_PREFERENCES`, not `prefs`. A Bazar advisor reads
+  // these, and the desk works in dirhams; a brief saying "$1.14M" makes them
+  // convert back, and a rounding error in that direction is a commercial one.
   const whatsappMessage = items.length
     ? `Hi — I'd like to talk about these ${items.length} on bazar.ae:\n\n` +
       items
         .map(
           (i) =>
-            `• ${i.title} (${i.reference}) — ${formatAed(i.price_aed)}`,
+            `• ${i.title} (${i.reference}) — ${formatPrice(i.price_aed, DEFAULT_PREFERENCES)}`,
         )
         .join("\n")
     : null;
@@ -195,7 +204,7 @@ export function ShortlistDrawer() {
           items
             .map(
               (i) =>
-                `• ${i.title} (${i.reference}) — ${formatAed(i.price_aed)}\n  https://bazar.ae/p/${i.slug}-${i.reference}`,
+                `• ${i.title} (${i.reference}) — ${formatPrice(i.price_aed, DEFAULT_PREFERENCES)}\n  https://bazar.ae/p/${i.slug}-${i.reference}`,
             )
             .join("\n\n") +
           "\n\n— Sent from Bazar Real Estate",
@@ -298,7 +307,7 @@ export function ShortlistDrawer() {
                     </div>
                     <div className="mt-1 flex items-baseline justify-between gap-2">
                       <span className="mono text-[12.5px] text-bz-ink">
-                        {formatAed(item.price_aed)}
+                        {formatPrice(item.price_aed, prefs)}
                       </span>
                       <span className="text-[11px] text-bz-ink-2">
                         {item.beds}b · {item.baths}ba

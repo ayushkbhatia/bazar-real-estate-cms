@@ -12,23 +12,24 @@ import {
 } from "@/lib/preferences";
 
 /**
- * T1-B cleanup: thin client wrapper around the brand-locked ListingCard
- * that re-formats the price through the user's currency preference. Used
- * by the "Nearby Properties" rail on `/p/[slug]`. The card itself stays
- * a brand component — we just intercept the price string before passing
- * it down.
+ * Thin client wrapper around the brand-locked ListingCard that formats price
+ * and area from the visitor's preferences. Used by the "Nearby Properties"
+ * rail on `/p/[slug]`. The card itself stays a brand component — we just
+ * format the strings before passing them down.
  *
- * Server-side, the wrapping page passes the AED-formatted string in
- * `price`. After hydration, we override with the preferences-aware
- * formatter if `priceAed` is set. No SSR mismatch because the SSR-shipped
- * string is also valid output (AED default).
+ * Same shape as `ListingCardPriced`; see its docblock for why `price` is a
+ * fallback rather than an SSR twin.
  */
-type Props = ListingCardProps & { priceAed?: number | null };
+type Props = Omit<ListingCardProps, "price"> & {
+  priceAed?: number | null;
+  /** Pre-formatted fallback, for callers that have no raw AED figure. */
+  price?: string;
+};
 
 export function SimilarCard({ priceAed, ...props }: Props) {
   const { prefs } = usePreferences();
   const price =
-    priceAed != null ? formatPrice(priceAed, prefs) : props.price;
+    priceAed != null ? formatPrice(priceAed, prefs) : (props.price ?? "—");
   const numericArea = typeof props.area === "number" ? props.area : null;
   const area =
     numericArea != null ? formatAreaValue(numericArea, prefs.area_unit) : props.area;

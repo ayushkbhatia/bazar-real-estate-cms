@@ -4,21 +4,24 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Home, Check } from "lucide-react";
 import { totals } from "@/lib/mortgage";
+import { formatMoneyValue, usePreferences } from "@/lib/preferences";
 import type { SectionCopy } from "./section-copy";
 
 /**
  * Home "Mortgage calculator" (handoff §5). Always-dark section with four
  * live sliders driving the amortization math in lib/mortgage.ts (`totals`).
  * Recomputes on every change — the calc is cheap, no debounce needed.
+ *
+ * Slider state stays in AED because `lib/mortgage.ts` is AED-denominated, not
+ * merely AED-scaled — it carries flat statutory fees and a CBUAE LTV tier that
+ * turns at AED 5M. Only the display converts.
  */
-function fmtAED(n: number): string {
-  return "AED " + Math.round(n).toLocaleString("en-US");
-}
-
 export function MortgageCalculatorSection({
   eyebrow = "Mortgage calculator",
   heading = "Estimate your monthly payments before making your move",
 }: SectionCopy = {}) {
+  const { prefs } = usePreferences();
+  const money = (n: number) => formatMoneyValue(n, prefs);
   const [price, setPrice] = useState(2_500_000);
   const [downPct, setDownPct] = useState(20);
   const [rate, setRate] = useState(4.25);
@@ -53,7 +56,7 @@ export function MortgageCalculatorSection({
         <div className="flex flex-col gap-6 rounded-2xl bg-[oklch(0.22_0.005_80)] p-6 md:rounded-none md:p-11">
           <Slider
             label="Property price"
-            display={fmtAED(price)}
+            display={money(price)}
             value={price}
             min={500_000}
             max={30_000_000}
@@ -62,7 +65,7 @@ export function MortgageCalculatorSection({
           />
           <Slider
             label="Down payment"
-            display={`${downPct}%  ·  ${fmtAED(down)}`}
+            display={`${downPct}%  ·  ${money(down)}`}
             value={downPct}
             min={5}
             max={80}
@@ -100,13 +103,13 @@ export function MortgageCalculatorSection({
             Estimated monthly payment
           </div>
           <div className="serif mt-3 text-[40px] md:text-[52px] leading-none tracking-tight">
-            {fmtAED(summary.monthlyPaymentAed)}
+            {money(summary.monthlyPaymentAed)}
           </div>
           <div className="mt-7 flex flex-col gap-3.5">
             {[
-              ["Loan amount", fmtAED(summary.principalAed)],
-              ["Down payment", fmtAED(down)],
-              ["Total interest", fmtAED(summary.totalInterestAed)],
+              ["Loan amount", money(summary.principalAed)],
+              ["Down payment", money(down)],
+              ["Total interest", money(summary.totalInterestAed)],
             ].map(([l, v]) => (
               <div
                 key={l}
