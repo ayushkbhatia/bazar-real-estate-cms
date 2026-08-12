@@ -3,6 +3,10 @@ import { ImageResponse } from "next/og";
 // No edge runtime: the card is constant JSX with no per-request input, and
 // `runtime = "edge"` was the only thing stopping Next.js prerendering it to a
 // static PNG at build time.
+//
+// English in both locales. Satori shapes Arabic but does not reorder it, and a
+// bidi pre-pass breaks on the first line wrap, so an Arabic card reads
+// backwards. Pinned by lib/og/arabic-og.test.ts, which carries the evidence.
 export const alt = "Bazar Real Estate — Abu Dhabi, properly understood";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

@@ -680,6 +680,22 @@ shows the trail.)
     same PR, that page renders in a different, per-device system face from
     every other Arabic page.
 
+- [i18n] OG images and PDFs stay English on /ar — both blocked on text layout.
+  Neither is a translation gap. Satori shapes Arabic but never reorders it, so
+  words lay out left-to-right and the sentence reads backwards; `direction:
+  "rtl"` on a text node is ignored (measured 2026-08-13 by rendering through
+  `ImageResponse` with IBM Plex Sans Arabic as a TTF — a TTF is required, it
+  cannot read woff2). A bidi pre-pass that reverses run and word order while
+  leaving each word's characters logical renders a *single line* correctly,
+  Latin islands and all, then breaks on the first wrap: a realistic property
+  title in a 620px column put the tail of the sentence on line one and its
+  first word alone on line three. Shipping it needs our own line breaking with
+  metrics Satori does not expose. `@react-pdf/renderer` fails differently —
+  real bidi and shaping, but Yoga is called with no direction argument and
+  there are no logical style props, so mirroring means hand-editing ~1,270
+  lines. Guarded by `lib/og/arabic-og.test.ts`; PDF downloads are labelled
+  "(English)" via `lib/pdf/language-note.ts`.
+
 - [legal] §2's Arabic heading reads "البيانات الشخصية التي بجمعها".
   The English heading is "What Personal Data We Collect", so this looks like
   a typo for "نجمعها" in the client's source document. Published verbatim —

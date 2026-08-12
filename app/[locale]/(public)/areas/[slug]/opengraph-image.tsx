@@ -3,6 +3,9 @@ import { getAreaProfile } from "@/lib/queries/area-profile";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
 import { withLocales } from "@/lib/i18n/static-params";
 
+// English in both locales. Satori shapes Arabic but does not reorder it, and a
+// bidi pre-pass breaks on the first line wrap, so an Arabic card reads
+// backwards. Pinned by lib/og/arabic-og.test.ts, which carries the evidence.
 export const alt = "Bazar community guide";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
