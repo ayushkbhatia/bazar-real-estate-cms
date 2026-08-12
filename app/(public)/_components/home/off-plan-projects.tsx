@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { CarouselGrid } from "@/components/brand/mobile";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { developmentUrl } from "@/lib/queries/development-utils";
-import { formatPriceAED } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
+import { PriceText } from "../area-text";
 import {
   HOME_OFFPLAN_CARD_COUNT,
   type SectionCopy,
@@ -110,9 +110,10 @@ export async function OffPlanProjects({
                   <div>
                     <div className="text-[11px] text-bz-muted">Starting from</div>
                     <div className="mt-0.5 text-[20px] font-medium tracking-tight text-bz-navy">
-                      {d.starting_price
-                        ? formatPriceAED(d.starting_price)
-                        : "Price on request"}
+                      <PriceText
+                        aed={d.starting_price}
+                        fallback="Price on request"
+                      />
                     </div>
                     {d.handover_date ? (
                       <div className="mt-1.5 text-[11px] text-bz-muted">

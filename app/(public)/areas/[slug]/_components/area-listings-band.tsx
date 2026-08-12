@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { CarouselGrid } from "@/components/brand/mobile";
 import { mediaPublicUrl } from "@/lib/media";
 import {
-  formatPriceAED,
   propertyUrl,
   type ListingRow,
 } from "@/lib/queries/properties";
@@ -97,7 +96,6 @@ export function AreaListingsBand({
                     className="block"
                   >
                     <ListingCardPriced
-                      price={formatPriceAED(row.price_aed)}
                       priceAed={row.price_aed}
                       title={row.title}
                       location={row.areas?.name ?? ""}

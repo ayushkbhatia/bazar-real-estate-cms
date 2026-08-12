@@ -3,10 +3,18 @@
 /**
  * Client-side preferences provider.
  *
- * The root layout reads the `bz_prefs` cookie server-side and passes the
- * initial value here, so SSR matches first paint (no hydration flicker).
- * Updates persist to both cookie (for SSR) and localStorage (for cross-tab
- * sync via the `storage` event).
+ * There is deliberately **no** server-seeded initial value. Reading the
+ * `bz_prefs` cookie in the root layout would call `cookies()`, which takes all
+ * ~40 public routes fully dynamic and silently discards their
+ * `export const revalidate` (home 60, every `/p/[slug]` 60, most others 300).
+ * So `getServerSnapshot` returns `DEFAULT_PREFERENCES`, SSR renders AED/ft²,
+ * and a visitor who picked something else gets one re-render after hydration.
+ * That one frame is the price of keeping the marketplace statically cached —
+ * see the same trade spelled out in `app/layout.tsx`.
+ *
+ * Updates persist to both the cookie (1 year, read by the PDF routes, which
+ * have no `revalidate` to lose) and localStorage (cross-tab sync via the
+ * `storage` event).
  */
 
 import {

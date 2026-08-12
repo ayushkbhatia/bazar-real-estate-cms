@@ -67,10 +67,25 @@ describe("buildOffplanMap", () => {
     expect(solaya.lat).toBeCloseTo(24.488, 3);
   });
 
-  it("formats a dot's price and falls back when unpriced", () => {
+  // The popup formats these; an unpriced project carries 0, not null, because
+  // MapLibre's tile encoder does not round-trip nulls.
+  it("carries a dot's raw price, with 0 for unpriced", () => {
     const { dots } = buildOffplanMap(rows);
-    expect(dots.find((d) => d.slug === "bulgari")?.price).toBe("AED 9.5M");
-    expect(dots.find((d) => d.slug === "mandarin")?.price).toBe("Price on request");
+    expect(dots.find((d) => d.slug === "bulgari")?.priceAed).toBe(9_500_000);
+    expect(dots.find((d) => d.slug === "mandarin")?.priceAed).toBe(0);
+  });
+
+  it("gives a project its own subtitle, since it has no beds or area", () => {
+    const { dots } = buildOffplanMap(rows);
+    const bulgari = dots.find((d) => d.slug === "bulgari")!;
+    expect(bulgari.beds).toBeNull();
+    expect(bulgari.builtUpFt2).toBeNull();
+    // Area name alone when the project has no developer attached.
+    expect(bulgari.metaText).toBe("Saadiyat Island");
+    // "Developer · Area" when it does.
+    expect(dots.find((d) => d.slug === "solaya")?.metaText).toBe(
+      "Aldar · Yas Island",
+    );
   });
 
   it("builds a flat option list for the lead-form picker", () => {

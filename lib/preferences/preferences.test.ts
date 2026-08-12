@@ -6,10 +6,15 @@ import {
   formatArea,
   formatAreaRange,
   formatAreaValue,
+  formatMoneyValue,
   formatPrice,
   formatPricePerArea,
+  inputToPriceParam,
+  priceParamToInput,
+  toAed,
   toFt2,
 } from "./formatters";
+import { formatPriceAED } from "@/lib/queries/property-utils";
 import { AED_PER_USD, convertFromAed, getRate } from "./rates";
 import { CURRENCIES, DEFAULT_PREFERENCES, isAreaUnit, isCurrency } from "./types";
 
@@ -103,15 +108,39 @@ describe("preferences/rates", () => {
 
 describe("preferences/formatters", () => {
   it("formatPrice renders AED and USD with compact M/K", () => {
-    expect(formatPrice(4_200_000, { currency: "AED" })).toBe("AED 4.20M");
+    expect(formatPrice(4_200_000, { currency: "AED" })).toBe("AED 4.2M");
     expect(formatPrice(750_000, { currency: "AED" })).toBe("AED 750K");
     expect(formatPrice(500, { currency: "AED" })).toBe("AED 500");
+    // USD keeps two decimals: a dollar is worth 3.6725 dirhams, so one
+    // decimal there would be 3.7× coarser than the AED figure beside it.
     expect(formatPrice(4_200_000, { currency: "USD" })).toMatch(/^\$ \d+\.\d{2}M$/);
+  });
+
+  /**
+   * `formatPriceAED` still serves the surfaces with no visitor to ask — admin
+   * tables, OG images, `generateMetadata`, email. If the two formatters drift,
+   * the same listing starts quoting two prices depending on which one rendered
+   * it, which is exactly the bug this equivalence was introduced to kill.
+   */
+  it("formatPrice in AED is byte-identical to the legacy formatPriceAED", () => {
+    for (const n of [
+      0, 1, 500, 999, 1_000, 1_001, 999_999, 1_000_000, 1_000_001, 4_200_000,
+      7_940_000, 12_500_000, 50_000_000,
+    ]) {
+      expect(formatPrice(n, { currency: "AED" })).toBe(formatPriceAED(n));
+    }
   });
 
   it("formatPrice handles nullish input", () => {
     expect(formatPrice(null)).toBe("—");
     expect(formatPrice(undefined)).toBe("—");
+  });
+
+  it("formatMoneyValue keeps every digit", () => {
+    expect(formatMoneyValue(1_050_000, { currency: "AED" })).toBe("AED 1,050,000");
+    expect(formatMoneyValue(1_050_000, { currency: "USD" })).toBe("$ 285,909");
+    expect(formatMoneyValue(null)).toBe("—");
+    expect(formatMoneyValue(undefined)).toBe("—");
   });
 
   it("formatArea converts ft² to m² when requested", () => {
@@ -173,5 +202,58 @@ describe("preferences/formatters", () => {
     const m2Num = parseInt(aedM2.replace(/[^\d]/g, ""), 10);
     expect(m2Num).toBeGreaterThan(ft2Num * 9);
     expect(m2Num).toBeLessThan(ft2Num * 11);
+  });
+
+  it("toAed inverts convertFromAed", () => {
+    expect(toAed(1, "USD")).toBeCloseTo(3.6725, 12);
+    expect(toAed(1_000_000, "AED")).toBe(1_000_000);
+    expect(toAed(convertFromAed(4_200_000, "USD"), "USD")).toBeCloseTo(4_200_000, 6);
+    expect(toAed(NaN, "USD")).toBe(0);
+  });
+});
+
+/**
+ * The URL stays AED whatever the visitor is typing, so a shared search link
+ * means the same thing to both parties. These converters are the only place
+ * the two units meet.
+ */
+describe("preferences/price param boundary", () => {
+  it("converts an AED param into the visitor's currency and back", () => {
+    expect(priceParamToInput("1836250", "USD")).toBe("500000");
+    expect(inputToPriceParam("500000", "USD")).toBe("1836250");
+    // AED is the storage currency, so both are identity there.
+    expect(priceParamToInput("1836250", "AED")).toBe("1836250");
+    expect(inputToPriceParam("1836250", "AED")).toBe("1836250");
+  });
+
+  it("what a USD visitor types is what the box reads back", () => {
+    // The visitor's own round-trip — typed USD → AED in the URL → USD in the
+    // box — is exact, because the AED figure lands within 0.5 of the true
+    // product and 0.5/3.6725 = 0.136 < 0.5 coming back.
+    for (let usd = 1; usd <= 200_000; usd += 7) {
+      const asParam = inputToPriceParam(String(usd), "USD");
+      expect(priceParamToInput(asParam, "USD")).toBe(String(usd));
+    }
+  });
+
+  it("the reverse trip is lossy, which is why untouched params must pass through", () => {
+    // AED → USD → AED is NOT recoverable: the dollar step compresses the range
+    // and the dirham digits are gone. Drift is small (≤ 2 AED) but real, so a
+    // caller must only push a price param through the converters when the
+    // visitor actually edited that box. Pinned so nobody "simplifies"
+    // filter-bar into rewriting every param on every commit.
+    expect(inputToPriceParam(priceParamToInput("1", "USD"), "USD")).toBe("0");
+    let maxDrift = 0;
+    for (let aed = 1; aed <= 2_000_000; aed += 11) {
+      const back = Number(inputToPriceParam(priceParamToInput(String(aed), "USD"), "USD"));
+      maxDrift = Math.max(maxDrift, Math.abs(back - aed));
+    }
+    expect(maxDrift).toBeLessThanOrEqual(2);
+  });
+
+  it("empty and non-numeric input yields an empty param", () => {
+    expect(priceParamToInput("", "USD")).toBe("");
+    expect(inputToPriceParam("", "USD")).toBe("");
+    expect(inputToPriceParam("abc", "USD")).toBe("");
   });
 });

@@ -20,7 +20,6 @@
 
 import { areaTag, type AreaPin, type AreaDot } from "@/lib/queries/area-map";
 import type { DevelopmentIndexRow } from "@/lib/queries/developments";
-import { formatStartingPrice } from "@/lib/schemas/development";
 
 const EMIRATE = "abu-dhabi";
 
@@ -165,10 +164,13 @@ export function buildOffplanMap(
         reference: d.slug,
         lng: pt.lng,
         lat: pt.lat,
-        price: d.starting_price != null ? formatStartingPrice(d.starting_price) : "Price on request",
         priceAed: d.starting_price ?? 0,
         title: d.name,
-        meta: d.developer ? `${d.developer.name} · ${name}` : name,
+        // A development has no single bed count or built-up area, so it
+        // supplies its own subtitle. No units in it, so nothing to convert.
+        beds: null,
+        builtUpFt2: null,
+        metaText: d.developer ? `${d.developer.name} · ${name}` : name,
       });
     });
 

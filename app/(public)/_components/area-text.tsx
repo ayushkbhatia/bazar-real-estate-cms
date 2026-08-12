@@ -1,27 +1,32 @@
 "use client";
 
 /**
- * Client-side area renderers for server-rendered surfaces.
+ * Client-side price and area renderers for server-rendered surfaces.
  *
- * Every area in the schema is stored in ft². Server components can't read the
- * visitor's `bz_prefs` cookie value through `usePreferences`, so anywhere a
- * server component wants a unit-aware figure it drops one of these in as the
- * value instead of interpolating `ft²` into a template string.
+ * Every area in the schema is stored in ft² and every price in AED. Server
+ * components can't read the visitor's `bz_prefs` cookie through
+ * `usePreferences` — that would mean calling `cookies()` and losing ISR — so
+ * anywhere a server component wants a preference-aware figure it drops one of
+ * these in as the value instead of interpolating `AED` or `ft²` into a
+ * template string.
  *
- * They render the ft² text during SSR (the default preference) and swap to m²
+ * They render the AED/ft² text during SSR (the default preference) and swap
  * after hydration if that's what the visitor picked — same pattern as
- * `ListingCardPriced` for prices.
+ * `ListingCardPriced`.
+ *
+ * This is the whole toolkit; prefer it over making a server component client
+ * just to reach the hook. `/market-reports/**` is the reference consumer.
  */
 
 import {
   areaUnitLabel,
-  convertFromAed,
   currencySymbol,
   formatArea,
   formatAreaRange,
+  formatMoneyValue,
   formatPrice,
   formatPricePerArea,
-  FT2_PER_M2,
+  formatPricePerAreaValue,
   usePreferences,
 } from "@/lib/preferences";
 
@@ -56,6 +61,28 @@ export function AreaRangeText({
 export function AreaUnitText() {
   const { prefs } = usePreferences();
   return <>{areaUnitLabel(prefs.area_unit)}</>;
+}
+
+/** Just the currency glyph — "AED" / "$". For table headers and unit suffixes. */
+export function CurrencySymbolText() {
+  const { prefs } = usePreferences();
+  return <>{currencySymbol(prefs.currency)}</>;
+}
+
+/**
+ * "AED 1,050,000" — money at full precision, no M/K compaction. For tables
+ * and figures where the digits themselves are the point.
+ */
+export function MoneyText({
+  aed,
+  fallback = "—",
+}: {
+  aed: number | null | undefined;
+  fallback?: string;
+}) {
+  const { prefs } = usePreferences();
+  if (aed == null || !Number.isFinite(aed)) return <>{fallback}</>;
+  return <>{formatMoneyValue(aed, prefs)}</>;
 }
 
 /** "AED 2.40M" — a price stored in AED, shown in the visitor's currency. */
@@ -97,11 +124,10 @@ export function PricePerAreaValueText({
 }) {
   const { prefs } = usePreferences();
   if (aedPerFt2 == null || !Number.isFinite(aedPerFt2)) return <>{fallback}</>;
-  const inCurrency = convertFromAed(aedPerFt2, prefs.currency);
-  const value = prefs.area_unit === "m2" ? inCurrency * FT2_PER_M2 : inCurrency;
   return (
     <>
-      {currencySymbol(prefs.currency)} {Math.round(value).toLocaleString()}
+      {currencySymbol(prefs.currency)}{" "}
+      {formatPricePerAreaValue(aedPerFt2, prefs)}
     </>
   );
 }
@@ -123,11 +149,10 @@ export function PricePerAreaText({
 }) {
   const { prefs } = usePreferences();
   if (aedPerFt2 == null || !Number.isFinite(aedPerFt2)) return <>{fallback}</>;
-  const inCurrency = convertFromAed(aedPerFt2, prefs.currency);
-  const value = prefs.area_unit === "m2" ? inCurrency * FT2_PER_M2 : inCurrency;
   return (
     <>
-      {currencySymbol(prefs.currency)} {Math.round(value).toLocaleString()} /{" "}
+      {currencySymbol(prefs.currency)}{" "}
+      {formatPricePerAreaValue(aedPerFt2, prefs)} /{" "}
       {areaUnitLabel(prefs.area_unit)}
       {suffix}
     </>

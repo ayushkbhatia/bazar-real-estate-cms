@@ -9,7 +9,6 @@ import { getAgentBySlug, listAgents } from "@/lib/queries/agents";
 import { listApprovedReviewsForAgent } from "@/lib/queries/reviews-by-subject";
 import { listListingsByAgent } from "@/lib/queries/listings-by-agent";
 import {
-  formatPriceAED,
   propertyUrl,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
@@ -357,7 +356,6 @@ export default async function AgentProfilePage({
                       className="block"
                     >
                       <ListingCardPriced
-                        price={formatPriceAED(row.price_aed)}
                         priceAed={row.price_aed}
                         title={row.title}
                         location={row.areas?.name ?? "United Arab Emirates"}

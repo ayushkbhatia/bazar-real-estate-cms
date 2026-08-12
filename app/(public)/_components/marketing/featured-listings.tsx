@@ -1,18 +1,16 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { ListingCardProps } from "@/components/brand/listing-card";
 import { ListingCardPriced } from "../listing-card-priced";
 import { SectionHead } from "./section-head";
+import type { FeaturedCardProps } from "./map-listing";
 
 type Props = {
   eyebrow?: string;
   title: React.ReactNode;
   ctaLabel?: string;
   ctaHref?: string;
-  /** `priceAed` is optional so older call sites still compile; without it the
-   *  card falls back to the server-rendered AED string. */
-  items: (ListingCardProps & { priceAed?: number | null })[];
+  items: FeaturedCardProps[];
 };
 
 /**

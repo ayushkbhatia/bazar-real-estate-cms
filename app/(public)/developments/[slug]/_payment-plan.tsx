@@ -12,17 +12,43 @@ import {
   computePaymentBreakdown,
   splitPaymentPlan,
 } from "@/lib/schemas/development";
+import {
+  DEFAULT_PREFERENCES,
+  formatArea,
+  formatPrice,
+  usePreferences,
+  type Preferences,
+} from "@/lib/preferences";
 
+/**
+ * A pricing option in the calculator's dropdown.
+ *
+ * The page used to hand this component a finished `label` string with "ft²"
+ * and "AED" baked in. It is built here instead, where the visitor's
+ * preferences are readable — a server component can't reach them without
+ * calling `cookies()` and losing the route's ISR.
+ */
 export type CalculatorUnit = {
   id: string;
-  label: string;
   price_aed: number;
+  /** Unit type name. Null for the starting-price stand-in. */
+  unitType: string | null;
+  beds: number | null;
+  builtUpFt2: number | null;
+  /** The synthetic option for a project with no unit inventory. */
+  isStartingPrice: boolean;
 };
 
-function formatAed(n: number): string {
-  if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(2)}M`;
-  if (n >= 1_000) return `AED ${(n / 1_000).toFixed(0)}K`;
-  return `AED ${Math.round(n).toLocaleString()}`;
+/** "3-bed villa · 3-bed · 2,400 ft²", or "From AED 1.6M" for the stand-in. */
+function unitLabel(u: CalculatorUnit, prefs: Preferences): string {
+  if (u.isStartingPrice) return `From ${formatPrice(u.price_aed, prefs)}`;
+  return [
+    u.unitType,
+    u.beds ? `${u.beds}-bed` : null,
+    u.builtUpFt2 ? formatArea(u.builtUpFt2, prefs.area_unit) : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 /**
@@ -54,6 +80,7 @@ export function PaymentPlanSection({
   developmentName: string;
   units: CalculatorUnit[];
 }) {
+  const { prefs } = usePreferences();
   const [selectedId, setSelectedId] = useState(units[0]?.id ?? "");
   const [downloading, setDownloading] = useState(false);
 
@@ -72,7 +99,7 @@ export function PaymentPlanSection({
 
   function amountFor(percent: number): string | null {
     if (price <= 0) return null;
-    return formatAed(price * (percent / 100));
+    return formatPrice(price * (percent / 100), prefs);
   }
 
   async function downloadPdf() {
@@ -83,7 +110,7 @@ export function PaymentPlanSection({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           developmentName,
-          unitLabel: selected?.label ?? null,
+          unitLabel: selected ? unitLabel(selected, DEFAULT_PREFERENCES) : null,
           priceAed: price,
           plan,
         }),
@@ -145,13 +172,13 @@ export function PaymentPlanSection({
   }[] = [
     {
       eyebrow: "During construction",
-      amount: breakdown ? formatAed(breakdown.construction) : "—",
+      amount: breakdown ? formatPrice(breakdown.construction, prefs) : "—",
       note: constructionNote,
       pct: split.constructionPct,
     },
     {
       eyebrow: "At handover",
-      amount: breakdown ? formatAed(breakdown.handover) : "—",
+      amount: breakdown ? formatPrice(breakdown.handover, prefs) : "—",
       note: handoverNote,
       pct: split.handoverPct,
     },
@@ -161,7 +188,7 @@ export function PaymentPlanSection({
   if (split.postHandoverPct > 0) {
     slices.push({
       eyebrow: "Post-handover",
-      amount: breakdown ? formatAed(breakdown.postHandover) : "—",
+      amount: breakdown ? formatPrice(breakdown.postHandover, prefs) : "—",
       note: postNote,
       pct: split.postHandoverPct,
     });
@@ -312,7 +339,7 @@ export function PaymentPlanSection({
               ) : (
                 units.map((u) => (
                   <option key={u.id} value={u.id}>
-                    {u.label}
+                    {unitLabel(u, prefs)}
                   </option>
                 ))
               )}
@@ -323,7 +350,7 @@ export function PaymentPlanSection({
               className="serif text-[28px] mt-3.5 hidden lg:block"
               style={{ letterSpacing: "-0.02em" }}
             >
-              {price > 0 ? formatAed(price) : "—"}
+              {price > 0 ? formatPrice(price, prefs) : "—"}
             </div>
           </div>
 
@@ -350,7 +377,7 @@ export function PaymentPlanSection({
               key: "Price",
               value: (
                 <span className="serif text-[16px] whitespace-nowrap">
-                  {price > 0 ? formatAed(price) : "—"}
+                  {price > 0 ? formatPrice(price, prefs) : "—"}
                 </span>
               ),
             },

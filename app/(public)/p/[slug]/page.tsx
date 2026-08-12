@@ -284,7 +284,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     ? mediaPublicUrl(media.floorPlan.storage_key)
     : null;
 
-  const priceAed = formatPriceAED(property.price_aed);
   const aedPerFt =
     property.built_up_ft2 && property.built_up_ft2 > 0
       ? Math.round(property.price_aed / property.built_up_ft2)
@@ -476,7 +475,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             priceAed={property.price_aed}
             aedPerFt2={aedPerFt}
             listedDays={daysSince(property.published_at)}
-            formattedAed={priceAed}
           />
         </div>
       </section>
@@ -688,7 +686,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                 className="block"
               >
                 <SimilarCard
-                  price={formatPriceAED(row.price_aed)}
                   priceAed={row.price_aed}
                   title={row.title}
                   location={row.areas?.name ?? "United Arab Emirates"}

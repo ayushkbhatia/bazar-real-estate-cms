@@ -1,4 +1,10 @@
 import { Eyebrow } from "@/components/brand/eyebrow";
+import {
+  AreaUnitText,
+  CurrencySymbolText,
+  PriceText,
+  PricePerAreaValueText,
+} from "../../../_components/area-text";
 
 type Comp = {
   ref: string;
@@ -39,7 +45,9 @@ export function DmtComparables({
             <th className="px-3 py-2 font-medium">Date</th>
             <th className="px-3 py-2 font-medium">Unit</th>
             <th className="px-3 py-2 font-medium text-right">Price</th>
-            <th className="px-3 py-2 font-medium text-right">AED/ft²</th>
+            <th className="px-3 py-2 font-medium text-right">
+              <CurrencySymbolText />/<AreaUnitText />
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -55,10 +63,12 @@ export function DmtComparables({
               </td>
               <td className="px-3 py-2 text-bz-ink-2">{c.unit}</td>
               <td className="px-3 py-2 mono text-bz-ink text-right">
-                AED {(c.price_aed / 1_000_000).toFixed(2)}M
+                <PriceText aed={c.price_aed} />
               </td>
               <td className="px-3 py-2 mono text-bz-ink-2 text-right">
-                {Math.round(c.price_aed / c.ft2).toLocaleString()}
+                <PricePerAreaValueText
+                  aedPerFt2={Math.round(c.price_aed / c.ft2)}
+                />
               </td>
             </tr>
           ))}

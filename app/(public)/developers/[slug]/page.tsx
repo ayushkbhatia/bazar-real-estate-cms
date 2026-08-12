@@ -12,7 +12,7 @@ import {
 } from "@/lib/queries/developers-extras";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { mediaPublicUrl } from "@/lib/media";
-import { formatPriceAED, propertyUrl } from "@/lib/queries/property-utils";
+import { propertyUrl } from "@/lib/queries/property-utils";
 import { DevelopmentCard } from "../../_components/marketing/development-card";
 import { ListingCardPriced } from "../../_components/listing-card-priced";
 import { entryLogo, findDirectoryEntry, listDirectory } from "../_directory";
@@ -225,7 +225,6 @@ export default async function DeveloperProfilePage({
                 className="block"
               >
                 <ListingCardPriced
-                  price={formatPriceAED(row.price_aed)}
                   priceAed={row.price_aed}
                   title={row.title}
                   location={row.area?.name ?? "United Arab Emirates"}

@@ -5,8 +5,12 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DualRangeSlider } from "./dual-range-slider";
-import { formatPriceAED } from "@/lib/queries/property-utils";
-import { areaUnitLabel, formatArea, usePreferences } from "@/lib/preferences";
+import {
+  areaUnitLabel,
+  formatArea,
+  formatPrice,
+  usePreferences,
+} from "@/lib/preferences";
 import {
   HERO_TABS,
   buildHeroSearchUrl,
@@ -164,13 +168,19 @@ export function HeroSearch({ defaultMode = "off-plan" }: { defaultMode?: string 
             Price range
           </span>
           <div className="px-1 pt-1.5">
+            {/*
+              Bounds and step stay AED — `buildHeroSearchUrl` writes them
+              straight into `price_min`/`price_max`, which the search query
+              reads as AED. Only the labels convert, exactly as the size
+              slider above keeps ft² steps and labels in m².
+            */}
             <DualRangeSlider
               key={`price-${mode}`}
               min={0}
               max={tab.price.max}
               step={tab.price.step}
               initial={price}
-              format={formatPriceAED}
+              format={(n) => formatPrice(n, prefs)}
               onChange={setPrice}
             />
           </div>

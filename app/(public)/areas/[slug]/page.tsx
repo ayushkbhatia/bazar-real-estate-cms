@@ -38,6 +38,10 @@ import {
 import { AreaFaq, type AreaFaqEntry } from "./_components/area-faq";
 import { AreaLeadForm } from "./_components/area-lead-form";
 import { AreaListingsBand } from "./_components/area-listings-band";
+import {
+  AreaUnitText,
+  PricePerAreaValueText,
+} from "../../_components/area-text";
 import { DevelopmentCard } from "../../_components/marketing/development-card";
 import { AreaMapDetail } from "../../_components/area-map/area-map-detail";
 import { AreaReportsRail } from "../../_components/market-context-link";
@@ -290,14 +294,20 @@ export default async function CommunityProfilePage({
           <div className="px-4 md:px-12 py-10">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
               <Stat
-                label="Median apt / ft²"
-                value={stats.medianAptPerFt2?.toLocaleString() ?? null}
-                unit="AED"
+                label={<>Median apt / <AreaUnitText /></>}
+                value={
+                  stats.medianAptPerFt2 == null ? null : (
+                    <PricePerAreaValueText aedPerFt2={stats.medianAptPerFt2} />
+                  )
+                }
               />
               <Stat
-                label="Median villa / ft²"
-                value={stats.medianVillaPerFt2?.toLocaleString() ?? null}
-                unit="AED"
+                label={<>Median villa / <AreaUnitText /></>}
+                value={
+                  stats.medianVillaPerFt2 == null ? null : (
+                    <PricePerAreaValueText aedPerFt2={stats.medianVillaPerFt2} />
+                  )
+                }
               />
               <Stat
                 label="Avg days on market"
@@ -684,16 +694,24 @@ export default async function CommunityProfilePage({
   );
 }
 
-/** One figure in the fallback stats band. An absent value renders an em-dash. */
+/**
+ * One figure in the fallback stats band. An absent value renders an em-dash.
+ *
+ * `label`, `value` and `unit` are ReactNode so a tile can carry the
+ * preference-aware leaves from `_components/area-text` — the page itself is a
+ * server component and can't read the visitor's currency or area unit. Callers
+ * must still pass `null` (not an empty element) for a missing figure, so the
+ * em-dash branch below stays reachable.
+ */
 function Stat({
   label,
   value,
   unit,
   tone,
 }: {
-  label: string;
-  value: string | null;
-  unit?: string;
+  label: React.ReactNode;
+  value: React.ReactNode | null;
+  unit?: React.ReactNode;
   tone?: "up" | "down";
 }) {
   return (

@@ -2,7 +2,6 @@ import * as React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
-  formatPriceAED,
   listPublishedProperties,
   propertyUrl,
   type ListingRow,
@@ -218,7 +217,6 @@ export default async function HomePage() {
                     className="block"
                   >
                     <ListingCardPriced
-                      price={formatPriceAED(row.price_aed)}
                       priceAed={row.price_aed}
                       title={row.title}
                       location={row.areas?.name ?? "United Arab Emirates"}

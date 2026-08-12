@@ -6,7 +6,8 @@ import {
   developmentUrl,
   type listPublishedDevelopments,
 } from "@/lib/queries/developments";
-import { formatStartingPrice, quarterLabel } from "@/lib/schemas/development";
+import { quarterLabel } from "@/lib/schemas/development";
+import { PriceText } from "../area-text";
 
 type Development = Awaited<
   ReturnType<typeof listPublishedDevelopments>
@@ -58,11 +59,11 @@ export function DevelopmentCard({ d }: { d: Development }) {
           <div className="text-[13px] text-bz-muted mt-1">{d.area.name}</div>
         ) : null}
         <div className="mt-5 pt-4 border-t border-bz-border grid grid-cols-3 gap-3">
-          {[
-            ["From", formatStartingPrice(d.starting_price)],
+          {([
+            ["From", <PriceText key="from" aed={d.starting_price} />],
             ["Bedrooms", d.bedrooms_text ?? "—"],
             ["Handover", quarterLabel(d.handover_date)],
-          ].map(([label, value]) => (
+          ] as [string, React.ReactNode][]).map(([label, value]) => (
             <div key={label}>
               <div className="text-[10.5px] uppercase tracking-wide text-bz-muted">
                 {label}

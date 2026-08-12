@@ -7,7 +7,26 @@
 
 import type { ComparableProperty } from "@/lib/queries/compare";
 
-export type CellValue = string | number | boolean | null;
+/**
+ * A cell whose value is money or an area, tagged with the unit it is stored
+ * in rather than rendered into a string here.
+ *
+ * The compare table is built on the server; the visitor's currency and area
+ * unit are only readable on the client. So these travel as raw AED / ft²
+ * numbers and `renderCell` in the page hands them to the leaves in
+ * `_components/area-text`.
+ */
+export type UnitCell =
+  | { kind: "aed"; value: number | null }
+  | { kind: "ft2"; value: number | null }
+  | { kind: "aedPerFt2"; value: number | null; per?: "yr" };
+
+export type CellValue = string | number | boolean | null | UnitCell;
+
+/** The comparable number inside a cell, for diffing. */
+function cellKey(v: CellValue): string | number | boolean | null {
+  return v !== null && typeof v === "object" ? v.value : v;
+}
 
 export type AttributeRow = {
   key: string;
@@ -27,18 +46,6 @@ export type AttributeGroup = {
 /* ────────────────────────────────────────────────────────────────
  * Formatting
  * ───────────────────────────────────────────────────────────────*/
-
-export function formatAed(n: number | null): string {
-  if (n == null) return "—";
-  if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(2)}M`;
-  if (n >= 1_000) return `AED ${(n / 1_000).toFixed(0)}K`;
-  return `AED ${n.toLocaleString()}`;
-}
-
-export function formatFt2(n: number | null): string {
-  if (n == null) return "—";
-  return `${n.toLocaleString()} ft²`;
-}
 
 export function modeLabel(mode: ComparableProperty["mode"]): string {
   switch (mode) {
@@ -121,9 +128,16 @@ export function listedDays(
  * Diff detection
  * ───────────────────────────────────────────────────────────────*/
 
-/** True iff the values (other than null) are not all equal. */
+/**
+ * True iff the values (other than null) are not all equal.
+ *
+ * Diffs the raw number inside a `UnitCell`, never its rendered text. Comparing
+ * formatted strings meant two listings at 4,201,000 and 4,204,000 AED both
+ * read "AED 4.20M" and the row was wrongly marked identical — and it would
+ * have made the highlighting depend on the visitor's currency.
+ */
 export function rowDiffers(values: CellValue[]): boolean {
-  const non = values.filter((v) => v !== null);
+  const non = values.map(cellKey).filter((v) => v !== null);
   if (non.length <= 1) return false;
   const first = non[0];
   return non.some((v) => v !== first);
@@ -164,15 +178,14 @@ function priceAndTermsGroup(
       row(
         "asking_price",
         "Asking price",
-        map(rows, (p) => formatAed(p.price_aed)),
+        map(rows, (p) => ({ kind: "aed", value: p.price_aed })),
       ),
+      // "per area", not "per ft²" — the unit is the visitor's to choose, and
+      // the cell renders it.
       row(
         "ppf",
-        "Price per ft²",
-        map(rows, (p) => {
-          const v = pricePerFt2(p);
-          return v == null ? null : `AED ${v.toLocaleString()}`;
-        }),
+        "Price per area",
+        map(rows, (p) => ({ kind: "aedPerFt2", value: pricePerFt2(p) })),
       ),
       row("mode", "Mode", map(rows, (p) => modeLabel(p.mode))),
       row(
@@ -183,11 +196,11 @@ function priceAndTermsGroup(
       row(
         "service_charge",
         "Service charge",
-        map(rows, (p) =>
-          p.service_charge_per_ft2 == null
-            ? "—"
-            : `AED ${p.service_charge_per_ft2}/ft²/yr`,
-        ),
+        map(rows, (p) => ({
+          kind: "aedPerFt2",
+          value: p.service_charge_per_ft2,
+          per: "yr",
+        })),
       ),
       row(
         "listed",
@@ -209,9 +222,13 @@ function specificationsGroup(rows: ComparableProperty[]): AttributeGroup {
       row(
         "built_up",
         "Area (built-up)",
-        map(rows, (p) => formatFt2(p.built_up_ft2)),
+        map(rows, (p) => ({ kind: "ft2", value: p.built_up_ft2 })),
       ),
-      row("plot", "Plot area", map(rows, (p) => formatFt2(p.plot_ft2))),
+      row(
+        "plot",
+        "Plot area",
+        map(rows, (p) => ({ kind: "ft2", value: p.plot_ft2 })),
+      ),
       row(
         "floor",
         "Floor",

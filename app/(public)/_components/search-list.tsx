@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import {
   listPublishedProperties,
-  formatPriceAED,
   propertyUrl,
   type ListingRow,
 } from "@/lib/queries/properties";
@@ -307,7 +306,6 @@ export async function SearchList({
                   <ListingCardPriced
                     variant="row"
                     className={ROW_CARD_RESPONSIVE}
-                    price={formatPriceAED(row.price_aed)}
                     priceAed={row.price_aed}
                     title={row.title}
                     location={row.areas?.name ?? "United Arab Emirates"}
@@ -342,7 +340,6 @@ export async function SearchList({
                     className="block"
                   >
                     <ListingCardPriced
-                      price={formatPriceAED(row.price_aed)}
                       priceAed={row.price_aed}
                       title={row.title}
                       location={row.areas?.name ?? "United Arab Emirates"}

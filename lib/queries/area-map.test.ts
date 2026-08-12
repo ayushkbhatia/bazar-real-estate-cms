@@ -118,16 +118,19 @@ describe("shapeDot", () => {
     built_up_ft2: 640,
   };
 
+  // The dot carries raw numbers, never formatted strings — the popup is a
+  // client component and formats in the visitor's currency and area unit.
   it("shapes a located property into a dot", () => {
     expect(shapeDot({ ...base, geo: { lat: 24.5, lng: 54.4 } })).toEqual({
       slug: "mamsha-studio",
       reference: "BAZ-AD-04891",
       lng: 54.4,
       lat: 24.5,
-      price: "AED 1.9M",
       priceAed: 1_900_000,
       title: "Studio · Mamsha",
-      meta: "Studio · 640 ft²",
+      beds: 0,
+      builtUpFt2: 640,
+      metaText: null,
     });
   });
 
@@ -142,6 +145,14 @@ describe("shapeDot", () => {
       geo: { lat: 24.5, lng: 54.4 },
     });
     expect(dot?.priceAed).toBe(2_500_000);
-    expect(dot?.price).toBe("AED 2.5M");
+  });
+
+  it("uses 0 as the no-price sentinel, since MapLibre drops nulls", () => {
+    const dot = shapeDot({
+      ...base,
+      price_aed: "not a number",
+      geo: { lat: 24.5, lng: 54.4 },
+    });
+    expect(dot?.priceAed).toBe(0);
   });
 });

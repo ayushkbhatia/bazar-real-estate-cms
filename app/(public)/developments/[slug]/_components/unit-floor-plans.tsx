@@ -15,9 +15,10 @@ import {
 import {
   formatArea,
   formatAreaRange,
+  formatMoneyValue,
   usePreferences,
 } from "@/lib/preferences";
-import type { AreaUnit } from "@/lib/preferences";
+import type { AreaUnit, Preferences } from "@/lib/preferences";
 
 /**
  * Units and their layouts — the row of unit-type buttons above the map.
@@ -111,7 +112,7 @@ export function UnitFloorPlans({
   if (types.length === 0) return null;
 
   const active = types.find((t) => t.id === activeId) ?? types[0]!;
-  const summary = summaryLine(active, prefs.area_unit);
+  const summary = summaryLine(active, prefs);
   const openType = lightbox ? types.find((t) => t.id === lightbox.typeId) : null;
   const openPlans = openType ? lightboxPlans(openType, prefs.area_unit) : [];
 
@@ -370,15 +371,24 @@ function lightboxPlans(type: UnitTypeCard, unit: AreaUnit): LightboxPlan[] {
   return out;
 }
 
-/** "1,240 – 1,480 ft² · from AED 2,400,000", dropping whatever isn't set.
- *  Sizes render in the visitor's area unit; the price stays AED because the
- *  rest of this section quotes AED and mixing the two here reads as a typo. */
-function summaryLine(type: UnitTypeCard, unit: AreaUnit): string | null {
+/**
+ * "1,240 – 1,480 ft² · from AED 2,400,000", dropping whatever isn't set.
+ *
+ * Both halves follow the visitor. The price used to stay AED on the grounds
+ * that the rest of the section quoted AED and mixing the two read as a typo —
+ * true at the time, and no longer: the units table and payment plan beside it
+ * now convert too.
+ */
+function summaryLine(type: UnitTypeCard, prefs: Preferences): string | null {
   const parts: string[] = [];
-  const size = formatAreaRange(type.size_from_ft2, type.size_to_ft2, unit);
+  const size = formatAreaRange(
+    type.size_from_ft2,
+    type.size_to_ft2,
+    prefs.area_unit,
+  );
   if (size) parts.push(size);
   if (type.price_from_aed != null) {
-    parts.push(`from AED ${type.price_from_aed.toLocaleString()}`);
+    parts.push(`from ${formatMoneyValue(type.price_from_aed, prefs)}`);
   }
   return parts.length ? parts.join(" · ") : null;
 }

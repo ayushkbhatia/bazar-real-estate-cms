@@ -18,7 +18,12 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
-import { formatPriceAED } from "@/lib/queries/property-utils";
+// Deep import, not the `@/lib/preferences` barrel: the barrel re-exports
+// `provider.tsx`, which is `"use client"`, and dragging a client boundary into
+// a server-side query module is how you accidentally bundle React state into
+// a data layer.
+import { formatArea } from "@/lib/preferences/formatters";
+import type { AreaUnit } from "@/lib/preferences/types";
 import { SEED_AREA_GUIDES } from "@/lib/seeds/areas";
 
 export type LngLat = { lng: number; lat: number };
@@ -41,18 +46,33 @@ export type AreaPin = {
   yoyChange: number | null;
 };
 
+/**
+ * One listing on the map. Everything numeric travels raw — the popup is a
+ * client component and formats in the visitor's currency and area unit, so a
+ * pre-formatted string here would be frozen at AED/ft² forever.
+ *
+ * These fields round-trip through MapLibre's GeoJSON worker, whose tile
+ * encoder does not reliably preserve `null`. Hence `priceAed: 0` as the
+ * "price on request" sentinel rather than a nullable number.
+ */
 export type AreaDot = {
   slug: string;
   reference: string;
   lng: number;
   lat: number;
-  /** Formatted for display, e.g. "AED 1.9M". */
-  price: string;
-  /** Raw AED, for any client-side sorting/threshold logic. */
+  /** Raw AED. `0` means the listing publishes no price. */
   priceAed: number;
   title: string;
-  /** Subtitle line, e.g. "1 bd · 920 ft²". */
-  meta: string;
+  /** Beds for the subtitle, or null. */
+  beds: number | null;
+  /** Built-up area in ft² for the subtitle, or null. */
+  builtUpFt2: number | null;
+  /**
+   * Pre-built subtitle for sources that have no beds/area to render — the
+   * off-plan map uses "Developer · Area". Takes precedence over
+   * `beds`/`builtUpFt2` when set, and carries no units, so it is safe frozen.
+   */
+  metaText: string | null;
 };
 
 const DEFAULT_EMIRATE = "abu-dhabi";
@@ -138,16 +158,21 @@ export function pickMedianPerFt2(stats: {
   return value > 0 ? value : null;
 }
 
-/** Dot subtitle: "Studio · 640 ft²" / "2 bd · 1,180 ft²". */
+/**
+ * Dot subtitle: "Studio · 640 ft²" / "2 bd · 1,180 ft²".
+ *
+ * Called from the client popup with the visitor's unit. The default keeps it
+ * pure ft² for callers that have no preference to hand — and keeps the
+ * existing specs honest.
+ */
 export function dotMeta(
   beds: number | null,
   builtUpFt2: number | null,
+  unit: AreaUnit = "ft2",
 ): string {
   const bedsLabel = beds === 0 ? "Studio" : beds != null ? `${beds} bd` : null;
   const sizeLabel =
-    builtUpFt2 && builtUpFt2 > 0
-      ? `${builtUpFt2.toLocaleString("en-US")} ft²`
-      : null;
+    builtUpFt2 && builtUpFt2 > 0 ? formatArea(builtUpFt2, unit) : null;
   return [bedsLabel, sizeLabel].filter(Boolean).join(" · ");
 }
 
@@ -165,16 +190,16 @@ type PropertyDotRow = {
 export function shapeDot(row: PropertyDotRow): AreaDot | null {
   const g = parseGeo(row.geo);
   if (!g) return null;
-  const priceAed = Number(row.price_aed) || 0;
   return {
     slug: row.slug,
     reference: row.reference,
     lng: g.lng,
     lat: g.lat,
-    price: formatPriceAED(priceAed),
-    priceAed,
+    priceAed: Number(row.price_aed) || 0,
     title: row.title,
-    meta: dotMeta(row.beds, row.built_up_ft2),
+    beds: row.beds,
+    builtUpFt2: row.built_up_ft2,
+    metaText: null,
   };
 }
 

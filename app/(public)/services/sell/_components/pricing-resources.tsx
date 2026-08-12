@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { ImageValue } from "@/lib/master-pages";
 import type { TransactionSpark } from "../_data";
+import { PricePerAreaUnitText } from "../../../_components/area-text";
 
 /** One card as the master-page editor stores it. */
 export type PricingCard = {
@@ -265,8 +266,12 @@ function SparkVisual({
         <circle cx={end.x} cy={end.y} r="3" fill="var(--bz-accent)" />
       </svg>
       <div className="flex justify-between mt-1.5 text-[10.5px] text-bz-muted">
-        <span className="mono">AED {Math.round(first).toLocaleString("en-GB")}/ft²</span>
-        <span className="mono">AED {Math.round(last).toLocaleString("en-GB")}/ft²</span>
+        <span className="mono">
+          <PricePerAreaUnitText aedPerFt2={Math.round(first)} />
+        </span>
+        <span className="mono">
+          <PricePerAreaUnitText aedPerFt2={Math.round(last)} />
+        </span>
       </div>
       <div className="text-[11.5px] text-bz-muted mt-2">{caption}</div>
     </div>

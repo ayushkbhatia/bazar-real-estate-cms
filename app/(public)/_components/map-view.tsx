@@ -3,10 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl, { type Map as MapLibreMap, Marker, Popup } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import {
-  formatPriceAED,
-  propertyUrl,
-} from "@/lib/queries/property-utils";
+import { propertyUrl } from "@/lib/queries/property-utils";
+import { formatPrice, usePreferences } from "@/lib/preferences";
 import { pastelMapStyle } from "./map-style";
 
 export type MapPin = {
@@ -27,6 +25,7 @@ type Props = {
 const DEFAULT_CENTER: [number, number] = [54.3773, 24.4539];
 
 export function MapView({ pins, className }: Props) {
+  const { prefs } = usePreferences();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
@@ -83,17 +82,18 @@ export function MapView({ pins, className }: Props) {
     if (pins.length === 0) return;
 
     pins.forEach((pin) => {
+      const label = formatPrice(pin.price_aed, prefs);
       const el = document.createElement("button");
       el.type = "button";
       el.className =
         "h-7 px-2 rounded-full bg-bz-navy hover:bg-bz-teal transition-colors text-white text-[12px] font-medium shadow-md whitespace-nowrap";
-      el.textContent = formatPriceAED(pin.price_aed);
-      el.setAttribute("aria-label", `${pin.title} — ${formatPriceAED(pin.price_aed)}`);
+      el.textContent = label;
+      el.setAttribute("aria-label", `${pin.title} — ${label}`);
 
       const popup = new Popup({ offset: 16, closeButton: false }).setHTML(
         `<a href="${propertyUrl(pin)}" style="display:block;text-decoration:none;color:inherit;font-family:inherit;font-size:13px">
           <div style="font-weight:500;margin-bottom:2px">${escapeHtml(pin.title)}</div>
-          <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:#666">${escapeHtml(pin.reference)} · ${formatPriceAED(pin.price_aed)}</div>
+          <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:#666">${escapeHtml(pin.reference)} · ${escapeHtml(label)}</div>
         </a>`,
       );
 
@@ -114,7 +114,10 @@ export function MapView({ pins, className }: Props) {
       );
       map.fitBounds(bounds, { padding: 40, maxZoom: 13 });
     }
-  }, [pins, ready]);
+    // `prefs` is load-bearing: markers are imperative DOM, not React, so
+    // nothing re-renders them on its own. Without it here the pins keep their
+    // old currency until the pin set itself changes.
+  }, [pins, ready, prefs]);
 
   return <div ref={containerRef} className={className} />;
 }
