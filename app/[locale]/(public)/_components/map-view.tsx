@@ -5,7 +5,8 @@ import maplibregl, { type Map as MapLibreMap, Marker, Popup } from "maplibre-gl"
 import "maplibre-gl/dist/maplibre-gl.css";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { formatPrice, usePreferences } from "@/lib/preferences";
-import { pastelMapStyle } from "./map-style";
+import { ensureRtlTextPlugin, pastelMapStyle } from "./map-style";
+import { useIsRtl } from "@/lib/dom/use-is-rtl";
 
 export type MapPin = {
   id: string;
@@ -25,6 +26,7 @@ type Props = {
 const DEFAULT_CENTER: [number, number] = [54.3773, 24.4539];
 
 export function MapView({ pins, className }: Props) {
+  const rtl = useIsRtl();
   const { prefs } = usePreferences();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -42,7 +44,11 @@ export function MapView({ pins, className }: Props) {
       ? [pins[0].geo.lng, pins[0].geo.lat]
       : DEFAULT_CENTER;
 
-    pastelMapStyle().then((style) => {
+    // Register the shaping plugin before the style resolves. Without it
+    // maplibre draws Arabic as isolated, unjoined, left-to-right
+    // letterforms — worse than leaving the labels in English.
+    if (rtl) void ensureRtlTextPlugin(maplibregl);
+    pastelMapStyle(rtl ? "ar" : "en").then((style) => {
       if (dead || !containerRef.current) return;
       map = new maplibregl.Map({
         container: containerRef.current,

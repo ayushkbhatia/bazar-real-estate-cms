@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored third-party bundles served as static assets. They are minified
+    // upstream artifacts, not source we author — linting them reports on
+    // somebody else's build output.
+    "public/vendor/**",
   ]),
   {
     rules: {

@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { pastelMapStyle } from "../../_components/map-style";
+import { ensureRtlTextPlugin, pastelMapStyle } from "../../_components/map-style";
+import { useIsRtl } from "@/lib/dom/use-is-rtl";
 
 /**
  * Client MapLibre canvas for the contact HQ map — the shared Bazar pastel
@@ -22,6 +23,7 @@ export function HqMapCanvas({
   label: string;
   className?: string;
 }) {
+  const rtl = useIsRtl();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -31,7 +33,11 @@ export function HqMapCanvas({
     let map: maplibregl.Map | null = null;
     let ro: ResizeObserver | null = null;
 
-    pastelMapStyle().then((style) => {
+    // Register the shaping plugin before the style resolves. Without it
+    // maplibre draws Arabic as isolated, unjoined, left-to-right
+    // letterforms — worse than leaving the labels in English.
+    if (rtl) void ensureRtlTextPlugin(maplibregl);
+    pastelMapStyle(rtl ? "ar" : "en").then((style) => {
       if (dead) return;
       const m = new maplibregl.Map({
         container,
@@ -74,7 +80,7 @@ export function HqMapCanvas({
       ro?.disconnect();
       map?.remove();
     };
-  }, [lat, lng, label]);
+  }, [lat, lng, label, rtl]);
 
   return <div ref={containerRef} className={className} dir="ltr" />;
 }
