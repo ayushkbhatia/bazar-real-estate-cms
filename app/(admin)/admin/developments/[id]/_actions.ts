@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import {
@@ -32,8 +33,8 @@ async function revalidateDevelopmentPaths(developmentId: string) {
   if (data?.slug)
     revalidatePath(`/admin/pages/sub/development/${data.slug}`);
   if (data?.published_at) {
-    revalidatePath(developmentUrl(data));
-    revalidatePath("/developments");
+    revalidateLocalised(developmentUrl(data));
+    revalidateLocalised("/developments");
   }
 }
 

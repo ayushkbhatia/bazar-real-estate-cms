@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import {
@@ -20,8 +21,8 @@ async function revalidatePagePaths(
 ) {
   if (!isSupabaseConfigured) return;
   revalidatePath("/admin/pages");
-  if (slug) revalidatePath(`/pages/${slug}`);
-  if (prevSlug && prevSlug !== slug) revalidatePath(`/pages/${prevSlug}`);
+  if (slug) revalidateLocalised(`/pages/${slug}`);
+  if (prevSlug && prevSlug !== slug) revalidateLocalised(`/pages/${prevSlug}`);
 }
 
 export type SavePageResult =

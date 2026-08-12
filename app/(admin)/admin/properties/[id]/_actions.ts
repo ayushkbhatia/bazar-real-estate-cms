@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { propertyEditSchema, normaliseEditInput } from "@/lib/schemas/property";
@@ -26,15 +27,15 @@ async function revalidatePropertyPaths(propertyId: string) {
     .eq("id", propertyId)
     .maybeSingle();
   if (data?.status === "published") {
-    revalidatePath(propertyUrl(data));
-    revalidatePath("/buy");
-    revalidatePath("/buy/ready");
-    revalidatePath("/buy/resale");
-    revalidatePath("/buy/search");
-    revalidatePath("/rent");
-    revalidatePath("/rent/search");
-    revalidatePath("/off-plan/search");
-    revalidatePath("/");
+    revalidateLocalised(propertyUrl(data));
+    revalidateLocalised("/buy");
+    revalidateLocalised("/buy/ready");
+    revalidateLocalised("/buy/resale");
+    revalidateLocalised("/buy/search");
+    revalidateLocalised("/rent");
+    revalidateLocalised("/rent/search");
+    revalidateLocalised("/off-plan/search");
+    revalidateLocalised("/");
   }
 }
 
@@ -143,15 +144,15 @@ export async function updateProperty(
   revalidatePath("/admin/properties");
   revalidatePath(`/admin/properties/${id}`);
   if (data.status === "published") {
-    revalidatePath(propertyUrl(data));
-    revalidatePath("/buy");
-    revalidatePath("/buy/ready");
-    revalidatePath("/buy/resale");
-    revalidatePath("/buy/search");
-    revalidatePath("/rent");
-    revalidatePath("/rent/search");
-    revalidatePath("/off-plan/search");
-    revalidatePath("/");
+    revalidateLocalised(propertyUrl(data));
+    revalidateLocalised("/buy");
+    revalidateLocalised("/buy/ready");
+    revalidateLocalised("/buy/resale");
+    revalidateLocalised("/buy/search");
+    revalidateLocalised("/rent");
+    revalidateLocalised("/rent/search");
+    revalidateLocalised("/off-plan/search");
+    revalidateLocalised("/");
   }
 
   return { status: "ok", message: "Saved." };
@@ -235,7 +236,7 @@ export async function assignAgent(
   });
 
   await revalidatePropertyPaths(propertyId);
-  revalidatePath("/agents");
+  revalidateLocalised("/agents");
   return {
     status: "ok",
     message: agentId ? "Advisor assigned." : "Advisor cleared.",

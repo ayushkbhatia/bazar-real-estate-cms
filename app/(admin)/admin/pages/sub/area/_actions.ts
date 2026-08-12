@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
@@ -77,7 +78,7 @@ async function persist(
     after: { area: record.slug, sections: sections.length },
   });
 
-  revalidatePath(`/areas/${record.slug}`);
+  revalidateLocalised(`/areas/${record.slug}`);
   revalidatePath(`/admin/pages/sub/area/${record.slug}`);
   revalidatePath("/admin/pages/sub/area");
   return { status: "ok", message: "Saved." };
@@ -162,7 +163,7 @@ export async function setAreaImages(
     after: images,
   });
 
-  revalidatePath(`/areas/${record.slug}`);
+  revalidateLocalised(`/areas/${record.slug}`);
   revalidatePath(`/admin/pages/sub/area/${record.slug}`);
   revalidatePath("/admin/pages/sub/area");
   return { status: "ok", message: "Image saved." };

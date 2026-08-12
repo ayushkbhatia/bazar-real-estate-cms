@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
@@ -72,7 +73,7 @@ async function persist(
     after: { master_page: key, sections: sections.length },
   });
 
-  revalidatePath(def.path);
+  revalidateLocalised(def.path);
   revalidatePath(`/admin/pages/master/${key}`);
   revalidatePath("/admin/pages");
   return { status: "ok", message: "Saved." };

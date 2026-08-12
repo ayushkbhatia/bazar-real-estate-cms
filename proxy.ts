@@ -1,8 +1,19 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 import { legacyQueryRedirect } from "@/lib/filters/search-redirect";
+import { isNonLocalisedPath } from "@/lib/i18n/non-localised";
 
 export async function proxy(request: NextRequest) {
+  // API routes, auth callbacks and the three externally-referenced route
+  // handlers never take a locale segment. This branch is a no-op today — it
+  // reaches the same `updateSession` the function ends with — and exists so
+  // that when the locale rewrite lands below it in P1, it cannot swallow
+  // `/api/**`. The matcher does not protect them: it only excludes paths
+  // containing a dot, and `/api/concierge` has none. See lib/i18n/non-localised.
+  if (isNonLocalisedPath(request.nextUrl.pathname)) {
+    return updateSession(request);
+  }
+
   // Legacy `?filter=` and `?category=` deep-links are resolved here rather
   // than inside the page components. Reading `searchParams` in a Server
   // Component forces the whole route to render dynamically, which discarded

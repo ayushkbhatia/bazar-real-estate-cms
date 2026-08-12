@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -80,14 +81,14 @@ export async function bulkUpdateProperties(
       patch.mode !== undefined ||
       patch.property_form !== undefined;
     if (touchesPublicCollections) {
-      revalidatePath("/buy");
-      revalidatePath("/buy/ready");
-      revalidatePath("/buy/resale");
-      revalidatePath("/buy/search");
-      revalidatePath("/rent");
-      revalidatePath("/rent/search");
-      revalidatePath("/off-plan/search");
-      revalidatePath("/");
+      revalidateLocalised("/buy");
+      revalidateLocalised("/buy/ready");
+      revalidateLocalised("/buy/resale");
+      revalidateLocalised("/buy/search");
+      revalidateLocalised("/rent");
+      revalidateLocalised("/rent/search");
+      revalidateLocalised("/off-plan/search");
+      revalidateLocalised("/");
     }
   }
 
@@ -194,7 +195,7 @@ export async function bulkPublishProperties(
   // Cleanly revalidate each newly-published detail URL.
   for (const row of passRows) {
     if (succeededSet.has(row.id)) {
-      revalidatePath(propertyUrl(row));
+      revalidateLocalised(propertyUrl(row));
     }
   }
 
@@ -274,7 +275,7 @@ export async function bulkMoveOffMarket(
 
   for (const id of result.succeeded) {
     const row = rowById.get(id);
-    if (row) revalidatePath(propertyUrl(row));
+    if (row) revalidateLocalised(propertyUrl(row));
   }
 
   await logBulkOperation({
@@ -386,17 +387,17 @@ export async function bulkArchiveProperties(
   // since they filter on deleted_at IS NULL.
   if (afterRows.length > 0) {
     revalidatePath("/admin/properties");
-    revalidatePath("/buy");
-    revalidatePath("/buy/ready");
-    revalidatePath("/buy/resale");
-    revalidatePath("/buy/search");
-    revalidatePath("/rent");
-    revalidatePath("/rent/search");
-    revalidatePath("/off-plan/search");
-    revalidatePath("/");
+    revalidateLocalised("/buy");
+    revalidateLocalised("/buy/ready");
+    revalidateLocalised("/buy/resale");
+    revalidateLocalised("/buy/search");
+    revalidateLocalised("/rent");
+    revalidateLocalised("/rent/search");
+    revalidateLocalised("/off-plan/search");
+    revalidateLocalised("/");
     for (const after of afterRows) {
       const before = beforeMap.get(after.id);
-      if (before) revalidatePath(propertyUrl(before));
+      if (before) revalidateLocalised(propertyUrl(before));
     }
   }
 

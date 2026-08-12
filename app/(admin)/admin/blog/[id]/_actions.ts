@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import {
@@ -18,9 +19,9 @@ const BLOG_ROLES = ["admin", "editor", "marketing"] as const;
 async function revalidateArticlePaths(slug: string | null, prevSlug?: string | null) {
   if (!isSupabaseConfigured) return;
   revalidatePath("/admin/blog");
-  revalidatePath("/insights");
-  if (slug) revalidatePath(`/insights/${slug}`);
-  if (prevSlug && prevSlug !== slug) revalidatePath(`/insights/${prevSlug}`);
+  revalidateLocalised("/insights");
+  if (slug) revalidateLocalised(`/insights/${slug}`);
+  if (prevSlug && prevSlug !== slug) revalidateLocalised(`/insights/${prevSlug}`);
 }
 
 export type SaveArticleResult =

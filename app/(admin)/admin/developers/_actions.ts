@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import {
@@ -160,10 +161,10 @@ export async function createDeveloper(
  * revalidate window.
  */
 function revalidateDeveloper(slug: string, previousSlug?: string | null) {
-  revalidatePath("/developers");
-  revalidatePath(`/developers/${slug}`);
+  revalidateLocalised("/developers");
+  revalidateLocalised(`/developers/${slug}`);
   if (previousSlug && previousSlug !== slug)
-    revalidatePath(`/developers/${previousSlug}`);
+    revalidateLocalised(`/developers/${previousSlug}`);
   revalidatePath("/sitemap.xml");
   revalidatePath("/admin/pages/sub/developer");
 }

@@ -1,14 +1,18 @@
 /**
  * Shared types for the user-preferences layer.
  *
- * AR locale + RTL is a separate post-Tier-1 epic (see plan §"Decisions locked").
- * Phase 1 only ships currency + area unit. The `Locale` type is reserved here
- * so the cookie shape doesn't need to change when AR lands.
+ * `Locale` used to be declared here as a reservation for the AR + RTL epic.
+ * That epic is now in flight, so the type moved to `lib/i18n/locales.ts` and
+ * is re-exported here — one list of locales, not two that can drift apart.
+ * The cookie shape is unchanged, exactly as the reservation intended.
  */
+
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+
+export type { Locale };
 
 export type Currency = "AED" | "USD";
 export type AreaUnit = "ft2" | "m2";
-export type Locale = "en";
 
 export const CURRENCIES: readonly Currency[] = ["AED", "USD"] as const;
 export const AREA_UNITS: readonly AreaUnit[] = ["ft2", "m2"] as const;
@@ -37,7 +41,7 @@ export type Preferences = {
 export const DEFAULT_PREFERENCES: Preferences = {
   currency: "AED",
   area_unit: "ft2",
-  locale: "en",
+  locale: DEFAULT_LOCALE,
 };
 
 export function isCurrency(v: unknown): v is Currency {

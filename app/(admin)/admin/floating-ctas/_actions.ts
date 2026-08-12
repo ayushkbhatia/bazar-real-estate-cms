@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
@@ -122,7 +123,7 @@ export async function saveFloatingCtas(
   });
 
   // The rail lives in the public layout, so every public route renders it.
-  revalidatePath("/", "layout");
+  revalidateLocalised("/", "layout");
   revalidatePath("/admin/floating-ctas");
 
   return {

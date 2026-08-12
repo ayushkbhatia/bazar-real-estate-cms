@@ -664,11 +664,21 @@ shows the trail.)
   Postgres blocks deleting it via SQL; remove it through the Storage API or the
   dashboard. Nothing can read or write it in the meantime.
 
-- [legal] /ar/legal/privacy is the only Arabic page on the site.
-  It is a one-off locale route, not an i18n layer: the surrounding nav and
-  footer stay English, and LegalDocFrame flips direction/typeface off a
-  `locale` prop. If a second Arabic page is ever needed, that is the moment
-  to bring in next-intl rather than copy the pattern a third time.
+- ~~[legal] /ar/legal/privacy is the only Arabic page on the site.~~
+  **Closed 2026-08-12 — the trigger fired.** This entry called for adopting a
+  real i18n layer rather than copying the one-off pattern a third time, and
+  that is now in flight: see
+  [ADR-0007](decisions/ADR-0007-arabic-locale-routing-and-content-storage.md)
+  and [I18N.md](I18N.md). Two carry-overs for the phase that moves the route
+  tree under `[locale]`:
+  - `/ar/legal/privacy` exists as a *physical* route today, so the move must
+    relocate its hand-authored Arabic to the `ar` branch of `legal/privacy`.
+    Left alone, that URL would start serving the **English** page under
+    `lang="ar"` — an hreflang violation on the one page a client checks first.
+  - `LegalDocFrame` sets an inline `style={{ fontFamily: ARABIC_STACK }}`.
+    Inline styles beat the `:lang(ar)` block, so unless it is removed in the
+    same PR, that page renders in a different, per-device system face from
+    every other Arabic page.
 
 - [legal] §2's Arabic heading reads "البيانات الشخصية التي بجمعها".
   The English heading is "What Personal Data We Collect", so this looks like

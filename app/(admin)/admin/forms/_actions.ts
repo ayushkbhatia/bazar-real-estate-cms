@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
@@ -280,10 +281,10 @@ export async function setSubmissionStatus(
 function revalidateFor(path: string) {
   revalidatePath("/admin/forms");
   if (path === "/" || path.split("/").length > 2) {
-    revalidatePath("/", "layout");
+    revalidateLocalised("/", "layout");
     return;
   }
-  revalidatePath(path);
+  revalidateLocalised(path);
 }
 
 /** The registry's version of a field, for the editor's "revert" affordance. */

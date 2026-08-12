@@ -1210,6 +1210,7 @@ export type Database = {
           id: string
           inferred_constraints: Json | null
           internal_notes: string | null
+          locale: string
           name: string
           phone: string | null
           pre_approved: boolean
@@ -1237,6 +1238,7 @@ export type Database = {
           id?: string
           inferred_constraints?: Json | null
           internal_notes?: string | null
+          locale?: string
           name: string
           phone?: string | null
           pre_approved?: boolean
@@ -1264,6 +1266,7 @@ export type Database = {
           id?: string
           inferred_constraints?: Json | null
           internal_notes?: string | null
+          locale?: string
           name?: string
           phone?: string | null
           pre_approved?: boolean
@@ -2131,6 +2134,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          locale: string
           source: string | null
           status: Database["public"]["Enums"]["newsletter_status"]
           subscribed_at: string
@@ -2144,6 +2148,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          locale?: string
           source?: string | null
           status?: Database["public"]["Enums"]["newsletter_status"]
           subscribed_at?: string
@@ -2157,6 +2162,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          locale?: string
           source?: string | null
           status?: Database["public"]["Enums"]["newsletter_status"]
           subscribed_at?: string
@@ -2587,6 +2593,7 @@ export type Database = {
           body: string | null
           created_at: string
           id: string
+          locale: string
           moderated_at: string | null
           moderated_by: string | null
           rating: number
@@ -2603,6 +2610,7 @@ export type Database = {
           body?: string | null
           created_at?: string
           id?: string
+          locale?: string
           moderated_at?: string | null
           moderated_by?: string | null
           rating: number
@@ -2619,6 +2627,7 @@ export type Database = {
           body?: string | null
           created_at?: string
           id?: string
+          locale?: string
           moderated_at?: string | null
           moderated_by?: string | null
           rating?: number

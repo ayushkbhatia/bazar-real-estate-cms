@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { env, isSupabaseConfigured } from "@/lib/env";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { useConsent } from "@/app/_consent/consent-provider";
 
 /**
@@ -18,8 +19,21 @@ import { useConsent } from "@/app/_consent/consent-provider";
  * authed events land on a real distinct_id instead of an anonymous one. Both
  * are gated on the same consent flag — no identify fires before analytics
  * consent and no identify fires when keys are missing.
+ *
+ * `locale` is registered as a super-property so it rides on every event. This
+ * codebase has no `capture()` calls at all — analytics is autocapture plus
+ * pageviews — so without it `/buy` and `/ar/buy` would arrive as two unrelated
+ * URL strings with no dimension to group them by, and "how is the Arabic site
+ * converting?" would have no answer. It ships before Arabic does because the
+ * data is not backfillable: events captured without the property never get it.
  */
-export function PostHogProvider({ children }: { children: React.ReactNode }) {
+export function PostHogProvider({
+  children,
+  locale = DEFAULT_LOCALE,
+}: {
+  children: React.ReactNode;
+  locale?: Locale;
+}) {
   const { isGranted } = useConsent();
   const analyticsAllowed = isGranted("analytics");
 
@@ -51,9 +65,15 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
           capture_pageleave: true,
           autocapture: true,
           opt_out_capturing_by_default: true,
-          loaded: (ph) => ph.opt_in_capturing(),
+          loaded: (ph) => {
+            // Register before opting in, so the very first pageview of the
+            // session already carries the locale.
+            ph.register({ locale });
+            ph.opt_in_capturing();
+          },
         });
       } else {
+        posthog.register({ locale });
         posthog.opt_in_capturing();
       }
     })().catch(() => undefined);
@@ -61,7 +81,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [analyticsAllowed]);
+  }, [analyticsAllowed, locale]);
 
   useEffect(() => {
     if (!env.NEXT_PUBLIC_POSTHOG_KEY) return;

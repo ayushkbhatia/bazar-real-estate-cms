@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
@@ -108,7 +109,7 @@ export async function createArticleCategory(
   });
 
   revalidatePath("/admin/blog");
-  revalidatePath("/insights");
+  revalidateLocalised("/insights");
 
   const categories = await fetchActiveCategories(supabase);
   return {
