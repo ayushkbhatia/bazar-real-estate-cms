@@ -680,6 +680,16 @@ shows the trail.)
     same PR, that page renders in a different, per-device system face from
     every other Arabic page.
 
+- [i18n] Masked measurement units come back Latin in the Arabic.
+  Observed on the first live run (BAZ-AD-06055): "216 sqm" is masked whole, so
+  the Arabic sentence reads "…تقدّم 216 sqm من المعيشة الراقية". That is the
+  mask doing its job — the number cannot drift because the model never sees it
+  — but a Gulf reader expects "متر مربع". The fix is the mechanism that already
+  exists rather than a new one: pass unit overrides to `unmask` the same way
+  hand-authored toponyms are passed, so ⟦n⟧ resolves to "216 متر مربع" while
+  the digits still never reach the model. Needs a decision on whether ft² stays
+  ft² (it is the unit the DLD paperwork uses) before wiring it.
+
 - [i18n] OG images and PDFs stay English on /ar — both blocked on text layout.
   Neither is a translation gap. Satori shapes Arabic but never reorders it, so
   words lay out left-to-right and the sentence reads backwards; `direction:
