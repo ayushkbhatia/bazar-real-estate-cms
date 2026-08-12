@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from "lucide-react";
+import { inlineArrowStep } from "@/lib/dom/inline-arrows";
+import { useIsRtl } from "@/lib/dom/use-is-rtl";
 
 /**
  * Full-screen viewer for a unit type's layouts.
@@ -90,6 +92,7 @@ export function FloorPlanLightbox({
   onIndexChange: (next: number) => void;
   onClose: () => void;
 }) {
+  const rtl = useIsRtl();
   const [zoomed, setZoomed] = useState(false);
   // Keyed by plan id rather than reset per navigation: stepping back to a plan
   // should not re-fall-back to the square frame it has already measured.
@@ -114,8 +117,13 @@ export function FloorPlanLightbox({
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
-      else if (e.key === "ArrowRight") next();
-      else if (e.key === "ArrowLeft") prev();
+      else {
+        // In RTL the next item is to the LEFT. Unswapped, the counter counts
+        // up while the image walks backwards.
+        const step = inlineArrowStep(e.key, rtl);
+        if (step === 1) next();
+        else if (step === -1) prev();
+      }
     }
     window.addEventListener("keydown", onKey);
     // The 1:1 view is its own scroll container; without this the page behind
@@ -126,7 +134,7 @@ export function FloorPlanLightbox({
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = previous;
     };
-  }, [onClose, next, prev]);
+  }, [onClose, next, prev, rtl]);
 
   if (!current) return null;
 

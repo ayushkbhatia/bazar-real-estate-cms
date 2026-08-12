@@ -17,6 +17,13 @@
 import * as React from "react";
 import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import {
+  clampInlineScroll,
+  inlineScrollStart,
+  maxInlineScroll,
+  toScrollLeft,
+} from "@/lib/dom/inline-scroll";
+import { useIsRtl } from "@/lib/dom/use-is-rtl";
 
 export type ProjectCarouselProps = {
   /** Area name, used as the group heading and the rail's accessible name. */
@@ -42,6 +49,7 @@ export function ProjectCarousel({
   // know whether the rail overflows, and rendering arrows that then vanish is
   // worse than rendering none that then appear.
   const [overflows, setOverflows] = React.useState(false);
+  const rtl = useIsRtl();
   const [canPrev, setCanPrev] = React.useState(false);
   const [canNext, setCanNext] = React.useState(false);
 
@@ -50,11 +58,15 @@ export function ProjectCarousel({
     if (!el) return;
     // A sub-pixel track width makes the end comparison flicker, hence the
     // one-pixel slack on both edges.
-    const max = el.scrollWidth - el.clientWidth;
+    const max = maxInlineScroll(el);
+    // Logical position: 0 is the inline start in both directions. Read raw,
+    // `scrollLeft` is <= 0 throughout in RTL, so `canPrev` would be pinned
+    // false and `canNext` pinned true — the rail frozen with both arrows lit.
+    const pos = inlineScrollStart(el, rtl);
     setOverflows(max > 1);
-    setCanPrev(el.scrollLeft > 1);
-    setCanNext(el.scrollLeft < max - 1);
-  }, []);
+    setCanPrev(pos > 1);
+    setCanNext(pos < max - 1);
+  }, [rtl]);
 
   React.useEffect(() => {
     const el = trackRef.current;
@@ -85,12 +97,15 @@ export function ProjectCarousel({
       typeof window.matchMedia === "function" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const from = el.scrollLeft;
-    const max = el.scrollWidth - el.clientWidth;
-    const target = Math.max(0, Math.min(max, from + direction * el.clientWidth));
+    const from = inlineScrollStart(el, rtl);
+    const max = maxInlineScroll(el);
+    const target = clampInlineScroll(from + direction * el.clientWidth, max);
     if (target === from) return;
 
-    el.scrollTo({ left: target, behavior: reduced ? "auto" : "smooth" });
+    el.scrollTo({
+      left: toScrollLeft(target, rtl),
+      behavior: reduced ? "auto" : "smooth",
+    });
     if (reduced) {
       measure();
       return;
@@ -110,7 +125,9 @@ export function ProjectCarousel({
      * position the rail left long ago.
      */
     window.setTimeout(() => {
-      if (el.scrollLeft === from) el.scrollLeft = target;
+      if (el.scrollLeft === toScrollLeft(from, rtl)) {
+        el.scrollLeft = toScrollLeft(target, rtl);
+      }
       measure();
     }, 150);
     // A smooth scroll is still moving when the check above runs; re-read once

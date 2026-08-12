@@ -4,6 +4,8 @@ import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { Camera, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
+import { inlineArrowStep } from "@/lib/dom/inline-arrows";
+import { useIsRtl } from "@/lib/dom/use-is-rtl";
 
 export type GalleryImage = {
   src: string | null;
@@ -118,6 +120,7 @@ function Lightbox({
   startIndex: number;
   onClose: () => void;
 }) {
+  const rtl = useIsRtl();
   const [index, setIndex] = useState(startIndex);
   const total = images.length;
 
@@ -133,12 +136,17 @@ function Lightbox({
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
-      else if (e.key === "ArrowRight") next();
-      else if (e.key === "ArrowLeft") prev();
+      else {
+        // In RTL the next item is to the LEFT. Unswapped, the counter counts
+        // up while the image walks backwards.
+        const step = inlineArrowStep(e.key, rtl);
+        if (step === 1) next();
+        else if (step === -1) prev();
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, next, prev]);
+  }, [onClose, next, prev, rtl]);
 
   const current = images[index];
 
