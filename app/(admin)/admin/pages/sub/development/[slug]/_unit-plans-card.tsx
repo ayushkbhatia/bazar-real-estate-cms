@@ -25,8 +25,8 @@ import {
   type FloorPlanInput,
   type UnitTypeInput,
 } from "@/lib/schemas/development-unit-plans";
-import type { MediaOption } from "../../../master/[key]/_editor";
-import { ImagePicker } from "./_images-card";
+import type { MediaOption } from "../../../../_fields/types";
+import { ImagePicker } from "../../../../_fields/image-picker";
 import {
   saveDevelopmentUnitPlans,
   seedDevelopmentUnitPlans,

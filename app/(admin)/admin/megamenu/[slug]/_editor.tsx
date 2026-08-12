@@ -38,10 +38,8 @@ import {
   type TabMetaEditInput,
 } from "@/lib/schemas/megamenu";
 import { saveMegamenuTab } from "./_actions";
-import {
-  ImagePicker,
-} from "../../pages/sub/development/[slug]/_images-card";
-import type { MediaOption } from "../../pages/master/[key]/_editor";
+import { ImagePicker } from "../../_fields/image-picker";
+import type { MediaOption } from "../../_fields/types";
 
 // ───────────────────────────────────────────────────────────────
 // Local state types — same as schema, plus a UI-only uid for stable React

@@ -20,11 +20,8 @@ import {
   AREAS_CARD_COUNT,
   MARQUEE_SLUGS,
 } from "@/app/(public)/areas/_components/area-cards";
-import {
-  MasterPageEditor,
-  type MediaOption,
-  type Seeds,
-} from "./_editor";
+import { MasterPageEditor } from "./_editor";
+import type { MediaOption, Seeds } from "../../../_fields/types";
 
 export const dynamic = "force-dynamic";
 

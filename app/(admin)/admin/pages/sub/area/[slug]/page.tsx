@@ -8,9 +8,9 @@ import { mediaPublicUrl } from "@/lib/media";
 import { getAreaPageContent } from "@/lib/queries/subpages";
 import {
   MasterPageEditor,
-  type MediaOption,
   type SectionActions,
 } from "../../../master/[key]/_editor";
+import type { MediaOption } from "../../../../_fields/types";
 import { AreaImagesCard } from "./_images-card";
 import { saveAreaPage, resetAreaPage } from "../_actions";
 

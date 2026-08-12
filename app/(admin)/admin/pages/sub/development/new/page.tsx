@@ -4,7 +4,7 @@ import { CmsShell } from "@/components/brand/cms-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { mediaPublicUrl } from "@/lib/media";
-import type { MediaOption } from "../../../master/[key]/_editor";
+import type { MediaOption } from "../../../../_fields/types";
 import { NewDevelopmentPageForm } from "./_form";
 
 export const dynamic = "force-dynamic";

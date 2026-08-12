@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { slugify } from "@/lib/slug";
 import { parseHeroFactNumber } from "@/lib/schemas/development";
-import type { MediaOption } from "../../../master/[key]/_editor";
-import { ImagePicker } from "../[slug]/_images-card";
+import type { MediaOption } from "../../../../_fields/types";
+import { ImagePicker } from "../../../../_fields/image-picker";
 import { createDevelopmentPage } from "../_actions";
 import { createDeveloper } from "../../../../developers/_actions";
 

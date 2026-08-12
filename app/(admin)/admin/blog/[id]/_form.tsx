@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CategorySelect } from "../_category-select";
-import { ImagePicker } from "../../pages/sub/development/[slug]/_images-card";
+import { ImagePicker } from "../../_fields/image-picker";
 import type { BlogMediaOption } from "../_image-insert-dialog";
 import { publishArticle, updateArticle } from "./_actions";
 import { PUBLISH_INTENT } from "./_intent";

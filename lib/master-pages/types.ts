@@ -28,15 +28,24 @@ export type SimpleFieldDef = {
 };
 
 /**
- * A pick from live records — a development, an area — rather than free text.
- * Options come from the same `seeds` the admin route already supplies, and the
- * stored value is the record's slug, so a rename doesn't break the link.
+ * A pick from a fixed set. Two flavours, and exactly one of the two option
+ * sources is set:
+ *
+ *  - `optionsKey` — live records (a development, an area, a form). Options come
+ *    from the same `seeds` the admin route already supplies, and the stored
+ *    value is the record's slug or key, so a rename doesn't break the link. The
+ *    value is *not* validated on save: a record can be unpublished after the
+ *    fact, and the renderer already drops picks it can't resolve.
+ *  - `options` — choices declared in code: column counts, aspect ratios, banner
+ *    variants. These *are* validated on save, because the set is closed and the
+ *    renderer switches on the value.
  */
 export type SelectFieldDef = {
   key: string;
   label: string;
   kind: "select";
-  optionsKey: SeedKey;
+  optionsKey?: SeedKey;
+  options?: { value: string; label: string }[];
   help?: string;
   /** Placeholder for the empty option. */
   placeholder?: string;
@@ -112,7 +121,7 @@ export type ListFieldDef = {
   seedKey?: SeedKey;
 };
 
-export type SeedKey = "areas" | "developments" | "properties";
+export type SeedKey = "areas" | "developments" | "properties" | "forms";
 
 export type FieldDef =
   | SimpleFieldDef

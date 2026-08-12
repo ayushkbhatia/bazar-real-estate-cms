@@ -11,7 +11,7 @@ import {
 } from "@/lib/queries/developers-extras";
 import { shippedLogo } from "@/lib/developers/shipped-logo";
 import { isUuidLike } from "@/lib/uuid";
-import type { MediaOption } from "../../pages/master/[key]/_editor";
+import type { MediaOption } from "../../_fields/types";
 import { DeveloperRecordForm } from "./_form";
 import { DeveloperPublishCard } from "./_publish-card";
 import { DeveloperLogoCard } from "./_logo-card";

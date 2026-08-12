@@ -16,7 +16,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import type { MediaOption } from "../pages/master/[key]/_editor";
+import type { MediaOption } from "../_fields/types";
 import { uploadToLibrary } from "../media/_upload-client";
 
 /**
