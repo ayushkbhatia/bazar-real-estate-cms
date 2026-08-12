@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState, useTransition } from "react";
+import { useIsRtl } from "@/lib/dom/use-is-rtl";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -767,6 +768,7 @@ function AmortChart({
   schedule: ReturnType<typeof amortizationByYear>;
   termYears: number;
 }) {
+  const rtl = useIsRtl();
   if (schedule.length === 0) {
     return (
       <p className="text-[13px] text-bz-muted">
@@ -802,7 +804,16 @@ function AmortChart({
           const h = (total / maxTotal) * 160; // bar fits into 160px tall area
           const pH = total === 0 ? 0 : h * (row.principalAed / total);
           const iH = h - pH;
-          const x = padding + i * colW + (colW - innerW) / 2;
+          // Mirror the time axis in RTL so the series runs right-to-left,
+          // the way a chronology reads in Arabic.
+          //
+          // This is a correctness fix, not a stylistic one. The label row
+          // below is HTML flex and reverses with `dir`; the SVG does not.
+          // Left alone the two disagree, and "Y25" ends up sitting over Y1's
+          // interest-heavy bar — the chart states the opposite of the truth.
+          const x = rtl
+            ? W - padding - (i + 1) * colW + (colW - innerW) / 2
+            : padding + i * colW + (colW - innerW) / 2;
           const baseY = 200;
           return (
             <g key={i}>
