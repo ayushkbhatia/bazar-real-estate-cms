@@ -40,13 +40,14 @@ import {
   X,
 } from "lucide-react";
 import { dotMeta, type AreaPin, type AreaDot } from "@/lib/queries/area-map";
-import { pastelMapStyle } from "../map-style";
+import { ensureRtlTextPlugin, pastelMapStyle } from "../map-style";
 import {
   areaUnitLabel,
   formatPrice,
   formatPricePerArea,
   usePreferences,
 } from "@/lib/preferences";
+import { useIsRtl } from "@/lib/dom/use-is-rtl";
 
 // City overviews — where the camera sits per emirate (matches the handoff).
 const CITIES: Record<
@@ -174,6 +175,7 @@ export function AreaMap({
   countNoun = DEFAULT_COUNT_NOUN,
   className,
 }: Props) {
+  const rtl = useIsRtl();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const [map, setMap] = useState<MapLibreMap | null>(null);
@@ -220,7 +222,11 @@ export function AreaMap({
     const center: [number, number] = focus ? [focus.lng, focus.lat] : city.center;
     const zoom = focus ? DETAIL_ZOOM : city.zoom;
 
-    pastelMapStyle().then((style) => {
+    // Register the shaping plugin before the style resolves. Without it
+    // maplibre draws Arabic as isolated, unjoined, left-to-right
+    // letterforms — worse than leaving the labels in English.
+    if (rtl) void ensureRtlTextPlugin(maplibregl);
+    pastelMapStyle(rtl ? "ar" : "en").then((style) => {
       if (dead || !containerRef.current) return;
       m = new maplibregl.Map({
         container: containerRef.current,
