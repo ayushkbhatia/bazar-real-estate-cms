@@ -16,11 +16,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { useLocale, useTranslations } from "next-intl";
 import { usePreferences } from "@/lib/preferences";
 import { PreferencesControls } from "./preferences-controls";
+import { LanguageSwitch } from "./language-switch";
+import type { Locale } from "@/lib/i18n/locales";
 
 export function PreferencesPopover() {
   const { prefs } = usePreferences();
+  const t = useTranslations("common");
+  const locale = useLocale() as Locale;
 
   return (
     <Popover>
@@ -28,7 +33,7 @@ export function PreferencesPopover() {
         <Button
           variant="ghost"
           size="sm"
-          aria-label="Change currency and area unit"
+          aria-label={t("preferences")}
           // Carries its own surface because it does not sit on the page — it
           // is fixed to the viewport and floats over whatever scrolls beneath.
           // On a cream page dark ink was fine; over a media hero, a navy band
@@ -46,17 +51,21 @@ export function PreferencesPopover() {
       </PopoverTrigger>
       <PopoverContent align="end" sideOffset={8} className="w-72 p-0">
         <div className="px-4 pt-3 pb-2 border-b border-bz-border">
-          <div className="eyebrow">Preferences</div>
+          <div className="eyebrow">{t("preferences")}</div>
           <p className="mt-1 text-[12px] text-bz-muted leading-snug">
-            Choose how prices and areas display across the site. Saved to this
-            browser.
+            {t("preferencesHelp")}
           </p>
         </div>
 
         <PreferencesControls />
 
-        <div className="px-4 py-2 border-t border-bz-border text-[11px] text-bz-muted">
-          AR locale & RTL coming soon.
+        {/* The slot that used to read "AR locale & RTL coming soon." It now
+            holds the real control, and renders nothing while only one locale
+            is served — so this shipped before Arabic did without leaving a
+            dead affordance on the page. */}
+        <div className="border-t border-bz-border">
+          <div className="px-4 pt-2 eyebrow">{t("language")}</div>
+          <LanguageSwitch current={locale} />
         </div>
       </PopoverContent>
     </Popover>

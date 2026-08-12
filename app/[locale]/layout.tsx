@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { Geist, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { NextIntlClientProvider } from "next-intl";
+import { setRequestLocale } from "next-intl/server";
 import { DirectionProvider } from "./_direction-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
@@ -13,6 +15,7 @@ import { VercelAnalyticsGate } from "@/app/_consent/analytics-gate";
 import { organizationJsonLd } from "@/lib/jsonld";
 import { getPublicBranding } from "@/lib/queries/site-settings";
 import { env } from "@/lib/env";
+import { cn } from "@/lib/utils";
 import {
   LOCALES,
   LOCALE_DIR,
@@ -139,11 +142,31 @@ export default async function RootLayout({
   if (!isEnabledLocale(raw)) notFound();
   const locale: Locale = raw;
 
+  // Required on 16.2.6: without it every page below this layout opts into
+  // dynamic rendering the moment it touches a next-intl API, silently
+  // discarding its `revalidate`. The page still renders, it just stops being
+  // cached, so nothing surfaces until the bill does.
+  // scripts/ci/assert-static-routes.mjs is what actually catches a missed one.
+  setRequestLocale(locale);
+
+  // Dynamically imported so the Arabic woff2 and its preload tag never reach
+  // an English page. See app/[locale]/_fonts-ar.ts.
+  const arabic =
+    LOCALE_DIR[locale] === "rtl"
+      ? (await import("./_fonts-ar")).plexArabic
+      : null;
+
   return (
     <html
       lang={locale}
       dir={LOCALE_DIR[locale]}
-      className={`${geist.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} h-full`}
+      className={cn(
+        geist.variable,
+        instrumentSerif.variable,
+        jetbrainsMono.variable,
+        arabic?.variable,
+        "h-full",
+      )}
     >
       <head>
         <script
@@ -154,8 +177,9 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-dvh-safe flex flex-col bg-background text-foreground">
-        <ConsentProvider>
-          {/*
+        <NextIntlClientProvider>
+          <ConsentProvider>
+            {/*
             Two direction mechanisms, both required and not interchangeable.
             CSS `direction` is inherited through the DOM, which is why `dir`
             sits on <html> — that is what portalled content (dialogs, popovers,
@@ -163,27 +187,30 @@ export default async function RootLayout({
             context and hard-defaults to "ltr" when no provider is mounted, so
             <html dir> alone is invisible to it.
           */}
-          <DirectionProvider dir={LOCALE_DIR[locale]}>
-            <NuqsAdapter>
-              <PostHogProvider locale={locale}>
-                <PreferencesProvider>
-                  <TooltipProvider delayDuration={150}>
-                    {children}
-                  </TooltipProvider>
-                </PreferencesProvider>
-              </PostHogProvider>
-            </NuqsAdapter>
-            {/* sonner reads document.documentElement.dir, which is set above. */}
-            <Toaster
-              richColors
-              closeButton
-              dir="auto"
-              position={LOCALE_DIR[locale] === "rtl" ? "bottom-left" : "bottom-right"}
-            />
-            <VercelAnalyticsGate />
-            <CookieBanner />
-          </DirectionProvider>
-        </ConsentProvider>
+            <DirectionProvider dir={LOCALE_DIR[locale]}>
+              <NuqsAdapter>
+                <PostHogProvider locale={locale}>
+                  <PreferencesProvider>
+                    <TooltipProvider delayDuration={150}>
+                      {children}
+                    </TooltipProvider>
+                  </PreferencesProvider>
+                </PostHogProvider>
+              </NuqsAdapter>
+              {/* sonner reads document.documentElement.dir, which is set above. */}
+              <Toaster
+                richColors
+                closeButton
+                dir="auto"
+                position={
+                  LOCALE_DIR[locale] === "rtl" ? "bottom-left" : "bottom-right"
+                }
+              />
+              <VercelAnalyticsGate />
+              <CookieBanner />
+            </DirectionProvider>
+          </ConsentProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -1,37 +1,15 @@
-import type { Metadata } from "next";
-import { LegalDocFrame } from "../../../legal/_layout";
-
-export const metadata: Metadata = {
-  title: "سياسة الخصوصية",
-  description:
-    "كيفية قيام شركة بازار العقارية ذ.م.م بجمع البيانات الشخصية واستخدامها وتخزينها والإفصاح عنها وحمايتها، وفقًا للمرسوم بقانون اتحادي رقم ٤٥ لسنة ٢٠٢١ بشأن حماية البيانات الشخصية.",
-  alternates: {
-    canonical: "/ar/legal/privacy",
-    languages: {
-      en: "/legal/privacy",
-      ar: "/ar/legal/privacy",
-    },
-  },
-};
+import { LegalDocFrame } from "../_layout";
 
 /**
- * TEMPORARY — delete this route in the PR that adds "ar" to LOCALES.
+ * The Arabic privacy policy, rendered as the `ar` branch of
+ * `/legal/privacy` — the same URL it has always been served at.
  *
- * While Arabic is not a served locale, `/ar/…` is not a locale prefix at all:
- * the proxy treats it as an ordinary unprefixed path and rewrites it to
- * `/en/ar/legal/privacy`, which this file serves. That is what keeps the one
- * hand-authored Arabic URL alive today.
- *
- * The moment "ar" is served, `/ar/legal/privacy` resolves as locale=ar +
- * /legal/privacy instead, and `../../legal/privacy/_content-ar.tsx` — already
- * written and verified — takes over at the same URL. This file then becomes
- * unreachable (its only remaining path, /en/ar/…, 308s away) and must go.
- *
- * Both cannot be deleted early: removing this before the flip 404s a live URL
- * that /legal/privacy and /sitemap both link to. Verified by doing exactly
- * that and watching scripts/ci/assert-static-routes.mjs catch it.
- */
-/**
+ * It used to be a physical route at `app/(public)/ar/legal/privacy`. That
+ * worked while `ar` was not a served locale, because `/ar/…` was then just an
+ * ordinary unprefixed path. The moment Arabic became real, `/ar/legal/privacy`
+ * started resolving as locale=ar + /legal/privacy — i.e. the ENGLISH policy
+ * under lang="ar" dir="rtl", an hreflang violation on the one page a client
+ * checks first. Caught by looking at the rendered page, not by any test.
  * The Arabic half of the client's bilingual privacy policy, verbatim.
  *
  * Reconstructed from the PDF by glyph position (right-to-left within each
@@ -45,7 +23,7 @@ export const metadata: Metadata = {
  * retention arrived bracketed as a placeholder in both languages. See
  * docs/FOLLOWUPS.md.
  */
-export default function ArabicPrivacyPage() {
+export function PrivacyArabic() {
   return (
     <LegalDocFrame
       active="privacy"

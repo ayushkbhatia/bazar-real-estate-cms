@@ -1,18 +1,32 @@
 import type { Metadata } from "next";
 import { LegalDocFrame } from "../_layout";
+import { PrivacyArabic } from "./_content-ar";
+import { localeAlternates } from "@/lib/i18n/metadata";
+import { isEnabledLocale, type Locale } from "@/lib/i18n/locales";
 
-export const metadata: Metadata = {
-  title: "Privacy policy",
-  description:
-    "How Bazar Real Estate L.L.C. collects, uses, stores, discloses, and protects personal data, issued under UAE PDPL (Federal Decree-Law No. 45 of 2021).",
-  alternates: {
-    canonical: "/legal/privacy",
-    languages: {
-      en: "/legal/privacy",
-      ar: "/ar/legal/privacy",
-    },
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: raw } = await params;
+  const locale: Locale = isEnabledLocale(raw) ? raw : "en";
+  const alternates = localeAlternates("/legal/privacy", locale);
+
+  return locale === "ar"
+    ? {
+        title: "سياسة الخصوصية",
+        description:
+          "كيفية قيام شركة بازار العقارية ذ.م.م بجمع البيانات الشخصية واستخدامها وتخزينها والإفصاح عنها وحمايتها، وفقًا للمرسوم بقانون اتحادي رقم ٤٥ لسنة ٢٠٢١ بشأن حماية البيانات الشخصية.",
+        alternates,
+      }
+    : {
+        title: "Privacy policy",
+        description:
+          "How Bazar Real Estate L.L.C. collects, uses, stores, discloses, and protects personal data, issued under UAE PDPL (Federal Decree-Law No. 45 of 2021).",
+        alternates,
+      };
+}
 
 /**
  * Client-supplied final text (bilingual PDF, English side), replacing the
@@ -22,7 +36,16 @@ export const metadata: Metadata = {
  * concierge, newsletter and valuation tools), the policy is the client's to
  * change, not ours. See docs/FOLLOWUPS.md.
  */
-export default function PrivacyPage() {
+export default async function PrivacyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  // Same URL, two languages — see _content-ar.tsx for why this is a branch
+  // rather than a separate route.
+  if (locale === "ar") return <PrivacyArabic />;
+
   return (
     <LegalDocFrame
       active="privacy"

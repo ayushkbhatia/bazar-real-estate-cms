@@ -9,11 +9,16 @@
 
 import { useState } from "react";
 import { Coins } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { usePreferences } from "@/lib/preferences";
 import { BottomSheet } from "@/components/brand/mobile";
 import { PreferencesControls } from "./preferences-controls";
+import { LanguageSwitch } from "./language-switch";
+import type { Locale } from "@/lib/i18n/locales";
 
 export function MobilePreferences() {
+  const t = useTranslations("common");
+  const locale = useLocale() as Locale;
   const { prefs } = usePreferences();
   const [open, setOpen] = useState(false);
 
@@ -40,9 +45,12 @@ export function MobilePreferences() {
       }
     >
       <PreferencesControls />
-      <p className="px-2 pt-3 text-[11px] text-bz-muted">
-        AR locale &amp; RTL coming soon.
-      </p>
+      {/* Was "AR locale & RTL coming soon." — now the real control. Renders
+          nothing while only one locale is served. */}
+      <div className="mt-3 border-t border-bz-border pt-2">
+        <div className="px-2 eyebrow">{t("language")}</div>
+        <LanguageSwitch current={locale} />
+      </div>
     </BottomSheet>
   );
 }

@@ -916,3 +916,74 @@
 [dir="rtl"] .bzmap__gl .maplibregl-ctrl-group {
   direction: ltr;
 }
+
+/* ─── Arabic typography ────────────────────────────────────────────────
+   Keyed on `:lang(ar)` rather than `[dir="rtl"]`, deliberately. They are not
+   the same question: a Latin pull-quote inside an Arabic page should keep the
+   brand face, and a `<span lang="ar">` inside an English page should get the
+   Arabic one. Direction and script travel separately, and the English-fallback
+   spans this epic emits (`<span lang="en" dir="ltr">` around an untranslated
+   field) depend on that distinction being honoured. */
+:root {
+  --bz-font-ar: var(--font-arabic), "Noto Naskh Arabic", "Geeza Pro",
+    "Al Bayan", sans-serif;
+}
+
+:lang(ar) {
+  --bz-font-sans: var(--bz-font-ar);
+  /* Instrument Serif has zero Arabic glyphs — left alone, every display
+     heading silently falls back to whatever the device happens to have, which
+     is how an Arabic page ends up looking different on every machine. */
+  --bz-font-serif: var(--bz-font-ar);
+  /* --bz-font-mono deliberately stays Latin: `.mono` only ever carries
+     reference codes, prices and dates, all of which are Latin-typeset. */
+  line-height: 1.75;
+}
+
+/* Arabic is cursive — the letters in a word are joined. `letter-spacing`
+   prises those joins apart into a row of disconnected marks, which reads as a
+   rendering fault rather than as tracking. There are ~309 inline
+   `style={{ letterSpacing }}` declarations across the tree, six of them inside
+   brand components, and an inline style beats every stylesheet rule short of
+   `!important`. Since nothing Arabic should ever carry tracking, the blunt
+   form is also the correct one. The cost is that Latin runs inside an Arabic
+   page lose their -0.005em body tracking, which is not perceptible.
+   `contact-card.module.css` already does exactly this, locally. */
+:lang(ar) * {
+  letter-spacing: normal !important;
+}
+
+:lang(ar) :is(h1, h2, h3, h4) {
+  line-height: 1.35;
+}
+
+:lang(ar) .serif {
+  font-family: var(--bz-font-ar);
+  font-weight: 500;
+  /* Instrument Serif is used italic in places. Arabic has no italic tradition
+     and synthetic obliquing shears the joins. */
+  font-style: normal;
+}
+
+/* The eyebrow is 11px uppercase with wide tracking — a treatment that borrows
+   its legibility from capital letters. Arabic is unicameral, so uppercasing is
+   a no-op and 11px is simply small. */
+:lang(ar) .eyebrow {
+  text-transform: none;
+  font-size: 12.5px;
+}
+
+/* ss01/cv11 are Geist-specific feature tags; leaving them on asks the Arabic
+   face for features it does not have. */
+:lang(ar) body {
+  font-feature-settings: normal;
+}
+
+/* Latin runs inside Arabic prose — prices, ft², reference codes, phone
+   numbers. Isolation stops the bidi algorithm reordering a trailing "+" or a
+   hyphen to the wrong end of the run. */
+:lang(ar) .mono {
+  font-family: var(--bz-font-mono);
+  direction: ltr;
+  unicode-bidi: isolate;
+}

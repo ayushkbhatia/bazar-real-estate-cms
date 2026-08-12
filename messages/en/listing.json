@@ -1,0 +1,9 @@
+{
+  "bedrooms": "{count, plural, =0 {Studio} one {# bedroom} other {# bedrooms}}",
+  "bathrooms": "{count, plural, one {# bathroom} other {# bathrooms}}",
+  "properties": "{count, plural, =0 {No properties} one {# property} other {# properties}}",
+  "forSale": "For sale",
+  "forRent": "For rent",
+  "offPlan": "Off-plan",
+  "verified": "Verified"
+}
