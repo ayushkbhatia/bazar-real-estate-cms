@@ -160,7 +160,7 @@ export default async function StatusPage() {
               >
                 {copy.label}
               </span>
-              <span className="mono text-[12px] text-bz-muted-2 min-w-[60px] text-right">
+              <span className="mono text-[12px] text-bz-muted-2 min-w-[60px] text-end">
                 {fmtMs(check.latency_ms)}
               </span>
             </li>

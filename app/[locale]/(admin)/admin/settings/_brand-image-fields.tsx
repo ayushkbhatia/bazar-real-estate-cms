@@ -296,7 +296,7 @@ export function LogoField({
               onClick={() => onStyleChange(option)}
               aria-pressed={style === option}
               className={cn(
-                "text-left rounded border px-3 py-2 transition-colors",
+                "text-start rounded border px-3 py-2 transition-colors",
                 style === option
                   ? "border-bz-accent bg-bz-surface-2"
                   : "border-bz-border hover:bg-bz-surface-2",

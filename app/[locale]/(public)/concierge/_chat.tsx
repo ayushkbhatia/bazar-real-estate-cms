@@ -312,7 +312,7 @@ export function ConciergeChat() {
 
       <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] min-h-[760px] overflow-hidden border-b border-bz-border">
         {/* LEFT — Conversation */}
-        <div className="flex flex-col border-r border-bz-border overflow-hidden">
+        <div className="flex flex-col border-e border-bz-border overflow-hidden">
           <div className="flex-1 px-4 md:px-12 py-8 flex flex-col gap-6 overflow-auto">
             {messages.length === 0 ? (
               <EmptyState onPick={(t) => sendMessage(t)} />
@@ -363,7 +363,7 @@ export function ConciergeChat() {
             </form>
             <AdvisorWhatsAppHandoff brief={brief} />
             <div className="mt-4 flex gap-1.5 flex-wrap">
-              <div className="eyebrow mr-2 mt-1">Try</div>
+              <div className="eyebrow me-2 mt-1">Try</div>
               {PROMPT_SUGGESTIONS.map((p) => (
                 <button
                   key={p}
@@ -445,10 +445,10 @@ function EmptyState({ onPick }: { onPick: (s: string) => void }) {
             key={p}
             type="button"
             onClick={() => onPick(p)}
-            className="text-left px-4 py-3 rounded-lg bg-bz-surface border border-bz-border hover:border-bz-ink-2 text-[13px] text-bz-ink-2 flex justify-between items-center"
+            className="text-start px-4 py-3 rounded-lg bg-bz-surface border border-bz-border hover:border-bz-ink-2 text-[13px] text-bz-ink-2 flex justify-between items-center"
           >
             {p}
-            <ArrowRight size={14} strokeWidth={1.6} className="text-bz-muted shrink-0 ml-3" />
+            <ArrowRight size={14} strokeWidth={1.6} className="text-bz-muted shrink-0 ms-3" />
           </button>
         ))}
       </div>
@@ -460,8 +460,8 @@ function MessageBubble({ message }: { message: UiMessage }) {
   if (message.role === "user") {
     return (
       <div className="self-end max-w-[78%]">
-        <div className="eyebrow text-right mb-1.5">You</div>
-        <div className="bg-bz-ink text-bz-bg px-5 py-3.5 rounded-2xl rounded-tr-sm text-[14.5px] leading-[1.55]">
+        <div className="eyebrow text-end mb-1.5">You</div>
+        <div className="bg-bz-ink text-bz-bg px-5 py-3.5 rounded-2xl rounded-se-sm text-[14.5px] leading-[1.55]">
           {message.text}
         </div>
       </div>
@@ -473,7 +473,7 @@ function MessageBubble({ message }: { message: UiMessage }) {
         <Sparkles size={12} strokeWidth={1.8} className="text-bz-accent" />
         <span className="text-bz-accent">Bazar Concierge</span>
       </div>
-      <div className="bg-bz-surface border border-bz-border px-5 py-4 rounded-2xl rounded-tl-sm text-[14.5px] leading-[1.6]">
+      <div className="bg-bz-surface border border-bz-border px-5 py-4 rounded-2xl rounded-ss-sm text-[14.5px] leading-[1.6]">
         {message.text ? (
           <p className="whitespace-pre-wrap">{message.text}</p>
         ) : (

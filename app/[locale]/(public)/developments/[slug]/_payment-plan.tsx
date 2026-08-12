@@ -234,7 +234,7 @@ export function PaymentPlanSection({
         <div className="relative w-max min-w-full">
           <div
             aria-hidden
-            className="absolute left-0 right-0 top-6 h-0.5 bg-bz-border-strong"
+            className="absolute start-0 end-0 top-6 h-0.5 bg-bz-border-strong"
           />
           <ol className="grid grid-flow-col auto-cols-[minmax(150px,1fr)] w-full list-none">
             {plan.milestones.map((m, i) => {
@@ -277,17 +277,17 @@ export function PaymentPlanSection({
       </div>
 
       {/* ── Timeline, narrow: the same schedule down a vertical spine ── */}
-      <ol className="xl:hidden mt-5 ml-2 pb-1 border-l-2 border-bz-border-strong flex flex-col gap-[18px] list-none">
+      <ol className="xl:hidden mt-5 ms-2 pb-1 border-s-2 border-bz-border-strong flex flex-col gap-[18px] list-none">
         {plan.milestones.map((m, i) => {
           const amount = amountFor(m.percent);
           return (
             <li
               key={`${m.label}-${i}`}
-              className="relative pl-[18px] flex gap-3.5 items-start"
+              className="relative ps-[18px] flex gap-3.5 items-start"
             >
               <span
                 className={cn(
-                  "absolute -left-2 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-bz-ink",
+                  "absolute -start-2 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-bz-ink",
                   i === 0 ? "bg-bz-ink" : "bg-bz-surface",
                 )}
               />

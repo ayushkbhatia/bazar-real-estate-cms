@@ -128,7 +128,7 @@ export function PropertiesTable({ rows }: { rows: ListingRow[] }) {
             <TableHead>Price</TableHead>
             <TableHead>Area</TableHead>
             <TableHead>Listed</TableHead>
-            <TableHead className="text-right">Open</TableHead>
+            <TableHead className="text-end">Open</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -189,7 +189,7 @@ export function PropertiesTable({ rows }: { rows: ListingRow[] }) {
                   <TableCell className="text-bz-muted text-[12px]">
                     {relativeDate(row.published_at ?? row.created_at)}
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-end">
                     {row.status === "published" ? (
                       <Link
                         href={propertyUrl(row)}

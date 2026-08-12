@@ -610,7 +610,7 @@ export function BlockListEditor({ pageId, initial }: Props) {
       )}
 
       <div className="border-t border-bz-border pt-4 flex items-center gap-2 flex-wrap">
-        <span className="text-[11.5px] text-bz-muted mr-1">Add block:</span>
+        <span className="text-[11.5px] text-bz-muted me-1">Add block:</span>
         {BLOCK_KINDS.map((kind) => (
           <Button
             key={kind}

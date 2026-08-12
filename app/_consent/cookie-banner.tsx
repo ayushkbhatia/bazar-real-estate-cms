@@ -51,10 +51,10 @@ export function CookieBanner() {
       aria-describedby="bz-consent-body"
       className={cn(
         "fixed inset-x-0 bottom-0 z-50 px-4 pb-4 pointer-events-none",
-        "md:left-auto md:right-6 md:bottom-6 md:px-0 md:pb-0",
+        "md:start-auto md:end-6 md:bottom-6 md:px-0 md:pb-0",
       )}
     >
-      <div className="pointer-events-auto bg-bz-surface border border-bz-border-strong rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.18)] max-w-[480px] ml-auto p-5 flex flex-col gap-4">
+      <div className="pointer-events-auto bg-bz-surface border border-bz-border-strong rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.18)] max-w-[480px] ms-auto p-5 flex flex-col gap-4">
         <div>
           <div className="text-[11px] uppercase tracking-widest text-bz-muted">
             Cookies

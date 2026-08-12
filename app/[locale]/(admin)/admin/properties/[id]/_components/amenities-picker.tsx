@@ -106,7 +106,7 @@ export function AmenitiesPicker({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3 flex-wrap">
-        <span className="text-[12.5px] text-bz-muted mr-auto tabular-nums">
+        <span className="text-[12.5px] text-bz-muted me-auto tabular-nums">
           {known.length} of {options.length} selected
         </span>
         {value.length > 0 ? (

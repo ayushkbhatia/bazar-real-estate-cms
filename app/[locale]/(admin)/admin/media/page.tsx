@@ -209,7 +209,7 @@ export default async function MediaPage({ searchParams }: PageProps) {
               <MediaSearchInput />
             </div>
             <MediaStateTabs counts={stateCounts} />
-            <div className="ml-auto">
+            <div className="ms-auto">
               <MediaViewToggle />
             </div>
           </div>

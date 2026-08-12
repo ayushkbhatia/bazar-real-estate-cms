@@ -23,7 +23,7 @@ export function KeyValueList({
       {items.map((it, i) => (
         <div key={i} className="flex items-center justify-between gap-4 py-3">
           <dt className="text-[13px] text-bz-muted">{it.key}</dt>
-          <dd className="text-right text-[13px] font-medium text-bz-ink">
+          <dd className="text-end text-[13px] font-medium text-bz-ink">
             {it.value}
           </dd>
         </div>

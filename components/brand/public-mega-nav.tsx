@@ -229,7 +229,7 @@ export function PublicMegaNav({ data, logo = null, footerSlot }: Props) {
         </div>
 
         {/* Mobile right cluster — just the hamburger + CTA */}
-        <div className="xl:hidden ml-auto flex items-center gap-2">
+        <div className="xl:hidden ms-auto flex items-center gap-2">
           <Button asChild size="sm">
             <Link href="/services/sell">List</Link>
           </Button>

@@ -81,7 +81,7 @@ export function LeadAdvisorBanner({
           </Link>
           <div className="mt-1 text-[13px] text-white/70">{agent.title}</div>
           <blockquote
-            className="serif italic text-[20px] mt-5 pl-5 border-l-2 border-bz-accent text-white/90 max-w-[52ch]"
+            className="serif italic text-[20px] mt-5 ps-5 border-s-2 border-bz-accent text-white/90 max-w-[52ch]"
             style={{ letterSpacing: "-0.005em" }}
           >
             &ldquo;{agent.pull_quote}&rdquo;

@@ -312,7 +312,7 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                         href={waUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-[11.5px] text-bz-muted hover:text-bz-accent ml-5"
+                        className="text-[11.5px] text-bz-muted hover:text-bz-accent ms-5"
                       >
                         Open in WhatsApp →
                       </a>

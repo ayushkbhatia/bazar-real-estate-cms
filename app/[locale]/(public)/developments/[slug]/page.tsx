@@ -424,7 +424,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               <div className="w-9 h-9 rounded-full bg-bz-accent text-white flex items-center justify-center text-[15px] font-semibold serif shadow-[0_4px_12px_rgba(0,0,0,.3)]">
                 {pin.key}
               </div>
-              <div className="absolute left-11 top-1.5 whitespace-nowrap bg-white/95 px-2.5 py-1 rounded text-[11px] font-medium text-bz-ink">
+              <div className="absolute start-11 top-1.5 whitespace-nowrap bg-white/95 px-2.5 py-1 rounded text-[11px] font-medium text-bz-ink">
                 {pin.label}
               </div>
             </div>
@@ -796,7 +796,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               {/* Wraps on narrow screens — "Register your interest" is a wider
                   label than the dead "Book a viewing" button it replaced, and
                   the pair ran off the right edge at 375px. */}
-              <div className="w-full md:w-auto md:ml-auto flex flex-wrap gap-2 items-end">
+              <div className="w-full md:w-auto md:ms-auto flex flex-wrap gap-2 items-end">
                 {leadForms.development_brochure!.enabled ? (
                 <BrochureGate
                   form={leadForms.development_brochure!}

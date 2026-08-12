@@ -48,7 +48,7 @@ export default async function PublicLayout({
       {/* Gate matches PublicMegaNav's xl breakpoint — below it the drawer
           carries the preferences entry via footerSlot, so an md gate here
           would render both controls at once between 768 and 1279. */}
-      <div className="hidden xl:flex fixed top-[84px] right-4 z-30">
+      <div className="hidden xl:flex fixed top-[84px] end-4 z-30">
         <PreferencesPopover />
       </div>
       <main className="flex-1">{children}</main>

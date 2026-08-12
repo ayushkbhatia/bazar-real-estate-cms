@@ -100,7 +100,7 @@ function ScopeTabs({
       <Link
         href="?temperature=hot"
         className={cn(
-          "px-3 h-8 inline-flex items-center rounded text-[13px] transition-colors ml-2",
+          "px-3 h-8 inline-flex items-center rounded text-[13px] transition-colors ms-2",
           hot
             ? "bg-[oklch(0.55_0.18_28)] text-white"
             : "text-bz-ink-2 hover:bg-bz-surface-2",

@@ -117,7 +117,7 @@ export default async function AgentsIndexPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`Message ${a.display_name} on WhatsApp`}
-                      className="absolute top-3 right-3 w-9 h-9 rounded-full bg-bz-ink/85 text-bz-bg backdrop-blur-sm inline-flex items-center justify-center hover:bg-bz-ink shadow-md"
+                      className="absolute top-3 end-3 w-9 h-9 rounded-full bg-bz-ink/85 text-bz-bg backdrop-blur-sm inline-flex items-center justify-center hover:bg-bz-ink shadow-md"
                     >
                       <MessageCircle size={14} strokeWidth={1.8} />
                     </a>

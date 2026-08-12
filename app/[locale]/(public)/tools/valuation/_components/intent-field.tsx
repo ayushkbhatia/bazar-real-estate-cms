@@ -60,8 +60,8 @@ export function IntentField({
             aria-pressed={active}
             className={
               active
-                ? "flex flex-col items-start gap-1 p-3 rounded-md border-2 border-bz-ink bg-bz-bg text-left transition-colors"
-                : "flex flex-col items-start gap-1 p-3 rounded-md border border-bz-border bg-bz-bg text-left hover:border-bz-border-strong transition-colors"
+                ? "flex flex-col items-start gap-1 p-3 rounded-md border-2 border-bz-ink bg-bz-bg text-start transition-colors"
+                : "flex flex-col items-start gap-1 p-3 rounded-md border border-bz-border bg-bz-bg text-start hover:border-bz-border-strong transition-colors"
             }
           >
             <Icon

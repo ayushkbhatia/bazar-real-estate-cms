@@ -240,7 +240,7 @@ export function ContentAssetEditor({
               />
             </Field>
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
-              <span className="text-[11px] text-bz-muted mr-1">Insert:</span>
+              <span className="text-[11px] text-bz-muted me-1">Insert:</span>
               {TOKENS.map((t) => (
                 <button
                   key={t.name}

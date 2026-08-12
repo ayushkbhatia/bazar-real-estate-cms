@@ -225,7 +225,7 @@ export function ShortlistDrawer() {
           // bottom-0 and ~64px tall over the safe-area inset), so the two
           // don't overlap. Desktop keeps the original bottom-left corner,
           // opposite the desktop CTA column at bottom-right.
-          className="fixed left-3 md:left-4 bottom-[calc(var(--bz-bar-safe)+64px)] md:bottom-6 z-40 inline-flex items-center gap-2 h-11 px-4 rounded-full bg-bz-ink text-bz-bg shadow-lg hover:bg-bz-ink/90 text-[13px]"
+          className="fixed start-3 md:start-4 bottom-[calc(var(--bz-bar-safe)+64px)] md:bottom-6 z-40 inline-flex items-center gap-2 h-11 px-4 rounded-full bg-bz-ink text-bz-bg shadow-lg hover:bg-bz-ink/90 text-[13px]"
         >
           <Scale size={14} strokeWidth={1.8} />
           <span>Shortlist · {ids.length}</span>
@@ -344,7 +344,7 @@ export function ShortlistDrawer() {
               <Link href={compareHref}>
                 <Scale size={14} strokeWidth={1.7} />
                 Compare {compareIds.length} side-by-side
-                <ArrowRight size={14} strokeWidth={1.7} className="ml-auto" />
+                <ArrowRight size={14} strokeWidth={1.7} className="ms-auto" />
               </Link>
             </Button>
           )}

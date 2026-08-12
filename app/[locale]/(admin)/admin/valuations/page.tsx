@@ -106,12 +106,12 @@ export default async function AdminValuationsPage({
             <table className="w-full text-[13.5px]" data-testid="valuations-list">
             <thead className="bg-bz-surface-2 text-[11.5px] uppercase tracking-wider text-bz-muted">
               <tr>
-                <th className="text-left px-4 py-2.5">Owner</th>
-                <th className="text-left px-4 py-2.5">Property</th>
-                <th className="text-left px-4 py-2.5">Instant range</th>
-                <th className="text-left px-4 py-2.5">Advisor</th>
-                <th className="text-left px-4 py-2.5">Status</th>
-                <th className="text-left px-4 py-2.5">Submitted</th>
+                <th className="text-start px-4 py-2.5">Owner</th>
+                <th className="text-start px-4 py-2.5">Property</th>
+                <th className="text-start px-4 py-2.5">Instant range</th>
+                <th className="text-start px-4 py-2.5">Advisor</th>
+                <th className="text-start px-4 py-2.5">Status</th>
+                <th className="text-start px-4 py-2.5">Submitted</th>
                 <th className="px-2 py-2.5" />
               </tr>
             </thead>

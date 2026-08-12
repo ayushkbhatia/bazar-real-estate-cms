@@ -106,7 +106,9 @@ export function Wordmark({
             height={120}
             sizes={logoSizesMap[size]}
             className={cn(
-              "w-auto shrink-0 object-contain object-left",
+              // object-position has no logical form; the mark stays pinned to
+              // the inline start, which is the right edge in Arabic.
+              "w-auto shrink-0 object-contain ltr:object-left rtl:object-right",
               logoOnlyHeightMap[size],
             )}
             priority

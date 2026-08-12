@@ -92,7 +92,7 @@ export default async function AreaSubPagesIndex() {
                 <TableHead>Sits inside</TableHead>
                 <TableHead>Cover</TableHead>
                 <TableHead>Page</TableHead>
-                <TableHead className="text-right">Edit</TableHead>
+                <TableHead className="text-end">Edit</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -158,7 +158,7 @@ export default async function AreaSubPagesIndex() {
                         <span className="text-bz-muted-2">Default</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-end">
                       <span className="inline-flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/pages/sub/area/${row.slug}`}

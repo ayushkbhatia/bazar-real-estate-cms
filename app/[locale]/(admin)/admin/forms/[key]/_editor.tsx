@@ -319,7 +319,7 @@ export function FormEditor({
           >
             {t.label}
             {t.key === "responses" && unread > 0 ? (
-              <span className="ml-1.5 inline-flex items-center h-[16px] px-1.5 rounded-full bg-bz-accent-soft text-bz-accent text-[10px] font-medium">
+              <span className="ms-1.5 inline-flex items-center h-[16px] px-1.5 rounded-full bg-bz-accent-soft text-bz-accent text-[10px] font-medium">
                 {unread}
               </span>
             ) : null}
@@ -565,7 +565,7 @@ function FieldsTab({
               </span>
               <button
                 type="button"
-                className="min-w-0 flex-1 text-left"
+                className="min-w-0 flex-1 text-start"
                 onClick={() => setOpen(open === index ? null : index)}
               >
                 <span
@@ -576,7 +576,7 @@ function FieldsTab({
                 >
                   {field.label}
                 </span>
-                <span className="ml-2 text-[11.5px] text-bz-muted-2">
+                <span className="ms-2 text-[11.5px] text-bz-muted-2">
                   {FORM_FIELD_TYPE_LABELS[field.type]}
                   {field.required ? " · required" : ""}
                   {field.width === "half" ? " · half width" : ""}

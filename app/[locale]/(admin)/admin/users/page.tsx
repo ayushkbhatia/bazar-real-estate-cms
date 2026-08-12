@@ -122,7 +122,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
             {filteredStaff.length === 1 ? "user" : "users"}
             {filters.role || filters.status || filters.q ? " match filters" : ""}
             {invitations.length > 0 ? (
-              <span className="ml-2">
+              <span className="ms-2">
                 · {invitations.length} pending invite
                 {invitations.length === 1 ? "" : "s"}
               </span>
@@ -132,7 +132,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
           <div className="bg-bz-surface border border-bz-border rounded-lg overflow-x-auto">
             <table className="w-full text-[13px] min-w-[640px]">
               <thead>
-                <tr className="text-left text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
+                <tr className="text-start text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
                   <th className="px-4 py-3 w-[36%]">User</th>
                   <th className="px-3 py-3">Role</th>
                   <th className="px-3 py-3">Permissions</th>
@@ -198,7 +198,7 @@ function StaffTableRow({
             <div className="font-medium truncate">
               {staff.display_name}
               {isSelf ? (
-                <span className="ml-1.5 text-[11px] text-bz-muted">(you)</span>
+                <span className="ms-1.5 text-[11px] text-bz-muted">(you)</span>
               ) : null}
             </div>
             {staff.email ? (
@@ -221,7 +221,7 @@ function StaffTableRow({
       <td className="px-3 py-3">
         <StatusPill status={staff.status} />
       </td>
-      <td className="px-3 py-3 text-right">
+      <td className="px-3 py-3 text-end">
         <StaffRowActions
           userId={staff.user_id}
           displayName={staff.display_name}
@@ -249,13 +249,13 @@ function PendingInvitationsTable({
       <div className="overflow-x-auto">
       <table className="w-full text-[13px] min-w-[640px]">
         <thead>
-          <tr className="text-left text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
+          <tr className="text-start text-[10.5px] text-bz-muted-2 uppercase tracking-wider border-b border-bz-border">
             <th className="px-4 py-2.5">Email</th>
             <th className="px-3 py-2.5">Display name</th>
             <th className="px-3 py-2.5">Role</th>
             <th className="px-3 py-2.5">Invited by</th>
             <th className="px-3 py-2.5">Expires</th>
-            <th className="px-3 py-2.5 text-right">Action</th>
+            <th className="px-3 py-2.5 text-end">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -275,7 +275,7 @@ function PendingInvitationsTable({
               <td className="px-3 py-2.5 text-bz-muted">
                 {relativeDate(inv.expires_at)}
               </td>
-              <td className="px-3 py-2.5 text-right">
+              <td className="px-3 py-2.5 text-end">
                 <InvitationActions invitationId={inv.id} />
               </td>
             </tr>

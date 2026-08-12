@@ -117,7 +117,7 @@ export function CmsUserPile() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded hover:bg-bz-surface-2 transition-colors text-left"
+          className="w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded hover:bg-bz-surface-2 transition-colors text-start"
         >
           <div className="w-8 h-8 rounded-full bg-bz-accent text-bz-accent-fg flex items-center justify-center text-[11px] font-medium">
             {initials}

@@ -79,7 +79,7 @@ export function FloatingCtaRail({
     <>
       {/* Desktop column */}
       <div
-        className={`hidden md:flex fixed right-4 bottom-6 z-40 flex-col gap-2 transition-opacity duration-200 ${
+        className={`hidden md:flex fixed end-4 bottom-6 z-40 flex-col gap-2 transition-opacity duration-200 ${
           visible ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
       >

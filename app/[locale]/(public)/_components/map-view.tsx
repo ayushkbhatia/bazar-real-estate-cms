@@ -119,7 +119,7 @@ export function MapView({ pins, className }: Props) {
     // old currency until the pin set itself changes.
   }, [pins, ready, prefs]);
 
-  return <div ref={containerRef} className={className} />;
+  return <div ref={containerRef} className={className} dir="ltr" />;
 }
 
 function escapeHtml(s: string): string {

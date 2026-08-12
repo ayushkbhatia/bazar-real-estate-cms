@@ -88,7 +88,7 @@ export default async function AdminAgentsPage() {
         ) : (
           <div className="mt-10 rounded-md border border-bz-border bg-bz-surface overflow-x-auto">
             <table className="w-full text-[13.5px]">
-              <thead className="bg-bz-surface-2 border-b border-bz-border text-left text-[11.5px] uppercase tracking-wider text-bz-muted">
+              <thead className="bg-bz-surface-2 border-b border-bz-border text-start text-[11.5px] uppercase tracking-wider text-bz-muted">
                 <tr>
                   <th className="py-3 px-4 font-medium">Name</th>
                   <th className="py-3 px-3 font-medium">Role</th>
@@ -96,7 +96,7 @@ export default async function AdminAgentsPage() {
                   <th className="py-3 px-3 font-medium">Specialties</th>
                   <th className="py-3 px-3 font-medium">Languages</th>
                   <th className="py-3 px-3 font-medium">Status</th>
-                  <th className="py-3 px-4 font-medium text-right">Edit</th>
+                  <th className="py-3 px-4 font-medium text-end">Edit</th>
                 </tr>
               </thead>
               <tbody>
@@ -146,7 +146,7 @@ export default async function AdminAgentsPage() {
                           {row.status}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-3 px-4 text-end">
                         <Link
                           href={`/admin/agents/${row.user_id}`}
                           className="text-[12.5px] text-bz-ink-2 hover:text-bz-accent transition-colors"

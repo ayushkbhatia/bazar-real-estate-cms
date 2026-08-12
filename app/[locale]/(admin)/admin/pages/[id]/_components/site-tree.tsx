@@ -38,7 +38,7 @@ export function PagesSiteTree({
   const groupKeys = Array.from(groups.keys()).sort();
 
   return (
-    <aside className="w-[300px] flex-shrink-0 border-r border-bz-border pr-4">
+    <aside className="w-[300px] flex-shrink-0 border-e border-bz-border pe-4">
       <Eyebrow>Site tree</Eyebrow>
       <p className="mt-1 text-[11.5px] text-bz-muted">
         Pages grouped by parent. Sprint 8 adds parent_slug.

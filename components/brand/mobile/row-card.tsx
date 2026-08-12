@@ -54,7 +54,7 @@ export function RowCard({
   );
 
   const base =
-    "flex w-full items-center gap-3 border-b border-bz-border py-3.5 text-left last:border-b-0";
+    "flex w-full items-center gap-3 border-b border-bz-border py-3.5 text-start last:border-b-0";
 
   if (href) {
     return (

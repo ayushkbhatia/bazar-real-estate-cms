@@ -44,7 +44,7 @@ export function ColumnGallery({
             type="button"
             onClick={() => setIdx((i) => (i - 1 + images.length) % images.length)}
             aria-label="Previous photo"
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/85 text-bz-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute start-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/85 text-bz-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
           >
             <ChevronLeft size={14} strokeWidth={1.8} />
           </button>
@@ -52,7 +52,7 @@ export function ColumnGallery({
             type="button"
             onClick={() => setIdx((i) => (i + 1) % images.length)}
             aria-label="Next photo"
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/85 text-bz-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute end-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-white/85 text-bz-ink flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
           >
             <ChevronRight size={14} strokeWidth={1.8} />
           </button>

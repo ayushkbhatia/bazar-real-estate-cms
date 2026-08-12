@@ -76,7 +76,7 @@ export function HqMapCanvas({
     };
   }, [lat, lng, label]);
 
-  return <div ref={containerRef} className={className} />;
+  return <div ref={containerRef} className={className} dir="ltr" />;
 }
 
 function escapeHtml(s: string): string {

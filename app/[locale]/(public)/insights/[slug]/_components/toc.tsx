@@ -63,7 +63,7 @@ export function ArticleToc() {
       </div>
       <ul className="flex flex-col gap-1.5">
         {entries.map((e) => (
-          <li key={e.id} className={e.level === 2 ? "pl-3" : ""}>
+          <li key={e.id} className={e.level === 2 ? "ps-3" : ""}>
             <a
               href={`#${e.id}`}
               className={

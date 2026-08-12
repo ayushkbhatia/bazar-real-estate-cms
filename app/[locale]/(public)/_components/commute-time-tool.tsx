@@ -34,7 +34,7 @@ export function CommuteTimeTool() {
         Commute time
       </button>
       {open ? (
-        <div className="absolute right-0 mt-1.5 w-[280px] rounded-md border border-bz-border bg-bz-bg shadow-md p-4 z-10">
+        <div className="absolute end-0 mt-1.5 w-[280px] rounded-md border border-bz-border bg-bz-bg shadow-md p-4 z-10">
           <label className="text-[11.5px] uppercase tracking-wider text-bz-muted">
             Destination
           </label>

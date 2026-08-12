@@ -328,7 +328,7 @@ function SortableMediaTile({
           />
         )}
         {item.role === "hero" ? (
-          <span className="absolute top-1.5 left-1.5 inline-flex items-center gap-1 h-5 px-1.5 rounded bg-bz-ink text-bz-bg text-[9.5px] uppercase tracking-wider">
+          <span className="absolute top-1.5 start-1.5 inline-flex items-center gap-1 h-5 px-1.5 rounded bg-bz-ink text-bz-bg text-[9.5px] uppercase tracking-wider">
             <Star size={9} strokeWidth={2} fill="currentColor" />
             Hero
           </span>
@@ -338,7 +338,7 @@ function SortableMediaTile({
           {...attributes}
           {...listeners}
           aria-label="Drag handle"
-          className="absolute top-1.5 right-1.5 w-6 h-6 rounded bg-white/90 text-bz-ink flex items-center justify-center cursor-grab active:cursor-grabbing"
+          className="absolute top-1.5 end-1.5 w-6 h-6 rounded bg-white/90 text-bz-ink flex items-center justify-center cursor-grab active:cursor-grabbing"
         >
           <GripVertical size={11} strokeWidth={1.7} />
         </button>

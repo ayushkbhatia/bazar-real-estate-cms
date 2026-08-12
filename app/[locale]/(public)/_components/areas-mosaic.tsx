@@ -48,7 +48,7 @@ export function AreasMosaic() {
             className="w-full h-full"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-bz-navy/70 via-bz-navy/10 to-transparent" />
-          <div className="absolute bottom-6 left-6 right-6 text-white">
+          <div className="absolute bottom-6 start-6 end-6 text-white">
             <div className="text-[11.5px] uppercase tracking-wider opacity-80">
               {AREAS[0].listings} listings
             </div>
@@ -68,7 +68,7 @@ export function AreasMosaic() {
           >
             <PlaceholderImage label={a.slug} className="w-full h-full" />
             <div className="absolute inset-0 bg-gradient-to-t from-bz-navy/70 via-bz-navy/10 to-transparent" />
-            <div className="absolute bottom-4 left-4 right-4 text-white">
+            <div className="absolute bottom-4 start-4 end-4 text-white">
               <div className="text-[10.5px] uppercase tracking-wider opacity-80">
                 {a.listings}
               </div>

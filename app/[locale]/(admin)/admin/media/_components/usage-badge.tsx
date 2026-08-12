@@ -15,7 +15,7 @@ export function MediaUsageBadge({
   if (count === 0) return null;
   return (
     <span
-      className="absolute bottom-2 left-2 inline-flex items-center gap-1 h-5 px-1.5 rounded bg-bz-ink/80 text-bz-bg text-[10px] font-medium backdrop-blur"
+      className="absolute bottom-2 start-2 inline-flex items-center gap-1 h-5 px-1.5 rounded bg-bz-ink/80 text-bz-bg text-[10px] font-medium backdrop-blur"
       title={title ?? `Used in ${count} place${count === 1 ? "" : "s"}`}
     >
       <Link2 size={9} strokeWidth={2} />

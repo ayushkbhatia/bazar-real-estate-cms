@@ -103,7 +103,7 @@ export function DevelopmentContentCard({
   return (
     <section className="rounded-lg border border-bz-border bg-bz-surface p-4 flex flex-col gap-6">
       <div className="flex items-center gap-3">
-        <div className="mr-auto">
+        <div className="me-auto">
           <h2 className="text-[13.5px] font-medium">Page content</h2>
           <p className="text-[11.5px] text-bz-muted">
             Payment plan, features, map pin, neighbours, FAQs and the lead
@@ -120,7 +120,7 @@ export function DevelopmentContentCard({
       {/* ── Payment plan ─────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 border-t border-bz-border pt-4">
         <div className="flex items-center gap-3">
-          <h3 className="text-[12.5px] font-medium mr-auto">Payment plan</h3>
+          <h3 className="text-[12.5px] font-medium me-auto">Payment plan</h3>
           {plan ? (
             <span
               className={cn(
@@ -279,7 +279,7 @@ export function DevelopmentContentCard({
       {/* ── Named features ───────────────────────────────────────── */}
       <div className="flex flex-col gap-3 border-t border-bz-border pt-4">
         <div className="flex items-center gap-3">
-          <h3 className="text-[12.5px] font-medium mr-auto">Named features</h3>
+          <h3 className="text-[12.5px] font-medium me-auto">Named features</h3>
           <span className="text-[11.5px] text-bz-muted">
             {form.feature_blocks.length}/8
           </span>
@@ -370,7 +370,7 @@ export function DevelopmentContentCard({
       {/* ── Neighbours ───────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 border-t border-bz-border pt-4">
         <div className="flex items-center gap-3">
-          <h3 className="text-[12.5px] font-medium mr-auto">
+          <h3 className="text-[12.5px] font-medium me-auto">
             Nearby Developments
           </h3>
           <span className="text-[11.5px] text-bz-muted">
@@ -409,7 +409,7 @@ export function DevelopmentContentCard({
       {/* ── FAQs ─────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-3 border-t border-bz-border pt-4">
         <div className="flex items-center gap-3">
-          <h3 className="text-[12.5px] font-medium mr-auto">FAQs</h3>
+          <h3 className="text-[12.5px] font-medium me-auto">FAQs</h3>
           <span className="text-[11.5px] text-bz-muted">
             {form.faq.length}/12
           </span>

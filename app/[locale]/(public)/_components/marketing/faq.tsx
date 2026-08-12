@@ -37,7 +37,7 @@ export function Faq({ items }: Props) {
               className="mt-1 shrink-0 text-bz-muted transition-transform group-open:rotate-45"
             />
           </summary>
-          <p className="text-[15px] text-bz-ink-2 leading-[1.6] mt-3 md:pl-[calc(12px+1rem)] md:max-w-[62ch]">
+          <p className="text-[15px] text-bz-ink-2 leading-[1.6] mt-3 md:ps-[calc(12px+1rem)] md:max-w-[62ch]">
             {a}
           </p>
         </details>

@@ -205,7 +205,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
                   >
                     <td
                       style={{ width: 220 }}
-                      className="py-3.5 pr-4 text-[13px] text-bz-muted"
+                      className="py-3.5 pe-4 text-[13px] text-bz-muted"
                     >
                       {r.label}
                     </td>
@@ -224,7 +224,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
                         <td
                           key={i}
                           className={cn(
-                            "py-3.5 px-4 text-[14px] border-l border-bz-border",
+                            "py-3.5 px-4 text-[14px] border-s border-bz-border",
                             highlight && "bg-bz-surface-2",
                             value === null && "text-bz-muted-2",
                           )}
@@ -286,7 +286,7 @@ function MobileAttrRow({
             <span className="mono text-[11px] text-bz-muted truncate">
               {p.reference}
             </span>
-            <span className="font-medium text-right">
+            <span className="font-medium text-end">
               {renderCell(row.values[i])}
             </span>
           </div>
@@ -357,7 +357,7 @@ function PropertyCard({
       data-testid={showTestId ? `compare-card-${pickIndex}` : undefined}
     >
       {pickIndex === 0 ? (
-        <div className="absolute top-2 left-2 z-10">
+        <div className="absolute top-2 start-2 z-10">
           <span className="bg-bz-navy text-bz-bg text-[10px] uppercase tracking-wider font-medium rounded-sm px-1.5 py-1">
             Best fit · advisor pick
           </span>

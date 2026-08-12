@@ -81,24 +81,24 @@ export default function CookiesPage() {
       <div className="not-prose my-6 overflow-x-auto -mx-2">
         <table className="w-full text-[13px] border-collapse">
           <thead>
-            <tr className="text-left text-[11.5px] uppercase tracking-widest text-bz-muted-2 border-b border-bz-border">
-              <th className="py-2 pl-2 pr-3">Name</th>
-              <th className="py-2 pr-3">Category</th>
-              <th className="py-2 pr-3">Provider</th>
-              <th className="py-2 pr-3">Purpose</th>
-              <th className="py-2 pr-3">Retention</th>
+            <tr className="text-start text-[11.5px] uppercase tracking-widest text-bz-muted-2 border-b border-bz-border">
+              <th className="py-2 ps-2 pe-3">Name</th>
+              <th className="py-2 pe-3">Category</th>
+              <th className="py-2 pe-3">Provider</th>
+              <th className="py-2 pe-3">Purpose</th>
+              <th className="py-2 pe-3">Retention</th>
             </tr>
           </thead>
           <tbody>
             {COOKIES.map((c) => (
               <tr key={c.name} className="border-b border-bz-border align-top">
-                <td className="py-3 pl-2 pr-3 mono text-[12px] whitespace-nowrap">
+                <td className="py-3 ps-2 pe-3 mono text-[12px] whitespace-nowrap">
                   {c.name}
                 </td>
-                <td className="py-3 pr-3">{c.category}</td>
-                <td className="py-3 pr-3">{c.provider}</td>
-                <td className="py-3 pr-3 text-bz-ink-2">{c.purpose}</td>
-                <td className="py-3 pr-3 text-bz-muted whitespace-nowrap">
+                <td className="py-3 pe-3">{c.category}</td>
+                <td className="py-3 pe-3">{c.provider}</td>
+                <td className="py-3 pe-3 text-bz-ink-2">{c.purpose}</td>
+                <td className="py-3 pe-3 text-bz-muted whitespace-nowrap">
                   {c.retention}
                 </td>
               </tr>

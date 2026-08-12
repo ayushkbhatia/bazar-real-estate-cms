@@ -26,7 +26,7 @@ export function CmsSearchInput() {
     <form onSubmit={submit} className="relative w-[280px]">
       <Search
         size={15}
-        className="absolute left-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
+        className="absolute start-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
       />
       <input
         type="search"
@@ -34,7 +34,7 @@ export function CmsSearchInput() {
         onChange={(e) => setValue(e.target.value)}
         placeholder="Search properties, enquiries…"
         disabled={pending}
-        className="w-full h-10 pl-9 pr-3 bg-bz-surface border border-bz-border rounded text-[13.5px] outline-none focus:border-bz-accent transition-colors"
+        className="w-full h-10 ps-9 pe-3 bg-bz-surface border border-bz-border rounded text-[13.5px] outline-none focus:border-bz-accent transition-colors"
       />
     </form>
   );

@@ -141,11 +141,11 @@ export default async function AdminSettingsCompliancePage() {
             <table className="w-full text-[13px]">
               <thead className="bg-bz-bg text-bz-muted text-[11.5px] uppercase tracking-wider">
                 <tr>
-                  <th className="text-left px-3 py-2 font-normal">Kind</th>
-                  <th className="text-left px-3 py-2 font-normal">Number</th>
-                  <th className="text-left px-3 py-2 font-normal">Holder</th>
-                  <th className="text-left px-3 py-2 font-normal">Expires</th>
-                  <th className="text-left px-3 py-2 font-normal">Status</th>
+                  <th className="text-start px-3 py-2 font-normal">Kind</th>
+                  <th className="text-start px-3 py-2 font-normal">Number</th>
+                  <th className="text-start px-3 py-2 font-normal">Holder</th>
+                  <th className="text-start px-3 py-2 font-normal">Expires</th>
+                  <th className="text-start px-3 py-2 font-normal">Status</th>
                 </tr>
               </thead>
               <tbody>

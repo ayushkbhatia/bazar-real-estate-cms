@@ -211,7 +211,7 @@ export function ResponsesTable({
               <div className="flex items-center gap-2 p-2.5">
                 <button
                   type="button"
-                  className="flex min-w-0 flex-1 items-center gap-2 text-left"
+                  className="flex min-w-0 flex-1 items-center gap-2 text-start"
                   onClick={() => {
                     setExpanded(isOpen ? null : row.id);
                     if (!isOpen && status === "new") mark(row.id, "read");

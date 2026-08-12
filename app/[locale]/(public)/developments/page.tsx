@@ -83,7 +83,7 @@ function DevelopmentCard({
           <PlaceholderImage label={d.slug} dark className="absolute inset-0" />
         )}
         {d.tagline ? (
-          <span className="absolute top-4 left-4 inline-flex items-center h-[24px] px-2.5 rounded-full text-[11px] font-medium bg-bz-accent text-white">
+          <span className="absolute top-4 start-4 inline-flex items-center h-[24px] px-2.5 rounded-full text-[11px] font-medium bg-bz-accent text-white">
             {d.tagline}
           </span>
         ) : null}

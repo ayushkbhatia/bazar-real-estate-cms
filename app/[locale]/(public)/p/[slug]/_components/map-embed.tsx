@@ -82,5 +82,5 @@ export function MapEmbed({
     };
   }, [lat, lng, title, pois]);
 
-  return <div ref={containerRef} className={className} />;
+  return <div ref={containerRef} className={className} dir="ltr" />;
 }

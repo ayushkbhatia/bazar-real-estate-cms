@@ -188,7 +188,7 @@ export default async function AdminPagesPage() {
                 <TableHead>Slug</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Updated</TableHead>
-                <TableHead className="text-right">Open</TableHead>
+                <TableHead className="text-end">Open</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -225,7 +225,7 @@ export default async function AdminPagesPage() {
                     <TableCell className="text-bz-muted text-[12px]">
                       {relative(row.updated_at)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-end">
                       {row.status === "published" ? (
                         <Link
                           href={pageUrl(row)}

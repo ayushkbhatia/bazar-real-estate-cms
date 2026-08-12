@@ -17,7 +17,7 @@ export function AdvisorNote({
   advisorName?: string | null;
 }) {
   return (
-    <div className="border-l-2 border-bz-accent pl-6 py-2">
+    <div className="border-s-2 border-bz-accent ps-6 py-2">
       <Eyebrow>Advisor&apos;s note</Eyebrow>
       <blockquote
         className="serif italic text-[20px] mt-3 leading-relaxed text-bz-ink max-w-[58ch]"

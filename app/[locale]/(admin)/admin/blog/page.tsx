@@ -139,7 +139,7 @@ export default async function AdminBlogPage({ searchParams }: PageProps) {
                 <TableHead>Category</TableHead>
                 <TableHead>Author</TableHead>
                 <TableHead>Updated</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-end">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -190,7 +190,7 @@ export default async function AdminBlogPage({ searchParams }: PageProps) {
                     <TableCell className="text-bz-muted text-[12px]">
                       {relative(row.updated_at)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-end">
                       <span className="inline-flex items-center justify-end gap-2">
                         {row.status === "published" && !trashed ? (
                           <Link

@@ -138,7 +138,7 @@ export function MediaLibrary({
                   <span>{formatBytes(item.size_bytes)}</span>
                   <span>·</span>
                   <span className="mono">{item.folder}</span>
-                  <span className="ml-auto flex items-center gap-1">
+                  <span className="ms-auto flex items-center gap-1">
                     <RowActions
                       item={item}
                       busy={busyId === item.id}
@@ -183,7 +183,7 @@ export function MediaLibrary({
                   <UsageLine item={item} onOpen={() => setDetails(item)} />
                 </div>
                 <StatePill state={item.state} />
-                <span className="mono text-[11px] text-bz-muted w-16 text-right">
+                <span className="mono text-[11px] text-bz-muted w-16 text-end">
                   {formatBytes(item.size_bytes)}
                 </span>
                 <span className="mono text-[11px] text-bz-muted w-20">
@@ -288,7 +288,7 @@ function Thumb({ item }: { item: MediaLibraryItem }) {
         title={item.usages.map((u) => `${u.label} — ${u.role}`).join("\n")}
       />
       {item.daysInTrash !== null ? (
-        <span className="absolute top-2 left-2 h-5 px-1.5 rounded bg-bz-ink/80 text-bz-bg text-[10px] font-medium inline-flex items-center backdrop-blur">
+        <span className="absolute top-2 start-2 h-5 px-1.5 rounded bg-bz-ink/80 text-bz-bg text-[10px] font-medium inline-flex items-center backdrop-blur">
           In trash {item.daysInTrash}d
         </span>
       ) : null}
@@ -321,7 +321,7 @@ function UsageLine({
     <button
       type="button"
       onClick={onOpen}
-      className="text-left text-[11.5px] text-bz-muted hover:text-bz-ink-2 truncate"
+      className="text-start text-[11.5px] text-bz-muted hover:text-bz-ink-2 truncate"
       title={item.usages.map((u) => `${u.label} (${u.role})`).join("\n")}
     >
       {first ? (

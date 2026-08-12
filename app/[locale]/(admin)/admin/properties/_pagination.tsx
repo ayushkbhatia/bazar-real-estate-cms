@@ -40,7 +40,7 @@ export function AdminPropertiesPagination({
       aria-label="Properties pagination"
       className="flex items-center justify-end gap-1 mt-4"
     >
-      <span className="mono text-[11px] text-bz-muted mr-2">
+      <span className="mono text-[11px] text-bz-muted me-2">
         Page {page} of {last} · {total.toLocaleString()} total
       </span>
       {page > 1 ? (

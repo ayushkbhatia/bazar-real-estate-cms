@@ -40,7 +40,7 @@ export function FaqAccordion({ items }: Props) {
                 aria-expanded={isOpen}
                 aria-controls={panelId}
                 onClick={() => setOpen(isOpen ? -1 : i)}
-                className="w-full flex items-center gap-5 py-5 md:py-[22px] text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
+                className="w-full flex items-center gap-5 py-5 md:py-[22px] text-start focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
               >
                 <span
                   className="flex-1 text-[15.5px] md:text-[17px] font-medium text-bz-ink"
@@ -63,7 +63,7 @@ export function FaqAccordion({ items }: Props) {
               role="region"
               aria-labelledby={headerId}
               hidden={!isOpen}
-              className="text-[14.5px] text-bz-ink-2 leading-[1.7] pb-6 md:pr-[60px] max-w-[720px]"
+              className="text-[14.5px] text-bz-ink-2 leading-[1.7] pb-6 md:pe-[60px] max-w-[720px]"
             >
               {answer}
             </div>

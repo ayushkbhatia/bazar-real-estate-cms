@@ -150,7 +150,7 @@ export function BlockEditor({
   return (
     <section className="rounded-lg border border-bz-border bg-bz-surface p-4 flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
-        <div className="mr-auto">
+        <div className="me-auto">
           <h2 className="text-[13.5px] font-medium">Sections</h2>
           <p className="text-[11.5px] text-bz-muted">
             {blocks.length} section{blocks.length === 1 ? "" : "s"}
@@ -295,7 +295,7 @@ function BlockRow({
         <button
           type="button"
           onClick={onToggleExpand}
-          className="flex-1 min-w-0 text-left"
+          className="flex-1 min-w-0 text-start"
         >
           <span className="text-[13.5px] font-medium">{def.label}</span>
           <span className="block text-[11.5px] text-bz-muted truncate">

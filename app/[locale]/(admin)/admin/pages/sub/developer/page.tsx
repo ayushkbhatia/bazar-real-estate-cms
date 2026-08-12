@@ -97,7 +97,7 @@ export default async function DeveloperSubPagesIndex() {
                 <TableHead>Founded</TableHead>
                 <TableHead>Projects</TableHead>
                 <TableHead>Listings</TableHead>
-                <TableHead className="text-right">Edit</TableHead>
+                <TableHead className="text-end">Edit</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -171,7 +171,7 @@ export default async function DeveloperSubPagesIndex() {
                     <TableCell className="mono text-[12.5px] text-bz-ink-2">
                       {row.property_count > 0 ? row.property_count : "—"}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-end">
                       <span className="inline-flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/developers/${row.slug}`}

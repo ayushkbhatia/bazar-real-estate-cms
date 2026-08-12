@@ -51,7 +51,7 @@ function ItemBadge({ item }: { item: MegamenuItem }) {
   return (
     <span
       className={cn(
-        "ml-2 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider",
+        "ms-2 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider",
         badgeVariantClasses[item.badge_variant],
       )}
     >
@@ -142,7 +142,10 @@ function ServiceCard({ column }: { column: MegamenuColumn }) {
           <ArrowRight
             size={14}
             strokeWidth={1.8}
-            className="text-bz-accent opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0"
+            // translate-x has no logical form, so the nudge needs an explicit pair:
+            // the chevron slides toward the reading direction, which is
+            // rightward in English and leftward in Arabic.
+            className="text-bz-accent opacity-0 ltr:-translate-x-1 rtl:translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0"
           />
         </div>
         {item ? (

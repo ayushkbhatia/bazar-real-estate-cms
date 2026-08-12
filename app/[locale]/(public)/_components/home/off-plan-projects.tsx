@@ -91,7 +91,7 @@ export async function OffPlanProjects({
                     className="h-full w-full"
                   />
                 )}
-                <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-bz-navy px-2.5 py-1 text-[11px] font-medium text-bz-bg">
+                <span className="absolute start-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-bz-navy px-2.5 py-1 text-[11px] font-medium text-bz-bg">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-current" />
                   Off-plan
                 </span>

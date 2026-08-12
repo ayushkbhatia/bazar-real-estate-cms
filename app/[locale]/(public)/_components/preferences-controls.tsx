@@ -40,7 +40,7 @@ export function PreferencesControls() {
                 )}
               >
                 <span className="flex items-center gap-2">
-                  <span className="mono text-[12px] w-9 inline-block text-left text-bz-ink-2">
+                  <span className="mono text-[12px] w-9 inline-block text-start text-bz-ink-2">
                     {CURRENCY_SYMBOL[c]}
                   </span>
                   <span>{CURRENCY_LABEL[c]}</span>

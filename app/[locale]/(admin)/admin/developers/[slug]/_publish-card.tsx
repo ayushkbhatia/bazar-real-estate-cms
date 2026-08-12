@@ -61,7 +61,7 @@ export function DeveloperPublishCard({
   return (
     <section className="rounded-lg border border-bz-border bg-bz-surface p-4 flex flex-col gap-4">
       <div className="flex items-start gap-3">
-        <div className="mr-auto">
+        <div className="me-auto">
           <div className="flex items-center gap-2">
             <h2 className="text-[13.5px] font-medium">Visibility</h2>
             <span

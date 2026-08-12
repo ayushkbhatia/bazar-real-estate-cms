@@ -203,7 +203,7 @@ export function NotificationsBell({
           <Bell size={15} strokeWidth={1.6} />
           {unread > 0 ? (
             <span
-              className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] inline-flex items-center justify-center px-1 rounded-full bg-bz-accent text-white text-[9px] font-semibold leading-none"
+              className="absolute -top-0.5 -end-0.5 min-w-[16px] h-[16px] inline-flex items-center justify-center px-1 rounded-full bg-bz-accent text-white text-[9px] font-semibold leading-none"
               aria-hidden
             >
               {visibleUnread}

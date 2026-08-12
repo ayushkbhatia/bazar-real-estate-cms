@@ -67,7 +67,7 @@ export function HomeFaqs({
                   type="button"
                   aria-expanded={on}
                   onClick={() => setOpen(on ? -1 : i)}
-                  className="flex w-full items-center justify-between gap-6 py-5 md:py-6 text-left"
+                  className="flex w-full items-center justify-between gap-6 py-5 md:py-6 text-start"
                 >
                   <span
                     className="serif text-[18px] md:text-[22px] leading-tight tracking-tight"

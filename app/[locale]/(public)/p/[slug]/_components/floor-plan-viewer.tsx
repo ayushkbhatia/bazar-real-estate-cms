@@ -96,7 +96,7 @@ export function FloorPlanViewer({
           }}
           className="object-contain p-2"
         />
-        <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-bz-ink/85 text-bz-bg text-[11.5px] font-medium opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+        <span className="absolute bottom-3 end-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-bz-ink/85 text-bz-bg text-[11.5px] font-medium opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
           <Maximize2 size={12} strokeWidth={1.7} />
           Enlarge
         </span>
@@ -181,7 +181,7 @@ function FloorPlanOverlay({
       aria-label={alt}
       className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
     >
-      <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+      <div className="absolute top-4 end-4 flex items-center gap-2 z-10">
         <button
           type="button"
           onClick={() => setZoomed((z) => !z)}

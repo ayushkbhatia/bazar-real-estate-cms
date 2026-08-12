@@ -93,14 +93,14 @@ export function HeroSearch({ defaultMode = "off-plan" }: { defaultMode?: string 
           <Search
             size={15}
             strokeWidth={1.8}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
+            className="absolute start-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
           />
           <input
             type="text"
             placeholder={tab.placeholder}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            className="w-full h-11 md:h-10 pl-9 pr-3 rounded-md bg-white text-bz-ink text-[13.5px] outline-none border border-bz-border focus:border-bz-accent"
+            className="w-full h-11 md:h-10 ps-9 pe-3 rounded-md bg-white text-bz-ink text-[13.5px] outline-none border border-bz-border focus:border-bz-accent"
           />
         </div>
 

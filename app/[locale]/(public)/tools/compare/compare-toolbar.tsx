@@ -78,7 +78,7 @@ export function CompareToolbar({
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <label className="flex items-center gap-2 text-[13px] text-bz-ink-2 mr-2 cursor-pointer">
+      <label className="flex items-center gap-2 text-[13px] text-bz-ink-2 me-2 cursor-pointer">
         <input
           type="checkbox"
           checked={showDiff}
@@ -148,14 +148,14 @@ function RemoveButtons({
       >
         Remove…
       </summary>
-      <div className="absolute right-0 top-full mt-1 z-10 bg-bz-surface border border-bz-border rounded shadow-lg p-2 min-w-[180px] flex flex-col gap-1">
+      <div className="absolute end-0 top-full mt-1 z-10 bg-bz-surface border border-bz-border rounded shadow-lg p-2 min-w-[180px] flex flex-col gap-1">
         {ids.map((id, i) => (
           <button
             key={id}
             type="button"
             onClick={() => onRemove(id)}
             data-testid={`remove-${i}`}
-            className="text-left text-[12.5px] px-2.5 py-1.5 rounded hover:bg-bz-surface-2 inline-flex items-center justify-between gap-2"
+            className="text-start text-[12.5px] px-2.5 py-1.5 rounded hover:bg-bz-surface-2 inline-flex items-center justify-between gap-2"
           >
             <span className="truncate mono">{id.slice(0, 8)}…</span>
             <X size={12} strokeWidth={1.8} className="text-bz-muted" />
