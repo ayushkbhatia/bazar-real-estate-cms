@@ -31,6 +31,18 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [off-plan] The landing's "View all in <area>" links go to a page that cannot
+  answer them.
+  `app/(public)/off-plan/page.tsx` builds `viewAllHref` as
+  `/off-plan/search?area=<slug>`, but that route searches the `properties`
+  table for `mode = 'off_plan'` — individual units — while the rail above it
+  shows `developments`. For an area with projects but no unit rows the link
+  lands on an empty result set: `/off-plan/search?area=hudayriyat-island`
+  returns 0 despite three published projects there. Verified 2026-08-11; the
+  area guide worked around it by anchoring in-page instead. "Done" is either an
+  area filter on a developments listing, or repointing these at `/off-plan`
+  with the group's anchor.
+
 - [e2e] Two developer specs skip rather than assert when their subject is draft.
   `developers.spec.ts` guards `/developers/aldar` and the MODON dedup case with
   `test.skip` on a 404, which is honest but means the merge-dedup invariant

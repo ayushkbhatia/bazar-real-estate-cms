@@ -234,18 +234,18 @@ export function AreaLandmarks({
 // ── 6 · Communities & developments ──────────────────────────────────────
 
 /**
- * The area's residential communities, in two passes.
+ * The area's residential communities — one list, from whichever source has
+ * something to say.
  *
  * `projects` are server-rendered `DevelopmentCard`s for the published projects
- * filed under this area — the same card the /off-plan rails use, with live
- * price, bedroom and handover data behind it. They lead, because a project we
- * actually have a page for is worth more to a visitor than a name.
+ * filed under this area, the same card the /off-plan rails use, with live
+ * price, bedroom and handover data behind them. Where they exist they *are*
+ * the band: a project we have a page for beats a name, and the three areas
+ * with projects were showing both, which read as the section repeating itself.
  *
- * `items` are the editorial community list from the CMS. Most areas name
- * communities that have no project record — Nawayef Village, Al Bandar — and
- * dropping them to make room for the cards would lose real content. The page
- * filters out any whose name matches a card above, so the band never says the
- * same thing twice.
+ * `items` are the CMS's editorial community list, and they carry the band on
+ * the 21 areas the catalogue has no projects for. Those names — Nawayef
+ * Village, Al Bandar — are real content with nowhere else to live.
  */
 export function AreaCommunities({
   heading,
@@ -264,19 +264,20 @@ export function AreaCommunities({
   viewAllHref?: string;
   footnote?: string | null;
 }) {
-  if (items.length === 0 && projects.length === 0) return null;
+  const showEditorial = projects.length === 0 && items.length > 0;
+  if (!showEditorial && projects.length === 0) return null;
   return (
-    <section className="border-t border-bz-border bg-bz-surface">
+    <section id="communities" className="border-t border-bz-border bg-bz-surface scroll-mt-16">
       <div className={`${SECTION} py-14 md:py-16`}>
         <div className="flex flex-wrap items-end justify-between gap-6">
           <BandHead eyebrow="Communities" heading={heading} intro={intro} />
-          {projects.length > 0 && viewAllHref ? (
+          {/* Only when there is something the cards are not already showing.
+              Every project in these areas fits on one row today, so a
+              permanent "view all" next to the complete set was a link to
+              nowhere new. */}
+          {viewAllHref && projectsTotal > projects.length ? (
             <Button asChild variant="outline">
-              <Link href={viewAllHref}>
-                {projectsTotal > projects.length
-                  ? `View all ${projectsTotal} projects`
-                  : "View all projects"}
-              </Link>
+              <Link href={viewAllHref}>View all {projectsTotal} projects</Link>
             </Button>
           ) : null}
         </div>
@@ -289,14 +290,15 @@ export function AreaCommunities({
           </div>
         ) : null}
 
-        {items.length > 0 ? (
+        {/* The editorial list is a *fallback*, not a companion. Where the
+            catalogue has projects for the area, those cards are the band —
+            running the CMS's community names underneath them read as the same
+            section twice, which is what it was. Where the catalogue has
+            nothing (21 of the 24 areas today), the names are all there is, and
+            they carry the band on their own. */}
+        {showEditorial ? (
           <>
-            {projects.length > 0 ? (
-              <h3 className="mt-14 text-[11px] uppercase tracking-wider text-bz-muted">
-                Other communities in this area
-              </h3>
-            ) : null}
-            <ul className={`${projects.length > 0 ? "mt-5" : "mt-9"} ${CARD_GRID}`}>
+            <ul className={`mt-9 ${CARD_GRID}`}>
               {items.map((item) => {
                 const inner = (
                   <>

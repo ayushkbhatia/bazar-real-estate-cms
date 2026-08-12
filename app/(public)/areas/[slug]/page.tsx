@@ -217,6 +217,33 @@ export default async function CommunityProfilePage({
     },
   );
 
+  // An area can have projects on the books and no unit-level listings yet —
+  // that is most of the catalogue today, and Hudayriyat is the case that
+  // surfaced it: three published developments, zero `properties` rows. Saying
+  // only "nothing for sale" there is both discouraging and untrue, so the
+  // empty state hands the visitor the projects that do exist.
+  const projectCount = inventory.developmentTotal;
+  //
+  // The link goes to the communities band on this page, not to
+  // /off-plan/search: that route searches `properties` with mode = 'off_plan',
+  // so for an area with no property rows it is empty by construction — the
+  // exact dead end this copy exists to avoid. The project cards are already
+  //higher up the page.
+  const saleEmpty =
+    projectCount > 0
+      ? {
+          body: `No individual listings in ${profile.name} yet — its ${
+            projectCount === 1 ? "development is" : `${projectCount} developments are`
+          } still selling off-plan through the developer.`,
+          href: "#communities",
+          label: projectCount === 1 ? "See the project" : `See the ${projectCount} projects`,
+        }
+      : {
+          body: `No published sale listings in ${profile.name} right now — an advisor can tell you what is coming to market.`,
+          href: "/contact",
+          label: "Talk to an advisor",
+        };
+
   const heroIntro = sv("hero", "intro") ?? profile.intro;
   const heroPosition = sv("hero", "position") ?? profile.position;
   const stats = profile.stats;
@@ -381,7 +408,7 @@ export default async function CommunityProfilePage({
           .slice(0, 6)
           .map((d) => <DevelopmentCard key={d.id} d={d} />)}
         projectsTotal={inventory.developmentTotal}
-        viewAllHref={`/off-plan/search?area=${profile.slug}`}
+        viewAllHref="/off-plan"
         footnote={str(values("communities"), "footnote")}
       />
     ),
@@ -395,9 +422,9 @@ export default async function CommunityProfilePage({
         rows={saleRows}
         ctaLabel={sv("listings", "cta_label") ?? "View all properties for sale"}
         ctaHref={sv("listings", "cta_href") ?? buyHref}
-        emptyBody={`No published sale listings in ${profile.name} right now — an advisor can tell you what is coming to market.`}
-        emptyHref="/contact"
-        emptyLabel="Talk to an advisor"
+        emptyBody={saleEmpty.body}
+        emptyHref={saleEmpty.href}
+        emptyLabel={saleEmpty.label}
       />
     ),
     "rentals": (
