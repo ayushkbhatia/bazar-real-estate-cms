@@ -116,6 +116,40 @@ describe("translateField", () => {
       .toHaveLength(0);
   });
 
+  it("retries when a caller's extra check fails, then reports it", async () => {
+    // The rich-text path: a dropped <strong> marker should get the same second
+    // chance a dropped price gets, without teaching validate() about HTML.
+    const client = fakeClient("نص بلا علامات", "⟦m0⟧نص⟦m1⟧");
+    const result = await translateField({
+      client,
+      text: "⟦m0⟧text⟦m1⟧",
+      kind: "body",
+      extraIssues: (out) =>
+        out.includes("⟦m0⟧") ? [] : ["formatting marker ⟦m0⟧ dropped"],
+    });
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.retried).toBe(true);
+
+    const second = (client.messages.create as ReturnType<typeof vi.fn>).mock
+      .calls[1][0] as { messages: { content: string }[] };
+    expect(second.messages.at(-1)?.content).toContain("⟦m0⟧ dropped");
+  });
+
+  it("reports a persistent markup failure under its own code", async () => {
+    const client = fakeClient("بلا علامات", "بلا علامات");
+    const result = await translateField({
+      client,
+      text: "⟦m0⟧text⟦m1⟧",
+      kind: "body",
+      extraIssues: () => ["formatting marker ⟦m0⟧ dropped"],
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues.map((i) => i.code)).toContain("markup");
+  });
+
   it("sends alt text to the cheap model and prose to the expensive one", async () => {
     expect(modelFor("alt")).toContain("haiku");
     expect(modelFor("body")).toBe("claude-opus-5");

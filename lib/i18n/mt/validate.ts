@@ -22,6 +22,7 @@ export type Issue = {
     | "latin-leak"
     | "too-long"
     | "glossary"
+    | "markup"
     | "empty";
   detail: string;
 };
