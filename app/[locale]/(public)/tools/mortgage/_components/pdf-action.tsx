@@ -2,6 +2,9 @@
 
 import { FileText } from "lucide-react";
 import { toast } from "sonner";
+import { pdfLabel } from "@/lib/pdf/language-note";
+import { useLocale } from "next-intl";
+import type { Locale } from "@/lib/i18n/locales";
 
 /**
  * Sprint 5b (backfilled): PDF action button for the mortgage calculator.
@@ -13,6 +16,8 @@ export function MortgagePdfAction({
 }: {
   enabled?: boolean;
 }) {
+  const locale = useLocale() as Locale;
+
   function handle() {
     if (!enabled) {
       toast.info(
@@ -31,7 +36,7 @@ export function MortgagePdfAction({
       className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[13px] text-bz-ink-2 hover:border-bz-border-strong transition-colors"
     >
       <FileText size={13} strokeWidth={1.7} />
-      Download PDF
+      {pdfLabel("Download PDF", locale)}
     </button>
   );
 }

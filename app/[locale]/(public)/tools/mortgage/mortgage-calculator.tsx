@@ -27,6 +27,9 @@ import { cn } from "@/lib/utils";
 import type { ResolvedForm } from "@/lib/forms/types";
 import { FormRenderer } from "@/app/[locale]/(public)/_components/forms/form-renderer";
 import { DbrGauge } from "./_components/dbr-gauge";
+import { pdfLabel } from "@/lib/pdf/language-note";
+import { useLocale } from "next-intl";
+import type { Locale } from "@/lib/i18n/locales";
 import {
   affordability,
   amortizationByYear,
@@ -869,6 +872,7 @@ function MortgagePdfDownload({
     dbr_pct: number | null;
   };
 }) {
+  const locale = useLocale() as Locale;
   const [pending, startTransition] = useTransition();
 
   function handle() {
@@ -904,7 +908,7 @@ function MortgagePdfDownload({
       disabled={pending}
     >
       <Download size={14} strokeWidth={1.6} />
-      {pending ? "Generating…" : "PDF summary"}
+      {pending ? "Generating…" : pdfLabel("PDF summary", locale)}
     </Button>
   );
 }
