@@ -34,6 +34,8 @@ import {
   type SectionValues,
   type ValidationIssue,
 } from "@/lib/master-pages";
+import { applyLocale } from "@/lib/master-pages/i18n";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { getBlockDef } from "./catalogue";
 import type { BlockInstance, LandingDocument, ResolvedBlock } from "./types";
 
@@ -85,7 +87,19 @@ export function serialiseDocument(doc: LandingDocument): BlockInstance[] {
  * a document that predates it. Unknown types come back with `def: null` and
  * their values untouched.
  */
-export function resolveDocument(blocks: BlockInstance[]): ResolvedBlock[] {
+export function resolveDocument(
+  blocks: BlockInstance[],
+  /**
+   * Fold to one language. Defaults to English so existing callers and specs
+   * are unaffected; the editor passes "bilingual" to keep both sides.
+   *
+   * Unknown block types are folded too. Their values are opaque to this build,
+   * but a `<key>_ar` sibling is a convention, not a schema — folding it keeps
+   * an unknown block rendering Arabic rather than leaking `title_ar` into the
+   * locked card.
+   */
+  locale: Locale | "bilingual" = DEFAULT_LOCALE,
+): ResolvedBlock[] {
   return blocks.map((block) => {
     const def = getBlockDef(block.type);
     if (!def) {
@@ -94,7 +108,10 @@ export function resolveDocument(blocks: BlockInstance[]): ResolvedBlock[] {
         type: block.type,
         def: null,
         enabled: block.enabled,
-        values: block.values,
+        values:
+          locale === "bilingual"
+            ? block.values
+            : applyLocale(block.values, locale).values,
       };
     }
     const target = def.version ?? 1;
@@ -107,7 +124,11 @@ export function resolveDocument(blocks: BlockInstance[]): ResolvedBlock[] {
       type: block.type,
       def,
       enabled: block.enabled,
-      values: mergeValues(def, migrated),
+      values:
+        locale === "bilingual"
+          ? mergeValues(def, migrated)
+          : applyLocale(mergeValues(def, migrated), locale, `${block.type}.`)
+              .values,
     };
   });
 }

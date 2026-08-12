@@ -25,6 +25,25 @@ export type SimpleFieldDef = {
   max?: number;
   /** Blank allowed. Defaults to true for everything but `text`. */
   optional?: boolean;
+  /**
+   * Opt this field OUT of its Arabic twin.
+   *
+   * Default is ON for `text` and `textarea`, and that default is deliberate:
+   * a forgotten opt-out costs one unused input in the editor, while a
+   * forgotten opt-in costs a permanent hole on the Arabic site that nobody
+   * finds until a customer does.
+   *
+   * Set `false` for anything that is not prose — a stat value ("2,400"), a
+   * unit ("AED/ft²"), a lucide icon name, a social network name, a CSS
+   * alignment token. `link` fields are never translatable.
+   */
+  i18n?: false;
+  /**
+   * Max length for the Arabic twin. Defaults to 1.5x `max`, because Arabic
+   * runs longer than English for the same content often enough that reusing
+   * the English cap silently truncates real copy.
+   */
+  maxAr?: number;
 };
 
 /**
@@ -136,6 +155,13 @@ export type FieldDef =
 export type ImageValue = {
   media_id: string | null;
   alt: string | null;
+  /**
+   * Arabic alt text. Sits beside `alt` rather than in a parallel structure,
+   * per the one rule: the twin lives next to its sibling at whatever depth the
+   * sibling lives. Optional because `normaliseScalar` has to tolerate stored
+   * values written before this existed.
+   */
+  alt_ar?: string | null;
   /** Placeholder caption used when no asset is picked. */
   label: string | null;
   /**
