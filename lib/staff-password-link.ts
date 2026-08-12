@@ -11,7 +11,7 @@ import { INVITE_EXPIRY_DAYS } from "@/lib/staff-invitations";
  *
  * Shared by the two surfaces that can trigger one:
  *  · an admin, from Users & roles or an advisor profile
- *    (app/(admin)/admin/agents/_actions.ts)
+ *    (app/[locale]/(admin)/admin/agents/_actions.ts)
  *  · a locked-out staff member, from /forgot-password
  *
  * One implementation on purpose. Staff recovery previously ran through

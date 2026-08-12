@@ -2,7 +2,7 @@
  * /developers — the developer-partners index.
  *
  * Only the copy is editable here. The 30-card grid is rendered from the
- * hardcoded directory in `app/(public)/developers/_data.ts`, which carries each
+ * hardcoded directory in `app/[locale]/(public)/developers/_data.ts`, which carries each
  * developer's slug, name, one-line blurb and logo PNG. It is deliberately NOT
  * modelled as a list field: a list takes over the whole set as soon as one item
  * is added (so a single hand-typed card would blank the other twenty-nine), and

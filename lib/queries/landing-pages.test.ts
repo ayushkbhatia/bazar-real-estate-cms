@@ -6,7 +6,7 @@ import { landingAdminUrl, landingUrl } from "./landing-pages";
 const root = process.cwd();
 const querySource = readFileSync(join(root, "lib/queries/landing-pages.ts"), "utf8");
 const actionSource = readFileSync(
-  join(root, "app/(admin)/admin/page-builder/_actions.ts"),
+  join(root, "app/[locale]/(admin)/admin/page-builder/_actions.ts"),
   "utf8",
 );
 const usageSource = readFileSync(join(root, "lib/queries/media-usage.ts"), "utf8");

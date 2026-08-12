@@ -7,7 +7,7 @@
 > Metropolitan Properties cookie pages (what-are-cookies primer, category
 > breakdown, per-cookie table, opt-out mechanics, do-not-track), rewritten
 > against Bazar's actual cookie inventory. Structure and cookie table match
-> the current `app/(public)/legal/cookies/page.tsx` implementation — content
+> the current `app/[locale]/(public)/legal/cookies/page.tsx` implementation — content
 > is expanded, not replaced. Once approved this replaces the copy in that
 > file.
 

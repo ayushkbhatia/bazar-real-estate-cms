@@ -10,7 +10,7 @@ import { sanitizeArticleHtml } from "@/lib/article-html";
 /**
  * Width of the article's reading column, in CSS pixels, at the breakpoint
  * where it stops being full-bleed. Mirrors `max-w-[760px]` minus the
- * `md:px-12` gutters on app/(public)/insights/[slug]/page.tsx.
+ * `md:px-12` gutters on app/[locale]/(public)/insights/[slug]/page.tsx.
  *
  * It only feeds the `sizes` hint, so being a little off costs a slightly
  * larger variant, not a broken layout — but it must be revisited if that

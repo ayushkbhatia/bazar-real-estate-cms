@@ -10,7 +10,7 @@ import {
   setChimeEnabled,
 } from "./chime";
 import { usePostgresChanges } from "./use-postgres-changes";
-import { useAdminSession } from "@/app/(admin)/_components/admin-session";
+import { useAdminSession } from "@/app/[locale]/(admin)/_components/admin-session";
 
 function subscribeToChimePreference(callback: () => void): () => void {
   window.addEventListener("bz-chime-changed", callback);

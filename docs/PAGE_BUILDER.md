@@ -45,10 +45,10 @@ lib/page-builder/
 lib/queries/landing-pages.ts     public + admin reads
 lib/schemas/landing-page.ts      metadata zod + slug rules
 
-app/(admin)/admin/_fields/       FieldEditor / ImagePicker / UploadButton
+app/[locale]/(admin)/admin/_fields/       FieldEditor / ImagePicker / UploadButton
                                  (extracted from the master-page editor; shared)
-app/(admin)/admin/page-builder/  list · new · editor · preview · actions
-app/(public)/lp/[slug]/          ISR route + the renderer switch
+app/[locale]/(admin)/admin/page-builder/  list · new · editor · preview · actions
+app/[locale]/(public)/lp/[slug]/          ISR route + the renderer switch
 
 supabase/migrations/0099_landing_pages.sql
 ```
@@ -127,7 +127,7 @@ Every media reference must be the `ImageValue` shape `{media_id, alt, label}` �
 1. Define it in `lib/page-builder/blocks/*.ts`. `defaults` must equal what the
    component renders today, so adding the block changes nothing visually.
 2. Add an adapter in `adapters.ts` — pure, `(values, data) => props`.
-3. Add a case in `app/(public)/lp/[slug]/_render.tsx` **and** its key to
+3. Add a case in `app/[locale]/(public)/lp/[slug]/_render.tsx` **and** its key to
    `RENDERED_KEYS`. `catalogue.test.ts` fails if the two disagree.
 4. If it needs data, declare `needs` + `queryCost` and teach `data.ts` how to
    fetch it — in the batch, never in the component.

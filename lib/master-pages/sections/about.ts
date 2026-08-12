@@ -16,7 +16,7 @@ import {
  *
  * Every `defaults` value below is the copy the page rendered before it became
  * editable, character for character, so an untouched page is byte-identical to
- * what shipped. Keep them in sync with app/(public)/about/page.tsx: the module
+ * what shipped. Keep them in sync with app/[locale]/(public)/about/page.tsx: the module
  * constants there (VALUES, EXPERTISE, PARTNERS, HIGHLIGHTS) survive only as
  * fallbacks for an empty list.
  *

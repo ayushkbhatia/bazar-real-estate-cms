@@ -128,7 +128,7 @@ export type DocumentValidation =
  * per-field normaliser. Values for *unknown* types come from `stored` — what
  * the database already holds — never from the client. A stale tab can reorder
  * or switch off a block it doesn't understand; it cannot invent or corrupt one.
- * That is the `saveForm` rule (app/(admin)/admin/forms/_actions.ts) applied to
+ * That is the `saveForm` rule (app/[locale]/(admin)/admin/forms/_actions.ts) applied to
  * a document whose vocabulary can outlive a deploy.
  */
 export function validateDocument(

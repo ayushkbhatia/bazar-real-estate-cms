@@ -13,12 +13,12 @@ import type {
 /**
  * Server-side reads for the CMS-editable megamenu.
  *
- * Public render path (used in app/(public)/layout.tsx):
+ * Public render path (used in app/[locale]/(public)/layout.tsx):
  *   `getPublishedMegamenu()` — cookie-free, RLS reads only `status='published'`
  *   tabs and their children. Falls back to an empty menu if Supabase env is
  *   missing, so previews and offline dev still render the rest of the page.
  *
- * Admin paths (used in app/(admin)/admin/navigation/*):
+ * Admin paths (used in app/[locale]/(admin)/admin/navigation/*):
  *   `listMegamenuTabsForAdmin()`   — sidebar list (all tabs, any status)
  *   `getMegamenuTabBySlugForAdmin(slug)` — full tab tree for the editor
  */

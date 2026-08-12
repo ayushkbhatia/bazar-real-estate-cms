@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 /**
  * Sprint 1 · T2 — defence-in-depth gate on /admin/*.
  *
- * The layout in app/(admin)/layout.tsx calls requireRole(STAFF_ROLES).
+ * The layout in app/[locale]/(admin)/layout.tsx calls requireRole(STAFF_ROLES).
  * For anonymous users, proxy.ts redirects to /admin/login upstream. For
  * signed-in non-staff users, requireRole throws notFound() so the
  * response is a 404 — not a 500 and not a redirect loop. We can't

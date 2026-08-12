@@ -8,7 +8,7 @@ import { test, expect } from "@playwright/test";
  * form could lose a field, or its links could 404, with the whole suite green.
  *
  * That gap matters while the customer-account surface is being removed: the
- * staff form imports `signInAction` from app/(public)/(auth)/_actions, inside
+ * staff form imports `signInAction` from app/[locale]/(public)/(auth)/_actions, inside
  * the route group scheduled for deletion, and today the "Forgot?" link points
  * into the customer auth pages that are also going away. These assertions are
  * what turn either mistake into a red build.

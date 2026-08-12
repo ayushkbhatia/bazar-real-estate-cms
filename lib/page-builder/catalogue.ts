@@ -9,7 +9,7 @@
  * audited for. There is nothing to re-earn per page.
  *
  * Adding a block means adding a def here AND a case in
- * app/(public)/lp/[slug]/_render.tsx — `catalogue.test.ts` fails the build if
+ * app/[locale]/(public)/lp/[slug]/_render.tsx — `catalogue.test.ts` fails the build if
  * the two ever disagree.
  */
 

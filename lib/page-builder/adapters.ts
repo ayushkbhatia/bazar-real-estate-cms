@@ -2,7 +2,7 @@
  * Stored values → component props.
  *
  * One pure function per block type, in the shape
- * `app/(public)/_components/marketing/master-content.tsx` established for the
+ * `app/[locale]/(public)/_components/marketing/master-content.tsx` established for the
  * master pages. Pure and data-free by design: everything that needs a query
  * arrives already fetched in `LandingData`, so these can be unit-tested without
  * a database and the renderer stays a switch with no I/O in it.
@@ -20,12 +20,12 @@ import {
   type ImageValue,
   type SectionValues,
 } from "@/lib/master-pages";
-import { listingRowToCard } from "@/app/(public)/_components/marketing/map-listing";
-import type { FeaturedCardProps } from "@/app/(public)/_components/marketing/map-listing";
-import type { CategoryTile } from "@/app/(public)/_components/marketing/category-tiles";
-import type { PropType } from "@/app/(public)/_components/marketing/prop-type-grid";
-import type { FeatureRowItem } from "@/app/(public)/_components/marketing/feature-rows";
-import type { CtaVariant } from "@/app/(public)/_components/marketing/cta-band";
+import { listingRowToCard } from "@/app/[locale]/(public)/_components/marketing/map-listing";
+import type { FeaturedCardProps } from "@/app/[locale]/(public)/_components/marketing/map-listing";
+import type { CategoryTile } from "@/app/[locale]/(public)/_components/marketing/category-tiles";
+import type { PropType } from "@/app/[locale]/(public)/_components/marketing/prop-type-grid";
+import type { FeatureRowItem } from "@/app/[locale]/(public)/_components/marketing/feature-rows";
+import type { CtaVariant } from "@/app/[locale]/(public)/_components/marketing/cta-band";
 import type { LandingData } from "./data";
 
 type Item = Record<string, string | boolean | null | ImageValue>;

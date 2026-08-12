@@ -8,7 +8,7 @@
 > eligibility, service description, agency relationship, fees, listing
 > compliance, prohibited use, liability, dispute resolution), rewritten
 > against Bazar's actual product surface. Once approved this replaces the
-> copy in `app/(public)/legal/terms/page.tsx`.
+> copy in `app/[locale]/(public)/legal/terms/page.tsx`.
 
 ---
 

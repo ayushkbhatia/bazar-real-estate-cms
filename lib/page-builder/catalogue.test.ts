@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isListField, isSelectField } from "@/lib/master-pages";
-import { RENDERED_KEYS } from "@/app/(public)/lp/[slug]/_render";
+import { RENDERED_KEYS } from "@/app/[locale]/(public)/lp/[slug]/_render";
 import { BLOCK_DEFS, getBlockDef, pickableBlocks } from "./catalogue";
 import { PRESETS } from "./presets";
 import { BLOCK_GROUPS } from "./types";

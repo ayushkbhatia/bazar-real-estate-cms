@@ -33,7 +33,7 @@ quick grep can show "what's outstanding in my area."
 
 - [off-plan] The landing's "View all in <area>" links go to a page that cannot
   answer them.
-  `app/(public)/off-plan/page.tsx` builds `viewAllHref` as
+  `app/[locale]/(public)/off-plan/page.tsx` builds `viewAllHref` as
   `/off-plan/search?area=<slug>`, but that route searches the `properties`
   table for `mode = 'off_plan'` — individual units — while the rail above it
   shows `developments`. For an area with projects but no unit rows the link
@@ -73,7 +73,7 @@ quick grep can show "what's outstanding in my area."
   The first is the old seed-driven "Consulting" page (senior-advisor hours,
   AED 950/hr) and is no longer linked from the megamenu; the second is the
   new client-approved Property Consultation landing. Nothing links to the
-  former except `app/(public)/sitemap/page.tsx`. "Done" is a decision:
+  former except `app/[locale]/(public)/sitemap/page.tsx`. "Done" is a decision:
   keep it as a distinct service, or redirect it at the new page and drop the
   seed entry.
 
@@ -103,10 +103,10 @@ quick grep can show "what's outstanding in my area."
   The card-level shortlist button is now default-on for anything rendering
   `ListingCard` with a `propertyId`, but two surfaces draw their own markup
   and were left alone: the MapLibre marker popup
-  (`app/(public)/_components/map-view.tsx`, built with `setHTML()` — a
+  (`app/[locale]/(public)/_components/map-view.tsx`, built with `setHTML()` — a
   string, so no React button can mount without reworking it into a portal),
   and the concierge chat result card
-  (`app/(public)/concierge/_components/inline-card.tsx`, which is
+  (`app/[locale]/(public)/concierge/_components/inline-card.tsx`, which is
   text-only, carries no property id, and is deliberately two lines tall).
   "Done" is either both wired up or a decision recorded that they stay out.
 
@@ -127,7 +127,7 @@ quick grep can show "what's outstanding in my area."
   surviving a soft nav on that route.
 
 - [shortlist] "Recently viewed" in the compare picker has no source.
-  `app/(public)/tools/compare/_components/picker-drawer.tsx` — the Saved tab
+  `app/[locale]/(public)/tools/compare/_components/picker-drawer.tsx` — the Saved tab
   now reads the real shortlist, but nothing in the app records views since
   customer accounts were removed
   ([ADR-0005](docs/decisions/ADR-0005-remove-customer-accounts.md)), so that
@@ -143,7 +143,7 @@ quick grep can show "what's outstanding in my area."
   it was — but a visitor who does hit it still gets no explanation.
 
 - [developments] Click-test the units & floor plans admin card.
-  `app/(admin)/admin/pages/sub/development/[slug]/_unit-plans-card.tsx` (~450
+  `app/[locale]/(admin)/admin/pages/sub/development/[slug]/_unit-plans-card.tsx` (~450
   lines) shipped in #263 without ever being exercised in a browser — the
   agent that wrote it had no staff credentials for `/admin/*`. Its server
   actions (`_unit-actions.ts`), the schema and both RLS directions are
@@ -162,7 +162,7 @@ quick grep can show "what's outstanding in my area."
 
 - [megamenu] Media library picker for featured tiles.
   `megamenu_featured_tiles.media_asset_id` is in the schema (FK to
-  `media_assets`) but the admin editor at `app/(admin)/admin/navigation/
+  `media_assets`) but the admin editor at `app/[locale]/(admin)/admin/navigation/
   [slug]/_editor.tsx` doesn't render a picker yet — tiles fall back to the
   `bz-img` / `bz-img-dark` diagonal placeholder. When a tile picks an image
   asset, `components/brand/megamenu-tile.tsx` also needs an `image` variant
@@ -181,7 +181,7 @@ quick grep can show "what's outstanding in my area."
   Add it to the "Admin" group with a `Navigation` (or `Menu`) lucide icon
   once parallel-work pressure is gone. Until then, the route is reachable
   by typing the URL or via "Site settings → Megamenu" (once the link is
-  added on `app/(admin)/admin/settings/page.tsx`).
+  added on `app/[locale]/(admin)/admin/settings/page.tsx`).
 
 - [megamenu] PostHog event for megamenu interactions.
   Capture `megamenu_tab_opened` (tab slug, source: hover|click|keyboard)
@@ -192,7 +192,7 @@ quick grep can show "what's outstanding in my area."
 
 - [i8] Regenerate `db/types.ts` after `0014_bulk_ops.sql` applies in prod.
   Server code in `lib/queries/bulk-operations.ts` + the action wrappers in
-  `app/(admin)/admin/properties/_bulk-actions.ts` currently cast through
+  `app/[locale]/(admin)/admin/properties/_bulk-actions.ts` currently cast through
   `unknown` for the new `bulk_operations` table. Once the migration lands
   in the production Supabase project, run `npm run db:types` and drop the
   casts. Surfaced by PR #67.
@@ -250,7 +250,7 @@ shows the trail.)
 
 - [properties] Publish role gate 404s marketing/support silently.
   `PROPERTY_ROLES = [admin, editor, agent]` in
-  `app/(admin)/admin/properties/[id]/_actions.ts`; `requireRole` throws
+  `app/[locale]/(admin)/admin/properties/[id]/_actions.ts`; `requireRole` throws
   `notFound()` for other staff, so marketing/support clicking Publish get a bare
   404 with no explanation. Show a "you don't have permission" message instead.
 
@@ -307,7 +307,7 @@ shows the trail.)
 
 - [media] Trash has a 30-day window in the copy but nothing purges it.
   The media library labels trashed assets "In trash Nd" against a 30-day
-  window (`TRASH_WINDOW_DAYS` in `app/(admin)/admin/media/page.tsx`), but only a
+  window (`TRASH_WINDOW_DAYS` in `app/[locale]/(admin)/admin/media/page.tsx`), but only a
   human clicking "Delete permanently" ever removes the storage object. Either
   add a cron that purges expired + still-unused assets, or drop the countdown.
 
@@ -563,7 +563,7 @@ shows the trail.)
 - [email] Three crons stamp their "already handled" marker before the send, so
   a failed email is never retried and the row is excluded forever.
   `enquiry-auto-reply/route.ts:56,64` also scans a fixed 5-minute window, so any
-  enquiry not mailed within 5 minutes is abandoned; `app/(public)/_actions.ts:159`
+  enquiry not mailed within 5 minutes is abandoned; `app/[locale]/(public)/_actions.ts:159`
   doesn't stamp `ack_sent_at` at all on the inline path, which double-sends the
   ack when the inline send succeeds. `enquiry-escalation/route.ts:116` stamps
   `escalated_at` before the mail loop and discards the `sendEmail` result at
@@ -729,7 +729,7 @@ shows the trail.)
   24-month Saadiyat sparkline the moment the DLD import runs.
 
 - [developers] The catalogue and the shipped directory disagree about slugs.
-  `app/(public)/developers/_data.ts` ships `modon` / `imkan` / `sobha`; the
+  `app/[locale]/(public)/developers/_data.ts` ships `modon` / `imkan` / `sobha`; the
   `developers` rows those listings actually reference are `modon-properties`,
   `imkan-properties`, `sobha-realty`. The grid now merges on the normalised
   name (`developerNameKey`) so neither is listed twice, and the superseded slug
@@ -764,7 +764,7 @@ shows the trail.)
   than the one it stores invites data-entry errors.
 
 - [perf] The dashboard pipeline chart runs six count queries instead of one.
-  `app/(admin)/admin/page.tsx` used to `select` every `enquiries` row to tally
+  `app/[locale]/(admin)/admin/page.tsx` used to `select` every `enquiries` row to tally
   six integers in memory, with no `limit`, so its cost grew with the table
   forever. That is now six `head: true` counts inside the existing
   `Promise.all`, which is bounded but still six round-trips. One grouped
@@ -778,7 +778,7 @@ shows the trail.)
   page instead of persisting across the segment. The session provider added in
   #293 removes the per-navigation *fetching* (four `/api/notifications/recent`
   calls and two browser `getUser()` calls per nav, now zero), but not the
-  remount itself. Hoisting the shell into `app/(admin)/layout.tsx` is a
+  remount itself. Hoisting the shell into `app/[locale]/(admin)/layout.tsx` is a
   43-file change and a real UX improvement — it belongs in its own PR, not a
   performance one.
 
@@ -843,7 +843,7 @@ shows the trail.)
   and only shows up as a hole in a live page weeks later.
 
 - [page-builder] Ten pre-designed section components in
-  `app/(public)/_components/` still have zero call sites: `trust-strip`,
+  `app/[locale]/(public)/_components/` still have zero call sites: `trust-strip`,
   `services-band`, `awards-band`, `areas-mosaic`, `insights-teaser`,
   `off-plan-strip`, `advisor-of-month`, `client-words`, `market-stats-strip`,
   `cta-banner`. They were considered for the v1 catalogue and left out for
@@ -857,7 +857,7 @@ shows the trail.)
   with a real reading pass, not free inventory.
 
 - [page-builder] Seven components under
-  `app/(admin)/admin/pages/[id]/_components/` remain orphaned from the
+  `app/[locale]/(admin)/admin/pages/[id]/_components/` remain orphaned from the
   abandoned Sprint 7g/8 page builder — `block-reorder` (dnd-kit), `block-add-cta`
   (offers `mosaic` and `embed`, neither of which is in `BLOCK_KINDS`, so wiring
   it up would create blocks `parseBlocks` deletes on the next read),

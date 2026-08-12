@@ -15,7 +15,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 // has been removed along with customer accounts.
 import { signOutAction } from "@/app/_actions/auth";
 import { isSupabaseConfigured } from "@/lib/env";
-import { useAdminSession } from "@/app/(admin)/_components/admin-session";
+import { useAdminSession } from "@/app/[locale]/(admin)/_components/admin-session";
 
 type StaffSummary = {
   display_name: string;
