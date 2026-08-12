@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import {
   acceptAll,
   rejectAll,
@@ -13,14 +13,14 @@ export async function acceptAllConsent(): Promise<ConsentState> {
   const next = acceptAll();
   await writeConsentCookie(next);
   // Force re-render so server-rendered analytics scripts can mount.
-  revalidatePath("/", "layout");
+  revalidateLocalised("/", "layout");
   return next;
 }
 
 export async function rejectAllConsent(): Promise<ConsentState> {
   const next = rejectAll();
   await writeConsentCookie(next);
-  revalidatePath("/", "layout");
+  revalidateLocalised("/", "layout");
   return next;
 }
 
@@ -30,6 +30,6 @@ export async function savePreferencesConsent(prefs: {
 }): Promise<ConsentState> {
   const next = savePreferences(prefs);
   await writeConsentCookie(next);
-  revalidatePath("/", "layout");
+  revalidateLocalised("/", "layout");
   return next;
 }

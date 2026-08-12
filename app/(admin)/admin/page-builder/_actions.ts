@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -59,8 +60,8 @@ function noEnv(): LandingResult {
 
 async function revalidateLanding(slug: string | null, prevSlug?: string | null) {
   revalidatePath("/admin/page-builder");
-  if (slug) revalidatePath(`/lp/${slug}`);
-  if (prevSlug && prevSlug !== slug) revalidatePath(`/lp/${prevSlug}`);
+  if (slug) revalidateLocalised(`/lp/${slug}`);
+  if (prevSlug && prevSlug !== slug) revalidateLocalised(`/lp/${prevSlug}`);
 }
 
 function duplicateSlug(error: { code?: string }): boolean {

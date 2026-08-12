@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
@@ -33,7 +34,7 @@ export type PublishMegamenuTabResult =
 async function revalidateMegamenuPaths() {
   if (!isSupabaseConfigured) return;
   revalidatePath("/admin/navigation");
-  revalidatePath("/", "layout"); // every public page renders the nav
+  revalidateLocalised("/", "layout"); // every public page renders the nav
 }
 
 export async function saveMegamenuTab(

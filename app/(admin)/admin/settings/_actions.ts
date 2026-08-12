@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import {
@@ -78,7 +79,7 @@ export async function updateBrandSettings(
     // layout's top bar, so every public route holds a cached copy of it.
     // Revalidating "/" alone would swap the logo on the homepage and leave
     // every other page on the old one until its own cache expired.
-    revalidatePath("/", "layout");
+    revalidateLocalised("/", "layout");
     return { status: "ok", message: "Brand settings saved." };
   }
   return result;
@@ -108,7 +109,7 @@ export async function updateDisplaySettings(
       after: parsed.data,
     });
     revalidatePath("/admin/settings");
-    revalidatePath("/");
+    revalidateLocalised("/");
     return { status: "ok", message: "Display settings saved." };
   }
   return result;

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -142,11 +143,11 @@ export async function updateArea(
 
   revalidatePath("/admin/pages/sub/area");
   revalidatePath(`/admin/areas/${id}`);
-  revalidatePath(`/areas/${data.slug}`);
+  revalidateLocalised(`/areas/${data.slug}`);
   // A slug change moves the public page; the old path needs clearing too.
   if (before?.slug && before.slug !== data.slug)
-    revalidatePath(`/areas/${before.slug}`);
-  revalidatePath("/areas");
+    revalidateLocalised(`/areas/${before.slug}`);
+  revalidateLocalised("/areas");
   return { status: "ok", message: "Saved." };
 }
 
@@ -261,10 +262,10 @@ export async function createArea(raw: {
   });
 
   revalidatePath("/admin/pages/sub/area");
-  revalidatePath("/areas");
+  revalidateLocalised("/areas");
   // The public guide exists from this moment — clear its path and the
   // sitemap so it's crawlable without waiting for the next ISR window.
-  revalidatePath(`/areas/${input.slug}`);
+  revalidateLocalised(`/areas/${input.slug}`);
   revalidatePath("/sitemap.xml");
   return {
     status: "ok",

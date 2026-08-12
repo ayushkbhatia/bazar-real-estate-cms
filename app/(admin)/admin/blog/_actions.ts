@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
@@ -28,8 +29,8 @@ async function loadArticle(id: string) {
 
 function revalidateBlog(slug?: string) {
   revalidatePath("/admin/blog");
-  revalidatePath("/insights");
-  if (slug) revalidatePath(`/insights/${slug}`);
+  revalidateLocalised("/insights");
+  if (slug) revalidateLocalised(`/insights/${slug}`);
 }
 
 /**

@@ -24,9 +24,23 @@ module.exports = {
       // The CI job resolves a currently-published property and passes it in.
       // Locally, `npx lhci autorun` audits the two stable routes unless you
       // set LHCI_DETAIL_URL yourself.
+      // The Arabic routes are audited as soon as they exist. The Arabic
+      // webfont is loaded with `display: swap`, which is a textbook CLS and
+      // LCP regression, and auditing `/` and `/buy` alone cannot see it —
+      // English pages never request that font. This is the only automated
+      // defence for the font decision, so the URLs are wired up in the phase
+      // that creates the risk rather than the one that discovers it.
+      //
+      // Gated on LHCI_AUDIT_AR so the config is correct before `/ar` is
+      // served: without it lhci would 404 and fail before scoring anything,
+      // which is exactly how the property-detail URL broke this job once
+      // before. The CI job sets it once Arabic ships.
       url: [
         "http://127.0.0.1:3100/",
         "http://127.0.0.1:3100/buy",
+        ...(process.env.LHCI_AUDIT_AR
+          ? ["http://127.0.0.1:3100/ar", "http://127.0.0.1:3100/ar/buy"]
+          : []),
         ...(process.env.LHCI_DETAIL_URL ? [process.env.LHCI_DETAIL_URL] : []),
       ],
       numberOfRuns: 3,

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
@@ -89,7 +90,7 @@ async function persist(
     after: { development: record.slug, sections: sections.length },
   });
 
-  revalidatePath(`/developments/${record.slug}`);
+  revalidateLocalised(`/developments/${record.slug}`);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   revalidatePath("/admin/pages/sub");
   return { status: "ok", message: "Saved." };
@@ -179,7 +180,7 @@ export async function setDevelopmentImages(
     after: images,
   });
 
-  revalidatePath(`/developments/${record.slug}`);
+  revalidateLocalised(`/developments/${record.slug}`);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   revalidatePath("/admin/pages/sub");
   return { status: "ok", message: "Images saved." };
@@ -257,10 +258,10 @@ export async function saveDevelopmentFacts(
     after: parsed.data,
   });
 
-  revalidatePath(`/developments/${record.slug}`);
+  revalidateLocalised(`/developments/${record.slug}`);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   revalidatePath("/admin/pages/sub/development");
-  revalidatePath("/developments");
+  revalidateLocalised("/developments");
   return { status: "ok", message: "Key facts saved." };
 }
 
@@ -474,7 +475,7 @@ export async function saveDevelopmentContent(
     },
   });
 
-  revalidatePath(`/developments/${record.slug}`);
+  revalidateLocalised(`/developments/${record.slug}`);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   return { status: "ok", message: "Saved." };
 }
@@ -552,6 +553,6 @@ export async function deleteDevelopment(
 
   revalidatePath("/admin/pages/sub");
   revalidatePath("/admin/pages/sub/development");
-  revalidatePath("/developments");
+  revalidateLocalised("/developments");
   return { status: "ok", message: `Deleted "${record.name}".` };
 }

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
@@ -205,7 +206,7 @@ export async function saveDevelopmentUnitPlans(
     },
   });
 
-  revalidatePath(`/developments/${record.slug}`);
+  revalidateLocalised(`/developments/${record.slug}`);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   return { status: "ok", message: "Units & floor plans saved." };
 }
@@ -251,7 +252,7 @@ export async function seedDevelopmentUnitPlans(
     after: { bedrooms_text: record.bedrooms_text },
   });
 
-  revalidatePath(`/developments/${record.slug}`);
+  revalidateLocalised(`/developments/${record.slug}`);
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   return { status: "ok", message: "Starter unit types added." };
 }

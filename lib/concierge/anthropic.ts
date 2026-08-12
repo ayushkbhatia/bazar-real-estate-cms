@@ -11,6 +11,7 @@
  * call the real API in CI.
  */
 import Anthropic from "@anthropic-ai/sdk";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { anthropicEnv, isAnthropicConfigured } from "./env";
 import {
   TOOL_HANDLERS,
@@ -27,6 +28,30 @@ export const MAX_INPUT_TOKENS_PER_SESSION = 50_000;
 export const MAX_OUTPUT_TOKENS_PER_TURN = 1500;
 export const MAX_ANON_TURNS = 5;
 export const MAX_TOOL_LOOPS = 6;
+
+/**
+ * Arabic needs roughly 2.5x the tokens of the equivalent English, because the
+ * script tokenises far less efficiently. Left at the English ceilings, an
+ * Arabic reply that says the same thing as a comfortable English one truncates
+ * mid-sentence — `stop_reason: "max_tokens"` — and the visitor sees the
+ * concierge stop talking halfway through a paragraph.
+ *
+ * 2x rather than 2.5x on output: the prompt asks for 1-3 short paragraphs, so
+ * the English cap already has headroom the Arabic one is borrowing.
+ */
+const AR_TOKEN_MULTIPLIER = 2;
+
+export function maxOutputTokens(locale: Locale): number {
+  return locale === "ar"
+    ? MAX_OUTPUT_TOKENS_PER_TURN * AR_TOKEN_MULTIPLIER
+    : MAX_OUTPUT_TOKENS_PER_TURN;
+}
+
+export function maxSessionInputTokens(locale: Locale): number {
+  return locale === "ar"
+    ? MAX_INPUT_TOKENS_PER_SESSION * AR_TOKEN_MULTIPLIER
+    : MAX_INPUT_TOKENS_PER_SESSION;
+}
 
 export const SYSTEM_PROMPT = `You are the Bazar Concierge — a senior advisor's apprentice for bazar.ae, a boutique advisory firm in Abu Dhabi. Your job is to help buyers, renters, and investors narrow down their property brief and surface 3-5 strong matches with deterministic match scores.
 
@@ -45,6 +70,30 @@ Hard rules:
 - Never recommend more than 5 properties at once.
 - Do not promise specific viewing times; say "an advisor will reach out".
 `;
+
+/**
+ * Claude usually mirrors the language it is written to, but nothing here
+ * enforced it, and the voice instruction above ("editorial, numerically
+ * honest") is calibrated for English. On an Arabic page a reply that drifts
+ * into English reads as broken rather than multilingual.
+ *
+ * Tool results stay English — they carry property titles, area names and
+ * reference codes, which are names rather than prose. The model is told to
+ * quote them as-is so a listing is searchable by the name on its own page.
+ */
+const ARABIC_CLAUSE = `
+
+LANGUAGE — this visitor is on the Arabic site:
+- Reply in Modern Standard Arabic throughout. Never switch to English mid-reply, even if the visitor writes to you in English.
+- Register: professional and editorial, the way a Gulf property advisory writes to a private client. Not the literal, formal register of a government circular.
+- Tool results come back in English. Property titles, development names, area names and reference codes are NAMES — reproduce them verbatim in Latin script rather than translating them, so they match what is printed on the listing.
+- Keep all numerals in Western digits (0-9). Prices, areas, dates and reference codes must be reproduced exactly as the tools return them.
+- Say تملك حر for freehold and حق انتفاع for leasehold. Never render leasehold as إيجار — that describes a rental and misstates what is being sold.
+- Refer to Bazar's people as مستشار (advisor), never وكيل (agent).`;
+
+export function systemPromptFor(locale: Locale = DEFAULT_LOCALE): string {
+  return locale === "ar" ? SYSTEM_PROMPT + ARABIC_CLAUSE : SYSTEM_PROMPT;
+}
 
 type AnthropicLikeClient = Pick<Anthropic, "messages">;
 
@@ -91,6 +140,8 @@ export type LoopOptions = {
   pinnedIds: string[];
   anonymous: boolean;
   totalInputTokensSoFar: number;
+  /** Defaults to English so existing callers and specs are unaffected. */
+  locale?: Locale;
 };
 
 /**
@@ -106,15 +157,17 @@ export async function* runConciergeLoop(
   opts: LoopOptions,
 ): AsyncGenerator<LoopUpdate> {
   const tools = toolsForSession({ anonymous: opts.anonymous });
+  const locale = opts.locale ?? DEFAULT_LOCALE;
+  const inputBudget = maxSessionInputTokens(locale);
   let messages: ConversationMessage[] = [...opts.messages];
   let inputTokens = opts.totalInputTokensSoFar;
 
   for (let iter = 0; iter < MAX_TOOL_LOOPS; iter++) {
-    if (inputTokens >= MAX_INPUT_TOKENS_PER_SESSION) {
+    if (inputTokens >= inputBudget) {
       yield {
         kind: "done",
         reason: "error",
-        error: `Session token budget exceeded (${inputTokens}/${MAX_INPUT_TOKENS_PER_SESSION}). Start a new brief.`,
+        error: `Session token budget exceeded (${inputTokens}/${inputBudget}). Start a new brief.`,
       };
       return;
     }
@@ -123,8 +176,8 @@ export async function* runConciergeLoop(
     try {
       response = await opts.client.messages.create({
         model: CONCIERGE_MODEL,
-        system: SYSTEM_PROMPT,
-        max_tokens: MAX_OUTPUT_TOKENS_PER_TURN,
+        system: systemPromptFor(locale),
+        max_tokens: maxOutputTokens(locale),
         tools: tools as unknown as Anthropic.Messages.Tool[],
         messages: messages as unknown as Anthropic.Messages.MessageParam[],
       });

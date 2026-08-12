@@ -6,6 +6,7 @@ A luxury real-estate marketplace **and** full operations CMS for [bazar.ae](http
 
 - **[docs/PROJECT_UNDERSTANDING.md](docs/PROJECT_UNDERSTANDING.md)** — what we're building, who Bazar is, IA, data model, compliance, roadmap. Required reading for any new contributor (human or AI).
 - **[docs/FOLLOWUPS.md](docs/FOLLOWUPS.md)** — cross-session backlog of small "noticed during a PR, not worth bloating it" items. Pick from here when you have a slot; add to it when you finish a PR and spot something.
+- **[docs/I18N.md](docs/I18N.md)** — Arabic + RTL: what you must do when you add a new page, component, section, block, form field or public column. Read before adding any of those.
 - **[AGENTS.md](AGENTS.md)** — Next.js 16 has breaking changes from earlier versions; consult `node_modules/next/dist/docs/` when in doubt.
 - **[docs/decisions/](docs/decisions/)** — Architecture Decision Records. Read these before assuming the spec is current; we deliberately diverged from the original brief in four places (FTS+Meilisearch, MapLibre+Mapbox, Vercel cron, Postgres+Mailchimp).
 - **Design handoff** (not in repo): `/Users/ayushkbhatia/Downloads/design_handoff_bazar_website_cms/` — 13 docs + 15 JSX screen mockups + tokens. The source of truth for screens, copy, and entity shapes.
@@ -157,6 +158,8 @@ All env vars are loaded via `lib/env.ts` (zod-validated). Don't read `process.en
 - Regenerate types with `npm run db:types` (calls `mcp__supabase__generate_typescript_types` and writes to `db/types.ts`).
 - RLS is enabled on every table. Permission model lives in Postgres policies, not app code.
 - For migrations affecting policy, also re-run the type generator.
+- **A new public column on `site_settings` needs a `grant select (…) to anon` in the same migration.** That table is the only one with column-level grants (0096/0097), and an ungranted column fails the *whole* PostgREST select — so the symptom is every public page silently falling back to code defaults, not an error. Every other table uses table-wide grants plus RLS and needs nothing.
+- **Public text columns need an Arabic twin** (`description` → `description_ar`) and an entry in `lib/i18n/domains.ts`. See [docs/I18N.md](docs/I18N.md).
 
 ## Deploy flow
 
