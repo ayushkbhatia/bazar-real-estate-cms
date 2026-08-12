@@ -58,7 +58,8 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
   if (!def) notFound();
 
   const [content, media, areas, developments, properties] = await Promise.all([
-    getMasterPageContent(key),
+    // Bilingual: the editor needs both sides of every field at once.
+    getMasterPageContent(key, "bilingual"),
     fetchMedia(),
     listAreasWithCounts(),
     listPublishedDevelopments(),

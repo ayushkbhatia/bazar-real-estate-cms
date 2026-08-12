@@ -4,6 +4,13 @@ import { ChevronRight, Pencil } from "lucide-react";
 import { getLandingPageForAdmin } from "@/lib/queries/landing-pages";
 import { attachImageUrls } from "@/lib/queries/section-images";
 import { resolveDocument, unknownBlockCount } from "@/lib/page-builder";
+import {
+  DEFAULT_LOCALE,
+  LOCALE_DIR,
+  isEnabledLocale,
+  type Locale,
+} from "@/lib/i18n/locales";
+import { DirectionProvider } from "@/app/[locale]/_direction-provider";
 import { loadLandingData } from "@/lib/page-builder/data";
 import { LandingRenderer } from "@/app/[locale]/(public)/lp/[slug]/_render";
 
@@ -22,14 +29,25 @@ import { LandingRenderer } from "@/app/[locale]/(public)/lp/[slug]/_render";
  */
 export const dynamic = "force-dynamic";
 
-type PageProps = { params: Promise<{ id: string }> };
+type PageProps = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ lang?: string }>;
+};
 
-export default async function LandingPreviewPage({ params }: PageProps) {
+export default async function LandingPreviewPage({
+  params,
+  searchParams,
+}: PageProps) {
   const { id } = await params;
+  const { lang } = await searchParams;
   const page = await getLandingPageForAdmin(id);
   if (!page) notFound();
 
-  const blocks = resolveDocument(page.draft);
+  // "What you preview is what publishes" — the same renderer as the public
+  // route, so the preview has to fold to a locale exactly as the public page
+  // will. `?lang=ar` shows the Arabic face, English fallbacks and all.
+  const locale: Locale = isEnabledLocale(lang) ? lang : DEFAULT_LOCALE;
+  const blocks = resolveDocument(page.draft, locale);
   await attachImageUrls(blocks);
   const data = await loadLandingData(blocks);
   const unknown = unknownBlockCount(blocks);
@@ -66,7 +84,20 @@ export default async function LandingPreviewPage({ params }: PageProps) {
           Nothing to preview yet — add a section in the editor.
         </p>
       ) : (
-        <LandingRenderer blocks={blocks} data={data} />
+        // The preview is an RTL island inside a permanently-LTR admin shell.
+        // Both mechanisms are needed and neither is redundant: `dir`/`lang` on
+        // the wrapper is what CSS `direction` and the `:lang(ar)` typography
+        // inherit from, and DirectionProvider is what Radix reads — it takes
+        // React context, not the DOM, so it cannot see the attribute.
+        //
+        // This is also the constraint that keeps the public side honest:
+        // direction has to be settable on any subtree, never assumed to come
+        // from <html>, or the preview silently renders LTR and previews a lie.
+        <div lang={locale} dir={LOCALE_DIR[locale]}>
+          <DirectionProvider dir={LOCALE_DIR[locale]}>
+            <LandingRenderer blocks={blocks} data={data} />
+          </DirectionProvider>
+        </div>
       )}
     </div>
   );

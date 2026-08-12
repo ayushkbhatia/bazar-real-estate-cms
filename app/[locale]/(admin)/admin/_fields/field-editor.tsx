@@ -16,7 +16,10 @@ import {
   type ItemValue,
   type SectionValues,
   type SimpleFieldDef,
+  arKey,
+  isTranslatable,
 } from "@/lib/master-pages";
+import { ArabicTwin } from "./arabic-twin";
 import { UploadButton, VideoUploadButton } from "./upload-button";
 import { fieldCls, type MediaOption, type Seeds } from "./types";
 
@@ -35,6 +38,8 @@ export function FieldEditor({
   media,
   onMediaAdded,
   seeds,
+  arValue,
+  onArChange,
 }: {
   field: FieldDef;
   value: unknown;
@@ -42,6 +47,18 @@ export function FieldEditor({
   media: MediaOption[];
   onMediaAdded: (m: MediaOption) => void;
   seeds: Seeds;
+  /**
+   * The Arabic twin's stored value, and its setter. Optional so a caller that
+   * has no bilingual document (or does not want the twin) is unaffected.
+   *
+   * Passed in rather than derived here because only the caller knows the whole
+   * values bag. List sub-fields are the exception — this component owns the
+   * item object, so it wires their twins itself and the call sites need no
+   * change for them, which is most of why the twins are derived rather than
+   * declared.
+   */
+  arValue?: string;
+  onArChange?: (v: string) => void;
 }) {
   if (isListField(field)) {
     const items = Array.isArray(value)
@@ -120,6 +137,16 @@ export function FieldEditor({
                     next[i] = { ...item, [sub.key]: v };
                     onChange(next);
                   }}
+                  arValue={
+                    typeof item[arKey(sub.key)] === "string"
+                      ? (item[arKey(sub.key)] as string)
+                      : ""
+                  }
+                  onArChange={(v) => {
+                    const next = items.slice();
+                    next[i] = { ...item, [arKey(sub.key)]: v };
+                    onChange(next);
+                  }}
                 />
               ))}
             </li>
@@ -162,6 +189,8 @@ export function FieldEditor({
       media={media}
       onMediaAdded={onMediaAdded}
       seeds={seeds}
+      arValue={arValue}
+      onArChange={onArChange}
     />
   );
 }
@@ -173,6 +202,8 @@ export function ScalarField({
   media,
   onMediaAdded,
   seeds,
+  arValue,
+  onArChange,
 }: {
   field: Exclude<FieldDef, { kind: "list" }>;
   value: ItemValue | undefined;
@@ -180,6 +211,17 @@ export function ScalarField({
   media: MediaOption[];
   onMediaAdded: (m: MediaOption) => void;
   seeds: Seeds;
+  /**
+   * The Arabic twin's value and setter. Optional, so a caller with no
+   * bilingual document is unaffected.
+   *
+   * This is the shared leaf for both a top-level field and a list item's
+   * sub-fields, which is why wiring it here covers list items with no change
+   * at either editor call site — the payoff for deriving twins rather than
+   * declaring them.
+   */
+  arValue?: string;
+  onArChange?: (v: string) => void;
 }) {
   if (isSelectField(field)) {
     // Two option sources. `options` is a closed set declared in code (column
@@ -458,6 +500,13 @@ export function ScalarField({
           onChange={(e) => onChange(e.target.value)}
         />
       )}
+      {onArChange && isTranslatable(field) ? (
+        <ArabicTwin
+          field={simple}
+          value={arValue ?? ""}
+          onChange={onArChange}
+        />
+      ) : null}
     </div>
   );
 }

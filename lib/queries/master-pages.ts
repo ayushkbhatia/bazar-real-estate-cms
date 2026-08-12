@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { attachImageUrls } from "@/lib/queries/section-images";
@@ -45,10 +46,20 @@ function build(
  */
 export async function getMasterPageContent(
   key: MasterPageKey,
+  /**
+   * Which language to fold the stored document down to.
+   *
+   * The ADMIN editor must pass "bilingual", or `resolveSections` collapses the
+   * `_ar` twins away and every Arabic input renders empty over stored content
+   * — the editor would then save that blank back and destroy it. Public
+   * callers pass their route locale; the default keeps every existing caller
+   * on English.
+   */
+  locale: Locale | "bilingual" = DEFAULT_LOCALE,
 ): Promise<MasterPageContent> {
   const def = getMasterPage(key);
   if (!def) throw new Error(`Unknown master page: ${key}`);
-  if (!isSupabaseConfigured) return build(resolveSections(def, null), true);
+  if (!isSupabaseConfigured) return build(resolveSections(def, null, locale), true);
 
   try {
     const supabase = createSupabasePublicClient();
@@ -57,14 +68,14 @@ export async function getMasterPageContent(
       .select("blocks")
       .eq("slug", masterSlug(key))
       .maybeSingle();
-    if (error || !data) return build(resolveSections(def, null), true);
+    if (error || !data) return build(resolveSections(def, null, locale), true);
 
     const stored = parseStoredSections(data.blocks);
-    const sections = resolveSections(def, stored);
+    const sections = resolveSections(def, stored, locale);
     await attachImageUrls(sections);
     return build(sections, stored === null);
   } catch (error) {
     console.error(`[master-pages] failed to load "${key}"`, error);
-    return build(resolveSections(def, null), true);
+    return build(resolveSections(def, null, locale), true);
   }
 }
