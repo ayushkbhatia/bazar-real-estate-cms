@@ -52,6 +52,9 @@ import {
 import type { AreaOption } from "@/lib/queries/areas";
 import type { Database } from "@/db/types";
 import { submitValuation } from "./_actions";
+import { pdfLabel } from "@/lib/pdf/language-note";
+import { useLocale } from "next-intl";
+import type { Locale } from "@/lib/i18n/locales";
 
 type Furnishing = Database["public"]["Enums"]["property_furnishing"];
 type PropertyType = Database["public"]["Enums"]["property_type"];
@@ -1033,6 +1036,7 @@ function SubmittedConfirmation({
   estimate: { lowAed: number; midAed: number; highAed: number } | null;
   valuationId: string | null;
 }) {
+  const locale = useLocale() as Locale;
   const { prefs } = usePreferences();
   const rangeValue = (aed: number) =>
     formatRangeAed(convertFromAed(aed, prefs.currency));
@@ -1074,7 +1078,7 @@ function SubmittedConfirmation({
                 href={`/api/pdf/valuation/${valuationId}`}
                 className="mt-5 inline-flex items-center gap-1.5 h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[13px] text-bz-ink-2 hover:border-bz-border-strong transition-colors"
               >
-                Download PDF
+                {pdfLabel("Download PDF", locale)}
               </a>
             ) : null}
           </div>

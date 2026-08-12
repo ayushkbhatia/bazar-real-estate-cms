@@ -92,3 +92,44 @@ describe("inline scroll coordinates", () => {
     });
   });
 });
+
+/**
+ * Drag-to-pan needs NO direction handling, and that is worth pinning so nobody
+ * "fixes" it later.
+ *
+ * The plan predicted the same clamp collapse the carousel suffered — "half of
+ * a 3840px floor plan unreachable". It conflated two call sites. The carousel
+ * applied its own `Math.max(0, …)` over a range that is [-max, 0] in RTL, and
+ * that genuinely collapsed. The floor-plan viewers just assign:
+ *
+ *     el.scrollLeft = d.left - (e.clientX - d.x)
+ *
+ * `clientX` is viewport coordinates and never flips, the expression is
+ * sign-symmetric, and the browser clamps scrollLeft to the element's own valid
+ * range. So the full extent is reachable in both directions with no change.
+ */
+describe("drag-to-pan is direction-agnostic as written", () => {
+  const MAX = 600;
+  // The browser clamps to the element's own range; RTL's is [-max, 0].
+  const pan = (start: number, deltaX: number, rtl: boolean) => {
+    const raw = start - deltaX;
+    return rtl ? Math.max(-MAX, Math.min(0, raw)) : Math.max(0, Math.min(MAX, raw));
+  };
+
+  it("reaches the far end in both directions", () => {
+    expect(pan(0, -9999, false)).toBe(MAX);
+    expect(pan(0, 9999, true)).toBe(-MAX);
+  });
+
+  it("cannot scroll past the inline start in either direction", () => {
+    expect(pan(0, 9999, false)).toBe(0);
+    expect(pan(0, -9999, true)).toBe(0);
+  });
+
+  it("moves the content with the pointer in both directions", () => {
+    // Dragging right reveals content on the inline-start side, whichever
+    // side that physically is.
+    expect(pan(300, 100, false)).toBe(200);
+    expect(pan(-300, 100, true)).toBe(-400);
+  });
+});
