@@ -8,9 +8,9 @@ import { mediaPublicUrl } from "@/lib/media";
 import { getDevelopmentPageContent } from "@/lib/queries/subpages";
 import {
   MasterPageEditor,
-  type MediaOption,
   type SectionActions,
 } from "../../../master/[key]/_editor";
+import type { MediaOption } from "../../../../_fields/types";
 import { DevelopmentImagesCard } from "./_images-card";
 import { DevelopmentFactsCard } from "./_facts-card";
 import {

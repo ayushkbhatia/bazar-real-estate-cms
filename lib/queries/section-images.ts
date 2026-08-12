@@ -1,13 +1,19 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { mediaPublicUrl } from "@/lib/media";
-import type { ImageValue, ResolvedSection } from "@/lib/master-pages";
+import type { ImageValue, SectionValues } from "@/lib/master-pages";
 
 /**
  * Turn every `media_id` in the resolved sections into a public URL. One query
  * for the whole page, walking both scalar image fields and image fields inside
  * list items.
+ *
+ * Typed on the shape it actually reads rather than on `ResolvedSection`, so a
+ * page builder block — same `values` bag, different envelope — resolves through
+ * the same single query.
  */
-export async function attachImageUrls(sections: ResolvedSection[]): Promise<void> {
+export async function attachImageUrls(
+  sections: { values: SectionValues }[],
+): Promise<void> {
   const images: ImageValue[] = [];
   const collect = (value: unknown) => {
     if (!value || typeof value !== "object") return;

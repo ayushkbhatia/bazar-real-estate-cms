@@ -811,3 +811,35 @@ shows the trail.)
   key. Route the routing lookup through the service-role or cookie-aware client
   (it runs inside a form submit, so it is already dynamic), and split the
   display columns onto the narrow public read the way `getPublicBranding` does.
+
+- [page-builder] The `media-usage` sources are still `.limit(1000)` each, and
+  the Page Builder adds a fourth document-shaped one. `pages` already holds one
+  `subpage/` row per development, per area and per developer, so the ceiling is
+  closer than the number suggests — and row 1001 onward is invisible to the
+  usage index, which means its images read as `unused` and the media library
+  offers to trash them. Pagination, not a bigger number: the failure is silent
+  and only shows up as a hole in a live page weeks later.
+
+- [page-builder] Ten pre-designed section components in
+  `app/(public)/_components/` still have zero call sites: `trust-strip`,
+  `services-band`, `awards-band`, `areas-mosaic`, `insights-teaser`,
+  `off-plan-strip`, `advisor-of-month`, `client-words`, `market-stats-strip`,
+  `cta-banner`. They were considered for the v1 catalogue and left out for
+  concrete reasons rather than for time — worth reading before anyone adopts
+  one: `areas-mosaic` hardcodes five areas with **invented listing counts**
+  ("338") and a layout that only works at exactly five items, which is a
+  fabricated inventory claim on a DLD-regulated advertising surface;
+  `market-stats-strip` hardcodes Q2-2026 medians behind a `Sprint 9 wires
+  getMarketStatsSnapshot()` TODO; `cta-banner` imports `ValuationLeadGate` from
+  the valuation tool, so it is not a leaf. Prop-ifying any of them is real work
+  with a real reading pass, not free inventory.
+
+- [page-builder] Seven components under
+  `app/(admin)/admin/pages/[id]/_components/` remain orphaned from the
+  abandoned Sprint 7g/8 page builder — `block-reorder` (dnd-kit), `block-add-cta`
+  (offers `mosaic` and `embed`, neither of which is in `BLOCK_KINDS`, so wiring
+  it up would create blocks `parseBlocks` deletes on the next read),
+  `block-thumbnails`, `data-source-toggle`, `site-tree`, `block-types/embed`,
+  `block-types/mosaic`. The Page Builder supersedes what they were for. Decide:
+  delete them, or lift `block-thumbnails` into the new add-block picker, which
+  is the one piece with obvious value left in it.

@@ -91,8 +91,15 @@ export function resolveSections(
   });
 }
 
-function mergeValues(
-  def: SectionDef,
+/**
+ * Field-by-field fallback to the registry defaults.
+ *
+ * Exported because the page builder resolves its blocks the same way — a block
+ * that gains a field renders, and a stored document that predates the field is
+ * not a broken document.
+ */
+export function mergeValues(
+  def: { fields: FieldDef[]; defaults: SectionValues },
   stored: SectionValues | null,
 ): SectionValues {
   const out: SectionValues = {};
@@ -106,7 +113,7 @@ function mergeValues(
   return out;
 }
 
-function emptyFor(field: FieldDef) {
+export function emptyFor(field: FieldDef) {
   if (isListField(field)) return [];
   if (isSelectField(field)) return null;
   if (isToggleField(field)) return true;
@@ -184,42 +191,12 @@ export function validateSections(
     if (!sectionDef || seen.has(raw.key)) continue;
     seen.add(raw.key);
 
-    const values: SectionValues = {};
-    for (const field of sectionDef.fields) {
-      const value = (raw.values ?? {})[field.key];
-      if (isListField(field)) {
-        const arr = Array.isArray(value) ? value : [];
-        if (arr.length > field.max) {
-          issues.push({
-            section: sectionDef.label,
-            field: field.label,
-            message: `Keep it to ${field.max} ${field.itemLabel}s or fewer.`,
-          });
-        }
-        values[field.key] = arr.slice(0, field.max).map((item) => {
-          const out: Record<string, ItemValue> = {};
-          for (const sub of field.fields) {
-            out[sub.key] = normaliseScalar(
-              sub,
-              (item as Record<string, unknown>)?.[sub.key],
-              sectionDef.label,
-              issues,
-            );
-          }
-          return out;
-        });
-      } else if (value !== undefined) {
-        // A key the client didn't send means "unchanged" — reading merges the
-        // default back in — so only a value that was actually submitted blank
-        // counts as a blank required field.
-        values[field.key] = normaliseScalar(
-          field,
-          value,
-          sectionDef.label,
-          issues,
-        );
-      }
-    }
+    const values = validateFieldValues(
+      sectionDef.fields,
+      raw.values ?? {},
+      sectionDef.label,
+      issues,
+    );
 
     sections.push({
       key: sectionDef.key,
@@ -239,7 +216,54 @@ export function validateSections(
   return issues.length > 0 ? { ok: false, issues } : { ok: true, sections };
 }
 
-function normaliseScalar(
+/**
+ * Normalise one flat bag of values against a field list.
+ *
+ * Split out of `validateSections` so the page builder can validate a block
+ * instance with the same rules — a block and a master-page section differ in
+ * how they are addressed, not in what a field means.
+ */
+export function validateFieldValues(
+  fields: FieldDef[],
+  incoming: SectionValues | Record<string, unknown>,
+  label: string,
+  issues: ValidationIssue[],
+): SectionValues {
+  const values: SectionValues = {};
+  for (const field of fields) {
+    const value = (incoming as Record<string, unknown>)[field.key];
+    if (isListField(field)) {
+      const arr = Array.isArray(value) ? value : [];
+      if (arr.length > field.max) {
+        issues.push({
+          section: label,
+          field: field.label,
+          message: `Keep it to ${field.max} ${field.itemLabel}s or fewer.`,
+        });
+      }
+      values[field.key] = arr.slice(0, field.max).map((item) => {
+        const out: Record<string, ItemValue> = {};
+        for (const sub of field.fields) {
+          out[sub.key] = normaliseScalar(
+            sub,
+            (item as Record<string, unknown>)?.[sub.key],
+            label,
+            issues,
+          );
+        }
+        return out;
+      });
+    } else if (value !== undefined) {
+      // A key the client didn't send means "unchanged" — reading merges the
+      // default back in — so only a value that was actually submitted blank
+      // counts as a blank required field.
+      values[field.key] = normaliseScalar(field, value, label, issues);
+    }
+  }
+  return values;
+}
+
+export function normaliseScalar(
   field: Exclude<FieldDef, { kind: "list" }>,
   value: unknown,
   sectionLabel: string,
@@ -251,10 +275,23 @@ function normaliseScalar(
     return value !== false;
   }
   if (isSelectField(field)) {
-    // The stored value is a record slug. It is not validated against the live
-    // records here: a record can be unpublished or renamed after the fact, and
-    // the renderer already drops picks it can't resolve.
-    return trimOrNull(value);
+    const picked = trimOrNull(value);
+    // A record pick (`optionsKey`) is deliberately not checked against the live
+    // records: a record can be unpublished or renamed after the fact, and the
+    // renderer already drops picks it can't resolve. A code-declared choice
+    // (`options`) is a closed set the renderer switches on, so an unknown value
+    // there is a bug or a stale tab, not an editorial decision.
+    if (field.options && picked !== null) {
+      if (!field.options.some((o) => o.value === picked)) {
+        issues.push({
+          section: sectionLabel,
+          field: field.label,
+          message: `"${picked}" isn't one of the available choices.`,
+        });
+        return null;
+      }
+    }
+    return picked;
   }
   if (isMediaField(field)) {
     if (!value || typeof value !== "object" || Array.isArray(value)) {

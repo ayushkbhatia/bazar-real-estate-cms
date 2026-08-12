@@ -121,7 +121,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // was indexable, linked from the site's own navigation, and advertised
     // nowhere. They are queried directly rather than through the list helpers
     // because those reshape rows and attach labels the sitemap has no use for.
-    const [properties, developments, articles] = await Promise.all([
+    const [properties, developments, articles, landings] = await Promise.all([
       supabase
         .from("properties")
         .select("slug, reference, updated_at, status")
@@ -139,6 +139,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .eq("status", "published")
         .is("deleted_at", null)
         .limit(2000),
+      // Campaign landing pages. `noindex` is the editor's explicit "keep this
+      // out of search" — usually set on a paid-advert page so it doesn't
+      // compete with the canonical route — so it filters here too.
+      supabase
+        .from("landing_pages")
+        .select("slug, updated_at")
+        .eq("status", "published")
+        .eq("noindex", false)
+        .is("deleted_at", null)
+        .limit(500),
     ]);
 
     const propertyEntries: MetadataRoute.Sitemap = (properties.data ?? []).map(
@@ -168,6 +178,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
     );
 
+    const landingEntries: MetadataRoute.Sitemap = (landings.data ?? []).map(
+      (l) => ({
+        url: `${base}/lp/${l.slug}`,
+        lastModified: l.updated_at ? new Date(l.updated_at) : now,
+        changeFrequency: "monthly" as const,
+        priority: 0.5,
+      }),
+    );
+
     return [
       ...staticEntries,
       ...categoryEntries,
@@ -176,6 +195,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...propertyEntries,
       ...developmentEntries,
       ...articleEntries,
+      ...landingEntries,
     ];
   } catch (err) {
     console.error("[sitemap] catalogue fetch failed", err);

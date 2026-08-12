@@ -12,6 +12,7 @@ export type MediaUsageKind =
   | "floor_plan"
   | "article"
   | "page"
+  | "landing_page"
   | "area"
   | "area_guide"
   | "developer"
@@ -58,6 +59,7 @@ export const USAGE_KIND_LABELS: Record<MediaUsageKind, string> = {
   floor_plan: "Floor plan",
   article: "Article",
   page: "Page",
+  landing_page: "Landing page",
   area: "Area",
   area_guide: "Area guide",
   developer: "Developer",

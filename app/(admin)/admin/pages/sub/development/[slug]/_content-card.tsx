@@ -16,8 +16,8 @@ import {
   type FeatureBlock,
   type PaymentMilestone,
 } from "@/lib/schemas/development-content";
-import type { MediaOption } from "../../../master/[key]/_editor";
-import { ImagePicker } from "./_images-card";
+import type { MediaOption } from "../../../../_fields/types";
+import { ImagePicker } from "../../../../_fields/image-picker";
 import { LocationPicker } from "../../../../properties/[id]/_components/location-picker";
 import { saveDevelopmentContent } from "../_actions";
 

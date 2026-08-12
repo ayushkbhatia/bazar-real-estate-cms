@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import type { MediaOption } from "../../../master/[key]/_editor";
-import { ImagePicker } from "../../development/[slug]/_images-card";
+import type { MediaOption } from "../../../../_fields/types";
+import { ImagePicker } from "../../../../_fields/image-picker";
 import { setAreaImages } from "../_actions";
 
 /**
