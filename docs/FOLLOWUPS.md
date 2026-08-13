@@ -680,6 +680,24 @@ shows the trail.)
     same PR, that page renders in a different, per-device system face from
     every other Arabic page.
 
+- [ci] E2E still asserts on other CMS-owned copy, and any editor can redden it.
+  On 2026-08-13 an editor standardised the submit label on 16 forms between
+  05:40 and 07:13; `property_enquiry` went from "Send enquiry" to "Submit" and
+  `contact_enquiry` gained `required` on both email and phone. Two marketplace
+  specs failed on a branch whose diff contained no runtime code at all. Those
+  two plus the newsletter spec now locate forms structurally
+  (`button[type="submit"]`), but the same trap is still set elsewhere:
+  `developments.spec.ts:124` matches `/townhouses ·/i`, which is
+  `development_unit_types.label`, and the filter-chip assertions in
+  `marketplace.spec.ts` read taxonomy labels. The general fix is the one
+  applied here — assert the outcome, locate by structure, and leave exact
+  wording to unit tests where it cannot drift.
+
+- [forms] The `development_brochure` submit button says "Sumbit" in production.
+  Live on the public form since 2026-08-13 06:54. One-word fix in
+  /admin/forms/development_brochure; noted here because nothing in the CMS
+  spell-checks editor copy and nobody is likely to look at that button again.
+
 - [properties] `properties.description` has no editor, and no data.
   `_tabs/description.tsx` exports `PropertyDescriptionTab` — a full Tiptap
   editor with a bold/italic/list/link toolbar — and **nothing imports it**. Its

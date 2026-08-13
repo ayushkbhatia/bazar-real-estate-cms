@@ -2,18 +2,24 @@ import { test, expect } from "@playwright/test";
 
 test("/insights surfaces the newsletter signup form", async ({ page }) => {
   await page.goto("/insights");
-  // Subscribe button visible inside the dark editor's-pick card
-  await expect(
-    page.getByRole("button", { name: /^subscribe$/i }),
-  ).toBeVisible();
-  await expect(page.getByPlaceholder(/you@email\.com/i)).toBeVisible();
+  // The signup form, located by its own field rather than by its button copy —
+  // forms.copy.submit_label is editor-owned and has changed under CI before.
+  const form = page
+    .locator("form")
+    .filter({ has: page.getByPlaceholder(/you@email\.com/i) });
+  await expect(form).toBeVisible();
+  await expect(form.locator('button[type="submit"]')).toBeVisible();
 });
 
 test("rejected emails surface a client-side error", async ({ page }) => {
   await page.goto("/insights");
   await page.getByPlaceholder(/you@email\.com/i).fill("not-an-email");
   // Browser-level required validation will block submit; trigger via click.
-  await page.getByRole("button", { name: /^subscribe$/i }).click();
+  await page
+    .locator("form")
+    .filter({ has: page.getByPlaceholder(/you@email\.com/i) })
+    .locator('button[type="submit"]')
+    .click();
   // The native :invalid validation message is enforced by the browser —
   // form does not submit. The email field stays focused.
   await expect(page.getByPlaceholder(/you@email\.com/i)).toBeFocused();

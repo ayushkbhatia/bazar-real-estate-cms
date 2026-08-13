@@ -95,14 +95,29 @@ test("property page emits JSON-LD with the right reference", async ({ page }) =>
   expect(listing.identifier).toBe(reference);
 });
 
-test("contact form rejects when no email or phone is supplied", async ({ page }) => {
+test("contact form refuses a submission with no way to reply", async ({ page }) => {
+  // Asserts the OUTCOME, not the wording. Which message appears depends on the
+  // form's field config, which editors own: with `email` and `phone` both
+  // marked required, the per-field rule fires and the cross-field "we need at
+  // least an email or a phone number" message is never reached. That exact
+  // edit landed in production on 2026-08-13 and reddened CI with no commit.
+  //
+  // The cross-field rule itself is covered where it cannot drift, in
+  // lib/forms/submission.test.ts.
   await page.goto("/contact");
-  await page.getByLabel(/^name$/i).fill("Playwright Tester");
-  await page.getByLabel(/tell us more/i).fill("Need help.");
-  await page.getByRole("button", { name: /^submit$/i }).click();
-  await expect(
-    page.getByText(/need at least an email or a phone number/i),
-  ).toBeVisible();
+  const form = page
+    .locator("form")
+    .filter({ has: page.locator("[name='message']") });
+  await expect(form).toBeVisible();
+
+  await form.locator("[name='name']").fill("Playwright Tester");
+  await form.locator("[name='message']").fill("Need help.");
+  await form.locator('button[type="submit"]').click();
+
+  // However it is refused — native validation, a field error, or the
+  // cross-field rule — it must not have gone through.
+  await expect(page.getByText(/thank you/i)).toBeHidden({ timeout: 3_000 });
+  await expect(form).toBeVisible();
 });
 
 test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
@@ -122,7 +137,10 @@ test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
   await form
     .locator("[name='message']")
     .fill("Automated marketplace E2E test enquiry — please disregard.");
-  await form.getByRole("button", { name: /send enquiry/i }).click();
+  // Located by role, never by label: the submit label is editor-controlled
+  // copy (forms.copy.submit_label). It was "Send enquiry" until an editor
+  // changed it to "Submit", which timed this test out for 30s at a stretch.
+  await form.locator('button[type="submit"]').click();
   await expect(page.getByText(/thank you/i)).toBeVisible({ timeout: 15_000 });
 });
 
