@@ -136,12 +136,28 @@ test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
   const form = page.locator("form").filter({ has: page.locator("[name='message']") });
   await expect(form).toBeVisible();
 
+  // Fill whatever fields the form currently has, rather than a list this spec
+  // decided on once. `phone` became required on property_enquiry on
+  // 2026-08-13 and the submission silently stopped going through; hardcoding
+  // the new list would only move the breakage to the next edit.
   const ts = Date.now();
-  await form.locator("[name='name']").fill(`Playwright ${ts}`);
-  await form.locator("[name='email']").fill(`pw+${ts}@example.com`);
-  await form
-    .locator("[name='message']")
-    .fill("Automated marketplace E2E test enquiry — please disregard.");
+  const inputs = form.locator("input:not([type='hidden']), textarea");
+  for (let i = 0; i < (await inputs.count()); i++) {
+    const field = inputs.nth(i);
+    if (!(await field.isVisible())) continue;
+    const type = (await field.getAttribute("type")) ?? "text";
+    if (type === "checkbox" || type === "radio") continue;
+    const name = (await field.getAttribute("name")) ?? "";
+    if (name === "email" || type === "email") {
+      await field.fill(`pw+${ts}@example.com`);
+    } else if (name === "phone" || type === "tel") {
+      await field.fill("+971500000000");
+    } else if (name === "message") {
+      await field.fill("Automated marketplace E2E test enquiry — please disregard.");
+    } else {
+      await field.fill(`Playwright ${ts}`);
+    }
+  }
   // Located by role, never by label: the submit label is editor-controlled
   // copy (forms.copy.submit_label). It was "Send enquiry" until an editor
   // changed it to "Submit", which timed this test out for 30s at a stretch.
