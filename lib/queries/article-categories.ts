@@ -1,6 +1,9 @@
 import { cache } from "react";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { type Locale } from "@/lib/i18n/locales";
+import { localiseDeep } from "@/lib/i18n/localise";
 import {
   SEED_ARTICLE_CATEGORIES,
   ARTICLE_CATEGORY_LABELS,
@@ -38,12 +41,25 @@ const SEED_ROWS: ArticleCategoryRow[] = SEED_ARTICLE_CATEGORIES.map((c) => ({
  * consumers on one page share one query.
  */
 export const listAllArticleCategories = cache(
-  async (): Promise<ArticleCategoryRow[]> => {
+  async (
+    /**
+     * Overridable; defaults to the locale of the request.
+     *
+     * Callers OUTSIDE the `[locale]` segment must pass one explicitly —
+     * app/sitemap.ts and the metadata routes have no `setRequestLocale` above
+     * them, so an ambient read there is a dynamic API and silently drops the
+     * route off prerendering. `cache()` keys on the argument, so passing it
+     * costs nothing.
+     */
+    locale?: Locale,
+  ): Promise<ArticleCategoryRow[]> => {
     if (!isSupabaseConfigured) return SEED_ROWS;
     const supabase = createSupabasePublicClient();
     const { data, error } = await supabase
       .from("article_categories")
-      .select("slug, label, description, sort_order, is_active")
+      .select(
+        "slug, label, label_ar, description, description_ar, sort_order, is_active",
+      )
       .order("sort_order", { ascending: true })
       .order("label", { ascending: true });
     if (error) {
@@ -52,7 +68,13 @@ export const listAllArticleCategories = cache(
       console.error("[listAllArticleCategories]", error.message);
       return SEED_ROWS;
     }
-    return (data ?? []) as ArticleCategoryRow[];
+    // Folded here rather than at each consumer: the label reaches the chip
+    // bar, the category heading, every article card and the sitemap, and this
+    // is the one place they all come through.
+    return localiseDeep(
+      (data ?? []) as ArticleCategoryRow[],
+      locale ?? (await currentLocale()),
+    );
   },
 );
 
@@ -63,8 +85,8 @@ export const listAllArticleCategories = cache(
  * content that already references them (see label/URL helpers below).
  */
 export const listArticleCategories = cache(
-  async (): Promise<ArticleCategoryRow[]> => {
-    const rows = await listAllArticleCategories();
+  async (locale?: Locale): Promise<ArticleCategoryRow[]> => {
+    const rows = await listAllArticleCategories(locale);
     return rows.filter((r) => r.is_active);
   },
 );
@@ -75,8 +97,8 @@ export const listArticleCategories = cache(
  * category still renders its proper label on public cards.
  */
 export const getArticleCategoryLabels = cache(
-  async (): Promise<Record<string, string>> => {
-    const rows = await listAllArticleCategories();
+  async (locale?: Locale): Promise<Record<string, string>> => {
+    const rows = await listAllArticleCategories(locale);
     const labels: Record<string, string> = { ...ARTICLE_CATEGORY_LABELS };
     for (const row of rows) labels[row.slug] = row.label;
     return labels;

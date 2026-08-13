@@ -8,6 +8,7 @@ import { logAudit } from "@/lib/audit";
 import { slugify } from "@/lib/slug";
 import {
   articleCategoryCreateSchema,
+  articleCategoryEditSchema,
   type ArticleCategoryCreateInput,
 } from "@/lib/schemas/article";
 import type { ArticleCategoryRow } from "@/lib/queries/article-categories";
@@ -117,4 +118,83 @@ export async function createArticleCategory(
     category: data as ArticleCategoryRow,
     categories,
   };
+}
+
+export type UpdateCategoryResult =
+  | { status: "ok" }
+  | { status: "error"; message: string; fieldErrors?: Record<string, string> };
+
+/**
+ * Edit one category: its label, its Arabic twins, its description, its order
+ * and whether it is still offered.
+ *
+ * Retiring a category that articles still use is refused rather than allowed
+ * with a warning. `is_active = false` removes it from the editor dropdown, the
+ * public chip bar, the sitemap and `generateStaticParams` — so an article filed
+ * under it keeps rendering but its category page stops being built, which is a
+ * 404 on a URL that was live. Making that reachable by accident is worse than
+ * making the editor move the articles first.
+ */
+export async function updateArticleCategory(
+  raw: unknown,
+): Promise<UpdateCategoryResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  const { supabase } = await requireRole(BLOG_ROLES);
+
+  const parsed = articleCategoryEditSchema.safeParse(raw);
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const key = String(issue.path[0] ?? "");
+      if (key && !fieldErrors[key]) fieldErrors[key] = issue.message;
+    }
+    return { status: "error", message: "Please fix the errors below.", fieldErrors };
+  }
+
+  const input = parsed.data;
+
+  if (!input.is_active) {
+    const { count } = await supabase
+      .from("articles")
+      .select("id", { head: true, count: "exact" })
+      .eq("category", input.slug)
+      .is("deleted_at", null);
+    if ((count ?? 0) > 0) {
+      return {
+        status: "error",
+        message: `${count} article${count === 1 ? " is" : "s are"} still filed under this category. Move them first, then retire it.`,
+        fieldErrors: { is_active: "Still in use" },
+      };
+    }
+  }
+
+  const { error } = await supabase
+    .from("article_categories")
+    .update({
+      label: input.label,
+      label_ar: input.label_ar ?? null,
+      description: input.description ?? null,
+      description_ar: input.description_ar ?? null,
+      sort_order: input.sort_order,
+      is_active: input.is_active,
+    })
+    .eq("slug", input.slug);
+  if (error) return { status: "error", message: error.message };
+
+  await logAudit({
+    action: "article_category.update",
+    target_kind: "article_category",
+    target_id: input.slug,
+    before: null,
+    after: { label: input.label, is_active: input.is_active },
+  });
+
+  revalidatePath("/admin/blog");
+  revalidatePath("/admin/blog/categories");
+  // The label shows on every article card and the category page itself.
+  revalidateLocalised("/insights");
+  revalidateLocalised(`/insights/category/${input.slug}`);
+
+  return { status: "ok" };
 }
