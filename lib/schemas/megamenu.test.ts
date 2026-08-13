@@ -10,41 +10,71 @@ import {
   tabMetaEditSchema,
 } from "./megamenu";
 
+/* The Arabic twins are required-with-null on every write schema, because the
+ * megamenu save deletes and re-inserts child rows: a twin the payload omits is
+ * not left alone, it is destroyed. These helpers keep the fixtures below about
+ * whatever they were testing before Arabic existed. */
+type Bag = Record<string, unknown>;
+const withTabAr = (o: Bag) => ({
+  label_ar: null,
+  panel_title_ar: null,
+  right_column_title_ar: null,
+  ...o,
+});
+const withItemAr = (o: Bag) => ({ label_ar: null, badge_label_ar: null, ...o });
+const withColAr = (o: Bag) => ({
+  heading_ar: null,
+  ...o,
+  items: ((o.items as Bag[]) ?? []).map(withItemAr),
+});
+const withTileAr = (o: Bag) => ({
+  badge_label_ar: null,
+  headline_ar: null,
+  cta_label_ar: null,
+  ...o,
+});
+const withPayloadAr = (o: Bag) => ({
+  ...o,
+  ...(o.meta ? { meta: withTabAr(o.meta as Bag) } : {}),
+  ...(o.columns ? { columns: (o.columns as Bag[]).map(withColAr) } : {}),
+  ...(o.featured ? { featured: (o.featured as Bag[]).map(withTileAr) } : {}),
+});
+
 // ───────────────────────────────────────────────────────────────
 // tabMetaEditSchema
 // ───────────────────────────────────────────────────────────────
 describe("tabMetaEditSchema", () => {
   it("accepts a fully-populated panel tab", () => {
-    const r = tabMetaEditSchema.safeParse({
+    const r = tabMetaEditSchema.safeParse(withTabAr({
       label: "Commercial",
       href: null,
       has_panel: true,
       panel_title: "Commercial in Abu Dhabi",
       panel_title_href: "/commercial",
       right_column_title: "Sub-markets",
-    });
+    }));
     expect(r.success).toBe(true);
   });
 
   it("accepts a direct-link tab (no panel)", () => {
-    const r = tabMetaEditSchema.safeParse({
+    const r = tabMetaEditSchema.safeParse(withTabAr({
       label: "Insights",
       href: "/insights",
       has_panel: false,
-    });
+    }));
     expect(r.success).toBe(true);
   });
 
   it("rejects an empty label", () => {
-    const r = tabMetaEditSchema.safeParse({ label: "", has_panel: true });
+    const r = tabMetaEditSchema.safeParse(withTabAr({ label: "", has_panel: true }));
     expect(r.success).toBe(false);
   });
 
   it("rejects a label over 60 chars", () => {
-    const r = tabMetaEditSchema.safeParse({
+    const r = tabMetaEditSchema.safeParse(withTabAr({
       label: "a".repeat(61),
       has_panel: true,
-    });
+    }));
     expect(r.success).toBe(false);
   });
 });
@@ -54,48 +84,48 @@ describe("tabMetaEditSchema", () => {
 // ───────────────────────────────────────────────────────────────
 describe("itemEditSchema", () => {
   it("accepts a minimal valid item", () => {
-    const r = itemEditSchema.safeParse({
+    const r = itemEditSchema.safeParse(withItemAr({
       position: 0,
       label: "Apartments",
       href: "/buy?type=apartment",
-    });
+    }));
     expect(r.success).toBe(true);
     if (r.success) expect(r.data.badge_variant).toBe("default");
   });
 
   it("accepts all badge variants", () => {
     for (const v of ["default", "hot", "luxury", "new", "trending", "partner"]) {
-      const r = itemEditSchema.safeParse({
+      const r = itemEditSchema.safeParse(withItemAr({
         position: 0,
         label: "X",
         href: "/x",
         badge_variant: v,
-      });
+      }));
       expect(r.success).toBe(true);
     }
   });
 
   it("rejects negative position", () => {
-    const r = itemEditSchema.safeParse({
+    const r = itemEditSchema.safeParse(withItemAr({
       position: -1,
       label: "X",
       href: "/x",
-    });
+    }));
     expect(r.success).toBe(false);
   });
 
   it("rejects empty href", () => {
-    const r = itemEditSchema.safeParse({ position: 0, label: "X", href: "" });
+    const r = itemEditSchema.safeParse(withItemAr({ position: 0, label: "X", href: "" }));
     expect(r.success).toBe(false);
   });
 
   it("rejects unknown target_kind", () => {
-    const r = itemEditSchema.safeParse({
+    const r = itemEditSchema.safeParse(withItemAr({
       position: 0,
       label: "X",
       href: "/x",
       target_kind: "team",
-    });
+    }));
     expect(r.success).toBe(false);
   });
 });
@@ -105,24 +135,24 @@ describe("itemEditSchema", () => {
 // ───────────────────────────────────────────────────────────────
 describe("columnEditSchema", () => {
   it("accepts a left zone column with items", () => {
-    const r = columnEditSchema.safeParse({
+    const r = columnEditSchema.safeParse(withColAr({
       zone: "left",
       position: 0,
       heading: "Resale",
       items: [
         { position: 0, label: "Apartments", href: "/buy?type=apartment" },
       ],
-    });
+    }));
     expect(r.success).toBe(true);
   });
 
   it("accepts an empty items array", () => {
-    const r = columnEditSchema.safeParse({
+    const r = columnEditSchema.safeParse(withColAr({
       zone: "right",
       position: 0,
       heading: null,
       items: [],
-    });
+    }));
     expect(r.success).toBe(true);
   });
 
@@ -132,20 +162,20 @@ describe("columnEditSchema", () => {
       label: `Item ${i}`,
       href: `/x/${i}`,
     }));
-    const r = columnEditSchema.safeParse({
+    const r = columnEditSchema.safeParse(withColAr({
       zone: "left",
       position: 0,
       items,
-    });
+    }));
     expect(r.success).toBe(false);
   });
 
   it("rejects an unknown zone", () => {
-    const r = columnEditSchema.safeParse({
+    const r = columnEditSchema.safeParse(withColAr({
       zone: "centre",
       position: 0,
       items: [],
-    });
+    }));
     expect(r.success).toBe(false);
   });
 });
@@ -155,7 +185,7 @@ describe("columnEditSchema", () => {
 // ───────────────────────────────────────────────────────────────
 describe("featuredTileEditSchema", () => {
   it("accepts a complete tile", () => {
-    const r = featuredTileEditSchema.safeParse({
+    const r = featuredTileEditSchema.safeParse(withTileAr({
       position: 0,
       variant: "dark",
       badge_label: "New launch",
@@ -163,40 +193,40 @@ describe("featuredTileEditSchema", () => {
       headline: "Solaya by Aldar",
       href: "/off-plan/solaya-by-aldar",
       cta_label: "Discover more",
-    });
+    }));
     expect(r.success).toBe(true);
   });
 
   it("accepts position 0 or 1, rejects 2+", () => {
     expect(
-      featuredTileEditSchema.safeParse({
+      featuredTileEditSchema.safeParse(withTileAr({
         position: 0,
         headline: "A",
         href: "/a",
-      }).success,
+      })).success,
     ).toBe(true);
     expect(
-      featuredTileEditSchema.safeParse({
+      featuredTileEditSchema.safeParse(withTileAr({
         position: 1,
         headline: "A",
         href: "/a",
-      }).success,
+      })).success,
     ).toBe(true);
     expect(
-      featuredTileEditSchema.safeParse({
+      featuredTileEditSchema.safeParse(withTileAr({
         position: 2,
         headline: "A",
         href: "/a",
-      }).success,
+      })).success,
     ).toBe(false);
   });
 
   it("rejects empty headline", () => {
-    const r = featuredTileEditSchema.safeParse({
+    const r = featuredTileEditSchema.safeParse(withTileAr({
       position: 0,
       headline: "",
       href: "/x",
-    });
+    }));
     expect(r.success).toBe(false);
   });
 });
@@ -206,7 +236,7 @@ describe("featuredTileEditSchema", () => {
 // ───────────────────────────────────────────────────────────────
 describe("tabEditPayloadSchema", () => {
   it("accepts a full Buy-style payload", () => {
-    const r = tabEditPayloadSchema.safeParse({
+    const r = tabEditPayloadSchema.safeParse(withPayloadAr({
       meta: {
         label: "Buy",
         has_panel: true,
@@ -240,7 +270,7 @@ describe("tabEditPayloadSchema", () => {
           href: "/off-plan/solaya-by-aldar",
         },
       ],
-    });
+    }));
     expect(r.success).toBe(true);
   });
 
@@ -252,20 +282,20 @@ describe("tabEditPayloadSchema", () => {
       headline: "X",
       href: "/x",
     };
-    const r = tabEditPayloadSchema.safeParse({
+    const r = tabEditPayloadSchema.safeParse(withPayloadAr({
       meta: { label: "Buy", has_panel: true },
       columns: [],
       featured: [tile, tile, tile],
-    });
+    }));
     expect(r.success).toBe(false);
   });
 
   it("accepts an empty columns/featured (direct-link tab)", () => {
-    const r = tabEditPayloadSchema.safeParse({
+    const r = tabEditPayloadSchema.safeParse(withPayloadAr({
       meta: { label: "About", has_panel: false, href: "/about" },
       columns: [],
       featured: [],
-    });
+    }));
     expect(r.success).toBe(true);
   });
 });

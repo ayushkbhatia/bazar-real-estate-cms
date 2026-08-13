@@ -597,6 +597,7 @@ export function MegamenuEditor({ tab, media: initialMedia }: Props) {
         zone: "left" as const,
         position: c.position,
         heading: c.heading,
+        heading_ar: c.heading_ar ?? null,
         items: c.items.map<LocalItem>((i) =>
           withUid({
             position: i.position,
@@ -605,7 +606,9 @@ export function MegamenuEditor({ tab, media: initialMedia }: Props) {
             target_kind: i.target_kind,
             target_id: i.target_id,
             icon: i.icon,
+            label_ar: i.label_ar ?? null,
             badge_label: i.badge_label,
+            badge_label_ar: i.badge_label_ar ?? null,
             badge_variant: i.badge_variant,
           }),
         ),
@@ -616,6 +619,7 @@ export function MegamenuEditor({ tab, media: initialMedia }: Props) {
         zone: "right" as const,
         position: c.position,
         heading: c.heading,
+        heading_ar: c.heading_ar ?? null,
         items: c.items.map<LocalItem>((i) =>
           withUid({
             position: i.position,
@@ -624,7 +628,9 @@ export function MegamenuEditor({ tab, media: initialMedia }: Props) {
             target_kind: i.target_kind,
             target_id: i.target_id,
             icon: i.icon,
+            label_ar: i.label_ar ?? null,
             badge_label: i.badge_label,
+            badge_label_ar: i.badge_label_ar ?? null,
             badge_variant: i.badge_variant,
           }),
         ),
@@ -635,19 +641,25 @@ export function MegamenuEditor({ tab, media: initialMedia }: Props) {
         position: t.position,
         variant: t.variant,
         badge_label: t.badge_label,
+        badge_label_ar: t.badge_label_ar ?? null,
         badge_kind: t.badge_kind,
         headline: t.headline,
+        headline_ar: t.headline_ar ?? null,
         href: t.href,
         media_asset_id: t.media_asset_id,
         cta_label: t.cta_label,
+        cta_label_ar: t.cta_label_ar ?? null,
       }),
     );
     const meta: TabMetaEditInput = {
       label: tab.label,
+      label_ar: tab.label_ar ?? null,
       href: tab.href,
       has_panel: tab.has_panel,
       panel_title: tab.panel_title,
+      panel_title_ar: tab.panel_title_ar ?? null,
       panel_title_href: tab.panel_title_href,
+      right_column_title_ar: tab.right_column_title_ar ?? null,
       right_column_title: tab.right_column_title,
     };
     return { meta, left, right, featured };
@@ -705,6 +717,7 @@ export function MegamenuEditor({ tab, media: initialMedia }: Props) {
       zone: c.zone,
       position: c.position,
       heading: c.heading ?? null,
+      heading_ar: c.heading_ar ?? null,
       items: cleanItems(c.items),
     });
     const allColumns = [...left, ...right].map(cleanColumn);
