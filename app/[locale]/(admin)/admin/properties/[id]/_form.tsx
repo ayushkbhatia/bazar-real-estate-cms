@@ -731,6 +731,13 @@ export function PropertyEditForm({
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="view">View</Label>
               <Input id="view" {...register("view")} placeholder="Sea view" />
+              <ArabicTwin
+                field={{ key: "view_ar", label: "View", kind: "text", max: 100 }}
+                value={watch("view_ar") ?? ""}
+                onChange={(v) =>
+                  setValue("view_ar", v === "" ? null : v, { shouldDirty: true })
+                }
+              />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="orientation">Orientation</Label>
@@ -738,6 +745,20 @@ export function PropertyEditForm({
                 id="orientation"
                 {...register("orientation")}
                 placeholder="North-east"
+              />
+              <ArabicTwin
+                field={{
+                  key: "orientation_ar",
+                  label: "Orientation",
+                  kind: "text",
+                  max: 80,
+                }}
+                value={watch("orientation_ar") ?? ""}
+                onChange={(v) =>
+                  setValue("orientation_ar", v === "" ? null : v, {
+                    shouldDirty: true,
+                  })
+                }
               />
             </div>
           </div>
@@ -852,6 +873,20 @@ export function PropertyEditForm({
               id="address_line"
               {...register("address_line")}
               placeholder="Mamsha Al Saadiyat, Saadiyat Island, Abu Dhabi"
+            />
+            <ArabicTwin
+              field={{
+                key: "address_line_ar",
+                label: "Address line",
+                kind: "text",
+                max: 240,
+              }}
+              value={watch("address_line_ar") ?? ""}
+              onChange={(v) =>
+                setValue("address_line_ar", v === "" ? null : v, {
+                  shouldDirty: true,
+                })
+              }
             />
             <span className="text-[11.5px] text-bz-muted">
               Internal — used for advisor reference. Public view shows area

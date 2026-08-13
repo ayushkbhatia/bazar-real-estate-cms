@@ -680,6 +680,17 @@ shows the trail.)
     same PR, that page renders in a different, per-device system face from
     every other Arabic page.
 
+- [i18n] properties' public read path is unfolded, and the file is protected.
+  title, short_description, description, address_line, view and orientation all
+  have twins and (except description) Arabic inputs, but nothing renders them:
+  the fold belongs in `lib/queries/properties.ts`, which is on the
+  protected-files list where additive changes get reverted. Every other table's
+  fold went in without asking because those query files carry no such rule.
+  Two `localiseRow` calls are needed — one before the detail shaper, one in the
+  published-list map — and both must sit upstream of the shaping functions, as
+  in lib/queries/developments.ts. Needs an explicit go-ahead on that file
+  before anyone writes it.
+
 - [i18n] Arabic columns can exist with no way to type into them, and no guard sees it.
   `AWAITING_TWIN` in lib/i18n/domains.ts tracks whether a `_ar` COLUMN exists,
   because that is what domains.test.ts can verify from db/types.ts. It says
