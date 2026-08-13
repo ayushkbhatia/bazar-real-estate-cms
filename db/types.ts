@@ -1803,6 +1803,7 @@ export type Database = {
         Row: {
           created_at: string
           heading: string | null
+          heading_ar: string | null
           id: string
           position: number
           tab_id: string
@@ -1812,6 +1813,7 @@ export type Database = {
         Insert: {
           created_at?: string
           heading?: string | null
+          heading_ar?: string | null
           id?: string
           position: number
           tab_id: string
@@ -1821,6 +1823,7 @@ export type Database = {
         Update: {
           created_at?: string
           heading?: string | null
+          heading_ar?: string | null
           id?: string
           position?: number
           tab_id?: string
@@ -1841,9 +1844,12 @@ export type Database = {
         Row: {
           badge_kind: Database["public"]["Enums"]["megamenu_tile_badge_kind"]
           badge_label: string | null
+          badge_label_ar: string | null
           created_at: string
           cta_label: string | null
+          cta_label_ar: string | null
           headline: string
+          headline_ar: string | null
           href: string
           id: string
           media_asset_id: string | null
@@ -1855,9 +1861,12 @@ export type Database = {
         Insert: {
           badge_kind?: Database["public"]["Enums"]["megamenu_tile_badge_kind"]
           badge_label?: string | null
+          badge_label_ar?: string | null
           created_at?: string
           cta_label?: string | null
+          cta_label_ar?: string | null
           headline: string
+          headline_ar?: string | null
           href: string
           id?: string
           media_asset_id?: string | null
@@ -1869,9 +1878,12 @@ export type Database = {
         Update: {
           badge_kind?: Database["public"]["Enums"]["megamenu_tile_badge_kind"]
           badge_label?: string | null
+          badge_label_ar?: string | null
           created_at?: string
           cta_label?: string | null
+          cta_label_ar?: string | null
           headline?: string
+          headline_ar?: string | null
           href?: string
           id?: string
           media_asset_id?: string | null
@@ -1900,6 +1912,7 @@ export type Database = {
       megamenu_items: {
         Row: {
           badge_label: string | null
+          badge_label_ar: string | null
           badge_variant: Database["public"]["Enums"]["megamenu_badge_variant"]
           column_id: string
           created_at: string
@@ -1907,6 +1920,7 @@ export type Database = {
           icon: string | null
           id: string
           label: string
+          label_ar: string | null
           position: number
           target_id: string | null
           target_kind:
@@ -1916,6 +1930,7 @@ export type Database = {
         }
         Insert: {
           badge_label?: string | null
+          badge_label_ar?: string | null
           badge_variant?: Database["public"]["Enums"]["megamenu_badge_variant"]
           column_id: string
           created_at?: string
@@ -1923,6 +1938,7 @@ export type Database = {
           icon?: string | null
           id?: string
           label: string
+          label_ar?: string | null
           position: number
           target_id?: string | null
           target_kind?:
@@ -1932,6 +1948,7 @@ export type Database = {
         }
         Update: {
           badge_label?: string | null
+          badge_label_ar?: string | null
           badge_variant?: Database["public"]["Enums"]["megamenu_badge_variant"]
           column_id?: string
           created_at?: string
@@ -1939,6 +1956,7 @@ export type Database = {
           icon?: string | null
           id?: string
           label?: string
+          label_ar?: string | null
           position?: number
           target_id?: string | null
           target_kind?:
@@ -1963,11 +1981,14 @@ export type Database = {
           href: string | null
           id: string
           label: string
+          label_ar: string | null
           panel_title: string | null
+          panel_title_ar: string | null
           panel_title_href: string | null
           position: number
           published_at: string | null
           right_column_title: string | null
+          right_column_title_ar: string | null
           slug: string
           status: Database["public"]["Enums"]["megamenu_tab_status"]
           updated_at: string
@@ -1978,11 +1999,14 @@ export type Database = {
           href?: string | null
           id?: string
           label: string
+          label_ar?: string | null
           panel_title?: string | null
+          panel_title_ar?: string | null
           panel_title_href?: string | null
           position: number
           published_at?: string | null
           right_column_title?: string | null
+          right_column_title_ar?: string | null
           slug: string
           status?: Database["public"]["Enums"]["megamenu_tab_status"]
           updated_at?: string
@@ -1993,11 +2017,14 @@ export type Database = {
           href?: string | null
           id?: string
           label?: string
+          label_ar?: string | null
           panel_title?: string | null
+          panel_title_ar?: string | null
           panel_title_href?: string | null
           position?: number
           published_at?: string | null
           right_column_title?: string | null
+          right_column_title_ar?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["megamenu_tab_status"]
           updated_at?: string
@@ -2709,7 +2736,9 @@ export type Database = {
         Row: {
           accent_token: string
           brand_name: string
+          brand_name_ar: string | null
           brand_tagline: string | null
+          brand_tagline_ar: string | null
           contact_email: string | null
           contact_phone: string | null
           email_templates: Json
@@ -2727,7 +2756,9 @@ export type Database = {
         Insert: {
           accent_token?: string
           brand_name?: string
+          brand_name_ar?: string | null
           brand_tagline?: string | null
+          brand_tagline_ar?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           email_templates?: Json
@@ -2745,7 +2776,9 @@ export type Database = {
         Update: {
           accent_token?: string
           brand_name?: string
+          brand_name_ar?: string | null
           brand_tagline?: string | null
+          brand_tagline_ar?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           email_templates?: Json

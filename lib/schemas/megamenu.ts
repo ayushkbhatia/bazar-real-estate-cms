@@ -73,6 +73,12 @@ export type MegamenuItem = {
   icon: string | null;
   badge_label: string | null;
   badge_variant: MegamenuBadgeVariant;
+  /* Arabic twins. Optional on the READ types so a caller that has not been
+   * taught to select them still typechecks — the public renderer falls back to
+   * the English in place, which is the site-wide rule. The WRITE schemas above
+   * are stricter on purpose: there, a missing twin destroys data. */
+  label_ar?: string | null;
+  badge_label_ar?: string | null;
 };
 
 export type MegamenuColumn = {
@@ -80,6 +86,7 @@ export type MegamenuColumn = {
   zone: MegamenuZone;
   position: number;
   heading: string | null;
+  heading_ar?: string | null;
   items: MegamenuItem[];
 };
 
@@ -99,6 +106,9 @@ export type MegamenuFeaturedTile = {
    */
   media_url?: string | null;
   cta_label: string | null;
+  badge_label_ar?: string | null;
+  headline_ar?: string | null;
+  cta_label_ar?: string | null;
 };
 
 export type MegamenuTab = {
@@ -111,6 +121,9 @@ export type MegamenuTab = {
   panel_title: string | null;
   panel_title_href: string | null;
   right_column_title: string | null;
+  label_ar?: string | null;
+  panel_title_ar?: string | null;
+  right_column_title_ar?: string | null;
   status: MegamenuTabStatus;
   // Grouped for the renderer — left[] and right[] (each ordered by position).
   columns: { left: MegamenuColumn[]; right: MegamenuColumn[] };
@@ -125,8 +138,17 @@ export type Megamenu = {
 // Write schemas — used by the admin server actions to validate input.
 // Keep the constraints in sync with the SQL column types.
 // ───────────────────────────────────────────────────────────────
+/* Arabic twins are `.nullable()` without `.optional()` throughout — a required
+ * key that may hold null. That is deliberate: the megamenu save deletes every
+ * child row and re-inserts it, so a twin the editor forgets to send is not a
+ * field left alone, it is a field destroyed. Required-with-null turns that into
+ * a validation error the editor sees instead of an Arabic string that quietly
+ * stops existing. The caps are 1.5x their English siblings, matching arMax. */
 export const tabMetaEditSchema = z.object({
   label: z.string().min(1).max(60),
+  label_ar: z.string().max(90).nullable(),
+  panel_title_ar: z.string().max(240).nullable(),
+  right_column_title_ar: z.string().max(120).nullable(),
   href: z.string().max(240).nullable().optional(),
   has_panel: z.boolean(),
   panel_title: z.string().max(160).nullable().optional(),
@@ -139,11 +161,13 @@ export const itemEditSchema = z.object({
   id: uuidLike().optional(), // optional for newly-created rows
   position: z.number().int().min(0),
   label: z.string().min(1).max(120),
+  label_ar: z.string().max(180).nullable(),
   href: z.string().min(1).max(240),
   target_kind: z.enum(MEGAMENU_TARGET_KINDS).nullable().optional(),
   target_id: uuidLike().nullable().optional(),
   icon: z.string().max(40).nullable().optional(),
   badge_label: z.string().max(40).nullable().optional(),
+  badge_label_ar: z.string().max(60).nullable(),
   badge_variant: z.enum(MEGAMENU_BADGE_VARIANTS).default("default"),
 });
 export type ItemEditInput = z.infer<typeof itemEditSchema>;
@@ -153,6 +177,7 @@ export const columnEditSchema = z.object({
   zone: z.enum(MEGAMENU_ZONES),
   position: z.number().int().min(0),
   heading: z.string().max(80).nullable().optional(),
+  heading_ar: z.string().max(120).nullable(),
   items: z.array(itemEditSchema).min(0).max(50),
 });
 export type ColumnEditInput = z.infer<typeof columnEditSchema>;
@@ -162,11 +187,14 @@ export const featuredTileEditSchema = z.object({
   position: z.number().int().min(0).max(1),
   variant: z.enum(MEGAMENU_TILE_VARIANTS).default("dark"),
   badge_label: z.string().max(40).nullable().optional(),
+  badge_label_ar: z.string().max(60).nullable(),
   badge_kind: z.enum(MEGAMENU_TILE_BADGE_KINDS).default("dot"),
   headline: z.string().min(1).max(120),
+  headline_ar: z.string().max(180).nullable(),
   href: z.string().min(1).max(240),
   media_asset_id: uuidLike().nullable().optional(),
   cta_label: z.string().max(40).nullable().optional(),
+  cta_label_ar: z.string().max(60).nullable(),
 });
 export type FeaturedTileEditInput = z.infer<typeof featuredTileEditSchema>;
 
@@ -185,11 +213,13 @@ export function defaultNewItem(position: number): ItemEditInput {
   return {
     position,
     label: "New link",
+    label_ar: null,
     href: "#",
     target_kind: "external",
     target_id: null,
     icon: null,
     badge_label: null,
+    badge_label_ar: null,
     badge_variant: "default",
   };
 }
@@ -202,6 +232,7 @@ export function defaultNewColumn(
     zone,
     position,
     heading: null,
+    heading_ar: null,
     items: [defaultNewItem(0)],
   };
 }
@@ -211,10 +242,13 @@ export function defaultNewFeaturedTile(position: number): FeaturedTileEditInput 
     position,
     variant: position === 0 ? "dark" : "light",
     badge_label: null,
+    badge_label_ar: null,
     badge_kind: "dot",
     headline: "New tile",
+    headline_ar: null,
     href: "#",
     media_asset_id: null,
     cta_label: null,
+    cta_label_ar: null,
   };
 }

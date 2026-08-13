@@ -198,22 +198,22 @@ export async function getPublishedMegamenu(): Promise<Megamenu> {
       supabase
         .from("megamenu_tabs")
         .select(
-          "id, slug, label, href, has_panel, position, panel_title, panel_title_href, right_column_title, status",
+          "id, slug, label, label_ar, href, has_panel, position, panel_title, panel_title_ar, panel_title_href, right_column_title, right_column_title_ar, status",
         )
         .eq("status", "published")
         .order("position"),
       supabase
         .from("megamenu_columns")
-        .select("id, tab_id, zone, position, heading"),
+        .select("id, tab_id, zone, position, heading, heading_ar"),
       supabase
         .from("megamenu_items")
         .select(
-          "id, column_id, position, label, href, target_kind, target_id, icon, badge_label, badge_variant",
+          "id, column_id, position, label, label_ar, href, target_kind, target_id, icon, badge_label, badge_label_ar, badge_variant",
         ),
       supabase
         .from("megamenu_featured_tiles")
         .select(
-          "id, tab_id, position, variant, badge_label, badge_kind, headline, href, media_asset_id, cta_label, media:media_asset_id(storage_key, deleted_at)",
+          "id, tab_id, position, variant, badge_label, badge_label_ar, badge_kind, headline, headline_ar, href, media_asset_id, cta_label, cta_label_ar, media:media_asset_id(storage_key, deleted_at)",
         ),
     ]);
 
@@ -269,7 +269,7 @@ export async function getMegamenuTabBySlugForAdmin(
   const { data: tab, error: tabErr } = await supabase
     .from("megamenu_tabs")
     .select(
-      "id, slug, label, href, has_panel, position, panel_title, panel_title_href, right_column_title, status",
+      "id, slug, label, label_ar, href, has_panel, position, panel_title, panel_title_ar, panel_title_href, right_column_title, right_column_title_ar, status",
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -281,12 +281,12 @@ export async function getMegamenuTabBySlugForAdmin(
   const [columnsRes, tilesRes] = await Promise.all([
     supabase
       .from("megamenu_columns")
-      .select("id, tab_id, zone, position, heading")
+      .select("id, tab_id, zone, position, heading, heading_ar")
       .eq("tab_id", tab.id),
     supabase
       .from("megamenu_featured_tiles")
       .select(
-        "id, tab_id, position, variant, badge_label, badge_kind, headline, href, media_asset_id, cta_label, media:media_asset_id(storage_key, deleted_at)",
+        "id, tab_id, position, variant, badge_label, badge_label_ar, badge_kind, headline, headline_ar, href, media_asset_id, cta_label, cta_label_ar, media:media_asset_id(storage_key, deleted_at)",
       )
       .eq("tab_id", tab.id),
   ]);
@@ -300,7 +300,7 @@ export async function getMegamenuTabBySlugForAdmin(
     const { data, error } = await supabase
       .from("megamenu_items")
       .select(
-        "id, column_id, position, label, href, target_kind, target_id, icon, badge_label, badge_variant",
+        "id, column_id, position, label, label_ar, href, target_kind, target_id, icon, badge_label, badge_label_ar, badge_variant",
       )
       .in("column_id", columnIds);
     if (error) {

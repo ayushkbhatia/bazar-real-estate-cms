@@ -289,6 +289,15 @@ export const DOMAINS: Domain[] = [
     table: "site_settings",
     columns: [
       {
+        column: "brand_tagline",
+        strategy: "hand",
+        evidence: "lib/queries/site-settings.ts:75",
+        note:
+          "Missed by the first classification pass and caught while wiring the " +
+          "twin: it is in the anon grant list of 0096 and in the public select, " +
+          "so it renders wherever the resolved settings do.",
+      },
+      {
         column: "brand_name",
         strategy: "hand",
         evidence: "components/brand/wordmark.tsx:102",
@@ -570,19 +579,9 @@ export const AWAITING_TWIN: string[] = [
   "article_categories.description",
   "pages.title",
   "landing_pages.title",
-  "megamenu_tabs.label",
-  "megamenu_tabs.panel_title",
-  "megamenu_tabs.right_column_title",
-  "megamenu_columns.heading",
-  "megamenu_items.label",
-  "megamenu_items.badge_label",
-  "megamenu_featured_tiles.headline",
-  "megamenu_featured_tiles.badge_label",
-  "megamenu_featured_tiles.cta_label",
   "floating_ctas.label",
   "floating_ctas.message_template",
   "floating_ctas.subject_template",
-  "site_settings.brand_name",
   "staff.display_name",
   "staff.title",
   "staff.bio",

@@ -67,11 +67,14 @@ export async function saveMegamenuTab(
     .from("megamenu_tabs")
     .update({
       label: payload.meta.label,
+      label_ar: payload.meta.label_ar,
       href: payload.meta.href ?? null,
       has_panel: payload.meta.has_panel,
       panel_title: payload.meta.panel_title ?? null,
+      panel_title_ar: payload.meta.panel_title_ar,
       panel_title_href: payload.meta.panel_title_href ?? null,
       right_column_title: payload.meta.right_column_title ?? null,
+      right_column_title_ar: payload.meta.right_column_title_ar,
     })
     .eq("id", tabId);
   if (metaErr) return { status: "error", message: metaErr.message };
@@ -92,6 +95,7 @@ export async function saveMegamenuTab(
       zone: c.zone,
       position: idx, // overwrite client position — array order is canonical
       heading: c.heading ?? null,
+      heading_ar: c.heading_ar,
     }));
     const { data: insertedCols, error: insColsErr } = await supabase
       .from("megamenu_columns")
@@ -112,11 +116,13 @@ export async function saveMegamenuTab(
       column_id: string;
       position: number;
       label: string;
+      label_ar: string | null;
       href: string;
       target_kind: TabEditPayload["columns"][number]["items"][number]["target_kind"];
       target_id: string | null;
       icon: string | null;
       badge_label: string | null;
+      badge_label_ar: string | null;
       badge_variant: TabEditPayload["columns"][number]["items"][number]["badge_variant"];
     }[] = [];
 
@@ -128,11 +134,13 @@ export async function saveMegamenuTab(
           column_id: columnId,
           position: itemIdx,
           label: it.label,
+          label_ar: it.label_ar,
           href: it.href,
           target_kind: it.target_kind ?? null,
           target_id: it.target_id ?? null,
           icon: it.icon ?? null,
           badge_label: it.badge_label ?? null,
+          badge_label_ar: it.badge_label_ar,
           badge_variant: it.badge_variant ?? "default",
         });
       });
@@ -154,11 +162,14 @@ export async function saveMegamenuTab(
       position: idx,
       variant: t.variant ?? "dark",
       badge_label: t.badge_label ?? null,
+      badge_label_ar: t.badge_label_ar,
       badge_kind: t.badge_kind ?? "dot",
       headline: t.headline,
+      headline_ar: t.headline_ar,
       href: t.href,
       media_asset_id: t.media_asset_id ?? null,
       cta_label: t.cta_label ?? null,
+      cta_label_ar: t.cta_label_ar,
     }));
     const { error: insTilesErr } = await supabase
       .from("megamenu_featured_tiles")
