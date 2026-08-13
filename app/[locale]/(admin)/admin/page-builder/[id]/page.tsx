@@ -158,6 +158,9 @@ export default async function LandingEditorPage({ params }: PageProps) {
           id={page.id}
           initial={{
             title: page.title,
+            // Mapped as well as loaded — this object is explicit, and an
+            // omitted twin reads as "not set" on a page that has Arabic.
+            title_ar: page.title_ar ?? null,
             slug: page.slug,
             meta_title:
               typeof seo.meta_title === "string" ? seo.meta_title : "",

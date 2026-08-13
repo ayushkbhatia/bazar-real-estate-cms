@@ -232,7 +232,18 @@ export const DOMAINS: Domain[] = [
   {
     table: "pages",
     columns: [
-      { column: "title", strategy: "hand", evidence: "pages/[slug]/page.tsx:22" },
+      {
+        column: "title",
+        strategy: "never",
+        evidence: "pages/[slug]/page.tsx:22",
+        note:
+          "Synthesised, not authored: every writer builds it as " +
+          "`${record.name} (area guide)` / `(project page)` / `(master page)`. " +
+          "It reaches the public only as the <title> fallback when seo.meta_title " +
+          "is unset, and translating '(area guide)' would be translating an " +
+          "internal label. The real fix is that an internal label should not be " +
+          "a page title in any language — recorded in FOLLOWUPS.",
+      },
       {
         column: "blocks",
         strategy: "hand",
@@ -568,6 +579,8 @@ export const AWAITING_TWIN: string[] = [];
 
 /** Columns with an Arabic input in the CMS today. */
 export const WIRED_EDITOR: string[] = [
+  "amenities_taxonomy.label",
+  "landing_pages.title",
   "floor_plans.description",
   "floor_plans.label",
   "development_unit_types.blurb",
@@ -616,6 +629,8 @@ export const WIRED_EDITOR: string[] = [
 
 /** Columns whose public read path folds the locale today. */
 export const WIRED_READ: string[] = [
+  "amenities_taxonomy.label",
+  "landing_pages.title",
   "floor_plans.description",
   "floor_plans.label",
   "development_unit_types.blurb",

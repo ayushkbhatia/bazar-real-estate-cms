@@ -6,11 +6,13 @@ import { Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ArabicTwin } from "../../_fields/arabic-twin";
 import { fieldCls } from "../../_fields/types";
 import { updateLandingMeta } from "../_actions";
 
 type Meta = {
   title: string;
+  title_ar: string | null;
   slug: string;
   meta_title: string;
   meta_description: string;
@@ -73,6 +75,11 @@ export function LandingMetaCard({
             className={fieldCls}
             value={meta.title}
             onChange={(e) => set("title", e.target.value)}
+          />
+          <ArabicTwin
+            field={{ key: "title_ar", label: "Page title", kind: "text", max: 160 }}
+            value={meta.title_ar ?? ""}
+            onChange={(v) => set("title_ar", v || null)}
           />
         </Field>
 

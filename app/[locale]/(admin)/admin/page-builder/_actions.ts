@@ -175,6 +175,7 @@ export async function updateLandingMeta(
     .from("landing_pages")
     .update({
       title: rest.title,
+      title_ar: rest.title_ar ?? null,
       slug: rest.slug,
       noindex: rest.noindex ?? false,
       seo: {

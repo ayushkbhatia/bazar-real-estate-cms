@@ -39,6 +39,9 @@ export const amenityTaxonomyEntrySchema = z.object({
     .max(40, "Code is too long")
     .regex(codeRegex, "Lowercase letters, numbers, and underscores only"),
   label: z.string().min(2, "Label is too short").max(60, "Label is too long"),
+  /* Arabic twin. `.optional()` — the taxonomy is upserted by code, so an
+   * omitted key is simply not written. Cap is 1.5x the English. */
+  label_ar: z.string().max(90).nullable().optional(),
   category: z.enum(AMENITY_CATEGORIES),
   icon: z.string().max(40).nullable().optional(),
   sort_order: z.number().int().min(0).max(10_000).default(0),

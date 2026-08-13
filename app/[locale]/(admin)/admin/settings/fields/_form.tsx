@@ -61,6 +61,7 @@ export function AddAmenityForm() {
           const res = await createAmenity({
             code: fd.get("code"),
             label: fd.get("label"),
+            label_ar: fd.get("label_ar"),
             category: fd.get("category"),
             icon: fd.get("icon"),
             sort_order: fd.get("sort_order"),
@@ -77,6 +78,17 @@ export function AddAmenityForm() {
     >
       <Field label="Code" name="code" placeholder="rooftop_lounge" error={fieldErrors.code} />
       <Field label="Label" name="label" placeholder="Rooftop lounge" error={fieldErrors.label} />
+      {/* A plain field rather than the collapsible ArabicTwin: this is an
+          uncontrolled FormData form with no per-field state to hang a toggle
+          on, and the row is four inputs wide, so a second one costs nothing. */}
+      <Field
+        label="Label (العربية)"
+        name="label_ar"
+        placeholder="صالة السطح"
+        dir="rtl"
+        lang="ar"
+        error={fieldErrors.label_ar}
+      />
       <SelectField
         label="Category"
         name="category"
@@ -121,12 +133,17 @@ function Field({
   placeholder,
   type = "text",
   error,
+  dir,
+  lang,
 }: {
   label: string;
   name: string;
   placeholder?: string;
   type?: string;
   error?: string;
+  /** "rtl" on the Arabic input, so the caret starts on the right. */
+  dir?: "ltr" | "rtl";
+  lang?: string;
 }) {
   return (
     <label className="flex flex-col gap-1">
@@ -136,6 +153,8 @@ function Field({
       <input
         name={name}
         type={type}
+        dir={dir}
+        lang={lang}
         placeholder={placeholder}
         className={
           error
