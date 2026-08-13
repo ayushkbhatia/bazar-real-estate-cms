@@ -146,6 +146,12 @@ const propertyOverviewFields = z.object({
     .max(240, "Keep the Arabic title under 240 characters")
     .nullable()
     .optional(),
+  /* The three hand-authored twins. `address_line` is place-name heavy and
+   * `view`/`orientation` are near-closed vocabularies, so all three are
+   * authored rather than machine-translated — see lib/i18n/domains.ts. */
+  address_line_ar: z.string().max(360).nullable().optional(),
+  view_ar: z.string().max(150).nullable().optional(),
+  orientation_ar: z.string().max(120).nullable().optional(),
   short_description_ar: z
     .string()
     .max(480, "Keep the Arabic summary under 480 characters")
@@ -344,6 +350,9 @@ const NULLABLE_TEXT_FIELDS = [
   // nothing" everywhere downstream instead of "not translated".
   "title_ar",
   "short_description_ar",
+  "address_line_ar",
+  "view_ar",
+  "orientation_ar",
   "view",
   "orientation",
   "address_line",
