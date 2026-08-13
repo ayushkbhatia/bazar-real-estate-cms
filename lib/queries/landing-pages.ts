@@ -1,6 +1,8 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
 import {
   parseLandingDocument,
   type BlockInstance,
@@ -26,6 +28,9 @@ export type LandingDetail = {
   id: string;
   slug: string;
   title: string;
+  /* Arabic twin. Optional: the ADMIN loader selects it so the editor can write
+   * back what it loaded, and the public read folds it away before rendering. */
+  title_ar?: string | null;
   status: LandingStatus;
   noindex: boolean;
   published_at: string | null;
@@ -47,13 +52,14 @@ export type LandingDetail = {
  * silently fell back to defaults for a year (docs/FOLLOWUPS.md:803). Asserted
  * in landing-pages.test.ts.
  */
-const PUBLIC_FIELDS = "id, slug, title, status, noindex, published_at, blocks, seo";
+const PUBLIC_FIELDS =
+  "id, slug, title, title_ar, status, noindex, published_at, blocks, seo";
 
 const ADMIN_LIST_FIELDS =
   "id, slug, title, status, noindex, published_at, updated_at, blocks, draft_blocks";
 
 const ADMIN_DETAIL_FIELDS =
-  "id, slug, title, status, noindex, published_at, created_at, updated_at, blocks, draft_blocks, seo";
+  "id, slug, title, title_ar, status, noindex, published_at, created_at, updated_at, blocks, draft_blocks, seo";
 
 /** Public: one published page. Anon, cookie-free, so the route keeps ISR. */
 export async function getPublishedLandingBySlug(
@@ -73,17 +79,24 @@ export async function getPublishedLandingBySlug(
     return null;
   }
   if (!data) return null;
-  const blocks = parseLandingDocument(data.blocks).blocks;
+  // Folded before the shape below picks fields off the row. The block document
+  // is localised separately by the page-builder resolver, which already handles
+  // its own derived twins — this only covers the row's own columns.
+  const row = localiseRow(
+    data as unknown as Record<string, unknown>,
+    await currentLocale(),
+  ) as unknown as typeof data;
+  const blocks = parseLandingDocument(row.blocks).blocks;
   return {
-    id: data.id,
-    slug: data.slug,
-    title: data.title,
-    status: data.status as LandingStatus,
-    noindex: data.noindex,
-    published_at: data.published_at,
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    status: row.status as LandingStatus,
+    noindex: row.noindex,
+    published_at: row.published_at,
     created_at: "",
     updated_at: "",
-    seo: (data.seo as Record<string, unknown> | null) ?? null,
+    seo: (row.seo as Record<string, unknown> | null) ?? null,
     blocks,
     draft: blocks,
     hasDraft: false,

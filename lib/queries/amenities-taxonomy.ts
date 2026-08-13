@@ -8,6 +8,8 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseDeep } from "@/lib/i18n/localise";
 import {
   DEFAULT_AMENITIES,
   type AmenityTaxonomyEntry,
@@ -27,7 +29,13 @@ export async function listAmenitiesTaxonomy(): Promise<
       .eq("active", true)
       .order("sort_order", { ascending: true });
     if (!data || data.length === 0) return DEFAULT_AMENITIES;
-    return (data as AmenityTaxonomyRow[]).map((r) => ({
+    // Folded before the shape below picks fields off the row. The amenity
+    // label renders on every property page's amenity grid, so this is one of
+    // the higher-frequency strings in the catalogue.
+    const locale = await currentLocale();
+    return (
+      localiseDeep(data, locale) as AmenityTaxonomyRow[]
+    ).map((r) => ({
       code: r.code,
       label: r.label,
       category: r.category,
@@ -83,6 +91,7 @@ export async function upsertAmenityTaxonomyEntry(
         {
           code: entry.code,
           label: entry.label,
+          label_ar: entry.label_ar ?? null,
           category: entry.category,
           icon: entry.icon ?? null,
           sort_order: entry.sort_order ?? 0,

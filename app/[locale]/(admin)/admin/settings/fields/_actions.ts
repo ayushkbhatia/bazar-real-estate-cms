@@ -67,6 +67,10 @@ export async function createAmenity(
   const parsed = amenityTaxonomyEntrySchema.safeParse({
     code: typeof raw.code === "string" ? raw.code.trim().toLowerCase() : "",
     label: typeof raw.label === "string" ? raw.label.trim() : "",
+    label_ar:
+      typeof raw.label_ar === "string" && raw.label_ar.trim() !== ""
+        ? raw.label_ar.trim()
+        : null,
     category: raw.category,
     icon:
       typeof raw.icon === "string" && raw.icon.trim().length > 0

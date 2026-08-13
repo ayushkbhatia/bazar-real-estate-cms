@@ -680,6 +680,27 @@ shows the trail.)
     same PR, that page renders in a different, per-device system face from
     every other Arabic page.
 
+- [i18n] Four more tables have public text with no editor behind it.
+  Adding Arabic turned into an audit of where the CMS never finished the
+  English, because a column with no editor renders fine and fails nothing.
+  Beyond article_categories, development_units and properties.description
+  (each recorded separately), two more surfaced while wiring the last batch:
+  `area_guides` has three readers and zero writers — intro_md, amenities and
+  schools render on /areas/<slug> and are edited nowhere; and
+  `developments.amenities` is populated on 8 of 21 projects with no writer in
+  app/ at all. Both arrived by migration. Their Arabic twins exist since 0104
+  and become reachable the moment an editor does.
+
+- [pages] `pages.title` is an internal label used as a public <title> fallback.
+  Every writer synthesises it — `${record.name} (area guide)`,
+  `(project page)`, `(master page)` — and `pages/[slug]/page.tsx:22` falls back
+  to it when `seo.meta_title` is unset. So a visitor can end up with
+  "Saadiyat Island (area guide)" in their browser tab. It is registered
+  `strategy: "never"` because translating "(area guide)" would be translating
+  an internal label, but the real fix is that this fallback should be the
+  record's own name, or nothing. Cheap to fix, and worth doing before /ar
+  launches rather than after.
+
 - [developments] `development_units` has readers but no writer.
   lib/queries/developments.ts:242 selects unit rows for the public units table,
   and nothing in app/ ever inserts or updates one — the 8 rows in production
