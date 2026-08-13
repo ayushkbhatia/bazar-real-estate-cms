@@ -24,9 +24,14 @@ export default async function FloatingCtasPage() {
     key: r.key,
     kind: r.kind,
     label: r.label,
+    // Mapped as well as selected — this object is explicit, so a column the
+    // query loads and this omits reaches the editor as undefined.
+    label_ar: r.label_ar ?? null,
     destination: r.destination,
     message_template: r.message_template,
+    message_template_ar: r.message_template_ar ?? null,
     subject_template: r.subject_template,
+    subject_template_ar: r.subject_template_ar ?? null,
     scope: r.scope,
     use_advisor_contact: r.use_advisor_contact,
     color: r.color,

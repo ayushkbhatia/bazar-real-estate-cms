@@ -83,12 +83,16 @@ export async function saveFloatingCtas(
       key: cta.key.trim().toLowerCase(),
       kind: cta.kind,
       label: cta.label.trim(),
+      label_ar: orNull(cta.label_ar),
       destination: orNull(cta.destination),
       message_template: orNull(cta.message_template),
+      message_template_ar: orNull(cta.message_template_ar),
       // A subject line only means something for mailto:. Clearing it when the
       // kind changes stops a stale one reappearing if it changes back.
       subject_template:
         cta.kind === "email" ? orNull(cta.subject_template) : null,
+      subject_template_ar:
+        cta.kind === "email" ? orNull(cta.subject_template_ar) : null,
       scope: cta.scope,
       use_advisor_contact: cta.use_advisor_contact,
       color: orNull(cta.color)?.toUpperCase() ?? null,

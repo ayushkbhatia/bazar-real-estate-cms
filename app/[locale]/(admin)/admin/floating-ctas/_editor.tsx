@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { ArabicTwin } from "../_fields/arabic-twin";
 import {
   FLOATING_CTA_KINDS,
   FLOATING_CTA_KIND_LABELS,
@@ -285,6 +286,11 @@ function CtaRow({
               maxLength={40}
               onChange={(e) => onChange({ label: e.target.value })}
             />
+            <ArabicTwin
+              field={{ key: "label_ar", label: "Button text", kind: "text", max: 40 }}
+              value={cta.label_ar ?? ""}
+              onChange={(v) => onChange({ label_ar: v || null })}
+            />
           </Field>
 
           <Field label="Type">
@@ -342,6 +348,16 @@ function CtaRow({
                 placeholder="Bazar enquiry · {context}"
                 onChange={(e) => onChange({ subject_template: e.target.value })}
               />
+              <ArabicTwin
+                field={{
+                  key: "subject_template_ar",
+                  label: "Subject",
+                  kind: "text",
+                  max: 200,
+                }}
+                value={cta.subject_template_ar ?? ""}
+                onChange={(v) => onChange({ subject_template_ar: v || null })}
+              />
             </Field>
           ) : null}
 
@@ -363,6 +379,19 @@ function CtaRow({
                   : "Hi {advisor}, I'm enquiring about {context} on bazar.ae"
               }
               onChange={(e) => onChange({ message_template: e.target.value })}
+            />
+            {/* Keep {advisor} and {context} in the Arabic — they are
+                substituted after the locale fold, so dropping one silently
+                loses the name the message was meant to greet someone by. */}
+            <ArabicTwin
+              field={{
+                key: "message_template_ar",
+                label: "Draft message",
+                kind: "textarea",
+                max: 1200,
+              }}
+              value={cta.message_template_ar ?? ""}
+              onChange={(v) => onChange({ message_template_ar: v || null })}
             />
             {cta.kind !== "call" ? (
               <TokenLegend
