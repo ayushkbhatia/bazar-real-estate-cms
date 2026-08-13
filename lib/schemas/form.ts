@@ -50,10 +50,18 @@ export const formFieldSchema = z.object({
     .max(40)
     .regex(FIELD_KEY_RE, "Use lowercase letters, numbers and underscores"),
   label: z.string().trim().min(1, "A field needs a label").max(80),
+  /* Arabic twins are required-with-null, not optional, and that is deliberate.
+   * saveForm deletes every field row for the form and re-inserts it from the
+   * payload, so a twin the editor omits is not left alone — it is destroyed.
+   * Required-with-null turns that into a validation error someone sees, the
+   * same reasoning as the megamenu. Caps are 1.5x their English siblings. */
+  label_ar: z.string().trim().max(120).nullable(),
   type: z.enum(FORM_FIELD_TYPES),
   mapping: z.enum(FORM_FIELD_MAPPINGS),
   placeholder: z.string().trim().max(120).nullable().optional(),
+  placeholder_ar: z.string().trim().max(180).nullable(),
   help: z.string().trim().max(240).nullable().optional(),
+  help_ar: z.string().trim().max(360).nullable(),
   /** Registry-authored, re-attached on read — accepted here and not stored. */
   note: z.string().trim().max(400).nullable().optional(),
   required: z.boolean(),
@@ -66,6 +74,7 @@ export const formFieldSchema = z.object({
   max: z.number().int().nullable().optional(),
   step: z.number().int().positive("A slider's step has to be above zero").nullable().optional(),
   unit: z.string().trim().max(12).nullable().optional(),
+  unit_ar: z.string().trim().max(18).nullable(),
   showWhen: conditionSchema.nullable().optional(),
   locked: z.boolean().optional(),
 });
@@ -206,10 +215,14 @@ export function blankField(type: FormFieldType, index: number): FormFieldSaveInp
   return {
     key: `question_${index + 1}`,
     label: "New question",
+    label_ar: null,
     type,
     mapping: "custom",
     placeholder: null,
+    placeholder_ar: null,
     help: null,
+    help_ar: null,
+    unit_ar: null,
     note: null,
     required: false,
     enabled: true,

@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { ArabicTwin } from "../../_fields/arabic-twin";
 import {
   FORM_FIELD_TYPES,
   FORM_FIELD_TYPE_LABELS,
@@ -57,9 +58,13 @@ function toSaveField(field: ResolvedForm["fields"][number]): FormFieldSaveInput 
   return {
     key: field.key,
     label: field.label,
+    label_ar: field.label_ar ?? null,
     type: field.type,
     mapping: field.mapping,
     placeholder: field.placeholder ?? null,
+    placeholder_ar: field.placeholder_ar ?? null,
+    help_ar: field.help_ar ?? null,
+    unit_ar: field.unit_ar ?? null,
     help: field.help ?? null,
     note: field.note ?? null,
     required: field.required,
@@ -686,12 +691,19 @@ function FieldDetail({
   return (
     <div className="border-t border-bz-border p-3 flex flex-col gap-3 bg-bz-bg/40">
       <div className="grid gap-3 sm:grid-cols-2">
-        <Text
-          label="Label"
-          value={field.label}
-          disabled={disabled}
-          onChange={(v) => onChange({ label: v })}
-        />
+        <div className="flex flex-col gap-1">
+          <Text
+            label="Label"
+            value={field.label}
+            disabled={disabled}
+            onChange={(v) => onChange({ label: v })}
+          />
+          <ArabicTwin
+            field={{ key: "label_ar", label: "Label", kind: "text", max: 80 }}
+            value={field.label_ar ?? ""}
+            onChange={(v) => onChange({ label_ar: v || null })}
+          />
+        </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[12px]">Type</Label>
           <select
@@ -710,12 +722,24 @@ function FieldDetail({
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <Text
-          label="Placeholder"
-          value={field.placeholder ?? ""}
-          disabled={disabled}
-          onChange={(v) => onChange({ placeholder: v || null })}
-        />
+        <div className="flex flex-col gap-1">
+          <Text
+            label="Placeholder"
+            value={field.placeholder ?? ""}
+            disabled={disabled}
+            onChange={(v) => onChange({ placeholder: v || null })}
+          />
+          <ArabicTwin
+            field={{
+              key: "placeholder_ar",
+              label: "Placeholder",
+              kind: "text",
+              max: 120,
+            }}
+            value={field.placeholder_ar ?? ""}
+            onChange={(v) => onChange({ placeholder_ar: v || null })}
+          />
+        </div>
         <div className="flex flex-col gap-1">
           <Label className="text-[12px]">Where the answer goes</Label>
           <select
@@ -739,13 +763,22 @@ function FieldDetail({
         </div>
       </div>
 
-      <Text
-        label="Helper text"
-        help="Shown to the visitor under the input. Leave blank for none."
-        value={field.help ?? ""}
-        disabled={disabled}
-        onChange={(v) => onChange({ help: v || null })}
-      />
+      <div className="flex flex-col gap-1">
+        <Text
+          label="Helper text"
+          help="Shown to the visitor under the input. Leave blank for none."
+          value={field.help ?? ""}
+          disabled={disabled}
+          onChange={(v) => onChange({ help: v || null })}
+        />
+        {/* `help` is public copy the visitor reads; `note` below it is
+            editor-only guidance from the registry and has no twin. */}
+        <ArabicTwin
+          field={{ key: "help_ar", label: "Helper text", kind: "text", max: 240 }}
+          value={field.help_ar ?? ""}
+          onChange={(v) => onChange({ help_ar: v || null })}
+        />
+      </div>
 
       {field.note ? (
         <p className="text-[11.5px] text-bz-muted-2 rounded border border-bz-border bg-bz-surface p-2.5">
@@ -837,6 +870,11 @@ function FieldDetail({
                 value={field.unit ?? ""}
                 disabled={disabled}
                 onChange={(e) => onChange({ unit: e.target.value || null })}
+              />
+              <ArabicTwin
+                field={{ key: "unit_ar", label: "Unit", kind: "text", max: 12 }}
+                value={field.unit_ar ?? ""}
+                onChange={(v) => onChange({ unit_ar: v || null })}
               />
             </label>
           </>
