@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { CategorySelect } from "../_category-select";
 import { ImagePicker } from "../../_fields/image-picker";
 import { ArabicTwin } from "../../_fields/arabic-twin";
+import { ArabicArticleBody } from "../_arabic-body";
 import type { BlogMediaOption } from "../_image-insert-dialog";
 import { publishArticle, updateArticle } from "./_actions";
 import { PUBLISH_INTENT } from "./_intent";
@@ -73,6 +74,9 @@ export function ArticleEditForm({
     Record<string, string>
   >({});
   const [bodyHtml, setBodyHtml] = useState<string>(initial.body_html ?? "");
+  const [bodyHtmlAr, setBodyHtmlAr] = useState<string>(
+    initial.body_html_ar ?? "",
+  );
 
   const {
     register,
@@ -103,6 +107,11 @@ export function ArticleEditForm({
       const result = await updateArticle(articleId, {
         ...values,
         body_html: bodyHtml,
+        // Empty string rather than "<p></p>" when untouched, so a never-opened
+        // editor does not store an empty document that reads as "translated".
+        body_html_ar: bodyHtmlAr.replace(/<[^>]*>/g, "").trim()
+          ? bodyHtmlAr
+          : null,
       });
       if (result.status !== "ok") {
         toast.error(result.message);
@@ -217,6 +226,12 @@ export function ArticleEditForm({
           Heading 2, heading 3, bold, italic, lists, links, blockquotes, and
           images. We&apos;ll auto-derive reading time on save.
         </span>
+        <ArabicArticleBody
+          value={bodyHtmlAr}
+          onChange={setBodyHtmlAr}
+          media={media}
+          onMediaUploaded={(m) => setMedia((cur) => [m, ...cur])}
+        />
       </div>
 
       <div className="bg-bz-surface border border-bz-border rounded-lg p-6 flex flex-col gap-4">

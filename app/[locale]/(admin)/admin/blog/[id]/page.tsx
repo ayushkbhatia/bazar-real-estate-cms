@@ -69,10 +69,17 @@ export default async function ArticleEditPage({ params }: PageProps) {
   const seo = (article.seo as Record<string, unknown> | null) ?? {};
   const initial: ArticleEditInput = {
     title: article.title,
+    // The twins are mapped here, not just selected. `initial` is an explicit
+    // object, so a column the select loads but this omits reaches the form as
+    // undefined — the Arabic box then reads "not set" on an article that has
+    // Arabic, which invites someone to translate it a second time.
+    title_ar: article.title_ar,
     slug: article.slug,
     excerpt: article.excerpt,
+    excerpt_ar: article.excerpt_ar,
     category: article.category,
     body_html: article.body_html ?? "",
+    body_html_ar: article.body_html_ar ?? "",
     hero_image_id: article.hero_image_id,
     meta_title: (seo.meta_title as string | null) ?? null,
     meta_description: (seo.meta_description as string | null) ?? null,

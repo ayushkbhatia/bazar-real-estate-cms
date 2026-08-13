@@ -34,6 +34,15 @@ type ArticleEditorProps = {
   media: BlogMediaOption[];
   /** Bubbles a fresh upload up so the picker lists it without a refresh. */
   onMediaUploaded: (m: BlogMediaOption) => void;
+  /**
+   * Writing direction for the content area. The Arabic body passes "rtl" so
+   * the caret starts on the right and paragraphs align correctly while typing
+   * — ProseMirror reads the contenteditable's own `dir`, so setting it on an
+   * ancestor is not enough.
+   */
+  dir?: "ltr" | "rtl";
+  /** Language of the content area, so the Arabic font stack applies. */
+  lang?: string;
 };
 
 function ToolbarBtn({
@@ -194,6 +203,8 @@ export function ArticleEditor({
   onChange,
   media,
   onMediaUploaded,
+  dir = "ltr",
+  lang,
 }: ArticleEditorProps) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const editor = useEditor({
@@ -213,6 +224,8 @@ export function ArticleEditor({
       attributes: {
         class:
           "tiptap min-h-[420px] px-5 py-4 text-[15.5px] leading-[1.65] focus:outline-none",
+        dir,
+        ...(lang ? { lang } : {}),
       },
     },
     onUpdate({ editor }) {
