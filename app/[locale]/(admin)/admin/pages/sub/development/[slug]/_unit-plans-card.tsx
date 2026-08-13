@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { ArabicTwin } from "../../../../_fields/arabic-twin";
 import {
   MAX_PLANS_PER_TYPE,
   MAX_PLANS_SHOWN,
@@ -307,6 +308,11 @@ export function DevelopmentUnitPlansCard({
                         placeholder="2 Bedroom"
                         onChange={(e) => setType(i, { label: e.target.value })}
                       />
+                      <ArabicTwin
+                        field={{ key: "label_ar", label: "Unit type", kind: "text", max: 60 }}
+                        value={type.label_ar ?? ""}
+                        onChange={(v) => setType(i, { label_ar: v || null })}
+                      />
                     </div>
                     <div className="flex flex-col gap-1">
                       <Label htmlFor={`ut_beds_${i}`} className="text-[11px]">
@@ -376,6 +382,11 @@ export function DevelopmentUnitPlansCard({
                         onChange={(e) =>
                           setType(i, { blurb: e.target.value || null })
                         }
+                      />
+                      <ArabicTwin
+                        field={{ key: "blurb_ar", label: "Blurb", kind: "textarea", max: 600 }}
+                        value={type.blurb_ar ?? ""}
+                        onChange={(v) => setType(i, { blurb_ar: v || null })}
                       />
                     </div>
                     <div className="flex flex-col gap-1">
@@ -509,6 +520,27 @@ export function DevelopmentUnitPlansCard({
                             setPlan(i, j, {
                               description: e.target.value || null,
                             })
+                          }
+                        />
+                        {/* Both layout twins live here, under the description.
+                            The label's own input shares a flex row with the
+                            delete button, and a second box in that strip would
+                            squeeze the row it belongs to. */}
+                        <ArabicTwin
+                          field={{ key: "label_ar", label: "Layout name", kind: "text", max: 80 }}
+                          value={plan.label_ar ?? ""}
+                          onChange={(v) => setPlan(i, j, { label_ar: v || null })}
+                        />
+                        <ArabicTwin
+                          field={{
+                            key: "description_ar",
+                            label: "Layout description",
+                            kind: "textarea",
+                            max: 600,
+                          }}
+                          value={plan.description_ar ?? ""}
+                          onChange={(v) =>
+                            setPlan(i, j, { description_ar: v || null })
                           }
                         />
 
