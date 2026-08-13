@@ -1,6 +1,8 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseDeep } from "@/lib/i18n/localise";
 import { mediaPublicUrl } from "@/lib/media";
 import {
   MAX_PLANS_SHOWN,
@@ -44,13 +46,15 @@ export type UnitTypeCard = {
 };
 
 const SELECT_FIELDS =
-  "id, label, beds, blurb, size_from_ft2, size_to_ft2, price_from_aed, enabled, sort_order, " +
-  "plans:floor_plans(id, label, description, beds, baths, area_ft2, enabled, sort_order, " +
+  "id, label, label_ar, beds, blurb, blurb_ar, size_from_ft2, size_to_ft2, price_from_aed, enabled, sort_order, " +
+  "plans:floor_plans(id, label, label_ar, description, description_ar, beds, baths, area_ft2, enabled, sort_order, " +
   "media:media_id(storage_key, alt_text, deleted_at))";
 
 type RawPlan = {
   id: string;
   label: string;
+  label_ar?: string | null;
+  description_ar?: string | null;
   description: string | null;
   beds: number | null;
   baths: number | null;
@@ -67,8 +71,12 @@ type RawPlan = {
 type RawType = {
   id: string;
   label: string;
+  /* Arabic twins, selected by the ADMIN loader so the editor can write back
+   * what it loaded. The public shaper folds them away before rendering. */
+  label_ar?: string | null;
   beds: number | null;
   blurb: string | null;
+  blurb_ar?: string | null;
   size_from_ft2: number | null;
   size_to_ft2: number | null;
   price_from_aed: number | string | null;
@@ -120,7 +128,11 @@ export async function listUnitTypesForPage(
     return [];
   }
 
-  return (data as unknown as RawType[])
+  // Folded on the raw rows, before the shape below builds explicit literals.
+  // localiseDeep reaches the nested `plans` too, so a floor plan's twins are
+  // resolved without this function knowing they exist.
+  const locale = await currentLocale();
+  return localiseDeep(data as unknown as RawType[], locale)
     .sort(bySortOrder)
     .map((t) => ({
       id: t.id,
@@ -186,8 +198,8 @@ export async function listUnitTypesForAdmin(
   const { data, error } = await supabase
     .from("development_unit_types")
     .select(
-      "id, label, beds, blurb, size_from_ft2, size_to_ft2, price_from_aed, enabled, sort_order, " +
-        "plans:floor_plans(id, label, description, beds, baths, area_ft2, media_id, enabled, sort_order)",
+      "id, label, label_ar, beds, blurb, blurb_ar, size_from_ft2, size_to_ft2, price_from_aed, enabled, sort_order, " +
+        "plans:floor_plans(id, label, label_ar, description, description_ar, beds, baths, area_ft2, media_id, enabled, sort_order)",
     )
     .eq("development_id", developmentId)
     .order("sort_order", { ascending: true });
@@ -203,8 +215,10 @@ export async function listUnitTypesForAdmin(
   return (data as unknown as AdminType[]).sort(bySortOrder).map((t) => ({
     id: t.id,
     label: t.label,
+    label_ar: t.label_ar ?? null,
     beds: t.beds,
     blurb: t.blurb,
+    blurb_ar: t.blurb_ar ?? null,
     size_from_ft2: t.size_from_ft2,
     size_to_ft2: t.size_to_ft2,
     price_from_aed: t.price_from_aed != null ? Number(t.price_from_aed) : null,
@@ -212,7 +226,9 @@ export async function listUnitTypesForAdmin(
     plans: (t.plans ?? []).sort(bySortOrder).map((p) => ({
       id: p.id,
       label: p.label,
+      label_ar: p.label_ar ?? null,
       description: p.description,
+      description_ar: p.description_ar ?? null,
       beds: p.beds,
       baths: p.baths,
       area_ft2: p.area_ft2,

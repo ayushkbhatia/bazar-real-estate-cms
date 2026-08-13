@@ -35,7 +35,9 @@ export const floorPlanSchema = z.object({
   /** Null for a row that hasn't been saved yet. */
   id: uuidLike().nullable(),
   label: z.string().min(1, "Give the layout a name").max(80),
+  label_ar: z.string().max(120).nullable(),
   description: z.string().max(600).nullable(),
+  description_ar: z.string().max(900).nullable(),
   beds: z.number().int().min(0).max(INT4_MAX).nullable(),
   baths: z.number().int().min(0).max(INT4_MAX).nullable(),
   area_ft2: z.number().int().min(0).max(1_000_000).nullable(),
@@ -49,8 +51,14 @@ export type FloorPlanInput = z.infer<typeof floorPlanSchema>;
 export const unitTypeSchema = z.object({
   id: uuidLike().nullable(),
   label: z.string().min(1, "Name the unit type").max(60),
+  /* Arabic twins are required-with-null. Both row builders in _unit-actions.ts
+   * name every column explicitly and re-write the whole row on update, so a
+   * twin missing from the payload is a twin overwritten — the same shape as
+   * the megamenu, not the partial-update tables. Caps are 1.5x the English. */
+  label_ar: z.string().max(90).nullable(),
   beds: z.number().int().min(0).max(INT4_MAX).nullable(),
   blurb: z.string().max(600).nullable(),
+  blurb_ar: z.string().max(900).nullable(),
   size_from_ft2: z.number().int().min(0).max(1_000_000).nullable(),
   size_to_ft2: z.number().int().min(0).max(1_000_000).nullable(),
   price_from_aed: z.number().min(0).max(9_999_999_999).nullable(),
@@ -100,7 +108,9 @@ export function blankPlan(index: number): FloorPlanInput {
   return {
     id: null,
     label: `Layout ${String.fromCharCode(65 + index)}`,
+    label_ar: null,
     description: null,
+    description_ar: null,
     beds: null,
     baths: null,
     area_ft2: null,
@@ -113,8 +123,10 @@ export function blankUnitType(label = "", beds: number | null = null): UnitTypeI
   return {
     id: null,
     label,
+    label_ar: null,
     beds,
     blurb: null,
+    blurb_ar: null,
     size_from_ft2: null,
     size_to_ft2: null,
     price_from_aed: null,
@@ -196,6 +208,7 @@ export function seedUnitTypes(bedroomsText: string | null): UnitTypeInput[] {
   return deriveUnitTypeSeeds(bedroomsText).map((t) => ({
     ...blankUnitType(t.label, t.beds),
     blurb: placeholderBlurb(t.beds),
+    blurb_ar: null,
     plans: [0, 1].map((i) => ({
       ...blankPlan(i),
       beds: t.beds,

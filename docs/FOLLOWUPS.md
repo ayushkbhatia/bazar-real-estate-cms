@@ -680,6 +680,16 @@ shows the trail.)
     same PR, that page renders in a different, per-device system face from
     every other Arabic page.
 
+- [developments] `development_units` has readers but no writer.
+  lib/queries/developments.ts:242 selects unit rows for the public units table,
+  and nothing in app/ ever inserts or updates one — the 8 rows in production
+  arrived by migration. So unit_type, orientation and lagoon_access render
+  publicly and cannot be edited, which is also why they have no Arabic inputs
+  despite having twin columns since 0104. Third table in this shape, after
+  article_categories and properties.description. Done looks like a units grid
+  under the development editor, or a decision that the table is seed-only and
+  its three text columns should be enum-backed instead of free text.
+
 - [blog] Article categories can be created but never edited.
   `createArticleCategory` in app/[locale]/(admin)/admin/blog/_category-actions.ts
   is the ONLY write to `article_categories` — there is no update action and no
