@@ -11,6 +11,7 @@ import {
   type PublishabilityResult,
 } from "@/lib/publishability";
 import { logAudit } from "@/lib/audit";
+import { sanitizeArticleHtml } from "@/lib/article-html";
 import { friendlyPropertyConstraintError } from "@/lib/property-constraints";
 import { requireRole } from "@/lib/auth";
 
@@ -68,8 +69,22 @@ export async function updateProperty(
 
   const { meta_title, meta_description, ...rest } = parsed.data;
 
+  // The description arrives as an opaque HTML string, so the editor's
+  // extension whitelist constrains nothing on this side. Sanitise before it is
+  // written — the same treatment the article body gets, and for the same
+  // reason: the value reaching the server is whatever was posted, not whatever
+  // the toolbar allows.
+  const description = rest.description
+    ? sanitizeArticleHtml(rest.description)
+    : null;
+  const descriptionAr = rest.description_ar
+    ? sanitizeArticleHtml(rest.description_ar)
+    : null;
+
   const updateData = {
     ...rest,
+    description,
+    description_ar: descriptionAr,
     seo: {
       slug: rest.slug,
       meta_title: meta_title ?? null,

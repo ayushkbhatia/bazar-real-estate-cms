@@ -133,6 +133,16 @@ const propertyOverviewFields = z.object({
     .max(320, "Keep it under 320 characters")
     .nullable()
     .optional(),
+  /* The long description. Rich text from the Tiptap tab, stored as HTML and
+   * sanitised in the action before it is written — never trust the string that
+   * arrives, even from our own editor.
+   *
+   * It was absent from this schema entirely until now, which is why the editor
+   * component existed for three sprints without being reachable: nothing could
+   * carry its value to the server. */
+  description: z.string().max(200_000, "Description is too long").nullable().optional(),
+  description_ar: z.string().max(300_000).nullable().optional(),
+
   /* Arabic twins. Optional and nullable in every case — blank falls back to
    * the English in place, which is the site-wide rule, so a missing
    * translation must never be a validation error.

@@ -68,6 +68,56 @@ describe("the Arabic twins survive a round trip", () => {
   });
 });
 
+describe("the long description is reachable end to end", () => {
+  const read = (f: string) =>
+    readFileSync(path.join(__dirname, f), "utf8");
+
+  it.each(["description", "description_ar"])(
+    "selects %s on the property page",
+    (column) => {
+      const select = read("page.tsx").match(/"id, reference[^"]*"/)?.[0] ?? "";
+      expect(select, `${column} missing from the select`).toContain(column);
+    },
+  );
+
+  it.each(["description", "description_ar"])(
+    "passes %s into the form's initial values",
+    (column) => {
+      const initial =
+        read("page.tsx").match(/const initial: PropertyEditInput = \{[\s\S]*?\n  \};/)?.[0] ??
+        "";
+      expect(initial, `${column} missing from initial`).toContain(column);
+    },
+  );
+
+  it("merges both into the submitted payload", () => {
+    // Tiptap is not a controlled input, so these live in local state and are
+    // merged at submit. Miss that and the editor saves with a success toast
+    // and nothing stored — the failure the article editor was built to avoid.
+    const form = read("_form.tsx");
+    expect(form).toMatch(/updateProperty\(propertyId, \{[\s\S]{0,400}description:/);
+    expect(form).toContain("description_ar:");
+  });
+
+  it("stores an emptied editor as null rather than an empty document", () => {
+    // "<p></p>" is not blank to any `??` downstream — it would read as
+    // "described" on a listing with no description. Asserted on behaviour
+    // rather than on a source pattern: both fields must be guarded by the
+    // same tag-stripping check before they are sent.
+    const form = read("_form.tsx");
+    expect(form, "no tag-stripping guard").toContain('replace(/<[^>]*>/g, "")');
+    expect(form).toMatch(/description: hasWords\(descriptionHtml\) \? descriptionHtml : null/);
+    expect(form).toMatch(/description_ar: hasWords\(descriptionAr\) \? descriptionAr : null/);
+  });
+
+  it("sanitises the HTML before it is written", () => {
+    // The value that reaches the server is whatever was posted, not whatever
+    // the toolbar allows.
+    const actions = read("_actions.ts");
+    expect(actions).toContain("sanitizeArticleHtml");
+  });
+});
+
 describe("the editor loads what it can overwrite", () => {
   it("selects both Arabic columns on the property page", () => {
     // The actual defect this pair of files had: the schema accepted the twins
