@@ -89,6 +89,41 @@ export const articleCreateSchema = z.object({
 export type ArticleCreateInput = z.infer<typeof articleCreateSchema>;
 
 /** Payload for adding a new category ("blog type") from the editor. */
+/**
+ * Editing an existing category.
+ *
+ * `slug` is deliberately absent. It is the public URL segment
+ * (/insights/category/<slug>) AND the foreign key articles reference by value
+ * — `articles.category = article_categories.slug` — so changing it would both
+ * break live links and orphan every article filed under it. It is shown in the
+ * screen and never editable.
+ *
+ * There is no delete either. A retired category still has to resolve its label
+ * for articles already tagged with it, which is why `is_active` exists and why
+ * lib/queries/article-categories.ts keeps reading inactive rows.
+ */
+export const articleCategoryEditSchema = z.object({
+  slug: z
+    .string()
+    .trim()
+    .regex(categorySlugRegex, "Lowercase letters, numbers, - and _ only"),
+  label: z
+    .string()
+    .trim()
+    .min(2, "Name is too short")
+    .max(60, "Name is too long"),
+  /* Arabic twins, 1.5x their English siblings as everywhere else. */
+  label_ar: z.string().trim().max(90).nullable().optional(),
+  description: z.string().trim().max(400).nullable().optional(),
+  description_ar: z.string().trim().max(600).nullable().optional(),
+  sort_order: z.number().int().min(0).max(10_000),
+  is_active: z.boolean(),
+});
+
+export type ArticleCategoryEditInput = z.infer<
+  typeof articleCategoryEditSchema
+>;
+
 export const articleCategoryCreateSchema = z.object({
   label: z
     .string()

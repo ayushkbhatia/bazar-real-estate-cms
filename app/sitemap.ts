@@ -67,7 +67,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // listArticleCategories() falls back to the seed set when Supabase is
   // unreachable, so these always populate.
   const categoryEntries: MetadataRoute.Sitemap = (
-    await listArticleCategories().catch((err) => {
+    await listArticleCategories(DEFAULT_LOCALE).catch((err) => {
       console.error("[sitemap] category fetch failed", err);
       return [];
     })

@@ -86,8 +86,9 @@ function reshape<T extends RawJoin>(
  */
 async function attachLabels<T extends ArticleListRow>(
   rows: T[],
+  locale?: Locale,
 ): Promise<T[]> {
-  const labels = await getArticleCategoryLabels();
+  const labels = await getArticleCategoryLabels(locale);
   return rows.map((r) => ({
     ...r,
     category_label: formatCategoryLabel(r.category, labels),
@@ -213,7 +214,7 @@ export async function getPublishedArticleBySlug(
     reshape(
       localiseDeep(data, locale ?? (await currentLocale())) as unknown as RawJoin,
     ) as unknown as ArticleDetail,
-  ]);
+  ], locale);
   return row;
 }
 

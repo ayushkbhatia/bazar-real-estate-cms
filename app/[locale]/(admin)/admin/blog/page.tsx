@@ -79,12 +79,17 @@ export default async function AdminBlogPage({ searchParams }: PageProps) {
       title="Insights"
       breadcrumbs="Content · Blog"
       primary={
-        <Button asChild>
-          <Link href="/admin/blog/new">
-            <Plus size={14} strokeWidth={1.8} />
-            New article
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline">
+            <Link href="/admin/blog/categories">Categories</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/admin/blog/new">
+              <Plus size={14} strokeWidth={1.8} />
+              New article
+            </Link>
+          </Button>
+        </div>
       }
     >
       <div className="flex flex-col gap-6">
