@@ -43,7 +43,7 @@ export default async function AdminAgentEditPage({
   const { data, error } = await supabase
     .from("staff")
     .select(
-      "user_id, display_name, slug, title, brn, bio, photo_url, languages, specialties, credentials, role, status, public_email, public_phone, whatsapp",
+      "user_id, display_name, display_name_ar, slug, title, title_ar, brn, bio, bio_ar, photo_url, languages, languages_ar, specialties, specialties_ar, credentials, role, status, public_email, public_phone, whatsapp",
     )
     .eq("user_id", id)
     .maybeSingle();

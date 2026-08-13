@@ -16,8 +16,14 @@ export const agentEditSchema = z.object({
     .max(120, "Slug is too long")
     .regex(slugRegex, "Lowercase letters, numbers, and hyphens only"),
   title: z.string().max(120).nullable().optional(),
+  /* Arabic twins. `.optional()` throughout: the staff save is a partial
+   * UPDATE, so an omitted key leaves the stored value alone. Caps are 1.5x
+   * their English siblings, matching arMax. */
+  display_name_ar: z.string().max(180).nullable().optional(),
+  title_ar: z.string().max(180).nullable().optional(),
   brn: z.string().max(64).nullable().optional(),
   bio: z.string().max(2000).nullable().optional(),
+  bio_ar: z.string().max(3000).nullable().optional(),
   // Publishable contact details (migration 0077). These render the Call /
   // WhatsApp / Email actions on the advisor's listings; each action is
   // hidden when its field is blank, so leaving them empty is a valid state.
@@ -37,6 +43,11 @@ export const agentEditSchema = z.object({
     .or(z.literal("").transform(() => null)),
   languages: z.array(z.string().max(60)).max(10),
   specialties: z.array(z.string().max(60)).max(10),
+  /* Array twins mirror their sibling's shape — a text twin beside a text[]
+   * column typechecks in SQL and fails on first save. Both are edited as a
+   * comma-separated string, exactly like the English. */
+  languages_ar: z.array(z.string().max(90)).max(10).nullable().optional(),
+  specialties_ar: z.array(z.string().max(90)).max(10).nullable().optional(),
   credentials: z.array(z.string().max(120)).max(10),
 });
 

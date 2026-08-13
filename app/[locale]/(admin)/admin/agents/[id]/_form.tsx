@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ArabicTwin } from "../../_fields/arabic-twin";
 import {
   agentEditSchema,
   type AgentEditInput,
@@ -66,6 +67,14 @@ export function AgentEditForm({
         <div>
           <Label htmlFor="display_name">Display name</Label>
           <Input id="display_name" {...register("display_name")} />
+          <ArabicTwin
+            field={{ key: "display_name_ar", label: "Display name", kind: "text", max: 120 }}
+            value={watch("display_name_ar") ?? ""}
+            onChange={(v) =>
+              setValue("display_name_ar", v === "" ? null : v, { shouldDirty: true })
+            }
+          />
+
           <FieldError
             message={errors.display_name?.message ?? serverErrors.display_name}
           />
@@ -90,6 +99,13 @@ export function AgentEditForm({
           id="title"
           placeholder="Senior Advisor · Saadiyat & Yas"
           {...register("title")}
+        />
+        <ArabicTwin
+          field={{ key: "title_ar", label: "Title", kind: "text", max: 120 }}
+          value={watch("title_ar") ?? ""}
+          onChange={(v) =>
+            setValue("title_ar", v === "" ? null : v, { shouldDirty: true })
+          }
         />
         <FieldError message={errors.title?.message ?? serverErrors.title} />
       </div>
@@ -167,6 +183,13 @@ export function AgentEditForm({
           placeholder="Twelve years in Saadiyat. The advisor families ask for when the deal needs to close quietly."
           className="mt-1.5 w-full px-3 py-2 rounded-md border border-bz-border bg-bz-bg text-[14px] leading-relaxed resize-y focus:outline-none focus:border-bz-accent"
         />
+        <ArabicTwin
+          field={{ key: "bio_ar", label: "Bio", kind: "textarea", max: 2000 }}
+          value={watch("bio_ar") ?? ""}
+          onChange={(v) =>
+            setValue("bio_ar", v === "" ? null : v, { shouldDirty: true })
+          }
+        />
         <FieldError message={errors.bio?.message ?? serverErrors.bio} />
       </div>
 
@@ -199,6 +222,17 @@ export function AgentEditForm({
             }
           />
           <p className="text-[11.5px] text-bz-muted mt-1">Comma separated.</p>
+          <ArabicTwin
+            field={{ key: "languages_ar", label: "Languages", kind: "text", max: 120 }}
+            value={(watch("languages_ar") ?? []).join(", ")}
+            onChange={(v) =>
+              setValue(
+                "languages_ar",
+                v.split(",").map((x) => x.trim()).filter(Boolean),
+                { shouldDirty: true },
+              )
+            }
+          />
         </div>
         <div>
           <Label>Specialties</Label>
@@ -215,6 +249,23 @@ export function AgentEditForm({
               )
             }
           />
+          <ArabicTwin
+            field={{
+              key: "specialties_ar",
+              label: "Specialties",
+              kind: "text",
+              max: 120,
+            }}
+            value={(watch("specialties_ar") ?? []).join(", ")}
+            onChange={(v) =>
+              setValue(
+                "specialties_ar",
+                v.split(",").map((x) => x.trim()).filter(Boolean),
+                { shouldDirty: true },
+              )
+            }
+          />
+          <p className="text-[11.5px] text-bz-muted mt-1">Comma separated.</p>
         </div>
       </div>
 
