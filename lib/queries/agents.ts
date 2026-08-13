@@ -14,6 +14,8 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
 import type { Database } from "@/db/types";
 
@@ -35,8 +37,11 @@ export type AgentProfile = {
   joined_at: string | null;
 };
 
+/* The `_ar` twins ride along and are folded away by `localiseRow` before
+ * `toAgentProfile` shapes the row — that shaper builds explicit literals, so
+ * folding after it would silently do nothing, as it did in the megamenu. */
 const PROFILE_FIELDS =
-  "user_id, slug, display_name, title, brn, photo_url, bio, specialties, languages, role, status, joined_at";
+  "user_id, slug, display_name, display_name_ar, title, title_ar, brn, photo_url, bio, bio_ar, specialties, specialties_ar, languages, languages_ar, role, status, joined_at";
 
 /** Convert seed entry → AgentProfile so the API shape stays consistent. */
 function seedToProfile(s: (typeof SEED_AGENTS)[number]): AgentProfile {
@@ -76,7 +81,10 @@ export async function listAgents(): Promise<AgentProfile[]> {
     if (error || !data || data.length === 0) {
       return SEED_AGENTS.map(seedToProfile);
     }
-    return data.map(toAgentProfile);
+    const locale = await currentLocale();
+    return data.map((row) =>
+      toAgentProfile(localiseRow(row as unknown as Record<string, unknown>, locale)),
+    );
   } catch {
     return SEED_AGENTS.map(seedToProfile);
   }
@@ -96,7 +104,13 @@ export async function getAgentBySlug(
         .eq("slug", slug)
         .eq("status", "active")
         .maybeSingle();
-      if (data) return toAgentProfile(data);
+      if (data)
+        return toAgentProfile(
+          localiseRow(
+            data as unknown as Record<string, unknown>,
+            await currentLocale(),
+          ),
+        );
     } catch {
       // fall through to seed
     }
