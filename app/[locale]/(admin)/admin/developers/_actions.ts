@@ -228,8 +228,10 @@ export async function updateDeveloper(
     .from("developers")
     .update({
       name: input.name,
+      name_ar: input.name_ar ?? null,
       slug: input.slug,
       description: input.description ?? null,
+      description_ar: input.description_ar ?? null,
       founded_year: input.founded_year ?? null,
     })
     .eq("id", id)

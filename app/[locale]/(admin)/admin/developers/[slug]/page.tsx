@@ -128,8 +128,14 @@ export default async function DeveloperRecordPage({ params }: PageProps) {
           initial={{
             id: record.id,
             name: record.name,
+            // Mapped, not just selected — this object is explicit, so a
+            // column the query loads and this omits reaches the form as
+            // undefined and the Arabic box reads "not set" on a record that
+            // has Arabic. Same shape as the bug fixed in the blog editor.
+            name_ar: record.name_ar ?? null,
             slug: record.slug,
             description: record.description,
+            description_ar: record.description_ar ?? null,
             founded_year: record.founded_year,
           }}
         />

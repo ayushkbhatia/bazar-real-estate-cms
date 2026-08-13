@@ -8,14 +8,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { ArabicTwin } from "../../_fields/arabic-twin";
 import { slugify } from "@/lib/slug";
 import { updateDeveloper } from "../_actions";
 
 export type DeveloperRecord = {
   id: string;
   name: string;
+  name_ar: string | null;
   slug: string;
   description: string | null;
+  description_ar: string | null;
   founded_year: number | null;
 };
 
@@ -43,8 +46,10 @@ export function DeveloperRecordForm({ initial }: { initial: DeveloperRecord }) {
     startTransition(async () => {
       const result = await updateDeveloper(form.id, {
         name: form.name,
+        name_ar: form.name_ar,
         slug: form.slug,
         description: form.description ?? "",
+        description_ar: form.description_ar,
         founded_year: form.founded_year ?? "",
       });
       if (result.status === "ok") {
@@ -73,6 +78,11 @@ export function DeveloperRecordForm({ initial }: { initial: DeveloperRecord }) {
               id="name"
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
+            />
+            <ArabicTwin
+              field={{ key: "name_ar", label: "Name", kind: "text", max: 120 }}
+              value={form.name_ar ?? ""}
+              onChange={(v) => set("name_ar", v || null)}
             />
             <FieldError message={errors.name} />
           </div>
@@ -121,6 +131,16 @@ export function DeveloperRecordForm({ initial }: { initial: DeveloperRecord }) {
             placeholder="One or two lines — shown on the profile hero and the /developers card."
             value={form.description ?? ""}
             onChange={(e) => set("description", e.target.value || null)}
+          />
+          <ArabicTwin
+            field={{
+              key: "description_ar",
+              label: "Description",
+              kind: "textarea",
+              max: 2000,
+            }}
+            value={form.description_ar ?? ""}
+            onChange={(v) => set("description_ar", v || null)}
           />
           <FieldError message={errors.description} />
         </div>

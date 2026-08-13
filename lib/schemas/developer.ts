@@ -33,6 +33,10 @@ export const developerEditSchema = z.object({
     .trim()
     .min(2, "Give the developer a name.")
     .max(120, "That name is too long — 120 characters max."),
+  /* Arabic twins. `.optional()` — updateDeveloper writes a partial UPDATE, so
+   * an omitted key leaves the stored value alone. Caps are 1.5x the English. */
+  name_ar: z.string().trim().max(180).nullable().optional(),
+  description_ar: z.string().max(3000).nullable().optional(),
   slug: z
     .string()
     .min(2, "Slug is too short")
