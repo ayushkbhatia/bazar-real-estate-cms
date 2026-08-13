@@ -95,14 +95,34 @@ test("property page emits JSON-LD with the right reference", async ({ page }) =>
   expect(listing.identifier).toBe(reference);
 });
 
-test("contact form rejects when no email or phone is supplied", async ({ page }) => {
+test("contact form refuses a submission with no way to reply", async ({ page }) => {
+  // Asserts the OUTCOME, not the wording. Which message appears depends on the
+  // form's field config, which editors own: with `email` and `phone` both
+  // marked required, the per-field rule fires and the cross-field "we need at
+  // least an email or a phone number" message is never reached. That exact
+  // edit landed in production on 2026-08-13 and reddened CI with no commit.
+  //
+  // The cross-field rule itself is covered where it cannot drift, in
+  // lib/forms/submission.test.ts.
   await page.goto("/contact");
-  await page.getByLabel(/^name$/i).fill("Playwright Tester");
-  await page.getByLabel(/tell us more/i).fill("Need help.");
-  await page.getByRole("button", { name: /^submit$/i }).click();
-  await expect(
-    page.getByText(/need at least an email or a phone number/i),
-  ).toBeVisible();
+  const form = page
+    .locator("form")
+    .filter({ has: page.locator("[name='message']") });
+  await expect(form).toBeVisible();
+
+  await form.locator("[name='name']").fill("Playwright Tester");
+  await form.locator("[name='message']").fill("Need help.");
+  await form.locator('button[type="submit"]').click();
+
+  // However it is refused — native validation, a field error, or the
+  // cross-field rule — it must not have gone through. On success FormRenderer
+  // replaces the whole <form> with a SuccessPanel, so the form still being
+  // there is the assertion. Checking for the absence of a success *phrase*
+  // would pass whether or not the guard worked, since that phrase is editor-
+  // owned and no longer says "thank you" anyway.
+  await page.waitForTimeout(1_000);
+  await expect(form).toBeVisible();
+  await expect(form.locator("[name='message']")).toBeVisible();
 });
 
 test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
@@ -116,14 +136,38 @@ test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
   const form = page.locator("form").filter({ has: page.locator("[name='message']") });
   await expect(form).toBeVisible();
 
+  // Fill whatever fields the form currently has, rather than a list this spec
+  // decided on once. `phone` became required on property_enquiry on
+  // 2026-08-13 and the submission silently stopped going through; hardcoding
+  // the new list would only move the breakage to the next edit.
   const ts = Date.now();
-  await form.locator("[name='name']").fill(`Playwright ${ts}`);
-  await form.locator("[name='email']").fill(`pw+${ts}@example.com`);
-  await form
-    .locator("[name='message']")
-    .fill("Automated marketplace E2E test enquiry — please disregard.");
-  await form.getByRole("button", { name: /send enquiry/i }).click();
-  await expect(page.getByText(/thank you/i)).toBeVisible({ timeout: 15_000 });
+  const inputs = form.locator("input:not([type='hidden']), textarea");
+  for (let i = 0; i < (await inputs.count()); i++) {
+    const field = inputs.nth(i);
+    if (!(await field.isVisible())) continue;
+    const type = (await field.getAttribute("type")) ?? "text";
+    if (type === "checkbox" || type === "radio") continue;
+    const name = (await field.getAttribute("name")) ?? "";
+    if (name === "email" || type === "email") {
+      await field.fill(`pw+${ts}@example.com`);
+    } else if (name === "phone" || type === "tel") {
+      await field.fill("+971500000000");
+    } else if (name === "message") {
+      await field.fill("Automated marketplace E2E test enquiry — please disregard.");
+    } else {
+      await field.fill(`Playwright ${ts}`);
+    }
+  }
+  // Located by role, never by label: the submit label is editor-controlled
+  // copy (forms.copy.submit_label). It was "Send enquiry" until an editor
+  // changed it to "Submit", which timed this test out for 30s at a stretch.
+  await form.locator('button[type="submit"]').click();
+  // Success is asserted structurally: FormRenderer swaps the whole <form> for a
+  // SuccessPanel when the submission lands, so the form going away IS the
+  // confirmation. The wording is not ours to assert — success_title on this
+  // form currently reads "Your details have been successfully submitted." and
+  // contained the word "thank you" until an editor rewrote it.
+  await expect(form).toBeHidden({ timeout: 15_000 });
 });
 
 test("filter bar narrows the result set via URL state", async ({ page }) => {
