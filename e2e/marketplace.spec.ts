@@ -115,9 +115,14 @@ test("contact form refuses a submission with no way to reply", async ({ page }) 
   await form.locator('button[type="submit"]').click();
 
   // However it is refused — native validation, a field error, or the
-  // cross-field rule — it must not have gone through.
-  await expect(page.getByText(/thank you/i)).toBeHidden({ timeout: 3_000 });
+  // cross-field rule — it must not have gone through. On success FormRenderer
+  // replaces the whole <form> with a SuccessPanel, so the form still being
+  // there is the assertion. Checking for the absence of a success *phrase*
+  // would pass whether or not the guard worked, since that phrase is editor-
+  // owned and no longer says "thank you" anyway.
+  await page.waitForTimeout(1_000);
   await expect(form).toBeVisible();
+  await expect(form.locator("[name='message']")).toBeVisible();
 });
 
 test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
@@ -141,7 +146,12 @@ test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
   // copy (forms.copy.submit_label). It was "Send enquiry" until an editor
   // changed it to "Submit", which timed this test out for 30s at a stretch.
   await form.locator('button[type="submit"]').click();
-  await expect(page.getByText(/thank you/i)).toBeVisible({ timeout: 15_000 });
+  // Success is asserted structurally: FormRenderer swaps the whole <form> for a
+  // SuccessPanel when the submission lands, so the form going away IS the
+  // confirmation. The wording is not ours to assert — success_title on this
+  // form currently reads "Your details have been successfully submitted." and
+  // contained the word "thank you" until an editor rewrote it.
+  await expect(form).toBeHidden({ timeout: 15_000 });
 });
 
 test("filter bar narrows the result set via URL state", async ({ page }) => {
