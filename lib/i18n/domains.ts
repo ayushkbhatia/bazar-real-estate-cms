@@ -568,6 +568,8 @@ export const AWAITING_TWIN: string[] = [];
 
 /** Columns with an Arabic input in the CMS today. */
 export const WIRED_EDITOR: string[] = [
+  "articles.title",
+  "articles.excerpt",
   "properties.title",
   "properties.short_description",
   "areas.name",
@@ -587,6 +589,9 @@ export const WIRED_EDITOR: string[] = [
 
 /** Columns whose public read path folds the locale today. */
 export const WIRED_READ: string[] = [
+  "articles.title",
+  "articles.excerpt",
+  "articles.body_html",
   "megamenu_tabs.label",
   "megamenu_tabs.panel_title",
   "megamenu_tabs.right_column_title",

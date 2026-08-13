@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getPublishedArticleBySlug } from "@/lib/queries/articles";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { mediaPublicUrl } from "@/lib/media";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -46,7 +47,7 @@ export default async function ArticleOpenGraph({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = await getPublishedArticleBySlug(slug);
+  const article = await getPublishedArticleBySlug(slug, DEFAULT_LOCALE);
 
   const title = article?.title ?? "The Bazar Brief";
   const category = article?.category_label ?? "Insights";

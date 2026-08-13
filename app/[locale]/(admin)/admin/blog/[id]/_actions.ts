@@ -60,12 +60,20 @@ export async function updateArticle(
   // and reading time are derived from this same value.
   const body_html = sanitizeArticleHtml(rest.body_html);
   const excerpt = deriveExcerpt(rest.excerpt, body_html);
+  // The Arabic body goes through the same sanitiser. It arrives from the slot
+  // walker rather than a person, which is not a reason to trust it more: the
+  // walker splices model output back into markup, and this is the last point
+  // before it is stored.
+  const body_html_ar = rest.body_html_ar
+    ? sanitizeArticleHtml(rest.body_html_ar)
+    : null;
 
   const { data, error } = await supabase
     .from("articles")
     .update({
       ...rest,
       body_html,
+      body_html_ar,
       excerpt,
       read_minutes: readingMinutes(body_html),
       seo: {
