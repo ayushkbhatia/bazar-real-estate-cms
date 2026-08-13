@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CategorySelect } from "../_category-select";
 import { ImagePicker } from "../../_fields/image-picker";
+import { ArabicTwin } from "../../_fields/arabic-twin";
 import type { BlogMediaOption } from "../_image-insert-dialog";
 import { publishArticle, updateArticle } from "./_actions";
 import { PUBLISH_INTENT } from "./_intent";
@@ -133,6 +134,13 @@ export function ArticleEditForm({
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="title">Title</Label>
           <Input id="title" {...register("title")} />
+          <ArabicTwin
+            field={{ key: "title_ar", label: "Title", kind: "text", max: 160 }}
+            value={watch("title_ar") ?? ""}
+            onChange={(v) =>
+              setValue("title_ar", v === "" ? null : v, { shouldDirty: true })
+            }
+          />
           <FieldError
             message={errors.title?.message ?? serverFieldErrors.title}
           />
@@ -168,6 +176,18 @@ export function ArticleEditForm({
             placeholder="One sentence used on cards and social previews. Leave blank to auto-derive."
             className="bz-field w-full rounded border border-bz-border px-3 py-2 text-[14px] outline-none focus:border-bz-accent transition-colors bg-bz-bg"
             {...register("excerpt")}
+          />
+          <ArabicTwin
+            field={{
+              key: "excerpt_ar",
+              label: "Excerpt",
+              kind: "textarea",
+              max: 320,
+            }}
+            value={watch("excerpt_ar") ?? ""}
+            onChange={(v) =>
+              setValue("excerpt_ar", v === "" ? null : v, { shouldDirty: true })
+            }
           />
           <FieldError message={errors.excerpt?.message} />
         </div>

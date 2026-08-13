@@ -114,6 +114,16 @@ export const articleEditSchema = z.object({
     .string()
     .min(3, "Title is too short")
     .max(160, "Title is too long"),
+  /* Arabic twins. `.optional()` because updateArticle writes a partial update,
+   * so an omitted key leaves the stored value alone. Caps are 1.5x their
+   * English siblings, matching arMax. */
+  title_ar: z.string().max(240, "Arabic title is too long").nullable().optional(),
+  excerpt_ar: z
+    .string()
+    .max(480, "Keep the Arabic excerpt under 480 characters")
+    .nullable()
+    .optional(),
+  body_html_ar: z.string().max(300_000).nullable().optional(),
   slug: z
     .string()
     .min(3, "Slug is too short")

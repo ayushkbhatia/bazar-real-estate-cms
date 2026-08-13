@@ -1,6 +1,9 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { type Locale } from "@/lib/i18n/locales";
+import { localiseDeep } from "@/lib/i18n/localise";
 import { formatCategoryLabel } from "@/lib/schemas/article";
 import { getArticleCategoryLabels } from "@/lib/queries/article-categories";
 import type { Database } from "@/db/types";
@@ -44,11 +47,15 @@ export type ArticleDetail = ArticleListRow & {
   seo: Record<string, unknown> | null;
 };
 
+/* The `_ar` twins ride along in both selects. They are folded away by
+ * `localiseDeep` before anything downstream sees them, so no renderer and no
+ * admin screen learns that Arabic exists — but they have to be SELECTED, or
+ * there is nothing to fold. */
 const LIST_FIELDS =
-  "id, slug, title, excerpt, category, status, read_minutes, published_at, created_at, updated_at, staff:author_id(display_name, title, slug), media:hero_image_id(storage_key, filename, alt_text)";
+  "id, slug, title, title_ar, excerpt, excerpt_ar, category, status, read_minutes, published_at, created_at, updated_at, staff:author_id(display_name, title, slug), media:hero_image_id(storage_key, filename, alt_text)";
 
 const DETAIL_FIELDS =
-  "id, slug, title, excerpt, category, status, read_minutes, body_html, seo, published_at, created_at, updated_at, staff:author_id(display_name, title, slug), media:hero_image_id(storage_key, filename, alt_text)";
+  "id, slug, title, title_ar, excerpt, excerpt_ar, category, status, read_minutes, body_html, body_html_ar, seo, published_at, created_at, updated_at, staff:author_id(display_name, title, slug), media:hero_image_id(storage_key, filename, alt_text)";
 
 type RawJoin = {
   staff: {
@@ -114,9 +121,12 @@ export async function listPublishedArticles(opts: {
     console.error("[listPublishedArticles]", error);
     return { rows: [], total: 0 };
   }
+  const articleLocale = await currentLocale();
   const rows = await attachLabels(
     (data ?? []).map((r) =>
-      reshape(r as unknown as RawJoin),
+      // Folded on the raw row, before reshape builds explicit literals and
+      // drops the twins — the mistake made once already in the megamenu.
+      reshape(localiseDeep(r, articleLocale) as unknown as RawJoin),
     ) as unknown as ArticleListRow[],
   );
   return { rows, total: count ?? 0 };
@@ -182,6 +192,8 @@ export async function countArticlesByCategory(): Promise<{
 /** Public-facing single article. Only published, not soft-deleted. */
 export async function getPublishedArticleBySlug(
   slug: string,
+  /** Overridable; defaults to the locale of the request. */
+  locale?: Locale,
 ): Promise<ArticleDetail | null> {
   if (!isSupabaseConfigured) return null;
   const supabase = createSupabasePublicClient();
@@ -198,7 +210,9 @@ export async function getPublishedArticleBySlug(
   }
   if (!data) return null;
   const [row] = await attachLabels([
-    reshape(data as unknown as RawJoin) as unknown as ArticleDetail,
+    reshape(
+      localiseDeep(data, locale ?? (await currentLocale())) as unknown as RawJoin,
+    ) as unknown as ArticleDetail,
   ]);
   return row;
 }
@@ -220,9 +234,12 @@ export async function getRelatedArticles(
     .order("published_at", { ascending: false })
     .limit(limit + 4); // over-fetch so we can prefer same category
   if (error || !data) return [];
+  const articleLocale = await currentLocale();
   const all = await attachLabels(
     data.map((r) =>
-      reshape(r as unknown as RawJoin),
+      // Folded on the raw row, before reshape builds explicit literals and
+      // drops the twins — the mistake made once already in the megamenu.
+      reshape(localiseDeep(r, articleLocale) as unknown as RawJoin),
     ) as unknown as ArticleListRow[],
   );
   const same = all.filter((a) => a.category === category);

@@ -22,7 +22,7 @@ async function fetchArticle(id: string) {
   const { data, error } = await supabase
     .from("articles")
     .select(
-      "id, title, slug, excerpt, category, status, body_html, hero_image_id, seo, published_at, updated_at, staff:author_id(display_name)",
+      "id, title, title_ar, slug, excerpt, excerpt_ar, category, status, body_html, body_html_ar, hero_image_id, seo, published_at, updated_at, staff:author_id(display_name)",
     )
     .eq("id", id)
     .maybeSingle();
