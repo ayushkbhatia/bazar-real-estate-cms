@@ -1,6 +1,8 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
 import type { Database } from "@/db/types";
 import {
   developmentFactsSchema,
@@ -22,7 +24,7 @@ export type DevelopmentUnit = DevelopmentUnitFromUtils;
 export type UnitFilter = UnitFilterFromUtils;
 
 const INDEX_FIELDS =
-  "id, name, slug, status, handover_date, total_units, starting_price, tagline, bedrooms_text, description, published_at, developers:developer_id(name, slug), areas:area_id(name, slug), hero:hero_image_id(storage_key, filename, alt_text)";
+  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, published_at, developers:developer_id(name, slug), areas:area_id(name, slug), hero:hero_image_id(storage_key, filename, alt_text)";
 
 // `masterplan_id` is joined the same way as `hero_image_id`, because it is
 // stored the same way: the CMS's Page images card writes both to columns on
@@ -31,7 +33,7 @@ const INDEX_FIELDS =
 // a masterplan row to — so an uploaded site plan silently never appeared.
 /** Exported so a test can pin the media joins — see developments.test.ts. */
 export const DETAIL_FIELDS =
-  "id, name, slug, status, handover_date, total_units, starting_price, tagline, bedrooms_text, description, vision, facts, payment_plan, master_plan, amenities, escrow_account, seo, published_at, developer_id, area_id, lead_advisor_id, hero:hero_image_id(storage_key, filename, alt_text), masterplan:masterplan_id(storage_key, filename, alt_text), developers:developer_id(id, name, slug, founded_year, description, stats), areas:area_id(name, slug)";
+  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, vision, vision_ar, facts, payment_plan, master_plan, amenities, amenities_ar, escrow_account, seo, published_at, developer_id, area_id, lead_advisor_id, hero:hero_image_id(storage_key, filename, alt_text), masterplan:masterplan_id(storage_key, filename, alt_text), developers:developer_id(id, name, slug, founded_year, description, stats), areas:area_id(name, slug)";
 
 type HeroMedia = {
   storage_key: string;
@@ -149,7 +151,10 @@ export async function listPublishedDevelopments(
     if (error) console.error("[listPublishedDevelopments]", error);
     return [];
   }
-  return data.map((r) => shapeIndexRow(r as unknown as Record<string, unknown>));
+  const locale = await currentLocale();
+  return data.map((r) =>
+    shapeIndexRow(localiseRow(r as unknown as Record<string, unknown>, locale)),
+  );
 }
 
 /** Get a single published development by slug. */
@@ -169,7 +174,15 @@ export async function getPublishedDevelopmentBySlug(
     return null;
   }
   if (!data) return null;
-  return shapeDetail(data as unknown as Record<string, unknown>);
+  // Folded before shapeDetail, which builds explicit literals and would drop
+  // the twins. Fourth shaper in this codebase with that property, after
+  // buildMegamenu, reshape and toAgentProfile.
+  return shapeDetail(
+    localiseRow(
+      data as unknown as Record<string, unknown>,
+      await currentLocale(),
+    ),
+  );
 }
 
 function shapeDetail(raw: Record<string, unknown>): DevelopmentDetail {
