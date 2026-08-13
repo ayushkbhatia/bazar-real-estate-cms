@@ -1,6 +1,9 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
+import { type Locale } from "@/lib/i18n/locales";
 import {
   brandSettingsSchema,
   displaySettingsSchema,
@@ -116,25 +119,36 @@ const BRANDING_DEFAULTS: PublicBranding = {
  * to it still asks for `lead_routing`, so under an anon key it still answers
  * from DEFAULTS, exactly as it has since 0010.
  */
-export async function getPublicBranding(): Promise<PublicBranding> {
+export async function getPublicBranding(
+  /** Overridable for tests; defaults to the locale of the request. */
+  locale?: Locale,
+): Promise<PublicBranding> {
   if (!isSupabaseConfigured) return BRANDING_DEFAULTS;
   try {
     const supabase = createSupabasePublicClient();
     const { data } = await supabase
       .from("site_settings")
-      .select("brand_name, brand_tagline, logo_url, logo_style, favicon_url")
+      .select(
+        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url",
+      )
       .eq("id", 1)
       .maybeSingle();
     if (!data) return BRANDING_DEFAULTS;
-    const style = data.logo_style as string | null;
+    // Folded before anything reads it, so the wordmark component keeps asking
+    // for `brand_name` and never learns a twin exists.
+    const row = localiseRow(
+      data as unknown as Record<string, unknown>,
+      locale ?? (await currentLocale()),
+    );
+    const style = row.logo_style as string | null;
     return {
-      brand_name: data.brand_name ?? BRANDING_DEFAULTS.brand_name,
-      brand_tagline: data.brand_tagline ?? null,
-      logo_url: data.logo_url ?? null,
+      brand_name: (row.brand_name as string | null) ?? BRANDING_DEFAULTS.brand_name,
+      brand_tagline: (row.brand_tagline as string | null) ?? null,
+      logo_url: (row.logo_url as string | null) ?? null,
       logo_style: (LOGO_STYLES as readonly string[]).includes(style ?? "")
         ? (style as LogoStyle)
         : "mark_and_name",
-      favicon_url: data.favicon_url ?? null,
+      favicon_url: (row.favicon_url as string | null) ?? null,
     };
   } catch {
     return BRANDING_DEFAULTS;
@@ -143,18 +157,27 @@ export async function getPublicBranding(): Promise<PublicBranding> {
 
 /** Public read for the marketplace pages — uses the cookie-free public
  *  client so the homepage stays ISR-eligible. */
-export async function getPublicSiteSettings(): Promise<SiteSettings> {
+export async function getPublicSiteSettings(
+  /** Overridable for tests; defaults to the locale of the request. */
+  locale?: Locale,
+): Promise<SiteSettings> {
   if (!isSupabaseConfigured) return DEFAULTS;
   try {
     const supabase = createSupabasePublicClient();
     const { data } = await supabase
       .from("site_settings")
       .select(
-        "brand_name, brand_tagline, logo_url, logo_style, favicon_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
+        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
       )
       .eq("id", 1)
       .maybeSingle();
-    return shape(data as unknown as Record<string, unknown> | null);
+    if (!data) return shape(null);
+    return shape(
+      localiseRow(
+        data as unknown as Record<string, unknown>,
+        locale ?? (await currentLocale()),
+      ),
+    );
   } catch {
     return DEFAULTS;
   }

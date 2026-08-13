@@ -94,3 +94,17 @@ export function localeUrl(path: string, locale: Locale): string {
 export function revalidateKey(path: string, locale: Locale): string {
   return path === "/" ? `/${locale}` : `/${locale}${path}`;
 }
+
+/**
+ * Coerce a route param to a Locale.
+ *
+ * `params.locale` is typed `string` because Next cannot know the segment's
+ * shape. Anything unrecognised becomes English rather than throwing: the proxy
+ * has already rejected unknown prefixes, so a surprise here means a bug in our
+ * own routing, and rendering English is a better answer than a 500.
+ */
+export function asLocale(value: string): Locale {
+  return (ALL_LOCALES as readonly string[]).includes(value)
+    ? (value as Locale)
+    : DEFAULT_LOCALE;
+}

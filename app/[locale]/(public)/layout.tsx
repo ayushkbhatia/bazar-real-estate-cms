@@ -3,6 +3,7 @@ import { PublicFooter } from "@/components/brand/public-footer";
 import { getPublishedMegamenuHydrated } from "@/lib/queries/megamenu-hydrate";
 import { listFloatingCtas } from "@/lib/queries/floating-ctas";
 import { getPublicBranding } from "@/lib/queries/site-settings";
+import { asLocale } from "@/lib/i18n/locales";
 import { getAdvisorWhatsAppNumber } from "@/lib/whatsapp";
 import { PreferencesPopover } from "./_components/preferences-popover";
 import { MobilePreferences } from "./_components/mobile-preferences";
@@ -13,13 +14,22 @@ import { FloatingCtaRail } from "./_components/floating-cta-rail";
 
 export default async function PublicLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
+  // Threaded explicitly rather than read from the request. Layouts render
+  // before the pages beneath them, so an ambient read here runs before any
+  // page can call setRequestLocale — which drops the whole subtree to
+  // on-demand rendering. assert-static-routes.mjs caught exactly that on
+  // /legal, a page whose entire body is a redirect.
+  const { locale } = await params;
+  const active = asLocale(locale);
   const [megamenu, floatingCtas, branding] = await Promise.all([
-    getPublishedMegamenuHydrated(),
+    getPublishedMegamenuHydrated(active),
     listFloatingCtas(),
-    getPublicBranding(),
+    getPublicBranding(active),
   ]);
   // Resolved here rather than inside the nav so the brand component stays a
   // presentational client component with no data dependency of its own.
