@@ -2,6 +2,8 @@ import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
 import type { Database } from "@/db/types";
 import {
   FLOATING_CTA_KINDS,
@@ -17,6 +19,10 @@ export type FloatingCtaRow = {
   label: string;
   destination: string | null;
   message_template: string | null;
+  /* Arabic twins, present on the admin path and folded away on the public one. */
+  label_ar?: string | null;
+  message_template_ar?: string | null;
+  subject_template_ar?: string | null;
   subject_template: string | null;
   scope: FloatingCtaScope;
   use_advisor_contact: boolean;
@@ -26,7 +32,7 @@ export type FloatingCtaRow = {
 };
 
 const COLUMNS =
-  "id, key, kind, label, destination, message_template, subject_template, scope, use_advisor_contact, color, enabled, sort_order";
+  "id, key, kind, label, label_ar, destination, message_template, message_template_ar, subject_template, subject_template_ar, scope, use_advisor_contact, color, enabled, sort_order";
 
 /**
  * The rail as it shipped before it was CMS-managed.
@@ -114,7 +120,14 @@ export const listFloatingCtas = cache(async (): Promise<FloatingCtaRow[]> => {
     console.error("[listFloatingCtas]", error.message);
     return SEED_FLOATING_CTAS;
   }
-  return narrow((data ?? []) as unknown as Record<string, unknown>[]);
+  // Folded before `narrow`, which builds explicit literals like every other
+  // shaper in this codebase.
+  const locale = await currentLocale();
+  return narrow(
+    ((data ?? []) as unknown as Record<string, unknown>[]).map((r) =>
+      localiseRow(r, locale),
+    ),
+  );
 });
 
 /**

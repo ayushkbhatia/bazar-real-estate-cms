@@ -680,6 +680,18 @@ shows the trail.)
     same PR, that page renders in a different, per-device system face from
     every other Arabic page.
 
+- [blog] Article categories can be created but never edited.
+  `createArticleCategory` in app/[locale]/(admin)/admin/blog/_category-actions.ts
+  is the ONLY write to `article_categories` — there is no update action and no
+  categories admin page, so the 13 existing rows' labels cannot be changed and
+  their `description` cannot be set at all (0 of 13 have one, because nothing
+  has ever written it). The label renders publicly on
+  /insights/category/<slug>, so this is a live surface with no editor. That is
+  also why article_categories has no Arabic inputs: there is nothing to add
+  them to. Done looks like a small categories screen — rename, describe,
+  reorder, deactivate — at which point the Arabic twins already in the schema
+  become reachable in the same pass.
+
 - [i18n] properties' public read path is unfolded, and the file is protected.
   title, short_description, description, address_line, view and orientation all
   have twins and (except description) Arabic inputs, but nothing renders them:
