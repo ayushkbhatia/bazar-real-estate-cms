@@ -2,6 +2,7 @@ import { cache } from "react";
 import { getPublishedMegamenu } from "./megamenu";
 import { listPublishedProperties } from "./properties";
 import { propertyUrl } from "./property-utils";
+import { type Locale } from "@/lib/i18n/locales";
 import type { Megamenu, MegamenuFeaturedTile } from "@/lib/schemas/megamenu";
 
 /**
@@ -26,9 +27,10 @@ import type { Megamenu, MegamenuFeaturedTile } from "@/lib/schemas/megamenu";
  * sequence — the featured-rent tiles don't depend on the menu, so waiting for
  * one before starting the other only added latency to every page in the site.
  */
-export const getPublishedMegamenuHydrated = cache(async (): Promise<Megamenu> => {
+export const getPublishedMegamenuHydrated = cache(
+  async (locale?: Locale): Promise<Megamenu> => {
   const [menu, rent] = await Promise.all([
-    getPublishedMegamenu(),
+    getPublishedMegamenu(locale),
     listPublishedProperties({ mode: "rent", limit: 2 }),
   ]);
 

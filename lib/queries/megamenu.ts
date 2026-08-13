@@ -2,6 +2,9 @@ import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { mediaPublicUrl } from "@/lib/media";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseDeep } from "@/lib/i18n/localise";
+import { type Locale } from "@/lib/i18n/locales";
 import type {
   Megamenu,
   MegamenuColumn,
@@ -190,7 +193,10 @@ const EMPTY: Megamenu = { tabs: [] };
 // ───────────────────────────────────────────────────────────────
 // Public read — used by the public layout. SSG-friendly.
 // ───────────────────────────────────────────────────────────────
-export async function getPublishedMegamenu(): Promise<Megamenu> {
+export async function getPublishedMegamenu(
+  /** Overridable for tests; defaults to the locale of the request. */
+  locale?: Locale,
+): Promise<Megamenu> {
   if (!isSupabaseConfigured) return EMPTY;
   try {
     const supabase = createSupabasePublicClient();
@@ -221,11 +227,22 @@ export async function getPublishedMegamenu(): Promise<Megamenu> {
       console.error("[getPublishedMegamenu] tabs", tabsRes.error);
       return EMPTY;
     }
+    // Folded on the RAW rows, before `buildMegamenu` shapes them.
+    //
+    // Folding the built menu instead does nothing at all, silently: the shaper
+    // constructs explicit literals (`label: i.label`), so the twins are gone
+    // by then and there is nothing left to apply. An end-to-end probe with
+    // real Arabic in the database is what caught that — every unit test passed,
+    // because they exercise the fold in isolation.
+    //
+    // Here it is the true read boundary, and a twin added to any of these four
+    // tables later needs no change to this file.
+    const active = locale ?? (await currentLocale());
     return buildMegamenu(
-      (tabsRes.data ?? []) as RawTab[],
-      (columnsRes.data ?? []) as RawColumn[],
-      (itemsRes.data ?? []) as RawItem[],
-      (tilesRes.data ?? []) as RawTile[],
+      localiseDeep((tabsRes.data ?? []) as RawTab[], active),
+      localiseDeep((columnsRes.data ?? []) as RawColumn[], active),
+      localiseDeep((itemsRes.data ?? []) as RawItem[], active),
+      localiseDeep((tilesRes.data ?? []) as RawTile[], active),
     );
   } catch (e) {
     console.error("[getPublishedMegamenu]", e);

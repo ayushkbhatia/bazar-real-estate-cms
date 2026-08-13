@@ -4,6 +4,7 @@ import { Geist, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { NextIntlClientProvider } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { DirectionProvider } from "./_direction-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
@@ -72,7 +73,11 @@ const DEFAULT_FAVICON = "/favicon.ico";
  * the `revalidatePath("/", "layout")` in the brand settings action.
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const { favicon_url } = await getPublicBranding();
+  // Explicitly English. This reads only `favicon_url`, which has no Arabic
+  // twin — and letting it fall through to the ambient locale would call a
+  // dynamic API inside generateMetadata, which takes the whole route off
+  // prerendering. That is precisely how /legal lost its CDN caching.
+  const { favicon_url } = await getPublicBranding(DEFAULT_LOCALE);
   const icon = favicon_url ?? DEFAULT_FAVICON;
 
   return {
