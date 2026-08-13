@@ -288,16 +288,32 @@ export const developmentEditSchema = z.object({
     .max(1_000_000_000)
     .nullable()
     .optional(),
+  /* Arabic twins. `.optional()` because updateDevelopment writes a partial
+   * UPDATE rather than replacing the row, so an omitted key leaves the stored
+   * value alone. Caps are 1.5x their English siblings, matching arMax. */
+  name_ar: z.string().max(180).nullable().optional(),
   tagline: z.string().max(120).nullable().optional(),
+  tagline_ar: z.string().max(180).nullable().optional(),
   bedrooms_text: z.string().max(40).nullable().optional(),
+  bedrooms_text_ar: z.string().max(60).nullable().optional(),
   description: z.string().max(600).nullable().optional(),
+  description_ar: z.string().max(900).nullable().optional(),
   vision: z.string().max(4000).nullable().optional(),
+  vision_ar: z.string().max(6000).nullable().optional(),
   escrow_account: z.string().max(80).nullable().optional(),
 });
 
 export type DevelopmentEditInput = z.infer<typeof developmentEditSchema>;
 
 const NULLABLE_TEXT_FIELDS = [
+  // Twins included, so an emptied Arabic box stores NULL rather than "" —
+  // "" reads as "translated to nothing" everywhere downstream, and the
+  // fallback rule keys on blank.
+  "name_ar",
+  "tagline_ar",
+  "bedrooms_text_ar",
+  "description_ar",
+  "vision_ar",
   "tagline",
   "bedrooms_text",
   "description",

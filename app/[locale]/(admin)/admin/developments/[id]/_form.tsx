@@ -12,6 +12,7 @@ import {
   developmentEditSchema,
   type DevelopmentEditInput,
 } from "@/lib/schemas/development";
+import { ArabicTwin } from "../../_fields/arabic-twin";
 import { updateDevelopment } from "./_actions";
 
 type DeveloperOption = { id: string; name: string };
@@ -62,6 +63,13 @@ export function DevelopmentEditForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field label="Name" error={form.formState.errors.name?.message}>
             <Input {...form.register("name")} />
+            <ArabicTwin
+              field={{ key: "name_ar", label: "Name", kind: "text", max: 120 }}
+              value={form.watch("name_ar") ?? ""}
+              onChange={(v) =>
+                form.setValue("name_ar", v === "" ? null : v, { shouldDirty: true })
+              }
+            />
           </Field>
           <Field label="Slug" error={form.formState.errors.slug?.message}>
             <Input {...form.register("slug")} />
@@ -119,6 +127,13 @@ export function DevelopmentEditForm({
             error={form.formState.errors.tagline?.message}
           >
             <Input {...form.register("tagline")} />
+            <ArabicTwin
+              field={{ key: "tagline_ar", label: "Tagline", kind: "text", max: 120 }}
+              value={form.watch("tagline_ar") ?? ""}
+              onChange={(v) =>
+                form.setValue("tagline_ar", v === "" ? null : v, { shouldDirty: true })
+              }
+            />
           </Field>
         </div>
       </Section>
@@ -154,6 +169,13 @@ export function DevelopmentEditForm({
             error={form.formState.errors.bedrooms_text?.message}
           >
             <Input {...form.register("bedrooms_text")} />
+            <ArabicTwin
+              field={{ key: "bedrooms_text_ar", label: "Bedrooms", kind: "text", max: 40 }}
+              value={form.watch("bedrooms_text_ar") ?? ""}
+              onChange={(v) =>
+                form.setValue("bedrooms_text_ar", v === "" ? null : v, { shouldDirty: true })
+              }
+            />
           </Field>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -179,6 +201,20 @@ export function DevelopmentEditForm({
             rows={3}
             className="w-full rounded border border-bz-border bg-bz-bg px-3 py-2 text-[13px] leading-[1.55]"
           />
+          <ArabicTwin
+            field={{
+              key: "description_ar",
+              label: "Short description",
+              kind: "textarea",
+              max: 600,
+            }}
+            value={form.watch("description_ar") ?? ""}
+            onChange={(v) =>
+              form.setValue("description_ar", v === "" ? null : v, {
+                shouldDirty: true,
+              })
+            }
+          />
         </Field>
         <div className="mt-4">
           <Field
@@ -189,6 +225,20 @@ export function DevelopmentEditForm({
               {...form.register("vision")}
               rows={6}
               className="w-full rounded border border-bz-border bg-bz-bg px-3 py-2 text-[13px] leading-[1.55]"
+            />
+            <ArabicTwin
+              field={{
+                key: "vision_ar",
+                label: "Vision",
+                kind: "textarea",
+                max: 4000,
+              }}
+              value={form.watch("vision_ar") ?? ""}
+              onChange={(v) =>
+                form.setValue("vision_ar", v === "" ? null : v, {
+                  shouldDirty: true,
+                })
+              }
             />
           </Field>
         </div>
