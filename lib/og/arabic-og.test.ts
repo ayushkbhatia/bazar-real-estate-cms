@@ -29,9 +29,12 @@ import { describe, expect, it } from "vitest";
  *
  * So the same call as PDFs (see lib/pdf/language-note.ts): an English card is
  * an unfinished feature, a backwards Arabic one is a broken feature, and the
- * English card is what these routes already render under /ar today. Arabic OG
- * is scheduled in P8 with the PDFs — both are blocked on real text layout, not
- * on translation.
+ * English card is what these routes already render under /ar today.
+ *
+ * Confirmed with the client 2026-08-13: OG cards stay English permanently, with
+ * no mirroring. This is therefore a settled decision rather than deferred work
+ * — nothing is scheduled to replace it. The measurements below are kept so that
+ * anyone reopening the question starts from evidence instead of re-deriving it.
  *
  * The trap this guards is specific. P4 made Arabic content trivial to reach —
  * `applyLocale` hands any surface its Arabic in one call — so the natural next
