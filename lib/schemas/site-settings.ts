@@ -85,7 +85,13 @@ function assetUrl() {
 /** Brand & identity section. */
 export const brandSettingsSchema = z.object({
   brand_name: z.string().trim().min(2).max(80),
+  /* Arabic twins. `.optional()` here, unlike the megamenu's required-with-null:
+   * this action does a partial UPDATE rather than a delete-and-reinsert, so an
+   * omitted key leaves the stored value alone instead of destroying it. Caps
+   * are 1.5x their English siblings, matching arMax. */
+  brand_name_ar: z.string().trim().max(120).nullable().optional(),
   brand_tagline: z.string().trim().max(160).nullable().optional(),
+  brand_tagline_ar: z.string().trim().max(240).nullable().optional(),
   logo_url: assetUrl(),
   favicon_url: assetUrl(),
   // `.optional()` rather than `.default()`: a zod default makes the *input*

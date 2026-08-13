@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { ArabicTwin } from "../_fields/arabic-twin";
 import {
   HERO_VARIANTS,
   HERO_VARIANT_DESCRIPTION,
@@ -116,12 +117,30 @@ export function BrandForm({
           error={form.formState.errors.brand_name?.message}
         >
           <Input {...form.register("brand_name")} />
+          <ArabicTwin
+            field={{ key: "brand_name_ar", label: "Brand name", kind: "text", max: 80 }}
+            value={form.watch("brand_name_ar") ?? ""}
+            onChange={(v) =>
+              form.setValue("brand_name_ar", v === "" ? null : v, {
+                shouldDirty: true,
+              })
+            }
+          />
         </Field>
         <Field
           label="Tagline"
           error={form.formState.errors.brand_tagline?.message}
         >
           <Input {...form.register("brand_tagline")} />
+          <ArabicTwin
+            field={{ key: "brand_tagline_ar", label: "Tagline", kind: "text", max: 160 }}
+            value={form.watch("brand_tagline_ar") ?? ""}
+            onChange={(v) =>
+              form.setValue("brand_tagline_ar", v === "" ? null : v, {
+                shouldDirty: true,
+              })
+            }
+          />
         </Field>
         <Field label="ORN (DMT licence)" error={form.formState.errors.orn?.message}>
           <Input
