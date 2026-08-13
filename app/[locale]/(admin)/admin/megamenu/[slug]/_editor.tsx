@@ -22,6 +22,7 @@ import { GripVertical, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ArabicTwin } from "../../_fields/arabic-twin";
 import {
   MEGAMENU_BADGE_VARIANTS,
   MEGAMENU_BADGE_VARIANT_LABELS,
@@ -167,6 +168,14 @@ function ItemRow({
       </div>
       {expanded ? (
         <div className="px-9 py-3 border-t border-bz-border grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="flex flex-col gap-1 md:col-span-2">
+            <FieldLabel>Label</FieldLabel>
+            <ArabicTwin
+              field={{ key: "label_ar", label: "Label", kind: "text", max: 120 }}
+              value={item.label_ar ?? ""}
+              onChange={(v) => onChange({ ...item, label_ar: v || null })}
+            />
+          </div>
           <label className="flex flex-col gap-1">
             <FieldLabel>Target kind</FieldLabel>
             <select
@@ -209,6 +218,11 @@ function ItemRow({
               onChange={(e) =>
                 onChange({ ...item, badge_label: e.target.value || null })
               }
+            />
+            <ArabicTwin
+              field={{ key: "badge_label_ar", label: "Badge label", kind: "text", max: 40 }}
+              value={item.badge_label_ar ?? ""}
+              onChange={(v) => onChange({ ...item, badge_label_ar: v || null })}
             />
           </label>
           <label className="flex flex-col gap-1">
@@ -320,6 +334,11 @@ function ColumnCard({
           <Trash2 size={13} />
         </button>
       </div>
+      <ArabicTwin
+        field={{ key: "heading_ar", label: "Column heading", kind: "text", max: 80 }}
+        value={column.heading_ar ?? ""}
+        onChange={(v) => onChange({ ...column, heading_ar: v || null })}
+      />
 
       <DndContext
         id={dndId}
@@ -494,6 +513,11 @@ function TileForm({
               onChange({ ...tile, badge_label: e.target.value || null })
             }
           />
+          <ArabicTwin
+            field={{ key: "badge_label_ar", label: "Badge label", kind: "text", max: 40 }}
+            value={tile.badge_label_ar ?? ""}
+            onChange={(v) => onChange({ ...tile, badge_label_ar: v || null })}
+          />
         </label>
         <label className="flex flex-col gap-1">
           <FieldLabel>CTA label</FieldLabel>
@@ -505,6 +529,11 @@ function TileForm({
               onChange({ ...tile, cta_label: e.target.value || null })
             }
           />
+          <ArabicTwin
+            field={{ key: "cta_label_ar", label: "CTA label", kind: "text", max: 40 }}
+            value={tile.cta_label_ar ?? ""}
+            onChange={(v) => onChange({ ...tile, cta_label_ar: v || null })}
+          />
         </label>
         <label className="flex flex-col gap-1 col-span-2">
           <FieldLabel>Headline</FieldLabel>
@@ -512,6 +541,11 @@ function TileForm({
             className={fieldCls}
             value={tile.headline}
             onChange={(e) => onChange({ ...tile, headline: e.target.value })}
+          />
+          <ArabicTwin
+            field={{ key: "headline_ar", label: "Headline", kind: "text", max: 120 }}
+            value={tile.headline_ar ?? ""}
+            onChange={(v) => onChange({ ...tile, headline_ar: v || null })}
           />
         </label>
         <div className="flex flex-col gap-1 col-span-2">
@@ -764,6 +798,11 @@ export function MegamenuEditor({ tab, media: initialMedia }: Props) {
               value={meta.label}
               onChange={(e) => patchMeta("label", e.target.value)}
             />
+            <ArabicTwin
+              field={{ key: "label_ar", label: "Label", kind: "text", max: 60 }}
+              value={meta.label_ar ?? ""}
+              onChange={(v) => patchMeta("label_ar", v || null)}
+            />
           </label>
           <label className="flex items-center gap-2 self-end pb-1.5">
             <input
@@ -784,6 +823,11 @@ export function MegamenuEditor({ tab, media: initialMedia }: Props) {
                     patchMeta("panel_title", e.target.value || null)
                   }
                 />
+                <ArabicTwin
+                  field={{ key: "panel_title_ar", label: "Panel title", kind: "text", max: 160 }}
+                  value={meta.panel_title_ar ?? ""}
+                  onChange={(v) => patchMeta("panel_title_ar", v || null)}
+                />
               </label>
               <label className="flex flex-col gap-1">
                 <FieldLabel>Panel title href (links the section title)</FieldLabel>
@@ -803,6 +847,11 @@ export function MegamenuEditor({ tab, media: initialMedia }: Props) {
                   onChange={(e) =>
                     patchMeta("right_column_title", e.target.value || null)
                   }
+                />
+                <ArabicTwin
+                  field={{ key: "right_column_title_ar", label: "Right column title", kind: "text", max: 80 }}
+                  value={meta.right_column_title_ar ?? ""}
+                  onChange={(v) => patchMeta("right_column_title_ar", v || null)}
                 />
               </label>
             </>

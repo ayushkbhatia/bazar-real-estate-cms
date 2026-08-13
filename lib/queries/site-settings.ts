@@ -14,7 +14,12 @@ import {
 const DEFAULTS: SiteSettings = {
   brand: {
     brand_name: "Bazar Real Estate",
+    // No Arabic default. A hardcoded Arabic wordmark would be a brand decision
+    // made in a defaults object; blank falls back to the English in place,
+    // which is the site-wide rule.
+    brand_name_ar: null,
     brand_tagline: "Abu Dhabi, properly understood.",
+    brand_tagline_ar: null,
     logo_url: null,
     logo_style: "mark_and_name",
     favicon_url: null,
@@ -37,7 +42,9 @@ function shape(raw: Record<string, unknown> | null | undefined): SiteSettings {
   if (!raw) return DEFAULTS;
   const brand = brandSettingsSchema.safeParse({
     brand_name: raw.brand_name ?? DEFAULTS.brand.brand_name,
+    brand_name_ar: raw.brand_name_ar ?? null,
     brand_tagline: raw.brand_tagline ?? DEFAULTS.brand.brand_tagline,
+    brand_tagline_ar: raw.brand_tagline_ar ?? null,
     logo_url: raw.logo_url ?? null,
     logo_style: raw.logo_style ?? DEFAULTS.brand.logo_style,
     favicon_url: raw.favicon_url ?? null,
@@ -72,7 +79,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   const { data, error } = await supabase
     .from("site_settings")
     .select(
-      "brand_name, brand_tagline, logo_url, logo_style, favicon_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
+      "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
     )
     .eq("id", 1)
     .maybeSingle();
