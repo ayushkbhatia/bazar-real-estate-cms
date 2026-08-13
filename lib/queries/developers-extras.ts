@@ -10,6 +10,9 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
+import { type Locale } from "@/lib/i18n/locales";
 import { mediaPublicUrl } from "@/lib/media";
 import { SEED_DEVELOPERS } from "@/lib/seeds/developers";
 import type {
@@ -23,6 +26,11 @@ export type DeveloperDetail = {
   name: string;
   founded_year: number | null;
   description: string | null;
+  /* Arabic twins. Present on the ADMIN path so the editor loads what it will
+   * write back; the public list folds them away before shaping, so a renderer
+   * never sees them. */
+  name_ar?: string | null;
+  description_ar?: string | null;
   logo_url: string | null;
   // From developer_profiles overlay:
   bio: string | null;
@@ -49,6 +57,12 @@ export type DeveloperListEntry = {
   name: string;
   founded_year: number | null;
   description: string | null;
+  /* Arabic twins. Optional, because the PUBLIC list folds them away before
+   * shaping and the ADMIN record loader keeps them so the editor can load what
+   * it will write back — one type, two truths, and optional is what lets both
+   * be honest. */
+  name_ar?: string | null;
+  description_ar?: string | null;
   /** Public URL of the uploaded logo, or null to fall back to a mark. */
   logo_url: string | null;
   /**
@@ -60,7 +74,7 @@ export type DeveloperListEntry = {
 };
 
 const LIST_COLUMNS =
-  "id, slug, name, founded_year, description, published_at, logo:logo_id(storage_key)";
+  "id, slug, name, name_ar, founded_year, description, description_ar, published_at, logo:logo_id(storage_key)";
 
 /** PostgREST returns an embedded row as an object or a one-element array. */
 function firstStorageKey(value: unknown): string | null {
@@ -72,7 +86,18 @@ function firstStorageKey(value: unknown): string | null {
 // ─────────────────────────────────────────────────────────────────────
 // listDevelopers
 // ─────────────────────────────────────────────────────────────────────
-export async function listDevelopers(): Promise<DeveloperListEntry[]> {
+export async function listDevelopers(
+  /**
+   * Overridable; defaults to the locale of the request.
+   *
+   * `app/sitemap.ts` passes DEFAULT_LOCALE explicitly. It sits outside the
+   * `[locale]` segment, so there is no `setRequestLocale` above it to make an
+   * ambient read safe — an unqualified call there is a dynamic API and takes
+   * /sitemap.xml off prerendering. The sitemap lists both trees anyway, so
+   * English is also the correct answer, not just the safe one.
+   */
+  locale?: Locale,
+): Promise<DeveloperListEntry[]> {
   if (!isSupabaseConfigured) return seedDeveloperList();
   try {
     const sb = createSupabasePublicClient();
@@ -81,14 +106,23 @@ export async function listDevelopers(): Promise<DeveloperListEntry[]> {
       .select(LIST_COLUMNS)
       .order("name", { ascending: true });
     if (error || !data || data.length === 0) return seedDeveloperList();
-    return data.map((r) => {
+    const active = locale ?? (await currentLocale());
+    return data.map((raw) => {
+      // Folded before the shape below builds explicit literals — the fifth
+      // shaper in this codebase where folding the output would do nothing.
+      const r = localiseRow(
+        raw as unknown as Record<string, unknown>,
+        active,
+      ) as unknown as typeof raw;
       const key = firstStorageKey(r.logo);
       return {
         id: r.id,
         slug: r.slug,
         name: r.name,
+        name_ar: r.name_ar ?? null,
         founded_year: r.founded_year,
         description: r.description,
+        description_ar: r.description_ar ?? null,
         logo_url: key ? mediaPublicUrl(key) : null,
         published: r.published_at !== null,
       };
@@ -161,8 +195,10 @@ export async function listDeveloperRecords(): Promise<DeveloperRecordRow[]> {
         id: r.id,
         slug: r.slug,
         name: r.name,
+        name_ar: r.name_ar ?? null,
         founded_year: r.founded_year,
         description: r.description,
+        description_ar: r.description_ar ?? null,
         logo_url: key ? mediaPublicUrl(key) : null,
         published: r.published_at !== null,
         logo_id: r.logo_id,

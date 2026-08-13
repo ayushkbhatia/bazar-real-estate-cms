@@ -4,6 +4,7 @@ import { isSupabaseConfigured, env } from "@/lib/env";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { developmentUrl } from "@/lib/queries/development-utils";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { listDevelopers } from "@/lib/queries/developers-extras";
 import { listArticleCategories } from "@/lib/queries/article-categories";
 import { categoryToUrlSlug } from "@/lib/schemas/article";
@@ -93,7 +94,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         console.error("[sitemap] area fetch failed", err);
         return [] as MetadataRoute.Sitemap;
       }),
-    listDevelopers()
+    // Explicitly English: this route is outside the [locale] segment, so an
+    // ambient locale read here is a dynamic API and drops /sitemap.xml off
+    // prerendering. It emits both trees regardless.
+    listDevelopers(DEFAULT_LOCALE)
       .then((rows) =>
         // A draft developer 404s, so advertising it here would be a soft-404
         // against the whole section.
