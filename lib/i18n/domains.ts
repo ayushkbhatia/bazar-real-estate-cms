@@ -546,17 +546,18 @@ export const DOMAINS: Domain[] = [
  * stale entry fails the build. It cannot silently grow either, because a new
  * unregistered column fails a different assertion.
  */
+/* Tracks TWIN COLUMNS, not editor coverage. A column leaves this list when its
+ * `_ar` sibling exists in the schema — which is what the guard can check from
+ * db/types.ts. Whether a CMS form exposes it is a separate question this list
+ * cannot see, and `developers` is currently in exactly that state: columns
+ * shipped in 0103, no Arabic inputs yet. Recorded in FOLLOWUPS. */
 export const AWAITING_TWIN: string[] = [
   // Migration 0101 added twins for the three MT targets only; these three are
   // hand-authored and still owed one.
   "properties.address_line",
   "properties.view",
   "properties.orientation",
-  "areas.name",
-  "areas.description",
   "area_guides.intro_md",
-  "developers.name",
-  "developers.description",
   "developments.name",
   "developments.tagline",
   "developments.description",

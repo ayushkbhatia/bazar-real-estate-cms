@@ -16,7 +16,7 @@ async function fetchArea(id: string) {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("areas")
-    .select("id, name, slug, kind, parent_id, description, seo_meta, geo")
+    .select("id, name, name_ar, slug, kind, parent_id, description, description_ar, seo_meta, geo")
     .eq("id", id)
     .maybeSingle();
   return data;
@@ -44,10 +44,12 @@ export default async function AreaRecordPage({ params }: PageProps) {
   const initial: AreaRecord = {
     id: area.id,
     name: area.name,
+    name_ar: area.name_ar,
     slug: area.slug,
     kind: area.kind as AreaKind,
     parent_id: area.parent_id,
     description: area.description,
+    description_ar: area.description_ar,
     meta_title: (seo.meta_title as string | null) ?? null,
     meta_description: (seo.meta_description as string | null) ?? null,
     lat: typeof geo.lat === "number" ? geo.lat : null,
