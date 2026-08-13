@@ -41,6 +41,14 @@ export type PublicColumn = {
    * `<column>_ar` sibling to look for.
    */
   inBag?: boolean;
+  /**
+   * Localised by a value-to-label map in code rather than an `_ar` column.
+   *
+   * For a closed vocabulary arriving from an external feed, a per-row twin is
+   * the wrong shape: the weekly DLD import repopulates the table, so every new
+   * row would arrive with a blank twin for ever.
+   */
+  labelMapped?: boolean;
   note?: string;
 };
 
@@ -188,6 +196,7 @@ export const DOMAINS: Domain[] = [
       {
         column: "property_type",
         strategy: "hand",
+        labelMapped: true,
         evidence: "market-reports/_components/comparables-table.tsx:76",
         note:
           "Caught by the exclusion review, which is the reason that pass exists — " +
@@ -546,53 +555,69 @@ export const DOMAINS: Domain[] = [
  * stale entry fails the build. It cannot silently grow either, because a new
  * unregistered column fails a different assertion.
  */
-/* Tracks TWIN COLUMNS, not editor coverage. A column leaves this list when its
- * `_ar` sibling exists in the schema — which is what the guard can check from
- * db/types.ts. Whether a CMS form exposes it is a separate question this list
- * cannot see, and `developers` is currently in exactly that state: columns
- * shipped in 0103, no Arabic inputs yet. Recorded in FOLLOWUPS. */
-export const AWAITING_TWIN: string[] = [
-  // Migration 0101 added twins for the three MT targets only; these three are
-  // hand-authored and still owed one.
-  "properties.address_line",
-  "properties.view",
-  "properties.orientation",
-  "area_guides.intro_md",
-  "developments.name",
-  "developments.tagline",
-  "developments.description",
-  "developments.vision",
-  "developments.bedrooms_text",
-  "developments.amenities",
-  "development_unit_types.label",
-  "development_unit_types.blurb",
-  "floor_plans.label",
-  "floor_plans.description",
-  "development_units.unit_type",
-  "development_units.orientation",
-  "development_units.lagoon_access",
-  "amenities_taxonomy.label",
-  "dld_comparables.property_type",
-  "articles.title",
-  "articles.excerpt",
-  "articles.body_html",
-  "article_categories.label",
-  "article_categories.description",
-  "pages.title",
-  "landing_pages.title",
-  "floating_ctas.label",
-  "floating_ctas.message_template",
-  "floating_ctas.subject_template",
-  "staff.display_name",
-  "staff.title",
-  "staff.bio",
-  "staff.specialties",
-  "staff.languages",
-  "form_fields.label",
-  "form_fields.placeholder",
-  "form_fields.help",
-  "form_fields.unit",
+/**
+ * Every translatable column now has its twin (migration 0104). What a twin
+ * does NOT tell you is whether a human can type into it, or whether the public
+ * page renders it — and both were invisible to this file until now, which let
+ * `developers` ship columns nobody could reach and look finished.
+ *
+ * So the remaining work is tracked as what IS wired, and the test derives the
+ * gap. Two short lists are easier to keep true than two long ones.
+ */
+export const AWAITING_TWIN: string[] = [];
+
+/** Columns with an Arabic input in the CMS today. */
+export const WIRED_EDITOR: string[] = [
+  "properties.title",
+  "properties.short_description",
+  "areas.name",
+  "areas.description",
+  "megamenu_tabs.label",
+  "megamenu_tabs.panel_title",
+  "megamenu_tabs.right_column_title",
+  "megamenu_columns.heading",
+  "megamenu_items.label",
+  "megamenu_items.badge_label",
+  "megamenu_featured_tiles.headline",
+  "megamenu_featured_tiles.badge_label",
+  "megamenu_featured_tiles.cta_label",
+  "site_settings.brand_name",
+  "site_settings.brand_tagline",
 ];
+
+/** Columns whose public read path folds the locale today. */
+export const WIRED_READ: string[] = [
+  "megamenu_tabs.label",
+  "megamenu_tabs.panel_title",
+  "megamenu_tabs.right_column_title",
+  "megamenu_columns.heading",
+  "megamenu_items.label",
+  "megamenu_items.badge_label",
+  "megamenu_featured_tiles.headline",
+  "megamenu_featured_tiles.badge_label",
+  "megamenu_featured_tiles.cta_label",
+  "site_settings.brand_name",
+  "site_settings.brand_tagline",
+];
+
+/** Registered columns that need Arabic, as `table.column`. */
+export function translatableKeys(): string[] {
+  return DOMAINS.flatMap((d) =>
+    d.columns
+      .filter((c) => c.strategy !== "never" && !c.inBag && !c.labelMapped)
+      .map((c) => `${d.table}.${c.column}`),
+  );
+}
+
+/** What still has no Arabic input in the CMS. */
+export function missingEditor(): string[] {
+  return translatableKeys().filter((k) => !WIRED_EDITOR.includes(k)).sort();
+}
+
+/** What still renders English on /ar even when Arabic is stored. */
+export function missingReadFold(): string[] {
+  return translatableKeys().filter((k) => !WIRED_READ.includes(k)).sort();
+}
 
 export const domainFor = (table: string): Domain | undefined =>
   DOMAINS.find((d) => d.table === table);

@@ -76,6 +76,7 @@ export type Database = {
           created_at: string
           icon: string | null
           label: string
+          label_ar: string | null
           sort_order: number
           updated_at: string
         }
@@ -86,6 +87,7 @@ export type Database = {
           created_at?: string
           icon?: string | null
           label: string
+          label_ar?: string | null
           sort_order?: number
           updated_at?: string
         }
@@ -96,6 +98,7 @@ export type Database = {
           created_at?: string
           icon?: string | null
           label?: string
+          label_ar?: string | null
           sort_order?: number
           updated_at?: string
         }
@@ -171,6 +174,7 @@ export type Database = {
           created_at: string
           hero_image_id: string | null
           intro_md: string | null
+          intro_md_ar: string | null
           published_at: string | null
           related_areas: string[]
           schools: Json
@@ -184,6 +188,7 @@ export type Database = {
           created_at?: string
           hero_image_id?: string | null
           intro_md?: string | null
+          intro_md_ar?: string | null
           published_at?: string | null
           related_areas?: string[]
           schools?: Json
@@ -197,6 +202,7 @@ export type Database = {
           created_at?: string
           hero_image_id?: string | null
           intro_md?: string | null
+          intro_md_ar?: string | null
           published_at?: string | null
           related_areas?: string[]
           schools?: Json
@@ -288,9 +294,11 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          description_ar: string | null
           id: string
           is_active: boolean
           label: string
+          label_ar: string | null
           slug: string
           sort_order: number
           updated_at: string
@@ -298,9 +306,11 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           id?: string
           is_active?: boolean
           label: string
+          label_ar?: string | null
           slug: string
           sort_order?: number
           updated_at?: string
@@ -308,9 +318,11 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           id?: string
           is_active?: boolean
           label?: string
+          label_ar?: string | null
           slug?: string
           sort_order?: number
           updated_at?: string
@@ -321,10 +333,12 @@ export type Database = {
         Row: {
           author_id: string | null
           body_html: string
+          body_html_ar: string | null
           category: string
           created_at: string
           deleted_at: string | null
           excerpt: string | null
+          excerpt_ar: string | null
           hero_image_id: string | null
           id: string
           published_at: string | null
@@ -334,15 +348,18 @@ export type Database = {
           slug: string
           status: Database["public"]["Enums"]["article_status"]
           title: string
+          title_ar: string | null
           updated_at: string
         }
         Insert: {
           author_id?: string | null
           body_html?: string
+          body_html_ar?: string | null
           category?: string
           created_at?: string
           deleted_at?: string | null
           excerpt?: string | null
+          excerpt_ar?: string | null
           hero_image_id?: string | null
           id?: string
           published_at?: string | null
@@ -352,15 +369,18 @@ export type Database = {
           slug: string
           status?: Database["public"]["Enums"]["article_status"]
           title: string
+          title_ar?: string | null
           updated_at?: string
         }
         Update: {
           author_id?: string | null
           body_html?: string
+          body_html_ar?: string | null
           category?: string
           created_at?: string
           deleted_at?: string | null
           excerpt?: string | null
+          excerpt_ar?: string | null
           hero_image_id?: string | null
           id?: string
           published_at?: string | null
@@ -370,6 +390,7 @@ export type Database = {
           slug?: string
           status?: Database["public"]["Enums"]["article_status"]
           title?: string
+          title_ar?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -864,11 +885,13 @@ export type Database = {
         Row: {
           beds: number | null
           blurb: string | null
+          blurb_ar: string | null
           created_at: string
           development_id: string
           enabled: boolean
           id: string
           label: string
+          label_ar: string | null
           price_from_aed: number | null
           size_from_ft2: number | null
           size_to_ft2: number | null
@@ -878,11 +901,13 @@ export type Database = {
         Insert: {
           beds?: number | null
           blurb?: string | null
+          blurb_ar?: string | null
           created_at?: string
           development_id: string
           enabled?: boolean
           id?: string
           label: string
+          label_ar?: string | null
           price_from_aed?: number | null
           size_from_ft2?: number | null
           size_to_ft2?: number | null
@@ -892,11 +917,13 @@ export type Database = {
         Update: {
           beds?: number | null
           blurb?: string | null
+          blurb_ar?: string | null
           created_at?: string
           development_id?: string
           enabled?: boolean
           id?: string
           label?: string
+          label_ar?: string | null
           price_from_aed?: number | null
           size_from_ft2?: number | null
           size_to_ft2?: number | null
@@ -922,13 +949,16 @@ export type Database = {
           floor_plan_id: string | null
           id: string
           lagoon_access: string | null
+          lagoon_access_ar: string | null
           orientation: string | null
+          orientation_ar: string | null
           plot_ft2: number | null
           plot_number: string | null
           price_aed: number | null
           sort_order: number
           status: Database["public"]["Enums"]["development_unit_status"]
           unit_type: string
+          unit_type_ar: string | null
           updated_at: string
         }
         Insert: {
@@ -939,13 +969,16 @@ export type Database = {
           floor_plan_id?: string | null
           id?: string
           lagoon_access?: string | null
+          lagoon_access_ar?: string | null
           orientation?: string | null
+          orientation_ar?: string | null
           plot_ft2?: number | null
           plot_number?: string | null
           price_aed?: number | null
           sort_order?: number
           status?: Database["public"]["Enums"]["development_unit_status"]
           unit_type: string
+          unit_type_ar?: string | null
           updated_at?: string
         }
         Update: {
@@ -956,13 +989,16 @@ export type Database = {
           floor_plan_id?: string | null
           id?: string
           lagoon_access?: string | null
+          lagoon_access_ar?: string | null
           orientation?: string | null
+          orientation_ar?: string | null
           plot_ft2?: number | null
           plot_number?: string | null
           price_aed?: number | null
           sort_order?: number
           status?: Database["public"]["Enums"]["development_unit_status"]
           unit_type?: string
+          unit_type_ar?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -985,11 +1021,14 @@ export type Database = {
       developments: {
         Row: {
           amenities: string[]
+          amenities_ar: string[] | null
           area_id: string | null
           bedrooms_text: string | null
+          bedrooms_text_ar: string | null
           brochure_id: string | null
           created_at: string
           description: string | null
+          description_ar: string | null
           developer_id: string
           escrow_account: string | null
           facts: Json
@@ -1001,6 +1040,7 @@ export type Database = {
           masterplan_id: string | null
           meta: Json | null
           name: string
+          name_ar: string | null
           payment_plan: Json | null
           published_at: string | null
           seo: Json | null
@@ -1008,17 +1048,22 @@ export type Database = {
           starting_price: number | null
           status: Database["public"]["Enums"]["development_status"]
           tagline: string | null
+          tagline_ar: string | null
           total_units: number | null
           updated_at: string
           vision: string | null
+          vision_ar: string | null
         }
         Insert: {
           amenities?: string[]
+          amenities_ar?: string[] | null
           area_id?: string | null
           bedrooms_text?: string | null
+          bedrooms_text_ar?: string | null
           brochure_id?: string | null
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           developer_id: string
           escrow_account?: string | null
           facts?: Json
@@ -1030,6 +1075,7 @@ export type Database = {
           masterplan_id?: string | null
           meta?: Json | null
           name: string
+          name_ar?: string | null
           payment_plan?: Json | null
           published_at?: string | null
           seo?: Json | null
@@ -1037,17 +1083,22 @@ export type Database = {
           starting_price?: number | null
           status?: Database["public"]["Enums"]["development_status"]
           tagline?: string | null
+          tagline_ar?: string | null
           total_units?: number | null
           updated_at?: string
           vision?: string | null
+          vision_ar?: string | null
         }
         Update: {
           amenities?: string[]
+          amenities_ar?: string[] | null
           area_id?: string | null
           bedrooms_text?: string | null
+          bedrooms_text_ar?: string | null
           brochure_id?: string | null
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           developer_id?: string
           escrow_account?: string | null
           facts?: Json
@@ -1059,6 +1110,7 @@ export type Database = {
           masterplan_id?: string | null
           meta?: Json | null
           name?: string
+          name_ar?: string | null
           payment_plan?: Json | null
           published_at?: string | null
           seo?: Json | null
@@ -1066,9 +1118,11 @@ export type Database = {
           starting_price?: number | null
           status?: Database["public"]["Enums"]["development_status"]
           tagline?: string | null
+          tagline_ar?: string | null
           total_units?: number | null
           updated_at?: string
           vision?: string | null
+          vision_ar?: string | null
         }
         Relationships: [
           {
@@ -1330,10 +1384,13 @@ export type Database = {
           key: string
           kind: string
           label: string
+          label_ar: string | null
           message_template: string | null
+          message_template_ar: string | null
           scope: string
           sort_order: number
           subject_template: string | null
+          subject_template_ar: string | null
           updated_at: string
           use_advisor_contact: boolean
         }
@@ -1346,10 +1403,13 @@ export type Database = {
           key: string
           kind: string
           label: string
+          label_ar?: string | null
           message_template?: string | null
+          message_template_ar?: string | null
           scope?: string
           sort_order?: number
           subject_template?: string | null
+          subject_template_ar?: string | null
           updated_at?: string
           use_advisor_contact?: boolean
         }
@@ -1362,10 +1422,13 @@ export type Database = {
           key?: string
           kind?: string
           label?: string
+          label_ar?: string | null
           message_template?: string | null
+          message_template_ar?: string | null
           scope?: string
           sort_order?: number
           subject_template?: string | null
+          subject_template_ar?: string | null
           updated_at?: string
           use_advisor_contact?: boolean
         }
@@ -1378,10 +1441,12 @@ export type Database = {
           beds: number | null
           created_at: string
           description: string | null
+          description_ar: string | null
           development_id: string
           enabled: boolean
           id: string
           label: string
+          label_ar: string | null
           media_id: string | null
           sort_order: number
           unit_type_id: string | null
@@ -1393,10 +1458,12 @@ export type Database = {
           beds?: number | null
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           development_id: string
           enabled?: boolean
           id?: string
           label: string
+          label_ar?: string | null
           media_id?: string | null
           sort_order?: number
           unit_type_id?: string | null
@@ -1408,10 +1475,12 @@ export type Database = {
           beds?: number | null
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           development_id?: string
           enabled?: boolean
           id?: string
           label?: string
+          label_ar?: string | null
           media_id?: string | null
           sort_order?: number
           unit_type_id?: string | null
@@ -1447,9 +1516,11 @@ export type Database = {
           enabled: boolean
           form_id: string
           help: string | null
+          help_ar: string | null
           id: string
           key: string
           label: string
+          label_ar: string | null
           locked: boolean
           mapping: string
           max_value: number | null
@@ -1457,6 +1528,7 @@ export type Database = {
           option_source: string | null
           options: Json
           placeholder: string | null
+          placeholder_ar: string | null
           position: number
           required: boolean
           rows: number | null
@@ -1464,6 +1536,7 @@ export type Database = {
           step: number | null
           type: string
           unit: string | null
+          unit_ar: string | null
           updated_at: string
           width: string
         }
@@ -1472,9 +1545,11 @@ export type Database = {
           enabled?: boolean
           form_id: string
           help?: string | null
+          help_ar?: string | null
           id?: string
           key: string
           label: string
+          label_ar?: string | null
           locked?: boolean
           mapping?: string
           max_value?: number | null
@@ -1482,6 +1557,7 @@ export type Database = {
           option_source?: string | null
           options?: Json
           placeholder?: string | null
+          placeholder_ar?: string | null
           position?: number
           required?: boolean
           rows?: number | null
@@ -1489,6 +1565,7 @@ export type Database = {
           step?: number | null
           type: string
           unit?: string | null
+          unit_ar?: string | null
           updated_at?: string
           width?: string
         }
@@ -1497,9 +1574,11 @@ export type Database = {
           enabled?: boolean
           form_id?: string
           help?: string | null
+          help_ar?: string | null
           id?: string
           key?: string
           label?: string
+          label_ar?: string | null
           locked?: boolean
           mapping?: string
           max_value?: number | null
@@ -1507,6 +1586,7 @@ export type Database = {
           option_source?: string | null
           options?: Json
           placeholder?: string | null
+          placeholder_ar?: string | null
           position?: number
           required?: boolean
           rows?: number | null
@@ -1514,6 +1594,7 @@ export type Database = {
           step?: number | null
           type?: string
           unit?: string | null
+          unit_ar?: string | null
           updated_at?: string
           width?: string
         }
@@ -1651,6 +1732,7 @@ export type Database = {
           slug: string
           status: Database["public"]["Enums"]["page_status"]
           title: string
+          title_ar: string | null
           updated_at: string
         }
         Insert: {
@@ -1666,6 +1748,7 @@ export type Database = {
           slug: string
           status?: Database["public"]["Enums"]["page_status"]
           title: string
+          title_ar?: string | null
           updated_at?: string
         }
         Update: {
@@ -1681,6 +1764,7 @@ export type Database = {
           slug?: string
           status?: Database["public"]["Enums"]["page_status"]
           title?: string
+          title_ar?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -2315,6 +2399,7 @@ export type Database = {
           slug: string
           status: Database["public"]["Enums"]["page_status"]
           title: string
+          title_ar: string | null
           updated_at: string
         }
         Insert: {
@@ -2326,6 +2411,7 @@ export type Database = {
           slug: string
           status?: Database["public"]["Enums"]["page_status"]
           title: string
+          title_ar?: string | null
           updated_at?: string
         }
         Update: {
@@ -2337,6 +2423,7 @@ export type Database = {
           slug?: string
           status?: Database["public"]["Enums"]["page_status"]
           title?: string
+          title_ar?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -2344,6 +2431,7 @@ export type Database = {
       properties: {
         Row: {
           address_line: string | null
+          address_line_ar: string | null
           advisor_note: string | null
           amenities: string[]
           area_id: string | null
@@ -2374,6 +2462,7 @@ export type Database = {
           listing_permit_no: string | null
           mode: Database["public"]["Enums"]["property_mode"]
           orientation: string | null
+          orientation_ar: string | null
           parking_bays: number | null
           plot_ft2: number | null
           price_aed: number
@@ -2398,11 +2487,13 @@ export type Database = {
           unit_number: string | null
           updated_at: string
           view: string | null
+          view_ar: string | null
           view_count: number
           year_built: number | null
         }
         Insert: {
           address_line?: string | null
+          address_line_ar?: string | null
           advisor_note?: string | null
           amenities?: string[]
           area_id?: string | null
@@ -2433,6 +2524,7 @@ export type Database = {
           listing_permit_no?: string | null
           mode: Database["public"]["Enums"]["property_mode"]
           orientation?: string | null
+          orientation_ar?: string | null
           parking_bays?: number | null
           plot_ft2?: number | null
           price_aed: number
@@ -2457,11 +2549,13 @@ export type Database = {
           unit_number?: string | null
           updated_at?: string
           view?: string | null
+          view_ar?: string | null
           view_count?: number
           year_built?: number | null
         }
         Update: {
           address_line?: string | null
+          address_line_ar?: string | null
           advisor_note?: string | null
           amenities?: string[]
           area_id?: string | null
@@ -2492,6 +2586,7 @@ export type Database = {
           listing_permit_no?: string | null
           mode?: Database["public"]["Enums"]["property_mode"]
           orientation?: string | null
+          orientation_ar?: string | null
           parking_bays?: number | null
           plot_ft2?: number | null
           price_aed?: number
@@ -2516,6 +2611,7 @@ export type Database = {
           unit_number?: string | null
           updated_at?: string
           view?: string | null
+          view_ar?: string | null
           view_count?: number
           year_built?: number | null
         }
@@ -2818,60 +2914,75 @@ export type Database = {
       staff: {
         Row: {
           bio: string | null
+          bio_ar: string | null
           brn: string | null
           created_at: string
           credentials: string[]
           display_name: string
+          display_name_ar: string | null
           joined_at: string | null
           languages: Json
+          languages_ar: Json | null
           photo_url: string | null
           public_email: string | null
           public_phone: string | null
           role: Database["public"]["Enums"]["staff_role"]
           slug: string
           specialties: string[]
+          specialties_ar: string[] | null
           status: Database["public"]["Enums"]["staff_status"]
           title: string | null
+          title_ar: string | null
           updated_at: string
           user_id: string
           whatsapp: string | null
         }
         Insert: {
           bio?: string | null
+          bio_ar?: string | null
           brn?: string | null
           created_at?: string
           credentials?: string[]
           display_name: string
+          display_name_ar?: string | null
           joined_at?: string | null
           languages?: Json
+          languages_ar?: Json | null
           photo_url?: string | null
           public_email?: string | null
           public_phone?: string | null
           role?: Database["public"]["Enums"]["staff_role"]
           slug: string
           specialties?: string[]
+          specialties_ar?: string[] | null
           status?: Database["public"]["Enums"]["staff_status"]
           title?: string | null
+          title_ar?: string | null
           updated_at?: string
           user_id: string
           whatsapp?: string | null
         }
         Update: {
           bio?: string | null
+          bio_ar?: string | null
           brn?: string | null
           created_at?: string
           credentials?: string[]
           display_name?: string
+          display_name_ar?: string | null
           joined_at?: string | null
           languages?: Json
+          languages_ar?: Json | null
           photo_url?: string | null
           public_email?: string | null
           public_phone?: string | null
           role?: Database["public"]["Enums"]["staff_role"]
           slug?: string
           specialties?: string[]
+          specialties_ar?: string[] | null
           status?: Database["public"]["Enums"]["staff_status"]
           title?: string | null
+          title_ar?: string | null
           updated_at?: string
           user_id?: string
           whatsapp?: string | null

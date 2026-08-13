@@ -1,7 +1,16 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { AWAITING_TWIN, DOMAINS, translatableColumns } from "./domains";
+import {
+  AWAITING_TWIN,
+  DOMAINS,
+  WIRED_EDITOR,
+  WIRED_READ,
+  missingEditor,
+  missingReadFold,
+  translatableColumns,
+  translatableKeys,
+} from "./domains";
 import { MT_TARGETS, isProtected } from "./mt/targets";
 
 /**
@@ -104,7 +113,7 @@ describe("the remaining work is written down, not remembered", () => {
     for (const domain of DOMAINS) {
       const columns = SCHEMA.get(domain.table);
       for (const entry of domain.columns) {
-        if (entry.strategy === "never" || entry.inBag) continue;
+        if (entry.strategy === "never" || entry.inBag || entry.labelMapped) continue;
         if (!columns?.has(twinName(entry.column))) {
           out.push(`${domain.table}.${entry.column}`);
         }
@@ -127,7 +136,7 @@ describe("the remaining work is written down, not remembered", () => {
         const entry = DOMAINS.find((d) => d.table === c.table)?.columns.find(
           (x) => x.column === c.column,
         );
-        return !entry?.inBag;
+        return !entry?.inBag && !entry?.labelMapped;
       });
     for (const { table, column } of shipped) {
       expect(SCHEMA.get(table)?.has(twinName(column)), `${table}.${column}`).toBe(
@@ -173,5 +182,51 @@ describe("the registry and the MT pipeline agree", () => {
         expect(targets.has(`${domain.table}.${entry.column}`)).toBe(false);
       }
     }
+  });
+});
+
+/**
+ * Coverage, kept honest.
+ *
+ * A twin column existing is not the same as a person being able to type into
+ * it, nor as the public page rendering it. Those three used to be conflated,
+ * and `developers` proved the cost: columns shipped, the work-list went quiet,
+ * and nothing in the CMS could reach them.
+ *
+ * These do not fail on incompleteness — the remaining wiring is real, planned
+ * work. They fail on DISHONESTY: a wired list that names a column which is not
+ * registered, or has drifted out of the schema, so the two short lists cannot
+ * quietly stop describing reality.
+ */
+describe("editor and read-path coverage", () => {
+  it("only claims columns that are actually registered", () => {
+    const known = new Set(translatableKeys());
+    for (const key of [...WIRED_EDITOR, ...WIRED_READ]) {
+      expect(known.has(key), `${key} is claimed wired but not a registered translatable column`)
+        .toBe(true);
+    }
+  });
+
+  it("reports what still has no Arabic input", () => {
+    // Not an assertion of completeness — a printed work-list that cannot rot,
+    // because it is derived rather than typed.
+    const missing = missingEditor();
+    expect(Array.isArray(missing)).toBe(true);
+    if (missing.length > 0) {
+      console.log(`\n  ${missing.length} column(s) still need an Arabic input:\n    ${missing.join("\n    ")}\n`);
+    }
+  });
+
+  it("reports what still renders English on /ar", () => {
+    const missing = missingReadFold();
+    expect(Array.isArray(missing)).toBe(true);
+    if (missing.length > 0) {
+      console.log(`\n  ${missing.length} column(s) still need a read-path fold:\n    ${missing.join("\n    ")}\n`);
+    }
+  });
+
+  it("has nothing left awaiting a twin column", () => {
+    // Migration 0104 finished the storage half outright.
+    expect(AWAITING_TWIN).toEqual([]);
   });
 });
