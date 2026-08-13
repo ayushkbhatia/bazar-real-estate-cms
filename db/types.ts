@@ -225,11 +225,13 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          description_ar: string | null
           geo: Json | null
           hero_image_id: string | null
           id: string
           kind: Database["public"]["Enums"]["area_kind"]
           name: string
+          name_ar: string | null
           parent_id: string | null
           seo_meta: Json | null
           slug: string
@@ -238,11 +240,13 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           geo?: Json | null
           hero_image_id?: string | null
           id?: string
           kind: Database["public"]["Enums"]["area_kind"]
           name: string
+          name_ar?: string | null
           parent_id?: string | null
           seo_meta?: Json | null
           slug: string
@@ -251,11 +255,13 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           geo?: Json | null
           hero_image_id?: string | null
           id?: string
           kind?: Database["public"]["Enums"]["area_kind"]
           name?: string
+          name_ar?: string | null
           parent_id?: string | null
           seo_meta?: Json | null
           slug?: string
@@ -766,10 +772,12 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          description_ar: string | null
           founded_year: number | null
           id: string
           logo_id: string | null
           name: string
+          name_ar: string | null
           published_at: string | null
           slug: string
           stats: Json | null
@@ -778,10 +786,12 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           founded_year?: number | null
           id?: string
           logo_id?: string | null
           name: string
+          name_ar?: string | null
           published_at?: string | null
           slug: string
           stats?: Json | null
@@ -790,10 +800,12 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          description_ar?: string | null
           founded_year?: number | null
           id?: string
           logo_id?: string | null
           name?: string
+          name_ar?: string | null
           published_at?: string | null
           slug?: string
           stats?: Json | null

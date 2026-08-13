@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { ArabicTwin } from "../../_fields/arabic-twin";
 import { slugify } from "@/lib/slug";
 import { AREA_KINDS, AREA_KIND_LABELS, type AreaKind } from "@/lib/schemas/area";
 import { updateArea } from "../../pages/sub/area/_record-actions";
@@ -18,7 +19,9 @@ export type AreaRecord = {
   slug: string;
   kind: AreaKind;
   parent_id: string | null;
+  name_ar: string | null;
   description: string | null;
+  description_ar: string | null;
   meta_title: string | null;
   meta_description: string | null;
   lat: number | null;
@@ -55,7 +58,9 @@ export function AreaRecordForm({
         slug: form.slug,
         kind: form.kind,
         parent_id: form.parent_id ?? "",
+        name_ar: form.name_ar ?? "",
         description: form.description ?? "",
+        description_ar: form.description_ar ?? "",
         meta_title: form.meta_title ?? "",
         meta_description: form.meta_description ?? "",
         lat: form.lat ?? "",
@@ -82,6 +87,11 @@ export function AreaRecordForm({
               id="name"
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
+            />
+            <ArabicTwin
+              field={{ key: "name_ar", label: "Name", kind: "text", max: 120 }}
+              value={form.name_ar ?? ""}
+              onChange={(v) => set("name_ar", v || null)}
             />
             <FieldError message={errors.name} />
           </div>
@@ -149,6 +159,16 @@ export function AreaRecordForm({
             className={cn(fieldCls, "resize-y")}
             value={form.description ?? ""}
             onChange={(e) => set("description", e.target.value || null)}
+          />
+          <ArabicTwin
+            field={{
+              key: "description_ar",
+              label: "Description",
+              kind: "textarea",
+              max: 2000,
+            }}
+            value={form.description_ar ?? ""}
+            onChange={(v) => set("description_ar", v || null)}
           />
           <FieldError message={errors.description} />
         </div>

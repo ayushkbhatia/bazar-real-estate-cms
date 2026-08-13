@@ -101,10 +101,12 @@ export async function updateArea(
     .from("areas")
     .update({
       name: input.name,
+      name_ar: input.name_ar ?? null,
       slug: input.slug,
       kind: input.kind,
       parent_id: input.parent_id ?? null,
       description: input.description ?? null,
+      description_ar: input.description_ar ?? null,
       seo_meta: {
         meta_title: input.meta_title ?? null,
         meta_description: input.meta_description ?? null,

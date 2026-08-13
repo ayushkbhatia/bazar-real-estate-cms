@@ -680,6 +680,18 @@ shows the trail.)
     same PR, that page renders in a different, per-device system face from
     every other Arabic page.
 
+- [i18n] Arabic columns can exist with no way to type into them, and no guard sees it.
+  `AWAITING_TWIN` in lib/i18n/domains.ts tracks whether a `_ar` COLUMN exists,
+  because that is what domains.test.ts can verify from db/types.ts. It says
+  nothing about whether a CMS form exposes the field. `developers.name_ar` and
+  `developers.description_ar` are in exactly that state right now — shipped by
+  migration 0103, no Arabic inputs on /admin/developers/<slug>. Same for the
+  public read paths: areas and developers are still resolved without a locale
+  fold outside the megamenu and branding, so stored Arabic will not render on
+  /areas/<slug> or /developers until those queries pass a locale through
+  localiseRow. Worth either extending the guard to check editor coverage, or
+  accepting the split and tracking UI separately — but not leaving it implicit.
+
 - [ci] E2E still asserts on other CMS-owned copy, and any editor can redden it.
   On 2026-08-13 an editor standardised the submit label on 16 forms between
   05:40 and 07:13; `property_enquiry` went from "Send enquiry" to "Submit" and

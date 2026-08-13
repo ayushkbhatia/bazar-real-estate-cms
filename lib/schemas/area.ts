@@ -52,7 +52,12 @@ export type AreaCreateInput = z.infer<typeof areaCreateSchema>;
 
 /** The record editor — everything on the row that a human sets. */
 export const areaEditSchema = areaCreateSchema.extend({
+  /* Arabic twins. `.optional()` because updateArea writes an explicit field
+   * list rather than replacing the row, so an omitted key leaves the stored
+   * value alone. Caps are 1.5x their English siblings, matching arMax. */
+  name_ar: z.string().max(180).nullable().optional(),
   description: z.string().max(2000).nullable().optional(),
+  description_ar: z.string().max(3000).nullable().optional(),
   meta_title: z.string().max(70).nullable().optional(),
   meta_description: z.string().max(180).nullable().optional(),
   lat: z.number().min(-90).max(90).nullable().optional(),
