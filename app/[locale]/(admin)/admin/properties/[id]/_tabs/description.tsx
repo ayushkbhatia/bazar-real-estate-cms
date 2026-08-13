@@ -15,9 +15,19 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 export function PropertyDescriptionTab({
   initialHtml,
   onChange,
+  dir = "ltr",
+  lang,
 }: {
   initialHtml: string;
   onChange: (html: string) => void;
+  /**
+   * Writing direction for the content area. The Arabic copy passes "rtl" so
+   * the caret starts on the right — ProseMirror reads the contenteditable's
+   * own `dir`, so setting it on an ancestor does not move it.
+   */
+  dir?: "ltr" | "rtl";
+  /** Language of the content area, so the Arabic font stack applies. */
+  lang?: string;
 }) {
   const editor = useEditor({
     extensions: [
@@ -25,6 +35,9 @@ export function PropertyDescriptionTab({
       Link.configure({ openOnClick: false }),
     ],
     content: initialHtml || "<p></p>",
+    editorProps: {
+      attributes: { dir, ...(lang ? { lang } : {}) },
+    },
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     immediatelyRender: false,
   });

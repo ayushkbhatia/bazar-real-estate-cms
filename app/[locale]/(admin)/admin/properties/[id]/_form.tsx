@@ -53,12 +53,27 @@ const LocationPicker = dynamic(
     ),
   },
 );
+/**
+ * Tiptap and its extensions are a large dependency and this tab is one of six,
+ * so the editor is fetched only when the Description tab is first opened —
+ * same treatment as the location picker above.
+ */
+const PropertyDescriptionTab = dynamic(
+  () => import("./_tabs/description").then((m) => m.PropertyDescriptionTab),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-[320px] rounded-lg bg-bz-surface-2 animate-pulse" />
+    ),
+  },
+);
 import {
   FloorPlanCard,
   type FloorPlanItem,
 } from "./_components/floor-plan-card";
 import { ArabicTwin } from "../../_fields/arabic-twin";
 import { TranslateButton } from "./_translate-button";
+import { ArabicPropertyDescription } from "./_tabs/_arabic-description";
 import { AmenitiesPicker } from "./_components/amenities-picker";
 import { NewAreaDialog } from "./_components/new-area-dialog";
 import { NewDeveloperDialog } from "./_components/new-developer-dialog";
@@ -132,6 +147,7 @@ const UNSET = "__unset__";
 const FIELD_TAB: Partial<Record<keyof PropertyEditInput, string>> = {
   title: "overview",
   short_description: "overview",
+  description: "description",
   type: "overview",
   mode: "overview",
   property_form: "overview",
@@ -192,6 +208,16 @@ export function PropertyEditForm({
     defaultValues: initial,
   });
 
+  // Rich text is not a controlled input, so it lives in local state and is
+  // merged into the payload at submit — the same arrangement the article
+  // editor uses.
+  const [descriptionHtml, setDescriptionHtml] = useState<string>(
+    initial.description ?? "",
+  );
+  const [descriptionAr, setDescriptionAr] = useState<string>(
+    initial.description_ar ?? "",
+  );
+
   const type = watch("type");
   const mode = watch("mode");
   const propertyForm = watch("property_form") ?? null;
@@ -241,7 +267,16 @@ export function PropertyEditForm({
   const onSubmit = (values: PropertyEditInput) => {
     setServerFieldErrors({});
     startTransition(async () => {
-      const result = await updateProperty(propertyId, values);
+      const hasWords = (html: string) =>
+        html.replace(/<[^>]*>/g, "").trim().length > 0;
+      const result = await updateProperty(propertyId, {
+        ...values,
+        // "<p></p>" is what an emptied editor serialises to, and it is not
+        // blank to any `??` downstream — it would read as "described" on a
+        // listing with no description.
+        description: hasWords(descriptionHtml) ? descriptionHtml : null,
+        description_ar: hasWords(descriptionAr) ? descriptionAr : null,
+      });
       if (result.status === "ok") {
         toast.success(result.message ?? "Saved.");
         // Refresh so the publish card's pre-flight (title/slug/price/permit/
@@ -314,6 +349,7 @@ export function PropertyEditForm({
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="pricing">Pricing</TabsTrigger>
+          <TabsTrigger value="description">Description</TabsTrigger>
           <TabsTrigger value="details">Details</TabsTrigger>
           <TabsTrigger value="location">Location</TabsTrigger>
           <TabsTrigger value="amenities">Amenities</TabsTrigger>
@@ -509,6 +545,25 @@ export function PropertyEditForm({
               }
             />
           </div>
+        </TabsContent>
+
+        {/* DESCRIPTION */}
+        <TabsContent
+          value="description"
+          className="bg-bz-surface border border-bz-border rounded-lg p-6 mt-6 flex flex-col gap-3"
+        >
+          <PropertyDescriptionTab
+            initialHtml={initial.description ?? ""}
+            onChange={setDescriptionHtml}
+          />
+          <ArabicPropertyDescription
+            value={descriptionAr}
+            onChange={setDescriptionAr}
+          />
+          <span className="text-[11.5px] text-bz-muted">
+            Renders below the specification table on the listing page. Headings,
+            bold, italic, lists, quotes and links.
+          </span>
         </TabsContent>
 
         {/* PRICING */}

@@ -44,7 +44,7 @@ async function fetchPropertyForEdit(id: string) {
       // loaded them writes null over them on the next save of any other field
       // — the editor sees a success toast and the Arabic is gone. Pinned by
       // _form.arabic.test.ts.
-      "id, reference, slug, title, title_ar, short_description, short_description_ar, type, mode, property_form, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, view_ar, orientation, orientation_ar, parking_bays, floor, address_line, address_line_ar, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, assigned_agent_id, geo",
+      "id, reference, slug, title, title_ar, short_description, short_description_ar, description, description_ar, type, mode, property_form, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, view_ar, orientation, orientation_ar, parking_bays, floor, address_line, address_line_ar, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, assigned_agent_id, geo",
     )
     .eq("id", id)
     .maybeSingle();
@@ -179,6 +179,8 @@ export default async function PropertyEditPage({ params }: PageProps) {
     title_ar: property.title_ar,
     short_description: property.short_description,
     short_description_ar: property.short_description_ar,
+    description: property.description,
+    description_ar: property.description_ar,
     type: property.type,
     mode: property.mode,
     // 'off_plan' exists in the DB enum but is not offered in the picker, so
