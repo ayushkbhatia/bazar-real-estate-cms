@@ -731,21 +731,16 @@ shows the trail.)
   the digits still never reach the model. Needs a decision on whether ft² stays
   ft² (it is the unit the DLD paperwork uses) before wiring it.
 
-- [i18n] OG images and PDFs stay English on /ar — both blocked on text layout.
-  Neither is a translation gap. Satori shapes Arabic but never reorders it, so
-  words lay out left-to-right and the sentence reads backwards; `direction:
-  "rtl"` on a text node is ignored (measured 2026-08-13 by rendering through
-  `ImageResponse` with IBM Plex Sans Arabic as a TTF — a TTF is required, it
-  cannot read woff2). A bidi pre-pass that reverses run and word order while
-  leaving each word's characters logical renders a *single line* correctly,
-  Latin islands and all, then breaks on the first wrap: a realistic property
-  title in a 620px column put the tail of the sentence on line one and its
-  first word alone on line three. Shipping it needs our own line breaking with
-  metrics Satori does not expose. `@react-pdf/renderer` fails differently —
-  real bidi and shaping, but Yoga is called with no direction argument and
-  there are no logical style props, so mirroring means hand-editing ~1,270
-  lines. Guarded by `lib/og/arabic-og.test.ts`; PDF downloads are labelled
-  "(English)" via `lib/pdf/language-note.ts`.
+- ~~[i18n] OG images and PDFs stay English on /ar — both blocked on text layout.~~
+  **Closed 2026-08-13 — decided, not deferred.** The client confirmed that OG
+  cards stay English with no mirroring or transposition, and that a single PDF
+  serves both the English and Arabic pages. So neither is outstanding work.
+  The evidence is kept where it is useful rather than here: lib/og/arabic-og.test.ts
+  holds the Satori measurements (shapes Arabic, never reorders; `direction:
+  "rtl"` ignored; a bidi pre-pass survives one line and breaks on the first
+  wrap) and guards against an OG route quietly starting to consume Arabic.
+  lib/pdf/language-note.ts holds the @react-pdf/renderer analysis and applies
+  the "(English)" suffix, which is now permanent copy rather than a placeholder.
 
 - [legal] §2's Arabic heading reads "البيانات الشخصية التي بجمعها".
   The English heading is "What Personal Data We Collect", so this looks like

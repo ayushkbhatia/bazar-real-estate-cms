@@ -1,7 +1,16 @@
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 
 /**
- * PDFs are English-only, and the download control has to say so.
+ * PDFs are English-only by decision, and the download control says so.
+ *
+ * Confirmed with the client 2026-08-13: one PDF serves both the English and
+ * Arabic pages. So this is not a placeholder waiting on an Arabic renderer —
+ * the suffix is permanent, and it earns its place by telling an Arabic reader
+ * what they are about to download before they download it.
+ *
+ * The renderer limitations below are kept because they explain why a bilingual
+ * PDF was never cheap, and would have to be re-solved if that decision ever
+ * changes.
  *
  * `@react-pdf/renderer` 4.5.1 genuinely has bidi (via bidi-js in
  * `@react-pdf/textkit`) and genuine Arabic shaping (fontkit's
@@ -16,7 +25,7 @@ import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
  * subsettable TTF is a separate licence grant with its own procurement lead
  * time — the same question that is open for the web font.
  *
- * So the honest interim is one word in the button rather than a half-measure.
+ * So it is one word in the button rather than a half-measure.
  * Arabic strings in an LTR layout with Helvetica renders blank boxes in a
  * mirrored-looking frame, which reads to a client as a broken feature rather
  * than an unfinished one — worse than an English PDF clearly labelled English.
