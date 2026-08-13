@@ -16,6 +16,9 @@ import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseDeep } from "@/lib/i18n/localise";
+import { type Locale } from "@/lib/i18n/locales";
 import type { Database, Json } from "@/db/types";
 import {
   FORM_DEFS,
@@ -42,7 +45,7 @@ export function isMissingTableError(
 
 const FORM_COLUMNS = "id, key, enabled, copy, notify_emails";
 const FIELD_COLUMNS =
-  "id, form_id, key, label, type, mapping, placeholder, help, required, enabled, width, options, option_source, rows, min_value, max_value, step, unit, show_when, locked, position";
+  "id, form_id, key, label, label_ar, type, mapping, placeholder, placeholder_ar, help, help_ar, required, enabled, width, options, option_source, rows, min_value, max_value, step, unit, unit_ar, show_when, locked, position";
 
 type FormRow = Database["public"]["Tables"]["forms"]["Row"];
 type FieldRow = Database["public"]["Tables"]["form_fields"]["Row"];
@@ -167,13 +170,35 @@ const loadAll = cache(
   },
 );
 
+/**
+ * Fold the stored field rows for a locale before they are merged.
+ *
+ * Done here rather than inside `resolveForm`, which the CMS also calls — the
+ * editor has to see the twins it is about to write back. Registry defaults are
+ * left alone on purpose: those are code strings with no `_ar` sibling, so an
+ * un-overridden field falls back to its English exactly as the site-wide rule
+ * requires.
+ */
+function localiseFields(
+  rows: StoredField[] | null,
+  locale: Locale,
+): StoredField[] | null {
+  if (!rows) return null;
+  return localiseDeep(rows, locale);
+}
+
 /** The effective form for a public page. Never null for a registry key. */
 export async function getForm(key: string): Promise<ResolvedForm> {
   const fallback = defaultForm(key);
   if (!fallback) throw new Error(`Unknown form: ${key}`);
   const { forms, fields } = await loadAll();
+  const locale = await currentLocale();
   return (
-    resolveForm(key, forms.get(key) ?? null, fields.get(key) ?? null) ?? fallback
+    resolveForm(
+      key,
+      forms.get(key) ?? null,
+      localiseFields(fields.get(key) ?? null, locale),
+    ) ?? fallback
   );
 }
 
@@ -182,11 +207,15 @@ export async function getForms(
   keys: string[],
 ): Promise<Record<string, ResolvedForm>> {
   const { forms, fields } = await loadAll();
+  const locale = await currentLocale();
   const out: Record<string, ResolvedForm> = {};
   for (const key of keys) {
     const resolved =
-      resolveForm(key, forms.get(key) ?? null, fields.get(key) ?? null) ??
-      defaultForm(key);
+      resolveForm(
+        key,
+        forms.get(key) ?? null,
+        localiseFields(fields.get(key) ?? null, locale),
+      ) ?? defaultForm(key);
     if (resolved) out[key] = resolved;
   }
   return out;

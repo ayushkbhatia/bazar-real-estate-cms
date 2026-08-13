@@ -70,6 +70,18 @@ describe("form registry", () => {
           options: f.options ?? [],
           placeholder: f.placeholder ?? null,
           help: f.help ?? null,
+          // The Arabic twins are required-with-null on the save schema, because
+          // saveForm deletes and re-inserts every field row — an omitted twin
+          // is destroyed, not left alone. The registry literal carries no `_ar`
+          // keys, so the editor fills them from the resolved field exactly as
+          // this does (see `toSaveField` in the forms editor). Relaxing the
+          // schema to `.default(null)` instead would make a client that forgot
+          // one wipe stored Arabic silently, which is the failure this
+          // strictness exists to prevent.
+          label_ar: f.label_ar ?? null,
+          placeholder_ar: f.placeholder_ar ?? null,
+          help_ar: f.help_ar ?? null,
+          unit_ar: f.unit_ar ?? null,
           optionSource: f.optionSource ?? null,
           rows: f.rows ?? null,
           min: f.min ?? null,

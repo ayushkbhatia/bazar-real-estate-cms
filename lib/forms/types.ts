@@ -200,11 +200,18 @@ export type FormFieldDef = {
   /** Stable handle. Used as the submission key and the input name. */
   key: string;
   label: string;
+  /** Arabic twins. Optional here, required-with-null on the save schema:
+   *  saveForm deletes and re-inserts every field row, so an omitted twin on
+   *  WRITE destroys data, while a reader that has not been taught to select
+   *  them should simply fall back to the English. */
+  label_ar?: string | null;
   type: FormFieldType;
   mapping: FormFieldMapping;
   placeholder?: string | null;
+  placeholder_ar?: string | null;
   /** Visitor-facing hint, rendered under the input on the public page. */
   help?: string | null;
+  help_ar?: string | null;
   /**
    * Editor-facing note, shown only in /admin/forms.
    *
@@ -227,6 +234,7 @@ export type FormFieldDef = {
   step?: number | null;
   /** range only — rendered before each number ("AED 2,500,000"). */
   unit?: string | null;
+  unit_ar?: string | null;
   /** Null ⇒ always asked, which is every field but the Buy hero's branches. */
   showWhen?: FormFieldCondition | null;
   /**
