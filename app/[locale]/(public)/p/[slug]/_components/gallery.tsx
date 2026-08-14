@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { Camera, X, ChevronLeft, ChevronRight } from "lucide-react";
@@ -25,6 +27,7 @@ export function Gallery({
   images: GalleryImage[];
   reference: string;
 }) {
+  const t = useTranslations("property");
   const slots: GalleryImage[] = images.slice(0, 5);
   while (slots.length < 5) {
     slots.push({
@@ -55,7 +58,11 @@ export function Gallery({
           <Tile
             slot={slots[4]}
             onClick={() => setOpen(4)}
-            overlay={remaining > 0 ? `+${remaining} photos` : undefined}
+            overlay={
+              remaining > 0
+                ? t("gallery.morePhotos", { count: remaining })
+                : undefined
+            }
           />
         </div>
       </section>
@@ -95,7 +102,11 @@ function Tile({
           alt={slot.alt}
           fill
           priority={priority}
-          sizes={priority ? "(min-width: 1024px) 66vw, 100vw" : "(min-width: 1024px) 33vw, 50vw"}
+          sizes={
+            priority
+              ? "(min-width: 1024px) 66vw, 100vw"
+              : "(min-width: 1024px) 33vw, 50vw"
+          }
           className="object-cover group-hover:scale-[1.02] transition-transform duration-500"
         />
       ) : (
@@ -120,14 +131,12 @@ function Lightbox({
   startIndex: number;
   onClose: () => void;
 }) {
+  const t = useTranslations("property");
   const rtl = useIsRtl();
   const [index, setIndex] = useState(startIndex);
   const total = images.length;
 
-  const next = useCallback(
-    () => setIndex((i) => (i + 1) % total),
-    [total],
-  );
+  const next = useCallback(() => setIndex((i) => (i + 1) % total), [total]);
   const prev = useCallback(
     () => setIndex((i) => (i - 1 + total) % total),
     [total],
@@ -159,7 +168,7 @@ function Lightbox({
       <button
         type="button"
         onClick={onClose}
-        aria-label="Close gallery"
+        aria-label={t("gallery.close")}
         className="absolute top-4 end-4 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
       >
         <X size={18} strokeWidth={1.8} />
@@ -167,7 +176,7 @@ function Lightbox({
       <button
         type="button"
         onClick={prev}
-        aria-label="Previous photo"
+        aria-label={t("gallery.previous")}
         className="absolute start-4 w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
       >
         <ChevronLeft size={20} strokeWidth={1.8} />

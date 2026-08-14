@@ -3,7 +3,10 @@
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { ensureRtlTextPlugin, pastelMapStyle } from "../../../_components/map-style";
+import {
+  ensureRtlTextPlugin,
+  pastelMapStyle,
+} from "../../../_components/map-style";
 import { useIsRtl } from "@/lib/dom/use-is-rtl";
 
 type POI = {

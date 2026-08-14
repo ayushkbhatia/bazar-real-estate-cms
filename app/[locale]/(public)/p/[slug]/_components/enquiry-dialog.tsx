@@ -64,7 +64,10 @@ export function PropertyEnquiryDialog({
         </DialogHeader>
         <div className="mt-2">
           <FormRenderer
-            form={{ ...form, copy: { ...form.copy, title: null, subtitle: null } }}
+            form={{
+              ...form,
+              copy: { ...form.copy, title: null, subtitle: null },
+            }}
             tokens={{ reference: propertyReference }}
             context={{ propertyId, propertyReference }}
             successStyle="soft"

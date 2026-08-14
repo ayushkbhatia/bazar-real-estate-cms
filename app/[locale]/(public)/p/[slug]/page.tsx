@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/lib/i18n/locales";
 import type { Metadata } from "next";
 import { getForm } from "@/lib/queries/forms";
 import { notFound, redirect } from "next/navigation";
@@ -22,16 +24,12 @@ import {
   getPublishedPropertyByReference,
   getSimilarProperties,
   propertyUrl,
-  type PropertyDetail,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
 import { getAdvisorByUserId } from "@/lib/queries/property-advisor";
 import { amenityLabel, orderAmenities, toOptions } from "@/lib/amenities";
-import {
-  propertyJsonLd,
-  breadcrumbListJsonLd,
-} from "@/lib/jsonld";
+import { propertyJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 // Cookie-free client on purpose: everything this route reads is public, and
 // `createSupabaseServerClient` calls `cookies()`, which opts the whole route
 // into dynamic rendering and discards the `revalidate = 60` below. Anonymous
@@ -144,10 +142,7 @@ import { MapEmbed } from "./_components/map-embed";
 import { PropertyActionRow } from "./_components/action-row";
 import { PriceBlock } from "./_components/price-block";
 import { AdvisorNote } from "./_components/advisor-note";
-import {
-  SpecificationTable,
-  type SpecRow,
-} from "./_components/specification";
+import { SpecificationTable, type SpecRow } from "./_components/specification";
 import { AgentCard } from "./_components/agent-card";
 import { FloatingCtaTarget } from "../../_components/floating-cta-context";
 import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
@@ -179,14 +174,16 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
       .eq("status", "published")
       .is("deleted_at", null)
       .limit(5000);
-    return (data ?? []).map((p) => ({ slug: propertyUrl(p).replace("/p/", "") }));
+    return (data ?? []).map((p) => ({
+      slug: propertyUrl(p).replace("/p/", ""),
+    }));
   } catch (err) {
     console.error("[p/[slug]] generateStaticParams failed", err);
     return [];
   }
 }
 
-type PageProps = { params: Promise<{ slug: string }> };
+type PageProps = { params: Promise<{ slug: string; locale: Locale }> };
 
 export async function generateMetadata({
   params,
@@ -230,7 +227,22 @@ export async function generateMetadata({
 }
 
 export default async function PropertyDetailPage({ params }: PageProps) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  /*
+   * The locale comes from `params`, not from the ambient request.
+   *
+   * `getTranslations("property")` on its own reads `getLocale()`, which falls
+   * through to `headers()` unless setRequestLocale has already run in the same
+   * render pass — and that made this route dynamic. `npm run check:routes`
+   * caught it immediately:
+   *
+   *     These routes were prerendered and are now rendered on demand:
+   *       /p/[slug]
+   *
+   * On the busiest template on the site. Nothing else would have noticed: the
+   * page still renders, just uncached, with its `revalidate` discarded.
+   */
+  const t = await getTranslations({ locale, namespace: "property" });
   const ref = extractReferenceFromSlug(slug);
   if (!ref) notFound();
 
@@ -262,16 +274,16 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   // same for everyone, which keeps it out of dynamic rendering.
   const [amenityTaxonomy, similar, enquiryForm, valuationGate] =
     await Promise.all([
-    listAmenitiesTaxonomy(),
-    getSimilarProperties(
-      property.id,
-      property.areas?.slug ?? null,
-      property.mode,
-    ),
-    // The listing enquiry dialog — fields and copy come from /admin/forms.
-    getForm("property_enquiry"),
-    getForm("valuation_report_gate"),
-  ]);
+      listAmenitiesTaxonomy(),
+      getSimilarProperties(
+        property.id,
+        property.areas?.slug ?? null,
+        property.mode,
+      ),
+      // The listing enquiry dialog — fields and copy come from /admin/forms.
+      getForm("property_enquiry"),
+      getForm("valuation_report_gate"),
+    ]);
 
   const amenityOptions = toOptions(amenityTaxonomy);
   const [extras, media] = await Promise.all([
@@ -325,40 +337,56 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   // Everything the listing stores that the key-facts tiles above don't
   // already show. Empty values are dropped, not rendered as em-dashes.
-  const specRows: SpecRow[] = ([
-    property.developments
-      ? { label: "Development", value: property.developments.name }
-      : null,
-    property.furnishing
-      ? { label: "Furnishing", value: FURNISHING_LABEL[property.furnishing] }
-      : null,
-    property.floor != null ? { label: "Floor", value: String(property.floor) } : null,
-    property.parking_bays != null
-      ? { label: "Parking", value: `${property.parking_bays} bay${property.parking_bays === 1 ? "" : "s"}` }
-      : null,
-    property.plot_ft2
-      ? { label: "Plot size", value: <AreaText ft2={property.plot_ft2} /> }
-      : null,
-    // Deliberately no AED/ft² row — the price block in the header band
-    // already carries it, and repeating it here reads as filler.
-    property.view ? { label: "View", value: property.view } : null,
-    property.orientation
-      ? { label: "Orientation", value: titleCase(property.orientation) }
-      : null,
-    property.service_charge_per_ft2
-      ? {
-          label: "Service charge",
-          value: (
-            <PricePerAreaText aedPerFt2={property.service_charge_per_ft2} />
-          ),
-          note: "Per year",
-        }
-      : null,
-    { label: "Listing type", value: MODE_LABEL[property.mode] },
-    property.published_at
-      ? { label: "Listed", value: formatListedDate(property.published_at) }
-      : null,
-  ] as (SpecRow | null)[]).filter((r): r is SpecRow => r !== null);
+  const specRows: SpecRow[] = (
+    [
+      property.developments
+        ? { label: t("spec.development"), value: property.developments.name }
+        : null,
+      property.furnishing
+        ? {
+            label: t("spec.furnishing"),
+            value: t(`furnishing.${property.furnishing}`),
+          }
+        : null,
+      property.floor != null
+        ? { label: t("spec.floor"), value: String(property.floor) }
+        : null,
+      property.parking_bays != null
+        ? {
+            label: t("spec.parking"),
+            value: t("spec.parkingBays", { count: property.parking_bays }),
+          }
+        : null,
+      property.plot_ft2
+        ? {
+            label: t("spec.plotSize"),
+            value: <AreaText ft2={property.plot_ft2} />,
+          }
+        : null,
+      // Deliberately no AED/ft² row — the price block in the header band
+      // already carries it, and repeating it here reads as filler.
+      property.view ? { label: t("spec.view"), value: property.view } : null,
+      property.orientation
+        ? { label: t("spec.orientation"), value: property.orientation }
+        : null,
+      property.service_charge_per_ft2
+        ? {
+            label: t("spec.serviceCharge"),
+            value: (
+              <PricePerAreaText aedPerFt2={property.service_charge_per_ft2} />
+            ),
+            note: t("spec.perYear"),
+          }
+        : null,
+      { label: t("spec.listingType"), value: t(`mode.${property.mode}`) },
+      property.published_at
+        ? {
+            label: t("spec.listed"),
+            value: formatListedDate(property.published_at),
+          }
+        : null,
+    ] as (SpecRow | null)[]
+  ).filter((r): r is SpecRow => r !== null);
 
   const siteUrl = (
     env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
@@ -433,10 +461,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       />
 
       <div className="mt-4">
-        <GalleryTabs
-          floorPlanUrl={floorPlanUrl}
-          reference={property.reference}
-        >
+        <GalleryTabs floorPlanUrl={floorPlanUrl} reference={property.reference}>
           <Gallery images={galleryImages} reference={property.reference} />
         </GalleryTabs>
       </div>
@@ -484,32 +509,32 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <FactTile
             icon={<BedDouble size={16} strokeWidth={1.6} />}
-            label="Bedrooms"
+            label={t("stat.bedrooms")}
             value={String(property.beds)}
           />
           <FactTile
             icon={<Bath size={16} strokeWidth={1.6} />}
-            label="Bathrooms"
+            label={t("stat.bathrooms")}
             value={String(property.baths)}
           />
           <FactTile
             icon={<Maximize2 size={16} strokeWidth={1.6} />}
-            label="Built-up"
+            label={t("stat.builtUp")}
             value={<AreaText ft2={property.built_up_ft2} />}
           />
           <FactTile
             icon={<Home size={16} strokeWidth={1.6} />}
-            label="Type"
+            label={t("stat.type")}
             value={titleCase(property.type)}
           />
           <FactTile
             icon={<KeyRound size={16} strokeWidth={1.6} />}
-            label="Tenure"
+            label={t("stat.tenure")}
             value={property.tenure ? titleCase(property.tenure) : "—"}
           />
           <FactTile
             icon={<Calendar size={16} strokeWidth={1.6} />}
-            label="Year built"
+            label={t("stat.yearBuilt")}
             value={property.year_built ? String(property.year_built) : "—"}
           />
         </div>
@@ -538,14 +563,12 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             <div>
               <Eyebrow>Features &amp; amenities</Eyebrow>
               <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5 text-[14px]">
-                {orderAmenities(property.amenities, amenityOptions).map(
-                  (a) => (
-                    <li key={a} className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-bz-accent" />
-                      {amenityLabel(a, amenityOptions)}
-                    </li>
-                  ),
-                )}
+                {orderAmenities(property.amenities, amenityOptions).map((a) => (
+                  <li key={a} className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-bz-accent" />
+                    {amenityLabel(a, amenityOptions)}
+                  </li>
+                ))}
               </ul>
             </div>
           ) : null}
@@ -747,22 +770,6 @@ function titleCase(s: string): string {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 }
-
-const FURNISHING_LABEL: Record<
-  NonNullable<PropertyDetail["furnishing"]>,
-  string
-> = {
-  unfurnished: "Unfurnished",
-  semi: "Semi-furnished",
-  fully: "Fully furnished",
-};
-
-const MODE_LABEL: Record<PropertyDetail["mode"], string> = {
-  buy: "For sale",
-  rent: "For rent",
-  off_plan: "Off-plan",
-  commercial: "Commercial",
-};
 
 /** `2026-08-07` / ISO timestamp → `7 Aug 2026`. Fixed en-GB locale so the
  *  server-rendered string matches on the client. */

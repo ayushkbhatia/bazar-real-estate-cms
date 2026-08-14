@@ -120,6 +120,7 @@ describe("pickClientMessages", () => {
       common: { a: "1" },
       consent: { d: "4" },
       search: { e: "5" },
+      property: { f: "6" },
       nav: { b: "2" },
       listing: { c: "3" },
     });

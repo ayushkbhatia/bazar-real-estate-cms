@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { Eyebrow } from "@/components/brand/eyebrow";
 import {
   formatPrice,
@@ -28,6 +30,7 @@ export function PriceBlock({
   aedPerFt2: number | null;
   listedDays: number | null;
 }) {
+  const t = useTranslations("property");
   const { prefs } = usePreferences();
   const headline = formatPrice(priceAed, prefs);
 
@@ -57,12 +60,7 @@ export function PriceBlock({
         )}
         {listedDays != null ? (
           <Eyebrow className="text-bz-accent">
-            Listed{" "}
-            {listedDays === 0
-              ? "today"
-              : listedDays === 1
-                ? "1 day ago"
-                : `${listedDays} days ago`}
+            {t("spec.listed")} {t("listedAgo", { days: listedDays })}
           </Eyebrow>
         ) : null}
       </div>
