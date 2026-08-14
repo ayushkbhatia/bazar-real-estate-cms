@@ -12,6 +12,8 @@ import {
   evaluateDevelopmentHeroFacts,
   type DevelopmentEditInput,
 } from "@/lib/schemas/development";
+import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
+import { toOptions } from "@/lib/amenities";
 import { DevelopmentEditForm } from "./_form";
 import { PublishCard } from "../_publish-card";
 
@@ -42,15 +44,24 @@ async function fetchAreas() {
 
 export default async function AdminDevelopmentEditPage({ params }: PageProps) {
   const { id } = await params;
-  const [development, developers, areas] = await Promise.all([
+  const [development, developers, areas, taxonomy] = await Promise.all([
     getDevelopmentForAdmin(id),
     fetchDevelopers(),
     fetchAreas(),
+    listAmenitiesTaxonomy(),
   ]);
   if (!development) notFound();
 
+  const amenityOptions = toOptions(taxonomy);
+
+  // The twins are mapped here, not just selected. #348 added them to the
+  // schema, the selects and the inputs but not to this object, so every field
+  // read "— not set" on a project that had Arabic — no data was lost, because
+  // an omitted optional key is left alone on update, but it invites an editor
+  // to translate the same field twice.
   const initial: DevelopmentEditInput = {
     name: development.name,
+    name_ar: development.name_ar,
     slug: development.slug,
     status: development.status,
     developer_id: development.developer_id,
@@ -62,10 +73,16 @@ export default async function AdminDevelopmentEditPage({ params }: PageProps) {
         ? Number(development.starting_price)
         : null,
     tagline: development.tagline,
+    tagline_ar: development.tagline_ar,
     bedrooms_text: development.bedrooms_text,
+    bedrooms_text_ar: development.bedrooms_text_ar,
     description: development.description,
+    description_ar: development.description_ar,
     vision: development.vision,
+    vision_ar: development.vision_ar,
     escrow_account: development.escrow_account,
+    amenities: development.amenities ?? [],
+    amenities_ar: development.amenities_ar ?? null,
   };
 
   const isPublished = development.published_at != null;
@@ -125,6 +142,7 @@ export default async function AdminDevelopmentEditPage({ params }: PageProps) {
             initial={initial}
             developers={developers}
             areas={areas}
+            amenityOptions={amenityOptions}
           />
         </div>
         <aside className="sticky top-6">

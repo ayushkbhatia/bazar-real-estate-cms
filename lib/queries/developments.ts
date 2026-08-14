@@ -336,7 +336,11 @@ export async function getDevelopmentForAdmin(id: string) {
   const { data, error } = await supabase
     .from("developments")
     .select(
-      "id, name, slug, status, handover_date, total_units, starting_price, description, tagline, bedrooms_text, vision, escrow_account, developer_id, area_id, published_at, facts, payment_plan, master_plan",
+      // Its own select, separate from INDEX_FIELDS and DETAIL_FIELDS — which
+      // is exactly how the twins were missed when they were added: two of the
+      // three selects learned about them and this one did not, so the editor's
+      // Arabic inputs loaded nothing on a project that had Arabic.
+      "id, name, name_ar, slug, status, handover_date, total_units, starting_price, description, description_ar, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, vision, vision_ar, amenities, amenities_ar, escrow_account, developer_id, area_id, published_at, facts, payment_plan, master_plan",
     )
     .eq("id", id)
     .maybeSingle();
