@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -185,7 +185,7 @@ export async function AreaLandmarks({
   items: BandItem[];
   footnote?: string | null;
 }) {
-  const t = await getTranslations("area");
+  const t = useTranslations("area");
   if (items.length === 0) return null;
   return (
     <section className={`${SECTION} py-14 md:py-16 border-t border-bz-border`}>
@@ -256,7 +256,7 @@ export async function AreaLandmarks({
  * the 21 areas the catalogue has no projects for. Those names — Nawayef
  * Village, Al Bandar — are real content with nowhere else to live.
  */
-export async function AreaCommunities({
+export function AreaCommunities({
   heading,
   intro,
   items,
@@ -273,7 +273,7 @@ export async function AreaCommunities({
   viewAllHref?: string;
   footnote?: string | null;
 }) {
-  const t = await getTranslations("area");
+  const t = useTranslations("area");
   const showEditorial = projects.length === 0 && items.length > 0;
   if (!showEditorial && projects.length === 0) return null;
   return (
@@ -371,7 +371,7 @@ export async function AreaCommunities({
 
 // ── 9 · Nearby destinations ─────────────────────────────────────────────
 
-export async function AreaNearby({
+export function AreaNearby({
   heading,
   intro,
   items,
@@ -382,7 +382,7 @@ export async function AreaNearby({
   items: BandItem[];
   footnote?: string | null;
 }) {
-  const t = await getTranslations("area");
+  const t = useTranslations("area");
   if (items.length === 0) return null;
   return (
     <section className={`${SECTION} py-14 md:py-16 border-t border-bz-border`}>
@@ -430,7 +430,7 @@ export async function AreaNearby({
 
 // ── 10 · Why choose this area ───────────────────────────────────────────
 
-export async function AreaWhy({
+export function AreaWhy({
   heading,
   intro,
   items,
@@ -439,7 +439,7 @@ export async function AreaWhy({
   intro?: string | null;
   items: BandItem[];
 }) {
-  const t = await getTranslations("area");
+  const t = useTranslations("area");
   if (items.length === 0) return null;
   return (
     <section className="bg-bz-navy text-white">
@@ -480,7 +480,7 @@ export async function AreaWhy({
  * client component passed in as `children`, so this stays a server component
  * and the guide ships one interactive island rather than a whole page of them.
  */
-export async function AreaLeadBand({
+export function AreaLeadBand({
   heading,
   intro,
   children,
@@ -489,7 +489,7 @@ export async function AreaLeadBand({
   intro?: string | null;
   children: React.ReactNode;
 }) {
-  const t = await getTranslations("area");
+  const t = useTranslations("area");
   return (
     <section className={`${SECTION} py-14 md:py-16 border-t border-bz-border`}>
       <div className="grid overflow-hidden rounded-2xl border border-bz-border bg-bz-surface md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
