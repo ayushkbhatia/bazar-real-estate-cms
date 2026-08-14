@@ -108,7 +108,10 @@ export function MegamenuTile({ tile, className }: Props) {
             {tile.badge_kind === "dot" ? (
               <span
                 aria-hidden
-                className={cn("h-1.5 w-1.5 rounded-full", dotClasses[tile.variant])}
+                className={cn(
+                  "h-1.5 w-1.5 rounded-full",
+                  dotClasses[tile.variant],
+                )}
               />
             ) : null}
             {tile.badge_label}

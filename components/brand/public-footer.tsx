@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
@@ -43,10 +44,19 @@ const SOCIAL: { label: string; href: string }[] = [
   { label: "Instagram", href: "https://www.instagram.com/bazarrealestate" },
   { label: "TikTok", href: "https://www.tiktok.com/@bazarrealestate" },
   { label: "YouTube", href: "https://www.youtube.com/@bazarrealestateae" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/company/bazarrealestate" },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/bazarrealestate",
+  },
 ];
 
-export function PublicFooter() {
+export async function PublicFooter() {
+  /*
+   * Ambient locale, not a prop. The root layout calls `setRequestLocale`
+   * before this renders, so the read is cached rather than a dynamic API —
+   * and `npm run check:routes` is what proves that rather than this comment.
+   */
+  const t = await getTranslations("footer");
   return (
     <footer className="bg-bz-ink text-[oklch(0.85_0.005_80)] px-4 md:px-12 pt-14 md:pt-16 pb-8">
       <div className="grid grid-cols-2 gap-10 md:grid-cols-[1.5fr_repeat(3,1fr)_1.15fr] md:gap-12 pb-12">
@@ -124,15 +134,23 @@ export function PublicFooter() {
               <div className="text-[11.5px] text-[oklch(0.6_0.005_80)]">
                 Phone / WhatsApp
               </div>
-              <a href="tel:+97126322223" className="block text-white hover:underline">
+              <a
+                href="tel:+97126322223"
+                className="block text-white hover:underline"
+              >
                 +971 2 632 2223
               </a>
-              <a href="tel:+971506911103" className="block text-white hover:underline">
+              <a
+                href="tel:+971506911103"
+                className="block text-white hover:underline"
+              >
                 +971 50 691 1103
               </a>
             </li>
             <li>
-              <div className="text-[11.5px] text-[oklch(0.6_0.005_80)]">Email</div>
+              <div className="text-[11.5px] text-[oklch(0.6_0.005_80)]">
+                Email
+              </div>
               <a
                 href="mailto:info@bazarrealestate.ae"
                 className="text-white hover:underline"
@@ -157,22 +175,19 @@ export function PublicFooter() {
       </div>
 
       <div className="flex flex-wrap justify-between gap-4 border-t border-[oklch(0.28_0_0)] pt-6 text-[12px] text-[oklch(0.6_0.005_80)]">
-        <div>
-          © 2026 Bazar Real Estate L.L.C. All rights reserved. · ADM:
-          202400997397 · Regulated by ADREC &amp; DLD
-        </div>
+        <div>{t("rights")}</div>
         <div className="flex gap-6">
           <Link href="/legal/privacy" className="hover:text-white">
-            Privacy Policy
+            {t("privacy")}
           </Link>
           <Link href="/legal/terms" className="hover:text-white">
-            Terms of Use
+            {t("terms")}
           </Link>
           <Link href="/legal/cookies" className="hover:text-white">
-            Cookies
+            {t("cookies")}
           </Link>
           <Link href="/sitemap.xml" className="hover:text-white">
-            Sitemap
+            {t("sitemap")}
           </Link>
         </div>
       </div>

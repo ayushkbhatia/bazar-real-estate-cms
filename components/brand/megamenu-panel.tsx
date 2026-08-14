@@ -177,7 +177,11 @@ export function MegamenuPanel({ tab }: Props) {
 
   // Grid layout. Each present zone gets a track.
   const gridCols = [
-    hasLeft ? (leftIsNarrow ? "minmax(0, max-content)" : "minmax(0, 1fr)") : null,
+    hasLeft
+      ? leftIsNarrow
+        ? "minmax(0, max-content)"
+        : "minmax(0, 1fr)"
+      : null,
     hasFeatured ? "minmax(0, 1.1fr)" : null,
     hasRight ? "minmax(0, 0.85fr)" : null,
   ]

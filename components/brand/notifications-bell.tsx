@@ -87,11 +87,13 @@ export function NotificationsBell({
     fetch("/api/notifications/recent", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then(
-        (json: {
-          rows: BellNotification[];
-          unread: number;
-          userId: string | null;
-        } | null) => {
+        (
+          json: {
+            rows: BellNotification[];
+            unread: number;
+            userId: string | null;
+          } | null,
+        ) => {
           if (cancelled || !json) return;
           setRows(json.rows ?? []);
           setUnread(json.unread ?? 0);
@@ -179,7 +181,9 @@ export function NotificationsBell({
       });
       if (res.ok) {
         const now = new Date().toISOString();
-        setRows((prev) => prev.map((r) => ({ ...r, read_at: r.read_at ?? now })));
+        setRows((prev) =>
+          prev.map((r) => ({ ...r, read_at: r.read_at ?? now })),
+        );
         setUnread(0);
       }
     });
@@ -194,9 +198,7 @@ export function NotificationsBell({
           variant="ghost"
           size="icon"
           aria-label={
-            unread > 0
-              ? `${unread} unread notifications`
-              : "Notifications"
+            unread > 0 ? `${unread} unread notifications` : "Notifications"
           }
           className="relative"
         >

@@ -114,9 +114,7 @@ export function Wordmark({
             priority
           />
         ) : (
-          <span
-            className={cn("relative block shrink-0", logoBoxMap[size])}
-          >
+          <span className={cn("relative block shrink-0", logoBoxMap[size])}>
             <Image
               src={logo.url}
               // Decorative when the name is spelled out beside it — announcing

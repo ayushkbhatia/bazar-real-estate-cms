@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithIntl as render } from "@/lib/i18n/test-utils";
 import { ListingCard, type ListingCardProps } from "./listing-card";
 
 /**
@@ -52,7 +53,9 @@ describe("ListingCard shortlist button", () => {
 
   it("is suppressed only when the surface opts out", () => {
     render(
-      <ListingCard {...props({ propertyId: "p-1", shortlistEnabled: false })} />,
+      <ListingCard
+        {...props({ propertyId: "p-1", shortlistEnabled: false })}
+      />,
     );
     expect(shortlistButton()).toBeNull();
   });

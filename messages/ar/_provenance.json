@@ -10,5 +10,51 @@
     "model": "claude-opus-5",
     "sourceHash": "8db72f6b2453",
     "reviewed": false
+  },
+  "footer.rights": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "adcec09bf803",
+    "reviewed": false
+  },
+  "footer.privacy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "506ff3946215",
+    "reviewed": false
+  },
+  "footer.terms": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "12a0015fa322",
+    "reviewed": false,
+    "note": "MT returned an imperative meaning 'comply with the terms of use'. A link label is a noun phrase."
+  },
+  "footer.sitemap": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "4db550cd9840",
+    "reviewed": false,
+    "note": "MT returned 'main headings'. Khareetat al-mawqi is the standard term for a sitemap."
+  },
+  "listing.verified": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ba43f15c9eba",
+    "reviewed": false
+  },
+  "listing.bedsShort": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "5e657ff6158d",
+    "reviewed": false,
+    "note": "Matched to bathsShort for consistency; both are the compact card abbreviations."
+  },
+  "listing.bathsShort": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "970f519c2cad",
+    "reviewed": false,
+    "note": "MT returned nothing: 'ba' is two characters with no context. Arabic has no comparable abbreviation, so the short noun is used."
   }
 }

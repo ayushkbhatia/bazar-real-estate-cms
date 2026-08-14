@@ -100,7 +100,12 @@ const NAV_GROUPS: { group: string; items: NavItem[] }[] = [
 // server and client agree (no hydration mismatch).
 const CMS_PRIMARY_TABS = [
   { key: "home", label: "Home", href: "/admin", icon: Home },
-  { key: "catalogue", label: "Catalogue", href: "/admin/properties", icon: Building2 },
+  {
+    key: "catalogue",
+    label: "Catalogue",
+    href: "/admin/properties",
+    icon: Building2,
+  },
   { key: "inbox", label: "Inbox", href: "/admin/enquiries", icon: Inbox },
   { key: "content", label: "Content", href: "/admin/blog", icon: FileText },
 ] as const;
@@ -108,7 +113,11 @@ const CMS_PRIMARY_TABS = [
 function activeCmsTab(pathname: string | null): string {
   const p = pathname ?? "";
   if (p === "/admin" || p.startsWith("/admin/analytics")) return "home";
-  if (["/admin/properties", "/admin/media", "/admin/agents"].some((m) => p.startsWith(m)))
+  if (
+    ["/admin/properties", "/admin/media", "/admin/agents"].some((m) =>
+      p.startsWith(m),
+    )
+  )
     return "catalogue";
   if (["/admin/enquiries", "/admin/valuations"].some((m) => p.startsWith(m)))
     return "inbox";

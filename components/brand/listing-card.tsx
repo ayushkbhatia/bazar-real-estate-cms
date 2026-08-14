@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { BedDouble, Bath, Maximize2, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -58,7 +59,10 @@ export type ListingCardProps = {
   className?: string;
 };
 
-const badgeStyles: Record<NonNullable<ListingCardProps["badgeKind"]>, string> = {
+const badgeStyles: Record<
+  NonNullable<ListingCardProps["badgeKind"]>,
+  string
+> = {
   ink: "bg-bz-navy text-bz-bg",
   accent: "bg-bz-accent-soft text-bz-accent",
   success: "bg-[oklch(0.94_0.04_145)] text-[oklch(0.35_0.08_145)]",
@@ -93,6 +97,7 @@ function Media({
   shortlistEnabled?: boolean;
   diff?: ListingCardDiff;
 }) {
+  const t = useTranslations("listing");
   const aspectClass = cn(
     "w-full",
     aspect === "4/3" && "aspect-[4/3]",
@@ -153,7 +158,7 @@ function Media({
         <div className="absolute bottom-3 start-3 z-10">
           <span className="inline-flex items-center gap-1 h-[22px] px-2 rounded-full text-[11px] font-medium bg-white/92 text-bz-accent">
             <ShieldCheck size={11} strokeWidth={2.2} />
-            Bazar Verified
+            {t("verified")}
           </span>
         </div>
       ) : null}
@@ -209,6 +214,11 @@ export function ListingCard({
   variant = "default",
   className,
 }: ListingCardProps) {
+  // `useTranslations`, not `getTranslations`: three Client Components render
+  // this (area-text, listing-card-priced, similar-card), so it cannot be
+  // async. The hook form works in both trees.
+  const t = useTranslations("listing");
+
   if (variant === "editorial") {
     return (
       <article className={cn("flex flex-col", className)}>
@@ -238,9 +248,15 @@ export function ListingCard({
               {price}
             </div>
             <div className="flex gap-3 text-[12px] text-bz-muted">
-              <span>{beds} bd</span>
-              <span>{baths} ba</span>
-              <span>{area} {areaUnit}</span>
+              <span>
+                {beds} {t("bedsShort")}
+              </span>
+              <span>
+                {baths} {t("bathsShort")}
+              </span>
+              <span>
+                {area} {areaUnit}
+              </span>
             </div>
           </div>
         </div>
@@ -285,13 +301,17 @@ export function ListingCard({
               </span>
             </div>
           ) : null}
-          <div className="text-[19px] font-medium tracking-tight text-bz-navy">{price}</div>
+          <div className="text-[19px] font-medium tracking-tight text-bz-navy">
+            {price}
+          </div>
           <div className="text-[14px] text-bz-ink-2">{title}</div>
           <div className="text-[12px] text-bz-muted">{location}</div>
           <div className="flex gap-3 mt-2 text-[12px] text-bz-muted">
-            <span>{beds} bedrooms</span>
-            <span>{baths} bathrooms</span>
-            <span>{area} {areaUnit}</span>
+            <span>{t("bedrooms", { count: beds })}</span>
+            <span>{t("bathrooms", { count: baths })}</span>
+            <span>
+              {area} {areaUnit}
+            </span>
           </div>
         </div>
       </article>
@@ -319,7 +339,9 @@ export function ListingCard({
         diff={diff}
       />
       <div className="p-4 flex flex-col gap-2 flex-1">
-        <div className="text-[19px] font-medium tracking-tight text-bz-navy">{price}</div>
+        <div className="text-[19px] font-medium tracking-tight text-bz-navy">
+          {price}
+        </div>
         <div className="text-[14px] text-bz-ink-2">{title}</div>
         <div className="text-[12px] text-bz-muted">{location}</div>
         <div className="flex gap-4 mt-auto pt-3 border-t border-bz-border text-bz-muted text-[12px]">
