@@ -1,5 +1,7 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
 
 export type AreaOption = {
   id: string;
@@ -13,11 +15,21 @@ export async function listAreaOptions(): Promise<AreaOption[]> {
   const supabase = createSupabasePublicClient();
   const { data, error } = await supabase
     .from("areas")
-    .select("id, slug, name, kind")
+    .select("id, slug, name, name_ar, kind")
     .eq("kind", "area")
     .order("name", { ascending: true });
   if (error || !data) return [];
-  return data.map((r) => ({ id: r.id, slug: r.slug, name: r.name }));
+  const locale = await currentLocale();
+  // The label is display; `id` and `slug` are identity and stay English —
+  // the form submits the id, so folding the label cannot break the value.
+  return data.map((r) => {
+    const t = localiseRow(r as unknown as Record<string, unknown>, locale) as {
+      id: string;
+      slug: string;
+      name: string;
+    };
+    return { id: r.id, slug: r.slug, name: t.name };
+  });
 }
 
 /** Look up an area's slug given its id. Returns null if missing. */

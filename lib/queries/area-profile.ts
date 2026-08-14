@@ -19,6 +19,9 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { SEED_AREA_GUIDES, type SeedAreaGuide } from "@/lib/seeds/areas";
 import type { AreaGuideRow } from "@/lib/types/sprint-8";
 import type { AreaKind } from "@/lib/schemas/area";
@@ -68,8 +71,10 @@ export type AreaRecordRow = {
   id: string;
   slug: string;
   name: string;
+  name_ar?: string | null;
   kind: AreaKind;
   description: string | null;
+  description_ar?: string | null;
   geo: unknown;
   seo_meta: unknown;
 };
@@ -186,12 +191,35 @@ function amenitiesFrom(
  * case that should still 404.
  */
 export function composeAreaProfile(input: {
+  /** The RAW row, twins included — this function folds it. */
   row: AreaRecordRow | null;
   guide: AreaGuideRow | null;
   seed: SeedAreaGuide | null;
+  locale?: Locale;
 }): AreaProfile | null {
-  const { row, guide, seed } = input;
-  if (!row && !seed) return null;
+  const { guide: rawGuide, seed } = input;
+  if (!input.row && !seed) return null;
+
+  const locale = input.locale ?? DEFAULT_LOCALE;
+  // Folded here rather than by the caller, because the intro precedence below
+  // has to know whether a translation exists — see the comment on `intro`.
+  const row = input.row
+    ? (localiseRow(
+        input.row as unknown as Record<string, unknown>,
+        locale,
+      ) as unknown as AreaRecordRow)
+    : null;
+  const guide = rawGuide
+    ? (localiseRow(
+        rawGuide as unknown as Record<string, unknown>,
+        locale,
+      ) as unknown as AreaGuideRow)
+    : null;
+  /* True when the record carries an authored Arabic description. */
+  const hasTranslatedDescription =
+    locale !== DEFAULT_LOCALE &&
+    typeof input.row?.description_ar === "string" &&
+    input.row.description_ar.trim() !== "";
 
   const slug = row?.slug ?? seed!.slug;
   const name = row?.name ?? seed!.name;
@@ -202,7 +230,20 @@ export function composeAreaProfile(input: {
     slug,
     name,
     kind: row?.kind ?? "area",
-    intro: guide?.intro_md || seed?.intro || row?.description || "",
+    /*
+     * `seed?.intro` is English-only editorial that lives in code
+     * (lib/seeds/areas.ts) and has no Arabic twin. Left in place it would win
+     * over a description the team has actually translated, dropping a
+     * paragraph of English into the top of an Arabic page — so on a non-default
+     * locale it steps aside for an authored translation. English is untouched:
+     * `hasTranslatedDescription` is false whenever the locale is the default.
+     */
+    intro:
+      guide?.intro_md ||
+      (hasTranslatedDescription ? row?.description : seed?.intro) ||
+      seed?.intro ||
+      row?.description ||
+      "",
     position: seed?.position ?? null,
     vibe: seed?.vibe ?? null,
     heroLabel: seed?.hero_label ?? slug,
@@ -223,7 +264,8 @@ export function composeAreaProfile(input: {
 // getAreaProfile
 // ─────────────────────────────────────────────────────────────────────
 
-const AREA_COLUMNS = "id, slug, name, kind, description, geo, seo_meta";
+const AREA_COLUMNS =
+  "id, slug, name, name_ar, kind, description, description_ar, geo, seo_meta";
 
 /**
  * Resolve one area for the public guide page.
@@ -234,11 +276,19 @@ const AREA_COLUMNS = "id, slug, name, kind, description, geo, seo_meta";
  */
 export async function getAreaProfile(
   slug: string,
+  /*
+   * Optional for the same reason as `getPublishedPropertyByReference`:
+   * `areas/[slug]/opengraph-image.tsx` is a metadata route with no
+   * `setRequestLocale` above it, and an ambient read there would drop a
+   * prerendered route off the G-1 baseline.
+   */
+  locale?: Locale,
 ): Promise<AreaProfile | null> {
   if (!slug) return null;
   const seed = SEED_AREA_GUIDES.find((g) => g.slug === slug) ?? null;
+  const active = locale ?? (await currentLocale());
   if (!isSupabaseConfigured)
-    return composeAreaProfile({ row: null, guide: null, seed });
+    return composeAreaProfile({ row: null, guide: null, seed, locale: active });
 
   try {
     const sb = createSupabasePublicClient();
@@ -249,7 +299,13 @@ export async function getAreaProfile(
       .order("created_at", { ascending: true })
       .limit(1);
     const row = (rows?.[0] as AreaRecordRow | undefined) ?? null;
-    if (!row) return composeAreaProfile({ row: null, guide: null, seed });
+    if (!row)
+      return composeAreaProfile({
+        row: null,
+        guide: null,
+        seed,
+        locale: active,
+      });
 
     const { data: guide } = await sb
       .from("area_guides")
@@ -262,9 +318,10 @@ export async function getAreaProfile(
       row,
       guide: (guide as AreaGuideRow | null) ?? null,
       seed,
+      locale: active,
     });
   } catch {
-    return composeAreaProfile({ row: null, guide: null, seed });
+    return composeAreaProfile({ row: null, guide: null, seed, locale: active });
   }
 }
 
@@ -299,7 +356,7 @@ export async function listAreaDirectory(): Promise<AreaDirectoryEntry[]> {
     const [{ data: rows }, { data: props }] = await Promise.all([
       sb
         .from("areas")
-        .select("id, slug, name, kind, parent_id")
+        .select("id, slug, name, name_ar, kind, parent_id")
         .in("kind", ["area", "sub_community"])
         .order("name", { ascending: true }),
       sb.from("properties").select("area_id").eq("status", "published"),
@@ -312,12 +369,21 @@ export async function listAreaDirectory(): Promise<AreaDirectoryEntry[]> {
       if (id) counts.set(id, (counts.get(id) ?? 0) + 1);
     }
 
-    const shape = (r: { id: string; slug: string; name: string }) => ({
-      id: r.id,
-      slug: r.slug,
-      name: r.name,
-      listingCount: counts.get(r.id) ?? 0,
-    });
+    // Display names on the A-Z directory. `slug` stays untouched — it is the
+    // URL, and folding an identity is how filtering breaks on /ar.
+    const directoryLocale = await currentLocale();
+    const shape = (r: { id: string; slug: string; name: string }) => {
+      const t = localiseRow(
+        r as unknown as Record<string, unknown>,
+        directoryLocale,
+      ) as unknown as { id: string; slug: string; name: string };
+      return {
+        id: r.id,
+        slug: r.slug,
+        name: t.name,
+        listingCount: counts.get(r.id) ?? 0,
+      };
+    };
 
     const areas = rows.filter((r) => r.kind === "area");
     const byParent = new Map<string, AreaDirectoryChild[]>();

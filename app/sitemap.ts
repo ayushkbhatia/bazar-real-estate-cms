@@ -9,7 +9,11 @@ import { listDevelopers } from "@/lib/queries/developers-extras";
 import { listArticleCategories } from "@/lib/queries/article-categories";
 import { categoryToUrlSlug } from "@/lib/schemas/article";
 
-const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"]; priority: number }[] = [
+const STATIC_ROUTES: {
+  path: string;
+  changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
+  priority: number;
+}[] = [
   { path: "/", changeFrequency: "daily", priority: 1.0 },
   { path: "/buy", changeFrequency: "hourly", priority: 0.9 },
   { path: "/rent", changeFrequency: "hourly", priority: 0.8 },
@@ -49,7 +53,10 @@ const STATIC_ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[numb
 export const revalidate = 3600;
 
 function siteUrl(): string {
-  return (env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae").replace(/\/+$/, "");
+  return (env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae").replace(
+    /\/+$/,
+    "",
+  );
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -81,7 +88,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // listAreasWithCounts() and listDevelopers() both fall back to seeds
   // when Supabase is offline, so we always get a populated list.
   const [areaEntries, developerEntries] = await Promise.all([
-    listAreasWithCounts()
+    listAreasWithCounts(DEFAULT_LOCALE)
       .then((rows) =>
         rows.map<MetadataRoute.Sitemap[number]>((r) => ({
           url: `${base}/areas/${r.slug}`,
@@ -101,12 +108,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .then((rows) =>
         // A draft developer 404s, so advertising it here would be a soft-404
         // against the whole section.
-        rows.filter((r) => r.published).map<MetadataRoute.Sitemap[number]>((r) => ({
-          url: `${base}/developers/${r.slug}`,
-          lastModified: now,
-          changeFrequency: "weekly",
-          priority: 0.5,
-        })),
+        rows
+          .filter((r) => r.published)
+          .map<MetadataRoute.Sitemap[number]>((r) => ({
+            url: `${base}/developers/${r.slug}`,
+            lastModified: now,
+            changeFrequency: "weekly",
+            priority: 0.5,
+          })),
       )
       .catch((err) => {
         console.error("[sitemap] developer fetch failed", err);
@@ -115,7 +124,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ]);
 
   if (!isSupabaseConfigured) {
-    return [...staticEntries, ...categoryEntries, ...areaEntries, ...developerEntries];
+    return [
+      ...staticEntries,
+      ...categoryEntries,
+      ...areaEntries,
+      ...developerEntries,
+    ];
   }
 
   try {
@@ -203,6 +217,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
   } catch (err) {
     console.error("[sitemap] catalogue fetch failed", err);
-    return [...staticEntries, ...categoryEntries, ...areaEntries, ...developerEntries];
+    return [
+      ...staticEntries,
+      ...categoryEntries,
+      ...areaEntries,
+      ...developerEntries,
+    ];
   }
 }

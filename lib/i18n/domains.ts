@@ -909,6 +909,8 @@ export const WIRED_EDITOR: string[] = [
 
 /** Columns whose public read path folds the locale today. */
 export const WIRED_READ: string[] = [
+  "areas.name",
+  "areas.description",
   "properties.title",
   "properties.short_description",
   "properties.description",
