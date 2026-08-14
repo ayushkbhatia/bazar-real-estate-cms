@@ -3,10 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { mediaPublicUrl } from "@/lib/media";
-import {
-  propertyUrl,
-  type ListingRow,
-} from "@/lib/queries/properties";
+import { propertyUrl, type ListingRow } from "@/lib/queries/properties";
 import { ListingCardPriced } from "./listing-card-priced";
 
 type Props = {
@@ -20,9 +17,9 @@ type Props = {
   browseAllLabel: string;
 };
 
-function badgeFor(row: ListingRow):
-  | { label: string; kind: "ink" | "accent" }
-  | undefined {
+function badgeFor(
+  row: ListingRow,
+): { label: string; kind: "ink" | "accent" } | undefined {
   if (row.flags?.exclusive) return { label: "Exclusive", kind: "ink" };
   if (row.flags?.vacant_on_transfer)
     return { label: "Vacant on transfer", kind: "accent" };
@@ -59,8 +56,7 @@ export function CuratedGrid({
       <section className="px-12 py-16">
         {rows.length === 0 ? (
           <div className="rounded-lg border border-bz-border bg-bz-surface p-9 text-[15px] text-bz-ink-2 max-w-[560px]">
-            Nothing matches this curation right now. Try the wider catalogue
-            on{" "}
+            Nothing matches this curation right now. Try the wider catalogue on{" "}
             <Link
               href={browseAllHref}
               className="underline underline-offset-2 hover:text-bz-ink"
@@ -71,36 +67,36 @@ export function CuratedGrid({
             listings land.
           </div>
         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {rows.map((row, index) => {
-                const badge = badgeFor(row);
-                return (
-                  <Link
-                    key={row.reference}
-                    href={propertyUrl(row)}
-                    className="block"
-                  >
-                    <ListingCardPriced
-                      priceAed={row.price_aed}
-                      title={row.title}
-                      location={row.areas?.name ?? "United Arab Emirates"}
-                      beds={row.beds}
-                      baths={row.baths}
-                      area={row.built_up_ft2 ?? 0}
-                      badge={badge?.label}
-                      badgeKind={badge?.kind}
-                      imgLabel={row.reference}
-                      heroSrc={
-                        row.hero ? mediaPublicUrl(row.hero.storage_key) : null
-                      }
-                      heroAlt={row.hero?.alt_text ?? row.title}
-                      priority={index === 0}
-                      propertyId={row.id}
-                    />
-                  </Link>
-                );
-              })}
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rows.map((row, index) => {
+              const badge = badgeFor(row);
+              return (
+                <Link
+                  key={row.reference}
+                  href={propertyUrl(row)}
+                  className="block"
+                >
+                  <ListingCardPriced
+                    priceAed={row.price_aed}
+                    title={row.title}
+                    location={row.areas?.name ?? "United Arab Emirates"}
+                    beds={row.beds}
+                    baths={row.baths}
+                    area={row.built_up_ft2 ?? 0}
+                    badge={badge?.label}
+                    badgeKind={badge?.kind}
+                    imgLabel={row.reference}
+                    heroSrc={
+                      row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                    }
+                    heroAlt={row.hero?.alt_text ?? row.title}
+                    priority={index === 0}
+                    propertyId={row.id}
+                  />
+                </Link>
+              );
+            })}
+          </div>
         )}
 
         <div className="mt-12 flex items-center justify-between flex-wrap gap-4">

@@ -46,7 +46,11 @@ export function PreferencesControls() {
                   <span>{CURRENCY_LABEL[c]}</span>
                 </span>
                 {prefs.currency === c && (
-                  <Check size={14} strokeWidth={1.8} className="text-bz-accent" />
+                  <Check
+                    size={14}
+                    strokeWidth={1.8}
+                    className="text-bz-accent"
+                  />
                 )}
               </button>
             </li>
@@ -73,7 +77,11 @@ export function PreferencesControls() {
               >
                 <span>{AREA_UNIT_LABEL[u]}</span>
                 {prefs.area_unit === u && (
-                  <Check size={14} strokeWidth={1.8} className="text-bz-accent" />
+                  <Check
+                    size={14}
+                    strokeWidth={1.8}
+                    className="text-bz-accent"
+                  />
                 )}
               </button>
             </li>

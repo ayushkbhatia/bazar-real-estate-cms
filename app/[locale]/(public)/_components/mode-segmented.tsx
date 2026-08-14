@@ -43,8 +43,7 @@ export function ModeSegmented() {
 
   function go(path: string) {
     if (path === pathname) return;
-    const qs =
-      typeof window !== "undefined" ? window.location.search : "";
+    const qs = typeof window !== "undefined" ? window.location.search : "";
     router.push(`${path}${qs}`);
   }
 

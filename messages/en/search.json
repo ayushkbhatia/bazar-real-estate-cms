@@ -1,0 +1,67 @@
+{
+  "mode": {
+    "buy": {
+      "eyebrow": "For sale",
+      "title": "Properties for sale",
+      "lede": "Curated freehold and leasehold listings across the United Arab Emirates."
+    },
+    "rent": {
+      "eyebrow": "For rent",
+      "title": "Properties for rent",
+      "lede": "Long-let homes from advisor-vetted landlords. Furnished and unfurnished."
+    },
+    "off_plan": {
+      "eyebrow": "Off-plan",
+      "title": "New developments",
+      "lede": "Pre-launch and on-sale developments from Abu Dhabi's leading developers."
+    },
+    "commercial": {
+      "eyebrow": "Commercial",
+      "title": "Commercial real estate",
+      "lede": "Office, retail, and industrial leases and freeholds."
+    }
+  },
+  "form": {
+    "ready_new": {
+      "eyebrow": "Ready · new",
+      "title": "Ready homes, never lived in",
+      "lede": "Completed, handed over, and bought direct from the developer — a first sale with no previous owner on the title."
+    },
+    "resale": {
+      "eyebrow": "Resale",
+      "title": "Resale homes",
+      "lede": "Completed homes bought from the current owner, with established communities, real service-charge history and a negotiable price."
+    }
+  },
+  "type": {
+    "apartment": "Apartment",
+    "villa": "Villa",
+    "penthouse": "Penthouse",
+    "townhouse": "Townhouse",
+    "commercial": "Commercial",
+    "land": "Land",
+    "hotel_apartment": "Hotel apartment",
+    "office": "Office",
+    "building": "Building",
+    "retail": "Retail",
+    "commercial_villa": "Commercial villa"
+  },
+  "filters": {
+    "propertyType": "Property type",
+    "anyType": "Any type",
+    "area": "Area",
+    "anyArea": "Any area",
+    "search": "Search",
+    "searchProperties": "Search properties",
+    "searchPlaceholder": "Search Mamsha, Saadiyat, sea view…",
+    "studio": "Studio",
+    "bedsFilter": "{count, plural, =0 {Studio} one {# bed} other {# beds}}",
+    "bathsFilter": "{count, plural, one {# bath} other {# baths}}",
+    "bedroomsOption": "{count, plural, one {# Bedroom} other {# Bedrooms}}",
+    "bedroomsMax": "6+ Bedrooms"
+  },
+  "results": {
+    "range": "{first}–{last} of {total} properties",
+    "none": "0 properties"
+  }
+}

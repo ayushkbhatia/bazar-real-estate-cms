@@ -32,6 +32,7 @@ export const NAMESPACES = [
   "footer",
   "consent",
   "listing",
+  "search",
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -64,6 +65,9 @@ export const CLIENT_NAMESPACES = [
   // the saving from #366 comes from the namespaces the waves ADD, which are
   // overwhelmingly server-side.
   "listing",
+  // The filter bar and hero search own their own state — dropdowns, chips,
+  // a debounced query box. Client by necessity.
+  "search",
 ] as const satisfies readonly Namespace[];
 
 /** Narrow a full message bag to the namespaces the client actually needs. */

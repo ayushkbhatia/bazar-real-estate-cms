@@ -56,8 +56,8 @@ export function DrawAreaTool({
       </button>
       {active ? (
         <div className="text-[11.5px] text-bz-muted max-w-[200px] leading-relaxed">
-          Polygon drawing lands with Mapbox in Sprint 12. The tool fires a
-          draw event for downstream listeners today.
+          Polygon drawing lands with Mapbox in Sprint 12. The tool fires a draw
+          event for downstream listeners today.
         </div>
       ) : null}
     </div>

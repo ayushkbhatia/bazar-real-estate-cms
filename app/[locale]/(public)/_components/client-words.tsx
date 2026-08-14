@@ -15,7 +15,10 @@ export function ClientWords({ limit = 3 }: { limit?: number }) {
   const items = SEED_TESTIMONIALS.slice(0, limit);
   return (
     <section className="px-4 md:px-12 py-12 md:py-16 border-t border-bz-border bg-bz-surface-2">
-      <div className="text-[11px] font-medium uppercase text-bz-ink-2" style={{ letterSpacing: "0.12em" }}>
+      <div
+        className="text-[11px] font-medium uppercase text-bz-ink-2"
+        style={{ letterSpacing: "0.12em" }}
+      >
         Client words
       </div>
       <h2

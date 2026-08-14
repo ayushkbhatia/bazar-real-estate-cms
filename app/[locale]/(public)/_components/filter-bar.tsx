@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useRef, useState, useTransition } from "react";
 import { useQueryStates } from "nuqs";
 import { Search, X, SlidersHorizontal } from "lucide-react";
@@ -23,20 +25,6 @@ import {
   type Currency,
 } from "@/lib/preferences";
 import { cn } from "@/lib/utils";
-
-const TYPE_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
-  apartment: "Apartment",
-  villa: "Villa",
-  penthouse: "Penthouse",
-  townhouse: "Townhouse",
-  commercial: "Commercial",
-  land: "Land",
-  hotel_apartment: "Hotel apartment",
-  office: "Office",
-  building: "Building",
-  retail: "Retail",
-  commercial_villa: "Commercial villa",
-};
 
 // T2-A — beds/baths chips. Studio (0) anchors the left side; "+" caps stay
 // at 5 (beds) and 4 (baths) to match the `lib/queries/properties.ts` `>=`
@@ -70,6 +58,7 @@ type Props = {
 };
 
 export function FilterBar({ areas }: Props) {
+  const tr = useTranslations("search");
   const [{ q, beds, baths, type, price_min, price_max, area }, setState] =
     useQueryStates(filterParsers, {
       shallow: false, // re-fetch the RSC page on change
@@ -150,7 +139,7 @@ export function FilterBar({ areas }: Props) {
                   : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
               )}
               aria-pressed={active}
-              aria-label={n === 0 ? "Studio" : `${label} bed${n === 1 ? "" : "s"}`}
+              aria-label={tr("filters.bedsFilter", { count: n })}
             >
               {label}
             </button>
@@ -178,7 +167,7 @@ export function FilterBar({ areas }: Props) {
                   : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
               )}
               aria-pressed={active}
-              aria-label={`${label} bath${n === 1 ? "" : "s"}`}
+              aria-label={tr("filters.bathsFilter", { count: n })}
             >
               {label}
             </button>
@@ -195,15 +184,15 @@ export function FilterBar({ areas }: Props) {
       >
         <SelectTrigger
           className={cn("h-9 text-[13px]", stacked ? "w-full" : "w-[160px]")}
-          aria-label="Property type"
+          aria-label={tr("filters.propertyType")}
         >
-          <SelectValue placeholder="Any type" />
+          <SelectValue placeholder={tr("filters.anyType")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={UNSET}>Any type</SelectItem>
+          <SelectItem value={UNSET}>{tr("filters.anyType")}</SelectItem>
           {PROPERTY_TYPES.map((t) => (
             <SelectItem key={t} value={t}>
-              {TYPE_LABELS[t]}
+              {tr(`type.${t}`)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -217,12 +206,12 @@ export function FilterBar({ areas }: Props) {
         >
           <SelectTrigger
             className={cn("h-9 text-[13px]", stacked ? "w-full" : "w-[200px]")}
-            aria-label="Area"
+            aria-label={tr("filters.area")}
           >
-            <SelectValue placeholder="Any area" />
+            <SelectValue placeholder={tr("filters.anyArea")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={UNSET}>Any area</SelectItem>
+            <SelectItem value={UNSET}>{tr("filters.anyArea")}</SelectItem>
             {areas.map((a) => (
               <SelectItem key={a.slug} value={a.slug}>
                 {a.name}
@@ -274,18 +263,18 @@ export function FilterBar({ areas }: Props) {
       <div className="flex flex-wrap items-center gap-3">
         {/* Free-text search — full width on mobile, fixed on desktop */}
         <label className="relative flex-1 md:flex-none min-w-0">
-          <span className="sr-only">Search</span>
+          <span className="sr-only">{tr("filters.search")}</span>
           <Search
             size={14}
             className="absolute start-3 top-1/2 -translate-y-1/2 text-bz-muted pointer-events-none"
           />
           <Input
             type="search"
-            placeholder="Search Mamsha, Saadiyat, sea view…"
+            placeholder={tr("filters.searchPlaceholder")}
             value={qInput}
             onChange={(e) => onQChange(e.target.value)}
             className="w-full md:w-[260px] h-9 ps-8 text-[13px]"
-            aria-label="Search properties"
+            aria-label={tr("filters.searchProperties")}
           />
         </label>
 
@@ -335,9 +324,7 @@ export function FilterBar({ areas }: Props) {
           </>
         }
       >
-        <div className="flex flex-col gap-5">
-          {controls(true)}
-        </div>
+        <div className="flex flex-col gap-5">{controls(true)}</div>
       </BottomSheet>
     </div>
   );
@@ -372,7 +359,10 @@ function PriceRangeInputs({
   priceMin: number | null;
   priceMax: number | null;
   stacked: boolean;
-  onCommit: (patch: { price_min?: number | null; price_max?: number | null }) => void;
+  onCommit: (patch: {
+    price_min?: number | null;
+    price_max?: number | null;
+  }) => void;
 }) {
   const seed = (n: number | null) =>
     n == null ? "" : priceParamToInput(String(n), currency);

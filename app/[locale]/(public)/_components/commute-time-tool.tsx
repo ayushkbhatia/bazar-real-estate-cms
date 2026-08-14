@@ -71,9 +71,8 @@ export function CommuteTimeTool() {
           </div>
 
           <p className="mt-3 text-[11.5px] text-bz-muted leading-relaxed">
-            Geo-filtering by isochrone activates with Mapbox in Sprint 12.
-            Your selection ({target}, {minutes} min) persists in URL state
-            today.
+            Geo-filtering by isochrone activates with Mapbox in Sprint 12. Your
+            selection ({target}, {minutes} min) persists in URL state today.
           </p>
         </div>
       ) : null}

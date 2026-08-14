@@ -178,9 +178,8 @@ export function HeroConcierge() {
             Tell us the brief. We&apos;ll narrow it down.
           </h1>
           <p className="mt-6 max-w-[58ch] text-[16px] text-white/80 leading-relaxed">
-            Talk to the Bazar concierge. We&apos;ll triangulate area,
-            budget, timeline, and constraints — then hand you to the
-            advisor who fits.
+            Talk to the Bazar concierge. We&apos;ll triangulate area, budget,
+            timeline, and constraints — then hand you to the advisor who fits.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">

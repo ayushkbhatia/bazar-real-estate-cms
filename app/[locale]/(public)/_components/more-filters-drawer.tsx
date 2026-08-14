@@ -103,10 +103,7 @@ export function MoreFiltersDrawer() {
     setOrDelete("year_max", state.year_max);
     setOrDelete("tenure", state.tenure);
     setOrDelete("furnishing", state.furnishing);
-    setOrDelete(
-      "amenities",
-      Array.from(state.amenities).join(","),
-    );
+    setOrDelete("amenities", Array.from(state.amenities).join(","));
     if (state.verified) params.set("verified", "true");
     else params.delete("verified");
     params.delete("page");

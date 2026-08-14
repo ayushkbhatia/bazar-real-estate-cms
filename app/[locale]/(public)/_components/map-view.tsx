@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import maplibregl, { type Map as MapLibreMap, Marker, Popup } from "maplibre-gl";
+import maplibregl, {
+  type Map as MapLibreMap,
+  Marker,
+  Popup,
+} from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { formatPrice, usePreferences } from "@/lib/preferences";

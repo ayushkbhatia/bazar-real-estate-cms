@@ -6,11 +6,12 @@ import { Grid3X3, List, Map } from "lucide-react";
 
 export type SearchView = "grid" | "list" | "map";
 
-const OPTIONS: { value: SearchView; label: string; Icon: React.ElementType }[] = [
-  { value: "grid", label: "Grid", Icon: Grid3X3 },
-  { value: "list", label: "List", Icon: List },
-  { value: "map", label: "Map", Icon: Map },
-];
+const OPTIONS: { value: SearchView; label: string; Icon: React.ElementType }[] =
+  [
+    { value: "grid", label: "Grid", Icon: Grid3X3 },
+    { value: "list", label: "List", Icon: List },
+    { value: "map", label: "Map", Icon: Map },
+  ];
 
 /**
  * `defaultView` is what the server rendered when the URL carried no `view`

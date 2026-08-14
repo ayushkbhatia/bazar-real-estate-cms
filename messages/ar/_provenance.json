@@ -56,5 +56,265 @@
     "sourceHash": "970f519c2cad",
     "reviewed": false,
     "note": "MT returned nothing: 'ba' is two characters with no context. Arabic has no comparable abbreviation, so the short noun is used."
+  },
+  "search.mode.buy.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "aedf56fc02b4",
+    "reviewed": false
+  },
+  "search.mode.buy.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7d480b8f3933",
+    "reviewed": false
+  },
+  "search.mode.buy.lede": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "71c5f076a44e",
+    "reviewed": false
+  },
+  "search.mode.rent.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "03cc104614c2",
+    "reviewed": false
+  },
+  "search.mode.rent.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5908beb7e0fa",
+    "reviewed": false
+  },
+  "search.mode.rent.lede": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1a5a6619b61d",
+    "reviewed": false
+  },
+  "search.mode.off_plan.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1e494873d5a6",
+    "reviewed": false
+  },
+  "search.mode.off_plan.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f3f92d64aab4",
+    "reviewed": false
+  },
+  "search.mode.off_plan.lede": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "11b3781c9d5f",
+    "reviewed": false
+  },
+  "search.mode.commercial.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ea7d0b763435",
+    "reviewed": false
+  },
+  "search.mode.commercial.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "bdcb2cea7af9",
+    "reviewed": false
+  },
+  "search.mode.commercial.lede": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b27eebad79e8",
+    "reviewed": false
+  },
+  "search.form.ready_new.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c90eaf30b64d",
+    "reviewed": false
+  },
+  "search.form.ready_new.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0d77705444af",
+    "reviewed": false
+  },
+  "search.form.ready_new.lede": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3c2b6565fc81",
+    "reviewed": false
+  },
+  "search.form.resale.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ec088e71148d",
+    "reviewed": false
+  },
+  "search.form.resale.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f7ed1615c674",
+    "reviewed": false
+  },
+  "search.form.resale.lede": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ab608f03f629",
+    "reviewed": false
+  },
+  "search.type.apartment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3fc028ffbb16",
+    "reviewed": false
+  },
+  "search.type.villa": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "afad4c579e50",
+    "reviewed": false
+  },
+  "search.type.penthouse": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e25d47b2f989",
+    "reviewed": false
+  },
+  "search.type.townhouse": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "305d3335194d",
+    "reviewed": false
+  },
+  "search.type.commercial": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ea7d0b763435",
+    "reviewed": false
+  },
+  "search.type.hotel_apartment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a99c00683d3f",
+    "reviewed": false
+  },
+  "search.type.office": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9e380d9991e6",
+    "reviewed": false
+  },
+  "search.type.building": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "87c5912f2cef",
+    "reviewed": false
+  },
+  "search.type.retail": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cdb38c8dc89a",
+    "reviewed": false
+  },
+  "search.type.commercial_villa": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "925ded28a804",
+    "reviewed": false
+  },
+  "search.filters.propertyType": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "47d0c991aecd",
+    "reviewed": false
+  },
+  "search.filters.anyType": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b05fc1fe6984",
+    "reviewed": false
+  },
+  "search.filters.anyArea": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9512dc79d6ea",
+    "reviewed": false
+  },
+  "search.filters.search": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "49c266baaaa7",
+    "reviewed": false
+  },
+  "search.filters.searchProperties": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8ccb6303d68b",
+    "reviewed": false
+  },
+  "search.filters.searchPlaceholder": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d16ecda8a422",
+    "reviewed": false
+  },
+  "search.filters.studio": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0aa91af2ec4c",
+    "reviewed": false
+  },
+  "search.filters.bedsFilter": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5e63c010349b",
+    "reviewed": false
+  },
+  "search.filters.bathsFilter": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "13b0b0aca7fa",
+    "reviewed": false
+  },
+  "search.filters.bedroomsOption": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dcd2260ad928",
+    "reviewed": false
+  },
+  "search.filters.bedroomsMax": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ce78be74d567",
+    "reviewed": false
+  },
+  "search.results.range": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "564b45ac20c8",
+    "reviewed": false
+  },
+  "search.results.none": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "62bafbd31c04",
+    "reviewed": false
+  },
+  "search.type.land": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "b6baff9358dd",
+    "reviewed": false,
+    "note": "MT returned '# أرض' — a hash invented from nothing, caught by the symmetric check added in #369."
+  },
+  "search.filters.area": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "024dc204d7ba",
+    "reviewed": false,
+    "note": "MT returned nothing: 'Area' alone is a single word with no context."
   }
 }
