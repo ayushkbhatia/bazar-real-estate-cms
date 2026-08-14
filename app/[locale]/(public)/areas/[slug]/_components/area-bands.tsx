@@ -1,4 +1,13 @@
+/*
+ * Both forms, on purpose. `AreaLandmarks` is already async for its own data
+ * fetch, and a hook cannot be called in an async function — eslint's
+ * rules-of-hooks says so and the build then fails prerendering with
+ * "Expected a suspended thenable". The other bands are synchronous Server
+ * Components with unit tests that render them directly, so they use the hook,
+ * which keeps `area` off CLIENT_NAMESPACES.
+ */
 import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -185,7 +194,7 @@ export async function AreaLandmarks({
   items: BandItem[];
   footnote?: string | null;
 }) {
-  const t = useTranslations("area");
+  const t = await getTranslations("area");
   if (items.length === 0) return null;
   return (
     <section className={`${SECTION} py-14 md:py-16 border-t border-bz-border`}>
