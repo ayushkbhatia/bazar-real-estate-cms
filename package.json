@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "check:routes": "node scripts/ci/assert-static-routes.mjs",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",

@@ -53,6 +53,18 @@ jobs:
       - name: Build
         run: npm run build
 
+      # G-1. Reads .next/prerender-manifest.json and fails if a route that used
+      # to prerender now renders on demand. It has to run after Build, in the
+      # same job, because it reads that job's build output.
+      #
+      # This guard has existed since P0 and has never run in CI — it was a
+      # script somebody had to remember. It caught /sitemap.xml going dynamic
+      # during the areas fold (#363) only because the fold's author ran it by
+      # hand. The message-wave sweep touches ~270 files under [locale], where a
+      # missing setRequestLocale is invisible in review and in every other gate.
+      - name: Prerendered routes unchanged
+        run: npm run check:routes
+
   e2e:
     name: E2E (Playwright)
     runs-on: ubuntu-latest
