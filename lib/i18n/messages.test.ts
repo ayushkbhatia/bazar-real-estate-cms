@@ -1,6 +1,8 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { icuArguments } from "./icu";
+import { IDENTICAL_BY_DESIGN } from "./namespaces";
 import { ALL_LOCALES, DEFAULT_LOCALE, type Locale } from "./locales";
 
 /**
@@ -13,10 +15,14 @@ import { ALL_LOCALES, DEFAULT_LOCALE, type Locale } from "./locales";
 const MESSAGES_DIR = path.join(__dirname, "..", "..", "messages");
 
 function namespaces(locale: Locale): string[] {
-  return readdirSync(path.join(MESSAGES_DIR, locale))
-    .filter((f) => f.endsWith(".json"))
-    .map((f) => f.replace(/\.json$/, ""))
-    .sort();
+  return (
+    readdirSync(path.join(MESSAGES_DIR, locale))
+      // `_`-prefixed files are sidecars, not namespaces. `messages/ar/_provenance.json`
+      // records which values a model produced; it has no English twin by design.
+      .filter((f) => f.endsWith(".json") && !f.startsWith("_"))
+      .map((f) => f.replace(/\.json$/, ""))
+      .sort()
+  );
 }
 
 function load(locale: Locale, ns: string): Record<string, unknown> {
@@ -46,36 +52,6 @@ function valueAt(obj: Record<string, unknown>, keyPath: string): unknown {
  * language endonyms, and anything typeset in Latin by convention. Anything
  * NOT on this list that matches its English is an untranslated string.
  */
-/**
- * Top-level ICU argument names, sorted.
- *
- * Brace-depth aware on purpose: a naive `/\{(\w+)[,}]/` also matches the
- * *contents* of plural branches, so `{count, plural, =0 {Studio} …}` reports
- * an argument called "Studio" — and then every translated message looks like a
- * placeholder mismatch, because the Arabic branch text is not `\w`.
- */
-function icuArguments(message: string): string {
-  const names: string[] = [];
-  let depth = 0;
-  for (let i = 0; i < message.length; i++) {
-    const ch = message[i];
-    if (ch === "}") depth--;
-    else if (ch === "{") {
-      if (depth === 0) {
-        const rest = message.slice(i + 1);
-        const m = rest.match(/^\s*([A-Za-z_]\w*)\s*[,}]/);
-        if (m) names.push(m[1]);
-      }
-      depth++;
-    }
-  }
-  return [...new Set(names)].sort().join(",");
-}
-
-const IDENTICAL_BY_DESIGN = new Set([
-  "common.languageEnglish",
-  "common.languageArabic",
-]);
 
 describe("message catalogues", () => {
   it("ships the same namespaces for every locale", () => {
@@ -163,7 +139,7 @@ describe("message catalogues", () => {
         const a = valueAt(en, key);
         const b = valueAt(ar, key);
         if (typeof a !== "string" || typeof b !== "string") continue;
-        if (icuArguments(a) !== icuArguments(b))
+        if (icuArguments(a).join(",") !== icuArguments(b).join(","))
           mismatched.push(`${ns}.${key}`);
       }
     }

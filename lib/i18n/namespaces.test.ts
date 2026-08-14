@@ -6,7 +6,11 @@ import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ALL_LOCALES } from "./locales";
-import { CLIENT_NAMESPACES, NAMESPACES, pickClientMessages } from "./namespaces";
+import {
+  CLIENT_NAMESPACES,
+  NAMESPACES,
+  pickClientMessages,
+} from "./namespaces";
 
 /**
  * Two failures this file exists to make loud, both of which render a broken
