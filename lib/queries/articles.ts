@@ -52,10 +52,10 @@ export type ArticleDetail = ArticleListRow & {
  * admin screen learns that Arabic exists — but they have to be SELECTED, or
  * there is nothing to fold. */
 const LIST_FIELDS =
-  "id, slug, title, title_ar, excerpt, excerpt_ar, category, status, read_minutes, published_at, created_at, updated_at, staff:author_id(display_name, title, slug), media:hero_image_id(storage_key, filename, alt_text)";
+  "id, slug, title, title_ar, excerpt, excerpt_ar, category, status, read_minutes, published_at, created_at, updated_at, staff:author_id(display_name, title, slug), media:hero_image_id(storage_key, filename, alt_text, alt_text_ar)";
 
 const DETAIL_FIELDS =
-  "id, slug, title, title_ar, excerpt, excerpt_ar, category, status, read_minutes, body_html, body_html_ar, seo, published_at, created_at, updated_at, staff:author_id(display_name, title, slug), media:hero_image_id(storage_key, filename, alt_text)";
+  "id, slug, title, title_ar, excerpt, excerpt_ar, category, status, read_minutes, body_html, body_html_ar, seo, published_at, created_at, updated_at, staff:author_id(display_name, title, slug), media:hero_image_id(storage_key, filename, alt_text, alt_text_ar)";
 
 type RawJoin = {
   staff: {

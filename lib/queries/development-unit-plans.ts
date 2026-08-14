@@ -48,7 +48,7 @@ export type UnitTypeCard = {
 const SELECT_FIELDS =
   "id, label, label_ar, beds, blurb, blurb_ar, size_from_ft2, size_to_ft2, price_from_aed, enabled, sort_order, " +
   "plans:floor_plans(id, label, label_ar, description, description_ar, beds, baths, area_ft2, enabled, sort_order, " +
-  "media:media_id(storage_key, alt_text, deleted_at))";
+  "media:media_id(storage_key, alt_text, alt_text_ar, deleted_at))";
 
 type RawPlan = {
   id: string;

@@ -8,10 +8,12 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseDeep } from "@/lib/i18n/localise";
 import type { DevelopmentIndexRow } from "./developments";
 
 const SIBLING_FIELDS =
-  "id, name, slug, status, handover_date, total_units, starting_price, tagline, bedrooms_text, description, published_at, developers:developer_id(name, slug), areas:area_id(name, slug), hero:hero_image_id(storage_key, filename, alt_text)";
+  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, published_at, developers:developer_id(name, slug), areas:area_id(name, slug), hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar)";
 
 /** Other developments in the same area, excluding the current one. */
 export async function listOtherDevelopmentsInArea(opts: {
@@ -29,8 +31,15 @@ export async function listOtherDevelopmentsInArea(opts: {
     .not("published_at", "is", null)
     .order("handover_date", { ascending: true, nullsFirst: false })
     .limit(opts.limit ?? 4);
+  // `...d` spreads the raw row, so without a fold the twins would ship to the
+  // renderer AND the English would win on /ar — both halves of the invariant.
+  // `localiseDeep` reaches the alt text inside the `hero` join.
+  const rows = localiseDeep(
+    (data ?? []) as unknown as Record<string, unknown>[],
+    await currentLocale(),
+  ) as unknown as DevelopmentIndexRow[];
   return (
-    (data as unknown as DevelopmentIndexRow[] | null)?.map((d) => ({
+    rows.map((d) => ({
       ...d,
       developer:
         (d as unknown as { developers: { name: string; slug: string } | null })
@@ -58,8 +67,15 @@ export async function listOtherDevelopmentsByDeveloper(opts: {
     .not("published_at", "is", null)
     .order("handover_date", { ascending: true, nullsFirst: false })
     .limit(opts.limit ?? 4);
+  // `...d` spreads the raw row, so without a fold the twins would ship to the
+  // renderer AND the English would win on /ar — both halves of the invariant.
+  // `localiseDeep` reaches the alt text inside the `hero` join.
+  const rows = localiseDeep(
+    (data ?? []) as unknown as Record<string, unknown>[],
+    await currentLocale(),
+  ) as unknown as DevelopmentIndexRow[];
   return (
-    (data as unknown as DevelopmentIndexRow[] | null)?.map((d) => ({
+    rows.map((d) => ({
       ...d,
       developer:
         (d as unknown as { developers: { name: string; slug: string } | null })
@@ -160,7 +176,8 @@ export async function getDevelopmentCoordsBulk(
     .from("developments")
     .select("id, meta")
     .in("id", ids);
-  for (const row of (data as Array<{ id: string; meta: unknown }> | null) ?? []) {
+  for (const row of (data as Array<{ id: string; meta: unknown }> | null) ??
+    []) {
     const m = row.meta as DevelopmentMeta | null;
     const c = m?.coords;
     if (

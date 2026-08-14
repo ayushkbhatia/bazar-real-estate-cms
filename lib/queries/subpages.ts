@@ -1,5 +1,7 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
 import { mediaPublicUrl } from "@/lib/media";
 import { attachImageUrls } from "@/lib/queries/section-images";
 import {
@@ -254,7 +256,9 @@ export async function getAreaHeroImage(
     const supabase = createSupabasePublicClient();
     const { data } = await supabase
       .from("areas")
-      .select("hero:hero_image_id(storage_key, alt_text, deleted_at)")
+      .select(
+        "hero:hero_image_id(storage_key, alt_text, alt_text_ar, deleted_at)",
+      )
       .eq("slug", slug)
       .maybeSingle();
     const hero = (
@@ -262,13 +266,23 @@ export async function getAreaHeroImage(
         hero: {
           storage_key: string;
           alt_text: string | null;
+          alt_text_ar: string | null;
           deleted_at: string | null;
         } | null;
       } | null
     )?.hero;
     // A trashed asset falls back to the placeholder rather than 404-ing.
     if (!hero || hero.deleted_at) return null;
-    return { url: mediaPublicUrl(hero.storage_key), alt: hero.alt_text };
+    // Folded here rather than on the outer row: `localiseRow` walks one level,
+    // and the alt text lives inside the join.
+    const folded = localiseRow(
+      hero as unknown as Record<string, unknown>,
+      await currentLocale(),
+    );
+    return {
+      url: mediaPublicUrl(hero.storage_key),
+      alt: (folded.alt_text as string | null) ?? null,
+    };
   } catch (error) {
     console.error(`[subpages] area hero lookup failed for "${slug}"`, error);
     return null;

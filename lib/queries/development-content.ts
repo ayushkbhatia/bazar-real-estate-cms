@@ -1,5 +1,7 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseDeep } from "@/lib/i18n/localise";
 import { mediaPublicUrl } from "@/lib/media";
 import { SEED_AGENTS, type SeedAgent } from "@/lib/seeds/agents";
 import type { DevelopmentIndexRow } from "@/lib/queries/developments";
@@ -10,7 +12,7 @@ import type { DevelopmentIndexRow } from "@/lib/queries/developments";
  */
 
 const NEIGHBOUR_FIELDS =
-  "id, name, slug, status, handover_date, total_units, starting_price, tagline, bedrooms_text, description, published_at, developers:developer_id(name, slug), areas:area_id(name, slug), hero:hero_image_id(storage_key, filename, alt_text)";
+  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, published_at, developers:developer_id(name, slug), areas:area_id(name, slug), hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar)";
 
 /**
  * Curated neighbours, in the order they were picked.
@@ -32,7 +34,14 @@ export async function listDevelopmentsByIds(
       .not("published_at", "is", null);
     if (error || !data) return [];
 
-    const rows = data as unknown as DevelopmentIndexRow[];
+    // A cast, not a shaper — the row goes out as-is, so an unfolded twin would
+    // leak `name_ar` to the renderer as well as rendering English on /ar.
+    // `localiseDeep` rather than `localiseRow`, because the alt text is one
+    // level down inside the `hero` join.
+    const rows = localiseDeep(
+      data as unknown as Record<string, unknown>[],
+      await currentLocale(),
+    ) as unknown as DevelopmentIndexRow[];
     const byId = new Map(rows.map((r) => [r.id, r]));
     return ids
       .map((id) => byId.get(id))
@@ -88,7 +97,9 @@ export async function getAdvisorForBanner(
 export async function withFeatureImages(
   blocks: { media_id?: string | null }[] | undefined,
 ): Promise<Record<string, string>> {
-  const ids = [...new Set((blocks ?? []).map((b) => b.media_id).filter(Boolean))];
+  const ids = [
+    ...new Set((blocks ?? []).map((b) => b.media_id).filter(Boolean)),
+  ];
   if (!isSupabaseConfigured || ids.length === 0) return {};
   try {
     const supabase = createSupabasePublicClient();

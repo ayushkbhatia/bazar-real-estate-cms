@@ -138,11 +138,15 @@ describe("development detail media joins", () => {
    * two halves can't drift apart again silently.
    */
   it("joins both images from the columns the CMS writes", () => {
+    // `alt_text_ar` rides inside the nested join rather than at the row level,
+    // because `localiseRow` is flat: a twin selected on the outer row would
+    // never reach `hero.alt_text`. Folded in `pickHero`, which is the only
+    // place that sees the nested object before its literal is built.
     expect(DETAIL_FIELDS).toContain(
-      "hero:hero_image_id(storage_key, filename, alt_text)",
+      "hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar)",
     );
     expect(DETAIL_FIELDS).toContain(
-      "masterplan:masterplan_id(storage_key, filename, alt_text)",
+      "masterplan:masterplan_id(storage_key, filename, alt_text, alt_text_ar)",
     );
   });
 });
