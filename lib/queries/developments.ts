@@ -16,6 +16,11 @@ import type {
   DevelopmentUnit as DevelopmentUnitFromUtils,
   UnitFilter as UnitFilterFromUtils,
 } from "./development-utils";
+import { classifyUnit } from "./development-utils";
+import type {
+  UnitRowInput,
+  UnitStatusInput,
+} from "@/lib/schemas/development-inventory";
 
 type DevelopmentStatus = Database["public"]["Enums"]["development_status"];
 type UnitStatus = Database["public"]["Enums"]["development_unit_status"];
@@ -232,6 +237,38 @@ function shapeDetail(raw: Record<string, unknown>): DevelopmentDetail {
   };
 }
 
+/*
+ * One select for both readers, so the public page and the CMS grid cannot drift
+ * apart on which columns exist. `getDevelopmentForAdmin` learning about the
+ * twins three PRs after the other two selects did is exactly what this avoids.
+ *
+ * PostgREST's inferred row type does not survive a concatenated string, so the
+ * rows are cast to `RawUnit` below — which is the same trade the unit-types
+ * reader makes, and the reason both shapes are written out here rather than
+ * inferred.
+ */
+const UNIT_FIELDS =
+  "id, unit_type, unit_type_ar, beds, built_up_ft2, plot_ft2, lagoon_access, lagoon_access_ar, " +
+  "orientation, orientation_ar, price_aed, plot_number, status, floor_plan_id, sort_order";
+
+type RawUnit = {
+  id: string;
+  unit_type: string;
+  unit_type_ar: string | null;
+  beds: number | null;
+  built_up_ft2: number | null;
+  plot_ft2: number | null;
+  lagoon_access: string | null;
+  lagoon_access_ar: string | null;
+  orientation: string | null;
+  orientation_ar: string | null;
+  price_aed: number | string | null;
+  plot_number: string | null;
+  status: UnitStatus;
+  floor_plan_id: string | null;
+  sort_order: number;
+};
+
 /** List units for a development, by sort_order. */
 export async function listDevelopmentUnits(
   developmentId: string,
@@ -240,25 +277,70 @@ export async function listDevelopmentUnits(
   const supabase = createSupabasePublicClient();
   const { data, error } = await supabase
     .from("development_units")
-    .select(
-      "id, unit_type, beds, built_up_ft2, plot_ft2, lagoon_access, orientation, price_aed, plot_number, status, floor_plan_id",
-    )
+    .select(UNIT_FIELDS)
     .eq("development_id", developmentId)
     .order("sort_order", { ascending: true });
   if (error || !data) return [];
-  return data.map((r) => ({
-    id: r.id,
-    unit_type: r.unit_type,
-    beds: r.beds,
-    built_up_ft2: r.built_up_ft2,
-    plot_ft2: r.plot_ft2,
-    lagoon_access: r.lagoon_access,
-    orientation: r.orientation,
-    price_aed: r.price_aed != null ? Number(r.price_aed) : null,
-    plot_number: r.plot_number,
-    status: r.status as UnitStatus,
-    floor_plan_id: r.floor_plan_id,
-  }));
+  const locale = await currentLocale();
+  return (data as unknown as RawUnit[]).map((r) => {
+    // Classify from the English, fold after. `classifyUnit`'s rules are
+    // English word matches, so doing it the other way round leaves every chip
+    // reading zero on /ar with a full table underneath it.
+    const categories = classifyUnit(r);
+    const t = localiseRow(r, locale);
+    return {
+      id: t.id,
+      unit_type: t.unit_type,
+      beds: t.beds,
+      built_up_ft2: t.built_up_ft2,
+      plot_ft2: t.plot_ft2,
+      lagoon_access: t.lagoon_access,
+      orientation: t.orientation,
+      price_aed: t.price_aed != null ? Number(t.price_aed) : null,
+      plot_number: t.plot_number,
+      status: t.status,
+      floor_plan_id: t.floor_plan_id,
+      categories,
+    };
+  });
+}
+
+/**
+ * The same rows for the CMS grid — every column, no Arabic fold, and the
+ * server client so an unpublished project is still editable.
+ */
+export async function listDevelopmentUnitsForAdmin(
+  developmentId: string,
+): Promise<UnitRowInput[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("development_units")
+    .select(UNIT_FIELDS)
+    .eq("development_id", developmentId)
+    .order("sort_order", { ascending: true });
+  if (error || !data) {
+    if (error) console.error("[listDevelopmentUnitsForAdmin]", error);
+    return [];
+  }
+  return (data as unknown as RawUnit[]).map((r) => {
+    return {
+      id: r.id,
+      unit_type: r.unit_type,
+      unit_type_ar: r.unit_type_ar ?? null,
+      beds: r.beds,
+      built_up_ft2: r.built_up_ft2,
+      plot_ft2: r.plot_ft2,
+      lagoon_access: r.lagoon_access,
+      lagoon_access_ar: r.lagoon_access_ar ?? null,
+      orientation: r.orientation,
+      orientation_ar: r.orientation_ar ?? null,
+      price_aed: r.price_aed != null ? Number(r.price_aed) : null,
+      plot_number: r.plot_number,
+      status: r.status as UnitStatusInput,
+      floor_plan_id: r.floor_plan_id,
+    };
+  });
 }
 
 /** List floor plans for a development. */

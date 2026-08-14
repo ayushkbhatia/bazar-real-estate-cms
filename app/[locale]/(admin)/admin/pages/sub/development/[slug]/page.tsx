@@ -19,7 +19,9 @@ import {
   type NeighbourOption,
 } from "./_content-card";
 import { DevelopmentUnitPlansCard } from "./_unit-plans-card";
+import { DevelopmentUnitsCard, type FloorPlanOption } from "./_units-card";
 import { listUnitTypesForAdmin } from "@/lib/queries/development-unit-plans";
+import { listDevelopmentUnitsForAdmin } from "@/lib/queries/developments";
 import { saveDevelopmentPage, resetDevelopmentPage } from "../_actions";
 import { PublishCard } from "../../../../developments/_publish-card";
 import { DeleteDevelopmentCard } from "./_delete-card";
@@ -120,17 +122,31 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
   const development = await fetchDevelopment(slug);
   if (!development) notFound();
 
-  const [content, media, options, role, links, unitTypes] = await Promise.all([
-    getDevelopmentPageContent({
-      name: development.name,
-      slug: development.slug,
-    }),
-    fetchMedia(),
-    fetchContentOptions(development.id),
-    getStaffRole(),
-    fetchLinkCounts(development.id),
-    listUnitTypesForAdmin(development.id),
-  ]);
+  const [content, media, options, role, links, unitTypes, units] =
+    await Promise.all([
+      getDevelopmentPageContent({
+        name: development.name,
+        slug: development.slug,
+      }),
+      fetchMedia(),
+      fetchContentOptions(development.id),
+      getStaffRole(),
+      fetchLinkCounts(development.id),
+      listUnitTypesForAdmin(development.id),
+      listDevelopmentUnitsForAdmin(development.id),
+    ]);
+
+  // The layout picker offers this project's plans, flattened out of the unit
+  // types they hang under and labelled with the type so two "Ground floor"
+  // entries are distinguishable.
+  const floorPlanOptions: FloorPlanOption[] = unitTypes.flatMap((t) =>
+    t.plans
+      .filter((p) => p.id !== null)
+      .map((p) => ({
+        id: p.id!,
+        label: t.label.trim() ? `${t.label.trim()} · ${p.label}` : p.label,
+      })),
+  );
 
   // Editing this page is open to marketing; taking a project live — or
   // deleting it — is not. Both actions enforce this too; this just stops the
@@ -256,6 +272,15 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
           initial={unitTypes}
           media={media}
           bedroomsText={development.bedrooms_text}
+        />
+
+        {/* Stock, not catalogue. Sits under the card above because a layout has
+            to exist before a unit can be linked to one. */}
+        <DevelopmentUnitsCard
+          slug={development.slug}
+          initial={units}
+          floorPlans={floorPlanOptions}
+          totalUnits={development.total_units}
         />
 
         <div className="flex flex-col gap-3">
