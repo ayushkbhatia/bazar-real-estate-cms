@@ -48,5 +48,7 @@ export function withLocalePrefix(pathname: string, locale: Locale): string {
 export function internalPath(pathname: string): string {
   const locale = localeFromPathname(pathname);
   if (locale) return pathname; // already prefixed — the router matches it directly
-  return pathname === "/" ? `/${DEFAULT_LOCALE}` : `/${DEFAULT_LOCALE}${pathname}`;
+  return pathname === "/"
+    ? `/${DEFAULT_LOCALE}`
+    : `/${DEFAULT_LOCALE}${pathname}`;
 }

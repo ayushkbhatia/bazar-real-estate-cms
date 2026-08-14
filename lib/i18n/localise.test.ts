@@ -55,7 +55,9 @@ describe("localiseRow", () => {
   it("leaves a twin with no English sibling alone", () => {
     // `foo_ar` with no `foo` is a data mistake, not a translation. Inventing
     // `foo` here would put a key on the object that no renderer expects.
-    expect(localiseRow({ orphan_ar: "x", keep: "y" }, "ar")).toEqual({ keep: "y" });
+    expect(localiseRow({ orphan_ar: "x", keep: "y" }, "ar")).toEqual({
+      keep: "y",
+    });
   });
 });
 
@@ -74,7 +76,14 @@ describe("localiseDeep", () => {
         ],
       },
     ],
-    featured: [{ headline: "Solaya", headline_ar: "سلایا", cta_label: "See more", cta_label_ar: null }],
+    featured: [
+      {
+        headline: "Solaya",
+        headline_ar: "سلایا",
+        cta_label: "See more",
+        cta_label_ar: null,
+      },
+    ],
   };
 
   it("folds every level in one call", () => {
@@ -101,10 +110,9 @@ describe("localiseDeep", () => {
   });
 
   it("passes plain values inside arrays through", () => {
-    expect(localiseDeep({ amenities: ["Pool", "Gym"] }, "ar").amenities).toEqual([
-      "Pool",
-      "Gym",
-    ]);
+    expect(
+      localiseDeep({ amenities: ["Pool", "Gym"] }, "ar").amenities,
+    ).toEqual(["Pool", "Gym"]);
   });
 
   it("does not dismantle a Date", () => {
@@ -114,7 +122,9 @@ describe("localiseDeep", () => {
 
   it("is a strip-only no-op in English", () => {
     expect(JSON.stringify(localiseDeep(tab, "en"))).not.toContain("_ar");
-    expect(localiseDeep(tab, "en").columns[0].items[0].label).toBe("Apartments");
+    expect(localiseDeep(tab, "en").columns[0].items[0].label).toBe(
+      "Apartments",
+    );
   });
 });
 

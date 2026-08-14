@@ -56,9 +56,7 @@ export async function listLicenses(): Promise<LicenseDisplay[]> {
         .from("staff")
         .select("user_id, display_name")
         .in("user_id", staffIds);
-      nameMap = new Map(
-        (staff ?? []).map((s) => [s.user_id, s.display_name]),
-      );
+      nameMap = new Map((staff ?? []).map((s) => [s.user_id, s.display_name]));
     }
     return (data as LicenseRow[]).map((l) => {
       const exp = new Date(l.expires_at);
@@ -73,7 +71,7 @@ export async function listLicenses(): Promise<LicenseDisplay[]> {
         holder_id: l.holder_id,
         holder_name:
           l.holder_kind === "staff" && l.holder_id
-            ? nameMap.get(l.holder_id) ?? null
+            ? (nameMap.get(l.holder_id) ?? null)
             : l.holder_kind === "firm"
               ? "Bazar (firm)"
               : null,
@@ -94,7 +92,9 @@ export async function listLicenses(): Promise<LicenseDisplay[]> {
 }
 
 /** Latest BRN for a given staff user. Returns null if no active BRN. */
-export async function getActiveBrn(staffUserId: string): Promise<LicenseRow | null> {
+export async function getActiveBrn(
+  staffUserId: string,
+): Promise<LicenseRow | null> {
   if (!isSupabaseConfigured || !staffUserId) return null;
   try {
     const sb = await createSupabaseServerClient();

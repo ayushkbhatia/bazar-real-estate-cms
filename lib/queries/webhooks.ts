@@ -133,10 +133,7 @@ export async function setWebhookStatus(
   if (!isSupabaseConfigured) return false;
   try {
     const sb = await createSupabaseServerClient();
-    const { error } = await sb
-      .from("webhooks")
-      .update({ status })
-      .eq("id", id);
+    const { error } = await sb.from("webhooks").update({ status }).eq("id", id);
     return !error;
   } catch {
     return false;

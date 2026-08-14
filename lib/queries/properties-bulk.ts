@@ -62,9 +62,7 @@ export async function listPropertiesByIdsForBulk(
   }));
 
   const order = new Map(ids.map((id, idx) => [id, idx]));
-  return rows.sort(
-    (a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0),
-  );
+  return rows.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
 }
 
 /** Run the existing publish gate on a bulk row. Pure-ish: just stitches

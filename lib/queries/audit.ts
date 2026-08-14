@@ -82,13 +82,17 @@ export async function listAuditLog(
 
   let query = supabase
     .from("audit_log")
-    .select("id, actor_id, actor_kind, action, target_kind, target_id, before, after, at", {
-      count: "exact",
-    });
+    .select(
+      "id, actor_id, actor_kind, action, target_kind, target_id, before, after, at",
+      {
+        count: "exact",
+      },
+    );
 
   if (filters.action) query = query.eq("action", filters.action);
   if (filters.target_kind) query = query.eq("target_kind", filters.target_kind);
-  if (filters.date_from) query = query.gte("at", `${filters.date_from}T00:00:00Z`);
+  if (filters.date_from)
+    query = query.gte("at", `${filters.date_from}T00:00:00Z`);
   if (filters.date_to) query = query.lte("at", `${filters.date_to}T23:59:59Z`);
   if (filters.q) {
     // Best-effort free-text search across action + target_id.
@@ -181,7 +185,10 @@ function escapeIlike(s: string): string {
 async function fetchActorMetadata(
   ids: string[],
 ): Promise<Map<string, { email: string | null; display_name: string | null }>> {
-  const out = new Map<string, { email: string | null; display_name: string | null }>();
+  const out = new Map<
+    string,
+    { email: string | null; display_name: string | null }
+  >();
   if (ids.length === 0) return out;
   try {
     const admin = createAdminClient();

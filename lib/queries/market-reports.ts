@@ -14,7 +14,8 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 
-export type PropertyTypeSlug = "villa" | "apartment" | "townhouse" | "penthouse";
+export type PropertyTypeSlug =
+  "villa" | "apartment" | "townhouse" | "penthouse";
 
 const PROPERTY_TYPE_DB_NAME: Record<PropertyTypeSlug, string> = {
   villa: "Villa",
@@ -167,7 +168,9 @@ function aggregate(rows: DldRow[]): {
   median_price_aed: number | null;
   median_aed_per_ft2: number | null;
 } {
-  const prices = rows.map((r) => Number(r.price_aed)).filter((n) => Number.isFinite(n) && n > 0);
+  const prices = rows
+    .map((r) => Number(r.price_aed))
+    .filter((n) => Number.isFinite(n) && n > 0);
   const perFt2 = rows
     .filter((r) => r.built_up_ft2 && Number(r.built_up_ft2) > 0)
     .map((r) => Number(r.price_aed) / Number(r.built_up_ft2));
@@ -237,7 +240,8 @@ export async function getTrend(opts: {
 }): Promise<TrendPoint[]> {
   const span = opts.span ?? 8;
   const quarters: Quarter[] = [];
-  for (let i = span - 1; i >= 0; i--) quarters.push(priorQuarter(opts.endQuarter, i));
+  for (let i = span - 1; i >= 0; i--)
+    quarters.push(priorQuarter(opts.endQuarter, i));
 
   // Fetch the full range in one query, then bin by quarter in JS.
   const oldest = quarterBoundaries(quarters[0]!);
@@ -270,7 +274,11 @@ export async function listRecentComparables(opts: {
   const rows = await fetchDldRows({ ...opts, ...bounds });
   return rows
     .sort((a, b) =>
-      a.transaction_date < b.transaction_date ? 1 : a.transaction_date > b.transaction_date ? -1 : 0,
+      a.transaction_date < b.transaction_date
+        ? 1
+        : a.transaction_date > b.transaction_date
+          ? -1
+          : 0,
     )
     .slice(0, opts.limit ?? 10)
     .map((r) => ({

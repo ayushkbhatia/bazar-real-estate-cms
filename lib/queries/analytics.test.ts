@@ -34,11 +34,7 @@ describe("bucketByDay", () => {
 
   it("counts timestamps into their iso-date bucket", () => {
     const buckets = bucketByDay(
-      [
-        "2026-05-21T08:30:00Z",
-        "2026-05-21T10:30:00Z",
-        "2026-05-20T01:00:00Z",
-      ],
+      ["2026-05-21T08:30:00Z", "2026-05-21T10:30:00Z", "2026-05-20T01:00:00Z"],
       7,
       now,
     );

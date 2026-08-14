@@ -45,8 +45,7 @@ export function localiseRow<T extends Record<string, unknown>>(
   for (const [key, value] of Object.entries(row)) {
     if (key.endsWith(AR_SUFFIX)) continue; // never leaks to a renderer
     const twin = row[`${key}${AR_SUFFIX}`];
-    out[key] =
-      locale !== DEFAULT_LOCALE && !isBlank(twin) ? twin : value;
+    out[key] = locale !== DEFAULT_LOCALE && !isBlank(twin) ? twin : value;
   }
   return out as T;
 }

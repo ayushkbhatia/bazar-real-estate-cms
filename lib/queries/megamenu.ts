@@ -263,7 +263,9 @@ export type MegamenuTabListRow = {
   updated_at: string;
 };
 
-export async function listMegamenuTabsForAdmin(): Promise<MegamenuTabListRow[]> {
+export async function listMegamenuTabsForAdmin(): Promise<
+  MegamenuTabListRow[]
+> {
   if (!isSupabaseConfigured) return [];
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase

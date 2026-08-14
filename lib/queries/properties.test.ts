@@ -43,7 +43,9 @@ describe("propertyUrl", () => {
 describe("extractReferenceFromSlug", () => {
   it("extracts a trailing BAZ-XX-NNNN reference", () => {
     expect(
-      extractReferenceFromSlug("mamsha-3-bed-beachfront-apartment-baz-ad-04891"),
+      extractReferenceFromSlug(
+        "mamsha-3-bed-beachfront-apartment-baz-ad-04891",
+      ),
     ).toBe("BAZ-AD-04891");
     expect(extractReferenceFromSlug("nudra-villa-baz-ad-04864")).toBe(
       "BAZ-AD-04864",
@@ -51,15 +53,11 @@ describe("extractReferenceFromSlug", () => {
   });
 
   it("normalises mixed-case input", () => {
-    expect(extractReferenceFromSlug("mixed-Baz-AD-12345")).toBe(
-      "BAZ-AD-12345",
-    );
+    expect(extractReferenceFromSlug("mixed-Baz-AD-12345")).toBe("BAZ-AD-12345");
   });
 
   it("supports varying sub-prefixes (single-emirate codes)", () => {
-    expect(extractReferenceFromSlug("foo-baz-dxb-77777")).toBe(
-      "BAZ-DXB-77777",
-    );
+    expect(extractReferenceFromSlug("foo-baz-dxb-77777")).toBe("BAZ-DXB-77777");
   });
 
   it("returns null when no reference is present", () => {

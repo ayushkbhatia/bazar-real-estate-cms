@@ -95,6 +95,12 @@ const GRANDFATHERED_CEILING = 45;
  */
 const FOLD_PROOFS: Record<string, string> = {
   "media_assets.alt_text": "lib/queries/developments.fold.test.ts",
+  "properties.title": "lib/queries/properties.fold.test.ts",
+  "properties.short_description": "lib/queries/properties.fold.test.ts",
+  "properties.description": "lib/queries/properties.fold.test.ts",
+  "properties.address_line": "lib/queries/properties.fold.test.ts",
+  "properties.view": "lib/queries/properties.fold.test.ts",
+  "properties.orientation": "lib/queries/properties.fold.test.ts",
 };
 
 describe("WIRED_READ fold proofs", () => {

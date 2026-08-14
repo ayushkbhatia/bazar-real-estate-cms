@@ -88,9 +88,9 @@ export async function listPendingInvitations(): Promise<PendingInvitation[]> {
   }
   return data.map((r) => {
     const raw = r as unknown as Record<string, unknown>;
-    const invited = raw.invited_by_staff as
-      | { display_name: string | null }
-      | null;
+    const invited = raw.invited_by_staff as {
+      display_name: string | null;
+    } | null;
     return {
       id: String(raw.id),
       email: String(raw.email),

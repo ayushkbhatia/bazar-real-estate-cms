@@ -172,9 +172,7 @@ export function pickAdvisor(
 
   // Prefer the lettings desk for a letting, and keep it clear of a sale.
   const wantsRentalDesk = opts.intent === "rent_out";
-  const preferred = covering.filter(
-    (c) => isRentalDesk(c) === wantsRentalDesk,
-  );
+  const preferred = covering.filter((c) => isRentalDesk(c) === wantsRentalDesk);
   const pool = preferred.length > 0 ? preferred : covering;
 
   return [...pool].sort((a, b) => {

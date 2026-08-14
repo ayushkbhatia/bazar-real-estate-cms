@@ -69,7 +69,11 @@ export async function logBulkOperation(entry: {
       payload: entry.payload ?? null,
     });
     if (error) {
-      console.warn("[bulk-operations] insert failed", entry.action, error.message);
+      console.warn(
+        "[bulk-operations] insert failed",
+        entry.action,
+        error.message,
+      );
     }
   } catch (err) {
     console.warn("[bulk-operations] threw", (err as Error).message);
@@ -165,7 +169,10 @@ export async function listBulkOperations(
 async function fetchActorMetadata(
   ids: string[],
 ): Promise<Map<string, { email: string | null; display_name: string | null }>> {
-  const out = new Map<string, { email: string | null; display_name: string | null }>();
+  const out = new Map<
+    string,
+    { email: string | null; display_name: string | null }
+  >();
   if (ids.length === 0) return out;
   try {
     const admin = createAdminClient();
@@ -193,7 +200,10 @@ async function fetchActorMetadata(
       });
     }
   } catch (err) {
-    console.warn("[bulk-operations fetchActorMetadata]", (err as Error).message);
+    console.warn(
+      "[bulk-operations fetchActorMetadata]",
+      (err as Error).message,
+    );
   }
   return out;
 }

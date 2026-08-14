@@ -74,7 +74,10 @@ export async function listEnquiries(filter: ListFilter = {}): Promise<{
 
   query = query
     .order("created_at", { ascending: false })
-    .range(filter.offset ?? 0, (filter.offset ?? 0) + (filter.limit ?? 100) - 1);
+    .range(
+      filter.offset ?? 0,
+      (filter.offset ?? 0) + (filter.limit ?? 100) - 1,
+    );
 
   const { data, error, count } = await query;
   if (error || !data) return { rows: [], total: 0 };
@@ -184,18 +187,25 @@ export async function getEnquiryById(
       author_id: string | null;
     }[];
   };
-  const conversation = (data as unknown as {
-    conversations: RawConv[] | null;
-  }).conversations?.[0];
-  const messages = (conversation?.messages ?? []).slice().sort(
-    (a, b) => new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime(),
-  );
+  const conversation = (
+    data as unknown as {
+      conversations: RawConv[] | null;
+    }
+  ).conversations?.[0];
+  const messages = (conversation?.messages ?? [])
+    .slice()
+    .sort(
+      (a, b) => new Date(a.sent_at).getTime() - new Date(b.sent_at).getTime(),
+    );
   const unread_count = messages.filter(
     (m) => m.direction === "inbound" && m.read_at === null,
   ).length;
 
   return {
-    ...(data as unknown as Omit<EnquiryDetail, "conversation_id" | "messages" | "unread_count">),
+    ...(data as unknown as Omit<
+      EnquiryDetail,
+      "conversation_id" | "messages" | "unread_count"
+    >),
     conversation_id: conversation?.id ?? null,
     messages,
     unread_count,
@@ -227,7 +237,9 @@ export async function listEnquiriesForUser(): Promise<EnquiryListRow[]> {
     properties: EnquiryListRow["properties"];
     developments: EnquiryListRow["developments"];
     staff: EnquiryListRow["staff"];
-    conversations: { messages: { id: string; direction: string; read_at: string | null }[] }[];
+    conversations: {
+      messages: { id: string; direction: string; read_at: string | null }[];
+    }[];
   };
   return (data as unknown as RawRow[]).map((row) => {
     const messages = row.conversations?.[0]?.messages ?? [];

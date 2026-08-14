@@ -25,7 +25,11 @@ vi.mock("@/lib/supabase/public", () => ({
   }),
 }));
 
-import { getAgentPhotos, withAgentPhoto, withAgentPhotos } from "./agent-photos";
+import {
+  getAgentPhotos,
+  withAgentPhoto,
+  withAgentPhotos,
+} from "./agent-photos";
 import type { SeedAgent } from "@/lib/seeds/agents";
 
 const agent = (slug: string) => ({ slug, display_name: slug }) as SeedAgent;

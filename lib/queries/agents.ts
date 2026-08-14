@@ -83,7 +83,9 @@ export async function listAgents(): Promise<AgentProfile[]> {
     }
     const locale = await currentLocale();
     return data.map((row) =>
-      toAgentProfile(localiseRow(row as unknown as Record<string, unknown>, locale)),
+      toAgentProfile(
+        localiseRow(row as unknown as Record<string, unknown>, locale),
+      ),
     );
   } catch {
     return SEED_AGENTS.map(seedToProfile);

@@ -1,10 +1,13 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
+
 import { COMPARE_CAP } from "@/lib/compare-store";
 import type { Database } from "@/db/types";
 
 const COMPARE_FIELDS =
-  "id, reference, slug, title, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, floor, year_built, tenure, furnishing, view, parking_bays, service_charge_per_ft2, amenities, flags, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text))";
+  "id, reference, slug, title, title_ar, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, floor, year_built, tenure, furnishing, view, view_ar, parking_bays, service_charge_per_ft2, amenities, flags, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 type RawMediaJoin = {
   role: Database["public"]["Enums"]["property_media_role"];
@@ -86,6 +89,10 @@ export async function getComparableProperties(
   if (error || !data) return [];
 
   const order = new Map(clean.map((id, idx) => [id, idx]));
+  // This payload is serialised to the browser by app/api/shortlist/route.ts,
+  // so an unfolded twin is not merely wrong on /ar — it ships `title_ar` over
+  // the wire to every English visitor today.
+  const locale = await currentLocale();
   const rows = data.map((row) => {
     const r = row as unknown as {
       property_media?: RawMediaJoin[] | null;
@@ -96,16 +103,19 @@ export async function getComparableProperties(
       r.property_media?.find((j) => j.role === "hero" && j.media)?.media ??
       null;
     return {
-      ...(r as object),
+      ...(localiseRow(
+        r as unknown as Record<string, unknown>,
+        locale,
+      ) as object),
       area_name: r.areas?.name ?? null,
       area_slug: r.areas?.slug ?? null,
       amenities: r.amenities ?? [],
-      hero,
+      hero: hero
+        ? localiseRow(hero as unknown as Record<string, unknown>, locale)
+        : null,
     } as ComparableProperty;
   });
 
-  rows.sort(
-    (a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0),
-  );
+  rows.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
   return rows;
 }

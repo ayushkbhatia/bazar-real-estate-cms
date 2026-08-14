@@ -32,7 +32,9 @@ const guideRow = (over: Partial<AreaGuideRow> = {}): AreaGuideRow => ({
 
 describe("composeAreaProfile", () => {
   it("returns null only when nothing matches the slug", () => {
-    expect(composeAreaProfile({ row: null, guide: null, seed: null })).toBeNull();
+    expect(
+      composeAreaProfile({ row: null, guide: null, seed: null }),
+    ).toBeNull();
   });
 
   it("builds a renderable profile from the database row alone", () => {
@@ -93,7 +95,10 @@ describe("composeAreaProfile", () => {
   });
 
   it("reads a seeded zero as 'not published', not as a headline zero", () => {
-    const villaless = { ...seed, stats: { ...seed.stats, median_villa_aed_per_ft2: 0 } };
+    const villaless = {
+      ...seed,
+      stats: { ...seed.stats, median_villa_aed_per_ft2: 0 },
+    };
     const p = composeAreaProfile({ row: null, guide: null, seed: villaless })!;
     expect(p.stats?.medianVillaPerFt2).toBeNull();
     expect(p.stats?.medianAptPerFt2).not.toBeNull();
