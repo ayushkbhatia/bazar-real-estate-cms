@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,16 +20,20 @@ import {
 } from "@/lib/preferences";
 
 export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
+  const t = useTranslations("development");
   const { prefs } = usePreferences();
   const [filter, setFilter] = useState<UnitFilter>("all");
   const counts = useMemo(() => countUnitsByFilter(units), [units]);
   const shown = useMemo(() => filterUnits(units, filter), [units, filter]);
 
   const tabs: { key: UnitFilter; label: string }[] = [
-    { key: "all", label: `All · ${counts.all}` },
-    { key: "villas", label: `Villas · ${counts.villas}` },
-    { key: "townhouses", label: `Townhouses · ${counts.townhouses}` },
-    { key: "lagoon", label: `Lagoon access · ${counts.lagoon}` },
+    { key: "all", label: t("units.filterAll", { count: counts.all }) },
+    { key: "villas", label: t("units.filterVillas", { count: counts.villas }) },
+    {
+      key: "townhouses",
+      label: t("units.filterTownhouses", { count: counts.townhouses }),
+    },
+    { key: "lagoon", label: t("units.filterLagoon", { count: counts.lagoon }) },
   ];
 
   return (
@@ -56,17 +62,17 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
         <table className="w-full text-[13px]">
           <thead>
             <tr className="text-start text-[11px] text-bz-muted uppercase tracking-wider">
-              <th className="px-4 py-3">Type</th>
-              <th className="px-2 py-3">Beds</th>
-              <th className="px-2 py-3">Built-up</th>
-              <th className="px-2 py-3">Plot</th>
-              <th className="px-2 py-3">Lagoon access</th>
-              <th className="px-2 py-3">Orientation</th>
+              <th className="px-4 py-3">{t("units.type")}</th>
+              <th className="px-2 py-3">{t("units.beds")}</th>
+              <th className="px-2 py-3">{t("units.builtUp")}</th>
+              <th className="px-2 py-3">{t("units.plot")}</th>
+              <th className="px-2 py-3">{t("units.lagoonAccess")}</th>
+              <th className="px-2 py-3">{t("units.orientation")}</th>
               <th className="px-2 py-3">
-                Price · {currencySymbol(prefs.currency)}
+                {t("units.price")} · {currencySymbol(prefs.currency)}
               </th>
-              <th className="px-2 py-3">Plot #</th>
-              <th className="px-4 py-3 text-end">Action</th>
+              <th className="px-2 py-3">{t("units.plotNumber")}</th>
+              <th className="px-4 py-3 text-end">{t("units.action")}</th>
             </tr>
           </thead>
           <tbody>
@@ -76,7 +82,7 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
                   colSpan={9}
                   className="px-4 py-16 text-center text-bz-muted text-[12.5px]"
                 >
-                  No units match this filter.
+                  {t("units.empty")}
                 </td>
               </tr>
             ) : (
@@ -108,7 +114,7 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
                   <td className="px-4 py-3 text-end">
                     {u.status === "available" ? (
                       <Button size="sm" variant="default">
-                        Reserve
+                        {t("units.reserve")}
                       </Button>
                     ) : (
                       <span
@@ -119,10 +125,10 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
                         }`}
                       >
                         {u.status === "held"
-                          ? "Held"
+                          ? t("units.held")
                           : u.status === "reserved"
-                            ? "Reserved"
-                            : "Sold"}
+                            ? t("units.reserved")
+                            : t("units.sold")}
                       </span>
                     )}
                   </td>

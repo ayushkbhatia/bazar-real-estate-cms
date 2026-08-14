@@ -34,6 +34,7 @@ export const NAMESPACES = [
   "listing",
   "search",
   "property",
+  "development",
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -72,6 +73,8 @@ export const CLIENT_NAMESPACES = [
   // Gallery lightbox and price block are interactive; the page itself is a
   // Server Component and reads the same namespace through getTranslations.
   "property",
+  // The units table filters client-side and the payment plan is interactive.
+  "development",
 ] as const satisfies readonly Namespace[];
 
 /** Narrow a full message bag to the namespaces the client actually needs. */

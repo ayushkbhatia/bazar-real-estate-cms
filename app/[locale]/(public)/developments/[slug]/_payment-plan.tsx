@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useMemo, useState } from "react";
 import { Download } from "lucide-react";
 import { toast } from "sonner";
@@ -80,6 +82,7 @@ export function PaymentPlanSection({
   developmentName: string;
   units: CalculatorUnit[];
 }) {
+  const t = useTranslations("development");
   const { prefs } = usePreferences();
   const [selectedId, setSelectedId] = useState(units[0]?.id ?? "");
   const [downloading, setDownloading] = useState(false);
@@ -140,26 +143,32 @@ export function PaymentPlanSection({
   const constructionNote = [
     `${split.constructionPct}%`,
     split.constructionCount > 0
-      ? `${split.constructionCount} instalment${split.constructionCount === 1 ? "" : "s"}`
+      ? t("payment.instalments", { count: split.constructionCount })
       : null,
   ]
     .filter(Boolean)
     .join(" · ");
 
   const handoverNote = [
-    `${split.handoverPct}% on key-handover`,
+    t("payment.onHandover", { pct: split.handoverPct }),
     split.handoverTiming,
   ]
     .filter(Boolean)
     .join(" · ");
 
   const postNote = plan.post_handover_months
-    ? `${split.postHandoverPct}% over ${plan.post_handover_months} months`
+    ? t("payment.overMonths", {
+        pct: split.postHandoverPct,
+        months: plan.post_handover_months,
+      })
     : split.postHandoverCount > 0
-      ? `${split.postHandoverPct}% over ${split.postHandoverCount} instalment${
-          split.postHandoverCount === 1 ? "" : "s"
-        }`
-      : `${split.postHandoverPct}% after handover`;
+      ? t("payment.overInstalments", {
+          pct: split.postHandoverPct,
+          instalments: t("payment.instalments", {
+            count: split.postHandoverCount,
+          }),
+        })
+      : t("payment.afterHandover", { pct: split.postHandoverPct });
 
   // `note` is the full caption under the wide layout's figure; `pct` is what
   // the narrow key/value list uses instead, because the full caption wraps to

@@ -1,0 +1,39 @@
+{
+  "facts": {
+    "architecture": "التصميم المعماري",
+    "landscape": "<br>حديقة منسّقة",
+    "total_area_ft2": "تللمساحة الإجمالية",
+    "lagoon_area_ft2": "المنطقة البحيرية",
+    "density": "تصنيف الكثافة",
+    "rera_escrow": "حساب الضمان لدى ريرا",
+    "service_charge_estimate": "رسوم الخدمات",
+    "tenure": "نوع الملكية"
+  },
+  "units": {
+    "type": "النوع",
+    "beds": "شرف",
+    "builtUp": "املاحة المبنية",
+    "plot": "أرض",
+    "lagoonAccess": "درج مباشر إلى البحيرة",
+    "orientation": "الاتجاه",
+    "plotNumber": "رقم القطعة",
+    "action": "تحرك الآن",
+    "price": "السعر",
+    "reserve": "شقة للبيع في ريزيرف",
+    "held": "شاغر",
+    "reserved": "محجوز",
+    "sold": "فيلا مباعة",
+    "empty": "لا توجد وحدات مطابقة لهذا الفلتر.",
+    "filterAll": "الكل · {count}",
+    "filterVillas": "فلل · {count}",
+    "filterTownhouses": "<br>تاون هاوس · {count}",
+    "filterLagoon": "إطلالة على البحيرة · {count}"
+  },
+  "payment": {
+    "instalments": "{count, plural, zero {# أقساط} one {قسط واحد} two {قسطان} few {# أقساط} many {# قسطاً} other {# قسط}}",
+    "onHandover": "{pct}% عند تسليم المفاتيح",
+    "overMonths": "{pct}٪ على مدى {months} شهرًا",
+    "overInstalments": "{pct}% فوق {instalments}",
+    "afterHandover": "{pct}% بعد التسليم"
+  }
+}

@@ -572,5 +572,193 @@
     "model": "claude-opus-5",
     "sourceHash": "5c7dfd7a7d9d",
     "reviewed": false
+  },
+  "development.facts.architecture": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cd74053c5481",
+    "reviewed": false
+  },
+  "development.facts.landscape": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e658d3ae034a",
+    "reviewed": false
+  },
+  "development.facts.total_area_ft2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f3521088fcec",
+    "reviewed": false
+  },
+  "development.facts.lagoon_area_ft2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8b09d813b50e",
+    "reviewed": false
+  },
+  "development.facts.density": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "77a283d69258",
+    "reviewed": false
+  },
+  "development.facts.rera_escrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a34910081122",
+    "reviewed": false
+  },
+  "development.facts.service_charge_estimate": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5c535d19ebc1",
+    "reviewed": false
+  },
+  "development.facts.tenure": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "872d94afc42c",
+    "reviewed": false
+  },
+  "development.units.type": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "baaddf70fb5d",
+    "reviewed": false
+  },
+  "development.units.beds": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2e2a3cd1a008",
+    "reviewed": false
+  },
+  "development.units.builtUp": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c51b9b3250d7",
+    "reviewed": false
+  },
+  "development.units.plot": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a0f0539ade59",
+    "reviewed": false
+  },
+  "development.units.lagoonAccess": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f4713bd535d7",
+    "reviewed": false
+  },
+  "development.units.action": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "64cff1319d2f",
+    "reviewed": false
+  },
+  "development.units.price": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "93c91c851e7a",
+    "reviewed": false
+  },
+  "development.units.reserve": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5ae6f30c297b",
+    "reviewed": false
+  },
+  "development.units.held": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "85cd61f8c3c8",
+    "reviewed": false
+  },
+  "development.units.reserved": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3385ffe67470",
+    "reviewed": false
+  },
+  "development.units.sold": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b870b1b48724",
+    "reviewed": false
+  },
+  "development.units.empty": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "88f60125818e",
+    "reviewed": false
+  },
+  "development.units.filterAll": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "440116eff544",
+    "reviewed": false
+  },
+  "development.units.filterVillas": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f3ef2041f70b",
+    "reviewed": false
+  },
+  "development.units.filterTownhouses": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5d890ddd8b66",
+    "reviewed": false
+  },
+  "development.units.filterLagoon": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a6e2ffc2235d",
+    "reviewed": false
+  },
+  "development.payment.instalments": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ede03c205e2b",
+    "reviewed": false
+  },
+  "development.payment.onHandover": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "94253fdff8b0",
+    "reviewed": false
+  },
+  "development.payment.overMonths": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6c19da0ac509",
+    "reviewed": false
+  },
+  "development.payment.overInstalments": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0b27a9e6e349",
+    "reviewed": false
+  },
+  "development.payment.afterHandover": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1a36a1cc89bc",
+    "reviewed": false
+  },
+  "development.units.orientation": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "e3d11242200f",
+    "reviewed": false,
+    "note": "MT invented a '#'. Single-word column header, no count."
+  },
+  "development.units.plotNumber": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "f53791a73b9b",
+    "reviewed": false,
+    "note": "Flagged hash-dropped, but that is a FALSE POSITIVE: the '#' in \"Plot #\" is a literal number-sign abbreviation, not ICU's number placeholder. The validator cannot tell them apart, and flagging for a human is the right side to err on."
   }
 }
