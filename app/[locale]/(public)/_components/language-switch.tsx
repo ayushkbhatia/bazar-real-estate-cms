@@ -1,16 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { usePathname } from "next/navigation";
 import { Check } from "lucide-react";
 import { LOCALES, LOCALE_DIR, type Locale } from "@/lib/i18n/locales";
 import { localeUrl } from "@/lib/i18n/locales";
 import { stripLocalePrefix } from "@/lib/i18n/routing";
 import { cn } from "@/lib/utils";
-
-const LABELS: Record<Locale, string> = {
-  en: "English",
-  ar: "العربية",
-};
 
 /**
  * The language switch, shared by the desktop popover and the mobile sheet.
@@ -32,6 +29,19 @@ const LABELS: Record<Locale, string> = {
  */
 export function LanguageSwitch({ current }: { current: Locale }) {
   const pathname = usePathname();
+  // Above the early return: hooks must run in the same order on every render.
+  const t = useTranslations("common");
+  /*
+   * Each option is labelled in its OWN language, which is why these two keys
+   * are the only entries in IDENTICAL_BY_DESIGN: `English` stays `English`
+   * under Arabic and `العربية` stays `العربية` under English. A switch
+   * labelled in the locale you cannot read is useless to the one person who
+   * needs it.
+   */
+  const label: Record<Locale, string> = {
+    en: t("languageEnglish"),
+    ar: t("languageArabic"),
+  };
 
   if (LOCALES.length < 2) return null;
 
@@ -59,7 +69,7 @@ export function LanguageSwitch({ current }: { current: Locale }) {
                 : "text-bz-ink-2 hover:bg-bz-surface-2 hover:text-bz-ink",
             )}
           >
-            <span>{LABELS[locale]}</span>
+            <span>{label[locale]}</span>
             {active ? (
               <Check size={14} strokeWidth={2} className="text-bz-teal" />
             ) : null}

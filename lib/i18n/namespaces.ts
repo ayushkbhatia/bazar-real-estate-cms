@@ -45,12 +45,16 @@ export type Namespace = (typeof NAMESPACES)[number];
  * throw nothing, since `request.ts` sets `getMessageFallback` to the dotted
  * key and only logs in development.
  *
- * Today: `common` alone, read by `preferences-popover.tsx` and
- * `mobile-preferences.tsx`. The other four namespaces have no consumer at all
- * yet — they are server-side surfaces waiting on their wave.
+ * `common` is read by the preferences controls, `consent` by the cookie banner.
+ * `nav`, `footer` and `listing` stay off this list on purpose: their consumers
+ * are server components, or belong to `components/brand/`.
  */
 export const CLIENT_NAMESPACES = [
   "common",
+  // The cookie banner is a Client Component by nature — it reads and writes a
+  // cookie, and it is the first thing a visitor touches. There is no
+  // server-rendered variant to move it to, so this one genuinely has to cross.
+  "consent",
 ] as const satisfies readonly Namespace[];
 
 /** Narrow a full message bag to the namespaces the client actually needs. */

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -12,16 +14,16 @@ import {
 import { useConsent } from "./consent-provider";
 
 export function CookieBanner() {
-  const {
-    state,
-    setState,
-    bannerOpen,
-    openCustomize,
-    setOpenCustomize,
-  } = useConsent();
+  const { state, setState, bannerOpen, openCustomize, setOpenCustomize } =
+    useConsent();
+  const t = useTranslations("consent");
   const [pending, startTransition] = useTransition();
-  const [analytics, setAnalytics] = useState<boolean>(state?.analytics ?? false);
-  const [marketing, setMarketing] = useState<boolean>(state?.marketing ?? false);
+  const [analytics, setAnalytics] = useState<boolean>(
+    state?.analytics ?? false,
+  );
+  const [marketing, setMarketing] = useState<boolean>(
+    state?.marketing ?? false,
+  );
 
   if (!bannerOpen) return null;
 
@@ -85,7 +87,7 @@ export function CookieBanner() {
 
         {openCustomize ? (
           <fieldset className="border-t border-bz-border pt-4 flex flex-col gap-3">
-            <legend className="sr-only">Customize cookie categories</legend>
+            <legend className="sr-only">{t("title")}</legend>
 
             <label className="flex items-start gap-3 cursor-not-allowed opacity-70">
               <input
@@ -124,8 +126,8 @@ export function CookieBanner() {
                   id="bz-consent-analytics-desc"
                   className="text-[12px] text-bz-muted leading-snug"
                 >
-                  Vercel Analytics + PostHog. Tells us which pages and
-                  listings work.
+                  Vercel Analytics + PostHog. Tells us which pages and listings
+                  work.
                 </span>
               </span>
             </label>
@@ -173,7 +175,7 @@ export function CookieBanner() {
               onClick={() => setOpenCustomize(true)}
               disabled={pending}
             >
-              Customize
+              {t("customize")}
             </Button>
           )}
 
@@ -184,12 +186,12 @@ export function CookieBanner() {
             onClick={onRejectAll}
             disabled={pending}
           >
-            Reject all
+            {t("rejectAll")}
           </Button>
 
           {openCustomize ? (
             <Button type="button" size="sm" onClick={onSave} disabled={pending}>
-              {pending ? "Saving…" : "Save preferences"}
+              {pending ? t("saving") : t("savePreferences")}
             </Button>
           ) : (
             <Button
@@ -198,7 +200,7 @@ export function CookieBanner() {
               onClick={onAcceptAll}
               disabled={pending}
             >
-              {pending ? "Saving…" : "Accept all"}
+              {pending ? t("saving") : t("acceptAll")}
             </Button>
           )}
         </div>

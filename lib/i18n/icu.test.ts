@@ -138,6 +138,17 @@ describe("catalogueIssues", () => {
     ).toContain("placeholder-drift");
   });
 
+  it("flags an invented #, which a real run produced", () => {
+    // "Currency & units" came back as "# العملة والوحدات" on the first
+    // production run. The check was one-sided and let it through; outside a
+    // plural that formats as a literal hash on the page.
+    expect(
+      catalogueIssues("Currency & units", "# العملة والوحدات").map(
+        (i) => i.code,
+      ),
+    ).toContain("hash-invented");
+  });
+
   it("flags a dropped # in a plural branch", () => {
     expect(
       catalogueIssues("# bedrooms", "غرف نوم").map((i) => i.code),

@@ -1,1 +1,14 @@
-{}
+{
+  "consent.saving": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "23e39291d613",
+    "reviewed": false
+  },
+  "common.currencyAndUnits": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8db72f6b2453",
+    "reviewed": false
+  }
+}

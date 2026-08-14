@@ -118,6 +118,7 @@ describe("pickClientMessages", () => {
   it("keeps only the client namespaces", () => {
     const picked = pickClientMessages({
       common: { a: "1" },
+      consent: { d: "4" },
       nav: { b: "2" },
       listing: { c: "3" },
     });
