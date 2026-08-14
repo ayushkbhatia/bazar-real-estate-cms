@@ -1,0 +1,43 @@
+{
+  "hero": {
+    "guide": "Community guide",
+    "guideWithVibe": "Community guide · {vibe}"
+  },
+  "stats": {
+    "avgDays": "Avg days on market",
+    "yoy": "YoY change"
+  },
+  "bands": {
+    "landmarks": "Landmarks & attractions",
+    "communities": "Communities",
+    "connectivity": "Connectivity",
+    "whyHere": "Why here",
+    "lifestyle": "Lifestyle",
+    "location": "Location",
+    "schools": "Schools nearby",
+    "amenities": "Amenities",
+    "advisors": "Advisors who cover this area",
+    "similar": "Similar areas",
+    "freeConsultation": "Free consultation",
+    "connectedHeading": "Connected to Abu Dhabi"
+  },
+  "cta": {
+    "forSale": "For sale",
+    "toRent": "To rent",
+    "viewAllSale": "View all properties for sale",
+    "viewAllRent": "View all properties for rent",
+    "enquireRentals": "Enquire about rentals",
+    "exploreProperties": "Explore properties",
+    "getConsultation": "Get a free consultation",
+    "talkToAdvisor": "Talk to an advisor",
+    "seeProjects": "{count, plural, one {See the project} other {See the # projects}}"
+  },
+  "empty": {
+    "nothingPublished": "Nothing published here right now.",
+    "offPlanOnly": "{count, plural, one {No individual listings in {area} yet — its development is still selling off-plan through the developer.} other {No individual listings in {area} yet — its # developments are still selling off-plan through the developer.}}",
+    "noSaleListings": "No published sale listings in {area} right now — an advisor can tell you what is coming to market."
+  },
+  "form": {
+    "successToast": "Request sent — an advisor will be in touch."
+  }
+}

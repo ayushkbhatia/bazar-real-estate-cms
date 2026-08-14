@@ -1,19 +1,17 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { CarouselGrid } from "@/components/brand/mobile";
 import { mediaPublicUrl } from "@/lib/media";
-import {
-  propertyUrl,
-  type ListingRow,
-} from "@/lib/queries/properties";
+import { propertyUrl, type ListingRow } from "@/lib/queries/properties";
 import { ListingCardPriced } from "../../../_components/listing-card-priced";
 import { CARD_TRACK } from "./area-bands";
 import { fluid } from "../../../_components/marketing/fluid";
 
-function badgeFor(row: ListingRow):
-  | { label: string; kind: "ink" | "accent" }
-  | undefined {
+function badgeFor(
+  row: ListingRow,
+): { label: string; kind: "ink" | "accent" } | undefined {
   if (row.flags?.exclusive) return { label: "Exclusive", kind: "ink" };
   if (row.flags?.vacant_on_transfer)
     return { label: "Vacant on transfer", kind: "accent" };
@@ -29,7 +27,7 @@ function badgeFor(row: ListingRow):
  * ships a "speak to us about upcoming availability" line instead of an empty
  * grid; the sale band falls back to a link into the wider search.
  */
-export function AreaListingsBand({
+export async function AreaListingsBand({
   eyebrow,
   heading,
   intro,
@@ -53,6 +51,7 @@ export function AreaListingsBand({
   emptyLabel?: string;
   tone?: "bg" | "surface";
 }) {
+  const t = await getTranslations("area");
   return (
     <section
       className={
@@ -120,7 +119,7 @@ export function AreaListingsBand({
         ) : (
           <div className="mt-9 rounded-md border border-dashed border-bz-border px-6 py-10 text-center">
             <p className="text-[14.5px] text-bz-ink-2 leading-relaxed mx-auto max-w-[62ch]">
-              {emptyBody ?? "Nothing published here right now."}
+              {emptyBody ?? t("empty.nothingPublished")}
             </p>
             <Button asChild variant="outline" className="mt-5">
               <Link href={emptyHref ?? ctaHref}>{emptyLabel ?? ctaLabel}</Link>

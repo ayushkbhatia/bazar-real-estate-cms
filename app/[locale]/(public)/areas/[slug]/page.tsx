@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/lib/i18n/locales";
 import * as React from "react";
 import { getForm } from "@/lib/queries/forms";
 import Image from "next/image";
@@ -15,7 +17,11 @@ import {
   listAreaDirectory,
   type AreaProfile,
 } from "@/lib/queries/area-profile";
-import { listAreaPins, listAreaListingDots, type AreaPin } from "@/lib/queries/area-map";
+import {
+  listAreaPins,
+  listAreaListingDots,
+  type AreaPin,
+} from "@/lib/queries/area-map";
 import { getAreaInventory } from "@/lib/queries/area-inventory";
 import { developmentUrl } from "@/lib/queries/developments";
 import { communityKey } from "@/lib/queries/community-key";
@@ -130,9 +136,12 @@ export async function generateMetadata({
 export default async function CommunityProfilePage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: Locale }>;
 }) {
-  const { slug } = await params;
+  const { slug, locale } = await params;
+  // Locale from params, never ambient — see #373 and #374. This route carries
+  // `revalidate: 300`.
+  const t = await getTranslations({ locale, namespace: "area" });
   // The catalogue row is what makes an area real: any area in `areas` gets a
   // page, whether or not it has a seed guide or a published `area_guides`
   // overlay. Only a slug that matches nothing at all 404s.
@@ -212,7 +221,9 @@ export default async function CommunityProfilePage({
       if (shownProjectKeys.has(key)) return [];
       const project = projectByKey.get(key);
       return [
-        project ? { ...item, href: item.href ?? developmentUrl(project) } : item,
+        project
+          ? { ...item, href: item.href ?? developmentUrl(project) }
+          : item,
       ];
     },
   );
@@ -232,16 +243,17 @@ export default async function CommunityProfilePage({
   const saleEmpty =
     projectCount > 0
       ? {
-          body: `No individual listings in ${profile.name} yet — its ${
-            projectCount === 1 ? "development is" : `${projectCount} developments are`
-          } still selling off-plan through the developer.`,
+          body: t("empty.offPlanOnly", {
+            area: profile.name,
+            count: projectCount,
+          }),
           href: "#communities",
-          label: projectCount === 1 ? "See the project" : `See the ${projectCount} projects`,
+          label: t("cta.seeProjects", { count: projectCount }),
         }
       : {
-          body: `No published sale listings in ${profile.name} right now — an advisor can tell you what is coming to market.`,
+          body: t("empty.noSaleListings", { area: profile.name }),
           href: "/contact",
-          label: "Talk to an advisor",
+          label: t("cta.talkToAdvisor"),
         };
 
   const heroIntro = sv("hero", "intro") ?? profile.intro;
@@ -251,210 +263,225 @@ export default async function CommunityProfilePage({
   const rentHref = `/rent/search?area=${profile.slug}`;
 
   const nodes: Record<string, React.ReactNode> = {
-    "hero": (
+    hero: (
       <>
-      {/* Hero */}
-      <section className="px-4 md:px-12 pt-8 pb-12">
-        <Eyebrow>
-          {sv("hero", "eyebrow") ??
-            (profile.vibe
-              ? `Community guide · ${profile.vibe}`
-              : "Community guide")}
-        </Eyebrow>
-        <h1
-          className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98] max-w-[14ch]"
-          style={{ letterSpacing: "-0.03em" }}
-        >
-          {sv("hero", "heading") ?? profile.name}
-        </h1>
-        {heroIntro ? (
-          <p className="mt-6 text-[17px] text-bz-ink-2 leading-relaxed max-w-[64ch]">
-            {heroIntro}
-          </p>
-        ) : null}
-        {heroPosition ? (
-          <p className="mt-4 mono text-[12.5px] text-bz-muted">{heroPosition}</p>
-        ) : null}
-      </section>
+        {/* Hero */}
+        <section className="px-4 md:px-12 pt-8 pb-12">
+          <Eyebrow>
+            {sv("hero", "eyebrow") ??
+              (profile.vibe
+                ? t("hero.guideWithVibe", { vibe: profile.vibe })
+                : t("hero.guide"))}
+          </Eyebrow>
+          <h1
+            className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98] max-w-[14ch]"
+            style={{ letterSpacing: "-0.03em" }}
+          >
+            {sv("hero", "heading") ?? profile.name}
+          </h1>
+          {heroIntro ? (
+            <p className="mt-6 text-[17px] text-bz-ink-2 leading-relaxed max-w-[64ch]">
+              {heroIntro}
+            </p>
+          ) : null}
+          {heroPosition ? (
+            <p className="mt-4 mono text-[12.5px] text-bz-muted">
+              {heroPosition}
+            </p>
+          ) : null}
+        </section>
       </>
     ),
     "hero-image": (
       <>
-      {/* Hero image */}
-      <section className="px-4 md:px-12 pb-14">
-        {heroImage ? (
-          <div className="relative w-full aspect-[21/9] overflow-hidden rounded-md">
-            <Image
-              src={heroImage.url}
-              alt={heroImage.alt ?? profile.name}
-              fill
-              priority
-              sizes="(max-width: 1280px) 100vw, 1280px"
-              className="object-cover"
-            />
-          </div>
-        ) : (
-          <PlaceholderImage
-            label={profile.heroLabel}
-            className="w-full aspect-[21/9] rounded-md"
-          />
-        )}
-      </section>
-      </>
-    ),
-    "stats": (
-      <>
-      {/* Market statistics. The editorial figures typed into the CMS win;
-          without them the band falls back to the medians on the guide
-          record, and hides entirely when there is neither. */}
-      {liveStats(values("stats")).length > 0 ? (
-        <AreaStatsBand
-          heading={
-            sv("stats", "heading") ?? `${profile.name} property market at a glance`
-          }
-          intro={sv("stats", "intro")}
-          stats={liveStats(values("stats"))}
-          footnote={str(values("stats"), "footnote")}
-        />
-      ) : stats ? (
-        <section className="border-y border-bz-border bg-bz-surface">
-          <div className="px-4 md:px-12 py-10">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
-              <Stat
-                label={<>Median apt / <AreaUnitText /></>}
-                value={
-                  stats.medianAptPerFt2 == null ? null : (
-                    <PricePerAreaValueText aedPerFt2={stats.medianAptPerFt2} />
-                  )
-                }
-              />
-              <Stat
-                label={<>Median villa / <AreaUnitText /></>}
-                value={
-                  stats.medianVillaPerFt2 == null ? null : (
-                    <PricePerAreaValueText aedPerFt2={stats.medianVillaPerFt2} />
-                  )
-                }
-              />
-              <Stat
-                label="Avg days on market"
-                value={stats.avgDaysOnMarket?.toString() ?? null}
-              />
-              <Stat
-                label="YoY change"
-                value={
-                  stats.yoyChangePct !== null
-                    ? `${stats.yoyChangePct > 0 ? "+" : ""}${stats.yoyChangePct}%`
-                    : null
-                }
-                tone={
-                  stats.yoyChangePct === null || stats.yoyChangePct === 0
-                    ? undefined
-                    : stats.yoyChangePct > 0
-                      ? "up"
-                      : "down"
-                }
+        {/* Hero image */}
+        <section className="px-4 md:px-12 pb-14">
+          {heroImage ? (
+            <div className="relative w-full aspect-[21/9] overflow-hidden rounded-md">
+              <Image
+                src={heroImage.url}
+                alt={heroImage.alt ?? profile.name}
+                fill
+                priority
+                sizes="(max-width: 1280px) 100vw, 1280px"
+                className="object-cover"
               />
             </div>
-          </div>
+          ) : (
+            <PlaceholderImage
+              label={profile.heroLabel}
+              className="w-full aspect-[21/9] rounded-md"
+            />
+          )}
         </section>
-      ) : null}
       </>
     ),
-    "map": (
+    stats: (
       <>
-      {/* Interactive map band — deep-linked to this area with its listing
-          dots. Self-hides for areas with no coordinates on record. */}
-      {focusPin ? (
-        <section className="px-4 md:px-12 py-14">
-          <Eyebrow>Location</Eyebrow>
-          <h2
-            className="serif text-[28px] md:text-[34px] mt-2 leading-tight"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            {sv("map", "heading") ?? `Find ${profile.name} on the map.`}
-          </h2>
-          {sv("map", "intro") ? (
-            <p className="mt-3 text-[15.5px] text-bz-ink-2 leading-relaxed max-w-[68ch]">
-              {sv("map", "intro")}
-            </p>
-          ) : null}
-          {sv("map", "detail") ? (
-            <p className="mt-2 text-[15.5px] text-bz-ink-2 leading-relaxed max-w-[68ch]">
-              {sv("map", "detail")}
-            </p>
-          ) : null}
-          <div className="mt-7 relative h-[420px] md:h-[520px] overflow-hidden rounded-md border border-bz-border bg-bz-surface">
-            <AreaMapDetail areas={pins} dots={dots} areaSlug={profile.slug} />
-          </div>
-        </section>
-      ) : null}
+        {/* Market statistics. The editorial figures typed into the CMS win;
+          without them the band falls back to the medians on the guide
+          record, and hides entirely when there is neither. */}
+        {liveStats(values("stats")).length > 0 ? (
+          <AreaStatsBand
+            heading={
+              sv("stats", "heading") ??
+              `${profile.name} property market at a glance`
+            }
+            intro={sv("stats", "intro")}
+            stats={liveStats(values("stats"))}
+            footnote={str(values("stats"), "footnote")}
+          />
+        ) : stats ? (
+          <section className="border-y border-bz-border bg-bz-surface">
+            <div className="px-4 md:px-12 py-10">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
+                <Stat
+                  label={
+                    <>
+                      Median apt / <AreaUnitText />
+                    </>
+                  }
+                  value={
+                    stats.medianAptPerFt2 == null ? null : (
+                      <PricePerAreaValueText
+                        aedPerFt2={stats.medianAptPerFt2}
+                      />
+                    )
+                  }
+                />
+                <Stat
+                  label={
+                    <>
+                      Median villa / <AreaUnitText />
+                    </>
+                  }
+                  value={
+                    stats.medianVillaPerFt2 == null ? null : (
+                      <PricePerAreaValueText
+                        aedPerFt2={stats.medianVillaPerFt2}
+                      />
+                    )
+                  }
+                />
+                <Stat
+                  label={t("stats.avgDays")}
+                  value={stats.avgDaysOnMarket?.toString() ?? null}
+                />
+                <Stat
+                  label={t("stats.yoy")}
+                  value={
+                    stats.yoyChangePct !== null
+                      ? `${stats.yoyChangePct > 0 ? "+" : ""}${stats.yoyChangePct}%`
+                      : null
+                  }
+                  tone={
+                    stats.yoyChangePct === null || stats.yoyChangePct === 0
+                      ? undefined
+                      : stats.yoyChangePct > 0
+                        ? "up"
+                        : "down"
+                  }
+                />
+              </div>
+            </div>
+          </section>
+        ) : null}
       </>
     ),
-    "landmarks": (
+    map: (
+      <>
+        {/* Interactive map band — deep-linked to this area with its listing
+          dots. Self-hides for areas with no coordinates on record. */}
+        {focusPin ? (
+          <section className="px-4 md:px-12 py-14">
+            <Eyebrow>{t("bands.location")}</Eyebrow>
+            <h2
+              className="serif text-[28px] md:text-[34px] mt-2 leading-tight"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              {sv("map", "heading") ?? `Find ${profile.name} on the map.`}
+            </h2>
+            {sv("map", "intro") ? (
+              <p className="mt-3 text-[15.5px] text-bz-ink-2 leading-relaxed max-w-[68ch]">
+                {sv("map", "intro")}
+              </p>
+            ) : null}
+            {sv("map", "detail") ? (
+              <p className="mt-2 text-[15.5px] text-bz-ink-2 leading-relaxed max-w-[68ch]">
+                {sv("map", "detail")}
+              </p>
+            ) : null}
+            <div className="mt-7 relative h-[420px] md:h-[520px] overflow-hidden rounded-md border border-bz-border bg-bz-surface">
+              <AreaMapDetail areas={pins} dots={dots} areaSlug={profile.slug} />
+            </div>
+          </section>
+        ) : null}
+      </>
+    ),
+    landmarks: (
       <AreaLandmarks
-        heading={sv("landmarks", "heading") ?? "Landmarks & attractions"}
+        heading={sv("landmarks", "heading") ?? t("bands.landmarks")}
         intro={sv("landmarks", "intro")}
         items={liveItems(values("landmarks"))}
         footnote={str(values("landmarks"), "footnote")}
       />
     ),
-    "communities": (
+    communities: (
       <AreaCommunities
         heading={sv("communities", "heading") ?? `Explore ${profile.name}`}
         intro={sv("communities", "intro")}
         items={editorialCommunities}
-        projects={inventory.developments
-          .slice(0, 6)
-          .map((d) => <DevelopmentCard key={d.id} d={d} />)}
+        projects={inventory.developments.slice(0, 6).map((d) => (
+          <DevelopmentCard key={d.id} d={d} />
+        ))}
         projectsTotal={inventory.developmentTotal}
         viewAllHref="/off-plan"
         footnote={str(values("communities"), "footnote")}
       />
     ),
-    "listings": (
+    listings: (
       <AreaListingsBand
-        eyebrow="For sale"
+        eyebrow={t("cta.forSale")}
         heading={
           sv("listings", "heading") ?? `Properties for sale in ${profile.name}`
         }
         intro={sv("listings", "intro")}
         rows={saleRows}
-        ctaLabel={sv("listings", "cta_label") ?? "View all properties for sale"}
+        ctaLabel={sv("listings", "cta_label") ?? t("cta.viewAllSale")}
         ctaHref={sv("listings", "cta_href") ?? buyHref}
         emptyBody={saleEmpty.body}
         emptyHref={saleEmpty.href}
         emptyLabel={saleEmpty.label}
       />
     ),
-    "rentals": (
+    rentals: (
       <AreaListingsBand
-        eyebrow="To rent"
+        eyebrow={t("cta.toRent")}
         heading={
           sv("rentals", "heading") ?? `Properties for rent in ${profile.name}`
         }
         intro={sv("rentals", "intro")}
         rows={rentRows}
-        ctaLabel={sv("rentals", "cta_label") ?? "View all properties for rent"}
+        ctaLabel={sv("rentals", "cta_label") ?? t("cta.viewAllRent")}
         ctaHref={sv("rentals", "cta_href") ?? rentHref}
         emptyBody={
           sv("rentals", "empty_body") ??
           `Looking to rent in ${profile.name}? Speak with our team about current and upcoming availability.`
         }
         emptyHref="/contact"
-        emptyLabel="Enquire about rentals"
+        emptyLabel={t("cta.enquireRentals")}
         tone="surface"
       />
     ),
-    "nearby": (
+    nearby: (
       <AreaNearby
-        heading={sv("nearby", "heading") ?? "Connected to Abu Dhabi"}
+        heading={sv("nearby", "heading") ?? t("bands.connectedHeading")}
         intro={sv("nearby", "intro")}
         items={liveItems(values("nearby"))}
         footnote={str(values("nearby"), "footnote")}
       />
     ),
-    "why": (
+    why: (
       <AreaWhy
         heading={sv("why", "heading") ?? `Why choose ${profile.name}?`}
         intro={sv("why", "intro")}
@@ -479,7 +506,7 @@ export default async function CommunityProfilePage({
         />
       </AreaLeadBand>
     ),
-    "faq": (
+    faq: (
       <AreaFaq
         heading={
           sv("faq", "heading") ??
@@ -491,202 +518,205 @@ export default async function CommunityProfilePage({
     ),
     "final-cta": (
       <AreaFinalCta
-        heading={sv("final-cta", "heading") ?? `Find your property in ${profile.name}`}
+        heading={
+          sv("final-cta", "heading") ?? `Find your property in ${profile.name}`
+        }
         intro={
           sv("final-cta", "intro") ??
           "Explore opportunities to buy, rent or invest with trusted property guidance from Bazar Real Estate."
         }
         primary={{
-          label: sv("final-cta", "cta_label") ?? "Explore properties",
+          label: sv("final-cta", "cta_label") ?? t("cta.exploreProperties"),
           href: sv("final-cta", "cta_href") ?? buyHref,
         }}
         secondary={{
-          label: sv("final-cta", "cta2_label") ?? "Get a free consultation",
+          label: sv("final-cta", "cta2_label") ?? t("cta.getConsultation"),
           href: sv("final-cta", "cta2_href") ?? "/contact",
         }}
       />
     ),
-    "schools": (
+    schools: (
       <>
-      {/* Schools + amenities — each column drops when it has nothing. */}
-      {profile.schools.length > 0 || profile.amenities.length > 0 ? (
-        <section className="px-4 md:px-12 py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-            {profile.schools.length > 0 ? (
-              <div>
-                <Eyebrow>Schools nearby</Eyebrow>
-                <ul className="mt-5 flex flex-col gap-3">
-                  {profile.schools.map((s) => (
-                    <li
-                      key={s.name}
-                      className="flex items-baseline justify-between gap-4 border-b border-bz-border pb-3"
-                    >
-                      <div>
-                        <div className="text-[15px] text-bz-ink">{s.name}</div>
-                        {s.curriculum || s.rating ? (
-                          <div className="text-[12px] text-bz-ink-2">
-                            {s.curriculum}
-                            {s.rating ? (
-                              <>
-                                {s.curriculum ? " · " : null}
-                                <span
-                                  className={
-                                    s.rating === "Outstanding"
-                                      ? "text-bz-accent font-medium"
-                                      : "text-bz-ink-2"
-                                  }
-                                >
-                                  ADEK / KHDA · {s.rating}
-                                </span>
-                              </>
-                            ) : null}
+        {/* Schools + amenities — each column drops when it has nothing. */}
+        {profile.schools.length > 0 || profile.amenities.length > 0 ? (
+          <section className="px-4 md:px-12 py-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+              {profile.schools.length > 0 ? (
+                <div>
+                  <Eyebrow>{t("bands.schools")}</Eyebrow>
+                  <ul className="mt-5 flex flex-col gap-3">
+                    {profile.schools.map((s) => (
+                      <li
+                        key={s.name}
+                        className="flex items-baseline justify-between gap-4 border-b border-bz-border pb-3"
+                      >
+                        <div>
+                          <div className="text-[15px] text-bz-ink">
+                            {s.name}
+                          </div>
+                          {s.curriculum || s.rating ? (
+                            <div className="text-[12px] text-bz-ink-2">
+                              {s.curriculum}
+                              {s.rating ? (
+                                <>
+                                  {s.curriculum ? " · " : null}
+                                  <span
+                                    className={
+                                      s.rating === "Outstanding"
+                                        ? "text-bz-accent font-medium"
+                                        : "text-bz-ink-2"
+                                    }
+                                  >
+                                    ADEK / KHDA · {s.rating}
+                                  </span>
+                                </>
+                              ) : null}
+                            </div>
+                          ) : null}
+                        </div>
+                        {s.distance_km !== null ? (
+                          <div className="mono text-[12px] text-bz-ink-2">
+                            {s.distance_km} km
                           </div>
                         ) : null}
-                      </div>
-                      {s.distance_km !== null ? (
-                        <div className="mono text-[12px] text-bz-ink-2">
-                          {s.distance_km} km
-                        </div>
-                      ) : null}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-            {profile.amenities.length > 0 ? (
-              <div>
-                <Eyebrow>Amenities</Eyebrow>
-                <ul className="mt-5 grid grid-cols-1 gap-2">
-                  {profile.amenities.map((a) => (
-                    <li key={a} className="text-[14px] text-bz-ink">
-                      · {a}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-          </div>
-        </section>
-      ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {profile.amenities.length > 0 ? (
+                <div>
+                  <Eyebrow>{t("bands.amenities")}</Eyebrow>
+                  <ul className="mt-5 grid grid-cols-1 gap-2">
+                    {profile.amenities.map((a) => (
+                      <li key={a} className="text-[14px] text-bz-ink">
+                        · {a}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+          </section>
+        ) : null}
       </>
     ),
-    "reports": (
+    reports: (
       <>
-      {/* T1-A cleanup: cross-link rail into the area's quarterly market
+        {/* T1-A cleanup: cross-link rail into the area's quarterly market
           reports.  Closes the moat-orphan gap — visitors browsing the
           area can pivot directly into the data. */}
-      <AreaReportsRail area_slug={profile.slug} area_name={profile.name} />
+        <AreaReportsRail area_slug={profile.slug} area_name={profile.name} />
       </>
     ),
-    "valuation": (
+    valuation: (
       <>
-      {/* T1-E cleanup: lead-gate surfaced on the area page — owners of
+        {/* T1-E cleanup: lead-gate surfaced on the area page — owners of
           property in this community are the highest-intent valuation
           lead source. */}
-      <section className="px-4 md:px-12 py-12 border-t border-bz-border bg-bz-surface-2">
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center">
-          <div>
-            <Eyebrow>Own property in {profile.name}?</Eyebrow>
-            <h2
-              className="serif text-[28px] mt-2 leading-tight max-w-[36ch]"
-              style={{ letterSpacing: "-0.018em" }}
-            >
-              See what an advisor would price it at, free.
-            </h2>
-            <p className="mt-3 text-[14px] text-bz-ink-2 max-w-[58ch]">
-              Instant data-backed range from our model, then a senior
-              advisor reviews and sends a refined valuation within 24
-              hours.
-            </p>
-          </div>
-          {gateForm.enabled ? (
-            <ValuationLeadGate
-              form={gateForm}
-              triggerLabel={`Value my ${profile.name} property`}
-            />
-          ) : null}
-        </div>
-      </section>
-      </>
-    ),
-    "lifestyle": (
-      <>
-      {/* T3-E: lifestyle dossier — commute chips, prose, dining picks.
-          Seed-shaped, so it only draws for editorially-enriched areas. */}
-      {profile.seed ? <LifestyleDossier area={profile.seed} /> : null}
-      </>
-    ),
-    "advisors": (
-      <>
-      {/* Advisors who cover this area */}
-      {advisors.length > 0 ? (
-        <section className="px-4 md:px-12 py-16">
-          <Eyebrow>Advisors who cover this area</Eyebrow>
-          <h2
-            className="serif text-[32px] mt-2 leading-tight"
-            style={{ letterSpacing: "-0.015em" }}
-          >
-            Who to talk to about {profile.name}.
-          </h2>
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-8">
-            {advisors.map((a) => (
-              <Link
-                key={a.slug}
-                href={`/agents/${a.slug}`}
-                className="group block"
+        <section className="px-4 md:px-12 py-12 border-t border-bz-border bg-bz-surface-2">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center">
+            <div>
+              <Eyebrow>Own property in {profile.name}?</Eyebrow>
+              <h2
+                className="serif text-[28px] mt-2 leading-tight max-w-[36ch]"
+                style={{ letterSpacing: "-0.018em" }}
               >
-                {a.photo_url ? (
-                  <div className="relative w-full aspect-[4/5] overflow-hidden rounded-md">
-                    <Image
-                      src={a.photo_url}
-                      alt={a.display_name}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 33vw"
-                      className="object-cover"
-                    />
-                  </div>
-                ) : (
-                  <PlaceholderImage
-                    label={a.slug}
-                    className="w-full aspect-[4/5] rounded-md"
-                  />
-                )}
-                <div className="mt-3">
-                  <div className="text-[15px] text-bz-ink group-hover:text-bz-accent transition-colors">
-                    {a.display_name}
-                  </div>
-                  <div className="text-[12px] text-bz-muted mt-0.5">
-                    {a.title}
-                  </div>
-                </div>
-              </Link>
-            ))}
+                See what an advisor would price it at, free.
+              </h2>
+              <p className="mt-3 text-[14px] text-bz-ink-2 max-w-[58ch]">
+                Instant data-backed range from our model, then a senior advisor
+                reviews and sends a refined valuation within 24 hours.
+              </p>
+            </div>
+            {gateForm.enabled ? (
+              <ValuationLeadGate
+                form={gateForm}
+                triggerLabel={`Value my ${profile.name} property`}
+              />
+            ) : null}
           </div>
         </section>
-      ) : null}
       </>
     ),
-    "similar": (
+    lifestyle: (
       <>
-      {/* Similar areas */}
-      {similar.length > 0 ? (
-        <section className="border-t border-bz-border bg-bz-surface">
-          <div className="px-4 md:px-12 py-12">
-            <Eyebrow>Similar areas</Eyebrow>
-            <div className="mt-5 flex flex-wrap gap-3">
-              {similar.map((s) => (
+        {/* T3-E: lifestyle dossier — commute chips, prose, dining picks.
+          Seed-shaped, so it only draws for editorially-enriched areas. */}
+        {profile.seed ? <LifestyleDossier area={profile.seed} /> : null}
+      </>
+    ),
+    advisors: (
+      <>
+        {/* Advisors who cover this area */}
+        {advisors.length > 0 ? (
+          <section className="px-4 md:px-12 py-16">
+            <Eyebrow>{t("bands.advisors")}</Eyebrow>
+            <h2
+              className="serif text-[32px] mt-2 leading-tight"
+              style={{ letterSpacing: "-0.015em" }}
+            >
+              Who to talk to about {profile.name}.
+            </h2>
+            <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-8">
+              {advisors.map((a) => (
                 <Link
-                  key={s.slug}
-                  href={`/areas/${s.slug}`}
-                  className="inline-flex items-center h-9 px-3 rounded border border-bz-border bg-bz-bg text-[13px] text-bz-ink-2 hover:border-bz-border-strong hover:text-bz-ink transition-colors"
+                  key={a.slug}
+                  href={`/agents/${a.slug}`}
+                  className="group block"
                 >
-                  {s.name}
+                  {a.photo_url ? (
+                    <div className="relative w-full aspect-[4/5] overflow-hidden rounded-md">
+                      <Image
+                        src={a.photo_url}
+                        alt={a.display_name}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 33vw"
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <PlaceholderImage
+                      label={a.slug}
+                      className="w-full aspect-[4/5] rounded-md"
+                    />
+                  )}
+                  <div className="mt-3">
+                    <div className="text-[15px] text-bz-ink group-hover:text-bz-accent transition-colors">
+                      {a.display_name}
+                    </div>
+                    <div className="text-[12px] text-bz-muted mt-0.5">
+                      {a.title}
+                    </div>
+                  </div>
                 </Link>
               ))}
             </div>
-          </div>
-        </section>
-      ) : null}
+          </section>
+        ) : null}
+      </>
+    ),
+    similar: (
+      <>
+        {/* Similar areas */}
+        {similar.length > 0 ? (
+          <section className="border-t border-bz-border bg-bz-surface">
+            <div className="px-4 md:px-12 py-12">
+              <Eyebrow>{t("bands.similar")}</Eyebrow>
+              <div className="mt-5 flex flex-wrap gap-3">
+                {similar.map((s) => (
+                  <Link
+                    key={s.slug}
+                    href={`/areas/${s.slug}`}
+                    className="inline-flex items-center h-9 px-3 rounded border border-bz-border bg-bz-bg text-[13px] text-bz-ink-2 hover:border-bz-border-strong hover:text-bz-ink transition-colors"
+                  >
+                    {s.name}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
       </>
     ),
   };

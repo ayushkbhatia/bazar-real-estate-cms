@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { Car, Footprints, Train } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { SeedAreaGuide } from "@/lib/seeds/areas";
@@ -12,7 +13,8 @@ type Props = {
  * section returns null entirely when none are populated so the page
  * stays clean for areas that haven't been editorially-enriched yet.
  */
-export function LifestyleDossier({ area }: Props) {
+export async function LifestyleDossier({ area }: Props) {
+  const t = await getTranslations("area");
   const hasChips = !!area.commute_chips?.length;
   const hasProse = !!area.lifestyle_prose;
   const hasDining = !!area.dining_picks?.length;
@@ -20,7 +22,7 @@ export function LifestyleDossier({ area }: Props) {
 
   return (
     <section className="px-4 md:px-12 py-16 border-t border-bz-border">
-      <Eyebrow>Lifestyle</Eyebrow>
+      <Eyebrow>{t("bands.lifestyle")}</Eyebrow>
       <h2
         className="serif text-[28px] md:text-[36px] mt-2 leading-tight max-w-[28ch]"
         style={{ letterSpacing: "-0.02em" }}

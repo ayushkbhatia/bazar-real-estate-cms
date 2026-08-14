@@ -181,3 +181,31 @@ describe("the shipped catalogue satisfies its own rules", () => {
     }
   });
 });
+
+describe("plural branch masking", () => {
+  it("does not let two branches both claim sentinel 0", async () => {
+    // Each branch is masked separately and `mask()` restarts at ⟦0⟧ every
+    // time, so without renumbering both branches emit ⟦0⟧ and the second one
+    // unmasks to the FIRST branch's token. Silently wrong whenever the two
+    // branches protect different values — a price in one, a reference in the
+    // other.
+    const { translatePluralMessage } = await import("./catalogue-mt");
+    let seen = "";
+    const client = {
+      messages: {
+        create: async (input: { messages: { content: string }[] }) => {
+          seen = input.messages[0]!.content;
+          return { content: [{ type: "text", text: "{}" }] };
+        },
+      },
+    };
+    await translatePluralMessage({
+      client,
+      message:
+        "{n, plural, one {one at AED 500,000} other {# from AED 900,000}}",
+      model: "test",
+    });
+    const sentinels = [...seen.matchAll(/⟦(\d+)⟧/g)].map((m) => m[1]);
+    expect(new Set(sentinels).size).toBe(sentinels.length);
+  });
+});
