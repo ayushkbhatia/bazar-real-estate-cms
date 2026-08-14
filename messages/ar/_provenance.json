@@ -760,5 +760,180 @@
     "sourceHash": "f53791a73b9b",
     "reviewed": false,
     "note": "Flagged hash-dropped, but that is a FALSE POSITIVE: the '#' in \"Plot #\" is a literal number-sign abbreviation, not ICU's number placeholder. The validator cannot tell them apart, and flagging for a human is the right side to err on."
+  },
+  "area.hero.guide": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0fdcaac91dae",
+    "reviewed": false
+  },
+  "area.hero.guideWithVibe": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a5f5e91f7d16",
+    "reviewed": false
+  },
+  "area.stats.avgDays": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b8ab0f1c262c",
+    "reviewed": false
+  },
+  "area.stats.yoy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "66cf25af3e18",
+    "reviewed": false
+  },
+  "area.bands.landmarks": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b9485905b406",
+    "reviewed": false
+  },
+  "area.bands.communities": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c864f329f5dd",
+    "reviewed": false
+  },
+  "area.bands.connectivity": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5479401fc08b",
+    "reviewed": false
+  },
+  "area.bands.whyHere": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "67a603516589",
+    "reviewed": false
+  },
+  "area.bands.lifestyle": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2e6c28eb66f4",
+    "reviewed": false
+  },
+  "area.bands.location": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "15b61974b270",
+    "reviewed": false
+  },
+  "area.bands.schools": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5a3254dd1b62",
+    "reviewed": false
+  },
+  "area.bands.amenities": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3e671d3a0d15",
+    "reviewed": false
+  },
+  "area.bands.advisors": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1b08eb03ca20",
+    "reviewed": false
+  },
+  "area.bands.similar": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ab3945c911b9",
+    "reviewed": false
+  },
+  "area.bands.freeConsultation": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b14093bf7bd4",
+    "reviewed": false
+  },
+  "area.bands.connectedHeading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7061ecf04c6c",
+    "reviewed": false
+  },
+  "area.cta.toRent": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d1f2bdf93045",
+    "reviewed": false
+  },
+  "area.cta.viewAllSale": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1e462a00c12e",
+    "reviewed": false
+  },
+  "area.cta.viewAllRent": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "edbf4a148a41",
+    "reviewed": false
+  },
+  "area.cta.enquireRentals": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7d06801c816f",
+    "reviewed": false
+  },
+  "area.cta.exploreProperties": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "56f26de56fe2",
+    "reviewed": false
+  },
+  "area.cta.getConsultation": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d1f9c2ff668e",
+    "reviewed": false
+  },
+  "area.cta.talkToAdvisor": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8012e5b98ed4",
+    "reviewed": false
+  },
+  "area.cta.seeProjects": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2dcd37299b7a",
+    "reviewed": false
+  },
+  "area.empty.nothingPublished": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fd75d0299976",
+    "reviewed": false
+  },
+  "area.empty.noSaleListings": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "44dec4c12c54",
+    "reviewed": false
+  },
+  "area.form.successToast": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "776b6f547c80",
+    "reviewed": false
+  },
+  "area.cta.forSale": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "aedf56fc02b4",
+    "reviewed": false
+  },
+  "area.empty.offPlanOnly": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "3cf90a0539c7",
+    "reviewed": false,
+    "note": "MT could not do this one. A long sentence with a nested {area} inside six plural branches: at max_tokens 1200 the JSON truncated, and raising it made the model return an explanation of plural rules instead. Hand-authored."
   }
 }

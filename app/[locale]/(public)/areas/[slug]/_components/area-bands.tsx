@@ -1,3 +1,13 @@
+/*
+ * Both forms, on purpose. `AreaLandmarks` is already async for its own data
+ * fetch, and a hook cannot be called in an async function — eslint's
+ * rules-of-hooks says so and the build then fails prerendering with
+ * "Expected a suspended thenable". The other bands are synchronous Server
+ * Components with unit tests that render them directly, so they use the hook,
+ * which keeps `area` off CLIENT_NAMESPACES.
+ */
+import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import * as React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -144,7 +154,10 @@ export function AreaStatsBand({
           }`}
         >
           {stats.map((s) => (
-            <div key={`${s.value}-${s.label}`} className="border-t border-bz-border pt-4">
+            <div
+              key={`${s.value}-${s.label}`}
+              className="border-t border-bz-border pt-4"
+            >
               <div
                 className="serif leading-none text-bz-ink"
                 style={{ fontSize: fluid(34), letterSpacing: "-0.018em" }}
@@ -170,7 +183,7 @@ export function AreaStatsBand({
  * brief calls for an image per landmark, and a landmark without one still
  * reads as a card thanks to the brand placeholder.
  */
-export function AreaLandmarks({
+export async function AreaLandmarks({
   heading,
   intro,
   items,
@@ -181,10 +194,15 @@ export function AreaLandmarks({
   items: BandItem[];
   footnote?: string | null;
 }) {
+  const t = await getTranslations("area");
   if (items.length === 0) return null;
   return (
     <section className={`${SECTION} py-14 md:py-16 border-t border-bz-border`}>
-      <BandHead eyebrow="Landmarks & attractions" heading={heading} intro={intro} />
+      <BandHead
+        eyebrow={t("bands.landmarks")}
+        heading={heading}
+        intro={intro}
+      />
       <ul className={`mt-9 ${CARD_GRID}`}>
         {items.map((item) => {
           const body = (
@@ -264,13 +282,21 @@ export function AreaCommunities({
   viewAllHref?: string;
   footnote?: string | null;
 }) {
+  const t = useTranslations("area");
   const showEditorial = projects.length === 0 && items.length > 0;
   if (!showEditorial && projects.length === 0) return null;
   return (
-    <section id="communities" className="border-t border-bz-border bg-bz-surface scroll-mt-16">
+    <section
+      id="communities"
+      className="border-t border-bz-border bg-bz-surface scroll-mt-16"
+    >
       <div className={`${SECTION} py-14 md:py-16`}>
         <div className="flex flex-wrap items-end justify-between gap-6">
-          <BandHead eyebrow="Communities" heading={heading} intro={intro} />
+          <BandHead
+            eyebrow={t("bands.communities")}
+            heading={heading}
+            intro={intro}
+          />
           {/* Only when there is something the cards are not already showing.
               Every project in these areas fits on one row today, so a
               permanent "view all" next to the complete set was a link to
@@ -365,10 +391,15 @@ export function AreaNearby({
   items: BandItem[];
   footnote?: string | null;
 }) {
+  const t = useTranslations("area");
   if (items.length === 0) return null;
   return (
     <section className={`${SECTION} py-14 md:py-16 border-t border-bz-border`}>
-      <BandHead eyebrow="Connectivity" heading={heading} intro={intro} />
+      <BandHead
+        eyebrow={t("bands.connectivity")}
+        heading={heading}
+        intro={intro}
+      />
       <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-x-16">
         {items.map((item) => {
           const row = (
@@ -417,11 +448,18 @@ export function AreaWhy({
   intro?: string | null;
   items: BandItem[];
 }) {
+  const t = useTranslations("area");
   if (items.length === 0) return null;
   return (
     <section className="bg-bz-navy text-white">
       <div className={`${SECTION} py-16 md:py-20`}>
-        <BandHead eyebrow="Why here" heading={heading} intro={intro} dark size={40} />
+        <BandHead
+          eyebrow={t("bands.whyHere")}
+          heading={heading}
+          intro={intro}
+          dark
+          size={40}
+        />
         <ul className="mt-11 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-9">
           {items.map((item, i) => (
             <li key={item.name} className="border-t border-white/25 pt-5">
@@ -460,11 +498,12 @@ export function AreaLeadBand({
   intro?: string | null;
   children: React.ReactNode;
 }) {
+  const t = useTranslations("area");
   return (
     <section className={`${SECTION} py-14 md:py-16 border-t border-bz-border`}>
       <div className="grid overflow-hidden rounded-2xl border border-bz-border bg-bz-surface md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div className="min-w-0 p-6 md:p-11 md:border-e border-bz-border">
-          <Eyebrow>Free consultation</Eyebrow>
+          <Eyebrow>{t("bands.freeConsultation")}</Eyebrow>
           <h2
             className="serif mt-2 font-normal leading-tight"
             style={{ fontSize: fluid(36), letterSpacing: "-0.02em" }}

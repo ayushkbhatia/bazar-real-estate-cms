@@ -171,13 +171,26 @@ export async function translatePluralMessage(input: {
     };
   }
 
-  const masked = parsed.branches.map((b) => ({
-    selector: b.selector,
-    ...mask(b.text),
-  }));
-  // One token table across all branches keeps sentinel numbering stable, which
-  // is what lets the same ⟦0⟧ mean the same thing in every form.
-  const tokens = masked.flatMap((m) => m.tokens);
+  /*
+   * Each branch is masked separately, and `mask()` restarts its numbering at
+   * ⟦0⟧ every time — so a two-branch message produces two different ⟦0⟧s that
+   * both unmask to the FIRST branch's token. Harmless when the branches share
+   * a placeholder, silently wrong when they do not.
+   *
+   * Renumber as we go: branch N's sentinels are shifted by the running token
+   * count, so the concatenated table lines up with the concatenated text.
+   */
+  const tokens: string[] = [];
+  const masked = parsed.branches.map((b) => {
+    const m = mask(b.text);
+    const offset = tokens.length;
+    const shifted = m.masked.replace(
+      /⟦\s*(\d+)\s*⟧/gu,
+      (_, n: string) => `⟦${Number(n) + offset}⟧`,
+    );
+    tokens.push(...m.tokens);
+    return { selector: b.selector, masked: shifted, tokens: m.tokens };
+  });
 
   const englishForms = Object.fromEntries(
     masked.map((m) => [m.selector, m.masked]),
@@ -185,7 +198,13 @@ export async function translatePluralMessage(input: {
 
   const res = await input.client.messages.create({
     model: input.model,
-    max_tokens: 1200,
+    /*
+     * Scaled to the input, not fixed. Six Arabic branches of one long sentence
+     * blew past a flat 1200 and the JSON came back truncated — which surfaces
+     * as `unparseable`, an error that says nothing about the cause. Arabic
+     * tokenises around 2.5x English, times six categories, plus JSON framing.
+     */
+    max_tokens: Math.min(8000, 600 + input.message.length * 18),
     system: PLURAL_SYSTEM,
     messages: [
       {
