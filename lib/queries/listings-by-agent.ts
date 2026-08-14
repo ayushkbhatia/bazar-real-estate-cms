@@ -8,6 +8,9 @@
  */
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
+
 import type { ListingRow } from "@/lib/queries/properties";
 
 // The `hero` slot on a properties row is sourced from the property_media
@@ -16,11 +19,15 @@ import type { ListingRow } from "@/lib/queries/properties";
 // surface its media_assets reference as `hero` so callers can keep using
 // `row.hero?.storage_key`.
 const LISTING_FIELDS =
-  "id, reference, slug, title, mode, price_aed, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text))";
+  "id, reference, slug, title, title_ar, mode, price_aed, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 type RawMediaJoin = {
   role: string;
-  media: { storage_key: string; filename: string; alt_text: string | null } | null;
+  media: {
+    storage_key: string;
+    filename: string;
+    alt_text: string | null;
+  } | null;
 };
 
 export async function listListingsByAgent(
@@ -40,13 +47,24 @@ export async function listListingsByAgent(
     if (error) console.error("[listListingsByAgent]", error);
     return [];
   }
-  return (data as unknown as (Record<string, unknown> & { property_media?: RawMediaJoin[] })[]).map(
-    (r) => {
-      const joins = r.property_media ?? [];
-      const heroJoin = joins.find((j) => j.role === "hero" && j.media);
-      const { property_media, ...rest } = r;
-      void property_media;
-      return { ...rest, hero: heroJoin?.media ?? null } as unknown as ListingRow;
-    },
-  );
+  const locale = await currentLocale();
+  return (
+    data as unknown as (Record<string, unknown> & {
+      property_media?: RawMediaJoin[];
+    })[]
+  ).map((r) => {
+    const joins = r.property_media ?? [];
+    const heroJoin = joins.find((j) => j.role === "hero" && j.media);
+    const { property_media, ...rest } = r;
+    void property_media;
+    return {
+      ...localiseRow(rest, locale),
+      hero: heroJoin?.media
+        ? localiseRow(
+            heroJoin.media as unknown as Record<string, unknown>,
+            locale,
+          )
+        : null,
+    } as unknown as ListingRow;
+  });
 }

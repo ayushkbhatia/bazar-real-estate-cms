@@ -55,26 +55,22 @@ export async function getSubjectByEmail(
   if (!admin) return null;
 
   try {
-    const [enquiries, valuations, mortgages, newsletter] =
-      await Promise.all([
-        admin
-          .from("enquiries")
-          .select("id, name, email, phone, brief_raw, source, status, created_at")
-          .ilike("email", email),
-        admin
-          .from("valuation_requests")
-          .select("*")
-          .ilike("owner_email", email),
-        admin
-          .from("mortgage_inquiries")
-          .select("*")
-          .ilike("applicant_email", email),
-        admin
-          .from("newsletter_subscribers")
-          .select("*")
-          .ilike("email", email)
-          .maybeSingle(),
-      ]);
+    const [enquiries, valuations, mortgages, newsletter] = await Promise.all([
+      admin
+        .from("enquiries")
+        .select("id, name, email, phone, brief_raw, source, status, created_at")
+        .ilike("email", email),
+      admin.from("valuation_requests").select("*").ilike("owner_email", email),
+      admin
+        .from("mortgage_inquiries")
+        .select("*")
+        .ilike("applicant_email", email),
+      admin
+        .from("newsletter_subscribers")
+        .select("*")
+        .ilike("email", email)
+        .maybeSingle(),
+    ]);
 
     const enquiryRows = enquiries.data ?? [];
 
@@ -95,7 +91,9 @@ export async function getSubjectByEmail(
       if (convIds.length > 0) {
         const { data: msgs } = await admin
           .from("messages")
-          .select("id, conversation_id, direction, author_kind, body, channel, sent_at")
+          .select(
+            "id, conversation_id, direction, author_kind, body, channel, sent_at",
+          )
           .in("conversation_id", convIds);
         messageRows = (msgs ?? []) as Record<string, unknown>[];
       }

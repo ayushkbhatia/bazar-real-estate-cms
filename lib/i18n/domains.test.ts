@@ -86,9 +86,10 @@ describe("the registry describes the whole schema", () => {
     for (const domain of DOMAINS) {
       const columns = SCHEMA.get(domain.table);
       for (const entry of domain.columns) {
-        expect(columns?.has(entry.column), `${domain.table}.${entry.column}`).toBe(
-          true,
-        );
+        expect(
+          columns?.has(entry.column),
+          `${domain.table}.${entry.column}`,
+        ).toBe(true);
       }
     }
   });
@@ -98,7 +99,10 @@ describe("the registry describes the whole schema", () => {
     // the one that rots. A file:line makes it re-checkable.
     for (const { table, columns } of DOMAINS) {
       for (const entry of columns) {
-        expect(entry.evidence.length, `${table}.${entry.column}`).toBeGreaterThan(5);
+        expect(
+          entry.evidence.length,
+          `${table}.${entry.column}`,
+        ).toBeGreaterThan(5);
       }
     }
   });
@@ -113,7 +117,8 @@ describe("the remaining work is written down, not remembered", () => {
     for (const domain of DOMAINS) {
       const columns = SCHEMA.get(domain.table);
       for (const entry of domain.columns) {
-        if (entry.strategy === "never" || entry.inBag || entry.labelMapped) continue;
+        if (entry.strategy === "never" || entry.inBag || entry.labelMapped)
+          continue;
         if (!columns?.has(twinName(entry.column))) {
           out.push(`${domain.table}.${entry.column}`);
         }
@@ -139,9 +144,10 @@ describe("the remaining work is written down, not remembered", () => {
         return !entry?.inBag && !entry?.labelMapped;
       });
     for (const { table, column } of shipped) {
-      expect(SCHEMA.get(table)?.has(twinName(column)), `${table}.${column}`).toBe(
-        true,
-      );
+      expect(
+        SCHEMA.get(table)?.has(twinName(column)),
+        `${table}.${column}`,
+      ).toBe(true);
     }
   });
 });
@@ -152,7 +158,9 @@ describe("the registry and the MT pipeline agree", () => {
       const entry = DOMAINS.find((d) => d.table === target.table)?.columns.find(
         (c) => c.column === target.column,
       );
-      expect(entry?.strategy, `${target.table}.${target.column}`).not.toBe("never");
+      expect(entry?.strategy, `${target.table}.${target.column}`).not.toBe(
+        "never",
+      );
     }
   });
 
@@ -169,8 +177,10 @@ describe("the registry and the MT pipeline agree", () => {
       const entry = DOMAINS.find((d) => d.table === target.table)?.columns.find(
         (c) => c.column === target.column,
       );
-      expect(entry, `${target.table}.${target.column} is an MT target but not public`)
-        .toBeDefined();
+      expect(
+        entry,
+        `${target.table}.${target.column} is an MT target but not public`,
+      ).toBeDefined();
     }
   });
 
@@ -202,8 +212,10 @@ describe("editor and read-path coverage", () => {
   it("only claims columns that are actually registered", () => {
     const known = new Set(translatableKeys());
     for (const key of [...WIRED_EDITOR, ...WIRED_READ]) {
-      expect(known.has(key), `${key} is claimed wired but not a registered translatable column`)
-        .toBe(true);
+      expect(
+        known.has(key),
+        `${key} is claimed wired but not a registered translatable column`,
+      ).toBe(true);
     }
   });
 
@@ -213,7 +225,9 @@ describe("editor and read-path coverage", () => {
     const missing = missingEditor();
     expect(Array.isArray(missing)).toBe(true);
     if (missing.length > 0) {
-      console.log(`\n  ${missing.length} column(s) still need an Arabic input:\n    ${missing.join("\n    ")}\n`);
+      console.log(
+        `\n  ${missing.length} column(s) still need an Arabic input:\n    ${missing.join("\n    ")}\n`,
+      );
     }
   });
 
@@ -221,7 +235,9 @@ describe("editor and read-path coverage", () => {
     const missing = missingReadFold();
     expect(Array.isArray(missing)).toBe(true);
     if (missing.length > 0) {
-      console.log(`\n  ${missing.length} column(s) still need a read-path fold:\n    ${missing.join("\n    ")}\n`);
+      console.log(
+        `\n  ${missing.length} column(s) still need a read-path fold:\n    ${missing.join("\n    ")}\n`,
+      );
     }
   });
 

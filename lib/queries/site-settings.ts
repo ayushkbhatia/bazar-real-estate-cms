@@ -68,7 +68,9 @@ function shape(raw: Record<string, unknown> | null | undefined): SiteSettings {
   return {
     brand: brand.success ? brand.data : DEFAULTS.brand,
     display: display.success ? display.data : DEFAULTS.display,
-    lead_routing: lead_routing.success ? lead_routing.data : DEFAULTS.lead_routing,
+    lead_routing: lead_routing.success
+      ? lead_routing.data
+      : DEFAULTS.lead_routing,
     email_templates: email_templates.success
       ? email_templates.data
       : DEFAULTS.email_templates,
@@ -142,7 +144,8 @@ export async function getPublicBranding(
     );
     const style = row.logo_style as string | null;
     return {
-      brand_name: (row.brand_name as string | null) ?? BRANDING_DEFAULTS.brand_name,
+      brand_name:
+        (row.brand_name as string | null) ?? BRANDING_DEFAULTS.brand_name,
       brand_tagline: (row.brand_tagline as string | null) ?? null,
       logo_url: (row.logo_url as string | null) ?? null,
       logo_style: (LOGO_STYLES as readonly string[]).includes(style ?? "")

@@ -59,7 +59,8 @@ export async function getMasterPageContent(
 ): Promise<MasterPageContent> {
   const def = getMasterPage(key);
   if (!def) throw new Error(`Unknown master page: ${key}`);
-  if (!isSupabaseConfigured) return build(resolveSections(def, null, locale), true);
+  if (!isSupabaseConfigured)
+    return build(resolveSections(def, null, locale), true);
 
   try {
     const supabase = createSupabasePublicClient();

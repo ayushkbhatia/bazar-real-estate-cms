@@ -14,8 +14,7 @@ import type { Database } from "@/db/types";
  * for display and `getArticleCategoryLabels()` to resolve arbitrary slugs.
  */
 export type ArticleCategory = string;
-export type ArticleStatus =
-  Database["public"]["Enums"]["article_status"];
+export type ArticleStatus = Database["public"]["Enums"]["article_status"];
 
 export type ArticleListRow = {
   id: string;
@@ -113,10 +112,7 @@ export async function listPublishedArticles(opts: {
   if (opts.authorId) query = query.eq("author_id", opts.authorId);
   query = query
     .order("published_at", { ascending: false })
-    .range(
-      opts.offset ?? 0,
-      (opts.offset ?? 0) + (opts.limit ?? 24) - 1,
-    );
+    .range(opts.offset ?? 0, (opts.offset ?? 0) + (opts.limit ?? 24) - 1);
   const { data, error, count } = await query;
   if (error) {
     console.error("[listPublishedArticles]", error);
@@ -210,11 +206,17 @@ export async function getPublishedArticleBySlug(
     return null;
   }
   if (!data) return null;
-  const [row] = await attachLabels([
-    reshape(
-      localiseDeep(data, locale ?? (await currentLocale())) as unknown as RawJoin,
-    ) as unknown as ArticleDetail,
-  ], locale);
+  const [row] = await attachLabels(
+    [
+      reshape(
+        localiseDeep(
+          data,
+          locale ?? (await currentLocale()),
+        ) as unknown as RawJoin,
+      ) as unknown as ArticleDetail,
+    ],
+    locale,
+  );
   return row;
 }
 
@@ -261,10 +263,14 @@ export async function listAllArticlesForAdmin(opts: {
 }): Promise<{ rows: ArticleListRow[]; total: number }> {
   if (!isSupabaseConfigured) return { rows: [], total: 0 };
   const supabase = await createSupabaseServerClient();
-  const base = supabase.from("articles").select(LIST_FIELDS, { count: "exact" });
-  const { data, error, count } = await (opts.trashed
-    ? base.not("deleted_at", "is", null)
-    : base.is("deleted_at", null))
+  const base = supabase
+    .from("articles")
+    .select(LIST_FIELDS, { count: "exact" });
+  const { data, error, count } = await (
+    opts.trashed
+      ? base.not("deleted_at", "is", null)
+      : base.is("deleted_at", null)
+  )
     .order("updated_at", { ascending: false })
     .range(opts.offset ?? 0, (opts.offset ?? 0) + (opts.limit ?? 100) - 1);
   if (error) {

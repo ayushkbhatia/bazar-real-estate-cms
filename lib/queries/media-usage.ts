@@ -347,7 +347,9 @@ export async function buildMediaUsageIndex(
       const found = await inChunks<Row>("area_guides", (batch) =>
         supabase
           .from("area_guides")
-          .select("area_id, published_at, hero_image_id, areas:area_id(name, slug)")
+          .select(
+            "area_id, published_at, hero_image_id, areas:area_id(name, slug)",
+          )
           .in("hero_image_id", batch),
       );
       for (const r of found) {
@@ -536,7 +538,9 @@ export function collectMediaIds(blocks: unknown): string[] {
       return;
     }
     if (!node || typeof node !== "object") return;
-    for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
+    for (const [key, value] of Object.entries(
+      node as Record<string, unknown>,
+    )) {
       if (key === "media_id" && typeof value === "string" && value) {
         found.add(value);
       } else {

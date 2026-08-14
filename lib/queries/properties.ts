@@ -3,17 +3,28 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import type { PropertyFilters } from "@/lib/filters/property";
 import type { Database } from "@/db/types";
-
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
 type Status = Database["public"]["Enums"]["property_status"];
 type Form = Database["public"]["Enums"]["property_form"];
 
+/*
+ * The Arabic twins ride here rather than being fetched separately, which is
+ * the whole reason twin columns were chosen over a translations table: a
+ * folded read costs no extra round-trip.
+ *
+ * `alt_text_ar` sits INSIDE the nested media join. `localiseRow` walks one
+ * level, so a twin selected at the row level would never reach it — see
+ * `pickHero`.
+ */
 const LISTING_FIELDS =
-  "id, reference, slug, title, short_description, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text))";
+  "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 const DETAIL_FIELDS =
-  "id, reference, slug, title, short_description, description, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, orientation, parking_bays, service_charge_per_ft2, amenities, flags, dld_plot_number, listing_permit_no, address_line, floor, published_at, created_at, updated_at, areas:area_id(name, slug), developments:development_id(name, slug), property_media(role, sort_order, media:media_assets(storage_key, filename, alt_text))";
+  "id, reference, slug, title, title_ar, short_description, short_description_ar, description, description_ar, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, view_ar, orientation, orientation_ar, parking_bays, service_charge_per_ft2, amenities, flags, dld_plot_number, listing_permit_no, address_line, address_line_ar, floor, published_at, created_at, updated_at, areas:area_id(name, slug), developments:development_id(name, slug), property_media(role, sort_order, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 type RawMediaJoin = {
   role: Database["public"]["Enums"]["property_media_role"];
@@ -22,13 +33,20 @@ type RawMediaJoin = {
     storage_key: string;
     filename: string;
     alt_text: string | null;
+    alt_text_ar?: string | null;
   } | null;
 };
 
-function pickHero(joins: RawMediaJoin[] | null | undefined) {
+function pickHero(joins: RawMediaJoin[] | null | undefined, locale: Locale) {
   if (!joins) return null;
   const hero = joins.find((j) => j.role === "hero" && j.media);
-  return hero?.media ?? null;
+  if (!hero?.media) return null;
+  // Folded here because this is the only point the nested media row is
+  // visible; the row-level fold in `attachHero` cannot reach one level down.
+  return localiseRow(
+    hero.media as unknown as Record<string, unknown>,
+    locale,
+  ) as unknown as HeroMedia;
 }
 
 export type HeroMedia = {
@@ -54,7 +72,11 @@ export type ListingRow = {
   beds: number;
   baths: number;
   built_up_ft2: number | null;
-  flags: { exclusive?: boolean; vacant_on_transfer?: boolean; mortgage_eligible?: boolean } | null;
+  flags: {
+    exclusive?: boolean;
+    vacant_on_transfer?: boolean;
+    mortgage_eligible?: boolean;
+  } | null;
   geo: Geo;
   published_at: string | null;
   created_at: string;
@@ -81,11 +103,30 @@ export type PropertyDetail = ListingRow & {
   developments: { name: string; slug: string } | null;
 };
 
+/**
+ * Drop the media join and hoist the hero, folding the row on the way through.
+ *
+ * Deliberately SYNCHRONOUS, taking the locale as an argument. Every one of the
+ * four call sites launders the result through `as unknown as ListingRow[]`,
+ * which would erase a `Promise<ListingRow>[]` completely — lint, typecheck and
+ * build would all pass while every listing card on /buy, /rent, /off-plan,
+ * /commercial, the home grid and /agents/[slug] rendered undefined in every
+ * field. Resolve the locale once in the caller; never make this async.
+ *
+ * `...rest` is a passthrough spread, so without the fold the twins would ship
+ * to the renderer as well as leaving English on /ar — and `compare.ts` proves
+ * that is not academic, since its payload is serialised to the browser.
+ */
 function attachHero<T extends { property_media?: RawMediaJoin[] | null }>(
   row: T,
+  locale: Locale,
 ): Omit<T, "property_media"> & { hero: HeroMedia } {
   const { property_media, ...rest } = row;
-  return { ...rest, hero: pickHero(property_media) };
+  const folded = localiseRow(
+    rest as unknown as Record<string, unknown>,
+    locale,
+  ) as unknown as Omit<T, "property_media">;
+  return { ...folded, hero: pickHero(property_media, locale) };
 }
 
 /** Resolve an area slug into its UUID. Returns null if not found. */
@@ -154,10 +195,14 @@ export async function listPublishedProperties(opts: {
     }
 
     // Sprint 4b: extended facets.
-    if (filters.ft2_min != null) query = query.gte("built_up_ft2", filters.ft2_min);
-    if (filters.ft2_max != null) query = query.lte("built_up_ft2", filters.ft2_max);
-    if (filters.year_min != null) query = query.gte("year_built", filters.year_min);
-    if (filters.year_max != null) query = query.lte("year_built", filters.year_max);
+    if (filters.ft2_min != null)
+      query = query.gte("built_up_ft2", filters.ft2_min);
+    if (filters.ft2_max != null)
+      query = query.lte("built_up_ft2", filters.ft2_max);
+    if (filters.year_min != null)
+      query = query.gte("year_built", filters.year_min);
+    if (filters.year_max != null)
+      query = query.lte("year_built", filters.year_max);
     if (filters.tenure) query = query.eq("tenure", filters.tenure);
     if (filters.furnishing) query = query.eq("furnishing", filters.furnishing);
     if (filters.amenities && filters.amenities.length > 0) {
@@ -190,8 +235,10 @@ export async function listPublishedProperties(opts: {
       query = query.order("price_aed", { ascending: false });
       break;
     case "area_desc":
-      query = query
-        .order("built_up_ft2", { ascending: false, nullsFirst: false });
+      query = query.order("built_up_ft2", {
+        ascending: false,
+        nullsFirst: false,
+      });
       break;
     case "recent":
     default:
@@ -206,8 +253,9 @@ export async function listPublishedProperties(opts: {
     console.error("[listPublishedProperties]", error);
     return { rows: [], total: 0 };
   }
+  const locale = await currentLocale();
   const rows = (data ?? []).map((row) =>
-    attachHero(row as unknown as { property_media: RawMediaJoin[] }),
+    attachHero(row as unknown as { property_media: RawMediaJoin[] }, locale),
   ) as unknown as ListingRow[];
   return { rows, total: count ?? 0 };
 }
@@ -215,6 +263,16 @@ export async function listPublishedProperties(opts: {
 /** Find a single published property by reference (case-insensitive). */
 export async function getPublishedPropertyByReference(
   reference: string,
+  /*
+   * Optional, and it has to be. Callers OUTSIDE the [locale] segment must pass
+   * one explicitly: `app/[locale]/(public)/p/[slug]/opengraph-image.tsx` is a
+   * metadata route, which renders outside the layout tree with no
+   * `setRequestLocale` above it, so an ambient read there is a dynamic API and
+   * silently drops the route off prerendering. `/p/[slug]/opengraph-image` is
+   * in the G-1 baseline; the same trap is already documented on
+   * `article-categories.ts` and `developers-extras.ts`.
+   */
+  locale?: Locale,
 ): Promise<PropertyDetail | null> {
   if (!isSupabaseConfigured) return null;
   const supabase = createSupabasePublicClient();
@@ -232,6 +290,7 @@ export async function getPublishedPropertyByReference(
   if (!data) return null;
   return attachHero(
     data as unknown as { property_media: RawMediaJoin[] },
+    locale ?? (await currentLocale()),
   ) as unknown as PropertyDetail;
 }
 
@@ -262,8 +321,9 @@ export async function getSimilarProperties(
   }
   const { data, error } = await query;
   if (error) return [];
+  const locale = await currentLocale();
   return (data ?? []).map((row) =>
-    attachHero(row as unknown as { property_media: RawMediaJoin[] }),
+    attachHero(row as unknown as { property_media: RawMediaJoin[] }, locale),
   ) as unknown as ListingRow[];
 }
 
@@ -281,14 +341,13 @@ export async function listPropertiesByIds(
     .is("deleted_at", null);
   if (error || !data) return [];
 
+  const locale = await currentLocale();
   const rows = (data ?? []).map((row) =>
-    attachHero(row as unknown as { property_media: RawMediaJoin[] }),
+    attachHero(row as unknown as { property_media: RawMediaJoin[] }, locale),
   ) as unknown as ListingRow[];
 
   const order = new Map(ids.map((id, idx) => [id, idx]));
-  return rows.sort(
-    (a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0),
-  );
+  return rows.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
 }
 
 /** Admin: list ALL properties (any status). Uses the auth-aware server client
@@ -317,8 +376,13 @@ export async function listAllPropertiesForAdmin(opts: {
     console.error("[listAllPropertiesForAdmin]", error);
     return { rows: [], total: 0 };
   }
+  // DEFAULT_LOCALE: the CMS grid is English by decision (ADR-0007), and an
+  // editor needs to see the English they are about to change.
   const rows = (data ?? []).map((row) =>
-    attachHero(row as unknown as { property_media: RawMediaJoin[] }),
+    attachHero(
+      row as unknown as { property_media: RawMediaJoin[] },
+      DEFAULT_LOCALE,
+    ),
   ) as unknown as ListingRow[];
   return { rows, total: count ?? 0 };
 }

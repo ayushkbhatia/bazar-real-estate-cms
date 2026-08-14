@@ -153,8 +153,7 @@ export function pickMedianPerFt2(stats: {
   median_villa_aed_per_ft2?: number;
 }): number | null {
   const value =
-    (stats.median_apt_aed_per_ft2 || 0) ||
-    (stats.median_villa_aed_per_ft2 || 0);
+    stats.median_apt_aed_per_ft2 || 0 || stats.median_villa_aed_per_ft2 || 0;
   return value > 0 ? value : null;
 }
 

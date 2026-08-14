@@ -61,7 +61,8 @@ function parseOptions(value: Json | null): FormOption[] {
     if (!label) continue;
     out.push({
       label,
-      value: typeof record.value === "string" && record.value ? record.value : label,
+      value:
+        typeof record.value === "string" && record.value ? record.value : label,
       intent: typeof record.intent === "string" ? record.intent : null,
     });
   }
@@ -364,8 +365,7 @@ export async function getFormForAdmin(
       error: formError.message,
     };
   }
-  if (!formRow)
-    return { form: fallbackForm, missingTable: false, error: null };
+  if (!formRow) return { form: fallbackForm, missingTable: false, error: null };
 
   const { data: fieldRows, error: fieldError } = await supabase
     .from("form_fields")

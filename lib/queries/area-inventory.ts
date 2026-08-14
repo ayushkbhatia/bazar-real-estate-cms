@@ -21,6 +21,10 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
+import { type Locale } from "@/lib/i18n/locales";
+
 import type { ListingRow } from "@/lib/queries/properties";
 import {
   listPublishedDevelopments,
@@ -29,7 +33,7 @@ import {
 
 /** Mirrors LISTING_FIELDS in lib/queries/properties.ts — keep them in step. */
 const LISTING_FIELDS =
-  "id, reference, slug, title, short_description, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text))";
+  "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 type RawMediaJoin = {
   role: string;
@@ -40,14 +44,21 @@ type RawMediaJoin = {
   } | null;
 };
 
-function attachHero(row: Record<string, unknown>): ListingRow {
+function attachHero(row: Record<string, unknown>, locale: Locale): ListingRow {
   const { property_media, ...rest } = row as {
     property_media?: RawMediaJoin[] | null;
   } & Record<string, unknown>;
   const hero =
     (property_media ?? []).find((j) => j.role === "hero" && j.media)?.media ??
     null;
-  return { ...rest, hero } as unknown as ListingRow;
+  // Folded in two places, because the row and its media are two levels:
+  // `localiseRow` walks one, and the alt text lives inside the join.
+  return {
+    ...localiseRow(rest, locale),
+    hero: hero
+      ? localiseRow(hero as unknown as Record<string, unknown>, locale)
+      : null,
+  } as unknown as ListingRow;
 }
 
 /** An area and the sub-communities filed under it. */
@@ -151,13 +162,16 @@ export async function getAreaInventory(
       (d) => d.area?.slug && areaSlugs.has(d.area.slug),
     );
 
+    // `.map(attachHero)` would hand the array INDEX to the second parameter —
+    // the locale — so the arrow is load-bearing, not style.
+    const locale = await currentLocale();
     return {
       areaIds,
       forSale: ((sale.data ?? []) as unknown as Record<string, unknown>[]).map(
-        attachHero,
+        (r) => attachHero(r, locale),
       ),
       forRent: ((rent.data ?? []) as unknown as Record<string, unknown>[]).map(
-        attachHero,
+        (r) => attachHero(r, locale),
       ),
       developments,
       saleTotal: sale.count ?? 0,

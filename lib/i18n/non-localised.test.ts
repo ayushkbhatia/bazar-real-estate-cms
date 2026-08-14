@@ -26,7 +26,9 @@ function routeHandlerPaths(): string[] {
       const abs = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         // Route groups like (public) don't appear in the URL.
-        const segment = /^\(.*\)$/.test(entry.name) ? url : `${url}/${entry.name}`;
+        const segment = /^\(.*\)$/.test(entry.name)
+          ? url
+          : `${url}/${entry.name}`;
         walk(abs, segment);
       } else if (entry.name === "route.ts") {
         out.push(url || "/");

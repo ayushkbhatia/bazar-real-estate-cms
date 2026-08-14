@@ -15,10 +15,7 @@ import { localiseRow } from "@/lib/i18n/localise";
 import { type Locale } from "@/lib/i18n/locales";
 import { mediaPublicUrl } from "@/lib/media";
 import { SEED_DEVELOPERS } from "@/lib/seeds/developers";
-import type {
-  DeveloperProfileRow,
-  DeveloperAward,
-} from "@/lib/types/sprint-8";
+import type { DeveloperProfileRow, DeveloperAward } from "@/lib/types/sprint-8";
 
 export type DeveloperDetail = {
   id: string;
@@ -182,7 +179,8 @@ export async function listDeveloperRecords(): Promise<DeveloperRecordRow[]> {
     const tally = (list: { developer_id: string | null }[] | null) => {
       const out = new Map<string, number>();
       for (const r of list ?? []) {
-        if (r.developer_id) out.set(r.developer_id, (out.get(r.developer_id) ?? 0) + 1);
+        if (r.developer_id)
+          out.set(r.developer_id, (out.get(r.developer_id) ?? 0) + 1);
       }
       return out;
     };
@@ -257,7 +255,11 @@ export async function listDeveloperListings(
   developerId: string,
   limit = 6,
 ): Promise<DeveloperListing[]> {
-  if (!isSupabaseConfigured || !developerId || developerId.startsWith("seed:")) {
+  if (
+    !isSupabaseConfigured ||
+    !developerId ||
+    developerId.startsWith("seed:")
+  ) {
     return [];
   }
   try {
@@ -267,7 +269,7 @@ export async function listDeveloperListings(
       .select(
         // `properties` has three FKs into `areas` (area, sub-community, building),
         // so the embed has to name the constraint — the bare alias is ambiguous.
-        "id, reference, slug, title, price_aed, beds, baths, built_up_ft2, flags, published_at, areas!properties_area_id_fkey(name, slug), property_media(role, media:media_assets(storage_key, alt_text))",
+        "id, reference, slug, title, title_ar, price_aed, beds, baths, built_up_ft2, flags, published_at, areas!properties_area_id_fkey(name, slug), property_media(role, media:media_assets(storage_key, alt_text, alt_text_ar))",
       )
       .eq("developer_id", developerId)
       .eq("status", "published")
@@ -276,7 +278,14 @@ export async function listDeveloperListings(
       .limit(limit);
     if (error || !data) return [];
 
-    return data.map((r) => {
+    // An explicit-literal shaper: the fold has to run on the raw row before
+    // this builds its object, or it is discarded.
+    const locale = await currentLocale();
+    return data.map((raw) => {
+      const r = localiseRow(
+        raw as unknown as Record<string, unknown>,
+        locale,
+      ) as unknown as typeof raw;
       const areaArr = r.areas as
         | { name: string; slug: string }
         | { name: string; slug: string }[]
@@ -285,7 +294,14 @@ export async function listDeveloperListings(
         role: string;
         media: { storage_key: string; alt_text: string | null } | null;
       }[];
-      const hero = joins.find((j) => j.role === "hero" && j.media)?.media ?? null;
+      const heroRaw =
+        joins.find((j) => j.role === "hero" && j.media)?.media ?? null;
+      const hero = heroRaw
+        ? (localiseRow(
+            heroRaw as unknown as Record<string, unknown>,
+            locale,
+          ) as unknown as typeof heroRaw)
+        : null;
       return {
         id: r.id,
         reference: r.reference,
@@ -309,7 +325,11 @@ export async function listDeveloperListings(
 export async function countDeveloperListings(
   developerId: string,
 ): Promise<number> {
-  if (!isSupabaseConfigured || !developerId || developerId.startsWith("seed:")) {
+  if (
+    !isSupabaseConfigured ||
+    !developerId ||
+    developerId.startsWith("seed:")
+  ) {
     return 0;
   }
   try {
@@ -353,9 +373,7 @@ export async function getDeveloperBySlug(
           .maybeSingle();
         const p = (profile as DeveloperProfileRow | null) ?? null;
         const logoArr = dev.logo as
-          | { storage_key: string }
-          | { storage_key: string }[]
-          | null;
+          { storage_key: string } | { storage_key: string }[] | null;
         const logoSingle = Array.isArray(logoArr) ? logoArr[0] : logoArr;
         return {
           id: dev.id,
@@ -408,7 +426,11 @@ export async function getDeveloperBySlug(
 export async function listDeveloperDevelopments(
   developerId: string,
 ): Promise<DeveloperDevelopment[]> {
-  if (!isSupabaseConfigured || !developerId || developerId.startsWith("seed:")) {
+  if (
+    !isSupabaseConfigured ||
+    !developerId ||
+    developerId.startsWith("seed:")
+  ) {
     return [];
   }
   try {

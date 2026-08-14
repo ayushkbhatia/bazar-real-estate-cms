@@ -29,29 +29,30 @@ import type { Megamenu, MegamenuFeaturedTile } from "@/lib/schemas/megamenu";
  */
 export const getPublishedMegamenuHydrated = cache(
   async (locale?: Locale): Promise<Megamenu> => {
-  const [menu, rent] = await Promise.all([
-    getPublishedMegamenu(locale),
-    listPublishedProperties({ mode: "rent", limit: 2 }),
-  ]);
+    const [menu, rent] = await Promise.all([
+      getPublishedMegamenu(locale),
+      listPublishedProperties({ mode: "rent", limit: 2 }),
+    ]);
 
-  const rentTab = menu.tabs.find((t) => t.slug === "rent");
-  if (!rentTab) return menu;
+    const rentTab = menu.tabs.find((t) => t.slug === "rent");
+    if (!rentTab) return menu;
 
-  const { rows } = rent;
-  if (rows.length === 0) return menu; // keep the seeded fallback tiles
+    const { rows } = rent;
+    if (rows.length === 0) return menu; // keep the seeded fallback tiles
 
-  const tiles: MegamenuFeaturedTile[] = rows.slice(0, 2).map((row, i) => ({
-    id: `rent-featured-${row.id}`,
-    position: i,
-    variant: i === 0 ? "dark" : "light",
-    badge_label: "For rent",
-    badge_kind: "dot",
-    headline: row.title,
-    href: propertyUrl(row),
-    media_asset_id: null,
-    cta_label: `AED ${Number(row.price_aed).toLocaleString("en-US")}/yr`,
-  }));
+    const tiles: MegamenuFeaturedTile[] = rows.slice(0, 2).map((row, i) => ({
+      id: `rent-featured-${row.id}`,
+      position: i,
+      variant: i === 0 ? "dark" : "light",
+      badge_label: "For rent",
+      badge_kind: "dot",
+      headline: row.title,
+      href: propertyUrl(row),
+      media_asset_id: null,
+      cta_label: `AED ${Number(row.price_aed).toLocaleString("en-US")}/yr`,
+    }));
 
-  rentTab.featured = tiles;
-  return menu;
-});
+    rentTab.featured = tiles;
+    return menu;
+  },
+);

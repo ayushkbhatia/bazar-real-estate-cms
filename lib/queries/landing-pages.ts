@@ -3,10 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
-import {
-  parseLandingDocument,
-  type BlockInstance,
-} from "@/lib/page-builder";
+import { parseLandingDocument, type BlockInstance } from "@/lib/page-builder";
 
 export type LandingStatus = "draft" | "published";
 
@@ -159,7 +156,10 @@ export async function listLandingPagesForAdmin(): Promise<LandingListRow[]> {
   }
   return (data ?? []).map((r) => {
     const live = parseLandingDocument(r.blocks).blocks;
-    const draft = r.draft_blocks === null ? null : parseLandingDocument(r.draft_blocks).blocks;
+    const draft =
+      r.draft_blocks === null
+        ? null
+        : parseLandingDocument(r.draft_blocks).blocks;
     return {
       id: r.id,
       slug: r.slug,

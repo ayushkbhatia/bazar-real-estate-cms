@@ -77,7 +77,9 @@ describe("advisor portraits", () => {
     // on storage key — without it the library would offer a live headshot for
     // deletion.
     expect(deriveMediaState([portrait])).toBe("live");
-    expect(canTrash({ state: "live", indexPartial: false }).allowed).toBe(false);
+    expect(canTrash({ state: "live", indexPartial: false }).allowed).toBe(
+      false,
+    );
   });
 });
 

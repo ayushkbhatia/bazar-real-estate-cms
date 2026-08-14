@@ -119,11 +119,7 @@ export async function resolveArticleCategoryByUrlSlug(
   const wanted = urlSlug.toLowerCase();
   const underscored = wanted.replace(/-/g, "_");
   const rows = await listAllArticleCategories();
-  return (
-    rows.find(
-      (r) => r.slug === wanted || r.slug === underscored,
-    ) ?? null
-  );
+  return rows.find((r) => r.slug === wanted || r.slug === underscored) ?? null;
 }
 
 /** Convenience for callers that only need a readable label for one slug. */

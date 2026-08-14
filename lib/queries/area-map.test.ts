@@ -10,7 +10,10 @@ import {
 
 describe("parseGeo", () => {
   it("reads a well-formed {lat,lng} blob", () => {
-    expect(parseGeo({ lat: 24.5, lng: 54.4 })).toEqual({ lat: 24.5, lng: 54.4 });
+    expect(parseGeo({ lat: 24.5, lng: 54.4 })).toEqual({
+      lat: 24.5,
+      lng: 54.4,
+    });
   });
 
   it("coerces numeric strings (jsonb round-trips)", () => {
@@ -83,7 +86,10 @@ describe("pickMedianPerFt2", () => {
 
   it("returns null when both are zero / missing", () => {
     expect(
-      pickMedianPerFt2({ median_apt_aed_per_ft2: 0, median_villa_aed_per_ft2: 0 }),
+      pickMedianPerFt2({
+        median_apt_aed_per_ft2: 0,
+        median_villa_aed_per_ft2: 0,
+      }),
     ).toBeNull();
     expect(pickMedianPerFt2({})).toBeNull();
   });

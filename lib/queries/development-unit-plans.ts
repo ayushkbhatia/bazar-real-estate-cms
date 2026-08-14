@@ -141,7 +141,8 @@ export async function listUnitTypesForPage(
       blurb: t.blurb,
       size_from_ft2: t.size_from_ft2,
       size_to_ft2: t.size_to_ft2,
-      price_from_aed: t.price_from_aed != null ? Number(t.price_from_aed) : null,
+      price_from_aed:
+        t.price_from_aed != null ? Number(t.price_from_aed) : null,
       plans: (t.plans ?? [])
         .filter((p) => p.enabled)
         .sort(bySortOrder)
@@ -161,7 +162,9 @@ export async function listUnitTypesForPage(
  * `bedrooms_text` means even those pages say something true about the project
  * rather than showing a hole where a section should be.
  */
-export function placeholderUnitTypes(bedroomsText: string | null): UnitTypeCard[] {
+export function placeholderUnitTypes(
+  bedroomsText: string | null,
+): UnitTypeCard[] {
   return seedUnitTypes(bedroomsText).map((t, i) => ({
     id: `placeholder-${i}`,
     label: t.label,

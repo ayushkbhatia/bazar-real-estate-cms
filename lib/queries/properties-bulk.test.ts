@@ -31,9 +31,9 @@ describe("evaluateBulkPublishability", () => {
     const labels = evaluateBulkPublishability(fixture()).checks.map((c) =>
       c.label.toLowerCase(),
     );
-    expect(labels.some((l) => /form a|title deed|noc|attorney|hero/.test(l))).toBe(
-      false,
-    );
+    expect(
+      labels.some((l) => /form a|title deed|noc|attorney|hero/.test(l)),
+    ).toBe(false);
   });
 
   it("flags a missing permit number", () => {

@@ -28,7 +28,8 @@ export async function attachImageUrls(
     }
     Object.values(v).forEach(collect);
   };
-  for (const section of sections) Object.values(section.values).forEach(collect);
+  for (const section of sections)
+    Object.values(section.values).forEach(collect);
 
   const ids = [...new Set(images.map((i) => i.media_id).filter(Boolean))];
   if (ids.length === 0) return;
@@ -52,4 +53,3 @@ export async function attachImageUrls(
     console.error("[master-pages] failed to resolve image urls", error);
   }
 }
-

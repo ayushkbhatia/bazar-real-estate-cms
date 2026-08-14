@@ -21,6 +21,10 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
+import { type Locale } from "@/lib/i18n/locales";
+
 import type { ListingRow } from "@/lib/queries/properties";
 import type { Database } from "@/db/types";
 
@@ -29,27 +33,44 @@ type PropertyTypeEnum = Database["public"]["Enums"]["property_type"];
 
 type RawMediaJoin = {
   role: string;
-  media: { storage_key: string; filename: string; alt_text: string | null } | null;
+  media: {
+    storage_key: string;
+    filename: string;
+    alt_text: string | null;
+  } | null;
 };
 
 const LISTING_FIELDS =
-  "id, reference, slug, title, mode, price_aed, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text))";
+  "id, reference, slug, title, title_ar, mode, price_aed, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 function mapRows(
   data: (Record<string, unknown> & { property_media?: RawMediaJoin[] })[],
+  locale: Locale,
 ): ListingRow[] {
+  // Folded in two places, because the row and its media are two levels:
+  // `localiseRow` walks one, and the alt text lives inside the join.
   return data.map((r) => {
     const joins = r.property_media ?? [];
     const heroJoin = joins.find((j) => j.role === "hero" && j.media);
     const { property_media, ...rest } = r;
     void property_media;
-    return { ...rest, hero: heroJoin?.media ?? null } as unknown as ListingRow;
+    return {
+      ...localiseRow(rest, locale),
+      hero: heroJoin?.media
+        ? localiseRow(
+            heroJoin.media as unknown as Record<string, unknown>,
+            locale,
+          )
+        : null,
+    } as unknown as ListingRow;
   });
 }
 
-export async function listExclusiveProperties(opts: {
-  limit?: number;
-} = {}): Promise<ListingRow[]> {
+export async function listExclusiveProperties(
+  opts: {
+    limit?: number;
+  } = {},
+): Promise<ListingRow[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = createSupabasePublicClient();
   const { data, error } = await supabase
@@ -64,13 +85,18 @@ export async function listExclusiveProperties(opts: {
     return [];
   }
   return mapRows(
-    data as unknown as (Record<string, unknown> & { property_media?: RawMediaJoin[] })[],
+    data as unknown as (Record<string, unknown> & {
+      property_media?: RawMediaJoin[];
+    })[],
+    await currentLocale(),
   );
 }
 
-export async function listNewThisWeek(opts: {
-  limit?: number;
-} = {}): Promise<ListingRow[]> {
+export async function listNewThisWeek(
+  opts: {
+    limit?: number;
+  } = {},
+): Promise<ListingRow[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = createSupabasePublicClient();
   const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
@@ -86,7 +112,10 @@ export async function listNewThisWeek(opts: {
     return [];
   }
   return mapRows(
-    data as unknown as (Record<string, unknown> & { property_media?: RawMediaJoin[] })[],
+    data as unknown as (Record<string, unknown> & {
+      property_media?: RawMediaJoin[];
+    })[],
+    await currentLocale(),
   );
 }
 
@@ -127,12 +156,15 @@ export async function listFeaturedByType(
     data as unknown as (Record<string, unknown> & {
       property_media?: RawMediaJoin[];
     })[],
+    await currentLocale(),
   );
 }
 
-export async function listPriceDrops(opts: {
-  limit?: number;
-} = {}): Promise<ListingRow[]> {
+export async function listPriceDrops(
+  opts: {
+    limit?: number;
+  } = {},
+): Promise<ListingRow[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = createSupabasePublicClient();
   // No `price_changes` table yet — surface listings flagged `price_drop`.
@@ -150,6 +182,9 @@ export async function listPriceDrops(opts: {
     return [];
   }
   return mapRows(
-    data as unknown as (Record<string, unknown> & { property_media?: RawMediaJoin[] })[],
+    data as unknown as (Record<string, unknown> & {
+      property_media?: RawMediaJoin[];
+    })[],
+    await currentLocale(),
   );
 }

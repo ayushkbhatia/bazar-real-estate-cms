@@ -142,7 +142,8 @@ describe("message catalogues", () => {
         if (typeof value !== "string" || !value.includes("plural,")) continue;
         const declared = [...value.matchAll(/(\w+)\s*\{/g)].map((m) => m[1]);
         const missing = required.filter((c) => !declared.includes(c));
-        if (missing.length) incomplete.push(`${ns}.${key} — missing ${missing.join(", ")}`);
+        if (missing.length)
+          incomplete.push(`${ns}.${key} — missing ${missing.join(", ")}`);
       }
     }
 
@@ -162,9 +163,13 @@ describe("message catalogues", () => {
         const a = valueAt(en, key);
         const b = valueAt(ar, key);
         if (typeof a !== "string" || typeof b !== "string") continue;
-        if (icuArguments(a) !== icuArguments(b)) mismatched.push(`${ns}.${key}`);
+        if (icuArguments(a) !== icuArguments(b))
+          mismatched.push(`${ns}.${key}`);
       }
     }
-    expect(mismatched, `placeholders differ:\n${mismatched.join("\n")}`).toEqual([]);
+    expect(
+      mismatched,
+      `placeholders differ:\n${mismatched.join("\n")}`,
+    ).toEqual([]);
   });
 });

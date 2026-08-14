@@ -47,24 +47,28 @@ function rawRevalidateCalls(): Call[] {
     { cwd: REPO_ROOT, encoding: "utf8" },
   );
 
-  return out
-    .trim()
-    .split("\n")
-    .filter(Boolean)
-    .map((row) => {
-      const [file, line, ...rest] = row.split(":");
-      return { file, line: Number(line), text: rest.join(":").trim() };
-    })
-    .filter((c) => c.file !== HELPER)
-    // Specs describe call sites, they are not call sites — including this one.
-    .filter((c) => !/\.test\.tsx?$/.test(c.file))
-    // Comments and imports mention the name without calling it.
-    .filter((c) => !c.text.startsWith("*") && !c.text.startsWith("//"))
-    .filter((c) => !c.text.startsWith("import"));
+  return (
+    out
+      .trim()
+      .split("\n")
+      .filter(Boolean)
+      .map((row) => {
+        const [file, line, ...rest] = row.split(":");
+        return { file, line: Number(line), text: rest.join(":").trim() };
+      })
+      .filter((c) => c.file !== HELPER)
+      // Specs describe call sites, they are not call sites — including this one.
+      .filter((c) => !/\.test\.tsx?$/.test(c.file))
+      // Comments and imports mention the name without calling it.
+      .filter((c) => !c.text.startsWith("*") && !c.text.startsWith("//"))
+      .filter((c) => !c.text.startsWith("import"))
+  );
 }
 
 function isExempt(text: string): boolean {
-  const arg = text.slice(text.indexOf("revalidatePath(") + "revalidatePath(".length);
+  const arg = text.slice(
+    text.indexOf("revalidatePath(") + "revalidatePath(".length,
+  );
   const literal = arg.match(/^["'`]([^"'`]*)["'`]/);
   if (literal) {
     const p = literal[1];
@@ -93,7 +97,9 @@ describe("public revalidation is locale-aware", () => {
     expect(helper).toContain("for (const locale of LOCALES)");
     // A helper that forgot the loop would pass the grep above while still
     // revalidating exactly one locale — the failure this file exists to stop.
-    expect(helper).toContain("revalidatePath(revalidateKey(path, locale), type)");
+    expect(helper).toContain(
+      "revalidatePath(revalidateKey(path, locale), type)",
+    );
   });
 
   it("still has admin call sites, so the exemption is load-bearing", () => {

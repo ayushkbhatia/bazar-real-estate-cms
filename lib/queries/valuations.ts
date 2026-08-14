@@ -3,8 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import type { Database } from "@/db/types";
 
-export type ValuationStatus =
-  Database["public"]["Enums"]["valuation_status"];
+export type ValuationStatus = Database["public"]["Enums"]["valuation_status"];
 
 export type ValuationListRow = {
   id: string;
@@ -36,10 +35,12 @@ const LIST_FIELDS =
 const DETAIL_FIELDS =
   "id, account_id, owner_name, owner_email, owner_phone, marketing_opt_in, property_type, beds, baths, built_up_ft2, floor, building_name, address_line, area_id, unit_number, condition, upgrades, furnishing, view_description, tenancy, mortgage_state, estimate_low_aed, estimate_mid_aed, estimate_high_aed, estimate_basis, status, assigned_advisor_id, advisor_estimate_aed, advisor_notes, reviewed_at, sent_at, created_at, updated_at, areas:area_id(name, slug), staff:assigned_advisor_id(display_name, user_id)";
 
-export async function listValuationRequests(opts: {
-  status?: ValuationStatus | "all";
-  limit?: number;
-} = {}): Promise<ValuationListRow[]> {
+export async function listValuationRequests(
+  opts: {
+    status?: ValuationStatus | "all";
+    limit?: number;
+  } = {},
+): Promise<ValuationListRow[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = await createSupabaseServerClient();
   let q = supabase
@@ -65,9 +66,7 @@ export async function listValuationRequests(opts: {
   });
 }
 
-export type ValuationDetail = Awaited<
-  ReturnType<typeof getValuationRequest>
->;
+export type ValuationDetail = Awaited<ReturnType<typeof getValuationRequest>>;
 
 export async function getValuationRequest(id: string) {
   if (!isSupabaseConfigured) return null;

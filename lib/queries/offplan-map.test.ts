@@ -4,7 +4,8 @@ import type { DevelopmentIndexRow } from "./developments";
 
 /** Minimal published-development row for the pure transform. */
 function dev(
-  over: Partial<DevelopmentIndexRow> & Pick<DevelopmentIndexRow, "id" | "slug" | "name">,
+  over: Partial<DevelopmentIndexRow> &
+    Pick<DevelopmentIndexRow, "id" | "slug" | "name">,
 ): DevelopmentIndexRow {
   return {
     status: "on_sale",
@@ -26,10 +27,22 @@ const YAS = { name: "Yas Island", slug: "yas-island" };
 
 describe("buildOffplanMap", () => {
   const rows = [
-    dev({ id: "1", slug: "bulgari", name: "Bulgari", area: SAADIYAT, starting_price: 9_500_000 }),
+    dev({
+      id: "1",
+      slug: "bulgari",
+      name: "Bulgari",
+      area: SAADIYAT,
+      starting_price: 9_500_000,
+    }),
     dev({ id: "2", slug: "mandarin", name: "Mandarin", area: SAADIYAT }),
     dev({ id: "3", slug: "bayviews", name: "Bayviews", area: SAADIYAT }),
-    dev({ id: "4", slug: "solaya", name: "Solaya", area: YAS, developer: { name: "Aldar", slug: "aldar" } }),
+    dev({
+      id: "4",
+      slug: "solaya",
+      name: "Solaya",
+      area: YAS,
+      developer: { name: "Aldar", slug: "aldar" },
+    }),
   ];
 
   it("groups projects by area with counts, busiest first", () => {
@@ -164,7 +177,12 @@ describe("buildOffplanMap", () => {
     const { pins, dots, groups, options } = buildOffplanMap([
       ...rows,
       dev({ id: "5", slug: "orphan", name: "Orphan", area: null }),
-      dev({ id: "6", slug: "unknown", name: "Unknown", area: { name: "Nowhere", slug: "nowhere" } }),
+      dev({
+        id: "6",
+        slug: "unknown",
+        name: "Unknown",
+        area: { name: "Nowhere", slug: "nowhere" },
+      }),
     ]);
     expect(pins.map((p) => p.slug)).not.toContain("nowhere");
     expect(dots.map((d) => d.slug)).not.toContain("orphan");
@@ -184,8 +202,21 @@ describe("parseGroupLimit", () => {
   it("treats anything that isn't one as no cap, so a rail is never empty", () => {
     // The master-page editor has no number field, so this is free text and an
     // editor can type whatever they like into it.
-    for (const bad of [null, undefined, "", "   ", "0", "-3", "twelve", "3.5", "1e3"]) {
-      expect(parseGroupLimit(bad), `${JSON.stringify(bad)} should mean no cap`).toBeNull();
+    for (const bad of [
+      null,
+      undefined,
+      "",
+      "   ",
+      "0",
+      "-3",
+      "twelve",
+      "3.5",
+      "1e3",
+    ]) {
+      expect(
+        parseGroupLimit(bad),
+        `${JSON.stringify(bad)} should mean no cap`,
+      ).toBeNull();
     }
   });
 });

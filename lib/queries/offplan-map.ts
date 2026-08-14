@@ -225,7 +225,9 @@ export function buildOffplanMap(
  * true total either way, so an area capped at 12 still reads "30 projects" and
  * still links out to the rest.
  */
-export function parseGroupLimit(value: string | null | undefined): number | null {
+export function parseGroupLimit(
+  value: string | null | undefined,
+): number | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   if (!/^\d+$/.test(trimmed)) return null;

@@ -4,8 +4,7 @@ import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured, env } from "@/lib/env";
 import type { Database } from "@/db/types";
 
-export type NewsletterStatus =
-  Database["public"]["Enums"]["newsletter_status"];
+export type NewsletterStatus = Database["public"]["Enums"]["newsletter_status"];
 
 export type NewsletterRow = {
   id: string;

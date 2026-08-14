@@ -4,12 +4,18 @@ import { describe, expect, it } from "vitest";
 import { landingAdminUrl, landingUrl } from "./landing-pages";
 
 const root = process.cwd();
-const querySource = readFileSync(join(root, "lib/queries/landing-pages.ts"), "utf8");
+const querySource = readFileSync(
+  join(root, "lib/queries/landing-pages.ts"),
+  "utf8",
+);
 const actionSource = readFileSync(
   join(root, "app/[locale]/(admin)/admin/page-builder/_actions.ts"),
   "utf8",
 );
-const usageSource = readFileSync(join(root, "lib/queries/media-usage.ts"), "utf8");
+const usageSource = readFileSync(
+  join(root, "lib/queries/media-usage.ts"),
+  "utf8",
+);
 
 /** The `PUBLIC_FIELDS = "..."` string, as written. */
 function constant(source: string, name: string): string {
@@ -32,7 +38,14 @@ describe("the public select", () => {
 
   it("still selects everything the public renderer needs", () => {
     const fields = constant(querySource, "PUBLIC_FIELDS");
-    for (const field of ["slug", "title", "status", "noindex", "blocks", "seo"]) {
+    for (const field of [
+      "slug",
+      "title",
+      "status",
+      "noindex",
+      "blocks",
+      "seo",
+    ]) {
       expect(fields).toContain(field);
     }
   });
@@ -60,9 +73,9 @@ describe("server-action role gates", () => {
     // RLS is not the boundary here: `landing_pages_staff_all` grants `for all`
     // to anyone `is_staff()` accepts, which includes agent and support.
     // `requireRole` is the only real gate, so every action must name one.
-    const actions = [...actionSource.matchAll(/export async function (\w+)\(/g)].map(
-      (m) => m[1],
-    );
+    const actions = [
+      ...actionSource.matchAll(/export async function (\w+)\(/g),
+    ].map((m) => m[1]);
     expect(actions.length).toBeGreaterThan(5);
     for (const name of actions) {
       const body = actionSource.slice(
@@ -80,14 +93,20 @@ describe("server-action role gates", () => {
     expect(actionSource).toContain(
       'const LANDING_DELETE_ROLES = ["admin", "editor"] as const',
     );
-    expect(actionSource).toMatch(/deleteLandingPage[\s\S]*?LANDING_DELETE_ROLES/);
+    expect(actionSource).toMatch(
+      /deleteLandingPage[\s\S]*?LANDING_DELETE_ROLES/,
+    );
   });
 
   it("only ever writes draft_blocks when saving the document", () => {
     // The whole point of the table. If saveLandingBlocks ever touched `blocks`,
     // editing a live campaign page would publish every keystroke's save.
-    const start = actionSource.indexOf("export async function saveLandingBlocks");
-    const end = actionSource.indexOf("export async function discardLandingDraft");
+    const start = actionSource.indexOf(
+      "export async function saveLandingBlocks",
+    );
+    const end = actionSource.indexOf(
+      "export async function discardLandingDraft",
+    );
     const body = actionSource.slice(start, end);
     expect(body).toContain("draft_blocks:");
     expect(body).not.toMatch(/\.update\(\{\s*blocks:/);

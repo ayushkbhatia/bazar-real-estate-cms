@@ -65,9 +65,21 @@ export const DOMAINS: Domain[] = [
   {
     table: "properties",
     columns: [
-      { column: "title", strategy: "machine", evidence: "p/[slug]/page.tsx:467" },
-      { column: "short_description", strategy: "machine", evidence: "p/[slug]/page.tsx:201" },
-      { column: "description", strategy: "machine", evidence: "p/[slug]/page.tsx:532" },
+      {
+        column: "title",
+        strategy: "machine",
+        evidence: "p/[slug]/page.tsx:467",
+      },
+      {
+        column: "short_description",
+        strategy: "machine",
+        evidence: "p/[slug]/page.tsx:201",
+      },
+      {
+        column: "description",
+        strategy: "machine",
+        evidence: "p/[slug]/page.tsx:532",
+      },
       {
         column: "address_line",
         strategy: "hand",
@@ -75,9 +87,21 @@ export const DOMAINS: Domain[] = [
         note: "Place-name heavy; a machine pass mangles Abu Dhabi street naming.",
       },
       { column: "view", strategy: "hand", evidence: "p/[slug]/page.tsx:344" },
-      { column: "orientation", strategy: "hand", evidence: "p/[slug]/page.tsx:346" },
-      { column: "reference", strategy: "never", evidence: "p/[slug]/page.tsx:423" },
-      { column: "listing_permit_no", strategy: "never", evidence: "p/[slug]/page.tsx:594" },
+      {
+        column: "orientation",
+        strategy: "hand",
+        evidence: "p/[slug]/page.tsx:346",
+      },
+      {
+        column: "reference",
+        strategy: "never",
+        evidence: "p/[slug]/page.tsx:423",
+      },
+      {
+        column: "listing_permit_no",
+        strategy: "never",
+        evidence: "p/[slug]/page.tsx:594",
+      },
       {
         column: "dld_plot_number",
         strategy: "never",
@@ -100,8 +124,16 @@ export const DOMAINS: Domain[] = [
   {
     table: "areas",
     columns: [
-      { column: "name", strategy: "hand", evidence: "areas/[slug]/page.tsx:268" },
-      { column: "description", strategy: "hand", evidence: "areas/[slug]/page.tsx:272" },
+      {
+        column: "name",
+        strategy: "hand",
+        evidence: "areas/[slug]/page.tsx:268",
+      },
+      {
+        column: "description",
+        strategy: "hand",
+        evidence: "areas/[slug]/page.tsx:272",
+      },
       {
         column: "seo_meta",
         strategy: "hand",
@@ -114,7 +146,11 @@ export const DOMAINS: Domain[] = [
   {
     table: "area_guides",
     columns: [
-      { column: "intro_md", strategy: "hand", evidence: "areas/[slug]/page.tsx:272" },
+      {
+        column: "intro_md",
+        strategy: "hand",
+        evidence: "areas/[slug]/page.tsx:272",
+      },
       {
         column: "amenities",
         strategy: "hand",
@@ -134,61 +170,139 @@ export const DOMAINS: Domain[] = [
     table: "developers",
     columns: [
       { column: "name", strategy: "hand", evidence: "developers/page.tsx:160" },
-      { column: "description", strategy: "hand", evidence: "developers/page.tsx:164" },
+      {
+        column: "description",
+        strategy: "hand",
+        evidence: "developers/page.tsx:164",
+      },
     ],
   },
   {
     table: "developments",
     columns: [
-      { column: "name", strategy: "hand", evidence: "developments/[slug]/page.tsx:753" },
-      { column: "tagline", strategy: "hand", evidence: "developments/[slug]/page.tsx:732" },
-      { column: "description", strategy: "machine", evidence: "developments/[slug]/page.tsx:760" },
+      {
+        column: "name",
+        strategy: "hand",
+        evidence: "developments/[slug]/page.tsx:753",
+      },
+      {
+        column: "tagline",
+        strategy: "hand",
+        evidence: "developments/[slug]/page.tsx:732",
+      },
+      {
+        column: "description",
+        strategy: "machine",
+        evidence: "developments/[slug]/page.tsx:760",
+      },
       {
         column: "vision",
         strategy: "machine",
         evidence: "developments/[slug]/page.tsx:361",
         note: "Longest field on the record (4,000 chars) — the shape MT is built for.",
       },
-      { column: "bedrooms_text", strategy: "hand", evidence: "developments/[slug]/page.tsx:772" },
-      { column: "amenities", strategy: "hand", evidence: "developments/[slug]/page.tsx:560" },
+      {
+        column: "bedrooms_text",
+        strategy: "hand",
+        evidence: "developments/[slug]/page.tsx:772",
+      },
+      {
+        column: "amenities",
+        strategy: "hand",
+        evidence: "developments/[slug]/page.tsx:560",
+      },
       {
         column: "escrow_account",
         strategy: "never",
         evidence: "_components/development-faq.tsx:134",
         note: "Regulatory-financial identifier inside the RERA escrow answer.",
       },
-      { column: "facts", strategy: "hand", evidence: "developments/[slug]/page.tsx:373", inBag: true },
-      { column: "master_plan", strategy: "hand", evidence: "developments/[slug]/page.tsx:414", inBag: true },
-      { column: "payment_plan", strategy: "hand", evidence: "developments/[slug]/page.tsx:792", inBag: true },
-      { column: "meta", strategy: "hand", evidence: "_components/feature-row.tsx:132", inBag: true },
+      {
+        column: "facts",
+        strategy: "hand",
+        evidence: "developments/[slug]/page.tsx:373",
+        inBag: true,
+      },
+      {
+        column: "master_plan",
+        strategy: "hand",
+        evidence: "developments/[slug]/page.tsx:414",
+        inBag: true,
+      },
+      {
+        column: "payment_plan",
+        strategy: "hand",
+        evidence: "developments/[slug]/page.tsx:792",
+        inBag: true,
+      },
+      {
+        column: "meta",
+        strategy: "hand",
+        evidence: "_components/feature-row.tsx:132",
+        inBag: true,
+      },
     ],
   },
   {
     table: "development_unit_types",
     columns: [
-      { column: "label", strategy: "hand", evidence: "_components/unit-floor-plans.tsx:157" },
-      { column: "blurb", strategy: "hand", evidence: "_components/unit-floor-plans.tsx" },
+      {
+        column: "label",
+        strategy: "hand",
+        evidence: "_components/unit-floor-plans.tsx:157",
+      },
+      {
+        column: "blurb",
+        strategy: "hand",
+        evidence: "_components/unit-floor-plans.tsx",
+      },
     ],
   },
   {
     table: "floor_plans",
     columns: [
-      { column: "label", strategy: "hand", evidence: "_components/unit-floor-plans.tsx" },
-      { column: "description", strategy: "hand", evidence: "_components/unit-floor-plans.tsx" },
+      {
+        column: "label",
+        strategy: "hand",
+        evidence: "_components/unit-floor-plans.tsx",
+      },
+      {
+        column: "description",
+        strategy: "hand",
+        evidence: "_components/unit-floor-plans.tsx",
+      },
     ],
   },
   {
     table: "development_units",
     columns: [
-      { column: "unit_type", strategy: "hand", evidence: "developments/[slug]/_units-table.tsx" },
-      { column: "orientation", strategy: "hand", evidence: "developments/[slug]/_units-table.tsx" },
-      { column: "lagoon_access", strategy: "hand", evidence: "developments/[slug]/_units-table.tsx" },
-      { column: "plot_number", strategy: "never", evidence: "developments/[slug]/_units-table.tsx" },
+      {
+        column: "unit_type",
+        strategy: "hand",
+        evidence: "developments/[slug]/_units-table.tsx",
+      },
+      {
+        column: "orientation",
+        strategy: "hand",
+        evidence: "developments/[slug]/_units-table.tsx",
+      },
+      {
+        column: "lagoon_access",
+        strategy: "hand",
+        evidence: "developments/[slug]/_units-table.tsx",
+      },
+      {
+        column: "plot_number",
+        strategy: "never",
+        evidence: "developments/[slug]/_units-table.tsx",
+      },
     ],
   },
   {
     table: "amenities_taxonomy",
-    columns: [{ column: "label", strategy: "hand", evidence: "p/[slug]/page.tsx:545" }],
+    columns: [
+      { column: "label", strategy: "hand", evidence: "p/[slug]/page.tsx:545" },
+    ],
   },
   {
     table: "dld_comparables",
@@ -211,22 +325,43 @@ export const DOMAINS: Domain[] = [
   {
     table: "articles",
     columns: [
-      { column: "title", strategy: "hand", evidence: "insights/[slug]/page.tsx:164" },
-      { column: "excerpt", strategy: "hand", evidence: "insights/[slug]/page.tsx:168" },
+      {
+        column: "title",
+        strategy: "hand",
+        evidence: "insights/[slug]/page.tsx:164",
+      },
+      {
+        column: "excerpt",
+        strategy: "hand",
+        evidence: "insights/[slug]/page.tsx:168",
+      },
       {
         column: "body_html",
         strategy: "machine",
         evidence: "insights/[slug]/page.tsx:231",
         note: "Tiptap HTML — goes through the slot walker in lib/i18n/mt/html.ts.",
       },
-      { column: "seo", strategy: "hand", evidence: "insights/[slug]/page.tsx:55", inBag: true },
+      {
+        column: "seo",
+        strategy: "hand",
+        evidence: "insights/[slug]/page.tsx:55",
+        inBag: true,
+      },
     ],
   },
   {
     table: "article_categories",
     columns: [
-      { column: "label", strategy: "hand", evidence: "insights/category/[cat]/page.tsx:112" },
-      { column: "description", strategy: "hand", evidence: "insights/category/[cat]/page.tsx:44" },
+      {
+        column: "label",
+        strategy: "hand",
+        evidence: "insights/category/[cat]/page.tsx:112",
+      },
+      {
+        column: "description",
+        strategy: "hand",
+        evidence: "insights/category/[cat]/page.tsx:44",
+      },
     ],
   },
   {
@@ -251,7 +386,12 @@ export const DOMAINS: Domain[] = [
         inBag: true,
         note: "Already covered by the derived twins in lib/master-pages/twins.ts.",
       },
-      { column: "seo", strategy: "hand", evidence: "pages/[slug]/page.tsx:22", inBag: true },
+      {
+        column: "seo",
+        strategy: "hand",
+        evidence: "pages/[slug]/page.tsx:22",
+        inBag: true,
+      },
     ],
   },
   {
@@ -265,7 +405,12 @@ export const DOMAINS: Domain[] = [
         inBag: true,
         note: "Covered by the derived twins.",
       },
-      { column: "seo", strategy: "hand", evidence: "lp/[slug]/page.tsx:56", inBag: true },
+      {
+        column: "seo",
+        strategy: "hand",
+        evidence: "lp/[slug]/page.tsx:56",
+        inBag: true,
+      },
     ],
   },
 
@@ -273,36 +418,86 @@ export const DOMAINS: Domain[] = [
   {
     table: "megamenu_tabs",
     columns: [
-      { column: "label", strategy: "hand", evidence: "components/brand/public-mega-nav.tsx:212" },
-      { column: "panel_title", strategy: "hand", evidence: "components/brand/megamenu-panel.tsx:212" },
-      { column: "right_column_title", strategy: "hand", evidence: "components/brand/megamenu-panel.tsx:270" },
+      {
+        column: "label",
+        strategy: "hand",
+        evidence: "components/brand/public-mega-nav.tsx:212",
+      },
+      {
+        column: "panel_title",
+        strategy: "hand",
+        evidence: "components/brand/megamenu-panel.tsx:212",
+      },
+      {
+        column: "right_column_title",
+        strategy: "hand",
+        evidence: "components/brand/megamenu-panel.tsx:270",
+      },
     ],
   },
   {
     table: "megamenu_columns",
-    columns: [{ column: "heading", strategy: "hand", evidence: "components/brand/megamenu-panel.tsx:88" }],
+    columns: [
+      {
+        column: "heading",
+        strategy: "hand",
+        evidence: "components/brand/megamenu-panel.tsx:88",
+      },
+    ],
   },
   {
     table: "megamenu_items",
     columns: [
-      { column: "label", strategy: "hand", evidence: "components/brand/megamenu-panel.tsx:101" },
-      { column: "badge_label", strategy: "hand", evidence: "components/brand/megamenu-panel.tsx:58" },
+      {
+        column: "label",
+        strategy: "hand",
+        evidence: "components/brand/megamenu-panel.tsx:101",
+      },
+      {
+        column: "badge_label",
+        strategy: "hand",
+        evidence: "components/brand/megamenu-panel.tsx:58",
+      },
     ],
   },
   {
     table: "megamenu_featured_tiles",
     columns: [
-      { column: "headline", strategy: "hand", evidence: "components/brand/megamenu-tile.tsx:126" },
-      { column: "badge_label", strategy: "hand", evidence: "components/brand/megamenu-tile.tsx:114" },
-      { column: "cta_label", strategy: "hand", evidence: "components/brand/megamenu-tile.tsx:137" },
+      {
+        column: "headline",
+        strategy: "hand",
+        evidence: "components/brand/megamenu-tile.tsx:126",
+      },
+      {
+        column: "badge_label",
+        strategy: "hand",
+        evidence: "components/brand/megamenu-tile.tsx:114",
+      },
+      {
+        column: "cta_label",
+        strategy: "hand",
+        evidence: "components/brand/megamenu-tile.tsx:137",
+      },
     ],
   },
   {
     table: "floating_ctas",
     columns: [
-      { column: "label", strategy: "hand", evidence: "_components/floating-cta-rail.tsx:14" },
-      { column: "message_template", strategy: "hand", evidence: "_components/floating-cta-rail.tsx:17" },
-      { column: "subject_template", strategy: "hand", evidence: "_components/floating-cta-rail.tsx:17" },
+      {
+        column: "label",
+        strategy: "hand",
+        evidence: "_components/floating-cta-rail.tsx:14",
+      },
+      {
+        column: "message_template",
+        strategy: "hand",
+        evidence: "_components/floating-cta-rail.tsx:17",
+      },
+      {
+        column: "subject_template",
+        strategy: "hand",
+        evidence: "_components/floating-cta-rail.tsx:17",
+      },
     ],
   },
   {
@@ -326,7 +521,11 @@ export const DOMAINS: Domain[] = [
           "a matching `grant select` fails the whole PostgREST select, and every " +
           "public page silently falls back to code defaults.",
       },
-      { column: "contact_phone", strategy: "never", evidence: "services/sell/page.tsx:338" },
+      {
+        column: "contact_phone",
+        strategy: "never",
+        evidence: "services/sell/page.tsx:338",
+      },
     ],
   },
 
@@ -334,15 +533,51 @@ export const DOMAINS: Domain[] = [
   {
     table: "staff",
     columns: [
-      { column: "display_name", strategy: "hand", evidence: "agents/[slug]/page.tsx:147" },
-      { column: "title", strategy: "hand", evidence: "agents/[slug]/page.tsx:142" },
-      { column: "bio", strategy: "machine", evidence: "agents/[slug]/page.tsx:151" },
-      { column: "specialties", strategy: "hand", evidence: "agents/[slug]/page.tsx:241" },
-      { column: "languages", strategy: "hand", evidence: "agents/[slug]/page.tsx:251" },
-      { column: "brn", strategy: "never", evidence: "agents/[slug]/page.tsx:206" },
-      { column: "public_phone", strategy: "never", evidence: "_components/agent-card.tsx" },
-      { column: "public_email", strategy: "never", evidence: "_components/agent-card.tsx" },
-      { column: "whatsapp", strategy: "never", evidence: "_components/agent-card.tsx" },
+      {
+        column: "display_name",
+        strategy: "hand",
+        evidence: "agents/[slug]/page.tsx:147",
+      },
+      {
+        column: "title",
+        strategy: "hand",
+        evidence: "agents/[slug]/page.tsx:142",
+      },
+      {
+        column: "bio",
+        strategy: "machine",
+        evidence: "agents/[slug]/page.tsx:151",
+      },
+      {
+        column: "specialties",
+        strategy: "hand",
+        evidence: "agents/[slug]/page.tsx:241",
+      },
+      {
+        column: "languages",
+        strategy: "hand",
+        evidence: "agents/[slug]/page.tsx:251",
+      },
+      {
+        column: "brn",
+        strategy: "never",
+        evidence: "agents/[slug]/page.tsx:206",
+      },
+      {
+        column: "public_phone",
+        strategy: "never",
+        evidence: "_components/agent-card.tsx",
+      },
+      {
+        column: "public_email",
+        strategy: "never",
+        evidence: "_components/agent-card.tsx",
+      },
+      {
+        column: "whatsapp",
+        strategy: "never",
+        evidence: "_components/agent-card.tsx",
+      },
     ],
   },
   {
@@ -362,22 +597,43 @@ export const DOMAINS: Domain[] = [
   {
     table: "form_fields",
     columns: [
-      { column: "label", strategy: "hand", evidence: "_components/forms/form-renderer.tsx" },
-      { column: "placeholder", strategy: "hand", evidence: "_components/forms/form-renderer.tsx" },
+      {
+        column: "label",
+        strategy: "hand",
+        evidence: "_components/forms/form-renderer.tsx",
+      },
+      {
+        column: "placeholder",
+        strategy: "hand",
+        evidence: "_components/forms/form-renderer.tsx",
+      },
       {
         column: "help",
         strategy: "hand",
         evidence: "_components/forms/form-renderer.tsx",
         note: "`help` is public copy; `note` on the same table is editor-only.",
       },
-      { column: "unit", strategy: "hand", evidence: "_components/forms/form-renderer.tsx" },
-      { column: "options", strategy: "hand", evidence: "_components/forms/form-renderer.tsx", inBag: true },
+      {
+        column: "unit",
+        strategy: "hand",
+        evidence: "_components/forms/form-renderer.tsx",
+      },
+      {
+        column: "options",
+        strategy: "hand",
+        evidence: "_components/forms/form-renderer.tsx",
+        inBag: true,
+      },
     ],
   },
   {
     table: "reviews",
     columns: [
-      { column: "title", strategy: "never", evidence: "agents/[slug]/page.tsx:305" },
+      {
+        column: "title",
+        strategy: "never",
+        evidence: "agents/[slug]/page.tsx:305",
+      },
       {
         column: "body",
         strategy: "never",
@@ -386,7 +642,11 @@ export const DOMAINS: Domain[] = [
           "Visitor-authored. Presenting a machine translation of a customer's " +
           "words as their words is a misrepresentation, not a quality problem.",
       },
-      { column: "author_name", strategy: "never", evidence: "agents/[slug]/page.tsx:314" },
+      {
+        column: "author_name",
+        strategy: "never",
+        evidence: "agents/[slug]/page.tsx:314",
+      },
     ],
   },
   {
@@ -435,7 +695,8 @@ export const DOMAINS: Domain[] = [
   {
     table: "viewings",
     columns: [],
-    excluded: "Internal scheduling. The reminder cron notifies the assigned agent, not the visitor.",
+    excluded:
+      "Internal scheduling. The reminder cron notifies the assigned agent, not the visitor.",
   },
   {
     table: "valuation_requests",
@@ -452,27 +713,32 @@ export const DOMAINS: Domain[] = [
   {
     table: "notifications",
     columns: [],
-    excluded: "Staff-only bell. System-generated, read solely by the CMS shell.",
+    excluded:
+      "Staff-only bell. System-generated, read solely by the CMS shell.",
   },
   {
     table: "dsr_requests",
     columns: [],
-    excluded: "Compliance audit trail. /data-deleted is static and reads no row.",
+    excluded:
+      "Compliance audit trail. /data-deleted is static and reads no row.",
   },
   {
     table: "bulk_operations",
     columns: [],
-    excluded: "Append-only operations log; remaining text columns are enum-like keys.",
+    excluded:
+      "Append-only operations log; remaining text columns are enum-like keys.",
   },
   {
     table: "audit_log",
     columns: [],
-    excluded: "Append-only audit trail. action/target_kind are keys, not prose.",
+    excluded:
+      "Append-only audit trail. action/target_kind are keys, not prose.",
   },
   {
     table: "accounts",
     columns: [],
-    excluded: "Dead table — customer accounts were removed (ADR-0005) and nothing reads it.",
+    excluded:
+      "Dead table — customer accounts were removed (ADR-0005) and nothing reads it.",
   },
   {
     table: "api_keys",
@@ -482,7 +748,8 @@ export const DOMAINS: Domain[] = [
   {
     table: "app_settings",
     columns: [],
-    excluded: "Infrastructure key/value store, read only by Postgres functions.",
+    excluded:
+      "Infrastructure key/value store, read only by Postgres functions.",
   },
   {
     table: "concierge_messages",
@@ -493,17 +760,20 @@ export const DOMAINS: Domain[] = [
   {
     table: "concierge_sessions",
     columns: [],
-    excluded: "anon_token is a cookie token; `brief` is jsonb of filter keys rendered from the taxonomy.",
+    excluded:
+      "anon_token is a cookie token; `brief` is jsonb of filter keys rendered from the taxonomy.",
   },
   {
     table: "integrations",
     columns: [],
-    excluded: "Staff-only ops state. last_error is upstream API output, not authored copy.",
+    excluded:
+      "Staff-only ops state. last_error is upstream API output, not authored copy.",
   },
   {
     table: "licenses",
     columns: [],
-    excluded: "Admin-only. The publicly shown ORN comes from site_settings, not here.",
+    excluded:
+      "Admin-only. The publicly shown ORN comes from site_settings, not here.",
   },
   {
     table: "otp_codes",
@@ -519,7 +789,8 @@ export const DOMAINS: Domain[] = [
   {
     table: "roles_custom",
     columns: [],
-    excluded: "Staff permission model with no live reader; labels would be CMS-internal anyway.",
+    excluded:
+      "Staff permission model with no live reader; labels would be CMS-internal anyway.",
   },
   {
     table: "staff_invitations",
@@ -530,7 +801,8 @@ export const DOMAINS: Domain[] = [
   {
     table: "webhooks",
     columns: [],
-    excluded: "Staff-only integration config; secret and target_url are credentials.",
+    excluded:
+      "Staff-only integration config; secret and target_url are credentials.",
   },
   {
     table: "conversations",
@@ -637,6 +909,12 @@ export const WIRED_EDITOR: string[] = [
 
 /** Columns whose public read path folds the locale today. */
 export const WIRED_READ: string[] = [
+  "properties.title",
+  "properties.short_description",
+  "properties.description",
+  "properties.address_line",
+  "properties.view",
+  "properties.orientation",
   "media_assets.alt_text",
   "development_units.unit_type",
   "development_units.lagoon_access",
@@ -696,19 +974,27 @@ export function translatableKeys(): string[] {
 
 /** What still has no Arabic input in the CMS. */
 export function missingEditor(): string[] {
-  return translatableKeys().filter((k) => !WIRED_EDITOR.includes(k)).sort();
+  return translatableKeys()
+    .filter((k) => !WIRED_EDITOR.includes(k))
+    .sort();
 }
 
 /** What still renders English on /ar even when Arabic is stored. */
 export function missingReadFold(): string[] {
-  return translatableKeys().filter((k) => !WIRED_READ.includes(k)).sort();
+  return translatableKeys()
+    .filter((k) => !WIRED_READ.includes(k))
+    .sort();
 }
 
 export const domainFor = (table: string): Domain | undefined =>
   DOMAINS.find((d) => d.table === table);
 
 /** Columns needing a translation, in the order a phase would work through them. */
-export function translatableColumns(): { table: string; column: string; strategy: Strategy }[] {
+export function translatableColumns(): {
+  table: string;
+  column: string;
+  strategy: Strategy;
+}[] {
   return DOMAINS.flatMap((d) =>
     d.columns
       .filter((c) => c.strategy !== "never")

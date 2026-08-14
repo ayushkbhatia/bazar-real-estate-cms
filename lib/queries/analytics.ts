@@ -155,8 +155,9 @@ export async function getAnalyticsSnapshot(
   const viewingsPriorTotal = viewingsPrior.count ?? 0;
 
   const priceRows =
-    (priceAvg.data as unknown as Array<{ price_aed: number | string }> | null) ??
-    [];
+    (priceAvg.data as unknown as Array<{
+      price_aed: number | string;
+    }> | null) ?? [];
   const avgPrice =
     priceRows.length === 0
       ? null
@@ -195,13 +196,13 @@ export async function getAnalyticsSnapshot(
       rangeDays,
       now,
     ),
-    enquiries_by_source: aggregateBySource(
-      enquiriesRows.map((r) => r.source),
-    ),
+    enquiries_by_source: aggregateBySource(enquiriesRows.map((r) => r.source)),
     enquiry_funnel: aggregateFunnel(
-      ((enquiriesAll.data as unknown as Array<{
-        status: string | null;
-      }> | null) ?? []).map((r) => r.status),
+      (
+        (enquiriesAll.data as unknown as Array<{
+          status: string | null;
+        }> | null) ?? []
+      ).map((r) => r.status),
     ),
     viewings_by_status: aggregateViewingsByStatus(
       viewingsRows.map((r) => r.status),

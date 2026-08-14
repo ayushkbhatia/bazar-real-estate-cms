@@ -17,9 +17,7 @@ import {
 import type { AmenityTaxonomyRow } from "@/lib/types/sprint-8";
 
 /** Sorted-by-sort_order active amenities. Falls back to DEFAULT_AMENITIES. */
-export async function listAmenitiesTaxonomy(): Promise<
-  AmenityTaxonomyEntry[]
-> {
+export async function listAmenitiesTaxonomy(): Promise<AmenityTaxonomyEntry[]> {
   if (!isSupabaseConfigured) return DEFAULT_AMENITIES;
   try {
     const sb = createSupabasePublicClient();
@@ -33,9 +31,7 @@ export async function listAmenitiesTaxonomy(): Promise<
     // label renders on every property page's amenity grid, so this is one of
     // the higher-frequency strings in the catalogue.
     const locale = await currentLocale();
-    return (
-      localiseDeep(data, locale) as AmenityTaxonomyRow[]
-    ).map((r) => ({
+    return (localiseDeep(data, locale) as AmenityTaxonomyRow[]).map((r) => ({
       code: r.code,
       label: r.label,
       category: r.category,
@@ -85,20 +81,18 @@ export async function upsertAmenityTaxonomyEntry(
   if (!isSupabaseConfigured) return false;
   try {
     const sb = await createSupabaseServerClient();
-    const { error } = await sb
-      .from("amenities_taxonomy")
-      .upsert(
-        {
-          code: entry.code,
-          label: entry.label,
-          label_ar: entry.label_ar ?? null,
-          category: entry.category,
-          icon: entry.icon ?? null,
-          sort_order: entry.sort_order ?? 0,
-          active: entry.active ?? true,
-        },
-        { onConflict: "code" },
-      );
+    const { error } = await sb.from("amenities_taxonomy").upsert(
+      {
+        code: entry.code,
+        label: entry.label,
+        label_ar: entry.label_ar ?? null,
+        category: entry.category,
+        icon: entry.icon ?? null,
+        sort_order: entry.sort_order ?? 0,
+        active: entry.active ?? true,
+      },
+      { onConflict: "code" },
+    );
     if (error) {
       console.error("[upsertAmenityTaxonomyEntry]", error);
       return false;

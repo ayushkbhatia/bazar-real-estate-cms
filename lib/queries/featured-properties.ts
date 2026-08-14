@@ -1,5 +1,9 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
+import { type Locale } from "@/lib/i18n/locales";
+
 import type { ListingRow } from "@/lib/queries/properties";
 
 /**
@@ -11,7 +15,7 @@ import type { ListingRow } from "@/lib/queries/properties";
  */
 
 const FIELDS =
-  "id, reference, slug, title, short_description, price_aed, mode, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text))";
+  "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 type MediaJoin = {
   role: string;
@@ -22,9 +26,14 @@ type MediaJoin = {
   } | null;
 };
 
-function pickHero(joins: MediaJoin[] | null) {
+function pickHero(joins: MediaJoin[] | null, locale: Locale) {
   const hero = (joins ?? []).find((j) => j.role === "hero" && j.media);
-  return hero?.media ?? null;
+  if (!hero?.media) return null;
+  // The nested alt text; the row-level fold cannot reach one level down.
+  return localiseRow(
+    hero.media as unknown as Record<string, unknown>,
+    locale,
+  ) as unknown as typeof hero.media;
 }
 
 /**
@@ -52,11 +61,19 @@ export async function listPropertiesByReference(
     return [];
   }
 
-  const rows = (data as unknown as (Omit<ListingRow, "hero"> & {
-    property_media: MediaJoin[] | null;
-  })[]).map(({ property_media, ...rest }) => ({
-    ...rest,
-    hero: pickHero(property_media),
+  const locale = await currentLocale();
+  const rows = (
+    data as unknown as (Omit<ListingRow, "hero"> & {
+      property_media: MediaJoin[] | null;
+    })[]
+  ).map(({ property_media, ...rest }) => ({
+    // `...rest` is a passthrough spread, so an unfolded twin leaks as well as
+    // rendering English.
+    ...(localiseRow(
+      rest as unknown as Record<string, unknown>,
+      locale,
+    ) as unknown as Omit<ListingRow, "hero">),
+    hero: pickHero(property_media, locale),
   })) as ListingRow[];
 
   const byReference = new Map(rows.map((r) => [r.reference, r]));

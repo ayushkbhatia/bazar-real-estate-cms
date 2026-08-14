@@ -49,8 +49,7 @@ export const SEED_FLOATING_CTAS: FloatingCtaRow[] = [
     kind: "whatsapp",
     label: "WhatsApp Bazar",
     destination: null,
-    message_template:
-      "Hi {advisor}, I'm enquiring about {context} on bazar.ae",
+    message_template: "Hi {advisor}, I'm enquiring about {context} on bazar.ae",
     subject_template: null,
     scope: "all_pages",
     use_advisor_contact: true,
@@ -135,9 +134,11 @@ export const listFloatingCtas = cache(async (): Promise<FloatingCtaRow[]> => {
  * arrives as through supabase-js. Only these two mean "apply the migration" —
  * any other failure is transient and must not tell an editor to run DDL.
  */
-export function isMissingTableError(error: {
-  code?: string | null;
-} | null): boolean {
+export function isMissingTableError(
+  error: {
+    code?: string | null;
+  } | null,
+): boolean {
   return error?.code === "42P01" || error?.code === "PGRST205";
 }
 

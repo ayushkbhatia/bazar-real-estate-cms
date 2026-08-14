@@ -10,11 +10,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
-import type {
-  ApiKeyRole,
-  ApiKeyRow,
-  ApiKeyStatus,
-} from "@/lib/types/sprint-8";
+import type { ApiKeyRole, ApiKeyRow, ApiKeyStatus } from "@/lib/types/sprint-8";
 
 export type ApiKeyDisplay = {
   id: string;
@@ -36,7 +32,7 @@ export type CreateApiKeyInput = {
 };
 
 export type CreatedApiKey = {
-  plaintext: string;       // shown ONCE
+  plaintext: string; // shown ONCE
   display: ApiKeyDisplay;
 };
 

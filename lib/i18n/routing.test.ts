@@ -50,7 +50,12 @@ describe("stripLocalePrefix", () => {
 
   it("round-trips with withLocalePrefix for every served locale", () => {
     for (const locale of LOCALES) {
-      for (const path of ["/", "/buy", "/p/a-villa-baz-ab-1", "/legal/privacy"]) {
+      for (const path of [
+        "/",
+        "/buy",
+        "/p/a-villa-baz-ab-1",
+        "/legal/privacy",
+      ]) {
         expect(stripLocalePrefix(withLocalePrefix(path, locale))).toBe(path);
       }
     }

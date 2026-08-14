@@ -97,10 +97,12 @@ function readSeoMeta(value: unknown): {
   title: string | null;
   description: string | null;
 } {
-  if (!value || typeof value !== "object") return { title: null, description: null };
+  if (!value || typeof value !== "object")
+    return { title: null, description: null };
   const m = value as { meta_title?: unknown; meta_description?: unknown };
   return {
-    title: typeof m.meta_title === "string" && m.meta_title ? m.meta_title : null,
+    title:
+      typeof m.meta_title === "string" && m.meta_title ? m.meta_title : null,
     description:
       typeof m.meta_description === "string" && m.meta_description
         ? m.meta_description
@@ -172,7 +174,8 @@ function amenitiesFrom(
   guide: AreaGuideRow | null,
   seed: SeedAreaGuide | null,
 ): string[] {
-  if (guide && guide.amenities?.length) return guide.amenities.map((a) => a.name);
+  if (guide && guide.amenities?.length)
+    return guide.amenities.map((a) => a.name);
   return seed?.amenities ?? [];
 }
 
@@ -229,10 +232,13 @@ const AREA_COLUMNS = "id, slug, name, kind, description, geo, seo_meta";
  * first match rather than `.maybeSingle()` — a legacy duplicate under a
  * different parent then renders the older record instead of throwing.
  */
-export async function getAreaProfile(slug: string): Promise<AreaProfile | null> {
+export async function getAreaProfile(
+  slug: string,
+): Promise<AreaProfile | null> {
   if (!slug) return null;
   const seed = SEED_AREA_GUIDES.find((g) => g.slug === slug) ?? null;
-  if (!isSupabaseConfigured) return composeAreaProfile({ row: null, guide: null, seed });
+  if (!isSupabaseConfigured)
+    return composeAreaProfile({ row: null, guide: null, seed });
 
   try {
     const sb = createSupabasePublicClient();
