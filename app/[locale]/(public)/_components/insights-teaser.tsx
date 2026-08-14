@@ -91,7 +91,9 @@ export async function InsightsTeaser() {
                 ) : null}
                 <div className="mt-4 text-[11.5px] text-bz-muted">
                   {lead.author?.display_name ?? "Bazar"}
-                  {lead.published_at ? ` · ${formatDate(lead.published_at)}` : ""}
+                  {lead.published_at
+                    ? ` · ${formatDate(lead.published_at)}`
+                    : ""}
                 </div>
               </div>
             </Link>

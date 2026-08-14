@@ -25,8 +25,8 @@ export function CtaBanner() {
           </h2>
           <p className="mt-4 text-[15px] opacity-90 max-w-[56ch]">
             Curious what your property might be worth? Get an advisor-prepared
-            valuation report within 24 hours. Or book a 30-minute call to
-            talk through what you&apos;re solving for.
+            valuation report within 24 hours. Or book a 30-minute call to talk
+            through what you&apos;re solving for.
           </p>
         </div>
         <div className="flex flex-col gap-2 md:items-end">

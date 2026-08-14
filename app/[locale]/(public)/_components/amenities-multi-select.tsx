@@ -55,9 +55,7 @@ export function AmenitiesMultiSelect({
               )}
             >
               {a.label}
-              {active ? (
-                <X size={10} strokeWidth={2} className="ms-1" />
-              ) : null}
+              {active ? <X size={10} strokeWidth={2} className="ms-1" /> : null}
             </button>
           );
         })}

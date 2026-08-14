@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import {
@@ -33,32 +34,6 @@ import { ListingCardPriced } from "./listing-card-priced";
 type Mode = Database["public"]["Enums"]["property_mode"];
 type Form = Database["public"]["Enums"]["property_form"];
 
-const MODE_COPY: Record<
-  Mode,
-  { eyebrow: string; title: string; lede: string }
-> = {
-  buy: {
-    eyebrow: "For sale",
-    title: "Properties for sale",
-    lede: "Curated freehold and leasehold listings across the United Arab Emirates.",
-  },
-  rent: {
-    eyebrow: "For rent",
-    title: "Properties for rent",
-    lede: "Long-let homes from advisor-vetted landlords. Furnished and unfurnished.",
-  },
-  off_plan: {
-    eyebrow: "Off-plan",
-    title: "New developments",
-    lede: "Pre-launch and on-sale developments from Abu Dhabi's leading developers.",
-  },
-  commercial: {
-    eyebrow: "Commercial",
-    title: "Commercial real estate",
-    lede: "Office, retail, and industrial leases and freeholds.",
-  },
-};
-
 /**
  * Completion-form copy for the sale sub-routes (/buy/ready, /buy/resale).
  * When a `form` is passed this replaces MODE_COPY so each route gets its own
@@ -72,20 +47,6 @@ const MODE_COPY: Record<
  * or backfilled — off-plan is still expressed as `mode = 'off_plan'`, and we
  * deliberately keep only one writable spelling of that concept.
  */
-const FORM_COPY: Partial<
-  Record<Form, { eyebrow: string; title: string; lede: string }>
-> = {
-  ready_new: {
-    eyebrow: "Ready · new",
-    title: "Ready homes, never lived in",
-    lede: "Completed, handed over, and bought direct from the developer — a first sale with no previous owner on the title.",
-  },
-  resale: {
-    eyebrow: "Resale",
-    title: "Resale homes",
-    lede: "Completed homes bought from the current owner, with established communities, real service-charge history and a negotiable price.",
-  },
-};
 
 /**
  * Empty state for the form sub-routes. A bare "0 properties" is a dead end on
@@ -218,7 +179,20 @@ export async function SearchList({
     listPublishedProperties({ mode, form, filters, limit: PAGE_SIZE, offset }),
     fetchAreas(),
   ]);
-  const copy = (form ? FORM_COPY[form] : undefined) ?? MODE_COPY[mode];
+  const t = await getTranslations("search");
+  /*
+   * Mode and form copy live in the search namespace now, keyed by the same
+   * enum values the tables used. `form` wins over `mode` so /buy/ready and
+   * /buy/resale each get their own h1 — a shared heading is what made those
+   * two look identical for 27 migrations. `off_plan` is declared in the Form
+   * enum but never written, so it falls through to the mode copy.
+   */
+  const group = form && form !== "off_plan" ? `form.${form}` : `mode.${mode}`;
+  const copy = {
+    eyebrow: t(`${group}.eyebrow`),
+    title: t(`${group}.title`),
+    lede: t(`${group}.lede`),
+  };
 
   const selectedArea =
     filters.area && areas.length
@@ -258,8 +232,12 @@ export async function SearchList({
         <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
           <div className="text-[13px] text-bz-muted">
             {total > 0
-              ? `${firstShown}–${lastShown} of ${total.toLocaleString()} properties`
-              : "0 properties"}
+              ? t("results.range", {
+                  first: firstShown,
+                  last: lastShown,
+                  total: total.toLocaleString(),
+                })
+              : t("results.none")}
             {filterSummary ? (
               <>
                 {" · "}

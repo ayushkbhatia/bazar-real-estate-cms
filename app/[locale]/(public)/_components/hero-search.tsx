@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
@@ -19,7 +21,12 @@ import {
 
 const EMPTY_RANGE: Range = { min: null, max: null };
 
-export function HeroSearch({ defaultMode = "off-plan" }: { defaultMode?: string }) {
+export function HeroSearch({
+  defaultMode = "off-plan",
+}: {
+  defaultMode?: string;
+}) {
+  const tr = useTranslations("search");
   const { prefs } = usePreferences();
   const router = useRouter();
   const [mode, setMode] = useState(
@@ -64,7 +71,11 @@ export function HeroSearch({ defaultMode = "off-plan" }: { defaultMode?: string 
           width so the narrower lg card can never squeeze them; the trade-off is
           that a fifth tab or a much longer label would overflow visibly rather
           than shrink silently. Labels live in lib/hero-search-config.ts. */}
-      <div className="flex gap-1 px-1 pt-1" role="tablist" aria-label="Search type">
+      <div
+        className="flex gap-1 px-1 pt-1"
+        role="tablist"
+        aria-label="Search type"
+      >
         {HERO_TABS.map((t) => {
           const active = mode === t.value;
           return (
@@ -137,7 +148,9 @@ export function HeroSearch({ defaultMode = "off-plan" }: { defaultMode?: string 
                 <option value="">Any beds</option>
                 {[1, 2, 3, 4, 5, 6].map((n) => (
                   <option key={n} value={n}>
-                    {n === 6 ? "6+ Bedrooms" : `${n} Bedroom${n > 1 ? "s" : ""}`}
+                    {n === 6
+                      ? tr("filters.bedroomsMax")
+                      : tr("filters.bedroomsOption", { count: n })}
                   </option>
                 ))}
               </select>
@@ -187,7 +200,11 @@ export function HeroSearch({ defaultMode = "off-plan" }: { defaultMode?: string 
         </div>
 
         {/* Submit */}
-        <Button type="submit" disabled={pending} className="h-11 md:h-10 w-full">
+        <Button
+          type="submit"
+          disabled={pending}
+          className="h-11 md:h-10 w-full"
+        >
           {pending ? "Searching…" : "Search"}
         </Button>
       </div>

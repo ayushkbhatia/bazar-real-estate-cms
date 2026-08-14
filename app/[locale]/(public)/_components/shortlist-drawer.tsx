@@ -264,65 +264,65 @@ export function ShortlistDrawer() {
               {items.map((item) => {
                 const inCompare = compareIds.includes(item.id);
                 return (
-                <li key={item.id} className="flex gap-3">
-                  <label className="flex items-center shrink-0 self-stretch cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={inCompare}
-                      disabled={!inCompare && compareFull}
-                      onChange={() => togglePicked(item.id)}
-                      className="w-4 h-4 accent-bz-accent disabled:cursor-not-allowed disabled:opacity-40"
-                      aria-label={
-                        inCompare
-                          ? `Remove ${item.title} from the comparison`
-                          : compareFull
-                            ? `Comparison is full — deselect one to add ${item.title}`
-                            : `Add ${item.title} to the comparison`
-                      }
-                    />
-                  </label>
-                  <Link
-                    href={`/p/${item.slug}-${item.reference}`}
-                    className="block relative w-20 h-20 rounded-md overflow-hidden bg-bz-surface-2 shrink-0"
-                  >
-                    {item.hero_url ? (
-                      <Image
-                        src={item.hero_url}
-                        alt={item.hero_alt ?? item.title}
-                        fill
-                        sizes="80px"
-                        className="object-cover"
+                  <li key={item.id} className="flex gap-3">
+                    <label className="flex items-center shrink-0 self-stretch cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={inCompare}
+                        disabled={!inCompare && compareFull}
+                        onChange={() => togglePicked(item.id)}
+                        className="w-4 h-4 accent-bz-accent disabled:cursor-not-allowed disabled:opacity-40"
+                        aria-label={
+                          inCompare
+                            ? `Remove ${item.title} from the comparison`
+                            : compareFull
+                              ? `Comparison is full — deselect one to add ${item.title}`
+                              : `Add ${item.title} to the comparison`
+                        }
                       />
-                    ) : null}
-                  </Link>
-                  <div className="flex-1 min-w-0">
+                    </label>
                     <Link
                       href={`/p/${item.slug}-${item.reference}`}
-                      className="block text-[13.5px] font-medium text-bz-ink hover:text-bz-accent transition-colors truncate"
+                      className="block relative w-20 h-20 rounded-md overflow-hidden bg-bz-surface-2 shrink-0"
                     >
-                      {item.title}
+                      {item.hero_url ? (
+                        <Image
+                          src={item.hero_url}
+                          alt={item.hero_alt ?? item.title}
+                          fill
+                          sizes="80px"
+                          className="object-cover"
+                        />
+                      ) : null}
                     </Link>
-                    <div className="text-[11.5px] text-bz-ink-2 mt-0.5 truncate">
-                      {item.area_name ?? "United Arab Emirates"}
+                    <div className="flex-1 min-w-0">
+                      <Link
+                        href={`/p/${item.slug}-${item.reference}`}
+                        className="block text-[13.5px] font-medium text-bz-ink hover:text-bz-accent transition-colors truncate"
+                      >
+                        {item.title}
+                      </Link>
+                      <div className="text-[11.5px] text-bz-ink-2 mt-0.5 truncate">
+                        {item.area_name ?? "United Arab Emirates"}
+                      </div>
+                      <div className="mt-1 flex items-baseline justify-between gap-2">
+                        <span className="mono text-[12.5px] text-bz-ink">
+                          {formatPrice(item.price_aed, prefs)}
+                        </span>
+                        <span className="text-[11px] text-bz-ink-2">
+                          {item.beds}b · {item.baths}ba
+                        </span>
+                      </div>
                     </div>
-                    <div className="mt-1 flex items-baseline justify-between gap-2">
-                      <span className="mono text-[12.5px] text-bz-ink">
-                        {formatPrice(item.price_aed, prefs)}
-                      </span>
-                      <span className="text-[11px] text-bz-ink-2">
-                        {item.beds}b · {item.baths}ba
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeId(item.id)}
-                    aria-label={`Remove ${item.title} from shortlist`}
-                    className="text-bz-ink-2 hover:text-bz-ink transition-colors shrink-0"
-                  >
-                    <Trash2 size={14} strokeWidth={1.7} />
-                  </button>
-                </li>
+                    <button
+                      type="button"
+                      onClick={() => removeId(item.id)}
+                      aria-label={`Remove ${item.title} from shortlist`}
+                      className="text-bz-ink-2 hover:text-bz-ink transition-colors shrink-0"
+                    >
+                      <Trash2 size={14} strokeWidth={1.7} />
+                    </button>
+                  </li>
                 );
               })}
             </ul>

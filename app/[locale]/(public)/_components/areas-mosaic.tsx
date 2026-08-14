@@ -43,10 +43,7 @@ export function AreasMosaic() {
           href={`/areas/${AREAS[0].slug}`}
           className="md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-lg block"
         >
-          <PlaceholderImage
-            label={AREAS[0].slug}
-            className="w-full h-full"
-          />
+          <PlaceholderImage label={AREAS[0].slug} className="w-full h-full" />
           <div className="absolute inset-0 bg-gradient-to-t from-bz-navy/70 via-bz-navy/10 to-transparent" />
           <div className="absolute bottom-6 start-6 end-6 text-white">
             <div className="text-[11.5px] uppercase tracking-wider opacity-80">

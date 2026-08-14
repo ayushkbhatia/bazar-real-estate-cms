@@ -20,7 +20,12 @@ export function reportableType(
   t: string | null | undefined,
 ): PropertyTypeSlug | null {
   if (!t) return null;
-  if (t === "villa" || t === "apartment" || t === "townhouse" || t === "penthouse") {
+  if (
+    t === "villa" ||
+    t === "apartment" ||
+    t === "townhouse" ||
+    t === "penthouse"
+  ) {
     return t;
   }
   return null;
@@ -67,7 +72,11 @@ export function AreaReportsRail({
               className="group flex items-center justify-between gap-2 px-4 py-3 rounded-md border border-bz-border bg-bz-surface hover:bg-bz-surface-2 transition-colors"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <BarChart3 size={13} strokeWidth={1.7} className="text-bz-ink-2 shrink-0" />
+                <BarChart3
+                  size={13}
+                  strokeWidth={1.7}
+                  className="text-bz-ink-2 shrink-0"
+                />
                 <span className="text-[14px] text-bz-ink truncate">
                   {propertyTypeLabel(t)}s
                 </span>
@@ -119,8 +128,8 @@ export function MarketContextBlock({
             <Eyebrow>Market context</Eyebrow>
             <p className="mt-1.5 text-[14px] text-bz-ink leading-relaxed max-w-[52ch]">
               See what {label.toLowerCase()} actually closed for in{" "}
-              {quarterLabel(quarter)} — median, AED/ft², and the 10 most
-              recent DLD-recorded transactions.
+              {quarterLabel(quarter)} — median, AED/ft², and the 10 most recent
+              DLD-recorded transactions.
             </p>
           </div>
           <Link

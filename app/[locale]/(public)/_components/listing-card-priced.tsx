@@ -1,6 +1,9 @@
 "use client";
 
-import { ListingCard, type ListingCardProps } from "@/components/brand/listing-card";
+import {
+  ListingCard,
+  type ListingCardProps,
+} from "@/components/brand/listing-card";
 import {
   areaUnitLabel,
   formatAreaValue,
@@ -44,7 +47,9 @@ export function ListingCardPriced({ priceAed, ...props }: Props) {
   // silently mis-converted.
   const numericArea = typeof props.area === "number" ? props.area : null;
   const area =
-    numericArea != null ? formatAreaValue(numericArea, prefs.area_unit) : props.area;
+    numericArea != null
+      ? formatAreaValue(numericArea, prefs.area_unit)
+      : props.area;
 
   return (
     <ListingCard

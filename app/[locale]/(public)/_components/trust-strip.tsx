@@ -1,5 +1,8 @@
 import { Star } from "lucide-react";
-import { DLD_BROKER_PERMIT, getGoogleReviewsSnapshot } from "@/lib/queries/trust";
+import {
+  DLD_BROKER_PERMIT,
+  getGoogleReviewsSnapshot,
+} from "@/lib/queries/trust";
 import { SEED_PRESS_LOGOS } from "@/lib/seeds/awards";
 
 /**
@@ -34,7 +37,9 @@ export async function TrustStrip() {
                 key={i}
                 size={14}
                 strokeWidth={0}
-                fill={i < stars ? "var(--bz-accent, #005777)" : "var(--bz-border)"}
+                fill={
+                  i < stars ? "var(--bz-accent, #005777)" : "var(--bz-border)"
+                }
               />
             ))}
           </div>
@@ -42,7 +47,8 @@ export async function TrustStrip() {
             <div className="text-[14px] font-medium text-bz-ink">
               {reviews.rating.toFixed(1)} on {reviews.platform}
               <span className="text-bz-ink-2 font-normal">
-                {" "}· {reviews.count} reviews
+                {" "}
+                · {reviews.count} reviews
               </span>
             </div>
             <div className="text-[11.5px] text-bz-ink-2 group-hover:text-bz-ink transition-colors">

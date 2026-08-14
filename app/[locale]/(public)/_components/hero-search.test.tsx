@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
+import { renderWithIntl as render } from "@/lib/i18n/test-utils";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn() }),
@@ -86,9 +87,9 @@ describe("<HeroSearch> mode buttons", () => {
       expect(cls).toContain("shrink-0");
       expect(cls).toContain("whitespace-nowrap");
       // No explicit width and no flex-grow: the width stays label + padding.
-      expect(cls.some((c) => /^(w-|max-w-|min-w-|basis-|flex-1|grow)/.test(c))).toBe(
-        false,
-      );
+      expect(
+        cls.some((c) => /^(w-|max-w-|min-w-|basis-|flex-1|grow)/.test(c)),
+      ).toBe(false);
     }
   });
 

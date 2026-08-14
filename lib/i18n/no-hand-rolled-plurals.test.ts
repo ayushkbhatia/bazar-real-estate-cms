@@ -24,9 +24,10 @@ import { join } from "node:path";
  * and calls it "the single reason the project uses next-intl rather than a
  * hand-rolled t()".
  *
- * Two of the sites below are worse than merely wrong. `filter-bar.tsx:153` and
- * `hero-search.tsx:140` re-implement `listing.bedrooms` by hand — a correct
- * six-category ICU message that has sat unused in the catalogue since P3.
+ * The first two entries were the worst of them — `filter-bar.tsx` and
+ * `hero-search.tsx` re-implemented a six-category ICU message by hand. Wave 1b
+ * converted both, and the ceiling dropped 11 -> 9. That is the mechanism
+ * working: every wave takes its own files off this list.
  *
  * ## Shape
  *
@@ -64,8 +65,6 @@ const HAND_ROLLED =
  * would quietly undo this file, which is why the count is asserted below.
  */
 const ALLOWED: readonly string[] = [
-  "app/[locale]/(public)/_components/filter-bar.tsx",
-  "app/[locale]/(public)/_components/hero-search.tsx",
   "app/[locale]/(public)/concierge/_chat.tsx",
   "app/[locale]/(public)/developments/[slug]/_payment-plan.tsx",
   "app/[locale]/(public)/market-reports/_components/report-hero.tsx",
@@ -78,7 +77,7 @@ const ALLOWED: readonly string[] = [
 ];
 
 /** What the allowlist held when the rule landed. Lowering it is the point. */
-const ALLOWED_CEILING = 11;
+const ALLOWED_CEILING = 9;
 
 /** Strip comments so a docblock describing the idiom does not trip on it. */
 function stripComments(source: string): string {

@@ -63,7 +63,31 @@ const namespaces = (() => {
   );
 })();
 
-const hash = (s: string) => createHash("sha256").update(s).digest("hex").slice(0, 12);
+/** Read a dotted path out of a possibly-nested bag. */
+const at = (bag: Record<string, unknown>, path: string): unknown =>
+  path
+    .split(".")
+    .reduce<unknown>(
+      (o, k) =>
+        o && typeof o === "object"
+          ? (o as Record<string, unknown>)[k]
+          : undefined,
+      bag,
+    );
+
+/** Write a dotted path into a possibly-nested bag, creating parents. */
+function put(bag: Record<string, unknown>, path: string, value: string): void {
+  const parts = path.split(".");
+  let node = bag;
+  for (const k of parts.slice(0, -1)) {
+    if (typeof node[k] !== "object" || node[k] === null) node[k] = {};
+    node = node[k] as Record<string, unknown>;
+  }
+  node[parts[parts.length - 1]!] = value;
+}
+
+const hash = (s: string) =>
+  createHash("sha256").update(s).digest("hex").slice(0, 12);
 
 /**
  * Keys whose Arabic is legitimately the English. Parsed from the shared
@@ -103,11 +127,29 @@ async function main() {
     const ar = existsSync(path.join(arDir, `${ns}.json`))
       ? read(path.join(arDir, `${ns}.json`))
       : {};
-    for (const [key, english] of Object.entries(en)) {
-      if (typeof english !== "string") continue;
+    /*
+     * Walks nested objects. The catalogue was flat at 39 keys; the waves
+     * introduce grouping (`search.mode.buy.eyebrow`) because eighteen
+     * enum-keyed strings flattened into `modeBuyEyebrow` is unreadable.
+     * `messages.test.ts` already handles arbitrary nesting via keyPaths — this
+     * script did not, and would have skipped every grouped key in silence.
+     */
+    const flatten = (
+      bag: Record<string, unknown>,
+      prefix = "",
+    ): [string, string][] =>
+      Object.entries(bag).flatMap(([k, v]) =>
+        typeof v === "string"
+          ? [[prefix + k, v] as [string, string]]
+          : v && typeof v === "object"
+            ? flatten(v as Record<string, unknown>, `${prefix}${k}.`)
+            : [],
+      );
+
+    for (const [key, english] of flatten(en)) {
       const id = `${ns}.${key}`;
       if (identicalByDesign.has(id)) continue;
-      const existing = ar[key];
+      const existing = at(ar, key);
       const prov = provenance[id];
       const stale = prov && prov.sourceHash !== hash(english);
 
@@ -194,7 +236,7 @@ async function main() {
       continue;
     }
 
-    (byNamespace[item.ns] ??= {})[item.key] = value;
+    put((byNamespace[item.ns] ??= {}), item.key, value);
     provenance[item.id] = {
       by: "machine",
       model: MT_MODEL_PROSE,
@@ -204,15 +246,48 @@ async function main() {
     console.log(`  ✓ ${item.id}`);
   }
 
+  /* Deep-merge and re-order to match the English, at every level. A shallow
+   * spread would drop sibling keys inside a nested group. */
+  const mergeInto = (
+    target: Record<string, unknown>,
+    source: Record<string, unknown>,
+  ): Record<string, unknown> => {
+    for (const [k, v] of Object.entries(source)) {
+      if (v && typeof v === "object" && !Array.isArray(v)) {
+        const next =
+          target[k] && typeof target[k] === "object"
+            ? (target[k] as Record<string, unknown>)
+            : {};
+        target[k] = mergeInto(next, v as Record<string, unknown>);
+      } else target[k] = v;
+    }
+    return target;
+  };
+
+  const orderLike = (
+    shape: Record<string, unknown>,
+    bag: Record<string, unknown>,
+  ): Record<string, unknown> => {
+    const out: Record<string, unknown> = {};
+    for (const k of Object.keys(shape)) {
+      if (!(k in bag)) continue;
+      const s = shape[k];
+      out[k] =
+        s && typeof s === "object" && !Array.isArray(s)
+          ? orderLike(
+              s as Record<string, unknown>,
+              bag[k] as Record<string, unknown>,
+            )
+          : bag[k];
+    }
+    return out;
+  };
+
   for (const [ns, added] of Object.entries(byNamespace)) {
     const file = path.join(arDir, `${ns}.json`);
     const current = existsSync(file) ? read(file) : {};
-    const merged: Record<string, unknown> = { ...current, ...added };
-    const ordered = Object.fromEntries(
-      Object.keys(read(path.join(enDir, `${ns}.json`)))
-        .filter((k) => k in merged)
-        .map((k) => [k, merged[k]]),
-    );
+    const merged = mergeInto({ ...current }, added);
+    const ordered = orderLike(read(path.join(enDir, `${ns}.json`)), merged);
     writeFileSync(file, `${JSON.stringify(ordered, null, 2)}\n`);
   }
   writeFileSync(provPath, `${JSON.stringify(provenance, null, 2)}\n`);
