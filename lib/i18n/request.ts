@@ -1,5 +1,6 @@
 import { getRequestConfig } from "next-intl/server";
 import { DEFAULT_LOCALE, isEnabledLocale, type Locale } from "./locales";
+import { NAMESPACES } from "./namespaces";
 
 /**
  * next-intl request config — the messages half only.
@@ -18,8 +19,12 @@ import { DEFAULT_LOCALE, isEnabledLocale, type Locale } from "./locales";
  *
  * Namespaces are separate files so a translator can be handed one surface at a
  * time, and merged here because next-intl wants one object per locale.
+ *
+ * The list lives in `./namespaces` rather than here because two other things
+ * need it: the provider, to decide what crosses to the browser, and a test, to
+ * check it against the directory. It was a local array while the test read the
+ * filesystem, so a new namespace file passed CI and was invisible to the app.
  */
-const NAMESPACES = ["common", "nav", "footer", "consent", "listing"] as const;
 
 async function loadMessages(locale: Locale) {
   const entries = await Promise.all(
