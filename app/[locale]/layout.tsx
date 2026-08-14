@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Geist, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { NextIntlClientProvider } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getMessages, setRequestLocale } from "next-intl/server";
+import { pickClientMessages } from "@/lib/i18n/namespaces";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { DirectionProvider } from "./_direction-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -182,7 +183,15 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-dvh-safe flex flex-col bg-background text-foreground">
-        <NextIntlClientProvider>
+        {/*
+          An explicit `messages` prop, narrowed to what a Client Component
+          actually reads. Without one, next-intl's RSC provider calls
+          `getMessages()` and serialises the WHOLE catalogue into the flight
+          payload of every route — fine at 39 keys, 150-400 KB once the message
+          waves land, on all 78 prerendered routes. Server components read the
+          rest through `getTranslations`, which never crosses the boundary.
+        */}
+        <NextIntlClientProvider messages={pickClientMessages(await getMessages())}>
           <ConsentProvider>
             {/*
             Two direction mechanisms, both required and not interchangeable.
