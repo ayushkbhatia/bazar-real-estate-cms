@@ -20,5 +20,20 @@ export function communityKey(name: string): string {
   let out = name.trim();
   // Twice, so a doubled tail ("Fahid Beach Residences") also reduces.
   for (let i = 0; i < 2; i++) out = out.replace(GENERIC_TAIL, "");
-  return out.toLowerCase().replace(/[^a-z0-9]/g, "");
+  // Letters and digits of ANY script, not just `[a-z0-9]`.
+  //
+  // This was `/[^a-z0-9]/g`, which is a landmine rather than a bug only
+  // because `LOCALES` is still `["en"]`. Both inputs to this function are
+  // already folded — `developments.name` at developments.ts:159 and the
+  // editorial item's name through the section choke point — so on /ar both
+  // arrive in Arabic, every character is outside `[a-z0-9]`, and EVERY name
+  // reduces to the empty string. `shownProjectKeys` collapses to `{""}`, that
+  // one key matches every editorial entry, and the whole communities band on
+  // /areas/<slug> is dropped as duplicates.
+  //
+  // For Latin input the result is unchanged — `\p{L}` contains a-z and `\p{N}`
+  // contains 0-9, and the string is already lower-cased. The one difference is
+  // that accented Latin now survives ("café" instead of "caf"), which is also
+  // the more correct answer.
+  return out.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
 }
