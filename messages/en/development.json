@@ -1,0 +1,39 @@
+{
+  "facts": {
+    "architecture": "Architecture",
+    "landscape": "Landscape",
+    "total_area_ft2": "Total area",
+    "lagoon_area_ft2": "Lagoon area",
+    "density": "Density",
+    "rera_escrow": "RERA escrow",
+    "service_charge_estimate": "Service charge",
+    "tenure": "Tenure"
+  },
+  "units": {
+    "type": "Type",
+    "beds": "Beds",
+    "builtUp": "Built-up",
+    "plot": "Plot",
+    "lagoonAccess": "Lagoon access",
+    "orientation": "Orientation",
+    "plotNumber": "Plot #",
+    "action": "Action",
+    "price": "Price",
+    "reserve": "Reserve",
+    "held": "Held",
+    "reserved": "Reserved",
+    "sold": "Sold",
+    "empty": "No units match this filter.",
+    "filterAll": "All · {count}",
+    "filterVillas": "Villas · {count}",
+    "filterTownhouses": "Townhouses · {count}",
+    "filterLagoon": "Lagoon access · {count}"
+  },
+  "payment": {
+    "instalments": "{count, plural, one {# instalment} other {# instalments}}",
+    "onHandover": "{pct}% on key-handover",
+    "overMonths": "{pct}% over {months} months",
+    "overInstalments": "{pct}% over {instalments}",
+    "afterHandover": "{pct}% after handover"
+  }
+}

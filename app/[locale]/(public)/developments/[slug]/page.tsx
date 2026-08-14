@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/lib/i18n/locales";
 import * as React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -79,7 +81,7 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
   }
 }
 
-type PageProps = { params: Promise<{ slug: string }> };
+type PageProps = { params: Promise<{ slug: string; locale: Locale }> };
 
 export async function generateMetadata({
   params,
@@ -140,6 +142,15 @@ const ANCHORED_SECTIONS = new Set([
 ]);
 
 export default async function DevelopmentDetailPage({ params }: PageProps) {
+  /*
+   * Locale from `params`, never ambient. `getTranslations("development")` on
+   * its own reads `getLocale()`, which falls through to `headers()` unless
+   * setRequestLocale ran in the same pass — that is what took /p/[slug] off
+   * prerendering in #373. This route carries `revalidate: 60`, so the same
+   * mistake here would be more expensive, not less.
+   */
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "development" });
   const { slug } = await params;
   const development = await getPublishedDevelopmentBySlug(slug);
   if (!development) notFound();
@@ -160,30 +171,30 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     siblingsByDeveloper,
     siblingsInArea,
   ] = await Promise.all([
-      getDevelopmentPageContent({
-        name: development.name,
-        slug: development.slug,
-      }),
-      listDevelopmentUnits(development.id),
-      listFloorPlans(development.id),
-      listUnitTypesForPage(development.id),
-      listDevelopmentMedia(development.id),
-      getDevelopmentMeta(development.id),
-      development.developer_id
-        ? listOtherDevelopmentsByDeveloper({
-            excludeId: development.id,
-            developerId: development.developer_id,
-            limit: 4,
-          })
-        : Promise.resolve([]),
-      development.area_id
-        ? listOtherDevelopmentsInArea({
-            excludeId: development.id,
-            areaId: development.area_id,
-            limit: 3,
-          })
-        : Promise.resolve([]),
-    ]);
+    getDevelopmentPageContent({
+      name: development.name,
+      slug: development.slug,
+    }),
+    listDevelopmentUnits(development.id),
+    listFloorPlans(development.id),
+    listUnitTypesForPage(development.id),
+    listDevelopmentMedia(development.id),
+    getDevelopmentMeta(development.id),
+    development.developer_id
+      ? listOtherDevelopmentsByDeveloper({
+          excludeId: development.id,
+          developerId: development.developer_id,
+          limit: 4,
+        })
+      : Promise.resolve([]),
+    development.area_id
+      ? listOtherDevelopmentsInArea({
+          excludeId: development.id,
+          areaId: development.area_id,
+          limit: 3,
+        })
+      : Promise.resolve([]),
+  ]);
 
   // Curated neighbours win over the same-area fallback, in the order they
   // were picked in the page editor.
@@ -207,9 +218,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   // SEED_AGENTS[0] is always present, so the overlay can't return null here.
   const leadAdvisor = (await withAgentPhoto(
     pickedAdvisor ??
-      SEED_AGENTS.find((a) =>
-        a.areas.includes(development.area?.slug ?? ""),
-      ) ??
+      SEED_AGENTS.find((a) => a.areas.includes(development.area?.slug ?? "")) ??
       SEED_AGENTS[0],
   ))!;
 
@@ -246,10 +255,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   // rendered side by side in one section. Either can be left empty; the half
   // that has imagery then spans the width.
   const curatedRenders = (key: string): RenderTile[] =>
-    list<Record<string, unknown>>(
-      content.section("renders")?.values ?? {},
-      key,
-    )
+    list<Record<string, unknown>>(content.section("renders")?.values ?? {}, key)
       .filter((i) => i.enabled !== false)
       .map((i) => {
         const image = (i.image ?? null) as {
@@ -282,7 +288,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             ? [
                 {
                   url: mediaPublicUrl(m.media.storage_key),
-                  alt: m.media.alt_text ?? `${development.name} render ${i + 1}`,
+                  alt:
+                    m.media.alt_text ?? `${development.name} render ${i + 1}`,
                   caption: null,
                 },
               ]
@@ -338,7 +345,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const overviewBody = sv("overview", "intro") ?? development.vision;
 
   const nodes: Record<string, React.ReactNode> = {
-    "overview": (
+    overview: (
       <section
         id="overview"
         className="px-4 md:px-12 py-16 grid grid-cols-1 md:grid-cols-2 gap-16 scroll-mt-16"
@@ -359,10 +366,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           {overviewBody ? (
             <div className="mt-6 space-y-4">
               {overviewBody.split("\n\n").map((para, i) => (
-                <p
-                  key={i}
-                  className="text-[16px] text-bz-ink-2 leading-[1.7]"
-                >
+                <p key={i} className="text-[16px] text-bz-ink-2 leading-[1.7]">
                   {para}
                 </p>
               ))}
@@ -370,15 +374,17 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           ) : null}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 self-start">
-          {factPairs(development.facts).map(([l, v]) => (
-            <div
-              key={l}
-              className="p-[18px] bg-bz-surface-2 rounded-lg border border-bz-border"
-            >
-              <div className="eyebrow">{l}</div>
-              <div className="text-[16px] font-medium mt-1.5">{v}</div>
-            </div>
-          ))}
+          {factPairs(development.facts, (k) => t(`facts.${k}`)).map(
+            ([l, v]) => (
+              <div
+                key={l}
+                className="p-[18px] bg-bz-surface-2 rounded-lg border border-bz-border"
+              >
+                <div className="eyebrow">{l}</div>
+                <div className="text-[16px] font-medium mt-1.5">{v}</div>
+              </div>
+            ),
+          )}
         </div>
       </section>
     ),
@@ -433,17 +439,18 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       </section>
     ),
     "payment-plan": development.payment_plan ? (
-        <PaymentPlanSection
-          id="payment-plan"
-          plan={development.payment_plan}
-          eyebrow={sv("payment-plan", "eyebrow")}
-          heading={sv("payment-plan", "heading") ?? "Cash flow timeline"}
-          intro={sv("payment-plan", "intro")}
-          developmentName={development.name}
-          units={calculatorUnits}
-        />
+      <PaymentPlanSection
+        id="payment-plan"
+        plan={development.payment_plan}
+        eyebrow={sv("payment-plan", "eyebrow")}
+        heading={sv("payment-plan", "heading") ?? "Cash flow timeline"}
+        intro={sv("payment-plan", "intro")}
+        developmentName={development.name}
+        units={calculatorUnits}
+      />
     ) : null,
-    "units": units.length > 0 ? (
+    units:
+      units.length > 0 ? (
         <section id="units" className="px-4 md:px-12 py-16 scroll-mt-16">
           <div className="flex justify-between items-end flex-wrap gap-4 mb-6">
             <div>
@@ -466,15 +473,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </div>
           <UnitsTable units={units} />
         </section>
-    ) : null,
+      ) : null,
     // Only the plans nobody has filed under a unit type. The rest render in
     // "Units & floor plans" below the features, and one drawing appearing
     // twice on the same page reads as a bug rather than as emphasis.
-    "floor-plans": legacyFloorPlans.length > 0 ? (
-        <section
-          id="floor-plans"
-          className="px-4 md:px-12 pb-16 scroll-mt-16"
-        >
+    "floor-plans":
+      legacyFloorPlans.length > 0 ? (
+        <section id="floor-plans" className="px-4 md:px-12 pb-16 scroll-mt-16">
           <Eyebrow>{sv("floor-plans", "eyebrow") ?? "Floor plans"}</Eyebrow>
           <h2
             className="serif text-[36px] mt-2"
@@ -517,9 +522,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                     </div>
                   ) : (
                     <PlaceholderImage
-                      label={fp.label
-                        .toLowerCase()
-                        .replace(/[^a-z0-9]+/g, "-")}
+                      label={fp.label.toLowerCase().replace(/[^a-z0-9]+/g, "-")}
                       className="aspect-square rounded"
                     />
                   )}
@@ -536,8 +539,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             )}
           </div>
         </section>
-    ) : null,
-    "renders":
+      ) : null,
+    renders:
       interiorTiles.length + exteriorTiles.length > 0 ? (
         <section id="renders" className="scroll-mt-16">
           <RendersGallery
@@ -551,7 +554,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           />
         </section>
       ) : null,
-    "features": (
+    features: (
       <section id="features" className="scroll-mt-16">
         <FeatureBlocks
           developmentName={development.name}
@@ -567,7 +570,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     // Unit-type buttons and their layouts. Sits between the named features and
     // the map by default; the page editor can move or hide it like any other.
     "unit-plans": (
-      <section id="unit-plans" className="scroll-mt-16 border-t border-bz-border">
+      <section
+        id="unit-plans"
+        className="scroll-mt-16 border-t border-bz-border"
+      >
         <UnitFloorPlans
           types={unitTypeCards}
           developmentName={development.name}
@@ -579,7 +585,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         />
       </section>
     ),
-    "location": (
+    location: (
       <section id="location" className="px-4 md:px-12 pb-16 scroll-mt-16">
         <Eyebrow>{sv("location", "eyebrow") ?? "Location"}</Eyebrow>
         <h2
@@ -608,85 +614,85 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       </section>
     ),
     // Map of other projects in the same area.
-    "nearby": (
-        <NearbyDevelopments
-          areaName={development.area?.name ?? "this area"}
-          nearby={neighbours}
-          eyebrow={sv("nearby", "eyebrow")}
-          heading={sv("nearby", "heading")}
-          intro={sv("nearby", "intro")}
-        />
+    nearby: (
+      <NearbyDevelopments
+        areaName={development.area?.name ?? "this area"}
+        nearby={neighbours}
+        eyebrow={sv("nearby", "eyebrow")}
+        heading={sv("nearby", "heading")}
+        intro={sv("nearby", "intro")}
+      />
     ),
-    "developer": development.developer_profile ? (
-        <section id="developer" className="px-4 md:px-12 pb-16 scroll-mt-16">
-          <Eyebrow>{sv("developer", "eyebrow") ?? "Developer"}</Eyebrow>
-          {/* The card below is built from the developer's own record, so an
+    developer: development.developer_profile ? (
+      <section id="developer" className="px-4 md:px-12 pb-16 scroll-mt-16">
+        <Eyebrow>{sv("developer", "eyebrow") ?? "Developer"}</Eyebrow>
+        {/* The card below is built from the developer's own record, so an
               override introduces a section heading above it rather than
               overwriting the partner's name and profile copy. */}
-          {sv("developer", "heading") ? (
-            <h2
-              className="serif text-[32px] mt-2 leading-tight"
-              style={{ letterSpacing: "-0.02em" }}
+        {sv("developer", "heading") ? (
+          <h2
+            className="serif text-[32px] mt-2 leading-tight"
+            style={{ letterSpacing: "-0.02em" }}
+          >
+            {sv("developer", "heading")}
+          </h2>
+        ) : null}
+        {sv("developer", "intro") ? (
+          <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+            {sv("developer", "intro")}
+          </p>
+        ) : null}
+        <div className="mt-3 rounded-xl border border-bz-border bg-bz-surface p-6 md:p-9 grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-12 items-center">
+          <div>
+            <div
+              className="serif text-[30px] md:text-[48px] leading-tight"
+              style={{ letterSpacing: "-0.025em" }}
             >
-              {sv("developer", "heading")}
-            </h2>
-          ) : null}
-          {sv("developer", "intro") ? (
-            <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-              {sv("developer", "intro")}
-            </p>
-          ) : null}
-          <div className="mt-3 rounded-xl border border-bz-border bg-bz-surface p-6 md:p-9 grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-12 items-center">
-            <div>
-              <div
-                className="serif text-[30px] md:text-[48px] leading-tight"
-                style={{ letterSpacing: "-0.025em" }}
-              >
-                {development.developer_profile.name}
+              {development.developer_profile.name}
+            </div>
+            {development.developer_profile.founded_year ? (
+              <div className="text-[12.5px] text-bz-muted mt-1">
+                Founded {development.developer_profile.founded_year}
               </div>
-              {development.developer_profile.founded_year ? (
-                <div className="text-[12.5px] text-bz-muted mt-1">
-                  Founded {development.developer_profile.founded_year}
-                </div>
-              ) : null}
-            </div>
-            <div>
-              {development.developer_profile.description ? (
-                <p className="text-[15px] text-bz-ink-2 leading-[1.65]">
-                  {development.developer_profile.description}
-                </p>
-              ) : null}
-            </div>
+            ) : null}
           </div>
-        </section>
+          <div>
+            {development.developer_profile.description ? (
+              <p className="text-[15px] text-bz-ink-2 leading-[1.65]">
+                {development.developer_profile.description}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </section>
     ) : null,
     "other-projects": development.developer?.name ? (
-        <DeveloperProjectsStrip
-          developerName={development.developer.name}
-          siblings={siblingsByDeveloper}
-          eyebrow={sv("other-projects", "eyebrow")}
-          heading={sv("other-projects", "heading")}
-          intro={sv("other-projects", "intro")}
-        />
+      <DeveloperProjectsStrip
+        developerName={development.developer.name}
+        siblings={siblingsByDeveloper}
+        eyebrow={sv("other-projects", "eyebrow")}
+        heading={sv("other-projects", "heading")}
+        intro={sv("other-projects", "intro")}
+      />
     ) : null,
     // DevelopmentFaq carries its own `id="faq"` anchor.
-    "faq": (
-        <DevelopmentFaq
-          development={development}
-          curated={meta?.faq}
-          eyebrow={sv("faq", "eyebrow")}
-          heading={sv("faq", "heading")}
-          intro={sv("faq", "intro")}
-        />
+    faq: (
+      <DevelopmentFaq
+        development={development}
+        curated={meta?.faq}
+        eyebrow={sv("faq", "eyebrow")}
+        heading={sv("faq", "heading")}
+        intro={sv("faq", "intro")}
+      />
     ),
-    "advisor": (
-        <LeadAdvisorBanner
+    advisor: (
+      <LeadAdvisorBanner
         agent={leadAdvisor}
         developmentName={development.name}
         eyebrow={sv("advisor", "eyebrow")}
         heading={sv("advisor", "heading")}
         intro={sv("advisor", "intro")}
-        />
+      />
     ),
   };
 
@@ -798,21 +804,21 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                   the pair ran off the right edge at 375px. */}
               <div className="w-full md:w-auto md:ms-auto flex flex-wrap gap-2 items-end">
                 {leadForms.development_brochure!.enabled ? (
-                <BrochureGate
-                  form={leadForms.development_brochure!}
-                  developmentName={development.name}
-                  developmentId={development.id}
-                  brochureUrl={brochure?.url ?? null}
-                  buttonLabel={sv("hero", "brochure_label")}
-                />
+                  <BrochureGate
+                    form={leadForms.development_brochure!}
+                    developmentName={development.name}
+                    developmentId={development.id}
+                    brochureUrl={brochure?.url ?? null}
+                    buttonLabel={sv("hero", "brochure_label")}
+                  />
                 ) : null}
                 {leadForms.development_interest!.enabled ? (
-                <InterestDialog
-                  form={leadForms.development_interest!}
-                  developmentName={development.name}
-                  developmentId={development.id}
-                  buttonLabel={sv("hero", "interest_label")}
-                />
+                  <InterestDialog
+                    form={leadForms.development_interest!}
+                    developmentName={development.name}
+                    developmentId={development.id}
+                    buttonLabel={sv("hero", "interest_label")}
+                  />
                 ) : null}
               </div>
             </div>
@@ -861,19 +867,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   );
 }
 
-function HeroStat({
-  value,
-  label,
-}: {
-  value: React.ReactNode;
-  label: string;
-}) {
+function HeroStat({ value, label }: { value: React.ReactNode; label: string }) {
   return (
     <div>
-      <div
-        className="serif text-[28px]"
-        style={{ letterSpacing: "-0.015em" }}
-      >
+      <div className="serif text-[28px]" style={{ letterSpacing: "-0.015em" }}>
         {value}
       </div>
       <div
@@ -886,24 +883,30 @@ function HeroStat({
   );
 }
 
-const FACT_LABELS: Record<string, string> = {
-  architecture: "Architecture",
-  landscape: "Landscape",
-  total_area_ft2: "Total area",
-  lagoon_area_ft2: "Lagoon area",
-  density: "Density",
-  rera_escrow: "RERA escrow",
-  service_charge_estimate: "Service charge",
-  tenure: "Tenure",
-};
+/**
+ * Which facts to show, in order. The labels come from the catalogue; this list
+ * is the ordering and the whitelist — a key absent from it is never rendered,
+ * which is what stops an editor's stray `facts` entry appearing unlabelled.
+ */
+const FACT_KEYS = [
+  "architecture",
+  "landscape",
+  "total_area_ft2",
+  "lagoon_area_ft2",
+  "density",
+  "rera_escrow",
+  "service_charge_estimate",
+  "tenure",
+] as const;
 
 function factPairs(
   facts: Record<string, string | undefined>,
+  label: (key: string) => string,
 ): [string, string][] {
   const out: [string, string][] = [];
-  for (const [key, label] of Object.entries(FACT_LABELS)) {
+  for (const key of FACT_KEYS) {
     const v = facts[key];
-    if (v) out.push([label, v]);
+    if (v) out.push([label(key), v]);
   }
   return out;
 }

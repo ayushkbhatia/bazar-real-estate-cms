@@ -66,7 +66,6 @@ const HAND_ROLLED =
  */
 const ALLOWED: readonly string[] = [
   "app/[locale]/(public)/concierge/_chat.tsx",
-  "app/[locale]/(public)/developments/[slug]/_payment-plan.tsx",
   "app/[locale]/(public)/market-reports/_components/report-hero.tsx",
   "app/[locale]/(public)/tools/valuation/valuation-wizard.tsx",
   "lib/concierge/handoff.ts",
@@ -75,7 +74,7 @@ const ALLOWED: readonly string[] = [
 ];
 
 /** What the allowlist held when the rule landed. Lowering it is the point. */
-const ALLOWED_CEILING = 7;
+const ALLOWED_CEILING = 6;
 
 /** Strip comments so a docblock describing the idiom does not trip on it. */
 function stripComments(source: string): string {
