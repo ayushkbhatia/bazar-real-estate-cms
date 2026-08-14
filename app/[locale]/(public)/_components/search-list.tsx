@@ -7,6 +7,8 @@ import {
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
 import { isSupabaseConfigured } from "@/lib/env";
 import {
   countActiveFilters,
@@ -128,9 +130,9 @@ function FormEmptyState({
   );
 }
 
-function badgeFor(row: ListingRow):
-  | { label: string; kind: "ink" | "accent" }
-  | undefined {
+function badgeFor(
+  row: ListingRow,
+): { label: string; kind: "ink" | "accent" } | undefined {
   if (row.flags?.exclusive) return { label: "Exclusive", kind: "ink" };
   if (row.flags?.vacant_on_transfer)
     return { label: "Vacant on transfer", kind: "accent" };
@@ -142,11 +144,25 @@ async function fetchAreas(): Promise<AreaOption[]> {
   const supabase = createSupabasePublicClient();
   const { data, error } = await supabase
     .from("areas")
-    .select("slug, name, kind")
+    .select("slug, name, name_ar, kind")
     .in("kind", ["area", "sub_community"])
     .order("name", { ascending: true });
   if (error || !data) return [];
-  return data.map((d) => ({ slug: d.slug, name: d.name }));
+  const locale = await currentLocale();
+  /*
+   * The LABEL folds; the VALUE does not. This dropdown writes `slug` into the
+   * query string and the filter compares against `slug`, so folding the label
+   * is safe and folding the value would silently return nothing on /ar — the
+   * identity-versus-display split that also bit `communityKey`.
+   */
+  return data.map((d) => ({
+    slug: d.slug,
+    name: (
+      localiseRow(d as unknown as Record<string, unknown>, locale) as {
+        name: string;
+      }
+    ).name,
+  }));
 }
 
 /**
@@ -273,23 +289,19 @@ export async function SearchList({
             <MapViewClient
               pins={rows
                 .filter(
-                  (
-                    r,
-                  ): r is typeof r & { geo: { lat: number; lng: number } } =>
+                  (r): r is typeof r & { geo: { lat: number; lng: number } } =>
                     r.geo !== null &&
                     typeof r.geo.lat === "number" &&
                     typeof r.geo.lng === "number",
                 )
-                .map(
-                  (r): MapPin => ({
-                    id: r.id,
-                    reference: r.reference,
-                    slug: r.slug,
-                    title: r.title,
-                    price_aed: r.price_aed,
-                    geo: r.geo,
-                  }),
-                )}
+                .map((r): MapPin => ({
+                  id: r.id,
+                  reference: r.reference,
+                  slug: r.slug,
+                  title: r.title,
+                  price_aed: r.price_aed,
+                  geo: r.geo,
+                }))}
               className="w-full h-full"
             />
           </div>
@@ -321,7 +333,9 @@ export async function SearchList({
                     heroAlt={row.hero?.alt_text ?? row.title}
                     priority={index < 2}
                     propertyId={row.id}
-                    verified={Boolean((row.flags as Record<string, unknown> | null)?.verified)}
+                    verified={Boolean(
+                      (row.flags as Record<string, unknown> | null)?.verified,
+                    )}
                   />
                 </Link>
               );
@@ -355,7 +369,9 @@ export async function SearchList({
                       heroAlt={row.hero?.alt_text ?? row.title}
                       priority={priority}
                       propertyId={row.id}
-                      verified={Boolean((row.flags as Record<string, unknown> | null)?.verified)}
+                      verified={Boolean(
+                        (row.flags as Record<string, unknown> | null)?.verified,
+                      )}
                     />
                   </Link>
                 );
@@ -372,16 +388,14 @@ export async function SearchList({
                       typeof r.geo.lat === "number" &&
                       typeof r.geo.lng === "number",
                   )
-                  .map(
-                    (r): MapPin => ({
-                      id: r.id,
-                      reference: r.reference,
-                      slug: r.slug,
-                      title: r.title,
-                      price_aed: r.price_aed,
-                      geo: r.geo,
-                    }),
-                  )}
+                  .map((r): MapPin => ({
+                    id: r.id,
+                    reference: r.reference,
+                    slug: r.slug,
+                    title: r.title,
+                    price_aed: r.price_aed,
+                    geo: r.geo,
+                  }))}
                 className="w-full h-full"
               />
             </aside>

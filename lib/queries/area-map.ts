@@ -18,6 +18,9 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
+
 // Deep import, not the `@/lib/preferences` barrel: the barrel re-exports
 // `provider.tsx`, which is `"use client"`, and dragging a client boundary into
 // a server-side query module is how you accidentally bundle React state into
@@ -237,7 +240,7 @@ export async function listAreaPins(
 
     const { data: areas } = await sb
       .from("areas")
-      .select("id, slug, name, geo")
+      .select("id, slug, name, name_ar, geo")
       .eq("kind", "area")
       .eq("parent_id", em.id)
       .order("name", { ascending: true });
@@ -254,6 +257,10 @@ export async function listAreaPins(
       .eq("status", "published")
       .in("area_id", ids);
 
+    // Pin labels are display; `slug` stays as authored — it keys
+    // AREA_CENTROIDS, areaTag() and seedStatsForSlug(), and folding it would
+    // silently drop every pin's centroid and stats on /ar.
+    const pinLocale = await currentLocale();
     const countByArea = new Map<string, number>();
     const pointsByArea = new Map<string, LngLat[]>();
     for (const p of props ?? []) {
@@ -282,7 +289,11 @@ export async function listAreaPins(
       pins.push({
         id: a.id,
         slug: a.slug,
-        name: a.name,
+        name: (
+          localiseRow(a as unknown as Record<string, unknown>, pinLocale) as {
+            name: string;
+          }
+        ).name,
         emirate,
         tag: areaTag(a.slug),
         lng: centroid.lng,

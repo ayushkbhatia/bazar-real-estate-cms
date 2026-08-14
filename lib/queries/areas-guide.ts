@@ -10,6 +10,10 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { currentLocale } from "@/lib/i18n/current";
+import { localiseRow } from "@/lib/i18n/localise";
+import { type Locale } from "@/lib/i18n/locales";
+
 import { SEED_AREA_GUIDES } from "@/lib/seeds/areas";
 
 export type AreaIndexEntry = {
@@ -23,13 +27,22 @@ export type AreaIndexEntry = {
 // ─────────────────────────────────────────────────────────────────────
 // listAreasWithCounts
 // ─────────────────────────────────────────────────────────────────────
-export async function listAreasWithCounts(): Promise<AreaIndexEntry[]> {
+export async function listAreasWithCounts(
+  /*
+   * Optional, and callers outside the [locale] segment MUST pass one.
+   * `app/sitemap.ts` is the reason this parameter exists: it sits at the root,
+   * has no `setRequestLocale` above it, and an ambient read there is a dynamic
+   * API. The G-1 guard caught exactly that — "/sitemap.xml was prerendered and
+   * is now rendered on demand" — on the commit that added the fold below.
+   */
+  locale?: Locale,
+): Promise<AreaIndexEntry[]> {
   if (!isSupabaseConfigured) return seedAreaIndex();
   try {
     const sb = createSupabasePublicClient();
     const { data: areas, error } = await sb
       .from("areas")
-      .select("id, slug, name, kind")
+      .select("id, slug, name, name_ar, kind")
       .eq("kind", "area")
       .order("name", { ascending: true });
     if (error || !areas || areas.length === 0) return seedAreaIndex();
@@ -59,10 +72,16 @@ export async function listAreasWithCounts(): Promise<AreaIndexEntry[]> {
       (guides ?? []).map((g: { area_id: string }) => g.area_id),
     );
 
+    const active = locale ?? (await currentLocale());
     return areas.map((a, i) => ({
       id: a.id,
       slug: a.slug,
-      name: a.name,
+      // Display only. `slug` is the URL and stays as authored.
+      name: (
+        localiseRow(a as unknown as Record<string, unknown>, active) as {
+          name: string;
+        }
+      ).name,
       listing_count: counts[i] ?? 0,
       guide_published: guideSet.has(a.id),
     }));

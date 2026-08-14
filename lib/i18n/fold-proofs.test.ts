@@ -94,6 +94,8 @@ const GRANDFATHERED_CEILING = 45;
  * `localise.test.ts` fall into.
  */
 const FOLD_PROOFS: Record<string, string> = {
+  "areas.name": "lib/queries/areas.fold.test.ts",
+  "areas.description": "lib/queries/areas.fold.test.ts",
   "media_assets.alt_text": "lib/queries/developments.fold.test.ts",
   "properties.title": "lib/queries/properties.fold.test.ts",
   "properties.short_description": "lib/queries/properties.fold.test.ts",
