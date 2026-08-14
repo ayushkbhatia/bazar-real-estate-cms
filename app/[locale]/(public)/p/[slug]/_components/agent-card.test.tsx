@@ -81,9 +81,9 @@ describe("AgentCard contact actions", () => {
     const hrefs = screen
       .getAllByRole("link")
       .map((a) => (a as HTMLAnchorElement).getAttribute("href"));
-    expect(
-      hrefs.some((h) => h?.startsWith("https://wa.me/97125550001")),
-    ).toBe(true);
+    expect(hrefs.some((h) => h?.startsWith("https://wa.me/97125550001"))).toBe(
+      true,
+    );
     expect(hrefs.some((h) => h?.startsWith("mailto:"))).toBe(false);
   });
 });

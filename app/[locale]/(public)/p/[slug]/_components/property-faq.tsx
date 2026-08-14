@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 
@@ -32,21 +33,22 @@ export function PropertyFaq({
   tenure,
   listingPermitNo,
 }: Props) {
-  const placeForArea = areaName ?? "Abu Dhabi";
+  const t = useTranslations("property");
+  const placeForArea = areaName ?? t("fallbackCity");
   const tenureNote =
     tenure === "freehold"
-      ? "Yes — this is a freehold title. Non-resident buyers can take ownership in their own name."
+      ? t("faq.tenureFreehold")
       : tenure === "leasehold"
-        ? "This is a leasehold title. Non-resident ownership rules vary by lease term and area — your Bazar advisor will clarify the exact eligibility."
-        : "Tenure varies by community. Your Bazar advisor will confirm the specific title structure and what it means for non-resident ownership before any offer is filed.";
+        ? t("faq.tenureLeasehold")
+        : t("faq.tenureUnknown");
 
   const entries: { q: string; a: string }[] = [
     {
-      q: `Where is ${reference} located?`,
-      a: `${title} sits within ${placeForArea}. The interactive map on this page anchors it to the wider community along with commute times to key destinations.`,
+      q: t("faq.locationQ", { reference }),
+      a: t("faq.locationA", { title, place: placeForArea }),
     },
     {
-      q: `Can a non-resident buy ${reference}?`,
+      q: t("faq.nonResidentQ", { reference }),
       a: tenureNote,
     },
     {
@@ -65,15 +67,21 @@ export function PropertyFaq({
 
   if (listingPermitNo) {
     entries.push({
-      q: "Where can I verify this listing?",
-      a: `Permit number ${listingPermitNo} is registered with the DLD. You can verify the listing — and confirm Bazar is the assigned broker — directly through the DLD's public Trakheesi portal.`,
+      q: t("faq.verifyQ"),
+      a: t("faq.verifyA", { permit: listingPermitNo }),
     });
   }
 
   // Also include a beds-specific question to broaden the long-tail surface
   entries.unshift({
-    q: `What does a ${beds}-bed ${propertyType} in ${placeForArea} typically include?`,
-    a: `A ${beds}-bed ${propertyType} in ${placeForArea} typically comes with ${baths} bathroom${baths === 1 ? "" : "s"}, a private balcony or terrace, dedicated parking, and access to the building's pool / gym amenity set. Specifications vary per tower; your Bazar advisor will share the full schedule for ${reference} on request.`,
+    q: t("faq.includesQ", { beds, type: propertyType, place: placeForArea }),
+    a: t("faq.includesA", {
+      beds,
+      type: propertyType,
+      place: placeForArea,
+      baths: t("faq.bathroomCount", { count: baths }),
+      reference,
+    }),
   });
 
   const ld = {

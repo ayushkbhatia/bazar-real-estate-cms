@@ -316,5 +316,261 @@
     "sourceHash": "024dc204d7ba",
     "reviewed": false,
     "note": "MT returned nothing: 'Area' alone is a single word with no context."
+  },
+  "property.spec.development": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "21b6a798321a",
+    "reviewed": false
+  },
+  "property.spec.furnishing": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cc288f83ffe8",
+    "reviewed": false
+  },
+  "property.spec.floor": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d268c9c44920",
+    "reviewed": false
+  },
+  "property.spec.parking": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4a64d6c849df",
+    "reviewed": false
+  },
+  "property.spec.plotSize": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b0a4daea9e40",
+    "reviewed": false
+  },
+  "property.spec.view": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dcc839a4015c",
+    "reviewed": false
+  },
+  "property.spec.orientation": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e3d11242200f",
+    "reviewed": false
+  },
+  "property.spec.serviceCharge": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5c535d19ebc1",
+    "reviewed": false
+  },
+  "property.spec.perYear": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fedcbfd9c934",
+    "reviewed": false
+  },
+  "property.spec.listingType": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "329627e86265",
+    "reviewed": false
+  },
+  "property.spec.listed": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "78797afdac99",
+    "reviewed": false
+  },
+  "property.spec.parkingBays": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "134814aaddfc",
+    "reviewed": false
+  },
+  "property.stat.builtUp": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c51b9b3250d7",
+    "reviewed": false
+  },
+  "property.stat.type": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "baaddf70fb5d",
+    "reviewed": false
+  },
+  "property.stat.tenure": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "872d94afc42c",
+    "reviewed": false
+  },
+  "property.stat.yearBuilt": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a16c86994cba",
+    "reviewed": false
+  },
+  "property.furnishing.unfurnished": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "bf193de9ee20",
+    "reviewed": false
+  },
+  "property.furnishing.semi": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b876608dbe6b",
+    "reviewed": false
+  },
+  "property.furnishing.fully": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1c2cb94bc144",
+    "reviewed": false
+  },
+  "property.mode.buy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "aedf56fc02b4",
+    "reviewed": false
+  },
+  "property.mode.rent": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "03cc104614c2",
+    "reviewed": false
+  },
+  "property.mode.off_plan": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1e494873d5a6",
+    "reviewed": false
+  },
+  "property.mode.commercial": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ea7d0b763435",
+    "reviewed": false
+  },
+  "property.gallery.morePhotos": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b0a4eea178fa",
+    "reviewed": false
+  },
+  "property.gallery.close": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "69e9e2930ad0",
+    "reviewed": false
+  },
+  "property.gallery.previous": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2f55863e032e",
+    "reviewed": false
+  },
+  "property.listedAgo": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fc77fa32f757",
+    "reviewed": false
+  },
+  "property.faq.locationA": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "362f1b36e7d2",
+    "reviewed": false
+  },
+  "property.faq.nonResidentQ": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "52f0f01b6538",
+    "reviewed": false
+  },
+  "property.faq.verifyQ": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "143356646a48",
+    "reviewed": false
+  },
+  "property.faq.verifyA": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "926c00216502",
+    "reviewed": false
+  },
+  "property.faq.includesQ": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1ebab01ddebd",
+    "reviewed": false
+  },
+  "property.faq.bathroomCount": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c2a7846d2dd8",
+    "reviewed": false
+  },
+  "property.fallbackArea": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dd64913c8b91",
+    "reviewed": false
+  },
+  "property.stat.bedrooms": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "2477f3143d34",
+    "reviewed": false,
+    "note": "MT invented a '#'. Plain column header, no count — the counted form lives in listing.bedrooms."
+  },
+  "property.stat.bathrooms": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "c7f191c4d296",
+    "reviewed": false,
+    "note": "MT returned nothing: a single-word column header carries no context."
+  },
+  "property.faq.locationQ": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "adbc0ec1478a",
+    "reviewed": false,
+    "note": "MT returned nothing. Placeholder position moved to suit Arabic word order — which is the point of using a named placeholder rather than concatenating."
+  },
+  "property.faq.includesA": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "a5f6e0465934",
+    "reviewed": false,
+    "note": "MT returned nothing on a sentence carrying five placeholders. Hand-authored with the placeholders reordered for Arabic — a fragment-for-fragment port could not have done that."
+  },
+  "property.faq.tenureFreehold": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "951c678e6896",
+    "reviewed": false
+  },
+  "property.faq.tenureLeasehold": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9e26b471798f",
+    "reviewed": false
+  },
+  "property.faq.tenureUnknown": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a8be7a0dedb7",
+    "reviewed": false
+  },
+  "property.fallbackCity": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5c7dfd7a7d9d",
+    "reviewed": false
   }
 }

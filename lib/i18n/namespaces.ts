@@ -33,6 +33,7 @@ export const NAMESPACES = [
   "consent",
   "listing",
   "search",
+  "property",
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -68,6 +69,9 @@ export const CLIENT_NAMESPACES = [
   // The filter bar and hero search own their own state — dropdowns, chips,
   // a debounced query box. Client by necessity.
   "search",
+  // Gallery lightbox and price block are interactive; the page itself is a
+  // Server Component and reads the same namespace through getTranslations.
+  "property",
 ] as const satisfies readonly Namespace[];
 
 /** Narrow a full message bag to the namespaces the client actually needs. */

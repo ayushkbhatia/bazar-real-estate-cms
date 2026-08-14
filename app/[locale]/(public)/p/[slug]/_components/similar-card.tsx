@@ -32,7 +32,9 @@ export function SimilarCard({ priceAed, ...props }: Props) {
     priceAed != null ? formatPrice(priceAed, prefs) : (props.price ?? "—");
   const numericArea = typeof props.area === "number" ? props.area : null;
   const area =
-    numericArea != null ? formatAreaValue(numericArea, prefs.area_unit) : props.area;
+    numericArea != null
+      ? formatAreaValue(numericArea, prefs.area_unit)
+      : props.area;
   return (
     <ListingCard
       {...props}

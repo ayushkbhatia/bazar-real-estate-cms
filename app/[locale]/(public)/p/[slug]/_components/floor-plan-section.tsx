@@ -59,8 +59,16 @@ export function FloorPlanSection({
 
       {/* Key facts strip under the plan */}
       <div className="mt-4 grid grid-cols-3 gap-3 max-w-[480px]">
-        <FactPill icon={<BedDouble size={13} strokeWidth={1.6} />} label="Bedrooms" value={String(beds)} />
-        <FactPill icon={<LayoutGrid size={13} strokeWidth={1.6} />} label="Bathrooms" value={String(baths)} />
+        <FactPill
+          icon={<BedDouble size={13} strokeWidth={1.6} />}
+          label="Bedrooms"
+          value={String(beds)}
+        />
+        <FactPill
+          icon={<LayoutGrid size={13} strokeWidth={1.6} />}
+          label="Bathrooms"
+          value={String(baths)}
+        />
         <FactPill
           icon={<Maximize2 size={13} strokeWidth={1.6} />}
           label="Built-up"

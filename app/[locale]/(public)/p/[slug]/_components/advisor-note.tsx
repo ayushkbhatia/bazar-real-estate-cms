@@ -26,9 +26,7 @@ export function AdvisorNote({
         &ldquo;{note}&rdquo;
       </blockquote>
       {advisorName ? (
-        <div className="mt-4 text-[12.5px] text-bz-muted">
-          — {advisorName}
-        </div>
+        <div className="mt-4 text-[12.5px] text-bz-muted">— {advisorName}</div>
       ) : null}
     </div>
   );
