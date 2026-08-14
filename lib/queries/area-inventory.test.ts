@@ -29,6 +29,37 @@ describe("communityKey", () => {
     expect(new Set(nawayef).size).toBe(3);
   });
 
+  /**
+   * The bug this function had until the Arabic epic reached /areas.
+   *
+   * Both inputs are already folded — `developments.name` at developments.ts:159
+   * and the editorial item's name through the section choke point — so on /ar
+   * they arrive in Arabic. Under the old `/[^a-z0-9]/g` every Arabic name
+   * reduced to "", the project key set became `{""}`, and that single key
+   * matched every editorial entry: the whole communities band vanished as
+   * duplicates. Silent, and invisible in English.
+   */
+  it("keeps Arabic names distinct instead of collapsing them to one key", () => {
+    const arabic = ["النسيم", "بشاير", "نويف", "مرسى السعديات"].map(
+      communityKey,
+    );
+    expect(arabic.every((k) => k.length > 0)).toBe(true);
+    expect(new Set(arabic).size).toBe(4);
+  });
+
+  it("still dedupes an Arabic name against itself, spacing and all", () => {
+    // The dedupe has to keep working in Arabic, not merely stop misfiring.
+    expect(communityKey("  النسيم ")).toBe(communityKey("النسيم"));
+  });
+
+  it("leaves every Latin key byte-identical to before", () => {
+    // The English site is live; this change must be a no-op for it.
+    expect(communityKey("Al Naseem Community")).toBe("alnaseem");
+    expect(communityKey("Hudayriyat Golf Estates")).toBe("hudayriyatgolf");
+    expect(communityKey("  al-zeina ")).toBe("alzeina");
+    expect(communityKey("Nawayef Park Views")).toBe("nawayefparkviews");
+  });
+
   it("ignores punctuation, case and spacing", () => {
     expect(communityKey("  al-zeina ")).toBe(communityKey("Al Zeina"));
     expect(communityKey("Marsa Al Saadiyat")).toBe(
