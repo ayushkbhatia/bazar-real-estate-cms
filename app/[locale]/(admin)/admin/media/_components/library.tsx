@@ -26,7 +26,9 @@ import {
   trashMedia,
   restoreMedia,
   deleteMediaPermanently,
+  saveMediaAlt,
 } from "../_actions";
+import { ArabicTwin } from "../../_fields/arabic-twin";
 import { MediaUsageBadge } from "./usage-badge";
 
 export type MediaLibraryItem = {
@@ -42,6 +44,8 @@ export type MediaLibraryItem = {
   daysInTrash: number | null;
   usages: MediaUsage[];
   state: MediaState;
+  alt_text: string | null;
+  alt_text_ar: string | null;
   trashable: { allowed: boolean; reason: string | null };
 };
 
@@ -260,9 +264,83 @@ export function MediaLibrary({
               No record references this file. It can be moved to the trash.
             </p>
           )}
+          {details && details.mime_type.startsWith("image/") ? (
+            <AltTextEditor key={details.id} item={details} />
+          ) : null}
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+/**
+ * Alt text for the asset, in both languages.
+ *
+ * Alt has been editable in exactly two places, both scoped to a property — the
+ * listing media library and the floor-plan card. Every other image in the
+ * system (developments, areas, articles, landing pages, the megamenu tiles) had
+ * no alt editor at all, which is an accessibility gap before it is a
+ * translation one. It belongs here because alt lives on `media_assets`: it
+ * describes the file, not one attachment of it.
+ *
+ * Keyed on `details.id` by the caller so opening a second asset remounts with
+ * its own values instead of showing the previous one's.
+ *
+ * Only offered for images. Alt on a PDF is not a thing.
+ */
+function AltTextEditor({ item }: { item: MediaLibraryItem }) {
+  const router = useRouter();
+  const [alt, setAlt] = useState(item.alt_text ?? "");
+  const [altAr, setAltAr] = useState(item.alt_text_ar ?? "");
+  const [pending, startTransition] = useTransition();
+  const dirty =
+    alt !== (item.alt_text ?? "") || altAr !== (item.alt_text_ar ?? "");
+
+  function save() {
+    startTransition(async () => {
+      const result = await saveMediaAlt(item.id, alt, altAr);
+      if (result.status === "ok") {
+        toast.success(result.message);
+        router.refresh();
+      } else {
+        toast.error(result.message);
+      }
+    });
+  }
+
+  return (
+    <div className="border-t border-bz-border pt-3 flex flex-col gap-1.5">
+      <label className="text-[11px] text-bz-muted" htmlFor={`alt-${item.id}`}>
+        Alt text
+      </label>
+      <textarea
+        id={`alt-${item.id}`}
+        rows={2}
+        value={alt}
+        onChange={(e) => setAlt(e.target.value)}
+        placeholder="What someone would see if the image didn't load."
+        className="bz-field w-full rounded border border-bz-border px-2.5 py-1.5 bg-bz-bg outline-none focus:border-bz-accent text-[13px] resize-y"
+      />
+      <ArabicTwin
+        field={{
+          key: "alt_text_ar",
+          label: "Alt text",
+          kind: "textarea",
+          max: 300,
+        }}
+        value={altAr}
+        onChange={setAltAr}
+      />
+      <div className="flex items-center justify-between gap-3 mt-1">
+        <span className="text-[11px] text-bz-muted">
+          Describes the image wherever it appears — this file is used in{" "}
+          {item.usages.length} place{item.usages.length === 1 ? "" : "s"}.
+        </span>
+        <Button size="sm" onClick={save} disabled={pending || !dirty}>
+          {pending ? "Saving…" : "Save alt text"}
+        </Button>
+      </div>
+    </div>
   );
 }
 
