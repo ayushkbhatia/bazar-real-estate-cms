@@ -169,3 +169,61 @@ export async function deleteMediaPermanently(
   revalidatePath("/admin/media");
   return { status: "ok", message: `"${asset.filename}" deleted for good.` };
 }
+
+/** Alt text caps. 300 is the existing property-side limit; Arabic gets 1.5x,
+ *  because the same sentence runs longer in Arabic and a copied cap truncates
+ *  valid translations. */
+const ALT_MAX = 300;
+const ALT_AR_MAX = 450;
+
+/**
+ * Alt text for one asset, in both languages.
+ *
+ * Alt lives on `media_assets`, so it is a property of the *file* and not of any
+ * one attachment — which is why it belongs here rather than only on the two
+ * property-scoped inputs that have been the sole way to edit it. Those cover
+ * photos attached to a listing; the other several hundred assets, including
+ * every image on a development, an area, an article or a landing page, had no
+ * alt editor at all.
+ *
+ * The search box on this screen has always matched on `alt_text`
+ * (`page.tsx:90`), so it was possible to find a file by an alt text the screen
+ * would not show you and you could not change.
+ *
+ * Not audit-logged. Alt text is copy, it changes often, and the log is where
+ * price and slug edits live — see the note on bulk-approve flooding in
+ * ADR-0007.
+ */
+export async function saveMediaAlt(
+  id: string,
+  alt: string,
+  altAr: string,
+): Promise<MediaMutationResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(MEDIA_ROLES);
+
+  const { asset, message } = await loadAsset(id);
+  if (!asset) return { status: "error", message: message ?? "Asset not found." };
+
+  const clean = (v: string, max: number) => {
+    const t = v.trim().slice(0, max);
+    return t === "" ? null : t;
+  };
+
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase
+    .from("media_assets")
+    .update({
+      alt_text: clean(alt, ALT_MAX),
+      // Named explicitly rather than left out when blank: this is a full-column
+      // update, so an omitted key would be the twin silently kept while the
+      // editor believes they cleared it.
+      alt_text_ar: clean(altAr, ALT_AR_MAX),
+    })
+    .eq("id", id);
+  if (error) return { status: "error", message: error.message };
+
+  revalidatePath("/admin/media");
+  return { status: "ok", message: "Alt text saved." };
+}

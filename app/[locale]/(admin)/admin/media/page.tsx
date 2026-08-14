@@ -51,6 +51,8 @@ type MediaRow = {
   folder: string;
   created_at: string;
   deleted_at: string | null;
+  alt_text: string | null;
+  alt_text_ar: string | null;
 };
 
 type PageProps = {
@@ -71,7 +73,7 @@ async function fetchMedia(opts: {
   let query = supabase
     .from("media_assets")
     .select(
-      "id, filename, mime_type, size_bytes, storage_key, folder, created_at, deleted_at",
+      "id, filename, mime_type, size_bytes, storage_key, folder, created_at, deleted_at, alt_text, alt_text_ar",
     );
 
   query = opts.trashed
@@ -172,6 +174,8 @@ export default async function MediaPage({ searchParams }: PageProps) {
       folder: row.folder,
       created_at: row.created_at,
       deleted_at: row.deleted_at,
+      alt_text: row.alt_text,
+      alt_text_ar: row.alt_text_ar,
       daysInTrash: row.deleted_at
         ? Math.max(0, TRASH_WINDOW_DAYS - daysSince(row.deleted_at))
         : null,
