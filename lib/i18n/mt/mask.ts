@@ -19,6 +19,13 @@
 
 /** Ordered longest-first; the first pattern to match a position wins. */
 const PATTERNS: { name: string; re: RegExp }[] = [
+  // ICU placeholders. `{count}` reaching the model unprotected is the same
+  // class of problem as a price reaching it: the model may translate it,
+  // reorder it, or drop the braces, and the message then formats to the
+  // literal text `{count}` on the page. Masked first because a placeholder can
+  // sit inside anything else here.
+  { name: "icu-arg", re: /\{\s*[A-Za-z_]\w*(?:\s*,\s*[^{}]*)?\s*\}/gu },
+
   // URLs and emails first — both contain dots and digits that later patterns
   // would otherwise bite chunks out of.
   { name: "url", re: /https?:\/\/[^\s<>"')]+/gu },

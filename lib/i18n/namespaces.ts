@@ -49,7 +49,9 @@ export type Namespace = (typeof NAMESPACES)[number];
  * `mobile-preferences.tsx`. The other four namespaces have no consumer at all
  * yet — they are server-side surfaces waiting on their wave.
  */
-export const CLIENT_NAMESPACES = ["common"] as const satisfies readonly Namespace[];
+export const CLIENT_NAMESPACES = [
+  "common",
+] as const satisfies readonly Namespace[];
 
 /** Narrow a full message bag to the namespaces the client actually needs. */
 export function pickClientMessages(
@@ -61,3 +63,21 @@ export function pickClientMessages(
   }
   return out;
 }
+
+/**
+ * Keys whose Arabic is legitimately the English, byte for byte.
+ *
+ * `messages.test.ts` allows these past its "no Arabic value is identical to
+ * its English" rule, and the catalogue translator must skip them for the same
+ * reason — otherwise every run tries to translate them again, and any Arabic
+ * it invented would then fail the test that permits them.
+ *
+ * A language switch labels each option in its OWN language, which is the whole
+ * convention: `English` stays `English` under Arabic, `العربية` stays
+ * `العربية` under English. Anything else makes the control unusable for the
+ * person who needs it most — someone who cannot read the current locale.
+ */
+export const IDENTICAL_BY_DESIGN: ReadonlySet<string> = new Set([
+  "common.languageEnglish",
+  "common.languageArabic",
+]);
