@@ -55,6 +55,15 @@ export const CLIENT_NAMESPACES = [
   // cookie, and it is the first thing a visitor touches. There is no
   // server-rendered variant to move it to, so this one genuinely has to cross.
   "consent",
+  // The mega-nav owns the mobile drawer's open/closed state, so it cannot be a
+  // Server Component. Five keys, all of them accessible names.
+  "nav",
+  // ListingCard renders from three Client Components (area-text,
+  // listing-card-priced, similar-card), so it cannot be async and its
+  // namespace has to cross. `footer` is the only one that stays server-only —
+  // the saving from #366 comes from the namespaces the waves ADD, which are
+  // overwhelmingly server-side.
+  "listing",
 ] as const satisfies readonly Namespace[];
 
 /** Narrow a full message bag to the namespaces the client actually needs. */

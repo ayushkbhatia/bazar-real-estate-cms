@@ -129,7 +129,9 @@ describe("pickClientMessages", () => {
   it("omits a client namespace that is absent rather than writing undefined", () => {
     // `undefined` in the bag would serialise as a key with no value and make
     // next-intl's own error message point at the wrong thing.
-    const picked = pickClientMessages({ nav: { b: "2" } });
+    // `footer` is the one namespace that never crosses — everything else is
+    // read by a Client Component somewhere.
+    const picked = pickClientMessages({ footer: { b: "2" } });
     expect(Object.keys(picked)).toEqual([]);
   });
 });

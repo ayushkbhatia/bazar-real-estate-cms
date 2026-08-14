@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -101,6 +103,7 @@ function useScrolled(offset: number): boolean {
 
 export function PublicMegaNav({ data, logo = null, footerSlot }: Props) {
   const pathname = usePathname();
+  const t = useTranslations("nav");
   const [mobileOpen, setMobileOpen] = useState(false);
   // Controlled Radix value — we only need "is a panel open", but the
   // header's opacity depends on it, so the state has to live up here.
@@ -153,7 +156,11 @@ export function PublicMegaNav({ data, logo = null, footerSlot }: Props) {
 
         {/* shrink-0 so the logo keeps its box when the trigger row is wide —
             without it the flex row steals width from the brand first. */}
-        <Link href="/" aria-label="Bazar — home" className="flex items-center shrink-0">
+        <Link
+          href="/"
+          aria-label={t("home")}
+          className="flex items-center shrink-0"
+        >
           <Wordmark logo={logo} />
         </Link>
 
@@ -224,7 +231,7 @@ export function PublicMegaNav({ data, logo = null, footerSlot }: Props) {
         {/* Right cluster */}
         <div className="hidden xl:flex gap-2 items-center">
           <Button asChild size="sm">
-            <Link href="/services/sell">List Your Property</Link>
+            <Link href="/services/sell">{t("listProperty")}</Link>
           </Button>
         </div>
 
@@ -235,7 +242,7 @@ export function PublicMegaNav({ data, logo = null, footerSlot }: Props) {
           </Button>
           <button
             type="button"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-label={mobileOpen ? t("closeMenu") : t("openMenu")}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((s) => !s)}
             className="h-10 w-10 inline-flex items-center justify-center rounded-md text-bz-ink hover:bg-bz-surface-2"

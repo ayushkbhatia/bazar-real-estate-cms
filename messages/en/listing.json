@@ -5,5 +5,7 @@
   "forSale": "For sale",
   "forRent": "For rent",
   "offPlan": "Off-plan",
-  "verified": "Verified"
+  "verified": "Bazar Verified",
+  "bedsShort": "bd",
+  "bathsShort": "ba"
 }

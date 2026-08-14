@@ -1,11 +1,15 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { render as rtlRender, screen } from "@testing-library/react";
+import { IntlHarness } from "@/lib/i18n/test-utils";
 import { PreferencesProvider } from "@/lib/preferences";
 import { BLOCK_DEFS, newBlockInstance } from "./catalogue";
 import { resolveDocument } from "./document";
 import { EMPTY_LANDING_DATA, type LandingData } from "./data";
 import { presetBlocks, PRESETS } from "./presets";
-import { BlockNode, LandingRenderer } from "@/app/[locale]/(public)/lp/[slug]/_render";
+import {
+  BlockNode,
+  LandingRenderer,
+} from "@/app/[locale]/(public)/lp/[slug]/_render";
 import type { BlockDef } from "./types";
 import type { ListingRow } from "@/lib/queries/properties";
 import type { SectionValues } from "@/lib/master-pages";
@@ -67,7 +71,13 @@ beforeAll(() => {
  * real app. Currency- and unit-aware cards read from it.
  */
 function render(ui: React.ReactElement) {
-  return rtlRender(<PreferencesProvider>{ui}</PreferencesProvider>);
+  // ListingCard reads the `listing` namespace, so the tree needs an intl
+  // provider as well as preferences.
+  return rtlRender(
+    <IntlHarness>
+      <PreferencesProvider>{ui}</PreferencesProvider>
+    </IntlHarness>,
+  );
 }
 
 function listing(reference: string): ListingRow {
@@ -114,7 +124,14 @@ const FILLED: Record<string, SectionValues> = {
     ],
   },
   tiles: {
-    items: [{ name: "Villas", desc: "Four to six beds.", cta: "Browse", href: "/buy" }],
+    items: [
+      {
+        name: "Villas",
+        desc: "Four to six beds.",
+        cta: "Browse",
+        href: "/buy",
+      },
+    ],
   },
   prop_types: {
     cols: "4",
@@ -157,7 +174,13 @@ describe("blocks with nothing to show", () => {
     // A rail whose picks were all unpublished, and list blocks nobody filled
     // in. Each must disappear entirely — a heading over an empty grid reads as
     // a broken page.
-    for (const key of ["featured_properties", "tiles", "faq", "steps", "chips"]) {
+    for (const key of [
+      "featured_properties",
+      "tiles",
+      "faq",
+      "steps",
+      "chips",
+    ]) {
       const def = BLOCK_DEFS.find((d) => d.key === key)!;
       const [block] = resolveDocument([newBlockInstance(def)]);
       const { container } = render(
@@ -186,7 +209,9 @@ describe("LandingRenderer", () => {
     const blocks = resolveDocument([
       { ...filled(BLOCK_DEFS.find((d) => d.key === "faq")!), enabled: false },
     ]);
-    const { container } = render(<LandingRenderer blocks={blocks} data={DATA} />);
+    const { container } = render(
+      <LandingRenderer blocks={blocks} data={DATA} />,
+    );
     expect(container.textContent?.trim()).toBe("");
   });
 
