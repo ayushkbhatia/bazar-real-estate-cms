@@ -26,8 +26,8 @@ export function MobilePreferences() {
     <BottomSheet
       open={open}
       onOpenChange={setOpen}
-      title="Preferences"
-      description="How prices and areas display across the site. Saved to this browser."
+      title={t("preferences")}
+      description={t("preferencesHelp")}
       trigger={
         <button
           type="button"
@@ -36,7 +36,7 @@ export function MobilePreferences() {
         >
           <span className="flex items-center gap-2">
             <Coins size={14} strokeWidth={1.6} />
-            Currency &amp; units
+            {t("currencyAndUnits")}
           </span>
           <span className="mono text-[12px] text-bz-muted">
             {prefs.currency} · {prefs.area_unit === "m2" ? "m²" : "ft²"}

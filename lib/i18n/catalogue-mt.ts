@@ -125,11 +125,26 @@ export function catalogueIssues(
     });
   }
 
+  /*
+   * `#` is ICU's number placeholder inside a plural branch. Checked in BOTH
+   * directions, because the one-sided version missed a real failure on the
+   * first production run: translating "Currency & units" came back as
+   * "# العملة والوحدات" — a `#` invented out of nothing, which formats as a
+   * literal hash on the page outside a plural and throws inside one.
+   */
   const hashesIn = (s: string) => (s.match(/#/g) ?? []).length;
-  if (hashesIn(english) > 0 && hashesIn(arabic) === 0) {
+  const enHashes = hashesIn(english);
+  const arHashes = hashesIn(arabic);
+  if (enHashes > 0 && arHashes === 0) {
     issues.push({
       code: "hash-dropped",
       detail: "the # number placeholder is missing from the Arabic",
+    });
+  }
+  if (enHashes === 0 && arHashes > 0) {
+    issues.push({
+      code: "hash-invented",
+      detail: `the Arabic gained ${arHashes} # not present in the English`,
     });
   }
 
