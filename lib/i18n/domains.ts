@@ -637,6 +637,7 @@ export const WIRED_EDITOR: string[] = [
 
 /** Columns whose public read path folds the locale today. */
 export const WIRED_READ: string[] = [
+  "media_assets.alt_text",
   "development_units.unit_type",
   "development_units.lagoon_access",
   "development_units.orientation",

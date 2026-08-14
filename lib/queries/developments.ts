@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import type { Database } from "@/db/types";
 import {
   developmentFactsSchema,
@@ -29,7 +30,7 @@ export type DevelopmentUnit = DevelopmentUnitFromUtils;
 export type UnitFilter = UnitFilterFromUtils;
 
 const INDEX_FIELDS =
-  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, published_at, developers:developer_id(name, slug), areas:area_id(name, slug), hero:hero_image_id(storage_key, filename, alt_text)";
+  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, published_at, developers:developer_id(name, slug), areas:area_id(name, slug), hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar)";
 
 // `masterplan_id` is joined the same way as `hero_image_id`, because it is
 // stored the same way: the CMS's Page images card writes both to columns on
@@ -38,7 +39,7 @@ const INDEX_FIELDS =
 // a masterplan row to — so an uploaded site plan silently never appeared.
 /** Exported so a test can pin the media joins — see developments.test.ts. */
 export const DETAIL_FIELDS =
-  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, vision, vision_ar, facts, payment_plan, master_plan, amenities, amenities_ar, escrow_account, seo, published_at, developer_id, area_id, lead_advisor_id, hero:hero_image_id(storage_key, filename, alt_text), masterplan:masterplan_id(storage_key, filename, alt_text), developers:developer_id(id, name, slug, founded_year, description, stats), areas:area_id(name, slug)";
+  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, vision, vision_ar, facts, payment_plan, master_plan, amenities, amenities_ar, escrow_account, seo, published_at, developer_id, area_id, lead_advisor_id, hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar), masterplan:masterplan_id(storage_key, filename, alt_text, alt_text_ar), developers:developer_id(id, name, slug, founded_year, description, stats), areas:area_id(name, slug)";
 
 type HeroMedia = {
   storage_key: string;
@@ -105,9 +106,23 @@ export type DevelopmentMedia = {
   media: HeroMedia;
 };
 
-function pickHero(input: unknown): HeroMedia {
+/**
+ * Resolve a joined `media_assets` row to the shape the page renders.
+ *
+ * Takes a locale because it is the only place the *nested* alt text can be
+ * folded. `localiseRow` is deliberately flat — it walks one level and stops —
+ * so the fold applied to the development row above never reaches
+ * `raw.hero.alt_text_ar`, and every alt text on /ar would stay English while
+ * the surrounding copy translated. Folding here, before the literal is built,
+ * is the whole fix; folding after would be discarded by the literal.
+ *
+ * `localiseDeep` at the row level would also work and is worse: it would
+ * recurse into the `facts` / `payment_plan` / `master_plan` jsonb blobs before
+ * zod ever sees them.
+ */
+function pickHero(input: unknown, locale: Locale): HeroMedia {
   if (!input || typeof input !== "object") return null;
-  const h = input as Record<string, unknown>;
+  const h = localiseRow(input as Record<string, unknown>, locale);
   if (typeof h.storage_key !== "string") return null;
   return {
     storage_key: h.storage_key,
@@ -116,7 +131,10 @@ function pickHero(input: unknown): HeroMedia {
   };
 }
 
-function shapeIndexRow(raw: Record<string, unknown>): DevelopmentIndexRow {
+function shapeIndexRow(
+  raw: Record<string, unknown>,
+  locale: Locale,
+): DevelopmentIndexRow {
   return {
     id: raw.id as string,
     name: raw.name as string,
@@ -129,9 +147,10 @@ function shapeIndexRow(raw: Record<string, unknown>): DevelopmentIndexRow {
     tagline: (raw.tagline as string | null) ?? null,
     bedrooms_text: (raw.bedrooms_text as string | null) ?? null,
     description: (raw.description as string | null) ?? null,
-    developer: (raw.developers as { name: string; slug: string } | null) ?? null,
+    developer:
+      (raw.developers as { name: string; slug: string } | null) ?? null,
     area: (raw.areas as { name: string; slug: string } | null) ?? null,
-    hero: pickHero(raw.hero),
+    hero: pickHero(raw.hero, locale),
   };
 }
 
@@ -158,7 +177,10 @@ export async function listPublishedDevelopments(
   }
   const locale = await currentLocale();
   return data.map((r) =>
-    shapeIndexRow(localiseRow(r as unknown as Record<string, unknown>, locale)),
+    shapeIndexRow(
+      localiseRow(r as unknown as Record<string, unknown>, locale),
+      locale,
+    ),
   );
 }
 
@@ -182,16 +204,18 @@ export async function getPublishedDevelopmentBySlug(
   // Folded before shapeDetail, which builds explicit literals and would drop
   // the twins. Fourth shaper in this codebase with that property, after
   // buildMegamenu, reshape and toAgentProfile.
+  const locale = await currentLocale();
   return shapeDetail(
-    localiseRow(
-      data as unknown as Record<string, unknown>,
-      await currentLocale(),
-    ),
+    localiseRow(data as unknown as Record<string, unknown>, locale),
+    locale,
   );
 }
 
-function shapeDetail(raw: Record<string, unknown>): DevelopmentDetail {
-  const base = shapeIndexRow(raw);
+function shapeDetail(
+  raw: Record<string, unknown>,
+  locale: Locale,
+): DevelopmentDetail {
+  const base = shapeIndexRow(raw, locale);
 
   const facts = developmentFactsSchema.safeParse(raw.facts ?? {});
   const masterPlan = masterPlanSchema.safeParse(raw.master_plan ?? {});
@@ -214,7 +238,7 @@ function shapeDetail(raw: Record<string, unknown>): DevelopmentDetail {
   return {
     ...base,
     // Same shape as the hero, so the same picker validates it.
-    masterplan: pickHero(raw.masterplan),
+    masterplan: pickHero(raw.masterplan, locale),
     vision: (raw.vision as string | null) ?? null,
     facts: facts.success ? facts.data : {},
     payment_plan: paymentPlan.success ? paymentPlan.data : null,
@@ -352,11 +376,12 @@ export async function listFloorPlans(
   const { data, error } = await supabase
     .from("floor_plans")
     .select(
-      "id, label, beds, area_ft2, unit_type_id, media:media_id(storage_key, filename, alt_text)",
+      "id, label, beds, area_ft2, unit_type_id, media:media_id(storage_key, filename, alt_text, alt_text_ar)",
     )
     .eq("development_id", developmentId)
     .order("sort_order", { ascending: true });
   if (error || !data) return [];
+  const locale = await currentLocale();
   return data.map((r) => {
     const raw = r as unknown as Record<string, unknown>;
     return {
@@ -364,7 +389,7 @@ export async function listFloorPlans(
       label: String(raw.label),
       beds: (raw.beds as number | null) ?? null,
       area_ft2: (raw.area_ft2 as number | null) ?? null,
-      media: pickHero(raw.media),
+      media: pickHero(raw.media, locale),
       unit_type_id: (raw.unit_type_id as string | null) ?? null,
     };
   });
@@ -379,17 +404,18 @@ export async function listDevelopmentMedia(
   const { data, error } = await supabase
     .from("development_media")
     .select(
-      "role, sort_order, media:media_id(storage_key, filename, alt_text)",
+      "role, sort_order, media:media_id(storage_key, filename, alt_text, alt_text_ar)",
     )
     .eq("development_id", developmentId)
     .order("sort_order", { ascending: true });
   if (error || !data) return [];
+  const locale = await currentLocale();
   return data.map((r) => {
     const raw = r as unknown as Record<string, unknown>;
     return {
       role: raw.role as DevelopmentMedia["role"],
       sort_order: (raw.sort_order as number) ?? 0,
-      media: pickHero(raw.media),
+      media: pickHero(raw.media, locale),
     };
   });
 }
@@ -408,7 +434,12 @@ export async function listAllDevelopmentsForAdmin(): Promise<
     if (error) console.error("[listAllDevelopmentsForAdmin]", error);
     return [];
   }
-  return data.map((r) => shapeIndexRow(r as unknown as Record<string, unknown>));
+  // DEFAULT_LOCALE, not the request locale: this is the CMS grid, which is
+  // English by decision (ADR-0007) and where an editor needs to see the
+  // English they are about to change.
+  return data.map((r) =>
+    shapeIndexRow(r as unknown as Record<string, unknown>, DEFAULT_LOCALE),
+  );
 }
 
 /** Admin: full development row by id (any publish state). */

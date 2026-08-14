@@ -93,7 +93,9 @@ const GRANDFATHERED_CEILING = 45;
  * proves nothing, which is the trap the two pre-existing `_ar` assertions in
  * `localise.test.ts` fall into.
  */
-const FOLD_PROOFS: Record<string, string> = {};
+const FOLD_PROOFS: Record<string, string> = {
+  "media_assets.alt_text": "lib/queries/developments.fold.test.ts",
+};
 
 describe("WIRED_READ fold proofs", () => {
   it("requires a proof for every column wired since the harness landed", () => {
