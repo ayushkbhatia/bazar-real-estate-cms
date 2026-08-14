@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  classifyUnit,
   countUnitsByFilter,
   developmentUrl,
   filterUnits,
@@ -8,20 +9,23 @@ import {
 import { DETAIL_FIELDS } from "./developments";
 
 function makeUnit(over: Partial<DevelopmentUnit>): DevelopmentUnit {
-  return {
+  const base = {
     id: over.id ?? "id",
     unit_type: "Villa A",
     beds: 3,
     built_up_ft2: 3800,
     plot_ft2: 5200,
-    lagoon_access: "Direct",
+    lagoon_access: "Direct" as string | null,
     orientation: "NW",
     price_aed: 6_200_000,
     plot_number: "A-12",
-    status: "available",
+    status: "available" as const,
     floor_plan_id: null,
     ...over,
   };
+  // Classified the same way the read path does it — from the row, once. A test
+  // that hand-wrote `categories` could not catch the fold-order bug below.
+  return { ...base, categories: over.categories ?? classifyUnit(base) };
 }
 
 const UNITS: DevelopmentUnit[] = [
@@ -60,6 +64,38 @@ describe("filterUnits", () => {
     const l = filterUnits(UNITS, "lagoon");
     // 1, 2, 3, 6 are direct/frontage/corner.  4 is walking — excluded.  5 is null.
     expect(l.map((u) => u.id).sort()).toEqual(["1", "2", "3", "6"]);
+  });
+
+  /**
+   * The reason `classifyUnit` exists separately from `filterUnits`.
+   *
+   * On /ar the row arrives with `unit_type` already replaced by its Arabic
+   * twin, and none of `/villa/i`, `/town|terrace/i` or `/walking/i` matches
+   * Arabic. Classify first, fold second, and the chips keep working; do it the
+   * other way round and every chip reads zero above a full table — which looks
+   * like an empty project rather than a bug.
+   */
+  it("still filters a row whose text has been folded to Arabic", () => {
+    const english = { unit_type: "Villa A", lagoon_access: "Direct" };
+    const folded = makeUnit({
+      id: "ar",
+      unit_type: "فيلا أ",
+      lagoon_access: "مباشر",
+      categories: classifyUnit(english),
+    });
+    expect(filterUnits([folded], "villas")).toHaveLength(1);
+    expect(filterUnits([folded], "lagoon")).toHaveLength(1);
+    expect(filterUnits([folded], "townhouses")).toHaveLength(0);
+  });
+
+  it("classifies from English, and Arabic alone matches nothing", () => {
+    // Not a wish — a statement of the constraint the fold order exists for.
+    expect(classifyUnit({ unit_type: "فيلا أ", lagoon_access: null })).toEqual(
+      [],
+    );
+    expect(
+      classifyUnit({ unit_type: "Villa A", lagoon_access: "Walking · 2 min" }),
+    ).toEqual(["villas"]);
   });
 });
 

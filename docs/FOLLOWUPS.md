@@ -684,12 +684,14 @@ shows the trail.)
   Adding Arabic turned into an audit of where the CMS never finished the
   English, because a column with no editor renders fine and fails nothing.
   Beyond article_categories, development_units and properties.description
-  (each recorded separately), two more surfaced while wiring the last batch:
-  `area_guides` has three readers and zero writers — intro_md, amenities and
-  schools render on /areas/<slug> and are edited nowhere; and
-  `developments.amenities` is populated on 8 of 21 projects with no writer in
-  app/ at all. Both arrived by migration. Their Arabic twins exist since 0104
-  and become reachable the moment an editor does.
+  (each recorded separately — **all three now built**), two more surfaced while
+  wiring the last batch: `area_guides` has three readers and zero writers —
+  intro_md, amenities and schools render on /areas/<slug> and are edited
+  nowhere; and `developments.amenities` was populated on 8 of 21 projects with
+  no writer in app/ at all (**now editable** — the amenities picker moved to
+  `admin/_fields/` and mounted on the development record). Both arrived by
+  migration. `area_guides` is the one still outstanding; its Arabic twins have
+  existed since 0104 and become reachable the moment an editor does.
 
 - [pages] `pages.title` is an internal label used as a public <title> fallback.
   Every writer synthesises it — `${record.name} (area guide)`,
@@ -701,15 +703,14 @@ shows the trail.)
   record's own name, or nothing. Cheap to fix, and worth doing before /ar
   launches rather than after.
 
-- [developments] `development_units` has readers but no writer.
-  lib/queries/developments.ts:242 selects unit rows for the public units table,
-  and nothing in app/ ever inserts or updates one — the 8 rows in production
-  arrived by migration. So unit_type, orientation and lagoon_access render
-  publicly and cannot be edited, which is also why they have no Arabic inputs
-  despite having twin columns since 0104. Third table in this shape, after
-  article_categories and properties.description. Done looks like a units grid
-  under the development editor, or a decision that the table is seed-only and
-  its three text columns should be enum-backed instead of free text.
+- ~~[developments] `development_units` has readers but no writer.~~ **Done** —
+  an Inventory grid now sits under the development sub-page editor, with
+  Arabic twins for unit_type, orientation and lagoon_access and a read fold on
+  the public table. One thing it left behind: `developments.total_units` is a
+  hand-typed number on the record while the grid holds the real rows, so the
+  public eyebrow can read "6 available of 312" against 8 stored units. The
+  editor says so, which is the cheap half of the fix; deriving the total, or
+  flagging the mismatch, is the other half.
 
 - [blog] Article categories can be created but never edited.
   `createArticleCategory` in app/[locale]/(admin)/admin/blog/_category-actions.ts
