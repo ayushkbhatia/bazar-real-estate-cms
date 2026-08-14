@@ -74,7 +74,7 @@ import {
 import { ArabicTwin } from "../../_fields/arabic-twin";
 import { TranslateButton } from "./_translate-button";
 import { ArabicPropertyDescription } from "./_tabs/_arabic-description";
-import { AmenitiesPicker } from "./_components/amenities-picker";
+import { AmenitiesPicker } from "../../_fields/amenities-picker";
 import { NewAreaDialog } from "./_components/new-area-dialog";
 import { NewDeveloperDialog } from "./_components/new-developer-dialog";
 import type { AmenityOption } from "@/lib/amenities";

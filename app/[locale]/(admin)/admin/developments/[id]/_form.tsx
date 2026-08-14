@@ -13,6 +13,8 @@ import {
   type DevelopmentEditInput,
 } from "@/lib/schemas/development";
 import { ArabicTwin } from "../../_fields/arabic-twin";
+import { AmenitiesPicker } from "../../_fields/amenities-picker";
+import type { AmenityOption } from "@/lib/amenities";
 import { updateDevelopment } from "./_actions";
 
 type DeveloperOption = { id: string; name: string };
@@ -23,11 +25,14 @@ export function DevelopmentEditForm({
   initial,
   developers,
   areas,
+  amenityOptions,
 }: {
   developmentId: string;
   initial: DevelopmentEditInput;
   developers: DeveloperOption[];
   areas: AreaOption[];
+  /** Amenity taxonomy, resolved server-side — same list the property editor uses. */
+  amenityOptions: AmenityOption[];
 }) {
   const form = useForm<DevelopmentEditInput>({
     resolver: zodResolver(developmentEditSchema),
@@ -241,6 +246,37 @@ export function DevelopmentEditForm({
               }
             />
           </Field>
+        </div>
+      </Section>
+
+      <Section title="Amenities">
+        <p className="text-[12px] text-bz-muted mb-3">
+          Shown as the feature blocks on the project page. Same taxonomy the
+          property editor uses, so a term added here is available there too.
+        </p>
+        <AmenitiesPicker
+          value={form.watch("amenities") ?? []}
+          options={amenityOptions}
+          onChange={(next) =>
+            form.setValue("amenities", next, { shouldDirty: true })
+          }
+        />
+        <div className="mt-3">
+          {/* An array twin, edited as a comma-separated line like staff
+              specialties — the picker's chips are a controlled vocabulary and
+              the Arabic for a term belongs on the taxonomy, not per project.
+              This is here for the handful a project words differently. */}
+          <ArabicTwin
+            field={{ key: "amenities_ar", label: "Amenities", kind: "text", max: 400 }}
+            value={(form.watch("amenities_ar") ?? []).join(", ")}
+            onChange={(v) =>
+              form.setValue(
+                "amenities_ar",
+                v.split(",").map((x) => x.trim()).filter(Boolean),
+                { shouldDirty: true },
+              )
+            }
+          />
         </div>
       </Section>
 

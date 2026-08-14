@@ -301,6 +301,10 @@ export const developmentEditSchema = z.object({
   vision: z.string().max(4000).nullable().optional(),
   vision_ar: z.string().max(6000).nullable().optional(),
   escrow_account: z.string().max(80).nullable().optional(),
+  /* Project amenities, the same taxonomy the property editor uses. text[] on
+   * the row, so the twin mirrors the shape rather than defaulting to text. */
+  amenities: z.array(z.string().max(60)).max(60).optional(),
+  amenities_ar: z.array(z.string().max(90)).max(60).nullable().optional(),
 });
 
 export type DevelopmentEditInput = z.infer<typeof developmentEditSchema>;
