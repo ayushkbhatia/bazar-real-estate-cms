@@ -579,6 +579,7 @@ export const AWAITING_TWIN: string[] = [];
 
 /** Columns with an Arabic input in the CMS today. */
 export const WIRED_EDITOR: string[] = [
+  "media_assets.alt_text",
   "development_units.unit_type",
   "development_units.lagoon_access",
   "development_units.orientation",
