@@ -148,8 +148,21 @@ export const DOMAINS: Domain[] = [
     columns: [
       {
         column: "intro_md",
-        strategy: "hand",
+        strategy: "never",
         evidence: "areas/[slug]/page.tsx:272",
+        note:
+          "Retired rather than wired, and the honest reason is that this " +
+          "column has never been reachable. `area_guides` holds ZERO rows in " +
+          "production, and its only public reader (getAreaProfile in " +
+          "area-profile.ts) filters `.not(published_at, is, null)` — so the " +
+          "overlay has never once fired. Its slot is already authored twice " +
+          "over: the `hero.intro` section override, which gets an Arabic twin " +
+          "free from the choke point, and `areas.description`, which is wired " +
+          "for both editor and read. A third editor would add a special case " +
+          "rather than remove one. The fold is in place regardless — " +
+          "composeAreaProfile folds the guide row, pinned by areas.fold.test.ts " +
+          "— so a row that does appear translates correctly. This entry says " +
+          "only that nobody should go looking for the missing input.",
       },
       {
         column: "amenities",

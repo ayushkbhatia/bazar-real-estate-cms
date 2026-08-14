@@ -219,26 +219,28 @@ describe("editor and read-path coverage", () => {
     }
   });
 
-  it("reports what still has no Arabic input", () => {
-    // Not an assertion of completeness — a printed work-list that cannot rot,
-    // because it is derived rather than typed.
-    const missing = missingEditor();
-    expect(Array.isArray(missing)).toBe(true);
-    if (missing.length > 0) {
-      console.log(
-        `\n  ${missing.length} column(s) still need an Arabic input:\n    ${missing.join("\n    ")}\n`,
-      );
-    }
+  /*
+   * Both lists are now EMPTY, so they are asserted rather than printed.
+   *
+   * They were console.log work-lists while the backlog was real, and that was
+   * right at the time — but a printed list nobody reads is how a regression
+   * gets in. Now that the backlog is closed, the only honest form is a
+   * failing test: adding a translatable column without an input, or without a
+   * fold, should redden CI on the commit that does it rather than show up in
+   * scrollback three sprints later.
+   *
+   * If you are here because one of these failed: you added a public text
+   * column. It needs an Arabic input in the CMS and a fold on its read path,
+   * and the fold needs a proof — see lib/i18n/fold-proofs.test.ts. Registering
+   * it `never` with a reason is also a valid answer; inventing an exemption is
+   * not.
+   */
+  it("has an Arabic input for every translatable column", () => {
+    expect(missingEditor()).toEqual([]);
   });
 
-  it("reports what still renders English on /ar", () => {
-    const missing = missingReadFold();
-    expect(Array.isArray(missing)).toBe(true);
-    if (missing.length > 0) {
-      console.log(
-        `\n  ${missing.length} column(s) still need a read-path fold:\n    ${missing.join("\n    ")}\n`,
-      );
-    }
+  it("folds every translatable column on its public read path", () => {
+    expect(missingReadFold()).toEqual([]);
   });
 
   it("has nothing left awaiting a twin column", () => {
