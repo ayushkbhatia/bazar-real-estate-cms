@@ -54,6 +54,19 @@ export type Issue = {
      * embedding controls.
      */
     | "presentation-forms"
+    /**
+     * Arabic bytes decoded as the wrong single-byte codepage and re-encoded.
+     * "الانتقال إلى التقرير" arrived as `ุงู„ุงู†ุชู‚ุงู„ ุฅู„ู‰`, which is Thai
+     * codepoints — the classic UTF-8-through-cp1256 round trip. Renders as
+     * gibberish and looks, to an English reviewer, exactly like Arabic.
+     */
+    | "mojibake"
+    /**
+     * The model answering with its data structure rather than its answer:
+     * `["غير مفروش"]` instead of `غير مفروش`. Valid Arabic inside valid JSON,
+     * so every other check passes.
+     */
+    | "json-literal"
     | "empty"
     /**
      * The API declined the request outright — `stop_reason: "refusal"`, zero
@@ -150,6 +163,29 @@ const TRANSPOSED_ARTICLE = /(?<![\p{L}\p{M}])\u0627\u0645\u0644/gu;
  */
 const PRESENTATION_FORMS = /[\uFB50-\uFDFF\uFE70-\uFEFE\u200E\u200F]/gu;
 
+/**
+ * A letter from a script this site does not use.
+ *
+ * The output is Arabic with Latin runs — currency codes, `ft²`, a reference.
+ * Anything else is a decoding accident, and the one observed was a whole
+ * string of Thai codepoints where Arabic belonged, which is what UTF-8 Arabic
+ * looks like after a trip through cp1256. Checked as "letter outside Arabic
+ * and Latin" rather than "in the Thai block" so the next codepage does not
+ * need its own rule.
+ */
+function foreignScript(text: string): string[] {
+  return [
+    ...new Set(
+      [...text].filter(
+        (c) =>
+          /\p{L}/u.test(c) &&
+          !/[\u0600-\u06FF\u0750-\u077F]/u.test(c) &&
+          !/[A-Za-z]/.test(c),
+      ),
+    ),
+  ];
+}
+
 export function validate(
   sourceMasked: string,
   outputMasked: string,
@@ -180,6 +216,30 @@ export function validate(
       code: "multiline",
       detail: `output has ${output.split("\n").length - 1} newline(s) the English does not — likely the model's own working`,
     });
+  }
+
+  const foreign = foreignScript(output);
+  if (foreign.length > 0) {
+    issues.push({
+      code: "mojibake",
+      detail: `letters from another script: ${foreign
+        .slice(0, 6)
+        .map((c) => `${c} (U+${c.codePointAt(0)!.toString(16).toUpperCase()})`)
+        .join(", ")} — Arabic bytes decoded as the wrong codepage`,
+    });
+  }
+
+  // `["غير مفروش"]` — the answer wrapped in the shape it was asked for.
+  if (/^\s*[[{]/.test(output)) {
+    try {
+      JSON.parse(output);
+      issues.push({
+        code: "json-literal",
+        detail: "output is a JSON value, not the translation it contains",
+      });
+    } catch {
+      // Prose that merely opens with a bracket is fine.
+    }
   }
 
   const shaped = output.match(PRESENTATION_FORMS);

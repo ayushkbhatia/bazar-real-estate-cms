@@ -82,6 +82,20 @@ describe("the checks that must never be quiet", () => {
     );
   });
 
+  it("flags Arabic that came back as another script", () => {
+    // "الانتقال إلى" arrived as Thai codepoints — UTF-8 Arabic decoded as
+    // cp1256 and re-encoded. To an English reviewer it looks like Arabic.
+    expect(codes("Skip to report", "ุงู„ุงู†ุชู‚ุงู„")).toContain("mojibake");
+    expect(codes("Skip", "الانتقال")).not.toContain("mojibake");
+    // Latin runs are expected — AED, ft², a reference.
+    expect(codes("Price in AED", "السعر بالـ AED")).not.toContain("mojibake");
+  });
+
+  it("flags the model returning its data structure", () => {
+    expect(codes("Unfurnished", '["غير مفروش"]')).toContain("json-literal");
+    expect(codes("Unfurnished", "غير مفروش")).not.toContain("json-literal");
+  });
+
   it("flags a transposed definite article", () => {
     // messages/ar/development.json shipped `املاحة المبنية` for "Built-up" in
     // wave 2b. Right length, right digits, no Latin, no sentinel drift — and

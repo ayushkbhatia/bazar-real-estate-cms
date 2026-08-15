@@ -152,6 +152,57 @@ describe("message namespaces", () => {
     ).toEqual([]);
   });
 
+  /**
+   * The hole the folder-based check leaves open.
+   *
+   * `ROUTE_NAMESPACES` is keyed on file paths, and a file path is not where a
+   * component renders. `tools/valuation/_components/lead-gate.tsx` sits under
+   * the `tools/` prefix and is mounted on `/areas/[slug]`, `/p/[slug]`, the
+   * developments floor-plan gate and the shared CTA banner — none of which
+   * mount the `tools` bag. Reading `tools` from there passes the check above
+   * and renders dotted key paths on four routes.
+   *
+   * So: a module inside the prefixes that reads the namespace may not be
+   * imported from outside them. Matched on the last two path segments, which
+   * is enough to be unambiguous here and does not need a module resolver.
+   */
+  it("keeps a route-scoped namespace inside the routes that mount it", () => {
+    const files = sourceFiles();
+    const escaped: string[] = [];
+
+    for (const [ns, prefixes] of Object.entries(ROUTE_NAMESPACES)) {
+      const inside = files.filter((f) =>
+        (prefixes as readonly string[]).some((p) => f.startsWith(p)),
+      );
+      for (const file of inside) {
+        const src = readFileSync(join(REPO_ROOT, file), "utf8");
+        if (!/^\s*["']use client["']/m.test(src)) continue;
+        if (![...src.matchAll(NS_CALL_RE)].some(([, n]) => n === ns)) continue;
+
+        const segments = file.replace(/\.tsx?$/, "").split("/");
+        const needle = segments.slice(-2).join("/");
+        for (const other of files) {
+          if ((prefixes as readonly string[]).some((p) => other.startsWith(p))) {
+            continue;
+          }
+          const otherSrc = readFileSync(join(REPO_ROOT, other), "utf8");
+          if (new RegExp(`from\\s+["'][^"']*${needle}["']`).test(otherSrc)) {
+            escaped.push(`${file} reads "${ns}" but is imported by ${other}`);
+          }
+        }
+      }
+    }
+
+    expect(
+      [...new Set(escaped)].sort(),
+      `A route-scoped namespace is only mounted on its own routes, and these ` +
+        `components render outside them — every key would come out as its ` +
+        `dotted path there:\n${[...new Set(escaped)].sort().join("\n")}\n\n` +
+        `Move the strings to a namespace on CLIENT_NAMESPACES, or move the ` +
+        `component under the segment that mounts the bag.`,
+    ).toEqual([]);
+  });
+
   it("keeps route-scoped namespaces off the global client list", () => {
     // Both lists is not a contradiction the code would catch — it would just
     // silently pay the global cost while looking scoped.
@@ -170,18 +221,15 @@ describe("message namespaces", () => {
 
 describe("pickClientMessages", () => {
   it("keeps only the client namespaces", () => {
-    const picked = pickClientMessages({
-      common: { a: "1" },
-      consent: { d: "4" },
-      search: { e: "5" },
-      property: { f: "6" },
-      development: { g: "7" },
-      editorial: { h: "8" },
-      nav: { b: "2" },
-      listing: { c: "3" },
-    });
+    // Deliberately out of order, and built from the list itself: the
+    // assertion is that `pickClientMessages` returns them in CLIENT_NAMESPACES
+    // order, which is what keeps the serialised payload stable across builds.
+    const bag = Object.fromEntries(
+      [...CLIENT_NAMESPACES].reverse().map((ns, i) => [ns, { [ns]: String(i) }]),
+    );
+    const picked = pickClientMessages(bag);
     expect(Object.keys(picked)).toEqual([...CLIENT_NAMESPACES]);
-    expect(picked.common).toEqual({ a: "1" });
+    expect(picked.common).toEqual({ common: String(CLIENT_NAMESPACES.length - 1) });
   });
 
   it("omits a client namespace that is absent rather than writing undefined", () => {

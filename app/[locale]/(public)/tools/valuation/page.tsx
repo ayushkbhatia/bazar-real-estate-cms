@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getForm } from "@/lib/queries/forms";
 import { Check } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { listAreaOptions } from "@/lib/queries/areas";
+import { asLocale } from "@/lib/i18n/locales";
 import { ValuationWizard } from "./valuation-wizard";
 import { ValuationLeadGate } from "./_components/lead-gate";
 
@@ -21,36 +23,47 @@ export const metadata: Metadata = {
  */
 export const revalidate = 3600;
 
-export default async function ValuationPage() {
+export default async function ValuationPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
+  // Explicit locale, not the ambient one: an ambient `getTranslations` resolves
+  // through `headers()`, which takes the route dynamic and silently discards
+  // the `revalidate` above — the exact regression this page already paid for
+  // once as a 5s TTFB.
+  const t = await getTranslations({ locale, namespace: "tools" });
+
   const [areas, gateForm] = await Promise.all([
     listAreaOptions(),
     getForm("valuation_report_gate"),
   ]);
 
+  const badges = [
+    { h: t("valuation.badgeDmt"), s: t("valuation.badgeDmtSub") },
+    { h: t("valuation.badgeReviewed"), s: t("valuation.badgeReviewedSub") },
+    { h: t("valuation.badgeFree"), s: t("valuation.badgeFreeSub") },
+  ];
+
   return (
     <div className="bg-bz-bg">
       <section className="px-4 md:px-12 pt-12 md:pt-20 pb-8">
-        <Eyebrow>For owners considering selling</Eyebrow>
+        <Eyebrow>{t("valuation.eyebrow")}</Eyebrow>
         <h1
           className="serif text-[36px] md:text-[64px] font-normal mt-3 leading-[1.0] max-w-[18ch]"
           style={{ letterSpacing: "-0.025em" }}
         >
-          What&apos;s your property worth,{" "}
-          <em className="italic">honestly?</em>
+          {t("valuation.headingLead")}{" "}
+          <em className="italic">{t("valuation.headingEmphasis")}</em>
         </h1>
         <p className="mt-5 max-w-[64ch] text-[16px] text-bz-ink-2 leading-relaxed">
-          Tell us about your property. You&apos;ll get an instant
-          data-backed range from our model, then a senior advisor reviews
-          and sends you a refined valuation within 24 hours — free, no
-          obligation.
+          {t("valuation.intro")}
         </p>
 
         <ul className="mt-7 flex flex-wrap gap-6 text-[13px] text-bz-muted">
-          {[
-            { h: "DMT-backed", s: "Abu Dhabi transaction data" },
-            { h: "Advisor-reviewed", s: "Senior partner signs off" },
-            { h: "Free", s: "Even if you don't list with us" },
-          ].map((item) => (
+          {badges.map((item) => (
             <li key={item.h} className="flex items-center gap-2.5">
               <span className="w-7 h-7 rounded-full bg-bz-accent-soft text-bz-accent inline-flex items-center justify-center">
                 <Check size={14} strokeWidth={2} />
@@ -72,11 +85,11 @@ export default async function ValuationPage() {
           {gateForm.enabled ? (
             <ValuationLeadGate
               form={gateForm}
-              triggerLabel="Skip to advisor-prepared report"
+              triggerLabel={t("valuation.skipTrigger")}
             />
           ) : null}
           <span className="text-[12.5px] text-bz-muted">
-            Already know your figures? Get the report straight to your inbox.
+            {t("valuation.skipNote")}
           </span>
         </div>
       </section>

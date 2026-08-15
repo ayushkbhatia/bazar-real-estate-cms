@@ -9,6 +9,7 @@
  */
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check, Loader2, Mail, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -36,7 +37,14 @@ type Props = {
   valuationAed?: number | null;
   /** Short one-liner about the property, used to pre-fill the brief. */
   propertySummary?: string;
-  /** Override label for the trigger button. */
+  /**
+   * Override label for the trigger button.
+   *
+   * A caller passing this owns the string — `/tools/valuation` says "Skip to
+   * advisor-prepared report" from its own namespace. Left unset, the gate uses
+   * `forms.gate.trigger`; the old default was a literal here, which no caller
+   * could translate and no extraction pass could see.
+   */
   triggerLabel?: string;
 };
 
@@ -46,8 +54,15 @@ export function ValuationLeadGate({
   form,
   valuationAed,
   propertySummary,
-  triggerLabel = "Get the full advisor report",
+  triggerLabel,
 }: Props) {
+  /*
+   * `forms`, not `tools` — this file sits under `tools/valuation/` and renders
+   * on `/areas/[slug]`, `/p/[slug]`, the developments floor-plan gate and the
+   * shared CTA banner, none of which mount the route-scoped `tools` bag. A
+   * route-scoped namespace is scoped by the URL, not by the folder.
+   */
+  const t = useTranslations("forms");
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("form");
   const [loading, setLoading] = useState(false);
@@ -79,15 +94,15 @@ export function ValuationLeadGate({
       });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error ?? "Could not send code.");
+        toast.error(data.error ?? t("gate.codeFailed"));
         return;
       }
       // Dev-only echo so we can hand-test without Resend.
       if (data.debug_code) setDebugCode(data.debug_code);
       setStep("verify");
-      toast.success("Code sent — check your inbox.");
+      toast.success(t("gate.codeSent"));
     } catch {
-      toast.error("Network error. Try again.");
+      toast.error(t("gate.networkError"));
     } finally {
       setLoading(false);
     }
@@ -114,12 +129,12 @@ export function ValuationLeadGate({
       });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error ?? "Verification failed.");
+        toast.error(data.error ?? t("gate.verifyFailed"));
         return;
       }
       setStep("done");
     } catch {
-      toast.error("Network error. Try again.");
+      toast.error(t("gate.networkError"));
     } finally {
       setLoading(false);
     }
@@ -139,23 +154,22 @@ export function ValuationLeadGate({
       }}
     >
       <DialogTrigger asChild>
-        <Button size="lg">{triggerLabel}</Button>
+        <Button size="lg">{triggerLabel ?? t("gate.trigger")}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[440px]">
         {step === "form" && (
           <>
             <DialogHeader>
               <DialogTitle className="serif text-[26px] leading-tight">
-                {form?.copy.title ?? "Get the full advisor report"}
+                {form?.copy.title ?? t("gate.title")}
               </DialogTitle>
               <DialogDescription className="text-bz-ink-2">
-                {form?.copy.subtitle ??
-                  "A Bazar advisor reviews the instant estimate against the latest comparables and sends you the prepared PDF within 24 hours."}
+                {form?.copy.subtitle ?? t("gate.subtitle")}
               </DialogDescription>
             </DialogHeader>
             <form className="grid gap-4 mt-3" onSubmit={handleIssue}>
               <div className="grid gap-1.5">
-                <Label htmlFor="vlg-email">Email</Label>
+                <Label htmlFor="vlg-email">{t("gate.email")}</Label>
                 <Input
                   id="vlg-email"
                   type="email"
@@ -163,32 +177,32 @@ export function ValuationLeadGate({
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder={t("gate.emailPlaceholder")}
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="vlg-name">Name (optional)</Label>
+                <Label htmlFor="vlg-name">{t("gate.name")}</Label>
                 <Input
                   id="vlg-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
-                  placeholder="So we know how to address the report"
+                  placeholder={t("gate.namePlaceholder")}
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="vlg-phone">Phone (optional)</Label>
+                <Label htmlFor="vlg-phone">{t("gate.phone")}</Label>
                 <Input
                   id="vlg-phone"
                   type="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   autoComplete="tel"
-                  placeholder="+971 50 …"
+                  placeholder={t("gate.phonePlaceholder")}
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="vlg-intent">I&apos;m thinking about…</Label>
+                <Label htmlFor="vlg-intent">{t("gate.intent")}</Label>
                 <select
                   id="vlg-intent"
                   className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
@@ -197,10 +211,12 @@ export function ValuationLeadGate({
                     setIntent(e.target.value as typeof intent)
                   }
                 >
-                  <option value="curious">Just curious about value</option>
-                  <option value="sell">Selling soon</option>
-                  <option value="refinance">Refinancing</option>
-                  <option value="other">Something else</option>
+                  {/* The value is the identity the API validates; only the
+                      label moves. */}
+                  <option value="curious">{t("gate.intentCurious")}</option>
+                  <option value="sell">{t("gate.intentSell")}</option>
+                  <option value="refinance">{t("gate.intentRefinance")}</option>
+                  <option value="other">{t("gate.intentOther")}</option>
                 </select>
               </div>
               <Button type="submit" disabled={loading} className="mt-2">
@@ -210,13 +226,12 @@ export function ValuationLeadGate({
                   <Mail size={14} strokeWidth={1.7} />
                 )}
                 {loading
-                  ? (form?.copy.pending_label ?? "Sending…")
-                  : (form?.copy.submit_label ?? "Email me a code")}
+                  ? (form?.copy.pending_label ?? t("gate.sending"))
+                  : (form?.copy.submit_label ?? t("gate.submit"))}
               </Button>
               {form?.copy.consent_note === null ? null : (
                 <p className="text-[11.5px] text-bz-muted">
-                  {form?.copy.consent_note ??
-                    "We use your email for the verification code and the report delivery. See our privacy notice for what happens next."}
+                  {form?.copy.consent_note ?? t("gate.consent")}
                 </p>
               )}
             </form>
@@ -227,21 +242,20 @@ export function ValuationLeadGate({
           <>
             <DialogHeader>
               <DialogTitle className="serif text-[26px] leading-tight">
-                Enter your code
+                {t("gate.verifyTitle")}
               </DialogTitle>
               <DialogDescription className="text-bz-ink-2">
-                We sent a 6-digit code to <b>{email}</b>. It expires in 10
-                minutes.
+                {t("gate.verifySubtitle", { email })}
               </DialogDescription>
             </DialogHeader>
             {debugCode ? (
               <div className="text-[12px] text-bz-muted rounded-md bg-bz-surface-2 p-2 mono">
-                Dev mode · code: {debugCode}
+                {t("gate.devCode", { code: debugCode })}
               </div>
             ) : null}
             <form className="grid gap-4 mt-3" onSubmit={handleVerify}>
               <div className="grid gap-1.5">
-                <Label htmlFor="vlg-code">Code</Label>
+                <Label htmlFor="vlg-code">{t("gate.code")}</Label>
                 <Input
                   id="vlg-code"
                   inputMode="numeric"
@@ -261,14 +275,14 @@ export function ValuationLeadGate({
                 ) : (
                   <ShieldCheck size={14} strokeWidth={1.7} />
                 )}
-                Verify and request report
+                {t("gate.verifySubmit")}
               </Button>
               <button
                 type="button"
                 className="text-[12.5px] text-bz-muted hover:text-bz-ink underline underline-offset-2"
                 onClick={() => setStep("form")}
               >
-                ← Use a different email
+                {t("gate.differentEmail")}
               </button>
             </form>
           </>
@@ -281,15 +295,14 @@ export function ValuationLeadGate({
                 <Check size={22} strokeWidth={1.8} />
               </div>
               <DialogTitle className="serif text-[26px] text-center leading-tight">
-                Report on its way
+                {t("gate.doneTitle")}
               </DialogTitle>
               <DialogDescription className="text-bz-ink-2 text-center">
-                A Bazar advisor will review your figures and send the full
-                report to <b>{email}</b> within 24 hours.
+                {t("gate.doneBody", { email })}
               </DialogDescription>
             </DialogHeader>
             <Button onClick={() => setOpen(false)} className="mt-4">
-              Close
+              {t("gate.close")}
             </Button>
           </>
         )}

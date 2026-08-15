@@ -53,52 +53,61 @@ import type { AreaOption } from "@/lib/queries/areas";
 import type { Database } from "@/db/types";
 import { submitValuation } from "./_actions";
 import { pdfLabel } from "@/lib/pdf/language-note";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { Locale } from "@/lib/i18n/locales";
 
 type Furnishing = Database["public"]["Enums"]["property_furnishing"];
 type PropertyType = Database["public"]["Enums"]["property_type"];
 
-const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
-  apartment: "Apartment",
-  villa: "Villa",
-  penthouse: "Penthouse",
-  townhouse: "Townhouse",
-  commercial: "Commercial",
-  land: "Land",
-  hotel_apartment: "Hotel apartment",
-  office: "Office",
-  building: "Building",
-  retail: "Retail",
-  commercial_villa: "Commercial villa",
+/*
+ * The enum values ARE the message keys, so five of the six label tables that
+ * used to live here are gone: `condition`, `furnishingOption`, `tenancy` and
+ * `mortgage` are read straight off the enum with `t(\`valuation.tenancy.${t}\`)`.
+ *
+ * Property types are not even that — `search.type.*` already carries all
+ * eleven, byte-identical, and `search` is on CLIENT_NAMESPACES, so the wizard
+ * reads the existing keys rather than adding a twelfth copy of "Penthouse".
+ */
+
+/**
+ * The two option lists that are their own identity.
+ *
+ * `UPGRADE_OPTIONS` and `VIEW_OPTIONS` are `z.enum(...)` members in
+ * `lib/schemas/valuation.ts`, so the English prose is what the browser submits
+ * and what the server validates against — translate the array and every
+ * submission fails validation in a language the visitor cannot debug. The
+ * stored value stays English; only the label moves.
+ *
+ * Keyed by the English string rather than by index so reordering the array
+ * cannot silently repoint a label, and typed as a total `Record` over the
+ * union so adding an option is a compile error until it has a key.
+ */
+const UPGRADE_KEYS: Record<(typeof UPGRADE_OPTIONS)[number], string> = {
+  "Designer kitchen (Boffi / Poliform / etc.)": "designerKitchen",
+  "Marble or stone flooring": "stoneFlooring",
+  "Smart home wiring": "smartHome",
+  "Extended primary suite / dressing room": "extendedSuite",
+  "Custom joinery / built-ins": "joinery",
+  "AV / cinema room": "cinema",
+  "Pool or outdoor terrace upgrades": "outdoor",
+  "Bathroom remodels": "bathrooms",
 };
 
-const FURNISHING_LABELS: Record<Furnishing, string> = {
-  unfurnished: "Unfurnished",
-  semi: "Semi-furnished",
-  fully: "Fully furnished",
+const VIEW_KEYS: Record<(typeof VIEW_OPTIONS)[number], string> = {
+  "Sea / waterfront": "sea",
+  "Skyline / city": "skyline",
+  "Park / garden": "park",
+  "Community / pool": "community",
+  "Partial sea": "partialSea",
 };
 
-const CONDITION_LABELS: Record<ValuationCondition, string> = {
-  original: "Original",
-  lightly_refreshed: "Lightly refreshed",
-  renovated: "Renovated",
-  fully_renovated: "Fully renovated",
-};
-
-const TENANCY_LABELS: Record<(typeof VALUATION_TENANCIES)[number], string> = {
-  vacant: "Vacant",
-  rented_le_6mo: "Rented · expires within 6 mo",
-  rented_gt_6mo: "Rented · expires > 6 mo",
-};
-
-const MORTGAGE_LABELS: Record<
-  (typeof VALUATION_MORTGAGE_STATES)[number],
-  string
-> = {
-  no: "No",
-  yes_partial: "Yes — partial",
-};
+/** The four steps, in order. The enum value is the message key. */
+const STEP_KEYS = [
+  "property",
+  "specifications",
+  "condition",
+  "aboutYou",
+] as const;
 
 type FormState = {
   // Step 1
@@ -148,13 +157,6 @@ const DEFAULT_STATE: FormState = {
   marketing_opt_in: false,
 };
 
-const STEP_LABELS = [
-  "Property",
-  "Specifications",
-  "Condition & upgrades",
-  "About you",
-];
-
 const STEP_SCHEMAS = [
   valuationStep1Schema,
   valuationStep2Schema,
@@ -170,6 +172,11 @@ function FieldError({ message }: { message?: string }) {
 }
 
 export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
+  const t = useTranslations("tools");
+  // The eleven property-type labels already exist in `search.type.*`,
+  // byte-identical, and `search` is on CLIENT_NAMESPACES. Reusing them beats a
+  // twelfth copy of "Penthouse" that can drift from the other eleven.
+  const types = useTranslations("search");
   const { prefs } = usePreferences();
   const [state, setState] = useState<FormState>(DEFAULT_STATE);
   const [step, setStep] = useState<0 | 1 | 2 | 3>(0);
@@ -248,7 +255,7 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
           midAed: result.estimate?.midAed ?? 0,
           highAed: result.estimate?.highAed ?? 0,
         });
-        toast.success("Valuation request received.");
+        toast.success(t("valuation.received"));
       } else {
         setSubmissionError(result.message);
         if (result.fieldErrors) setErrors(result.fieldErrors);
@@ -276,10 +283,10 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
         {step > 0 ? (
           <CollapsedStep
             n="01"
-            label="Property"
+            label={t("valuation.step.property")}
             summary={[
               areas.find((a) => a.id === state.area_id)?.name ??
-                "Area not specified",
+                t("valuation.areaUnset"),
               state.building_name,
               state.unit_number ? `· ${state.unit_number}` : null,
             ]
@@ -291,22 +298,30 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
         {step > 1 ? (
           <CollapsedStep
             n="02"
-            label="Specifications"
-            summary={`${PROPERTY_TYPE_LABELS[state.property_type]} · ${state.beds} bed · ${state.baths} bath · ${formatArea(state.built_up_ft2, prefs.area_unit)}${
-              state.floor != null ? ` · Floor ${state.floor}` : ""
-            }`}
+            label={t("valuation.step.specifications")}
+            summary={[
+              types(`type.${state.property_type}`),
+              t("valuation.bedsShort", { count: state.beds }),
+              t("valuation.bathsLong", { count: state.baths }),
+              formatArea(state.built_up_ft2, prefs.area_unit),
+              state.floor != null
+                ? t("valuation.floor", { n: state.floor })
+                : null,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
             onEdit={() => setStep(1)}
           />
         ) : null}
         {step > 2 ? (
           <CollapsedStep
             n="03"
-            label="Condition & upgrades"
+            label={t("valuation.step.condition")}
             summary={
               state.condition
-                ? CONDITION_LABELS[state.condition] +
+                ? t(`valuation.condition.${state.condition}`) +
                   (state.upgrades.length > 0
-                    ? ` · ${state.upgrades.length} upgrade${state.upgrades.length === 1 ? "" : "s"}`
+                    ? ` · ${t("valuation.upgradeCount", { count: state.upgrades.length })}`
                     : "")
                 : "—"
             }
@@ -317,16 +332,20 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
         <div className="border border-bz-ink rounded-lg p-6 md:p-7 mt-2" style={{ borderWidth: 1.5 }}>
           <div className="flex justify-between items-center">
             <div>
-              <Eyebrow>Step {String(step + 1).padStart(2, "0")} of 04</Eyebrow>
+              <Eyebrow>
+                {t("valuation.stepEyebrow", {
+                  n: String(step + 1).padStart(2, "0"),
+                })}
+              </Eyebrow>
               <h2
                 className="serif text-[28px] mt-1.5"
                 style={{ letterSpacing: "-0.02em" }}
               >
-                {STEP_LABELS[step]}
+                {t(`valuation.step.${STEP_KEYS[step]}`)}
               </h2>
             </div>
             <span className="mono text-[11px] text-bz-muted">
-              Step {step + 1} / 4
+              {t("valuation.stepCounter", { n: step + 1 })}
             </span>
           </div>
 
@@ -359,16 +378,26 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
               disabled={step === 0 || pending}
             >
               <ArrowLeft size={14} strokeWidth={1.6} />
-              Back
+              {t("valuation.back")}
             </Button>
             {step < 3 ? (
               <Button onClick={onNext}>
-                Continue · {STEP_LABELS[step + 1]}
+                {/*
+                  One key for the button and one for the heading, both reading
+                  `valuation.step.*`. e2e/tools-valuation.spec.ts asserts
+                  `/Continue · Specifications/i` on the button and
+                  `/^Specifications$/i` on the heading of the step it lands on,
+                  so the two have to be the same string — which they are,
+                  because there is only one.
+                */}
+                {t("valuation.continueTo", {
+                  step: t(`valuation.step.${STEP_KEYS[step + 1]}`),
+                })}
                 <ArrowRight size={14} strokeWidth={1.6} />
               </Button>
             ) : (
               <Button onClick={onSubmit} disabled={pending}>
-                {pending ? "Sending…" : "Send for review"}
+                {pending ? t("valuation.sending") : t("valuation.submit")}
                 <ArrowRight size={14} strokeWidth={1.6} />
               </Button>
             )}
@@ -378,9 +407,8 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
         <div className="mt-5 p-4 bg-bz-surface-2 rounded-lg text-[12.5px] text-bz-ink-2 flex gap-3 items-start">
           <Eye size={14} strokeWidth={1.6} className="text-bz-muted mt-0.5" />
           <p>
-            <strong className="text-bz-ink">Your details stay private.</strong>{" "}
-            We use the property address only to match comparable transactions.
-            We never publish or list it without your written go-ahead.
+            <strong className="text-bz-ink">{t("valuation.privacyLead")}</strong>{" "}
+            {t("valuation.privacyBody")}
           </p>
         </div>
       </div>
@@ -405,23 +433,23 @@ function Step1({
   errors: Record<string, string>;
   areas: AreaOption[];
 }) {
+  const t = useTranslations("tools");
   return (
     <div className="mt-5 flex flex-col gap-4">
       <p className="text-[13.5px] text-bz-ink-2 leading-relaxed">
-        Where is the property? You can change the address and building
-        below; we only use them to match comparable transactions.
+        {t("valuation.step1Intro")}
       </p>
       <fieldset>
-        <Label htmlFor="area">Area</Label>
+        <Label htmlFor="area">{t("valuation.area")}</Label>
         <Select
           value={state.area_id || "__none__"}
           onValueChange={(v) => update("area_id", v === "__none__" ? "" : v)}
         >
           <SelectTrigger id="area" className="mt-1.5 w-full">
-            <SelectValue placeholder="Pick an area" />
+            <SelectValue placeholder={t("valuation.areaPlaceholder")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__none__">Other / not listed</SelectItem>
+            <SelectItem value="__none__">{t("valuation.areaOther")}</SelectItem>
             {areas.map((a) => (
               <SelectItem key={a.id} value={a.id}>
                 {a.name}
@@ -432,34 +460,34 @@ function Step1({
         <FieldError message={errors.area_id} />
       </fieldset>
       <fieldset>
-        <Label htmlFor="building">Building / development</Label>
+        <Label htmlFor="building">{t("valuation.building")}</Label>
         <Input
           id="building"
           className="mt-1.5"
           value={state.building_name}
           onChange={(e) => update("building_name", e.target.value)}
-          placeholder="e.g. Mamsha Al Saadiyat"
+          placeholder={t("valuation.buildingPlaceholder")}
         />
       </fieldset>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <fieldset>
-          <Label htmlFor="address">Address line (optional)</Label>
+          <Label htmlFor="address">{t("valuation.addressLine")}</Label>
           <Input
             id="address"
             className="mt-1.5"
             value={state.address_line}
             onChange={(e) => update("address_line", e.target.value)}
-            placeholder="Plot, street, neighbourhood"
+            placeholder={t("valuation.addressPlaceholder")}
           />
         </fieldset>
         <fieldset>
-          <Label htmlFor="unit">Unit (optional)</Label>
+          <Label htmlFor="unit">{t("valuation.unit")}</Label>
           <Input
             id="unit"
             className="mt-1.5"
             value={state.unit_number}
             onChange={(e) => update("unit_number", e.target.value)}
-            placeholder="e.g. 704"
+            placeholder={t("valuation.unitPlaceholder")}
           />
         </fieldset>
       </div>
@@ -476,11 +504,13 @@ function Step2({
   update: <K extends keyof FormState>(k: K, v: FormState[K]) => void;
   errors: Record<string, string>;
 }) {
+  const t = useTranslations("tools");
+  const types = useTranslations("search");
   const { prefs } = usePreferences();
   return (
     <div className="mt-5 flex flex-col gap-4">
       <fieldset>
-        <Label htmlFor="property_type">Property type</Label>
+        <Label htmlFor="property_type">{t("valuation.propertyType")}</Label>
         <Select
           value={state.property_type}
           onValueChange={(v) => update("property_type", v as PropertyType)}
@@ -489,9 +519,9 @@ function Step2({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {PROPERTY_TYPES.map((t) => (
-              <SelectItem key={t} value={t}>
-                {PROPERTY_TYPE_LABELS[t]}
+            {PROPERTY_TYPES.map((pt) => (
+              <SelectItem key={pt} value={pt}>
+                {types(`type.${pt}`)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -499,7 +529,7 @@ function Step2({
       </fieldset>
       <div className="grid grid-cols-3 gap-3">
         <fieldset>
-          <Label htmlFor="beds">Bedrooms</Label>
+          <Label htmlFor="beds">{t("valuation.bedrooms")}</Label>
           <Input
             id="beds"
             className="mt-1.5"
@@ -510,7 +540,7 @@ function Step2({
           <FieldError message={errors.beds} />
         </fieldset>
         <fieldset>
-          <Label htmlFor="baths">Bathrooms</Label>
+          <Label htmlFor="baths">{t("valuation.bathrooms")}</Label>
           <Input
             id="baths"
             className="mt-1.5"
@@ -521,7 +551,7 @@ function Step2({
           <FieldError message={errors.baths} />
         </fieldset>
         <fieldset>
-          <Label htmlFor="floor">Floor (optional)</Label>
+          <Label htmlFor="floor">{t("valuation.floorOptional")}</Label>
           <Input
             id="floor"
             className="mt-1.5"
@@ -538,7 +568,7 @@ function Step2({
       </div>
       <fieldset>
         <Label htmlFor="built_up">
-          Built-up area · {areaUnitLabel(prefs.area_unit)}
+          {t("valuation.builtUp", { unit: areaUnitLabel(prefs.area_unit) })}
         </Label>
         <Input
           id="built_up"
@@ -568,14 +598,15 @@ function Step3({
   state: FormState;
   update: <K extends keyof FormState>(k: K, v: FormState[K]) => void;
 }) {
+  const t = useTranslations("tools");
   return (
     <div className="mt-5 flex flex-col gap-5">
       <p className="text-[13.5px] text-bz-ink-2 leading-relaxed">
-        The more you tell us, the tighter the range.
+        {t("valuation.step3Intro")}
       </p>
 
       <fieldset>
-        <Label>Overall condition</Label>
+        <Label>{t("valuation.overallCondition")}</Label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mt-2">
           {VALUATION_CONDITIONS.map((c) => {
             const active = state.condition === c;
@@ -592,7 +623,7 @@ function Step3({
                     : "bg-bz-surface-2 text-bz-ink-2 border-transparent hover:border-bz-border-strong",
                 )}
               >
-                {CONDITION_LABELS[c]}
+                {t(`valuation.condition.${c}`)}
               </button>
             );
           })}
@@ -600,7 +631,7 @@ function Step3({
       </fieldset>
 
       <fieldset>
-        <Label>Renovation / upgrades · select all that apply</Label>
+        <Label>{t("valuation.upgradesLabel")}</Label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mt-2">
           {UPGRADE_OPTIONS.map((u) => {
             const checked = state.upgrades.includes(u);
@@ -624,7 +655,8 @@ function Step3({
                     update("upgrades", next);
                   }}
                 />
-                <span>{u}</span>
+                {/* The English `u` is the submitted value; only the label moves. */}
+                <span>{t(`valuation.upgrade.${UPGRADE_KEYS[u]}`)}</span>
               </label>
             );
           })}
@@ -632,8 +664,12 @@ function Step3({
       </fieldset>
 
       <fieldset>
-        <Label>Furnishing</Label>
-        <div className="flex gap-1.5 mt-2" role="radiogroup" aria-label="Furnishing">
+        <Label>{t("valuation.furnishing")}</Label>
+        <div
+          className="flex gap-1.5 mt-2"
+          role="radiogroup"
+          aria-label={t("valuation.furnishing")}
+        >
           {FURNISHINGS.map((f) => {
             const active = state.furnishing === f;
             return (
@@ -650,7 +686,7 @@ function Step3({
                     : "bg-bz-surface-2 text-bz-ink-2 border-transparent hover:border-bz-border-strong",
                 )}
               >
-                {FURNISHING_LABELS[f]}
+                {t(`valuation.furnishingOption.${f}`)}
               </button>
             );
           })}
@@ -658,7 +694,7 @@ function Step3({
       </fieldset>
 
       <fieldset>
-        <Label>View</Label>
+        <Label>{t("valuation.view")}</Label>
         <div className="flex flex-wrap gap-1.5 mt-2">
           {VIEW_OPTIONS.map((v) => {
             const active = state.view_description === v;
@@ -675,7 +711,7 @@ function Step3({
                     : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
                 )}
               >
-                {v}
+                {t(`valuation.viewOption.${VIEW_KEYS[v]}`)}
               </button>
             );
           })}
@@ -684,7 +720,7 @@ function Step3({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <fieldset>
-          <Label htmlFor="tenancy">Currently rented?</Label>
+          <Label htmlFor="tenancy">{t("valuation.tenancyLabel")}</Label>
           <Select
             value={state.tenancy ?? "vacant"}
             onValueChange={(v) =>
@@ -695,16 +731,16 @@ function Step3({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {VALUATION_TENANCIES.map((t) => (
-                <SelectItem key={t} value={t}>
-                  {TENANCY_LABELS[t]}
+              {VALUATION_TENANCIES.map((v) => (
+                <SelectItem key={v} value={v}>
+                  {t(`valuation.tenancy.${v}`)}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </fieldset>
         <fieldset>
-          <Label htmlFor="mortgage">Mortgaged?</Label>
+          <Label htmlFor="mortgage">{t("valuation.mortgageLabel")}</Label>
           <Select
             value={state.mortgage_state ?? "no"}
             onValueChange={(v) =>
@@ -720,7 +756,7 @@ function Step3({
             <SelectContent>
               {VALUATION_MORTGAGE_STATES.map((m) => (
                 <SelectItem key={m} value={m}>
-                  {MORTGAGE_LABELS[m]}
+                  {t(`valuation.mortgage.${m}`)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -740,14 +776,14 @@ function Step4({
   update: <K extends keyof FormState>(k: K, v: FormState[K]) => void;
   errors: Record<string, string>;
 }) {
+  const t = useTranslations("tools");
   return (
     <div className="mt-5 flex flex-col gap-4">
       <p className="text-[13.5px] text-bz-ink-2 leading-relaxed">
-        Where should we send the report? A senior advisor will review your
-        details and email you a refined number within 24 hours.
+        {t("valuation.step4Intro")}
       </p>
       <fieldset>
-        <Label htmlFor="owner_name">Full name</Label>
+        <Label htmlFor="owner_name">{t("valuation.fullName")}</Label>
         <Input
           id="owner_name"
           className="mt-1.5"
@@ -759,7 +795,7 @@ function Step4({
       </fieldset>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <fieldset>
-          <Label htmlFor="owner_email">Email</Label>
+          <Label htmlFor="owner_email">{t("valuation.email")}</Label>
           <Input
             id="owner_email"
             type="email"
@@ -771,14 +807,14 @@ function Step4({
           <FieldError message={errors.owner_email} />
         </fieldset>
         <fieldset>
-          <Label htmlFor="owner_phone">Phone (optional)</Label>
+          <Label htmlFor="owner_phone">{t("valuation.phone")}</Label>
           <Input
             id="owner_phone"
             className="mt-1.5"
             autoComplete="tel"
             value={state.owner_phone}
             onChange={(e) => update("owner_phone", e.target.value)}
-            placeholder="+971 50 …"
+            placeholder={t("valuation.phonePlaceholder")}
           />
           <FieldError message={errors.owner_phone} />
         </fieldset>
@@ -789,7 +825,7 @@ function Step4({
           checked={state.marketing_opt_in}
           onChange={(e) => update("marketing_opt_in", e.target.checked)}
         />
-        Send me Bazar&apos;s quarterly market read (no daily spam, ever).
+        {t("valuation.marketingOptIn")}
       </label>
     </div>
   );
@@ -798,14 +834,16 @@ function Step4({
 /* ─── Visual chrome ─────────────────────────────────────────── */
 
 function ProgressStrip({ current }: { current: number }) {
+  const t = useTranslations("tools");
   return (
     <div className="flex gap-1 mb-7" data-testid="progress-strip">
-      {STEP_LABELS.map((label, i) => {
+      {STEP_KEYS.map((key, i) => {
+        const label = t(`valuation.step.${key}`);
         const state =
           i < current ? "done" : i === current ? "current" : "pending";
         return (
           <div
-            key={label}
+            key={key}
             className={cn(
               "flex-1 pb-3 border-b-2",
               state === "pending" ? "border-bz-border" : "border-bz-navy",
@@ -859,14 +897,15 @@ function CollapsedStep({
   summary: string;
   onEdit: () => void;
 }) {
+  const t = useTranslations("tools");
   return (
     <div className="mb-2 flex justify-between items-center px-5 py-3.5 bg-bz-surface border border-bz-border rounded-lg">
       <div>
-        <Eyebrow>Step {n} · {label}</Eyebrow>
+        <Eyebrow>{t("valuation.stepCollapsed", { n, label })}</Eyebrow>
         <div className="text-[13px] mt-1">{summary}</div>
       </div>
       <Button variant="ghost" size="sm" onClick={onEdit}>
-        Edit
+        {t("valuation.edit")}
       </Button>
     </div>
   );
@@ -881,12 +920,13 @@ function LivePreview({
   areas: AreaOption[];
   estimate: ReturnType<typeof estimateValuation>;
 }) {
+  const t = useTranslations("tools");
   const { prefs } = usePreferences();
   const rangeValue = (aed: number) =>
     formatRangeAed(convertFromAed(aed, prefs.currency));
   const area = areas.find((a) => a.id === state.area_id);
   const propertyLine = [
-    state.building_name || area?.name || "Property",
+    state.building_name || area?.name || t("valuation.propertyFallback"),
     state.unit_number,
   ]
     .filter(Boolean)
@@ -899,28 +939,52 @@ function LivePreview({
       <div className="px-6 py-5 bg-bz-ink text-white flex justify-between items-center">
         <div>
           <Eyebrow className="text-white/70">
-            Live preview · refines as you fill
+            {t("valuation.livePreview")}
           </Eyebrow>
-          <div className="serif text-[18px] mt-0.5">Bazar valuation report</div>
+          <div className="serif text-[18px] mt-0.5">
+            {t("valuation.reportTitle")}
+          </div>
         </div>
         {estimate ? (
           <div className="mono text-[10.5px] text-white/70">
-            range {Math.round(estimate.basis.rangeFraction * 100)}% ·{" "}
-            {estimate.basis.confidence}
+            {t("valuation.rangeBadge", {
+              pct: Math.round(estimate.basis.rangeFraction * 100),
+              confidence: t(
+                `valuation.confidence.${estimate.basis.confidence}`,
+              ),
+            })}
           </div>
         ) : null}
       </div>
       <div className="p-6">
         <div className="text-[13px] font-medium">{propertyLine}</div>
+        {/*
+          A middot-separated spec list, built part by part rather than from one
+          message with three placeholders — because each count needs its own
+          plural and `refuse()` rightly rejects a plural buried inside a
+          sentence. English is invariant here ("3 bed", not "3 beds") because
+          the line abbreviates; Arabic gets all six categories, which is the
+          difference between "3 غرف نوم" and the "3 غرفة نوم" this rendered
+          before.
+        */}
         <div className="text-[11.5px] text-bz-muted mt-0.5">
-          {state.beds} bed · {state.baths} ba ·{" "}
-          {formatArea(state.built_up_ft2, prefs.area_unit)}
-          {state.floor != null ? ` · Floor ${state.floor}` : ""}
+          {[
+            t("valuation.bedsShort", { count: state.beds }),
+            t("valuation.bathsShort", { count: state.baths }),
+            formatArea(state.built_up_ft2, prefs.area_unit),
+            state.floor != null
+              ? t("valuation.floor", { n: state.floor })
+              : null,
+          ]
+            .filter(Boolean)
+            .join(" · ")}
         </div>
 
         <div className="mt-6">
           <Eyebrow>
-            Estimated market value · {currencySymbol(prefs.currency)}
+            {t("valuation.estimatedValue", {
+              symbol: currencySymbol(prefs.currency),
+            })}
           </Eyebrow>
           {estimate ? (
             <>
@@ -932,7 +996,7 @@ function LivePreview({
                 {rangeValue(estimate.lowAed)} – {rangeValue(estimate.highAed)}
               </div>
               <div className="text-[12px] text-bz-muted mt-1">
-                Midpoint{" "}
+                {t("valuation.midpoint")}{" "}
                 <span className="text-bz-navy font-medium">
                   {currencySymbol(prefs.currency)} {rangeValue(estimate.midAed)}
                 </span>{" "}
@@ -941,7 +1005,7 @@ function LivePreview({
             </>
           ) : (
             <div className="text-[13px] text-bz-muted mt-2">
-              Add a built-up area to see the range.
+              {t("valuation.needArea")}
             </div>
           )}
         </div>
@@ -949,12 +1013,14 @@ function LivePreview({
         <div className="border-t border-bz-border my-6" />
 
         <div>
-          <Eyebrow>What goes into the estimate</Eyebrow>
+          <Eyebrow>{t("valuation.basisHeading")}</Eyebrow>
           <ul className="mt-3 flex flex-col gap-2 text-[12px] text-bz-ink-2">
             <li className="flex justify-between">
               <span>
-                Area baseline ({currencySymbol(prefs.currency)}/
-                {areaUnitLabel(prefs.area_unit)})
+                {t("valuation.basisBaseline", {
+                  symbol: currencySymbol(prefs.currency),
+                  unit: areaUnitLabel(prefs.area_unit),
+                })}
               </span>
               <span className="mono">
                 {estimate
@@ -963,7 +1029,7 @@ function LivePreview({
               </span>
             </li>
             <li className="flex justify-between">
-              <span>Condition adjustment</span>
+              <span>{t("valuation.basisCondition")}</span>
               <span className="mono">
                 {estimate
                   ? `× ${estimate.basis.multipliers.condition.toFixed(2)}`
@@ -971,7 +1037,7 @@ function LivePreview({
               </span>
             </li>
             <li className="flex justify-between">
-              <span>View premium</span>
+              <span>{t("valuation.basisView")}</span>
               <span className="mono">
                 {estimate
                   ? `× ${estimate.basis.multipliers.view.toFixed(2)}`
@@ -979,7 +1045,7 @@ function LivePreview({
               </span>
             </li>
             <li className="flex justify-between">
-              <span>Upgrades premium</span>
+              <span>{t("valuation.basisUpgrades")}</span>
               <span className="mono">
                 {estimate
                   ? `× ${estimate.basis.multipliers.upgrades.toFixed(2)}`
@@ -987,7 +1053,7 @@ function LivePreview({
               </span>
             </li>
             <li className="flex justify-between">
-              <span>Furnishing</span>
+              <span>{t("valuation.basisFurnishing")}</span>
               <span className="mono">
                 {estimate
                   ? `× ${estimate.basis.multipliers.furnishing.toFixed(2)}`
@@ -997,7 +1063,7 @@ function LivePreview({
             {estimate &&
             estimate.basis.multipliers.floor !== 1 ? (
               <li className="flex justify-between">
-                <span>Floor premium</span>
+                <span>{t("valuation.basisFloor")}</span>
                 <span className="mono">
                   × {estimate.basis.multipliers.floor.toFixed(2)}
                 </span>
@@ -1013,10 +1079,9 @@ function LivePreview({
             MA
           </div>
           <div className="flex-1">
-            <Eyebrow>Advisor review · pending</Eyebrow>
+            <Eyebrow>{t("valuation.advisorPending")}</Eyebrow>
             <p className="text-[13px] mt-1 leading-relaxed">
-              A senior advisor will refine this and send a final number
-              within 24 hours of submission.
+              {t("valuation.advisorNote")}
             </p>
           </div>
         </div>
@@ -1037,6 +1102,7 @@ function SubmittedConfirmation({
   valuationId: string | null;
 }) {
   const locale = useLocale() as Locale;
+  const t = useTranslations("tools");
   const { prefs } = usePreferences();
   const rangeValue = (aed: number) =>
     formatRangeAed(convertFromAed(aed, prefs.currency));
@@ -1046,22 +1112,26 @@ function SubmittedConfirmation({
       data-testid="valuation-confirmation"
     >
       <div className="max-w-[640px] bg-bz-accent-soft rounded-xl p-6 md:p-10">
-        <Eyebrow className="text-bz-accent">Thank you, {ownerName}</Eyebrow>
+        <Eyebrow className="text-bz-accent">
+          {t("valuation.thankYou", { name: ownerName })}
+        </Eyebrow>
         <h2
           className="serif text-[28px] md:text-[36px] mt-2"
           style={{ letterSpacing: "-0.02em" }}
         >
-          Your valuation is in review.
+          {t("valuation.inReview")}
         </h2>
+        {/*
+          The email used to sit in its own <strong>, which meant the sentence
+          was three JSX children and the Arabic could not move the address to
+          where the clause wants it. One message, one placeholder.
+        */}
         <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed">
-          We&apos;ve sent a confirmation to{" "}
-          <strong className="text-bz-ink">{ownerEmail}</strong> with the
-          instant range below. A senior advisor will refine the number and
-          email you within 24 hours.
+          {t("valuation.confirmationBody", { email: ownerEmail })}
         </p>
         {estimate ? (
           <div className="mt-6 px-5 py-4 bg-white rounded-lg border border-bz-border">
-            <Eyebrow>Instant range</Eyebrow>
+            <Eyebrow>{t("valuation.instantRange")}</Eyebrow>
             <div
               className="serif text-[28px] md:text-[40px] mt-1 text-bz-navy"
               style={{ letterSpacing: "-0.025em" }}
@@ -1070,15 +1140,17 @@ function SubmittedConfirmation({
               {rangeValue(estimate.lowAed)} – {rangeValue(estimate.highAed)}
             </div>
             <div className="text-[12.5px] text-bz-muted mt-1">
-              midpoint {currencySymbol(prefs.currency)}{" "}
-              {rangeValue(estimate.midAed)}
+              {t("valuation.confirmationMidpoint", {
+                symbol: currencySymbol(prefs.currency),
+                value: rangeValue(estimate.midAed),
+              })}
             </div>
             {valuationId ? (
               <a
                 href={`/api/pdf/valuation/${valuationId}`}
                 className="mt-5 inline-flex items-center gap-1.5 h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[13px] text-bz-ink-2 hover:border-bz-border-strong transition-colors"
               >
-                {pdfLabel("Download PDF", locale)}
+                {pdfLabel(t("valuation.downloadPdf"), locale)}
               </a>
             ) : null}
           </div>
