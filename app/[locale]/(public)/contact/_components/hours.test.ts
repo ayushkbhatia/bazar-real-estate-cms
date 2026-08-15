@@ -44,6 +44,13 @@ describe("formatMinutes", () => {
     expect(formatMinutes(0)).toBe("12 AM");
     expect(formatMinutes(720)).toBe("12 PM");
   });
+
+  it("takes its meridiem labels from the caller", () => {
+    // Arabic writes ص and م. The defaults keep every other caller — and the
+    // rest of this file — on English.
+    expect(formatMinutes(540, { am: "ص", pm: "م" })).toBe("9 ص");
+    expect(formatMinutes(1170, { am: "ص", pm: "م" })).toBe("7:30 م");
+  });
 });
 
 describe("dayIndex", () => {
@@ -60,12 +67,19 @@ describe("dayIndex", () => {
 
 describe("toRowView", () => {
   it("renders a range from the two times", () => {
-    expect(toRowView(WEEK[0]).display).toBe("9 AM–7 PM");
+    // The words are the caller's now: a usable range surfaces as two minute
+    // counts and no text at all.
+    const view = toRowView(WEEK[0]);
+    expect(view.openMinutes).toBe(540);
+    expect(view.closeMinutes).toBe(1140);
+    expect(view.rawDisplay).toBeNull();
+    expect(view.closedDay).toBe(false);
   });
 
   it("says Closed for a day that's switched off", () => {
     const row = toRowView(WEEK[6]);
-    expect(row.display).toBe("Closed");
+    expect(row.closedDay).toBe(true);
+    expect(row.rawDisplay).toBeNull();
     expect(row.openMinutes).toBeNull();
   });
 
@@ -76,7 +90,9 @@ describe("toRowView", () => {
       close: null,
       openDay: true,
     });
-    expect(row.display).toBe("By appointment");
+    // Free text the editor typed survives verbatim — it is content, and its
+    // Arabic comes from the master page's twin rather than the catalogue.
+    expect(row.rawDisplay).toBe("By appointment");
     expect(row.openMinutes).toBeNull();
   });
 
@@ -87,7 +103,9 @@ describe("toRowView", () => {
       close: "02:00",
       openDay: true,
     });
-    expect(row.display).toBe("10 PM–2 AM");
+    // An overnight shift stays as written and out of the calculation.
+    expect(row.rawDisplay).toBe("22:00–02:00");
+    expect(row.openMinutes).toBeNull();
     expect(row.openMinutes).toBeNull();
   });
 });
@@ -96,24 +114,27 @@ describe("statusFor", () => {
   it("is open during the day, and names the closing time", () => {
     expect(statusFor(views(), { day: 1, minutes: 10 * 60 })).toEqual({
       open: true,
-      state: "Open",
-      detail: "Closes 7 PM",
+      kind: "closesAt",
+      minutes: 19 * 60,
+      day: null,
     });
   });
 
   it("is closed before opening, and names today's opening time", () => {
     expect(statusFor(views(), { day: 1, minutes: 8 * 60 })).toEqual({
       open: false,
-      state: "Closed",
-      detail: "Opens 9 AM",
+      kind: "opensAt",
+      minutes: 9 * 60,
+      day: null,
     });
   });
 
   it("points at tomorrow once the office has shut", () => {
     expect(statusFor(views(), { day: 1, minutes: 20 * 60 })).toEqual({
       open: false,
-      state: "Closed",
-      detail: "Opens tomorrow 9 AM",
+      kind: "opensTomorrow",
+      minutes: 9 * 60,
+      day: null,
     });
   });
 
@@ -121,8 +142,9 @@ describe("statusFor", () => {
     // Saturday evening — Sunday is shut, so the next opening is Monday.
     expect(statusFor(views(), { day: 6, minutes: 20 * 60 })).toEqual({
       open: false,
-      state: "Closed",
-      detail: "Opens Mon 9 AM",
+      kind: "opensDay",
+      minutes: 9 * 60,
+      day: 1,
     });
   });
 
@@ -132,8 +154,9 @@ describe("statusFor", () => {
     ].map(toRowView);
     expect(statusFor(rows, { day: 1, minutes: 600 })).toEqual({
       open: false,
-      state: "Closed",
-      detail: null,
+      kind: "none",
+      minutes: null,
+      day: null,
     });
   });
 

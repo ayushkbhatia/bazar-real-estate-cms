@@ -1,13 +1,17 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { ChevronDown, Clock } from "lucide-react";
 import {
+  DAY_KEYS,
   dubaiNow,
+  formatMinutes,
   rotateToToday,
   statusFor,
   toRowView,
   type HoursRow,
+  type HoursRowView,
   type HoursStatus,
 } from "./hours";
 
@@ -31,7 +35,53 @@ export function OpeningHours({
   label: string;
   rows: HoursRow[];
 }) {
+  const t = useTranslations("common");
   const views = React.useMemo(() => rows.map(toRowView), [rows]);
+
+  /** Minute-of-day as the visitor's locale writes it. */
+  const time = React.useCallback(
+    (minutes: number) =>
+      formatMinutes(minutes, { am: t("hours.am"), pm: t("hours.pm") }),
+    [t],
+  );
+
+  /**
+   * The summary line, from a decision rather than from `statusFor`'s prose.
+   *
+   * `opensDay` is the case that could not survive as a sentence: the model
+   * used to build "Opens Mon 9 AM" from a hardcoded English abbreviation, and
+   * Arabic does not abbreviate its weekdays that way.
+   */
+  const detail = React.useCallback(
+    (s: HoursStatus): string | null => {
+      if (s.kind === "none" || s.minutes === null) return null;
+      if (s.kind === "opensDay" && s.day !== null) {
+        return t("hours.opensDay", {
+          day: t(`hours.day.${DAY_KEYS[s.day]}`),
+          time: time(s.minutes),
+        });
+      }
+      return t(`hours.${s.kind}`, { time: time(s.minutes) });
+    },
+    [t, time],
+  );
+
+  /** One row's hours: closed, a range, or the editor's own words. */
+  const rowLabel = React.useCallback(
+    (row: HoursRowView): string => {
+      if (row.closedDay) return t("hours.closed");
+      if (row.openMinutes !== null && row.closeMinutes !== null) {
+        return t("hours.range", {
+          from: time(row.openMinutes),
+          to: time(row.closeMinutes),
+        });
+      }
+      // Free text the editor typed — "By appointment". Its Arabic comes from
+      // the master page's twin, not from here.
+      return row.rawDisplay ?? "—";
+    },
+    [t, time],
+  );
   const [now, setNow] = React.useState<{ day: number; minutes: number } | null>(
     null,
   );
@@ -70,14 +120,14 @@ export function OpeningHours({
                       status.open ? "text-bz-accent" : "text-bz-muted"
                     }
                   >
-                    {status.state}
+                    {t(status.open ? "hours.open" : "hours.closed")}
                   </span>
-                  {status.detail ? (
-                    <span className="text-bz-ink-2"> · {status.detail}</span>
+                  {detail(status) ? (
+                    <span className="text-bz-ink-2"> · {detail(status)}</span>
                   ) : null}
                 </>
               ) : (
-                <span className="text-bz-ink-2">See daily hours</span>
+                <span className="text-bz-ink-2">{t("hours.seeDaily")}</span>
               )}
             </span>
             <ChevronDown
@@ -101,7 +151,7 @@ export function OpeningHours({
                   <span
                     className={row.openDay ? undefined : "text-bz-muted"}
                   >
-                    {row.display}
+                    {rowLabel(row)}
                   </span>
                 </li>
               );

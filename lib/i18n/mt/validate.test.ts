@@ -132,6 +132,13 @@ describe("the checks that must never be quiet", () => {
     ).not.toContain("too-long");
   });
 
+  it("flags a replacement character", () => {
+    // "Sell" came back as "ب\uFFFD\uFFFDع". No judgement needed — U+FFFD only
+    // appears when bytes could not be decoded.
+    expect(codes("Sell", "ب\uFFFD\uFFFDع")).toContain("replacement-char");
+    expect(codes("Sell", "بيع")).not.toContain("replacement-char");
+  });
+
   it("flags a Latin letter fused into an Arabic word", () => {
     // Observed: "United Arab Emirates" -> "امتb الإمارات العربية المتحدة".
     // `latin-leak` needs a run of four and never sees it; `mojibake` allows

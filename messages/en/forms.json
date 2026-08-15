@@ -30,5 +30,73 @@
     "doneTitle": "Report on its way",
     "doneBody": "A Bazar advisor will review your figures and send the full report to {email} within 24 hours.",
     "close": "Close"
+  },
+  "sell": {
+    "intent": {
+      "sell": "Sell",
+      "rent_out": "Rent out"
+    },
+    "category": {
+      "residential": "Residential",
+      "commercial": "Commercial"
+    },
+    "furnishing": {
+      "unfurnished": "Unfurnished",
+      "semi_furnished": "Semi-furnished",
+      "fully_furnished": "Fully furnished"
+    },
+    "urgency": {
+      "this_month": "This month",
+      "two_months": "Within 2 months",
+      "flexible": "Flexible"
+    },
+    "callWindow": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening"
+    },
+    "callPhrase": {
+      "morning": "tomorrow morning",
+      "afternoon": "this afternoon",
+      "evening": "this evening"
+    },
+    "type": {
+      "Apartment": "Apartment",
+      "Villa": "Villa",
+      "Townhouse": "Townhouse",
+      "Penthouse": "Penthouse",
+      "Land": "Land",
+      "Other": "Other",
+      "Office": "Office",
+      "Retail": "Retail",
+      "Warehouse": "Warehouse",
+      "Showroom": "Showroom",
+      "Full building": "Full building",
+      "Plot": "Plot"
+    },
+    "bedroomsStudio": "Studio",
+    "fieldIntent": "I am looking to",
+    "fieldLocation": "Location",
+    "fieldCategory": "Category & type",
+    "fieldBedrooms": "Bedrooms",
+    "fieldArea": "Built-up area",
+    "fieldFurnishing": "Furnishing",
+    "urgencySell": "How soon do you want to sell?",
+    "urgencyRent": "How soon do you want it let?",
+    "fieldName": "Full name",
+    "fieldMobile": "Mobile",
+    "fieldEmail": "Email",
+    "fieldCallWindow": "Best time to call",
+    "namePlaceholder": "As it appears on the title deed",
+    "mobilePlaceholder": "50 000 0000",
+    "emailPlaceholder": "you@email.com",
+    "locationPlaceholder": "Building, community or area",
+    "matchingAreas": "Matching areas",
+    "categoryGroup": "Property category",
+    "advisorFallback": "Your advisor",
+    "sent": "Enquiry sent. You are matched with an advisor.",
+    "fixErrors": "Please fix the errors below.",
+    "sendFailed": "Something went wrong sending that. Try again — your answers are still here.",
+    "unavailable": "We can't take the form right now. Call the desk and we'll take the details by phone."
   }
 }

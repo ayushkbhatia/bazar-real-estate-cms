@@ -12,6 +12,7 @@ import {
 } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeft,
@@ -26,17 +27,11 @@ import type { LeadAreaOption } from "@/lib/queries/lead-routing";
 import {
   LP_BEDROOMS,
   LP_CALL_WINDOWS,
-  LP_CALL_WINDOW_LABELS,
-  LP_CALL_WINDOW_PHRASES,
   LP_CATEGORIES,
-  LP_CATEGORY_LABELS,
   LP_FURNISHINGS,
-  LP_FURNISHING_LABELS,
   LP_INTENTS,
-  LP_INTENT_LABELS,
   LP_TYPES,
   LP_URGENCIES,
-  LP_URGENCY_LABELS,
   bedroomsApply,
   buildSummary,
   listPropertySchema,
@@ -221,6 +216,7 @@ const STEP1_FIELDS = [
 ] as const;
 
 export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
+  const t = useTranslations("forms");
   const c = useMemo(() => resolveCopy(copy), [copy]);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
@@ -327,7 +323,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
         setConfirmation({
           reference: result.reference,
           summary: result.summary,
-          callPhrase: LP_CALL_WINDOW_PHRASES[result.callWindow],
+          callPhrase: t(`sell.callPhrase.${result.callWindow}`),
           advisor: result.advisor,
         });
         setStep(3);
@@ -401,7 +397,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                       : "bg-bz-surface-2 text-bz-ink-2 hover:bg-bz-surface-3",
                   )}
                 >
-                  {LP_INTENT_LABELS[v]}
+                  {t(`sell.intent.${v}`)}
                 </button>
               ))}
             </div>
@@ -425,7 +421,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
           >
             <div
               role="group"
-              aria-label="Property category"
+              aria-label={t("sell.categoryGroup")}
               className="inline-flex gap-1 p-[3px] rounded bg-bz-surface-2"
             >
               {LP_CATEGORIES.map((c) => (
@@ -441,22 +437,27 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                       : "text-bz-muted hover:text-bz-ink",
                   )}
                 >
-                  {LP_CATEGORY_LABELS[c]}
+                  {t(`sell.category.${c}`)}
                 </button>
               ))}
             </div>
             <div className="flex flex-wrap gap-1.5 mt-2.5">
-              {LP_TYPES[values.category].map((t) => (
+              {/*
+                `pt` is the submitted value and the message key both — the
+                English member of LP_TYPES is what the server validates
+                against, so only the label moves.
+              */}
+              {LP_TYPES[values.category].map((pt) => (
                 <Pill
-                  key={t}
-                  active={values.property_type === t}
+                  key={pt}
+                  active={values.property_type === pt}
                   onClick={() => {
-                    setValue("property_type", t);
-                    if (!bedroomsApply(values.category, t))
+                    setValue("property_type", pt);
+                    if (!bedroomsApply(values.category, pt))
                       setValue("bedrooms", null);
                   }}
                 >
-                  {t}
+                  {t(`sell.type.${pt}`)}
                 </Pill>
               ))}
             </div>
@@ -464,7 +465,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
 
           {showBedrooms ? (
             <FieldShell
-              label="Bedrooms"
+              label={t("sell.fieldBedrooms")}
               required
               error={errors.bedrooms?.message}
               className="mt-6"
@@ -472,12 +473,12 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
               <div className="flex flex-wrap gap-1.5">
                 {LP_BEDROOMS.map((b) => (
                   <Pill
-                    key={b}
+                    key={b === "Studio" ? t("sell.bedroomsStudio") : b}
                     active={values.bedrooms === b}
                     onClick={() => setValue("bedrooms", b)}
                     className={b === "Studio" ? undefined : "min-w-[48px]"}
                   >
-                    {b}
+                    {b === "Studio" ? t("sell.bedroomsStudio") : b}
                   </Pill>
                 ))}
               </div>
@@ -485,7 +486,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
           ) : null}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-6">
-            <FieldShell label="Built-up area" error={errors.area_sqft?.message}>
+            <FieldShell label={t("sell.fieldArea")} error={errors.area_sqft?.message}>
               <div className="relative">
                 <input
                   id="lp-area"
@@ -505,7 +506,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                 </span>
               </div>
             </FieldShell>
-            <FieldShell label="Furnishing" htmlFor="lp-furnishing">
+            <FieldShell label={t("sell.fieldFurnishing")} htmlFor="lp-furnishing">
               <select
                 id="lp-furnishing"
                 value={values.furnishing ?? ""}
@@ -520,7 +521,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                 <option value="">Select</option>
                 {LP_FURNISHINGS.map((f) => (
                   <option key={f} value={f}>
-                    {LP_FURNISHING_LABELS[f]}
+                    {t(`sell.furnishing.${f}`)}
                   </option>
                 ))}
               </select>
@@ -530,8 +531,8 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
           <FieldShell
             label={
               values.intent === "sell"
-                ? "How soon do you want to sell?"
-                : "How soon do you want it let?"
+                ? t("sell.urgencySell")
+                : t("sell.urgencyRent")
             }
             className="mt-6"
           >
@@ -545,7 +546,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                   }
                   className="h-11 justify-center"
                 >
-                  {LP_URGENCY_LABELS[u]}
+                  {t(`sell.urgency.${u}`)}
                 </Pill>
               ))}
             </div>
@@ -588,7 +589,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
           </p>
 
           <FieldShell
-            label="Full name"
+            label={t("sell.fieldName")}
             required
             htmlFor="lp-name"
             error={errors.name?.message}
@@ -598,14 +599,14 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
               id="lp-name"
               {...register("name")}
               autoComplete="name"
-              placeholder="As it appears on the title deed"
+              placeholder={t("sell.namePlaceholder")}
               className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
             />
           </FieldShell>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-4.5">
             <FieldShell
-              label="Mobile"
+              label={t("sell.fieldMobile")}
               required
               htmlFor="lp-mobile"
               error={errors.mobile?.message}
@@ -619,13 +620,13 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                   {...register("mobile")}
                   inputMode="tel"
                   autoComplete="tel-national"
-                  placeholder="50 000 0000"
+                  placeholder={t("sell.mobilePlaceholder")}
                   className="mono w-full h-11 rounded-e border border-bz-border bg-bz-surface px-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
                 />
               </div>
             </FieldShell>
             <FieldShell
-              label="Email"
+              label={t("sell.fieldEmail")}
               required
               htmlFor="lp-email"
               error={errors.email?.message}
@@ -635,13 +636,13 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                 {...register("email")}
                 type="email"
                 autoComplete="email"
-                placeholder="you@email.com"
+                placeholder={t("sell.emailPlaceholder")}
                 className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
               />
             </FieldShell>
           </div>
 
-          <FieldShell label="Best time to call" className="mt-4.5">
+          <FieldShell label={t("sell.fieldCallWindow")} className="mt-4.5">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
               {LP_CALL_WINDOWS.map((c) => (
                 <Pill
@@ -650,7 +651,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                   onClick={() => setValue("call_window", c)}
                   className="h-11 justify-center"
                 >
-                  {LP_CALL_WINDOW_LABELS[c]}
+                  {t(`sell.callWindow.${c}`)}
                 </Pill>
               ))}
             </div>
@@ -786,12 +787,13 @@ function Confirmed({
   copy: ResolvedCopy;
   onAnother: () => void;
 }) {
+  const t = useTranslations("forms");
   const { advisor } = confirmation;
   const firstName = advisor?.name.split(" ")[0] ?? null;
   const phone = advisor?.phone ?? deskPhone;
   // "Your advisor" rather than a blank when nobody is matched: the timeline
   // still describes a call that will happen, just not by name.
-  const advisorToken = firstName ?? "Your advisor";
+  const advisorToken = firstName ?? t("sell.advisorFallback");
   const nextSteps: [string, string][] = copy.steps.map(([when, what]) => [
     when,
     fillTokens(what, { advisor: advisorToken }),
@@ -923,6 +925,7 @@ function LocationField({
   error?: string;
   onChange: (text: string, slug: string | null) => void;
 }) {
+  const t = useTranslations("forms");
   const listId = useId();
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
@@ -959,7 +962,7 @@ function LocationField({
 
   return (
     <FieldShell
-      label="Location"
+      label={t("sell.fieldLocation")}
       required
       htmlFor="lp-location"
       error={error}
@@ -1006,14 +1009,14 @@ function LocationField({
               setOpen(false);
             }
           }}
-          placeholder="Building, community or area"
+          placeholder={t("sell.locationPlaceholder")}
           className="w-full h-11 rounded border border-bz-border bg-bz-surface ps-9 pe-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
         />
         {showList ? (
           <ul
             id={listId}
             role="listbox"
-            aria-label="Matching areas"
+            aria-label={t("sell.matchingAreas")}
             className="absolute top-[calc(100%+4px)] start-0 end-0 z-20 rounded border border-bz-border bg-bz-surface overflow-hidden"
           >
             {matches.map((option, i) => (
