@@ -959,6 +959,17 @@ shows the trail.)
   offers to trash them. Pagination, not a bigger number: the failure is silent
   and only shows up as a hole in a live page weeks later.
 
+- [dead-code] The inventory below is now mechanical, not a memory.
+  `lib/dead-code.test.ts` (G-15) enumerates every module in `app/`,
+  `components/` and `lib/` that nothing imports, carries a one-line reason per
+  entry, and fails if a new one appears. It deletes nothing — ten of its
+  entries are the deliberate parking lot described immediately below, and one
+  of those is a fabricated-inventory hazard rather than a candidate. Its second
+  job is the message waves: a string in a component nothing mounts still gets
+  extracted, translated and human-reviewed, and then renders nowhere, so
+  G-13's allowlist could never honestly empty. Waves 4b and 4c deleted
+  seventeen such components before the guard existed; 24 remain listed.
+
 - [page-builder] Ten pre-designed section components in
   `app/[locale]/(public)/_components/` still have zero call sites: `trust-strip`,
   `services-band`, `awards-band`, `areas-mosaic`, `insights-teaser`,
