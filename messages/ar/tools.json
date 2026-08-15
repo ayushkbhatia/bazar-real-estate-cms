@@ -170,8 +170,8 @@
       "fully_renovated": "كامل التجديد"
     },
     "furnishingOption": {
-      "unfurnished": "افغير مفروش",
-      "semi": "مفروش جزئياً",
+      "unfurnished": "غير مفروش",
+      "semi": "شبه مفروش",
       "fully": "مفروش بالكامل"
     },
     "tenancy": {
@@ -283,7 +283,7 @@
     },
     "furnishing": {
       "unfurnished": "غير مفروش",
-      "semi": "مفروش جزئياً",
+      "semi": "شبه مفروش",
       "fully": "مفروش بالكامل"
     },
     "type": {
@@ -292,10 +292,10 @@
       "penthouse": "بنتهاوس",
       "townhouse": "تاون هاوس",
       "commercial": "تجاري",
-      "land": "الأرض",
+      "land": "أرض",
       "hotel_apartment": "شقة فندقية",
       "office": "مكتب",
-      "building": "البناية",
+      "building": "مبنى",
       "retail": "تجزئة",
       "commercial_villa": "فيلا تجارية"
     },
@@ -350,9 +350,9 @@
   "picker": {
     "addToCompare": "أضف إلى المقارنة",
     "source": "اختيار المصدر",
-    "tabSaved": "المحفوظة",
+    "tabSaved": "محفوظ",
     "tabRecent": "المشاهدة مؤخراً",
-    "tabSearch": "البحث",
+    "tabSearch": "بحث",
     "loading": "جارٍ تحميل قائمتك المختصرة…",
     "allHereTitle": "كل ما تم حفظه موجود هنا بالفعل",
     "allHereBody": "أضف إعلاناً عقارياً آخر إلى قائمتك المختصرة وسيظهر في هذا التبويب.",

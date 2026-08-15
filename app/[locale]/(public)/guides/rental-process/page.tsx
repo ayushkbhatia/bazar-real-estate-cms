@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
 
 export const metadata: Metadata = {
@@ -8,81 +10,76 @@ export const metadata: Metadata = {
   alternates: { canonical: "/guides/rental-process" },
 };
 
-const STEPS: [string, string][] = [
-  [
-    "Set your budget",
-    "Consider more than rent: annual rent, security deposit, agency commission, utility charges, municipality fees, internet, moving costs, and any building move-in fees. Municipality fees are 5% of the rental value or index, whichever is higher.",
-  ],
-  [
-    "Choose the right location",
-    "Abu Dhabi offers waterfront apartments, family villas, gated communities, and city-centre options. Popular areas include Al Reem, Saadiyat, Yas, Al Raha Beach, Khalifa City, Al Bateen, Al Mushrif, Al Reef, Al Muroor, and the Corniche.",
-  ],
-  [
-    "View and compare properties",
-    "Arrange viewings with a licensed agent. Check size, layout, natural light, finishing, parking, facilities, and condition. Ask about availability, payment count, maintenance, chiller charges, pets, and move-in restrictions.",
-  ],
-  [
-    "Make an offer",
-    "Your offer usually includes the annual rent, number of payments, contract start date, security deposit, and any special terms. Once accepted, you'll provide documents and make the required payments to proceed.",
-  ],
-  [
-    "Sign the tenancy contract",
-    "The contract should state tenant and landlord details, property details, annual rent, number of payments, start and end dates, deposit, maintenance responsibilities, payment terms, renewal terms, and any agreed conditions. Read carefully and keep a copy.",
-  ],
-  [
-    "Register with Tawtheeq",
-    "Contracts are registered through Tawtheeq. DARI lets the lessor register online, creating an official tenancy record linked to utility registration and municipality fees.",
-  ],
-  [
-    "Set up utilities",
-    "For Tawtheeq-registered tenants, TAQA/ADDC creates the account under the contract name, with the first bill within about a month. A separate application may need a passport, Emirates ID, contract, and previous closing letter.",
-  ],
-  [
-    "Arrange move-in approval",
-    "Check whether your building requires move-in approval. Some require booking the service elevator and submitting mover details with copies of the contract and Emirates ID — especially in towers and gated communities.",
-  ],
-  [
-    "Move in and document condition",
-    "Collect keys, access cards, and parking cards. Inspect again and photograph the condition before placing furniture. Report any maintenance issues immediately.",
-  ],
-  [
-    "Understand renewal & end-of-tenancy",
-    "Renewals are submitted through DARI; the tenant can accept or reject. The lessor cannot raise rent by more than 5% at renewal. To close a tenancy after expiry, DARI provides a close-tenancy service the tenant reviews and approves.",
-  ],
+/** Step order. The key names the message; the array is the page. */
+const STEPS = [
+  "setBudget",
+  "chooseRightLocation",
+  "viewCompareProperties",
+  "makeOffer",
+  "signTenancyContract",
+  "registerTawtheeq",
+  "setUpUtilities",
+  "arrangeMoveApproval",
+  "moveDocumentCondition",
+  "understandRenewalEndTenancy",
+] as const;
+
+/**
+ * Body blocks, in order, each naming its own message subtree.
+ *
+ * Named rather than indexed so reordering the page cannot silently
+ * repoint a translation at the wrong paragraph.
+ */
+const BLOCKS: readonly {
+  key: string;
+  copy?: true;
+  bullets?: readonly string[];
+  checklist?: readonly string[];
+}[] = [
+  { key: "rentalProcessChecklist", checklist: ["setRentalBudget", "choosePreferredCommunity", "viewCompareProperties", "confirmRentPayment", "submitTenantDocuments", "signTenancyContract", "completeTawtheeqRegistration", "confirmWaterElectricity", "checkMunicipalityFee", "arrangeMoveApproval", "inspectPropertyMoving", "keepContractsReceipts"] },
+  { key: "finalTip", copy: true },
 ];
 
-export default function RentalProcessGuide() {
+export default async function RentalProcessPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "guides" });
   return (
     <GuideShell
-      eyebrow="Guide for Tenants · 8 min read"
-      title="The Abu Dhabi Rental Process, Step by Step"
-      intro="Renting in Abu Dhabi involves several important steps. Understanding Tawtheeq, utility registration, municipality fees, and move-in approvals makes the whole process easier."
+      locale={locale}
+      eyebrow={t("rentalProcess.eyebrow")}
+      title={t("rentalProcess.title")}
+      intro={t("rentalProcess.intro")}
       body={[
-        ...STEPS.map(([t, d], i) => ({
-          heading: `Step ${i + 1}: ${t}`,
-          copy: d,
+        ...STEPS.map((key, i) => ({
+          heading: t("stepPrefixed", {
+            n: i + 1,
+            title: t(`rentalProcess.step.${key}.title`),
+          }),
+          copy: t(`rentalProcess.step.${key}.copy`),
         })),
-        {
-          heading: "Rental process checklist",
-          checklist: [
-            "Set your rental budget",
-            "Choose your preferred community",
-            "View and compare properties",
-            "Confirm rent, payment terms, and availability",
-            "Submit tenant documents",
-            "Sign the tenancy contract",
-            "Complete Tawtheeq registration",
-            "Confirm water and electricity setup",
-            "Check municipality fee billing",
-            "Arrange move-in approval",
-            "Inspect the property before moving in",
-            "Keep all contracts, receipts, and documents",
-          ],
-        },
-        {
-          heading: "Final tip",
-          copy: "Before signing any rental agreement, always confirm the contract terms, payment schedule, property condition, and all required documents.",
-        },
+        ...BLOCKS.map((b) => ({
+          heading: t(`rentalProcess.block.${b.key}.heading`),
+          ...(b.copy ? { copy: t(`rentalProcess.block.${b.key}.copy`) } : {}),
+          ...(b.bullets
+            ? {
+                bullets: b.bullets.map((i) =>
+                  t(`rentalProcess.block.${b.key}.bullets.${i}`),
+                ),
+              }
+            : {}),
+          ...(b.checklist
+            ? {
+                checklist: b.checklist.map((i) =>
+                  t(`rentalProcess.block.${b.key}.checklist.${i}`),
+                ),
+              }
+            : {}),
+        })),
       ]}
     />
   );

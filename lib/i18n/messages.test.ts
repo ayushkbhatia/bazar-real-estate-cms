@@ -136,6 +136,29 @@ describe("message catalogues", () => {
         const english = String(valueAt(en, key) ?? "");
         const id = `${ns}.${key}`;
 
+        /*
+         * Wildly longer than its English, which on a short label means the
+         * model wrote something of its own rather than translating.
+         * `guides.goldenVisa.block.whoIts.heading` — English "Who it's for",
+         * twelve characters — came back as 54 characters of "Explore the
+         * world of AI and machine learning with our experts". Fluent,
+         * correctly scripted, entirely unrelated, and invisible to every
+         * other check here.
+         *
+         * Plurals are exempt: English declares two branches and Arabic six,
+         * so a correct translation really is three times longer.
+         */
+        if (!/\{\s*\w+\s*,\s*plural\s*,/.test(english)) {
+          const cap =
+            english.length < 40
+              ? Math.max(30, english.length * 4)
+              : english.length * 2.2;
+          if (value.length > cap) {
+            broken.push(
+              `${id}: ${value.length} chars from ${english.length} — ${value}`,
+            );
+          }
+        }
         // A Latin letter welded into an Arabic word — `امتb الإمارات`.
         // Legitimate Latin in Arabic output is a token with space around it.
         // Arabic LETTERS, not the Arabic block: `AED 12M، على` is a Latin
@@ -191,6 +214,89 @@ describe("message catalogues", () => {
         `value that exists and differs from its English is not on its work ` +
         `list.`,
     ).toEqual([]);
+  });
+
+  /**
+   * The same English must give the same Arabic.
+   *
+   * The strongest check in this file, and the last one added, because it is
+   * the only one that can see a *fluent* mistake. Every other rule here asks
+   * whether a string is well-formed; this one asks whether it agrees with the
+   * sibling that says the same thing — and a hallucination almost never
+   * agrees.
+   *
+   * What it caught on its first run, all of it already merged:
+   *
+   *   "Abu Dhabi"   -> تأجير محل تجاري في أبوظبي   ("renting a commercial shop")
+   *   "Search"      -> شقق للبيع                    ("apartments for sale")
+   *   "View"        -> شقة مطلة                     ("an apartment with a view")
+   *   "For sale"    -> <br>للبيع
+   *   "Unfurnished" -> افغير مفروش                  (two characters welded on)
+   *
+   * and five different renderings of "Final tip" across five guides.
+   *
+   * Divergence is not always wrong — one English word can need two Arabic
+   * ones. But it is always a decision, so it goes in ALLOWED_DIVERGENCE with
+   * the reason rather than passing silently.
+   */
+  it("gives the same Arabic to the same English", () => {
+    /** English strings that legitimately translate two ways, and why. */
+    const ALLOWED_DIVERGENCE: ReadonlySet<string> = new Set([]);
+
+    const byEnglish = new Map<string, Map<string, string>>();
+    for (const ns of namespaces(DEFAULT_LOCALE)) {
+      const en = load(DEFAULT_LOCALE, ns);
+      const ar = load("ar", ns);
+      for (const key of keyPaths(en)) {
+        const english = valueAt(en, key);
+        const arabic = valueAt(ar, key);
+        if (typeof english !== "string" || typeof arabic !== "string") continue;
+        // Below four characters the "same string" is usually a coincidence.
+        if (english.length <= 3) continue;
+        if (ALLOWED_DIVERGENCE.has(english)) continue;
+        if (!byEnglish.has(english)) byEnglish.set(english, new Map());
+        byEnglish.get(english)!.set(`${ns}.${key}`, arabic);
+      }
+    }
+
+    const divergent: string[] = [];
+    for (const [english, renderings] of byEnglish) {
+      if (new Set(renderings.values()).size <= 1) continue;
+      divergent.push(
+        `"${english}"\n` +
+          [...renderings]
+            .map(([id, ar]) => `      ${ar}   (${id})`)
+            .join("\n"),
+      );
+    }
+
+    expect(
+      divergent.sort(),
+      `These English strings are translated more than one way:\n\n` +
+        `${divergent.sort().join("\n\n")}\n\n` +
+        `Pick one rendering and use it everywhere, or — if the two really do ` +
+        `need different Arabic — add the English to ALLOWED_DIVERGENCE with ` +
+        `the reason.`,
+    ).toEqual([]);
+  });
+
+  it("carries no HTML the English does not", () => {
+    // `area.cta.forSale` shipped as "<br>للبيع". The tag renders literally,
+    // and `multiline` never saw it because there is no newline involved.
+    const withTags: string[] = [];
+    for (const ns of namespaces("ar")) {
+      const ar = load("ar", ns);
+      const en = load(DEFAULT_LOCALE, ns);
+      for (const key of keyPaths(ar)) {
+        const value = String(valueAt(ar, key));
+        const english = String(valueAt(en, key) ?? "");
+        const tag = /<\/?[a-z][a-z0-9]*\s*\/?>/i;
+        if (tag.test(value) && !tag.test(english)) {
+          withTags.push(`${ns}.${key}: ${value}`);
+        }
+      }
+    }
+    expect(withTags.sort(), withTags.sort().join("\n")).toEqual([]);
   });
 
   it("declares every Arabic plural category ICU asks for", () => {

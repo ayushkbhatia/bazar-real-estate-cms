@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
 import { PropertyResidencyChecker } from "./_checker";
 
@@ -9,25 +11,56 @@ export const metadata: Metadata = {
   alternates: { canonical: "/guides/property-linked-residency" },
 };
 
-export default function PropertyLinkedResidencyPage() {
+/**
+ * Body blocks, in order, each naming its own message subtree.
+ *
+ * Named rather than indexed so reordering the page cannot silently
+ * repoint a translation at the wrong paragraph.
+ */
+const BLOCKS: readonly {
+  key: string;
+  copy?: true;
+  bullets?: readonly string[];
+  checklist?: readonly string[];
+}[] = [
+  { key: "when2YearVisa", copy: true },
+  { key: "doesntCover", copy: true },
+  { key: "mortgageRules", copy: true },
+];
+
+export default async function PropertyLinkedResidencyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "guides" });
   return (
     <GuideShell
-      eyebrow="Residency · 2-year visa"
-      title="Property-linked residency, simplified."
-      intro="The AED 750K+ property route to a 2-year renewable UAE residency — who qualifies, what the asset needs to look like, and the realistic timeline."
+      locale={locale}
+      eyebrow={t("propertyLinkedResidency.eyebrow")}
+      title={t("propertyLinkedResidency.title")}
+      intro={t("propertyLinkedResidency.intro")}
       body={[
-        {
-          heading: "When the 2-year visa is the right fit",
-          copy: "If you don't yet have AED 2M+ to deploy for the Golden Visa but want a real UAE residency, the 2-year property-linked visa is the cleaner path. It's renewable indefinitely while you hold the property and covers spouse + dependent children.",
-        },
-        {
-          heading: "What it doesn't cover",
-          copy: "It's a residency, not a citizenship pathway. You can't sponsor extended family beyond spouse and minors. You'll still need to maintain UAE-side tax residency rules (typically 90+ days in country) if you want the Tax Residency Certificate.",
-        },
-        {
-          heading: "Mortgage rules",
-          copy: "Mortgaged property qualifies as long as the lender issues an NOC. If your outstanding loan exceeds 50% of the property value, ICP will additionally want 12 months of repayment history on file. None of this is a blocker — just timing.",
-        },
+        ...BLOCKS.map((b) => ({
+          heading: t(`propertyLinkedResidency.block.${b.key}.heading`),
+          ...(b.copy ? { copy: t(`propertyLinkedResidency.block.${b.key}.copy`) } : {}),
+          ...(b.bullets
+            ? {
+                bullets: b.bullets.map((i) =>
+                  t(`propertyLinkedResidency.block.${b.key}.bullets.${i}`),
+                ),
+              }
+            : {}),
+          ...(b.checklist
+            ? {
+                checklist: b.checklist.map((i) =>
+                  t(`propertyLinkedResidency.block.${b.key}.checklist.${i}`),
+                ),
+              }
+            : {}),
+        })),
       ]}
     >
       <PropertyResidencyChecker />

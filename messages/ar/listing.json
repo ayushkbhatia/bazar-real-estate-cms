@@ -4,7 +4,7 @@
   "properties": "{count, plural, =0 {لا توجد عقارات} zero {لا توجد عقارات} one {عقار واحد} two {عقاران} few {# عقارات} many {# عقارًا} other {# عقار}}",
   "forSale": "للبيع",
   "forRent": "للإيجار",
-  "offPlan": "على المخطط",
+  "offPlan": "على الخارطة",
   "verified": "فيلا مؤكدة من بازار",
   "bedsShort": "غرفة",
   "bathsShort": "حمام"

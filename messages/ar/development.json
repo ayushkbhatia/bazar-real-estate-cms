@@ -1,7 +1,7 @@
 {
   "facts": {
     "architecture": "التصميم المعماري",
-    "landscape": "<br>حديقة منسّقة",
+    "landscape": "حديقة منسّقة",
     "total_area_ft2": "تللمساحة الإجمالية",
     "lagoon_area_ft2": "المنطقة البحيرية",
     "density": "تصنيف الكثافة",
@@ -26,7 +26,7 @@
     "empty": "لا توجد وحدات مطابقة لهذا الفلتر.",
     "filterAll": "الكل · {count}",
     "filterVillas": "فلل · {count}",
-    "filterTownhouses": "<br>تاون هاوس · {count}",
+    "filterTownhouses": "تاون هاوس · {count}",
     "filterLagoon": "إطلالة على البحيرة · {count}"
   },
   "payment": {

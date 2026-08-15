@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { ArrowLeft, Check } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 
@@ -16,6 +17,15 @@ type Props = {
   title: string;
   intro: string;
   body: GuideBlock[];
+  /**
+   * Threaded from the page rather than read ambiently.
+   *
+   * Every string the *pages* pass in is already resolved; the only message
+   * this component owns is the back-link. An ambient `getTranslations()` for
+   * one label would resolve through `headers()` and take all eleven guide
+   * routes dynamic.
+   */
+  locale: string;
   children?: React.ReactNode;
 };
 
@@ -25,7 +35,15 @@ type Props = {
  * without HTML in the seed. An interactive widget (e.g. eligibility checker)
  * lands as `children` below the body.
  */
-export function GuideShell({ eyebrow, title, intro, body, children }: Props) {
+export async function GuideShell({
+  eyebrow,
+  title,
+  intro,
+  body,
+  locale,
+  children,
+}: Props) {
+  const t = await getTranslations({ locale, namespace: "guides" });
   return (
     <article className="bg-bz-bg">
       <div className="px-4 md:px-12 pt-10 max-w-[1200px]">
@@ -34,7 +52,7 @@ export function GuideShell({ eyebrow, title, intro, body, children }: Props) {
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-ink-2 hover:text-bz-ink transition-colors"
         >
           <ArrowLeft size={13} strokeWidth={1.8} />
-          All guides &amp; insights
+          {t("backToInsights")}
         </Link>
       </div>
 
