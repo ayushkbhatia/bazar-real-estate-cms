@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n/locales";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -8,16 +10,11 @@ import { Button } from "@/components/ui/button";
 import { getAgentBySlug, listAgents } from "@/lib/queries/agents";
 import { listApprovedReviewsForAgent } from "@/lib/queries/reviews-by-subject";
 import { listListingsByAgent } from "@/lib/queries/listings-by-agent";
-import {
-  propertyUrl,
-} from "@/lib/queries/properties";
+import { propertyUrl } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { getSeedAgentBySlug } from "@/lib/seeds/agents";
 import { getSeedAreaGuideBySlug } from "@/lib/seeds/areas";
-import {
-  realEstateAgentJsonLd,
-  breadcrumbListJsonLd,
-} from "@/lib/jsonld";
+import { realEstateAgentJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
 import { ListingCardPriced } from "../../_components/listing-card-priced";
 
@@ -42,11 +39,31 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * A display first name.
+ *
+ * `split(" ")[0]` was inlined at six sites in this file. It is wrong often
+ * enough in this market to be worth naming: Arabic names routinely carry
+ * `بن` and `عبد` compounds, so the first whitespace-delimited token is
+ * frequently a particle rather than a name. One place to fix it when someone
+ * decides what the right rule is, instead of six.
+ */
+function firstName(full: string): string {
+  return full.trim().split(/\s+/)[0] ?? full;
+}
+
 export default async function AgentProfilePage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: Locale }>;
 }) {
+  /*
+   * Locale from `params`, never ambient. An ambient `getTranslations` reads
+   * `getLocale()`, which falls through to `headers()` and takes the route off
+   * prerendering — check:routes caught all five of these at once.
+   */
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "editorial" });
   const { slug } = await params;
   const agent = await getAgentBySlug(slug);
   if (!agent) notFound();
@@ -73,14 +90,14 @@ export default async function AgentProfilePage({
   const closedQtd = supplementary?.closed_qtd ?? 0;
   const pullQuote =
     supplementary?.pull_quote ??
-    `${agent.display_name.split(" ")[0]} works the full advisory cycle end to end.`;
+    t("agent.worksFullCycle", { name: firstName(agent.display_name) });
   const areaSlugs = supplementary?.areas ?? [];
   const areas = areaSlugs
     .map((a) => getSeedAreaGuideBySlug(a))
     .filter((a) => a != null);
 
   const waUrl = `https://wa.me/${whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
-    `Hi ${agent.display_name.split(" ")[0]}, I'd like to talk about a Bazar engagement.`,
+    t("agent.mailGreeting", { name: firstName(agent.display_name) }),
   )}`;
 
   const siteBase = (
@@ -139,7 +156,7 @@ export default async function AgentProfilePage({
             />
           )}
           <div>
-            <Eyebrow>{agent.title ?? "Advisor"}</Eyebrow>
+            <Eyebrow>{agent.title ?? t("agent.advisor")}</Eyebrow>
             <h1
               className="serif text-[32px] md:text-[56px] mt-3 font-normal leading-[1.02] max-w-[16ch]"
               style={{ letterSpacing: "-0.025em" }}
@@ -236,7 +253,7 @@ export default async function AgentProfilePage({
       <section className="px-4 md:px-12 py-16 max-w-[1280px]">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
           <div>
-            <Eyebrow>Specialties</Eyebrow>
+            <Eyebrow>{t("eyebrow.specialties")}</Eyebrow>
             <ul className="mt-4 flex flex-col gap-2">
               {agent.specialties.map((s) => (
                 <li key={s} className="text-[14px] text-bz-ink">
@@ -246,7 +263,7 @@ export default async function AgentProfilePage({
             </ul>
           </div>
           <div>
-            <Eyebrow>Languages</Eyebrow>
+            <Eyebrow>{t("eyebrow.languages")}</Eyebrow>
             <ul className="mt-4 flex flex-col gap-2">
               {agent.languages.map((l) => (
                 <li key={l} className="text-[14px] text-bz-ink">
@@ -256,7 +273,7 @@ export default async function AgentProfilePage({
             </ul>
           </div>
           <div>
-            <Eyebrow>Areas</Eyebrow>
+            <Eyebrow>{t("eyebrow.areas")}</Eyebrow>
             <ul className="mt-4 flex flex-col gap-2">
               {areas.map((a) =>
                 a ? (
@@ -279,7 +296,7 @@ export default async function AgentProfilePage({
       {reviews.length > 0 ? (
         <section className="border-t border-bz-border">
           <div className="px-4 md:px-12 py-16 max-w-[1280px]">
-            <Eyebrow>What clients say</Eyebrow>
+            <Eyebrow>{t("eyebrow.whatClientsSay")}</Eyebrow>
             <h2
               className="serif text-[32px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.015em" }}
@@ -294,7 +311,12 @@ export default async function AgentProfilePage({
                 >
                   <div className="flex items-center gap-1 text-bz-accent">
                     {Array.from({ length: r.rating }).map((_, i) => (
-                      <Star key={i} size={13} strokeWidth={1.5} fill="currentColor" />
+                      <Star
+                        key={i}
+                        size={13}
+                        strokeWidth={1.5}
+                        fill="currentColor"
+                      />
                     ))}
                   </div>
                   {r.title ? (
@@ -329,7 +351,7 @@ export default async function AgentProfilePage({
       {/* Active listings */}
       <section className="border-t border-bz-border bg-bz-surface">
         <div className="px-4 md:px-12 py-16 max-w-[1280px]">
-          <Eyebrow>Active listings</Eyebrow>
+          <Eyebrow>{t("eyebrow.activeListings")}</Eyebrow>
           <h2
             className="serif text-[32px] mt-2 leading-tight"
             style={{ letterSpacing: "-0.015em" }}
@@ -342,42 +364,40 @@ export default async function AgentProfilePage({
               what {agent.display_name.split(" ")[0]} is working on off-market.
             </div>
           ) : (
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {activeListings.map((row, index) => {
-                  const badge = row.flags?.exclusive
-                    ? { label: "Exclusive", kind: "ink" as const }
-                    : row.flags?.vacant_on_transfer
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {activeListings.map((row, index) => {
+                const badge = row.flags?.exclusive
+                  ? { label: "Exclusive", kind: "ink" as const }
+                  : row.flags?.vacant_on_transfer
                     ? { label: "Vacant on transfer", kind: "accent" as const }
                     : undefined;
-                  return (
-                    <Link
-                      key={row.reference}
-                      href={propertyUrl(row)}
-                      className="block"
-                    >
-                      <ListingCardPriced
-                        priceAed={row.price_aed}
-                        title={row.title}
-                        location={row.areas?.name ?? "United Arab Emirates"}
-                        beds={row.beds}
-                        baths={row.baths}
-                        area={row.built_up_ft2 ?? 0}
-                        badge={badge?.label}
-                        badgeKind={badge?.kind}
-                        imgLabel={row.reference}
-                        heroSrc={
-                          row.hero
-                            ? mediaPublicUrl(row.hero.storage_key)
-                            : null
-                        }
-                        heroAlt={row.hero?.alt_text ?? row.title}
-                        priority={index === 0}
-                        propertyId={row.id}
-                      />
-                    </Link>
-                  );
-                })}
-              </div>
+                return (
+                  <Link
+                    key={row.reference}
+                    href={propertyUrl(row)}
+                    className="block"
+                  >
+                    <ListingCardPriced
+                      priceAed={row.price_aed}
+                      title={row.title}
+                      location={row.areas?.name ?? "United Arab Emirates"}
+                      beds={row.beds}
+                      baths={row.baths}
+                      area={row.built_up_ft2 ?? 0}
+                      badge={badge?.label}
+                      badgeKind={badge?.kind}
+                      imgLabel={row.reference}
+                      heroSrc={
+                        row.hero ? mediaPublicUrl(row.hero.storage_key) : null
+                      }
+                      heroAlt={row.hero?.alt_text ?? row.title}
+                      priority={index === 0}
+                      propertyId={row.id}
+                    />
+                  </Link>
+                );
+              })}
+            </div>
           )}
         </div>
       </section>

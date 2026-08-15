@@ -91,6 +91,24 @@ function textOf(res: { content: { type: string; text?: string }[] }): string {
  * `messages.test.ts`. Catching them here means a bad run is a script failure
  * with a named cause rather than a red suite after the fact.
  */
+/**
+ * Strip a markdown heading marker the model added on its own.
+ *
+ * Short, bare inputs — "Our team", "Land", "Bathrooms", "Currency & units" —
+ * come back as `# النص` often enough to be a pattern rather than an accident:
+ * a two-word string with no surrounding sentence reads like a heading prompt,
+ * and the model obliges. It had been hand-corrected four separate times across
+ * waves 1b, 2a and 3 before it was worth naming.
+ *
+ * Only stripped when the English carries no `#` of its own, so a genuine ICU
+ * `#` placeholder or a literal "Plot #" is never touched. Formatting the model
+ * invented, not content it translated.
+ */
+export function stripMarkdownHeading(english: string, arabic: string): string {
+  if (english.includes("#")) return arabic;
+  return arabic.replace(/^\s*#{1,6}\s+/, "");
+}
+
 export function catalogueIssues(
   english: string,
   arabic: string,

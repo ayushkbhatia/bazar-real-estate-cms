@@ -1,8 +1,6 @@
+import { useTranslations } from "next-intl";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import {
-  quarterLabel,
-  type TrendPoint,
-} from "@/lib/queries/market-reports";
+import { quarterLabel, type TrendPoint } from "@/lib/queries/market-reports";
 import { PriceText } from "../../_components/area-text";
 
 type Props = {
@@ -22,6 +20,7 @@ type Props = {
  * route dynamic and discard its `revalidate`.
  */
 export function TrendChart({ trend }: Props) {
+  const t = useTranslations("editorial");
   const validValues = trend.filter(
     (p): p is TrendPoint & { median_price_aed: number } =>
       p.median_price_aed != null && p.median_price_aed > 0,
@@ -40,7 +39,7 @@ export function TrendChart({ trend }: Props) {
   if (!hasData) {
     return (
       <section className="px-4 md:px-12 py-12 border-b border-bz-border">
-        <Eyebrow>Trend</Eyebrow>
+        <Eyebrow>{t("eyebrow.trend")}</Eyebrow>
         <h2
           className="serif text-[28px] mt-2"
           style={{ letterSpacing: "-0.018em" }}

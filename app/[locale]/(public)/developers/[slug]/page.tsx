@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n/locales";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -64,8 +66,15 @@ export async function generateMetadata({
 export default async function DeveloperProfilePage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: Locale }>;
 }) {
+  /*
+   * Locale from `params`, never ambient. An ambient `getTranslations` reads
+   * `getLocale()`, which falls through to `headers()` and takes the route off
+   * prerendering — check:routes caught all five of these at once.
+   */
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "editorial" });
   const { slug } = await params;
   // Identity resolves from either side. The directory carries the logo and
   // descriptor for the 30 curated partners, so a developer listed there
@@ -139,7 +148,7 @@ export default async function DeveloperProfilePage({
             )}
           </div>
           <div>
-            <Eyebrow>Developer</Eyebrow>
+            <Eyebrow>{t("eyebrow.developer")}</Eyebrow>
             <h1
               className="serif text-[40px] md:text-[64px] mt-3 font-normal leading-[1.02]"
               style={{ letterSpacing: "-0.025em" }}
@@ -159,7 +168,7 @@ export default async function DeveloperProfilePage({
       <section className="px-4 md:px-12 py-14 md:py-20">
         <div className="flex items-end justify-between gap-8 flex-wrap">
           <div>
-            <Eyebrow>Developments</Eyebrow>
+            <Eyebrow>{t("eyebrow.developments")}</Eyebrow>
             <h2
               className="serif text-[30px] md:text-[36px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.02em" }}
@@ -199,7 +208,7 @@ export default async function DeveloperProfilePage({
         <section className="px-4 md:px-12 pb-14 md:pb-20">
           <div className="flex items-end justify-between gap-8 flex-wrap">
             <div>
-              <Eyebrow>Associated listings</Eyebrow>
+              <Eyebrow>{t("eyebrow.associatedListings")}</Eyebrow>
               <h2
                 className="serif text-[30px] md:text-[36px] mt-2 leading-tight"
                 style={{ letterSpacing: "-0.02em" }}
@@ -219,11 +228,7 @@ export default async function DeveloperProfilePage({
 
           <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {listings.map((row, index) => (
-              <Link
-                key={row.id}
-                href={propertyUrl(row)}
-                className="block"
-              >
+              <Link key={row.id} href={propertyUrl(row)} className="block">
                 <ListingCardPriced
                   priceAed={row.price_aed}
                   title={row.title}

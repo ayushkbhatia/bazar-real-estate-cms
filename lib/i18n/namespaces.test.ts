@@ -122,6 +122,7 @@ describe("pickClientMessages", () => {
       search: { e: "5" },
       property: { f: "6" },
       development: { g: "7" },
+      editorial: { h: "8" },
       nav: { b: "2" },
       listing: { c: "3" },
     });

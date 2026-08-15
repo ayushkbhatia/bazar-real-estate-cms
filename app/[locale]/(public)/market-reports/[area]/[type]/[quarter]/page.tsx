@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -88,12 +89,15 @@ export async function generateMetadata({
   return {
     title,
     description: `Median price, AED/ft², and closed transactions for ${snapshot.area_name} ${propertyTypeLabel(type).toLowerCase()}s in ${quarterLabel(quarter)}.`,
-    alternates: { canonical: reportPath({ area_slug: area, property_type: type, quarter }) },
+    alternates: {
+      canonical: reportPath({ area_slug: area, property_type: type, quarter }),
+    },
     robots: { index: true, follow: true },
   };
 }
 
 export default async function MarketReportDetailPage({ params }: PageProps) {
+  const t = await getTranslations("editorial");
   const { area, type, quarter: qSlug } = await params;
   if (!isValidType(type)) notFound();
   const quarter = quarterFromSlug(qSlug);
@@ -107,8 +111,18 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
   if (!snapshot) notFound();
 
   const [trend, comparables, liveListings] = await Promise.all([
-    getTrend({ area_slug: area, property_type: type, endQuarter: quarter, span: 8 }),
-    listRecentComparables({ area_slug: area, property_type: type, quarter, limit: 10 }),
+    getTrend({
+      area_slug: area,
+      property_type: type,
+      endQuarter: quarter,
+      span: 8,
+    }),
+    listRecentComparables({
+      area_slug: area,
+      property_type: type,
+      quarter,
+      limit: 10,
+    }),
     // T1-A cleanup: live comparable resale listings rail
     listLiveComparables({ area_slug: area, property_type: type, limit: 6 }),
   ]);
@@ -124,7 +138,11 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
     license: "https://creativecommons.org/licenses/by/4.0/",
     isAccessibleForFree: true,
     temporalCoverage: `${quarter.year}-${String((quarter.q - 1) * 3 + 1).padStart(2, "0")}/P3M`,
-    variableMeasured: ["median_price_aed", "median_aed_per_ft2", "transaction_count"],
+    variableMeasured: [
+      "median_price_aed",
+      "median_aed_per_ft2",
+      "transaction_count",
+    ],
   };
 
   return (
@@ -136,11 +154,17 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
 
       {/* Breadcrumb */}
       <div className="px-4 md:px-12 pt-6 text-[12px] text-bz-muted flex flex-wrap items-center gap-2">
-        <Link href="/market-reports" className="text-bz-teal hover:text-bz-navy">
+        <Link
+          href="/market-reports"
+          className="text-bz-teal hover:text-bz-navy"
+        >
           Market reports
         </Link>
         <span>›</span>
-        <Link href={`/areas/${snapshot.area_slug}`} className="text-bz-teal hover:text-bz-navy">
+        <Link
+          href={`/areas/${snapshot.area_slug}`}
+          className="text-bz-teal hover:text-bz-navy"
+        >
           {snapshot.area_name}
         </Link>
         <span>›</span>
@@ -172,7 +196,7 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
 
       {/* Advisor commentary */}
       <section className="px-4 md:px-12 py-12 border-b border-bz-border">
-        <Eyebrow>Advisor commentary</Eyebrow>
+        <Eyebrow>{t("eyebrow.advisorCommentary")}</Eyebrow>
         <h2
           className="serif text-[28px] mt-2 max-w-[44ch]"
           style={{ letterSpacing: "-0.018em" }}
@@ -181,10 +205,10 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
         </h2>
         <p className="mt-4 text-[15px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
           The median masks the distribution — and the distribution is where
-          buying decisions are actually made. For a personalised reading of
-          this dataset, including off-market signals, time-to-close, and the
-          shape of the active buyer pool in {snapshot.area_name}, book a
-          30-minute call with your Bazar advisor.
+          buying decisions are actually made. For a personalised reading of this
+          dataset, including off-market signals, time-to-close, and the shape of
+          the active buyer pool in {snapshot.area_name}, book a 30-minute call
+          with your Bazar advisor.
         </p>
         <div className="mt-6">
           <Link

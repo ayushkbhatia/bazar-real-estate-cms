@@ -935,5 +935,169 @@
     "sourceHash": "3cf90a0539c7",
     "reviewed": false,
     "note": "MT could not do this one. A long sentence with a nested {area} inside six plural branches: at max_tokens 1200 the JSON truncated, and raising it made the model return an explanation of plural rules instead. Hand-authored."
+  },
+  "editorial.eyebrow.advisorCommentary": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "997a354d2b29",
+    "reviewed": false
+  },
+  "editorial.eyebrow.articles": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b14ac78a46e9",
+    "reviewed": false
+  },
+  "editorial.eyebrow.associatedListings": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1890bd99dbeb",
+    "reviewed": false
+  },
+  "editorial.eyebrow.category": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "292c06f0045a",
+    "reviewed": false
+  },
+  "editorial.eyebrow.developer": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3fb7b39416f1",
+    "reviewed": false
+  },
+  "editorial.eyebrow.developments": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6c57ed1a13bb",
+    "reviewed": false
+  },
+  "editorial.eyebrow.languages": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "318655cea4bd",
+    "reviewed": false
+  },
+  "editorial.eyebrow.specialties": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "89440c3f3b75",
+    "reviewed": false
+  },
+  "editorial.eyebrow.talkToAuthor": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "00fad4fe9ee4",
+    "reviewed": false
+  },
+  "editorial.eyebrow.trend": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9e217716c4e0",
+    "reviewed": false
+  },
+  "editorial.eyebrow.whatClientsSay": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "aaef1116b6a2",
+    "reviewed": false
+  },
+  "editorial.eyebrow.whatsSelling": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f4db6f8a2be6",
+    "reviewed": false
+  },
+  "editorial.article.share": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "29887a5ff984",
+    "reviewed": false
+  },
+  "editorial.article.save": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1509f561f241",
+    "reviewed": false
+  },
+  "editorial.article.saved": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b5c120b316c2",
+    "reviewed": false
+  },
+  "editorial.article.sendToAdvisor": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9b7a174c8f9b",
+    "reviewed": false
+  },
+  "editorial.article.onThisPage": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b5658fc8edda",
+    "reviewed": false
+  },
+  "editorial.article.breadcrumb": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2bd873d6c734",
+    "reviewed": false
+  },
+  "editorial.report.noTransactions": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9d705ef61898",
+    "reviewed": false
+  },
+  "editorial.eyebrow.activeListings": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "353ee8b85a32",
+    "reviewed": false
+  },
+  "editorial.eyebrow.areas": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2d36715a6cc6",
+    "reviewed": false
+  },
+  "editorial.eyebrow.ourTeam": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cb7511f9c87d",
+    "reviewed": false
+  },
+  "editorial.agent.advisor": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "28da8c1f9ede",
+    "reviewed": false
+  },
+  "editorial.fallbackArea": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dd64913c8b91",
+    "reviewed": false
+  },
+  "editorial.report.closedTransactions": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c9d12df5605c",
+    "reviewed": false
+  },
+  "editorial.agent.worksFullCycle": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "7108c48a41c3",
+    "reviewed": false,
+    "note": "MT returned nothing twice. A short sentence whose only content word is a masked proper noun leaves almost nothing to translate."
+  },
+  "editorial.agent.mailGreeting": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "dc3389df8b2e",
+    "reviewed": false,
+    "note": "MT returned nothing. Same shape — a greeting built almost entirely around a masked name."
   }
 }

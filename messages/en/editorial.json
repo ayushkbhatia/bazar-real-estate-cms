@@ -1,0 +1,37 @@
+{
+  "eyebrow": {
+    "activeListings": "Active listings",
+    "advisorCommentary": "Advisor commentary",
+    "areas": "Areas",
+    "articles": "Articles",
+    "associatedListings": "Associated listings",
+    "category": "Category",
+    "developer": "Developer",
+    "developments": "Developments",
+    "languages": "Languages",
+    "ourTeam": "Our team",
+    "specialties": "Specialties",
+    "talkToAuthor": "Talk to the author",
+    "trend": "Trend",
+    "whatClientsSay": "What clients say",
+    "whatsSelling": "What's selling · DLD recorded"
+  },
+  "article": {
+    "share": "Share",
+    "save": "Save",
+    "saved": "Saved",
+    "sendToAdvisor": "Send to advisor",
+    "onThisPage": "On this page",
+    "breadcrumb": "Breadcrumb"
+  },
+  "agent": {
+    "advisor": "Advisor",
+    "worksFullCycle": "{name} works the full advisory cycle end to end.",
+    "mailGreeting": "Hi {name}, I'd like to talk about a Bazar engagement."
+  },
+  "report": {
+    "closedTransactions": "{count, plural, one {# closed {type} transaction on DLD record in {quarter}.} other {# closed {type} transactions on DLD record in {quarter}.}}",
+    "noTransactions": "No closed {type} transactions surfaced for {area} in this quarter yet."
+  },
+  "fallbackArea": "United Arab Emirates"
+}

@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n/locales";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { MessageCircle } from "lucide-react";
@@ -24,7 +26,14 @@ export const metadata: Metadata = {
     "Twelve senior advisors across buy, sell, rent, off-plan, and investment desks in Abu Dhabi.",
 };
 
-export default async function AgentsIndexPage() {
+export default async function AgentsIndexPage({ params }: { params: Promise<{ locale: Locale }> }) {
+  /*
+   * Locale from `params`, never ambient. An ambient `getTranslations` reads
+   * `getLocale()`, which falls through to `headers()` and takes the route off
+   * prerendering — check:routes caught all five of these at once.
+   */
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "editorial" });
   const agents = await listAgents();
   // T3-A: group by desk so the team page reads as an org chart rather than
   // a flat grid. Order: Leadership → Buy-side → Off-plan → Lettings.
@@ -33,12 +42,13 @@ export default async function AgentsIndexPage() {
   return (
     <div className="bg-bz-bg">
       <section className="px-4 md:px-12 pt-12 md:pt-20 pb-14 max-w-[1200px]">
-        <Eyebrow>Our team</Eyebrow>
+        <Eyebrow>{t("eyebrow.ourTeam")}</Eyebrow>
         <h1
           className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
         >
-          Twelve advisors.<br />
+          Twelve advisors.
+          <br />
           By design.
         </h1>
         <p className="mt-8 text-[17px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
@@ -64,10 +74,7 @@ export default async function AgentsIndexPage() {
               const wa = whatsappFor(a.slug, a.display_name);
               return (
                 <div key={a.user_id} className="relative group">
-                  <Link
-                    href={`/agents/${a.slug}`}
-                    className="block"
-                  >
+                  <Link href={`/agents/${a.slug}`} className="block">
                     {a.photo_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img

@@ -186,8 +186,12 @@ async function main() {
   // type-stripping will not resolve.
   const { translateField, MT_MODEL_PROSE } =
     await import("../../lib/i18n/mt/translate");
-  const { translatePluralMessage, catalogueIssues, refuse } =
-    await import("../../lib/i18n/catalogue-mt");
+  const {
+    translatePluralMessage,
+    catalogueIssues,
+    refuse,
+    stripMarkdownHeading,
+  } = await import("../../lib/i18n/catalogue-mt");
   const { parseMessage } = await import("../../lib/i18n/icu");
 
   const failures: { id: string; issues: { code: string; detail: string }[] }[] =
@@ -225,7 +229,10 @@ async function main() {
         kind: item.english.length > 160 ? "body" : "title",
       });
       if (res.ok) {
-        value = res.text;
+        // Applied before validation, not after: a stray heading marker would
+        // otherwise trip `hash-invented` and send a perfectly good translation
+        // to the human queue.
+        value = stripMarkdownHeading(item.english, res.text);
         issues = catalogueIssues(item.english, value);
       } else issues = res.issues;
     }
