@@ -1,7 +1,13 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
 /**
  * Sprint 5b: DBR (debt-burden ratio) gauge. UAE central-bank guideline is
- * <= 50%; mortgage stress tests typically aim <= 35%. This is a static SVG
- * arc — no client interactivity needed.
+ * <= 50%; mortgage stress tests typically aim <= 35%. The arc itself is
+ * static SVG; the component is a Client Component only because its parent
+ * (`mortgage-calculator.tsx`) is, and it reads the same route-scoped `tools`
+ * bag mounted by `tools/layout.tsx`.
  */
 
 /**
@@ -27,6 +33,7 @@ export function DbrGauge({
   monthlyPaymentAed: number;
   monthlyIncomeAed: number;
 }) {
+  const t = useTranslations("tools");
   const dbr =
     monthlyIncomeAed > 0
       ? Math.min(1.5, monthlyPaymentAed / monthlyIncomeAed)
@@ -46,20 +53,20 @@ export function DbrGauge({
 
   const band =
     dbr <= 0.35
-      ? { label: "Comfortable", color: "var(--bz-success, oklch(0.55 0.14 145))" }
+      ? { key: "dbrComfortable", color: "var(--bz-success, oklch(0.55 0.14 145))" }
       : dbr <= 0.5
-        ? { label: "Within limit", color: "var(--bz-warning, oklch(0.7 0.13 65))" }
-        : { label: "Over UAE limit", color: "var(--bz-danger, oklch(0.5 0.18 25))" };
+        ? { key: "dbrWithinLimit", color: "var(--bz-warning, oklch(0.7 0.13 65))" }
+        : { key: "dbrOverLimit", color: "var(--bz-danger, oklch(0.5 0.18 25))" };
 
   return (
     <div className="rounded-lg border border-bz-border bg-bz-surface p-6">
       <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-        Debt-burden ratio (DBR)
+        {t("mortgage.dbrTitle")}
       </div>
       <div className="mt-4 grid grid-cols-[200px_1fr] gap-6 items-center">
         <svg
           viewBox="0 0 200 110"
-          aria-label={`Debt-burden ratio ${pct}%`}
+          aria-label={t("mortgage.dbrAria", { pct })}
           className="w-full"
         >
           {/* Track */}
@@ -96,13 +103,18 @@ export function DbrGauge({
             className="text-[13px] font-medium"
             style={{ color: band.color }}
           >
-            {band.label}
+            {t(`mortgage.${band.key}`)}
           </div>
+          {/*
+            The two figures used to be wrapped in `.mono` spans. Splicing a
+            translated sentence around two fixed JSX children makes the Arabic
+            word order unexpressible — the caps have to be able to move — so
+            the sentence is one message and the numerals lose the mono face.
+            Decoration on one paragraph, against a sentence that can be
+            translated at all.
+          */}
           <p className="mt-2 text-[12.5px] text-bz-muted leading-relaxed">
-            UAE central bank caps DBR at <span className="mono text-bz-ink-2">50%</span>.
-            Stress-tested banks underwrite to{" "}
-            <span className="mono text-bz-ink-2">35%</span> with a 2% rate
-            buffer. Adjust the income field above to recalculate.
+            {t("mortgage.dbrExplainer")}
           </p>
         </div>
       </div>

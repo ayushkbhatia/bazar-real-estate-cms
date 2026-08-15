@@ -172,6 +172,22 @@ describe("cashToClose", () => {
     const byKey = Object.fromEntries(r.lines.map((l) => [l.key, l.amountAed]));
     expect(byKey.bazar_advisory).toBe(0);
   });
+
+  it("carries the rate behind each rate-derived line, and null otherwise", () => {
+    // The percentages e2e/tools-mortgage.spec.ts:21-23 asserts on screen are
+    // produced here, so the trailing-zero rule (1.50 -> "1.5%") is pinned in a
+    // unit test rather than only by a browser.
+    const byKey = Object.fromEntries(result.lines.map((l) => [l.key, l.pct]));
+    expect(byKey.down_payment).toBe("25%");
+    expect(byKey.dld_transfer).toBe("4%");
+    expect(byKey.mortgage_registration).toBe("0.25%");
+    expect(byKey.bank_arrangement).toBe("1%");
+    expect(byKey.bazar_advisory).toBe("1.5%");
+    // Flat statutory fees have no rate to show.
+    expect(byKey.trustee_office).toBeNull();
+    expect(byKey.property_valuation).toBeNull();
+    expect(byKey.noc_misc).toBeNull();
+  });
 });
 
 /* minDownPaymentPct — UAE Central Bank LTV mapping. */
@@ -204,7 +220,7 @@ describe("affordability", () => {
     // 17,065/mo on a 1.2M/yr income → ~17% DBR.
     const a = affordability(1_200_000, 17_065)!;
     expect(a.status).toBe("ok");
-    expect(a.label).toMatch(/Comfortably/);
+    expect(a.dbr).toBeCloseTo(0.17, 2);
   });
 
   it("flags 40–50% DBR as stretched", () => {
@@ -217,6 +233,6 @@ describe("affordability", () => {
     // 6,000/mo on 120K/yr → 60% DBR.
     const a = affordability(120_000, 6_000)!;
     expect(a.status).toBe("over");
-    expect(a.label).toMatch(/Above the 50%/);
+    expect(a.dbr).toBeCloseTo(0.6, 2);
   });
 });

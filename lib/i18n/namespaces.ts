@@ -37,6 +37,7 @@ export const NAMESPACES = [
   "development",
   "area",
   "editorial",
+  "tools",
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -81,6 +82,40 @@ export const CLIENT_NAMESPACES = [
   // Client Components. The rest of this namespace is read server-side.
   "editorial",
 ] as const satisfies readonly Namespace[];
+
+/**
+ * Namespaces that cross to the browser on some routes but not on all of them.
+ *
+ * `CLIENT_NAMESPACES` is paid for on all 78 prerendered routes. That is a fair
+ * price for `nav` at five keys and the wrong one for `tools` at ~400: the
+ * mortgage calculator's copy would ride along on the home page, on every
+ * article and on every listing, and be read on four routes.
+ *
+ * A namespace listed here is mounted by `<RouteMessages>` in the layout of the
+ * segments named beside it, and is invisible everywhere else. The value is the
+ * set of path prefixes allowed to read it — checked from both ends by
+ * `namespaces.test.ts`:
+ *
+ *  - a `"use client"` file OUTSIDE those prefixes may not read the namespace,
+ *    because nothing would have mounted it and every key would render as its
+ *    own dotted path;
+ *  - and every prefix must contain a layout that actually mounts it, because a
+ *    route-scoped provider you forgot to mount fails in exactly the same
+ *    silent way.
+ *
+ * The second half is the one worth having. The first is a rule you would
+ * probably notice in review; the second is `request.ts`'s hardcoded
+ * `NAMESPACES` array all over again — a list that has to agree with something
+ * else and has no mechanism forcing it to.
+ */
+export const ROUTE_NAMESPACES = {
+  tools: [
+    "app/[locale]/(public)/tools/",
+    "app/[locale]/(public)/concierge/",
+  ],
+} as const satisfies Partial<Record<Namespace, readonly string[]>>;
+
+export type RouteNamespace = keyof typeof ROUTE_NAMESPACES;
 
 /** Narrow a full message bag to the namespaces the client actually needs. */
 export function pickClientMessages(

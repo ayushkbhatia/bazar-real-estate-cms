@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { render } from "@testing-library/react";
+import { renderWithIntl } from "@/lib/i18n/test-utils";
 import { DbrGauge } from "./dbr-gauge";
+
+// `tools` is route-scoped rather than global (see `ROUTE_NAMESPACES`), so the
+// harness is told about it here the same way `tools/layout.tsx` tells the
+// browser about it.
+const render = (ui: React.ReactElement) =>
+  renderWithIntl(ui, { namespaces: ["tools"] });
 
 /**
  * The arc is drawn from `Math.sin` / `Math.cos`, which the spec does not

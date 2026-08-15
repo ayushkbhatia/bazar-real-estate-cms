@@ -45,7 +45,10 @@ export type MtClient = {
       max_tokens: number;
       system: string;
       messages: { role: "user" | "assistant"; content: string }[];
-    }): Promise<{ content: { type: string; text?: string }[] }>;
+    }): Promise<{
+      content: { type: string; text?: string }[];
+      stop_reason?: string | null;
+    }>;
   };
 };
 
@@ -55,7 +58,9 @@ export type CatalogueResult =
   | { ok: true; value: string; kind: "simple" | "plural" }
   | { ok: false; issues: CatalogueIssue[] };
 
-const PLURAL_SYSTEM = `You produce Arabic plural forms for a property marketplace in Abu Dhabi.
+const PLURAL_SYSTEM = `You produce Arabic plural forms for the interface of a property website in Abu Dhabi.
+
+This is chrome — a count on a button, a filter label, a result header — not listing copy. Do not reach for marketing vocabulary, and do not resolve an ambiguous word toward property vocabulary when the everyday sense is what a control means.
 
 You are given the English forms of one countable phrase, keyed by ICU selector.
 
@@ -107,6 +112,29 @@ function textOf(res: { content: { type: string; text?: string }[] }): string {
 export function stripMarkdownHeading(english: string, arabic: string): string {
   if (english.includes("#")) return arabic;
   return arabic.replace(/^\s*#{1,6}\s+/, "");
+}
+
+/**
+ * A message with no words in it.
+ *
+ * `"{pct} · {amount}"` masks down to `"⟦0⟧ · ⟦1⟧"` — two sentinels, a middot
+ * and two spaces. There is nothing there to translate, so the model's only
+ * honest answer is the input, and `messages.test.ts` then fails it as "Arabic
+ * identical to English". The real machine translation of this string IS the
+ * string.
+ *
+ * So the pipeline recognises the shape rather than arguing with it: structural
+ * messages are copied across, recorded as `structural` provenance, and
+ * exempted from the identity rule by the same predicate — no hand-maintained
+ * allowlist to fall out of date as the waves add more of them.
+ *
+ * Deliberately narrow. It asks whether any LETTER survives masking, in any
+ * script, so `"Y{year}"` is NOT structural (the `Y` is an abbreviation a
+ * reader has to parse, and Arabic spells it `س`). Digits and punctuation do
+ * not count as words in either language.
+ */
+export function isStructural(english: string): boolean {
+  return !/\p{L}/u.test(mask(english).masked);
 }
 
 export function catalogueIssues(
@@ -232,14 +260,35 @@ export async function translatePluralMessage(input: {
     ],
   });
 
+  /*
+   * A blank response is not a parse failure, and calling it one sends a
+   * reviewer looking at the prompt. The API declines requests outright —
+   * `stop_reason: "refusal"`, no content blocks — and `JSON.parse("")` throws
+   * exactly like malformed JSON does, so the two were indistinguishable in the
+   * failure report. Same fix as `translateField`, same reason.
+   */
+  const body = textOf(res);
+  if (body.length === 0) {
+    const stop = res.stop_reason ?? "unknown";
+    return {
+      ok: false,
+      issues: [
+        {
+          code: stop === "refusal" ? "refusal" : "empty",
+          detail: `no text returned (stop_reason=${stop})`,
+        },
+      ],
+    };
+  }
+
   let forms: Record<string, string>;
   try {
-    const raw = textOf(res).replace(/^```(?:json)?\s*|\s*```$/g, "");
+    const raw = body.replace(/^```(?:json)?\s*|\s*```$/g, "");
     forms = JSON.parse(raw);
   } catch {
     return {
       ok: false,
-      issues: [{ code: "unparseable", detail: textOf(res).slice(0, 200) }],
+      issues: [{ code: "unparseable", detail: body.slice(0, 200) }],
     };
   }
 

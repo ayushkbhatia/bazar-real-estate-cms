@@ -55,6 +55,56 @@ describe("the checks that must never be quiet", () => {
   it("rejects empty output outright", () => {
     expect(codes("Villa", "   ")).toEqual(["empty"]);
   });
+
+  it("flags markdown the English does not have", () => {
+    // Real output: "Hybrid" -> "**هجين**", which next-intl renders with the
+    // asterisks in it. The model volunteers emphasis on short bare inputs.
+    expect(codes("Hybrid", "**هجين**")).toContain("markdown");
+    expect(codes("Land", "## أرض")).toContain("markdown");
+  });
+
+  it("leaves markdown alone when the English has its own", () => {
+    expect(codes("**Sold**", "**تم البيع**")).not.toContain("markdown");
+  });
+
+  it("flags the model's own working left in the answer", () => {
+    // Real output for "Hybrid": a note to itself, two newlines, then the
+    // translation — and next-intl renders the whole thing.
+    expect(
+      codes("Hybrid", "الملاحظة: يجب أن يكون الناتج بالعربية فقط.\n\nهجين"),
+    ).toContain("multiline");
+    expect(codes("Hybrid", "هجين")).not.toContain("multiline");
+  });
+
+  it("keeps a newline the English asked for", () => {
+    expect(codes("Line one\nLine two", "سطر أول\nسطر ثانٍ")).not.toContain(
+      "multiline",
+    );
+  });
+
+  it("flags a transposed definite article", () => {
+    // messages/ar/development.json shipped `املاحة المبنية` for "Built-up" in
+    // wave 2b. Right length, right digits, no Latin, no sentinel drift — and
+    // wrong in a way only a reader of Arabic could see.
+    expect(codes("Built-up", "املاحة المبنية")).toContain("transposition");
+    expect(codes("Term", "املدة")).toContain("transposition");
+  });
+
+  it("flags a presentation-form ligature and a stray directional mark", () => {
+    // "الإطفاء" came back spelled with U+FEF9, the lam-alef ligature glyph —
+    // it renders identically and matches nothing. "متغير" arrived with a
+    // U+200E glued to the front.
+    expect(codes("Amortization", "ا\uFEF9طفاء")).toContain("presentation-forms");
+    expect(codes("Variable", "\u200Eمتغير")).toContain("presentation-forms");
+    expect(codes("Amortization", "الإطفاء")).not.toContain("presentation-forms");
+  });
+
+  it("does not flag correct Arabic, or a word that only looks like it", () => {
+    expect(codes("Term", "المدة")).not.toContain("transposition");
+    expect(codes("Area", "المساحة المبنية")).not.toContain("transposition");
+    // إملاء carries hamza-under-alef (U+0625), which the pattern excludes.
+    expect(codes("Dictation", "إملاء")).not.toContain("transposition");
+  });
 });
 
 describe("glossary enforcement", () => {

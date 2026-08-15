@@ -22,6 +22,10 @@ import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+// Eager, unlike the rest of the lib chain: the work list is built before the
+// SDK is imported, and whether a message has any words in it decides whether
+// it belongs on that list at all.
+import { isStructural } from "../../lib/i18n/catalogue-mt";
 
 const ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -45,10 +49,26 @@ const enDir = path.join(ROOT, "messages", "en");
 const arDir = path.join(ROOT, "messages", "ar");
 const provPath = path.join(arDir, "_provenance.json");
 
-/** One entry per machine-translated key. Absent means nobody has touched it. */
+/**
+ * One entry per key the pipeline has touched. Absent means nobody has.
+ *
+ * `model` is null for a `structural` entry — a message made only of
+ * placeholders and punctuation is copied across without a model seeing it, and
+ * naming one there would claim a translation that never happened.
+ */
 type Provenance = Record<
   string,
-  { by: string; model: string; sourceHash: string; reviewed: boolean }
+  {
+    /**
+     * `human` is set by hand when a reviewer replaces a machine string — the
+     * script never writes it, and never overwrites one either, because a
+     * hand-fixed value is not "missing" and is not identical to its English.
+     */
+    by: "machine" | "structural" | "human";
+    model: string | null;
+    sourceHash: string;
+    reviewed: boolean;
+  }
 >;
 
 /** Namespaces the app actually loads — not whatever is on disk. */
@@ -156,9 +176,13 @@ async function main() {
       if (!existing) work.push({ ns, key, id, english, why: "missing" });
       else if (stale && INCLUDE_STALE)
         work.push({ ns, key, id, english, why: "source changed" });
-      else if (existing === english)
+      else if (existing === english && !isStructural(english))
         // Byte-identical is what messages.test.ts fails on. Always redo it —
         // it is either an untranslated placeholder or a paste-to-pass.
+        //
+        // Unless the message has no words in it: "{pct} · {amount}" is
+        // *supposed* to come out identical, and without this clause it goes
+        // back on the work list on every run forever.
         work.push({ ns, key, id, english, why: "identical to English" });
     }
   }
@@ -186,12 +210,8 @@ async function main() {
   // type-stripping will not resolve.
   const { translateField, MT_MODEL_PROSE } =
     await import("../../lib/i18n/mt/translate");
-  const {
-    translatePluralMessage,
-    catalogueIssues,
-    refuse,
-    stripMarkdownHeading,
-  } = await import("../../lib/i18n/catalogue-mt");
+  const { translatePluralMessage, catalogueIssues, refuse, stripMarkdownHeading } =
+    await import("../../lib/i18n/catalogue-mt");
   const { parseMessage } = await import("../../lib/i18n/icu");
 
   const failures: { id: string; issues: { code: string; detail: string }[] }[] =
@@ -205,9 +225,24 @@ async function main() {
       continue;
     }
 
+    // "{pct} · {amount}" has no words in it. Sending it costs a call and the
+    // honest answer comes back identical, which the parity test then fails.
+    if (isStructural(item.english)) {
+      put((byNamespace[item.ns] ??= {}), item.key, item.english);
+      provenance[item.id] = {
+        by: "structural",
+        model: null,
+        sourceHash: hash(item.english),
+        reviewed: true,
+      };
+      console.log(`  = ${item.id} (no words to translate)`);
+      continue;
+    }
+
     const parsed = parseMessage(item.english);
     let value: string | null = null;
     let issues: { code: string; detail: string }[] = [];
+    let usedModel: string = MT_MODEL_PROSE;
 
     if (parsed.kind === "plural") {
       // Never handed to the prose model whole: English offers two categories
@@ -224,11 +259,23 @@ async function main() {
       const res = await translateField({
         client,
         text: item.english,
-        // UI strings are short and load-bearing; "title" is the register the
-        // existing prompt uses for headline-shaped copy.
-        kind: item.english.length > 160 ? "body" : "title",
+        /*
+         * `ui`, not `title`.
+         *
+         * The catalogue was being translated under the listing prompt, which
+         * opens "You translate Emirati property listings" — so every
+         * ambiguous label resolved toward property vocabulary. "Optional"
+         * came back as فاخر (luxury), "Comfortable" as شقة مريحة (a
+         * comfortable apartment), and "fixed" as a whole listing blurb about
+         * a fixed tenancy. All three are defensible translations of the word
+         * in a listing and none of them is a button, and nothing in the
+         * validator can see the difference: right length, right digits, no
+         * Latin, no sentinel drift.
+         */
+        kind: "ui",
       });
       if (res.ok) {
+        usedModel = res.model;
         // Applied before validation, not after: a stray heading marker would
         // otherwise trip `hash-invented` and send a perfectly good translation
         // to the human queue.
@@ -246,7 +293,11 @@ async function main() {
     put((byNamespace[item.ns] ??= {}), item.key, value);
     provenance[item.id] = {
       by: "machine",
-      model: MT_MODEL_PROSE,
+      // The model that actually answered, which is not always the one asked:
+      // `translateField` falls back to the bulk model when the prose model
+      // refuses outright. Recording the primary regardless made the one field
+      // provenance exists to carry a lie.
+      model: usedModel,
       sourceHash: hash(item.english),
       reviewed: false,
     };

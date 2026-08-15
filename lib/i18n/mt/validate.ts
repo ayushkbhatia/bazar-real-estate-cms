@@ -23,7 +23,49 @@ export type Issue = {
     | "too-long"
     | "glossary"
     | "markup"
-    | "empty";
+    /**
+     * Markdown the English does not have. The model reaches for `**bold**`
+     * and `# heading` on short bare inputs — "Hybrid" came back as
+     * `**هجين**`, "Annual income · {symbol}" as `**دخل سنوي · ⟦0⟧**` — and
+     * next-intl renders it literally, asterisks and all.
+     */
+    | "markdown"
+    /**
+     * The model's own working, left in the answer. Real output:
+     * `"الملاحظة: يجب أن يكون الناتج بالعربية فقط.\n\nهجين"` — a note to
+     * itself, two newlines, then the translation. It renders in full.
+     */
+    | "multiline"
+    /**
+     * `امل` at the start of a word, where Arabic wants `الم` — the definite
+     * article followed by meem, with the lam and meem transposed.
+     * `المساحة` -> `املاحة`, `المدة` -> `املدة`, `الملخص` -> `املخص`.
+     */
+    | "transposition"
+    /**
+     * Arabic Presentation Forms, or a stray directional mark.
+     *
+     * `الإطفاء` came back spelled with U+FEF9 — the isolated *glyph* for
+     * lam-alef, not the two letters. It renders identically and breaks
+     * everything else: search will not match it, the Arabic FTS config will
+     * not stem it, and copy-paste carries a character no keyboard produces.
+     * `متغير` arrived with a U+200E LRM glued to the front, which
+     * `hasLegacyMarks` does not look for because it only bans the deprecated
+     * embedding controls.
+     */
+    | "presentation-forms"
+    | "empty"
+    /**
+     * The API declined the request outright — `stop_reason: "refusal"`, zero
+     * output tokens, no content blocks. Separated from `empty` because they
+     * call for opposite responses: `empty` means the prompt produced a blank
+     * answer and is worth re-prompting, a refusal means the request never ran
+     * and is worth re-rolling unchanged. It is also stochastic on innocuous
+     * input — "Generating…" and "Attached to your request" both drew one.
+     */
+    | "refusal"
+    /** `stop_reason: "max_tokens"` with nothing usable. Raise the ceiling. */
+    | "truncated";
   detail: string;
 };
 
@@ -62,6 +104,52 @@ function latinRuns(text: string): string[] {
   return text.match(/[A-Za-z]{4,}/gu) ?? [];
 }
 
+/**
+ * Markdown emphasis and heading markers, which no message in this catalogue
+ * uses. Only flagged when the English has none of its own, so a literal
+ * asterisk or a `# ` that was always there survives untouched.
+ */
+function markdownAdded(source: string, output: string): string[] {
+  const found: string[] = [];
+  const emphasis = /(\*\*|__)(?=\S)[\s\S]+?\1/g;
+  if (!emphasis.test(source) && emphasis.test(output)) found.push("bold");
+  if (!/^\s*#{1,6}\s/.test(source) && /^\s*#{1,6}\s/.test(output)) {
+    found.push("heading");
+  }
+  if (!/^\s*[-*]\s/m.test(source) && /^\s*[-*]\s/m.test(output)) {
+    found.push("bullet");
+  }
+  return found;
+}
+
+/**
+ * `امل` opening a word, where the Arabic is `الم`.
+ *
+ * The definite article `ال` followed by meem, with the lam and meem
+ * transposed: `المساحة` comes back `املاحة`, `المدة` as `املدة`, `الملخص` as
+ * `املخص`. It survived every other check — right length, right digits, no
+ * Latin, no sentinel drift — and `messages/ar/development.json` shipped one in
+ * wave 2b (`units.builtUp = "املاحة المبنية"`) because the only instrument
+ * that could catch it was a reader of Arabic.
+ *
+ * Native words beginning `امل` are close to nonexistent; the ones that look
+ * like it carry hamza (`إملاء`, U+0625), which this does not match. So a hit
+ * is a defect rather than a judgement call.
+ */
+const TRANSPOSED_ARTICLE = /(?<![\p{L}\p{M}])\u0627\u0645\u0644/gu;
+
+/**
+ * Glyphs where letters belong.
+ *
+ * U+FB50–U+FDFF and U+FE70–U+FEFE are the Arabic Presentation Forms: shaped
+ * variants and ligatures that a text renderer produces and a *document* should
+ * never contain. U+200E/U+200F are the directional marks — bidi isolation is
+ * `lib/i18n/bidi`'s job on the way to the DOM, not something baked into a
+ * stored string. U+FEFF is excluded: it is the byte-order mark, a different
+ * problem with a different fix.
+ */
+const PRESENTATION_FORMS = /[\uFB50-\uFDFF\uFE70-\uFEFE\u200E\u200F]/gu;
+
 export function validate(
   sourceMasked: string,
   outputMasked: string,
@@ -72,6 +160,46 @@ export function validate(
 
   if (output.length === 0) {
     return [{ code: "empty", detail: "model returned nothing" }];
+  }
+
+  const md = markdownAdded(sourceMasked, output);
+  if (md.length > 0) {
+    issues.push({
+      code: "markdown",
+      detail: `output added markdown the English does not have: ${md.join(", ")}`,
+    });
+  }
+
+  // The model narrating before it answers. Every catalogue message and every
+  // listing field this pipeline touches is a single run of text, so a newline
+  // the English does not have is working left in the output rather than
+  // content — real example: "الملاحظة: يجب أن يكون الناتج بالعربية فقط" and
+  // then, two newlines later, the actual translation.
+  if (!sourceMasked.includes("\n") && output.includes("\n")) {
+    issues.push({
+      code: "multiline",
+      detail: `output has ${output.split("\n").length - 1} newline(s) the English does not — likely the model's own working`,
+    });
+  }
+
+  const shaped = output.match(PRESENTATION_FORMS);
+  if (shaped) {
+    issues.push({
+      code: "presentation-forms",
+      detail: `${shaped.length} presentation-form or directional character(s): ${[
+        ...new Set(shaped),
+      ]
+        .map((c) => `U+${c.codePointAt(0)!.toString(16).toUpperCase()}`)
+        .join(", ")} — write the letters, not the glyphs`,
+    });
+  }
+
+  const transposed = output.match(TRANSPOSED_ARTICLE);
+  if (transposed) {
+    issues.push({
+      code: "transposition",
+      detail: `${transposed.length} word(s) begin امل where Arabic wants الم — the definite article's lam and meem are swapped`,
+    });
   }
 
   // ── Sentinel integrity. Identity, not order: Arabic reorders, and a

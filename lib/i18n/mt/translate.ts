@@ -1,7 +1,6 @@
 import { createHash } from "node:crypto";
 import { mask, unmask } from "./mask";
-import { SYSTEM_PROMPT, buildPrompt, retryHint } from "./prompt";
-import type { MtTarget } from "./targets";
+import { buildPrompt, retryHint, systemPromptFor, type MtKind } from "./prompt";
 import { validate, type Issue } from "./validate";
 
 /**
@@ -22,8 +21,30 @@ import { validate, type Issue } from "./validate";
 export const MT_MODEL_PROSE = "claude-opus-5";
 export const MT_MODEL_BULK = "claude-haiku-4-5-20251001";
 
-export function modelFor(kind: MtTarget["kind"]): string {
+export function modelFor(kind: MtKind): string {
   return kind === "alt" ? MT_MODEL_BULK : MT_MODEL_PROSE;
+}
+
+/**
+ * Where to go when the primary model declines the request outright.
+ *
+ * `stop_reason: "refusal"` is the API's own gate, and on this system prompt it
+ * is **not** stochastic: eight strings in the `tools` namespace drew it on
+ * every one of four rolls, including copy as plain as "Generating…" and
+ * "Attached to your request". Batching them into one request did not help
+ * either, so it is not about how little context a short string carries.
+ *
+ * What does help is a different model. `claude-haiku-4-5` answers the same
+ * eight without hesitating — and they are two-to-four-word interface labels,
+ * the exact register the bulk model already handles for alt text. So a refusal
+ * falls back rather than failing, and `Provenance.model` records which model
+ * actually produced the string, which is the point of recording it.
+ *
+ * Null for `alt`, which is already on the bulk model: there is nowhere below
+ * it to fall, and a loop between the two would be worse than a clean failure.
+ */
+export function fallbackModelFor(kind: MtKind): string | null {
+  return kind === "alt" ? null : MT_MODEL_BULK;
 }
 
 /**
@@ -37,7 +58,16 @@ export type MtClient = {
       max_tokens: number;
       system: string;
       messages: { role: "user" | "assistant"; content: string }[];
-    }): Promise<{ content: { type: string; text?: string }[] }>;
+    }): Promise<{
+      content: { type: string; text?: string }[];
+      /**
+       * Why the model stopped. Optional because the fakes in
+       * `translate.test.ts` do not set it, and because the only value that
+       * changes behaviour here is `"refusal"` — anything else falls through
+       * to the same validation it always had.
+       */
+      stop_reason?: string | null;
+    }>;
   };
 };
 
@@ -65,7 +95,15 @@ export type TranslateResult = TranslateOk | TranslateFail;
  * concierge's ceilings were corrected for in P0.
  */
 function maxTokensFor(text: string): number {
-  return Math.max(512, Math.ceil(text.length * 2.5) + 256);
+  /*
+   * The floor is 1024 rather than 512 because the ceiling has to cover what
+   * the model writes, not what it keeps. Asked for a short fragment it
+   * sometimes reasons aloud first — "\"Term\" on a form (e.g. loan term) =
+   * المدة" — and on a 32-character input a 512 ceiling ran out mid-deliberation
+   * and returned `stop_reason: "max_tokens"` with no text at all. Unused
+   * ceiling is free; a truncation costs the whole string.
+   */
+  return Math.max(1024, Math.ceil(text.length * 2.5) + 256);
 }
 
 function textOf(response: { content: { type: string; text?: string }[] }): string {
@@ -79,7 +117,7 @@ function textOf(response: { content: { type: string; text?: string }[] }): strin
 export async function translateField(input: {
   client: MtClient;
   text: string;
-  kind: MtTarget["kind"];
+  kind: MtKind;
   maxLength?: number;
   /**
    * Arabic for masked proper nouns, keyed by sentinel index. This is how an
@@ -100,7 +138,9 @@ export async function translateField(input: {
   extraIssues?: (output: string) => string[];
 }): Promise<TranslateResult> {
   const source = input.text.trim();
-  const model = modelFor(input.kind);
+  const primary = modelFor(input.kind);
+  // Reassigned once, if the primary refuses — see `fallbackModelFor`.
+  let model = primary;
 
   if (source.length === 0) {
     return { ok: false, issues: [{ code: "empty", detail: "nothing to translate" }], raw: "", model };
@@ -116,19 +156,81 @@ export async function translateField(input: {
   let lastRaw = "";
   let lastIssues: Issue[] = [];
 
-  // Two attempts. The retry names the specific failures, which fixes far more
-  // than re-rolling the same prompt does; a third attempt has not been worth
-  // its latency on anything observed so far.
+  /*
+   * Two answered attempts, and separately a few re-rolls for answers that
+   * never arrived. They are counted apart because they are different failures
+   * and the right response to each is the opposite of the other.
+   *
+   * A badly translated field is rejected by `validate`, and what fixes it is a
+   * retry that names what was wrong — which is why the loop appends the
+   * exchange and a hint. Two of those; a third has not been worth its latency
+   * on anything observed.
+   *
+   * But the API also declines requests outright: `stop_reason: "refusal"`,
+   * zero output tokens, no content blocks at all. Translating the `tools`
+   * namespace drew eleven in one run on copy as plain as "Generating…", so the
+   * trigger is stochastic rather than anything in the text. There is nothing
+   * to correct and nothing to hint at — the fix is to roll again.
+   *
+   * Before the loop could tell them apart it did the worst available thing
+   * with a refusal. `validate` reported `empty — model returned nothing`,
+   * naming the symptom and no cause. And the retry pushed
+   * `{role: "assistant", content: ""}` onto the conversation, which is not a
+   * legal turn — so the one retry the string was going to get was spent on a
+   * malformed history rather than on another roll.
+   *
+   * A re-roll therefore leaves both the history and the attempt count alone,
+   * and only `MAX_REROLLS` bounds it. Zero output tokens means it is close to
+   * free; the ceiling is there so a systematic refusal cannot spin.
+   */
+  const MAX_REROLLS = 3;
+  let rerolls = 0;
+  let switched = false;
   for (let attempt = 0; attempt < 2; attempt++) {
     const response = await input.client.messages.create({
       model,
       max_tokens: maxTokensFor(masked),
-      system: SYSTEM_PROMPT,
+      system: systemPromptFor(input.kind),
       messages,
     });
 
     const out = textOf(response);
     lastRaw = out;
+
+    if (out.length === 0) {
+      const stop = response.stop_reason ?? "unknown";
+      lastIssues = [
+        {
+          code:
+            stop === "refusal"
+              ? "refusal"
+              : stop === "max_tokens"
+                ? "truncated"
+                : "empty",
+          detail: `no text returned (stop_reason=${stop})`,
+        },
+      ];
+      // A truncation is answerable — the ceiling is ours to raise — so it
+      // burns an attempt like any other bad answer. A refusal and an
+      // unexplained blank are not, so they re-roll unchanged.
+      if (stop !== "max_tokens" && rerolls < MAX_REROLLS) {
+        rerolls++;
+        attempt--;
+        continue;
+      }
+      // Out of re-rolls on a refusal: try the other model once, from a clean
+      // count. Everything else has already had every chance it is going to get.
+      const fallback = switched ? null : fallbackModelFor(input.kind);
+      if (stop === "refusal" && fallback && fallback !== model) {
+        switched = true;
+        model = fallback;
+        rerolls = 0;
+        attempt--;
+        continue;
+      }
+      break;
+    }
+
     lastIssues = [
       ...validate(masked, out, { maxLength: input.maxLength }),
       ...(input.extraIssues?.(out) ?? []).map((detail) => ({
