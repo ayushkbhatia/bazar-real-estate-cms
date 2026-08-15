@@ -92,6 +92,35 @@ export type Issue = {
 const MAX_GROWTH = 2.2;
 
 /**
+ * The same cap, loosened, for sources too short for a ratio to mean much.
+ *
+ * Short strings were exempt entirely, and short strings are exactly where the
+ * model invents. Translating the heading "Who it's for" (12 characters)
+ * returned *"استكشف عالم الذكاء الاصطناعي والتعلم الآلي مع خبرائنا"* — "Explore
+ * the world of AI and machine learning with our experts", 58 characters of
+ * marketing boilerplate with no relationship to the input. It passed every
+ * other check in this file: right script, no markdown, no newline, no stray
+ * Latin, no numeral drift, plausible-looking Arabic.
+ *
+ * 4x rather than 2.2x because short English genuinely expands: "TRC" becomes
+ * "شهادة الإقامة الضريبية", a ratio of seven. `SHORT_MIN` is the floor that
+ * keeps those from tripping — an abbreviation may expand freely, a phrase may
+ * not quadruple.
+ */
+const SHORT_GROWTH = 4;
+const SHORT_MIN = 30;
+
+/**
+ * An ICU plural, whose length cannot be compared across locales at all.
+ *
+ * English declares two branches and Arabic six or seven, so a correct
+ * translation is *supposed* to be three times longer — `listing.bedrooms` goes
+ * from 63 characters to 139 and is right. Measuring the whole message would
+ * flag thirteen correct plurals to catch two bad labels.
+ */
+const IS_PLURAL = /\{\s*\w+\s*,\s*plural\s*,/;
+
+/**
  * Arabic runs longer than English for short strings and the ratio is noisy, so
  * the cap only applies once there is enough text for the ratio to mean
  * anything. Below that a runaway is caught by `too-long` on absolute length.
@@ -356,13 +385,23 @@ export function validate(
       detail: `${output.length} chars over the ${opts.maxLength} limit`,
     });
   }
-  if (
+  if (IS_PLURAL.test(sourceMasked)) {
+    // Skip both growth caps — see IS_PLURAL.
+  } else if (
     sourceMasked.length >= RATIO_FLOOR &&
     output.length > sourceMasked.length * MAX_GROWTH
   ) {
     issues.push({
       code: "too-long",
       detail: `${output.length} chars from ${sourceMasked.length} — the model probably explained itself`,
+    });
+  } else if (
+    sourceMasked.length < RATIO_FLOOR &&
+    output.length > Math.max(SHORT_MIN, sourceMasked.length * SHORT_GROWTH)
+  ) {
+    issues.push({
+      code: "too-long",
+      detail: `${output.length} chars from a ${sourceMasked.length}-char label — far past what translation costs, so the model wrote something of its own`,
     });
   }
 

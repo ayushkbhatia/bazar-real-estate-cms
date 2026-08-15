@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { asLocale } from "@/lib/i18n/locales";
 import { GuideShell } from "../_components/guide-shell";
 import { TaxResidencyChecker } from "./_checker";
 
@@ -9,25 +11,56 @@ export const metadata: Metadata = {
   alternates: { canonical: "/guides/tax-residency" },
 };
 
-export default function TaxResidencyPage() {
+/**
+ * Body blocks, in order, each naming its own message subtree.
+ *
+ * Named rather than indexed so reordering the page cannot silently
+ * repoint a translation at the wrong paragraph.
+ */
+const BLOCKS: readonly {
+  key: string;
+  copy?: true;
+  bullets?: readonly string[];
+  checklist?: readonly string[];
+}[] = [
+  { key: "certificateDoes", copy: true },
+  { key: "twoRoutesQualify", copy: true },
+  { key: "doesntFix", copy: true },
+];
+
+export default async function TaxResidencyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "guides" });
   return (
     <GuideShell
-      eyebrow="Tax · UAE residency"
-      title="UAE Tax Residency Certificate."
-      intro="The criteria for obtaining a UAE Tax Residency Certificate, what the certificate actually does and doesn't cover, and how to think about it alongside a tax-treaty break elsewhere."
+      locale={locale}
+      eyebrow={t("taxResidency.eyebrow")}
+      title={t("taxResidency.title")}
+      intro={t("taxResidency.intro")}
       body={[
-        {
-          heading: "What the certificate does",
-          copy: "A Tax Residency Certificate (TRC) is a formal document issued by the UAE Federal Tax Authority confirming that you (or your company) are a tax resident of the UAE under the country's domestic rules. It's the primary instrument used to claim benefits under the UAE's 130+ double-tax treaties when you need to break tax residency elsewhere.",
-        },
-        {
-          heading: "Two routes to qualify",
-          copy: "Route 1: 183+ days of physical presence in the UAE during the tax year. Route 2: 90+ days, plus a UAE anchor (a permanent home, employment, or business). The 90-day route is the workhorse for senior executives and founders who split their time between markets — but it requires evidence, not just passport stamps.",
-        },
-        {
-          heading: "What it doesn't fix",
-          copy: "Holding a TRC doesn't automatically break your tax residency elsewhere — that depends on the other country's domestic rules and the specific treaty article. The TRC is necessary, not sufficient. A cross-border tax adviser should pressure-test the treaty break before you rely on the certificate.",
-        },
+        ...BLOCKS.map((b) => ({
+          heading: t(`taxResidency.block.${b.key}.heading`),
+          ...(b.copy ? { copy: t(`taxResidency.block.${b.key}.copy`) } : {}),
+          ...(b.bullets
+            ? {
+                bullets: b.bullets.map((i) =>
+                  t(`taxResidency.block.${b.key}.bullets.${i}`),
+                ),
+              }
+            : {}),
+          ...(b.checklist
+            ? {
+                checklist: b.checklist.map((i) =>
+                  t(`taxResidency.block.${b.key}.checklist.${i}`),
+                ),
+              }
+            : {}),
+        })),
       ]}
     >
       <TaxResidencyChecker />

@@ -76,10 +76,10 @@
     "reviewed": false
   },
   "search.mode.rent.eyebrow": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "03cc104614c2",
-    "reviewed": false
+    "reviewed": true
   },
   "search.mode.rent.title": {
     "by": "machine",
@@ -232,10 +232,10 @@
     "reviewed": false
   },
   "search.filters.search": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "49c266baaaa7",
-    "reviewed": false
+    "reviewed": true
   },
   "search.filters.searchProperties": {
     "by": "machine",
@@ -312,10 +312,10 @@
     "reviewed": false
   },
   "property.spec.furnishing": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "cc288f83ffe8",
-    "reviewed": false
+    "reviewed": true
   },
   "property.spec.floor": {
     "by": "machine",
@@ -336,10 +336,10 @@
     "reviewed": false
   },
   "property.spec.view": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "dcc839a4015c",
-    "reviewed": false
+    "reviewed": true
   },
   "property.spec.orientation": {
     "by": "machine",
@@ -366,10 +366,10 @@
     "reviewed": false
   },
   "property.spec.listed": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "78797afdac99",
-    "reviewed": false
+    "reviewed": true
   },
   "property.spec.parkingBays": {
     "by": "machine",
@@ -498,10 +498,10 @@
     "reviewed": false
   },
   "property.faq.bathroomCount": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "c2a7846d2dd8",
-    "reviewed": false
+    "reviewed": true
   },
   "property.stat.bedrooms": {
     "by": "hand",
@@ -511,11 +511,10 @@
     "note": "MT invented a '#'. Plain column header, no count — the counted form lives in listing.bedrooms."
   },
   "property.stat.bathrooms": {
-    "by": "hand",
+    "by": "human",
     "model": null,
     "sourceHash": "c7f191c4d296",
-    "reviewed": false,
-    "note": "MT returned nothing: a single-word column header carries no context."
+    "reviewed": true
   },
   "property.faq.locationQ": {
     "by": "hand",
@@ -550,10 +549,10 @@
     "reviewed": false
   },
   "property.fallbackCity": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "5c7dfd7a7d9d",
-    "reviewed": false
+    "reviewed": true
   },
   "development.facts.architecture": {
     "by": "machine",
@@ -562,10 +561,10 @@
     "reviewed": false
   },
   "development.facts.landscape": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "e658d3ae034a",
-    "reviewed": false
+    "reviewed": true
   },
   "development.facts.total_area_ft2": {
     "by": "machine",
@@ -688,10 +687,10 @@
     "reviewed": false
   },
   "development.units.filterTownhouses": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "5d890ddd8b66",
-    "reviewed": false
+    "reviewed": true
   },
   "development.units.filterLagoon": {
     "by": "machine",
@@ -798,10 +797,10 @@
     "reviewed": false
   },
   "area.bands.location": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "15b61974b270",
-    "reviewed": false
+    "reviewed": true
   },
   "area.bands.schools": {
     "by": "machine",
@@ -906,10 +905,10 @@
     "reviewed": false
   },
   "area.cta.forSale": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "aedf56fc02b4",
-    "reviewed": false
+    "reviewed": true
   },
   "area.empty.offPlanOnly": {
     "by": "hand",
@@ -973,10 +972,10 @@
     "reviewed": false
   },
   "editorial.article.share": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "29887a5ff984",
-    "reviewed": false
+    "reviewed": true
   },
   "editorial.article.saved": {
     "by": "machine",
@@ -1653,10 +1652,10 @@
     "reviewed": false
   },
   "search.type.retail": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "cdb38c8dc89a",
-    "reviewed": false
+    "reviewed": true
   },
   "property.fallbackArea": {
     "by": "machine",
@@ -2049,10 +2048,10 @@
     "reviewed": false
   },
   "tools.valuation.furnishingOption.semi": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "b876608dbe6b",
-    "reviewed": false
+    "reviewed": true
   },
   "tools.valuation.furnishingOption.fully": {
     "by": "machine",
@@ -2541,10 +2540,10 @@
     "reviewed": false
   },
   "tools.valuation.furnishingOption.unfurnished": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "bf193de9ee20",
-    "reviewed": false
+    "reviewed": true
   },
   "tools.valuation.bathsShort": {
     "by": "machine",
@@ -2781,10 +2780,10 @@
     "reviewed": false
   },
   "tools.compare.furnishing.semi": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "b876608dbe6b",
-    "reviewed": false
+    "reviewed": true
   },
   "tools.compare.furnishing.fully": {
     "by": "machine",
@@ -2823,10 +2822,10 @@
     "reviewed": true
   },
   "tools.compare.type.land": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "b6baff9358dd",
-    "reviewed": false
+    "reviewed": true
   },
   "tools.compare.type.hotel_apartment": {
     "by": "machine",
@@ -2841,10 +2840,10 @@
     "reviewed": false
   },
   "tools.compare.type.building": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "87c5912f2cef",
-    "reviewed": false
+    "reviewed": true
   },
   "tools.compare.type.retail": {
     "by": "machine",
@@ -3141,10 +3140,10 @@
     "reviewed": false
   },
   "tools.picker.tabSaved": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "b5c120b316c2",
-    "reviewed": false
+    "reviewed": true
   },
   "tools.picker.tabRecent": {
     "by": "machine",
@@ -3153,10 +3152,10 @@
     "reviewed": false
   },
   "tools.picker.tabSearch": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "49c266baaaa7",
-    "reviewed": false
+    "reviewed": true
   },
   "tools.picker.loading": {
     "by": "machine",
@@ -3480,6 +3479,1734 @@
     "by": "human",
     "model": null,
     "sourceHash": "37935abeed16",
+    "reviewed": true
+  },
+  "guides.backToInsights": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4b7681c46785",
+    "reviewed": false
+  },
+  "guides.readTheGuide": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "83b3b277abbf",
+    "reviewed": false
+  },
+  "guides.stepNumbered": {
+    "by": "structural",
+    "model": null,
+    "sourceHash": "403c65342466",
+    "reviewed": true
+  },
+  "guides.stepPrefixed": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1c36af1930cc",
+    "reviewed": false
+  },
+  "guides.index.eyebrow": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "572cd72feb9a",
+    "reviewed": true
+  },
+  "guides.index.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cbcd6636a114",
+    "reviewed": false
+  },
+  "guides.index.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a08ce7e325e6",
+    "reviewed": false
+  },
+  "guides.index.card.golden-visa.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "25b5a746f68a",
+    "reviewed": false
+  },
+  "guides.index.card.golden-visa.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1422951f25fc",
+    "reviewed": false
+  },
+  "guides.index.card.golden-visa.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8ce1379529b3",
+    "reviewed": false
+  },
+  "guides.index.card.property-linked-residency.eyebrow": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "36bac6fbe79d",
+    "reviewed": true
+  },
+  "guides.index.card.property-linked-residency.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cdcc66162ce0",
+    "reviewed": false
+  },
+  "guides.index.card.property-linked-residency.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8b45120e44b0",
+    "reviewed": false
+  },
+  "guides.index.card.tax-residency.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "75394e480f1c",
+    "reviewed": false
+  },
+  "guides.index.card.tax-residency.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e8b37387f440",
+    "reviewed": false
+  },
+  "guides.index.card.tax-residency.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cc9cf3dfa1c1",
+    "reviewed": false
+  },
+  "guides.index.card.kyc-non-residents.eyebrow": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "3a0b0046fec6",
+    "reviewed": true
+  },
+  "guides.index.card.kyc-non-residents.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0276e6806dbb",
+    "reviewed": false
+  },
+  "guides.index.card.kyc-non-residents.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e2c9f04a1fcc",
+    "reviewed": false
+  },
+  "guides.index.card.for-tenants.eyebrow": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "23e7757d5704",
+    "reviewed": true
+  },
+  "guides.index.card.for-tenants.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7e02c5c99d58",
+    "reviewed": false
+  },
+  "guides.index.card.for-tenants.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8050d2f47e28",
+    "reviewed": false
+  },
+  "guides.index.card.for-landlords.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c7df28b9d003",
+    "reviewed": false
+  },
+  "guides.index.card.for-landlords.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7e93a55fd0f9",
+    "reviewed": false
+  },
+  "guides.index.card.for-landlords.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f14831cb7418",
+    "reviewed": false
+  },
+  "guides.forTenants.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0c94b3ae8494",
+    "reviewed": false
+  },
+  "guides.forTenants.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "cfde430d452c",
+    "reviewed": true
+  },
+  "guides.forTenants.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "082c5c378e3d",
+    "reviewed": false
+  },
+  "guides.forTenants.card.tenant-move-in.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "78140b393825",
+    "reviewed": false
+  },
+  "guides.forTenants.card.tenant-move-in.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c93265e8f8d9",
+    "reviewed": false
+  },
+  "guides.forTenants.card.tenant-move-in.desc": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "846e1de8b589",
+    "reviewed": false
+  },
+  "guides.forTenants.card.required-documents.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f02bbbdc6c05",
+    "reviewed": false
+  },
+  "guides.forTenants.card.required-documents.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "805526764e24",
+    "reviewed": false
+  },
+  "guides.forTenants.card.required-documents.desc": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "71ce9d648f21",
+    "reviewed": false
+  },
+  "guides.forTenants.card.rental-process.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4c3f68e81013",
+    "reviewed": false
+  },
+  "guides.forTenants.card.rental-process.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "c81b02285845",
+    "reviewed": true
+  },
+  "guides.forTenants.card.rental-process.desc": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0e931d7d0d1b",
+    "reviewed": false
+  },
+  "guides.forLandlords.eyebrow": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "28492b09d684",
+    "reviewed": true
+  },
+  "guides.forLandlords.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "96f4b4b3cfa8",
+    "reviewed": false
+  },
+  "guides.forLandlords.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3a7151acfe73",
+    "reviewed": false
+  },
+  "guides.forLandlords.card.property-management.label": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "c5606fe39b13",
+    "reviewed": true
+  },
+  "guides.forLandlords.card.property-management.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "c45937da5168",
+    "reviewed": true
+  },
+  "guides.forLandlords.card.property-management.desc": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ab82efbdd28c",
+    "reviewed": false
+  },
+  "guides.forLandlords.card.how-to-rent-out.label": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "342b90666f15",
+    "reviewed": true
+  },
+  "guides.forLandlords.card.how-to-rent-out.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fd7c9f5cf757",
+    "reviewed": false
+  },
+  "guides.forLandlords.card.how-to-rent-out.desc": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cb938cefd581",
+    "reviewed": false
+  },
+  "guides.goldenVisa.eyebrow": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "0e0e3d087907",
+    "reviewed": true
+  },
+  "guides.goldenVisa.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d7ab3ae0a4db",
+    "reviewed": false
+  },
+  "guides.goldenVisa.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c8369859e25e",
+    "reviewed": false
+  },
+  "guides.goldenVisa.block.whoIts.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8ad1aff98e77",
+    "reviewed": false
+  },
+  "guides.goldenVisa.block.qualifyingProperty.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "285295b83e0f",
+    "reviewed": false
+  },
+  "guides.goldenVisa.block.qualifyingProperty.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1230158adf91",
+    "reviewed": false
+  },
+  "guides.goldenVisa.block.dependants.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6455dd007fe2",
+    "reviewed": false
+  },
+  "guides.goldenVisa.block.dependants.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2a9c09950e54",
+    "reviewed": false
+  },
+  "guides.goldenVisa.block.timeline.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9dcff98e275f",
+    "reviewed": false
+  },
+  "guides.goldenVisa.block.timeline.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "10593efd61b0",
+    "reviewed": false
+  },
+  "guides.howToRentOut.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "835fedd66099",
+    "reviewed": false
+  },
+  "guides.howToRentOut.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "901e3137ab60",
+    "reviewed": false
+  },
+  "guides.howToRentOut.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4188cb60e75b",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.preparePropertyRent.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "098c9bd62cd8",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.preparePropertyRent.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e27333d11273",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.setRightRentalPrice.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "79f53e5ef0b1",
+    "reviewed": true
+  },
+  "guides.howToRentOut.step.setRightRentalPrice.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "074d95c9360e",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.listPropertyProfessionally.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "30a059282f65",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.listPropertyProfessionally.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c2c6a3cc019e",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.workLicensedAgent.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2504e2fc27ca",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.workLicensedAgent.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d7d1082dbc06",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.screenQualifyTenants.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "694ab0a55753",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.screenQualifyTenants.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6a969bc7f65a",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.agreeRentalTerms.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "921658bfc054",
+    "reviewed": true
+  },
+  "guides.howToRentOut.step.agreeRentalTerms.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d6b9254a143c",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.signRegisterTenancyContract.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "da78f74db9e2",
+    "reviewed": true
+  },
+  "guides.howToRentOut.step.signRegisterTenancyContract.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2c9f2ef4e4cc",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.understandMunicipalityFees.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "188e269c59d9",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.understandMunicipalityFees.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a7bde5191067",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.completeHandover.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "4f4088cbbc49",
+    "reviewed": true
+  },
+  "guides.howToRentOut.step.completeHandover.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "32ea63726acf",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.manageTenancy.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3a45c101e235",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.manageTenancy.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5217ae930df3",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.renewingEndingTenancy.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "219b87e3568b",
+    "reviewed": false
+  },
+  "guides.howToRentOut.step.renewingEndingTenancy.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "43796a1b11cc",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "58d950a1f214",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.prepareInspectProperty": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "455333035bc7",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.completeMaintenanceListing": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7e6da40abe7b",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.setRightRental": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "79f53e5ef0b1",
+    "reviewed": true
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.takeProfessionalPhotos": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3bda6ffdee74",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.createAccurateListing": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e3a6ae195d1c",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.workLicensedAgent": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2504e2fc27ca",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.screenTenantDocuments": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2fda1ddf5d50",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.agreeRentTerms": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8d9a0569c30f",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.signTenancyContract": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3095d060deca",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.registerThroughTawtheeq": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "beade52d087d",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.completeKeyAccess": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d846cdf62711",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.keepPaymentReceipts": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "57c46200d239",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.landlordChecklist.checklist.trackRentPayments": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9c98e52ffb8f",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.documentsRequiredListProperty.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "10e73ddeef40",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.documentsRequiredListProperty.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1558b2b6ba9e",
+    "reviewed": false
+  },
+  "guides.howToRentOut.block.finalTip.heading": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5d65e2980444",
+    "reviewed": true
+  },
+  "guides.howToRentOut.block.finalTip.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1609dc952496",
+    "reviewed": false
+  },
+  "guides.kycNonResidents.eyebrow": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "3a0b0046fec6",
+    "reviewed": true
+  },
+  "guides.kycNonResidents.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "eacc784b891c",
+    "reviewed": false
+  },
+  "guides.kycNonResidents.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f721ca56aff0",
+    "reviewed": false
+  },
+  "guides.kycNonResidents.block.identity.heading": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "999f23fcd7be",
+    "reviewed": true
+  },
+  "guides.kycNonResidents.block.identity.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d8e89f5381c8",
+    "reviewed": false
+  },
+  "guides.kycNonResidents.block.address.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "56ef8f20955f",
+    "reviewed": false
+  },
+  "guides.kycNonResidents.block.address.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d94c344ccc94",
+    "reviewed": false
+  },
+  "guides.kycNonResidents.block.sourceFunds.heading": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "3a6a36cb07bc",
+    "reviewed": true
+  },
+  "guides.kycNonResidents.block.sourceFunds.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9c0f6f163c8b",
+    "reviewed": false
+  },
+  "guides.kycNonResidents.block.banking.heading": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "d7a596cdc2da",
+    "reviewed": true
+  },
+  "guides.kycNonResidents.block.banking.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a5a7dd6f2012",
+    "reviewed": false
+  },
+  "guides.kycNonResidents.block.ifYoullLetProperty.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0a1b9036a2ad",
+    "reviewed": false
+  },
+  "guides.kycNonResidents.block.ifYoullLetProperty.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "be078edf7a82",
+    "reviewed": false
+  },
+  "guides.propertyLinkedResidency.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "43c387c12274",
+    "reviewed": false
+  },
+  "guides.propertyLinkedResidency.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "48f0b9f69e76",
+    "reviewed": false
+  },
+  "guides.propertyLinkedResidency.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e2d441a57bdf",
+    "reviewed": false
+  },
+  "guides.propertyLinkedResidency.block.when2YearVisa.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "508c065b55cf",
+    "reviewed": false
+  },
+  "guides.propertyLinkedResidency.block.when2YearVisa.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a18ccdd326e6",
+    "reviewed": false
+  },
+  "guides.propertyLinkedResidency.block.doesntCover.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6c1871ef90ff",
+    "reviewed": false
+  },
+  "guides.propertyLinkedResidency.block.doesntCover.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c0c4e3d4c55f",
+    "reviewed": false
+  },
+  "guides.propertyLinkedResidency.block.mortgageRules.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "25c84076346b",
+    "reviewed": false
+  },
+  "guides.propertyLinkedResidency.block.mortgageRules.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f1e755eac639",
+    "reviewed": false
+  },
+  "guides.propertyManagement.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9a8cac0b1265",
+    "reviewed": false
+  },
+  "guides.propertyManagement.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c45937da5168",
+    "reviewed": false
+  },
+  "guides.propertyManagement.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "16671f64f954",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.propertyManagement.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "531c7092626f",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.propertyManagement.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cf05d9eef9c8",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.whyPropertyManagementMatters.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "70e8899cdaec",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.whyPropertyManagementMatters.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "945c2811f186",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.keyPropertyManagementServices.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "87fc2cfda390",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.keyPropertyManagementServices.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1e7242f7242b",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.landlordsPrepare.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9dccbf9d5d43",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.landlordsPrepare.bullets.titleDeedProof": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "701a09802cf7",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.landlordsPrepare.bullets.emiratesIdPassport": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "28caad39728e",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.landlordsPrepare.bullets.powerAttorneyIf": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2e7cd2f58c6f",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.landlordsPrepare.bullets.existingTenancyContract": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "140a5c5bf0a8",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.landlordsPrepare.bullets.tenantContactDetails": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ed5e29a537dc",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.landlordsPrepare.bullets.propertyKeysAccess": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ce3fe8c41092",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.landlordsPrepare.bullets.parkingDetailsFloor": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6598713bd262",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.landlordsPrepare.bullets.maintenanceHistoryService": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "8db91f5fb37b",
+    "reviewed": true
+  },
+  "guides.propertyManagement.block.landlordsPrepare.bullets.utilityCommunityManagement": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e94a00cd3550",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.benefitsPropertyManagement.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7c3c3e01d006",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.benefitsPropertyManagement.checklist.saveTimeReduce": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "396cc70a03b2",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.benefitsPropertyManagement.checklist.improveCommunication": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3d6acdab652d",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.benefitsPropertyManagement.checklist.keepPropertyWell": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c139f543d7c9",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.benefitsPropertyManagement.checklist.trackRentPayments": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d8ac4b2e1f50",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.benefitsPropertyManagement.checklist.reduceVacancyPeriods": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f0ec5d5a188c",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.benefitsPropertyManagement.checklist.protectConditionProperty": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "07429effa04e",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.benefitsPropertyManagement.checklist.manageRenewalsDocumentation": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "53c3195ede1d",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.benefitsPropertyManagement.checklist.supportLandlordsLiving": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "864bcf1ed2ee",
+    "reviewed": false
+  },
+  "guides.propertyManagement.block.finalTip.heading": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5d65e2980444",
+    "reviewed": true
+  },
+  "guides.propertyManagement.block.finalTip.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ef89185230e3",
+    "reviewed": false
+  },
+  "guides.rentalProcess.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dc53b7df7df1",
+    "reviewed": false
+  },
+  "guides.rentalProcess.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a1bbcb054697",
+    "reviewed": false
+  },
+  "guides.rentalProcess.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "edd306824fd3",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.setBudget.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1b1d386adaad",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.setBudget.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ed43eaa7f527",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.chooseRightLocation.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d6ae1627a344",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.chooseRightLocation.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "466874db58c4",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.viewCompareProperties.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6c977d0ca461",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.viewCompareProperties.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3cd1210d9173",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.makeOffer.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ae2a3b1eb855",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.makeOffer.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1981ce048450",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.signTenancyContract.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3095d060deca",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.signTenancyContract.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0284a9b7f6ea",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.registerTawtheeq.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "404cf1d13ee8",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.registerTawtheeq.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ac62f9a9647f",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.setUpUtilities.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b87e37202d82",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.setUpUtilities.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e62be9be382d",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.arrangeMoveApproval.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6d081e8ee3bd",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.arrangeMoveApproval.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ff46af952978",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.moveDocumentCondition.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "890ece3116fe",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.moveDocumentCondition.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9e16954eb048",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.understandRenewalEndTenancy.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "86605d12b5fd",
+    "reviewed": false
+  },
+  "guides.rentalProcess.step.understandRenewalEndTenancy.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9c651b247090",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "24d31405b6ce",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.setRentalBudget": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3972d16621a7",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.choosePreferredCommunity": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d77466f96df1",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.viewCompareProperties": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6c977d0ca461",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.confirmRentPayment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dafb991659ed",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.submitTenantDocuments": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "709614b0ee37",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.signTenancyContract": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3095d060deca",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.completeTawtheeqRegistration": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "73ee28689455",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.confirmWaterElectricity": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "afe455a0b289",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.checkMunicipalityFee": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "10881f61fa7e",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.arrangeMoveApproval": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "6d081e8ee3bd",
+    "reviewed": true
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.inspectPropertyMoving": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "baf15fab5270",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.rentalProcessChecklist.checklist.keepContractsReceipts": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "41d79de70085",
+    "reviewed": false
+  },
+  "guides.rentalProcess.block.finalTip.heading": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5d65e2980444",
+    "reviewed": true
+  },
+  "guides.rentalProcess.block.finalTip.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c03bda85ff3f",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.eyebrow": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "74dede74b654",
+    "reviewed": true
+  },
+  "guides.requiredDocuments.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "189912d71b90",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4feb426fb162",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.basicTenantDocuments.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "98d6f6d4dcdc",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.basicTenantDocuments.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c4fac8268109",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.basicTenantDocuments.bullets.passportCopy": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "80538065e57b",
+    "reviewed": true
+  },
+  "guides.requiredDocuments.block.basicTenantDocuments.bullets.uaeResidenceVisa": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "93e4564da581",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.basicTenantDocuments.bullets.emiratesIdCopy": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5c856bdc4a79",
+    "reviewed": true
+  },
+  "guides.requiredDocuments.block.basicTenantDocuments.bullets.contactNumberEmail": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1ab281583336",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.basicTenantDocuments.bullets.salaryCertificateEmployment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9f38dceb7753",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.basicTenantDocuments.bullets.recentBankStatement": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e327238329d7",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.basicTenantDocuments.bullets.marriageCertificateIf": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3e3337054d09",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsTawtheeqRegistration.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f271c7dac7ea",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsTawtheeqRegistration.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "34ce3fde9de9",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsTawtheeqRegistration.bullets.signedTenancyContract": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5b272a3ef526",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsTawtheeqRegistration.bullets.tenantEmiratesId": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c71ded908470",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsTawtheeqRegistration.bullets.tenantPassportCopy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "88884ecb4b00",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsTawtheeqRegistration.bullets.tenantContactDetails": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ea43ad1a10c0",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsTawtheeqRegistration.bullets.propertyPremiseId": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6c5f3dfcfccd",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsTawtheeqRegistration.bullets.landlordAuthorisedRepresentative": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e08c11272be4",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsTawtheeqRegistration.bullets.propertyOwnershipUnit": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "52c472c8acbf",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsUtilityConnection.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "406f441423bc",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsUtilityConnection.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "87561eff7ad5",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsBuildingCommunityMove.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2131aef6dc00",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsBuildingCommunityMove.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "359cf3878ff6",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.paymentDocumentsReceipts.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8465e3443cf2",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.paymentDocumentsReceipts.checklist.securityDepositReceipt": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "02590caa1299",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.paymentDocumentsReceipts.checklist.agencyCommissionReceipt": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1a8f83623889",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.paymentDocumentsReceipts.checklist.rentPaymentProof": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "269171182e01",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.paymentDocumentsReceipts.checklist.chequeCopiesIf": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "87da9b2e5531",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.paymentDocumentsReceipts.checklist.utilityDepositActivation": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b6af52a06f13",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.paymentDocumentsReceipts.checklist.anyMaintenanceMove": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c22b9eba0a44",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsCompanyTenants.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fae988ce060c",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.documentsCompanyTenants.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "40abb31e028c",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a693156fe6f3",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.checklist.passportCopy": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "80538065e57b",
+    "reviewed": true
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.checklist.emiratesIdCopy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5c856bdc4a79",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.checklist.uaeVisaCopy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "771e9086bd23",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.checklist.signedTenancyContract": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5b272a3ef526",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.checklist.tawtheeqRegistrationConfirmation": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "34c97d0327a3",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.checklist.salaryCertificateEmployment": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "9f38dceb7753",
+    "reviewed": true
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.checklist.securityDepositPayment": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "b4f47d4aeae1",
+    "reviewed": true
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.checklist.utilityAccountDetails": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "4d74961d663a",
+    "reviewed": true
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.checklist.previousAccountClosing": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "60fe3b0bdfde",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.checklist.moveApprovalDocuments": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "097d890e7944",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.abuDhabiTenantDocument.checklist.parkingAccessCard": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "52fc1a774ddf",
+    "reviewed": false
+  },
+  "guides.requiredDocuments.block.finalTip.heading": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5d65e2980444",
+    "reviewed": true
+  },
+  "guides.requiredDocuments.block.finalTip.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8db138a7ee37",
+    "reviewed": false
+  },
+  "guides.taxResidency.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2fc2f4a4e12e",
+    "reviewed": false
+  },
+  "guides.taxResidency.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "98045edb4931",
+    "reviewed": false
+  },
+  "guides.taxResidency.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e9be973828d9",
+    "reviewed": false
+  },
+  "guides.taxResidency.block.certificateDoes.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5024e72d5053",
+    "reviewed": false
+  },
+  "guides.taxResidency.block.certificateDoes.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "66cbc5aefc93",
+    "reviewed": false
+  },
+  "guides.taxResidency.block.twoRoutesQualify.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4c5c1fe1cb6b",
+    "reviewed": false
+  },
+  "guides.taxResidency.block.twoRoutesQualify.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "601f28fe3f5b",
+    "reviewed": false
+  },
+  "guides.taxResidency.block.doesntFix.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e8a9b278d6b1",
+    "reviewed": false
+  },
+  "guides.taxResidency.block.doesntFix.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ccc3dda2197e",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5c4557da0c80",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c93265e8f8d9",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "189dfa21d3e1",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.confirmTenancyContract.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "892373614e0d",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.confirmTenancyContract.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7bfd1619a034",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.checkPropertyHandover.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2265bc9389c5",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.checkPropertyHandover.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f4e9176ac9cd",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.confirmUtilitiesTaqaAddc.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a335e9902615",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.confirmUtilitiesTaqaAddc.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "215f3cb6e338",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.understandAbuDhabiMunicipality.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9d9086be0eac",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.understandAbuDhabiMunicipality.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fc758ebe07cf",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.prepareMoveEssentials.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1a3f2178a8cd",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.prepareMoveEssentials.checklist.signedTenancyContract": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5b272a3ef526",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.prepareMoveEssentials.checklist.tawtheeqRegistrationConfirmation": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "34c97d0327a3",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.prepareMoveEssentials.checklist.emiratesIdPassport": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "28caad39728e",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.prepareMoveEssentials.checklist.utilityAccountDetails": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4d74961d663a",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.prepareMoveEssentials.checklist.buildingCommunityAccess": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "286aaaf2d790",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.prepareMoveEssentials.checklist.parkingAccessIf": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "480758ddd5d0",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.prepareMoveEssentials.checklist.movePermitIf": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ae429a3a074b",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.prepareMoveEssentials.checklist.maintenanceContactDetails": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "22d1e0ac6c36",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.prepareMoveEssentials.checklist.keyHandoverConfirmation": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "85143f1b903a",
+    "reviewed": true
+  },
+  "guides.tenantMoveIn.block.checkBuildingCommunityRules.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "10473e7cae3b",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.checkBuildingCommunityRules.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5c91e5b5d022",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.afterMoving.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2b8c060edcf1",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.afterMoving.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "449b94d44d88",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "08cf7963aed4",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.signTenancyContract": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3095d060deca",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.confirmTawtheeqRegistration": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4344c5862999",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.payRentDeposit": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "67ef0f581809",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.inspectPropertyHandover": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8dae1f2cefa7",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.takePhotosProperty": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8c9faff6f123",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.confirmUtilityAccount": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "be3ef9c80c43",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.checkMunicipalityFee": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "bb6a7d369e58",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.collectKeysAccess": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2dbc8f537e6c",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.arrangeInternetConnection": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f96b786939e4",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.confirmMaintenanceContacts": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f4d5c3631c15",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.scheduleMoversBuilding": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9ddd37373af5",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.moveChecklistAbuDhabi.checklist.keepReceiptsDocuments": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d4d61267962f",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.finalTip.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6506dc74b9b1",
+    "reviewed": false
+  },
+  "guides.goldenVisa.block.whoIts.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "60c3907ec269",
+    "reviewed": false
+  },
+  "guides.tenantMoveIn.block.finalTip.heading": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5d65e2980444",
+    "reviewed": true
+  },
+  "listing.offPlan": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "1e494873d5a6",
     "reviewed": true
   }
 }

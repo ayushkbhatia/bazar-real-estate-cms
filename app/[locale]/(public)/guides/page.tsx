@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { asLocale } from "@/lib/i18n/locales";
 import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 
@@ -10,92 +12,64 @@ export const metadata: Metadata = {
   alternates: { canonical: "/guides" },
 };
 
+/**
+ * Card order. The slug is both the href and the message key, so a card cannot
+ * link to one guide and describe another.
+ */
 const GUIDES = [
-  {
-    slug: "golden-visa",
-    eyebrow: "Residency · 10-year",
-    title: "Golden Visa via property",
-    intro:
-      "The AED 2M+ route to a 10-year renewable residency. Eligibility, dependants, off-plan rules, and the 4–6 week timeline.",
-  },
-  {
-    slug: "property-linked-residency",
-    eyebrow: "Residency · 2-year",
-    title: "Property-linked residency",
-    intro:
-      "The AED 750K+ route. When the 2-year visa is the better fit, mortgage rules, and the realistic application window.",
-  },
-  {
-    slug: "tax-residency",
-    eyebrow: "Tax · TRC",
-    title: "UAE Tax Residency Certificate",
-    intro:
-      "The 183-day and 90-day-plus-anchor routes to a TRC. What the certificate does and doesn't cover under the UAE's 130+ treaties.",
-  },
-  {
-    slug: "kyc-non-residents",
-    eyebrow: "Compliance · KYC",
-    title: "KYC for non-resident buyers",
-    intro:
-      "The KYC and source-of-funds paperwork to expect at the trustee desk. Compile this before MoU and the transfer day runs smoothly.",
-  },
-  {
-    slug: "for-tenants",
-    eyebrow: "Renting · For Tenants",
-    title: "Renting in Abu Dhabi",
-    intro:
-      "The tenant's playbook — move-in steps, the documents to prepare, and the full rental journey from budget to Tawtheeq to renewal.",
-  },
-  {
-    slug: "for-landlords",
-    eyebrow: "Renting · For Landlords",
-    title: "Renting out your property",
-    intro:
-      "The landlord's playbook — professional property management and how to rent out your property the right way, from pricing to handover.",
-  },
-];
+  "golden-visa",
+  "property-linked-residency",
+  "tax-residency",
+  "kyc-non-residents",
+  "for-tenants",
+  "for-landlords",
+] as const;
 
-export default function GuidesIndexPage() {
+export default async function GuidesIndexPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "guides" });
   return (
     <article className="bg-bz-bg">
       <section className="px-4 md:px-12 pt-12 md:pt-24 pb-12 border-b border-bz-border">
-        <Eyebrow>Guides</Eyebrow>
+        <Eyebrow>{t("index.eyebrow")}</Eyebrow>
         <h1
           className="serif text-[38px] md:text-[72px] mt-3 leading-[0.98] max-w-[24ch]"
           style={{ letterSpacing: "-0.028em" }}
         >
-          Buying paperwork, demystified.
+          {t("index.title")}
         </h1>
         <p className="mt-6 max-w-[58ch] text-[17px] text-bz-ink-2 leading-relaxed">
-          Plain-English walk-throughs of the residency, tax, and KYC paperwork
-          that surrounds a UAE property purchase. Each guide includes an
-          eligibility checker where useful and a CTA into Bazar&apos;s visa
-          desk when you&apos;re ready to act.
+          {t("index.intro")}
         </p>
       </section>
 
       <section className="px-4 md:px-12 py-16">
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[1100px]">
-          {GUIDES.map((g) => (
-            <li key={g.slug}>
+          {GUIDES.map((slug) => (
+            <li key={slug}>
               <Link
-                href={`/guides/${g.slug}`}
+                href={`/guides/${slug}`}
                 className="group block rounded-lg border border-bz-border bg-bz-surface p-7 h-full hover:border-bz-ink transition-colors"
               >
                 <div className="text-[11px] uppercase tracking-wider text-bz-ink-2">
-                  {g.eyebrow}
+                  {t(`index.card.${slug}.eyebrow`)}
                 </div>
                 <h2
                   className="serif text-[28px] mt-2 leading-tight"
                   style={{ letterSpacing: "-0.018em" }}
                 >
-                  {g.title}
+                  {t(`index.card.${slug}.title`)}
                 </h2>
                 <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed">
-                  {g.intro}
+                  {t(`index.card.${slug}.intro`)}
                 </p>
                 <span className="mt-5 inline-flex items-center gap-1.5 text-[13px] text-bz-ink group-hover:text-bz-accent transition-colors">
-                  Read the guide
+                  {t("readTheGuide")}
                   <ArrowRight size={13} strokeWidth={1.7} />
                 </span>
               </Link>

@@ -1,0 +1,511 @@
+{
+  "backToInsights": "All guides & insights",
+  "readTheGuide": "Read the guide",
+  "stepNumbered": "{n}. {title}",
+  "stepPrefixed": "Step {n}: {title}",
+  "index": {
+    "eyebrow": "Guides",
+    "title": "Buying paperwork, demystified.",
+    "intro": "Plain-English walk-throughs of the residency, tax, and KYC paperwork that surrounds a UAE property purchase. Each guide includes an eligibility checker where useful and a CTA into Bazar's visa desk when you're ready to act.",
+    "card": {
+      "golden-visa": {
+        "eyebrow": "Residency · 10-year",
+        "title": "Golden Visa via property",
+        "intro": "The AED 2M+ route to a 10-year renewable residency. Eligibility, dependants, off-plan rules, and the 4–6 week timeline."
+      },
+      "property-linked-residency": {
+        "eyebrow": "Residency · 2-year",
+        "title": "Property-linked residency",
+        "intro": "The AED 750K+ route. When the 2-year visa is the better fit, mortgage rules, and the realistic application window."
+      },
+      "tax-residency": {
+        "eyebrow": "Tax · TRC",
+        "title": "UAE Tax Residency Certificate",
+        "intro": "The 183-day and 90-day-plus-anchor routes to a TRC. What the certificate does and doesn't cover under the UAE's 130+ treaties."
+      },
+      "kyc-non-residents": {
+        "eyebrow": "Compliance · KYC",
+        "title": "KYC for non-resident buyers",
+        "intro": "The KYC and source-of-funds paperwork to expect at the trustee desk. Compile this before MoU and the transfer day runs smoothly."
+      },
+      "for-tenants": {
+        "eyebrow": "Renting · For Tenants",
+        "title": "Renting in Abu Dhabi",
+        "intro": "The tenant's playbook — move-in steps, the documents to prepare, and the full rental journey from budget to Tawtheeq to renewal."
+      },
+      "for-landlords": {
+        "eyebrow": "Renting · For Landlords",
+        "title": "Renting out your property",
+        "intro": "The landlord's playbook — professional property management and how to rent out your property the right way, from pricing to handover."
+      }
+    }
+  },
+  "forTenants": {
+    "eyebrow": "Guide · For Tenants",
+    "title": "Everything a tenant needs, before signing.",
+    "intro": "Renting in Abu Dhabi is straightforward when you know the steps. These guides cover the move-in process, the documents to prepare, and the full rental journey from budget to renewal.",
+    "card": {
+      "tenant-move-in": {
+        "label": "Move-In Guide",
+        "title": "Abu Dhabi Tenant Move-In Guide",
+        "desc": "From signing your tenancy contract to setting up utilities and completing your move-in checklist — prepare for a smooth move."
+      },
+      "required-documents": {
+        "label": "Required Documents",
+        "title": "Required Documents for Renting",
+        "desc": "The identification, Tawtheeq, utility, and building-approval documents every tenant should prepare in advance."
+      },
+      "rental-process": {
+        "label": "Rental Process",
+        "title": "Abu Dhabi Rental Process, Step by Step",
+        "desc": "The complete tenant journey — set your budget, view, offer, sign, register Tawtheeq, and move in."
+      }
+    }
+  },
+  "forLandlords": {
+    "eyebrow": "Guide · For Landlords",
+    "title": "Rent it out, well — and protect the asset.",
+    "intro": "Owning a rental in Abu Dhabi is a strong long-term investment when managed properly. These guides cover professional property management and the full process of renting out your property.",
+    "card": {
+      "property-management": {
+        "label": "Property Management",
+        "title": "Abu Dhabi Landlord Guide: Property Management",
+        "desc": "What property management covers, why it matters in a regulated market, and how it protects your income and your property."
+      },
+      "how-to-rent-out": {
+        "label": "Renting Out",
+        "title": "How to Rent Out Your Property",
+        "desc": "Prepare, price, list, screen tenants, agree terms, sign, register Tawtheeq, and hand over — the right way."
+      }
+    }
+  },
+  "goldenVisa": {
+    "eyebrow": "Residency · Golden Visa",
+    "title": "The 10-year Golden Visa, via property.",
+    "intro": "A plain-English walk-through of the 10-year UAE Golden Visa for property buyers — who qualifies, what counts as a qualifying asset, how dependants work, and the realistic timeline from application to Emirates ID.",
+    "block": {
+      "whoIts": {
+        "heading": "Who it's for",
+        "copy": "The Golden Visa was designed to anchor investors, founders, and senior professionals in the UAE for the long term. The property route is one of the cleanest paths: own AED 2M+ of qualifying real estate in your personal name and you're eligible for a 10-year residency, renewable, that covers your spouse and dependent children."
+      },
+      "qualifyingProperty": {
+        "heading": "Qualifying property",
+        "copy": "Ready, titled property at AED 2M+ qualifies straight away. Off-plan property qualifies once the developer has issued the 50%-paid certificate. Multiple properties can be combined towards the threshold provided each is in your personal name and the cumulative AED value clears AED 2M. Company-held property doesn't qualify directly — ICP grants the visa to the beneficial owner of record, so you'd need to restructure to personal title."
+      },
+      "dependants": {
+        "heading": "Dependants",
+        "copy": "Spouse and dependent children (typically up to 21, or 25 for unmarried daughters in full-time education) are covered under your sponsorship. The visa is renewable as long as the property is held. If you sell below the threshold, the residency lapses on the next renewal cycle."
+      },
+      "timeline": {
+        "heading": "Timeline",
+        "copy": "End-to-end, expect 4–6 weeks from full-pack submission to Emirates ID issuance. The bottleneck is usually the medical + biometrics slots rather than ICP processing itself. Bazar's visa desk pre-compiles every document so the submission lands clean on day one."
+      }
+    }
+  },
+  "howToRentOut": {
+    "eyebrow": "Guide for Landlords · 9 min read",
+    "title": "How to Rent Out Your Property in Abu Dhabi",
+    "intro": "Renting out a property can provide stable income and long-term value. To do it successfully, prepare the unit, price it correctly, find the right tenant, and register the tenancy properly. A well-prepared property, accurate listing, qualified tenant, registered contract, and organised handover protect your investment and reduce future issues.",
+    "step": {
+      "preparePropertyRent": {
+        "title": "Prepare your property for rent",
+        "copy": "Make sure it is clean, well maintained, and ready for viewings. Check air conditioning, plumbing, electrical fittings, appliances, bathroom fixtures, doors and locks, paint, flooring, lighting, and access cards. A well-presented property attracts better enquiries."
+      },
+      "setRightRentalPrice": {
+        "title": "Set the right rental price",
+        "copy": "Price too high and it sits vacant; too low and you lose income. Compare similar properties, building quality, size and layout, view and floor level, furnishing, parking, and recent rental activity in the area."
+      },
+      "listPropertyProfessionally": {
+        "title": "List the property professionally",
+        "copy": "A strong listing is clear, accurate and attractive — property type, location, bedrooms and bathrooms, size, price, payment terms, availability, furnishing, parking, amenities, features, high-quality photos, and a floor plan where available."
+      },
+      "workLicensedAgent": {
+        "title": "Work with a licensed agent",
+        "copy": "A licensed agent markets the property, arranges viewings, qualifies tenants, negotiates offers, and prepares documentation. If not otherwise agreed, lease brokerage commission may not exceed 5% of annual rent, and the broker cannot collect from both parties."
+      },
+      "screenQualifyTenants": {
+        "title": "Screen and qualify tenants",
+        "copy": "Confirm the tenant is serious, financially prepared, and able to provide documents — passport, Emirates ID, visa copy (if applicable), contact details, plus company details and trade licence for corporate tenants, and the agreed payment method."
+      },
+      "agreeRentalTerms": {
+        "title": "Agree on rental terms",
+        "copy": "Confirm annual rent, number of payments, security deposit, start and end dates, maintenance responsibility, furnishing, parking allocation, renewal terms, move-in date, and any special conditions before signing."
+      },
+      "signRegisterTenancyContract": {
+        "title": "Sign and register the tenancy contract",
+        "copy": "Contracts are registered through Tawtheeq. Via DARI, lessors start the online lease registration by selecting the property and entering contract, tenant, and premise details. A new lease registration costs AED 50; contracts over four years are charged at 1%."
+      },
+      "understandMunicipalityFees": {
+        "title": "Understand municipality fees",
+        "copy": "TAQA Distribution collects the municipality fee on behalf of the DMT — 5% of the rental value or index, whichever is higher, billed monthly. Usually paid via the tenant's utility bill, but landlords should understand it as part of the tenant's cost."
+      },
+      "completeHandover": {
+        "title": "Complete handover",
+        "copy": "Provide keys, access and parking cards, remotes, community rules, maintenance contacts, utility information, move-in permit instructions, and a handover condition report. Photograph the condition before the tenant moves in."
+      },
+      "manageTenancy": {
+        "title": "Manage the tenancy",
+        "copy": "Track rent payment dates, cheque status, maintenance requests, expiry date, renewal discussions, tenant communication, property condition, and required documents."
+      },
+      "renewingEndingTenancy": {
+        "title": "Renewing or ending the tenancy",
+        "copy": "Renew through DARI (currently at a 0% increase under ADREC's 3 June 2026 measure). To close an expired tenancy, the landlord submits a close-tenancy request via DARI, which the tenant accepts, returns feedback on, or rejects."
+      }
+    },
+    "block": {
+      "landlordChecklist": {
+        "heading": "Landlord checklist",
+        "checklist": {
+          "prepareInspectProperty": "Prepare and inspect the property",
+          "completeMaintenanceListing": "Complete maintenance before listing",
+          "setRightRental": "Set the right rental price",
+          "takeProfessionalPhotos": "Take professional photos",
+          "createAccurateListing": "Create an accurate listing",
+          "workLicensedAgent": "Work with a licensed agent",
+          "screenTenantDocuments": "Screen tenant documents",
+          "agreeRentTerms": "Agree on rent, terms, and deposit",
+          "signTenancyContract": "Sign the tenancy contract",
+          "registerThroughTawtheeq": "Register through Tawtheeq / DARI",
+          "completeKeyAccess": "Complete key and access card handover",
+          "keepPaymentReceipts": "Keep payment receipts and records",
+          "trackRentPayments": "Track rent payments and renewal dates"
+        }
+      },
+      "documentsRequiredListProperty": {
+        "heading": "What documents are required to list a property?",
+        "copy": "Usually a title deed or proof of ownership, Emirates ID or passport copy, contact details, property details, and any existing tenancy contract if the unit is rented. You can list a property that is currently rented — clearly mention that it's tenanted, along with the lease expiry date, current rent, and whether notice has been served."
+      },
+      "finalTip": {
+        "heading": "Final tip",
+        "copy": "Renting out a property in Abu Dhabi is easier when you follow a clear process — preparation, accurate listing, a qualified tenant, a registered contract, and an organised handover."
+      }
+    }
+  },
+  "kycNonResidents": {
+    "eyebrow": "Compliance · KYC",
+    "title": "KYC for non-resident buyers.",
+    "intro": "The KYC and AML documentation non-resident buyers should expect when acquiring UAE property. Nothing onerous if prepared — every blocker we've seen has been a documentation problem, not an eligibility one.",
+    "block": {
+      "identity": {
+        "heading": "Identity",
+        "copy": "Passport biographical page + entry stamp / residency visa (if any). Where the passport is recent, a second photo ID — driver's licence or national ID — closes the loop with the trustee desk faster."
+      },
+      "address": {
+        "heading": "Address",
+        "copy": "Utility bill or bank statement in your name, dated within the last three months, showing your home address. PDF statements from your online bank count provided they include name + address + statement period header."
+      },
+      "sourceFunds": {
+        "heading": "Source of funds",
+        "copy": "This is the part buyers underestimate. For purchases above AED 2M, the DLD-side trustee will request documentary evidence of the funds — bank statements showing accumulation, the sale contract if you've recently sold another asset, employment / dividend statements, or a clean note from your accountant. Compile this before you reach the MoU stage; it's the most common cause of trustee-day delays."
+      },
+      "banking": {
+        "heading": "Banking",
+        "copy": "You don't need a UAE bank account to buy. The 10% MoU deposit can be wire-transferred to the DLD-approved trustee from any clean source; the balance can be wired straight to the trustee on transfer day. Where a UAE account would help is post-purchase — service-charge direct debits, rental income collection, mortgage payments. Bazar can introduce you to the bank that fits your residency status."
+      },
+      "ifYoullLetProperty": {
+        "heading": "If you'll let the property out",
+        "copy": "Non-resident landlords need a tax representative inside the UAE, which is a one-line appointment your property management partner handles. ADJD (Abu Dhabi Judicial Department) registers the tenancy contract; service charges are billed by the master community. Bazar's lettings desk handles the entire cycle if you'd rather not manage from abroad."
+      }
+    }
+  },
+  "propertyLinkedResidency": {
+    "eyebrow": "Residency · 2-year visa",
+    "title": "Property-linked residency, simplified.",
+    "intro": "The AED 750K+ property route to a 2-year renewable UAE residency — who qualifies, what the asset needs to look like, and the realistic timeline.",
+    "block": {
+      "when2YearVisa": {
+        "heading": "When the 2-year visa is the right fit",
+        "copy": "If you don't yet have AED 2M+ to deploy for the Golden Visa but want a real UAE residency, the 2-year property-linked visa is the cleaner path. It's renewable indefinitely while you hold the property and covers spouse + dependent children."
+      },
+      "doesntCover": {
+        "heading": "What it doesn't cover",
+        "copy": "It's a residency, not a citizenship pathway. You can't sponsor extended family beyond spouse and minors. You'll still need to maintain UAE-side tax residency rules (typically 90+ days in country) if you want the Tax Residency Certificate."
+      },
+      "mortgageRules": {
+        "heading": "Mortgage rules",
+        "copy": "Mortgaged property qualifies as long as the lender issues an NOC. If your outstanding loan exceeds 50% of the property value, ICP will additionally want 12 months of repayment history on file. None of this is a blocker — just timing."
+      }
+    }
+  },
+  "propertyManagement": {
+    "eyebrow": "Guide for Landlords · 7 min read",
+    "title": "Abu Dhabi Landlord Guide: Property Management",
+    "intro": "Owning a rental in Abu Dhabi is a strong long-term investment — but managing it well takes time, market knowledge, and consistent follow-up. Property management protects the landlord's asset, maintains the property's value, supports the tenant, and keeps every rental process organised.",
+    "block": {
+      "propertyManagement": {
+        "heading": "What is property management?",
+        "copy": "Property management is the ongoing management of a rental property on behalf of the owner. It can include tenant communication, rent collection, maintenance coordination, inspections, lease renewals, documentation, and support with move-in and move-out. For landlords living outside the UAE or short on time, it reduces stress and keeps the property professionally maintained."
+      },
+      "whyPropertyManagementMatters": {
+        "heading": "Why property management matters in Abu Dhabi",
+        "copy": "Abu Dhabi's rental market is regulated, and landlords must manage contracts, tenant records, maintenance, renewals, and official lease registration correctly. Tenancy contracts are registered through Tawtheeq using the DARI digital ecosystem. A management service keeps important tasks — tenant follow-ups, rent collection, maintenance, renewals, and handover — handled on time."
+      },
+      "keyPropertyManagementServices": {
+        "heading": "Key property management services",
+        "copy": "Tenant management: the manager acts as the main point of contact between landlord and tenant. Rent collection: tracking payments, following up on dues, and updating the landlord. Maintenance coordination: contacting approved providers, arranging access, and following up until resolved — landlord and tenant repair responsibilities are addressed under Abu Dhabi's lease regulations, including Law No. 20 of 2006. Property inspections: monitoring condition before move-in, during the tenancy, and before move-out. Lease renewal support: tracking expiry dates and coordinating renewals through DARI — as of ADREC's announcement dated 3 June 2026, all residential, commercial, and industrial tenancy renewals are processed at a 0% increase for the duration of the temporary measure. Move-in and move-out coordination: key handover, access and parking cards, permits, and final condition reports. Documentation and compliance: organising contracts, ID copies, receipts, Tawtheeq records, and invoices — DARI also allows property management agreements to be registered, renewed, amended, or cancelled."
+      },
+      "landlordsPrepare": {
+        "heading": "What landlords should prepare",
+        "bullets": {
+          "titleDeedProof": "Title deed or proof of ownership",
+          "emiratesIdPassport": "Emirates ID and passport copy",
+          "powerAttorneyIf": "Power of attorney, if applicable",
+          "existingTenancyContract": "Existing tenancy contract, if rented",
+          "tenantContactDetails": "Tenant contact details, if applicable",
+          "propertyKeysAccess": "Property keys and access cards",
+          "parkingDetailsFloor": "Parking details and floor plan",
+          "maintenanceHistoryService": "Maintenance history and service-charge information",
+          "utilityCommunityManagement": "Utility and community management details"
+        }
+      },
+      "benefitsPropertyManagement": {
+        "heading": "Benefits of property management",
+        "checklist": {
+          "saveTimeReduce": "Save time and reduce tenant-related stress",
+          "improveCommunication": "Improve communication",
+          "keepPropertyWell": "Keep the property well maintained",
+          "trackRentPayments": "Track rent payments more efficiently",
+          "reduceVacancyPeriods": "Reduce vacancy periods",
+          "protectConditionProperty": "Protect the condition of the property",
+          "manageRenewalsDocumentation": "Manage renewals and documentation",
+          "supportLandlordsLiving": "Support landlords living outside the UAE"
+        }
+      },
+      "finalTip": {
+        "heading": "Final tip",
+        "copy": "Property management is not only about collecting rent — it's about protecting your asset, maintaining value, supporting the tenant, and keeping every process organised."
+      }
+    }
+  },
+  "rentalProcess": {
+    "eyebrow": "Guide for Tenants · 8 min read",
+    "title": "The Abu Dhabi Rental Process, Step by Step",
+    "intro": "Renting in Abu Dhabi involves several important steps. Understanding Tawtheeq, utility registration, municipality fees, and move-in approvals makes the whole process easier.",
+    "step": {
+      "setBudget": {
+        "title": "Set your budget",
+        "copy": "Consider more than rent: annual rent, security deposit, agency commission, utility charges, municipality fees, internet, moving costs, and any building move-in fees. Municipality fees are 5% of the rental value or index, whichever is higher."
+      },
+      "chooseRightLocation": {
+        "title": "Choose the right location",
+        "copy": "Abu Dhabi offers waterfront apartments, family villas, gated communities, and city-centre options. Popular areas include Al Reem, Saadiyat, Yas, Al Raha Beach, Khalifa City, Al Bateen, Al Mushrif, Al Reef, Al Muroor, and the Corniche."
+      },
+      "viewCompareProperties": {
+        "title": "View and compare properties",
+        "copy": "Arrange viewings with a licensed agent. Check size, layout, natural light, finishing, parking, facilities, and condition. Ask about availability, payment count, maintenance, chiller charges, pets, and move-in restrictions."
+      },
+      "makeOffer": {
+        "title": "Make an offer",
+        "copy": "Your offer usually includes the annual rent, number of payments, contract start date, security deposit, and any special terms. Once accepted, you'll provide documents and make the required payments to proceed."
+      },
+      "signTenancyContract": {
+        "title": "Sign the tenancy contract",
+        "copy": "The contract should state tenant and landlord details, property details, annual rent, number of payments, start and end dates, deposit, maintenance responsibilities, payment terms, renewal terms, and any agreed conditions. Read carefully and keep a copy."
+      },
+      "registerTawtheeq": {
+        "title": "Register with Tawtheeq",
+        "copy": "Contracts are registered through Tawtheeq. DARI lets the lessor register online, creating an official tenancy record linked to utility registration and municipality fees."
+      },
+      "setUpUtilities": {
+        "title": "Set up utilities",
+        "copy": "For Tawtheeq-registered tenants, TAQA/ADDC creates the account under the contract name, with the first bill within about a month. A separate application may need a passport, Emirates ID, contract, and previous closing letter."
+      },
+      "arrangeMoveApproval": {
+        "title": "Arrange move-in approval",
+        "copy": "Check whether your building requires move-in approval. Some require booking the service elevator and submitting mover details with copies of the contract and Emirates ID — especially in towers and gated communities."
+      },
+      "moveDocumentCondition": {
+        "title": "Move in and document condition",
+        "copy": "Collect keys, access cards, and parking cards. Inspect again and photograph the condition before placing furniture. Report any maintenance issues immediately."
+      },
+      "understandRenewalEndTenancy": {
+        "title": "Understand renewal & end-of-tenancy",
+        "copy": "Renewals are submitted through DARI; the tenant can accept or reject. The lessor cannot raise rent by more than 5% at renewal. To close a tenancy after expiry, DARI provides a close-tenancy service the tenant reviews and approves."
+      }
+    },
+    "block": {
+      "rentalProcessChecklist": {
+        "heading": "Rental process checklist",
+        "checklist": {
+          "setRentalBudget": "Set your rental budget",
+          "choosePreferredCommunity": "Choose your preferred community",
+          "viewCompareProperties": "View and compare properties",
+          "confirmRentPayment": "Confirm rent, payment terms, and availability",
+          "submitTenantDocuments": "Submit tenant documents",
+          "signTenancyContract": "Sign the tenancy contract",
+          "completeTawtheeqRegistration": "Complete Tawtheeq registration",
+          "confirmWaterElectricity": "Confirm water and electricity setup",
+          "checkMunicipalityFee": "Check municipality fee billing",
+          "arrangeMoveApproval": "Arrange move-in approval",
+          "inspectPropertyMoving": "Inspect the property before moving in",
+          "keepContractsReceipts": "Keep all contracts, receipts, and documents"
+        }
+      },
+      "finalTip": {
+        "heading": "Final tip",
+        "copy": "Before signing any rental agreement, always confirm the contract terms, payment schedule, property condition, and all required documents."
+      }
+    }
+  },
+  "requiredDocuments": {
+    "eyebrow": "Guide for Tenants · 6 min read",
+    "title": "Required Documents for Renting in Abu Dhabi",
+    "intro": "Having the right documents ready speeds up the rental process and avoids delays with Tawtheeq, utilities, and building move-in approvals. Prepare early and keep both digital and printed copies.",
+    "block": {
+      "basicTenantDocuments": {
+        "heading": "1. Basic tenant documents",
+        "copy": "Most landlords, agencies, and property managers will ask tenants to provide identification and residency documents before finalising the agreement. Commonly required:",
+        "bullets": {
+          "passportCopy": "Passport copy",
+          "uaeResidenceVisa": "UAE residence visa copy, if applicable",
+          "emiratesIdCopy": "Emirates ID copy",
+          "contactNumberEmail": "Contact number and email address",
+          "salaryCertificateEmployment": "Salary certificate or employment letter, if requested",
+          "recentBankStatement": "Recent bank statement, if requested",
+          "marriageCertificateIf": "Marriage certificate, if applicable for family occupancy"
+        }
+      },
+      "documentsTawtheeqRegistration": {
+        "heading": "2. Documents for Tawtheeq registration",
+        "copy": "In Abu Dhabi, rental contracts are registered through Tawtheeq. On DARI, the lessor registers the tenancy by entering the contract type, tenant type, premise ID, and tenant information. For individual tenants, DARI requires the tenant's Emirates ID number or Unified Number.",
+        "bullets": {
+          "signedTenancyContract": "Signed tenancy contract",
+          "tenantEmiratesId": "Tenant Emirates ID or UID",
+          "tenantPassportCopy": "Tenant passport copy",
+          "tenantContactDetails": "Tenant contact details",
+          "propertyPremiseId": "Property premise ID",
+          "landlordAuthorisedRepresentative": "Landlord or authorised representative details",
+          "propertyOwnershipUnit": "Property ownership or unit information"
+        }
+      },
+      "documentsUtilityConnection": {
+        "heading": "3. Documents for utility connection",
+        "copy": "For tenants registered with Tawtheeq, TAQA Distribution/ADDC usually creates the water and electricity account automatically under the name on the tenancy contract. If a separate move-in application is required, you may need a passport, Emirates ID, tenancy contract, and the previous account closing letter (formerly known as a clearance certificate)."
+      },
+      "documentsBuildingCommunityMove": {
+        "heading": "4. Documents for building or community move-in approval",
+        "copy": "Some buildings require move-in approval before bringing furniture or using the service elevator. Management may request the tenancy contract, Emirates ID and passport copies, Tawtheeq certificate (if available), move-in date and time, moving company details, vehicle details, and landlord approval."
+      },
+      "paymentDocumentsReceipts": {
+        "heading": "5. Payment documents and receipts",
+        "checklist": {
+          "securityDepositReceipt": "Security deposit receipt",
+          "agencyCommissionReceipt": "Agency commission receipt",
+          "rentPaymentProof": "Rent payment proof",
+          "chequeCopiesIf": "Cheque copies, if rent is paid by cheque",
+          "utilityDepositActivation": "Utility deposit or activation confirmation",
+          "anyMaintenanceMove": "Any maintenance or move-in fee receipts"
+        }
+      },
+      "documentsCompanyTenants": {
+        "heading": "6. Documents for company tenants",
+        "copy": "Company tenants may be registered using the trade licence number, along with business contact and representative information — typically a trade licence copy, representative Emirates ID and passport, an authorisation letter or power of attorney, company contact details, and the signed tenancy contract."
+      },
+      "abuDhabiTenantDocument": {
+        "heading": "Abu Dhabi tenant document checklist",
+        "checklist": {
+          "passportCopy": "Passport copy",
+          "emiratesIdCopy": "Emirates ID copy",
+          "uaeVisaCopy": "UAE visa copy, if applicable",
+          "signedTenancyContract": "Signed tenancy contract",
+          "tawtheeqRegistrationConfirmation": "Tawtheeq registration confirmation, if available",
+          "salaryCertificateEmployment": "Salary certificate or employment letter, if requested",
+          "securityDepositPayment": "Security deposit and payment receipts",
+          "utilityAccountDetails": "Utility account details",
+          "previousAccountClosing": "Previous account closing letter, if required",
+          "moveApprovalDocuments": "Move-in approval documents",
+          "parkingAccessCard": "Parking or access card application documents"
+        }
+      },
+      "finalTip": {
+        "heading": "Final tip",
+        "copy": "Prepare your documents early and keep both digital and printed copies — it makes completing the contract, registering Tawtheeq, and moving in far smoother."
+      }
+    }
+  },
+  "taxResidency": {
+    "eyebrow": "Tax · UAE residency",
+    "title": "UAE Tax Residency Certificate.",
+    "intro": "The criteria for obtaining a UAE Tax Residency Certificate, what the certificate actually does and doesn't cover, and how to think about it alongside a tax-treaty break elsewhere.",
+    "block": {
+      "certificateDoes": {
+        "heading": "What the certificate does",
+        "copy": "A Tax Residency Certificate (TRC) is a formal document issued by the UAE Federal Tax Authority confirming that you (or your company) are a tax resident of the UAE under the country's domestic rules. It's the primary instrument used to claim benefits under the UAE's 130+ double-tax treaties when you need to break tax residency elsewhere."
+      },
+      "twoRoutesQualify": {
+        "heading": "Two routes to qualify",
+        "copy": "Route 1: 183+ days of physical presence in the UAE during the tax year. Route 2: 90+ days, plus a UAE anchor (a permanent home, employment, or business). The 90-day route is the workhorse for senior executives and founders who split their time between markets — but it requires evidence, not just passport stamps."
+      },
+      "doesntFix": {
+        "heading": "What it doesn't fix",
+        "copy": "Holding a TRC doesn't automatically break your tax residency elsewhere — that depends on the other country's domestic rules and the specific treaty article. The TRC is necessary, not sufficient. A cross-border tax adviser should pressure-test the treaty break before you rely on the certificate."
+      }
+    }
+  },
+  "tenantMoveIn": {
+    "eyebrow": "Guide for Tenants · 7 min read",
+    "title": "Abu Dhabi Tenant Move-In Guide",
+    "intro": "Moving into a rental in Abu Dhabi is a straightforward process when you know the right steps — from signing your contract to setting up utilities and completing your move-in checklist. A successful move-in starts with proper documentation: get the contract, payments, and property condition recorded before you settle in.",
+    "block": {
+      "confirmTenancyContract": {
+        "heading": "1. Confirm your tenancy contract",
+        "copy": "Before moving in, make sure your tenancy contract is signed by both landlord and tenant. In Abu Dhabi, tenancy contracts are registered through Tawtheeq, the official tenancy registration system. Lease registration can be managed online through the DARI platform, where the lessor enters the property details, tenant details, contract type, and premise information."
+      },
+      "checkPropertyHandover": {
+        "heading": "2. Check the property before handover",
+        "copy": "Before collecting the keys, inspect the property carefully — walls, flooring, doors, windows, kitchen, bathrooms, air conditioning, lighting, and water connections. It is also recommended to take photos or videos before moving in. This protects both tenant and landlord by clearly recording the property's condition at the start of the tenancy."
+      },
+      "confirmUtilitiesTaqaAddc": {
+        "heading": "3. Confirm utilities and TAQA/ADDC account setup",
+        "copy": "For most tenants registered through Tawtheeq, the water and electricity account is set up automatically under the same name shown on the tenancy contract, with the first bill typically arriving within around one month. If the property is not covered by Tawtheeq or ADGM, you may need a separate move-in application — usually requiring a passport, Emirates ID, tenancy contract, and the previous account closing letter."
+      },
+      "understandAbuDhabiMunicipality": {
+        "heading": "4. Understand Abu Dhabi municipality fees",
+        "copy": "Tenants renting in Abu Dhabi pay municipality fees in addition to water and electricity. When a contract is registered with Tawtheeq, the tenant is usually enrolled automatically. The fee is calculated at 5% of the rental value or rental index, whichever is higher, and is billed monthly through the utility bill. UAE Nationals are exempt for residential contracts intended for their own use."
+      },
+      "prepareMoveEssentials": {
+        "heading": "5. Prepare move-in essentials",
+        "checklist": {
+          "signedTenancyContract": "Signed tenancy contract",
+          "tawtheeqRegistrationConfirmation": "Tawtheeq registration confirmation, if available",
+          "emiratesIdPassport": "Emirates ID and passport copy",
+          "utilityAccountDetails": "Utility account details",
+          "buildingCommunityAccess": "Building or community access cards",
+          "parkingAccessIf": "Parking access, if included",
+          "movePermitIf": "Move-in permit, if required",
+          "maintenanceContactDetails": "Maintenance contact details",
+          "keyHandoverConfirmation": "Key handover confirmation"
+        }
+      },
+      "checkBuildingCommunityRules": {
+        "heading": "6. Check building and community rules",
+        "copy": "Some buildings and communities require move-in approval before bringing furniture or using the service elevator. Check with building or community management before scheduling movers — you may need to provide the tenancy contract, Emirates ID, mover details, and preferred move-in date."
+      },
+      "afterMoving": {
+        "heading": "7. After moving in",
+        "copy": "Keep a copy of all important documents: tenancy contract, payment receipts, Tawtheeq certificate, and utility account details. Confirm your name and contact details are correct on the tenancy record and utility account, and save emergency maintenance, security, and landlord or property-manager contacts."
+      },
+      "moveChecklistAbuDhabi": {
+        "heading": "Move-in checklist for Abu Dhabi tenants",
+        "checklist": {
+          "signTenancyContract": "Sign the tenancy contract",
+          "confirmTawtheeqRegistration": "Confirm Tawtheeq registration",
+          "payRentDeposit": "Pay rent, deposit, and agency fees as agreed",
+          "inspectPropertyHandover": "Inspect the property before handover",
+          "takePhotosProperty": "Take photos of the property condition",
+          "confirmUtilityAccount": "Confirm utility account setup",
+          "checkMunicipalityFee": "Check municipality fee charges",
+          "collectKeysAccess": "Collect keys, access cards, and parking cards",
+          "arrangeInternetConnection": "Arrange internet connection",
+          "confirmMaintenanceContacts": "Confirm maintenance contacts",
+          "scheduleMoversBuilding": "Schedule movers with building approval",
+          "keepReceiptsDocuments": "Keep all receipts and documents safely"
+        }
+      },
+      "finalTip": {
+        "heading": "Final tip",
+        "copy": "Make sure your tenancy contract is clear, your payments are recorded, and your move-in condition is documented before you fully settle into your new Abu Dhabi home."
+      }
+    }
+  }
+}

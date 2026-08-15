@@ -39,6 +39,7 @@ export const NAMESPACES = [
   "editorial",
   "tools",
   "forms",
+  "guides",
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -133,6 +134,13 @@ export const ROUTE_NAMESPACES = {
     "app/[locale]/(public)/tools/",
     "app/[locale]/(public)/concierge/",
   ],
+  /*
+   * 287 keys of residency, tax and tenancy prose, read on eleven routes. The
+   * guides are server components, so nothing here crosses to the browser at
+   * all today — the entry exists because the four eligibility checkers under
+   * these routes are Client Components and W5b converts them next.
+   */
+  guides: ["app/[locale]/(public)/guides/"],
 } as const satisfies Partial<Record<Namespace, readonly string[]>>;
 
 export type RouteNamespace = keyof typeof ROUTE_NAMESPACES;

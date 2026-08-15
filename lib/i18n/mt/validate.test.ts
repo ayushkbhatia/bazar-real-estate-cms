@@ -91,6 +91,39 @@ describe("the checks that must never be quiet", () => {
     expect(codes("Price in AED", "السعر بالـ AED")).not.toContain("mojibake");
   });
 
+  it("flags a short label that came back as something else entirely", () => {
+    // The real one: "Who it's for" returned "Explore the world of AI and
+    // machine learning with our experts". Fluent, correctly scripted, and
+    // unrelated to the input — invisible to every other check here.
+    expect(
+      codes(
+        "Who it's for",
+        "استكشف عالم الذكاء الاصطناعي والتعلم الآلي مع خبرائنا",
+      ),
+    ).toContain("too-long");
+  });
+
+  it("lets a short term expand as much as Arabic needs", () => {
+    // An abbreviation legitimately quadruples and more.
+    expect(codes("TRC", "شهادة الإقامة الضريبية")).not.toContain("too-long");
+    expect(codes("Dependants", "المعالون")).not.toContain("too-long");
+    expect(codes("Compliance · KYC", "اعرف عميلك · الامتثال")).not.toContain(
+      "too-long",
+    );
+  });
+
+  it("never measures the growth of a plural", () => {
+    // Two English branches become six or seven Arabic ones, so a correct
+    // translation triples in length. `listing.bedrooms` really is 63 chars of
+    // English and 139 of Arabic.
+    expect(
+      codes(
+        "{count, plural, =0 {Studio} one {# bedroom} other {# bedrooms}}",
+        "{count, plural, =0 {استوديو} zero {بدون غرف نوم} one {غرفة نوم واحدة} two {غرفتا نوم} few {# غرف نوم} many {# غرفة نوم} other {# غرفة نوم}}",
+      ),
+    ).not.toContain("too-long");
+  });
+
   it("flags a Latin letter fused into an Arabic word", () => {
     // Observed: "United Arab Emirates" -> "امتb الإمارات العربية المتحدة".
     // `latin-leak` needs a run of four and never sees it; `mojibake` allows
