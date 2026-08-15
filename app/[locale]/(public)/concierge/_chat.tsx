@@ -9,6 +9,7 @@ import {
   ArrowRight,
   MessageCircle,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import type { ConciergeBrief, BriefChip } from "@/lib/concierge/brief";
@@ -55,12 +56,23 @@ type Score = {
   factors: ScoreFactor[];
 };
 
+/**
+ * The four starters, as message keys.
+ *
+ * These are the one place in this file where the English is also *input* — a
+ * click sends the string to the model as the visitor's first message. That is
+ * the right behaviour translated: an Arabic-reading visitor should send an
+ * Arabic brief, and `lib/concierge` already carries a locale clause from P0.5.
+ */
 const PROMPT_SUGGESTIONS = [
-  "3-bed family villa on Saadiyat under AED 12M, walking to Cranleigh",
-  "Yield > 7% under AED 2M",
-  "Where would my AED 5M go furthest?",
-  "Off-plan that's safe in a downturn",
-];
+  "suggestion1",
+  "suggestion2",
+  "suggestion3",
+  "suggestion4",
+] as const;
+
+/** Shared shape for the two helpers that render tool activity. */
+type T = ReturnType<typeof useTranslations>;
 
 let tickCounter = 0;
 function nextTick(): number {
@@ -69,6 +81,7 @@ function nextTick(): number {
 }
 
 export function ConciergeChat() {
+  const t = useTranslations("tools");
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<UiMessage[]>([]);
   const [brief, setBrief] = useState<ConciergeBrief>({ chips: [] });
@@ -209,7 +222,7 @@ export function ConciergeChat() {
           if (m.id !== assistantId) return m;
           const events = (m.toolEvents ?? []).map((e, i, arr) => {
             if (e.name === name && e.status === "running" && i === arr.findLastIndex((x) => x.name === name && x.status === "running")) {
-              return { ...e, status: "done" as const, summary: summariseResult(name, frame.result) };
+              return { ...e, status: "done" as const, summary: summariseResult(name, frame.result, t) };
             }
             return e;
           });
@@ -286,25 +299,25 @@ export function ConciergeChat() {
           <div>
             <div className="eyebrow inline-flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-bz-success" />
-              Concierge online · Mariam available to take over
+              {t("concierge.online")}
             </div>
             <h1
               className="serif text-[28px] md:text-[40px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.025em" }}
             >
-              The Concierge{" "}
+              {t("concierge.headingLead")}{" "}
               <span className="text-bz-muted">·</span>{" "}
               <em
                 style={{ fontStyle: "italic", fontSize: 32 }}
               >
-                your brief, in plain English
+                {t("concierge.headingEmphasis")}
               </em>
             </h1>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={resetSession}>
               <RefreshCw size={14} strokeWidth={1.6} />
-              New brief
+              {t("concierge.newBrief")}
             </Button>
           </div>
         </div>
@@ -315,10 +328,10 @@ export function ConciergeChat() {
         <div className="flex flex-col border-e border-bz-border overflow-hidden">
           <div className="flex-1 px-4 md:px-12 py-8 flex flex-col gap-6 overflow-auto">
             {messages.length === 0 ? (
-              <EmptyState onPick={(t) => sendMessage(t)} />
+              <EmptyState onPick={sendMessage} />
             ) : null}
             {messages.map((m) => (
-              <MessageBubble key={m.id} message={m} />
+              <MessageBubble key={m.id} message={m} t={t} />
             ))}
             <div ref={messagesEndRef} />
           </div>
@@ -344,34 +357,34 @@ export function ConciergeChat() {
                   }
                 }}
                 rows={2}
-                placeholder="Continue the brief…"
+                placeholder={t("concierge.composerPlaceholder")}
                 className="border-0 px-3 py-2.5 resize-none bg-transparent outline-none text-[14px]"
               />
               <div className="flex justify-between items-center px-1.5 pt-1">
                 <button
                   type="button"
-                  onClick={() => sendMessage("Hand me off to a human advisor.")}
+                  onClick={() => sendMessage(t("concierge.handOffPrompt"))}
                   className="text-[11.5px] text-bz-muted hover:text-bz-ink"
                 >
-                  Hand off to advisor
+                  {t("concierge.handOff")}
                 </button>
                 <Button type="submit" size="sm" disabled={sending || !input.trim()}>
                   <Send size={14} strokeWidth={1.6} />
-                  Send
+                  {t("concierge.send")}
                 </Button>
               </div>
             </form>
-            <AdvisorWhatsAppHandoff brief={brief} />
+            <AdvisorWhatsAppHandoff brief={brief} t={t} />
             <div className="mt-4 flex gap-1.5 flex-wrap">
-              <div className="eyebrow me-2 mt-1">Try</div>
-              {PROMPT_SUGGESTIONS.map((p) => (
+              <div className="eyebrow me-2 mt-1">{t("concierge.try")}</div>
+              {PROMPT_SUGGESTIONS.map((key) => (
                 <button
-                  key={p}
+                  key={key}
                   type="button"
-                  onClick={() => sendMessage(p)}
+                  onClick={() => sendMessage(t(`concierge.${key}`))}
                   className="h-7 px-2.5 rounded text-[11.5px] bg-bz-surface border border-bz-border text-bz-muted hover:text-bz-ink hover:border-bz-ink-2"
                 >
-                  {p}
+                  {t(`concierge.${key}`)}
                 </button>
               ))}
             </div>
@@ -381,10 +394,10 @@ export function ConciergeChat() {
         {/* RIGHT — Brief rail */}
         <aside className="bg-bz-surface-2 flex flex-col overflow-hidden">
           <div className="px-7 pt-6 pb-5 bg-bz-surface border-b border-bz-border">
-            <Eyebrow>Brief · what I understood</Eyebrow>
+            <Eyebrow>{t("concierge.briefHeading")}</Eyebrow>
             {(brief.chips ?? []).length === 0 ? (
               <p className="text-[12.5px] text-bz-muted mt-3">
-                Start typing and I&apos;ll pull out the parts of your brief.
+                {t("concierge.briefEmpty")}
               </p>
             ) : (
               <div className="flex gap-1.5 flex-wrap mt-3">
@@ -404,17 +417,23 @@ export function ConciergeChat() {
           </div>
           <div className="px-7 py-4 flex justify-between items-center text-[12px] text-bz-muted border-b border-bz-border">
             <span>
-              {pinnedCards.length} match{pinnedCards.length === 1 ? "" : "es"} · scored against your brief
+              {t("concierge.matchCount", { count: pinnedCards.length })} ·{" "}
+              {t("concierge.scoredAgainst")}
             </span>
           </div>
           <div className="px-7 py-4 flex flex-col gap-2.5 overflow-auto">
             {pinnedCards.length === 0 ? (
               <div className="py-12 text-center text-[12.5px] text-bz-muted">
-                Pinned matches appear here as the concierge narrows your brief.
+                {t("concierge.noPinned")}
               </div>
             ) : (
               pinnedCards.map(({ score, property }) => (
-                <ResultCard key={property.id} property={property} score={score} />
+                <ResultCard
+                  key={property.id}
+                  property={property}
+                  score={score}
+                  t={t}
+                />
               ))
             )}
           </div>
@@ -425,29 +444,27 @@ export function ConciergeChat() {
 }
 
 function EmptyState({ onPick }: { onPick: (s: string) => void }) {
+  const t = useTranslations("tools");
   return (
     <div className="flex flex-col gap-3 items-start">
       <Eyebrow>
         <span className="inline-flex items-center gap-1">
           <Sparkles size={11} strokeWidth={1.8} />
-          Quick starts
+          {t("concierge.quickStarts")}
         </span>
       </Eyebrow>
       <p className="text-[14px] text-bz-muted leading-[1.6] max-w-[60ch]">
-        Tell me what you&apos;re looking for in plain English — your budget,
-        the area, who&apos;ll live there, what matters. I&apos;ll pull from
-        our catalogue and off-market mandates and hand you 3–5 options with
-        deterministic match scores.
+        {t("concierge.emptyBody")}
       </p>
       <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-[60ch]">
-        {PROMPT_SUGGESTIONS.map((p) => (
+        {PROMPT_SUGGESTIONS.map((key) => (
           <button
-            key={p}
+            key={key}
             type="button"
-            onClick={() => onPick(p)}
+            onClick={() => onPick(t(`concierge.${key}`))}
             className="text-start px-4 py-3 rounded-lg bg-bz-surface border border-bz-border hover:border-bz-ink-2 text-[13px] text-bz-ink-2 flex justify-between items-center"
           >
-            {p}
+            {t(`concierge.${key}`)}
             <ArrowRight size={14} strokeWidth={1.6} className="text-bz-muted shrink-0 ms-3" />
           </button>
         ))}
@@ -456,11 +473,11 @@ function EmptyState({ onPick }: { onPick: (s: string) => void }) {
   );
 }
 
-function MessageBubble({ message }: { message: UiMessage }) {
+function MessageBubble({ message, t }: { message: UiMessage; t: T }) {
   if (message.role === "user") {
     return (
       <div className="self-end max-w-[78%]">
-        <div className="eyebrow text-end mb-1.5">You</div>
+        <div className="eyebrow text-end mb-1.5">{t("concierge.you")}</div>
         <div className="bg-bz-ink text-bz-bg px-5 py-3.5 rounded-2xl rounded-se-sm text-[14.5px] leading-[1.55]">
           {message.text}
         </div>
@@ -471,17 +488,17 @@ function MessageBubble({ message }: { message: UiMessage }) {
     <div className="max-w-[88%]">
       <div className="eyebrow inline-flex items-center gap-1.5 mb-1.5">
         <Sparkles size={12} strokeWidth={1.8} className="text-bz-accent" />
-        <span className="text-bz-accent">Bazar Concierge</span>
+        <span className="text-bz-accent">{t("concierge.botName")}</span>
       </div>
       <div className="bg-bz-surface border border-bz-border px-5 py-4 rounded-2xl rounded-ss-sm text-[14.5px] leading-[1.6]">
         {message.text ? (
           <p className="whitespace-pre-wrap">{message.text}</p>
         ) : (
-          <p className="text-bz-muted">Thinking…</p>
+          <p className="text-bz-muted">{t("concierge.thinking")}</p>
         )}
         {message.toolEvents && message.toolEvents.length > 0 ? (
           <div className="mt-4 p-3 bg-bz-surface-2 rounded-lg text-[12px] text-bz-muted">
-            <div className="eyebrow mb-1.5">While we talk · my work</div>
+            <div className="eyebrow mb-1.5">{t("concierge.myWork")}</div>
             <div className="flex flex-col gap-1">
               {message.toolEvents.map((e, i) => (
                 <div key={i} className="flex gap-2">
@@ -493,7 +510,7 @@ function MessageBubble({ message }: { message: UiMessage }) {
                     {e.status === "done" ? "✓" : "⋯"}
                   </span>
                   <span>
-                    {humaniseTool(e.name)}
+                    {humaniseTool(e.name, t)}
                     {e.summary ? ` · ${e.summary}` : ""}
                   </span>
                 </div>
@@ -509,9 +526,11 @@ function MessageBubble({ message }: { message: UiMessage }) {
 function ResultCard({
   property,
   score,
+  t,
 }: {
   property: Scoreable;
   score?: Score;
+  t: T;
 }) {
   const value = score?.score ?? null;
   const { prefs } = usePreferences();
@@ -526,13 +545,16 @@ function ResultCard({
                 {property.title}
               </div>
               <div className="text-[11.5px] text-bz-muted mt-0.5 truncate">
-                {formatPrice(property.price_aed, prefs)} · {property.beds} bd ·{" "}
-                {property.built_up_ft2
-                  ? formatArea(property.built_up_ft2, prefs.area_unit)
-                  : property.type}
+                {t("concierge.cardSpec", {
+                  price: formatPrice(property.price_aed, prefs),
+                  beds: property.beds,
+                  size: property.built_up_ft2
+                    ? formatArea(property.built_up_ft2, prefs.area_unit)
+                    : property.type,
+                })}
               </div>
               <div className="text-[11px] text-bz-muted mt-1">
-                {property.area ?? "United Arab Emirates"}
+                {property.area ?? t("concierge.fallbackArea")}
               </div>
             </div>
             <div className="text-center shrink-0">
@@ -548,7 +570,7 @@ function ResultCard({
                 {value ?? "—"}
               </div>
               <div className="text-[9px] text-bz-muted uppercase tracking-wider">
-                match
+                {t("concierge.match")}
               </div>
             </div>
           </div>
@@ -587,42 +609,45 @@ function ResultCard({
   );
 }
 
-function humaniseTool(name: string): string {
-  switch (name) {
-    case "search_properties":
-      return "Filtered live inventory";
-    case "semantic_search":
-      return "Semantic-searched the catalogue";
-    case "get_market_stats":
-      return "Pulled market comparables";
-    case "score_against_brief":
-      return "Scored matches against your brief";
-    case "pin_properties":
-      return "Pinned top matches to the rail";
-    case "hand_off_to_advisor":
-      return "Handed off to advisor";
-    default:
-      return name;
-  }
+/**
+ * The tool name, as a line the visitor can read.
+ *
+ * The switch is gone: the six tool names are the message keys. `has` guards
+ * the default — a tool the catalogue does not know about shows its raw name
+ * rather than the string `tools.concierge.tool.new_thing`, which is what
+ * `getMessageFallback` would otherwise render on the page.
+ */
+function humaniseTool(name: string, t: T): string {
+  const key = `concierge.tool.${name}`;
+  return t.has(key) ? t(key) : name;
 }
 
-function summariseResult(name: string, result: unknown): string | undefined {
+function summariseResult(
+  name: string,
+  result: unknown,
+  t: T,
+): string | undefined {
   const r = (result ?? {}) as Record<string, unknown>;
   if (name === "search_properties" || name === "semantic_search") {
     const count = Array.isArray(r.results) ? r.results.length : 0;
-    return `${count} candidate${count === 1 ? "" : "s"}`;
+    return t("concierge.candidates", { count });
   }
   if (name === "score_against_brief") {
     const scores = (r.scores as Array<{ score: number }>) ?? [];
-    if (scores.length === 0) return "no candidates";
+    if (scores.length === 0) return t("concierge.noCandidates");
     const top = Math.max(...scores.map((s) => s.score));
-    return `top ${top}`;
+    return t("concierge.topScore", { score: top });
   }
   if (name === "pin_properties") {
-    return `${r.pinned ?? 0} pinned`;
+    return t("concierge.pinnedCount", { count: Number(r.pinned ?? 0) });
   }
   if (name === "get_market_stats") {
-    return r.count != null ? `${r.count} listings in ${r.area ?? "area"}` : undefined;
+    return r.count != null
+      ? t("concierge.listingsInArea", {
+          count: Number(r.count),
+          area: String(r.area ?? ""),
+        })
+      : undefined;
   }
   return undefined;
 }
@@ -632,7 +657,13 @@ function summariseResult(name: string, result: unknown): string | undefined {
  * pre-filled as the first message. Lets the user escape the chat into a
  * live conversation without losing the context they just built up.
  */
-function AdvisorWhatsAppHandoff({ brief }: { brief: ConciergeBrief }) {
+function AdvisorWhatsAppHandoff({
+  brief,
+  t,
+}: {
+  brief: ConciergeBrief;
+  t: T;
+}) {
   const url = useMemo(
     () => buildAdvisorWhatsAppLink(formatBriefForWhatsApp(brief)),
     [brief],
@@ -648,7 +679,7 @@ function AdvisorWhatsAppHandoff({ brief }: { brief: ConciergeBrief }) {
         className="inline-flex items-center gap-2 text-[12.5px] text-bz-muted hover:text-bz-accent"
       >
         <MessageCircle size={13} strokeWidth={1.6} />
-        Hand-off to advisor via WhatsApp
+        {t("concierge.whatsAppHandoff")}
       </a>
     </div>
   );

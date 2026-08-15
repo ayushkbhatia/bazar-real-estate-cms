@@ -10,6 +10,7 @@ import {
 } from "nuqs";
 import { Download, Share2, Save, X } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -31,6 +32,7 @@ export function CompareToolbar({
   showDiff: boolean;
   count: number;
 }) {
+  const t = useTranslations("tools");
   const router = useRouter();
   const [, startTransition] = useTransition();
   const [state, setState] = useQueryStates(
@@ -62,7 +64,7 @@ export function CompareToolbar({
     const url = window.location.href;
     if (navigator.share) {
       try {
-        await navigator.share({ url, title: "Bazar comparison" });
+        await navigator.share({ url, title: t("compare.shareTitle") });
         return;
       } catch {
         // user dismissed; fall through to clipboard
@@ -70,11 +72,11 @@ export function CompareToolbar({
     }
     try {
       await navigator.clipboard.writeText(url);
-      toast.success("Link copied — paste anywhere.");
+      toast.success(t("compare.linkCopied"));
     } catch {
-      toast.error("Couldn't copy the link.");
+      toast.error(t("compare.linkCopyFailed"));
     }
-  }, []);
+  }, [t]);
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -83,10 +85,10 @@ export function CompareToolbar({
           type="checkbox"
           checked={showDiff}
           onChange={toggleDiff}
-          aria-label="Highlight differences"
+          aria-label={t("compare.highlightDifferences")}
           data-testid="diff-toggle"
         />
-        Highlight differences
+        {t("compare.highlightDifferences")}
       </label>
       <div className="w-px h-6 bg-bz-border mx-1" />
       <Button
@@ -94,27 +96,27 @@ export function CompareToolbar({
         size="sm"
         onClick={() => {
           if (ids.length === 0) {
-            toast.error("Add properties to compare first.");
+            toast.error(t("compare.addFirst"));
             return;
           }
           window.location.href = `/api/pdf/compare?ids=${encodeURIComponent(ids.join(","))}`;
         }}
-        title="Download comparison as PDF"
+        title={t("compare.pdfTitle")}
       >
         <Download size={14} strokeWidth={1.6} />
-        PDF
+        {t("compare.pdf")}
       </Button>
       <Button variant="outline" size="sm" onClick={share}>
         <Share2 size={14} strokeWidth={1.6} />
-        Share
+        {t("compare.share")}
       </Button>
       <Button
         size="sm"
         disabled
-        title="Save comparison lands with the valuation migration"
+        title={t("compare.saveTitle")}
       >
         <Save size={14} strokeWidth={1.6} />
-        Save comparison
+        {t("compare.save")}
       </Button>
       {/* Hidden control surface — each card calls back into here via
           a delegated click on the X button. We render small buttons
@@ -135,6 +137,7 @@ function RemoveButtons({
   ids: string[];
   onRemove: (id: string) => void;
 }) {
+  const t = useTranslations("tools");
   // The cards live in the server component and don't know how to fire
   // events back. We render screen-reader-only buttons positioned absolutely
   // *inside* each card via a global selector. That hidden-button approach
@@ -144,9 +147,9 @@ function RemoveButtons({
     <details className="relative">
       <summary
         className="list-none cursor-pointer text-[12px] text-bz-muted hover:text-bz-ink h-9 px-2 inline-flex items-center"
-        aria-label="Remove a property from the comparison"
+        aria-label={t("compare.removeMenuAria")}
       >
-        Remove…
+        {t("compare.removeMenu")}
       </summary>
       <div className="absolute end-0 top-full mt-1 z-10 bg-bz-surface border border-bz-border rounded shadow-lg p-2 min-w-[180px] flex flex-col gap-1">
         {ids.map((id, i) => (

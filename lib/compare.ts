@@ -21,16 +21,52 @@ export type UnitCell =
   | { kind: "ft2"; value: number | null }
   | { kind: "aedPerFt2"; value: number | null; per?: "yr" };
 
-export type CellValue = string | number | boolean | null | UnitCell;
+/**
+ * A cell whose text is a message key rather than words.
+ *
+ * The mode, the tenure, the furnishing and the type are enums, and this module
+ * used to turn each into English prose — the only strings in a file whose
+ * header says "pure helpers, no React, no DB". `renderCell` resolves the key
+ * against the catalogue instead, so the model stays arithmetic and taxonomy.
+ */
+export type MsgCell = {
+  kind: "msg";
+  key: string;
+  /** ICU `count`, for the two keys that are plurals — floor and listed-ago. */
+  count?: number;
+};
+
+export type CellValue =
+  | string
+  | number
+  | boolean
+  | null
+  | UnitCell
+  | MsgCell;
 
 /** The comparable number inside a cell, for diffing. */
 function cellKey(v: CellValue): string | number | boolean | null {
-  return v !== null && typeof v === "object" ? v.value : v;
+  if (v === null || typeof v !== "object") return v;
+  // A message cell diffs on its key, which is the enum — comparing rendered
+  // text would make the highlighting depend on the visitor's language, the
+  // same way comparing formatted money made it depend on their currency.
+  return v.kind === "msg"
+    ? `${v.key}${v.count === undefined ? "" : `:${v.count}`}`
+    : v.value;
 }
 
 export type AttributeRow = {
+  /** Stable key — the React list key, and the message key for the row name. */
   key: string;
-  label: string;
+  /**
+   * The row's name, when it is **data** rather than copy.
+   *
+   * Every row here is named by the catalogue via `key` — except an amenity
+   * row, whose name is an amenity string out of the database. That one gets
+   * its Arabic from the DB read fold, not from `messages/`, so it travels as
+   * text and the renderer prints it verbatim.
+   */
+  dataLabel?: string;
   /** One cell per property, in the same order as the input. */
   values: CellValue[];
   /** When true, the row is rendered with diff-highlight backgrounds. */
@@ -39,7 +75,6 @@ export type AttributeRow = {
 
 export type AttributeGroup = {
   key: string;
-  label: string;
   rows: AttributeRow[];
 };
 
@@ -47,81 +82,40 @@ export type AttributeGroup = {
  * Formatting
  * ───────────────────────────────────────────────────────────────*/
 
-export function modeLabel(mode: ComparableProperty["mode"]): string {
-  switch (mode) {
-    case "buy":
-      return "Buy · resale";
-    case "rent":
-      return "Rent";
-    case "off_plan":
-      return "Off-plan";
-    case "commercial":
-      return "Commercial";
-  }
+/*
+ * `modeLabel`, `typeLabel`, `tenureLabel` and `furnishingLabel` used to live
+ * here, each a switch returning English. They are enums, so the enum value is
+ * the message key and the switch was pure ceremony — the row now emits
+ * `{ kind: "msg", key: "mode.buy" }` and the page resolves it.
+ */
+
+/** A cell naming an enum, resolved against the catalogue at render time. */
+function msg(key: string, count?: number): MsgCell {
+  return count === undefined ? { kind: "msg", key } : { kind: "msg", key, count };
 }
 
-export function typeLabel(t: ComparableProperty["type"]): string {
-  switch (t) {
-    case "apartment":
-      return "Apartment";
-    case "villa":
-      return "Villa";
-    case "penthouse":
-      return "Penthouse";
-    case "townhouse":
-      return "Townhouse";
-    case "commercial":
-      return "Commercial";
-    case "land":
-      return "Land";
-    case "hotel_apartment":
-      return "Hotel apartment";
-    case "office":
-      return "Office";
-    case "building":
-      return "Building";
-    case "retail":
-      return "Retail";
-    case "commercial_villa":
-      return "Commercial villa";
-  }
-}
+/**
+ * How long ago a listing was published, as a unit and a count.
+ *
+ * It used to return the sentence — "today", "1 day ago", "5 mo ago" — which
+ * cannot be translated: Arabic has six plural categories and this had two, so
+ * "3 days ago" and "11 days ago" take different nouns. Returning the pair lets
+ * the caller pick an ICU message per unit and get all six.
+ */
+export type ListedAge =
+  | { unit: "day" | "month" | "year"; n: number }
+  | null;
 
-export function tenureLabel(
-  t: ComparableProperty["tenure"],
-): string | null {
-  if (!t) return null;
-  return t === "freehold"
-    ? "Freehold"
-    : t === "leasehold"
-      ? "Leasehold"
-      : "Usufruct";
-}
-
-export function furnishingLabel(
-  f: ComparableProperty["furnishing"],
-): string | null {
-  if (!f) return null;
-  return f === "unfurnished"
-    ? "Unfurnished"
-    : f === "semi"
-      ? "Semi-furnished"
-      : "Fully furnished";
-}
-
-/** Days since publication. */
-export function listedDays(
+export function listedAge(
   publishedIso: string | null,
   nowMs: number,
-): string {
-  if (!publishedIso) return "—";
+): ListedAge {
+  if (!publishedIso) return null;
   const ms = nowMs - new Date(publishedIso).getTime();
-  const d = Math.floor(ms / (24 * 60 * 60_000));
-  if (d <= 0) return "today";
-  if (d === 1) return "1 day ago";
-  if (d < 30) return `${d} days ago`;
-  if (d < 365) return `${Math.floor(d / 30)} mo ago`;
-  return `${Math.floor(d / 365)} yr ago`;
+  const d = Math.max(0, Math.floor(ms / (24 * 60 * 60_000)));
+  if (d < 30) return { unit: "day", n: d };
+  if (d < 365) return { unit: "month", n: Math.floor(d / 30) };
+  return { unit: "year", n: Math.floor(d / 365) };
 }
 
 /* ────────────────────────────────────────────────────────────────
@@ -147,12 +141,17 @@ export function rowDiffers(values: CellValue[]): boolean {
  * Row builders
  * ───────────────────────────────────────────────────────────────*/
 
-function row(
+function row(key: string, values: CellValue[]): AttributeRow {
+  return { key, values, differs: rowDiffers(values) };
+}
+
+/** An amenity row, whose name comes from the database rather than a message. */
+function dataRow(
   key: string,
-  label: string,
+  dataLabel: string,
   values: CellValue[],
 ): AttributeRow {
-  return { key, label, values, differs: rowDiffers(values) };
+  return { key, dataLabel, values, differs: rowDiffers(values) };
 }
 
 function map<T>(
@@ -173,29 +172,24 @@ function priceAndTermsGroup(
 ): AttributeGroup {
   return {
     key: "price_terms",
-    label: "Price & terms",
     rows: [
       row(
         "asking_price",
-        "Asking price",
         map(rows, (p) => ({ kind: "aed", value: p.price_aed })),
       ),
       // "per area", not "per ft²" — the unit is the visitor's to choose, and
       // the cell renders it.
       row(
         "ppf",
-        "Price per area",
         map(rows, (p) => ({ kind: "aedPerFt2", value: pricePerFt2(p) })),
       ),
-      row("mode", "Mode", map(rows, (p) => modeLabel(p.mode))),
+      row("mode", map(rows, (p) => msg(`mode.${p.mode}`))),
       row(
         "tenure",
-        "Tenure",
-        map(rows, (p) => tenureLabel(p.tenure) ?? "—"),
+        map(rows, (p) => (p.tenure ? msg(`tenure.${p.tenure}`) : null)),
       ),
       row(
         "service_charge",
-        "Service charge",
         map(rows, (p) => ({
           kind: "aedPerFt2",
           value: p.service_charge_per_ft2,
@@ -204,8 +198,10 @@ function priceAndTermsGroup(
       ),
       row(
         "listed",
-        "Listed",
-        map(rows, (p) => listedDays(p.published_at, nowMs)),
+        map(rows, (p) => {
+          const age = listedAge(p.published_at, nowMs);
+          return age ? msg(`listed.${age.unit}`, age.n) : null;
+        }),
       ),
     ],
   };
@@ -214,48 +210,32 @@ function priceAndTermsGroup(
 function specificationsGroup(rows: ComparableProperty[]): AttributeGroup {
   return {
     key: "specifications",
-    label: "Specifications",
     rows: [
-      row("type", "Type", map(rows, (p) => typeLabel(p.type))),
-      row("beds", "Bedrooms", map(rows, (p) => p.beds)),
-      row("baths", "Bathrooms", map(rows, (p) => p.baths)),
+      row("type", map(rows, (p) => msg(`type.${p.type}`))),
+      row("beds", map(rows, (p) => p.beds)),
+      row("baths", map(rows, (p) => p.baths)),
       row(
         "built_up",
-        "Area (built-up)",
         map(rows, (p) => ({ kind: "ft2", value: p.built_up_ft2 })),
       ),
-      row(
-        "plot",
-        "Plot area",
-        map(rows, (p) => ({ kind: "ft2", value: p.plot_ft2 })),
-      ),
+      row("plot", map(rows, (p) => ({ kind: "ft2", value: p.plot_ft2 }))),
+      // The floor NUMBER travels; the word "Floor" is the caller's. Returning
+      // `Floor 7` here put a translatable noun inside a diffing key, so two
+      // properties on the same floor compared as equal only by accident of
+      // spelling.
       row(
         "floor",
-        "Floor",
-        map(rows, (p) =>
-          p.floor == null ? "—" : `Floor ${p.floor}`,
-        ),
+        map(rows, (p) => (p.floor == null ? null : msg("floorValue", p.floor))),
       ),
-      row(
-        "year_built",
-        "Year built",
-        map(rows, (p) => p.year_built ?? "—"),
-      ),
-      row(
-        "parking",
-        "Parking bays",
-        map(rows, (p) => p.parking_bays ?? "—"),
-      ),
+      row("year_built", map(rows, (p) => p.year_built ?? null)),
+      row("parking", map(rows, (p) => p.parking_bays ?? null)),
       row(
         "furnishing",
-        "Furnishing",
-        map(rows, (p) => furnishingLabel(p.furnishing) ?? "—"),
+        map(rows, (p) =>
+          p.furnishing ? msg(`furnishing.${p.furnishing}`) : null,
+        ),
       ),
-      row(
-        "view",
-        "View",
-        map(rows, (p) => p.view ?? "—"),
-      ),
+      row("view", map(rows, (p) => p.view ?? null)),
     ],
   };
 }
@@ -263,14 +243,7 @@ function specificationsGroup(rows: ComparableProperty[]): AttributeGroup {
 function locationGroup(rows: ComparableProperty[]): AttributeGroup {
   return {
     key: "location",
-    label: "Location",
-    rows: [
-      row(
-        "area",
-        "Neighborhood",
-        map(rows, (p) => p.area_name ?? "—"),
-      ),
-    ],
+    rows: [row("area", map(rows, (p) => p.area_name ?? null))],
   };
 }
 
@@ -288,21 +261,15 @@ function amenitiesGroup(rows: ComparableProperty[]): AttributeGroup {
   if (all.length === 0) {
     return {
       key: "amenities",
-      label: "Amenities",
       rows: [
-        row(
-          "amenity_count",
-          "Listed amenities",
-          map(rows, (p) => p.amenities.length),
-        ),
+        row("amenity_count", map(rows, (p) => p.amenities.length)),
       ],
     };
   }
   return {
     key: "amenities",
-    label: "Amenities",
     rows: all.slice(0, 12).map((amenity) =>
-      row(
+      dataRow(
         `amenity::${amenity.toLowerCase()}`,
         amenity,
         map(rows, (p) =>
@@ -316,21 +283,17 @@ function amenitiesGroup(rows: ComparableProperty[]): AttributeGroup {
 function investmentGroup(rows: ComparableProperty[]): AttributeGroup {
   return {
     key: "investment",
-    label: "Investment",
     rows: [
       row(
         "exclusive",
-        "Bazar exclusive",
         map(rows, (p) => Boolean(p.flags?.exclusive)),
       ),
       row(
         "vacant_on_transfer",
-        "Vacant on transfer",
         map(rows, (p) => Boolean(p.flags?.vacant_on_transfer)),
       ),
       row(
         "mortgage_eligible",
-        "Mortgageable now",
         map(rows, (p) =>
           // Off-plan: assume not mortgageable yet unless explicitly flagged.
           p.mode === "off_plan"

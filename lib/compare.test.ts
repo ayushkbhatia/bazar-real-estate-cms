@@ -2,8 +2,7 @@ import { describe, it, expect } from "vitest";
 import type { ComparableProperty } from "@/lib/queries/compare";
 import {
   buildAttributeGroups,
-  listedDays,
-  modeLabel,
+  listedAge,
   rowDiffers,
   unionAmenities,
 } from "./compare";
@@ -43,26 +42,71 @@ function p(
 }
 
 
-describe("modeLabel", () => {
-  it("disambiguates buy as 'Buy · resale' for the comparison table", () => {
-    expect(modeLabel("buy")).toBe("Buy · resale");
-    expect(modeLabel("off_plan")).toBe("Off-plan");
+describe("enum cells", () => {
+  it("emits the enum as a message key rather than English", () => {
+    // `modeLabel`/`typeLabel`/`tenureLabel`/`furnishingLabel` used to turn
+    // these into prose inside a file whose header says "no React, no DB".
+    // The words are the caller's now; the model emits the key.
+    const [priceTerms, specs] = buildAttributeGroups([p()]);
+    const cell = (g: typeof priceTerms, key: string) =>
+      g.rows.find((r) => r.key === key)!.values[0];
+    expect(cell(priceTerms!, "mode")).toEqual({ kind: "msg", key: "mode.buy" });
+    expect(cell(priceTerms!, "tenure")).toEqual({
+      kind: "msg",
+      key: "tenure.freehold",
+    });
+    expect(cell(specs!, "type")).toEqual({
+      kind: "msg",
+      key: "type.apartment",
+    });
+    expect(cell(specs!, "furnishing")).toEqual({
+      kind: "msg",
+      key: "furnishing.unfurnished",
+    });
+  });
+
+  it("carries the floor as a count, not as the words 'Floor 7'", () => {
+    // The noun used to be baked in, which put a translatable word inside the
+    // value two properties are diffed on.
+    const [, specs] = buildAttributeGroups([p({ floor: 7 })]);
+    expect(specs!.rows.find((r) => r.key === "floor")!.values[0]).toEqual({
+      kind: "msg",
+      key: "floorValue",
+      count: 7,
+    });
+  });
+
+  it("diffs a message cell on its key and count, not its rendered text", () => {
+    // Otherwise the highlighting would depend on the visitor's language, the
+    // way it once depended on their currency.
+    expect(
+      rowDiffers([
+        { kind: "msg", key: "floorValue", count: 7 },
+        { kind: "msg", key: "floorValue", count: 9 },
+      ]),
+    ).toBe(true);
+    expect(
+      rowDiffers([
+        { kind: "msg", key: "mode.buy" },
+        { kind: "msg", key: "mode.buy" },
+      ]),
+    ).toBe(false);
   });
 });
 
-describe("listedDays", () => {
+describe("listedAge", () => {
   const NOW = new Date("2026-05-21T12:00:00Z").getTime();
 
-  it("returns days for recent listings, months/years for older ones", () => {
-    expect(listedDays("2026-05-19T12:00:00Z", NOW)).toBe("2 days ago");
-    expect(listedDays("2026-05-20T12:00:00Z", NOW)).toBe("1 day ago");
-    expect(listedDays("2026-05-21T12:00:00Z", NOW)).toBe("today");
-    expect(listedDays("2026-02-21T12:00:00Z", NOW)).toBe("2 mo ago");
-    expect(listedDays("2024-05-21T12:00:00Z", NOW)).toBe("2 yr ago");
+  it("returns a unit and a count, so the caller can pluralise", () => {
+    expect(listedAge("2026-05-19T12:00:00Z", NOW)).toEqual({ unit: "day", n: 2 });
+    expect(listedAge("2026-05-20T12:00:00Z", NOW)).toEqual({ unit: "day", n: 1 });
+    expect(listedAge("2026-05-21T12:00:00Z", NOW)).toEqual({ unit: "day", n: 0 });
+    expect(listedAge("2026-02-21T12:00:00Z", NOW)).toEqual({ unit: "month", n: 2 });
+    expect(listedAge("2024-05-21T12:00:00Z", NOW)).toEqual({ unit: "year", n: 2 });
   });
 
   it("returns em-dash when never published", () => {
-    expect(listedDays(null, NOW)).toBe("—");
+    expect(listedAge(null, NOW)).toBeNull();
   });
 });
 

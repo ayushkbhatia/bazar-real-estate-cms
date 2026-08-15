@@ -67,6 +67,13 @@ export type Issue = {
      * so every other check passes.
      */
     | "json-literal"
+    /**
+     * A Latin letter welded into an Arabic word: `امتb الإمارات` for "United
+     * Arab Emirates". Distinct from `latin-leak`, which looks for runs of four
+     * or more and so never sees a single stray character, and from `mojibake`,
+     * which allows Latin because `AED` and `ft²` are legitimate.
+     */
+    | "latin-intrusion"
     | "empty"
     /**
      * The API declined the request outright — `stop_reason: "refusal"`, zero
@@ -115,6 +122,33 @@ export function toWesternDigits(s: string): string {
  */
 function latinRuns(text: string): string[] {
   return text.match(/[A-Za-z]{4,}/gu) ?? [];
+}
+
+/**
+ * A Latin letter directly against an Arabic one, with no space between.
+ *
+ * Legitimate Latin in Arabic output is a token — `AED`, `ft²`, `BR-1042` —
+ * and a token has whitespace or punctuation around it. A letter fused to an
+ * Arabic word is a corrupted character, and the one observed produced
+ * `امتb الإمارات العربية المتحدة` where the Arabic wanted only the last three
+ * words.
+ *
+ * The Arabic side is Arabic LETTERS, spelled out as ranges rather than as the
+ * whole `\u0600-\u06FF` block. The block version flagged `AED 12M، على` — a
+ * Latin token against U+060C, the Arabic comma — which is ordinary
+ * punctuation and would have failed a perfectly good string.
+ *
+ * `[[\p{Script=Arabic}&&\p{L}]]` says this far better and is not available:
+ * set intersection needs the `v` flag, which needs `target: es2024`, which
+ * `next build` does not use even though `tsc --noEmit` here does. That gap is
+ * why this was caught by Playwright's own build rather than by the gate.
+ */
+function latinIntrusions(text: string): string[] {
+  return (
+    text.match(
+      /[\u0621-\u064A\u0671-\u06D3][A-Za-z]|[A-Za-z][\u0621-\u064A\u0671-\u06D3]/gu,
+    ) ?? []
+  );
 }
 
 /**
@@ -215,6 +249,14 @@ export function validate(
     issues.push({
       code: "multiline",
       detail: `output has ${output.split("\n").length - 1} newline(s) the English does not — likely the model's own working`,
+    });
+  }
+
+  const fused = latinIntrusions(output);
+  if (fused.length > 0) {
+    issues.push({
+      code: "latin-intrusion",
+      detail: `Latin letter fused to an Arabic word: ${[...new Set(fused)].slice(0, 4).join(", ")}`,
     });
   }
 

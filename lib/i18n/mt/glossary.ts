@@ -53,6 +53,12 @@ export const GLOSSARY: GlossaryEntry[] = [
     en: "usufruct",
     ar: "حق انتفاع",
     stem: "انتفاع",
+    note:
+      "Deliberately the same rendering as `leasehold`, which is fine in prose " +
+      "and NOT fine in a table: /tools/compare puts the two tenure values in " +
+      "the same column, where they now read identically. Splitting them is a " +
+      "legal-terminology question for the client's compliance contact, not a " +
+      "translation one — see ADR-0007's open question 1.",
   },
   {
     en: "musataha",
