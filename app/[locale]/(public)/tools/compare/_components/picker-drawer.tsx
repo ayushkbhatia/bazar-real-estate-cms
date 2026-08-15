@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Plus, Heart, Clock, Search } from "lucide-react";
 import {
   Sheet,
@@ -56,6 +57,7 @@ export function PickerDrawer({
    *  something compact so the two don't nest. */
   children?: React.ReactNode;
 }) {
+  const t = useTranslations("tools");
   const { prefs } = usePreferences();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"saved" | "recent" | "search">("saved");
@@ -108,7 +110,7 @@ export function PickerDrawer({
           >
             <div className="text-center">
               <Plus size={20} strokeWidth={1.5} className="mx-auto mb-1.5" />
-              <span className="text-[12.5px]">Add to compare</span>
+              <span className="text-[12.5px]">{t("picker.addToCompare")}</span>
             </div>
           </button>
         )}
@@ -118,18 +120,18 @@ export function PickerDrawer({
         className="data-[side=right]:w-full sm:w-[400px] overflow-y-auto"
       >
         <SheetHeader>
-          <SheetTitle>Add to compare</SheetTitle>
+          <SheetTitle>{t("picker.addToCompare")}</SheetTitle>
         </SheetHeader>
 
         <div className="px-6 pt-2">
           <div
             role="tablist"
-            aria-label="Picker source"
+            aria-label={t("picker.source")}
             className="border-b border-bz-border flex gap-4"
           >
             <TabBtn active={tab === "saved"} onClick={() => setTab("saved")}>
               <Heart size={12} strokeWidth={1.7} />
-              Saved
+              {t("picker.tabSaved")}
               {candidates.length > 0 ? (
                 <span className="mono text-[10.5px] text-bz-muted">
                   {candidates.length}
@@ -138,11 +140,11 @@ export function PickerDrawer({
             </TabBtn>
             <TabBtn active={tab === "recent"} onClick={() => setTab("recent")}>
               <Clock size={12} strokeWidth={1.7} />
-              Recently viewed
+              {t("picker.tabRecent")}
             </TabBtn>
             <TabBtn active={tab === "search"} onClick={() => setTab("search")}>
               <Search size={12} strokeWidth={1.7} />
-              Search
+              {t("picker.tabSearch")}
             </TabBtn>
           </div>
 
@@ -150,30 +152,28 @@ export function PickerDrawer({
             {tab === "saved" ? (
               saved === null ? (
                 <p className="py-10 text-center text-[12.5px] text-bz-ink-2 italic">
-                  Loading your shortlist…
+                  {t("picker.loading")}
                 </p>
               ) : candidates.length === 0 ? (
                 <EmptyPanel
-                  title={
+                  title={t(
                     (saved?.length ?? 0) > 0
-                      ? "Everything saved is already here"
-                      : "No saved listings yet"
-                  }
-                  body={
+                      ? "picker.allHereTitle"
+                      : "picker.noneTitle",
+                  )}
+                  body={t(
                     (saved?.length ?? 0) > 0
-                      ? "Shortlist another listing and it'll show up in this tab."
-                      : "Hit the shortlist icon on any listing card and it'll show up here."
-                  }
+                      ? "picker.allHereBody"
+                      : "picker.noneBody",
+                  )}
                   href="/buy"
-                  cta="Browse listings"
+                  cta={t("picker.browseListings")}
                 />
               ) : (
                 <>
                   <p className="text-[11.5px] text-bz-muted">
-                    {slotsLeft === 1
-                      ? "One slot left."
-                      : `${slotsLeft} slots left.`}{" "}
-                    Pick one to add it to the comparison.
+                    {t("picker.slotsLeft", { count: slotsLeft })}{" "}
+                    {t("picker.pickOne")}
                   </p>
                   <ul className="mt-3 flex flex-col divide-y divide-bz-border">
                     {candidates.map((item) => (
@@ -210,14 +210,17 @@ export function PickerDrawer({
                               {item.title}
                             </span>
                             <span className="block text-[11.5px] text-bz-ink-2 mt-0.5 truncate">
-                              {item.area_name ?? "United Arab Emirates"}
+                              {item.area_name ?? t("picker.fallbackArea")}
                             </span>
                             <span className="mt-1 flex items-baseline justify-between gap-2">
                               <span className="mono text-[12px] text-bz-ink">
                                 {formatPrice(item.price_aed, prefs)}
                               </span>
                               <span className="text-[11px] text-bz-ink-2">
-                                {item.beds}b · {item.baths}ba
+                                {t("picker.bedsBaths", {
+                                  beds: item.beds,
+                                  baths: item.baths,
+                                })}
                               </span>
                             </span>
                           </span>
@@ -229,17 +232,17 @@ export function PickerDrawer({
               )
             ) : tab === "recent" ? (
               <EmptyPanel
-                title="Nothing viewed yet"
-                body="Listings you open aren't remembered — shortlist them instead and they'll appear under Saved."
+                title={t("picker.recentTitle")}
+                body={t("picker.recentBody")}
                 href="/buy"
-                cta="Browse listings"
+                cta={t("picker.browseListings")}
               />
             ) : (
               <EmptyPanel
-                title="Search the marketplace"
-                body="Open the full search to find a listing, then hit the shortlist icon on its card to bring it here."
+                title={t("picker.searchTitle")}
+                body={t("picker.searchBody")}
                 href="/buy"
-                cta="Open search"
+                cta={t("picker.openSearch")}
               />
             )}
           </div>

@@ -2563,5 +2563,923 @@
     "model": null,
     "sourceHash": "7fa9af1252eb",
     "reviewed": true
+  },
+  "tools.compare.metaTitle": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fab6b072bbf9",
+    "reviewed": false
+  },
+  "tools.compare.heading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a3d7b387c34d",
+    "reviewed": false
+  },
+  "tools.compare.group.price_terms": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7e0e2154ca52",
+    "reviewed": false
+  },
+  "tools.compare.group.specifications": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "015b4e0a76e5",
+    "reviewed": false
+  },
+  "tools.compare.group.location": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "15b61974b270",
+    "reviewed": false
+  },
+  "tools.compare.group.amenities": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3e671d3a0d15",
+    "reviewed": false
+  },
+  "tools.compare.group.investment": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "40754039ee2b",
+    "reviewed": true
+  },
+  "tools.compare.row.asking_price": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "40005aa18a39",
+    "reviewed": false
+  },
+  "tools.compare.row.ppf": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "aad888020a27",
+    "reviewed": false
+  },
+  "tools.compare.row.mode": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5e23ec6a300d",
+    "reviewed": true
+  },
+  "tools.compare.row.tenure": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "872d94afc42c",
+    "reviewed": false
+  },
+  "tools.compare.row.service_charge": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5c535d19ebc1",
+    "reviewed": false
+  },
+  "tools.compare.row.listed": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "78797afdac99",
+    "reviewed": false
+  },
+  "tools.compare.row.type": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "baaddf70fb5d",
+    "reviewed": false
+  },
+  "tools.compare.row.beds": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2477f3143d34",
+    "reviewed": false
+  },
+  "tools.compare.row.baths": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c7f191c4d296",
+    "reviewed": false
+  },
+  "tools.compare.row.built_up": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "eb9a6bb319c2",
+    "reviewed": false
+  },
+  "tools.compare.row.plot": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "fbc6e6c14f2e",
+    "reviewed": true
+  },
+  "tools.compare.row.floor": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d268c9c44920",
+    "reviewed": false
+  },
+  "tools.compare.row.year_built": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a16c86994cba",
+    "reviewed": false
+  },
+  "tools.compare.row.parking": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b2bce54ea686",
+    "reviewed": false
+  },
+  "tools.compare.row.furnishing": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "cc288f83ffe8",
+    "reviewed": true
+  },
+  "tools.compare.row.view": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "dcc839a4015c",
+    "reviewed": true
+  },
+  "tools.compare.row.area": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1e99f126692f",
+    "reviewed": false
+  },
+  "tools.compare.row.amenity_count": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "52bfe1fbe145",
+    "reviewed": false
+  },
+  "tools.compare.row.exclusive": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "70b9fb52389b",
+    "reviewed": true
+  },
+  "tools.compare.row.vacant_on_transfer": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5ac4757119da",
+    "reviewed": false
+  },
+  "tools.compare.row.mortgage_eligible": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "f080cd37411a",
+    "reviewed": true
+  },
+  "tools.compare.mode.buy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c9ee7ac05ec6",
+    "reviewed": false
+  },
+  "tools.compare.mode.rent": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f0268cb9100a",
+    "reviewed": false
+  },
+  "tools.compare.mode.off_plan": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1e494873d5a6",
+    "reviewed": false
+  },
+  "tools.compare.mode.commercial": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "ea7d0b763435",
+    "reviewed": true
+  },
+  "tools.compare.tenure.freehold": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "93121a841ed0",
+    "reviewed": false
+  },
+  "tools.compare.tenure.leasehold": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7b607809680c",
+    "reviewed": false
+  },
+  "tools.compare.tenure.usufruct": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "601632660460",
+    "reviewed": false
+  },
+  "tools.compare.furnishing.unfurnished": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "bf193de9ee20",
+    "reviewed": false
+  },
+  "tools.compare.furnishing.semi": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b876608dbe6b",
+    "reviewed": false
+  },
+  "tools.compare.furnishing.fully": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1c2cb94bc144",
+    "reviewed": false
+  },
+  "tools.compare.type.apartment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3fc028ffbb16",
+    "reviewed": false
+  },
+  "tools.compare.type.villa": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "afad4c579e50",
+    "reviewed": false
+  },
+  "tools.compare.type.penthouse": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e25d47b2f989",
+    "reviewed": false
+  },
+  "tools.compare.type.townhouse": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "305d3335194d",
+    "reviewed": false
+  },
+  "tools.compare.type.commercial": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "ea7d0b763435",
+    "reviewed": true
+  },
+  "tools.compare.type.land": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b6baff9358dd",
+    "reviewed": false
+  },
+  "tools.compare.type.hotel_apartment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a99c00683d3f",
+    "reviewed": false
+  },
+  "tools.compare.type.office": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9e380d9991e6",
+    "reviewed": false
+  },
+  "tools.compare.type.building": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "87c5912f2cef",
+    "reviewed": false
+  },
+  "tools.compare.type.retail": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cdb38c8dc89a",
+    "reviewed": false
+  },
+  "tools.compare.type.commercial_villa": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "925ded28a804",
+    "reviewed": false
+  },
+  "tools.compare.listed.day": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "72bff8393d4d",
+    "reviewed": false
+  },
+  "tools.compare.listed.month": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ae1a27f83995",
+    "reviewed": false
+  },
+  "tools.compare.listed.year": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "8025621f75a6",
+    "reviewed": true
+  },
+  "tools.compare.floorValue": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cba3f1d83143",
+    "reviewed": false
+  },
+  "tools.compare.yes": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "85a39ab345d6",
+    "reviewed": true
+  },
+  "tools.compare.no": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1ea442a134b2",
+    "reviewed": false
+  },
+  "tools.compare.fullComparison": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "61cae854090d",
+    "reviewed": false
+  },
+  "tools.compare.propertyCount": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "ea882471c6cf",
+    "reviewed": true
+  },
+  "tools.compare.whatDiffers": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1710711052f0",
+    "reviewed": false
+  },
+  "tools.compare.bestFit": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a74c365a5b23",
+    "reviewed": false
+  },
+  "tools.compare.unresolvedTitle": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a0933b3ef87c",
+    "reviewed": false
+  },
+  "tools.compare.unresolvedBody": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8b04fc0dece3",
+    "reviewed": false
+  },
+  "tools.compare.emptySlotTitle": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "27f66bb371e4",
+    "reviewed": false
+  },
+  "tools.compare.emptySlotBody": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "aa89d44b9b90",
+    "reviewed": false
+  },
+  "tools.compare.browse": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "3227aa966625",
+    "reviewed": true
+  },
+  "tools.compare.addFromShortlist": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ff4953d7278c",
+    "reviewed": false
+  },
+  "tools.compare.emptyEyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e888155d8c7d",
+    "reviewed": false
+  },
+  "tools.compare.emptyHeading": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5f1cae91f25b",
+    "reviewed": true
+  },
+  "tools.compare.emptyBody": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "163fca85e127",
+    "reviewed": false
+  },
+  "tools.compare.browseMarketplace": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "fd5be8c298fd",
+    "reviewed": true
+  },
+  "tools.compare.comparingCount": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "19cd5014aa18",
+    "reviewed": false
+  },
+  "tools.compare.shareTitle": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "aa8ce88dd539",
+    "reviewed": true
+  },
+  "tools.compare.linkCopied": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6bd4eafb0089",
+    "reviewed": false
+  },
+  "tools.compare.linkCopyFailed": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fb7cf90aa374",
+    "reviewed": false
+  },
+  "tools.compare.highlightDifferences": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "258a98f42f53",
+    "reviewed": true
+  },
+  "tools.compare.addFirst": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "58b7a7a881a9",
+    "reviewed": false
+  },
+  "tools.compare.pdfTitle": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f96ba2220a1a",
+    "reviewed": false
+  },
+  "tools.compare.pdf": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1d393b0081b6",
+    "reviewed": false
+  },
+  "tools.compare.share": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "29887a5ff984",
+    "reviewed": true
+  },
+  "tools.compare.saveTitle": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c2ea71672143",
+    "reviewed": false
+  },
+  "tools.compare.save": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "634836ce5874",
+    "reviewed": false
+  },
+  "tools.compare.removeMenu": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "708d25234a50",
+    "reviewed": true
+  },
+  "tools.compare.removeMenuAria": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0cbdc4211d62",
+    "reviewed": false
+  },
+  "tools.compare.metricsReference": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "71bf90935fc2",
+    "reviewed": false
+  },
+  "tools.compare.metricsYield": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "78702296a870",
+    "reviewed": false
+  },
+  "tools.compare.metricsForeign": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "990ec0cbe656",
+    "reviewed": true
+  },
+  "tools.compare.metricsMortgageable": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ae1bc985b04d",
+    "reviewed": false
+  },
+  "tools.compare.foreignYes": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0a50b11ff1ec",
+    "reviewed": false
+  },
+  "tools.compare.foreignRestricted": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a00571bcb257",
+    "reviewed": false
+  },
+  "tools.compare.mortgageableCash": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "8a254151f3ea",
+    "reviewed": true
+  },
+  "tools.compare.metricsHeading": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "fe7f2114d572",
+    "reviewed": true
+  },
+  "tools.compare.metricsGrowth": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6055d0dc6c55",
+    "reviewed": false
+  },
+  "tools.compare.verdictEyebrow": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "c15f685665e9",
+    "reviewed": true
+  },
+  "tools.compare.verdictBody": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "436536b19e7a",
+    "reviewed": false
+  },
+  "tools.compare.verdictNote": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "03f4ec3eefd6",
+    "reviewed": false
+  },
+  "tools.picker.addToCompare": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4c4f51c8b887",
+    "reviewed": false
+  },
+  "tools.picker.source": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2ccb6013da7d",
+    "reviewed": false
+  },
+  "tools.picker.tabSaved": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b5c120b316c2",
+    "reviewed": false
+  },
+  "tools.picker.tabRecent": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8e445e8aa6d2",
+    "reviewed": false
+  },
+  "tools.picker.tabSearch": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "49c266baaaa7",
+    "reviewed": false
+  },
+  "tools.picker.loading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "929bc89de71d",
+    "reviewed": false
+  },
+  "tools.picker.allHereTitle": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d05c48c2d99e",
+    "reviewed": false
+  },
+  "tools.picker.allHereBody": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "fb95374a5922",
+    "reviewed": true
+  },
+  "tools.picker.noneTitle": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8c0da110fc62",
+    "reviewed": false
+  },
+  "tools.picker.noneBody": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "581758a1964c",
+    "reviewed": false
+  },
+  "tools.picker.browseListings": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4ba99b00c519",
+    "reviewed": false
+  },
+  "tools.picker.slotsLeft": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "4ddcc4561645",
+    "reviewed": true
+  },
+  "tools.picker.pickOne": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "754cacc7265c",
+    "reviewed": false
+  },
+  "tools.picker.fallbackArea": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "dd64913c8b91",
+    "reviewed": true
+  },
+  "tools.picker.bedsBaths": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "80e1fa05f28f",
+    "reviewed": false
+  },
+  "tools.picker.recentTitle": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d972ca58b48d",
+    "reviewed": false
+  },
+  "tools.picker.recentBody": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "aa49de0c72f0",
+    "reviewed": false
+  },
+  "tools.picker.searchTitle": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "0a6ea1b07058",
+    "reviewed": true
+  },
+  "tools.picker.searchBody": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "134d6fe0b720",
+    "reviewed": false
+  },
+  "tools.picker.openSearch": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "50ce48b9c623",
+    "reviewed": false
+  },
+  "tools.concierge.online": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "41794ac599df",
+    "reviewed": false
+  },
+  "tools.concierge.headingLead": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ce6754108586",
+    "reviewed": false
+  },
+  "tools.concierge.headingEmphasis": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "0b52ef671c5b",
+    "reviewed": true
+  },
+  "tools.concierge.newBrief": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "95c73a6adf92",
+    "reviewed": true
+  },
+  "tools.concierge.composerPlaceholder": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "78282426cb80",
+    "reviewed": false
+  },
+  "tools.concierge.handOff": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "a20114c29d09",
+    "reviewed": true
+  },
+  "tools.concierge.handOffPrompt": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a3a8be1400ab",
+    "reviewed": false
+  },
+  "tools.concierge.send": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f6f4688ff23d",
+    "reviewed": false
+  },
+  "tools.concierge.try": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "85d6c0718cfe",
+    "reviewed": true
+  },
+  "tools.concierge.quickStarts": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "aa135997d19c",
+    "reviewed": true
+  },
+  "tools.concierge.emptyBody": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "62e43933149c",
+    "reviewed": false
+  },
+  "tools.concierge.suggestion1": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ec56dda565ab",
+    "reviewed": false
+  },
+  "tools.concierge.suggestion2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "72937e824506",
+    "reviewed": false
+  },
+  "tools.concierge.suggestion3": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "62176cd89f47",
+    "reviewed": true
+  },
+  "tools.concierge.suggestion4": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e01fc52d8ba4",
+    "reviewed": false
+  },
+  "tools.concierge.briefHeading": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "8a506dc5c144",
+    "reviewed": true
+  },
+  "tools.concierge.briefEmpty": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5f9d04604cc7",
+    "reviewed": true
+  },
+  "tools.concierge.matchCount": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6d9da4e23a61",
+    "reviewed": false
+  },
+  "tools.concierge.scoredAgainst": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3d9bf6adc987",
+    "reviewed": false
+  },
+  "tools.concierge.noPinned": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5bf25b5a4771",
+    "reviewed": true
+  },
+  "tools.concierge.you": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "08b041935798",
+    "reviewed": true
+  },
+  "tools.concierge.botName": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "a9d7d1ff9a8c",
+    "reviewed": true
+  },
+  "tools.concierge.thinking": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a02f1cea3c1d",
+    "reviewed": false
+  },
+  "tools.concierge.myWork": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b7f63274b3f3",
+    "reviewed": false
+  },
+  "tools.concierge.fallbackArea": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "dd64913c8b91",
+    "reviewed": true
+  },
+  "tools.concierge.match": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4945a70fa7f9",
+    "reviewed": false
+  },
+  "tools.concierge.cardSpec": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f8a8410ddeac",
+    "reviewed": false
+  },
+  "tools.concierge.whatsAppHandoff": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "837d30b82bdd",
+    "reviewed": false
+  },
+  "tools.concierge.tool.search_properties": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "724e2eb571c1",
+    "reviewed": true
+  },
+  "tools.concierge.tool.semantic_search": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "efefd325291d",
+    "reviewed": false
+  },
+  "tools.concierge.tool.get_market_stats": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "17e768ee26be",
+    "reviewed": false
+  },
+  "tools.concierge.tool.score_against_brief": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "99f694f68e1d",
+    "reviewed": true
+  },
+  "tools.concierge.tool.pin_properties": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "29bf79aa5e01",
+    "reviewed": false
+  },
+  "tools.concierge.tool.hand_off_to_advisor": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "b70a72197577",
+    "reviewed": true
+  },
+  "tools.concierge.candidates": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "edd99d2f5182",
+    "reviewed": false
+  },
+  "tools.concierge.noCandidates": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "e922a8c389c3",
+    "reviewed": true
+  },
+  "tools.concierge.topScore": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "3e02ba92e676",
+    "reviewed": true
+  },
+  "tools.concierge.pinnedCount": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "997d81b06441",
+    "reviewed": false
+  },
+  "tools.concierge.listingsInArea": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "37935abeed16",
+    "reviewed": true
   }
 }

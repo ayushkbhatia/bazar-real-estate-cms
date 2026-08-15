@@ -136,6 +136,13 @@ describe("message catalogues", () => {
         const english = String(valueAt(en, key) ?? "");
         const id = `${ns}.${key}`;
 
+        // A Latin letter welded into an Arabic word — `امتb الإمارات`.
+        // Legitimate Latin in Arabic output is a token with space around it.
+        // Arabic LETTERS, not the Arabic block: `AED 12M، على` is a Latin
+        // token followed by an Arabic comma, which is correct punctuation.
+        if (/[\u0621-\u064A\u0671-\u06D3][A-Za-z]|[A-Za-z][\u0621-\u064A\u0671-\u06D3]/u.test(value)) {
+          broken.push(`${id}: Latin letter fused to an Arabic word — ${value}`);
+        }
         // A letter from a script this site does not use — Arabic bytes that
         // went through the wrong codepage and came back as, in the one
         // observed case, Thai.

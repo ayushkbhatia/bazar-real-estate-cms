@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { asLocale } from "@/lib/i18n/locales";
 import { Check, X, Plus } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
@@ -36,11 +38,23 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 type PageProps = {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<{
     ids?: string;
     diff?: string;
   }>;
 };
+
+/**
+ * `getTranslations` bound once and threaded down, rather than each helper
+ * awaiting its own.
+ *
+ * The helpers below are plain functions in this file, so making them async to
+ * fetch their own translator would make the whole tree async for no gain — and
+ * an ambient `getTranslations()` inside one of them would resolve through
+ * `headers()`, which is how a page silently loses its render mode.
+ */
+type T = Awaited<ReturnType<typeof getTranslations>>;
 
 const SLOT_COUNT = 4;
 const TABLE_COLS = `220px repeat(${SLOT_COUNT}, minmax(0, 1fr))`;
@@ -54,7 +68,10 @@ function parseIds(raw?: string): string[] {
     .slice(0, SLOT_COUNT);
 }
 
-export default async function ComparePage({ searchParams }: PageProps) {
+export default async function ComparePage({ params, searchParams }: PageProps) {
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "tools" });
   const { ids: idsRaw, diff: diffRaw } = await searchParams;
   const requestedIds = parseIds(idsRaw);
   const showDiff = diffRaw !== "0"; // default on
@@ -62,7 +79,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
   const properties = await getComparableProperties(requestedIds);
 
   if (requestedIds.length === 0) {
-    return <EmptyState />;
+    return <EmptyState t={t} />;
   }
 
   // Some ids may not resolve (unpublished, deleted, bad uuid). Keep the
@@ -89,14 +106,13 @@ export default async function ComparePage({ searchParams }: PageProps) {
         <div className="flex justify-between items-center gap-6 flex-wrap">
           <div>
             <Eyebrow>
-              Comparing {present.length}{" "}
-              {present.length === 1 ? "property" : "properties"}
+              {t("compare.comparingCount", { count: present.length })}
             </Eyebrow>
             <h1
               className="serif text-[28px] md:text-[36px] mt-1.5"
               style={{ letterSpacing: "-0.02em" }}
             >
-              Side by side
+              {t("compare.heading")}
             </h1>
           </div>
           <CompareToolbar
@@ -115,12 +131,18 @@ export default async function ComparePage({ searchParams }: PageProps) {
             {slots.map((slot, i) => (
               <div key={`m-card-${i}`} className="w-[78%] max-w-[300px]">
                 {slot ? (
-                  <PropertyCard property={slot} pickIndex={i} showTestId={false} />
+                  <PropertyCard
+                    property={slot}
+                    pickIndex={i}
+                    showTestId={false}
+                    t={t}
+                  />
                 ) : (
                   <EmptySlot
                     index={i}
                     requestedIds={requestedIds}
                     showTestId={false}
+                    t={t}
                   />
                 )}
               </div>
@@ -130,10 +152,12 @@ export default async function ComparePage({ searchParams }: PageProps) {
 
         {diffRows.length > 0 ? (
           <section className="px-4 pt-8">
-            <Eyebrow className="text-bz-ink">What differs</Eyebrow>
+            <Eyebrow className="text-bz-ink">
+              {t("compare.whatDiffers")}
+            </Eyebrow>
             <div className="mt-3 divide-y divide-bz-border">
               {diffRows.map((r) => (
-                <MobileAttrRow key={r.key} row={r} present={present} />
+                <MobileAttrRow key={r.key} row={r} present={present} t={t} />
               ))}
             </div>
           </section>
@@ -142,18 +166,20 @@ export default async function ComparePage({ searchParams }: PageProps) {
         <section className="px-4 pt-8 pb-4">
           <details className="rounded-lg border border-bz-border bg-bz-surface">
             <summary className="cursor-pointer list-none px-4 py-3 text-[14px] font-medium flex items-center justify-between">
-              Full comparison
+              {t("compare.fullComparison")}
               <span className="text-[12px] text-bz-muted">
-                {present.length} {present.length === 1 ? "property" : "properties"}
+                {t("compare.propertyCount", { count: present.length })}
               </span>
             </summary>
             <div className="px-4 pb-4">
               {groups.map((group) => (
                 <div key={group.key} className="mt-4 first:mt-2">
-                  <Eyebrow className="text-bz-ink">{group.label}</Eyebrow>
+                  <Eyebrow className="text-bz-ink">
+                    {t(`compare.group.${group.key}`)}
+                  </Eyebrow>
                   <div className="mt-1 divide-y divide-bz-border">
                     {group.rows.map((r) => (
-                      <MobileAttrRow key={r.key} row={r} present={present} />
+                      <MobileAttrRow key={r.key} row={r} present={present} t={t} />
                     ))}
                   </div>
                 </div>
@@ -172,9 +198,19 @@ export default async function ComparePage({ searchParams }: PageProps) {
           <div /> {/* spacer aligned with attribute labels */}
           {slots.map((slot, i) =>
             slot ? (
-              <PropertyCard key={`card-${i}-${slot.id}`} property={slot} pickIndex={i} />
+              <PropertyCard
+                key={`card-${i}-${slot.id}`}
+                property={slot}
+                pickIndex={i}
+                t={t}
+              />
             ) : (
-              <EmptySlot key={`empty-${i}`} index={i} requestedIds={requestedIds} />
+              <EmptySlot
+                key={`empty-${i}`}
+                index={i}
+                requestedIds={requestedIds}
+                t={t}
+              />
             ),
           )}
         </div>
@@ -188,7 +224,9 @@ export default async function ComparePage({ searchParams }: PageProps) {
               className="grid gap-4 py-3 border-t border-bz-ink"
               style={{ borderTopWidth: 1.5, gridTemplateColumns: TABLE_COLS }}
             >
-              <Eyebrow className="text-bz-ink">{group.label}</Eyebrow>
+              <Eyebrow className="text-bz-ink">
+                {t(`compare.group.${group.key}`)}
+              </Eyebrow>
             </div>
             <table
               className="w-full"
@@ -207,7 +245,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
                       style={{ width: 220 }}
                       className="py-3.5 pe-4 text-[13px] text-bz-muted"
                     >
-                      {r.label}
+                      {rowLabel(r, t)}
                     </td>
                     {slots.map((slot, i) => {
                       // Cells for *present* properties are indexed by their
@@ -229,7 +267,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
                             value === null && "text-bz-muted-2",
                           )}
                         >
-                          {renderCell(value)}
+                          {renderCell(value, t)}
                         </td>
                       );
                     })}
@@ -255,7 +293,10 @@ export default async function ComparePage({ searchParams }: PageProps) {
               mortgageableNow: i !== 1,
             }))}
           />
-          <VerdictBand references={present.map((p) => p.reference)} />
+          <VerdictBand
+            references={present.map((p) => p.reference)}
+            locale={locale}
+          />
         </section>
       ) : null}
     </div>
@@ -270,13 +311,15 @@ export default async function ComparePage({ searchParams }: PageProps) {
 function MobileAttrRow({
   row,
   present,
+  t,
 }: {
   row: AttributeRow;
   present: ComparableProperty[];
+  t: T;
 }) {
   return (
     <div className="py-3">
-      <div className="text-[12px] text-bz-muted">{row.label}</div>
+      <div className="text-[12px] text-bz-muted">{rowLabel(row, t)}</div>
       <div className="mt-1.5 flex flex-col gap-1">
         {present.map((p, i) => (
           <div
@@ -287,7 +330,7 @@ function MobileAttrRow({
               {p.reference}
             </span>
             <span className="font-medium text-end">
-              {renderCell(row.values[i])}
+              {renderCell(row.values[i], t)}
             </span>
           </div>
         ))}
@@ -296,7 +339,19 @@ function MobileAttrRow({
   );
 }
 
-function renderCell(value: CellValue) {
+/**
+ * The row's name: a message, unless the row is an amenity.
+ *
+ * An amenity row is named by an amenity string out of the database, which gets
+ * its Arabic through the DB read fold rather than the catalogue — so it
+ * carries `dataLabel` and prints verbatim. Everything else is code copy and
+ * resolves through `key`.
+ */
+function rowLabel(row: AttributeRow, t: T): string {
+  return row.dataLabel ?? t(`compare.row.${row.key}`);
+}
+
+function renderCell(value: CellValue, t: T) {
   if (value === null) return <span>—</span>;
   // Money and areas arrive as raw AED / ft² tagged with their unit; these
   // leaves are client components that render them in the visitor's currency
@@ -314,13 +369,23 @@ function renderCell(value: CellValue) {
             suffix={value.per === "yr" ? " / yr" : ""}
           />
         );
+      case "msg":
+        // The enums — mode, tenure, type, furnishing — plus the two that
+        // carry a count. `lib/compare.ts` emits the key; the words live here.
+        return (
+          <span>
+            {value.count === undefined
+              ? t(`compare.${value.key}`)
+              : t(`compare.${value.key}`, { count: value.count })}
+          </span>
+        );
     }
   }
   if (value === true) {
     return (
       <span className="text-bz-success inline-flex items-center gap-1.5">
         <Check size={14} strokeWidth={1.8} />
-        <span className="text-[12px] text-bz-ink-2">Yes</span>
+        <span className="text-[12px] text-bz-ink-2">{t("compare.yes")}</span>
       </span>
     );
   }
@@ -339,12 +404,14 @@ function PropertyCard({
   property,
   pickIndex,
   showTestId = true,
+  t,
 }: {
   property: ComparableProperty;
   pickIndex: number;
   /** Suppressed on the mobile rail so the desktop matrix testids stay
    *  unique for the e2e specs (both trees are in the DOM at once). */
   showTestId?: boolean;
+  t: T;
 }) {
   return (
     <article
@@ -359,7 +426,7 @@ function PropertyCard({
       {pickIndex === 0 ? (
         <div className="absolute top-2 start-2 z-10">
           <span className="bg-bz-navy text-bz-bg text-[10px] uppercase tracking-wider font-medium rounded-sm px-1.5 py-1">
-            Best fit · advisor pick
+            {t("compare.bestFit")}
           </span>
         </div>
       ) : null}
@@ -402,10 +469,12 @@ function EmptySlot({
   index,
   requestedIds,
   showTestId = true,
+  t,
 }: {
   index: number;
   requestedIds: string[];
   showTestId?: boolean;
+  t: T;
 }) {
   // If this slot index is occupied in the URL but couldn't be resolved,
   // show a different message than for genuinely empty slots.
@@ -419,24 +488,28 @@ function EmptySlot({
         <Plus size={16} strokeWidth={1.8} />
       </div>
       <div className="text-[13px] text-bz-ink-2">
-        {isUnresolved ? "Couldn't load this property" : "Add another property"}
+        {t(
+          isUnresolved
+            ? "compare.unresolvedTitle"
+            : "compare.emptySlotTitle",
+        )}
       </div>
       <p className="text-[11px] text-center max-w-[160px]">
-        {isUnresolved
-          ? "It may be off-market or no longer published."
-          : "Pull one in from your shortlist, or go find another"}
+        {t(
+          isUnresolved ? "compare.unresolvedBody" : "compare.emptySlotBody",
+        )}
       </p>
       {/* An unresolved slot already holds an id, so there's nothing to add
           into — only the genuinely empty ones get the picker. */}
       {isUnresolved ? (
         <Button asChild variant="outline" size="sm" className="mt-2">
-          <Link href="/buy">Browse</Link>
+          <Link href="/buy">{t("compare.browse")}</Link>
         </Button>
       ) : (
         <div className="mt-2">
           <PickerDrawer requestedIds={requestedIds}>
             <Button variant="outline" size="sm">
-              Add from shortlist
+              {t("compare.addFromShortlist")}
             </Button>
           </PickerDrawer>
         </div>
@@ -445,24 +518,22 @@ function EmptySlot({
   );
 }
 
-function EmptyState() {
+function EmptyState({ t }: { t: T }) {
   return (
     <div className="bg-bz-bg px-4 md:px-12 py-12 md:py-20">
-      <Eyebrow>Compare</Eyebrow>
+      <Eyebrow>{t("compare.emptyEyebrow")}</Eyebrow>
       <h1
         className="serif text-[30px] md:text-[48px] mt-2 max-w-[18ch]"
         style={{ letterSpacing: "-0.025em" }}
       >
-        Stack properties side by side.
+        {t("compare.emptyHeading")}
       </h1>
       <p className="mt-4 max-w-[58ch] text-[15px] text-bz-ink-2 leading-relaxed">
-        Pull two to four properties into a comparison and we&apos;ll line
-        up price, specs, location, amenities, and investment fundamentals.
-        Share the URL to send the same comparison to a partner or advisor.
+        {t("compare.emptyBody")}
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Button asChild>
-          <Link href="/buy">Browse the marketplace</Link>
+          <Link href="/buy">{t("compare.browseMarketplace")}</Link>
         </Button>
       </div>
     </div>

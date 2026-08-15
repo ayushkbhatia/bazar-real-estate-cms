@@ -27,9 +27,14 @@ import { join } from "node:path";
  * The first two entries were the worst of them — `filter-bar.tsx` and
  * `hero-search.tsx` re-implemented a six-category ICU message by hand. Wave 1b
  * converted both, and the ceiling dropped 11 -> 9. That is the mechanism
- * working: every wave takes its own files off this list. 11 -> 9 -> 5 -> 4;
- * wave 4b took the valuation wizard's `${n} upgrade${n === 1 ? "" : "s"}`,
- * which the Arabic renders across six categories.
+ * working: every wave takes its own files off this list. 11 -> 9 -> 5 -> 4 ->
+ * 3. Wave 4b took the valuation wizard's `${n} upgrade${n === 1 ? "" : "s"}`
+ * and 4c took the concierge's two — the match count on the brief rail and the
+ * candidate count in the tool log — each of which the Arabic renders across
+ * six categories rather than two.
+ *
+ * The three left are `lib/`: none is on a public surface, and each needs its
+ * own decision about whether the string is copy or a log line.
  *
  * ## Shape
  *
@@ -67,14 +72,13 @@ const HAND_ROLLED =
  * would quietly undo this file, which is why the count is asserted below.
  */
 const ALLOWED: readonly string[] = [
-  "app/[locale]/(public)/concierge/_chat.tsx",
   "lib/concierge/handoff.ts",
   "lib/page-builder/publishability.ts",
   "lib/schemas/content-asset.ts",
 ];
 
 /** What the allowlist held when the rule landed. Lowering it is the point. */
-const ALLOWED_CEILING = 4;
+const ALLOWED_CEILING = 3;
 
 /** Strip comments so a docblock describing the idiom does not trip on it. */
 function stripComments(source: string): string {

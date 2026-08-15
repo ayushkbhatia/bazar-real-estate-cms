@@ -1,8 +1,13 @@
+"use client";
+
 /**
  * Sprint 5b: investment metrics row for the compare page — gross yield,
  * 10-year area growth, DLD foreign-buyer eligibility. Sprint 12 swaps the
  * placeholder yields for real DLD-comparable-driven figures.
  */
+
+
+import { useTranslations } from "next-intl";
 
 type Metric = {
   ref: string;
@@ -13,22 +18,29 @@ type Metric = {
 };
 
 export function InvestmentMetrics({ rows }: { rows: Metric[] }) {
+  const t = useTranslations("tools");
   if (rows.length === 0) return null;
   return (
     <div className="rounded-lg border border-bz-border bg-bz-surface overflow-hidden">
       <div className="px-5 py-3 border-b border-bz-border bg-bz-surface-2">
         <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-          Investment metrics
+          {t("compare.metricsHeading")}
         </div>
       </div>
       <table className="w-full text-[13.5px]">
         <thead className="text-start text-[11.5px] uppercase tracking-wider text-bz-muted">
           <tr>
-            <th className="px-5 py-3 font-medium">Reference</th>
-            <th className="px-3 py-3 font-medium">Gross yield</th>
-            <th className="px-3 py-3 font-medium">10-yr growth</th>
-            <th className="px-3 py-3 font-medium">Foreign buyer</th>
-            <th className="px-3 py-3 font-medium">Mortgageable</th>
+            <th className="px-5 py-3 font-medium">
+              {t("compare.metricsReference")}
+            </th>
+            <th className="px-3 py-3 font-medium">{t("compare.metricsYield")}</th>
+            <th className="px-3 py-3 font-medium">{t("compare.metricsGrowth")}</th>
+            <th className="px-3 py-3 font-medium">
+              {t("compare.metricsForeign")}
+            </th>
+            <th className="px-3 py-3 font-medium">
+              {t("compare.metricsMortgageable")}
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -53,10 +65,14 @@ export function InvestmentMetrics({ rows }: { rows: Metric[] }) {
                 </span>
               </td>
               <td className="px-3 py-3 text-bz-ink-2">
-                {r.foreignEligible ? "Yes (freehold)" : "Restricted"}
+                {t(
+                  r.foreignEligible
+                    ? "compare.foreignYes"
+                    : "compare.foreignRestricted",
+                )}
               </td>
               <td className="px-3 py-3 text-bz-ink-2">
-                {r.mortgageableNow ? "Yes" : "Cash only"}
+                {t(r.mortgageableNow ? "compare.yes" : "compare.mortgageableCash")}
               </td>
             </tr>
           ))}

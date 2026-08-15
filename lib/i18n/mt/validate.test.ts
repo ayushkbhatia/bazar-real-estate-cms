@@ -91,6 +91,20 @@ describe("the checks that must never be quiet", () => {
     expect(codes("Price in AED", "السعر بالـ AED")).not.toContain("mojibake");
   });
 
+  it("flags a Latin letter fused into an Arabic word", () => {
+    // Observed: "United Arab Emirates" -> "امتb الإمارات العربية المتحدة".
+    // `latin-leak` needs a run of four and never sees it; `mojibake` allows
+    // Latin because AED and ft² are legitimate.
+    expect(codes("United Arab Emirates", "امتb الإمارات")).toContain(
+      "latin-intrusion",
+    );
+    // A token with space around it is exactly what Arabic output should keep.
+    expect(codes("Price in AED", "السعر بالـ AED")).not.toContain(
+      "latin-intrusion",
+    );
+    expect(codes("Emirates", "الإمارات")).not.toContain("latin-intrusion");
+  });
+
   it("flags the model returning its data structure", () => {
     expect(codes("Unfurnished", '["غير مفروش"]')).toContain("json-literal");
     expect(codes("Unfurnished", "غير مفروش")).not.toContain("json-literal");
