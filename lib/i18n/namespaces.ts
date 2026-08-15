@@ -38,6 +38,7 @@ export const NAMESPACES = [
   "area",
   "editorial",
   "tools",
+  "forms",
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -81,6 +82,21 @@ export const CLIENT_NAMESPACES = [
   // article-actions (share, save) and the article table of contents are
   // Client Components. The rest of this namespace is read server-side.
   "editorial",
+  /*
+   * The public lead forms, and the one namespace here that is global because
+   * of *where its components render* rather than what they are.
+   *
+   * `tools/valuation/_components/lead-gate.tsx` lives under `/tools`, which
+   * would make it a candidate for the route-scoped `tools` bag — and it is
+   * mounted on `/areas/[slug]`, `/p/[slug]`, the developments floor-plan gate
+   * and the shared CTA banner, none of which mount that bag. A route-scoped
+   * namespace is scoped by the URL the component renders under, not by the
+   * folder it happens to sit in.
+   *
+   * W7 fills this out with the public zod messages and toasts, which have the
+   * same property: they surface wherever a form does.
+   */
+  "forms",
 ] as const satisfies readonly Namespace[];
 
 /**

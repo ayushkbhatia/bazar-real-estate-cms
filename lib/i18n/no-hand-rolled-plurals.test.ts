@@ -27,7 +27,9 @@ import { join } from "node:path";
  * The first two entries were the worst of them — `filter-bar.tsx` and
  * `hero-search.tsx` re-implemented a six-category ICU message by hand. Wave 1b
  * converted both, and the ceiling dropped 11 -> 9. That is the mechanism
- * working: every wave takes its own files off this list.
+ * working: every wave takes its own files off this list. 11 -> 9 -> 5 -> 4;
+ * wave 4b took the valuation wizard's `${n} upgrade${n === 1 ? "" : "s"}`,
+ * which the Arabic renders across six categories.
  *
  * ## Shape
  *
@@ -66,14 +68,13 @@ const HAND_ROLLED =
  */
 const ALLOWED: readonly string[] = [
   "app/[locale]/(public)/concierge/_chat.tsx",
-  "app/[locale]/(public)/tools/valuation/valuation-wizard.tsx",
   "lib/concierge/handoff.ts",
   "lib/page-builder/publishability.ts",
   "lib/schemas/content-asset.ts",
 ];
 
 /** What the allowlist held when the rule landed. Lowering it is the point. */
-const ALLOWED_CEILING = 5;
+const ALLOWED_CEILING = 4;
 
 /** Strip comments so a docblock describing the idiom does not trip on it. */
 function stripComments(source: string): string {

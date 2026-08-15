@@ -136,6 +136,22 @@ describe("message catalogues", () => {
         const english = String(valueAt(en, key) ?? "");
         const id = `${ns}.${key}`;
 
+        // A letter from a script this site does not use — Arabic bytes that
+        // went through the wrong codepage and came back as, in the one
+        // observed case, Thai.
+        const foreign = [
+          ...new Set(
+            [...value].filter(
+              (c) =>
+                /\p{L}/u.test(c) &&
+                !/[\u0600-\u06FF\u0750-\u077F]/u.test(c) &&
+                !/[A-Za-z]/.test(c),
+            ),
+          ),
+        ];
+        if (foreign.length > 0) {
+          broken.push(`${id}: letters from another script — ${value}`);
+        }
         // Presentation-form glyphs and directional marks, which a stored
         // string must never carry — they render identically and match nothing.
         const shaped = value.match(/[\uFB50-\uFDFF\uFE70-\uFEFE\u200E\u200F]/gu);
