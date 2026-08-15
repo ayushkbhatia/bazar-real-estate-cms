@@ -79,8 +79,12 @@ export const CLIENT_NAMESPACES = [
   "property",
   // The units table filters client-side and the payment plan is interactive.
   "development",
-  // article-actions (share, save) and the article table of contents are
-  // Client Components. The rest of this namespace is read server-side.
+  // The market-report hero and its comparables table are Client Components
+  // (they format money and areas in the visitor's units), so this has to
+  // cross. It used to say "article-actions and the article table of contents"
+  // — both of which are real files that `insights/[slug]/page.tsx` has never
+  // imported, so the stated reason was wrong even though the conclusion held.
+  // See `lib/dead-code.test.ts`.
   "editorial",
   /*
    * The public lead forms, and the one namespace here that is global because

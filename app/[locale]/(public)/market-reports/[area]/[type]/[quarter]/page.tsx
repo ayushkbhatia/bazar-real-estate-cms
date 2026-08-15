@@ -1,4 +1,5 @@
-import { getTranslations } from "next-intl/server";
+import { asLocale } from "@/lib/i18n/locales";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -30,7 +31,12 @@ import { LiveListingsRail } from "../../../_components/live-listings-rail";
 export const revalidate = 3600;
 
 type PageProps = {
-  params: Promise<{ area: string; type: string; quarter: string }>;
+  params: Promise<{
+    locale: string;
+    area: string;
+    type: string;
+    quarter: string;
+  }>;
 };
 
 /**
@@ -97,8 +103,18 @@ export async function generateMetadata({
 }
 
 export default async function MarketReportDetailPage({ params }: PageProps) {
-  const t = await getTranslations("editorial");
-  const { area, type, quarter: qSlug } = await params;
+  const { locale: rawLocale, area, type, quarter: qSlug } = await params;
+  /*
+   * Explicit, like every other page in the tree. `getTranslations("editorial")`
+   * with no locale reads `getCachedRequestLocale() || headers()`, and the
+   * `headers()` branch is what quietly takes a route dynamic and discards its
+   * `revalidate`. This route has no `revalidate` to lose today, which is the
+   * only reason the ambient call was harmless — the next person to add one
+   * would have found it the expensive way.
+   */
+  const locale = asLocale(rawLocale);
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "editorial" });
   if (!isValidType(type)) notFound();
   const quarter = quarterFromSlug(qSlug);
   if (!quarter) notFound();
