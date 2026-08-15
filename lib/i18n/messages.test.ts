@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { icuArguments } from "./icu";
 import { IDENTICAL_BY_DESIGN } from "./namespaces";
+import { isStructural } from "./catalogue-mt";
 import { ALL_LOCALES, DEFAULT_LOCALE, type Locale } from "./locales";
 
 /**
@@ -93,6 +94,10 @@ describe("message catalogues", () => {
       for (const key of keyPaths(en)) {
         const id = `${ns}.${key}`;
         if (IDENTICAL_BY_DESIGN.has(id)) continue;
+        // A message that is only placeholders and punctuation — "{pct} · {amount}"
+        // — has no words to translate, so identical is the correct answer
+        // rather than a shortcut. Recognised by shape, not by a list.
+        if (isStructural(String(valueAt(en, key)))) continue;
         if (valueAt(en, key) === valueAt(ar, key)) untranslated.push(id);
       }
     }
@@ -100,7 +105,68 @@ describe("message catalogues", () => {
     expect(
       untranslated,
       `These Arabic values are identical to the English. Either translate them, ` +
-        `or add them to IDENTICAL_BY_DESIGN with a reason:\n${untranslated.join("\n")}`,
+        `or add them to IDENTICAL_BY_DESIGN with a reason:\n${untranslated.join("\n")}\n\n` +
+        `A message made only of placeholders and punctuation is exempt ` +
+        `automatically (see isStructural) — if one is listed here it has a ` +
+        `real word in it.`,
+    ).toEqual([]);
+  });
+
+  /**
+   * The standing version of the checks the translator runs per string.
+   *
+   * `validate` rejects these before anything is written, but only for a string
+   * that goes through the pipeline. A hand-edit, a merge, or a pipeline that
+   * did not have the check yet leaves them in the file — and one did:
+   * `development.units.builtUp` shipped as `املاحة المبنية` in wave 2b, where
+   * the Arabic wants `المساحة`. Right length, right digits, no Latin, no
+   * sentinel drift. The only instrument that could have caught it was a person
+   * who reads Arabic.
+   *
+   * So the catalogue is checked as a whole, on every run, forever.
+   */
+  it("carries no mechanically broken Arabic", () => {
+    const broken: string[] = [];
+
+    for (const ns of namespaces("ar")) {
+      const ar = load("ar", ns);
+      const en = load(DEFAULT_LOCALE, ns);
+      for (const key of keyPaths(ar)) {
+        const value = String(valueAt(ar, key));
+        const english = String(valueAt(en, key) ?? "");
+        const id = `${ns}.${key}`;
+
+        // Presentation-form glyphs and directional marks, which a stored
+        // string must never carry — they render identically and match nothing.
+        const shaped = value.match(/[\uFB50-\uFDFF\uFE70-\uFEFE\u200E\u200F]/gu);
+        if (shaped) {
+          broken.push(
+            `${id}: ${shaped.length} presentation-form/directional char(s) — ${value}`,
+          );
+        }
+        // The definite article with its lam and meem swapped.
+        if (/(?<![\p{L}\p{M}])\u0627\u0645\u0644/u.test(value)) {
+          broken.push(`${id}: transposed article (امل for الم) — ${value}`);
+        }
+        // The model narrating before it answers.
+        if (!english.includes("\n") && value.includes("\n")) {
+          broken.push(`${id}: newline the English does not have — ${value}`);
+        }
+        // Markdown it added on its own.
+        if (!/(\*\*|__)(?=\S)[\s\S]+?\1/.test(english) &&
+            /(\*\*|__)(?=\S)[\s\S]+?\1/.test(value)) {
+          broken.push(`${id}: markdown the English does not have — ${value}`);
+        }
+      }
+    }
+
+    expect(
+      broken.sort(),
+      `These Arabic values are broken in a way no reviewer of English would ` +
+        `see:\n${broken.sort().join("\n")}\n\n` +
+        `Fix them by hand — re-running the translator will not, because a ` +
+        `value that exists and differs from its English is not on its work ` +
+        `list.`,
     ).toEqual([]);
   });
 

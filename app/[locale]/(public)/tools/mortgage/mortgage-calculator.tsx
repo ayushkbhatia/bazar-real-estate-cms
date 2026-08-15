@@ -28,7 +28,7 @@ import type { ResolvedForm } from "@/lib/forms/types";
 import { FormRenderer } from "@/app/[locale]/(public)/_components/forms/form-renderer";
 import { DbrGauge } from "./_components/dbr-gauge";
 import { pdfLabel } from "@/lib/pdf/language-note";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { Locale } from "@/lib/i18n/locales";
 import {
   affordability,
@@ -55,17 +55,48 @@ const PRICE_MAX = 50_000_000;
 const DOWN_MIN_PCT = 0.15;
 const DOWN_MAX_PCT = 0.8;
 
-const MORTGAGE_TYPES: { value: MortgageType; label: string }[] = [
-  { value: "fixed", label: "Fixed" },
-  { value: "variable", label: "Variable" },
-  { value: "hybrid", label: "Hybrid" },
+/**
+ * Message keys, not labels.
+ *
+ * Two forms per mortgage type because the copy uses both: `typeFixed` is a
+ * button ("Fixed"), `typeFixedInline` is the tail of a sentence ("…at 4.25%
+ * fixed"). English gets there with `.toLowerCase()`; Arabic has no case, so a
+ * lowercased label is not a form the language has. Two keys is the only
+ * version of this that survives translation — and it also fixes the sentence,
+ * which until now interpolated the raw enum and rendered "fixed" by accident
+ * rather than by choice.
+ */
+const MORTGAGE_TYPES: {
+  value: MortgageType;
+  key: string;
+  inlineKey: string;
+}[] = [
+  { value: "fixed", key: "typeFixed", inlineKey: "typeFixedInline" },
+  { value: "variable", key: "typeVariable", inlineKey: "typeVariableInline" },
+  { value: "hybrid", key: "typeHybrid", inlineKey: "typeHybridInline" },
 ];
 
-const BUYER_STATUSES: { value: BuyerStatus; label: string }[] = [
-  { value: "uae_resident", label: "UAE resident" },
-  { value: "non_resident", label: "Non-resident" },
-  { value: "gcc_national", label: "GCC national" },
+const BUYER_STATUSES: { value: BuyerStatus; key: string }[] = [
+  { value: "uae_resident", key: "statusUaeResident" },
+  { value: "non_resident", key: "statusNonResident" },
+  { value: "gcc_national", key: "statusGccNational" },
 ];
+
+/**
+ * The note beside each closing line. `noc_misc` has none — the em-dash the
+ * table renders in its place is typography, not copy, so it never reaches the
+ * catalogue where it would fail the "Arabic differs from English" rule for a
+ * character that is the same in both.
+ */
+const CASH_NOTE_KEYS = new Set([
+  "down_payment",
+  "dld_transfer",
+  "trustee_office",
+  "mortgage_registration",
+  "bank_arrangement",
+  "property_valuation",
+  "bazar_advisory",
+]);
 
 const TERM_OPTIONS = [25, 20, 15, 10] as const;
 
@@ -98,6 +129,7 @@ export function MortgageCalculator({
 }: {
   preApprovalForm: ResolvedForm;
 }) {
+  const t = useTranslations("tools");
   const { prefs } = usePreferences();
   /** An AED figure, rendered in the visitor's currency. */
   const formatAed = (n: number) =>
@@ -146,30 +178,43 @@ export function MortgageCalculator({
     return [
       {
         key: "current",
-        name: "Current",
-        sub: `${termYears}y · ${formatPct(annualRatePct / 100)} · ${formatPct(downPct)} down`,
+        name: t("mortgage.scenarioCurrent"),
+        sub: t("mortgage.scenarioSub", {
+          years: termYears,
+          rate: formatPct(annualRatePct / 100),
+          down: formatPct(downPct),
+        }),
         monthly: summary.monthlyPaymentAed,
         total: summary.totalPaidAed,
         active: true,
       },
       {
         key: "more_upfront",
-        name: "More upfront",
-        sub: `${termYears}y · ${formatPct(annualRatePct / 100)} · ${formatPct(altDownPct)} down`,
+        name: t("mortgage.scenarioMoreUpfront"),
+        sub: t("mortgage.scenarioSub", {
+          years: termYears,
+          rate: formatPct(annualRatePct / 100),
+          down: formatPct(altDownPct),
+        }),
         monthly: alt.monthlyPaymentAed,
         total: alt.totalPaidAed,
         active: false,
       },
       {
         key: "shorter_term",
-        name: "Shorter term",
-        sub: `${shorterTerm}y · ${formatPct(annualRatePct / 100)} · ${formatPct(downPct)} down`,
+        name: t("mortgage.scenarioShorterTerm"),
+        sub: t("mortgage.scenarioSub", {
+          years: shorterTerm,
+          rate: formatPct(annualRatePct / 100),
+          down: formatPct(downPct),
+        }),
         monthly: short.monthlyPaymentAed,
         total: short.totalPaidAed,
         active: false,
       },
     ];
   }, [
+    t,
     inputs,
     summary.monthlyPaymentAed,
     summary.totalPaidAed,
@@ -187,19 +232,35 @@ export function MortgageCalculator({
    * only in what they are rendered *in* — the visitor sees their own currency,
    * the advisor always sees AED (see `advisorLines` below).
    */
+  /**
+   * How the two composite rows are worded. Everything else in the table is a
+   * bare figure, so this is the whole surface where the visitor's copy and the
+   * advisor's brief have to diverge — see `advisorLines`.
+   */
+  type ScenarioWording = {
+    deposit(pct: string, amount: string): string;
+    term(years: number, rate: number, type: MortgageType): string;
+  };
+
   const buildScenarioLines = useCallback(
-    (p: Preferences): [label: string, value: string][] => {
+    (p: Preferences, w: ScenarioWording): { key: string; value: string }[] => {
       const money = (n: number) => formatMoneyValue(n, p);
       return [
-        ["Property price", money(price)],
-        [
-          "Deposit",
-          `${formatPct(downPct)} · ${money(Math.round(price * downPct))}`,
-        ],
-        ["Loan amount", money(summary.principalAed)],
-        ["Term", `${termYears} years at ${annualRatePct}% ${mortgageType}`],
-        ["Monthly payment", money(summary.monthlyPaymentAed)],
-        ["Cash to close", money(closing.totalAed)],
+        { key: "linePropertyPrice", value: money(price) },
+        {
+          key: "lineDeposit",
+          value: w.deposit(
+            formatPct(downPct),
+            money(Math.round(price * downPct)),
+          ),
+        },
+        { key: "lineLoanAmount", value: money(summary.principalAed) },
+        {
+          key: "lineTerm",
+          value: w.term(termYears, annualRatePct, mortgageType),
+        },
+        { key: "lineMonthlyPayment", value: money(summary.monthlyPaymentAed) },
+        { key: "lineCashToClose", value: money(closing.totalAed) },
       ];
     },
     [
@@ -214,9 +275,26 @@ export function MortgageCalculator({
     ],
   );
 
+  /** The loan type as it reads mid-sentence: "…at 4.25% fixed". */
+  const inlineType = useCallback(
+    (v: MortgageType) =>
+      t(`mortgage.${MORTGAGE_TYPES.find((x) => x.value === v)!.inlineKey}`),
+    [t],
+  );
+
+  const visitorWording: ScenarioWording = useMemo(
+    () => ({
+      deposit: (pct, amount) =>
+        t("mortgage.lineDepositValue", { pct, amount }),
+      term: (years, rate, type) =>
+        t("mortgage.lineTermValue", { years, rate, type: inlineType(type) }),
+    }),
+    [t, inlineType],
+  );
+
   const scenarioLines = useMemo(
-    () => buildScenarioLines(prefs),
-    [buildScenarioLines, prefs],
+    () => buildScenarioLines(prefs, visitorWording),
+    [buildScenarioLines, prefs, visitorWording],
   );
 
   /**
@@ -225,16 +303,39 @@ export function MortgageCalculator({
    * "$1.14M" makes the desk convert back, and an error in that direction is a
    * commercial one.
    */
+  /**
+   * The same six rows, in English, deliberately — labels as well as figures.
+   *
+   * Everything built from this leaves the browser for the Bazar mortgage desk,
+   * which is already why it is pinned to AED rather than the visitor's
+   * currency. The wording follows the same rule for the same reason: an
+   * Arabic-reading buyer still produces a brief the desk can act on, and the
+   * desk works in English. It reuses the one builder rather than a second copy
+   * of the six numbers, which is what that builder is for.
+   */
   const advisorLines = useMemo(
-    () => buildScenarioLines(DEFAULT_PREFERENCES),
+    () =>
+      buildScenarioLines(DEFAULT_PREFERENCES, {
+        deposit: (pct, amount) => `${pct} · ${amount}`,
+        term: (years, rate, type) => `${years} years at ${rate}% ${type}`,
+      }),
     [buildScenarioLines],
   );
+
+  const ADVISOR_LABELS: Record<string, string> = {
+    linePropertyPrice: "Property price",
+    lineDeposit: "Deposit",
+    lineLoanAmount: "Loan amount",
+    lineTerm: "Term",
+    lineMonthlyPayment: "Monthly payment",
+    lineCashToClose: "Cash to close",
+  };
 
   // Read at submit time, not at mount time — see `scenario` on
   // `FormSubmitContext`. Nudging the price slider after typing an email must
   // update the brief without resetting the form.
   const scenarioBrief = advisorLines
-    .map(([label, value]) => `${label}: ${value}`)
+    .map(({ key, value }) => `${ADVISOR_LABELS[key]}: ${value}`)
     .join("\n");
 
   // Pre-fill the WhatsApp handoff with the user's current scenario so the
@@ -260,11 +361,13 @@ export function MortgageCalculator({
     <section className="px-4 md:px-12 pb-12 grid lg:grid-cols-[440px_1fr] gap-10 items-start [&>*]:min-w-0">
       {/* ── LEFT: inputs ───────────────────────────────────────── */}
       <div className="border border-bz-border bg-bz-surface rounded-lg p-6 md:p-7 lg:sticky lg:top-6">
-        <Eyebrow>Scenario</Eyebrow>
+        <Eyebrow>{t("mortgage.scenario")}</Eyebrow>
 
         <fieldset className="mt-5">
           <Label htmlFor="price">
-            Property price · {currencySymbol(prefs.currency)}
+            {t("mortgage.propertyPrice", {
+              symbol: currencySymbol(prefs.currency),
+            })}
           </Label>
           <Input
             id="price"
@@ -275,7 +378,9 @@ export function MortgageCalculator({
               const next = fromInput(e.target.value);
               setPrice(Math.max(PRICE_MIN, Math.min(PRICE_MAX, next)));
             }}
-            aria-label={`Property price in ${prefs.currency}`}
+            aria-label={t("mortgage.propertyPriceAria", {
+              currency: prefs.currency,
+            })}
           />
           <input
             type="range"
@@ -285,7 +390,7 @@ export function MortgageCalculator({
             value={Math.min(price, 10_000_000)}
             onChange={(e) => setPrice(Number(e.target.value))}
             className="w-full mt-3 accent-bz-accent"
-            aria-label="Property price slider"
+            aria-label={t("mortgage.propertyPriceSlider")}
           />
           {/* Slider bounds and step stay AED; only the ticks convert. */}
           <div className="flex justify-between text-[11px] text-bz-muted mt-1">
@@ -295,13 +400,15 @@ export function MortgageCalculator({
         </fieldset>
 
         <fieldset className="mt-5">
-          <Label htmlFor="down">Down payment · {formatPct(downPct)}</Label>
+          <Label htmlFor="down">
+            {t("mortgage.downPayment", { pct: formatPct(downPct) })}
+          </Label>
           <Input
             id="down"
             readOnly
             className="mt-1.5 mono text-[15px]"
             value={formatAed(Math.round(price * downPct))}
-            aria-label="Down payment in AED"
+            aria-label={t("mortgage.downPaymentAria", { currency: "AED" })}
           />
           <input
             type="range"
@@ -311,7 +418,7 @@ export function MortgageCalculator({
             value={Math.round(downPct * 100)}
             onChange={(e) => setDownPct(Number(e.target.value) / 100)}
             className="w-full mt-3 accent-bz-accent"
-            aria-label="Down payment slider"
+            aria-label={t("mortgage.downPaymentSlider")}
           />
           <div className="flex justify-between text-[11px] text-bz-muted mt-1">
             <span>15%</span>
@@ -319,22 +426,36 @@ export function MortgageCalculator({
           </div>
           {belowGuidance ? (
             <p className="text-[12px] text-bz-warning mt-1.5">
-              Below the {formatPct(minDown)} minimum for{" "}
-              {BUYER_STATUSES.find((b) => b.value === buyerStatus)?.label}
-              {price >= 5_000_000
-                ? ` on properties at or above AED 5M${
-                    prefs.currency === "AED"
-                      ? ""
-                      : ` (${formatPrice(5_000_000, prefs)})`
-                  }.`
-                : "."}
+              {/*
+                Three whole sentences rather than one glued to two conditional
+                tails. The tails carried the full stop, so translating the stem
+                alone would leave the punctuation stranded on the English side
+                of the join — and Arabic cannot necessarily put the qualifying
+                clause where English puts it anyway.
+              */}
+              {t(
+                price < 5_000_000
+                  ? "mortgage.belowGuidance"
+                  : prefs.currency === "AED"
+                    ? "mortgage.belowGuidanceHighTier"
+                    : "mortgage.belowGuidanceHighTierConverted",
+                {
+                  pct: formatPct(minDown),
+                  status: t(
+                    `mortgage.${
+                      BUYER_STATUSES.find((b) => b.value === buyerStatus)!.key
+                    }`,
+                  ),
+                  converted: formatPrice(5_000_000, prefs),
+                },
+              )}
             </p>
           ) : null}
         </fieldset>
 
         <div className="grid grid-cols-2 gap-3 mt-5">
           <fieldset>
-            <Label htmlFor="rate">Interest rate</Label>
+            <Label htmlFor="rate">{t("mortgage.interestRate")}</Label>
             <Input
               id="rate"
               className="mt-1.5"
@@ -344,11 +465,11 @@ export function MortgageCalculator({
                 const n = Number(e.target.value);
                 if (Number.isFinite(n)) setAnnualRatePct(Math.max(0, Math.min(20, n)));
               }}
-              aria-label="Annual interest rate (%)"
+              aria-label={t("mortgage.interestRateAria")}
             />
           </fieldset>
           <fieldset>
-            <Label htmlFor="term">Term</Label>
+            <Label htmlFor="term">{t("mortgage.term")}</Label>
             <Select
               value={String(termYears)}
               onValueChange={(v) => setTermYears(Number(v))}
@@ -359,7 +480,7 @@ export function MortgageCalculator({
               <SelectContent>
                 {TERM_OPTIONS.map((y) => (
                   <SelectItem key={y} value={String(y)}>
-                    {y} years
+                    {t("mortgage.termYears", { years: y })}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -368,17 +489,21 @@ export function MortgageCalculator({
         </div>
 
         <fieldset className="mt-5">
-          <Label>Mortgage type</Label>
-          <div className="flex gap-1 mt-1.5" role="radiogroup" aria-label="Mortgage type">
-            {MORTGAGE_TYPES.map((t) => {
-              const active = mortgageType === t.value;
+          <Label>{t("mortgage.mortgageType")}</Label>
+          <div
+            className="flex gap-1 mt-1.5"
+            role="radiogroup"
+            aria-label={t("mortgage.mortgageType")}
+          >
+            {MORTGAGE_TYPES.map((type) => {
+              const active = mortgageType === type.value;
               return (
                 <button
-                  key={t.value}
+                  key={type.value}
                   type="button"
                   role="radio"
                   aria-checked={active}
-                  onClick={() => setMortgageType(t.value)}
+                  onClick={() => setMortgageType(type.value)}
                   className={cn(
                     "flex-1 h-10 rounded text-[13px] border transition-colors",
                     active
@@ -386,7 +511,7 @@ export function MortgageCalculator({
                       : "bg-bz-surface-2 text-bz-ink-2 border-transparent hover:border-bz-border-strong",
                   )}
                 >
-                  {t.label}
+                  {t(`mortgage.${type.key}`)}
                 </button>
               );
             })}
@@ -394,11 +519,11 @@ export function MortgageCalculator({
         </fieldset>
 
         <fieldset className="mt-5">
-          <Label>Buyer status</Label>
+          <Label>{t("mortgage.buyerStatus")}</Label>
           <div
             className="flex gap-1 mt-1.5"
             role="radiogroup"
-            aria-label="Buyer status"
+            aria-label={t("mortgage.buyerStatus")}
           >
             {BUYER_STATUSES.map((b) => {
               const active = buyerStatus === b.value;
@@ -416,7 +541,7 @@ export function MortgageCalculator({
                       : "bg-bz-surface-2 text-bz-ink-2 border-transparent hover:border-bz-border-strong",
                   )}
                 >
-                  {b.label}
+                  {t(`mortgage.${b.key}`)}
                 </button>
               );
             })}
@@ -425,10 +550,12 @@ export function MortgageCalculator({
 
         <div className="border-t border-bz-border my-6" />
 
-        <Eyebrow>Optional</Eyebrow>
+        <Eyebrow>{t("mortgage.optional")}</Eyebrow>
         <fieldset className="mt-3">
           <Label htmlFor="income">
-            Annual income · {currencySymbol(prefs.currency)}
+            {t("mortgage.annualIncome", {
+              symbol: currencySymbol(prefs.currency),
+            })}
           </Label>
           <Input
             id="income"
@@ -436,10 +563,12 @@ export function MortgageCalculator({
             className="mt-1.5"
             value={toInput(annualIncome)}
             onChange={(e) => setAnnualIncome(Math.max(0, fromInput(e.target.value)))}
-            aria-label={`Annual income in ${prefs.currency}`}
+            aria-label={t("mortgage.annualIncomeAria", {
+              currency: prefs.currency,
+            })}
           />
           <p className="text-[11.5px] text-bz-muted mt-1">
-            For affordability check · DBR &lt;50% guideline
+            {t("mortgage.affordabilityHelp")}
           </p>
         </fieldset>
 
@@ -457,7 +586,21 @@ export function MortgageCalculator({
             data-testid="affordability"
           >
             <CheckCircle2 size={14} strokeWidth={1.8} />
-            <span>{afford.label}</span>
+            {/*
+              The headline used to be built inside `affordability()`, which put
+              the only three English sentences in an otherwise pure AED model.
+              The status comes from the model; the sentence comes from here.
+            */}
+            <span>
+              {t(
+                afford.status === "ok"
+                  ? "mortgage.affordabilityOk"
+                  : afford.status === "stretched"
+                    ? "mortgage.affordabilityStretched"
+                    : "mortgage.affordabilityOver",
+                { pct: Math.round(afford.dbr * 100) },
+              )}
+            </span>
           </div>
         ) : null}
 
@@ -475,7 +618,9 @@ export function MortgageCalculator({
       <div className="flex flex-col gap-4">
         {/* Hero — monthly payment */}
         <div className="bg-bz-ink text-white rounded-xl p-6 md:p-9">
-          <Eyebrow className="text-white/70">Monthly payment</Eyebrow>
+          <Eyebrow className="text-white/70">
+            {t("mortgage.monthlyPayment")}
+          </Eyebrow>
           <div
             className="serif text-[52px] md:text-[88px] mt-1 leading-none"
             style={{ letterSpacing: "-0.03em" }}
@@ -484,13 +629,26 @@ export function MortgageCalculator({
             {formatAed(summary.monthlyPaymentAed)}
           </div>
           <p className="text-[14px] text-white/75 mt-3">
-            For {formatAed(summary.principalAed)} borrowed · {termYears} years
-            at {annualRatePct}% {mortgageType}
+            {t("mortgage.borrowedFor", {
+              amount: formatAed(summary.principalAed),
+              years: termYears,
+              rate: annualRatePct,
+              type: inlineType(mortgageType),
+            })}
           </p>
           <div className="grid grid-cols-3 gap-4 md:gap-6 mt-9 pt-7 border-t border-white/15">
-            <Metric label="Total to be paid" value={formatAed(summary.totalPaidAed)} />
-            <Metric label="Total interest" value={formatAed(summary.totalInterestAed)} />
-            <Metric label="Principal share" value={`${summary.principalSharePct}%`} />
+            <Metric
+              label={t("mortgage.totalToPay")}
+              value={formatAed(summary.totalPaidAed)}
+            />
+            <Metric
+              label={t("mortgage.totalInterest")}
+              value={formatAed(summary.totalInterestAed)}
+            />
+            <Metric
+              label={t("mortgage.principalShare")}
+              value={`${summary.principalSharePct}%`}
+            />
           </div>
         </div>
 
@@ -498,12 +656,12 @@ export function MortgageCalculator({
         <div className="border border-bz-border bg-bz-surface rounded-lg p-6 md:p-7">
           <div className="flex justify-between items-end mb-4">
             <div>
-              <Eyebrow>True cash to close</Eyebrow>
+              <Eyebrow>{t("mortgage.cashEyebrow")}</Eyebrow>
               <h3
                 className="serif text-[22px] mt-1"
                 style={{ letterSpacing: "-0.01em" }}
               >
-                What you actually wire
+                {t("mortgage.cashHeading")}
               </h3>
             </div>
             <MortgagePdfDownload
@@ -528,16 +686,29 @@ export function MortgageCalculator({
             <tbody>
               {closing.lines.map((line) => (
                 <tr key={line.key} className="border-b border-bz-border">
-                  <td className="py-2.5 text-bz-ink">{line.label}</td>
+                  {/*
+                    `pct` is passed to every row, including the flat fees whose
+                    message has no placeholder for it. next-intl ignores an
+                    unused argument, and the alternative — a conditional call —
+                    would make the message key depend on the data rather than
+                    on the row, which is what makes a key unfindable by grep.
+                  */}
+                  <td className="py-2.5 text-bz-ink">
+                    {t(`mortgage.cashLine.${line.key}`, {
+                      pct: line.pct ?? "",
+                    })}
+                  </td>
                   <td className="py-2.5 text-end mono">{formatAed(line.amountAed)}</td>
                   <td className="py-2.5 text-end text-[11.5px] text-bz-muted">
-                    {line.note}
+                    {CASH_NOTE_KEYS.has(line.key)
+                      ? t(`mortgage.cashNote.${line.key}`)
+                      : "—"}
                   </td>
                 </tr>
               ))}
               <tr className="bg-bz-surface-2">
                 <td className="py-3 px-2 text-[14px] font-medium">
-                  Total cash needed at close
+                  {t("mortgage.cashTotal")}
                 </td>
                 <td
                   className="py-3 px-2 text-end mono text-[16px] font-medium text-bz-navy"
@@ -546,16 +717,16 @@ export function MortgageCalculator({
                   {formatAed(closing.totalAed)}
                 </td>
                 <td className="py-3 px-2 text-end text-[11px] text-bz-muted">
-                  {formatPct(closing.pctOfPrice)} of price
+                  {t("mortgage.cashPctOfPrice", {
+                    pct: formatPct(closing.pctOfPrice),
+                  })}
                 </td>
               </tr>
             </tbody>
           </table>
           {prefs.currency !== "AED" ? (
             <p className="mt-3 text-[11.5px] text-bz-muted leading-relaxed">
-              Statutory fees — DLD transfer, trustee office, NOC, valuation —
-              are set in AED. Figures here convert at the fixed 3.6725 AED/USD
-              peg, so they are exact, not indicative.
+              {t("mortgage.cashPegNote")}
             </p>
           ) : null}
         </div>
@@ -564,22 +735,24 @@ export function MortgageCalculator({
         <div className="border border-bz-border bg-bz-surface rounded-lg p-6 md:p-7">
           <div className="flex justify-between items-center mb-5">
             <div>
-              <Eyebrow>Amortization · {termYears} years</Eyebrow>
+              <Eyebrow>
+                {t("mortgage.amortEyebrow", { years: termYears })}
+              </Eyebrow>
               <h3
                 className="serif text-[22px] mt-1"
                 style={{ letterSpacing: "-0.01em" }}
               >
-                How interest tapers
+                {t("mortgage.amortHeading")}
               </h3>
             </div>
             <div className="flex gap-3 text-[12px]">
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-sm bg-bz-ink" />
-                Principal
+                {t("mortgage.amortPrincipal")}
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-sm bg-bz-accent" />
-                Interest
+                {t("mortgage.amortInterest")}
               </span>
             </div>
           </div>
@@ -588,12 +761,12 @@ export function MortgageCalculator({
 
         {/* Scenario compare */}
         <div className="border border-bz-border bg-bz-surface rounded-lg p-6 md:p-7">
-          <Eyebrow>Compare scenarios</Eyebrow>
+          <Eyebrow>{t("mortgage.compareEyebrow")}</Eyebrow>
           <h3
             className="serif text-[22px] mt-1"
             style={{ letterSpacing: "-0.01em" }}
           >
-            What if you change one variable?
+            {t("mortgage.compareHeading")}
           </h3>
           <div className="grid sm:grid-cols-3 gap-3 mt-5" data-testid="scenarios">
             {scenarios.map((s) => (
@@ -621,7 +794,9 @@ export function MortgageCalculator({
                   className={cn("serif text-[24px] mt-3.5", !s.active && "text-bz-navy")}
                   style={{ letterSpacing: "-0.015em" }}
                 >
-                  {formatAed(s.monthly)}/mo
+                  {t("mortgage.scenarioMonthly", {
+                    amount: formatAed(s.monthly),
+                  })}
                 </div>
                 <div
                   className={cn(
@@ -629,7 +804,7 @@ export function MortgageCalculator({
                     s.active ? "text-white/70" : "text-bz-muted",
                   )}
                 >
-                  {formatAed(s.total)} total
+                  {t("mortgage.scenarioTotal", { amount: formatAed(s.total) })}
                 </div>
               </div>
             ))}
@@ -649,7 +824,9 @@ export function MortgageCalculator({
         )}
       >
         <div>
-          <Eyebrow className="text-bz-accent">Ready to make it real?</Eyebrow>
+          <Eyebrow className="text-bz-accent">
+            {t("mortgage.preApprovalEyebrow")}
+          </Eyebrow>
           <h2
             className={cn(
               "serif mt-1.5",
@@ -657,10 +834,10 @@ export function MortgageCalculator({
             )}
             style={{ letterSpacing: "-0.015em" }}
           >
-            Get pre-approved with our preferred lenders.
+            {t("mortgage.preApprovalHeading")}
           </h2>
           <p className="text-[13.5px] text-bz-ink-2 mt-1.5">
-            Soft credit pull · 24-hour response · 5 partner banks
+            {t("mortgage.preApprovalSub")}
           </p>
 
           {showPreApprovalForm ? (
@@ -670,11 +847,13 @@ export function MortgageCalculator({
                 className="mt-6 rounded-lg border border-bz-border bg-bz-surface p-5"
                 data-testid="pre-approval-scenario"
               >
-                <Eyebrow>Attached to your request</Eyebrow>
+                <Eyebrow>{t("mortgage.attachedEyebrow")}</Eyebrow>
                 <dl className="mt-3.5 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-                  {scenarioLines.map(([label, value]) => (
-                    <div key={label}>
-                      <dt className="text-[11.5px] text-bz-muted">{label}</dt>
+                  {scenarioLines.map(({ key, value }) => (
+                    <div key={key}>
+                      <dt className="text-[11.5px] text-bz-muted">
+                        {t(`mortgage.${key}`)}
+                      </dt>
                       <dd className="mono text-[13.5px] text-bz-ink mt-0.5">
                         {value}
                       </dd>
@@ -682,13 +861,12 @@ export function MortgageCalculator({
                   ))}
                 </dl>
                 <p className="text-[11.5px] text-bz-muted mt-4 pt-3.5 border-t border-bz-border">
-                  Adjust anything above and this updates before you send — no
-                  need to retype your numbers.
+                  {t("mortgage.attachedNote")}
                 </p>
               </div>
 
               <p className="text-[13px] text-bz-ink-2 mt-6">
-                Rather talk it through first?
+                {t("mortgage.ratherTalk")}
               </p>
             </>
           ) : null}
@@ -702,7 +880,7 @@ export function MortgageCalculator({
             <Button asChild variant="outline">
               <Link href="/contact">
                 <Calendar size={14} strokeWidth={1.6} />
-                Talk to advisor
+                {t("mortgage.talkToAdvisor")}
               </Link>
             </Button>
             {waLink ? (
@@ -713,7 +891,7 @@ export function MortgageCalculator({
               >
                 <a href={waLink} target="_blank" rel="noopener noreferrer">
                   <MessageCircle size={14} strokeWidth={1.6} />
-                  Pre-approval via WhatsApp
+                  {t("mortgage.preApprovalWhatsApp")}
                   <ArrowRight size={14} strokeWidth={1.6} />
                 </a>
               </Button>
@@ -724,7 +902,7 @@ export function MortgageCalculator({
                 data-testid="pre-approval-cta"
               >
                 <Link href="/contact?source=mortgage">
-                  Start pre-approval
+                  {t("mortgage.startPreApproval")}
                   <ArrowRight size={14} strokeWidth={1.6} />
                 </Link>
               </Button>
@@ -771,12 +949,11 @@ function AmortChart({
   schedule: ReturnType<typeof amortizationByYear>;
   termYears: number;
 }) {
+  const t = useTranslations("tools");
   const rtl = useIsRtl();
   if (schedule.length === 0) {
     return (
-      <p className="text-[13px] text-bz-muted">
-        Enter a loan amount and term to see the schedule.
-      </p>
+      <p className="text-[13px] text-bz-muted">{t("mortgage.amortEmpty")}</p>
     );
   }
   const maxTotal = Math.max(
@@ -790,7 +967,11 @@ function AmortChart({
 
   return (
     <>
-      <svg width="100%" viewBox={`0 0 ${W} ${H}`} aria-label="Amortization chart">
+      <svg
+        width="100%"
+        viewBox={`0 0 ${W} ${H}`}
+        aria-label={t("mortgage.amortAria")}
+      >
         {[40, 80, 120, 160, 200].map((y) => (
           <line
             key={y}
@@ -840,11 +1021,15 @@ function AmortChart({
         <line x1={0} x2={W} y1={200} y2={200} stroke="var(--bz-ink)" />
       </svg>
       <div className="flex justify-between text-[11px] text-bz-muted mt-1">
-        <span>Y1</span>
-        <span>Y{Math.round(termYears * 0.25) || 1}</span>
-        <span>Y{Math.round(termYears * 0.5) || 1}</span>
-        <span>Y{Math.round(termYears * 0.75) || 1}</span>
-        <span>Y{termYears}</span>
+        {[
+          1,
+          Math.round(termYears * 0.25) || 1,
+          Math.round(termYears * 0.5) || 1,
+          Math.round(termYears * 0.75) || 1,
+          termYears,
+        ].map((year, i) => (
+          <span key={i}>{t("mortgage.amortYear", { year })}</span>
+        ))}
       </div>
     </>
   );
@@ -873,6 +1058,7 @@ function MortgagePdfDownload({
   };
 }) {
   const locale = useLocale() as Locale;
+  const t = useTranslations("tools");
   const [pending, startTransition] = useTransition();
 
   function handle() {
@@ -891,11 +1077,12 @@ function MortgagePdfDownload({
         a.download = "bazar-mortgage-scenario.pdf";
         a.click();
         URL.revokeObjectURL(url);
-        toast.success("Mortgage scenario PDF downloaded.");
-      } catch (e) {
-        toast.error(
-          e instanceof Error ? e.message : "Could not generate PDF.",
-        );
+        toast.success(t("mortgage.pdfDownloaded"));
+      } catch {
+        // The thrown message is `PDF render failed (500)` — a status code the
+        // visitor cannot act on, and the one string here that was never worth
+        // translating. One sentence for every failure, in their language.
+        toast.error(t("mortgage.pdfFailed"));
       }
     });
   }
@@ -908,7 +1095,9 @@ function MortgagePdfDownload({
       disabled={pending}
     >
       <Download size={14} strokeWidth={1.6} />
-      {pending ? "Generating…" : pdfLabel("PDF summary", locale)}
+      {pending
+        ? t("mortgage.pdfGenerating")
+        : pdfLabel(t("mortgage.pdfSummary"), locale)}
     </Button>
   );
 }

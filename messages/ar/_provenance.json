@@ -141,12 +141,6 @@
     "sourceHash": "0d77705444af",
     "reviewed": false
   },
-  "search.form.ready_new.lede": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "3c2b6565fc81",
-    "reviewed": false
-  },
   "search.form.resale.eyebrow": {
     "by": "machine",
     "model": "claude-opus-5",
@@ -211,12 +205,6 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "87c5912f2cef",
-    "reviewed": false
-  },
-  "search.type.retail": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "cdb38c8dc89a",
     "reviewed": false
   },
   "search.type.commercial_villa": {
@@ -513,12 +501,6 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "c2a7846d2dd8",
-    "reviewed": false
-  },
-  "property.fallbackArea": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "dd64913c8b91",
     "reviewed": false
   },
   "property.stat.bedrooms": {
@@ -972,12 +954,6 @@
     "sourceHash": "6c57ed1a13bb",
     "reviewed": false
   },
-  "editorial.eyebrow.languages": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "318655cea4bd",
-    "reviewed": false
-  },
   "editorial.eyebrow.specialties": {
     "by": "machine",
     "model": "claude-opus-5",
@@ -990,18 +966,6 @@
     "sourceHash": "00fad4fe9ee4",
     "reviewed": false
   },
-  "editorial.eyebrow.trend": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "9e217716c4e0",
-    "reviewed": false
-  },
-  "editorial.eyebrow.whatClientsSay": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "aaef1116b6a2",
-    "reviewed": false
-  },
   "editorial.eyebrow.whatsSelling": {
     "by": "machine",
     "model": "claude-opus-5",
@@ -1012,12 +976,6 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "29887a5ff984",
-    "reviewed": false
-  },
-  "editorial.article.save": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "1509f561f241",
     "reviewed": false
   },
   "editorial.article.saved": {
@@ -1068,12 +1026,6 @@
     "sourceHash": "cb7511f9c87d",
     "reviewed": false
   },
-  "editorial.agent.advisor": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "28da8c1f9ede",
-    "reviewed": false
-  },
   "editorial.fallbackArea": {
     "by": "machine",
     "model": "claude-opus-5",
@@ -1099,5 +1051,671 @@
     "sourceHash": "dc3389df8b2e",
     "reviewed": false,
     "note": "MT returned nothing. Same shape — a greeting built almost entirely around a masked name."
+  },
+  "tools.mortgage.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "67b99caacfcf",
+    "reviewed": false
+  },
+  "tools.mortgage.headingEmphasis": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "107872fd251c",
+    "reviewed": true
+  },
+  "tools.mortgage.scenario": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "2fcb5d374697",
+    "reviewed": true
+  },
+  "tools.mortgage.propertyPrice": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "be12e2b60705",
+    "reviewed": false
+  },
+  "tools.mortgage.propertyPriceAria": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "bf316c9a8042",
+    "reviewed": true
+  },
+  "tools.mortgage.propertyPriceSlider": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5fe3e004772d",
+    "reviewed": false
+  },
+  "tools.mortgage.downPayment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8a38568364c1",
+    "reviewed": false
+  },
+  "tools.mortgage.downPaymentAria": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a0a2e64ecf9c",
+    "reviewed": false
+  },
+  "tools.mortgage.downPaymentSlider": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "15d6379b1d9a",
+    "reviewed": true
+  },
+  "tools.mortgage.belowGuidance": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4dfd23baab6c",
+    "reviewed": false
+  },
+  "tools.mortgage.belowGuidanceHighTier": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "abddbae2ce8e",
+    "reviewed": false
+  },
+  "tools.mortgage.belowGuidanceHighTierConverted": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0e9fee959eb6",
+    "reviewed": false
+  },
+  "tools.mortgage.interestRate": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "604f7b0c9b8b",
+    "reviewed": false
+  },
+  "tools.mortgage.interestRateAria": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "83b31c2f3f1e",
+    "reviewed": false
+  },
+  "tools.mortgage.term": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c6f3bfd45614",
+    "reviewed": false
+  },
+  "tools.mortgage.termYears": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "619c58829a79",
+    "reviewed": false
+  },
+  "tools.mortgage.mortgageType": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "1682419012c6",
+    "reviewed": true
+  },
+  "tools.mortgage.typeFixed": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1246fc93bca0",
+    "reviewed": false
+  },
+  "tools.mortgage.typeHybrid": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6c67dc13f839",
+    "reviewed": false
+  },
+  "tools.mortgage.typeFixedInline": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "992a93455c71",
+    "reviewed": true
+  },
+  "tools.mortgage.typeVariableInline": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3b325109deb0",
+    "reviewed": false
+  },
+  "tools.mortgage.typeHybridInline": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0deac0a26c0d",
+    "reviewed": false
+  },
+  "tools.mortgage.buyerStatus": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "55bb6056fae5",
+    "reviewed": false
+  },
+  "tools.mortgage.statusUaeResident": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2016efb73286",
+    "reviewed": false
+  },
+  "tools.mortgage.statusNonResident": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e469e7e16e14",
+    "reviewed": false
+  },
+  "tools.mortgage.statusGccNational": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "aea6c91a9e3e",
+    "reviewed": false
+  },
+  "tools.mortgage.optional": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "59be71333c96",
+    "reviewed": false
+  },
+  "tools.mortgage.annualIncome": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7db08ac3396b",
+    "reviewed": false
+  },
+  "tools.mortgage.annualIncomeAria": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "470aef7f3fe6",
+    "reviewed": true
+  },
+  "tools.mortgage.affordabilityHelp": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dd4e1fe128d2",
+    "reviewed": false
+  },
+  "tools.mortgage.affordabilityOk": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f9c4f539e37b",
+    "reviewed": false
+  },
+  "tools.mortgage.affordabilityStretched": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8ea3dd0d4e40",
+    "reviewed": false
+  },
+  "tools.mortgage.affordabilityOver": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "87852ac95183",
+    "reviewed": false
+  },
+  "tools.mortgage.dbrTitle": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d00de5d3c75b",
+    "reviewed": false
+  },
+  "tools.mortgage.dbrAria": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2114c8324ffe",
+    "reviewed": false
+  },
+  "tools.mortgage.dbrComfortable": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "459a23a5980f",
+    "reviewed": false
+  },
+  "tools.mortgage.dbrWithinLimit": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ffd32e288eda",
+    "reviewed": false
+  },
+  "tools.mortgage.dbrOverLimit": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "86333bd38da8",
+    "reviewed": false
+  },
+  "tools.mortgage.dbrExplainer": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e0208419bb54",
+    "reviewed": false
+  },
+  "tools.mortgage.monthlyPayment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2f736ddb52cd",
+    "reviewed": false
+  },
+  "tools.mortgage.borrowedFor": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "af58ed02c666",
+    "reviewed": true
+  },
+  "tools.mortgage.totalToPay": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d78127e724be",
+    "reviewed": false
+  },
+  "tools.mortgage.totalInterest": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4bdb2a9cff3c",
+    "reviewed": false
+  },
+  "tools.mortgage.principalShare": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6b3b86cf9a27",
+    "reviewed": false
+  },
+  "tools.mortgage.cashEyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "567065d168f2",
+    "reviewed": false
+  },
+  "tools.mortgage.cashHeading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cc779ba83e06",
+    "reviewed": false
+  },
+  "tools.mortgage.cashTotal": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "bde4c9187ef6",
+    "reviewed": false
+  },
+  "tools.mortgage.cashPctOfPrice": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9c5559e59d2d",
+    "reviewed": false
+  },
+  "tools.mortgage.cashPegNote": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2832daeca3f3",
+    "reviewed": false
+  },
+  "tools.mortgage.cashLine.down_payment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8a38568364c1",
+    "reviewed": false
+  },
+  "tools.mortgage.cashLine.dld_transfer": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "230ab644a1ba",
+    "reviewed": false
+  },
+  "tools.mortgage.cashLine.trustee_office": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "2580de242a55",
+    "reviewed": true
+  },
+  "tools.mortgage.cashLine.mortgage_registration": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "bed569a2e4e0",
+    "reviewed": true
+  },
+  "tools.mortgage.cashLine.bank_arrangement": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c3013f730194",
+    "reviewed": false
+  },
+  "tools.mortgage.cashLine.property_valuation": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7e2e677f24e9",
+    "reviewed": false
+  },
+  "tools.mortgage.cashLine.bazar_advisory": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a9d8c0ffb6d6",
+    "reviewed": false
+  },
+  "tools.mortgage.cashLine.noc_misc": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6656b2164843",
+    "reviewed": false
+  },
+  "tools.mortgage.cashNote.down_payment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f55461266d94",
+    "reviewed": false
+  },
+  "tools.mortgage.cashNote.dld_transfer": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "bf15569cf497",
+    "reviewed": false
+  },
+  "tools.mortgage.cashNote.trustee_office": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "bf15569cf497",
+    "reviewed": false
+  },
+  "tools.mortgage.cashNote.mortgage_registration": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9920629c0b80",
+    "reviewed": false
+  },
+  "tools.mortgage.cashNote.bank_arrangement": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5eebab4c2b29",
+    "reviewed": true
+  },
+  "tools.mortgage.cashNote.property_valuation": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "ef41540cd8be",
+    "reviewed": true
+  },
+  "tools.mortgage.cashNote.bazar_advisory": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "526b49dc23b7",
+    "reviewed": false
+  },
+  "tools.mortgage.amortHeading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6d118048b6fe",
+    "reviewed": false
+  },
+  "tools.mortgage.amortPrincipal": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "afc19f1734c1",
+    "reviewed": true
+  },
+  "tools.mortgage.amortInterest": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "595fd085df10",
+    "reviewed": false
+  },
+  "tools.mortgage.amortAria": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "bc6f7318be38",
+    "reviewed": false
+  },
+  "tools.mortgage.amortEmpty": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1bceebf58f9f",
+    "reviewed": false
+  },
+  "tools.mortgage.amortYear": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "7c538877dc87",
+    "reviewed": true
+  },
+  "tools.mortgage.compareEyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6935119c6e81",
+    "reviewed": false
+  },
+  "tools.mortgage.compareHeading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1975644a6699",
+    "reviewed": false
+  },
+  "tools.mortgage.scenarioCurrent": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e0d1b68224bf",
+    "reviewed": false
+  },
+  "tools.mortgage.scenarioMoreUpfront": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e5d05e3be4a4",
+    "reviewed": false
+  },
+  "tools.mortgage.scenarioShorterTerm": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ced7c47ad22b",
+    "reviewed": false
+  },
+  "tools.mortgage.scenarioSub": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f1a5271d7c0e",
+    "reviewed": false
+  },
+  "tools.mortgage.scenarioMonthly": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c1bafaa13f93",
+    "reviewed": false
+  },
+  "tools.mortgage.scenarioTotal": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9e6830f2849e",
+    "reviewed": false
+  },
+  "tools.mortgage.linePropertyPrice": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "028750efac85",
+    "reviewed": true
+  },
+  "tools.mortgage.lineDeposit": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "0da00b600a2d",
+    "reviewed": true
+  },
+  "tools.mortgage.lineDepositValue": {
+    "by": "structural",
+    "model": null,
+    "sourceHash": "e3d97b62d691",
+    "reviewed": true
+  },
+  "tools.mortgage.lineLoanAmount": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "db5e6f26bafb",
+    "reviewed": true
+  },
+  "tools.mortgage.lineTerm": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c6f3bfd45614",
+    "reviewed": false
+  },
+  "tools.mortgage.lineTermValue": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "abced2cb55c9",
+    "reviewed": false
+  },
+  "tools.mortgage.lineMonthlyPayment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2f736ddb52cd",
+    "reviewed": false
+  },
+  "tools.mortgage.lineCashToClose": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "69070b7325ac",
+    "reviewed": false
+  },
+  "tools.mortgage.preApprovalEyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0c428f0b37c2",
+    "reviewed": false
+  },
+  "tools.mortgage.preApprovalHeading": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d9c723cf75c7",
+    "reviewed": false
+  },
+  "tools.mortgage.preApprovalSub": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9fe1b303c6ad",
+    "reviewed": false
+  },
+  "tools.mortgage.attachedEyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c141f4aa6f77",
+    "reviewed": false
+  },
+  "tools.mortgage.attachedNote": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d2a7911db4df",
+    "reviewed": false
+  },
+  "tools.mortgage.ratherTalk": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ff5462094b9b",
+    "reviewed": false
+  },
+  "tools.mortgage.talkToAdvisor": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "11afbc7a7486",
+    "reviewed": false
+  },
+  "tools.mortgage.preApprovalWhatsApp": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dd4ab3212222",
+    "reviewed": false
+  },
+  "tools.mortgage.startPreApproval": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "1e868a67f184",
+    "reviewed": true
+  },
+  "tools.mortgage.pdfSummary": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8ab275acf2d8",
+    "reviewed": false
+  },
+  "tools.mortgage.pdfGenerating": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d20a4476a0a8",
+    "reviewed": false
+  },
+  "tools.mortgage.pdfDownloaded": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c003b1c3e4ed",
+    "reviewed": false
+  },
+  "tools.mortgage.pdfFailed": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d00096f57562",
+    "reviewed": false
+  },
+  "search.form.ready_new.lede": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3c2b6565fc81",
+    "reviewed": false
+  },
+  "search.type.retail": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cdb38c8dc89a",
+    "reviewed": false
+  },
+  "property.fallbackArea": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dd64913c8b91",
+    "reviewed": false
+  },
+  "editorial.eyebrow.languages": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "318655cea4bd",
+    "reviewed": false
+  },
+  "editorial.eyebrow.trend": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9e217716c4e0",
+    "reviewed": false
+  },
+  "editorial.eyebrow.whatClientsSay": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "aaef1116b6a2",
+    "reviewed": false
+  },
+  "editorial.article.save": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1509f561f241",
+    "reviewed": false
+  },
+  "editorial.agent.advisor": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "28da8c1f9ede",
+    "reviewed": false
+  },
+  "tools.mortgage.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8bcf0c766538",
+    "reviewed": false
+  },
+  "tools.mortgage.typeVariable": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e57e99872603",
+    "reviewed": false
+  },
+  "tools.mortgage.amortEyebrow": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "93ca12cecb1d",
+    "reviewed": true
+  },
+  "tools.mortgage.headingLead": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "3605b48fddb6",
+    "reviewed": true
   }
 }

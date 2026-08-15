@@ -30,13 +30,28 @@ export type MortgageInputs = {
   termYears: number;
 };
 
+/**
+ * One row of the closing table: what it is, how much, and — where the rate is
+ * what makes the row meaningful — the rate it was struck at.
+ *
+ * `label` and `note` used to live here as English prose. They were the only
+ * strings in an otherwise pure AED model, they could not be translated where
+ * they sat, and half of them were a fixed noun glued to a computed percentage:
+ * `` `DLD transfer fee · ${pct(0.04)}` ``. Splitting them means the caller
+ * renders `t("tools.cashDldTransfer", { pct })` and the model goes back to
+ * being arithmetic.
+ */
 export type CashToCloseLine = {
-  /** Stable key — used as the React list key and by tests. */
+  /** Stable key — the React list key, the message key, and what tests assert. */
   key: string;
-  /** Display label, free-form. */
-  label: string;
-  /** Note in the right-hand column. */
-  note: string;
+  /**
+   * The rate behind the amount, already formatted (`"4%"`, `"1.5%"`).
+   *
+   * Formatted rather than numeric because `pct()` is where the trailing-zero
+   * rule lives — 1.50 renders as `1.5%`, and `e2e/tools-mortgage.spec.ts:23`
+   * asserts that spelling. Null on the flat statutory fees, which have no rate.
+   */
+  pct: string | null;
   amountAed: number;
 };
 
@@ -202,50 +217,42 @@ export function cashToClose(
   const lines: CashToCloseLine[] = [
     {
       key: "down_payment",
-      label: `Down payment · ${pct(downPct)}`,
-      note: "Lender requirement",
+      pct: pct(downPct),
       amountAed: downPayment,
     },
     {
       key: "dld_transfer",
-      label: `DLD transfer fee · ${pct(STATUTORY.dldTransferPct)}`,
-      note: "Statutory",
+      pct: pct(STATUTORY.dldTransferPct),
       amountAed: round(inputs.pricePropertyAed * STATUTORY.dldTransferPct),
     },
     {
       key: "trustee_office",
-      label: "Trustee office fee",
-      note: "Statutory",
+      pct: null,
       amountAed: STATUTORY.trusteeOfficeFeeAed,
     },
     {
       key: "mortgage_registration",
-      label: `Mortgage registration · ${pct(STATUTORY.mortgageRegistrationPct)}`,
-      note: "DLD",
+      pct: pct(STATUTORY.mortgageRegistrationPct),
       amountAed: round(principal * STATUTORY.mortgageRegistrationPct),
     },
     {
       key: "bank_arrangement",
-      label: `Bank arrangement fee · ${pct(STATUTORY.bankArrangementPct)}`,
-      note: "Negotiable",
+      pct: pct(STATUTORY.bankArrangementPct),
       amountAed: round(principal * STATUTORY.bankArrangementPct),
     },
     {
       key: "property_valuation",
-      label: "Property valuation",
-      note: "Bank-selected",
+      pct: null,
       amountAed: STATUTORY.propertyValuationAed,
     },
     {
       key: "bazar_advisory",
-      label: `Bazar advisory · ${pct(advisoryPct)}`,
-      note: "Capped",
+      pct: pct(advisoryPct),
       amountAed: round(inputs.pricePropertyAed * advisoryPct),
     },
     {
       key: "noc_misc",
-      label: "NOC & misc.",
-      note: "—",
+      pct: null,
       amountAed: STATUTORY.nocMiscAed,
     },
   ];
@@ -266,8 +273,6 @@ export type Affordability = {
   /** Debt-burden ratio: monthly payment ÷ monthly income, as a fraction. */
   dbr: number;
   status: "ok" | "stretched" | "over";
-  /** Headline copy the result card can render. */
-  label: string;
 };
 
 /**
@@ -287,14 +292,10 @@ export function affordability(
   else if (dbr <= 0.5) status = "stretched";
   else status = "over";
 
-  const dbrPct = Math.round(dbr * 100);
-  const label =
-    status === "ok"
-      ? `Comfortably within affordability · ${dbrPct}% DBR`
-      : status === "stretched"
-        ? `Within the 50% DBR cap, but stretched · ${dbrPct}% DBR`
-        : `Above the 50% DBR cap · ${dbrPct}% DBR`;
-  return { monthlyIncomeAed: round(monthlyIncome), dbr, status, label };
+  // The headline copy that used to be built here now comes from the message
+  // catalogue, keyed on `status`. The three sentences differ by more than a
+  // word each, so they are three keys rather than one with a placeholder.
+  return { monthlyIncomeAed: round(monthlyIncome), dbr, status };
 }
 
 /* ────────────────────────────────────────────────────────────────

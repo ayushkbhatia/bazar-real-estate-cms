@@ -9,6 +9,7 @@ import { ALL_LOCALES } from "./locales";
 import {
   CLIENT_NAMESPACES,
   NAMESPACES,
+  ROUTE_NAMESPACES,
   pickClientMessages,
 } from "./namespaces";
 
@@ -90,9 +91,13 @@ describe("message namespaces", () => {
       if (!/^\s*["']use client["']/m.test(src)) continue;
 
       for (const [, ns] of src.matchAll(NS_CALL_RE)) {
-        if (!(CLIENT_NAMESPACES as readonly string[]).includes(ns!)) {
-          offenders.push(`${file} → "${ns}"`);
-        }
+        if ((CLIENT_NAMESPACES as readonly string[]).includes(ns!)) continue;
+        // A route-scoped namespace is mounted by one segment's layout, so it
+        // is legal inside that segment and nowhere else.
+        const prefixes: readonly string[] =
+          ROUTE_NAMESPACES[ns as keyof typeof ROUTE_NAMESPACES] ?? [];
+        if (prefixes.some((p) => file.startsWith(p))) continue;
+        offenders.push(`${file} → "${ns}"`);
       }
     }
 
@@ -103,8 +108,57 @@ describe("message namespaces", () => {
         `${[...new Set(offenders)].sort().join("\n")}\n\n` +
         `Prefer moving the component to a Server Component with ` +
         `getTranslations. Only add to CLIENT_NAMESPACES when it genuinely ` +
-        `needs to be interactive — it costs bytes on all 78 prerendered routes.`,
+        `needs to be interactive — it costs bytes on all 78 prerendered ` +
+        `routes. For a large namespace read by one route family, add it to ` +
+        `ROUTE_NAMESPACES and mount <RouteMessages> in that segment's layout.`,
     ).toEqual([]);
+  });
+
+  /**
+   * The half that catches the mistake nobody would spot in review.
+   *
+   * A route-scoped namespace lives or dies on a layout mounting it. Delete
+   * that layout, move the segment, or add a prefix to `ROUTE_NAMESPACES` and
+   * forget the layout, and every key under it renders as `tools.monthlyPayment`
+   * on the live site — no exception, no Sentry event, no failing test.
+   */
+  it("mounts every route-scoped namespace in the segment that claims it", () => {
+    const layouts = new Map(
+      sourceFiles()
+        .filter((f) => /\/layout\.tsx$/.test(f))
+        .map((f) => [f, readFileSync(join(REPO_ROOT, f), "utf8")] as const),
+    );
+
+    const missing: string[] = [];
+    for (const [ns, prefixes] of Object.entries(ROUTE_NAMESPACES)) {
+      for (const prefix of prefixes as readonly string[]) {
+        const mounted = [...layouts].some(
+          ([file, src]) =>
+            file.startsWith(prefix) &&
+            /<RouteMessages\b/.test(src) &&
+            new RegExp(`["']${ns}["']`).test(src),
+        );
+        if (!mounted) missing.push(`${prefix} → "${ns}"`);
+      }
+    }
+
+    expect(
+      missing.sort(),
+      `ROUTE_NAMESPACES promises these segments mount a namespace, and no ` +
+        `layout under them does:\n${missing.sort().join("\n")}\n\n` +
+        `Add a layout.tsx that renders <RouteMessages namespaces={[…]}> — ` +
+        `without it every key in the namespace renders as its own dotted key ` +
+        `path on the live site and nothing throws.`,
+    ).toEqual([]);
+  });
+
+  it("keeps route-scoped namespaces off the global client list", () => {
+    // Both lists is not a contradiction the code would catch — it would just
+    // silently pay the global cost while looking scoped.
+    for (const ns of Object.keys(ROUTE_NAMESPACES)) {
+      expect(CLIENT_NAMESPACES as readonly string[]).not.toContain(ns);
+      expect(NAMESPACES as readonly string[]).toContain(ns);
+    }
   });
 
   it("scans a believable number of files", () => {

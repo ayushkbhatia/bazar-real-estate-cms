@@ -8,7 +8,7 @@ import type { ReactElement, ReactNode } from "react";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { DEFAULT_LOCALE, type Locale } from "./locales";
-import { CLIENT_NAMESPACES } from "./namespaces";
+import { CLIENT_NAMESPACES, type RouteNamespace } from "./namespaces";
 
 /**
  * `render()` with an intl provider around it.
@@ -29,13 +29,22 @@ import { CLIENT_NAMESPACES } from "./namespaces";
  * browser receives at runtime. A component reaching for a namespace outside it
  * should fail here for the same reason it fails in production, rather than
  * passing in tests and rendering a raw key path on the live site.
+ *
+ * A route-scoped namespace (`ROUTE_NAMESPACES`) is the one exception, and it
+ * is passed the same way the route passes it: explicitly, via `namespaces`.
+ * That keeps the harness honest in both directions — a component under
+ * `/tools` gets `tools` only because its test said so, exactly as it gets it
+ * in the browser only because `tools/layout.tsx` said so.
  */
 
 const ROOT = join(import.meta.dirname, "..", "..");
 
-function messagesFor(locale: Locale): Record<string, unknown> {
+function messagesFor(
+  locale: Locale,
+  extra: readonly RouteNamespace[] = [],
+): Record<string, unknown> {
   const out: Record<string, unknown> = {};
-  for (const ns of CLIENT_NAMESPACES) {
+  for (const ns of [...CLIENT_NAMESPACES, ...extra]) {
     out[ns] = JSON.parse(
       readFileSync(join(ROOT, "messages", locale, `${ns}.json`), "utf8"),
     );
@@ -46,12 +55,17 @@ function messagesFor(locale: Locale): Record<string, unknown> {
 export function IntlHarness({
   children,
   locale = DEFAULT_LOCALE,
+  namespaces = [],
 }: {
   children: ReactNode;
   locale?: Locale;
+  namespaces?: readonly RouteNamespace[];
 }) {
   return (
-    <NextIntlClientProvider locale={locale} messages={messagesFor(locale)}>
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messagesFor(locale, namespaces)}
+    >
       {children}
     </NextIntlClientProvider>
   );
@@ -62,16 +76,22 @@ export function IntlHarness({
  *
  * `locale` defaults to English so an existing test keeps asserting on the same
  * strings. Pass `"ar"` to check that a component survives RTL — which is worth
- * doing for anything that measures, scrolls, or positions.
+ * doing for anything that measures, scrolls, or positions. Pass `namespaces`
+ * for a component that lives under a route mounting its own bag.
  */
 export function renderWithIntl(
   ui: ReactElement,
-  options: Omit<RenderOptions, "wrapper"> & { locale?: Locale } = {},
+  options: Omit<RenderOptions, "wrapper"> & {
+    locale?: Locale;
+    namespaces?: readonly RouteNamespace[];
+  } = {},
 ): RenderResult {
-  const { locale = DEFAULT_LOCALE, ...rest } = options;
+  const { locale = DEFAULT_LOCALE, namespaces, ...rest } = options;
   return render(ui, {
     wrapper: ({ children }) => (
-      <IntlHarness locale={locale}>{children}</IntlHarness>
+      <IntlHarness locale={locale} namespaces={namespaces}>
+        {children}
+      </IntlHarness>
     ),
     ...rest,
   });

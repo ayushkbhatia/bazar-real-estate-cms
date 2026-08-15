@@ -5,6 +5,8 @@ import {
   machineProvenance,
   modelFor,
   translateField,
+  MT_MODEL_BULK,
+  MT_MODEL_PROSE,
   type MtClient,
 } from "./translate";
 
@@ -154,6 +156,144 @@ describe("translateField", () => {
     expect(modelFor("alt")).toContain("haiku");
     expect(modelFor("body")).toBe("claude-opus-5");
     expect(modelFor("title")).toBe("claude-opus-5");
+  });
+});
+
+/**
+ * The API declining the request, as opposed to answering it badly.
+ *
+ * `stop_reason: "refusal"` comes back with zero output tokens and an empty
+ * `content` array. Translating the `tools` namespace drew eleven of these in a
+ * single run, on strings as plain as "Generating…", so it is stochastic rather
+ * than anything about the text — which is exactly why re-rolling works and
+ * naming it matters.
+ */
+function refusingClient(
+  refusals: number,
+  then = "احجز معاينة",
+): MtClient & { calls: unknown[][] } {
+  const calls: unknown[][] = [];
+  let n = 0;
+  return {
+    calls,
+    messages: {
+      create: vi.fn(async (args) => {
+        calls.push([args]);
+        return n++ < refusals
+          ? { content: [], stop_reason: "refusal" }
+          : { content: [{ type: "text", text: then }], stop_reason: "end_turn" };
+      }),
+    },
+  } as MtClient & { calls: unknown[][] };
+}
+
+describe("translateField · a declined request", () => {
+  it("re-rolls the same prompt and succeeds", async () => {
+    const client = refusingClient(2);
+    const result = await translateField({
+      client,
+      text: "Book a viewing",
+      kind: "title",
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.text).toBe("احجز معاينة");
+    expect(client.calls).toHaveLength(3);
+  });
+
+  it("never appends an empty assistant turn", async () => {
+    // The old loop pushed `{role: "assistant", content: ""}` after a blank
+    // response. That is not a legal turn, so the one retry the string was
+    // going to get was spent on a malformed conversation rather than on
+    // another roll of the prompt.
+    const client = refusingClient(1);
+    await translateField({ client, text: "Book a viewing", kind: "title" });
+    for (const [args] of client.calls as { messages: { content: string }[] }[][]) {
+      expect(args.messages.every((m) => m.content.length > 0)).toBe(true);
+      // And the prompt is unchanged — there is nothing to correct.
+      expect(args.messages).toHaveLength(1);
+    }
+  });
+
+  it("falls back to the other model when the refusal is persistent", async () => {
+    // The failure this exists for is deterministic, not flaky: eight `tools`
+    // strings refused on every roll from the prose model and translated
+    // first time on the bulk one.
+    const client = refusingClient(4);
+    const result = await translateField({
+      client,
+      text: "Book a viewing",
+      kind: "title",
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    // And the result says which model actually produced it.
+    expect(result.model).toBe(MT_MODEL_BULK);
+    const models = (client.calls as { model: string }[][]).map(
+      ([a]) => a.model,
+    );
+    expect(models.slice(0, 4)).toEqual(Array(4).fill(MT_MODEL_PROSE));
+    expect(models[4]).toBe(MT_MODEL_BULK);
+  });
+
+  it("does not fall back for alt text, which is already on the bulk model", async () => {
+    const client = refusingClient(99);
+    const result = await translateField({
+      client,
+      text: "Book a viewing",
+      kind: "alt",
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(
+      new Set((client.calls as { model: string }[][]).map(([a]) => a.model)),
+    ).toEqual(new Set([MT_MODEL_BULK]));
+  });
+
+  it("names the refusal rather than calling it empty", async () => {
+    const client = refusingClient(99);
+    const result = await translateField({
+      client,
+      text: "Book a viewing",
+      kind: "title",
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues.map((i) => i.code)).toEqual(["refusal"]);
+    expect(result.issues[0]!.detail).toContain("stop_reason=refusal");
+  });
+
+  it("distinguishes a truncation from a refusal", async () => {
+    const client = {
+      messages: {
+        create: vi.fn(async () => ({
+          content: [],
+          stop_reason: "max_tokens",
+        })),
+      },
+    } as unknown as MtClient;
+    const result = await translateField({
+      client,
+      text: "Book a viewing",
+      kind: "title",
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues[0]!.code).toBe("truncated");
+  });
+
+  it("still reports a blank answer with no stop_reason as empty", async () => {
+    // The fakes above this line do not set `stop_reason` at all, so the
+    // fall-through has to keep working or half this file changes meaning.
+    const client = fakeClient("");
+    const result = await translateField({
+      client,
+      text: "Book a viewing",
+      kind: "title",
+    });
+    expect(result.ok).toBe(false);
+    if (result.ok) return;
+    expect(result.issues[0]!.code).toBe("empty");
   });
 });
 
