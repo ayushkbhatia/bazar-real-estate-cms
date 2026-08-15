@@ -507,5 +507,291 @@
         "copy": "Make sure your tenancy contract is clear, your payments are recorded, and your move-in condition is documented before you fully settle into your new Abu Dhabi home."
       }
     }
+  },
+  "checker": {
+    "shell": {
+      "eyebrow": "Eligibility checker",
+      "stepCounter": "Step {n} of {total}",
+      "back": "Back",
+      "next": "Next",
+      "seeResult": "See result",
+      "whatNext": "What to do next",
+      "restart": "Restart",
+      "defaultCta": "Talk to a Bazar advisor",
+      "status": {
+        "eligible": "eligible",
+        "likely": "likely",
+        "borderline": "borderline",
+        "ineligible": "ineligible"
+      }
+    },
+    "goldenVisa": {
+      "title": "Check where you land in 90 seconds.",
+      "intro": "Three questions about the property and the ownership structure. The result is directional — your Bazar advisor will tighten it against your specific paperwork before any application is filed.",
+      "step": {
+        "value": {
+          "question": "What's the property value you're considering?",
+          "choice": {
+            "above_2m": {
+              "label": "AED 2M or more",
+              "hint": "Golden Visa threshold"
+            },
+            "1m_to_2m": {
+              "label": "Between AED 1M and AED 2M"
+            },
+            "750k_to_1m": {
+              "label": "AED 750K – 1M",
+              "hint": "2-year residency threshold"
+            },
+            "below_750k": {
+              "label": "Below AED 750K"
+            }
+          }
+        },
+        "ownership": {
+          "question": "How will the property be owned?",
+          "choice": {
+            "personal": {
+              "label": "In my personal name"
+            },
+            "joint": {
+              "label": "Jointly with my spouse"
+            },
+            "company": {
+              "label": "In a company name"
+            },
+            "mortgaged": {
+              "label": "Partly mortgaged"
+            }
+          }
+        },
+        "stage": {
+          "question": "Where is the property in its lifecycle?",
+          "choice": {
+            "ready_titled": {
+              "label": "Ready and titled"
+            },
+            "off_plan_50pct": {
+              "label": "Off-plan, 50%+ paid"
+            },
+            "off_plan_below50": {
+              "label": "Off-plan, less than 50% paid"
+            }
+          }
+        }
+      },
+      "outcome": {
+        "belowThreshold": {
+          "title": "Below the residency threshold today",
+          "copy": "AED 750K is the minimum for the 2-year property-linked residency. Step up the budget or wait for the right project — a Bazar advisor can build a brief that lands you in the qualifying band.",
+          "cta": "Talk through eligibility",
+          "next": {
+            "1": "Discuss a brief and a target qualifying range",
+            "2": "Consider the 2-year route (AED 750K+) as an interim step"
+          }
+        },
+        "twoYearBand": {
+          "title": "Eligible for 2-year residency, not Golden Visa yet",
+          "copy": "The 2-year property-linked residency requires AED 750K+; you're inside that band. The 10-year Golden Visa needs AED 2M+ — close but not there yet. The 2-year route is renewable and gets you into the country while you scale up.",
+          "cta": "Plan the 2-year + upgrade path",
+          "next": {
+            "1": "Apply for the 2-year visa first to lock in residency",
+            "2": "Plan the upgrade path to AED 2M+ over 12–18 months"
+          }
+        },
+        "companyHeld": {
+          "title": "Company-held property doesn't qualify directly",
+          "copy": "The visa is granted on the owner of record. If the property is held by a company, ICP will check the beneficial-ownership structure but won't grant the visa to a corporate. Your advisor can restructure to personal title before the application.",
+          "cta": "Discuss restructuring",
+          "next": {
+            "1": "Restructure to personal title pre-application",
+            "2": "Confirm the transfer fees + timeline with conveyancing"
+          }
+        },
+        "offPlanUnder50": {
+          "title": "Eligible — once you cross the 50% paid threshold",
+          "copy": "ICP applies the Golden Visa to off-plan property only after the developer has issued the 50%-paid certificate. Stay the course, hit the milestone, and you're in. Bazar's visa desk can pre-stage your paperwork so the day-1 submission is smooth.",
+          "next": {
+            "1": "Track the 50% paid milestone with the developer",
+            "2": "Pre-compile passport, valuation, NOC, dependants"
+          }
+        },
+        "eligible": {
+          "title": "You should qualify for the 10-year Golden Visa",
+          "copy": "AED 2M+ in personal name on a ready or majority-paid off-plan property is the canonical Golden Visa profile. ICP processing typically lands in 4–6 weeks once paperwork is complete. Bazar's visa desk handles the entire flow — eligibility check, documentation, medical, Emirates ID, dependants.",
+          "cta": "Engage the visa desk",
+          "next": {
+            "1": "Compile passport, title deed, valuation, dependants paperwork",
+            "2": "Book the medical + Emirates ID slot",
+            "3": "Submit through ICP — typical 4–6 week clearance window"
+          }
+        }
+      }
+    },
+    "taxResidency": {
+      "title": "Where do you land on the FTA's two tests?",
+      "intro": "Three questions about days, anchor, and treaty intent. The result is directional only — for borderline cases, a cross-border tax adviser is essential before filing.",
+      "step": {
+        "days": {
+          "question": "How many days will you spend in the UAE this tax year?",
+          "choice": {
+            "183_plus": {
+              "label": "183+ days"
+            },
+            "90_to_182": {
+              "label": "90–182 days",
+              "hint": "Qualifies if certain other conditions are met"
+            },
+            "below_90": {
+              "label": "Below 90 days"
+            }
+          }
+        },
+        "anchor": {
+          "question": "Which best describes your UAE anchor?",
+          "choice": {
+            "permanent_home": {
+              "label": "I own or rent a permanent home in the UAE"
+            },
+            "employment": {
+              "label": "I'm employed by a UAE entity"
+            },
+            "business": {
+              "label": "I run a UAE business / I'm a partner"
+            },
+            "none": {
+              "label": "None of the above"
+            }
+          }
+        },
+        "treaty": {
+          "question": "Do you need to break tax residency in another country via a treaty?",
+          "choice": {
+            "yes": {
+              "label": "Yes — I want a treaty-grade certificate"
+            },
+            "domestic_only": {
+              "label": "No — UAE domestic certificate is enough"
+            },
+            "unsure": {
+              "label": "Not sure"
+            }
+          }
+        }
+      },
+      "outcome": {
+        "notEligible": {
+          "title": "Not eligible this tax year",
+          "copy": "Both pathways require either physical presence or a UAE anchor (home, employment, or business). With neither, the Federal Tax Authority will reject the application.",
+          "next": {
+            "1": "Plan to spend at least 90 days in the UAE next tax year",
+            "2": "Or establish a permanent home / employment / business"
+          }
+        },
+        "via183": {
+          "title": "Eligible via the 183-day route",
+          "copy": "Physical presence of 183+ days in the UAE during the tax year qualifies you directly — no further conditions. Application turnaround is typically 4–6 weeks once your travel records are compiled.",
+          "cta": "Get help compiling the application",
+          "next": {
+            "1": "Compile passport stamps + UAE entry/exit records",
+            "2": "Request the certificate via the FTA portal"
+          }
+        },
+        "via90Anchor": {
+          "title": "Eligible via the 90-day + anchor route",
+          "copy": "90–182 days plus a UAE anchor (home, employment, or business) qualifies you under the FTA's secondary test. You'll need to evidence the anchor — title deed, tenancy contract, Emirates ID, trade licence, salary certificate, depending on which applies.",
+          "cta": "Get help compiling the application",
+          "next": {
+            "1": "Compile travel records + anchor evidence",
+            "2": "Submit through the FTA portal"
+          }
+        },
+        "borderline": {
+          "title": "Borderline — case-by-case",
+          "copy": "Your profile sits in the FTA's discretionary zone. With evidence of substantial UAE economic activity (e.g. a fully-owned UAE company drawing your income, a UAE-titled primary residence) the certificate is often granted, but it's not automatic. Worth a 30-minute advisor call to map your case.",
+          "next": {
+            "1": "Book a 30-minute consult to map evidence",
+            "2": "Identify any gaps before applying"
+          }
+        }
+      }
+    },
+    "propertyResidency": {
+      "title": "Are you on the right side of the threshold?",
+      "intro": "Three questions about the asset. The result is directional; your advisor will pressure-test it before any application is filed.",
+      "step": {
+        "value": {
+          "question": "What's the property value?",
+          "choice": {
+            "above_750k": {
+              "label": "AED 750K or more"
+            },
+            "below_750k": {
+              "label": "Below AED 750K"
+            }
+          }
+        },
+        "mortgage": {
+          "question": "Is the property mortgaged?",
+          "choice": {
+            "no_mortgage": {
+              "label": "No, paid in full"
+            },
+            "mortgage_below_50": {
+              "label": "Yes — mortgage covers less than 50% of value"
+            },
+            "mortgage_above_50": {
+              "label": "Yes — mortgage covers 50% or more"
+            }
+          }
+        },
+        "stage": {
+          "question": "Is the property ready and titled?",
+          "choice": {
+            "ready": {
+              "label": "Yes — titled and registered"
+            },
+            "off_plan": {
+              "label": "Off-plan, still under construction"
+            }
+          }
+        }
+      },
+      "outcome": {
+        "belowThreshold": {
+          "title": "Below the AED 750K threshold",
+          "copy": "The 2-year residency requires AED 750K+ on the title. Look at projects above that line or consider scaling up — Bazar's advisors regularly run shortlists at the 750K-1M sweet spot.",
+          "next": {
+            "1": "Discuss a qualifying-range brief with an advisor"
+          }
+        },
+        "offPlan": {
+          "title": "Eligible once the property hands over",
+          "copy": "The 2-year visa is granted against a registered title deed, which off-plan property doesn't have until handover. The good news: developer payment progress doesn't change this — only handover does.",
+          "next": {
+            "1": "Track the handover date with the developer",
+            "2": "Pre-stage paperwork so day-1 application is clean"
+          }
+        },
+        "lenderNoc": {
+          "title": "Lender NOC required",
+          "copy": "When the outstanding mortgage exceeds 50% of the property value, ICP requires the lender's NOC plus proof that you've serviced the loan on schedule for 12+ months. Achievable, just means an extra week or two of paperwork.",
+          "next": {
+            "1": "Request the lender NOC",
+            "2": "Compile 12 months of repayment statements"
+          }
+        },
+        "eligible": {
+          "title": "You should qualify for the 2-year residency",
+          "copy": "AED 750K+ on title, mortgage-clean or under 50% leveraged, ready property — the textbook profile. End-to-end timeline is typically 3–4 weeks once the medical slot opens up.",
+          "cta": "Engage the visa desk",
+          "next": {
+            "1": "Compile passport, title deed, valuation, dependants paperwork",
+            "2": "Book the medical + Emirates ID slot",
+            "3": "Submit via ICP — 3–4 week clearance window"
+          }
+        }
+      }
+    }
   }
 }

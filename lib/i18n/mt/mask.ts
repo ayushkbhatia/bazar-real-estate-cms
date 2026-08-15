@@ -63,6 +63,21 @@ const PATTERNS: { name: string; re: RegExp }[] = [
     re: /\bAED\s?\d(?:[\d,.]*\d)?(?:\s?(?:[MK]|million|billion)\b)?|\b\d(?:[\d,.]*\d)?\s?(?:[MK]\b)?\s?AED\b/giu,
   },
 
+  /*
+   * A bare magnitude, with no currency beside it.
+   *
+   * Ranges drop the second currency: "AED 750K – 1M" carries the prefix once,
+   * so the rule above masks the first figure and hands `1M` to the model
+   * untouched. It came back as "1 مليون" — half the range translated, half
+   * not, which reads as two different units and is exactly what masking
+   * exists to prevent. `numeral-drift` did not see it either, because the
+   * digit `1` survived.
+   *
+   * Ordered after `price` so the currency-qualified form still wins the
+   * earliest-start-longest-span tie-break and `AED 2M` masks as one token.
+   */
+  { name: "magnitude", re: /\b\d(?:[\d,.]*\d)?[MK]\b/gu },
+
   // Measurements. ft², sq ft, sqft, m², sqm — all with an optional thousands
   // separator.
   //

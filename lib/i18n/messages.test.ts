@@ -163,7 +163,10 @@ describe("message catalogues", () => {
         // Legitimate Latin in Arabic output is a token with space around it.
         // Arabic LETTERS, not the Arabic block: `AED 12M، على` is a Latin
         // token followed by an Arabic comma, which is correct punctuation.
-        if (/[\u0621-\u064A\u0671-\u06D3][A-Za-z]|[A-Za-z][\u0621-\u064A\u0671-\u06D3]/u.test(value)) {
+        // And a leading Arabic letter only counts when it is not itself
+        // preceded by a space or Arabic — `وAED` is the conjunction written
+        // attached, which is how Arabic spells it.
+        if (/[A-Za-z][\u0621-\u064A\u0671-\u06D3]|(?<!(?:^|\s)[وبلكف])(?<=[\u0621-\u064A\u0671-\u06D3])[A-Za-z]/u.test(value)) {
           broken.push(`${id}: Latin letter fused to an Arabic word — ${value}`);
         }
         // A letter from a script this site does not use — Arabic bytes that

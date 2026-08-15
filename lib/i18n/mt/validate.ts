@@ -162,6 +162,8 @@ function latinRuns(text: string): string[] {
  * `امتb الإمارات العربية المتحدة` where the Arabic wanted only the last three
  * words.
  *
+ * Two asymmetries, both earned.
+ *
  * The Arabic side is Arabic LETTERS, spelled out as ranges rather than as the
  * whole `\u0600-\u06FF` block. The block version flagged `AED 12M، على` — a
  * Latin token against U+060C, the Arabic comma — which is ordinary
@@ -171,11 +173,19 @@ function latinRuns(text: string): string[] {
  * set intersection needs the `v` flag, which needs `target: es2024`, which
  * `next build` does not use even though `tsc --noEmit` here does. That gap is
  * why this was caught by Playwright's own build rather than by the gate.
+ *
+ * And Arabic writes its one-letter proclitics attached to the next word, so
+ * `وAED` — "and AED" — is correct orthography, not a fused character. The
+ * assertion therefore sits on the LATIN character: flag it when an Arabic
+ * letter precedes, unless that letter is one of `و ب ل ك ف` at a word
+ * boundary. The naive version failed `بين AED 1M وAED 2M` for spelling Arabic
+ * properly; putting the exemption on the Arabic character instead exempted
+ * `امتb`, which is the defect this exists for.
  */
 function latinIntrusions(text: string): string[] {
   return (
     text.match(
-      /[\u0621-\u064A\u0671-\u06D3][A-Za-z]|[A-Za-z][\u0621-\u064A\u0671-\u06D3]/gu,
+      /[A-Za-z][\u0621-\u064A\u0671-\u06D3]|(?<!(?:^|\s)[وبلكف])(?<=[\u0621-\u064A\u0671-\u06D3])[A-Za-z]/gu,
     ) ?? []
   );
 }
