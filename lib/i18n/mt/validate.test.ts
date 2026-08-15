@@ -82,6 +82,14 @@ describe("the checks that must never be quiet", () => {
     );
   });
 
+  it("lets Arabic attach its conjunction to a Latin token", () => {
+    // `وAED` is "and AED" spelled the way Arabic spells it. The first version
+    // of this rule failed a correct string for correct orthography.
+    expect(codes("Between AED 1M and AED 2M", "بين AED 1M وAED 2M")).not.toContain(
+      "latin-intrusion",
+    );
+  });
+
   it("flags Arabic that came back as another script", () => {
     // "الانتقال إلى" arrived as Thai codepoints — UTF-8 Arabic decoded as
     // cp1256 and re-encoded. To an English reviewer it looks like Arabic.

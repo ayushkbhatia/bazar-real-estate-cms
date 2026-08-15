@@ -5208,5 +5208,713 @@
     "model": null,
     "sourceHash": "1e494873d5a6",
     "reviewed": true
+  },
+  "guides.checker.shell.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fba93e312d2a",
+    "reviewed": false
+  },
+  "guides.checker.shell.stepCounter": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "82e0b7bc4bad",
+    "reviewed": false
+  },
+  "guides.checker.shell.back": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "76900f1bfd16",
+    "reviewed": false
+  },
+  "guides.checker.shell.next": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1ff57a29d7c9",
+    "reviewed": false
+  },
+  "guides.checker.shell.seeResult": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f354093b945b",
+    "reviewed": false
+  },
+  "guides.checker.shell.whatNext": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "6164ad73de30",
+    "reviewed": true
+  },
+  "guides.checker.shell.restart": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "6b983a81e5e8",
+    "reviewed": true
+  },
+  "guides.checker.shell.defaultCta": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5dbf4ef893ce",
+    "reviewed": false
+  },
+  "guides.checker.shell.status.eligible": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fc99c152d847",
+    "reviewed": false
+  },
+  "guides.checker.shell.status.likely": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "442b7af49162",
+    "reviewed": false
+  },
+  "guides.checker.shell.status.borderline": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d9c6972123a4",
+    "reviewed": false
+  },
+  "guides.checker.shell.status.ineligible": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b154effcfec0",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "69d7eb3997cc",
+    "reviewed": true
+  },
+  "guides.checker.goldenVisa.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "49cb419df638",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.value.question": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "543131afd0cb",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.value.choice.above_2m.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "839f2678d343",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.value.choice.above_2m.hint": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c2f4ed4c5ea6",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.value.choice.1m_to_2m.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "665b116cc810",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.value.choice.750k_to_1m.hint": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "8c6053a8fd80",
+    "reviewed": true
+  },
+  "guides.checker.goldenVisa.step.value.choice.below_750k.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dd82fd929789",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.ownership.question": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b6d47f414835",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.ownership.choice.personal.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "df91a53208fb",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.ownership.choice.joint.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c5b0dfb73585",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.ownership.choice.company.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "70838423ed4b",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.ownership.choice.mortgaged.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "703450738576",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.stage.question": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "b6638aa244dc",
+    "reviewed": true
+  },
+  "guides.checker.goldenVisa.step.stage.choice.ready_titled.label": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "eb7ea1bd88ee",
+    "reviewed": true
+  },
+  "guides.checker.goldenVisa.step.stage.choice.off_plan_50pct.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6771e1ea1ad0",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.step.stage.choice.off_plan_below50.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dc930d0540b8",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.belowThreshold.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0af569d5a872",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.belowThreshold.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d335d4444db0",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.belowThreshold.cta": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "358d8e7a5776",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.belowThreshold.next.1": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "54decb89e847",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.belowThreshold.next.2": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "eb7f8612f0de",
+    "reviewed": true
+  },
+  "guides.checker.goldenVisa.outcome.twoYearBand.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "ecfff7ccbda9",
+    "reviewed": true
+  },
+  "guides.checker.goldenVisa.outcome.twoYearBand.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f3f233712962",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.twoYearBand.next.1": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "42e971d24b03",
+    "reviewed": true
+  },
+  "guides.checker.goldenVisa.outcome.twoYearBand.next.2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ecaec580be89",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.companyHeld.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "8a6cec4333b5",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.companyHeld.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "20d28579e779",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.companyHeld.cta": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "47533d699168",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.companyHeld.next.1": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "54e1ee0b474f",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.companyHeld.next.2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c614c90923ef",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.offPlanUnder50.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "ec9e9a747b95",
+    "reviewed": true
+  },
+  "guides.checker.goldenVisa.outcome.offPlanUnder50.next.1": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "12844045dd6a",
+    "reviewed": true
+  },
+  "guides.checker.goldenVisa.outcome.offPlanUnder50.next.2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "adcc80356d7a",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.eligible.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0f43d10728ff",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.eligible.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ac7eee5d38fd",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.eligible.cta": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1c30c36eeacf",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.eligible.next.1": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b1f5e0539a3b",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.eligible.next.2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0e79e6a569c5",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.eligible.next.3": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f7a36e279dc2",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ac60dc3bf09b",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "724bb1f16f28",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.days.question": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d1ea6baa2280",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.days.choice.183_plus.label": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "3be48c6d9d1d",
+    "reviewed": true
+  },
+  "guides.checker.taxResidency.step.days.choice.90_to_182.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ca238f9a7c6d",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.days.choice.90_to_182.hint": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "949ed8fb443e",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.days.choice.below_90.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e7a2f4960b10",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.anchor.question": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1ac3aeda7e2c",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.anchor.choice.permanent_home.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dbcfe7112893",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.anchor.choice.employment.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b69d31595a08",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.anchor.choice.business.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3af184574d4d",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.anchor.choice.none.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4b69dd367621",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.treaty.question": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ef86ff3753f4",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.treaty.choice.yes.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b32fd5266d3c",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.treaty.choice.domestic_only.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0eed09be8dc2",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.step.treaty.choice.unsure.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "dca5fa430c12",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.notEligible.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "97058e66c57f",
+    "reviewed": true
+  },
+  "guides.checker.taxResidency.outcome.notEligible.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c56cd42ade35",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.notEligible.next.1": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "2b8ff9ee226e",
+    "reviewed": true
+  },
+  "guides.checker.taxResidency.outcome.notEligible.next.2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "768e19af4a39",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.via183.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5a976db09d44",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.via183.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f933f2f01c5f",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.via183.cta": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "265e65508a67",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.via183.next.1": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4a821063bbc1",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.via183.next.2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "620888d3c48d",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.via90Anchor.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5a5bec301a70",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.via90Anchor.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "92c0dd2d7ce8",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.via90Anchor.next.1": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "370ccdc5f48f",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.via90Anchor.next.2": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "3b3d2b3abf9f",
+    "reviewed": true
+  },
+  "guides.checker.taxResidency.outcome.borderline.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7ad03a032572",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.borderline.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d3c42394d8b9",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.borderline.next.1": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a4ac300cb096",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.borderline.next.2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "93ba6c864b22",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "13895092508f",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.intro": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "24326d20522a",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.step.value.question": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "858b0b44b925",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.step.value.choice.above_750k.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "66f1137eb0de",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.step.value.choice.below_750k.label": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "dd82fd929789",
+    "reviewed": true
+  },
+  "guides.checker.propertyResidency.step.mortgage.question": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f3e2c99d750b",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.step.mortgage.choice.no_mortgage.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4cd709caa2e4",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.step.mortgage.choice.mortgage_below_50.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6e8eec4f71ab",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.step.stage.question": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5ddba8e93c7e",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.step.stage.choice.ready.label": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "8ee364ab1628",
+    "reviewed": true
+  },
+  "guides.checker.propertyResidency.step.stage.choice.off_plan.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9b5273f874f9",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.belowThreshold.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "177ab6190dba",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.belowThreshold.next.1": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "690eb75cb695",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.offPlan.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "20662020a8d0",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.offPlan.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "14847bcc62a2",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.offPlan.next.1": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "81a7e6cc65ab",
+    "reviewed": true
+  },
+  "guides.checker.propertyResidency.outcome.offPlan.next.2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "46d22975c6eb",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.lenderNoc.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "cf85274a733d",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.lenderNoc.next.1": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "320e708515e7",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.lenderNoc.next.2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0ef5eb7b634f",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.eligible.title": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "5273d920e285",
+    "reviewed": true
+  },
+  "guides.checker.propertyResidency.outcome.eligible.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "73027d4687d2",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.eligible.cta": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1c30c36eeacf",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.eligible.next.1": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b1f5e0539a3b",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.eligible.next.2": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0e79e6a569c5",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.eligible.next.3": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "a697fea2392a",
+    "reviewed": true
+  },
+  "guides.checker.goldenVisa.outcome.offPlanUnder50.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "5b84f81103c1",
+    "reviewed": false
+  },
+  "guides.checker.taxResidency.outcome.via90Anchor.cta": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "265e65508a67",
+    "reviewed": true
+  },
+  "guides.checker.propertyResidency.step.mortgage.choice.mortgage_above_50.label": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ff1da3ade243",
+    "reviewed": false
+  },
+  "guides.checker.propertyResidency.outcome.lenderNoc.copy": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6e4cb5dfc2be",
+    "reviewed": false
+  },
+  "guides.checker.goldenVisa.outcome.twoYearBand.cta": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "dc89438e0fcf",
+    "reviewed": true
+  },
+  "guides.checker.goldenVisa.step.value.choice.750k_to_1m.label": {
+    "by": "structural",
+    "model": null,
+    "sourceHash": "8a7c469d57b0",
+    "reviewed": true
+  },
+  "guides.checker.propertyResidency.outcome.belowThreshold.copy": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "71ee99aeaf2e",
+    "reviewed": true
   }
 }
