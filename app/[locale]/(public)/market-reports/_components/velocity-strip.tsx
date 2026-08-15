@@ -1,8 +1,5 @@
 import { Eyebrow } from "@/components/brand/eyebrow";
-import {
-  quarterLabel,
-  type TrendPoint,
-} from "@/lib/queries/market-reports";
+import { quarterLabel, type TrendPoint } from "@/lib/queries/market-reports";
 
 type Props = {
   trend: TrendPoint[];
@@ -33,10 +30,9 @@ export function VelocityStrip({ trend }: Props) {
         Liquidity is {direction} across the {trend.length}-quarter window.
       </h2>
       <p className="mt-3 text-[13px] text-bz-ink-2 max-w-[60ch]">
-        Transaction counts are a rougher signal than days-on-market but the
-        same direction of travel. DLD doesn&apos;t publish listing-to-close
-        intervals, so we use closed-volume momentum until that dataset
-        lands.
+        Transaction counts are a rougher signal than days-on-market but the same
+        direction of travel. DLD doesn&apos;t publish listing-to-close
+        intervals, so we use closed-volume momentum until that dataset lands.
       </p>
       <div className="mt-6 flex items-end gap-1.5 h-[80px] max-w-[720px]">
         {trend.map((t, i) => {
@@ -47,9 +43,7 @@ export function VelocityStrip({ trend }: Props) {
               key={i}
               className="flex-1 flex flex-col items-center justify-end gap-1.5"
             >
-              <span className="mono text-[10px] text-bz-ink-2">
-                {t.count}
-              </span>
+              <span className="mono text-[10px] text-bz-ink-2">{t.count}</span>
               <div
                 className={
                   isLatest
@@ -65,10 +59,7 @@ export function VelocityStrip({ trend }: Props) {
       </div>
       <div className="mt-2 flex items-end gap-1.5 max-w-[720px]">
         {trend.map((t, i) => (
-          <div
-            key={i}
-            className="flex-1 text-center text-[10px] text-bz-ink-2"
-          >
+          <div key={i} className="flex-1 text-center text-[10px] text-bz-ink-2">
             {i === 0 || i === trend.length - 1 || i % 2 === 0
               ? quarterLabel(t.quarter)
               : ""}

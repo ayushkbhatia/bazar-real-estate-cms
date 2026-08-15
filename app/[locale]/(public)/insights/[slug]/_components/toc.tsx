@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useEffect, useState } from "react";
 
 type TocEntry = { id: string; text: string; level: number };
@@ -10,6 +12,7 @@ type TocEntry = { id: string; text: string; level: number };
  * and keeps the active entry in sync as the user scrolls.
  */
 export function ArticleToc() {
+  const t = useTranslations("editorial");
   const [entries, setEntries] = useState<TocEntry[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -55,7 +58,7 @@ export function ArticleToc() {
 
   return (
     <nav
-      aria-label="On this page"
+      aria-label={t("article.onThisPage")}
       className="sticky top-6 w-[200px] flex-shrink-0 text-[12.5px]"
     >
       <div className="text-[10.5px] uppercase tracking-widest text-bz-muted mb-3">

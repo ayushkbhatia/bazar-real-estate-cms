@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n/locales";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -78,8 +80,15 @@ function ArticleHero({ row }: { row: ArticleListRow }) {
 export default async function InsightsCategoryPage({
   params,
 }: {
-  params: Promise<{ cat: string }>;
+  params: Promise<{ cat: string; locale: Locale }>;
 }) {
+  /*
+   * Locale from `params`, never ambient. An ambient `getTranslations` reads
+   * `getLocale()`, which falls through to `headers()` and takes the route off
+   * prerendering — check:routes caught all five of these at once.
+   */
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "editorial" });
   const { cat } = await params;
   const category = await resolveArticleCategoryByUrlSlug(cat);
   if (!category) notFound();
@@ -104,7 +113,7 @@ export default async function InsightsCategoryPage({
 
       {/* Hero */}
       <section className="px-4 md:px-12 pt-8 pb-12 max-w-[1200px]">
-        <Eyebrow>Category</Eyebrow>
+        <Eyebrow>{t("eyebrow.category")}</Eyebrow>
         <h1
           className="serif text-[34px] md:text-[64px] mt-3 font-normal leading-[1.02]"
           style={{ letterSpacing: "-0.025em" }}
@@ -121,8 +130,8 @@ export default async function InsightsCategoryPage({
         {rows.length === 0 ? (
           <div className="py-24 text-center max-w-[44ch] mx-auto border border-dashed border-bz-border rounded-md">
             <p className="text-[15px] text-bz-ink-2">
-              We haven&apos;t published any{" "}
-              {category.label.toLowerCase()} pieces yet.
+              We haven&apos;t published any {category.label.toLowerCase()}{" "}
+              pieces yet.
             </p>
             <Button asChild variant="outline" className="mt-6">
               <Link href="/insights">View all categories</Link>
@@ -153,7 +162,9 @@ export default async function InsightsCategoryPage({
                   ) : null}
                   <div className="mt-3 text-[11.5px] text-bz-muted">
                     {row.author?.display_name ?? "Bazar"}
-                    {row.published_at ? ` · ${formatDate(row.published_at)}` : ""}
+                    {row.published_at
+                      ? ` · ${formatDate(row.published_at)}`
+                      : ""}
                   </div>
                 </Link>
               </article>

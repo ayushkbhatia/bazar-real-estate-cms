@@ -62,10 +62,7 @@ export default async function DevelopersPage() {
 
   const nodes: Record<string, React.ReactNode> = {
     hero: (
-      <section
-        key="hero"
-        className="px-4 md:px-12 pt-12 md:pt-20 pb-12"
-      >
+      <section key="hero" className="px-4 md:px-12 pt-12 md:pt-20 pb-12">
         {heroEyebrow ? <Eyebrow>{heroEyebrow}</Eyebrow> : null}
         <h1
           className="serif mt-3.5 max-w-[1000px]"
@@ -116,66 +113,66 @@ export default async function DevelopersPage() {
             // inside the frame and needs a taller box for comparable weight.
             const tight = d.uploaded === null && d.trimmed !== null;
             return (
-            <Link
-              key={d.slug}
-              href={`/developers/${d.slug}`}
-              className="group flex flex-col rounded-lg border border-bz-border bg-bz-surface overflow-hidden hover:border-bz-border-strong transition-colors"
-            >
-              <div className="flex items-center justify-center px-5 min-h-[140px] md:min-h-[152px]">
-                {logo ? (
-                  <Image
-                    src={logo.src}
-                    alt={d.name}
-                    width={logo.w}
-                    height={logo.h}
-                    className={
-                      tight
-                        ? // `max-w-full` keeps the box inside the card on narrow
-                          // two-column viewports, where it is the tighter bound.
-                          "w-[132px] h-12 md:w-40 md:h-14 max-w-full object-contain"
-                        : "h-20 md:h-24 w-auto max-w-full object-contain"
-                    }
-                    sizes={
-                      tight
-                        ? "160px"
-                        : "(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
-                    }
-                  />
-                ) : (
-                  // No art at all — initials keep the card the same height as
-                  // its neighbours instead of collapsing the row.
-                  <span
-                    className="serif text-[34px] leading-none text-bz-ink-2"
-                    aria-hidden="true"
+              <Link
+                key={d.slug}
+                href={`/developers/${d.slug}`}
+                className="group flex flex-col rounded-lg border border-bz-border bg-bz-surface overflow-hidden hover:border-bz-border-strong transition-colors"
+              >
+                <div className="flex items-center justify-center px-5 min-h-[140px] md:min-h-[152px]">
+                  {logo ? (
+                    <Image
+                      src={logo.src}
+                      alt={d.name}
+                      width={logo.w}
+                      height={logo.h}
+                      className={
+                        tight
+                          ? // `max-w-full` keeps the box inside the card on narrow
+                            // two-column viewports, where it is the tighter bound.
+                            "w-[132px] h-12 md:w-40 md:h-14 max-w-full object-contain"
+                          : "h-20 md:h-24 w-auto max-w-full object-contain"
+                      }
+                      sizes={
+                        tight
+                          ? "160px"
+                          : "(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
+                      }
+                    />
+                  ) : (
+                    // No art at all — initials keep the card the same height as
+                    // its neighbours instead of collapsing the row.
+                    <span
+                      className="serif text-[34px] leading-none text-bz-ink-2"
+                      aria-hidden="true"
+                    >
+                      {initials(d.name)}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col flex-1 p-5 border-t border-bz-border">
+                  <div
+                    className="serif text-[19px] leading-tight"
+                    style={{ letterSpacing: "-0.01em" }}
                   >
-                    {initials(d.name)}
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col flex-1 p-5 border-t border-bz-border">
-                <div
-                  className="serif text-[19px] leading-tight"
-                  style={{ letterSpacing: "-0.01em" }}
-                >
-                  {d.name}
+                    {d.name}
+                  </div>
+                  {d.blurb ? (
+                    <p className="text-[12px] text-bz-ink-2 leading-snug mt-1.5 flex-1">
+                      {d.blurb}
+                    </p>
+                  ) : (
+                    <p className="flex-1" />
+                  )}
+                  <div className="flex items-center gap-1.5 mt-4 text-[12.5px] font-medium text-bz-accent">
+                    {cardCta}
+                    <ArrowRight
+                      size={13}
+                      strokeWidth={1.8}
+                      className="transition-transform group-hover:translate-x-0.5"
+                    />
+                  </div>
                 </div>
-                {d.blurb ? (
-                  <p className="text-[12px] text-bz-ink-2 leading-snug mt-1.5 flex-1">
-                    {d.blurb}
-                  </p>
-                ) : (
-                  <p className="flex-1" />
-                )}
-                <div className="flex items-center gap-1.5 mt-4 text-[12.5px] font-medium text-bz-accent">
-                  {cardCta}
-                  <ArrowRight
-                    size={13}
-                    strokeWidth={1.8}
-                    className="transition-transform group-hover:translate-x-0.5"
-                  />
-                </div>
-              </div>
-            </Link>
+              </Link>
             );
           })}
         </div>

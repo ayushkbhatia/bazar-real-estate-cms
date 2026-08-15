@@ -34,7 +34,8 @@ export function LoadMoreButton({
         className="inline-flex items-center gap-1.5 h-10 px-5 rounded-md border border-bz-border bg-bz-bg text-[13px] text-bz-ink-2 hover:border-bz-border-strong transition-colors"
       >
         <ArrowDown size={13} strokeWidth={1.7} />
-        Load more · {Math.min(step, total - current)} of {total - current} remaining
+        Load more · {Math.min(step, total - current)} of {total - current}{" "}
+        remaining
       </Link>
     </div>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { useState } from "react";
 import { Share2, Bookmark, Send, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -9,6 +11,7 @@ import { toast } from "sonner";
  * the article byline strip.
  */
 export function ArticleActions({ title }: { title: string }) {
+  const t = useTranslations("editorial");
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -39,7 +42,7 @@ export function ArticleActions({ title }: { title: string }) {
 
   return (
     <div className="flex items-center gap-2">
-      <Btn onClick={share} label="Share">
+      <Btn onClick={share} label={t("article.share")}>
         {copied ? (
           <>
             <Check size={12} strokeWidth={2} />
@@ -54,7 +57,7 @@ export function ArticleActions({ title }: { title: string }) {
       </Btn>
       <Btn
         onClick={() => setSaved((v) => !v)}
-        label={saved ? "Saved" : "Save"}
+        label={saved ? t("article.saved") : t("article.save")}
         pressed={saved}
       >
         <Bookmark
@@ -62,9 +65,9 @@ export function ArticleActions({ title }: { title: string }) {
           strokeWidth={1.7}
           fill={saved ? "currentColor" : "none"}
         />
-        {saved ? "Saved" : "Save"}
+        {saved ? t("article.saved") : t("article.save")}
       </Btn>
-      <Btn onClick={send} label="Send to advisor">
+      <Btn onClick={send} label={t("article.sendToAdvisor")}>
         <Send size={12} strokeWidth={1.7} />
         Send to advisor
       </Btn>

@@ -23,7 +23,8 @@ import { NewsletterSignup } from "../_components/newsletter-signup";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "The Bazar Brief — market reports, field notes, and advisor commentary",
+  title:
+    "The Bazar Brief — market reports, field notes, and advisor commentary",
   description:
     "Long-form market analysis, advisor field notes, and the occasional contrarian take on Abu Dhabi real estate. One email every Wednesday.",
 };
@@ -42,13 +43,7 @@ const PAGE_SIZE = 24;
 const ARTICLE_GRID_COLUMNS =
   "grid-cols-[repeat(auto-fill,minmax(min(280px,100%),1fr))]";
 
-function ArticleHero({
-  row,
-  sizes,
-}: {
-  row: ArticleListRow;
-  sizes: string;
-}) {
+function ArticleHero({ row, sizes }: { row: ArticleListRow; sizes: string }) {
   if (row.hero) {
     return (
       <Image
@@ -313,7 +308,9 @@ export default async function InsightsIndexPage() {
                   ) : null}
                   <div className="mt-3 text-[11.5px] text-bz-muted">
                     {row.author?.display_name ?? "Bazar"}
-                    {row.published_at ? ` · ${formatDate(row.published_at)}` : ""}
+                    {row.published_at
+                      ? ` · ${formatDate(row.published_at)}`
+                      : ""}
                   </div>
                 </Link>
               </article>

@@ -86,7 +86,9 @@ export default async function ArticleDetailPage({ params }: PageProps) {
   const related = await getRelatedArticles(article.id, article.category, 3);
 
   const categoryLabel = article.category_label;
-  const heroSrc = article.hero ? mediaPublicUrl(article.hero.storage_key) : null;
+  const heroSrc = article.hero
+    ? mediaPublicUrl(article.hero.storage_key)
+    : null;
 
   // Sprint 5d: JSON-LD + breadcrumb structured data.
   const siteUrl = (
@@ -263,9 +265,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                   {row.category_label}
                   {row.read_minutes ? ` · ${row.read_minutes} min` : ""}
                 </div>
-                <h4
-                  className="serif text-[19px] mt-2 leading-[1.25] group-hover:text-bz-accent transition-colors"
-                >
+                <h4 className="serif text-[19px] mt-2 leading-[1.25] group-hover:text-bz-accent transition-colors">
                   {row.title}
                 </h4>
                 <div className="mt-2 text-[11.5px] text-bz-muted">

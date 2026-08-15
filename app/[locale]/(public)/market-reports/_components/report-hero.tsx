@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import {
@@ -23,9 +24,11 @@ type Props = {
  * already make.
  */
 export function ReportHero({ snapshot }: Props) {
-  const yoyPct = snapshot.yoy_change != null
-    ? Math.round(snapshot.yoy_change * 1000) / 10 // one decimal
-    : null;
+  const t = useTranslations("editorial");
+  const yoyPct =
+    snapshot.yoy_change != null
+      ? Math.round(snapshot.yoy_change * 1000) / 10 // one decimal
+      : null;
   const yoyPositive = yoyPct != null && yoyPct >= 0;
 
   return (
@@ -43,8 +46,15 @@ export function ReportHero({ snapshot }: Props) {
         </h1>
         <p className="mt-5 text-[17px] text-bz-ink-2 leading-relaxed max-w-[52ch]">
           {snapshot.count > 0
-            ? `${snapshot.count.toLocaleString()} closed ${snapshot.property_type} transaction${snapshot.count === 1 ? "" : "s"} on DLD record in ${quarterLabel(snapshot.quarter)}.`
-            : `No closed ${snapshot.property_type} transactions surfaced for ${snapshot.area_name} in this quarter yet.`}
+            ? t("report.closedTransactions", {
+                count: snapshot.count,
+                type: snapshot.property_type,
+                quarter: quarterLabel(snapshot.quarter),
+              })
+            : t("report.noTransactions", {
+                type: snapshot.property_type,
+                area: snapshot.area_name,
+              })}
         </p>
       </div>
 
@@ -66,11 +76,7 @@ export function ReportHero({ snapshot }: Props) {
         />
         <Tile
           eyebrow="YoY change"
-          value={
-            yoyPct == null
-              ? "—"
-              : `${yoyPositive ? "+" : ""}${yoyPct}%`
-          }
+          value={yoyPct == null ? "—" : `${yoyPositive ? "+" : ""}${yoyPct}%`}
           icon={
             yoyPct == null ? null : yoyPositive ? (
               <ArrowUp size={14} strokeWidth={1.8} className="text-bz-accent" />
@@ -79,10 +85,7 @@ export function ReportHero({ snapshot }: Props) {
             )
           }
         />
-        <Tile
-          eyebrow="Transactions"
-          value={snapshot.count.toLocaleString()}
-        />
+        <Tile eyebrow="Transactions" value={snapshot.count.toLocaleString()} />
       </div>
     </section>
   );

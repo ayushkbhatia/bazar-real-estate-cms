@@ -44,8 +44,8 @@ export default async function MarketReportsIndexPage() {
       <section className="px-4 md:px-12 py-16">
         {areas.length === 0 ? (
           <div className="rounded-lg border border-bz-border bg-bz-surface p-9 text-[15px] text-bz-muted">
-            No closed transactions surfaced for {quarterLabel(quarter)} yet.
-            The dataset refreshes weekly — check back shortly.
+            No closed transactions surfaced for {quarterLabel(quarter)} yet. The
+            dataset refreshes weekly — check back shortly.
           </div>
         ) : (
           <div className="space-y-12">

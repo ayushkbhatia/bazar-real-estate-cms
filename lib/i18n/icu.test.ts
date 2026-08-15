@@ -209,3 +209,21 @@ describe("plural branch masking", () => {
     expect(new Set(sentinels).size).toBe(sentinels.length);
   });
 });
+
+describe("stripMarkdownHeading", () => {
+  it("removes a heading marker the model invented", async () => {
+    // Observed four times across waves 1b, 2a and 3 on short bare inputs:
+    // "Currency & units", "Land", "Bathrooms", "Our team". A two-word string
+    // with no surrounding sentence reads like a heading prompt.
+    const { stripMarkdownHeading } = await import("./catalogue-mt");
+    expect(stripMarkdownHeading("Our team", "# فريقنا")).toBe("فريقنا");
+    expect(stripMarkdownHeading("Land", "## أرض")).toBe("أرض");
+  });
+
+  it("leaves a genuine # alone", async () => {
+    const { stripMarkdownHeading } = await import("./catalogue-mt");
+    // ICU's number placeholder, and a literal number-sign abbreviation.
+    expect(stripMarkdownHeading("# bedrooms", "# غرف نوم")).toBe("# غرف نوم");
+    expect(stripMarkdownHeading("Plot #", "# رقم القطعة")).toBe("# رقم القطعة");
+  });
+});

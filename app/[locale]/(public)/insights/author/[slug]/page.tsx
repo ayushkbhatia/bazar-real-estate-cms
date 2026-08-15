@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n/locales";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -68,8 +70,15 @@ function ArticleHero({ row }: { row: ArticleListRow }) {
 export default async function InsightsAuthorPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: Locale }>;
 }) {
+  /*
+   * Locale from `params`, never ambient. An ambient `getTranslations` reads
+   * `getLocale()`, which falls through to `headers()` and takes the route off
+   * prerendering — check:routes caught all five of these at once.
+   */
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "editorial" });
   const { slug } = await params;
   const seed = getSeedAgentBySlug(slug);
   // Try DB lookup. Anon RLS may block — fall back to seed data.
@@ -122,7 +131,9 @@ export default async function InsightsAuthorPage({
             {seed ? (
               <div className="mt-6">
                 <Button asChild variant="outline">
-                  <Link href={`/agents/${seed.slug}`}>View advisor profile</Link>
+                  <Link href={`/agents/${seed.slug}`}>
+                    View advisor profile
+                  </Link>
                 </Button>
               </div>
             ) : null}
@@ -132,7 +143,7 @@ export default async function InsightsAuthorPage({
 
       {/* Articles */}
       <section className="border-t border-bz-border px-4 md:px-12 py-16 max-w-[1280px]">
-        <Eyebrow>Articles</Eyebrow>
+        <Eyebrow>{t("eyebrow.articles")}</Eyebrow>
         <h2
           className="serif text-[32px] mt-2 leading-tight"
           style={{ letterSpacing: "-0.015em" }}

@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
@@ -17,11 +18,12 @@ export function ArticleRail({
     slug: string;
   } | null;
 }) {
+  const t = useTranslations("editorial");
   return (
     <aside className="sticky top-6 w-full md:w-[240px] flex-shrink-0 flex flex-col gap-4">
       {author ? (
         <div className="rounded-lg border border-bz-border bg-bz-surface p-5">
-          <Eyebrow>Talk to the author</Eyebrow>
+          <Eyebrow>{t("eyebrow.talkToAuthor")}</Eyebrow>
           <Link
             href={`/agents/${author.slug}`}
             className="block mt-3 flex flex-col items-start gap-3"
@@ -67,8 +69,8 @@ export function ArticleRail({
           One email every Wednesday.
         </h4>
         <p className="mt-2 text-[12px] text-white/70 leading-relaxed">
-          Field notes, the weekly Abu Dhabi index, and one chart worth
-          sitting with.
+          Field notes, the weekly Abu Dhabi index, and one chart worth sitting
+          with.
         </p>
         <div className="mt-4">
           <NewsletterSignup source="insights_article" variant="dark" />

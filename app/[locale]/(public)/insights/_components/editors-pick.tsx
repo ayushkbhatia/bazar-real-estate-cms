@@ -2,10 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import {
-  articleUrl,
-  type ArticleListRow,
-} from "@/lib/queries/articles";
+import { articleUrl, type ArticleListRow } from "@/lib/queries/articles";
 import { mediaPublicUrl } from "@/lib/media";
 
 /**
@@ -24,8 +21,8 @@ export function EditorsPick({ article }: { article: ArticleListRow | null }) {
           Editor&apos;s pick
         </div>
         <p className="mt-3 text-[14px] opacity-80 leading-relaxed">
-          Publish an article and flag it as editor&apos;s pick in
-          /admin/blog to see it surface here.
+          Publish an article and flag it as editor&apos;s pick in /admin/blog to
+          see it surface here.
         </p>
       </div>
     );

@@ -36,6 +36,7 @@ export const NAMESPACES = [
   "property",
   "development",
   "area",
+  "editorial",
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -76,6 +77,9 @@ export const CLIENT_NAMESPACES = [
   "property",
   // The units table filters client-side and the payment plan is interactive.
   "development",
+  // article-actions (share, save) and the article table of contents are
+  // Client Components. The rest of this namespace is read server-side.
+  "editorial",
 ] as const satisfies readonly Namespace[];
 
 /** Narrow a full message bag to the namespaces the client actually needs. */
