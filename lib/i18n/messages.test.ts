@@ -159,6 +159,10 @@ describe("message catalogues", () => {
             );
           }
         }
+        // U+FFFD is never anything but corruption.
+        if (value.includes("\uFFFD")) {
+          broken.push(`${id}: replacement character — ${value}`);
+        }
         // A Latin letter welded into an Arabic word — `امتb الإمارات`.
         // Legitimate Latin in Arabic output is a token with space around it.
         // Arabic LETTERS, not the Arabic block: `AED 12M، على` is a Latin

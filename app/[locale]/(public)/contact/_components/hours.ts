@@ -25,23 +25,60 @@ export type HoursRow = {
 export type HoursRowView = HoursRow & {
   /** 0 = Sunday … 6 = Saturday, matching `Date#getDay`. Null if unrecognised. */
   index: number | null;
-  /** "9 AM–7 PM", "Closed", or the editor's own words. */
-  display: string;
+  /** True for a day the office is shut — the caller supplies the word. */
+  closedDay: boolean;
+  /**
+   * The editor's own words, when the times are not a parseable range.
+   *
+   * "By appointment" is content the editor typed and gets its Arabic from the
+   * master page's twin, not from the catalogue. Null when the row resolves to
+   * a range or to "closed", both of which the caller renders itself.
+   */
+  rawDisplay: string | null;
   openMinutes: number | null;
   closeMinutes: number | null;
 };
 
+/**
+ * The status, as a decision rather than a sentence.
+ *
+ * It used to return `state: "Open"` and `detail: "Opens Mon 9 AM"` — five
+ * English strings and a weekday abbreviation, in a module that otherwise only
+ * does arithmetic on minutes. Same shape `lib/mortgage.ts`, `lib/compare.ts`
+ * and the eligibility checkers carried, and the same fix: name the case, let
+ * the caller say it.
+ *
+ * `day` is a weekday index for `opensDay`, which is the one case that needs
+ * one — and it needs to be an index rather than "Mon", because Arabic does not
+ * abbreviate its weekday names the way English does.
+ */
 export type HoursStatus = {
   open: boolean;
-  /** "Open" / "Closed". */
-  state: string;
-  /** "Closes 7 PM", "Opens Mon 9 AM" — null when nothing can be said. */
-  detail: string | null;
+  kind: "closesAt" | "opensAt" | "opensTomorrow" | "opensDay" | "none";
+  /** Minute-of-day for the time in the sentence. Null for `none`. */
+  minutes: number | null;
+  /** 0 = Sunday … 6 = Saturday. Only set for `opensDay`. */
+  day: number | null;
 };
 
 const DAY_PREFIXES = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
-const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+/**
+ * Weekday message keys, indexed the way `Date#getDay` indexes.
+ *
+ * The abbreviations themselves used to live here. Arabic does not abbreviate
+ * its weekday names the way English does, so the array carries keys and the
+ * caller resolves them.
+ */
+export const DAY_KEYS = [
+  "sun",
+  "mon",
+  "tue",
+  "wed",
+  "thu",
+  "fri",
+  "sat",
+] as const;
 
 /** "09:00" → 540. Null for anything that isn't a 24-hour clock time. */
 export function parseMinutes(value: string | null): number | null {
@@ -54,11 +91,20 @@ export function parseMinutes(value: string | null): number | null {
   return hours * 60 + minutes;
 }
 
-/** 540 → "9 AM", 1170 → "7:30 PM". */
-export function formatMinutes(total: number): string {
+/**
+ * 540 → "9 AM", 1170 → "7:30 PM".
+ *
+ * The meridiem labels are arguments because Arabic writes ص and م, not AM and
+ * PM. They default to English so every existing caller and the whole of
+ * `hours.test.ts` keep working unchanged.
+ */
+export function formatMinutes(
+  total: number,
+  meridiem: { am: string; pm: string } = { am: "AM", pm: "PM" },
+): string {
   const hours = Math.floor(total / 60) % 24;
   const minutes = total % 60;
-  const suffix = hours < 12 ? "AM" : "PM";
+  const suffix = hours < 12 ? meridiem.am : meridiem.pm;
   const h12 = hours % 12 === 0 ? 12 : hours % 12;
   return minutes === 0
     ? `${h12} ${suffix}`
@@ -89,16 +135,19 @@ export function toRowView(row: HoursRow): HoursRowView {
     closeMinutes !== null &&
     closeMinutes > openMinutes;
 
-  let display: string;
-  if (!row.openDay) display = "Closed";
-  else if (openMinutes !== null && closeMinutes !== null)
-    display = `${formatMinutes(openMinutes)}–${formatMinutes(closeMinutes)}`;
-  else display = [row.open, row.close].filter(Boolean).join("–") || "—";
+  // Three shapes, and only one of them is words: a closed day and a parseable
+  // range are both rendered by the caller, so neither produces a string here.
+  const rawDisplay = row.openDay
+    ? usable
+      ? null
+      : [row.open, row.close].filter(Boolean).join("–") || null
+    : null;
 
   return {
     ...row,
     index: dayIndex(row.day),
-    display,
+    closedDay: !row.openDay,
+    rawDisplay,
     openMinutes: usable ? openMinutes : null,
     closeMinutes: usable ? closeMinutes : null,
   };
@@ -171,30 +220,25 @@ export function statusFor(
   ) {
     return {
       open: true,
-      state: "Open",
-      detail: `Closes ${formatMinutes(today.closeMinutes)}`,
+      kind: "closesAt",
+      minutes: today.closeMinutes,
+      day: null,
     };
   }
 
   if (today?.openMinutes != null && now.minutes < today.openMinutes) {
-    return {
-      open: false,
-      state: "Closed",
-      detail: `Opens ${formatMinutes(today.openMinutes)}`,
-    };
+    return { open: false, kind: "opensAt", minutes: today.openMinutes, day: null };
   }
 
   for (let step = 1; step <= 7; step++) {
     const next = byDay.get((now.day + step) % 7);
     if (next?.openMinutes == null) continue;
-    const label = step === 1 ? "tomorrow" : DAY_SHORT[(now.day + step) % 7];
-    return {
-      open: false,
-      state: "Closed",
-      detail: `Opens ${label} ${formatMinutes(next.openMinutes)}`,
-    };
+    const day = (now.day + step) % 7;
+    return step === 1
+      ? { open: false, kind: "opensTomorrow", minutes: next.openMinutes, day: null }
+      : { open: false, kind: "opensDay", minutes: next.openMinutes, day };
   }
 
   // Every row is closed or unparseable — say so without inventing a time.
-  return { open: false, state: "Closed", detail: null };
+  return { open: false, kind: "none", minutes: null, day: null };
 }

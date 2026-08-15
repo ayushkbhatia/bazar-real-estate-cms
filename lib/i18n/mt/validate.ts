@@ -74,6 +74,12 @@ export type Issue = {
      * which allows Latin because `AED` and `ft²` are legitimate.
      */
     | "latin-intrusion"
+    /**
+     * U+FFFD, the replacement character. Decisive rather than suggestive: it
+     * only ever appears when a byte sequence could not be decoded, so there
+     * is no judgement to make. "بيع" arrived as "ب\uFFFD\uFFFDع".
+     */
+    | "replacement-char"
     | "empty"
     /**
      * The API declined the request outright — `stop_reason: "refusal"`, zero
@@ -288,6 +294,14 @@ export function validate(
     issues.push({
       code: "multiline",
       detail: `output has ${output.split("\n").length - 1} newline(s) the English does not — likely the model's own working`,
+    });
+  }
+
+  const replacements = (output.match(/\uFFFD/g) ?? []).length;
+  if (replacements > 0) {
+    issues.push({
+      code: "replacement-char",
+      detail: `${replacements} U+FFFD — a byte sequence that could not be decoded`,
     });
   }
 

@@ -16,5 +16,26 @@
   "notFoundBody": "The link may be out of date, or the page has been moved. The home page is the quickest way back to the catalogue.",
   "returnHome": "Return home",
   "browseBuy": "Browse buy",
-  "currencyAndUnits": "Currency & units"
+  "currencyAndUnits": "Currency & units",
+  "hours": {
+    "open": "Open",
+    "closed": "Closed",
+    "closesAt": "Closes {time}",
+    "opensAt": "Opens {time}",
+    "opensTomorrow": "Opens tomorrow {time}",
+    "opensDay": "Opens {day} {time}",
+    "range": "{from}–{to}",
+    "am": "AM",
+    "pm": "PM",
+    "day": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "seeDaily": "See daily hours"
+  }
 }

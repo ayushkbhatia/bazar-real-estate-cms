@@ -1,6 +1,9 @@
 // @vitest-environment jsdom
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
+// The form reads the `forms` namespace now, so a bare `render()` throws
+// "No intl context found" rather than failing an assertion.
+import { renderWithIntl as render } from "@/lib/i18n/test-utils";
 import userEvent from "@testing-library/user-event";
 import { ListPropertyForm, type SellFormCopy } from "./list-property-form";
 

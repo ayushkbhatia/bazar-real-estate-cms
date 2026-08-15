@@ -621,10 +621,10 @@
     "reviewed": false
   },
   "development.units.plot": {
-    "by": "machine",
-    "model": "claude-opus-5",
+    "by": "human",
+    "model": null,
     "sourceHash": "a0f0539ade59",
-    "reviewed": false
+    "reviewed": true
   },
   "development.units.lagoonAccess": {
     "by": "machine",
@@ -1667,12 +1667,6 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "318655cea4bd",
-    "reviewed": false
-  },
-  "editorial.eyebrow.trend": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "9e217716c4e0",
     "reviewed": false
   },
   "editorial.eyebrow.whatClientsSay": {
@@ -5916,5 +5910,425 @@
     "model": null,
     "sourceHash": "71ee99aeaf2e",
     "reviewed": true
+  },
+  "common.hours.open": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "ed077f3d8125",
+    "reviewed": true
+  },
+  "common.hours.closed": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "c21ead0614e7",
+    "reviewed": true
+  },
+  "common.hours.closesAt": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ce0beac58b86",
+    "reviewed": false
+  },
+  "common.hours.opensAt": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "d1b8be715540",
+    "reviewed": true
+  },
+  "common.hours.opensTomorrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0b24567885bf",
+    "reviewed": false
+  },
+  "common.hours.opensDay": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "65f0b503a5a8",
+    "reviewed": false
+  },
+  "common.hours.range": {
+    "by": "structural",
+    "model": null,
+    "sourceHash": "c064a2050938",
+    "reviewed": true
+  },
+  "common.hours.am": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c8f48a68649d",
+    "reviewed": false
+  },
+  "common.hours.pm": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6b987654a411",
+    "reviewed": false
+  },
+  "common.hours.day.sun": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "db18f17fe532",
+    "reviewed": false
+  },
+  "common.hours.day.mon": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f40d7f51f69e",
+    "reviewed": false
+  },
+  "common.hours.day.tue": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d1eb39b09bf5",
+    "reviewed": false
+  },
+  "common.hours.day.wed": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "58339f45df96",
+    "reviewed": false
+  },
+  "common.hours.day.thu": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "7da11212ed34",
+    "reviewed": false
+  },
+  "common.hours.day.fri": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "66dab40cea1d",
+    "reviewed": false
+  },
+  "common.hours.day.sat": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "fdeb71b569e0",
+    "reviewed": true
+  },
+  "common.hours.seeDaily": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e70488606300",
+    "reviewed": false
+  },
+  "forms.sell.intent.sell": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "2ec1e2815946",
+    "reviewed": true
+  },
+  "forms.sell.intent.rent_out": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "ebf9fda55c93",
+    "reviewed": false
+  },
+  "forms.sell.category.residential": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0b1370b44a02",
+    "reviewed": false
+  },
+  "forms.sell.category.commercial": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "ea7d0b763435",
+    "reviewed": true
+  },
+  "forms.sell.furnishing.unfurnished": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "bf193de9ee20",
+    "reviewed": false
+  },
+  "forms.sell.furnishing.semi_furnished": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "b876608dbe6b",
+    "reviewed": true
+  },
+  "forms.sell.furnishing.fully_furnished": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "1c2cb94bc144",
+    "reviewed": false
+  },
+  "forms.sell.urgency.this_month": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fd787ef3d46c",
+    "reviewed": false
+  },
+  "forms.sell.urgency.two_months": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "673b0166fa1b",
+    "reviewed": true
+  },
+  "forms.sell.urgency.flexible": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "9622d2850be8",
+    "reviewed": true
+  },
+  "forms.sell.callWindow.morning": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "e9376a281aac",
+    "reviewed": true
+  },
+  "forms.sell.callWindow.afternoon": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "fb847b43637e",
+    "reviewed": false
+  },
+  "forms.sell.callWindow.evening": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "458c1fed5743",
+    "reviewed": false
+  },
+  "forms.sell.callPhrase.morning": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "a9e0fc1020f4",
+    "reviewed": false
+  },
+  "forms.sell.callPhrase.afternoon": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "aafce569e354",
+    "reviewed": false
+  },
+  "forms.sell.callPhrase.evening": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6545e13689d4",
+    "reviewed": false
+  },
+  "forms.sell.type.Apartment": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "3fc028ffbb16",
+    "reviewed": false
+  },
+  "forms.sell.type.Villa": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "afad4c579e50",
+    "reviewed": false
+  },
+  "forms.sell.type.Townhouse": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "305d3335194d",
+    "reviewed": false
+  },
+  "forms.sell.type.Penthouse": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e25d47b2f989",
+    "reviewed": false
+  },
+  "forms.sell.type.Land": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "b6baff9358dd",
+    "reviewed": true
+  },
+  "forms.sell.type.Other": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "f97e9da0e3b8",
+    "reviewed": true
+  },
+  "forms.sell.type.Office": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "9e380d9991e6",
+    "reviewed": true
+  },
+  "forms.sell.type.Retail": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "cdb38c8dc89a",
+    "reviewed": true
+  },
+  "forms.sell.type.Warehouse": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2a625c251683",
+    "reviewed": false
+  },
+  "forms.sell.type.Showroom": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "74cc1d00fe9e",
+    "reviewed": false
+  },
+  "forms.sell.type.Plot": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "a0f0539ade59",
+    "reviewed": true
+  },
+  "forms.sell.bedroomsStudio": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0aa91af2ec4c",
+    "reviewed": false
+  },
+  "forms.sell.fieldIntent": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "04810a8cf708",
+    "reviewed": false
+  },
+  "forms.sell.fieldLocation": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "15b61974b270",
+    "reviewed": false
+  },
+  "forms.sell.fieldCategory": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c1ba7cd50437",
+    "reviewed": false
+  },
+  "forms.sell.fieldBedrooms": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2477f3143d34",
+    "reviewed": false
+  },
+  "forms.sell.fieldArea": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "933250071524",
+    "reviewed": false
+  },
+  "forms.sell.fieldFurnishing": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "cc288f83ffe8",
+    "reviewed": true
+  },
+  "forms.sell.urgencySell": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "d68e42378b6c",
+    "reviewed": false
+  },
+  "forms.sell.urgencyRent": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0ae1aa53c2e9",
+    "reviewed": false
+  },
+  "forms.sell.fieldName": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "f13a64ba2fea",
+    "reviewed": false
+  },
+  "forms.sell.fieldMobile": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "cbaad3cf4a65",
+    "reviewed": true
+  },
+  "forms.sell.fieldEmail": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "969ccbd3cf63",
+    "reviewed": false
+  },
+  "forms.sell.fieldCallWindow": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "1095511f6382",
+    "reviewed": true
+  },
+  "forms.sell.namePlaceholder": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "af7e628592d7",
+    "reviewed": true
+  },
+  "forms.sell.mobilePlaceholder": {
+    "by": "structural",
+    "model": null,
+    "sourceHash": "deddcc45057d",
+    "reviewed": true
+  },
+  "forms.sell.emailPlaceholder": {
+    "by": "structural",
+    "model": null,
+    "sourceHash": "8d12b7f58c0d",
+    "reviewed": true
+  },
+  "forms.sell.locationPlaceholder": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "46eb30f87b80",
+    "reviewed": true
+  },
+  "forms.sell.matchingAreas": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2953d853eb34",
+    "reviewed": false
+  },
+  "forms.sell.categoryGroup": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "a8ef37014abf",
+    "reviewed": true
+  },
+  "forms.sell.advisorFallback": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "c95c73b97c6f",
+    "reviewed": false
+  },
+  "forms.sell.sent": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "e96708e437ee",
+    "reviewed": false
+  },
+  "forms.sell.fixErrors": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "079f78060c05",
+    "reviewed": false
+  },
+  "forms.sell.sendFailed": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "b2413f6cc491",
+    "reviewed": false
+  },
+  "forms.sell.unavailable": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "2592359b6232",
+    "reviewed": false
+  },
+  "forms.sell.type.Full building": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "182e8151e4d4",
+    "reviewed": false
+  },
+  "editorial.eyebrow.trend": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "9e217716c4e0",
+    "reviewed": false
   }
 }

@@ -66,39 +66,45 @@ export type LpUrgency = (typeof LP_URGENCIES)[number];
 export const LP_CALL_WINDOWS = ["morning", "afternoon", "evening"] as const;
 export type LpCallWindow = (typeof LP_CALL_WINDOWS)[number];
 
-export const LP_INTENT_LABELS: Record<LpIntent, string> = {
-  sell: "Sell",
-  rent_out: "Rent out",
-};
-
-export const LP_CATEGORY_LABELS: Record<LpCategory, string> = {
+/**
+ * English labels for the advisor brief, and for nothing else.
+ *
+ * These used to be what the form rendered too. The UI now resolves the same
+ * enums through the `forms` namespace, so an Arabic-reading owner sees Arabic
+ * options — but `buildOwnerBrief` below composes the message that leaves the
+ * browser for the Bazar desk, and that stays English for the same reason the
+ * mortgage tool's advisor lines stay in AED: five people read it, they work in
+ * English, and a brief they have to translate back is worse than no brief.
+ *
+ * `LP_CALL_WINDOW_PHRASES` is gone entirely — it was confirmation copy the
+ * *owner* reads ("Mariam will call you this afternoon"), so it belongs in the
+ * catalogue and nowhere near this file.
+ *
+ * `LP_TYPES` above stays English for a different reason: its members are what
+ * the browser submits and the server validates, and `LP_TYPES_WITHOUT_BEDROOMS`
+ * matches on "Land" and "Other" by value.
+ */
+const LP_CATEGORY_LABELS: Record<LpCategory, string> = {
   residential: "Residential",
   commercial: "Commercial",
 };
 
-export const LP_FURNISHING_LABELS: Record<LpFurnishing, string> = {
+const LP_FURNISHING_LABELS: Record<LpFurnishing, string> = {
   unfurnished: "Unfurnished",
   semi_furnished: "Semi-furnished",
   fully_furnished: "Fully furnished",
 };
 
-export const LP_URGENCY_LABELS: Record<LpUrgency, string> = {
+const LP_URGENCY_LABELS: Record<LpUrgency, string> = {
   this_month: "This month",
   two_months: "Within 2 months",
   flexible: "Flexible",
 };
 
-export const LP_CALL_WINDOW_LABELS: Record<LpCallWindow, string> = {
+const LP_CALL_WINDOW_LABELS: Record<LpCallWindow, string> = {
   morning: "Morning",
   afternoon: "Afternoon",
   evening: "Evening",
-};
-
-/** What the confirmation promises — "Mariam will call you this morning." */
-export const LP_CALL_WINDOW_PHRASES: Record<LpCallWindow, string> = {
-  morning: "tomorrow morning",
-  afternoon: "this afternoon",
-  evening: "this evening",
 };
 
 /**

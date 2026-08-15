@@ -30,5 +30,73 @@
     "doneTitle": "ملف التقرير قيد الإرسال",
     "doneBody": "سيراجع أحد مستشاري بازار الأرقام التي أدخلتها ويرسل التقرير الكامل إلى {email} خلال 24 ساعة.",
     "close": "إغلاق"
+  },
+  "sell": {
+    "intent": {
+      "sell": "بيع",
+      "rent_out": "تأجير"
+    },
+    "category": {
+      "residential": "سكني",
+      "commercial": "تجاري"
+    },
+    "furnishing": {
+      "unfurnished": "غير مفروش",
+      "semi_furnished": "شبه مفروش",
+      "fully_furnished": "مفروش بالكامل"
+    },
+    "urgency": {
+      "this_month": "الشهر الحالي",
+      "two_months": "خلال شهرين",
+      "flexible": "مرن"
+    },
+    "callWindow": {
+      "morning": "الصباح",
+      "afternoon": "ما بعد الظهر",
+      "evening": "المساء"
+    },
+    "callPhrase": {
+      "morning": "صباح الغد",
+      "afternoon": "بعد ظهر اليوم",
+      "evening": "اليوم مساءً"
+    },
+    "type": {
+      "Apartment": "شقة",
+      "Villa": "فيلا",
+      "Townhouse": "تاون هاوس",
+      "Penthouse": "بنتهاوس",
+      "Land": "أرض",
+      "Other": "أخرى",
+      "Office": "مكتب",
+      "Retail": "تجزئة",
+      "Warehouse": "مستودع",
+      "Showroom": "صالة عرض",
+      "Full building": "المبنى بالكامل",
+      "Plot": "قطعة أرض"
+    },
+    "bedroomsStudio": "استوديو",
+    "fieldIntent": "أرغب في",
+    "fieldLocation": "الموقع",
+    "fieldCategory": "الفئة والنوع",
+    "fieldBedrooms": "غرف النوم",
+    "fieldArea": "المساحة المبنية",
+    "fieldFurnishing": "التأثيث",
+    "urgencySell": "ما مدى سرعة رغبتك في البيع؟",
+    "urgencyRent": "خلال كم من الوقت ترغب في تأجيره؟",
+    "fieldName": "الاسم الكامل",
+    "fieldMobile": "الهاتف المتحرك",
+    "fieldEmail": "البريد الإلكتروني",
+    "fieldCallWindow": "أفضل وقت للاتصال",
+    "namePlaceholder": "كما هو مذكور في سند الملكية",
+    "mobilePlaceholder": "50 000 0000",
+    "emailPlaceholder": "you@email.com",
+    "locationPlaceholder": "المبنى أو المجمع أو المنطقة",
+    "matchingAreas": "المناطق المطابقة",
+    "categoryGroup": "فئة العقار",
+    "advisorFallback": "المستشار الخاص بك",
+    "sent": "تم إرسال الاستفسار. تم ربطك بمستشار.",
+    "fixErrors": "الرجاء تصحيح الأخطاء أدناه.",
+    "sendFailed": "حدث خطأ أثناء الإرسال. حاول مرة أخرى — إجاباتك ما زالت محفوظة هنا.",
+    "unavailable": "لا يمكننا استلام النموذج في الوقت الحالي. يُرجى الاتصال بالمكتب وسنأخذ التفاصيل عبر الهاتف."
   }
 }
