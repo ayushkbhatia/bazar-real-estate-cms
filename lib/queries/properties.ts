@@ -142,6 +142,41 @@ async function resolveAreaId(
   return data?.id ?? null;
 }
 
+/**
+ * The row values a search surface means when it asks for one `mode`.
+ *
+ * "Buy" is an umbrella, not a row value. Someone browsing for sale wants
+ * ready, resale *and* off-plan — a plan bought off-plan is still a purchase.
+ * `properties.mode` records the narrower fact, so the buy surfaces have to
+ * expand to both. Off-plan keeps its own route for visitors who specifically
+ * want pre-handover stock; buy is the superset, not a competitor.
+ *
+ * This is not academic: every published row in the catalogue is `off_plan`
+ * today, so `.eq('mode', 'buy')` renders /buy/search and the home page's
+ * featured rail empty against a perfectly healthy catalogue.
+ *
+ * Deliberately not `neq('rent')` — that is what the area guide's sale band
+ * uses (`lib/queries/area-inventory.ts`), and it sweeps in `commercial`,
+ * which has its own mode tab on the search surfaces.
+ *
+ * `form` still narrows on top: /buy/ready and /buy/resale filter
+ * `property_form`, which off-plan rows do not carry, so they stay exact.
+ */
+const MODE_UMBRELLA: Partial<Record<Mode, readonly Mode[]>> = {
+  buy: ["buy", "off_plan"],
+};
+
+/** Apply a mode filter, expanding the umbrella modes to the rows they cover. */
+function filterByMode<
+  T extends {
+    eq: (c: string, v: string) => T;
+    in: (c: string, v: readonly string[]) => T;
+  },
+>(query: T, mode: Mode): T {
+  const umbrella = MODE_UMBRELLA[mode];
+  return umbrella ? query.in("mode", umbrella) : query.eq("mode", mode);
+}
+
 /** List published listings for the public marketplace. */
 export async function listPublishedProperties(opts: {
   mode?: Mode;
@@ -160,7 +195,7 @@ export async function listPublishedProperties(opts: {
     .eq("status", "published")
     .is("deleted_at", null);
 
-  if (opts.mode) query = query.eq("mode", opts.mode);
+  if (opts.mode) query = filterByMode(query, opts.mode);
   if (opts.form) query = query.eq("property_form", opts.form);
 
   const filters = opts.filters;
@@ -302,13 +337,17 @@ export async function getSimilarProperties(
 ): Promise<ListingRow[]> {
   if (!isSupabaseConfigured) return [];
   const supabase = createSupabasePublicClient();
-  let query = supabase
-    .from("properties")
-    .select(LISTING_FIELDS)
-    .neq("id", excludeId)
-    .eq("status", "published")
-    .eq("mode", mode)
-    .is("deleted_at", null)
+  // Same umbrella as the search surfaces: "similar" to a sale listing means
+  // other sale stock, off-plan included.
+  let query = filterByMode(
+    supabase
+      .from("properties")
+      .select(LISTING_FIELDS)
+      .neq("id", excludeId)
+      .eq("status", "published")
+      .is("deleted_at", null),
+    mode,
+  )
     .order("published_at", { ascending: false })
     .limit(4);
   if (areaSlug) {
