@@ -20,6 +20,7 @@ const TABS: { group: string; items: Tab[] }[] = [
       { label: "Property fields", href: "/admin/settings/fields", status: "stub" },
       { label: "Routing", href: "/admin/settings/routing", status: "live" },
       { label: "Templates", href: "/admin/settings/templates", status: "live" },
+      { label: "Mortgage", href: "/admin/settings/mortgage", status: "live" },
     ],
   },
   {

@@ -993,3 +993,15 @@ shows the trail.)
   `block-types/mosaic`. The Page Builder supersedes what they were for. Decide:
   delete them, or lift `block-thumbnails` into the new add-block picker, which
   is the one piece with obvious value left in it.
+
+- [mortgage] The DBR gauge and the affordability sentence read from two
+  different scales. `affordability()` in `lib/mortgage.ts` bands at
+  `dbrComfortablePct` / `dbrMaxPct` (40 / 50 by default, both editable under
+  Settings → Mortgage); `DbrGauge` colours at 0.35 / `maxDbr`. The 0.35 is the
+  lenders' stress-test convention rather than a regulator's number, which is
+  why it stayed in code — but it predates the settings panel and nobody chose
+  the mismatch deliberately. Either make it a third editable figure or align
+  the gauge's green band on `dbrComfortablePct`; the second changes what the
+  page renders today, so it needs a look rather than a patch.
+  `app/[locale]/(public)/tools/mortgage/_components/dbr-gauge.tsx:56`.
+

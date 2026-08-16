@@ -168,6 +168,131 @@ export const EMAIL_TEMPLATE_LABEL: Record<EmailTemplateKey, string> = {
   newsletter_welcome: "Newsletter welcome",
 };
 
+/**
+ * The mortgage calculator's assumptions — everything /tools/mortgage computes
+ * with that the visitor does not type.
+ *
+ * Percentages are stored as WHOLE PERCENTS here (4 = 4%), not fractions. The
+ * model in `lib/mortgage.ts` works in fractions and converts on the way in:
+ * an admin typing a fee schedule reads it off a DLD circular in percent, and
+ * a field that silently wanted 0.04 is a field that eventually gets 4.
+ *
+ * Every default matches `DEFAULT_MORTGAGE_ASSUMPTIONS`, plus the four opening
+ * values of the calculator's own inputs. Keep the two in step — the model's
+ * copy is what renders when this column is empty or fails to parse.
+ */
+const percent = (max: number) =>
+  z
+    .number({ message: "Enter a number" })
+    .min(0, "Cannot be negative")
+    .max(max, `Cannot exceed ${max}%`);
+const money = (max: number) =>
+  z
+    .number({ message: "Enter a number" })
+    .int("Whole dirhams")
+    .min(0, "Cannot be negative")
+    .max(max);
+
+export const mortgageSettingsSchema = z
+  .object({
+    // ── what the calculator opens on ──
+    default_price_aed: money(500_000_000),
+    default_down_payment_pct: percent(100),
+    default_rate_pct: percent(30),
+    default_term_years: z.number().int().min(1).max(40),
+    default_annual_income_aed: money(500_000_000),
+
+    // ── cash to close ──
+    dld_transfer_pct: percent(25),
+    mortgage_registration_pct: percent(25),
+    bank_arrangement_pct: percent(25),
+    advisory_pct: percent(25),
+    trustee_office_fee_aed: money(1_000_000),
+    property_valuation_fee_aed: money(1_000_000),
+    noc_misc_fee_aed: money(1_000_000),
+
+    // ── Central Bank LTV tiers ──
+    ltv_high_tier_price_aed: money(500_000_000),
+    min_down_resident_pct: percent(100),
+    min_down_resident_high_pct: percent(100),
+    min_down_non_resident_pct: percent(100),
+
+    // ── debt-burden ratio ──
+    dbr_comfortable_pct: percent(100),
+    dbr_max_pct: percent(100),
+  })
+  /**
+   * Two orderings the arithmetic does not enforce but the screen does: a
+   * comfort line above the cap paints "stretched" over a band that cannot
+   * exist, and a high-tier deposit below the standard one means crossing the
+   * five-million threshold asks for *less* money down.
+   */
+  .refine((v) => v.dbr_comfortable_pct <= v.dbr_max_pct, {
+    message: "The comfortable DBR must be at or below the maximum",
+    path: ["dbr_comfortable_pct"],
+  })
+  .refine((v) => v.min_down_resident_pct <= v.min_down_resident_high_pct, {
+    message: "The higher tier must ask for at least as much as the standard one",
+    path: ["min_down_resident_high_pct"],
+  });
+
+export type MortgageSettings = z.infer<typeof mortgageSettingsSchema>;
+
+/**
+ * The figures the tool shipped with. Mirrors `DEFAULT_MORTGAGE_ASSUMPTIONS` in
+ * lib/mortgage.ts (in percent rather than fractions) plus the calculator's own
+ * opening values — keep the two in step.
+ *
+ * A literal rather than `schema.parse({})` with per-field `.default()`, because
+ * a schema whose every key is optional types the form as a bag of `unknown`
+ * and hands the editor "expected number, received undefined" instead of a
+ * field-level message.
+ */
+export const MORTGAGE_SETTINGS_DEFAULTS: MortgageSettings = {
+  default_price_aed: 4_200_000,
+  default_down_payment_pct: 25,
+  default_rate_pct: 4.25,
+  default_term_years: 25,
+  default_annual_income_aed: 950_000,
+
+  dld_transfer_pct: 4,
+  mortgage_registration_pct: 0.25,
+  bank_arrangement_pct: 1,
+  advisory_pct: 1.5,
+  trustee_office_fee_aed: 4_200,
+  property_valuation_fee_aed: 3_150,
+  noc_misc_fee_aed: 5_800,
+
+  ltv_high_tier_price_aed: 5_000_000,
+  min_down_resident_pct: 25,
+  min_down_resident_high_pct: 35,
+  min_down_non_resident_pct: 50,
+
+  dbr_comfortable_pct: 40,
+  dbr_max_pct: 50,
+};
+
+/**
+ * A stored bag, filled out from the defaults before it is validated.
+ *
+ * The merge is what lets a bag written before a field existed still parse: the
+ * alternative — a schema where every key carries its own `.default()` — makes
+ * every key optional on the way in, which is exactly the type the admin form
+ * cannot be written against.
+ */
+export function parseMortgageSettings(raw: unknown): MortgageSettings {
+  const bag =
+    raw && typeof raw === "object" && !Array.isArray(raw)
+      ? (raw as Record<string, unknown>)
+      : {};
+  const parsed = mortgageSettingsSchema.safeParse({
+    ...MORTGAGE_SETTINGS_DEFAULTS,
+    ...bag,
+  });
+  return parsed.success ? parsed.data : MORTGAGE_SETTINGS_DEFAULTS;
+}
+
+
 /** What the route handler returns when reading the singleton row. */
 export type SiteSettings = {
   brand: BrandSettingsInput;

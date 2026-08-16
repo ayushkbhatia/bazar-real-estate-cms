@@ -37,6 +37,7 @@ describe("registry", () => {
       "consultation",
       "qr",
       "contact-qr",
+      "mortgage",
     ]);
     for (const page of MASTER_PAGES) {
       const keys = page.sections.map((s) => s.key);

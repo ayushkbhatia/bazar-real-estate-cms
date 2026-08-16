@@ -23,6 +23,10 @@ The line is drawn in the registry:
 
 - `headingSource` names the master-page section that owns the surrounding copy.
   The manager links to it rather than offering a second field.
+  `lib/forms/registry.test.ts` holds every `headingSource` to a page and a
+  section that actually exist — a link that 404s from a CMS screen, or lands on
+  a real page missing the section it promised, teaches an editor that the copy
+  is not editable anywhere and sends them to retype it into the form.
 - `copyFromPage: true` means even the button and confirmation live in Pages &
   blocks. Three of the service forms had them there before this existed, and a
   second writable copy of one string is a bug waiting to happen — so the

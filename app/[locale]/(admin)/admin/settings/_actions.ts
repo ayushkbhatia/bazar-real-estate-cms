@@ -10,6 +10,7 @@ import {
   emailTemplateOverrideSchema,
   emailTemplatesSchema,
   leadRoutingSettingsSchema,
+  mortgageSettingsSchema,
   EMAIL_TEMPLATE_KEYS,
   type EmailTemplateKey,
 } from "@/lib/schemas/site-settings";
@@ -140,6 +141,43 @@ export async function updateLeadRouting(
     });
     revalidatePath("/admin/settings");
     return { status: "ok", message: "Lead-routing rules saved." };
+  }
+  return result;
+}
+
+/**
+ * The mortgage calculator's assumptions.
+ *
+ * `revalidateLocalised` rather than `revalidatePath`: /tools/mortgage is
+ * prerendered per locale, and busting the English copy alone would leave the
+ * Arabic page quoting last month's DLD rate until its own cache expired.
+ */
+export async function updateMortgageSettings(
+  raw: Record<string, unknown>,
+): Promise<ActionResult> {
+  const gated = await gate();
+  if (gated) return gated;
+  const parsed = mortgageSettingsSchema.safeParse(raw);
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: "Please fix the errors below.",
+      fieldErrors: fieldErrorsFromZod(parsed.error),
+    };
+  }
+  const supabase = await createSupabaseServerClient();
+  const result = await updateRow(supabase, { mortgage: parsed.data });
+  if (result.status === "ok") {
+    await logAudit({
+      action: "settings.mortgage_update",
+      target_kind: "site_settings",
+      target_id: "1",
+      before: null,
+      after: parsed.data,
+    });
+    revalidatePath("/admin/settings");
+    revalidateLocalised("/tools/mortgage");
+    return { status: "ok", message: "Mortgage assumptions saved." };
   }
   return result;
 }

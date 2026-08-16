@@ -29,9 +29,16 @@ function coord(n: number): string {
 export function DbrGauge({
   monthlyPaymentAed,
   monthlyIncomeAed,
+  maxDbr = 0.5,
 }: {
   monthlyPaymentAed: number;
   monthlyIncomeAed: number;
+  /**
+   * The Central Bank cap, from Settings → Mortgage. The 0.35 band below it is
+   * the lenders' stress-test convention rather than a regulator's number, so
+   * it stays in code — `affordability()` carries the editable comfort line.
+   */
+  maxDbr?: number;
 }) {
   const t = useTranslations("tools");
   const dbr =
@@ -54,7 +61,7 @@ export function DbrGauge({
   const band =
     dbr <= 0.35
       ? { key: "dbrComfortable", color: "var(--bz-success, oklch(0.55 0.14 145))" }
-      : dbr <= 0.5
+      : dbr <= maxDbr
         ? { key: "dbrWithinLimit", color: "var(--bz-warning, oklch(0.7 0.13 65))" }
         : { key: "dbrOverLimit", color: "var(--bz-danger, oklch(0.5 0.18 25))" };
 
@@ -114,7 +121,7 @@ export function DbrGauge({
             translated at all.
           */}
           <p className="mt-2 text-[12.5px] text-bz-muted leading-relaxed">
-            {t("mortgage.dbrExplainer")}
+            {t("mortgage.dbrExplainer", { cap: Math.round(maxDbr * 100) })}
           </p>
         </div>
       </div>

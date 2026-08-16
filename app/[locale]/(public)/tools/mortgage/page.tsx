@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { getForm } from "@/lib/queries/forms";
+import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { str } from "@/lib/master-pages";
+import {
+  getPublicMortgageSettings,
+  toMortgageAssumptions,
+} from "@/lib/queries/site-settings";
 import { asLocale } from "@/lib/i18n/locales";
 import { MortgageCalculator } from "./mortgage-calculator";
 
@@ -18,20 +24,24 @@ export default async function MortgagePage({
 }) {
   const locale = asLocale((await params).locale);
   setRequestLocale(locale);
-  // Explicit locale rather than the ambient one: `getTranslations("tools")`
-  // resolves through `headers()` when nothing has cached the request locale,
-  // which takes the route dynamic and discards its cache behaviour silently.
-  const t = await getTranslations({ locale, namespace: "tools" });
 
-  // Resolved here rather than inside the calculator because `getForm` is a
-  // server read and the calculator is a client component — a `ResolvedForm` is
-  // plain JSON and crosses the boundary intact, the same way the dialogs do it.
-  const preApprovalForm = await getForm("mortgage_preapproval");
+  // Resolved here rather than inside the calculator because all three are
+  // server reads and the calculator is a client component — a `ResolvedForm`,
+  // a folded `SectionValues` bag and the assumptions object are all plain JSON
+  // and cross the boundary intact, the same way the dialogs do it.
+  const [preApprovalForm, content, mortgage] = await Promise.all([
+    getForm("mortgage_preapproval"),
+    getMasterPageContent("mortgage", locale),
+    getPublicMortgageSettings(),
+  ]);
+
+  const hero = content.section("hero")?.values ?? {};
+  const band = content.section("pre_approval")?.values ?? {};
 
   return (
     <div className="bg-bz-bg">
       <section className="px-4 md:px-12 pt-12 md:pt-20 pb-6">
-        <Eyebrow>{t("mortgage.eyebrow")}</Eyebrow>
+        {str(hero, "eyebrow") ? <Eyebrow>{str(hero, "eyebrow")}</Eyebrow> : null}
         <h1
           className="serif text-[36px] md:text-[64px] font-normal mt-3 leading-[1.0] max-w-[16ch]"
           style={{ letterSpacing: "-0.025em" }}
@@ -44,15 +54,43 @@ export default async function MortgagePage({
             heroes already carry, so the translator meets one convention rather
             than two.
           */}
-          {t("mortgage.headingLead")}{" "}
-          <em className="italic">{t("mortgage.headingEmphasis")}</em>
+          {str(hero, "title")}{" "}
+          {str(hero, "title_emphasis") ? (
+            <em className="italic">{str(hero, "title_emphasis")}</em>
+          ) : null}
         </h1>
         <p className="mt-5 max-w-[64ch] text-[16px] text-bz-ink-2 leading-relaxed">
-          {t("mortgage.intro")}
+          {str(hero, "intro")}
         </p>
       </section>
 
-      <MortgageCalculator preApprovalForm={preApprovalForm} />
+      <MortgageCalculator
+        preApprovalForm={preApprovalForm}
+        assumptions={toMortgageAssumptions(mortgage)}
+        opening={{
+          priceAed: mortgage.default_price_aed,
+          downPaymentPct: mortgage.default_down_payment_pct / 100,
+          ratePct: mortgage.default_rate_pct,
+          termYears: mortgage.default_term_years,
+          annualIncomeAed: mortgage.default_annual_income_aed,
+        }}
+        // The whole band is one section, so it travels as one object rather
+        // than nine props — a field added to it in the registry reaches the
+        // component without a signature change.
+        band={{
+          enabled: content.section("pre_approval")?.enabled ?? true,
+          eyebrow: str(band, "eyebrow"),
+          title: str(band, "title"),
+          sub: str(band, "sub"),
+          scenarioLabel: str(band, "scenario_label"),
+          scenarioNote: str(band, "scenario_note"),
+          talkLabel: str(band, "talk_label"),
+          advisorCtaLabel: str(band, "advisor_cta_label"),
+          advisorCtaHref: str(band, "advisor_cta_href") ?? "/contact",
+          whatsappCtaLabel: str(band, "whatsapp_cta_label"),
+          fallbackCtaLabel: str(band, "fallback_cta_label"),
+        }}
+      />
     </div>
   );
 }

@@ -10,9 +10,13 @@ import {
   emailTemplatesSchema,
   leadRoutingSettingsSchema,
   LOGO_STYLES,
+  parseMortgageSettings,
+  MORTGAGE_SETTINGS_DEFAULTS,
   type LogoStyle,
+  type MortgageSettings,
   type SiteSettings,
 } from "@/lib/schemas/site-settings";
+import { type MortgageAssumptions } from "@/lib/mortgage";
 
 const DEFAULTS: SiteSettings = {
   brand: {
@@ -76,6 +80,35 @@ function shape(raw: Record<string, unknown> | null | undefined): SiteSettings {
     email_templates: email_templates.success
       ? email_templates.data
       : DEFAULTS.email_templates,
+  };
+}
+
+/**
+ * Settings → the shape `lib/mortgage.ts` computes with.
+ *
+ * The only place whole percents become fractions. Doing it once, at the read
+ * boundary, is what lets the model stay in fractions (where 1% of a loan is
+ * `0.01 * principal` and not a division nobody remembers) while the admin form
+ * stays in the units a DLD circular is written in.
+ */
+export function toMortgageAssumptions(
+  settings: MortgageSettings,
+): MortgageAssumptions {
+  const frac = (p: number) => p / 100;
+  return {
+    trusteeOfficeFeeAed: settings.trustee_office_fee_aed,
+    nocMiscAed: settings.noc_misc_fee_aed,
+    propertyValuationAed: settings.property_valuation_fee_aed,
+    dldTransferPct: frac(settings.dld_transfer_pct),
+    mortgageRegistrationPct: frac(settings.mortgage_registration_pct),
+    bankArrangementPct: frac(settings.bank_arrangement_pct),
+    bazarAdvisoryPct: frac(settings.advisory_pct),
+    ltvHighTierPriceAed: settings.ltv_high_tier_price_aed,
+    minDownResidentPct: frac(settings.min_down_resident_pct),
+    minDownResidentHighPct: frac(settings.min_down_resident_high_pct),
+    minDownNonResidentPct: frac(settings.min_down_non_resident_pct),
+    dbrComfortablePct: frac(settings.dbr_comfortable_pct),
+    dbrMaxPct: frac(settings.dbr_max_pct),
   };
 }
 
@@ -188,5 +221,62 @@ export async function getPublicSiteSettings(
     );
   } catch {
     return DEFAULTS;
+  }
+}
+
+/**
+ * The calculator's settings, for /tools/mortgage.
+ *
+ * Its own function rather than a field off `getPublicSiteSettings` for the
+ * reason 0096 documents above: that read asks for `lead_routing`, which anon
+ * may not see, so under the anon key it answers from DEFAULTS every time. This
+ * one names only granted columns, so it actually returns what an admin saved.
+ *
+ * Every failure — no env, no row, a revoked grant, a bag that fails validation
+ * — lands on the figures the tool shipped with. A calculator that renders a
+ * stale fee is a support ticket; one that renders nothing is a lost lead.
+ */
+export async function getPublicMortgageSettings(): Promise<MortgageSettings> {
+  if (!isSupabaseConfigured) return MORTGAGE_SETTINGS_DEFAULTS;
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("site_settings")
+      .select("mortgage")
+      .eq("id", 1)
+      .maybeSingle();
+    return parseMortgageSettings(
+      (data as { mortgage?: unknown } | null)?.mortgage,
+    );
+  } catch {
+    return MORTGAGE_SETTINGS_DEFAULTS;
+  }
+}
+
+/**
+ * The same read for /admin/settings/mortgage, through the caller's session so
+ * the staff policy applies.
+ *
+ * A dedicated read rather than a field on `getSiteSettings`, and the reason is
+ * the column-grant trap 0096 documents from the other side: a select naming a
+ * column that does not exist yet fails WHOLE, so folding `mortgage` into the
+ * wide settings read would mean an unapplied 0105 blanked Brand, Routing and
+ * Templates too. Scoped like this, the blast radius of a missing migration is
+ * the one screen that needs it — which then shows the built-in figures.
+ */
+export async function getMortgageSettings(): Promise<MortgageSettings> {
+  if (!isSupabaseConfigured) return MORTGAGE_SETTINGS_DEFAULTS;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase
+      .from("site_settings")
+      .select("mortgage")
+      .eq("id", 1)
+      .maybeSingle();
+    return parseMortgageSettings(
+      (data as { mortgage?: unknown } | null)?.mortgage,
+    );
+  } catch {
+    return MORTGAGE_SETTINGS_DEFAULTS;
   }
 }

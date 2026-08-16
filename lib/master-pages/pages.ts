@@ -37,6 +37,7 @@ import { PROPERTY_MANAGEMENT_PAGE } from "./sections/property-management";
 import { PROPERTY_CONSULTATION_PAGE } from "./sections/property-consultation";
 import { QR_PAGE } from "./sections/qr";
 import { CONTACT_QR_PAGE } from "./sections/contact-qr";
+import { MORTGAGE_PAGE } from "./sections/mortgage";
 
 
 // ── shared default content ──────────────────────────────────────────────
@@ -1548,4 +1549,5 @@ export const MASTER_PAGES: MasterPageDef[] = [
   PROPERTY_CONSULTATION_PAGE,
   QR_PAGE,
   CONTACT_QR_PAGE,
+  MORTGAGE_PAGE,
 ];
