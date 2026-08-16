@@ -1,4 +1,373 @@
 {
+  "about": {
+    "expertise": {
+      "body": {
+        "en": "We combine market expertise, strong industry relationships, and a client-focused approach to support buyers, investors, landlords, sellers, and tenants across the UAE.",
+        "ar": "نجمع بين الخبرة السوقية والعلاقات القوية في القطاع والنهج الذي يركّز على العميل لدعم المشترين والمستثمرين والملاك والبائعين والمستأجرين في جميع أنحاء الإمارات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "chips[0].label": {
+        "en": "Off-Plan Sales",
+        "ar": "على الخارطة المبيعات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "chips[1].label": {
+        "en": "Secondary Market",
+        "ar": "السوق الثانوي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "chips[3].label": {
+        "en": "Property Investment",
+        "ar": "الاستثمار العقاري",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "chips[4].label": {
+        "en": "Property Management",
+        "ar": "إدارة العقارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "chips[6].label": {
+        "en": "Luxury Properties",
+        "ar": "عقارات فاخرة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "chips[7].label": {
+        "en": "Commercial Real Estate",
+        "ar": "العقارات التجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "cta_label": {
+        "en": "Our services",
+        "ar": "خدماتنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "eyebrow": {
+        "en": "Our areas of expertise",
+        "ar": "مجالات خبرتنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "items[0].label": {
+        "en": "Established in 2005",
+        "ar": "مُنذ عام 2005",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "items[2].label": {
+        "en": "Award-winning UAE agency",
+        "ar": "مؤسسة إماراتية حائزة على جوائز",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "items[3].label": {
+        "en": "Strong Abu Dhabi presence",
+        "ar": "حضور قوي في أبوظبي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "items[4].label": {
+        "en": "Experienced local team",
+        "ar": "فريق محلي ذو خبرة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      }
+    },
+    "footprint": {
+      "cards[0].desc": {
+        "en": "Abu Dhabi is our home market and core area of expertise. From prime island communities to the heart of the city, Bazar covers residential, investment, and commercial opportunities across the capital.",
+        "ar": "أبوظبي هي سوقنا الأساسي ومجال خبرتنا الأول. من أرقى المجتمعات على الجزر إلى قلب المدينة، تغطي بازار الفرص السكنية والاستثمارية والتجارية في أنحاء العاصمة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "cards[0].img": {
+        "en": "abu dhabi · corniche",
+        "ar": "أبوظبي · الكورنيش",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "cards[0].name": {
+        "en": "Abu Dhabi",
+        "ar": "أبوظبي",
+        "by": "machine"
+      },
+      "cards[0].tag": {
+        "en": "Our home market",
+        "ar": "سوقنا المحلي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "cards[1].desc": {
+        "en": "Expanding beyond Abu Dhabi, Bazar connects clients to selected opportunities across Dubai and other key UAE markets — established communities, new developments, and investment-focused destinations.",
+        "ar": "التوسّع خارج أبوظبي، تربط بازار عملاءها بفرص مختارة في دبي وأسواق رئيسية أخرى في الإمارات — مجتمعات قائمة، ومشاريع جديدة، ووجهات استثمارية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "cards[1].img": {
+        "en": "dubai skyline",
+        "ar": "أفق دبي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "cards[1].name": {
+        "en": "Dubai & Wider UAE",
+        "ar": "دبي وباقي الإمارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "cards[1].tag": {
+        "en": "Selected opportunities",
+        "ar": "فرص مختارة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "title": {
+        "en": "Rooted in Abu Dhabi, reaching the wider UAE.",
+        "ar": "متجذرون في أبوظبي، ونمتد إلى مختلف أنحاء الإمارات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      }
+    },
+    "hero": {
+      "body_2": {
+        "en": "With deep roots in Abu Dhabi and a growing presence across the wider UAE, Bazar has developed a trusted reputation for market expertise, professional excellence, and strong industry relationships in one of the region's most dynamic real estate markets.",
+        "ar": "بجذور راسخة في أبوظبي وحضور متنامٍ في مختلف أنحاء الإمارات، بنت بازار سمعة موثوقة في الخبرة السوقية والتميّز المهني والعلاقات القوية داخل القطاع، في واحد من أكثر أسواق العقارات حيوية في المنطقة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "eyebrow": {
+        "en": "About Bazar Real Estate",
+        "ar": "بازار نبذة عن العقارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.242Z"
+      },
+      "meta": {
+        "en": "Established Abu Dhabi · 2005",
+        "ar": "تأسست في أبوظبي · 2005",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      }
+    },
+    "location": {
+      "company": {
+        "en": "Bazar Real Estate L.L.C.",
+        "ar": "بازار للعقارات ذات مسؤولية محدودة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "directions_label": {
+        "en": "Get directions",
+        "ar": "احصل على الاتجاهات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.245Z"
+      },
+      "title": {
+        "en": "Based in Abu Dhabi, serving the UAE.",
+        "ar": "أبوظبي مقرنا في، ونخدم كافة أنحاء الإمارات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      }
+    },
+    "mission": {
+      "body": {
+        "en": "Drawing on over 20 years of local expertise, strong developer relationships, and in-depth market knowledge, we deliver tailored property guidance that creates lasting value and a seamless client experience.",
+        "ar": "اعتمادًا على أكثر من 20 عامًا من الخبرة المحلية، وعلاقات قوية مع المطورين العقاريين، ومعرفة عميقة بالسوق، نقدّم استشارات عقارية مصمّمة خصيصًا تصنع قيمة دائمة وتجربة سلسة للعملاء.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "eyebrow": {
+        "en": "Our mission",
+        "ar": "مهمتنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "title": {
+        "en": "To guide clients through the UAE real estate market with clarity, integrity, and strategic insight.",
+        "ar": "توجيه العملاء في سوق العقارات الإماراتي بوضوح ونزاهة ورؤية استراتيجية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      }
+    },
+    "partners": {
+      "cta_label": {
+        "en": "All developers",
+        "ar": "جميع المطورين",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "items[0].label": {
+        "en": "Aldar Properties",
+        "ar": "الدار العقارية",
+        "by": "machine"
+      },
+      "items[1].label": {
+        "en": "Modon Properties",
+        "ar": "مُدن العقارية",
+        "by": "machine"
+      },
+      "items[2].label": {
+        "en": "Bloom Holding",
+        "ar": "بلووم القابضة",
+        "by": "machine"
+      },
+      "items[3].label": {
+        "en": "IMKAN Properties",
+        "ar": "إمكان العقارية",
+        "by": "machine"
+      },
+      "items[4].label": {
+        "en": "Reportage Properties",
+        "ar": "ريبورتاج العقارية",
+        "by": "machine"
+      },
+      "items[5].label": {
+        "en": "Eagle Hills",
+        "ar": "إيجل هيلز",
+        "by": "machine"
+      },
+      "items[6].label": {
+        "en": "Radiant Real Estate",
+        "ar": "Radiant Real Estate",
+        "by": "machine"
+      },
+      "items[7].label": {
+        "en": "Ohana Development",
+        "ar": "أوهانا للتطوير العقاري",
+        "by": "machine"
+      },
+      "items[8].label": {
+        "en": "Taraf",
+        "ar": "ترف",
+        "by": "machine"
+      },
+      "title": {
+        "en": "Trusted by the region's builders.",
+        "ar": "ثقة بُناة المنطقة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      }
+    },
+    "story": {
+      "columns[0].body": {
+        "en": "At Bazar Real Estate, we go beyond property transactions. We act as a trusted partner for clients navigating Abu Dhabi and the wider UAE real estate market, combining local expertise with a modern, investor-focused approach.\n\nWith direct relationships with leading developers, financial partners, and key industry stakeholders, Bazar provides clients with the knowledge, access, and confidence needed to make informed property decisions.",
+        "ar": "في بازار العقارية، نتجاوز حدود المعاملات العقارية. فنحن شريك موثوق للعملاء في أبوظبي وسوق العقارات في الإمارات عمومًا، ونجمع بين الخبرة المحلية ونهج عصري يركّز على المستثمر.\n\nوبفضل العلاقات المباشرة مع كبار المطوّرين والشركاء الماليين والجهات الرئيسية في القطاع، توفّر بازار لعملائها المعرفة وسهولة الوصول والثقة اللازمة لاتخاذ قرارات عقارية مدروسة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "columns[0].title": {
+        "en": "A partner, not just a broker.",
+        "ar": "شريك، وليس مجرد وسيط عقاري.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "columns[1].body": {
+        "en": "Founded in Abu Dhabi in 2005 by Azmi Mohamdin, Bazar Real Estate was built on deep, hands-on knowledge of the local property market.\n\nOver the years, the company has grown into a trusted real estate partner, known for clear guidance, market insight, professionalism, transparency, and long-term value. Our journey reflects the growth of the UAE property sector itself — from established communities to landmark developments and emerging investment destinations.",
+        "ar": "تأسست شركة بازار العقارية في أبوظبي عام 2005 على يد عزمي محمد الدين، مستندة إلى معرفة عميقة وعملية بسوق العقارات المحلي.\n\nوعلى مدى السنوات، نمت الشركة لتصبح شريكاً عقارياً موثوقاً، معروفاً بالإرشاد الواضح، والرؤية السوقية، والاحترافية، والشفافية، والقيمة طويلة الأمد. وتعكس مسيرتنا نمو قطاع العقارات في الإمارات ذاته — من المجتمعات الراسخة إلى المشاريع البارزة والوجهات الاستثمارية الناشئة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "columns[1].eyebrow": {
+        "en": "Our story",
+        "ar": "قصتنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      }
+    },
+    "values": {
+      "items[0].desc": {
+        "en": "Transparency, reliability, and long-term confidence.",
+        "ar": "الشفافية والموثوقية والثقة على المدى الطويل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "items[2].desc": {
+        "en": "Strong connections with developers, banks, and industry partners.",
+        "ar": "علاقات قوية مع المطورين والبنوك وشركاء القطاع.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "items[2].name": {
+        "en": "Access",
+        "ar": "الوصول",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "items[3].desc": {
+        "en": "Client satisfaction, success, and long-term value.",
+        "ar": "رضا العملاء والنجاح والقيمة على المدى الطويل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "items[3].name": {
+        "en": "Customer Focus",
+        "ar": "التركيز على العميل",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "items[4].desc": {
+        "en": "Smart solutions for evolving market needs.",
+        "ar": "حلول ذكية لاحتياجات السوق المتغيرة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      },
+      "items[4].name": {
+        "en": "Innovation",
+        "ar": "الابتكار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:32:10.244Z"
+      }
+    }
+  },
   "areas": {
     "all_areas": {
       "body": {
@@ -14,6 +383,13 @@
         "by": "machine",
         "model": "claude-opus-5",
         "at": "2026-08-16T10:54:35.557Z"
+      },
+      "heading": {
+        "en": "The full Abu Dhabi index.",
+        "ar": "المؤشر الكامل لـ أبوظبي.",
+        "by": "machine",
+        "model": "claude-haiku-4-5-20251001",
+        "at": "2026-08-16T12:50:29.645Z"
       }
     },
     "area_map": {
@@ -204,7 +580,7 @@
         "ar": "ممشى السعديات\nحد السعديات\nالسعديات لاغونز\nسعديات ريزيرف\nجزيرة نوراي\nنوبو ريزيدنسز\nباكارات ريزيدنسز السعديات\nجزيرة رمحان",
         "by": "machine",
         "model": "claude-opus-5",
-        "at": "2026-08-16T11:00:32.154Z"
+        "at": "2026-08-16T12:50:29.646Z"
       },
       "items[2].chips_label": {
         "en": "Popular luxury communities",
@@ -465,6 +841,13 @@
         "by": "machine",
         "model": "claude-opus-5",
         "at": "2026-08-16T10:54:35.558Z"
+      },
+      "stats[1].value": {
+        "en": "Every district",
+        "ar": "المناطق كافة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:50:29.646Z"
       },
       "title": {
         "en": "Two decades of Abu Dhabi expertise, on your side.",
@@ -1400,6 +1783,639 @@
       }
     }
   },
+  "consultation": {
+    "covers": {
+      "eyebrow": {
+        "en": "What your consultation covers",
+        "ar": "ما تشمله استشارتك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "heading": {
+        "en": "Make an Informed Property Decision",
+        "ar": "اتخذ قرارك العقاري عن دراية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[0].desc": {
+        "en": "Understanding your preferred location, property type, budget and objectives.",
+        "ar": "فهم موقعك المفضّل ونوع العقار والميزانية والأهداف.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[0].name": {
+        "en": "Property Requirements",
+        "ar": "أملاك مطلوبة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[1].desc": {
+        "en": "Comparing suitable properties and current market positioning.",
+        "ar": "مقارنة العقارات المناسبة والتموضع الحالي في السوق.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[1].name": {
+        "en": "Market & Price Comparison",
+        "ar": "مقارنة السوق والأسعار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[2].desc": {
+        "en": "Understanding which Abu Dhabi areas best match your lifestyle or investment requirements.",
+        "ar": "فهم مناطق أبوظبي الأنسب لأسلوب حياتك أو متطلباتك الاستثمارية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[2].name": {
+        "en": "Location & Community Guidance",
+        "ar": "المشورة بشأن الموقع والمجتمع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[3].desc": {
+        "en": "Comparing available developments, property types and opportunities.",
+        "ar": "مقارنة المشاريع المتاحة وأنواع العقارات والفرص.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[3].name": {
+        "en": "Project & Developer Comparison",
+        "ar": "مقارنة المشاريع والمطورين العقاريين",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[4].desc": {
+        "en": "Guidance through the main steps involved in the property transaction.",
+        "ar": "إرشاد خلال الخطوات الرئيسية في المعاملة العقارية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[4].name": {
+        "en": "Buying or Selling Process",
+        "ar": "عملية الشراء أو البيع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[5].desc": {
+        "en": "Understanding payment plans, financing considerations and expected property costs.",
+        "ar": "فهم خطط السداد واعتبارات التمويل والتكاليف العقارية المتوقعة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      }
+    },
+    "final_cta": {
+      "body": {
+        "en": "Tell us what you are looking for, and our team will help you understand the options available and identify the next step.",
+        "ar": "أخبرنا بما تبحث عنه، وسيساعدك فريقنا على فهم الخيارات المتاحة وتحديد الخطوة التالية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "cta_label": {
+        "en": "Get a Free Property Consultation",
+        "ar": "استشارة عقارية مجانية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "eyebrow": {
+        "en": "Next step",
+        "ar": "الخطوة التالية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      }
+    },
+    "help": {
+      "eyebrow": {
+        "en": "How we can help",
+        "ar": "كيف يمكننا المساعدة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "heading": {
+        "en": "Property Guidance Built Around You",
+        "ar": "المشورة العقارية مصممة حولك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "intro": {
+        "en": "Every property decision is different. We start by understanding what you are trying to achieve before recommending the opportunities that best match your requirements.",
+        "ar": "كل قرار عقاري يختلف عن غيره. نبدأ بفهم ما تسعى إلى تحقيقه قبل أن نوصي بالفرص الأنسب لمتطلباتك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[0].desc": {
+        "en": "Compare locations, projects and properties based on your budget and lifestyle requirements.",
+        "ar": "قارن بين المواقع والمشاريع والعقارات وفقاً لميزانيتك ومتطلبات نمط حياتك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[0].img": {
+        "en": "buying a property",
+        "ar": "شراء عقار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[0].name": {
+        "en": "Buying a Property",
+        "ar": "شراء عقار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[1].desc": {
+        "en": "Understand your property’s market position and the options available when bringing it to market.",
+        "ar": "افهم موقع عقارك في السوق والخيارات المتاحة عند طرحه للبيع.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[1].img": {
+        "en": "selling a property",
+        "ar": "بيع عقار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[1].name": {
+        "en": "Selling a Property",
+        "ar": "بيع عقار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[2].desc": {
+        "en": "Compare new developments, payment plans, expected handover timelines and available unit types.",
+        "ar": "قارن بين المشاريع الجديدة وخطط السداد ومواعيد التسليم المتوقعة وأنواع الوحدات المتاحة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[2].img": {
+        "en": "off-plan properties",
+        "ar": "عقارات على الخارطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[2].name": {
+        "en": "Off-Plan Properties",
+        "ar": "عقارات على الخارطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[3].desc": {
+        "en": "Explore completed, move-in-ready properties across Abu Dhabi’s established and new communities.",
+        "ar": "استكشف عقارات جاهزة للسكن ومكتملة البناء في مجتمعات أبوظبي القائمة والجديدة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[3].img": {
+        "en": "ready properties",
+        "ar": "عقارات جاهزة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[3].name": {
+        "en": "Ready Properties",
+        "ar": "العقارات الجاهزة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[4].desc": {
+        "en": "Explore previously owned homes coming back to the market, with the title deed already issued.",
+        "ar": "اكتشف المنازل المملوكة سابقًا التي تعود إلى السوق، مع صدور سند الملكية بالفعل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[4].img": {
+        "en": "resale properties",
+        "ar": "العقارات المعاد بيعها",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[4].name": {
+        "en": "Resale Properties",
+        "ar": "العقارات المعاد بيعها",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      }
+    },
+    "hero": {
+      "lede": {
+        "en": "Better property decisions start with the right guidance.",
+        "ar": "القرارات العقارية الأفضل تبدأ بالإرشاد الصحيح.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "sub": {
+        "en": "Whether you are looking to buy, sell or invest, get professional property guidance based on your requirements, budget and objectives.",
+        "ar": "سواء كنت تبحث عن الشراء أو البيع أو الاستثمار، احصل على استشارة عقارية احترافية بناءً على متطلباتك وميزانيتك وأهدافك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "title": {
+        "en": "Property Consultation",
+        "ar": "استشارة عقارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.287Z"
+      }
+    },
+    "hero_form": {
+      "form_sub": {
+        "en": "Tell us what you are looking for and one of our property consultants will be in contact with you shortly.",
+        "ar": "أخبرنا بما تبحث عنه وسيتواصل معك أحد مستشارينا العقاريين قريبًا.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "form_title": {
+        "en": "Get a Free Property Consultation",
+        "ar": "استشارة عقارية مجانية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "interest_label": {
+        "en": "I’m Interested In",
+        "ar": "أنا مهتم بـ",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "note": {
+        "en": "By submitting you agree to be contacted by a Bazar advisor.",
+        "ar": "بإرسال النموذج فإنك توافق على أن يتواصل معك مستشار من بازار.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "options[0].label": {
+        "en": "Buying",
+        "ar": "الشراء",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "options[1].label": {
+        "en": "Selling",
+        "ar": "مبيعات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "options[2].label": {
+        "en": "Investing",
+        "ar": "الاستثمار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "submit_label": {
+        "en": "Request a Free Consultation",
+        "ar": "طلب استشارة مجانية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "success_body": {
+        "en": "One of our property consultants will be in contact with you shortly to talk through what you are looking for and the options available.",
+        "ar": "سيتواصل معك أحد مستشاري العقارات لدينا قريبًا لمناقشة ما تبحث عنه والخيارات المتاحة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      }
+    },
+    "who": {
+      "eyebrow": {
+        "en": "Who is it for?",
+        "ar": "لمن هذا؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[0].desc": {
+        "en": "Understand the market and buying process before making your first property decision.",
+        "ar": "افهم السوق وإجراءات الشراء قبل اتخاذ قرارك العقاري الأول.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[0].name": {
+        "en": "First-Time Buyers",
+        "ar": "المشترون لأول مرة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[1].desc": {
+        "en": "Find a property that fits your lifestyle, family and location requirements.",
+        "ar": "ابحث عن عقار يناسب نمط حياتك ومتطلبات عائلتك والموقع الذي تريده.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[2].desc": {
+        "en": "Compare opportunities based on your objectives and preferred investment strategy.",
+        "ar": "قارن الفرص بناءً على أهدافك واستراتيجية الاستثمار المفضلة لديك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[2].name": {
+        "en": "Property Investors",
+        "ar": "استثمار العقارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      },
+      "items[3].desc": {
+        "en": "Understand your options before selling or making your next property move.",
+        "ar": "افهم خياراتك قبل البيع أو اتخاذ خطوتك العقارية التالية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:37:24.288Z"
+      }
+    }
+  },
+  "contact": {
+    "contact_details": {
+      "hours[0].day": {
+        "en": "Monday",
+        "ar": "الاثنين",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "hours[1].day": {
+        "en": "Tuesday",
+        "ar": "الثلاثاء",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "hours[2].day": {
+        "en": "Wednesday",
+        "ar": "الأربعاء",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "hours[3].day": {
+        "en": "Thursday",
+        "ar": "الخميس",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "hours[4].day": {
+        "en": "Friday",
+        "ar": "الجمعة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "hours[5].day": {
+        "en": "Saturday",
+        "ar": "السبت",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "hours[6].day": {
+        "en": "Sunday",
+        "ar": "الأحد",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "phone_label": {
+        "en": "Call us / message us",
+        "ar": "اتصل بنا / راسلنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      }
+    },
+    "enquiry_form": {
+      "form_sub": {
+        "en": "Tell us what you're looking for, and our team will get back to you shortly.",
+        "ar": "أخبرنا بما تبحث عنه، وسيتواصل معك فريقنا قريبًا.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "whatsapp_label": {
+        "en": "WhatsApp us instead",
+        "ar": "راسلنا عبر واتساب بدلاً من ذلك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      }
+    },
+    "help": {
+      "eyebrow": {
+        "en": "How can we help?",
+        "ar": "كيف يمكننا مساعدتك؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "heading": {
+        "en": "Choose the service that matches your enquiry.",
+        "ar": "اختر الخدمة التي تناسب استفسارك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "items[3].label": {
+        "en": "List Your Property",
+        "ar": "أدرج عقارك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "items[4].label": {
+        "en": "Explore New Projects",
+        "ar": "مشاريع جديدة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "items[5].label": {
+        "en": "Our Partners",
+        "ar": "شركاؤنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "items[6].label": {
+        "en": "Our Services",
+        "ar": "خدماتنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      },
+      "items[8].label": {
+        "en": "About Us",
+        "ar": "من نحن",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      }
+    },
+    "hero": {
+      "eyebrow": {
+        "en": "Contact",
+        "ar": "اتصل بنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.109Z"
+      },
+      "subtitle": {
+        "en": "Get in touch with Bazar Real Estate for buying, selling, renting, listing, or investment enquiries across Abu Dhabi and the UAE.",
+        "ar": "تواصل مع بازار العقارية لأي استفسار حول البيع أو الشراء أو الإيجار أو الإعلان العقاري أو الاستثمار في أبوظبي والإمارات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:44:34.154Z"
+      }
+    }
+  },
+  "contact-qr": {
+    "card": {
+      "name": {
+        "en": "Bazar Real Estate",
+        "ar": "أملاك بازار العقارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:48:50.153Z"
+      }
+    },
+    "details": {
+      "office_city": {
+        "en": "Abu Dhabi",
+        "ar": "أبوظبي",
+        "by": "machine"
+      },
+      "whatsapp_message": {
+        "en": "Hi Bazar, I just scanned your QR code.",
+        "ar": "بازار مرحباً، لقد قمت للتو بمسح رمز الاستجابة السريعة الخاص بك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:48:50.155Z"
+      }
+    },
+    "enquiry_form": {
+      "body": {
+        "en": "A few lines is plenty — area, budget, timeline. An advisor will come back to you shortly.",
+        "ar": "بضعة أسطر تكفي — المنطقة، الميزانية، الإطار الزمني. سيعاود أحد المستشارين التواصل معك قريبًا.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:48:50.155Z"
+      },
+      "heading": {
+        "en": "Tell us what you're after.",
+        "ar": "تفضّل بإخبارنا بما تبحث عنه.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:48:50.155Z"
+      }
+    },
+    "explore": {
+      "heading": {
+        "en": "Have a look around.",
+        "ar": "ألق نظرة على المكان.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:48:50.155Z"
+      },
+      "links[0].label": {
+        "en": "Properties for sale",
+        "ar": "قائمة العقارات للبيع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:48:50.155Z"
+      },
+      "links[1].label": {
+        "en": "Properties for rent",
+        "ar": "عقارات للإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:48:50.155Z"
+      },
+      "links[2].label": {
+        "en": "New projects",
+        "ar": "مشاريع جديدة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:48:50.155Z"
+      }
+    }
+  },
+  "developers": {
+    "directory": {
+      "body": {
+        "en": "Access to established communities, new launches, luxury residences, and investment opportunities across Abu Dhabi, Dubai and the wider UAE.",
+        "ar": "الوصول إلى المجتمعات القائمة والمشاريع الجديدة والمساكن الفاخرة والفرص الاستثمارية في أبوظبي ودبي وسائر أنحاء الإمارات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:45:16.172Z"
+      }
+    },
+    "hero": {
+      "eyebrow": {
+        "en": "Developers",
+        "ar": "المطورون",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:45:16.170Z"
+      },
+      "sub": {
+        "en": "Direct relationships with the region's leading developers give Bazar clients early access to landmark communities, new launches, and off-plan opportunities.",
+        "ar": "علاقاتنا المباشرة مع كبرى شركات التطوير في المنطقة تمنح عملاء بازار وصولاً مبكراً إلى المجتمعات المميزة والإطلاقات الجديدة والفرص على الخارطة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:45:16.172Z"
+      },
+      "title": {
+        "en": "The developers\nshaping",
+        "ar": "المطوّرون الذين\nيشكّلون",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:45:16.172Z"
+      }
+    }
+  },
   "home": {
     "area_map": {
       "eyebrow": {
@@ -1651,6 +2667,394 @@
         "en": "Al Bateen",
         "ar": "البطين",
         "by": "machine"
+      }
+    }
+  },
+  "insights": {
+    "articles": {
+      "empty_body": {
+        "en": "We haven't published any {category} insights yet.",
+        "ar": "لم ننشر بعد أي رؤى حول {category}",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:46:01.783Z"
+      },
+      "empty_cta_label": {
+        "en": "View all categories",
+        "ar": "عرض جميع الفئات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:46:01.783Z"
+      }
+    },
+    "categories": {
+      "all_label": {
+        "en": "All",
+        "ar": "الكل",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:46:01.783Z"
+      }
+    },
+    "featured": {
+      "body": {
+        "en": "A short briefing on the week's Abu Dhabi deals, advisor commentary, and one chart worth sitting with.",
+        "ar": "موجز قصير عن صفقات أبوظبي لهذا الأسبوع، وتعليقات المستشارين، ورسم بياني واحد يستحق التأمل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:46:01.783Z"
+      },
+      "heading": {
+        "en": "One email every Wednesday.",
+        "ar": "بريد إلكتروني واحد كل أربعاء.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:46:01.783Z"
+      }
+    },
+    "hero": {
+      "body": {
+        "en": "Long-form market analysis, advisor field notes, and the occasional contrarian take. One email every Wednesday.",
+        "ar": "تحليلات معمّقة للسوق، وملاحظات ميدانية من المستشارين، ورأي مخالف بين الحين والآخر. رسالة واحدة كل أربعاء.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:46:01.781Z"
+      }
+    }
+  },
+  "manage": {
+    "care": {
+      "eyebrow": {
+        "en": "More than day-to-day management",
+        "ar": "أكثر من مجرد إدارة يومية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "heading": {
+        "en": "Protecting Your Property for the Long Term",
+        "ar": "المحافظة على عقارك على المدى الطويل",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "intro": {
+        "en": "Professional management helps maintain your property, support tenants and keep everything organised.",
+        "ar": "الإدارة الاحترافية تساعد في الحفاظ على عقارك ودعم المستأجرين وتنظيم كل شيء.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[0].desc": {
+        "en": "Ongoing attention to the condition and maintenance of your property.",
+        "ar": "إدارة مستمرة لحالة عقارك وأعمال صيانته.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[1].desc": {
+        "en": "A professional point of contact throughout the tenancy.",
+        "ar": "نقطة تواصل احترافية طوال فترة الإيجار.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[1].name": {
+        "en": "Tenant Support",
+        "ar": "دعم المستأجرين",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[2].desc": {
+        "en": "Organised management of property, tenancy and payment records.",
+        "ar": "إدارة منظّمة لسجلات العقارات والإيجارات والمدفوعات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[2].name": {
+        "en": "Clear Administration",
+        "ar": "إدارة واضحة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[3].desc": {
+        "en": "One team supporting the ongoing requirements of your property.",
+        "ar": "فريق واحد يدعم المتطلبات المستمرة لعقارك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[3].name": {
+        "en": "Dedicated Support",
+        "ar": "التزام بالدعم",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      }
+    },
+    "final_cta": {
+      "body": {
+        "en": "Spend less time managing the day-to-day responsibilities of your property and more time focusing on your investment. Speak with our team about professional property management in Abu Dhabi.",
+        "ar": "خصّص وقتاً أقل لإدارة المسؤوليات اليومية لعقارك ووقتاً أكبر للتركيز على استثمارك. تحدّث مع فريقنا حول إدارة العقارات الاحترافية في أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "cta_label": {
+        "en": "Request a Free Consultation",
+        "ar": "طلب استشارة مجانية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "eyebrow": {
+        "en": "Next step",
+        "ar": "الخطوة التالية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "heading": {
+        "en": "Leave the Management to Us",
+        "ar": "اترك الإدارة لنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      }
+    },
+    "hero": {
+      "eyebrow": {
+        "en": "Services · Property Management",
+        "ar": "الخدمات · إدارة الأملاك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.289Z"
+      },
+      "sub": {
+        "en": "Professional property management focused on protecting your property, supporting tenants and ensuring efficient day-to-day operations.",
+        "ar": "إدارة عقارية احترافية تركّز على حماية عقارك، ودعم المستأجرين، وضمان كفاءة العمليات اليومية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.293Z"
+      },
+      "title": {
+        "en": "Property Management in Abu Dhabi",
+        "ar": "إدارة العقارات في أبوظبي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.293Z"
+      }
+    },
+    "hero_form": {
+      "form_sub": {
+        "en": "Tell us about your property and one of our property consultants will be in contact with you shortly.",
+        "ar": "أخبرنا عن عقارك وسيتواصل معك أحد مستشارينا العقاريين قريبًا.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "note": {
+        "en": "By submitting you agree to be contacted by a Bazar advisor.",
+        "ar": "بإرسالك النموذج فإنك توافق على أن يتواصل معك أحد مستشاري بازار.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "submit_label": {
+        "en": "Request Property Management Support",
+        "ar": "طلب دعم إدارة العقارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "success_body": {
+        "en": "One of our property consultants will be in contact with you shortly to talk through your property and the support you need.",
+        "ar": "سيتواصل معك أحد مستشاري العقارات لدينا قريبًا لمناقشة عقارك والدعم الذي تحتاجه.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "success_title": {
+        "en": "Thank you — we have your details.",
+        "ar": "شكرًا لك — لقد استلمنا بياناتك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      }
+    },
+    "how_it_works": {
+      "eyebrow": {
+        "en": "How it works",
+        "ar": "كيف تتم العملية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "heading": {
+        "en": "Simple Property Management from Start to Finish",
+        "ar": "إدارة عقارية بسيطة من البداية إلى النهاية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "steps[0].desc": {
+        "en": "Tell us about your property and management requirements.",
+        "ar": "أخبرنا عن عقارك ومتطلبات إدارته.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "steps[1].title": {
+        "en": "Property Review",
+        "ar": "المراجعة العقارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "steps[2].desc": {
+        "en": "Once agreed, our team manages the day-to-day requirements of your property.",
+        "ar": "بعد الاتفاق، يتولى فريقنا إدارة المتطلبات اليومية لعقارك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "steps[2].title": {
+        "en": "Management Begins",
+        "ar": "تبدأ الإدارة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      }
+    },
+    "support": {
+      "eyebrow": {
+        "en": "Complete property management support",
+        "ar": "دعم متكامل لإدارة الأملاك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "heading": {
+        "en": "Your Property, Professionally Managed",
+        "ar": "عقارك بإدارة احترافية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "intro": {
+        "en": "Dedicated property management to help landlords protect their property, manage tenants and handle ongoing tenancy requirements efficiently.",
+        "ar": "إدارة عقارية متخصصة تساعد الملاك على حماية عقاراتهم وإدارة المستأجرين والتعامل مع متطلبات الإيجار المستمرة بكفاءة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[0].desc": {
+        "en": "Professional tenant communication and support.",
+        "ar": "التواصل مع المستأجرين ودعمهم باحترافية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[0].img": {
+        "en": "tenant management",
+        "ar": "إدارة المستأجرين",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[1].desc": {
+        "en": "Rental payment management and tracking.",
+        "ar": "إدارة ومتابعة مدفوعات الإيجار.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[1].img": {
+        "en": "rent collection",
+        "ar": "تحصيل الإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[1].name": {
+        "en": "Rent Collection",
+        "ar": "خدمة تحصيل الإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[2].desc": {
+        "en": "Support with tenancy registration, renewals and documentation.",
+        "ar": "الدعم في تسجيل عقود الإيجار والتجديدات والمستندات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[2].img": {
+        "en": "lease administration",
+        "ar": "إدارة عقود الإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[2].name": {
+        "en": "Lease Administration",
+        "ar": "إدارة عقود الإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[3].desc": {
+        "en": "Efficient coordination of property maintenance and repairs.",
+        "ar": "تنسيق فعّال لأعمال صيانة العقارات وإصلاحها.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[3].img": {
+        "en": "maintenance coordination",
+        "ar": "تنسيق أعمال الصيانة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[3].name": {
+        "en": "Maintenance Coordination",
+        "ar": "تنسيق أعمال الصيانة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[4].desc": {
+        "en": "Regular oversight of property condition and maintenance needs.",
+        "ar": "إشراف منتظم على حالة العقار واحتياجات الصيانة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[4].img": {
+        "en": "property inspections",
+        "ar": "معاينات العقارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[5].desc": {
+        "en": "Coordination of handovers, access and property documentation.",
+        "ar": "تنسيق عمليات التسليم والوصول ووثائق العقار.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
+      },
+      "items[5].name": {
+        "en": "Move-In & Move-Out Support",
+        "ar": "دعم الانتقال والمغادرة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:41:48.294Z"
       }
     }
   },
@@ -1973,6 +3377,86 @@
         "by": "machine",
         "model": "claude-opus-5",
         "at": "2026-08-16T10:41:34.610Z"
+      }
+    }
+  },
+  "qr": {
+    "contact_details": {
+      "heading": {
+        "en": "Bazar Real Estate, Abu Dhabi.",
+        "ar": "بازار للعقارات، أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:47:46.675Z"
+      },
+      "phone_note": {
+        "en": "Mon–Sat 9am–7pm GST",
+        "ar": "الاثنين–السبت 9 صباحًا–7 مساءً بتوقيت الخليج",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:47:46.675Z"
+      }
+    },
+    "cta": {
+      "body": {
+        "en": "Tell us what you're looking for and our team will get back to you shortly.",
+        "ar": "أخبرنا بما تبحث عنه وسيعاود فريقنا التواصل معك قريبًا.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:47:46.675Z"
+      },
+      "cta_label": {
+        "en": "Contact us",
+        "ar": "اتصل بنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:47:46.675Z"
+      },
+      "eyebrow": {
+        "en": "No phone to hand?",
+        "ar": "لا يوجد هاتف بمتناولك؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:47:46.675Z"
+      },
+      "heading": {
+        "en": "Send us an enquiry instead.",
+        "ar": "أرسل لنا استفسارك بدلاً من ذلك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:47:46.675Z"
+      }
+    },
+    "hero": {
+      "subtitle": {
+        "en": "Scan the code to reach Bazar Real Estate — buying, selling, renting, listing, or investment enquiries across Abu Dhabi and the UAE.",
+        "ar": "امسح الرمز للتواصل مع بازار العقارية — استفسارات البيع أو الشراء أو الإيجار أو الإعلان العقاري أو الاستثمار في أبوظبي والإمارات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:47:46.675Z"
+      },
+      "title": {
+        "en": "Point your camera here.",
+        "ar": "نوجّه الكاميرا إلى هنا.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:47:46.674Z"
+      }
+    },
+    "qr_code": {
+      "caption": {
+        "en": "Opens our contact page.",
+        "ar": "موقع اتصل بنا يفتح صفحة الاتصال لدينا.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:47:46.675Z"
+      },
+      "instruction": {
+        "en": "Open the camera on your phone, hold it over the code, and tap the link that appears. No app needed.",
+        "ar": "افتح الكاميرا في هاتفك، ووجّهها نحو الرمز، ثم اضغط على الرابط الذي يظهر. لا حاجة إلى أي تطبيق.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:47:46.675Z"
       }
     }
   },
@@ -2395,6 +3879,944 @@
         "by": "machine",
         "model": "claude-opus-5",
         "at": "2026-08-16T10:37:34.607Z"
+      }
+    }
+  },
+  "sell": {
+    "confirmation": {
+      "another_label": {
+        "en": "Submit another property",
+        "ar": "إرسال عقار آخر",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "desk_name": {
+        "en": "Bazar advisory desk",
+        "ar": "بازار مكتب الاستشارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "desk_role": {
+        "en": "Abu Dhabi · Sell, rent and management",
+        "ar": "منطقة أبوظبي · البيع والإيجار والإدارة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "heading_desk": {
+        "en": "An advisor will call you {when}.",
+        "ar": "سيتصل بك أحد المستشارين {when}.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "heading_matched": {
+        "en": "{advisor} will call you {when}.",
+        "ar": "{advisor} سيتصل بك {when}.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "reference_label": {
+        "en": "Matched · reference",
+        "ar": "مطابق · مرجع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "steps[1].what": {
+        "en": "Free valuation visit, photography brief and a pricing recommendation.",
+        "ar": "زيارة تقييم مجانية، وموجز تصوير، وتوصية بالتسعير.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "steps[2].what": {
+        "en": "Form A signed, listing goes live across Bazar and the UAE portals.",
+        "ar": "التوقيع على النموذج A، ويُنشر الإعلان العقاري على بازار وبوابات الإمارات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "summary_matched": {
+        "en": "— assigned to the advisor who covers your community.",
+        "ar": "— يُحال إلى المستشار المسؤول عن مجتمعك السكني.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      }
+    },
+    "faq": {
+      "cta_label": {
+        "en": "Book a consultation",
+        "ar": "احجز استشارة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "eyebrow": {
+        "en": "Questions",
+        "ar": "الأسئلة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "items[0].a": {
+        "en": "Fill in the form above with the property details and how to reach you. It routes to the single Bazar advisor who covers your community — not a shared pool — and they call you directly, usually within two hours during business hours.",
+        "ar": "عبّئ النموذج أعلاه ببيانات العقار وطريقة التواصل معك. يصل الطلب إلى مستشار بازار الوحيد المسؤول عن منطقتك — وليس إلى فريق مشترك — ويتصل بك مباشرة، عادةً خلال ساعتين ضمن ساعات العمل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "items[1].a": {
+        "en": "The original title deed, your passport and Emirates ID, a developer NOC, Form A (the agency agreement you sign with us) and Form F / MOU once a buyer is agreed. If the property is mortgaged, your bank will also need to issue a liability letter.",
+        "ar": "سند الملكية الأصلي، وجواز سفرك وبطاقة الهوية الإماراتية، وشهادة عدم ممانعة من المطور العقاري، والنموذج A (اتفاقية الوساطة التي توقّعها معنا)، والنموذج F / مذكرة التفاهم بعد الاتفاق مع المشتري. وإذا كان العقار مرهوناً، سيلزم أيضاً أن يصدر البنك خطاب المديونية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "items[1].q": {
+        "en": "What documents do I need to sell my property?",
+        "ar": "ما المستندات المطلوبة لبيع عقاري؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "items[2].a": {
+        "en": "Sale and lease agreements in Abu Dhabi are transacted through ADREC-registered brokers. A licensed advisor keeps the paperwork compliant, handles negotiation, and files the transfer with the Department of Municipalities and Transport on your behalf.",
+        "ar": "تُبرم عقود البيع والإيجار في أبوظبي عبر وسطاء مسجّلين لدى ADREC. ويتولى المستشار المرخّص ضمان توافق المستندات مع الأنظمة، وإدارة التفاوض، وتسجيل نقل الملكية لدى دائرة البلديات والنقل نيابةً عنك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "items[2].q": {
+        "en": "Do I need a licensed agent?",
+        "ar": "هل أحتاج إلى وكيل مرخّص؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "items[3].a": {
+        "en": "Yes. The buyer normally takes on the existing tenancy contract for its remaining term. If you need the property vacant at handover, UAE tenancy law requires twelve months' written notice served through a notary or registered post.",
+        "ar": "نعم. يتولى المشتري عادةً عقد الإيجار القائم للمدة المتبقية منه. وإذا كنت بحاجة إلى العقار خالياً عند التسليم، فإن قانون الإيجارات في الإمارات يشترط إشعاراً خطياً قبل اثني عشر شهراً يُرسل عبر كاتب العدل أو البريد المسجّل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "items[3].q": {
+        "en": "Can I sell a property that is currently rented?",
+        "ar": "هل يمكنني بيع عقار مؤجَّر حالياً؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "items[4].a": {
+        "en": "Selling: a 2% transfer fee to the municipality, agency commission of 2% plus VAT, and a developer NOC fee — typically AED 500 to 5,000. Renting out: Tawtheeq registration, ADDC connection charges, and agency commission where applicable.",
+        "ar": "البيع: رسوم نقل ملكية بنسبة 2% للبلدية، وعمولة الوساطة 2% إضافة إلى ضريبة القيمة المضافة، ورسوم شهادة عدم ممانعة من المطور العقاري — عادة من AED 500 إلى 5,000. التأجير: تسجيل توثيق، ورسوم توصيل شركة أبوظبي للتوزيع، وعمولة الوساطة عند الاقتضاء.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "items[4].q": {
+        "en": "What are the main costs of selling or renting out?",
+        "ar": "ما هي التكاليف الرئيسية للبيع أو التأجير؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "items[5].a": {
+        "en": "Start with the Bazar valuation tool for an instant range built from registered Abu Dhabi transactions, service charges and comparable listings. Your advisor then walks the property and refines it — the visit is free, with no obligation to list.",
+        "ar": "ابدأ بأداة التقييم من بازار للحصول على نطاق سعري فوري مبني على معاملات أبوظبي المسجّلة ورسوم الخدمات والعروض المماثلة. ثم يعاين مستشارك العقار ويدقّق التقييم — الزيارة مجانية، دون أي التزام بإدراج العقار.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "items[5].q": {
+        "en": "How do I work out what my property is worth?",
+        "ar": "كيف أحدد قيمة عقاري؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "phone_outro": {
+        "en": "— you'll get an advisor, not a call centre.",
+        "ar": "— ستحصل على مستشار، لا مركز اتصال.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      }
+    },
+    "form": {
+      "back_label": {
+        "en": "Back",
+        "ar": "عودة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "consent_label": {
+        "en": "I agree that Bazar Real Estate may contact me about this property by phone, WhatsApp and email.",
+        "ar": "أوافق على أن تتواصل معي بازار العقارية بشأن هذا العقار عبر الهاتف والواتساب والبريد الإلكتروني.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "details_sub": {
+        "en": "Your details go to one advisor only. We don't sell them on, and you won't be added to a mailing list.",
+        "ar": "تصل بياناتك إلى مستشار واحد فقط. نحن لا نبيعها لأي جهة، ولن تتم إضافتك إلى أي قائمة بريدية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "details_title": {
+        "en": "Where should the advisor reach you?",
+        "ar": "أين يمكن للمستشار التواصل معك؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "reassurance": {
+        "en": "Takes about two minutes. Nothing is published without your written go-ahead.",
+        "ar": "يستغرق الأمر دقيقتين تقريبًا. ولا يُنشر أي شيء دون موافقتك الخطية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "step_1_label": {
+        "en": "Your property",
+        "ar": "عقارك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "submit_label": {
+        "en": "Match me with an advisor",
+        "ar": "اربطني بمستشار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "submit_pending_label": {
+        "en": "Matching…",
+        "ar": "جارٍ المطابقة…",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      }
+    },
+    "hero": {
+      "points[0].detail": {
+        "en": "Every advisor registered, vetted and named on your file",
+        "ar": "كل مستشار مسجّل ومدقّق ومُدرج باسمه في ملفك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "points[0].title": {
+        "en": "ADREC-licensed advisors",
+        "ar": "مستشارون مرخّصون من ADREC",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "points[1].detail": {
+        "en": "Photography, listing and portal spend are on us. Commission on completion only",
+        "ar": "عبء التصوير والإعلان العقاري والإنفاق على المنصات علينا. العمولة عند إتمام الصفقة فقط",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "points[1].title": {
+        "en": "No upfront fees",
+        "ar": "لا رسوم مقدمة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "points[2].title": {
+        "en": "One point of contact",
+        "ar": "نقطة تواصل واحدة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "sub": {
+        "en": "Tell us about the property. We match you with the senior Bazar advisor who covers your community — the same person runs it from valuation through to transfer.",
+        "ar": "أخبرنا عن العقار. نوصّلك بكبير مستشاري بازار المسؤول عن مجتمعك السكني — والشخص نفسه يتابع الأمر من التقييم وحتى نقل الملكية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "title": {
+        "en": "Sell or rent out,\nwith one advisor",
+        "ar": "بِع أو أجِّر،\nمع مستشار واحد",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.473Z"
+      }
+    },
+    "pricing": {
+      "body": {
+        "en": "Overpricing costs more time than any other decision an owner makes. Start with the data before you start with an opinion.",
+        "ar": "المبالغة في السعر تكلّف وقتًا أكثر من أي قرار آخر يتخذه المالك. ابدأ بالبيانات قبل أن تبدأ بالرأي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "cards[0].cta": {
+        "en": "Get your estimate",
+        "ar": "احصل على تقديرك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "cards[0].desc": {
+        "en": "An instant, data-backed range for your unit — built from registered Abu Dhabi transactions and comparable listings.",
+        "ar": "نطاق سعري فوري مدعوم بالبيانات لوحدتك — مبني على معاملات أبوظبي المسجّلة والعروض المماثلة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "cards[1].cta": {
+        "en": "Explore transactions",
+        "ar": "استعراض المعاملات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "cards[1].desc": {
+        "en": "Browse registered sales in your community and benchmark against real closings, not asking prices.",
+        "ar": "المبيعات المسجّلة في مجتمعك، وقارنها بعمليات بيع فعلية لا بأسعار الطلب.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "cards[1].eyebrow": {
+        "en": "Abu Dhabi transactions",
+        "ar": "معاملات أبوظبي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "cards[1].title": {
+        "en": "See what buyers actually paid",
+        "ar": "العقود: ما دفعه المشترون فعلياً",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "cards[2].desc": {
+        "en": "Written by the advisors who do this daily — the paperwork, the fees, and the mistakes that cost owners months.",
+        "ar": "المستشارون الذين يمارسون هذا العمل يوميًا هم من كتبه — المعاملات الورقية، والرسوم، والأخطاء التي تكلّف المُلّاك شهورًا.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "cards[2].title": {
+        "en": "Everything you need to know",
+        "ar": "استكشف كل ما تحتاج معرفته",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "eyebrow": {
+        "en": "Before you price it",
+        "ar": "قبل أن تحدد السعر",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "guides[0].title": {
+        "en": "Renting out your property",
+        "ar": "تأجير عقارك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "guides[1].kicker": {
+        "en": "Paperwork",
+        "ar": "سجلات ومستندات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "guides[2].title": {
+        "en": "What property management covers",
+        "ar": "ما تشمله إدارة العقارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "range_low": {
+        "en": "Low",
+        "ar": "منخفض",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "range_mid": {
+        "en": "Midpoint",
+        "ar": "المنتصف",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "range_title": {
+        "en": "Your range, in AED",
+        "ar": "نطاقك، بالدرهم",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "spark_note": {
+        "en": "DLD-sourced · updated each quarter",
+        "ar": "مصدرها DLD · تُحدَّث كل ربع سنة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      },
+      "spark_placeholder": {
+        "en": "Registered sales by community, building and property type",
+        "ar": "التصرفات العقارية المسجّلة حسب المنطقة والمبنى ونوع العقار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:26:41.479Z"
+      }
+    }
+  },
+  "services": {
+    "faqs": {
+      "eyebrow": {
+        "en": "Common questions",
+        "ar": "الأسئلة الشائعة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "heading": {
+        "en": "Across every service.",
+        "ar": "عبر جميع خدماتنا.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "items[0].a": {
+        "en": "Yes. We assist with ready, resale, and off-plan property purchases across Abu Dhabi and the wider UAE.",
+        "ar": "نعم. نساعد في شراء العقارات الجاهزة وإعادة البيع والعقارات على الخارطة في أبوظبي وسائر أنحاء الإمارات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "items[0].q": {
+        "en": "Can Bazar help me buy both ready and off-plan properties?",
+        "ar": "هل يمكن أن يساعدني بازار في شراء العقارات الجاهزة والعقارات على الخارطة؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "items[1].a": {
+        "en": "Property value depends on location, size, condition, view, demand, and recent market activity. We provide a considered valuation before you list.",
+        "ar": "تعتمد قيمة العقار على الموقع والمساحة والحالة والإطلالة والطلب ونشاط السوق الأخير. نقدّم لك تقييماً مدروساً قبل طرح عقارك للبيع.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "items[1].q": {
+        "en": "How do I know how much my property is worth?",
+        "ar": "A: كيف أعرف قيمة عقاري؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "items[2].a": {
+        "en": "Yes. It is especially helpful for owners who are not based near their property or prefer professional support.",
+        "ar": "نعم. تُعد الخدمة مفيدة بشكل خاص للملاك غير المقيمين بالقرب من عقاراتهم أو الذين يفضلون الدعم المهني.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "items[2].q": {
+        "en": "Is property management useful for overseas landlords?",
+        "ar": "هل إدارة الأملاك مفيدة للملاك المقيمين في الخارج؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "items[3].a": {
+        "en": "Some banks offer mortgage options for eligible non-residents, subject to bank criteria and approval. We connect you with suitable partners.",
+        "ar": "تقدّم بعض البنوك خيارات تمويل عقاري لغير المقيمين المؤهلين، وفقًا لمعايير البنك وموافقته. نوصلك بالشركاء المناسبين.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "items[3].q": {
+        "en": "Can non-residents get a mortgage in the UAE?",
+        "ar": "نعم، هل يمكن لغير المقيمين الحصول على تمويل عقاري في الإمارات؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      }
+    },
+    "hero": {
+      "eyebrow": {
+        "en": "What we do",
+        "ar": "مجالات عملنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.080Z"
+      },
+      "sub": {
+        "en": "Buy, sell, rent, manage, or finance — every service is backed by over 20 years of UAE market experience and a single, senior point of contact.",
+        "ar": "الشراء أو البيع أو الإيجار أو الإدارة أو التمويل — كل خدمة مدعومة بأكثر من 20 عامًا من الخبرة في سوق الإمارات وبنقطة تواصل واحدة مع مسؤول أول.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "title_emphasis": {
+        "en": "advisors.",
+        "ar": "المستشارون.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      }
+    },
+    "practice_buy": {
+      "cta_label": {
+        "en": "Start a buying enquiry",
+        "ar": "بدء طلب شراء",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "help": {
+        "en": "Apartments\nVillas\nTownhouses\nPenthouses\nCommercial\nLand\nOff-Plan\nReady & Resale\nInvestment",
+        "ar": "شقق\nفلل\nتاون هاوس\nبنتهاوس\nتجاري\nأراضٍ\nعلى الخارطة\nجاهز وإعادة بيع\nاستثمار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[0].desc": {
+        "en": "Location, budget, property type, and goals.",
+        "ar": "الموقع، والميزانية، ونوع العقار، والأهداف.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[0].title": {
+        "en": "Understand your needs",
+        "ar": "استيعاب احتياجاتك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[1].desc": {
+        "en": "Suitable options based on your requirements.",
+        "ar": "خيارات مناسبة بناءً على متطلباتك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[2].desc": {
+        "en": "Insight on value, demand, and growth potential.",
+        "ar": "رؤية حول القيمة والطلب وإمكانات النمو.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[3].desc": {
+        "en": "Clear property comparisons and viewing support.",
+        "ar": "مقارنات عقارية واضحة ودعم في المعاينة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps_label": {
+        "en": "How we support you",
+        "ar": "استمرار دعمنا لك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "sub": {
+        "en": "Find the right property with confidence — residential, commercial, and land opportunities across Abu Dhabi's most sought-after communities.",
+        "ar": "اعثر على العقار المناسب بثقة — فرص سكنية وتجارية وأراضٍ في أكثر مجتمعات أبوظبي طلبًا.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      }
+    },
+    "practice_manage": {
+      "help": {
+        "en": "Apartments\nVillas\nTownhouses\nPenthouses\nCommercial Units\nOffices\nRetail Spaces\nInvestment",
+        "ar": "شقق\nفلل\nتاون هاوس\nبنتهاوس\nوحدات تجارية\nمكاتب\nمساحات للبيع بالتجزئة\nاستثمار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "help_label": {
+        "en": "What we help you manage",
+        "ar": "ما نساعدك على إدارته",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[0].desc": {
+        "en": "Communication and daily property matters.",
+        "ar": "المراسلات وشؤون العقار اليومية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[0].title": {
+        "en": "Tenant coordination",
+        "ar": "تنسيق شؤون المستأجرين",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[1].desc": {
+        "en": "Tenant placement, renewals, and rental guidance.",
+        "ar": "إدارة استقطاب المستأجرين والتجديدات وإرشادات التأجير.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[1].title": {
+        "en": "Leasing support",
+        "ar": "الدعم في التأجير",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[2].desc": {
+        "en": "Maintenance follow-up and support.",
+        "ar": "مساعدة ومتابعة الصيانة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[2].title": {
+        "en": "Maintenance coordination",
+        "ar": "تنسيق أعمال الصيانة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[3].desc": {
+        "en": "Property checks and owner updates.",
+        "ar": "إجراءات فحص العقار وتحديثات المُلّاك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[4].desc": {
+        "en": "Rental records and document coordination.",
+        "ar": "سجلات الإيجار وتنسيق المستندات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[5].desc": {
+        "en": "Ongoing support for landlords.",
+        "ar": "المتابعة المستمرة لأصحاب العقارات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[5].title": {
+        "en": "Owner support",
+        "ar": "دعم المُلّاك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "sub": {
+        "en": "Professional property management for landlords and investors — protect your asset and keep tenants satisfied.",
+        "ar": "إدارة عقارية احترافية للملاك والمستثمرين — احمِ أصولك وحافظ على رضا المستأجرين.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "title": {
+        "en": "Property Management",
+        "ar": "إدارة الأملاك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      }
+    },
+    "practice_mortgage": {
+      "cta_label": {
+        "en": "Request mortgage guidance",
+        "ar": "طلب استشارة تمويل عقاري",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "help": {
+        "en": "First-time buyers\nUAE residents\nNon-resident buyers\nInvestors\nEnd-users\nCash vs. mortgage",
+        "ar": "المشترون لأول مرة\nالمقيمون في الإمارات\nالمشترون غير المقيمين\nالمستثمرون\nالمستخدمون النهائيون\nنقدًا مقابل تمويل عقاري",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "help_label": {
+        "en": "Who this service is for",
+        "ar": "لمن هذه الخدمة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[0].desc": {
+        "en": "Understand your buying power.",
+        "ar": "اعرف قدرتك الشرائية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "steps[1].title": {
+        "en": "Pre-approval support",
+        "ar": "الدعم في الموافقة المبدئية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "steps[2].title": {
+        "en": "Banking coordination",
+        "ar": "​التنسيق المصرفي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "steps[3].desc": {
+        "en": "Search based on your financing position.",
+        "ar": "البحث بناءً على وضعك التمويلي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "steps[3].title": {
+        "en": "Property matching",
+        "ar": "أملاك مطابقة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "steps_label": {
+        "en": "How we support you",
+        "ar": "كيف ندعمك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "sub": {
+        "en": "Mortgage guidance for confident property decisions — know your budget early and search with focus.",
+        "ar": "إرشادات تمويل عقاري لقرارات عقارية واثقة — اعرف ميزانيتك مبكرًا وابحث بتركيز.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "title": {
+        "en": "Mortgage Support",
+        "ar": "دعم تمويل عقاري",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      }
+    },
+    "practice_rent": {
+      "cta_label": {
+        "en": "Find a rental",
+        "ar": "ابحث عن عقار للإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "help": {
+        "en": "Apartments\nVillas\nTownhouses\nPenthouses\nCommercial Spaces\nOffices\nRetail Units",
+        "ar": "شقق\nفلل\nتاون هاوس\nبنتهاوس\nمساحات تجارية\nمكاتب\nوحدات تجزئة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[0].desc": {
+        "en": "Location, budget, size, and move-in date.",
+        "ar": "الموقع، والميزانية، والمساحة، وتاريخ الانتقال.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[0].title": {
+        "en": "Understand your needs",
+        "ar": "استيعاب احتياجاتك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[1].desc": {
+        "en": "Suitable options based on your requirements.",
+        "ar": "خيارات مناسبة بناءً على متطلباتك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[2].desc": {
+        "en": "Viewing coordination and property comparisons.",
+        "ar": "تنسيق معاينة العقارات ومقارنتها.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[3].desc": {
+        "en": "Clear guidance on payments and tenancy details.",
+        "ar": "إرشادات واضحة حول المدفوعات وتفاصيل الإيجار.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[4].desc": {
+        "en": "Help with the next steps after selection.",
+        "ar": "المساعدة في الخطوات التالية بعد الاختيار.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[4].title": {
+        "en": "Move-in support",
+        "ar": "دعم الانتقال",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps_label": {
+        "en": "How we support you",
+        "ar": "احتضان دعمنا لك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "sub": {
+        "en": "Our team helps tenants find the right rental with clarity and confidence.",
+        "ar": "يساعد فريقنا المستأجرين في العثور على العقار المناسب للإيجار بوضوح وثقة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "title": {
+        "en": "Rent a Property",
+        "ar": "استئجار عقار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      }
+    },
+    "practice_sell": {
+      "cta_label": {
+        "en": "Request a valuation",
+        "ar": "تقييم اطلب",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "help": {
+        "en": "Apartments\nVillas\nTownhouses\nPenthouses\nCommercial\nLand\nInvestment\nReady & Resale",
+        "ar": "شقق\nفلل\nتاون هاوس\nبنتهاوس\nتجاري\nأراضٍ\nاستثمار\nجاهز وإعادة بيع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[0].desc": {
+        "en": "Location, condition, size, view, demand and recent activity.",
+        "ar": "الموقع والحالة والمساحة والإطلالة والطلب والنشاط الأخير.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[0].title": {
+        "en": "Property valuation",
+        "ar": "تقييم العقار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[1].desc": {
+        "en": "A realistic price that attracts serious buyers.",
+        "ar": "سعر واقعي يجذب المشترين الجادين.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[2].desc": {
+        "en": "Clear details and strong presentation.",
+        "ar": "مواصفات واضحة وعرض قوي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[4].desc": {
+        "en": "We filter serious enquiries and arrange viewings.",
+        "ar": "نقوم بتصفية الطلبات الجادة وتنسيق المعاينات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "steps[5].title": {
+        "en": "Negotiation & closing",
+        "ar": "التفاوض والإتمام",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "sub": {
+        "en": "Looking to sell in Abu Dhabi? Our experts support you at every step — from valuation to closing.",
+        "ar": "تفكر في البيع في أبوظبي؟ خبراؤنا يرافقونك في كل خطوة — من التقييم حتى إتمام الصفقة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      },
+      "title": {
+        "en": "Sell Your Property",
+        "ar": "سجّل عقارك للبيع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.085Z"
+      }
+    },
+    "why": {
+      "body": {
+        "en": "Over 20 years of UAE real estate experience, direct developer and banking relationships, and client-focused guidance — combined so you make confident decisions whether you're buying, selling, renting, managing, or financing.",
+        "ar": "أكثر من 20 عامًا من الخبرة في سوق العقارات الإماراتي، وعلاقات مباشرة مع المطورين العقاريين والبنوك، وإرشاد يركّز على العميل — مجتمعة لتتخذ قراراتك بثقة سواء كنت تشتري أو تبيع أو تستأجر أو تدير أو تموّل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "eyebrow": {
+        "en": "Why Bazar",
+        "ar": "لماذا بازار؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "stats[0].label": {
+        "en": "UAE market experience",
+        "ar": "خبرة في سوق الإمارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "stats[0].value": {
+        "en": "20+ yrs",
+        "ar": "أكثر من 20 عامًا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T12:19:33.086Z"
+      },
+      "stats[1].value": {
+        "en": "1",
+        "ar": "1",
+        "by": "machine"
       }
     }
   }

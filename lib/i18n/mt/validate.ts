@@ -361,7 +361,16 @@ export function validate(
 
   // The same substantial Arabic run twice, back to back — the shape a model
   // leaves when it answers, second-guesses itself, and answers again.
-  const repeat = /([\u0600-\u06FF][\u0600-\u06FF\s]{7,}?)\s*\1/u.exec(output);
+  /*
+   * A run of Arabic repeated back to back, ON ONE LINE.
+   *
+   * The single-line constraint is load-bearing: several fields are
+   * newline-delimited chip lists, and three area names that share a word —
+   * ممشى السعديات / حد السعديات / السعديات لاغونز — are three correct entries,
+   * not a model repeating itself. Allowing the run to span a newline flagged
+   * exactly that and dropped good content.
+   */
+  const repeat = /([\u0600-\u06FF][\u0600-\u06FF ]{7,}?) *\1/u.exec(output);
   if (repeat) {
     issues.push({
       code: "self-repeat",

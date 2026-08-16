@@ -310,3 +310,22 @@ describe("a sentence that ends on a preposition", () => {
     expect(validate("Villa at ⟦0⟧, ref ⟦1⟧", "⟦1⟧ فيلا بسعر ⟦0⟧")).toEqual([]);
   });
 });
+
+describe("self-repeat and newline-delimited lists", () => {
+  it("leaves three chip entries that share a word alone", () => {
+    // Real content from /areas. These are three distinct places, not a model
+    // repeating itself, and flagging them dropped correct Arabic.
+    expect(
+      validate(
+        "Mamsha Al Saadiyat\nHidd Al Saadiyat\nSaadiyat Lagoons",
+        "ممشى السعديات\nحد السعديات\nالسعديات لاغونز",
+      ).map((i) => i.code),
+    ).not.toContain("self-repeat");
+  });
+
+  it("still catches a run repeated on one line", () => {
+    expect(
+      validate("Browse Properties", "تصفح العقارات تصفح العقارات").map((i) => i.code),
+    ).toContain("self-repeat");
+  });
+});
