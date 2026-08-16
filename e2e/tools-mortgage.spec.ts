@@ -54,26 +54,67 @@ test("monthly payment falls when the user shortens the term", async ({ page }) =
   expect(monthlyAfter).not.toBe(monthlyBefore);
 });
 
-test("pre-approval CTA points at wa.me with the current scenario", async ({
+test("the pre-approval form is drawn once, and the closing CTA leads to it", async ({
   page,
 }) => {
   await page.goto("/tools/mortgage");
+
+  // Which of the two places the form sits in — the hero or the closing band —
+  // is a switch in Pages & blocks. What must hold either way is that it is
+  // drawn EXACTLY once: two live copies on one page is two sets of answers to
+  // reconcile, and each would file its own lead.
+  await expect(page.getByTestId("pre-approval-form")).toHaveCount(1);
+
   const cta = page.getByTestId("pre-approval-cta");
   await expect(cta).toBeVisible();
   const href = await cta.getAttribute("href");
   expect(href).not.toBeNull();
-  // wa.me URL with the prefilled text=… querystring.
-  expect(href!.startsWith("https://wa.me/")).toBe(true);
-  expect(href!).toContain("?text=");
-  const decoded = decodeURIComponent(href!.split("?text=")[1] ?? "");
 
-  // Read the scenario off the page rather than hardcoding it: the point of
-  // the assertion is that the handoff carries what the visitor is looking at,
-  // whatever the opening figures happen to be.
+  if (href!.startsWith("#")) {
+    // Form in the hero: the closing band scrolls back up to it.
+    const target = page.locator(href!);
+    await expect(target).toHaveCount(1);
+    await expect(target.locator("form")).toHaveCount(1);
+    return;
+  }
+
+  // Form in the closing band: the second button hands off to WhatsApp with the
+  // scenario prefilled. Read the figures off the page rather than hardcoding
+  // them — the opening scenario is an admin's to set.
+  expect(href!.startsWith("https://wa.me/")).toBe(true);
+  const decoded = decodeURIComponent(href!.split("?text=")[1] ?? "");
   const monthly = (await page.getByTestId("monthly-payment").innerText()).trim();
   expect(decoded).toContain(monthly);
   expect(decoded).toMatch(/Property price: AED [0-9,]+/);
   expect(decoded).toMatch(/Term: \d+ years/);
+});
+
+test("every section the editor arranged renders, in that order", async ({
+  page,
+}) => {
+  await page.goto("/tools/mortgage");
+
+  // The page is six sections an editor can reorder or switch off, so the spec
+  // asserts they are consistent with each other rather than pinning an order
+  // the CMS owns: whatever renders must be a known section, the scenario
+  // selector must be there (it is locked), and nothing may render twice.
+  const ids = await page
+    .locator("main section[data-testid]")
+    .evaluateAll((nodes) =>
+      nodes.map((n) => (n as HTMLElement).dataset.testid ?? ""),
+    );
+  const known = [
+    "scenario-section",
+    "affordability-section",
+    "compare-section",
+    "amortization-section",
+    "cash-to-close-section",
+    "pre-approval-section",
+  ];
+  expect(ids.length).toBeGreaterThan(0);
+  for (const id of ids) expect(known, `unknown section ${id}`).toContain(id);
+  expect(new Set(ids).size, "a section rendered twice").toBe(ids.length);
+  expect(ids).toContain("scenario-section");
 });
 
 test("affordability badge flips when income drops below the DBR cap", async ({

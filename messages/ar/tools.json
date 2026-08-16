@@ -1,6 +1,5 @@
 {
   "mortgage": {
-    "scenario": "السيناريو",
     "propertyPrice": "سعر العقار · {symbol}",
     "propertyPriceAria": "سعر العقار بـ{currency}",
     "propertyPriceSlider": "شريط تمرير سعر العقار",
@@ -25,7 +24,6 @@
     "statusUaeResident": "مقيم في الإمارات",
     "statusNonResident": "غير مقيم",
     "statusGccNational": "مواطن دول مجلس التعاون الخليجي",
-    "optional": "اختياري",
     "annualIncome": "الدخل السنوي · {symbol}",
     "annualIncomeAria": "الدخل السنوي بـ{currency}",
     "affordabilityHelp": "لفحص القدرة على السداد · نسبة عبء الدين أقل من {cap}% إرشادية",
@@ -43,8 +41,6 @@
     "totalToPay": "الإجمالي المستحق الدفع",
     "totalInterest": "إجمالي الفائدة",
     "principalShare": "حصة أصل القرض",
-    "cashEyebrow": "إجمالي المبلغ النقدي المطلوب عند الإغلاق",
-    "cashHeading": "ما تحوّله فعلياً",
     "cashTotal": "إجمالي المبلغ النقدي المطلوب عند الإتمام",
     "cashPctOfPrice": "{pct} من السعر",
     "cashPegNote": "الرسوم القانونية — رسوم نقل الملكية لدى دائرة الأراضي والأملاك، ومكتب أمين التسجيل، وشهادة عدم الممانعة، والتقييم — محددة بالدرهم الإماراتي. والأرقام هنا محوّلة وفق سعر الربط الثابت 3.6725 AED/دولار أمريكي، لذا فهي دقيقة وليست تقديرية.",
@@ -67,15 +63,11 @@
       "property_valuation": "يختاره البنك",
       "bazar_advisory": "بحد أقصى"
     },
-    "amortEyebrow": "الإطفاء · {years} سنة",
-    "amortHeading": "كيفية تناقص الفائدة",
     "amortPrincipal": "أصل القرض",
     "amortInterest": "الفائدة",
     "amortAria": "مخطط الإطفاء",
     "amortEmpty": "أدخل مبلغ القرض والمدة لعرض الجدول.",
     "amortYear": "س{year}",
-    "compareEyebrow": "مقارنة السيناريوهات",
-    "compareHeading": "ماذا لو غيّرت متغيّرًا واحدًا؟",
     "scenarioCurrent": "الحالي",
     "scenarioMoreUpfront": "المزيد مقدماً",
     "scenarioShorterTerm": "المدة الأقصر",
@@ -93,7 +85,8 @@
     "pdfSummary": "ملخص PDF",
     "pdfGenerating": "جارٍ الإنشاء…",
     "pdfDownloaded": "تم تنزيل ملف PDF لسيناريو تمويل عقاري.",
-    "pdfFailed": "تعذّر إنشاء ملف PDF."
+    "pdfFailed": "تعذّر إنشاء ملف PDF.",
+    "dbrEmpty": "أدخل دخلك السنوي أعلاه وسيُظهر المؤشّر موقعك."
   },
   "valuation": {
     "eyebrow": "للملاك الذين يفكرون في البيع",

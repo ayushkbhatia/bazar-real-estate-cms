@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
-import { Eyebrow } from "@/components/brand/eyebrow";
 import { getForm } from "@/lib/queries/forms";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
-import { str } from "@/lib/master-pages";
+import { img, str } from "@/lib/master-pages";
 import {
   getPublicMortgageSettings,
   toMortgageAssumptions,
 } from "@/lib/queries/site-settings";
 import { asLocale } from "@/lib/i18n/locales";
+import type { SectionValues } from "@/lib/master-pages";
 import { MortgageCalculator } from "./mortgage-calculator";
 
 export const metadata: Metadata = {
@@ -16,6 +16,15 @@ export const metadata: Metadata = {
   description:
     "All-in mortgage maths for Abu Dhabi: monthly payment, true cash to close (DLD, trustee, valuation, advisory), affordability check against Central Bank UAE DBR rules, and side-by-side scenario compare.",
 };
+
+/** The three fields every output section carries. */
+function head(v: SectionValues) {
+  return {
+    eyebrow: str(v, "eyebrow"),
+    title: str(v, "title"),
+    intro: str(v, "intro"),
+  };
+}
 
 export default async function MortgagePage({
   params,
@@ -25,46 +34,60 @@ export default async function MortgagePage({
   const locale = asLocale((await params).locale);
   setRequestLocale(locale);
 
-  // Resolved here rather than inside the calculator because all three are
-  // server reads and the calculator is a client component — a `ResolvedForm`,
-  // a folded `SectionValues` bag and the assumptions object are all plain JSON
-  // and cross the boundary intact, the same way the dialogs do it.
+  // All three are server reads and the tool is a client component — a
+  // `ResolvedForm`, a folded `SectionValues` bag and the assumptions object
+  // are plain JSON and cross the boundary intact, the same way the dialogs
+  // do it.
   const [preApprovalForm, content, mortgage] = await Promise.all([
     getForm("mortgage_preapproval"),
     getMasterPageContent("mortgage", locale),
     getPublicMortgageSettings(),
   ]);
 
-  const hero = content.section("hero")?.values ?? {};
-  const band = content.section("pre_approval")?.values ?? {};
+  const v = (key: string) => content.section(key)?.values ?? {};
+  const heroV = v("hero");
+  const bandV = v("pre_approval");
+  const heroImage = img(heroV, "image");
 
   return (
     <div className="bg-bz-bg">
-      <section className="px-4 md:px-12 pt-12 md:pt-20 pb-6">
-        {str(hero, "eyebrow") ? <Eyebrow>{str(hero, "eyebrow")}</Eyebrow> : null}
-        <h1
-          className="serif text-[36px] md:text-[64px] font-normal mt-3 leading-[1.0] max-w-[16ch]"
-          style={{ letterSpacing: "-0.025em" }}
-        >
-          {/*
-            Lead plus emphasis, the same two-field shape `service-hero.tsx` and
-            `master-content.tsx` already use for their DB-authored headings. It
-            pins the italic run to the end of the sentence, which is a real
-            constraint in Arabic — but it is the constraint the CMS-authored
-            heroes already carry, so the translator meets one convention rather
-            than two.
-          */}
-          {str(hero, "title")}{" "}
-          {str(hero, "title_emphasis") ? (
-            <em className="italic">{str(hero, "title_emphasis")}</em>
-          ) : null}
-        </h1>
-        <p className="mt-5 max-w-[64ch] text-[16px] text-bz-ink-2 leading-relaxed">
-          {str(hero, "intro")}
-        </p>
-      </section>
-
+      {/*
+        Every section — the hero included — is rendered by the client component
+        rather than assembled here. The pre-approval form carries the visitor's
+        live scenario as submit context, and the hero is one of the two places
+        it can be drawn, so the hero has to sit inside the component that holds
+        the scenario. Splitting it would mean lifting that state to a provider
+        for the sake of one heading.
+      */}
       <MortgageCalculator
+        order={content.order}
+        hero={{
+          eyebrow: str(heroV, "eyebrow"),
+          title: str(heroV, "title"),
+          titleEmphasis: str(heroV, "title_emphasis"),
+          sub: str(heroV, "sub"),
+          imageUrl: heroImage?.url ?? null,
+          imageAlt: heroImage?.alt ?? null,
+          showForm: heroV.show_form !== false,
+        }}
+        scenario={head(v("scenario"))}
+        affordabilityCopy={head(v("affordability"))}
+        compare={head(v("compare"))}
+        amortization={head(v("amortization"))}
+        cashToCloseCopy={head(v("cash_to_close"))}
+        preApproval={{
+          eyebrow: str(bandV, "eyebrow"),
+          title: str(bandV, "title"),
+          sub: str(bandV, "sub"),
+          scenarioLabel: str(bandV, "scenario_label"),
+          scenarioNote: str(bandV, "scenario_note"),
+          talkLabel: str(bandV, "talk_label"),
+          advisorCtaLabel: str(bandV, "advisor_cta_label"),
+          advisorCtaHref: str(bandV, "advisor_cta_href") ?? "/contact",
+          whatsappCtaLabel: str(bandV, "whatsapp_cta_label"),
+          fallbackCtaLabel: str(bandV, "fallback_cta_label"),
+          jumpCtaLabel: str(bandV, "jump_cta_label"),
+        }}
         preApprovalForm={preApprovalForm}
         assumptions={toMortgageAssumptions(mortgage)}
         opening={{
@@ -73,22 +96,6 @@ export default async function MortgagePage({
           ratePct: mortgage.default_rate_pct,
           termYears: mortgage.default_term_years,
           annualIncomeAed: mortgage.default_annual_income_aed,
-        }}
-        // The whole band is one section, so it travels as one object rather
-        // than nine props — a field added to it in the registry reaches the
-        // component without a signature change.
-        band={{
-          enabled: content.section("pre_approval")?.enabled ?? true,
-          eyebrow: str(band, "eyebrow"),
-          title: str(band, "title"),
-          sub: str(band, "sub"),
-          scenarioLabel: str(band, "scenario_label"),
-          scenarioNote: str(band, "scenario_note"),
-          talkLabel: str(band, "talk_label"),
-          advisorCtaLabel: str(band, "advisor_cta_label"),
-          advisorCtaHref: str(band, "advisor_cta_href") ?? "/contact",
-          whatsappCtaLabel: str(band, "whatsapp_cta_label"),
-          fallbackCtaLabel: str(band, "fallback_cta_label"),
         }}
       />
     </div>

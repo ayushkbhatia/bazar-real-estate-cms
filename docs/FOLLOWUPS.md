@@ -1005,3 +1005,12 @@ shows the trail.)
   page renders today, so it needs a look rather than a patch.
   `app/[locale]/(public)/tools/mortgage/_components/dbr-gauge.tsx:56`.
 
+- [marketing] `ServiceHero` lives under
+  `app/[locale]/(public)/services/_components/` but is not service-specific any
+  more: /tools/mortgage now opens with it, because the client asked for the
+  /services/manage shape, and imports it across route subtrees to get there.
+  Its two-pass gradient and the "light copy belongs to the column, not the
+  section" fix are axe-sensitive and worth exactly one copy, so copying it was
+  never an option. Promote it to `_components/marketing/` beside `SectionHead`
+  and update the four call sites — a move plus four import lines, left out of
+  the section split so that diff stayed readable.

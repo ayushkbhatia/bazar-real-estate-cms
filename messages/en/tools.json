@@ -1,6 +1,5 @@
 {
   "mortgage": {
-    "scenario": "Scenario",
     "propertyPrice": "Property price · {symbol}",
     "propertyPriceAria": "Property price in {currency}",
     "propertyPriceSlider": "Property price slider",
@@ -25,7 +24,6 @@
     "statusUaeResident": "UAE resident",
     "statusNonResident": "Non-resident",
     "statusGccNational": "GCC national",
-    "optional": "Optional",
     "annualIncome": "Annual income · {symbol}",
     "annualIncomeAria": "Annual income in {currency}",
     "affordabilityHelp": "For affordability check · DBR <{cap}% guideline",
@@ -43,8 +41,6 @@
     "totalToPay": "Total to be paid",
     "totalInterest": "Total interest",
     "principalShare": "Principal share",
-    "cashEyebrow": "True cash to close",
-    "cashHeading": "What you actually wire",
     "cashTotal": "Total cash needed at close",
     "cashPctOfPrice": "{pct} of price",
     "cashPegNote": "Statutory fees — DLD transfer, trustee office, NOC, valuation — are set in AED. Figures here convert at the fixed 3.6725 AED/USD peg, so they are exact, not indicative.",
@@ -67,15 +63,11 @@
       "property_valuation": "Bank-selected",
       "bazar_advisory": "Capped"
     },
-    "amortEyebrow": "Amortization · {years} years",
-    "amortHeading": "How interest tapers",
     "amortPrincipal": "Principal",
     "amortInterest": "Interest",
     "amortAria": "Amortization chart",
     "amortEmpty": "Enter a loan amount and term to see the schedule.",
     "amortYear": "Y{year}",
-    "compareEyebrow": "Compare scenarios",
-    "compareHeading": "What if you change one variable?",
     "scenarioCurrent": "Current",
     "scenarioMoreUpfront": "More upfront",
     "scenarioShorterTerm": "Shorter term",
@@ -93,7 +85,8 @@
     "pdfSummary": "PDF summary",
     "pdfGenerating": "Generating…",
     "pdfDownloaded": "Mortgage scenario PDF downloaded.",
-    "pdfFailed": "Could not generate PDF."
+    "pdfFailed": "Could not generate PDF.",
+    "dbrEmpty": "Add your annual income above and the gauge will show where you land."
   },
   "valuation": {
     "eyebrow": "For owners considering selling",
