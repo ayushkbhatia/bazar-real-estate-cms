@@ -12,13 +12,22 @@ import { Faq } from "../_components/marketing/faq";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { faqPairs, list, statPairs, str } from "@/lib/master-pages";
 import { chipLines } from "@/lib/master-pages/text";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
-export const metadata: Metadata = {
-  title: "Services · Bazar Real Estate",
-  description:
-    "Buy, sell, rent, manage, or finance — every service is backed by over 20 years of UAE market experience and a single, senior point of contact.",
-  alternates: { canonical: "/services" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("services", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/services" },
+  });
+}
 
 export const revalidate = 300;
 

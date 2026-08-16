@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { uuidLikeOrEmpty } from "@/lib/uuid";
+import { SEO_DESCRIPTION_MAX, SEO_TITLE_MAX } from "./seo";
 
 /**
  * Area records — the catalogue rows behind `/areas/<slug>` guides.
@@ -58,8 +59,14 @@ export const areaEditSchema = areaCreateSchema.extend({
   name_ar: z.string().max(180).nullable().optional(),
   description: z.string().max(2000).nullable().optional(),
   description_ar: z.string().max(3000).nullable().optional(),
-  meta_title: z.string().max(70).nullable().optional(),
-  meta_description: z.string().max(180).nullable().optional(),
+  // Shared with the Search appearance card, which writes the same
+  // `areas.seo_meta` bag — two caps on one column is how they drift apart.
+  meta_title: z.string().max(SEO_TITLE_MAX).nullable().optional(),
+  meta_description: z
+    .string()
+    .max(SEO_DESCRIPTION_MAX)
+    .nullable()
+    .optional(),
   lat: z.number().min(-90).max(90).nullable().optional(),
   lng: z.number().min(-180).max(180).nullable().optional(),
 });

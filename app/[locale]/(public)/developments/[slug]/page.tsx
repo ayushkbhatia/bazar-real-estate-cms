@@ -90,7 +90,14 @@ export async function generateMetadata({
   const d = await getPublishedDevelopmentBySlug(slug);
   if (!d) return { title: "Development not found" };
 
+  // CMS first, then the derivations this page has always used. The fallbacks
+  // are unchanged, so a project nobody has given a search appearance to
+  // publishes exactly what it published before. Already folded to the request
+  // locale by the query — see DevelopmentDetail.seo.
+  const { meta_title, meta_description } = d.seo;
+
   const description =
+    meta_description ??
     d.description ??
     `${d.name} by ${d.developer?.name ?? "Bazar"} — handover ${quarterLabel(d.handover_date)}`;
 
@@ -100,7 +107,11 @@ export async function generateMetadata({
     : undefined;
 
   return {
-    title: `${d.name} · ${d.developer?.name ?? "Off-plan"}`,
+    // Absolute when authored, so what the editor typed is what ships — the
+    // CMS preview shows it untemplated and the two have to agree.
+    title: meta_title
+      ? { absolute: meta_title }
+      : `${d.name} · ${d.developer?.name ?? "Off-plan"}`,
     description,
     alternates: { canonical },
     openGraph: {

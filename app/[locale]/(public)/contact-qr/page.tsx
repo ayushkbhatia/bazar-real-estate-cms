@@ -9,13 +9,22 @@ import { list, str } from "@/lib/master-pages";
 import { ContactCard } from "./_components/contact-card";
 import { loadContactQrContent } from "./_content";
 import { bukra } from "./_fonts";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
-export const metadata: Metadata = {
-  title: "Contact Bazar Real Estate",
-  description:
-    "You've scanned our code — save Bazar Real Estate to your phone in one tap, or call, WhatsApp or email an advisor in Abu Dhabi.",
-  alternates: { canonical: "/contact-qr" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("contact-qr", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/contact-qr" },
+  });
+}
 
 export const revalidate = 300;
 

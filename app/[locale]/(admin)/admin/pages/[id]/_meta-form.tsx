@@ -9,10 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updatePage } from "./_actions";
+import { SearchResultPreview } from "../../_fields/search-appearance";
 
 type Props = {
   pageId: string;
   initial: PageEditInput;
+  /** What the page publishes when meta title is blank, template applied. */
+  fallbackTitle: string;
+  faviconUrl: string | null;
+  brandName: string;
 };
 
 function FieldError({ message }: { message?: string }) {
@@ -22,7 +27,13 @@ function FieldError({ message }: { message?: string }) {
   );
 }
 
-export function PageMetaForm({ pageId, initial }: Props) {
+export function PageMetaForm({
+  pageId,
+  initial,
+  fallbackTitle,
+  faviconUrl,
+  brandName,
+}: Props) {
   const [pending, startTransition] = useTransition();
   const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
 
@@ -90,6 +101,22 @@ export function PageMetaForm({ pageId, initial }: Props) {
           />
           <FieldError message={errors.meta_description?.message} />
         </div>
+        {/*
+          The rehearsal, not decoration: the two fields above are the only copy
+          on the page whose audience never sees the page. It follows the slug
+          field live, so renaming the page updates the result URL as you type.
+          /pages/[slug] publishes no description fallback at all, which is why
+          leaving that field blank shows a warning rather than grey text.
+        */}
+        <SearchResultPreview
+          path={`/pages/${watch("slug") || "your-slug"}`}
+          title={watch("meta_title") ?? ""}
+          description={watch("meta_description") ?? ""}
+          fallbackTitle={fallbackTitle}
+          fallbackDescription={null}
+          faviconUrl={faviconUrl}
+          brandName={brandName}
+        />
       </div>
       <div className="flex items-center justify-end gap-3">
         <Button type="submit" disabled={pending}>

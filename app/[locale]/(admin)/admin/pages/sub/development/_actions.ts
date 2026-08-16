@@ -18,6 +18,11 @@ import {
 } from "@/lib/master-pages/subpages";
 import { developmentContentSchema } from "@/lib/schemas/development-content";
 import { developmentHeroFactsPartialSchema } from "@/lib/schemas/development";
+import {
+  mergeSearchAppearance,
+  searchAppearanceSchema,
+  type SearchAppearanceInput,
+} from "@/lib/schemas/seo";
 
 const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
 /**
@@ -555,4 +560,75 @@ export async function deleteDevelopment(
   revalidatePath("/admin/pages/sub/development");
   revalidateLocalised("/developments");
   return { status: "ok", message: `Deleted "${record.name}".` };
+}
+
+/**
+ * The search title and description for a project page.
+ *
+ * `/developments/[slug]` used to derive both from the record — the name for the
+ * title, the marketing description or a synthesised "handover Q3 2027" string
+ * for the snippet — with no way to say anything else. Those derivations are
+ * still the fallback; this only adds the override.
+ *
+ * Its own action rather than a field on the content card, for the same reason
+ * the master pages split theirs out: the content card writes `meta` wholesale,
+ * and an SEO save that had to carry the feature blocks with it would let two
+ * editors on two cards overwrite each other.
+ */
+export async function saveDevelopmentSeo(
+  slug: string,
+  raw: SearchAppearanceInput,
+): Promise<SubPageResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PAGE_ROLES);
+
+  const { record, message } = await loadRecord(slug);
+  if (!record)
+    return { status: "error", message: message ?? "Development not found." };
+
+  const parsed = searchAppearanceSchema.safeParse(raw);
+  if (!parsed.success)
+    return {
+      status: "invalid",
+      message: "Fix the highlighted fields before saving.",
+      issues: parsed.error.issues.map(
+        (i) => `${i.path.join(".") || "field"}: ${i.message}`,
+      ),
+    };
+
+  const supabase = await createSupabaseServerClient();
+  const { data: existing } = await supabase
+    .from("developments")
+    .select("seo")
+    .eq("id", record.id)
+    .maybeSingle();
+
+  const { data, error } = await supabase
+    .from("developments")
+    .update({
+      seo: mergeSearchAppearance(existing?.seo, parsed.data) as unknown as never,
+    })
+    .eq("id", record.id)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { status: "error", message: error.message };
+  if (!data)
+    return {
+      status: "error",
+      message: "Not saved — your account may not be allowed to edit this.",
+    };
+
+  await logAudit({
+    action: "development.seo_update",
+    target_kind: "development",
+    target_id: record.id,
+    before: null,
+    after: parsed.data,
+  });
+
+  revalidateLocalised(`/developments/${record.slug}`);
+  revalidatePath(`/admin/pages/sub/development/${record.slug}`);
+  return { status: "ok", message: "Search appearance saved." };
 }

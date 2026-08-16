@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SEO_DESCRIPTION_MAX, SEO_TITLE_MAX } from "./seo";
 
 const slugRegex = /^[a-z0-9][a-z0-9-/]*[a-z0-9]$/;
 
@@ -172,8 +173,14 @@ export const pageEditSchema = z.object({
     .min(2)
     .max(140)
     .regex(slugRegex, "Lowercase letters, digits, slashes, and hyphens only"),
-  meta_title: z.string().max(70).nullable().optional(),
-  meta_description: z.string().max(180).nullable().optional(),
+  // Shared with the Search appearance card, which writes the same
+  // `pages.seo` bag — two caps on one column is how they drift apart.
+  meta_title: z.string().max(SEO_TITLE_MAX).nullable().optional(),
+  meta_description: z
+    .string()
+    .max(SEO_DESCRIPTION_MAX)
+    .nullable()
+    .optional(),
 });
 
 export type PageEditInput = z.infer<typeof pageEditSchema>;

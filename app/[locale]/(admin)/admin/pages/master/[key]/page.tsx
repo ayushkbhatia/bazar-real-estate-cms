@@ -21,6 +21,14 @@ import {
   MARQUEE_SLUGS,
 } from "@/app/[locale]/(public)/areas/_components/area-cards";
 import { MasterPageEditor } from "./_editor";
+import { SearchAppearanceCard } from "../../../_fields/search-appearance";
+import { MASTER_PAGE_SEO_DEFAULTS } from "@/lib/master-pages/seo-defaults";
+import {
+  getMasterPageSearchAppearance,
+  getSearchPreviewChrome,
+  withTitleTemplate,
+} from "@/lib/queries/search-appearance";
+import { saveMasterPageSeo } from "./_actions";
 import type { MediaOption, Seeds } from "../../../_fields/types";
 
 export const dynamic = "force-dynamic";
@@ -57,7 +65,8 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
   const def = getMasterPage(key);
   if (!def) notFound();
 
-  const [content, media, areas, developments, properties] = await Promise.all([
+  const [content, media, areas, developments, properties, seo, chrome] =
+    await Promise.all([
     // Bilingual: the editor needs both sides of every field at once.
     getMasterPageContent(key, "bilingual"),
     fetchMedia(),
@@ -65,7 +74,11 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
     listPublishedDevelopments(),
     // Only the home page offers a listings picker; skip the query elsewhere.
     key === "home" ? listPropertyOptions() : Promise.resolve([]),
+    getMasterPageSearchAppearance(def.key),
+    getSearchPreviewChrome(),
   ]);
+
+  const seoDefaults = MASTER_PAGE_SEO_DEFAULTS[def.key];
 
   // What a seedable list can be filled from. `current` mirrors what the live
   // page renders today — same source, same order, same cut — so "load what's
@@ -175,6 +188,28 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
             enabled: s.enabled,
             values: s.values,
           }))}
+        />
+        {/*
+          Below the sections rather than above them. The sections are what an
+          editor came here to change; the search appearance is a once-a-quarter
+          edit, and putting it first would push the page's actual content below
+          the fold on every visit.
+        */}
+        <SearchAppearanceCard
+          initial={seo}
+          path={def.path}
+          fallbackTitle={
+            seoDefaults.titleIsAbsolute
+              ? seoDefaults.title
+              : withTitleTemplate(seoDefaults.title)
+          }
+          fallbackDescription={seoDefaults.description}
+          faviconUrl={chrome.faviconUrl}
+          brandName={chrome.brandName}
+          /* `.bind` rather than an inline arrow: a plain function cannot
+             cross the server/client boundary, and a bound server action can.
+             Same constraint the sub-page editors document for their save. */
+          onSave={saveMasterPageSeo.bind(null, def.key)}
         />
       </div>
     </CmsShell>

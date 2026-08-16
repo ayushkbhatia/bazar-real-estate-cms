@@ -22,13 +22,22 @@ import {
   type ImageValue,
 } from "@/lib/master-pages";
 import { chipLines, headlineParts } from "@/lib/master-pages/text";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
-export const metadata: Metadata = {
-  title: "Areas in Abu Dhabi",
-  description:
-    "From waterfront destinations to family-friendly neighbourhoods, discover the Abu Dhabi areas that define living and investing in the capital.",
-  alternates: { canonical: "/areas" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("areas", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/areas" },
+  });
+}
 
 export const revalidate = 300;
 

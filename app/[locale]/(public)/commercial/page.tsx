@@ -9,15 +9,24 @@ import { listingRowToCard } from "../_components/marketing/map-listing";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
 import { buyRentContent } from "../_components/marketing/master-content";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "Commercial Property in Abu Dhabi",
-  description:
-    "Office, retail, and industrial leases and freeholds across Abu Dhabi's business districts — advised on whole cost of occupancy, not headline rent.",
-  alternates: { canonical: "/commercial" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("commercial", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/commercial" },
+  });
+}
 
 // Old deep-links (/commercial?type=office) are redirected to /commercial/search
 // by proxy.ts. Deliberately no `searchParams` here: reading it — even just to

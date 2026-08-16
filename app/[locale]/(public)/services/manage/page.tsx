@@ -14,13 +14,22 @@ import { ServiceCtaBand } from "../_components/service-cta-band";
 import { ServiceValueGrid } from "../_components/service-value-grid";
 import { ServiceLeadForm } from "../_components/service-lead-form";
 import { mediaCards, stepPairs, valueCards } from "../_components/service-content";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
-export const metadata: Metadata = {
-  title: "Property Management in Abu Dhabi | Bazar",
-  description:
-    "Professional property management focused on protecting your property, supporting tenants and ensuring efficient day-to-day operations. Tell us about your property and a Bazar consultant will be in touch.",
-  alternates: { canonical: "/services/manage" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("manage", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/services/manage" },
+  });
+}
 
 // The location field's suggestions come from the live area index, so the page
 // is static-with-refresh rather than frozen at build time.

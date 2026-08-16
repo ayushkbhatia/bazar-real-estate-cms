@@ -27,13 +27,22 @@ import {
 } from "@/lib/master-pages";
 import { OffplanMapExplorer } from "../_components/off-plan/offplan-map-explorer";
 import { ProjectInterestForm } from "../_components/off-plan/project-interest-form";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
-export const metadata: Metadata = {
-  title: "New Projects · Off-plan in Abu Dhabi",
-  description:
-    "Explore the latest off-plan developments across Abu Dhabi's top communities — from waterfront apartments to branded residences.",
-  alternates: { canonical: "/off-plan" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("off-plan", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/off-plan" },
+  });
+}
 
 export const revalidate = 300;
 

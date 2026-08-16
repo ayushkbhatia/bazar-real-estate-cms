@@ -18,6 +18,7 @@ import {
 } from "@/lib/page-builder";
 import type { MediaOption, Seeds } from "../../_fields/types";
 import { LandingMetaCard } from "./_meta-card";
+import { getSearchPreviewChrome } from "@/lib/queries/search-appearance";
 import { BlockEditor } from "./_block-editor";
 import { LandingPublishCard } from "./_publish-card";
 
@@ -52,13 +53,15 @@ export default async function LandingEditorPage({ params }: PageProps) {
   if (!page) notFound();
 
   const supabase = await createSupabaseServerClient();
-  const [media, areas, developments, properties, forms] = await Promise.all([
-    fetchMedia(),
-    listAreasWithCounts(),
-    listPublishedDevelopments(),
-    listPropertyOptions(),
-    listFormsForAdmin(supabase),
-  ]);
+  const [media, areas, developments, properties, forms, chrome] =
+    await Promise.all([
+      fetchMedia(),
+      listAreasWithCounts(),
+      listPublishedDevelopments(),
+      listPropertyOptions(),
+      listFormsForAdmin(supabase),
+      getSearchPreviewChrome(),
+    ]);
 
   const areaSeed = areas.map((a) => ({
     name: a.name,
@@ -170,6 +173,8 @@ export default async function LandingEditorPage({ params }: PageProps) {
                 : "",
             noindex: page.noindex,
           }}
+          faviconUrl={chrome.faviconUrl}
+          brandName={chrome.brandName}
         />
 
         <BlockEditor

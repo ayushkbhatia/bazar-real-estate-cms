@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import * as React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -29,8 +30,25 @@ import { getForm } from "@/lib/queries/forms";
 import { listPropertiesByReference } from "@/lib/queries/featured-properties";
 import { HOME_FEATURED_LISTING_COUNT } from "./_components/home/section-copy";
 import { faqPairs, img, list, statPairs, str } from "@/lib/master-pages";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
 export const revalidate = 60;
+
+/**
+ * The home page never declared its own metadata — it inherited the root
+ * layout's `title.default` and `description`, which is exactly why it was the
+ * page an editor could not touch. Those two strings are now the fallback in
+ * MASTER_PAGE_SEO_DEFAULTS and the CMS can override them; with nothing saved
+ * the head is byte-identical to what it was.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  return masterPageMetadata("home", asLocale((await params).locale));
+}
 
 const VALID_VARIANTS: HeroVariant[] = [
   "fullbleed",

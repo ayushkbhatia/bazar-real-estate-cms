@@ -25,6 +25,13 @@ import { listDevelopmentUnitsForAdmin } from "@/lib/queries/developments";
 import { saveDevelopmentPage, resetDevelopmentPage } from "../_actions";
 import { PublishCard } from "../../../../developments/_publish-card";
 import { DeleteDevelopmentCard } from "./_delete-card";
+import { SearchAppearanceCard } from "../../../../_fields/search-appearance";
+import { saveDevelopmentSeo } from "../_actions";
+import {
+  getSearchPreviewChrome,
+  withTitleTemplate,
+} from "@/lib/queries/search-appearance";
+import { readSearchAppearance } from "@/lib/schemas/seo";
 import { getStaffRole } from "@/lib/auth";
 import { evaluateDevelopmentHeroFacts } from "@/lib/schemas/development";
 
@@ -104,7 +111,7 @@ async function fetchDevelopment(slug: string) {
   const { data } = await supabase
     .from("developments")
     .select(
-      "id, name, slug, status, published_at, hero_image_id, masterplan_id, payment_plan, meta, lead_advisor_id, starting_price, bedrooms_text, total_units, handover_date",
+      "id, name, slug, status, published_at, hero_image_id, masterplan_id, payment_plan, meta, lead_advisor_id, starting_price, bedrooms_text, total_units, handover_date, description, seo, developers:developer_id(name)",
     )
     .eq("slug", slug)
     .maybeSingle();
@@ -122,7 +129,7 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
   const development = await fetchDevelopment(slug);
   if (!development) notFound();
 
-  const [content, media, options, role, links, unitTypes, units] =
+  const [content, media, options, role, links, unitTypes, units, chrome] =
     await Promise.all([
       getDevelopmentPageContent({
         name: development.name,
@@ -134,7 +141,18 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
       fetchLinkCounts(development.id),
       listUnitTypesForAdmin(development.id),
       listDevelopmentUnitsForAdmin(development.id),
+      getSearchPreviewChrome(),
     ]);
+
+  // PostgREST returns an embedded to-one join as an object here, but its
+  // generated types allow an array; normalise before reading the name.
+  const joined = development.developers as
+    | { name: string }
+    | { name: string }[]
+    | null;
+  const developerName = Array.isArray(joined)
+    ? (joined[0]?.name ?? null)
+    : (joined?.name ?? null);
 
   // The layout picker offers this project's plans, flattened out of the unit
   // types they hang under and labelled with the type so two "Ground floor"
@@ -312,6 +330,28 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
             }))}
           />
         </div>
+
+        {/*
+          The fallbacks reproduce what generateMetadata on
+          /developments/[slug] derives when nothing is saved: the project name
+          against its developer, plus the root layout's title template, and the
+          marketing description. The developer is joined into the select above
+          purely so this preview can be accurate — a preview that showed
+          "Off-plan" where the live page shows "Aldar" would send an editor
+          rewriting a title that was already fine.
+        */}
+        <SearchAppearanceCard
+          initial={readSearchAppearance(development.seo)}
+          path={`/developments/${development.slug}`}
+          fallbackTitle={withTitleTemplate(
+            `${development.name} · ${developerName ?? "Off-plan"}`,
+          )}
+          fallbackDescription={development.description}
+          faviconUrl={chrome.faviconUrl}
+          brandName={chrome.brandName}
+          onSave={saveDevelopmentSeo.bind(null, development.slug)}
+          description="The title and description Google shows for this project page. Leave blank to keep what the page derives from the project record."
+        />
 
         {/* Last on the page on purpose — it is the one thing here that can't
             be undone, so it should not sit next to anything routine. */}

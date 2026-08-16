@@ -12,6 +12,8 @@ import { HqMapCanvas } from "../contact/_components/hq-map-canvas";
 import { PartnerEcosystemSection } from "../_components/partner-ecosystem-section";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { img, list, str, type ImageValue } from "@/lib/master-pages";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
 // Bazar HQ — Al Bateen, Abu Dhabi. Same coordinate as the /contact HQ map so
 // the two location surfaces stay 1:1.
@@ -19,12 +21,19 @@ const HQ_LAT = 24.4619;
 const HQ_LNG = 54.3487;
 const HQ_DIRECTIONS = `https://www.google.com/maps/dir/?api=1&destination=${HQ_LAT},${HQ_LNG}`;
 
-export const metadata: Metadata = {
-  title: "About Bazar Real Estate",
-  description:
-    "A trusted name in UAE real estate since 2005 — over 20 years of trust, transparency, and proven market experience across Abu Dhabi and the wider UAE.",
-  alternates: { canonical: "/about" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("about", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/about" },
+  });
+}
 
 export const revalidate = 300;
 

@@ -7,18 +7,27 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { fluid } from "../_components/marketing/fluid";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "Scan to contact Bazar Real Estate",
-  description:
-    "A scannable code that opens Bazar Real Estate's contact page — for office screens, printed cards, and window displays.",
-  alternates: { canonical: "/qr" },
-  // A display surface, not a landing page: it must not compete with /contact
-  // in search results.
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("qr", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/qr" },
+    // A display surface, not a landing page: it must not compete with /contact
+    // in search results.
+    robots: { index: false, follow: false },
+  });
+}
 
 /**
  * The address the code encodes when the field is blank.

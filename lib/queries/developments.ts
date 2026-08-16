@@ -1,6 +1,10 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
+import {
+  localiseSearchAppearance,
+  readSearchAppearance,
+} from "@/lib/schemas/seo";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
@@ -74,6 +78,18 @@ export type DevelopmentDetail = DevelopmentIndexRow & {
   master_plan: MasterPlan;
   amenities: string[];
   escrow_account: string | null;
+  /**
+   * The CMS search appearance, edited at
+   * /admin/pages/sub/development/[slug]. `DETAIL_FIELDS` has always selected
+   * the column; it was simply never surfaced, so nothing could read it.
+   *
+   * Folded to the request locale here, not handed over as the raw bag. Every
+   * shape leaving this module is post-fold — `lib/i18n/fold-harness.ts` fails
+   * the build if an `_ar` key survives into one — and folding at the shaper
+   * means the page reads two strings instead of re-deciding what Arabic
+   * fallback means.
+   */
+  seo: { meta_title: string | null; meta_description: string | null };
   developer_id: string | null;
   area_id: string | null;
   developer_profile: {
@@ -245,6 +261,7 @@ function shapeDetail(
     master_plan: masterPlan.success ? masterPlan.data : {},
     amenities: Array.isArray(raw.amenities) ? (raw.amenities as string[]) : [],
     escrow_account: (raw.escrow_account as string | null) ?? null,
+    seo: localiseSearchAppearance(readSearchAppearance(raw.seo), locale),
     developer_id: (raw.developer_id as string | null) ?? null,
     lead_advisor_id: (raw.lead_advisor_id as string | null) ?? null,
     area_id: (raw.area_id as string | null) ?? null,
