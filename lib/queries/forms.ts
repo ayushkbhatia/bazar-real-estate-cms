@@ -61,6 +61,10 @@ function parseOptions(value: Json | null): FormOption[] {
     if (!label) continue;
     out.push({
       label,
+      // Rebuilt key by key, so anything not named here is destroyed. That is
+      // exactly how the four field-level twins were lost (#390) — this one is
+      // named on purpose.
+      label_ar: typeof record.label_ar === "string" ? record.label_ar : null,
       value:
         typeof record.value === "string" && record.value ? record.value : label,
       intent: typeof record.intent === "string" ? record.intent : null,

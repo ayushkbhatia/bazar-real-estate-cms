@@ -10,6 +10,7 @@ import { getFormDef } from "@/lib/forms/registry";
 import { defaultForm } from "@/lib/forms/resolve";
 import { formSaveSchema, type FormSaveInput } from "@/lib/schemas/form";
 import type { FormFieldDef } from "@/lib/forms/types";
+import { FORM_COPY_KEYS, copyArKey } from "@/lib/forms/copy-keys";
 
 const FORM_ROLES = ["admin", "editor", "marketing"] as const;
 
@@ -109,16 +110,30 @@ export async function saveForm(raw: FormSaveInput): Promise<SaveFormResult> {
     };
   }
 
+  /*
+   * Built from `FORM_COPY_KEYS`, not hand-listed.
+   *
+   * This object REPLACES the stored bag rather than merging into it, so any key
+   * missing here is destroyed on every save. docs/I18N.md names that as the
+   * trap; deriving the list is what stops it being one, and it is why the seven
+   * Arabic twins arrived without seven more chances to forget.
+   */
   const copyPayload = editsCopy
-    ? {
-        title: orNull(input.copy.title),
-        subtitle: orNull(input.copy.subtitle),
-        submit_label: input.copy.submit_label.trim(),
-        pending_label: input.copy.pending_label.trim(),
-        success_title: input.copy.success_title.trim(),
-        success_body: input.copy.success_body.trim(),
-        consent_note: orNull(input.copy.consent_note),
-      }
+    ? Object.fromEntries(
+        FORM_COPY_KEYS.flatMap((k) => {
+          const value = (input.copy as Record<string, unknown>)[k.key];
+          const arabic = (input.copy as Record<string, unknown>)[copyArKey(k.key)];
+          return [
+            [
+              k.key,
+              k.optional
+                ? orNull(value as string | null)
+                : String(value ?? "").trim(),
+            ],
+            [copyArKey(k.key), orNull((arabic ?? null) as string | null)],
+          ];
+        }),
+      )
     : ((existing?.copy ?? {}) as Record<string, unknown>);
 
   const row = {

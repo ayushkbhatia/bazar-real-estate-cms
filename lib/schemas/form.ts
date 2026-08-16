@@ -15,6 +15,12 @@ import {
   type FormFieldType,
 } from "@/lib/forms/types";
 import { FORM_OPTION_SOURCES } from "@/lib/forms/types";
+import {
+  FORM_COPY_KEYS,
+  copyArKey,
+  copyArMax,
+  type FormCopyKey,
+} from "@/lib/forms/copy-keys";
 
 export const MAX_FORM_FIELDS = 30;
 export const MAX_FIELD_OPTIONS = 24;
@@ -24,6 +30,10 @@ export const FIELD_KEY_RE = /^[a-z][a-z0-9_]*$/;
 
 const optionSchema = z.object({
   label: z.string().trim().min(1, "An option needs a label").max(80),
+  // 120 = 1.5x the English cap, matching `arMax`. Optional and nullable
+  // because a form with no Arabic renders its English, which is the designed
+  // fallback rather than a failure.
+  label_ar: z.string().trim().max(120).nullable().optional(),
   value: z.string().trim().max(80),
   intent: z.string().trim().max(20).nullable().optional(),
 });
@@ -81,15 +91,42 @@ export const formFieldSchema = z.object({
 
 export type FormFieldSaveInput = z.infer<typeof formFieldSchema>;
 
-export const formCopySchema = z.object({
-  title: z.string().trim().max(160).nullable(),
-  subtitle: z.string().trim().max(400).nullable(),
-  submit_label: z.string().trim().min(1, "The button needs a label").max(60),
-  pending_label: z.string().trim().min(1, "The sending state needs a label").max(60),
-  success_title: z.string().trim().min(1, "The confirmation needs a heading").max(120),
-  success_body: z.string().trim().min(1, "The confirmation needs a body").max(600),
-  consent_note: z.string().trim().max(300).nullable(),
-});
+/**
+ * Built from `FORM_COPY_KEYS` rather than listed again.
+ *
+ * zod strips unknown keys, so this schema is one of the five places that had to
+ * learn about Arabic before an editor's `title_ar` could survive a save — and a
+ * hand-written list here would be the easiest of the five to forget, because
+ * forgetting it fails silently rather than loudly.
+ */
+export const formCopySchema = z.object(
+  Object.fromEntries(
+    FORM_COPY_KEYS.flatMap((k) => {
+      const english = k.optional
+        ? z.string().trim().max(k.max).nullable()
+        : z
+            .string()
+            .trim()
+            .min(1, (k as { blank?: string }).blank ?? "This is required")
+            .max(k.max);
+      return [
+        [k.key, english],
+        [
+          copyArKey(k.key),
+          z.string().trim().max(copyArMax(k.max)).nullable().optional(),
+        ],
+      ];
+    }),
+  ) as {
+    [K in FormCopyKey]: z.ZodType<string | null>;
+  } & {
+    // `ZodOptional` rather than `ZodType<… | undefined>`: the first makes the
+    // KEY optional in the inferred type, the second makes a required key whose
+    // value may be undefined. The editor supplies Arabic only when a form has
+    // any, so it has to be the former.
+    [K in `${FormCopyKey}_ar`]: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+  },
+);
 
 export const formSaveSchema = z
   .object({

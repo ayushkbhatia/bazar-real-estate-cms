@@ -20,6 +20,7 @@
  */
 
 import { getFormDef } from "./registry";
+import { FORM_COPY_KEYS, copyArKey } from "./copy-keys";
 import type {
   FormCopy,
   FormDef,
@@ -33,16 +34,24 @@ export type StoredField = FormFieldDef & { position: number };
 
 function mergeCopy(def: FormDef, stored: Partial<FormCopy> | null): FormCopy {
   if (!stored) return { ...def.copy };
-  const out = { ...def.copy };
-  for (const key of Object.keys(out) as (keyof FormCopy)[]) {
-    const value = stored[key];
-    // `undefined` means "never saved" and falls back; an explicit null means
-    // the editor cleared an optional string, and must survive the merge.
-    if (value !== undefined) {
-      (out as Record<string, unknown>)[key] = value;
+  const out: Record<string, unknown> = { ...def.copy };
+  /*
+   * Iterates FORM_COPY_KEYS rather than the registry defaults.
+   *
+   * The old loop was over `Object.keys(out)` — the seven English keys the
+   * registry literal happens to carry — so a stored `title_ar` was silently
+   * discarded on every read. The Arabic had storage and an editor and no way
+   * to reach a renderer.
+   */
+  for (const { key } of FORM_COPY_KEYS) {
+    for (const k of [key, copyArKey(key)] as const) {
+      const value = (stored as Record<string, unknown>)[k];
+      // `undefined` means "never saved" and falls back; an explicit null means
+      // the editor cleared an optional string, and must survive the merge.
+      if (value !== undefined) out[k] = value;
     }
   }
-  return out;
+  return out as FormCopy;
 }
 
 function mergeFields(
