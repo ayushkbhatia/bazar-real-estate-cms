@@ -89,14 +89,38 @@ function parseCondition(value: Json | null): FormFieldCondition | null {
   return { field, values };
 }
 
+/**
+ * One database row to the shape `resolveForm` and `localiseDeep` expect.
+ *
+ * The four `_ar` columns are the whole reason this function is worth a comment.
+ * They were selected in `FIELD_COLUMNS` and never mapped here, which made every
+ * piece of field-level Arabic in the product unreachable: migration 0104 added
+ * the columns, `_actions.ts` writes them, `localiseFields` below exists purely
+ * to fold them — and `localiseDeep` had nothing to fold, because the twins were
+ * dropped one step earlier.
+ *
+ * It was silent in both directions and destructive on the second save. The
+ * editor reads through this same function, so it rendered blank Arabic inputs
+ * over stored content; saving that form then wrote the blanks back and the
+ * Arabic was gone for good.
+ *
+ * TypeScript could not catch it: `StoredField` is `FormFieldDef & {position}`,
+ * and all four twins are declared optional on `FormFieldDef` — correctly, since
+ * a form need not have Arabic — so omitting them is well-typed. `forms-arabic.
+ * test.ts` is the guard instead, and it is written against `FIELD_COLUMNS`
+ * rather than against these four names, so a fifth twin cannot repeat this.
+ */
 function toStoredField(row: FieldRow): StoredField {
   return {
     key: row.key,
     label: row.label,
+    label_ar: row.label_ar,
     type: row.type as FormFieldType,
     mapping: row.mapping as FormFieldMapping,
     placeholder: row.placeholder,
+    placeholder_ar: row.placeholder_ar,
     help: row.help,
+    help_ar: row.help_ar,
     required: row.required,
     enabled: row.enabled,
     width: row.width === "half" ? "half" : "full",
@@ -107,6 +131,7 @@ function toStoredField(row: FieldRow): StoredField {
     max: row.max_value,
     step: row.step,
     unit: row.unit,
+    unit_ar: row.unit_ar,
     showWhen: parseCondition(row.show_when),
     locked: row.locked,
     position: row.position,
