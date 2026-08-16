@@ -2858,6 +2858,7 @@ export type Database = {
           lead_routing: Json
           logo_style: string
           logo_url: string | null
+          mortgage: Json
           orn: string | null
           updated_at: string
           updated_by: string | null
@@ -2879,6 +2880,7 @@ export type Database = {
           lead_routing?: Json
           logo_style?: string
           logo_url?: string | null
+          mortgage?: Json
           orn?: string | null
           updated_at?: string
           updated_by?: string | null
@@ -2900,6 +2902,7 @@ export type Database = {
           lead_routing?: Json
           logo_style?: string
           logo_url?: string | null
+          mortgage?: Json
           orn?: string | null
           updated_at?: string
           updated_by?: string | null

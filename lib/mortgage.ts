@@ -165,54 +165,108 @@ export function amortizationByYear(inputs: MortgageInputs): AmortYear[] {
  * Cash to close
  * ───────────────────────────────────────────────────────────────*/
 
-const STATUTORY = {
-  /** Trustee office fee — flat in AED, sometimes 4,000 in Dubai but the
-   *  4,200 figure matches what Abu Dhabi DARI/DMT charges in practice. */
-  trusteeOfficeFeeAed: 4_200,
+/**
+ * Every figure the model is not given by the visitor.
+ *
+ * These were `const STATUTORY`, a `5_000_000` literal inside
+ * `minDownPaymentPct` and two thresholds inside `affordability` — three
+ * hardcoded sets that an admin now edits under Settings → Mortgage. They are
+ * one type rather than three because they are read together, saved together
+ * and wrong together: a DLD rate that moved and an LTV tier that moved are the
+ * same afternoon's work at the desk.
+ *
+ * Percentages are FRACTIONS here (0.04 = 4%), matching the rest of this file.
+ * The settings form types whole percents and converts at its boundary — a
+ * schema that stored fractions would invite an editor to type `4` and quietly
+ * charge four hundred percent.
+ */
+export type MortgageAssumptions = {
+  /** Trustee office fee — flat in AED. */
+  trusteeOfficeFeeAed: number;
   /** NOC and misc disbursements, rough flat estimate. */
-  nocMiscAed: 5_800,
+  nocMiscAed: number;
   /** Property valuation fee, bank-selected. */
-  propertyValuationAed: 3_150,
+  propertyValuationAed: number;
   /** DLD transfer fee as a fraction of price. */
-  dldTransferPct: 0.04,
+  dldTransferPct: number;
   /** DLD mortgage registration as a fraction of loan principal. */
+  mortgageRegistrationPct: number;
+  /** Bank arrangement fee as a fraction of loan principal. */
+  bankArrangementPct: number;
+  /** Bazar advisory as a fraction of price. */
+  bazarAdvisoryPct: number;
+  /** Price at or above which the higher Central Bank LTV tier applies. */
+  ltvHighTierPriceAed: number;
+  /** Minimum deposit for a resident or GCC national, below the tier. */
+  minDownResidentPct: number;
+  /** …and at or above it. */
+  minDownResidentHighPct: number;
+  /** Minimum deposit for a non-resident, per most lenders. */
+  minDownNonResidentPct: number;
+  /** DBR at or below which the gauge reads "comfortable". */
+  dbrComfortablePct: number;
+  /** DBR above which it reads "over" — the Central Bank cap. */
+  dbrMaxPct: number;
+};
+
+/**
+ * The figures the tool shipped with, and what it falls back to whenever the
+ * stored settings are absent, unreadable or fail validation. Every one of
+ * these was a literal in this file before Settings → Mortgage existed, so an
+ * un-edited install computes exactly what it always did.
+ */
+export const DEFAULT_MORTGAGE_ASSUMPTIONS: MortgageAssumptions = {
+  // Sometimes 4,000 in Dubai, but 4,200 matches what Abu Dhabi DARI/DMT
+  // charges in practice.
+  trusteeOfficeFeeAed: 4_200,
+  nocMiscAed: 5_800,
+  propertyValuationAed: 3_150,
+  dldTransferPct: 0.04,
   mortgageRegistrationPct: 0.0025,
-  /** Bank arrangement fee — negotiable; show the headline 1%. */
+  // Negotiable; show the headline 1%.
   bankArrangementPct: 0.01,
-  /** Bazar advisory — capped 1.5%. */
+  // Bazar advisory — capped 1.5%.
   bazarAdvisoryPct: 0.015,
-} as const;
+  // CB UAE rules (paraphrased):
+  //   · UAE expat (resident), first < 5M:    25%
+  //   · UAE expat (resident), first ≥ 5M:    35%
+  //   · Non-resident:                        50% (per most lenders)
+  //   · GCC national: same as UAE resident expat.
+  ltvHighTierPriceAed: 5_000_000,
+  minDownResidentPct: 0.25,
+  minDownResidentHighPct: 0.35,
+  minDownNonResidentPct: 0.5,
+  dbrComfortablePct: 0.4,
+  dbrMaxPct: 0.5,
+};
 
 /** Buyer-status-aware down payment guidance (UAE Central Bank LTV rules). */
 export function minDownPaymentPct(
   status: BuyerStatus,
   priceAed: number,
+  assumptions: MortgageAssumptions = DEFAULT_MORTGAGE_ASSUMPTIONS,
 ): number {
-  // CB UAE rules (paraphrased):
-  //   · UAE national, first property < 5M:   20%
-  //   · UAE national, first property ≥ 5M:   30%
-  //   · UAE expat (resident), first < 5M:    25%
-  //   · UAE expat (resident), first ≥ 5M:    35%
-  //   · Non-resident:                        50% (per most lenders)
-  //   · GCC national: same as UAE resident expat.
-  const highTier = priceAed >= 5_000_000;
+  const highTier = priceAed >= assumptions.ltvHighTierPriceAed;
   switch (status) {
     case "non_resident":
-      return 0.5;
+      return assumptions.minDownNonResidentPct;
     case "uae_resident":
     case "gcc_national":
-      return highTier ? 0.35 : 0.25;
+      return highTier
+        ? assumptions.minDownResidentHighPct
+        : assumptions.minDownResidentPct;
   }
 }
 
 export function cashToClose(
   inputs: MortgageInputs,
-  opts?: { advisoryPct?: number },
+  opts?: { advisoryPct?: number; assumptions?: MortgageAssumptions },
 ): CashToClose {
+  const a = opts?.assumptions ?? DEFAULT_MORTGAGE_ASSUMPTIONS;
   const downPct = clampPct(inputs.downPaymentPct);
   const downPayment = round(inputs.pricePropertyAed * downPct);
   const principal = round(inputs.pricePropertyAed - downPayment);
-  const advisoryPct = opts?.advisoryPct ?? STATUTORY.bazarAdvisoryPct;
+  const advisoryPct = opts?.advisoryPct ?? a.bazarAdvisoryPct;
 
   const lines: CashToCloseLine[] = [
     {
@@ -222,28 +276,28 @@ export function cashToClose(
     },
     {
       key: "dld_transfer",
-      pct: pct(STATUTORY.dldTransferPct),
-      amountAed: round(inputs.pricePropertyAed * STATUTORY.dldTransferPct),
+      pct: pct(a.dldTransferPct),
+      amountAed: round(inputs.pricePropertyAed * a.dldTransferPct),
     },
     {
       key: "trustee_office",
       pct: null,
-      amountAed: STATUTORY.trusteeOfficeFeeAed,
+      amountAed: a.trusteeOfficeFeeAed,
     },
     {
       key: "mortgage_registration",
-      pct: pct(STATUTORY.mortgageRegistrationPct),
-      amountAed: round(principal * STATUTORY.mortgageRegistrationPct),
+      pct: pct(a.mortgageRegistrationPct),
+      amountAed: round(principal * a.mortgageRegistrationPct),
     },
     {
       key: "bank_arrangement",
-      pct: pct(STATUTORY.bankArrangementPct),
-      amountAed: round(principal * STATUTORY.bankArrangementPct),
+      pct: pct(a.bankArrangementPct),
+      amountAed: round(principal * a.bankArrangementPct),
     },
     {
       key: "property_valuation",
       pct: null,
-      amountAed: STATUTORY.propertyValuationAed,
+      amountAed: a.propertyValuationAed,
     },
     {
       key: "bazar_advisory",
@@ -253,7 +307,7 @@ export function cashToClose(
     {
       key: "noc_misc",
       pct: null,
-      amountAed: STATUTORY.nocMiscAed,
+      amountAed: a.nocMiscAed,
     },
   ];
 
@@ -278,18 +332,21 @@ export type Affordability = {
 /**
  * Central Bank UAE caps total monthly debt servicing at 50% of monthly
  * income. We treat mortgage-alone-above-50% as "over", 40–50% as
- * "stretched", below 40% as "ok".
+ * "stretched", below 40% as "ok" — both thresholds editable under
+ * Settings → Mortgage, because the cap is a regulator's number and the
+ * comfort line is a house view.
  */
 export function affordability(
   annualIncomeAed: number,
   monthlyPaymentAed: number,
+  assumptions: MortgageAssumptions = DEFAULT_MORTGAGE_ASSUMPTIONS,
 ): Affordability | null {
   if (annualIncomeAed <= 0) return null;
   const monthlyIncome = annualIncomeAed / 12;
   const dbr = monthlyPaymentAed / monthlyIncome;
   let status: Affordability["status"];
-  if (dbr <= 0.4) status = "ok";
-  else if (dbr <= 0.5) status = "stretched";
+  if (dbr <= assumptions.dbrComfortablePct) status = "ok";
+  else if (dbr <= assumptions.dbrMaxPct) status = "stretched";
   else status = "over";
 
   // The headline copy that used to be built here now comes from the message

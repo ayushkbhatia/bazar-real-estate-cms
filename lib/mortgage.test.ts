@@ -6,6 +6,7 @@ import {
   minDownPaymentPct,
   monthlyPayment,
   totals,
+  DEFAULT_MORTGAGE_ASSUMPTIONS,
 } from "./mortgage";
 
 /* monthlyPayment — verify against worked examples. The formula:
@@ -234,5 +235,84 @@ describe("affordability", () => {
     const a = affordability(120_000, 6_000)!;
     expect(a.status).toBe("over");
     expect(a.dbr).toBeCloseTo(0.6, 2);
+  });
+});
+
+/**
+ * Everything below overrides the assumptions. The point of the suite above is
+ * that the model computes what it always did when nothing is passed; the point
+ * here is that Settings → Mortgage reaches every figure it claims to.
+ */
+describe("editable assumptions", () => {
+  const bump = (patch: Partial<typeof DEFAULT_MORTGAGE_ASSUMPTIONS>) => ({
+    ...DEFAULT_MORTGAGE_ASSUMPTIONS,
+    ...patch,
+  });
+  const inputs = {
+    pricePropertyAed: 4_000_000,
+    downPaymentPct: 0.25,
+    annualRatePct: 4.25,
+    termYears: 25,
+  };
+
+  it("re-rates the DLD line and re-totals the table", () => {
+    const base = cashToClose(inputs);
+    const raised = cashToClose(inputs, {
+      assumptions: bump({ dldTransferPct: 0.05 }),
+    });
+    const line = (c: typeof base) =>
+      c.lines.find((l) => l.key === "dld_transfer")!;
+    expect(line(base).amountAed).toBe(160_000);
+    expect(line(raised).amountAed).toBe(200_000);
+    expect(line(raised).pct).toBe("5%");
+    // The total is derived, not stored — a fee change must move it.
+    expect(raised.totalAed - base.totalAed).toBe(40_000);
+  });
+
+  it("re-rates the flat fees, which take no percentage", () => {
+    const c = cashToClose(inputs, {
+      assumptions: bump({ trusteeOfficeFeeAed: 4_400 }),
+    });
+    const line = c.lines.find((l) => l.key === "trustee_office")!;
+    expect(line.amountAed).toBe(4_400);
+    expect(line.pct).toBeNull();
+  });
+
+  it("keeps the explicit advisoryPct override winning over the assumptions", () => {
+    // The PDF route and the compare tool pass a negotiated advisory rate per
+    // scenario. That is a per-deal number, not a house default, so it must not
+    // be overwritten by the settings value.
+    const c = cashToClose(inputs, {
+      advisoryPct: 0.01,
+      assumptions: bump({ bazarAdvisoryPct: 0.02 }),
+    });
+    expect(c.lines.find((l) => l.key === "bazar_advisory")!.pct).toBe("1%");
+  });
+
+  it("moves the LTV tier threshold", () => {
+    const a = bump({ ltvHighTierPriceAed: 3_000_000 });
+    // 4M is below the built-in 5M threshold and above the edited 3M one.
+    expect(minDownPaymentPct("uae_resident", 4_000_000)).toBe(0.25);
+    expect(minDownPaymentPct("uae_resident", 4_000_000, a)).toBe(0.35);
+  });
+
+  it("moves each LTV tier's own figure", () => {
+    const a = bump({ minDownNonResidentPct: 0.45 });
+    expect(minDownPaymentPct("non_resident", 1_000_000, a)).toBe(0.45);
+  });
+
+  it("moves the DBR bands", () => {
+    // 15,000/mo against 50,000/mo income is a DBR of 0.30 — comfortable by
+    // default, over the limit once the cap is dragged below it.
+    const income = 600_000;
+    expect(affordability(income, 15_000)!.status).toBe("ok");
+    expect(
+      affordability(income, 15_000, bump({ dbrComfortablePct: 0.2, dbrMaxPct: 0.25 }))!
+        .status,
+    ).toBe("over");
+    expect(
+      affordability(income, 15_000, bump({ dbrComfortablePct: 0.2, dbrMaxPct: 0.35 }))!
+        .status,
+    ).toBe("stretched");
   });
 });

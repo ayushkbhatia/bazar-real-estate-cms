@@ -16,7 +16,12 @@ import {
   emailTemplatesSchema,
   leadRoutingRuleSchema,
   leadRoutingSettingsSchema,
+  mortgageSettingsSchema,
+  parseMortgageSettings,
+  MORTGAGE_SETTINGS_DEFAULTS,
 } from "./site-settings";
+import { toMortgageAssumptions } from "@/lib/queries/site-settings";
+import { DEFAULT_MORTGAGE_ASSUMPTIONS } from "@/lib/mortgage";
 
 describe("brandSettingsSchema", () => {
   it("accepts a minimal payload (just name)", () => {
@@ -260,5 +265,89 @@ describe("EMAIL_TEMPLATE_KEYS / LABEL", () => {
     for (const k of EMAIL_TEMPLATE_KEYS) {
       expect(EMAIL_TEMPLATE_LABEL[k].length).toBeGreaterThan(2);
     }
+  });
+});
+
+describe("mortgageSettingsSchema", () => {
+  it("accepts the built-in figures", () => {
+    expect(mortgageSettingsSchema.safeParse(MORTGAGE_SETTINGS_DEFAULTS).success).toBe(
+      true,
+    );
+  });
+
+  it("fills a partial bag from the defaults rather than failing whole", () => {
+    // The shape a column written before a field existed has. Parsing it bare
+    // would fail, and a failed parse reverts every figure beside the one that
+    // is missing.
+    const parsed = parseMortgageSettings({ dld_transfer_pct: 5 });
+    expect(parsed.dld_transfer_pct).toBe(5);
+    expect(parsed.trustee_office_fee_aed).toBe(
+      MORTGAGE_SETTINGS_DEFAULTS.trustee_office_fee_aed,
+    );
+  });
+
+  it("falls back whole when a stored value is out of range", () => {
+    // Not a partial application: a bag carrying a negative fee is a bag we
+    // cannot reason about, and half-applying it puts figures on the page that
+    // no one typed.
+    expect(parseMortgageSettings({ dld_transfer_pct: -1 })).toEqual(
+      MORTGAGE_SETTINGS_DEFAULTS,
+    );
+  });
+
+  it.each([null, undefined, "nonsense", []])(
+    "treats %p as an empty bag",
+    (raw) => {
+      expect(parseMortgageSettings(raw)).toEqual(MORTGAGE_SETTINGS_DEFAULTS);
+    },
+  );
+
+  it("rejects a comfort line above the cap", () => {
+    const r = mortgageSettingsSchema.safeParse({
+      ...MORTGAGE_SETTINGS_DEFAULTS,
+      dbr_comfortable_pct: 60,
+      dbr_max_pct: 50,
+    });
+    expect(r.success).toBe(false);
+  });
+
+  it("rejects a higher LTV tier that asks for less than the standard one", () => {
+    const r = mortgageSettingsSchema.safeParse({
+      ...MORTGAGE_SETTINGS_DEFAULTS,
+      min_down_resident_pct: 40,
+      min_down_resident_high_pct: 35,
+    });
+    expect(r.success).toBe(false);
+  });
+});
+
+describe("toMortgageAssumptions", () => {
+  /**
+   * The one invariant holding the two copies of these figures together: the
+   * settings defaults are the model's defaults in percent. If someone edits
+   * one and not the other, an install that has never opened the settings form
+   * computes differently from one that opened it and pressed Save without
+   * changing anything.
+   */
+  it("turns the built-in settings back into the model's own defaults", () => {
+    expect(toMortgageAssumptions(MORTGAGE_SETTINGS_DEFAULTS)).toEqual(
+      DEFAULT_MORTGAGE_ASSUMPTIONS,
+    );
+  });
+
+  it("reads percentages as percent, not fractions", () => {
+    const a = toMortgageAssumptions({
+      ...MORTGAGE_SETTINGS_DEFAULTS,
+      dld_transfer_pct: 4,
+    });
+    expect(a.dldTransferPct).toBe(0.04);
+  });
+
+  it("passes dirham figures through untouched", () => {
+    const a = toMortgageAssumptions({
+      ...MORTGAGE_SETTINGS_DEFAULTS,
+      trustee_office_fee_aed: 4_400,
+    });
+    expect(a.trusteeOfficeFeeAed).toBe(4_400);
   });
 });

@@ -231,7 +231,8 @@ export type MasterPageKey =
   | "manage"
   | "consultation"
   | "qr"
-  | "contact-qr";
+  | "contact-qr"
+  | "mortgage";
 
 export type MasterPageDef = {
   key: MasterPageKey;

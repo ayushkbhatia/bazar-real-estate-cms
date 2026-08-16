@@ -37,6 +37,7 @@ import {
   minDownPaymentPct,
   totals,
   type BuyerStatus,
+  type MortgageAssumptions,
   type MortgageType,
 } from "@/lib/mortgage";
 import {
@@ -105,9 +106,10 @@ const TERM_OPTIONS = [25, 20, 15, 10] as const;
  *
  * All state in this component stays AED, because `lib/mortgage.ts` is
  * AED-denominated rather than merely AED-scaled: `minDownPaymentPct` turns on
- * the CBUAE LTV tier at AED 5,000,000, and `STATUTORY` carries flat dirham fee
- * schedules (trustee office, NOC, valuation). Converting the model's inputs
- * would move a statutory threshold. Only what reaches the screen converts.
+ * the CBUAE LTV tier at a dirham price, and `MortgageAssumptions` carries flat
+ * dirham fee schedules (trustee office, NOC, valuation). Converting the
+ * model's inputs would move a statutory threshold. Only what reaches the
+ * screen converts.
  */
 
 function formatPct(p: number): string {
@@ -124,10 +126,46 @@ function parseMoneyInput(s: string): number {
   return Number.isFinite(n) ? Math.round(n) : 0;
 }
 
+/**
+ * The pre-approval band's words, resolved from Pages & blocks by the page.
+ *
+ * Every entry is nullable because a master-page field is nullable: an editor
+ * who clears the eyebrow means "no eyebrow", not "fall back to the one I just
+ * deleted". The band renders around whatever survives.
+ */
+export type PreApprovalBandCopy = {
+  enabled: boolean;
+  eyebrow: string | null;
+  title: string | null;
+  sub: string | null;
+  scenarioLabel: string | null;
+  scenarioNote: string | null;
+  talkLabel: string | null;
+  advisorCtaLabel: string | null;
+  advisorCtaHref: string;
+  whatsappCtaLabel: string | null;
+  fallbackCtaLabel: string | null;
+};
+
+/** The four figures the calculator opens on, from Settings → Mortgage. */
+export type MortgageOpeningValues = {
+  priceAed: number;
+  downPaymentPct: number;
+  ratePct: number;
+  termYears: number;
+  annualIncomeAed: number;
+};
+
 export function MortgageCalculator({
   preApprovalForm,
+  band,
+  assumptions,
+  opening,
 }: {
   preApprovalForm: ResolvedForm;
+  band: PreApprovalBandCopy;
+  assumptions: MortgageAssumptions;
+  opening: MortgageOpeningValues;
 }) {
   const t = useTranslations("tools");
   const { prefs } = usePreferences();
@@ -141,13 +179,18 @@ export function MortgageCalculator({
   const fromInput = (raw: string) =>
     Math.round(toAed(parseMoneyInput(raw), prefs.currency));
 
-  const [price, setPrice] = useState(4_200_000);
-  const [downPct, setDownPct] = useState(0.25);
-  const [annualRatePct, setAnnualRatePct] = useState(4.25);
-  const [termYears, setTermYears] = useState<number>(25);
+  // Opening values, not defaults-for-ever: `useState` reads them once, so an
+  // admin changing the house rate moves where the page starts without
+  // resetting a visitor mid-session.
+  const [price, setPrice] = useState(opening.priceAed);
+  const [downPct, setDownPct] = useState(opening.downPaymentPct);
+  const [annualRatePct, setAnnualRatePct] = useState(opening.ratePct);
+  const [termYears, setTermYears] = useState<number>(opening.termYears);
   const [mortgageType, setMortgageType] = useState<MortgageType>("fixed");
   const [buyerStatus, setBuyerStatus] = useState<BuyerStatus>("uae_resident");
-  const [annualIncome, setAnnualIncome] = useState<number>(950_000);
+  const [annualIncome, setAnnualIncome] = useState<number>(
+    opening.annualIncomeAed,
+  );
 
   const inputs = useMemo(
     () => ({
@@ -160,13 +203,18 @@ export function MortgageCalculator({
   );
 
   const summary = useMemo(() => totals(inputs), [inputs]);
-  const closing = useMemo(() => cashToClose(inputs), [inputs]);
+  const closing = useMemo(
+    () => cashToClose(inputs, { assumptions }),
+    [inputs, assumptions],
+  );
   const schedule = useMemo(() => amortizationByYear(inputs), [inputs]);
   const afford = useMemo(
-    () => affordability(annualIncome, summary.monthlyPaymentAed),
-    [annualIncome, summary.monthlyPaymentAed],
+    () => affordability(annualIncome, summary.monthlyPaymentAed, assumptions),
+    [annualIncome, summary.monthlyPaymentAed, assumptions],
   );
-  const minDown = minDownPaymentPct(buyerStatus, price);
+  const minDown = minDownPaymentPct(buyerStatus, price, assumptions);
+  /** The DBR cap as a whole number, for the sentences that quote it. */
+  const dbrCapPct = Math.round(assumptions.dbrMaxPct * 100);
   const belowGuidance = downPct < minDown;
 
   // Three preset scenarios: "current", "more upfront", "shorter term".
@@ -568,7 +616,13 @@ export function MortgageCalculator({
             })}
           />
           <p className="text-[11.5px] text-bz-muted mt-1">
-            {t("mortgage.affordabilityHelp")}
+            {/*
+              The cap is interpolated rather than written into the sentence:
+              it is editable under Settings → Mortgage, and a status that flips
+              at 45% above a line that still reads "50%" is worse than either
+              number on its own.
+            */}
+            {t("mortgage.affordabilityHelp", { cap: dbrCapPct })}
           </p>
         </fieldset>
 
@@ -598,7 +652,7 @@ export function MortgageCalculator({
                   : afford.status === "stretched"
                     ? "mortgage.affordabilityStretched"
                     : "mortgage.affordabilityOver",
-                { pct: Math.round(afford.dbr * 100) },
+                { pct: Math.round(afford.dbr * 100), cap: dbrCapPct },
               )}
             </span>
           </div>
@@ -609,6 +663,7 @@ export function MortgageCalculator({
             <DbrGauge
               monthlyPaymentAed={summary.monthlyPaymentAed}
               monthlyIncomeAed={annualIncome / 12}
+              maxDbr={assumptions.dbrMaxPct}
             />
           </div>
         ) : null}
@@ -813,7 +868,15 @@ export function MortgageCalculator({
       </div>
     </section>
 
-    {/* ── Pre-approval — the lead form, with wa.me and the desk beside it ── */}
+    {/*
+      ── Pre-approval — the lead form, with wa.me and the desk beside it ──
+
+      Two switches, deliberately separate. Switching the SECTION off in Pages &
+      blocks removes the band; switching the FORM off in Forms keeps the band
+      and falls it back to the WhatsApp-and-advisor row it was before the form
+      existed. An editor who wanted the second should not get the first.
+    */}
+    {band.enabled ? (
     <section className="px-4 md:px-12 pb-12 md:pb-24">
       <div
         className={cn(
@@ -824,9 +887,9 @@ export function MortgageCalculator({
         )}
       >
         <div>
-          <Eyebrow className="text-bz-accent">
-            {t("mortgage.preApprovalEyebrow")}
-          </Eyebrow>
+          {band.eyebrow ? (
+            <Eyebrow className="text-bz-accent">{band.eyebrow}</Eyebrow>
+          ) : null}
           <h2
             className={cn(
               "serif mt-1.5",
@@ -834,11 +897,11 @@ export function MortgageCalculator({
             )}
             style={{ letterSpacing: "-0.015em" }}
           >
-            {t("mortgage.preApprovalHeading")}
+            {band.title}
           </h2>
-          <p className="text-[13.5px] text-bz-ink-2 mt-1.5">
-            {t("mortgage.preApprovalSub")}
-          </p>
+          {band.sub ? (
+            <p className="text-[13.5px] text-bz-ink-2 mt-1.5">{band.sub}</p>
+          ) : null}
 
           {showPreApprovalForm ? (
             <>
@@ -847,7 +910,9 @@ export function MortgageCalculator({
                 className="mt-6 rounded-lg border border-bz-border bg-bz-surface p-5"
                 data-testid="pre-approval-scenario"
               >
-                <Eyebrow>{t("mortgage.attachedEyebrow")}</Eyebrow>
+                {band.scenarioLabel ? (
+                  <Eyebrow>{band.scenarioLabel}</Eyebrow>
+                ) : null}
                 <dl className="mt-3.5 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
                   {scenarioLines.map(({ key, value }) => (
                     <div key={key}>
@@ -860,14 +925,18 @@ export function MortgageCalculator({
                     </div>
                   ))}
                 </dl>
-                <p className="text-[11.5px] text-bz-muted mt-4 pt-3.5 border-t border-bz-border">
-                  {t("mortgage.attachedNote")}
-                </p>
+                {band.scenarioNote ? (
+                  <p className="text-[11.5px] text-bz-muted mt-4 pt-3.5 border-t border-bz-border">
+                    {band.scenarioNote}
+                  </p>
+                ) : null}
               </div>
 
-              <p className="text-[13px] text-bz-ink-2 mt-6">
-                {t("mortgage.ratherTalk")}
-              </p>
+              {band.talkLabel ? (
+                <p className="text-[13px] text-bz-ink-2 mt-6">
+                  {band.talkLabel}
+                </p>
+              ) : null}
             </>
           ) : null}
 
@@ -877,12 +946,14 @@ export function MortgageCalculator({
               showPreApprovalForm && "mt-2.5",
             )}
           >
-            <Button asChild variant="outline">
-              <Link href="/contact">
-                <Calendar size={14} strokeWidth={1.6} />
-                {t("mortgage.talkToAdvisor")}
-              </Link>
-            </Button>
+            {band.advisorCtaLabel ? (
+              <Button asChild variant="outline">
+                <Link href={band.advisorCtaHref}>
+                  <Calendar size={14} strokeWidth={1.6} />
+                  {band.advisorCtaLabel}
+                </Link>
+              </Button>
+            ) : null}
             {waLink ? (
               <Button
                 asChild
@@ -891,7 +962,7 @@ export function MortgageCalculator({
               >
                 <a href={waLink} target="_blank" rel="noopener noreferrer">
                   <MessageCircle size={14} strokeWidth={1.6} />
-                  {t("mortgage.preApprovalWhatsApp")}
+                  {band.whatsappCtaLabel}
                   <ArrowRight size={14} strokeWidth={1.6} />
                 </a>
               </Button>
@@ -902,7 +973,7 @@ export function MortgageCalculator({
                 data-testid="pre-approval-cta"
               >
                 <Link href="/contact?source=mortgage">
-                  {t("mortgage.startPreApproval")}
+                  {band.fallbackCtaLabel}
                   <ArrowRight size={14} strokeWidth={1.6} />
                 </Link>
               </Button>
@@ -924,6 +995,7 @@ export function MortgageCalculator({
         ) : null}
       </div>
     </section>
+    ) : null}
     </>
   );
 }

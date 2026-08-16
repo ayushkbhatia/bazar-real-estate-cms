@@ -22,12 +22,15 @@ import {
   displaySettingsSchema,
   emailTemplateOverrideSchema,
   leadRoutingSettingsSchema,
+  mortgageSettingsSchema,
+  MORTGAGE_SETTINGS_DEFAULTS,
   type BrandSettingsInput,
   type DisplaySettingsInput,
   type EmailTemplateKey,
   type EmailTemplatesOverrides,
   type LeadRoutingSettings,
   type LeadRoutingRule,
+  type MortgageSettings,
 } from "@/lib/schemas/site-settings";
 import {
   resetEmailTemplate,
@@ -35,6 +38,7 @@ import {
   updateDisplaySettings,
   updateEmailTemplate,
   updateLeadRouting,
+  updateMortgageSettings,
 } from "./_actions";
 import {
   FaviconField,
@@ -299,6 +303,199 @@ export function DisplayForm({ initial }: { initial: DisplaySettingsInput }) {
             {pending ? "Saving…" : "Save display"}
           </Button>
         </div>
+      </form>
+    </SectionCard>
+  );
+}
+
+
+// ───────────────────────────────────────────────────────────────
+// Mortgage calculator
+// ───────────────────────────────────────────────────────────────
+
+/**
+ * One editable assumption. `suffix` is the unit, drawn inside the input's
+ * trailing edge so a percentage and a dirham figure are told apart without
+ * reading the label — the whole panel is numbers, and "4" meaning 4% sitting
+ * above "4,200" meaning AED 4,200 is exactly the confusion that produces a
+ * calculator quoting four hundred percent.
+ */
+const MORTGAGE_GROUPS: {
+  title: string;
+  blurb: string;
+  fields: {
+    key: keyof MortgageSettings;
+    label: string;
+    suffix: "%" | "AED" | "years";
+    step?: string;
+    help?: string;
+  }[];
+}[] = [
+  {
+    title: "What the calculator opens on",
+    blurb:
+      "The figures a visitor sees before touching anything. They are a starting point, not a limit — every one is editable on the page.",
+    fields: [
+      { key: "default_price_aed", label: "Property price", suffix: "AED" },
+      { key: "default_down_payment_pct", label: "Down payment", suffix: "%", step: "0.5" },
+      { key: "default_rate_pct", label: "Interest rate", suffix: "%", step: "0.05" },
+      { key: "default_term_years", label: "Term", suffix: "years" },
+      {
+        key: "default_annual_income_aed",
+        label: "Annual income",
+        suffix: "AED",
+        help: "Only feeds the affordability gauge.",
+      },
+    ],
+  },
+  {
+    title: "Cash to close",
+    blurb:
+      "The closing table under the monthly payment. Percentages of the property price unless noted; the flat fees are charged whatever the price.",
+    fields: [
+      { key: "dld_transfer_pct", label: "DLD transfer fee", suffix: "%", step: "0.05" },
+      {
+        key: "mortgage_registration_pct",
+        label: "Mortgage registration",
+        suffix: "%",
+        step: "0.05",
+        help: "Charged on the loan amount, not the price.",
+      },
+      {
+        key: "bank_arrangement_pct",
+        label: "Bank arrangement fee",
+        suffix: "%",
+        step: "0.05",
+        help: "Charged on the loan amount, not the price.",
+      },
+      { key: "advisory_pct", label: "Bazar advisory", suffix: "%", step: "0.05" },
+      { key: "trustee_office_fee_aed", label: "Trustee office fee", suffix: "AED" },
+      { key: "property_valuation_fee_aed", label: "Property valuation", suffix: "AED" },
+      { key: "noc_misc_fee_aed", label: "NOC & disbursements", suffix: "AED" },
+    ],
+  },
+  {
+    title: "Minimum deposit (Central Bank LTV)",
+    blurb:
+      "What the page warns a buyer they will need down. Two tiers either side of a price threshold, plus the non-resident figure most lenders hold to.",
+    fields: [
+      { key: "ltv_high_tier_price_aed", label: "Higher-tier threshold", suffix: "AED" },
+      {
+        key: "min_down_resident_pct",
+        label: "Resident / GCC — below threshold",
+        suffix: "%",
+        step: "0.5",
+      },
+      {
+        key: "min_down_resident_high_pct",
+        label: "Resident / GCC — at or above",
+        suffix: "%",
+        step: "0.5",
+      },
+      { key: "min_down_non_resident_pct", label: "Non-resident", suffix: "%", step: "0.5" },
+    ],
+  },
+  {
+    title: "Affordability (debt-burden ratio)",
+    blurb:
+      "Monthly payment as a share of monthly income. The Central Bank caps total debt servicing at 50%; the comfort line is a house view.",
+    fields: [
+      {
+        key: "dbr_comfortable_pct",
+        label: "Comfortable up to",
+        suffix: "%",
+        step: "0.5",
+        help: "At or below this the gauge reads comfortable.",
+      },
+      {
+        key: "dbr_max_pct",
+        label: "Maximum",
+        suffix: "%",
+        step: "0.5",
+        help: "Above this it reads over the limit.",
+      },
+    ],
+  },
+];
+
+export function MortgageForm({ initial }: { initial: MortgageSettings }) {
+  const form = useForm<MortgageSettings>({
+    resolver: zodResolver(mortgageSettingsSchema),
+    defaultValues: initial,
+  });
+  const [pending, startTransition] = useTransition();
+
+  function onSubmit(values: MortgageSettings) {
+    startTransition(async () => {
+      const r = await updateMortgageSettings(values);
+      if (r.status === "ok") toast.success(r.message ?? "Saved.");
+      else {
+        toast.error(r.message);
+        if (r.fieldErrors)
+          for (const [k, v] of Object.entries(r.fieldErrors))
+            form.setError(k as keyof MortgageSettings, { message: v });
+      }
+    });
+  }
+
+  return (
+    <SectionCard
+      title="Mortgage calculator"
+      subtitle="What /tools/mortgage computes with. The words around the calculator live in Pages & blocks → Mortgage calculator; the pre-approval form's own fields live in Forms."
+    >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-7">
+        {MORTGAGE_GROUPS.map((group) => (
+          <div key={group.title}>
+            <h3 className="text-[13px] font-medium">{group.title}</h3>
+            <p className="text-[12px] text-bz-muted mt-0.5 leading-[1.55] max-w-[70ch]">
+              {group.blurb}
+            </p>
+            <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {group.fields.map((f) => (
+                <Field
+                  key={f.key}
+                  label={f.label}
+                  error={form.formState.errors[f.key]?.message}
+                >
+                  <div className="relative">
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      step={f.step ?? "1"}
+                      className="mono pe-14"
+                      {...form.register(f.key, { valueAsNumber: true })}
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 end-3 flex items-center text-[11.5px] text-bz-muted">
+                      {f.suffix}
+                    </span>
+                  </div>
+                  {f.help ? (
+                    <p className="text-[11.5px] text-bz-muted-2">{f.help}</p>
+                  ) : null}
+                </Field>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        <div className="flex items-center gap-2 pt-1">
+          <Button type="submit" disabled={pending}>
+            {pending ? "Saving…" : "Save assumptions"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={pending}
+            onClick={() => form.reset(MORTGAGE_SETTINGS_DEFAULTS)}
+          >
+            <RotateCcw size={14} strokeWidth={1.6} />
+            Reset to built-in figures
+          </Button>
+        </div>
+        <p className="text-[11.5px] text-bz-muted-2 -mt-4">
+          Resetting fills the form with the figures the tool shipped with — it
+          is not saved until you press Save.
+        </p>
       </form>
     </SectionCard>
   );

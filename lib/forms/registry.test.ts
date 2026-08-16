@@ -4,6 +4,7 @@ import { defaultForm, resolveForm } from "./resolve";
 import { formSaveSchema } from "@/lib/schemas/form";
 import { hasOptions } from "./types";
 import { ENQUIRY_SOURCES } from "@/lib/schemas/enquiry";
+import { getMasterPage } from "@/lib/master-pages";
 
 /**
  * The registry is a promise: it is what the site renders today. These are the
@@ -130,6 +131,30 @@ describe("form registry", () => {
         expect(field.step ?? 0, where).toBeGreaterThan(0);
       }
     }
+  });
+
+  it("points every heading link at a section that exists", () => {
+    // The manager renders `headingSource` as a link out and tells the editor
+    // which words live there. A stale pageKey is a 404 from a CMS screen; a
+    // stale sectionKey is worse — the link lands on a real page and the
+    // section it promised is not on it, so the editor concludes the copy is
+    // not editable anywhere and retypes it into the form.
+    const broken: string[] = [];
+    for (const form of FORM_DEFS) {
+      const source = form.headingSource;
+      if (!source) continue;
+      const page = getMasterPage(source.pageKey);
+      if (!page) {
+        broken.push(`${form.key} → unknown page "${source.pageKey}"`);
+        continue;
+      }
+      if (!page.sections.some((s) => s.key === source.sectionKey)) {
+        broken.push(
+          `${form.key} → ${source.pageKey} has no section "${source.sectionKey}"`,
+        );
+      }
+    }
+    expect(broken, broken.join("\n")).toEqual([]);
   });
 
   it("only marks a field locked when the handler needs it", () => {

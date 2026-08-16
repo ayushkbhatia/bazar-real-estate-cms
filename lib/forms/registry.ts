@@ -1000,6 +1000,11 @@ export const FORM_DEFS: FormDef[] = [
     control: "full",
     variant: "compact",
     enquirySource: "mortgage",
+    headingSource: {
+      pageKey: "mortgage",
+      sectionKey: "pre_approval",
+      note: "the band's eyebrow, headline, sub-headline, the scenario recap's label and footnote, and the two buttons beside the form",
+    },
     // The scenario is supplied by the page at submit time, not typed by the
     // visitor — see `scenario` on `FormSubmitContext`. Prefilling the message
     // box instead would freeze the numbers at the moment the form mounted and
