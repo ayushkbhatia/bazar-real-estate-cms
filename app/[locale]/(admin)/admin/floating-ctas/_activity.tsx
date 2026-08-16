@@ -143,7 +143,7 @@ export function FloatingCtaActivity({
 
 function Th({ children }: { children: React.ReactNode }) {
   return (
-    <th className="text-left font-medium px-3 py-2 text-[11px] uppercase tracking-wider">
+    <th className="text-start font-medium px-3 py-2 text-[11px] uppercase tracking-wider">
       {children}
     </th>
   );
