@@ -348,11 +348,12 @@ describe("normaliseEditInput", () => {
   });
 });
 
-// --- Property form (provenance) -------------------------------------------
+// --- Property form (completion axis) --------------------------------------
 //
 // `ready_new` means "developer first sale, never previously owned" — it is
-// provenance, not age. `off_plan` exists in the Postgres enum but is
-// deliberately not selectable: mode='off_plan' already says that.
+// provenance, not age. `off_plan` became selectable in 0110: off-plan is a way
+// of buying, so it is written on the completion axis as well as on `mode`, and
+// a DB trigger keeps the two spellings in step.
 
 const BASE_OVERVIEW = {
   title: "Saadiyat · 3-bed garden villa",
@@ -361,12 +362,12 @@ const BASE_OVERVIEW = {
 } as const;
 
 describe("PROPERTY_FORMS", () => {
-  it("offers exactly the two ownership-history forms", () => {
-    expect(PROPERTY_FORMS).toEqual(["ready_new", "resale"]);
+  it("offers the three completion forms, off-plan first", () => {
+    expect(PROPERTY_FORMS).toEqual(["off_plan", "ready_new", "resale"]);
   });
 
-  it("does not offer off_plan even though the DB enum has it", () => {
-    expect(PROPERTY_FORMS).not.toContain("off_plan");
+  it("offers off_plan, which 0110 made a written value", () => {
+    expect(PROPERTY_FORMS).toContain("off_plan");
   });
 
   it("labels every selectable form", () => {
@@ -388,9 +389,12 @@ describe("isSaleMode", () => {
     expect(isSaleMode("commercial")).toBe(true);
   });
 
-  it("excludes rent and off_plan", () => {
+  it("counts off_plan as a sale mode — buying a plan is still buying", () => {
+    expect(isSaleMode("off_plan")).toBe(true);
+  });
+
+  it("excludes rent, which the DB check keeps form-free", () => {
     expect(isSaleMode("rent")).toBe(false);
-    expect(isSaleMode("off_plan")).toBe(false);
   });
 
   it("is safe on null/undefined/garbage", () => {
@@ -406,8 +410,8 @@ describe("toSelectableForm", () => {
     expect(toSelectableForm("resale")).toBe("resale");
   });
 
-  it("collapses off_plan to null so the picker never has to render it", () => {
-    expect(toSelectableForm("off_plan")).toBeNull();
+  it("passes off_plan through — the picker renders it since 0110", () => {
+    expect(toSelectableForm("off_plan")).toBe("off_plan");
   });
 
   it("collapses empty, null, undefined, and unknown values to null", () => {
@@ -428,8 +432,8 @@ describe("formForMode", () => {
     expect(formForMode("rent", "resale")).toBeNull();
   });
 
-  it("clears the form when the mode moves to off_plan", () => {
-    expect(formForMode("off_plan", "ready_new")).toBeNull();
+  it("keeps the form on off_plan, which is a sale mode now", () => {
+    expect(formForMode("off_plan", "off_plan")).toBe("off_plan");
   });
 
   it("stays null when there was no form to begin with", () => {
@@ -492,13 +496,13 @@ describe("property_form validation", () => {
     }
   });
 
-  it("rejects off_plan as a property_form value", () => {
+  it("accepts off_plan as a property_form on a buy row", () => {
     const res = propertyOverviewSchema.safeParse({
       ...BASE_OVERVIEW,
       mode: "buy",
       property_form: "off_plan",
     });
-    expect(res.success).toBe(false);
+    expect(res.success).toBe(true);
   });
 
   it("applies the same rule on the full edit schema", () => {

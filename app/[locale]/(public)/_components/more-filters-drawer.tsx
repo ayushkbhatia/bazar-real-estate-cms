@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toOptions } from "@/lib/amenities";
 import { SlidersHorizontal, X } from "lucide-react";
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { TENURES, FURNISHINGS } from "@/lib/filters/property";
+import { PROPERTY_FORMS, PROPERTY_FORM_LABELS } from "@/lib/schemas/property";
 import {
   areaUnitLabel,
   convertArea,
@@ -55,9 +57,20 @@ function inputToFt2Param(raw: string, unit: AreaUnit): string {
   return String(Math.round(toFt2(n, unit)));
 }
 
-export function MoreFiltersDrawer() {
+/**
+ * `showForm` is the completion-form facet — off-plan / ready (new) / resale.
+ * It renders on /buy/search only: buy is the umbrella that spans all three
+ * forms, so it is the one surface where narrowing on that axis means anything.
+ * /buy/ready and /buy/resale have already narrowed it from the route, and a
+ * tenancy has no completion form at all (the DB keeps the column NULL there).
+ */
+export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) {
   const router = useRouter();
   const sp = useSearchParams();
+  // Only the completion facet reads next-intl: the rest of this drawer is
+  // still un-extracted English, and G-13's ratchet is shrink-only, so a new
+  // literal would have to be paid for by removing an old one.
+  const t = useTranslations("search");
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -65,6 +78,7 @@ export function MoreFiltersDrawer() {
   const unit = prefs.area_unit;
 
   const initial = {
+    form: sp.get("form") ?? "",
     ft2_min: ft2ParamToInput(sp.get("ft2_min") ?? "", unit),
     ft2_max: ft2ParamToInput(sp.get("ft2_max") ?? "", unit),
     year_min: sp.get("year_min") ?? "",
@@ -97,6 +111,7 @@ export function MoreFiltersDrawer() {
       if (v) params.set(k, v);
       else params.delete(k);
     }
+    setOrDelete("form", showForm ? state.form : "");
     setOrDelete("ft2_min", inputToFt2Param(state.ft2_min, unit));
     setOrDelete("ft2_max", inputToFt2Param(state.ft2_max, unit));
     setOrDelete("year_min", state.year_min);
@@ -116,6 +131,7 @@ export function MoreFiltersDrawer() {
 
   function reset() {
     setState({
+      form: "",
       ft2_min: "",
       ft2_max: "",
       year_min: "",
@@ -128,6 +144,7 @@ export function MoreFiltersDrawer() {
   }
 
   const activeCount =
+    (showForm && state.form ? 1 : 0) +
     (state.ft2_min ? 1 : 0) +
     (state.ft2_max ? 1 : 0) +
     (state.year_min ? 1 : 0) +
@@ -221,6 +238,31 @@ export function MoreFiltersDrawer() {
               ))}
             </select>
           </div>
+
+          {/* Completion form — buy only, see the note on showForm */}
+          {showForm ? (
+            <div>
+              <Label htmlFor="form-pick">{t("filters.completion")}</Label>
+              <select
+                id="form-pick"
+                value={state.form}
+                onChange={(e) =>
+                  setState((s) => ({ ...s, form: e.target.value }))
+                }
+                className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-accent"
+              >
+                <option value="">Any</option>
+                {PROPERTY_FORMS.map((f) => (
+                  <option key={f} value={f}>
+                    {PROPERTY_FORM_LABELS[f]}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1.5 text-[12px] text-bz-muted leading-relaxed">
+                {t("filters.completionHelp")}
+              </p>
+            </div>
+          ) : null}
 
           {/* Furnishing */}
           <div>

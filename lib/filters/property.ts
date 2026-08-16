@@ -5,7 +5,7 @@ import {
   parseAsStringEnum,
   parseAsBoolean,
 } from "nuqs/server";
-import { PROPERTY_TYPES } from "@/lib/schemas/property";
+import { PROPERTY_FORMS, PROPERTY_TYPES } from "@/lib/schemas/property";
 
 export const TENURES = ["freehold", "leasehold"] as const;
 export const FURNISHINGS = ["unfurnished", "semi", "fully"] as const;
@@ -29,6 +29,10 @@ export const filterParsers = {
   beds: parseAsInteger,
   baths: parseAsInteger,
   type: parseAsStringEnum([...PROPERTY_TYPES]),
+  /** Completion form — off-plan / ready (new) / resale. Only meaningful on the
+   *  sale surfaces; /buy/ready and /buy/resale set it from the route instead,
+   *  and SearchList ignores it outside mode = buy. */
+  form: parseAsStringEnum([...PROPERTY_FORMS]),
   price_min: parseAsInteger,
   price_max: parseAsInteger,
   area: parseAsString,
@@ -56,6 +60,7 @@ export type PropertyFilters = {
   beds: number | null;
   baths: number | null;
   type: (typeof PROPERTY_TYPES)[number] | null;
+  form: (typeof PROPERTY_FORMS)[number] | null;
   price_min: number | null;
   price_max: number | null;
   area: string | null;
@@ -77,6 +82,7 @@ const EMPTY: PropertyFilters = {
   beds: null,
   baths: null,
   type: null,
+  form: null,
   price_min: null,
   price_max: null,
   area: null,
@@ -112,6 +118,13 @@ export function parseFilters(input: Record<string, unknown>): PropertyFilters {
 
   if (typeof input.type === "string" && (PROPERTY_TYPES as readonly string[]).includes(input.type)) {
     out.type = input.type as PropertyFilters["type"];
+  }
+
+  if (
+    typeof input.form === "string" &&
+    (PROPERTY_FORMS as readonly string[]).includes(input.form)
+  ) {
+    out.form = input.form as PropertyFilters["form"];
   }
 
   const min = toInt(input.price_min);
@@ -202,6 +215,7 @@ export function describeFilters(f: PropertyFilters, areaName?: string): string {
   if (f.beds != null) parts.push(`${f.beds}+ beds`);
   if (f.baths != null) parts.push(`${f.baths}+ baths`);
   if (f.type) parts.push(humanType(f.type));
+  if (f.form) parts.push(humanForm(f.form));
   if (areaName) parts.push(`in ${areaName}`);
   else if (f.area) parts.push(`in ${f.area}`);
   if (f.price_min != null || f.price_max != null) {
@@ -210,6 +224,17 @@ export function describeFilters(f: PropertyFilters, areaName?: string): string {
     parts.push(`AED ${min}–${max}`);
   }
   return parts.join(" · ");
+}
+
+function humanForm(f: NonNullable<PropertyFilters["form"]>): string {
+  switch (f) {
+    case "off_plan":
+      return "Off-plan";
+    case "ready_new":
+      return "Ready (new)";
+    case "resale":
+      return "Resale";
+  }
 }
 
 function humanType(t: PropertyFilters["type"]): string {

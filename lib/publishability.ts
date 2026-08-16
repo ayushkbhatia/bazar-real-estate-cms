@@ -3,9 +3,12 @@ import type { Database } from "@/db/types";
 type PropertyForm = Database["public"]["Enums"]["property_form"];
 type PropertyMode = Database["public"]["Enums"]["property_mode"];
 
-/** Modes that are sold rather than let. Only these are split into the
- *  /buy/ready and /buy/resale routes, so only these need a form. */
-const SALE_MODES = ["buy", "commercial"] as const;
+/** Modes that are sold rather than let, and so need a completion form.
+ *  Off-plan joined the list in 0110: it is a purchase, its rows carry
+ *  `property_form = 'off_plan'`, and a DB trigger fills that value — so the
+ *  check passes without an operator ever touching the picker. Leaving it out
+ *  would exempt exactly the rows the /buy facet now depends on. */
+const SALE_MODES = ["buy", "commercial", "off_plan"] as const;
 
 export type PublishabilityInput = {
   status: string;
@@ -58,10 +61,10 @@ export function evaluatePublishability(
     if (!developerPassed) blockers.push("Developer is missing");
   }
 
-  // A sale listing with no form belongs to neither /buy/ready nor
-  // /buy/resale — it would publish and then be invisible on both. Rentals
-  // must keep the column NULL (DB check `properties_form_rent_null_ck`), and
-  // off-plan is still expressed through `mode`, so neither is gated here.
+  // A sale listing with no form belongs to none of /buy/ready, /buy/resale or
+  // the off-plan facet — it would publish and then be invisible on all three.
+  // Rentals must keep the column NULL (DB check
+  // `properties_form_rent_null_ck`), so they are not gated here.
   if (input.mode !== undefined && input.property_form !== undefined) {
     const isSale = (SALE_MODES as readonly string[]).includes(input.mode);
     if (isSale) {
@@ -69,7 +72,7 @@ export function evaluatePublishability(
       checks.push({ label: "Sale form is set", passed: formPassed });
       if (!formPassed)
         blockers.push(
-          "Sale form is missing — set it to Ready (new) or Resale in the Overview tab, or the listing shows on neither /buy/ready nor /buy/resale",
+          "Sale form is missing — set it to Off-plan, Ready (new) or Resale in the Overview tab, or the listing shows on none of /buy/ready, /buy/resale or the off-plan facet",
         );
     }
   }

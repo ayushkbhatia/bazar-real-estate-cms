@@ -101,14 +101,26 @@ describe("evaluatePublishability", () => {
       expect(res.checks.some((c) => c.label === "Sale form is set")).toBe(false);
     });
 
-    it("leaves off-plan unaffected — mode still expresses off-plan", () => {
-      const res = evaluatePublishability({
+    it("gates off-plan too — 0110 made it a written form", () => {
+      // The DB trigger fills `property_form = 'off_plan'` on any off-plan row,
+      // so in practice this check passes without anyone touching the picker.
+      // A NULL here means the row predates the trigger or was hand-built.
+      const missing = evaluatePublishability({
         ...base(),
         mode: "off_plan",
         property_form: null,
       });
-      expect(res.ok).toBe(true);
-      expect(res.checks.some((c) => c.label === "Sale form is set")).toBe(false);
+      expect(missing.ok).toBe(false);
+      expect(missing.checks.some((c) => c.label === "Sale form is set")).toBe(
+        true,
+      );
+
+      const filled = evaluatePublishability({
+        ...base(),
+        mode: "off_plan",
+        property_form: "off_plan",
+      });
+      expect(filled.ok).toBe(true);
     });
 
     it("skips the check entirely when the caller doesn't track the fields", () => {
