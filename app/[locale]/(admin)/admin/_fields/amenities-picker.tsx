@@ -9,6 +9,7 @@ import {
   orderAmenities,
   splitAmenities,
   valueOf,
+  MAX_AMENITIES,
   MAX_AMENITY_LENGTH,
   type AmenityOption,
 } from "@/lib/amenities";
@@ -52,20 +53,65 @@ export function AmenitiesPicker({
     onChange(orderAmenities([...nextKnown, ...unknown], options));
   }
 
+  /**
+   * What the listing would store. Custom values live in the same `text[]` as
+   * the taxonomy ones and count against the same cap, so the cards have to be
+   * checked against known + unknown, not against the card count on screen.
+   */
+  const stored = known.length + unknown.length;
+
+  function atCap(projected: number) {
+    return projected >= MAX_AMENITIES;
+  }
+
   function toggle(option: AmenityOption) {
     const next = new Set(selected);
     const v = valueOf(option);
-    if (next.has(v)) next.delete(v);
-    else next.add(v);
+    if (next.has(v)) {
+      next.delete(v);
+    } else {
+      // Checked here rather than left to the save — the schema enforces the
+      // same cap server-side, and finding out at save time costs the agent
+      // the whole round trip.
+      if (atCap(next.size + unknown.length)) {
+        setNotice({
+          tone: "error",
+          text: `Maximum ${MAX_AMENITIES} amenities — remove one to add another.`,
+        });
+        return;
+      }
+      next.add(v);
+    }
+    setNotice(null);
     commit(next);
   }
 
   function setGroup(items: AmenityOption[], on: boolean) {
     const next = new Set(selected);
+    let skipped = 0;
     for (const item of items) {
-      if (on) next.add(valueOf(item));
-      else next.delete(valueOf(item));
+      const v = valueOf(item);
+      if (!on) {
+        next.delete(v);
+        continue;
+      }
+      if (next.has(v)) continue;
+      // Fill to the cap and say what didn't fit, rather than dropping the
+      // whole "Select all" on the floor.
+      if (atCap(next.size + unknown.length)) {
+        skipped += 1;
+        continue;
+      }
+      next.add(v);
     }
+    setNotice(
+      skipped > 0
+        ? {
+            tone: "error",
+            text: `Maximum ${MAX_AMENITIES} amenities — ${skipped} not added.`,
+          }
+        : null,
+    );
     commit(next);
   }
 
@@ -108,6 +154,12 @@ export function AmenitiesPicker({
       <div className="flex items-center gap-3 flex-wrap">
         <span className="text-[12.5px] text-bz-muted me-auto tabular-nums">
           {known.length} of {options.length} selected
+          {/* Custom values are invisible in the count above but spend the same
+              budget — showing the real total is what stops "under 50" from
+              colliding with a cap the agent can't see. */}
+          {unknown.length > 0 ? (
+            <> · {stored} of {MAX_AMENITIES} used</>
+          ) : null}
         </span>
         {value.length > 0 ? (
           <button

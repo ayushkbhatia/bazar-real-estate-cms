@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { MAX_AMENITIES } from "@/lib/amenities";
 import {
   propertyOverviewSchema,
   propertyPricingSchema,
@@ -156,16 +157,25 @@ describe("propertyLocationSchema", () => {
 });
 
 describe("propertyAmenitiesSchema", () => {
-  it("accepts up to 50 strings", () => {
+  it("accepts up to the cap", () => {
     const res = propertyAmenitiesSchema.safeParse({
       amenities: ["Pool", "Gym", "Concierge"],
     });
     expect(res.success).toBe(true);
   });
 
-  it("rejects beyond 50", () => {
+  // The cap is one above the 50 a listing is meant to be able to hold, so a
+  // full 50 selections never lands on the boundary.
+  it("accepts a full 50 with room to spare", () => {
     const res = propertyAmenitiesSchema.safeParse({
-      amenities: Array(51).fill("Item"),
+      amenities: Array.from({ length: 50 }, (_, i) => `Item ${i}`),
+    });
+    expect(res.success).toBe(true);
+  });
+
+  it("rejects beyond the cap", () => {
+    const res = propertyAmenitiesSchema.safeParse({
+      amenities: Array.from({ length: MAX_AMENITIES + 1 }, (_, i) => `Item ${i}`),
     });
     expect(res.success).toBe(false);
   });

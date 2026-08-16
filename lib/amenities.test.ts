@@ -30,6 +30,34 @@ describe("toOptions", () => {
   });
 });
 
+describe("duplicate labels in the taxonomy", () => {
+  // Live taxonomy has three of these ("playground"/"playgroundd",
+  // "marina"/"marinaa", "picnic_areas"/"picnic_areass") — distinct codes,
+  // identical labels. We store labels, so each one used to occupy two slots
+  // of the cap for one visible tick.
+  const DUPES: AmenityTaxonomyEntry[] = [
+    ...TAXONOMY,
+    { code: "pooll", label: "Pool", category: "outdoor", icon: null, sort_order: 50, active: true },
+  ];
+
+  it("collapses to one option per label", () => {
+    expect(toOptions(DUPES).map((o) => o.code)).toEqual(["pool", "spa", "gym"]);
+  });
+
+  it("does not store the same amenity twice", () => {
+    expect(orderAmenities(["Pool"], toOptions(DUPES))).toEqual(["Pool"]);
+  });
+
+  it("stays single even if the caller hands it unfiltered options", () => {
+    const raw = DUPES.map((t) => ({
+      code: t.code,
+      label: t.label,
+      category: t.category,
+    }));
+    expect(orderAmenities(["Pool", "Gym"], raw)).toEqual(["Pool", "Gym"]);
+  });
+});
+
 describe("groupAmenities", () => {
   it("groups by category and hides empty groups", () => {
     const groups = groupAmenities(OPTIONS);

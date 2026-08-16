@@ -46,11 +46,24 @@ export function valueOf(entry: AmenityOption | AmenityTaxonomyEntry): string {
 export function toOptions(
   taxonomy: AmenityTaxonomyEntry[] = DEFAULT_AMENITIES,
 ): AmenityOption[] {
+  const seen = new Set<string>();
   return taxonomy
     .filter((t) => t.active !== false)
     .slice()
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-    .map((t) => ({ code: t.code, label: t.label, category: t.category }));
+    .map((t) => ({ code: t.code, label: t.label, category: t.category }))
+    // The taxonomy is admin-editable and holds distinct *codes*, so the same
+    // label can exist twice ("playground" / "playgroundd"). We store labels,
+    // so a duplicate label is one amenity wearing two hats: it renders as two
+    // identical cards and — because `orderAmenities` walks the options — it
+    // writes itself into the listing twice, spending two slots of the cap for
+    // one visible selection. Lowest sort_order wins.
+    .filter((o) => {
+      const key = normalise(o.label);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 }
 
 /** Grouped for the picker and the facet — taxonomy order within each group. */
@@ -101,16 +114,24 @@ export function orderAmenities(
 ): string[] {
   const { known, unknown } = splitAmenities(stored, options);
   const selected = new Set(known);
-  const ordered = options.map(valueOf).filter((v) => selected.has(v));
+  const ordered = dedupeBy(
+    options.map(valueOf).filter((v) => selected.has(v)),
+    normalise,
+  );
   return [...ordered, ...unknown];
 }
 
 /**
- * Ceilings for a stored amenity list. These mirror `propertyAmenitiesSchema`
- * in `lib/schemas/property.ts` — keep the two in step, the server re-validates
- * with the schema and the client pre-checks with these.
+ * Ceilings for a stored amenity list. `propertyAmenitiesSchema` in
+ * `lib/schemas/property.ts` imports these rather than restating them — the
+ * client pre-checks with the constants and the server re-validates with the
+ * schema, and they can no longer drift apart.
+ *
+ * The list cap is 51 so that a listing can carry a full 50 amenities with a
+ * slot to spare; it used to be 50 on both sides, which meant any stray extra
+ * entry rejected a selection the picker was reporting as under the limit.
  */
-export const MAX_AMENITIES = 50;
+export const MAX_AMENITIES = 51;
 export const MAX_AMENITY_LENGTH = 50;
 
 /**
@@ -214,4 +235,15 @@ function normalise(value: string): string {
 
 function dedupe(values: string[]): string[] {
   return [...new Set(values)];
+}
+
+/** Dedupe on a derived key, keeping the first spelling seen. */
+function dedupeBy(values: string[], key: (v: string) => string): string[] {
+  const seen = new Set<string>();
+  return values.filter((v) => {
+    const k = key(v);
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
 }
