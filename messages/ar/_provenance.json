@@ -6330,5 +6330,35 @@
     "model": "claude-opus-5",
     "sourceHash": "9e217716c4e0",
     "reviewed": false
+  },
+  "search.form.off_plan.eyebrow": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "db87e3052863",
+    "reviewed": false
+  },
+  "search.form.off_plan.title": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6b71c1692dc8",
+    "reviewed": false
+  },
+  "search.form.off_plan.lede": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "0aaac4f6fec7",
+    "reviewed": false
+  },
+  "search.filters.completion": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "557fe004f344",
+    "reviewed": false
+  },
+  "search.filters.completionHelp": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6af5cf3d4854",
+    "reviewed": false
   }
 }

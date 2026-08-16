@@ -43,9 +43,9 @@ type Form = Database["public"]["Enums"]["property_form"];
  * `ready_new` is PROVENANCE, not age: it means the developer's first sale,
  * never previously owned. Never describe it as "recently built".
  *
- * Partial because `off_plan` is declared in the enum but is not yet written
- * or backfilled — off-plan is still expressed as `mode = 'off_plan'`, and we
- * deliberately keep only one writable spelling of that concept.
+ * `off_plan` joined them in 0110: the column is written on every off-plan row
+ * now, so /buy/search?form=off_plan is a real slice of the buy umbrella and
+ * gets its own copy rather than borrowing the /off-plan mode heading.
  */
 
 /**
@@ -60,7 +60,12 @@ function FormEmptyState({
   form: Form;
   activeCount: number;
 }) {
-  const label = form === "resale" ? "resale" : "ready, never-lived-in";
+  const label =
+    form === "resale"
+      ? "resale"
+      : form === "off_plan"
+        ? "off-plan"
+        : "ready, never-lived-in";
   return (
     <div className="py-16 md:py-20 max-w-[52ch] mx-auto text-center">
       <p className="serif text-[22px] md:text-[26px] text-bz-ink">
@@ -80,11 +85,14 @@ function FormEmptyState({
         >
           All properties for sale
         </Link>
+        {/* The second move widens the axis this route narrowed. On the
+            off-plan facet that would point back at itself, so it offers the
+            projects instead — those exist in areas with no unit listings. */}
         <Link
-          href="/off-plan"
+          href={form === "off_plan" ? "/off-plan" : "/buy/search?form=off_plan"}
           className="inline-flex items-center h-9 px-4 rounded-md border border-bz-border text-bz-ink-2 text-[13px] hover:border-bz-border-strong"
         >
-          Browse off-plan
+          {form === "off_plan" ? "Browse off-plan projects" : "Browse off-plan"}
         </Link>
       </div>
     </div>
@@ -175,8 +183,25 @@ export async function SearchList({
   const page = filters.page && filters.page > 0 ? filters.page : 1;
   const offset = (page - 1) * PAGE_SIZE;
 
+  /*
+   * The completion form can arrive two ways, and the route wins: /buy/ready is
+   * the ready-new page whatever `?form=` says. The URL facet is honoured on
+   * /buy/search only — "buy" is the umbrella that spans all three forms, so it
+   * is the one surface where narrowing on the second axis means anything.
+   * Passing it through on /rent/search would return zero rows by construction
+   * (the DB check keeps `property_form` NULL on tenancies).
+   */
+  const effectiveForm: Form | undefined =
+    form ?? (mode === "buy" ? (filters.form ?? undefined) : undefined);
+
   const [{ rows, total }, areas] = await Promise.all([
-    listPublishedProperties({ mode, form, filters, limit: PAGE_SIZE, offset }),
+    listPublishedProperties({
+      mode,
+      form: effectiveForm,
+      filters,
+      limit: PAGE_SIZE,
+      offset,
+    }),
     fetchAreas(),
   ]);
   const t = await getTranslations("search");
@@ -184,10 +209,11 @@ export async function SearchList({
    * Mode and form copy live in the search namespace now, keyed by the same
    * enum values the tables used. `form` wins over `mode` so /buy/ready and
    * /buy/resale each get their own h1 — a shared heading is what made those
-   * two look identical for 27 migrations. `off_plan` is declared in the Form
-   * enum but never written, so it falls through to the mode copy.
+   * two look identical for 27 migrations. Since 0110 `off_plan` is a written
+   * form too, and it carries its own copy: /buy/search?form=off_plan is the
+   * off-plan slice *of buy*, so it must not borrow the /off-plan heading.
    */
-  const group = form && form !== "off_plan" ? `form.${form}` : `mode.${mode}`;
+  const group = effectiveForm ? `form.${effectiveForm}` : `mode.${mode}`;
   const copy = {
     eyebrow: t(`${group}.eyebrow`),
     title: t(`${group}.title`),
@@ -246,15 +272,15 @@ export async function SearchList({
             ) : null}
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <MoreFiltersDrawer />
+            <MoreFiltersDrawer showForm={mode === "buy" && !form} />
             <SortDropdown />
             <ViewToggle defaultView={defaultView} />
           </div>
         </div>
 
         {rows.length === 0 ? (
-          form ? (
-            <FormEmptyState form={form} activeCount={activeCount} />
+          effectiveForm ? (
+            <FormEmptyState form={effectiveForm} activeCount={activeCount} />
           ) : (
             <div className="py-20 text-center text-bz-muted">
               {activeCount > 0

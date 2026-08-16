@@ -22,6 +22,11 @@
     }
   },
   "form": {
+    "off_plan": {
+      "eyebrow": "Off-plan · for sale",
+      "title": "Off-plan homes for sale",
+      "lede": "Bought from the developer before handover — a purchase on a payment plan, with the longest run to completion and the earliest choice of unit."
+    },
     "ready_new": {
       "eyebrow": "Ready · new",
       "title": "Ready homes, never lived in",
@@ -58,7 +63,9 @@
     "bedsFilter": "{count, plural, =0 {Studio} one {# bed} other {# beds}}",
     "bathsFilter": "{count, plural, one {# bath} other {# baths}}",
     "bedroomsOption": "{count, plural, one {# Bedroom} other {# Bedrooms}}",
-    "bedroomsMax": "6+ Bedrooms"
+    "bedroomsMax": "6+ Bedrooms",
+    "completion": "Completion",
+    "completionHelp": "Off-plan is still under construction. Ready (new) is the developer's first sale; resale has had an owner before."
   },
   "results": {
     "range": "{first}–{last} of {total} properties",

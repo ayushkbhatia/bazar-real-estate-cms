@@ -14,17 +14,20 @@ export const PROPERTY_MODE_LABELS: Record<PropertyMode, string> = {
   commercial: "Commercial",
 };
 
-/** Property form — the *provenance* of a sale listing.
+/** Property form — where a sale listing sits on the completion axis.
  *
- *  The Postgres enum `public.property_form` also carries 'off_plan', but that
- *  value is deliberately NOT offered here: off-plan is already expressed by
- *  `mode = 'off_plan'`, and two writable spellings of one concept is a trap.
- *  So the only selectable forms are the two that describe ownership history.
+ *  'off_plan' became writable in 0110. It used to be excluded here on the
+ *  grounds that `mode = 'off_plan'` already said it and two spellings are a
+ *  trap — but the mode axis is the *transaction* axis, and leaving off-plan
+ *  there alone said off-plan was not a purchase. It is one. The duplication is
+ *  deliberate and the DB keeps the two in step: a trigger fills this column on
+ *  any row whose mode is off_plan, so an operator never has to set both.
  */
-export const PROPERTY_FORMS = ["ready_new", "resale"] as const;
+export const PROPERTY_FORMS = ["off_plan", "ready_new", "resale"] as const;
 export type PropertyForm = (typeof PROPERTY_FORMS)[number];
 
 export const PROPERTY_FORM_LABELS: Record<PropertyForm, string> = {
+  off_plan: "Off-plan",
   ready_new: "Ready (new)",
   resale: "Resale",
 };
@@ -32,6 +35,8 @@ export const PROPERTY_FORM_LABELS: Record<PropertyForm, string> = {
 /** Operator-facing one-liners. "Ready (new)" is about never-having-been-owned,
  *  not about the building being recently finished — say so in the UI. */
 export const PROPERTY_FORM_HINTS: Record<PropertyForm, string> = {
+  off_plan:
+    "Not yet completed — bought from the developer before handover. Set automatically when the mode is Off-plan.",
   ready_new:
     "Completed and sold directly by the developer — never previously owned. Not about how recently it was built.",
   resale: "Previously owned; being sold on by the current owner.",
@@ -39,19 +44,21 @@ export const PROPERTY_FORM_HINTS: Record<PropertyForm, string> = {
 
 /** Shown under the picker before anything is chosen. */
 export const PROPERTY_FORM_HELP =
-  "How this home is coming to market. Ready (new): the developer's first sale, never previously owned. Resale: previously owned.";
+  "How this home is coming to market. Off-plan: not yet completed. Ready (new): the developer's first sale, never previously owned. Resale: previously owned.";
 
 /** Modes that may carry a property form. Rent must not: the DB CHECK
- *  `properties_form_rent_null_ck` rejects a rent row with a non-null form,
- *  and off-plan says the same thing through `mode` already. */
-const SALE_MODES: readonly PropertyMode[] = ["buy", "commercial"];
+ *  `properties_form_rent_null_ck` rejects a rent row with a non-null form.
+ *  Off-plan is in the list since 0110 — the row carries `property_form =
+ *  'off_plan'` as well as `mode = 'off_plan'`, so clearing the form on that
+ *  mode would fight the DB trigger that writes it back. */
+const SALE_MODES: readonly PropertyMode[] = ["buy", "commercial", "off_plan"];
 
 export function isSaleMode(mode: string | null | undefined): boolean {
   return SALE_MODES.includes(mode as PropertyMode);
 }
 
 /** Narrow any stored/loaded value to a form the pickers can actually show.
- *  'off_plan', unknown strings, and empty strings all collapse to null. */
+ *  Unknown strings and empty strings collapse to null. */
 export function toSelectableForm(
   value: string | null | undefined,
 ): PropertyForm | null {

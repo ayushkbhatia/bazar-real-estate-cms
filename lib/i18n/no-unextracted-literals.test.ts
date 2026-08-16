@@ -106,7 +106,7 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/partner-ecosystem-section.tsx": 3,
   "app/[locale]/(public)/_components/partner-marquee.tsx": 1,
   "app/[locale]/(public)/_components/preferences-controls.tsx": 2,
-  "app/[locale]/(public)/_components/search-list.tsx": 2,
+  "app/[locale]/(public)/_components/search-list.tsx": 1,
   "app/[locale]/(public)/_components/shortlist-drawer.tsx": 7,
   "app/[locale]/(public)/_components/trust-strip.tsx": 2,
   "app/[locale]/(public)/about/page.tsx": 1,
