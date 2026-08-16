@@ -1,6 +1,1414 @@
 {
+  "areas": {
+    "all_areas": {
+      "body": {
+        "en": "Every area and sub-community we cover, with the number of homes listed in each right now.",
+        "ar": "كل منطقة ومجتمع فرعي نغطيه، مع عدد المنازل المدرجة في كل منها حالياً.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "eyebrow": {
+        "en": "Every community",
+        "ar": "كل مجتمع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.557Z"
+      }
+    },
+    "area_map": {
+      "eyebrow": {
+        "en": "Where to live",
+        "ar": "أين تسكن",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "heading": {
+        "en": "Find your area first. The home follows.",
+        "ar": "ابحث عن منطقتك أولاً. المنزل يأتي بعد ذلك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      }
+    },
+    "area_spotlights": {
+      "eyebrow": {
+        "en": "Area spotlights",
+        "ar": "أضواء على المناطق",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T11:00:32.153Z"
+      },
+      "heading": {
+        "en": "Two islands worth a closer look.",
+        "ar": "جزيرتان تستحقان نظرة أقرب.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[0].blurb": {
+        "en": "Abu Dhabi's emerging waterfront destination — beaches, sports and leisure districts, and a new wave of low-rise coastal homes.",
+        "ar": "الوجهة البحرية الناشئة في أبوظبي — شواطئ، ومناطق للرياضة والترفيه، وموجة جديدة من المساكن الساحلية منخفضة الارتفاع.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[0].img": {
+        "en": "hudayriyat island · coastline aerial",
+        "ar": "جزيرة الحديريات · تصوير جوي للساحل",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[0].name": {
+        "en": "Hudayriyat Island",
+        "ar": "جزيرة الحديريات",
+        "by": "machine"
+      },
+      "items[1].blurb": {
+        "en": "A vibrant, high-density waterfront community minutes from the city — strong rental demand and a deep mix of apartments and towers.",
+        "ar": "مجتمع نابض بالحياة عالي الكثافة على الواجهة المائية على بُعد دقائق من المدينة — طلب إيجاري قوي ومزيج واسع من الشقق والأبراج.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[1].img": {
+        "en": "al reem island · skyline waterfront",
+        "ar": "جزيرة الريم · واجهة بحرية بأفق المدينة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[1].name": {
+        "en": "Al Reem Island",
+        "ar": "جزيرة الريم",
+        "by": "machine"
+      },
+      "sub": {
+        "en": "Where demand, new supply, and lifestyle are converging right now.",
+        "ar": "حيث يلتقي الطلب والمعروض الجديد ونمط الحياة في الوقت الحالي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "tile_eyebrow": {
+        "en": "Area Spotlight",
+        "ar": "أضواء على المنطقة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      }
+    },
+    "community_types": {
+      "heading": {
+        "en": "Find the setting that fits your life.",
+        "ar": "اعثر على المكان الذي يناسب حياتك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[0].about": {
+        "en": "Designed around views, open spaces, and lifestyle convenience, waterfront communities remain highly desirable.",
+        "ar": "المجتمعات المطلة على الواجهة المائية، المصممة حول الإطلالات والمساحات المفتوحة وسهولة نمط الحياة، لا تزال مرغوبة بشدة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[0].chips": {
+        "en": "Mamsha Al Saadiyat\nHidd Al Saadiyat\nAl Muneera\nAl Bandar\nAl Zeina\nYas Acres\nReem Hills\nGardenia Bay",
+        "ar": "ممشى السعديات\nحد السعديات\nالمنيرة\nالبندر\nالزينة\nياس ايكرز\nريم هيلز\nجاردينيا باي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[0].cta_label": {
+        "en": "Explore waterfront communities",
+        "ar": "مجتمعات على الواجهة المائية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[0].img": {
+        "en": "waterfront promenade · canal",
+        "ar": "ممشى الواجهة المائية · القناة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[0].name": {
+        "en": "Waterfront Communities",
+        "ar": "المجتمعات المطلة على الواجهة المائية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[0].tagline": {
+        "en": "Explore communities designed around sea views, canals, promenades, and relaxed waterfront living.",
+        "ar": "استكشف مجتمعات مصممة حول إطلالات البحر والقنوات المائية والممشى والحياة الهادئة على الواجهة البحرية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[1].about": {
+        "en": "Gated communities are ideal for families seeking privacy, security, landscaped spaces, and everyday convenience.",
+        "ar": "المجمعات المغلقة مثالية للعائلات التي تبحث عن الخصوصية والأمان والمساحات الخضراء المنسّقة وسهولة الحياة اليومية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T11:00:32.154Z"
+      },
+      "items[1].chips": {
+        "en": "Yas Acres\nSaadiyat Lagoons\nSaadiyat Reserve\nAl Raha Gardens\nReem Hills\nAl Ghadeer\nBloom Living\nHidd Al Saadiyat",
+        "ar": "ياس ايكرز\nالسعديات لاغونز\nسعديات ريزيرف\nحدائق الراحة\nريم هيلز\nالغدير\nبلوم ليفينغ\nحد السعديات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[1].cta_label": {
+        "en": "Explore gated communities",
+        "ar": "مجمعات سكنية مغلقة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[1].img": {
+        "en": "gated villa community · aerial",
+        "ar": "فيلا ضمن مجمع مغلق · تصوير جوي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[1].name": {
+        "en": "Gated Communities",
+        "ar": "المجمعات السكنية المغلقة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[1].tagline": {
+        "en": "Discover private residential communities offering security, comfort, and a more exclusive living environment.",
+        "ar": "اكتشف المجتمعات السكنية الخاصة التي توفر الأمان والراحة وبيئة معيشية أكثر تميزًا.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[2].about": {
+        "en": "Luxury communities offer premium homes, refined surroundings, privacy, and strong lifestyle appeal.",
+        "ar": "المجتمعات الفاخرة توفّر منازل راقية ومحيطاً مميزاً وخصوصية وأسلوب حياة جذاباً.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[2].chips": {
+        "en": "Mamsha Al Saadiyat\nHidd Al Saadiyat\nSaadiyat Lagoons\nSaadiyat Reserve\nNurai Island\nNobu Residences\nBaccarat Residences Saadiyat\nRamhan Island",
+        "ar": "ممشى السعديات\nحد السعديات\nالسعديات لاغونز\nسعديات ريزيرف\nجزيرة نوراي\nنوبو ريزيدنسز\nباكارات ريزيدنسز السعديات\nجزيرة رمحان",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T11:00:32.154Z"
+      },
+      "items[2].chips_label": {
+        "en": "Popular luxury communities",
+        "ar": "المجتمعات الفاخرة الأكثر رواجًا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T11:00:32.154Z"
+      },
+      "items[2].cta_label": {
+        "en": "Explore luxury communities",
+        "ar": "اكتشف المجتمعات الفاخرة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[2].img": {
+        "en": "luxury residence · beachfront",
+        "ar": "إقامة فاخرة · على الواجهة البحرية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[2].name": {
+        "en": "Luxury Communities",
+        "ar": "المجتمعات الفاخرة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T11:00:32.154Z"
+      },
+      "items[2].tagline": {
+        "en": "Explore Abu Dhabi's most premium addresses, offering high-end residences, exclusive amenities, and prime locations.",
+        "ar": "اكتشف أرقى العناوين في أبوظبي، التي تقدم مساكن فاخرة، المرافق الحصرية، ومواقع متميزة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[3].about": {
+        "en": "Family-friendly communities are ideal for those seeking space, convenience, and long-term comfort.",
+        "ar": "المجتمعات المناسبة للعائلات مثالية لمن يبحث عن المساحة والراحة اليومية والاستقرار على المدى الطويل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[3].chips": {
+        "en": "Yas Acres\nAl Raha Gardens\nBloom Living\nAl Ghadeer\nSaadiyat Lagoons\nNoya\nNoya Viva\nFay Al Reeman",
+        "ar": "ياس ايكرز\nحدائق الراحة\nبلوم ليفينج\nالغدير\nالسعديات لاغونز\nنويا\nنويا فيفا\nفay الريمان",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[3].chips_label": {
+        "en": "Popular family-friendly communities",
+        "ar": "المجمعات السكنية الأنسب للعائلات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[3].cta_label": {
+        "en": "Explore family-friendly communities",
+        "ar": "المجتمعات المناسبة للعائلات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[3].name": {
+        "en": "Family-Friendly Communities",
+        "ar": "مجتمعات مناسبة للعائلات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "sub": {
+        "en": "Every community has a character. Filter by the way you want to live.",
+        "ar": "كل مجتمع له طابعه الخاص. اختر وفق أسلوب الحياة الذي تريده.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T11:00:32.154Z"
+      }
+    },
+    "faqs": {
+      "eyebrow": {
+        "en": "Areas FAQ",
+        "ar": "الأسئلة الشائعة عن المناطق",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "heading": {
+        "en": "Questions about Abu Dhabi's areas.",
+        "ar": "أبوظبي أسئلة حول مناطق",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[0].a": {
+        "en": "It depends on your goal. Saadiyat Island and Al Reem Island are perennial favourites for capital appreciation and rental demand, while emerging destinations like Hudayriyat Island offer earlier entry points. Our advisors can match an area to your budget, timeline, and whether you're buying to live or to let.",
+        "ar": "الأمر يعتمد على هدفك. جزيرة السعديات وجزيرة الريم من الوجهات المفضّلة دائمًا لنمو رأس المال والطلب على الإيجار، بينما توفّر وجهات ناشئة مثل جزيرة الحديريات نقاط دخول مبكرة. بإمكان مستشارينا اختيار المنطقة التي تناسب ميزانيتك وإطارك الزمني، وما إذا كنت تشتري للسكن أو للتأجير.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[0].q": {
+        "en": "Which are the best areas to invest in Abu Dhabi?",
+        "ar": "ما هي أفضل المناطق للاستثمار في أبوظبي؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[1].a": {
+        "en": "Yes. Abu Dhabi allows foreign nationals to own freehold property in designated investment zones, which cover most of the islands and communities featured here — including Saadiyat, Al Reem, Yas, and Al Raha Beach.",
+        "ar": "نعم. أبوظبي تتيح للأجانب تملك العقارات تملك حر في مناطق الاستثمار المحددة، والتي تشمل معظم الجزر والمجتمعات المعروضة هنا — بما في ذلك السعديات والريم وياس وشاطئ الراحة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[1].q": {
+        "en": "Can foreigners buy property in these areas?",
+        "ar": "هل يمكن للأجانب شراء العقارات في هذه المناطق؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[2].a": {
+        "en": "In Abu Dhabi's designated investment zones, non-UAE nationals can hold freehold ownership of the property and the land. Elsewhere, foreign ownership is typically structured as long-term leasehold or usufruct. Every area guide notes its ownership terms.",
+        "ar": "في مناطق الاستثمار المحددة في أبوظبي، يمكن لغير مواطني الدولة الحصول على تملك حر للعقار والأرض. أما في المناطق الأخرى، فتُنظَّم ملكية الأجانب عادةً على شكل حق انتفاع طويل الأمد. ويوضّح كل دليل منطقة شروط الملكية الخاصة به.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[2].q": {
+        "en": "What's the difference between an investment zone and a freehold area?",
+        "ar": "ما الفرق بين منطقة استثمارية ومنطقة تملك حر؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[3].a": {
+        "en": "Gated, low-rise communities with schools and parks nearby tend to suit families best — Yas Acres, Al Raha Gardens, Saadiyat Lagoons, and Bloom Living are common choices. Filter by the family-friendly community type above to see the full list.",
+        "ar": "المجمّعات المسوّرة منخفضة الارتفاع القريبة من المدارس والحدائق هي الأنسب للعائلات عادةً — ومن الخيارات الشائعة ياس ايكرز وحدائق الراحة والسعديات لاغونز وبلوم ليفينغ. استخدم عامل التصفية حسب نوع المجمّعات المناسبة للعائلات أعلاه للاطّلاع على القائمة كاملة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[3].q": {
+        "en": "Which areas are best for families?",
+        "ar": "ما هي أفضل المناطق للعائلات؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[4].a": {
+        "en": "Higher-density waterfront communities such as Al Reem Island typically post the strongest gross yields thanks to steady tenant demand, while premium addresses trade yield for capital growth. Each area guide shows median prices and recent market movement.",
+        "ar": "عادةً ما تسجّل المجتمعات الواقعة على الواجهة المائية ذات الكثافة الأعلى مثل جزيرة الريم أقوى العوائد الإجمالية بفضل الطلب المستقر من المستأجرين، في حين تتنازل العناوين الفاخرة عن العائد مقابل النمو الرأسمالي. ويعرض دليل كل منطقة الأسعار الوسيطة وحركة السوق الأخيرة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[4].q": {
+        "en": "Which areas offer the strongest rental yields?",
+        "ar": "ما المناطق التي تحقق أعلى العوائد الإيجارية؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[5].a": {
+        "en": "Waterfront communities lead on views, promenades, and lifestyle; gated communities lead on privacy, security, and space for families. Tell an advisor how you want to live and we'll shortlist areas that fit — often across both categories.",
+        "ar": "مجتمعات الواجهة البحرية تتميز بالإطلالات والممشى وأسلوب الحياة؛ أما المجتمعات المسوّرة فتتميز بالخصوصية والأمان والمساحة للعائلات. أخبر أحد مستشارينا كيف ترغب في العيش وسنضع لك قائمة مختصرة بالمناطق المناسبة — غالباً من كلتا الفئتين.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "items[5].q": {
+        "en": "How do I choose between a waterfront and a gated community?",
+        "ar": "كيف أختار بين مجتمع على الواجهة المائية ومجتمع سكني مغلق؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "sub": {
+        "en": "The essentials on ownership, investment, and choosing where to live.",
+        "ar": "معلومات أساسية عن التملّك والاستثمار واختيار مكان السكن.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      }
+    },
+    "hero": {
+      "eyebrow": {
+        "en": "Abu Dhabi Locations",
+        "ar": "أبوظبي المواقع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.554Z"
+      },
+      "subtitle": {
+        "en": "From waterfront destinations to family-friendly neighbourhoods, discover the areas that define living and investing in the capital.",
+        "ar": "من الوجهات المطلة على الواجهة المائية إلى الأحياء المناسبة للعائلات، اكتشف المناطق التي تحدد ملامح السكن والاستثمار في العاصمة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.557Z"
+      },
+      "title": {
+        "en": "Explore Abu Dhabi's leading communities.",
+        "ar": "اكتشف أبرز مجتمعات أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.557Z"
+      }
+    },
+    "list_your_property": {
+      "body": {
+        "en": "Looking to sell or rent? We'll handle the process for you.",
+        "ar": "هل ترغب في البيع أو التأجير؟ نتولى العملية نيابةً عنك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "heading": {
+        "en": "List your property",
+        "ar": "ااعرض عقارك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      }
+    },
+    "why_bazar": {
+      "body": {
+        "en": "With over 20 years in the UAE market, Bazar pairs street-level knowledge of every Abu Dhabi community with developer relationships and honest, client-first guidance — so you choose an area with conviction, not guesswork.",
+        "ar": "بخبرة تتجاوز 20 عامًا في سوق الإمارات، تجمع بازار بين معرفة ميدانية بكل مجتمع في أبوظبي وعلاقات وثيقة مع المطورين العقاريين وإرشاد صادق يضع العميل أولًا — لتختار المنطقة بقناعة، لا بالتخمين.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "eyebrow": {
+        "en": "Why Bazar",
+        "ar": "لماذا بازار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T11:00:32.154Z"
+      },
+      "stats[0].label": {
+        "en": "In the UAE market",
+        "ar": "في سوق الإمارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "stats[0].value": {
+        "en": "20+ yrs",
+        "ar": "أكثر من 20 عامًا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "stats[1].label": {
+        "en": "Abu Dhabi coverage",
+        "ar": "تغطية أبوظبي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      },
+      "title": {
+        "en": "Two decades of Abu Dhabi expertise, on your side.",
+        "ar": "عقدان من الخبرة في أبوظبي، إلى جانبك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:54:35.558Z"
+      }
+    }
+  },
+  "buy": {
+    "communities": {
+      "chips[0].label": {
+        "en": "Al Reem Island",
+        "ar": "جزيرة الريم",
+        "by": "machine"
+      },
+      "chips[1].label": {
+        "en": "Yas Island",
+        "ar": "جزيرة ياس",
+        "by": "machine"
+      },
+      "chips[2].label": {
+        "en": "Saadiyat Island",
+        "ar": "جزيرة السعديات",
+        "by": "machine"
+      },
+      "chips[3].label": {
+        "en": "Al Raha Beach",
+        "ar": "شاطئ الراحة",
+        "by": "machine"
+      },
+      "chips[4].label": {
+        "en": "Al Maryah Island",
+        "ar": "جزيرة الماريه",
+        "by": "machine"
+      },
+      "chips[5].label": {
+        "en": "Khalifa City",
+        "ar": "مدينة خليفة",
+        "by": "machine"
+      },
+      "chips[6].label": {
+        "en": "Hudayriyat Island",
+        "ar": "جزيرة الحديريات",
+        "by": "machine"
+      },
+      "chips[7].label": {
+        "en": "Masdar City",
+        "ar": "مدينة مصدر",
+        "by": "machine"
+      },
+      "communities_cta": {
+        "en": "Explore all locations",
+        "ar": "استكشف جميع المواقع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "communities_eyebrow": {
+        "en": "Where to buy",
+        "ar": "أين تشتري",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "communities_sub": {
+        "en": "Explore properties across Abu Dhabi's most popular residential and lifestyle destinations.",
+        "ar": "استكشف العقارات في أبرز الوجهات السكنية والحيوية في أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "communities_title": {
+        "en": "Abu Dhabi's leading communities.",
+        "ar": "المجتمعات الرائدة في أبوظبي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:57:32.465Z"
+      }
+    },
+    "faq": {
+      "faq_eyebrow": {
+        "en": "Buying with Bazar",
+        "ar": "الشراء مع بازار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:57:32.465Z"
+      },
+      "items[0].a": {
+        "en": "Yes. We assist with ready, resale, and off-plan property purchases across Abu Dhabi and the wider UAE.",
+        "ar": "نعم. نساعدكم في شراء العقارات الجاهزة وعقارات إعادة البيع والعقارات على الخارطة في أبوظبي وفي مختلف أنحاء الإمارات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[0].q": {
+        "en": "Can Bazar help me buy both ready and off-plan properties?",
+        "ar": "هل يمكن أن يساعدني بازار في شراء العقارات الجاهزة والعقارات على الخارطة؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[1].a": {
+        "en": "Foreign buyers can purchase property in designated investment areas in Abu Dhabi.",
+        "ar": "يمكن للمشترين الأجانب تملك العقارات في مناطق الاستثمار المحددة في أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[1].q": {
+        "en": "Can I buy property in Abu Dhabi as a foreigner?",
+        "ar": "هل يمكنني شراء عقار في أبوظبي كأجنبي؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[2].a": {
+        "en": "It is recommended if you plan to finance your purchase, as it helps define your budget clearly.",
+        "ar": "يُنصح به إذا كنت تخطط لتمويل عملية الشراء، فهو يساعدك على تحديد ميزانيتك بوضوح.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[2].q": {
+        "en": "Do I need mortgage approval before searching?",
+        "ar": "هل أحتاج إلى موافقة تمويل عقاري قبل البحث؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[3].a": {
+        "en": "Yes. We can guide you based on location, rental demand, developer reputation, and long-term value.",
+        "ar": "نعم. يمكننا إرشادك بناءً على الموقع، والطلب على الإيجار، وسمعة المطور العقاري، والقيمة على المدى الطويل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[3].q": {
+        "en": "Can Bazar help with investment properties?",
+        "ar": "هل يمكن لـبازار المساعدة في العقارات الاستثمارية؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      }
+    },
+    "featured": {
+      "featured_cta": {
+        "en": "Browse all for sale",
+        "ar": "تصفح جميع العقارات للبيع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "featured_title": {
+        "en": "Featured properties for sale",
+        "ar": "العقارات المميزة للبيع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      }
+    },
+    "hero": {
+      "chips[0].label": {
+        "en": "Apartment",
+        "ar": "شقة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "chips[1].label": {
+        "en": "Villa",
+        "ar": "فيلا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "chips[2].label": {
+        "en": "Penthouse",
+        "ar": "بنتهاوس",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "eyebrow": {
+        "en": "Buy a Property",
+        "ar": "شراء عقار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.268Z"
+      },
+      "sub": {
+        "en": "Browse ready, resale and off-plan homes across Abu Dhabi's most sought-after communities — with a senior advisor guiding every step.",
+        "ar": "تصفّح المنازل الجاهزة وإعادة البيع وعلى الخارطة في أكثر مجتمعات أبوظبي طلبًا — مع مستشار أول يرشدك في كل خطوة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "title": {
+        "en": "Find the right property\nwith",
+        "ar": "اعثر على العقار المناسب\nمع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      }
+    },
+    "hero_form": {
+      "form_sub": {
+        "en": "Tell us what you're looking for, and our team will help you find the right opportunity.",
+        "ar": "أخبرنا بما تبحث عنه، وسيساعدك فريقنا في العثور على الفرصة المناسبة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "form_title": {
+        "en": "Start your property search",
+        "ar": "سابدأ رحلة البحث عن عقارك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      }
+    },
+    "lead_band": {
+      "eyebrow": {
+        "en": "Talk to an advisor",
+        "ar": "التحدث إلى مستشار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:57:32.463Z"
+      },
+      "sub": {
+        "en": "Share your brief — area, budget, timeline — and a senior advisor will come back with a shortlist worth your time.",
+        "ar": "شاركنا متطلباتك — المنطقة والميزانية والإطار الزمني — وسيعود إليك أحد كبار المستشارين بقائمة مختصرة تستحق وقتك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      }
+    },
+    "map": {
+      "body": {
+        "en": "Zoom into an area and tap a property to open its details — or pick a community below to focus the map.",
+        "ar": "كبّر منطقة معينة واضغط على عقار لعرض تفاصيله — أو اختر مجتمعًا أدناه لتركيز الخريطة عليه.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "eyebrow": {
+        "en": "On the map",
+        "ar": "على الخريطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:31:57.616Z"
+      },
+      "heading": {
+        "en": "Buy across Abu Dhabi's communities.",
+        "ar": "أبوظبي اشترِ في مجتمعات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      }
+    },
+    "prop_types": {
+      "items[0].cta": {
+        "en": "Browse apartments",
+        "ar": "تصفح الشقق",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "items[0].desc": {
+        "en": "Find modern apartments in prime Abu Dhabi communities, ideal for individuals, couples, families, and professionals.",
+        "ar": "اعثر على شقق عصرية في أرقى مجتمعات أبوظبي، مثالية للأفراد والأزواج والعائلات وأصحاب المهن.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "items[0].img": {
+        "en": "apartments",
+        "ar": "شقق",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "items[1].cta": {
+        "en": "Browse villas",
+        "ar": "تصفح الفلل",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "items[1].desc": {
+        "en": "Explore spacious villas designed for family living, privacy, outdoor space, and long-term comfort.",
+        "ar": "استكشف فللاً واسعة مصممة للحياة العائلية والخصوصية والمساحات الخارجية والراحة على المدى الطويل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "items[1].img": {
+        "en": "villas",
+        "ar": "أملاك فلل",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:31:57.617Z"
+      },
+      "items[1].name": {
+        "en": "Villas",
+        "ar": "الفلل",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "items[2].cta": {
+        "en": "Browse townhouses",
+        "ar": "تصفح التاون هاوس",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[2].desc": {
+        "en": "Discover townhouses that offer the perfect balance between space, community living, and everyday convenience.",
+        "ar": "اكتشف تاون هاوس يوفر التوازن المثالي بين المساحة والحياة المجتمعية وراحة الحياة اليومية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[2].img": {
+        "en": "townhouses",
+        "ar": "تاون هاوس",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[2].name": {
+        "en": "Townhouses",
+        "ar": "تاون هاوس",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[3].cta": {
+        "en": "Browse penthouses",
+        "ar": "تصفح البنتهاوس",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[3].desc": {
+        "en": "Browse premium penthouses with larger layouts, high-end finishes, and exceptional views.",
+        "ar": "تصفح البنتهاوسات الفاخرة بمساحات أوسع وتشطيبات راقية وإطلالات استثنائية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[3].img": {
+        "en": "penthouses",
+        "ar": "بنتهاوس",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[3].name": {
+        "en": "Penthouses",
+        "ar": "بنتهاوس",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[4].cta": {
+        "en": "Browse commercial",
+        "ar": "تصفح العقارات التجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[4].desc": {
+        "en": "Find offices, retail spaces, and other commercial opportunities for your business.",
+        "ar": "ابحث عن مكاتب ومساحات تجزئة وفرص تجارية أخرى لأعمالك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[4].img": {
+        "en": "commercial properties",
+        "ar": "العقارات التجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "items[4].name": {
+        "en": "Commercial Properties",
+        "ar": "العقارات التجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "prop_types_title": {
+        "en": "A home for every stage.",
+        "ar": "منزل يناسب كل مرحلة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      }
+    },
+    "ways": {
+      "tiles[0].cta": {
+        "en": "Browse off-plan",
+        "ar": "على الخارطة تصفح",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:31:57.617Z"
+      },
+      "tiles[0].desc": {
+        "en": "New launches with structured payment plans.",
+        "ar": "مشاريع جديدة بخطط سداد منظّمة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "tiles[0].img": {
+        "en": "off-plan tower · render",
+        "ar": "برج على الخارطة · صورة تخيلية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:57:32.465Z"
+      },
+      "tiles[0].name": {
+        "en": "Off-Plan Properties",
+        "ar": "عقارات على الخارطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:31:57.617Z"
+      },
+      "tiles[1].cta": {
+        "en": "Browse resale",
+        "ar": "تصفح إعادة البيع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "tiles[1].desc": {
+        "en": "Established homes ready for handover.",
+        "ar": "منازل قائمة جاهزة للتسليم.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "tiles[1].img": {
+        "en": "resale apartment",
+        "ar": "شقة إعادة بيع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "tiles[1].name": {
+        "en": "Resale Properties",
+        "ar": "العقارات المعاد بيعها",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "tiles[2].cta": {
+        "en": "Browse ready",
+        "ar": "تصفح الجاهز",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "tiles[2].desc": {
+        "en": "Vacant, keys-in-hand homes.",
+        "ar": "منازل شاغرة وجاهزة للتسليم الفوري.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:57:32.465Z"
+      },
+      "tiles[2].img": {
+        "en": "ready villa · interior",
+        "ar": "فيلا جاهزة · التشطيب الداخلي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "tiles[3].cta": {
+        "en": "Browse commercial",
+        "ar": "تصفح العقارات التجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "tiles[3].desc": {
+        "en": "Offices, retail and land.",
+        "ar": "مكاتب ومحلات تجارية وأراضٍ.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "tiles[3].img": {
+        "en": "commercial tower",
+        "ar": "برج تجاري",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:31:57.617Z"
+      },
+      "tiles[3].name": {
+        "en": "Commercial Properties",
+        "ar": "العقارات التجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "ways_eyebrow": {
+        "en": "Ways to buy",
+        "ar": "طرق الشراء",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      },
+      "ways_title": {
+        "en": "What type of property are you looking for?",
+        "ar": "ما نوع العقار الذي تبحث عنه؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.269Z"
+      }
+    },
+    "why": {
+      "stats[0].label": {
+        "en": "In the UAE market",
+        "ar": "في السوق الإماراتي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "stats[0].value": {
+        "en": "20+ yrs",
+        "ar": "أكثر من 20 عامًا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "stats[1].label": {
+        "en": "Full-market access",
+        "ar": "الوصول إلى السوق بالكامل",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "stats[1].value": {
+        "en": "Ready + off-plan",
+        "ar": "جاهز + على الخارطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:31:57.617Z"
+      },
+      "why_body": {
+        "en": "With over 20 years of UAE real estate experience, Bazar Real Estate combines local market knowledge, developer relationships, and client-focused guidance to help you make confident property decisions — whether you're buying your first home or your fifth investment.",
+        "ar": "بخبرة تتجاوز 20 عامًا في سوق العقارات الإماراتي، تجمع بازار العقارية بين المعرفة بالسوق المحلي وعلاقاتها بالمطورين العقاريين والإرشاد الذي يركّز على العميل، لمساعدتك على اتخاذ قرارات عقارية واثقة — سواء كنت تشتري منزلك الأول أو استثمارك الخامس.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      },
+      "why_title": {
+        "en": "Two decades of Abu Dhabi expertise, on your side.",
+        "ar": "عقدان من الخبرة في أبوظبي، إلى جانبك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:30:05.270Z"
+      }
+    }
+  },
+  "commercial": {
+    "communities": {
+      "chips[0].label": {
+        "en": "Al Reem Island",
+        "ar": "جزيرة الريم",
+        "by": "machine"
+      },
+      "chips[1].label": {
+        "en": "Yas Island",
+        "ar": "جزيرة ياس",
+        "by": "machine"
+      },
+      "chips[2].label": {
+        "en": "Saadiyat Island",
+        "ar": "جزيرة السعديات",
+        "by": "machine"
+      },
+      "chips[3].label": {
+        "en": "Al Raha Beach",
+        "ar": "شاطئ الراحة",
+        "by": "machine"
+      },
+      "chips[4].label": {
+        "en": "Al Maryah Island",
+        "ar": "جزيرة الماريه",
+        "by": "machine"
+      },
+      "chips[5].label": {
+        "en": "Khalifa City",
+        "ar": "مدينة خليفة",
+        "by": "machine"
+      },
+      "chips[6].label": {
+        "en": "Hudayriyat Island",
+        "ar": "جزيرة الحديريات",
+        "by": "machine"
+      },
+      "chips[7].label": {
+        "en": "Masdar City",
+        "ar": "مدينة مصدر",
+        "by": "machine"
+      },
+      "communities_cta": {
+        "en": "Explore locations",
+        "ar": "استكشف المواقع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "communities_sub": {
+        "en": "From the financial free-zone on Al Maryah to the mixed-use towers on Al Reem, the right address depends on who needs to reach you.",
+        "ar": "المنطقة المالية الحرة في المارية إلى الأبراج متعددة الاستخدامات في الريم، يعتمد اختيار العنوان المناسب على من يحتاج للوصول إليك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "communities_title": {
+        "en": "Abu Dhabi's established business addresses.",
+        "ar": "أبوظبي عناوين الأعمال الراسخة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      }
+    },
+    "faq": {
+      "items[0].a": {
+        "en": "Yes. We advise on commercial leases and on freehold acquisitions, including whole buildings and land with confirmed permitted use.",
+        "ar": "نعم. نقدّم الاستشارات بشأن عقود الإيجار التجارية وعمليات الشراء بنظام تملك حر، بما في ذلك المباني الكاملة والأراضي ذات الاستخدام المصرّح به المؤكّد.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[0].q": {
+        "en": "Do you handle both leasing and sales?",
+        "ar": "هل تتعاملون مع التأجير والبيع معًا؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[1].a": {
+        "en": "We advise on what the fit-out will realistically cost and who carries it under the lease, and can introduce contractors we have worked with.",
+        "ar": "نقدّم المشورة بشأن التكلفة الواقعية للتجهيزات الداخلية ومن يتحملها بموجب عقد الإيجار، ويمكننا ترشيح مقاولين سبق أن تعاملنا معهم.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[1].q": {
+        "en": "Can you help with fit-out?",
+        "ar": "هل نساعدك في التشطيب؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[2].a": {
+        "en": "Shell-and-core is delivered as a bare structure with services brought to the floor; fitted space is ready to occupy. The rent difference rarely reflects the true cost difference, which is what we help you work out.",
+        "ar": "التسليم على الهيكل يكون بمساحة خالية مع إيصال الخدمات إلى الطابق، أما المساحة المجهّزة فتكون جاهزة للإشغال. ونادراً ما يعكس فرق الإيجار الفرق الحقيقي في التكلفة، وهو ما نساعدك على حسابه.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[3].a": {
+        "en": "It depends on who has to reach you — clients, staff or freight. Tell us the use and we will shortlist the districts that fit rather than the ones with the most availability.",
+        "ar": "الأمر يعتمد على من يحتاج للوصول إليك — العملاء أو الموظفون أو الشحن. أخبرنا بطبيعة الاستخدام وسنضع لك قائمة مختصرة بالمناطق المناسبة، لا بالمناطق الأكثر توفراً.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      }
+    },
+    "featured": {
+      "featured_cta": {
+        "en": "Browse all commercial",
+        "ar": "تصفح جميع العقارات التجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "featured_title": {
+        "en": "Available commercial space",
+        "ar": "أملاك تجارية متاحة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      }
+    },
+    "hero": {
+      "chips[0].label": {
+        "en": "Offices",
+        "ar": "العقارات المكتبية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "chips[2].label": {
+        "en": "Showrooms",
+        "ar": "صالات العرض",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "eyebrow": {
+        "en": "Commercial Property",
+        "ar": "أملاك تجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.325Z"
+      },
+      "stats[0].label": {
+        "en": "& freehold",
+        "ar": "و تملك حر",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "stats[0].value": {
+        "en": "Lease",
+        "ar": "عقد إيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "stats[2].label": {
+        "en": "business districts",
+        "ar": "المناطق التجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "stats[2].value": {
+        "en": "Abu Dhabi",
+        "ar": "أبوظبي",
+        "by": "machine"
+      },
+      "sub": {
+        "en": "Leases and freeholds across Abu Dhabi's business districts — sized to how your business actually works, with an advisor who reads the lease before you sign it.",
+        "ar": "عقود إيجار وتملك حر في مناطق الأعمال في أبوظبي — بمساحات تناسب طريقة عمل شركتك فعليًا، مع مستشار يقرأ العقد قبل أن توقّعه.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.332Z"
+      },
+      "title": {
+        "en": "Office, retail and\nindustrial space,",
+        "ar": "مساحات مكتبية وتجارية\nوصناعية،",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.331Z"
+      }
+    },
+    "hero_form": {
+      "form_sub": {
+        "en": "Tell us the use, the headcount and the timing — we'll come back with options that fit, not a list to wade through.",
+        "ar": "أخبرنا بالاستخدام وعدد الموظفين والتوقيت — وسنعود إليك بخيارات مناسبة، لا بقائمة طويلة تحتاج إلى تصفّحها.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "form_title": {
+        "en": "Find commercial space",
+        "ar": "اعثر على مساحة تجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      }
+    },
+    "lead_band": {
+      "sub": {
+        "en": "Share the use, approximate area and move-in date — an advisor will send you matched commercial options, usually within one business day.",
+        "ar": "شاركنا نوع الاستخدام والمساحة التقريبية وتاريخ الانتقال، وسيرسل لك أحد المستشارين خيارات تجارية مطابقة، عادةً خلال يوم عمل واحد.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "title": {
+        "en": "Tell us what your business needs.",
+        "ar": "تحدّث إلينا عن احتياجات عملك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      }
+    },
+    "map": {
+      "eyebrow": {
+        "en": "Business districts",
+        "ar": "مناطق الأعمال",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      }
+    },
+    "prop_types": {
+      "items[0].cta": {
+        "en": "Browse offices",
+        "ar": "تصفح المكاتب",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "items[0].img": {
+        "en": "offices",
+        "ar": "مكاتب",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "items[0].name": {
+        "en": "Offices",
+        "ar": "العقارات المكتبية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "items[1].cta": {
+        "en": "Browse retail",
+        "ar": "تصفح المحلات التجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "items[1].desc": {
+        "en": "Street-front units, mall space and F&B pitches in the catchments where footfall actually is.",
+        "ar": "المنافذ الواجهات الشارعية ومساحات المولات ومواقع المطاعم والمقاهي في النطاقات التي تشهد حركة زوار فعلية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.333Z"
+      },
+      "items[2].cta": {
+        "en": "Browse showrooms",
+        "ar": "تصفح صالات العرض",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[2].desc": {
+        "en": "High-visibility showroom and light-industrial space with the access and ceiling heights those uses need.",
+        "ar": "صالة عرض ومساحة صناعية خفيفة بموقع بارز، مع سهولة الوصول وارتفاعات الأسقف التي تتطلبها هذه الاستخدامات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[2].img": {
+        "en": "showrooms",
+        "ar": "صالات عرض",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[2].name": {
+        "en": "Showrooms",
+        "ar": "صالات العرض",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[3].cta": {
+        "en": "Browse whole buildings",
+        "ar": "تصفح المباني الكاملة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[3].desc": {
+        "en": "Full-building acquisitions and leasebacks for occupiers and investors buying income rather than a unit.",
+        "ar": "استحواذات المباني الكاملة وإعادة التأجير للمستخدمين والمستثمرين الذين يشترون دخلاً لا وحدة عقارية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[3].img": {
+        "en": "whole buildings",
+        "ar": "مبانٍ كاملة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[4].desc": {
+        "en": "Plots with the zoning and permitted use confirmed before you commit to a design.",
+        "ar": "أراضٍ مؤكدة تصنيفها العمراني والاستخدام المسموح به قبل التزامك بأي تصميم.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "items[4].name": {
+        "en": "Land",
+        "ar": "العقارات المستقلة (الأراضي)",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      }
+    },
+    "why": {
+      "stats[0].value": {
+        "en": "Whole-cost",
+        "ar": "التكلفة الإجمالية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "stats[1].label": {
+        "en": "Before you commit",
+        "ar": "نصائح قبل أن تلتزم",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "stats[1].value": {
+        "en": "Lease review",
+        "ar": "تدقيق عقد الإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "why_body": {
+        "en": "Fit-out liability, service charge, permitted use and the escalation clause matter more than the headline rent. Bazar advises on the whole cost of occupying a space, so the lease you sign is the one you thought you were signing.",
+        "ar": "مسؤولية التجهيزات ورسوم الخدمات والاستخدام المسموح به وبند الزيادة أمور أهم من الإيجار المعلن. تقدّم بازار المشورة بشأن التكلفة الكاملة لشغل المساحة، ليكون عقد الإيجار الذي توقّعه هو العقد الذي ظننت أنك توقّعه.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      },
+      "why_title": {
+        "en": "A commercial search is a business decision, not a listing search.",
+        "ar": "البحث التجاري قرار عمل، وليس بحثاً عن إعلان عقاري.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:48:07.334Z"
+      }
+    }
+  },
   "home": {
     "area_map": {
+      "eyebrow": {
+        "en": "Where to live",
+        "ar": "أين تسكن",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:32:42.362Z"
+      },
       "heading": {
         "en": "Find your area first. The home follows.",
         "ar": "ابحث عن منطقتك أولاً. المنزل يأتي بعدها.",
@@ -153,6 +1561,20 @@
       }
     },
     "off_plan_projects": {
+      "body": {
+        "en": "Explore the latest off-plan projects across top communities.",
+        "ar": "استكشف أحدث المشاريع على الخارطة في أبرز المجتمعات.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:32:42.363Z"
+      },
+      "eyebrow": {
+        "en": "Off-plan projects for sale",
+        "ar": "مشاريع على الخارطة للبيع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:32:42.363Z"
+      },
       "heading": {
         "en": "New developments in Abu Dhabi",
         "ar": "مشاريع جديدة في أبوظبي",
@@ -229,6 +1651,750 @@
         "en": "Al Bateen",
         "ar": "البطين",
         "by": "machine"
+      }
+    }
+  },
+  "off-plan": {
+    "faq": {
+      "faq_eyebrow": {
+        "en": "FAQ",
+        "ar": "FAQ",
+        "by": "machine"
+      },
+      "faq_title": {
+        "en": "Off-plan questions, answered.",
+        "ar": "الأسئلة حول العقارات على الخارطة، مُجابة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[0].a": {
+        "en": "You reserve a home before (or during) construction, directly from the developer. You typically pay in staged instalments through the build and take handover once the project completes — often at a lower entry price than a comparable ready home.",
+        "ar": "تحجز منزلاً قبل البناء (أو أثناءه) مباشرة من المطور العقاري. وتدفع عادةً على أقساط مرحلية خلال فترة البناء، وتستلم عند التسليم بعد اكتمال المشروع — غالباً بسعر دخول أقل من منزل جاهز مماثل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[0].q": {
+        "en": "What does buying off-plan mean?",
+        "ar": "ماذا يعني الشراء على الخارطة؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[1].a": {
+        "en": "Most Abu Dhabi launches spread the price across construction milestones — a common structure is 40% during the build and 60% on handover, though plans vary by developer and project. We break down each plan alongside the numbers before you commit.",
+        "ar": "تُوزّع معظم الإطلاقات في أبوظبي السعر على مراحل الإنشاء — وأحد الهياكل الشائعة هو 40% أثناء البناء و60% عند التسليم، مع اختلاف الخطط حسب المطور العقاري والمشروع. نفصّل لك كل خطة إلى جانب الأرقام قبل أن تلتزم.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[1].q": {
+        "en": "How do payment plans work?",
+        "ar": "كيف تعمل خطط السداد؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[2].a": {
+        "en": "Yes. Off-plan payments are made into a developer's project escrow account, which is regulated so funds are released against verified construction progress rather than paid out up front. We confirm the escrow arrangement on every project we advise on.",
+        "ar": "نعم. تُدفع مبالغ الشراء على الخارطة في حساب الضمان الخاص بمشروع المطور العقاري، وهو حساب خاضع للتنظيم بحيث يُفرج عن الأموال مقابل تقدّم إنشائي مُتحقَّق منه بدلاً من دفعها مقدماً. ونؤكد ترتيب حساب الضمان في كل مشروع نقدّم المشورة بشأنه.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[2].q": {
+        "en": "Is my money protected before handover?",
+        "ar": "نعم، أموالك محمية قبل التسليم؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[3].a": {
+        "en": "Yes — foreign buyers can own freehold in Abu Dhabi's designated investment zones, which cover most of the island communities where new projects launch. We'll confirm the ownership status of any project you're considering.",
+        "ar": "نعم — يمكن للمشترين الأجانب الحصول على تملك حر في مناطق الاستثمار المحددة في أبوظبي، والتي تشمل معظم المجتمعات السكنية في الجزر حيث تُطلق المشاريع الجديدة. وسنؤكد لك وضع الملكية لأي مشروع تفكر فيه.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[3].q": {
+        "en": "Can non-residents and foreigners buy off-plan?",
+        "ar": "هل يمكن لغير المقيمين والأجانب الشراء على الخارطة؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      }
+    },
+    "hero": {
+      "eyebrow": {
+        "en": "New Projects",
+        "ar": "مشاريع جديدة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.607Z"
+      },
+      "stats[0].label": {
+        "en": "of H1 2026 sales were off-plan",
+        "ar": "من مبيعات النصف 1 من 2026 كانت على الخارطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "stats[0].value": {
+        "en": "78%",
+        "ar": "78%",
+        "by": "machine"
+      },
+      "stats[1].label": {
+        "en": "leading communities",
+        "ar": "المجتمعات الرائدة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "stats[1].value": {
+        "en": "8",
+        "ar": "8",
+        "by": "machine"
+      },
+      "stats[2].label": {
+        "en": "flexible payment plans",
+        "ar": "خطط سداد مرنة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "stats[2].value": {
+        "en": "40/60",
+        "ar": "40/60",
+        "by": "machine"
+      },
+      "sub": {
+        "en": "Explore the latest off-plan projects across Abu Dhabi's top communities — from waterfront apartments to branded residences.",
+        "ar": "اكتشف أحدث المشاريع على الخارطة في أبرز مجتمعات أبوظبي — من الشقق المطلة على الواجهة المائية إلى المساكن ذات العلامات التجارية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "title": {
+        "en": "New developments\nin Abu Dhabi.",
+        "ar": "مشاريع جديدة\nفي أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      }
+    },
+    "launches": {
+      "body": {
+        "en": "Browse the newest and upcoming residential developments across the emirate.",
+        "ar": "تصفّح أحدث المشاريع السكنية والقادمة في أنحاء الإمارة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "eyebrow": {
+        "en": "New launch",
+        "ar": "إطلاق جديد",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "heading": {
+        "en": "Abu Dhabi's latest launches.",
+        "ar": "أبوظبي أحدث إطلاقات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      }
+    },
+    "locations": {
+      "body": {
+        "en": "From waterfront destinations to family-friendly neighbourhoods — the areas shaping the emirate's off-plan market.",
+        "ar": "من الوجهات المطلة على الواجهة المائية إلى الأحياء المناسبة للعائلات — المناطق التي تشكّل سوق العقارات على الخارطة في الإمارة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "eyebrow": {
+        "en": "Abu Dhabi locations",
+        "ar": "أبوظبي مواقع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "heading": {
+        "en": "Explore Abu Dhabi's leading communities.",
+        "ar": "استكشف أبرز مجتمعات أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      }
+    },
+    "map": {
+      "eyebrow": {
+        "en": "On the map",
+        "ar": "على الخريطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "heading": {
+        "en": "Explore new projects across Abu Dhabi.",
+        "ar": "اكتشف المشاريع الجديدة في أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      }
+    },
+    "prop_types": {
+      "items[0].cta": {
+        "en": "View off-plan apartments",
+        "ar": "عرض الشقق على الخارطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[0].desc": {
+        "en": "Discover modern off-plan apartments in Abu Dhabi's most connected communities.",
+        "ar": "اكتشف شققاً عصرية على الخارطة في أكثر مجتمعات أبوظبي اتصالاً.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[0].name": {
+        "en": "Apartments",
+        "ar": "شقق",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[1].cta": {
+        "en": "View off-plan villas",
+        "ar": "عرض الفلل على الخارطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[1].desc": {
+        "en": "Explore spacious villas designed for privacy, comfort, and long-term family living.",
+        "ar": "استكشف فللاً واسعة مصممة للخصوصية والراحة والحياة العائلية طويلة الأمد.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[2].cta": {
+        "en": "View off-plan townhouses",
+        "ar": "عرض التاون هاوس على الخارطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[3].cta": {
+        "en": "View off-plan penthouses",
+        "ar": "عرض البنتهاوس على الخارطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[3].desc": {
+        "en": "Discover exclusive penthouses with premium views, spacious layouts, and elevated living.",
+        "ar": "اكتشف بنتهاوس حصرية بإطلالات مميزة وتصاميم واسعة ومستوى معيشة راقٍ.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "items[4].desc": {
+        "en": "Premium residences created with globally recognised lifestyle and hospitality brands.",
+        "ar": "منازل سكنية فاخرة تم تطويرها بالتعاون مع علامات عالمية رائدة في أسلوب الحياة والضيافة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      }
+    },
+    "why": {
+      "stats[0].label": {
+        "en": "H1 2026 sales off-plan",
+        "ar": "مبيعات H1 2026 على الخارطة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "stats[0].value": {
+        "en": "78%",
+        "ar": "78%",
+        "by": "machine"
+      },
+      "stats[1].label": {
+        "en": "typical payment plans",
+        "ar": "خطط السداد المعتادة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "stats[1].value": {
+        "en": "40/60",
+        "ar": "40/60",
+        "by": "machine"
+      },
+      "stats[2].label": {
+        "en": "leading communities",
+        "ar": "المجتمعات الرائدة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "stats[2].value": {
+        "en": "8",
+        "ar": "8",
+        "by": "machine"
+      },
+      "stats[3].label": {
+        "en": "advisor response",
+        "ar": "رد المستشار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "stats[3].value": {
+        "en": "2h",
+        "ar": "2h",
+        "by": "machine"
+      },
+      "why_body": {
+        "en": "From first render to handover, Bazar advises on the launches worth your capital — payment plans, escrow protection, developer track record, and resale timing. One team, from reservation to keys.",
+        "ar": "من أول صورة تخيلية وحتى التسليم، تقدّم بازار المشورة بشأن الإطلاقات التي تستحق رأس مالك — خطط السداد، وحماية حساب الضمان، وسجل المطور العقاري، وتوقيت إعادة البيع. فريق واحد، من الحجز إلى استلام المفاتيح.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      },
+      "why_title": {
+        "en": "Off-plan, handled end to end.",
+        "ar": "العقارات على الخارطة، تُدار من البداية إلى النهاية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:41:34.610Z"
+      }
+    }
+  },
+  "rent": {
+    "communities": {
+      "chips[0].label": {
+        "en": "Al Reem Island",
+        "ar": "جزيرة الريم",
+        "by": "machine"
+      },
+      "chips[1].label": {
+        "en": "Yas Island",
+        "ar": "جزيرة ياس",
+        "by": "machine"
+      },
+      "chips[2].label": {
+        "en": "Saadiyat Island",
+        "ar": "جزيرة السعديات",
+        "by": "machine"
+      },
+      "chips[3].label": {
+        "en": "Al Raha Beach",
+        "ar": "شاطئ الراحة",
+        "by": "machine"
+      },
+      "chips[4].label": {
+        "en": "Al Maryah Island",
+        "ar": "جزيرة الماريه",
+        "by": "machine"
+      },
+      "chips[5].label": {
+        "en": "Khalifa City",
+        "ar": "مدينة خليفة",
+        "by": "machine"
+      },
+      "chips[6].label": {
+        "en": "Hudayriyat Island",
+        "ar": "جزيرة الحديريات",
+        "by": "machine"
+      },
+      "chips[7].label": {
+        "en": "Masdar City",
+        "ar": "مدينة مصدر",
+        "by": "machine"
+      },
+      "communities_cta": {
+        "en": "Explore rental locations",
+        "ar": "استكشف مواقع الإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "communities_eyebrow": {
+        "en": "Popular rental areas",
+        "ar": "المناطق الأكثر طلباً للإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:59:18.465Z"
+      },
+      "communities_sub": {
+        "en": "Explore rental properties across Abu Dhabi's most popular residential and lifestyle destinations.",
+        "ar": "استكشف العقارات المعروضة للإيجار في أشهر الوجهات السكنية والحيوية في أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "communities_title": {
+        "en": "Rent in Abu Dhabi's leading communities.",
+        "ar": "إيجار في أبرز مجتمعات أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      }
+    },
+    "faq": {
+      "faq_eyebrow": {
+        "en": "Renting with Bazar",
+        "ar": "الاستئجار مع بازار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:59:18.465Z"
+      },
+      "faq_title": {
+        "en": "Questions, answered.",
+        "ar": "الأسئلة، مُجابة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[0].a": {
+        "en": "Yes. We assist with homes, apartments, villas, offices, retail spaces, and other commercial rentals.",
+        "ar": "نعم. نقدّم المساعدة في المنازل والشقق والفلل والمكاتب والمساحات التجارية وغيرها من الإيجارات التجارية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[0].q": {
+        "en": "Can Bazar help me find both residential and commercial rentals?",
+        "ar": "بازار هل يمكن أن تساعدني في إيجاد عقارات إيجار سكنية وتجارية على حد سواء؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[1].a": {
+        "en": "Tenants usually need identification documents, contact details, and payment information.",
+        "ar": "المستأجرون يحتاجون عادةً إلى وثائق الهوية وبيانات الاتصال ومعلومات الدفع.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[1].q": {
+        "en": "What documents do tenants usually need?",
+        "ar": "المستندات التي يحتاجها المستأجرون عادةً؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[2].a": {
+        "en": "Yes. We can help you find vacant and ready-to-move rental options.",
+        "ar": "موافقون. يمكننا مساعدتك في العثور على خيارات إيجار شاغرة وجاهزة للسكن.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[2].q": {
+        "en": "Can I rent a ready-to-move property?",
+        "ar": "هل يمكنني استئجار عقار جاهز للسكن؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[3].a": {
+        "en": "Yes. We can suggest areas based on your budget, lifestyle, commute, and property needs.",
+        "ar": "نعم. يمكننا اقتراح مناطق تناسب ميزانيتك ونمط حياتك ومسافة تنقلك واحتياجاتك العقارية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[3].q": {
+        "en": "Can Bazar help with location recommendations?",
+        "ar": "هل يمكن لـبازار المساعدة في التوصية بالمواقع؟",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      }
+    },
+    "featured": {
+      "featured_cta": {
+        "en": "Browse all for rent",
+        "ar": "تصفح جميع العقارات للإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "featured_title": {
+        "en": "Featured properties for rent",
+        "ar": "العقارات المميزة للإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      }
+    },
+    "hero": {
+      "chips[0].label": {
+        "en": "Apartments",
+        "ar": "شقق",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "chips[3].label": {
+        "en": "Offices",
+        "ar": "العقارات المكتبية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:59:18.465Z"
+      },
+      "eyebrow": {
+        "en": "Rent a Property",
+        "ar": "استئجار عقار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.605Z"
+      },
+      "stats[0].label": {
+        "en": "& commercial",
+        "ar": "& تجاري",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "stats[1].label": {
+        "en": "popular rental areas",
+        "ar": "مناطق الإيجار الشائعة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "stats[1].value": {
+        "en": "8",
+        "ar": "8",
+        "by": "machine"
+      },
+      "stats[2].value": {
+        "en": "Vacant",
+        "ar": "افرغ",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:59:18.465Z"
+      },
+      "sub": {
+        "en": "Residential and commercial rentals across the city's most connected communities — matched to your budget, lifestyle and move-in date.",
+        "ar": "إيجارات سكنية وتجارية في أكثر مجتمعات المدينة اتصالاً — تتناسب مع ميزانيتك ونمط حياتك وموعد انتقالك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "title": {
+        "en": "Find your next\nrental in",
+        "ar": "اعثر على عقارك التالي\nللإيجار في",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:59:18.464Z"
+      },
+      "title_emphasis": {
+        "en": "Abu Dhabi.",
+        "ar": "أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      }
+    },
+    "hero_form": {
+      "form_sub": {
+        "en": "Find Your Next Rental Property in Abu Dhabi",
+        "ar": "اعثر على عقارك التالي للإيجار في أبوظبي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:59:18.465Z"
+      },
+      "form_title": {
+        "en": "Rent a Property",
+        "ar": "خدمة استئجار عقار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      }
+    },
+    "lead_band": {
+      "sub": {
+        "en": "Share your budget, preferred areas and move-in date — an advisor will send you matched rentals, usually within one business day.",
+        "ar": "شاركنا ميزانيتك والمناطق المفضلة لديك وتاريخ الانتقال — وسيرسل لك أحد المستشارين خيارات إيجار مطابقة، عادةً خلال يوم عمل واحد.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      }
+    },
+    "map": {
+      "eyebrow": {
+        "en": "Rental areas",
+        "ar": "أملاك للإيجار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "heading": {
+        "en": "Rent by area. Start with the map.",
+        "ar": "الإيجار حسب المنطقة. ابدأ من الخريطة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      }
+    },
+    "prop_types": {
+      "items[0].cta": {
+        "en": "View rentals",
+        "ar": "عرض الإيجارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[0].desc": {
+        "en": "Find modern apartments in prime Abu Dhabi communities, ideal for individuals, couples, families, and professionals.",
+        "ar": "اعثر على شقق عصرية في أرقى مجتمعات أبوظبي، مثالية للأفراد والأزواج والعائلات والمهنيين.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[0].img": {
+        "en": "apartments",
+        "ar": "شقق",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[0].name": {
+        "en": "Apartments",
+        "ar": "شقق",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[1].cta": {
+        "en": "View rentals",
+        "ar": "عرض الإيجارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[1].desc": {
+        "en": "Explore spacious villas designed for family living, privacy, outdoor space, and long-term comfort.",
+        "ar": "استكشف فللاً واسعة مصممة للحياة العائلية والخصوصية والمساحات الخارجية والراحة على المدى الطويل.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[1].img": {
+        "en": "villas",
+        "ar": "فلل",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[2].cta": {
+        "en": "View rentals",
+        "ar": "عرض الإيجارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[2].desc": {
+        "en": "Discover townhouses that offer the perfect balance between space, community living, and everyday convenience.",
+        "ar": "اكتشف تاون هاوس يوفر التوازن المثالي بين المساحة والحياة المجتمعية والراحة اليومية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[3].cta": {
+        "en": "View rentals",
+        "ar": "عرض الإيجارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:59:18.465Z"
+      },
+      "items[3].desc": {
+        "en": "Browse premium penthouses with larger layouts, high-end finishes, and exceptional views.",
+        "ar": "تصفّح البنتهاوس الفاخرة بمساحات أوسع وتشطيبات راقية وإطلالات استثنائية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:59:18.465Z"
+      },
+      "items[4].cta": {
+        "en": "View rentals",
+        "ar": "عرض الإيجارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[4].desc": {
+        "en": "Find offices, retail spaces, and other commercial opportunities for your business.",
+        "ar": "ابحث عن مكاتب ومساحات تجزئة وفرص تجارية أخرى لأعمالك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[4].img": {
+        "en": "commercial properties",
+        "ar": "العقارات التجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "items[4].name": {
+        "en": "Commercial Properties",
+        "ar": "العقارات التجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "prop_types_title": {
+        "en": "Rentals for every kind of tenant.",
+        "ar": "تأجير يناسب كل نوع من المستأجرين.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      }
+    },
+    "why": {
+      "stats[0].label": {
+        "en": "Residential & commercial",
+        "ar": "أملاك سكنية وتجارية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "stats[1].label": {
+        "en": "Location recommendations",
+        "ar": "التوصيات بشأن المواقع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "stats[1].value": {
+        "en": "Budget-led",
+        "ar": "احسب حسب الميزانية",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "why_body": {
+        "en": "With deep local market knowledge and experience across residential and commercial properties, Bazar Real Estate helps tenants find the right rental option with clarity and confidence — from shortlist to move-in.",
+        "ar": "بفضل معرفتنا العميقة بالسوق المحلي وخبرتنا في العقارات السكنية والتجارية، تساعد بازار العقارية المستأجرين على إيجاد الخيار الإيجاري المناسب بوضوح وثقة — من إعداد القائمة المختصرة وحتى الانتقال للسكن.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
+      },
+      "why_title": {
+        "en": "Local knowledge that turns a search into the right home.",
+        "ar": "معرفة محلية تحوّل البحث إلى المنزل المناسب.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:37:34.607Z"
       }
     }
   }

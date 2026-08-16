@@ -61,6 +61,24 @@ export type Issue = {
      * eight-character Arabic run twice in a row.
      */
     | "self-repeat"
+    /**
+     * The sentence ends on a preposition.
+     *
+     * "Find Your Next Rental Property in Abu Dhabi" came back as
+     * "⟦0⟧ ابحث عن عقارك الإيجاري التالي في" — the place name dragged to the
+     * front and في left hanging off the end with nothing to govern.
+     *
+     * Every content word is present and correct, so the round trip passes it
+     * and the page renders a broken sentence.
+     *
+     * Deliberately NOT a rule about sentinel position. `validate` checks
+     * sentinel identity and never position, because Arabic word order moves
+     * them legitimately — a reference number leading a listing line is normal,
+     * and there is a test asserting exactly that. A trailing preposition is
+     * unambiguous in a way that a fronted span is not: Arabic sentences do not
+     * end in حرف جر.
+     */
+    | "dangling-preposition"
     | "too-long"
     | "glossary"
     | "markup"
@@ -357,6 +375,16 @@ export function validate(
     issues.push({
       code: "orphan-tail",
       detail: "text continues immediately after a full stop",
+    });
+  }
+
+  // Trailing حرف جر. Excludes the case where the English also ends on a
+  // preposition, which happens in fragments ("Homes to move in to").
+  const DANGLING = /(?:^|\s)(في|على|من|إلى|عن|مع|بين|حول|خلال|عبر)\s*[.،!؟]?\s*$/u;
+  if (DANGLING.test(output) && !/\b(in|on|of|to|for|with|from|about)\s*$/i.test(sourceMasked)) {
+    issues.push({
+      code: "dangling-preposition",
+      detail: "the Arabic ends on a preposition with nothing after it",
     });
   }
 

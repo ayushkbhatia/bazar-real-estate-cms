@@ -30,6 +30,7 @@
  * For the same reason the model is the *weakest* adequate one rather than the
  * strongest. A better back-translator is a worse instrument.
  */
+import { GLOSSARY } from "./glossary";
 import type { MtClient } from "./translate";
 
 /** Haiku: the project's existing bulk model, and deliberately not the prose one. */
@@ -272,5 +273,33 @@ export function restoreNames(
   for (const [ar, en] of pairs) {
     out = out.split(ar).join(en);
   }
+  return out;
+}
+
+/**
+ * Put the English house terms back before the round trip, for the same reason
+ * as `restoreNames`.
+ *
+ * A glossary term is not the model's choice. `off-plan` is على الخارطة because
+ * `glossary.ts` says so — that is the phrase UAE property Arabic actually uses,
+ * and `validate` already fails any output that renders it some other way. So
+ * round-tripping it tests nothing about this translation.
+ *
+ * What it does instead is fail it. The back-translator, told nothing about
+ * property, reads على الخارطة literally and returns "on the map"; the
+ * comparator then sees "off-plan" against "on the map" and rejects a correct
+ * translation for using the correct term. On the /buy page that was four of
+ * fifteen blocks, and it recurs everywhere the corpus says "off-plan".
+ *
+ * Restoring the English keeps the gate pointed at what the model actually
+ * decided. Ordered longest-first so a term containing another is not eaten.
+ */
+export function restoreGlossary(arabic: string): string {
+  const pairs = GLOSSARY.map((e) => [e.ar, e.en] as const)
+    .filter(([ar]) => ar.trim())
+    .sort((a, b) => b[0].length - a[0].length);
+
+  let out = arabic;
+  for (const [ar, en] of pairs) out = out.split(ar).join(en);
   return out;
 }

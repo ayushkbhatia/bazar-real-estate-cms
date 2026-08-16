@@ -288,3 +288,25 @@ describe("the model answering twice", () => {
     expect(codes).not.toContain("self-repeat");
   });
 });
+
+describe("a sentence that ends on a preposition", () => {
+  it("catches the fronted-span breakage", () => {
+    expect(
+      validate("Find Your Next Rental Property in ⟦0⟧", "⟦0⟧ ابحث عن عقارك الإيجاري التالي في").map(
+        (i) => i.code,
+      ),
+    ).toContain("dangling-preposition");
+  });
+
+  it("leaves a correctly placed span alone", () => {
+    expect(
+      validate("New developments in ⟦0⟧", "مشاريع جديدة في ⟦0⟧").map((i) => i.code),
+    ).not.toContain("dangling-preposition");
+  });
+
+  it("does not fight the rule that sentinel POSITION is never checked", () => {
+    // The existing contract: identity is checked, position never is, because
+    // Arabic word order moves sentinels legitimately.
+    expect(validate("Villa at ⟦0⟧, ref ⟦1⟧", "⟦1⟧ فيلا بسعر ⟦0⟧")).toEqual([]);
+  });
+});

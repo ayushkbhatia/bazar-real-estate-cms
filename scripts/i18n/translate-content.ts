@@ -180,7 +180,7 @@ async function main() {
   const { default: Anthropic } = await import("@anthropic-ai/sdk");
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const { translateField } = await import("../../lib/i18n/mt/translate");
-  const { backTranslate, equivalence, restoreNames } =
+  const { backTranslate, equivalence, restoreNames, restoreGlossary } =
     await import("../../lib/i18n/mt/backtranslate");
 
   const nouns = nounMap();
@@ -276,7 +276,10 @@ async function main() {
       // rejected for a word the model was never asked to choose.
       items: candidates.map((c, i) => ({
         id: String(i),
-        arabic: restoreNames(c.ar, nouns),
+        // House terms go back too — see `restoreGlossary`. على الخارطة is the
+        // correct Arabic for "off-plan", and round-tripping it returns "on the
+        // map", failing a translation for using the term the glossary requires.
+        arabic: restoreGlossary(restoreNames(c.ar, nouns)),
       })),
     });
     const backOf = new Map(backs.map((b) => [b.id, b.english]));
