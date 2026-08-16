@@ -97,4 +97,20 @@ describe("organizationJsonLd", () => {
     expect(ld.name).toBe("Bazar Real Estate");
     expect(ld.url).toBe("https://bazar-real-estate-cms.example");
   });
+
+  it("defaults `logo` to a file that ships in /public", async () => {
+    const { organizationJsonLd } = await importModule();
+    // The previous default was /icon.png, which does not exist in the repo —
+    // a 404 here is how a search result ends up with a blank generic mark.
+    expect(organizationJsonLd().logo).toBe(
+      "https://bazar-real-estate-cms.example/brand/bazar-logo.png",
+    );
+  });
+
+  it("prefers the CMS search-result logo when one is set", async () => {
+    const { organizationJsonLd } = await importModule();
+    expect(
+      organizationJsonLd("https://cdn.example.com/search-mark.png").logo,
+    ).toBe("https://cdn.example.com/search-mark.png");
+  });
 });

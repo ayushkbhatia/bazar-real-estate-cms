@@ -15,7 +15,10 @@ import { ConsentProvider } from "@/app/_consent/consent-provider";
 import { CookieBanner } from "@/app/_consent/cookie-banner";
 import { VercelAnalyticsGate } from "@/app/_consent/analytics-gate";
 import { organizationJsonLd } from "@/lib/jsonld";
-import { getPublicBranding } from "@/lib/queries/site-settings";
+import {
+  getPublicBranding,
+  resolveSearchIcon,
+} from "@/lib/queries/site-settings";
 import { env } from "@/lib/env";
 import { cn } from "@/lib/utils";
 import {
@@ -78,8 +81,16 @@ export async function generateMetadata(): Promise<Metadata> {
   // twin — and letting it fall through to the ambient locale would call a
   // dynamic API inside generateMetadata, which takes the whole route off
   // prerendering. That is precisely how /legal lost its CDN caching.
-  const { favicon_url } = await getPublicBranding(DEFAULT_LOCALE);
-  const icon = favicon_url ?? DEFAULT_FAVICON;
+  const branding = await getPublicBranding(DEFAULT_LOCALE);
+  const icon = branding.favicon_url ?? DEFAULT_FAVICON;
+  // The mark search engines read. Google asks for a square that is a multiple
+  // of 48px and takes it from `rel="icon"` or `rel="apple-touch-icon"`, so it
+  // is declared as a second, *sized* icon link rather than replacing the tab
+  // favicon: two `rel="icon"` tags that both omit `sizes` is the ambiguity the
+  // note above is about, two that declare different sizes is the standard way
+  // to offer both. Null when nothing is set, in which case the head is exactly
+  // what it was before this field existed.
+  const searchIcon = resolveSearchIcon(branding, SITE_URL);
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -95,11 +106,19 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "Bazar Real Estate",
     },
     icons: {
-      icon,
+      // The sized entry is added only when it is a *different* file: with no
+      // search logo set the chain resolves back to the favicon, and emitting
+      // the same href twice would be two icon links arguing over one image.
+      icon:
+        searchIcon && searchIcon !== icon
+          ? [{ url: icon }, { url: searchIcon, sizes: "192x192" }]
+          : icon,
       shortcut: icon,
-      // Home-screen bookmarks want a bigger square than a tab strip does. We
-      // only have one uploaded file, so it serves both; iOS scales it.
-      apple: icon,
+      // Home-screen bookmarks want a bigger square than a tab strip does — the
+      // search-result mark is authored at exactly that size, so it serves here
+      // too and iOS scales it. Falls back to the favicon when unset, which is
+      // the behaviour this line has always had.
+      apple: searchIcon ?? icon,
     },
   };
 }
@@ -155,6 +174,13 @@ export default async function RootLayout({
   // scripts/ci/assert-static-routes.mjs is what actually catches a missed one.
   setRequestLocale(locale);
 
+  // Same cookie-free anon read the (public) layout already does, and it has to
+  // come *after* setRequestLocale: an await placed above that call lets the
+  // subtree render before the locale is pinned, and every page below drops to
+  // on-demand rendering. assert-static-routes.mjs is what catches it.
+  const branding = await getPublicBranding(locale);
+  const searchLogo = resolveSearchIcon(branding, SITE_URL);
+
   // Dynamically imported so the Arabic woff2 and its preload tag never reach
   // an English page. See app/[locale]/_fonts-ar.ts.
   const arabic =
@@ -178,7 +204,7 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationJsonLd()),
+            __html: JSON.stringify(organizationJsonLd(searchLogo)),
           }}
         />
       </head>

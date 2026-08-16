@@ -383,6 +383,107 @@ export function FaviconField({
 }
 
 /**
+ * The square mark a search engine draws beside the site.
+ *
+ * Its own field rather than a reuse of the favicon for the reason 0108 gives:
+ * a file authored to stay legible at 16px in a tab strip is normally cruder
+ * than the one that should stand for the brand in a result row or a knowledge
+ * panel. Left empty it falls back to the favicon, then the logo, so this is
+ * additive for an operator who never touches it.
+ */
+export function SearchLogoField({
+  value,
+  brandName,
+  fallbackUrl,
+  options,
+  onChange,
+  error,
+}: {
+  value: string;
+  /** Drawn in the result rehearsal, so it reads as this site and not a mock. */
+  brandName: string;
+  /** What search engines get when this field is empty — favicon, then logo. */
+  fallbackUrl: string;
+  options: LogoOption[];
+  onChange: (url: string) => void;
+  error?: string;
+}) {
+  const shown = value || fallbackUrl;
+  return (
+    <BrandImagePicker
+      label="Search-result logo"
+      value={value}
+      options={options}
+      onChange={onChange}
+      emptyLabel="No search logo — reuse the favicon"
+      previewClassName="h-20 w-20"
+      error={error}
+      help={
+        <>
+          Square PNG, 512×512 (Google wants a multiple of 48px). This is the
+          mark shown next to your result on Google and in the knowledge panel,
+          drawn at about 24px in a result row and much larger in a panel — so
+          unlike the favicon it can carry a little more detail. Left empty it
+          reuses the favicon, then the logo. Artboard padding is cropped off on
+          upload. Search engines re-crawl on their own schedule: expect days,
+          not minutes, before a result row changes.
+        </>
+      }
+    >
+      {/*
+        Result-row rehearsal at roughly true size. The failure this catches is
+        the one the operator cannot otherwise see until Google has re-crawled:
+        a mark that dissolves inside the small circular chip a SERP draws it
+        in. `shown` rather than `value` so the row is honest about the
+        fallback when the field is empty.
+      */}
+      <div className="mt-3">
+        <div className="rounded border border-bz-border bg-bz-surface-2 px-3 py-2.5">
+          <div className="flex items-center gap-2">
+            <span className="flex size-7 flex-shrink-0 items-center justify-center overflow-hidden rounded-full border border-bz-border bg-bz-bg">
+              {shown ? (
+                /* Plain <img>: 28px is below every optimizer breakpoint, so
+                   next/image would only add a request for the same bytes. */
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={shown}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="size-5 object-contain"
+                />
+              ) : (
+                <span className="size-3 rounded-full bg-bz-muted-2" />
+              )}
+            </span>
+            <span className="min-w-0">
+              <span className="block truncate text-[12px] text-bz-ink">
+                {brandName}
+              </span>
+              <span className="block truncate text-[11px] text-bz-muted">
+                www.bazarrealestate.ae
+              </span>
+            </span>
+          </div>
+          <span className="mt-1.5 block text-[13px] text-bz-accent">
+            {brandName} — Abu Dhabi, properly understood
+          </span>
+          <span className="mt-0.5 block text-[11.5px] text-bz-muted">
+            Bespoke real estate advisory and a curated marketplace across the
+            United Arab Emirates.
+          </span>
+        </div>
+        <p className="mt-1 text-[11px] text-bz-muted">
+          {value
+            ? "Search-result preview, approximate size"
+            : "Search-result preview — currently showing the fallback"}
+        </p>
+      </div>
+    </BrandImagePicker>
+  );
+}
+
+/**
  * The lockup drawn in the public footer.
  *
  * Its own field rather than a reuse of the top-bar logo: the footer is the ink

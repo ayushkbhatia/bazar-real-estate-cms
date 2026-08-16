@@ -44,6 +44,7 @@ import {
   FaviconField,
   FooterLogoField,
   LogoField,
+  SearchLogoField,
   type LogoOption,
 } from "./_brand-image-fields";
 
@@ -69,6 +70,7 @@ export function BrandForm({
   const logoStyle = form.watch("logo_style");
   const faviconUrl = form.watch("favicon_url");
   const footerLogoUrl = form.watch("footer_logo_url");
+  const searchLogoUrl = form.watch("search_logo_url");
 
   function onSubmit(values: BrandSettingsInput) {
     startTransition(async () => {
@@ -86,7 +88,7 @@ export function BrandForm({
   return (
     <SectionCard
       title="Brand & identity"
-      subtitle="Logo, favicon, footer logo, public-facing name, tagline, and footer contact info."
+      subtitle="Logo, favicon, footer logo, search-result logo, public-facing name, tagline, and footer contact info."
     >
       <form
         onSubmit={form.handleSubmit(onSubmit)}
@@ -128,6 +130,21 @@ export function BrandForm({
             })
           }
           error={form.formState.errors.footer_logo_url?.message}
+        />
+        {/* Same fallback chain the root layout resolves, so the rehearsal row
+            shows what a crawler would actually fetch rather than nothing. */}
+        <SearchLogoField
+          value={searchLogoUrl ?? ""}
+          brandName={form.watch("brand_name") || "Bazar Real Estate"}
+          fallbackUrl={faviconUrl ?? logoUrl ?? ""}
+          options={logoOptions}
+          onChange={(url) =>
+            form.setValue("search_logo_url", url === "" ? null : url, {
+              shouldDirty: true,
+              shouldValidate: true,
+            })
+          }
+          error={form.formState.errors.search_logo_url?.message}
         />
         <Field
           label="Brand name"

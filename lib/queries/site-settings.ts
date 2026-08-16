@@ -31,6 +31,7 @@ const DEFAULTS: SiteSettings = {
     logo_style: "mark_and_name",
     favicon_url: null,
     footer_logo_url: null,
+    search_logo_url: null,
     orn: null,
     contact_email: null,
     contact_phone: null,
@@ -57,6 +58,7 @@ function shape(raw: Record<string, unknown> | null | undefined): SiteSettings {
     logo_style: raw.logo_style ?? DEFAULTS.brand.logo_style,
     favicon_url: raw.favicon_url ?? null,
     footer_logo_url: raw.footer_logo_url ?? null,
+    search_logo_url: raw.search_logo_url ?? null,
     orn: raw.orn ?? null,
     contact_email: raw.contact_email ?? null,
     contact_phone: raw.contact_phone ?? null,
@@ -119,7 +121,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   const { data, error } = await supabase
     .from("site_settings")
     .select(
-      "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
+      "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, search_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
     )
     .eq("id", 1)
     .maybeSingle();
@@ -135,6 +137,7 @@ export type PublicBranding = {
   logo_style: LogoStyle;
   favicon_url: string | null;
   footer_logo_url: string | null;
+  search_logo_url: string | null;
 };
 
 const BRANDING_DEFAULTS: PublicBranding = {
@@ -144,6 +147,7 @@ const BRANDING_DEFAULTS: PublicBranding = {
   logo_style: "mark_and_name",
   favicon_url: null,
   footer_logo_url: null,
+  search_logo_url: null,
 };
 
 /**
@@ -168,7 +172,7 @@ export async function getPublicBranding(
     const { data } = await supabase
       .from("site_settings")
       .select(
-        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url",
+        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, search_logo_url",
       )
       .eq("id", 1)
       .maybeSingle();
@@ -190,10 +194,39 @@ export async function getPublicBranding(
         : "mark_and_name",
       favicon_url: (row.favicon_url as string | null) ?? null,
       footer_logo_url: (row.footer_logo_url as string | null) ?? null,
+      search_logo_url: (row.search_logo_url as string | null) ?? null,
     };
   } catch {
     return BRANDING_DEFAULTS;
   }
+}
+
+/**
+ * The mark a search engine should draw for this site, as an absolute URL.
+ *
+ * One chain, in one place, because two surfaces consume it and they must not
+ * disagree: the sized `<link rel="icon">` / apple-touch-icon in the root
+ * layout's metadata, and the `logo` of the Organization JSON-LD. Falls back
+ * favicon → logo, so a site that never fills the new field still publishes a
+ * real file rather than the /icon.png that never existed.
+ *
+ * Absolutised against `siteUrl` because a stored value may legitimately be a
+ * site-relative path (`/brand/logo.png`), and schema.org `logo` is only
+ * useful to a crawler as an absolute URL.
+ */
+export function resolveSearchIcon(
+  branding: Pick<
+    PublicBranding,
+    "search_logo_url" | "favicon_url" | "logo_url"
+  >,
+  siteUrl: string,
+): string | null {
+  const picked =
+    branding.search_logo_url ?? branding.favicon_url ?? branding.logo_url;
+  if (!picked) return null;
+  return picked.startsWith("/")
+    ? `${siteUrl.replace(/\/+$/, "")}${picked}`
+    : picked;
 }
 
 /** Public read for the marketplace pages — uses the cookie-free public
@@ -208,7 +241,7 @@ export async function getPublicSiteSettings(
     const { data } = await supabase
       .from("site_settings")
       .select(
-        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
+        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, search_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
       )
       .eq("id", 1)
       .maybeSingle();
