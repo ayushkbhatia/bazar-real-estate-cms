@@ -94,6 +94,10 @@ export const brandSettingsSchema = z.object({
   brand_tagline_ar: z.string().trim().max(240).nullable().optional(),
   logo_url: assetUrl(),
   favicon_url: assetUrl(),
+  // The footer's own lockup. Separate from `logo_url` because the footer is
+  // drawn on the ink surface and normally wants the reversed artwork; null
+  // keeps the typeset wordmark.
+  footer_logo_url: assetUrl(),
   // `.optional()` rather than `.default()`: a zod default makes the *input*
   // type optional and the output required, and react-hook-form's resolver
   // types reject that asymmetry. The column is `not null default

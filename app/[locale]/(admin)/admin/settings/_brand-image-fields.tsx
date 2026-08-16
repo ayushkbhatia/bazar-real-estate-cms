@@ -27,7 +27,7 @@ function trimNote(trim: Extract<TrimResult, { status: "trimmed" }>): string {
 }
 
 /**
- * Shared picker behind both brand-image fields.
+ * Shared picker behind every brand-image field.
  *
  * Same contract as the advisor portrait picker: the settings columns are URL
  * columns rather than media ids, so this stores the asset's public URL. That
@@ -42,6 +42,7 @@ function BrandImagePicker({
   onChange,
   emptyLabel,
   previewClassName,
+  previewOnInk = false,
   help,
   error,
   children,
@@ -53,6 +54,12 @@ function BrandImagePicker({
   emptyLabel: string;
   /** Preview box geometry — a favicon is square, a lockup is not. */
   previewClassName: string;
+  /**
+   * Draw the preview on the ink surface instead of the checkerboard. The
+   * footer logo is normally white artwork, and white-on-checkerboard is the
+   * one background that hides whether it reads at all.
+   */
+  previewOnInk?: boolean;
   help: ReactNode;
   error?: string;
   /** Extra controls shown under the field once a file is chosen. */
@@ -141,19 +148,25 @@ function BrandImagePicker({
         {/*
           Checkerboard behind the preview: brand art is usually a transparent
           PNG, and a white swatch on a white card hides exactly the mistake an
-          operator needs to catch before saving.
+          operator needs to catch before saving. The footer field opts out and
+          previews on ink instead — that is the surface it actually lands on.
         */}
         <div
           className={cn(
-            "relative flex-shrink-0 overflow-hidden rounded border border-bz-border bg-bz-surface-2",
+            "relative flex-shrink-0 overflow-hidden rounded border border-bz-border",
+            previewOnInk ? "bg-bz-ink" : "bg-bz-surface-2",
             previewClassName,
           )}
-          style={{
-            backgroundImage:
-              "linear-gradient(45deg, rgba(128,128,128,.16) 25%, transparent 25%, transparent 75%, rgba(128,128,128,.16) 75%), linear-gradient(45deg, rgba(128,128,128,.16) 25%, transparent 25%, transparent 75%, rgba(128,128,128,.16) 75%)",
-            backgroundSize: "12px 12px",
-            backgroundPosition: "0 0, 6px 6px",
-          }}
+          style={
+            previewOnInk
+              ? undefined
+              : {
+                  backgroundImage:
+                    "linear-gradient(45deg, rgba(128,128,128,.16) 25%, transparent 25%, transparent 75%, rgba(128,128,128,.16) 75%), linear-gradient(45deg, rgba(128,128,128,.16) 25%, transparent 25%, transparent 75%, rgba(128,128,128,.16) 75%)",
+                  backgroundSize: "12px 12px",
+                  backgroundPosition: "0 0, 6px 6px",
+                }
+          }
         >
           {value ? (
             <Image
@@ -164,7 +177,12 @@ function BrandImagePicker({
               className="object-contain p-1.5"
             />
           ) : (
-            <span className="absolute inset-0 flex items-center justify-center text-center text-[10px] text-bz-muted-2">
+            <span
+              className={cn(
+                "absolute inset-0 flex items-center justify-center text-center text-[10px]",
+                previewOnInk ? "text-white/45" : "text-bz-muted-2",
+              )}
+            >
               None
             </span>
           )}
@@ -361,5 +379,49 @@ export function FaviconField({
         <span className="text-[11px] text-bz-muted">Tab preview, actual size</span>
       </div>
     </BrandImagePicker>
+  );
+}
+
+/**
+ * The lockup drawn in the public footer.
+ *
+ * Its own field rather than a reuse of the top-bar logo: the footer is the ink
+ * surface, so the file that works there is normally the reversed (light)
+ * variant of the same artwork. Left empty, the footer keeps the typeset
+ * "Bazar" wordmark it has always drawn.
+ */
+export function FooterLogoField({
+  value,
+  options,
+  onChange,
+  error,
+}: {
+  value: string;
+  options: LogoOption[];
+  onChange: (url: string) => void;
+  error?: string;
+}) {
+  return (
+    <BrandImagePicker
+      label="Footer logo"
+      value={value}
+      options={options}
+      onChange={onChange}
+      emptyLabel="No footer logo — use the type wordmark"
+      previewClassName="h-20 w-32"
+      previewOnInk
+      error={error}
+      help={
+        <>
+          PNG, WebP or AVIF with a transparent background. The footer sits on
+          the dark ink surface, so upload the light/reversed artwork — the
+          preview here is on that same background, which is where a dark file
+          gives itself away. Drawn 40px tall, so anything above ~320px on the
+          long edge is only weight. Artboard padding is cropped off on upload.
+          SVG is not accepted: the media library rejects it because an SVG can
+          carry script.
+        </>
+      }
+    />
   );
 }

@@ -2851,6 +2851,7 @@ export type Database = {
           contact_phone: string | null
           email_templates: Json
           favicon_url: string | null
+          footer_logo_url: string | null
           hero_variant: string
           id: number
           integrations: Json
@@ -2871,6 +2872,7 @@ export type Database = {
           contact_phone?: string | null
           email_templates?: Json
           favicon_url?: string | null
+          footer_logo_url?: string | null
           hero_variant?: string
           id?: number
           integrations?: Json
@@ -2891,6 +2893,7 @@ export type Database = {
           contact_phone?: string | null
           email_templates?: Json
           favicon_url?: string | null
+          footer_logo_url?: string | null
           hero_variant?: string
           id?: number
           integrations?: Json
@@ -3857,3 +3860,4 @@ export const Constants = {
     },
   },
 } as const
+
