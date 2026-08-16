@@ -559,6 +559,15 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             </div>
           ) : null}
 
+          {/* Floor plan section */}
+          <FloorPlanSection
+            imageUrl={floorPlanUrl}
+            beds={property.beds}
+            baths={property.baths}
+            builtUpFt2={property.built_up_ft2}
+            reference={property.reference}
+          />
+
           {property.amenities.length > 0 ? (
             <div>
               <Eyebrow>Features &amp; amenities</Eyebrow>
@@ -572,15 +581,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               </ul>
             </div>
           ) : null}
-
-          {/* Floor plan section */}
-          <FloorPlanSection
-            imageUrl={floorPlanUrl}
-            beds={property.beds}
-            baths={property.baths}
-            builtUpFt2={property.built_up_ft2}
-            reference={property.reference}
-          />
 
           {/* Location */}
           <div id="location" className="scroll-mt-16">
