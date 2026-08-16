@@ -106,7 +106,7 @@ export const DOMAINS: Domain[] = [
         column: "dld_plot_number",
         strategy: "never",
         evidence: "p/[slug]/page.tsx:600",
-        note: "Same class as the permit number. Belongs in PROTECTED_FIELDS.",
+        note: "Same class as the permit number.",
       },
     ],
   },

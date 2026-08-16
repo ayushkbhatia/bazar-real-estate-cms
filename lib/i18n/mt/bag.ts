@@ -151,8 +151,11 @@ function slotFor(input: {
  * and `textarea` — so alt text needs its own branch. `alt_ar` is a fixed key on
  * `ImageValue`, not a derived twin, and `normaliseScalar` rebuilds the object
  * key by key with no spread, so anything it does not name is destroyed on the
- * next save. That is why the cap here is stated rather than derived: it matches
- * the `media_assets.alt_text` target in `targets.ts`.
+ * next save. The cap is stated rather than derived because there is no
+ * `FieldDef` to derive it from — `alt` is a fixed key on `ImageValue`. 200 is
+ * generous for what the `alt` register asks for ("under fifteen words"), and
+ * deliberately not borrowed from the `media_assets.alt_text` target, which
+ * caps a different column on a different table and has just moved to 450.
  */
 const ALT_MAX = 200;
 

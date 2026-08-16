@@ -8,6 +8,7 @@ import {
   isProtected,
   targetsFor,
 } from "./targets";
+import { DOMAINS } from "@/lib/i18n/domains";
 
 /**
  * G-7 — the registry describes the real schema, and never targets something
@@ -125,5 +126,57 @@ describe("target shape", () => {
       "short_description",
       "title",
     ]);
+  });
+});
+
+describe("the denylist and the registry agree on regulatory identifiers", () => {
+  /**
+   * The direction nothing checked.
+   *
+   * Every existing guard runs from `MT_TARGETS` outward — "is this target
+   * protected", "is this target 'never'". None starts from a `never` column and
+   * asks whether the denylist knows about it, which is exactly why
+   * `properties.dld_plot_number` sat with an in-source note asking to be added
+   * here and nothing failed.
+   *
+   * Scoped to the regulatory and financial class rather than to all sixteen
+   * `never` columns, because the two lists answer different questions. Contact
+   * details and visitor PII are `never` for reasons the denylist does not
+   * speak to, and forcing equality would mean adding entries whose `why` would
+   * have to be invented.
+   */
+  it("protects every regulatory identifier the registry marks 'never'", () => {
+    for (const [table, column] of [
+      ["properties", "dld_plot_number"],
+      ["developments", "escrow_account"],
+      ["development_units", "plot_number"],
+      ["properties", "listing_permit_no"],
+      ["staff", "brn"],
+    ] as const) {
+      const entry = DOMAINS.find((d) => d.table === table)?.columns.find(
+        (c) => c.column === column,
+      );
+      expect(entry?.strategy, `${table}.${column} — registry strategy`).toBe(
+        "never",
+      );
+      expect(
+        isProtected(table, column),
+        `${table}.${column} is 'never' in lib/i18n/domains.ts but not in ` +
+          `PROTECTED_FIELDS. docs/I18N.md tells contributors to check the ` +
+          `denylist before adding a target, so a gap there answers "no" to ` +
+          `the wrong question.`,
+      ).toBe(true);
+    }
+  });
+
+  it("keeps the Arabic caps at 1.5x their English siblings", () => {
+    // Guards the drift this file already had: 180/400 against a 240/480 edit
+    // schema. Inert today (nothing reads maxLength at runtime) and a silent
+    // English-fallback bug the day anything does.
+    const cap = (column: string) =>
+      MT_TARGETS.find((t) => t.table === "properties" && t.column === column)
+        ?.maxLength;
+    expect(cap("title")).toBe(240);
+    expect(cap("short_description")).toBe(480);
   });
 });
