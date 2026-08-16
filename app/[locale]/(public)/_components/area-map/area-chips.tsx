@@ -37,12 +37,16 @@ export function AreaChips({
           >
             {a.name}
             {/* Active count inherits the light on-ink text; inactive uses a
-                muted tone that still clears 4.5:1 on the white chip. */}
-            <span
-              className={`mono text-[10.5px] ${active ? "" : "text-bz-muted"}`}
-            >
-              {a.count}
-            </span>
+                muted tone that still clears 4.5:1 on the white chip. A count
+                of 0 prints nothing — on a mode-scoped map (e.g. /commercial)
+                that is the honest state, and "Yas Island 0" reads as broken. */}
+            {a.count > 0 ? (
+              <span
+                className={`mono text-[10.5px] ${active ? "" : "text-bz-muted"}`}
+              >
+                {a.count}
+              </span>
+            ) : null}
           </button>
         );
       })}

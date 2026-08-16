@@ -31,6 +31,9 @@ import { SEED_AREA_GUIDES } from "@/lib/seeds/areas";
 
 export type LngLat = { lng: number; lat: number };
 
+/** `properties.mode` — the listing bucket a surface is scoped to. */
+export type ListingMode = "buy" | "rent" | "off_plan" | "commercial";
+
 export type AreaPin = {
   id: string;
   slug: string;
@@ -41,7 +44,12 @@ export type AreaPin = {
   tag: string | null;
   lng: number;
   lat: number;
-  /** Published-listing count — the number shown in the pill. */
+  /**
+   * Published-listing count — the number shown in the pill, scoped to the
+   * `mode` the caller asked for. `0` is a real answer ("this area has no
+   * commercial inventory"), and every count surface hides the number rather
+   * than printing a zero.
+   */
   count: number;
   /** Headline median AED/ft², or null when we have no figure. */
   medianPerFt2: number | null;
@@ -205,6 +213,41 @@ export function shapeDot(row: PropertyDotRow): AreaDot | null {
   };
 }
 
+export type AreaTally = {
+  /** Published listings of any mode, per area — decides whether a pin exists. */
+  any: Map<string, number>;
+  /** Published listings in the requested mode, per area — the printed number. */
+  inMode: Map<string, number>;
+  /** Located listings per area, for the centroid fallback. */
+  points: Map<string, LngLat[]>;
+};
+
+/**
+ * Tally the emirate's published listings per area.
+ *
+ * `any` and `inMode` are deliberately separate: the pin set is "areas with
+ * inventory" (browsing geography), the count is "inventory in *this* mode"
+ * (an assertion about what the visitor can buy or lease here). With no `mode`
+ * the two are identical.
+ */
+export function tallyAreaListings(
+  rows: { area_id: unknown; geo: unknown; mode?: unknown }[],
+  mode?: ListingMode,
+): AreaTally {
+  const tally: AreaTally = { any: new Map(), inMode: new Map(), points: new Map() };
+  for (const r of rows) {
+    const aid = typeof r.area_id === "string" ? r.area_id : null;
+    if (!aid) continue;
+    tally.any.set(aid, (tally.any.get(aid) ?? 0) + 1);
+    if (!mode || r.mode === mode) {
+      tally.inMode.set(aid, (tally.inMode.get(aid) ?? 0) + 1);
+    }
+    const pt = parseGeo(r.geo);
+    if (pt) tally.points.set(aid, [...(tally.points.get(aid) ?? []), pt]);
+  }
+  return tally;
+}
+
 /** median AED/ft² + YoY for an area, from the seed guides. */
 function seedStatsForSlug(slug: string): {
   median: number | null;
@@ -221,10 +264,21 @@ function seedStatsForSlug(slug: string): {
 // ─────────────────────────────────────────────────────────────────────
 // listAreaPins
 // ─────────────────────────────────────────────────────────────────────
+/**
+ * One pin per area of `emirate`.
+ *
+ * `opts.mode` scopes the *count* to one listing bucket — `/commercial` must
+ * not advertise "Yas Island 14" when all fourteen are off-plan homes. The pin
+ * *set* stays "areas with published inventory of any kind": the map is also
+ * how a visitor browses the emirate's geography, so a mode with no inventory
+ * yet keeps its areas and simply shows no number (see `AreaPin.count`).
+ */
 export async function listAreaPins(
   emirate: string = DEFAULT_EMIRATE,
+  opts: { mode?: ListingMode } = {},
 ): Promise<AreaPin[]> {
-  if (!isSupabaseConfigured) return seedAreaPins(emirate);
+  const { mode } = opts;
+  if (!isSupabaseConfigured) return seedAreaPins(emirate, mode);
   try {
     const sb = createSupabasePublicClient();
 
@@ -236,7 +290,7 @@ export async function listAreaPins(
       .eq("kind", "emirate")
       .eq("slug", emirate)
       .maybeSingle();
-    if (!em) return emirate === DEFAULT_EMIRATE ? seedAreaPins(emirate) : [];
+    if (!em) return emirate === DEFAULT_EMIRATE ? seedAreaPins(emirate, mode) : [];
 
     const { data: areas } = await sb
       .from("areas")
@@ -245,7 +299,7 @@ export async function listAreaPins(
       .eq("parent_id", em.id)
       .order("name", { ascending: true });
     if (!areas || areas.length === 0) {
-      return emirate === DEFAULT_EMIRATE ? seedAreaPins(emirate) : [];
+      return emirate === DEFAULT_EMIRATE ? seedAreaPins(emirate, mode) : [];
     }
 
     // One roundtrip for every published listing in the emirate; we both
@@ -253,7 +307,7 @@ export async function listAreaPins(
     const ids = areas.map((a) => a.id);
     const { data: props } = await sb
       .from("properties")
-      .select("area_id, geo")
+      .select("area_id, geo, mode")
       .eq("status", "published")
       .in("area_id", ids);
 
@@ -261,29 +315,17 @@ export async function listAreaPins(
     // AREA_CENTROIDS, areaTag() and seedStatsForSlug(), and folding it would
     // silently drop every pin's centroid and stats on /ar.
     const pinLocale = await currentLocale();
-    const countByArea = new Map<string, number>();
-    const pointsByArea = new Map<string, LngLat[]>();
-    for (const p of props ?? []) {
-      const aid = p.area_id as string;
-      if (!aid) continue;
-      countByArea.set(aid, (countByArea.get(aid) ?? 0) + 1);
-      const pt = parseGeo(p.geo);
-      if (pt) {
-        const arr = pointsByArea.get(aid) ?? [];
-        arr.push(pt);
-        pointsByArea.set(aid, arr);
-      }
-    }
+    const tally = tallyAreaListings(props ?? [], mode);
 
     const pins: AreaPin[] = [];
     for (const a of areas) {
-      const count = countByArea.get(a.id) ?? 0;
-      // A pin advertises live inventory — skip areas with none.
-      if (count === 0) continue;
+      const count = tally.inMode.get(a.id) ?? 0;
+      // A pin advertises live inventory — skip areas with none at all.
+      if ((tally.any.get(a.id) ?? 0) === 0) continue;
       const centroid =
         parseGeo(a.geo) ??
         AREA_CENTROIDS[a.slug] ??
-        computeCentroid(pointsByArea.get(a.id) ?? []);
+        computeCentroid(tally.points.get(a.id) ?? []);
       if (!centroid) continue; // nowhere to place it
       const { median, yoy } = seedStatsForSlug(a.slug);
       pins.push({
@@ -305,7 +347,7 @@ export async function listAreaPins(
     }
     return pins;
   } catch {
-    return seedAreaPins(emirate);
+    return seedAreaPins(emirate, mode);
   }
 }
 
@@ -317,7 +359,7 @@ export async function listAreaListingDots(
     emirate?: string;
     areaSlug?: string;
     /** Scope dots to one listing mode (e.g. "rent" for the /rent map). */
-    mode?: "buy" | "rent" | "off_plan" | "commercial";
+    mode?: ListingMode;
   } = {},
 ): Promise<AreaDot[]> {
   const { emirate = DEFAULT_EMIRATE, areaSlug, mode } = opts;
@@ -375,7 +417,7 @@ export async function listAreaListingDots(
 // ─────────────────────────────────────────────────────────────────────
 // Seed fallback (Supabase unconfigured — local dev with no creds)
 // ─────────────────────────────────────────────────────────────────────
-function seedAreaPins(emirate: string): AreaPin[] {
+function seedAreaPins(emirate: string, mode?: ListingMode): AreaPin[] {
   if (emirate !== DEFAULT_EMIRATE) return [];
   const pins: AreaPin[] = [];
   let i = 0;
@@ -391,8 +433,10 @@ function seedAreaPins(emirate: string): AreaPin[] {
       tag: areaTag(slug),
       lng: centroid.lng,
       lat: centroid.lat,
-      // Deterministic non-zero count so the offline map isn't blank.
-      count: 4 + ((i * 7) % 17),
+      // Deterministic non-zero count so the offline map isn't blank. A
+      // mode-scoped caller gets 0 instead: the seeds carry no mode, so any
+      // number here would be the same misrepresentation we just removed.
+      count: mode ? 0 : 4 + ((i * 7) % 17),
       medianPerFt2: median,
       yoyChange: yoy,
     });
