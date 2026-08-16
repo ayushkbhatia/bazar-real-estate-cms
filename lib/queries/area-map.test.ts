@@ -6,6 +6,7 @@ import {
   pickMedianPerFt2,
   dotMeta,
   shapeDot,
+  tallyAreaListings,
 } from "./area-map";
 
 describe("parseGeo", () => {
@@ -160,5 +161,46 @@ describe("shapeDot", () => {
       geo: { lat: 24.5, lng: 54.4 },
     });
     expect(dot?.priceAed).toBe(0);
+  });
+});
+
+describe("tallyAreaListings", () => {
+  const geo = { lat: 24.5, lng: 54.4 };
+  // Mirrors production at the time of the fix: Yas Island's published stock is
+  // entirely off-plan, and /commercial was printing "14" off exactly this.
+  const rows = [
+    { area_id: "yas", geo, mode: "off_plan" },
+    { area_id: "yas", geo, mode: "off_plan" },
+    { area_id: "yas", geo: null, mode: "commercial" },
+    { area_id: "adgm", geo, mode: "commercial" },
+    { area_id: null, geo, mode: "commercial" },
+  ];
+
+  it("counts every mode when none is requested", () => {
+    const t = tallyAreaListings(rows);
+    expect(t.any.get("yas")).toBe(3);
+    expect(t.inMode.get("yas")).toBe(3);
+  });
+
+  it("scopes the printed count to the requested mode", () => {
+    const t = tallyAreaListings(rows, "commercial");
+    expect(t.inMode.get("yas")).toBe(1);
+    expect(t.inMode.get("adgm")).toBe(1);
+  });
+
+  it("keeps the any-mode tally, so an area still pins with a 0 count", () => {
+    const t = tallyAreaListings(rows, "rent");
+    expect(t.any.get("yas")).toBe(3);
+    expect(t.inMode.get("yas")).toBeUndefined();
+  });
+
+  it("collects only located listings for the centroid fallback", () => {
+    const t = tallyAreaListings(rows, "commercial");
+    expect(t.points.get("yas")).toHaveLength(2);
+  });
+
+  it("ignores rows with no area", () => {
+    const t = tallyAreaListings(rows, "commercial");
+    expect(t.any.size).toBe(2);
   });
 });

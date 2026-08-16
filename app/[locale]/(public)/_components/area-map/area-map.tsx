@@ -495,7 +495,11 @@ function Overlay({
             onClick={() => onSelectArea(a.slug)}
           >
             <span className="bzmap-pin__name">{a.name}</span>
-            <span className="bzmap-pin__count">{a.count}</span>
+            {/* No badge at 0 — on a mode-scoped map the area is still worth
+                pinning to browse, but it has nothing to advertise. */}
+            {a.count > 0 ? (
+              <span className="bzmap-pin__count">{a.count}</span>
+            ) : null}
           </button>
         );
       })}
@@ -557,7 +561,9 @@ function Flyout({
   const countLabel =
     countNoun.plural.charAt(0).toUpperCase() + countNoun.plural.slice(1);
   const stats: [string, string][] = [
-    [String(area.count), countLabel],
+    // Em dash at 0, same as a missing median — the map may be scoped to a
+    // mode this area has no inventory in.
+    [area.count > 0 ? String(area.count) : "—", countLabel],
     [median, `Median /${areaUnitLabel(prefs.area_unit)}`],
     [yoy, "YoY"],
   ];
@@ -612,14 +618,18 @@ function Flyout({
         >
           View community guide <ArrowRight size={15} />
         </Link>
-        <button
-          type="button"
-          onClick={onZoomToListings}
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-bz-border px-4 text-sm text-bz-ink-2 transition-colors hover:bg-bz-surface-2"
-        >
-          <Search size={14} /> Zoom to {area.count}{" "}
-          {area.count === 1 ? countNoun.singular : countNoun.plural}
-        </button>
+        {/* Nothing to zoom to when the area has no inventory in this mode —
+            the button would frame an empty patch of map. */}
+        {area.count > 0 ? (
+          <button
+            type="button"
+            onClick={onZoomToListings}
+            className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-bz-border px-4 text-sm text-bz-ink-2 transition-colors hover:bg-bz-surface-2"
+          >
+            <Search size={14} /> Zoom to {area.count}{" "}
+            {area.count === 1 ? countNoun.singular : countNoun.plural}
+          </button>
+        ) : null}
       </div>
     </div>
   );

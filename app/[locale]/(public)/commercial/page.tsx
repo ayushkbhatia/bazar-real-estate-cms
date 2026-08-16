@@ -78,6 +78,13 @@ export default async function CommercialPage() {
           eyebrow={str(map, "eyebrow") ?? undefined}
           heading={str(map, "heading") ?? undefined}
           body={str(map, "body")}
+          // Dots, per-area counts and the "all" link all belong to commercial
+          // inventory. The section defaults to rent (its first caller), and
+          // taking those defaults here is what put rental dots and an
+          // emirate-wide published count on this page.
+          mode="commercial"
+          allHref="/commercial/search"
+          allLabel="All commercial"
         />
       }
       mapAbove
