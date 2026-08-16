@@ -2860,6 +2860,7 @@ export type Database = {
           logo_url: string | null
           mortgage: Json
           orn: string | null
+          search_logo_url: string | null
           updated_at: string
           updated_by: string | null
         }
@@ -2882,6 +2883,7 @@ export type Database = {
           logo_url?: string | null
           mortgage?: Json
           orn?: string | null
+          search_logo_url?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -2904,6 +2906,7 @@ export type Database = {
           logo_url?: string | null
           mortgage?: Json
           orn?: string | null
+          search_logo_url?: string | null
           updated_at?: string
           updated_by?: string | null
         }

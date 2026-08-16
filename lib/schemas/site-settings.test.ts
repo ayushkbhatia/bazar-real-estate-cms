@@ -122,6 +122,27 @@ describe("brandSettingsSchema", () => {
     expect(bad.success).toBe(false);
   });
 
+  it("validates search_logo_url on the same rules as logo_url", () => {
+    const ok = brandSettingsSchema.safeParse({
+      brand_name: "Bazar",
+      search_logo_url: "https://cdn.example.com/search-mark.png",
+    });
+    expect(ok.success).toBe(true);
+
+    const cleared = brandSettingsSchema.safeParse({
+      brand_name: "Bazar",
+      search_logo_url: "",
+    });
+    expect(cleared.success && cleared.data.search_logo_url).toBeNull();
+
+    // Lands in a <link rel="icon"> and in the Organization JSON-LD `logo`.
+    const bad = brandSettingsSchema.safeParse({
+      brand_name: "Bazar",
+      search_logo_url: "javascript:alert(1)",
+    });
+    expect(bad.success).toBe(false);
+  });
+
   it("accepts both logo styles and rejects anything else", () => {
     for (const logo_style of LOGO_STYLES) {
       const r = brandSettingsSchema.safeParse({ brand_name: "Bazar", logo_style });

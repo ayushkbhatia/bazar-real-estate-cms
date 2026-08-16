@@ -98,6 +98,11 @@ export const brandSettingsSchema = z.object({
   // drawn on the ink surface and normally wants the reversed artwork; null
   // keeps the typeset wordmark.
   footer_logo_url: assetUrl(),
+  // The square mark search engines draw beside the result. Separate from
+  // `favicon_url` because a file authored to survive a 16px tab strip is
+  // normally cruder than the one that should stand for the brand in a SERP
+  // row or a knowledge panel; null falls back to the favicon, then the logo.
+  search_logo_url: assetUrl(),
   // `.optional()` rather than `.default()`: a zod default makes the *input*
   // type optional and the output required, and react-hook-form's resolver
   // types reject that asymmetry. The column is `not null default

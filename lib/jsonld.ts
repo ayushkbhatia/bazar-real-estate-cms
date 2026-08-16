@@ -154,14 +154,27 @@ export function articleJsonLd(
 }
 
 /** Default organisation block usable site-wide. */
-export function organizationJsonLd(): Record<string, unknown> {
+/**
+ * The site-wide Organization block, rendered in the root layout's <head>.
+ *
+ * `logo` is what a search engine draws beside the result and in a knowledge
+ * panel, so it takes the CMS value (Brand & identity → "Search-result logo",
+ * already resolved and absolutised by `resolveSearchIcon`). The parameter is
+ * optional so the block still renders during a Supabase outage; the default
+ * points at the wordmark actually shipped in /public. It used to point at
+ * `/icon.png`, which has never existed in this repo — a 404 for the logo is
+ * exactly how a result row ends up with a blank generic mark.
+ */
+export function organizationJsonLd(
+  logoUrl?: string | null,
+): Record<string, unknown> {
   const url = siteUrl();
   return {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
     name: "Bazar Real Estate",
     url,
-    logo: `${url}/icon.png`,
+    logo: logoUrl ?? `${url}/brand/bazar-logo.png`,
     address: {
       "@type": "PostalAddress",
       addressLocality: "Abu Dhabi",
