@@ -38,7 +38,6 @@ import { PROPERTY_CONSULTATION_PAGE } from "./sections/property-consultation";
 import { QR_PAGE } from "./sections/qr";
 import { CONTACT_QR_PAGE } from "./sections/contact-qr";
 import { MORTGAGE_PAGE } from "./sections/mortgage";
-import { withArabicDefaults } from "./arabic";
 
 
 // ── shared default content ──────────────────────────────────────────────
@@ -1533,7 +1532,7 @@ const AREAS: MasterPageDef = {
  * this file was already 1300 lines, and one page per module keeps a change to
  * /about out of the diff for /buy.
  */
-const RAW_MASTER_PAGES: MasterPageDef[] = [
+export const MASTER_PAGES: MasterPageDef[] = [
   HOME,
   BUY,
   RENT,
@@ -1552,17 +1551,3 @@ const RAW_MASTER_PAGES: MasterPageDef[] = [
   CONTACT_QR_PAGE,
   MORTGAGE_PAGE,
 ];
-
-/**
- * The registry the app uses, with generated Arabic folded into the defaults.
- *
- * The wrap is one line and one insertion point on purpose. `mergeValues` reads
- * `def.defaults` field by field and iterates `withArabicTwinsDeep`, so a
- * `title_ar` in a section's defaults renders with no migration and no database
- * write — see `lib/master-pages/arabic.ts` for why the generated Arabic is
- * committed data rather than a production write.
- *
- * Nothing downstream changes: a section with no stored Arabic is returned
- * unchanged, by identity, and an editor's saved value still beats a default.
- */
-export const MASTER_PAGES: MasterPageDef[] = withArabicDefaults(RAW_MASTER_PAGES);

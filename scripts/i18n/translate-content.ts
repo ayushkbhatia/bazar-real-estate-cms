@@ -37,13 +37,13 @@ const LIMIT = args.includes("--limit")
   : Infinity;
 
 type Entry = {
-  en: string;
   ar: string;
   by: "machine" | "reviewed" | "human";
   model?: string;
   at?: string;
 };
-type Store = Record<string, Record<string, Record<string, Entry>>>;
+/** English → Arabic. See lib/master-pages/arabic.ts for why. */
+type Store = Record<string, Entry>;
 
 function readStore(): Store {
   try {
@@ -56,15 +56,7 @@ function readStore(): Store {
 /** Sorted on the way out, so a re-run produces a diff of only what changed. */
 function writeStore(store: Store) {
   const sorted: Store = {};
-  for (const page of Object.keys(store).sort()) {
-    sorted[page] = {};
-    for (const section of Object.keys(store[page]!).sort()) {
-      sorted[page]![section] = {};
-      for (const key of Object.keys(store[page]![section]!).sort()) {
-        sorted[page]![section]![key] = store[page]![section]![key]!;
-      }
-    }
-  }
+  for (const en of Object.keys(store).sort()) sorted[en] = store[en]!;
   writeFileSync(STORE_PATH, `${JSON.stringify(sorted, null, 2)}\n`, "utf8");
 }
 
@@ -76,7 +68,41 @@ async function main() {
 
   const { MASTER_PAGES } = await import("../../lib/master-pages/pages");
   const { walkSection } = await import("../../lib/i18n/mt/bag");
+  const { mergeValues } = await import("../../lib/master-pages/index");
   const { nounMap, nounTerms } = await import("../../lib/i18n/mt/proper-nouns");
+
+  /*
+   * The LIVE content, not the registry defaults.
+   *
+   * `mergeValues` puts the editor's stored English over the default, and that
+   * is what the page renders. Generating from defaults alone left 303 slots
+   * whose live English had been rewritten in the CMS with no Arabic at all —
+   * measured against production. Reading the rows here is what makes the store
+   * describe the site rather than the repo.
+   *
+   * Falls back to defaults-only when Supabase is unreachable, so `--dry-run`
+   * still works with no credentials; it just under-reports.
+   */
+  const storedFor = new Map<string, Record<string, Record<string, unknown>>>();
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (url && key) {
+    const { createClient } = await import("@supabase/supabase-js");
+    const sb = createClient(url, key, { auth: { persistSession: false } });
+    const { data } = await sb.from("pages").select("slug, blocks").like("slug", "master/%");
+    for (const row of (data ?? []) as { slug: string; blocks: unknown }[]) {
+      const sections = Array.isArray(row.blocks)
+        ? (row.blocks as { key: string; values: Record<string, unknown> }[])
+        : [];
+      storedFor.set(
+        row.slug.replace("master/", ""),
+        Object.fromEntries(sections.map((sec) => [sec.key, sec.values])),
+      );
+    }
+    console.log(`Read live content for ${storedFor.size} page(s).`);
+  } else {
+    console.log("No Supabase credentials — walking registry defaults only.");
+  }
 
   const pages = MASTER_PAGES.filter((p) => ALL || p.key === PAGE);
   if (!pages.length) {
@@ -110,9 +136,10 @@ async function main() {
 
   for (const page of pages) {
     for (const section of page.sections) {
+      const stored = storedFor.get(page.key)?.[section.key] ?? null;
       const slots = walkSection({
         fields: section.fields,
-        values: section.defaults,
+        values: mergeValues(section, stored as never),
         docKey: `master:${page.key}`,
         sectionKey: section.key,
       });
@@ -153,11 +180,7 @@ async function main() {
 
   // Identity slots need no key, so they are written even in a keyless run.
   for (const w of identity) {
-    ((store[w.page] ??= {})[w.section] ??= {})[w.pathKey] = {
-      en: w.english,
-      ar: w.english,
-      by: "machine",
-    };
+    store[w.english.trim()] = { ar: w.english, by: "machine" };
   }
 
   if (model.length === 0) {
@@ -213,11 +236,7 @@ async function main() {
     const masked = mask(w.english, terms);
     if (masked.masked.replace(/⟦\d+⟧/gu, "").trim() === "") {
       const resolved = unmask(masked.masked, masked.tokens, overridesFor(masked, nouns));
-      ((store[w.page] ??= {})[w.section] ??= {})[w.pathKey] = {
-        en: w.english,
-        ar: resolved,
-        by: "machine",
-      };
+      store[w.english.trim()] = { ar: resolved, by: "machine" };
       ok++;
       console.log(`${resolved}   [protected content, no model call]`);
       continue;
@@ -305,8 +324,7 @@ async function main() {
         failures.push(`${label} — round trip: ${v?.reason ?? "no verdict"}`);
         continue;
       }
-      ((store[c.job.page] ??= {})[c.job.section] ??= {})[c.job.pathKey] = {
-        en: c.job.english,
+      store[c.job.english.trim()] = {
         ar: c.ar,
         by: "machine",
         model: c.model,

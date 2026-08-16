@@ -6,6 +6,7 @@ import { withArabicTwinsDeep } from "./twins";
 export * from "./twins";
 import { applyLocale } from "./i18n";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+import { fillArabic } from "./arabic";
 import {
   isMediaField,
   isListField,
@@ -136,7 +137,16 @@ export function mergeValues(
         ? (def.defaults[field.key] ?? emptyFor(field))
         : value;
   }
-  return out;
+  /*
+   * Generated Arabic goes in LAST, and only where nothing else supplied it.
+   *
+   * It has to happen here rather than on `def.defaults`, because the English it
+   * belongs to may have come from either side of this merge. Folding it into
+   * the defaults meant an editor who rewrote a headline kept the Arabic of the
+   * headline they replaced — measured at 303 slots against production. See
+   * `lib/master-pages/arabic.ts`.
+   */
+  return fillArabic(def.fields, out);
 }
 
 export function emptyFor(field: FieldDef) {
