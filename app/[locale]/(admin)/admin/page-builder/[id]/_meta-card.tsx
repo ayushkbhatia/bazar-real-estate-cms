@@ -9,6 +9,13 @@ import { cn } from "@/lib/utils";
 import { ArabicTwin } from "../../_fields/arabic-twin";
 import { fieldCls } from "../../_fields/types";
 import { updateLandingMeta } from "../_actions";
+import { SearchResultPreview } from "../../_fields/search-appearance";
+import {
+  SEO_DESCRIPTION_DISPLAY,
+  SEO_DESCRIPTION_MAX,
+  SEO_TITLE_DISPLAY,
+  SEO_TITLE_MAX,
+} from "@/lib/schemas/seo";
 
 type Meta = {
   title: string;
@@ -22,9 +29,13 @@ type Meta = {
 export function LandingMetaCard({
   id,
   initial,
+  faviconUrl,
+  brandName,
 }: {
   id: string;
   initial: Meta;
+  faviconUrl: string | null;
+  brandName: string;
 }) {
   const router = useRouter();
   const [meta, setMeta] = useState(initial);
@@ -100,7 +111,7 @@ export function LandingMetaCard({
 
         <Field
           label="Search title"
-          help={`${meta.meta_title.length}/70`}
+          help={counterHelp(meta.meta_title, SEO_TITLE_DISPLAY, SEO_TITLE_MAX)}
           error={errors.meta_title}
         >
           <input
@@ -113,7 +124,11 @@ export function LandingMetaCard({
 
         <Field
           label="Search description"
-          help={`${meta.meta_description.length}/180`}
+          help={counterHelp(
+            meta.meta_description,
+            SEO_DESCRIPTION_DISPLAY,
+            SEO_DESCRIPTION_MAX,
+          )}
           error={errors.meta_description}
         >
           <textarea
@@ -123,6 +138,31 @@ export function LandingMetaCard({
           />
         </Field>
       </div>
+
+      {/*
+        The rehearsal. A landing page is usually built against a paid campaign,
+        where the result row is the first thing a click ever sees — and the
+        noindex box below means it is sometimes not seen at all, which the
+        preview says out loud rather than leaving to be inferred.
+      */}
+      {meta.noindex ? (
+        <p className="rounded border border-bz-border bg-bz-surface-2 px-3 py-2 text-[11.5px] text-bz-muted">
+          Hidden from search — this page asks not to be indexed, so the title
+          and description above will not appear in a result.
+        </p>
+      ) : (
+        <SearchResultPreview
+          path={`/lp/${meta.slug || "your-slug"}`}
+          title={meta.meta_title}
+          description={meta.meta_description}
+          /* /lp/[slug] falls back to the page title, and publishes no
+             description at all when the field is blank. */
+          fallbackTitle={meta.title}
+          fallbackDescription={null}
+          faviconUrl={faviconUrl}
+          brandName={brandName}
+        />
+      )}
 
       <label className="flex items-start gap-2.5 text-[12.5px] cursor-pointer select-none">
         <input
@@ -168,4 +208,20 @@ function Field({
       ) : null}
     </div>
   );
+}
+
+/**
+ * The counter beside a search field.
+ *
+ * It reports two different limits and they are not the same thing: `max` is
+ * what the validator will reject, `display` is where Google stops showing the
+ * copy. Only the second one matters most of the time, which is why it is the
+ * one that gets words.
+ */
+function counterHelp(value: string, display: number, max: number): string {
+  const n = value.length;
+  if (n === 0) return `0/${max}`;
+  if (n > max) return `${n}/${max} — too long to save`;
+  if (n > display) return `${n}/${max} — cut in results past ~${display}`;
+  return `${n}/${max}`;
 }

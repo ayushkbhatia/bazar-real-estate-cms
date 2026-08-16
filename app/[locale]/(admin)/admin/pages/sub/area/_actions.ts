@@ -12,6 +12,11 @@ import {
   type StoredSection,
 } from "@/lib/master-pages";
 import { areaPageDef, subPageSlug } from "@/lib/master-pages/subpages";
+import {
+  mergeSearchAppearance,
+  searchAppearanceSchema,
+  type SearchAppearanceInput,
+} from "@/lib/schemas/seo";
 
 const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
 
@@ -167,4 +172,81 @@ export async function setAreaImages(
   revalidatePath(`/admin/pages/sub/area/${record.slug}`);
   revalidatePath("/admin/pages/sub/area");
   return { status: "ok", message: "Image saved." };
+}
+
+/**
+ * The search title and description for an area guide.
+ *
+ * The store is `areas.seo_meta`, not `pages.seo`: /areas/[slug] has read the
+ * area record's bag since the guides shipped, and repointing it at the page
+ * document would orphan whatever is already written there. So this action
+ * writes the column the public page already reads.
+ *
+ * The same two fields are also editable on the area *record* screen
+ * (/admin/areas/[id]) — the record is where an area's facts live, and these
+ * happened to be there because that form existed first. Editing them here as
+ * well is the point of this change: an editor working on the guide should not
+ * have to know that its search appearance lives on a different screen. Both
+ * write the same column, so neither is a second copy.
+ */
+export async function saveAreaSeo(
+  slug: string,
+  raw: SearchAppearanceInput,
+): Promise<SubPageResult> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PAGE_ROLES);
+
+  const { record, message } = await loadRecord(slug);
+  if (!record)
+    return { status: "error", message: message ?? "Area not found." };
+
+  const parsed = searchAppearanceSchema.safeParse(raw);
+  if (!parsed.success)
+    return {
+      status: "invalid",
+      message: "Fix the highlighted fields before saving.",
+      issues: parsed.error.issues.map(
+        (i) => `${i.path.join(".") || "field"}: ${i.message}`,
+      ),
+    };
+
+  const supabase = await createSupabaseServerClient();
+  const { data: existing } = await supabase
+    .from("areas")
+    .select("seo_meta")
+    .eq("id", record.id)
+    .maybeSingle();
+
+  const { data, error } = await supabase
+    .from("areas")
+    .update({
+      seo_meta: mergeSearchAppearance(
+        existing?.seo_meta,
+        parsed.data,
+      ) as unknown as never,
+    })
+    .eq("id", record.id)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { status: "error", message: error.message };
+  if (!data)
+    return {
+      status: "error",
+      message: "Not saved — your account may not be allowed to edit this.",
+    };
+
+  await logAudit({
+    action: "area.seo_update",
+    target_kind: "area",
+    target_id: record.id,
+    before: null,
+    after: parsed.data,
+  });
+
+  revalidateLocalised(`/areas/${record.slug}`);
+  revalidatePath(`/admin/pages/sub/area/${record.slug}`);
+  revalidatePath(`/admin/areas/${record.id}`);
+  return { status: "ok", message: "Search appearance saved." };
 }

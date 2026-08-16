@@ -7,6 +7,10 @@ import { type PageEditInput } from "@/lib/schemas/page";
 import { BlockListEditor } from "./_block-list";
 import { PageMetaForm } from "./_meta-form";
 import { PagePublishCard } from "./_publish-card";
+import {
+  getSearchPreviewChrome,
+  withTitleTemplate,
+} from "@/lib/queries/search-appearance";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +18,10 @@ type PageProps = { params: Promise<{ id: string }> };
 
 export default async function PageEditPage({ params }: PageProps) {
   const { id } = await params;
-  const page = await getPageForAdmin(id);
+  const [page, chrome] = await Promise.all([
+    getPageForAdmin(id),
+    getSearchPreviewChrome(),
+  ]);
   if (!page) notFound();
 
   const seo = page.seo ?? {};
@@ -56,7 +63,15 @@ export default async function PageEditPage({ params }: PageProps) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
         <div className="flex flex-col gap-6 min-w-0">
-          <PageMetaForm pageId={page.id} initial={initial} />
+          <PageMetaForm
+            pageId={page.id}
+            initial={initial}
+            /* /pages/[slug] falls back to the page's own title and publishes
+               no description at all, which the preview says out loud. */
+            fallbackTitle={withTitleTemplate(page.title)}
+            faviconUrl={chrome.faviconUrl}
+            brandName={chrome.brandName}
+          />
           <BlockListEditor pageId={page.id} initial={page.blocks} />
         </div>
         <aside className="sticky top-6">

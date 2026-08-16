@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { LANDING_SLUG_RE, isReservedLandingSlug } from "@/lib/page-builder/types";
+import { SEO_DESCRIPTION_MAX, SEO_TITLE_MAX } from "./seo";
 
 /**
  * Landing-page metadata.
@@ -37,11 +38,20 @@ export const landingMetaSchema = z.object({
    * name. `.optional()` — updateLandingMeta writes a partial update. */
   title_ar: z.string().trim().max(240).nullable().optional(),
   slug: slugField,
-  meta_title: z.string().trim().max(70, "Keep it under 70 characters.").optional(),
+  // Shared with the Search appearance card, which previews the same
+  // `landing_pages.seo` bag — two caps on one column is how they drift apart.
+  meta_title: z
+    .string()
+    .trim()
+    .max(SEO_TITLE_MAX, `Keep it under ${SEO_TITLE_MAX} characters.`)
+    .optional(),
   meta_description: z
     .string()
     .trim()
-    .max(180, "Keep it under 180 characters.")
+    .max(
+      SEO_DESCRIPTION_MAX,
+      `Keep it under ${SEO_DESCRIPTION_MAX} characters.`,
+    )
     .optional(),
   noindex: z.boolean().optional(),
 });

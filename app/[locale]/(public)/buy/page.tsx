@@ -15,15 +15,24 @@ import type { BuyCategory } from "../_components/marketing/buy-category-explorer
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
 import { buyRentContent } from "../_components/marketing/master-content";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "Buy a Property in Abu Dhabi",
-  description:
-    "Find the right property with confidence — ready, resale and off-plan homes across Abu Dhabi's most sought-after communities, with a senior advisor guiding every step.",
-  alternates: { canonical: "/buy" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("buy", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/buy" },
+  });
+}
 
 // Old deep-links (/buy?type=apartment) are redirected to the relocated search
 // route by proxy.ts. Deliberately no `searchParams` here: reading it — even

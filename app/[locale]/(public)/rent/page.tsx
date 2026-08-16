@@ -10,15 +10,24 @@ import { listingRowToCard } from "../_components/marketing/map-listing";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { str } from "@/lib/master-pages";
 import { buyRentContent } from "../_components/marketing/master-content";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title: "Rent a Property in Abu Dhabi",
-  description:
-    "Residential and commercial rentals across Abu Dhabi's most connected communities — matched to your budget, lifestyle, and move-in date.",
-  alternates: { canonical: "/rent" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("rent", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/rent" },
+  });
+}
 
 // Old deep-links (/rent?beds=2) are redirected to /rent/search by proxy.ts.
 // No `searchParams` here — reading it would make the route fully dynamic and

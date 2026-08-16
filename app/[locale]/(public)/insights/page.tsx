@@ -19,15 +19,21 @@ import { str } from "@/lib/master-pages";
 import { mediaPublicUrl } from "@/lib/media";
 import { cn } from "@/lib/utils";
 import { NewsletterSignup } from "../_components/newsletter-signup";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
 export const revalidate = 300;
 
-export const metadata: Metadata = {
-  title:
-    "The Bazar Brief — market reports, field notes, and advisor commentary",
-  description:
-    "Long-form market analysis, advisor field notes, and the occasional contrarian take on Abu Dhabi real estate. One email every Wednesday.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("insights", asLocale((await params).locale));
+}
 
 const PAGE_SIZE = 24;
 

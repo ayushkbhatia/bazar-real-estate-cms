@@ -9,13 +9,22 @@ import { str } from "@/lib/master-pages";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
 import { entryLogo, initials, listDirectory } from "./_directory";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
-export const metadata: Metadata = {
-  title: "Developers · Bazar Real Estate",
-  description:
-    "Direct relationships with the UAE's leading developers give Bazar clients early access to landmark communities, new launches, and off-plan opportunities.",
-  alternates: { canonical: "/developers" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("developers", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/developers" },
+  });
+}
 
 export const revalidate = 300;
 

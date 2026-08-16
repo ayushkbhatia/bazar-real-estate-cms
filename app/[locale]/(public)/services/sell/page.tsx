@@ -14,13 +14,22 @@ import { getSellHeroStats, getTransactionSpark } from "./_data";
 import { FaqAccordion } from "./_components/faq-accordion";
 import { ListPropertyForm } from "./_components/list-property-form";
 import { PricingResources } from "./_components/pricing-resources";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
-export const metadata: Metadata = {
-  title: "Sell or rent out your property in Abu Dhabi | Bazar",
-  description:
-    "Tell us about your property and we'll match you with the senior Bazar advisor who covers your community — ADREC-licensed, no upfront fees, one point of contact from valuation through to transfer.",
-  alternates: { canonical: "/services/sell" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("sell", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/services/sell" },
+  });
+}
 
 const DEFAULT_DESK_PHONE = "+971 2 632 2223";
 

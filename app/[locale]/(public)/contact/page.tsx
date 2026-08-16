@@ -30,13 +30,22 @@ import { OpeningHours } from "./_components/opening-hours";
 import type { HoursRow } from "./_components/hours";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { img, list, str } from "@/lib/master-pages";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
-export const metadata: Metadata = {
-  title: "Contact Bazar Real Estate",
-  description:
-    "Get in touch with Bazar Real Estate for buying, selling, renting, listing, or investment enquiries across Abu Dhabi and the UAE.",
-  alternates: { canonical: "/contact" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("contact", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/contact" },
+  });
+}
 
 export const revalidate = 300;
 

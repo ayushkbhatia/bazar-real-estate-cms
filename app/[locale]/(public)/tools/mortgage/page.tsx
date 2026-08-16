@@ -10,12 +10,18 @@ import {
 import { asLocale } from "@/lib/i18n/locales";
 import type { SectionValues } from "@/lib/master-pages";
 import { MortgageCalculator } from "./mortgage-calculator";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
 
-export const metadata: Metadata = {
-  title: "Mortgage calculator",
-  description:
-    "All-in mortgage maths for Abu Dhabi: monthly payment, true cash to close (DLD, trustee, valuation, advisory), affordability check against Central Bank UAE DBR rules, and side-by-side scenario compare.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("mortgage", asLocale((await params).locale));
+}
 
 /** The three fields every output section carries. */
 function head(v: SectionValues) {

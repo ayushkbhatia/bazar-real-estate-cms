@@ -15,13 +15,22 @@ import {
   type InterestOption,
 } from "../_components/service-lead-form";
 import { mediaCards, valueCards } from "../_components/service-content";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { asLocale } from "@/lib/i18n/locales";
 
-export const metadata: Metadata = {
-  title: "Property Consultation in Abu Dhabi | Bazar",
-  description:
-    "Better property decisions start with the right guidance. Whether you are looking to buy, sell or invest, get professional property guidance based on your requirements, budget and objectives.",
-  alternates: { canonical: "/services/consultation" },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → this page →
+  // Search appearance. Unedited, they fall back to the strings that used
+  // to be the literal here, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("consultation", asLocale((await params).locale),
+  {
+    alternates: { canonical: "/services/consultation" },
+  });
+}
 
 export const revalidate = 3600;
 

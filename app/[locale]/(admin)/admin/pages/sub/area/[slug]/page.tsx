@@ -12,7 +12,13 @@ import {
 } from "../../../master/[key]/_editor";
 import type { MediaOption } from "../../../../_fields/types";
 import { AreaImagesCard } from "./_images-card";
-import { saveAreaPage, resetAreaPage } from "../_actions";
+import { saveAreaPage, resetAreaPage, saveAreaSeo } from "../_actions";
+import { SearchAppearanceCard } from "../../../../_fields/search-appearance";
+import {
+  getSearchPreviewChrome,
+  withTitleTemplate,
+} from "@/lib/queries/search-appearance";
+import { readSearchAppearance } from "@/lib/schemas/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +49,7 @@ async function fetchArea(slug: string) {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("areas")
-    .select("id, name, slug, kind, hero_image_id")
+    .select("id, name, slug, kind, hero_image_id, description, seo_meta")
     .eq("slug", slug)
     .maybeSingle();
   return data;
@@ -60,9 +66,10 @@ export default async function AreaSubPage({ params }: PageProps) {
   const area = await fetchArea(slug);
   if (!area) notFound();
 
-  const [content, media] = await Promise.all([
+  const [content, media, chrome] = await Promise.all([
     getAreaPageContent({ name: area.name, slug: area.slug }),
     fetchMedia(),
+    getSearchPreviewChrome(),
   ]);
 
   return (
@@ -147,6 +154,24 @@ export default async function AreaSubPage({ params }: PageProps) {
             }))}
           />
         </div>
+
+        {/*
+          Fallbacks reproduce what generateMetadata on /areas/[slug] publishes
+          when the bag is empty: "<name> — Bazar community guide", plus the
+          area's own intro as the snippet.
+        */}
+        <SearchAppearanceCard
+          initial={readSearchAppearance(area.seo_meta)}
+          path={`/areas/${area.slug}`}
+          fallbackTitle={withTitleTemplate(
+            `${area.name} — Bazar community guide`,
+          )}
+          fallbackDescription={area.description}
+          faviconUrl={chrome.faviconUrl}
+          brandName={chrome.brandName}
+          onSave={saveAreaSeo.bind(null, area.slug)}
+          description="The title and description Google shows for this area guide. Leave blank to keep what the page builds from the area record. These are the same two fields as on the area record screen — either one writes the same place."
+        />
       </div>
     </CmsShell>
   );
