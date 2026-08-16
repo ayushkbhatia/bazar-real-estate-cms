@@ -127,11 +127,12 @@ export function orderAmenities(
  * client pre-checks with the constants and the server re-validates with the
  * schema, and they can no longer drift apart.
  *
- * The list cap is 51 so that a listing can carry a full 50 amenities with a
- * slot to spare; it used to be 50 on both sides, which meant any stray extra
- * entry rejected a selection the picker was reporting as under the limit.
+ * The list cap is 100. It sits deliberately clear of any round number an
+ * agent might be aiming for, so a stray extra entry can't reject a selection
+ * the picker is reporting as under the limit — the failure mode from back when
+ * the two sides were both pinned to 50.
  */
-export const MAX_AMENITIES = 51;
+export const MAX_AMENITIES = 100;
 export const MAX_AMENITY_LENGTH = 50;
 
 /**
