@@ -15,19 +15,20 @@ const section = (pageKey: string, sectionKey: string) =>
   page(pageKey).sections.find((s) => s.key === sectionKey)!;
 
 describe("kindForField", () => {
-  it("sends long prose to body and card copy to summary", () => {
-    expect(kindForField({ key: "x", label: "x", kind: "textarea", max: 600 })).toBe("body");
-    expect(kindForField({ key: "x", label: "x", kind: "textarea", max: 240 })).toBe("summary");
+  it("sends page copy to the page register, whatever its length", () => {
+    // Not `title`/`summary`/`body`. Those registers are framed as LISTING
+    // content, and on page copy that framing changes what the model produces
+    // rather than how it sounds: run under `title` ("a listing headline"), the
+    // heading "Reviews and comments" came back as a fully furnished studio
+    // with a canal view, and it passed all nineteen structural checks.
+    expect(kindForField({ key: "heading", label: "Heading", kind: "text", max: 120 })).toBe("page");
+    expect(kindForField({ key: "body", label: "Body", kind: "textarea", max: 600 })).toBe("page");
+    expect(kindForField({ key: "sub", label: "Intro", kind: "textarea", max: 240 })).toBe("page");
   });
 
-  it("keeps marketing headlines in the listing register, not the interface one", () => {
-    // The distinction the whole mapping turns on. A hero heading IS property
-    // marketing; translating it under UI_SYSTEM_PROMPT ("you are NOT
-    // translating a property listing") flattens it into form-control Arabic.
-    expect(kindForField({ key: "heading", label: "Heading", kind: "text", max: 120 })).toBe("title");
-  });
-
-  it("sends buttons and very short labels to the interface register", () => {
+  it("keeps the interface register for the genuinely control-shaped strings", () => {
+    // Where the failure `ui` was written for — an ambiguous single word
+    // resolving toward property vocabulary — is still the real risk.
     expect(kindForField({ key: "cta_label", label: "Button", kind: "text", max: 60 })).toBe("ui");
     expect(kindForField({ key: "label", label: "Label", kind: "text", max: 24 })).toBe("ui");
   });
@@ -234,10 +235,11 @@ describe("the whole registry", () => {
     expect(all.some((s) => s.pathKey.includes("_ar"))).toBe(false);
   });
 
-  it("gives every slot a register", () => {
+  it("gives every slot a register, and none of them a listing register", () => {
     const all = MASTER_PAGES.flatMap((p) => walkDefaults(`master:${p.key}`, p.sections));
     const kinds = new Set(all.map((s) => s.kind));
-    expect([...kinds].sort()).toEqual(expect.arrayContaining(["title"]));
-    expect(all.every((s) => ["ui", "title", "summary", "body", "alt"].includes(s.kind))).toBe(true);
+    // `title`, `summary` and `body` are for property listings. A master page
+    // reaching one of them is the bug that produced invented copy on /home.
+    expect([...kinds].sort()).toEqual(["page", "ui"]);
   });
 });

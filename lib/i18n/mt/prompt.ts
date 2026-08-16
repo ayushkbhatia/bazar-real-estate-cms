@@ -34,7 +34,7 @@ import type { MtTarget } from "./targets";
  * a human reading the rendered page sees it, which is exactly the failure mode
  * ADR-0007 calls "bad Arabic is worse than no Arabic".
  */
-export type MtKind = MtTarget["kind"] | "ui";
+export type MtKind = MtTarget["kind"] | "ui" | "page";
 
 const REGISTER: Record<MtKind, string> = {
   ui: "Interface text on a website — a button, a field label, a section heading, a short helper sentence. Translate the words in front of you and nothing around them. Never expand a one- or two-word label into a phrase; never resolve an ambiguous word toward property vocabulary. \"Optional\" is the opposite of required, not a luxury. \"Comfortable\" describes a ratio, not an apartment. \"Fixed\" describes an interest rate, not a tenancy. If a word could mean two things, choose the one a control on a form would mean.",
@@ -45,6 +45,22 @@ const REGISTER: Record<MtKind, string> = {
   body:
     "Listing prose. Keep the paragraph structure and the sentence count of the English. Do not add detail the English does not state, and do not summarise.",
   alt: "Image alt text for a screen reader. Describe what is visible, plainly, in under fifteen words.",
+  /*
+   * Copy from the firm's own marketing pages — a hero headline, an eyebrow, a
+   * section intro, a button.
+   *
+   * It needs its own register because the other four are all framed as
+   * *listing* content, and on page copy that framing does not merely change
+   * the tone, it changes what the model produces. Run under `title` ("a
+   * listing headline"), a heading reading "Reviews and comments" came back as
+   * "شقة استوديو مفروشة بالكامل — إطلالة على القناة" — a fully furnished studio
+   * with a canal view. Fluent, confident, and about nothing on the page.
+   *
+   * Every one of the nineteen structural checks passed it. Nothing else can
+   * catch this, which is why the fix belongs in the prompt.
+   */
+  page:
+    "Copy from the firm's own website — a headline, an eyebrow label, a short section intro, a button. Say exactly what the English says, at the same length. Do not describe a property, do not write new marketing, and do not expand a two-word label into a sentence.",
 };
 
 /** The rules that hold whatever is being translated. */
@@ -53,8 +69,10 @@ const SHARED_RULES = `Rules:
 - Placeholders like ⟦0⟧ are protected content — prices, permit numbers, references, phone numbers, measurements. Reproduce each one EXACTLY as it appears, once. Move them where Arabic word order requires. Never translate, renumber, add or drop one.
 - Placeholders like ⟦m0⟧ are formatting markers (bold, italic, a link). Reproduce each one EXACTLY, once. Move them to wrap the words they should emphasise in Arabic — they mark emphasis, not position. An opening marker must still come before its closing marker.
 - Never invent a number, a measurement, a date, or a fact that is not in the English.
+- A placeholder often stands for a proper noun — a place, a company, a project. Keep it in the position that noun would occupy in an Arabic sentence. "New developments in ⟦0⟧" is "مشاريع جديدة في ⟦0⟧", never "⟦0⟧ مشاريع جديدة في".
 - Use Western digits (0-9) for any number you write, matching the site's convention.
 - Do not leave English words in the Arabic.
+- Write Modern Standard Arabic only. No dialect — never "عايز", "مش", "ايه", "دلوقتي" or any other colloquial form. This is published copy for a professional firm.
 - Output plain text. Never add markdown — no #, no **bold**, no bullets — unless the English has it.`;
 
 export const SYSTEM_PROMPT = `You translate Emirati property listings from English into Arabic for a boutique advisory in Abu Dhabi.
@@ -79,8 +97,36 @@ You are NOT translating a property listing. Do not reach for marketing vocabular
 
 ${SHARED_RULES}`;
 
+/**
+ * The framing for the firm's own page copy.
+ *
+ * Separate from both other system prompts for the same reason `UI_SYSTEM_PROMPT`
+ * is separate from `SYSTEM_PROMPT`: the opening sentence decides what the model
+ * thinks it is doing, and a clause buried further down does not undo it.
+ *
+ * `SYSTEM_PROMPT` opens "You translate Emirati property listings", and on a
+ * page heading that produces a property listing — not a bad translation, a
+ * different thing entirely. `UI_SYSTEM_PROMPT` overcorrects the other way: it
+ * says "you are NOT translating a property listing" and renders hero copy in
+ * the voice of a bank's form controls.
+ *
+ * This one names the actual job: translating marketing copy that already
+ * exists, faithfully.
+ */
+export const PAGE_SYSTEM_PROMPT = `You translate the copy of a property advisory's own website from English into Arabic. The firm is a boutique advisory in Abu Dhabi.
+
+This is a TRANSLATION, not a brief. Every string you are given is already on a live page in English. Say the same thing in Arabic. Do not write better marketing, do not describe a property, and do not supply detail the English leaves out.
+
+The commonest failure on this material is inventing content. "Reviews and comments" is a heading about reviews; it is not an invitation to describe an apartment. "Where to live" is a two-word label, not a listing. A three-word English string becomes a three-word Arabic string.
+
+Write Modern Standard Arabic as UAE property websites actually write it — clear, direct, readable. Not literary, not administrative.
+
+${SHARED_RULES}`;
+
 export function systemPromptFor(kind: MtKind): string {
-  return kind === "ui" ? UI_SYSTEM_PROMPT : SYSTEM_PROMPT;
+  if (kind === "ui") return UI_SYSTEM_PROMPT;
+  if (kind === "page") return PAGE_SYSTEM_PROMPT;
+  return SYSTEM_PROMPT;
 }
 
 export function buildPrompt(input: {
