@@ -567,6 +567,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "A scannable code that opens Bazar Real Estate's contact page — for office screens, printed cards, and window displays.": {
+    "ar": "رمز قابل للمسح يفتح صفحة التواصل الخاصة بشركة بازار للعقارات — لشاشات المكاتب والبطاقات المطبوعة وواجهات العرض.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
+  },
   "A short briefing on the week's Abu Dhabi deals, advisor commentary, and one chart worth sitting with.": {
     "ar": "موجز قصير عن صفقات أبوظبي لهذا الأسبوع، وتعليقات المستشارين، ورسم بياني واحد يستحق التأمل.",
     "by": "machine",
@@ -596,6 +602,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:51:11.583Z"
+  },
+  "A trusted name in UAE real estate since 2005 — over 20 years of trust, transparency, and proven market experience across Abu Dhabi and the wider UAE.": {
+    "ar": "اسم موثوق في القطاع العقاري الإماراتي منذ عام 2005 — أكثر من 20 عامًا من الثقة والشفافية والخبرة السوقية المثبتة في أبوظبي وسائر أنحاء الإمارات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "A vibrant waterfront community with strong rental demand.": {
     "ar": "مجتمع نابض بالحياة على الواجهة المائية مع طلب قوي على الإيجار.",
@@ -819,7 +831,19 @@
     "ar": "بازار نبذة عن العقارية",
     "by": "machine",
     "model": "claude-opus-5",
-    "at": "2026-08-16T12:32:10.242Z"
+    "at": "2026-08-16T17:00:34.989Z"
+  },
+  "About Bazar Real Estate | Real Estate Experts in Abu Dhabi": {
+    "ar": "نبذة عن بازار العقارية | خبراء العقارات في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
+  },
+  "About Bazar — Abu Dhabi, properly understood": {
+    "ar": "نبذة عن بازار — أبوظبي، بفهم صحيح",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
   },
   "About Us": {
     "ar": "من نحن",
@@ -842,6 +866,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
+  },
+  "Abu Dhabi Communities | Bazar Real Estate": {
+    "ar": "مجتمعات أبوظبي | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
   },
   "Abu Dhabi Established Since 2005": {
     "ar": "أبوظبي تأسست منذ عام 2005",
@@ -894,6 +924,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
+  },
+  "Abu Dhabi Real Estate News | Bazar Real Estate": {
+    "ar": "أبوظبي أخبار العقارات | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
   },
   "Abu Dhabi Royal Equestrian Arts": {
     "ar": "أبوظبي فنون الفروسية الملكية",
@@ -1513,6 +1549,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Areas in Abu Dhabi": {
+    "ar": "المناطق في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
+  },
   "At Bazar Real Estate, we go beyond property transactions. We act as a trusted partner for clients navigating Abu Dhabi and the wider UAE real estate market, combining local expertise with a modern, investor-focused approach.\n\nWith direct relationships with leading developers, financial partners, and key industry stakeholders, Bazar provides clients with the knowledge, access, and confidence needed to make informed property decisions.": {
     "ar": "في بازار العقارية، نتجاوز حدود المعاملات العقارية. فنحن شريك موثوق للعملاء في أبوظبي وسوق العقارات في الإمارات عمومًا، ونجمع بين الخبرة المحلية ونهج عصري يركّز على المستثمر.\n\nوبفضل العلاقات المباشرة مع كبار المطوّرين والشركاء الماليين والجهات الرئيسية في القطاع، توفّر بازار لعملائها المعرفة وسهولة الوصول والثقة اللازمة لاتخاذ قرارات عقارية مدروسة.",
     "by": "machine",
@@ -1597,6 +1639,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
   },
+  "Bazar Real Estate | Abu Dhabi Real Estate": {
+    "ar": "بازار للعقارات | أبوظبي للعقارات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
+  },
+  "Bazar Real Estate — Abu Dhabi, properly understood": {
+    "ar": "بازار للعقارات — أبوظبي، بفهم صحيح",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.987Z"
+  },
   "Bazar Real Estate, Abu Dhabi.": {
     "ar": "بازار للعقارات، أبوظبي.",
     "by": "machine",
@@ -1608,6 +1662,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Bazar is a twelve-advisor boutique real-estate firm covering Abu Dhabi. Fiduciary advisory, off-market access, and numerically honest analysis.": {
+    "ar": "بازار شركة عقارية متخصصة تضم اثني عشر مستشارًا وتغطي أبوظبي. استشارات ائتمانية، ووصول إلى الفرص خارج السوق، وتحليل صادق بالأرقام.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
   },
   "Bazar · Abu Dhabi": {
     "ar": "بازار · أبوظبي",
@@ -1692,6 +1752,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Better property decisions start with the right guidance. Whether you are looking to buy, sell or invest, get professional property guidance based on your requirements, budget and objectives.": {
+    "ar": "تبدأ القرارات العقارية الأفضل بالإرشاد الصحيح. سواء كنت ترغب في الشراء أو البيع أو الاستثمار، احصل على إرشاد عقاري احترافي يستند إلى متطلباتك وميزانيتك وأهدافك.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.675Z"
   },
   "Between Yas Island and Saadiyat Island.": {
     "ar": "بين جزيرة ياس وجزيرة السعديات.",
@@ -1822,6 +1888,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.270Z"
+  },
+  "Browse properties for sale in Abu Dhabi, including apartments, villas, townhouses, and investment opportunities across leading communities.": {
+    "ar": "تصفّح العقارات المعروضة للبيع في أبوظبي، بما في ذلك الشقق والفلل والتاون هاوس والفرص الاستثمارية في أبرز المجتمعات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
   },
   "Browse ready": {
     "ar": "تصفح الجاهز",
@@ -1955,6 +2027,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.268Z"
   },
+  "Buy a Property in Abu Dhabi": {
+    "ar": "شراء عقار في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
+  },
   "Buy across Abu Dhabi's communities.": {
     "ar": "أبوظبي اشترِ في مجتمعات",
     "by": "machine",
@@ -1962,10 +2040,10 @@
     "at": "2026-08-16T10:30:05.269Z"
   },
   "Buy, sell, rent, manage, or finance — every service is backed by over 20 years of UAE market experience and a single, senior point of contact.": {
-    "ar": "الشراء أو البيع أو الإيجار أو الإدارة أو التمويل — كل خدمة مدعومة بأكثر من 20 عامًا من الخبرة في سوق الإمارات وبنقطة تواصل واحدة مع مسؤول أول.",
+    "ar": "الشراء أو البيع أو الإيجار أو الإدارة أو التمويل — كل خدمة مدعومة بأكثر من 20 عامًا من الخبرة في سوق الإمارات، وبنقطة تواصل واحدة مع مسؤول رفيع المستوى.",
     "by": "machine",
     "model": "claude-opus-5",
-    "at": "2026-08-16T12:19:33.085Z"
+    "at": "2026-08-16T16:54:41.822Z"
   },
   "Buyer qualification": {
     "ar": "تأهيل المشتري",
@@ -2255,6 +2333,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:16:12.763Z"
   },
+  "Commercial Properties in Abu Dhabi | Bazar Real Estate": {
+    "ar": "عقارات تجارية في أبوظبي | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
+  },
   "Commercial Property": {
     "ar": "أملاك تجارية",
     "by": "machine",
@@ -2272,6 +2356,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:57:09.582Z"
+  },
+  "Commercial Property in Abu Dhabi": {
+    "ar": "عقارات تجارية في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "Commercial Real Estate": {
     "ar": "العقارات التجارية",
@@ -2416,6 +2506,24 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.109Z"
+  },
+  "Contact Bazar Real Estate": {
+    "ar": "بازار للعقارات — اتصل بنا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
+  },
+  "Contact Bazar Real Estate for help with buying, selling, renting, investing, or managing property in Abu Dhabi.": {
+    "ar": "بازار للعقارات — تواصل معنا للمساعدة في شراء العقارات أو بيعها أو تأجيرها أو الاستثمار فيها أو إدارتها في أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
+  },
+  "Contact Bazar Real Estate | Property Enquiries & Support": {
+    "ar": "تواصل مع بازار العقارية | استفسارات العقارات والدعم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
   },
   "Contact Details": {
     "ar": "تفاصيل الاتصال",
@@ -2605,6 +2713,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:45:16.170Z"
   },
+  "Developers · Bazar Real Estate": {
+    "ar": "بازار ريل إستيت · المطورون",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
+  },
   "Direct access to Khalifa Port’s deep-water terminals.": {
     "ar": "وصول مباشر إلى محطات المياه العميقة في ميناء خليفة.",
     "by": "machine",
@@ -2616,6 +2730,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:37:03.040Z"
+  },
+  "Direct relationships with the UAE's leading developers give Bazar clients early access to landmark communities, new launches, and off-plan opportunities.": {
+    "ar": "علاقاتنا المباشرة مع كبرى شركات التطوير في الإمارات تمنح عملاء بازار وصولاً مبكراً إلى المجتمعات المميزة والإطلاقات الجديدة والفرص على الخارطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "Direct relationships with the region's leading developers give Bazar clients early access to landmark communities, new launches, and off-plan opportunities.": {
     "ar": "علاقاتنا المباشرة مع كبرى شركات التطوير في المنطقة تمنح عملاء بازار وصولاً مبكراً إلى المجتمعات المميزة والإطلاقات الجديدة والفرص على الخارطة.",
@@ -2676,6 +2796,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:01:23.673Z"
+  },
+  "Discover leading real estate developers in Abu Dhabi and explore their latest projects, communities, and residential developments across the UAE.": {
+    "ar": "اكتشف أبرز المطوّرين العقاريين في أبوظبي واستعرض أحدث مشاريعهم ومجتمعاتهم والمشاريع السكنية في مختلف أنحاء الإمارات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
   },
   "Discover modern off-plan apartments in Abu Dhabi's most connected communities.": {
     "ar": "اكتشف شققاً عصرية على الخارطة في أكثر مجتمعات أبوظبي اتصالاً.",
@@ -2742,6 +2868,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:41:24.841Z"
+  },
+  "Discover the latest off-plan properties and new developments in Abu Dhabi, with project details, payment plans, prices, and investment opportunities.": {
+    "ar": "اكتشف أحدث العقارات على الخارطة والمشاريع الجديدة في أبوظبي، مع تفاصيل المشاريع وخطط السداد والأسعار وفرص الاستثمار.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
   },
   "Discover the right place to live, connect and grow.": {
     "ar": "اكتشف المكان المناسب للسكن والتواصل والنمو.",
@@ -3071,6 +3203,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
   },
+  "Explore Abu Dhabi real estate with Bazar Real Estate. Discover properties, new projects, trusted advice, and tailored support for buyers and investors.": {
+    "ar": "استكشف عقارات أبوظبي مع بازار العقارية. اكتشف العقارات والمشاريع الجديدة والاستشارات الموثوقة والدعم المخصص للمشترين والمستثمرين.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
+  },
   "Explore Abu Dhabi's leading communities.": {
     "ar": "اكتشف أبرز مجتمعات أبوظبي.",
     "by": "machine",
@@ -3082,6 +3220,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
+  },
+  "Explore Abu Dhabi’s leading communities and areas, with insights into lifestyle, property options, connectivity, and real estate opportunities.": {
+    "ar": "اكتشف أبرز المجتمعات والمناطق في أبوظبي، مع نظرة على أسلوب الحياة وخيارات العقارات وسهولة التنقل وفرص الاستثمار العقاري.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
   },
   "Explore Al Ghadeer": {
     "ar": "الغدير استكشف",
@@ -3106,6 +3250,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:21:17.942Z"
+  },
+  "Explore Bazar Real Estate services, including property sales, leasing, investment advice, property management, and mortgage support.": {
+    "ar": "اكتشف خدمات بازار العقارية، بما في ذلك بيع العقارات والتأجير والاستشارات الاستثمارية وإدارة الأملاك ودعم تمويل عقاري.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
   },
   "Explore Fahid Island": {
     "ar": "جزيرة فاهد استكشف",
@@ -3184,6 +3334,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:01:35.962Z"
+  },
+  "Explore commercial properties in Abu Dhabi, including offices, retail spaces, buildings, and investment opportunities for businesses and investors.": {
+    "ar": "اكتشف العقارات التجارية في أبوظبي، بما في ذلك المكاتب والمساحات التجارية والمباني وفرص الاستثمار للشركات والمستثمرين.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
   },
   "Explore communities designed around sea views, canals, promenades, and relaxed waterfront living.": {
     "ar": "استكشف مجتمعات مصممة حول إطلالات البحر والقنوات المائية والممشى والحياة الهادئة على الواجهة البحرية.",
@@ -3382,6 +3538,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:51:11.583Z"
+  },
+  "Explore the latest off-plan developments across Abu Dhabi's top communities — from waterfront apartments to branded residences.": {
+    "ar": "اكتشف أحدث المشاريع على الخارطة في أبرز مجتمعات أبوظبي — من الشقق المطلة على الواجهة المائية إلى المساكن ذات العلامات التجارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "Explore the latest off-plan projects across Abu Dhabi's top communities — from waterfront apartments to branded residences.": {
     "ar": "اكتشف أحدث المشاريع على الخارطة في أبرز مجتمعات أبوظبي — من الشقق المطلة على الواجهة المائية إلى المساكن ذات العلامات التجارية.",
@@ -3799,6 +3961,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
   },
+  "Find properties for rent in Abu Dhabi, from apartments and villas to family homes in some of the capital’s most sought-after communities.": {
+    "ar": "ابحث عن عقارات للإيجار في أبوظبي، من الشقق والفلل إلى منازل العائلات في أكثر مجتمعات العاصمة طلبًا.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
+  },
   "Find rental apartments with beach and skyline frontage in the heart of the city.": {
     "ar": "شقق للإيجار تطل على الشاطئ وأفق المدينة في قلب المدينة.",
     "by": "machine",
@@ -3852,6 +4020,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.269Z"
+  },
+  "Find the right property with confidence — ready, resale and off-plan homes across Abu Dhabi's most sought-after communities, with a senior advisor guiding every step.": {
+    "ar": "اعثر على العقار المناسب بثقة — منازل جاهزة وإعادة بيع وعلى الخارطة في أكثر المجتمعات المرغوبة في أبوظبي، مع مستشار أول يرافقك في كل خطوة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "Find the right property with confidence — residential, commercial, and land opportunities across Abu Dhabi's most sought-after communities.": {
     "ar": "اعثر على العقار المناسب بثقة — فرص سكنية وتجارية وأراضٍ في أكثر مجتمعات أبوظبي طلبًا.",
@@ -4117,6 +4291,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
   },
+  "From waterfront destinations to family-friendly neighbourhoods, discover the Abu Dhabi areas that define living and investing in the capital.": {
+    "ar": "من الوجهات المطلة على الواجهة المائية إلى الأحياء المناسبة للعائلات، اكتشف مناطق أبوظبي التي تُعرّف السكن والاستثمار في العاصمة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
+  },
   "From waterfront destinations to family-friendly neighbourhoods, discover the areas that define living and investing in the capital.": {
     "ar": "من الوجهات المطلة على الواجهة المائية إلى الأحياء المناسبة للعائلات، اكتشف المناطق التي تحدد ملامح السكن والاستثمار في العاصمة.",
     "by": "machine",
@@ -4285,6 +4465,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.245Z"
   },
+  "Get expert property consultation in Abu Dhabi with tailored guidance for buying, selling, investing, and making informed real estate decisions.": {
+    "ar": "احصل على استشارة عقارية متخصصة في أبوظبي مع إرشادات مصممة خصيصًا للشراء والبيع والاستثمار واتخاذ قرارات عقارية مدروسة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
+  },
   "Get in Touch": {
     "ar": "تواصل معنا",
     "by": "machine",
@@ -4292,10 +4478,10 @@
     "at": "2026-08-16T13:28:31.966Z"
   },
   "Get in touch with Bazar Real Estate for buying, selling, renting, listing, or investment enquiries across Abu Dhabi and the UAE.": {
-    "ar": "تواصل مع بازار العقارية لأي استفسار حول البيع أو الشراء أو الإيجار أو الإعلان العقاري أو الاستثمار في أبوظبي والإمارات.",
+    "ar": "تواصل مع بازار العقارية للاستفسارات المتعلقة بالشراء أو البيع أو الإيجار أو الإعلان العقاري أو الاستثمار في أبوظبي والإمارات.",
     "by": "machine",
     "model": "claude-opus-5",
-    "at": "2026-08-16T12:44:34.154Z"
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "Get in touch with Bazar Real Estate for trusted property guidance across Abu Dhabi and the wider UAE.": {
     "ar": "تواصل مع بازار العقارية للحصول على استشارات عقارية موثوقة في أبوظبي وسائر أنحاء الإمارات.",
@@ -4877,6 +5063,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:17:31.300Z"
   },
+  "Learn more about Bazar Real Estate, our experience, values, and commitment to helping clients navigate the Abu Dhabi property market.": {
+    "ar": "تعرّف على بازار العقارية، وخبرتنا وقيمنا والتزامنا بمساعدة العملاء على التنقل في سوق العقارات في أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
+  },
   "Lease": {
     "ar": "عقد إيجار",
     "by": "machine",
@@ -4961,11 +5153,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
   },
+  "List Your Property in Abu Dhabi | Bazar Real Estate": {
+    "ar": "اعرض عقارك في أبوظبي | بازار للعقارات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
+  },
   "List your property": {
     "ar": "ااعرض عقارك",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
+  },
+  "List your property in Abu Dhabi with Bazar Real Estate and connect with qualified buyers and tenants through professional marketing and support.": {
+    "ar": "اعرض عقارك في أبوظبي مع بازار العقارية وتواصل مع مشترين ومستأجرين جادين من خلال تسويق ودعم احترافيين.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
   },
   "Living on the Corniche": {
     "ar": "الحياة على الكورنيش",
@@ -5098,6 +5302,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:43:22.108Z"
+  },
+  "Long-form market analysis, advisor field notes, and the occasional contrarian take on Abu Dhabi real estate. One email every Wednesday.": {
+    "ar": "تحليلات مفصّلة للسوق، وملاحظات ميدانية من مستشارينا، ورأي مخالف من حين لآخر حول العقارات في أبوظبي. رسالة واحدة كل أربعاء.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "Long-form market analysis, advisor field notes, and the occasional contrarian take. One email every Wednesday.": {
     "ar": "تحليلات معمّقة للسوق، وملاحظات ميدانية من المستشارين، ورأي مخالف بين الحين والآخر. رسالة واحدة كل أربعاء.",
@@ -5499,7 +5709,7 @@
     "ar": "حاسبة تمويل عقاري",
     "by": "machine",
     "model": "claude-opus-5",
-    "at": "2026-08-16T10:01:23.673Z"
+    "at": "2026-08-16T17:02:41.676Z"
   },
   "Mortgage guidance for confident property decisions — know your budget early and search with focus.": {
     "ar": "إرشادات تمويل عقاري لقرارات عقارية واثقة — اعرف ميزانيتك مبكرًا وابحث بتركيز.",
@@ -5566,6 +5776,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.607Z"
+  },
+  "New Projects · Off-plan in Abu Dhabi": {
+    "ar": "مشاريع جديدة · على الخارطة في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "New Residential Market": {
     "ar": "السوق السكني الجديد",
@@ -5687,6 +5903,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
   },
+  "Off-Plan Properties in Abu Dhabi | Bazar Real Estate": {
+    "ar": "عقارات على الخارطة في أبوظبي | بازار للعقارات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
+  },
   "Off-Plan Property Sale Index": {
     "ar": "مؤشر مبيعات العقارات على الخارطة",
     "by": "machine",
@@ -5740,6 +5962,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.331Z"
+  },
+  "Office, retail, and industrial leases and freeholds across Abu Dhabi's business districts — advised on whole cost of occupancy, not headline rent.": {
+    "ar": "عقود إيجار وتملك حر للمكاتب والمساحات التجارية والصناعية في مناطق الأعمال بـأبوظبي — بمشورة تقوم على إجمالي تكلفة الإشغال، لا على الإيجار المعلن.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "Offices": {
     "ar": "العقارات المكتبية",
@@ -6303,11 +6531,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.293Z"
   },
+  "Professional property management focused on protecting your property, supporting tenants and ensuring efficient day-to-day operations. Tell us about your property and a Bazar consultant will be in touch.": {
+    "ar": "إدارة عقارية احترافية تركّز على حماية عقارك، ودعم المستأجرين، وضمان كفاءة العمليات اليومية. أخبرنا عن عقارك وسيتواصل معك أحد مستشاري بازار.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.675Z"
+  },
   "Professional property management for landlords and investors — protect your asset and keep tenants satisfied.": {
     "ar": "إدارة عقارية احترافية للملاك والمستثمرين — احمِ أصولك وحافظ على رضا المستأجرين.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
+  },
+  "Professional property management in Abu Dhabi, including tenant support, maintenance coordination, leasing, and day-to-day property care.": {
+    "ar": "إدارة عقارية احترافية في أبوظبي، تشمل دعم المستأجرين وتنسيق الصيانة والتأجير والعناية اليومية بالعقار.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
   },
   "Professional tenant communication and support.": {
     "ar": "التواصل مع المستأجرين ودعمهم باحترافية.",
@@ -6332,6 +6572,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:11:22.357Z"
+  },
+  "Properties for Rent in Abu Dhabi | Bazar Real Estate": {
+    "ar": "عقارات للإيجار في أبوظبي | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
   },
   "Properties for Rent in Al Ghadeer": {
     "ar": "عقارات للإيجار في الغدير",
@@ -6416,6 +6662,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:26:57.193Z"
+  },
+  "Properties for Sale in Abu Dhabi | Bazar Real Estate": {
+    "ar": "عقارات للبيع في أبوظبي | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
   },
   "Properties for Sale in Al Ghadeer": {
     "ar": "عقارات للبيع في الغدير",
@@ -6519,6 +6771,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.287Z"
   },
+  "Property Consultation in Abu Dhabi | Bazar": {
+    "ar": "استشارات عقارية في أبوظبي | بازار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.675Z"
+  },
+  "Property Consultation in Abu Dhabi | Bazar Real Estate": {
+    "ar": "استشارات عقارية في أبوظبي | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
+  },
   "Property Consultations": {
     "ar": "ٱستشارات عقارية",
     "by": "machine",
@@ -6572,6 +6836,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.293Z"
+  },
+  "Property Management in Abu Dhabi | Bazar": {
+    "ar": "إدارة العقارات في أبوظبي | بازار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
+  },
+  "Property Management in Abu Dhabi | Bazar Real Estate": {
+    "ar": "إدارة الأملاك في أبوظبي | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
   },
   "Property Owners": {
     "ar": "ملاك العقارات",
@@ -6775,6 +7051,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.877Z"
   },
+  "Real Estate Developers in Abu Dhabi | Bazar Real Estate": {
+    "ar": "مطورو العقارات في أبوظبي | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
+  },
+  "Real Estate Services in Abu Dhabi | Bazar Real Estate": {
+    "ar": "خدمات عقارية في أبوظبي | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
+  },
   "Recognised by Leading UAE Developers": {
     "ar": "معتمدون لدى كبرى المطوّرين العقاريين في الإمارات",
     "by": "machine",
@@ -6846,6 +7134,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
+  },
+  "Rent a Property in Abu Dhabi": {
+    "ar": "استئجار عقار في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "Rent by area. Start with the map.": {
     "ar": "الإيجار حسب المنطقة. ابدأ من الخريطة.",
@@ -6995,6 +7289,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:15:04.118Z"
   },
+  "Residential and commercial rentals across Abu Dhabi's most connected communities — matched to your budget, lifestyle, and move-in date.": {
+    "ar": "إيجارات سكنية وتجارية في أكثر مجتمعات أبوظبي اتصالاً — بما يناسب ميزانيتك ونمط حياتك وتاريخ انتقالك.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
+  },
   "Residential and commercial rentals across the city's most connected communities — matched to your budget, lifestyle and move-in date.": {
     "ar": "إيجارات سكنية وتجارية في أكثر مجتمعات المدينة اتصالاً — تتناسب مع ميزانيتك ونمط حياتك وموعد انتقالك.",
     "by": "machine",
@@ -7113,6 +7413,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:47:46.675Z"
   },
+  "Scan to contact Bazar Real Estate": {
+    "ar": "امسح للتواصل مع بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.675Z"
+  },
   "Schools & Retail": {
     "ar": "المدارس والمتاجر",
     "by": "machine",
@@ -7166,6 +7472,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
+  },
+  "Sell or rent out your property in Abu Dhabi | Bazar": {
+    "ar": "بيع أو تأجير عقارك في أبوظبي | بازار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "Sell or rent out,\nwith one advisor": {
     "ar": "بِع أو أجِّر،\nمع مستشار واحد",
@@ -7244,6 +7556,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.902Z"
+  },
+  "Services · Bazar Real Estate": {
+    "ar": "بازار الخدمات · العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "Services · Property Consultation": {
     "ar": "الخدمات · استشارات عقارية",
@@ -7388,6 +7706,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.269Z"
+  },
+  "Stay updated with Abu Dhabi real estate news, market trends, investment insights, new launches, and property updates from Bazar Real Estate.": {
+    "ar": "ابقَ على اطلاع بأخبار العقارات في أبوظبي، واتجاهات السوق، ورؤى الاستثمار، والإطلاقات الجديدة، ومستجدات العقارات من بازار العقارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
   },
   "Strategic Location": {
     "ar": "الموقع الاستراتيجي",
@@ -7537,6 +7861,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Tell us about your property and we'll match you with the senior Bazar advisor who covers your community — ADREC-licensed, no upfront fees, one point of contact from valuation through to transfer.": {
+    "ar": "أخبرنا عن عقارك وسنوصلك بكبير مستشاري بازار المسؤول عن مجتمعك — مرخّص من ADREC، بدون رسوم مقدمة، ونقطة تواصل واحدة من التقييم حتى نقل الملكية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
+  },
   "Tell us the use, the headcount and the timing — we'll come back with options that fit, not a list to wade through.": {
     "ar": "أخبرنا بالاستخدام وعدد الموظفين والتوقيت — وسنعود إليك بخيارات مناسبة، لا بقائمة طويلة تحتاج إلى تصفّحها.",
     "by": "machine",
@@ -7650,6 +7980,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
+  },
+  "The Bazar Brief — market reports, field notes, and advisor commentary": {
+    "ar": "موجز بازار — تقارير السوق وملاحظات ميدانية وتعليقات المستشارين",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:00:34.989Z"
   },
   "The Beach House": {
     "ar": "بيت الشاطئ",
@@ -8074,6 +8410,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
+  },
+  "Use our UAE mortgage calculator to estimate monthly payments, explore financing options, and better understand your potential home loan.": {
+    "ar": "استخدم حاسبة تمويل عقاري في الإمارات لتقدير الأقساط الشهرية، واستكشاف خيارات التمويل، وفهم قرضك السكني المحتمل بشكل أفضل.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:03:51.667Z"
   },
   "Vacant": {
     "ar": "افرغ",
@@ -8948,6 +9290,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
+  },
+  "You've scanned our code — save Bazar Real Estate to your phone in one tap, or call, WhatsApp or email an advisor in Abu Dhabi.": {
+    "ar": "لقد مسحت رمزنا — احفظ بازار للعقارات في هاتفك بنقرة واحدة، أو اتصل بأحد المستشارين في أبوظبي أو راسله عبر واتساب أو البريد الإلكتروني.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T17:02:41.676Z"
   },
   "Your Future Has an Address": {
     "ar": "مستقبلك له عنوان",

@@ -36,6 +36,8 @@ const ALL = args.includes("--all");
 const SUBPAGES = args.includes("--subpages");
 /** The 22 public lead forms: copy, field labels, and option labels. */
 const FORMS = args.includes("--forms");
+/** Search appearance: the `<title>` and description a result page shows. */
+const SEO = args.includes("--seo");
 const PAGE = args[args.indexOf("--page") + 1];
 const LIMIT = args.includes("--limit")
   ? Number(args[args.indexOf("--limit") + 1])
@@ -66,8 +68,8 @@ function writeStore(store: Store) {
 }
 
 async function main() {
-  if (!ALL && !PAGE && !SUBPAGES && !FORMS) {
-    console.error("Pass --page <key>, --all, --subpages, or --forms.");
+  if (!ALL && !PAGE && !SUBPAGES && !FORMS && !SEO) {
+    console.error("Pass --page <key>, --all, --subpages, --forms, or --seo.");
     process.exit(2);
   }
 
@@ -139,6 +141,50 @@ async function main() {
    * its output means walking exactly what a visitor reads.
    */
   const work: Job[] = [];
+
+  if (SEO) {
+    /*
+     * Two layers, and both matter.
+     *
+     * The CMS `seo` bag is what 16 pages actually publish today. The code
+     * defaults are what the other routes publish, and what every page falls
+     * back to when its CMS field is blank — which is most of them. Missing
+     * either leaves an Arabic page carrying an English title into a search
+     * result, which is worse than an untranslated page because it looks
+     * finished.
+     */
+    const { MASTER_PAGE_SEO_DEFAULTS } = await import("../../lib/master-pages/seo-defaults");
+    const { readSearchAppearance } = await import("../../lib/schemas/seo");
+
+    const addSeo = (where: string, what: string, english: unknown, max: number) => {
+      if (typeof english !== "string" || !english.trim()) return;
+      work.push({
+        page: `seo:${where}`,
+        section: "meta",
+        pathKey: what,
+        english,
+        kind: "page",
+        maxLength: Math.ceil(max * 1.5),
+        identity: false,
+      });
+    };
+
+    for (const [key, d] of Object.entries(MASTER_PAGE_SEO_DEFAULTS)) {
+      addSeo(key, "default.title", d.title, 70);
+      addSeo(key, "default.description", d.description, 200);
+    }
+
+    if (sb) {
+      const { data } = await sb.from("pages").select("slug, seo");
+      for (const row of (data ?? []) as { slug: string; seo: unknown }[]) {
+        const seo = readSearchAppearance(row.seo as never);
+        addSeo(row.slug, "meta_title", seo.meta_title, 70);
+        addSeo(row.slug, "meta_description", seo.meta_description, 200);
+      }
+    }
+    console.log(`${work.length} search-appearance string(s).`);
+  }
+
   if (FORMS) {
     const { FORM_DEFS } = await import("../../lib/forms/registry");
     const { resolveForm } = await import("../../lib/forms/resolve");
@@ -208,7 +254,7 @@ async function main() {
       }
     }
     console.log(`${pages.length} subpage(s) with stored content.`);
-  } else if (FORMS) {
+  } else if (FORMS || SEO) {
     pages = [];
   } else {
     pages = MASTER_PAGES.filter((p) => ALL || p.key === PAGE);

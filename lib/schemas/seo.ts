@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { arabicFor } from "@/lib/i18n/arabic-store";
 
 /**
  * The search-appearance bag — what an editor writes to control how a page
@@ -124,11 +125,25 @@ export function localiseSearchAppearance(
   locale: string,
 ): { meta_title: string | null; meta_description: string | null } {
   const ar = locale === "ar";
-  return {
-    meta_title: (ar ? seo.meta_title_ar : null) ?? seo.meta_title,
-    meta_description:
-      (ar ? seo.meta_description_ar : null) ?? seo.meta_description,
-  };
+  /*
+   * Generated Arabic backs the stored twin, and only where the twin is blank.
+   *
+   * This is the single choke point for search appearance — master pages,
+   * developments and articles all fold through it — which makes it the one
+   * place worth teaching about the store. Without it an Arabic page carries
+   * an English `<title>` and description into the result page, and that is
+   * worse than an untranslated page: it looks finished.
+   *
+   * Nobody had written a single Arabic meta field: 16 pages carry a
+   * `meta_title` and a `meta_description`, and zero carry either twin.
+   */
+  const title =
+    (ar ? seo.meta_title_ar || arabicFor(seo.meta_title) : null) ??
+    seo.meta_title;
+  const description =
+    (ar ? seo.meta_description_ar || arabicFor(seo.meta_description) : null) ??
+    seo.meta_description;
+  return { meta_title: title, meta_description: description };
 }
 
 /**

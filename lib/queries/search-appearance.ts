@@ -5,6 +5,7 @@ import { masterSlug, type MasterPageKey } from "@/lib/master-pages";
 import { MASTER_PAGE_SEO_DEFAULTS } from "@/lib/master-pages/seo-defaults";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { getPublicBranding } from "@/lib/queries/site-settings";
+import { arabicFor } from "@/lib/i18n/arabic-store";
 import {
   EMPTY_SEARCH_APPEARANCE,
   localiseSearchAppearance,
@@ -70,15 +71,44 @@ export async function masterPageMetadata(
   // A CMS title is always absolute (see above). The fallback keeps whatever
   // form the route published before: templated everywhere except the home
   // page, which has always shipped the layout's untemplated default.
+  /*
+   * The code-side fallback needs Arabic too.
+   *
+   * `localiseSearchAppearance` handles the CMS values; these are the strings a
+   * page publishes when the CMS field is blank, which today is most of them.
+   * Left alone, an Arabic page with no CMS meta gets an English title from
+   * `MASTER_PAGE_SEO_DEFAULTS` — the same failure one layer down.
+   */
+  /*
+   * All or nothing, per snippet.
+   *
+   * A result showing an Arabic title over an English description is worse than
+   * one that is wholly English: it reads as broken rather than untranslated,
+   * and it tells a searcher the page is in a language it is not. Three pages
+   * would have shipped exactly that — their titles translated cleanly and
+   * their descriptions were blocked by the gate.
+   *
+   * So the generated fallback applies only when BOTH halves have Arabic. A
+   * twin an editor wrote is their decision and is not subject to this;
+   * `localiseSearchAppearance` has already applied those.
+   */
+  const arTitle = locale === "ar" ? arabicFor(defaults.title) : null;
+  const arDescription = locale === "ar" ? arabicFor(defaults.description) : null;
+  const bothTranslated = Boolean(arTitle && arDescription);
+
+  const fallbackTitle = (bothTranslated ? arTitle : null) ?? defaults.title;
+  const fallbackDescription =
+    (bothTranslated ? arDescription : null) ?? defaults.description;
+
   const title = meta_title
     ? { absolute: meta_title }
     : defaults.titleIsAbsolute
-      ? { absolute: defaults.title }
-      : defaults.title;
+      ? { absolute: fallbackTitle }
+      : fallbackTitle;
 
   return {
     title,
-    description: meta_description ?? defaults.description,
+    description: meta_description ?? fallbackDescription,
     ...extra,
   };
 }
