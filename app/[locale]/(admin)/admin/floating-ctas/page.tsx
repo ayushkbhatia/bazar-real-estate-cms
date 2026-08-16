@@ -1,8 +1,12 @@
 import { CmsShell } from "@/components/brand/cms-shell";
 import { requireRole } from "@/lib/auth";
-import { listFloatingCtasForAdmin } from "@/lib/queries/floating-ctas";
+import {
+  listCtaClicks,
+  listFloatingCtasForAdmin,
+} from "@/lib/queries/floating-ctas";
 import type { FloatingCtaInput } from "@/lib/schemas/floating-cta";
 import { FloatingCtasEditor } from "./_editor";
+import { FloatingCtaActivity } from "./_activity";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +21,10 @@ const CTA_ROLES = ["admin", "editor", "marketing"] as const;
  */
 export default async function FloatingCtasPage() {
   const { supabase } = await requireRole(CTA_ROLES);
-  const { rows, missingTable, error } = await listFloatingCtasForAdmin(supabase);
+  const [{ rows, missingTable, error }, clicks] = await Promise.all([
+    listFloatingCtasForAdmin(supabase),
+    listCtaClicks(supabase),
+  ]);
 
   const initial: FloatingCtaInput[] = rows.map((r) => ({
     id: r.id,
@@ -28,6 +35,7 @@ export default async function FloatingCtasPage() {
     // query loads and this omits reaches the editor as undefined.
     label_ar: r.label_ar ?? null,
     destination: r.destination,
+    cc_destination: r.cc_destination,
     message_template: r.message_template,
     message_template_ar: r.message_template_ar ?? null,
     subject_template: r.subject_template,
@@ -66,6 +74,9 @@ export default async function FloatingCtasPage() {
           </p>
         ) : (
           <FloatingCtasEditor initial={initial} />
+        )}
+        {missingTable ? null : (
+          <FloatingCtaActivity rows={clicks.rows} summary={clicks.summary} />
         )}
       </div>
     </CmsShell>

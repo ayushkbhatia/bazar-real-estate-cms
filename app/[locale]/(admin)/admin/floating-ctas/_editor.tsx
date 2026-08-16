@@ -24,6 +24,8 @@ import {
   FLOATING_CTA_KIND_LABELS,
   FLOATING_CTA_SCOPES,
   FLOATING_CTA_SCOPE_LABELS,
+  FLOATING_CTA_SCOPE_HEADINGS,
+  FLOATING_CTA_TOKEN_SCOPES,
   FLOATING_CTA_TOKENS,
   MAX_FLOATING_CTAS,
   blankFloatingCta,
@@ -32,6 +34,8 @@ import {
   type FloatingCtaInput,
   type FloatingCtaKind,
   type FloatingCtaScope,
+  type FloatingCtaTokenValues,
+  type FloatingCtaTokenScope,
 } from "@/lib/schemas/floating-cta";
 import { saveFloatingCtas } from "./_actions";
 
@@ -337,6 +341,21 @@ function CtaRow({
 
           {cta.kind === "email" ? (
             <Field
+              label="Always copy in"
+              hint="Added as CC on every mail this button opens. The visitor can see and delete it before sending, so treat it as a courtesy copy — the click log below is the actual record."
+            >
+              <input
+                className={fieldCls}
+                value={cta.cc_destination ?? ""}
+                placeholder="enquiries@bazar.ae"
+                inputMode="email"
+                onChange={(e) => onChange({ cc_destination: e.target.value })}
+              />
+            </Field>
+          ) : null}
+
+          {cta.kind === "email" ? (
+            <Field
               label="Subject line"
               hint="What the visitor's mail client fills the subject with."
               className="md:col-span-2"
@@ -395,6 +414,7 @@ function CtaRow({
             />
             {cta.kind !== "call" ? (
               <TokenLegend
+                scope={cta.scope}
                 onInsert={(token) =>
                   onChange({
                     message_template: `${cta.message_template ?? ""}${token}`,
@@ -500,21 +520,52 @@ function Preview({ cta }: { cta: FloatingCtaInput }) {
  * the tokens are the one part of this screen where what you type isn't what
  * they read.
  */
+/**
+ * The draft as a visitor on a listing page would receive it.
+ *
+ * Worth the space: the tokens are the one part of this screen where what you
+ * type is not what they read. Every token in the registry has a value here, so
+ * the preview never renders a hole that the real message would fill — a
+ * preview that quietly drops half the sentence is worse than none.
+ */
+const PREVIEW_VALUES: FloatingCtaTokenValues = {
+  brand: "Bazar",
+  context: "Marina Bay Tower, 2-bed with full sea view",
+  url: "https://www.bazarrealestate.ae/p/marina-bay-tower-baz-ad-04891",
+  path: "/p/marina-bay-tower-baz-ad-04891",
+  page_title: "Marina Bay Tower, 2-bed with full sea view",
+  locale: "en",
+  date: "16 August 2026",
+  advisor: "Layla Al Mansoori",
+  advisor_first: "Layla",
+  advisor_title: "Senior Advisor",
+  advisor_phone: "+971 50 123 4567",
+  advisor_email: "layla@bazar.ae",
+  advisor_brn: "BRN-40291",
+  property_title: "Marina Bay Tower, 2-bed with full sea view",
+  reference: "BAZ-AD-04891",
+  price: "AED 2,400,000",
+  beds: "2",
+  baths: "3",
+  property_type: "Apartment",
+  area_name: "Al Reem Island",
+  development_name: "Marina Bay",
+  developer_name: "Aldar Properties",
+  handover: "Q4 2027",
+};
+
 function MessagePreview({ cta }: { cta: FloatingCtaInput }) {
   if (cta.kind === "call") return null;
-  const ctx = {
-    advisorName: "Layla Al Mansoori",
-    contextRef: "BAZ-AD-04891",
-    url: "https://www.bazarrealestate.ae/p/example",
-  };
   const subject =
-    cta.kind === "email" ? renderCtaTemplate(cta.subject_template, ctx) : "";
-  const body = renderCtaTemplate(cta.message_template, ctx);
+    cta.kind === "email"
+      ? renderCtaTemplate(cta.subject_template, PREVIEW_VALUES)
+      : "";
+  const body = renderCtaTemplate(cta.message_template, PREVIEW_VALUES);
   if (!subject && !body) return null;
   return (
     <div className="md:col-span-2">
       <Label className="text-[11px] uppercase tracking-wider text-bz-ink-2">
-        Preview
+        Preview · as it would arrive from a listing page
       </Label>
       <div className="mt-1 rounded border border-bz-border bg-bz-bg p-2.5 text-[12.5px] whitespace-pre-wrap">
         {subject ? <div className="font-medium">{subject}</div> : null}
@@ -524,20 +575,47 @@ function MessagePreview({ cta }: { cta: FloatingCtaInput }) {
   );
 }
 
-function TokenLegend({ onInsert }: { onInsert: (token: string) => void }) {
+function TokenLegend({
+  scope,
+  onInsert,
+}: {
+  scope: FloatingCtaScope;
+  onInsert: (token: string) => void;
+}) {
   return (
-    <div className="flex flex-wrap gap-1.5 mt-1.5">
-      {FLOATING_CTA_TOKENS.map((t) => (
-        <button
-          key={t.token}
-          type="button"
-          title={t.hint}
-          onClick={() => onInsert(t.token)}
-          className="mono text-[11px] rounded border border-bz-border px-1.5 py-0.5 text-bz-ink-2 hover:bg-bz-surface-2"
-        >
-          {t.token}
-        </button>
-      ))}
+    <div className="mt-2 grid gap-2">
+      {FLOATING_CTA_TOKEN_SCOPES.map((group) => {
+        const tokens = FLOATING_CTA_TOKENS.filter((t) => t.scope === group);
+        if (tokens.length === 0) return null;
+        // A button pinned to every page still shows the listing groups, but
+        // dimmed: the tokens work when it happens to be on a listing, and
+        // hiding them would read as "these don't exist".
+        const reachable = group === "always" || scope === "detail_pages";
+        return (
+          <div key={group}>
+            <div className="text-[10.5px] uppercase tracking-wider text-bz-ink-2">
+              {FLOATING_CTA_SCOPE_HEADINGS[group as FloatingCtaTokenScope]}
+              {reachable ? null : " · only on listing pages"}
+            </div>
+            <div className="flex flex-wrap gap-1.5 mt-1">
+              {tokens.map((t) => (
+                <button
+                  key={t.token}
+                  type="button"
+                  title={t.hint}
+                  onClick={() => onInsert(t.token)}
+                  className={cn(
+                    "mono text-[11px] rounded border border-bz-border px-1.5 py-0.5 hover:bg-bz-surface-2",
+                    reachable ? "text-bz-ink-2" : "text-bz-muted",
+                  )}
+                >
+                  {t.token}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

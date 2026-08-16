@@ -688,6 +688,12 @@ export const DOMAINS: Domain[] = [
       "No public read path and no anon select policy (0061). subject/body are advisor outreach copy an agent edits by hand and sends one-to-one. Arabic outreach would be a separate asset row, not an _ar twin.",
   },
   {
+    table: "cta_clicks",
+    columns: [],
+    excluded:
+      "Staff-read telemetry with no anon select policy (0109) and no public read path. Every text column is a copy of something else's value — the page path, the page title as the visitor's own locale already rendered it, the advisor's name, the listing reference — so there is nothing here to translate that is not translated at its source.",
+  },
+  {
     table: "enquiries",
     columns: [],
     excluded:

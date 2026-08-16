@@ -179,6 +179,10 @@ export function ServicePage({ service }: { service: SeedService }) {
         }
         advisorEmail={SEED_AGENTS[0]!.email ?? null}
         contextRef={service.name}
+        tokens={{
+          advisor_title: SEED_AGENTS[0]!.title,
+          advisor_brn: SEED_AGENTS[0]!.brn,
+        }}
         kind="service"
       />
     </div>

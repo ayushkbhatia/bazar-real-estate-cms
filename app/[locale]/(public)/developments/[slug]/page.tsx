@@ -871,7 +871,25 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         advisorName={leadAdvisor.display_name}
         advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone ?? null}
         advisorEmail={leadAdvisor.email ?? null}
+        /* The lead advisor here falls back to a seeded agent when no staff
+           member is assigned, and a seed has no `staff` row to point at —
+           so the click is logged against the project with no advisor
+           rather than against an id that would fail the foreign key. */
+        advisorId={
+          "user_id" in leadAdvisor && typeof leadAdvisor.user_id === "string"
+            ? leadAdvisor.user_id
+            : null
+        }
+        developmentId={development.id}
         contextRef={development.name}
+        tokens={{
+          development_name: development.name,
+          developer_name: development.developer?.name ?? null,
+          handover: quarterLabel(development.handover_date),
+          area_name: development.area?.name ?? null,
+          advisor_title: leadAdvisor.title ?? null,
+          advisor_brn: leadAdvisor.brn ?? null,
+        }}
         kind="development"
       />
     </article>

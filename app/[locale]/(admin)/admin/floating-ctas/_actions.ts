@@ -85,6 +85,11 @@ export async function saveFloatingCtas(
       label: cta.label.trim(),
       label_ar: orNull(cta.label_ar),
       destination: orNull(cta.destination),
+      // A CC only exists on a mailto. Clearing it alongside the subject
+      // keeps a kind change from leaving the office silently copied on
+      // nothing, or silently re-copied if the kind changes back.
+      cc_destination:
+        cta.kind === "email" ? orNull(cta.cc_destination) : null,
       message_template: orNull(cta.message_template),
       message_template_ar: orNull(cta.message_template_ar),
       // A subject line only means something for mailto:. Clearing it when the
