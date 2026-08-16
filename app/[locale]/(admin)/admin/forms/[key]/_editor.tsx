@@ -41,6 +41,8 @@ import {
 import type { SubmissionRow } from "@/lib/queries/forms";
 import { resetForm, saveForm } from "../_actions";
 import { ResponsesTable } from "./_responses";
+import { FORM_COPY_KEYS, type FormCopyKey } from "@/lib/forms/copy-keys";
+import type { SimpleFieldDef } from "@/lib/master-pages/types";
 
 const fieldCls =
   "bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent text-[12.5px]";
@@ -471,10 +473,20 @@ function ContentTab({
             value={copy.title ?? ""}
             onChange={(v) => onChange({ title: v || null })}
           />
+          <ArabicTwin
+            field={copyField("title", "Heading")}
+            value={copy.title_ar ?? ""}
+            onChange={(v) => onChange({ title_ar: v || null })}
+          />
           <Area
             label="Sub-heading"
             value={copy.subtitle ?? ""}
             onChange={(v) => onChange({ subtitle: v || null })}
+          />
+          <ArabicTwin
+            field={copyField("subtitle", "Sub-heading")}
+            value={copy.subtitle_ar ?? ""}
+            onChange={(v) => onChange({ subtitle_ar: v || null })}
           />
         </>
       ) : null}
@@ -485,12 +497,22 @@ function ContentTab({
           value={copy.submit_label}
           onChange={(v) => onChange({ submit_label: v })}
         />
+          <ArabicTwin
+            field={copyField("submit_label", "Button label")}
+            value={copy.submit_label_ar ?? ""}
+            onChange={(v) => onChange({ submit_label_ar: v || null })}
+          />
         <Text
           label="While sending"
           help="What the button says between the click and the confirmation."
           value={copy.pending_label}
           onChange={(v) => onChange({ pending_label: v })}
         />
+          <ArabicTwin
+            field={copyField("pending_label", "While sending")}
+            value={copy.pending_label_ar ?? ""}
+            onChange={(v) => onChange({ pending_label_ar: v || null })}
+          />
       </div>
 
       <Text
@@ -498,20 +520,56 @@ function ContentTab({
         value={copy.success_title}
         onChange={(v) => onChange({ success_title: v })}
       />
+          <ArabicTwin
+            field={copyField("success_title", "Confirmation heading")}
+            value={copy.success_title_ar ?? ""}
+            onChange={(v) => onChange({ success_title_ar: v || null })}
+          />
       <Area
         label="Confirmation copy"
         help="What the visitor reads once it's sent. Say what happens next and by when."
         value={copy.success_body}
         onChange={(v) => onChange({ success_body: v })}
       />
+          <ArabicTwin
+            field={copyField("success_body", "Confirmation copy")}
+            value={copy.success_body_ar ?? ""}
+            onChange={(v) => onChange({ success_body_ar: v || null })}
+          />
       <Area
         label="Small print"
         help="Sits under the button. Leave blank to hide it."
         value={copy.consent_note ?? ""}
         onChange={(v) => onChange({ consent_note: v || null })}
       />
+          <ArabicTwin
+            field={copyField("consent_note", "Small print")}
+            value={copy.consent_note_ar ?? ""}
+            onChange={(v) => onChange({ consent_note_ar: v || null })}
+          />
     </div>
   );
+}
+
+
+/**
+ * A `SimpleFieldDef` for one copy key, so `ArabicTwin` can render its label,
+ * its cap and its counter the same way it does for a master-page field.
+ *
+ * Built from `FORM_COPY_KEYS` rather than restated, because the editor is the
+ * fifth of the five places that enumerate these keys — and the one where
+ * forgetting a twin is invisible, since a missing input just looks like a
+ * shorter form.
+ */
+function copyField(key: FormCopyKey, label: string): SimpleFieldDef {
+  const spec = FORM_COPY_KEYS.find((k) => k.key === key)!;
+  return {
+    key,
+    label,
+    kind: spec.max > 300 ? "textarea" : "text",
+    max: spec.max,
+    optional: true,
+  };
 }
 
 // ── fields ───────────────────────────────────────────────────────────────

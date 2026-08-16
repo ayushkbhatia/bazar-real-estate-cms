@@ -163,6 +163,15 @@ export const FORM_OPTION_SOURCE_LABELS: Record<FormOptionSource, string> = {
 
 export type FormOption = {
   label: string;
+  /**
+   * The label in Arabic.
+   *
+   * Needs no read-fold of its own: `localiseDeep` already walks arrays of
+   * objects pairing `<key>` with `<key>_ar`, and `lib/queries/forms.ts` already
+   * calls it on the field rows. The only reason option labels rendered English
+   * on `/ar` is that `parseOptions` rebuilt each object and dropped the key.
+   */
+  label_ar?: string | null;
   /** Stored value. Blank means "use the label" — what a typed option does. */
   value: string;
   /**
@@ -307,7 +316,7 @@ export function formatRangeLabel(field: FormFieldDef, value: unknown): string {
 }
 
 /** Copy the manager owns, as opposed to the page copy in Pages & blocks. */
-export type FormCopy = {
+export type FormCopyEnglish = {
   /** Only set when `headingSource` is absent — see the file header. */
   title: string | null;
   subtitle: string | null;
@@ -318,6 +327,19 @@ export type FormCopy = {
   /** The line under the button. Null hides it. */
   consent_note: string | null;
 };
+
+/**
+ * The Arabic twins, DERIVED from the English keys rather than listed again.
+ *
+ * All optional: a form with no Arabic renders its English under `lang="ar"`,
+ * which is the designed fallback (ADR-0007 §5), so requiring them would block
+ * saving a form that works perfectly well.
+ */
+export type FormCopyArabic = {
+  [K in keyof FormCopyEnglish as `${K & string}_ar`]?: string | null;
+};
+
+export type FormCopy = FormCopyEnglish & FormCopyArabic;
 
 /** What happens to a submission once it validates. */
 export const FORM_HANDLERS = [
