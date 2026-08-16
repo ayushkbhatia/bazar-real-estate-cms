@@ -24,6 +24,7 @@
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import type { MasterPageDef } from "../../lib/master-pages/types";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const STORE_PATH = join(ROOT, "lib/master-pages/arabic/master.json");
@@ -31,6 +32,8 @@ const STORE_PATH = join(ROOT, "lib/master-pages/arabic/master.json");
 const args = process.argv.slice(2);
 const DRY = args.includes("--dry-run");
 const ALL = args.includes("--all");
+/** Per-record area and development pages, whose copy is entirely in the database. */
+const SUBPAGES = args.includes("--subpages");
 const PAGE = args[args.indexOf("--page") + 1];
 const LIMIT = args.includes("--limit")
   ? Number(args[args.indexOf("--limit") + 1])
@@ -61,8 +64,8 @@ function writeStore(store: Store) {
 }
 
 async function main() {
-  if (!ALL && !PAGE) {
-    console.error("Pass --page <key> or --all.");
+  if (!ALL && !PAGE && !SUBPAGES) {
+    console.error("Pass --page <key>, --all, or --subpages.");
     process.exit(2);
   }
 
@@ -86,30 +89,68 @@ async function main() {
   const storedFor = new Map<string, Record<string, Record<string, unknown>>>();
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (url && key) {
+  let sb: Awaited<ReturnType<typeof makeClient>> | null = null;
+  async function makeClient(u: string, k: string) {
     const { createClient } = await import("@supabase/supabase-js");
-    const sb = createClient(url, key, { auth: { persistSession: false } });
-    const { data } = await sb.from("pages").select("slug, blocks").like("slug", "master/%");
+    return createClient(u, k, { auth: { persistSession: false } });
+  }
+  if (url && key) {
+    sb = await makeClient(url, key);
+    const { data } = await sb.from("pages").select("slug, blocks");
     for (const row of (data ?? []) as { slug: string; blocks: unknown }[]) {
       const sections = Array.isArray(row.blocks)
         ? (row.blocks as { key: string; values: Record<string, unknown> }[])
         : [];
+      // Master pages are keyed by their bare key; subpages by their full slug.
       storedFor.set(
-        row.slug.replace("master/", ""),
+        row.slug.startsWith("master/") ? row.slug.replace("master/", "") : row.slug,
         Object.fromEntries(sections.map((sec) => [sec.key, sec.values])),
       );
     }
     console.log(`Read live content for ${storedFor.size} page(s).`);
+  } else if (SUBPAGES) {
+    console.error("--subpages needs Supabase credentials: all of its copy is in the database.");
+    process.exit(2);
   } else {
     console.log("No Supabase credentials — walking registry defaults only.");
   }
 
-  const pages = MASTER_PAGES.filter((p) => ALL || p.key === PAGE);
-  if (!pages.length) {
-    console.error(
-      `No such page: ${PAGE}\nKnown: ${MASTER_PAGES.map((p) => p.key).join(", ")}`,
-    );
-    process.exit(2);
+  /*
+   * Subpages are a different shape and it matters.
+   *
+   * `AREA_SECTIONS` and `DEVELOPMENT_SECTIONS` carry NO default copy —
+   * `walkDefaults` over either returns zero slots. Every word on an area guide
+   * or a project page lives in its own `pages` row, so there is nothing to
+   * generate from the registry and the rows ARE the corpus: 24 areas, 13
+   * developments.
+   *
+   * The def is built per record because the record's name appears inside field
+   * labels and help text, which is why `areaPageDef` takes one at all.
+   */
+  let pages: { key: string; sections: MasterPageDef["sections"] }[];
+  if (SUBPAGES) {
+    const { areaPageDef, developmentPageDef, subPageSlug } =
+      await import("../../lib/master-pages/subpages");
+    pages = [];
+    for (const kind of ["area", "development"] as const) {
+      const table = kind === "area" ? "areas" : "developments";
+      const { data } = await sb!.from(table).select("name, slug").order("name");
+      for (const record of (data ?? []) as { name: string; slug: string }[]) {
+        const slug = subPageSlug(kind, record.slug);
+        if (!storedFor.has(slug)) continue; // no row, no content to translate
+        const def = kind === "area" ? areaPageDef(record) : developmentPageDef(record);
+        pages.push({ key: slug, sections: def.sections });
+      }
+    }
+    console.log(`${pages.length} subpage(s) with stored content.`);
+  } else {
+    pages = MASTER_PAGES.filter((p) => ALL || p.key === PAGE);
+    if (!pages.length) {
+      console.error(
+        `No such page: ${PAGE}\nKnown: ${MASTER_PAGES.map((p) => p.key).join(", ")}`,
+      );
+      process.exit(2);
+    }
   }
 
   const store = readStore();
@@ -158,7 +199,29 @@ async function main() {
     }
   }
 
-  const todo = work.slice(0, LIMIT);
+  /*
+   * One call per distinct English string, not per slot.
+   *
+   * The store is keyed by the English, so translating "Explore the area" twice
+   * writes the same entry twice — and across 37 subpages built from one
+   * template, the repetition is the bulk of the corpus. Deduping here is what
+   * makes the volume run affordable, and it cannot change the result: two slots
+   * with identical English are guaranteed identical Arabic by construction.
+   */
+  const seen = new Set<string>();
+  const unique = work.filter((w) => {
+    const en = w.english.trim();
+    if (seen.has(en)) return false;
+    seen.add(en);
+    return true;
+  });
+  if (unique.length !== work.length) {
+    console.log(
+      `${work.length} slot(s) collapse to ${unique.length} distinct string(s).\n`,
+    );
+  }
+
+  const todo = unique.slice(0, LIMIT);
   const identity = todo.filter((w) => w.identity);
   const model = todo.filter((w) => !w.identity);
 
@@ -214,124 +277,92 @@ async function main() {
 
   let ok = 0;
   const failures: string[] = [];
-  /** Translated and structurally clean; still has to survive the round trip. */
-  const candidates: { job: Job; ar: string; model: string }[] = [];
-
-  for (const [i, w] of model.entries()) {
-    const label = `${w.page}/${w.section}.${w.pathKey}`;
-    process.stdout.write(`[${i + 1}/${model.length}] ${label} … `);
-
-    /*
-     * A value that is ENTIRELY protected content needs no model at all.
-     *
-     * "Al Bateen" masks to a single sentinel, so the model is handed "⟦0⟧" and
-     * asked to translate nothing; whatever it returns, the answer was already
-     * decided by `overridesFor`. Sending it anyway wasted a call and then
-     * failed the round trip, because البطين back-translates as "the belly" —
-     * the anatomical sense of the root — and the comparator rightly rejected a
-     * proper noun that had become a body part.
-     *
-     * The same applies to "ADREC & DLD", a bare phone number, or a price.
-     */
-    const masked = mask(w.english, terms);
-    if (masked.masked.replace(/⟦\d+⟧/gu, "").trim() === "") {
-      const resolved = unmask(masked.masked, masked.tokens, overridesFor(masked, nouns));
-      store[w.english.trim()] = { ar: resolved, by: "machine" };
-      ok++;
-      console.log(`${resolved}   [protected content, no model call]`);
-      continue;
-    }
-
-    const result = await translateField({
-      client,
-      text: w.english,
-      kind: w.kind as never,
-      maxLength: w.maxLength,
-      properNouns: nouns,
-    });
-
-    if (!result.ok) {
-      const why = result.issues.map((issue) => issue.code).join(", ");
-      console.log(`FAILED (${why})`);
-      failures.push(`${label} — ${why}`);
-      continue;
-    }
-
-    candidates.push({ job: w, ar: result.text, model: result.model });
-    console.log(result.text.slice(0, 60));
-  }
 
   /*
-   * The semantic gate.
+   * Chunked, and the store is written after every chunk.
    *
-   * The nineteen structural checks have already run inside `translateField`.
-   * They cannot see a sentence that is fluent, correctly formed, the right
-   * length and about something else — which on the first /home run was six of
-   * thirty-eight strings, every one of them reported clean.
-   *
-   * So each survivor is translated BACK to English by a model told nothing
-   * about the domain, and a second model compares the two English strings. It
-   * never sees the Arabic, so fluent Arabic cannot persuade it.
-   *
-   * Calibrated against 177 human-approved catalogue entries, 60 deliberately
-   * mismatched pairs and 8 failures this project has actually shipped:
-   * 8/8 known-bad caught, 60/60 mismatches rejected, and a 25% false-positive
-   * rate that is uniform across length bands — round-tripping a terse term
-   * through Arabic is simply lossy ("Deposit" comes back as "advance
-   * payment").
-   *
-   * A blocked slot is NOT written, so it renders English — the designed
-   * fallback — and appears in the report as something for a human to write.
-   * That is the trade the false-positive rate buys: roughly three quarters of
-   * the corpus translated and round-trip-verified, and a short list of the
-   * rest, instead of everything translated and six in thirty-eight wrong.
+   * The subpage run is ~1,400 strings and several hours. Translating everything
+   * and writing once at the end means a timeout, a rate limit or a dropped
+   * connection loses the whole run. Writing per chunk bounds the loss to one
+   * chunk, and — because a slot whose English is already in the store is
+   * skipped on the next pass — re-running simply resumes.
    */
-  if (candidates.length) {
-    console.log(`\nRound-tripping ${candidates.length} translation(s)…`);
-    const backs = await backTranslate({
-      client,
-      // Proper nouns go back to English first — see `restoreNames`. Without
-      // this, البطين round-trips as "ventricle" and a correct translation is
-      // rejected for a word the model was never asked to choose.
-      items: candidates.map((c, i) => ({
-        id: String(i),
-        // House terms go back too — see `restoreGlossary`. على الخارطة is the
-        // correct Arabic for "off-plan", and round-tripping it returns "on the
-        // map", failing a translation for using the term the glossary requires.
-        arabic: restoreGlossary(restoreNames(c.ar, nouns)),
-      })),
-    });
-    const backOf = new Map(backs.map((b) => [b.id, b.english]));
-    const verdicts = await equivalence({
-      client,
-      pairs: candidates.map((c, i) => ({
-        id: String(i),
-        source: c.job.english,
-        back: backOf.get(String(i)) ?? "",
-      })),
-    });
-    const verdictOf = new Map(verdicts.map((v) => [v.id, v]));
+  const CHUNK = 25;
+  for (let start = 0; start < model.length; start += CHUNK) {
+    const batch = model.slice(start, start + CHUNK);
+    const candidates: { job: Job; ar: string; model: string }[] = [];
 
-    for (const [i, c] of candidates.entries()) {
-      const v = verdictOf.get(String(i));
-      const label = `${c.job.page}/${c.job.section}.${c.job.pathKey}`;
-      if (!v?.same) {
-        console.log(
-          `  BLOCKED ${label}\n      en:   ${JSON.stringify(c.job.english.slice(0, 60))}` +
-            `\n      back: ${JSON.stringify((backOf.get(String(i)) ?? "").slice(0, 60))}` +
-            `\n      why:  ${v?.reason ?? "no verdict"}`,
-        );
-        failures.push(`${label} — round trip: ${v?.reason ?? "no verdict"}`);
+    for (const [i, w] of batch.entries()) {
+      const label = `${w.page}/${w.section}.${w.pathKey}`;
+      process.stdout.write(`[${start + i + 1}/${model.length}] ${label} … `);
+
+      const masked = mask(w.english, terms);
+      if (masked.masked.replace(/⟦\d+⟧/gu, "").trim() === "") {
+        const resolved = unmask(masked.masked, masked.tokens, overridesFor(masked, nouns));
+        store[w.english.trim()] = { ar: resolved, by: "machine" };
+        ok++;
+        console.log(`${resolved}   [protected content, no model call]`);
         continue;
       }
-      store[c.job.english.trim()] = {
-        ar: c.ar,
-        by: "machine",
-        model: c.model,
-        at: new Date().toISOString(),
-      };
-      ok++;
+
+      const result = await translateField({
+        client,
+        text: w.english,
+        kind: w.kind as never,
+        maxLength: w.maxLength,
+        properNouns: nouns,
+      });
+
+      if (!result.ok) {
+        const why = result.issues.map((issue) => issue.code).join(", ");
+        console.log(`FAILED (${why})`);
+        failures.push(`${label} — ${why}`);
+        continue;
+      }
+      candidates.push({ job: w, ar: result.text, model: result.model });
+      console.log(result.text.slice(0, 60));
     }
+
+    if (candidates.length) {
+      const backs = await backTranslate({
+        client,
+        items: candidates.map((c, i) => ({
+          id: String(i),
+          arabic: restoreGlossary(restoreNames(c.ar, nouns)),
+        })),
+      });
+      const backOf = new Map(backs.map((b) => [b.id, b.english]));
+      const verdicts = await equivalence({
+        client,
+        pairs: candidates.map((c, i) => ({
+          id: String(i),
+          source: c.job.english,
+          back: backOf.get(String(i)) ?? "",
+        })),
+      });
+      const verdictOf = new Map(verdicts.map((v) => [v.id, v]));
+
+      for (const [i, c] of candidates.entries()) {
+        const v = verdictOf.get(String(i));
+        const label = `${c.job.page}/${c.job.section}.${c.job.pathKey}`;
+        if (!v?.same) {
+          failures.push(`${label} — round trip: ${v?.reason ?? "no verdict"}`);
+          continue;
+        }
+        store[c.job.english.trim()] = {
+          ar: c.ar,
+          by: "machine",
+          model: c.model,
+          at: new Date().toISOString(),
+        };
+        ok++;
+      }
+    }
+
+    writeStore(store);
+    console.log(
+      `── chunk ${Math.floor(start / CHUNK) + 1}: ${ok} written, ${failures.length} blocked so far\n`,
+    );
   }
 
   writeStore(store);
