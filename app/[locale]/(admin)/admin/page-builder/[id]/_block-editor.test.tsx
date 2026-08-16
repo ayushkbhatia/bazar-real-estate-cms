@@ -161,4 +161,22 @@ describe("BlockEditor", () => {
       screen.getByRole("button", { name: /add section/i }),
     ).toBeInTheDocument();
   });
+
+  it("opens the catalogue when Add section is clicked", () => {
+    // The trigger has to be a SheetTrigger: BottomSheet renders whatever it is
+    // given verbatim, so a bare Button never flips the sheet open and the one
+    // control an editor touches on every page is inert.
+    setup([]);
+    expect(screen.queryByText("Add a section")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /add section/i }));
+    expect(screen.getByText("Add a section")).toBeInTheDocument();
+  });
+
+  it("adds the picked section to the list", () => {
+    setup([]);
+    fireEvent.click(screen.getByRole("button", { name: /add section/i }));
+    fireEvent.click(screen.getByText(faq.label));
+    expect(rows()).toHaveLength(1);
+    expect(screen.getByLabelText(`Move ${faq.label} up`)).toBeInTheDocument();
+  });
 });

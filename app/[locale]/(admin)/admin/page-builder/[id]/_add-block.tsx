@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SheetTrigger } from "@/components/ui/sheet";
 import { BottomSheet } from "@/components/brand/mobile";
 import { BLOCK_GROUPS, blocksInGroup } from "@/lib/page-builder/catalogue";
 import type { BlockDef } from "@/lib/page-builder/types";
@@ -34,9 +35,16 @@ export function AddBlock({
       description="Every section here already ships on the live site, so it looks right on a phone out of the box."
       maxHeight="88dvh"
       trigger={
-        <Button type="button" variant="outline" size="sm" className="self-start">
-          <Plus size={13} strokeWidth={1.8} /> Add section
-        </Button>
+        <SheetTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="self-start"
+          >
+            <Plus size={13} strokeWidth={1.8} /> Add section
+          </Button>
+        </SheetTrigger>
       }
     >
       <div className="flex flex-col gap-6 pb-4">
