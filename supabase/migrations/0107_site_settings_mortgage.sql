@@ -1,4 +1,4 @@
--- 0106 — mortgage calculator assumptions on site_settings
+-- 0107 — mortgage calculator assumptions on site_settings
 --
 -- /tools/mortgage computed against literals in lib/mortgage.ts: the DLD
 -- transfer rate, the trustee and valuation fees, the Central Bank LTV tiers
