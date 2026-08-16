@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { UUID_SHAPE_RE } from "@/lib/uuid";
-import { normaliseAmenityList } from "@/lib/amenities";
+import { MAX_AMENITIES, normaliseAmenityList } from "@/lib/amenities";
 
 export const PROPERTY_MODES = ["buy", "rent", "off_plan", "commercial"] as const;
 export type PropertyMode = (typeof PROPERTY_MODES)[number];
@@ -280,11 +280,11 @@ export const propertyLocationSchema = z.object({
   area_id: uuidOrEmpty,
 });
 
-/** Amenities tab — free-form chip list capped at 50 entries. */
+/** Amenities tab — free-form chip list capped at `MAX_AMENITIES` entries. */
 export const propertyAmenitiesSchema = z.object({
   amenities: z
     .array(z.string().min(1).max(50))
-    .max(50, "Maximum 50 amenities"),
+    .max(MAX_AMENITIES, `Maximum ${MAX_AMENITIES} amenities`),
 });
 
 /** Compliance jsonb checkboxes. Required before publish. */
