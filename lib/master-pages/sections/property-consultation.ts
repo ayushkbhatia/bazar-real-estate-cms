@@ -103,6 +103,9 @@ export const PROPERTY_CONSULTATION_PAGE: MasterPageDef = {
             text("label", "Label", { max: 40 }),
             text("intent", "Tag the lead as", {
               max: 20,
+              // Written into the enquiry record and used to route it. Arabic
+              // here corrupts CRM data in a column nobody re-reads.
+              i18n: false,
               optional: true,
               help: `Used to route and filter the enquiry. One of: ${CONSULTATION_INTENTS.join(
                 ", ",

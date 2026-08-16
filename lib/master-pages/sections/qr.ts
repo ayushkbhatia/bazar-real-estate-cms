@@ -81,14 +81,15 @@ export const QR_PAGE: MasterPageDef = {
         eyebrow(),
         heading({ optional: true }),
         text("phone_label", "Phone heading", { max: 60, optional: true }),
-        text("phone_primary", "Phone number", { max: 40 }),
+        text("phone_primary", "Phone number", { max: 40, i18n: false }),
         text("phone_secondary", "Second phone number", {
           max: 40,
           optional: true,
+          i18n: false,
         }),
         text("phone_note", "Phone note", { max: 80, optional: true }),
         text("email_label", "Email heading", { max: 60, optional: true }),
-        text("email", "Email address", { max: 120 }),
+        text("email", "Email address", { max: 120, i18n: false }),
         text("email_note", "Email note", { max: 80, optional: true }),
         text("address_label", "Office heading", { max: 60, optional: true }),
         area("address", "Office address", {

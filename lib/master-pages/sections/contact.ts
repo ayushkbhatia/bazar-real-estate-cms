@@ -86,15 +86,19 @@ export const CONTACT_PAGE: MasterPageDef = {
         "The phone and email links are built from the values below — write the number the way it should read on the page and the tap-to-call link follows. The open/closed line above the hours is worked out from the times, on Abu Dhabi time.",
       fields: [
         text("phone_label", "Phone · heading", { max: 80 }),
-        text("phone_1", "Phone · first number", { max: 40 }),
-        text("phone_2", "Phone · second number", { max: 40, optional: true }),
+        text("phone_1", "Phone · first number", { max: 40, i18n: false }),
+        text("phone_2", "Phone · second number", {
+          max: 40,
+          optional: true,
+          i18n: false,
+        }),
         text("phone_note", "Phone · small print", {
           max: 120,
           optional: true,
           help: "Small print under the numbers. The opening hours have their own panel below — don't repeat them here.",
         }),
         text("email_label", "Email · heading", { max: 80 }),
-        text("email", "Email address", { max: 160 }),
+        text("email", "Email address", { max: 160, i18n: false }),
         text("email_note", "Email · small print", { max: 120, optional: true }),
         text("office_label", "Office · heading", { max: 80 }),
         area("address", "Office address", {
@@ -118,10 +122,11 @@ export const CONTACT_PAGE: MasterPageDef = {
             text("day", "Day", { max: 20 }),
             text("open", "Opens", {
               max: 40,
+              i18n: false,
               optional: true,
               help: "24-hour clock — 09:00 renders as 9 AM. Anything else (“By appointment”) renders as written and is left out of the open/closed line.",
             }),
-            text("close", "Closes", { max: 40, optional: true }),
+            text("close", "Closes", { max: 40, optional: true, i18n: false }),
             toggle(
               "open_day",
               "Open this day",
@@ -199,6 +204,8 @@ export const CONTACT_PAGE: MasterPageDef = {
             link("href", "Link"),
             text("icon", "Icon", {
               max: 20,
+              // A lucide icon name. Translated, the icon disappears.
+              i18n: false,
               optional: true,
               help: "One of: home, building, tag, upload, layers, link, sliders, file, user. Anything else falls back to a generic icon.",
             }),

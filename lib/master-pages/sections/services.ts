@@ -57,6 +57,9 @@ function practiceSection(p: PracticeInput): SectionDef {
     fields: [
       text("number", "Number", {
         max: 8,
+        // "01".."05". SHARED_RULES keeps Western digits in Arabic anyway, so
+        // the best case is an identical twin and the worst is a numeral swap.
+        i18n: false,
         help: "Shown above the title, and on the chip in the hero.",
       }),
       heading({ key: "title", label: "Title" }),
