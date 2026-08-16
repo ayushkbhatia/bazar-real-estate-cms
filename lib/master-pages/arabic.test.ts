@@ -2,10 +2,9 @@
  * @vitest-environment node
  */
 import { describe, it, expect } from "vitest";
-import { applyArabic, withArabicDefaults, type ArabicStore } from "./arabic";
+import { fillArabic, type ArabicStore } from "./arabic";
 import { mergeValues } from "./index";
 import { applyLocale } from "./i18n";
-import { MASTER_PAGES } from "./pages";
 import type { SectionDef } from "./types";
 
 const section: SectionDef = {
@@ -20,76 +19,74 @@ const section: SectionDef = {
 };
 
 const store: ArabicStore = {
-  home: {
-    hero: {
-      title: { en: "Find a home worth keeping.", ar: "مسكن يستحق البقاء فيه.", by: "machine" },
-      cta_label: { en: "Browse", ar: "تصفح", by: "machine" },
-    },
-  },
+  "Find a home worth keeping.": { ar: "استثمر في منزل يستحق البقاء.", by: "machine" },
+  Browse: { ar: "تصفح", by: "machine" },
+  "Your Future Has an Address": { ar: "لمستقبلك عنوان", by: "machine" },
 };
 
-describe("applyArabic", () => {
-  it("puts the Arabic where mergeValues and applyLocale will find it", () => {
-    // The assertion the whole design rests on: an `_ar` key in a section's
-    // DEFAULTS renders, with no migration and no database write.
-    const merged = mergeValues(applyArabic(section, store.home!.hero), null);
-    expect(merged.title_ar).toBe("مسكن يستحق البقاء فيه.");
-    expect(applyLocale(merged, "ar", "hero.").values.title).toBe(
-      "مسكن يستحق البقاء فيه.",
-    );
+describe("fillArabic", () => {
+  it("fills a blank twin from the store", () => {
+    const out = fillArabic(section.fields, { ...section.defaults }, store);
+    expect(out.title_ar).toBe("استثمر في منزل يستحق البقاء.");
   });
 
   it("leaves the English untouched", () => {
-    const out = applyArabic(section, store.home!.hero);
-    expect(out.defaults.title).toBe("Find a home worth keeping.");
-    expect(applyLocale(mergeValues(out, null), "en", "hero.").values.title).toBe(
-      "Find a home worth keeping.",
+    const out = fillArabic(section.fields, { ...section.defaults }, store);
+    expect(out.title).toBe("Find a home worth keeping.");
+  });
+
+  it("never overwrites Arabic that is already there", () => {
+    // An editor's value, or a hand-declared registry twin. Both outrank this.
+    const out = fillArabic(
+      section.fields,
+      { ...section.defaults, title_ar: "عنوان كتبه المحرر" },
+      store,
     );
+    expect(out.title_ar).toBe("عنوان كتبه المحرر");
   });
 
-  it("drops Arabic whose English has since been edited", () => {
-    // The staleness rule, and the direction it fails in. An editor rewrites the
-    // headline; the Arabic underneath it now describes something else. Falling
-    // back to English renders a complete page in the wrong language, which is
-    // recoverable. Rendering the stale Arabic makes a claim the English does
-    // not, which is not.
-    const edited: SectionDef = {
-      ...section,
-      defaults: { ...section.defaults, title: "Find a home worth loving." },
-    };
-    const merged = mergeValues(applyArabic(edited, store.home!.hero), null);
-    expect(merged.title_ar).toBeNull();
-    expect(applyLocale(merged, "ar", "hero.").values.title).toBe(
-      "Find a home worth loving.",
-    );
-  });
-
-  it("returns the section by identity when there is nothing to apply", () => {
-    expect(applyArabic(section, undefined)).toBe(section);
-    expect(applyArabic(section, {})).toBe(section);
-  });
-
-  it("never lets a default beat what an editor saved", () => {
-    // The client's own edit is permanent. A stored value wins over a default,
-    // so once someone types Arabic in the CMS this file stops applying to that
-    // field — which is the whole reason it is safe to generate into defaults.
-    const merged = mergeValues(applyArabic(section, store.home!.hero), {
-      title_ar: "عنوان كتبه المحرر",
-    });
-    expect(merged.title_ar).toBe("عنوان كتبه المحرر");
+  it("returns the bag by identity when nothing matches", () => {
+    const values = { title: "Something nobody has translated", cta_label: null };
+    expect(fillArabic(section.fields, values, store)).toBe(values);
   });
 });
 
-describe("withArabicDefaults", () => {
-  it("touches only the pages and sections named in the store", () => {
-    const pages = withArabicDefaults(MASTER_PAGES, { nope: {} } as ArabicStore);
-    expect(pages).toEqual(MASTER_PAGES);
+describe("mergeValues + fillArabic — the case that made this content-addressed", () => {
+  /**
+   * The bug this design replaced.
+   *
+   * Keyed by field path and folded into `def.defaults`, the Arabic for the
+   * DEFAULT headline was served beside the editor's REPLACEMENT headline —
+   * because `mergeValues` takes the stored English and falls back to the
+   * default `_ar`. 303 master-page slots had been edited in production.
+   */
+  it("uses the editor's English and its matching Arabic", () => {
+    // `mergeValues` reads the real store, so this exercises the mechanism with
+    // an injected one: the English arrives from STORAGE, not from the registry
+    // default, and still finds its Arabic. Under the old path-keyed design this
+    // field would have rendered the DEFAULT headline's Arabic instead.
+    const merged = { ...section.defaults, title: "Your Future Has an Address" };
+    const out = fillArabic(section.fields, merged, store);
+    expect(out.title).toBe("Your Future Has an Address");
+    expect(out.title_ar).toBe("لمستقبلك عنوان");
   });
 
-  it("is what the exported registry already ran through", () => {
-    // Guards the wiring itself: MASTER_PAGES is the wrapped registry, so a
-    // future refactor that exports the raw array would fail here rather than
-    // silently rendering English forever.
-    expect(withArabicDefaults(MASTER_PAGES)).toEqual(MASTER_PAGES);
+  it("falls back to English when the editor writes something new", () => {
+    // No entry for this English, so no Arabic. `/ar` renders the English,
+    // which is the designed fallback and the safe direction — the alternative
+    // is Arabic that describes a headline nobody can see.
+    const merged = mergeValues(section, { title: "A headline nobody has translated" });
+    expect(merged.title).toBe("A headline nobody has translated");
+    expect(merged.title_ar).toBeNull();
+    expect(applyLocale(merged, "ar", "hero.").values.title).toBe(
+      "A headline nobody has translated",
+    );
+  });
+
+  it("still works for a page nobody has edited", () => {
+    const merged = mergeValues(section, null);
+    expect(applyLocale(merged, "ar", "hero.").values.title).toBe(
+      "استثمر في منزل يستحق البقاء.",
+    );
   });
 });
