@@ -14,6 +14,32 @@ import {
 
 const FIELDS_ROLES = ["admin", "editor"] as const;
 
+/** Mirrors how lib/amenities.ts compares stored values to the taxonomy. */
+function normaliseLabel(label: string): string {
+  return label.replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+/**
+ * The taxonomy keys on code, but the catalogue stores *labels* — two active
+ * entries sharing a label are one amenity twice over, and a listing that ticks
+ * it spends two slots of its amenities cap for one visible selection (#386).
+ * Migration 0106 enforces this in Postgres; this check exists so the editor
+ * says which entry is in the way instead of surfacing "Insert failed."
+ */
+function activeLabelClash(
+  all: AmenityTaxonomyEntry[],
+  label: string,
+  exceptCode: string,
+): AmenityTaxonomyEntry | undefined {
+  const key = normaliseLabel(label);
+  return all.find(
+    (a) =>
+      a.code !== exceptCode &&
+      a.active !== false &&
+      normaliseLabel(a.label) === key,
+  );
+}
+
 export type AmenityActionResult =
   | { status: "ok" }
   | { status: "error"; message: string; fieldErrors?: Record<string, string> };
@@ -34,6 +60,16 @@ export async function toggleAmenityActive(
   const existing = all.find((a) => a.code === code);
   if (!existing) {
     return { status: "error", message: "Amenity code not found." };
+  }
+
+  if (nextActive) {
+    const clash = activeLabelClash(all, existing.label, existing.code);
+    if (clash) {
+      return {
+        status: "error",
+        message: `“${clash.label}” is already active as "${clash.code}". Turn that one off first.`,
+      };
+    }
   }
 
   const ok = await upsertAmenityTaxonomyEntry({
@@ -105,6 +141,17 @@ export async function createAmenity(
       status: "error",
       message: `Code "${entry.code}" already exists. Toggle the existing entry instead.`,
       fieldErrors: { code: "Already in use" },
+    };
+  }
+
+  const labelClash = activeLabelClash(all, entry.label, entry.code);
+  if (labelClash) {
+    return {
+      status: "error",
+      // The point the old message missed: the collision that matters is the
+      // label, and a fresh code does not resolve it.
+      message: `“${labelClash.label}” already exists as "${labelClash.code}". Edit that entry instead of adding a second one.`,
+      fieldErrors: { label: "Already in use" },
     };
   }
 
