@@ -1,1 +1,235 @@
-{}
+{
+  "home": {
+    "area_map": {
+      "heading": {
+        "en": "Find your area first. The home follows.",
+        "ar": "ابحث عن منطقتك أولاً. المنزل يأتي بعدها.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      }
+    },
+    "faqs": {
+      "body": {
+        "en": "Clear guidance for every step of your real estate journey.",
+        "ar": "إرشادات واضحة في كل خطوة من رحلتك العقارية.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "eyebrow": {
+        "en": "FAQs",
+        "ar": "الأسئلة الشائعة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "heading": {
+        "en": "Frequently asked questions",
+        "ar": "الأسئلة الشائعة",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      }
+    },
+    "featured_properties": {
+      "body": {
+        "en": "Discover properties that bring you closer to the lifestyle you are looking for.",
+        "ar": "اكتشف عقارات تقرّبك من نمط الحياة الذي تبحث عنه.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "cta_label": {
+        "en": "All properties",
+        "ar": "جميع العقارات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:03:22.147Z"
+      },
+      "eyebrow": {
+        "en": "Featured properties for sale",
+        "ar": "عقارات مميزة للبيع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:03:22.147Z"
+      },
+      "heading": {
+        "en": "Featured properties, handpicked for you",
+        "ar": "عقارات مميزة، منتقاة خصيصاً لك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      }
+    },
+    "hero": {
+      "eyebrow": {
+        "en": "Bazar · Abu Dhabi",
+        "ar": "بازار · أبوظبي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.670Z"
+      },
+      "link_2_label": {
+        "en": "Talk to an Advisor",
+        "ar": "تحدث إلى مستشار",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "title": {
+        "en": "Find a home worth keeping.",
+        "ar": "استثمر في منزل يستحق البقاء.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      }
+    },
+    "list_your_property": {
+      "body": {
+        "en": "Looking to sell or rent? We'll handle the process for you.",
+        "ar": "هل ترغب في البيع أو التأجير؟ سنتولى العملية نيابةً عنك.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "eyebrow": {
+        "en": "List your property",
+        "ar": "اعرض عقارك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      }
+    },
+    "location_browsing": {
+      "body": {
+        "en": "Discover leading communities across Abu Dhabi.",
+        "ar": "استكشف أبرز المجتمعات السكنية في أبوظبي.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "cta_label": {
+        "en": "All locations",
+        "ar": "جميع المواقع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:03:22.146Z"
+      },
+      "eyebrow": {
+        "en": "Location-based browsing",
+        "ar": "التصفح حسب الموقع",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "heading": {
+        "en": "Your next location starts here",
+        "ar": "موقعك التالي يبدأ من هنا",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "overview_name": {
+        "en": "Abu Dhabi",
+        "ar": "أبوظبي",
+        "by": "machine"
+      }
+    },
+    "mortgage_calculator": {
+      "eyebrow": {
+        "en": "Mortgage calculator",
+        "ar": "حاسبة تمويل عقاري",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "heading": {
+        "en": "Estimate your monthly payments before making your move",
+        "ar": "قدّر أقساطك الشهرية قبل اتخاذ خطوتك",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      }
+    },
+    "off_plan_projects": {
+      "heading": {
+        "en": "New developments in Abu Dhabi",
+        "ar": "مشاريع جديدة في أبوظبي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      }
+    },
+    "testimonials": {
+      "eyebrow": {
+        "en": "Testimonials",
+        "ar": "آراء العملاء",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "heading": {
+        "en": "Reviews and comments",
+        "ar": "التقييمات والتعليقات",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:03:22.147Z"
+      }
+    },
+    "who_we_are": {
+      "body": {
+        "en": "Established in 2005, Bazar Real Estate L.L.C. is a leading award-winning real estate agency in the UAE, recognized for its market expertise, professional excellence, and trusted presence in the region's ever-evolving property market.",
+        "ar": "تأسست شركة بازار للعقارات ذات المسؤولية المحدودة عام 2005، وهي وكالة عقارية رائدة وحائزة على جوائز في الإمارات، معروفة بخبرتها في السوق وتميّزها المهني وحضورها الموثوق في سوق العقارات الدائم التطور في المنطقة.",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "eyebrow": {
+        "en": "Who we are",
+        "ar": "من نحن",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "stats[0].label": {
+        "en": "Years in market",
+        "ar": "منذ سنوات في السوق",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:03:22.147Z"
+      },
+      "stats[0].value": {
+        "en": "20+",
+        "ar": "20+",
+        "by": "machine"
+      },
+      "stats[1].label": {
+        "en": "Regulated",
+        "ar": "مُنظَّم",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:03:22.147Z"
+      },
+      "stats[1].value": {
+        "en": "ADREC & DLD",
+        "ar": "ADREC وDLD",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:01:23.673Z"
+      },
+      "stats[2].label": {
+        "en": "Head office",
+        "ar": "المكتب الرئيسي",
+        "by": "machine",
+        "model": "claude-opus-5",
+        "at": "2026-08-16T10:03:22.147Z"
+      },
+      "stats[2].value": {
+        "en": "Al Bateen",
+        "ar": "البطين",
+        "by": "machine"
+      }
+    }
+  }
+}

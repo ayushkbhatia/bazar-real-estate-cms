@@ -78,6 +78,14 @@ export const PROPER_NOUNS: NounEntry[] = [
     note: "This is the free zone / financial centre on Al Maryah Island, not a residential community — check whether it belongs in the area taxonomy at all. Arabic property and business copy very often keeps the Latin acronym 'ADGM' alongside or instead of the full name (سوق أبوظبي العالمي (ADGM)); consider rendering the full Arabic name with the Latin acronym in parentheses. Note the acronym itself is never",
   },
   {
+    en: "Al Bateen",
+    ar: "البطين",
+    kind: "area",
+    confidence: "official",
+    source: "Arabic toponym - restoring original; the client's own address in lib/master-pages/sections/contact-qr.ts is written البطين",
+    note: "Not an `areas` row, so it was missed by the first sourcing pass. It is in the firm's own office address and in the /home stats, where an unmasked \"Al Bateen\" back-translated as \"the hidden things\" — the literal sense of the Arabic root.",
+  },
+  {
     en: "Abu Dhabi",
     ar: "أبوظبي",
     kind: "area",

@@ -217,3 +217,74 @@ describe("digit normalisation", () => {
     expect(toWesternDigits("۴۵۶")).toBe("456"); // extended (Persian) range
   });
 });
+
+describe("malformations that survive the semantic gate", () => {
+  /**
+   * All four of these shipped past `validate` AND past back-translation on the
+   * /home calibration run. Every content word is correct and present; only the
+   * arrangement is wrong, which is precisely what a bag-of-meaning comparison
+   * cannot see.
+   */
+  const codes = (en: string, ar: string) => validate(en, ar).map((i) => i.code);
+
+  it("catches the field's own Arabic label leaking into its value", () => {
+    expect(codes("Who we are", "العربية: من نحن")).toContain("label-leak");
+  });
+
+  it("does not fire when the English is genuinely about Arabic", () => {
+    expect(codes("Available in Arabic", "متوفر بالعربية")).not.toContain("label-leak");
+  });
+
+  it("catches a colon a two-word label did not earn", () => {
+    expect(
+      codes("Head office", "العنوان الرئيسي: المكتب الرئيسي"),
+    ).toContain("punctuation-added");
+  });
+
+  it("leaves a colon the English asked for", () => {
+    expect(codes("Note: read this", "ملاحظة: اقرأ هذا")).not.toContain(
+      "punctuation-added",
+    );
+  });
+
+  it("leaves a colon in real prose alone", () => {
+    // The rule is scoped to short labels on purpose — a sentence may
+    // legitimately gain punctuation Arabic prefers.
+    expect(
+      codes(
+        "We handle the process on your behalf, end to end",
+        "نتولى العملية نيابةً عنك: من البداية إلى النهاية",
+      ),
+    ).not.toContain("punctuation-added");
+  });
+
+  it("catches a sentence continuing past its own full stop", () => {
+    expect(
+      codes("Discover leading communities across Abu Dhabi.", "المجتمعات الرائدة في أبوظبي.اكتشف"),
+    ).toContain("orphan-tail");
+  });
+
+  it("leaves a properly spaced sentence break alone", () => {
+    expect(
+      codes("Find your area first. The home follows.", "ابحث عن منطقتك أولًا. والمنزل يأتي بعدها."),
+    ).not.toContain("orphan-tail");
+  });
+});
+
+describe("the model answering twice", () => {
+  it("catches a deliberation leak", () => {
+    const codes = validate(
+      "Browse Properties",
+      'براوز? No — "تصفح العقارات"تصفح العقارات',
+    ).map((i) => i.code);
+    // Either tell is enough; both firing is the normal case for this shape.
+    expect(codes.some((c) => c === "self-repeat" || c === "punctuation-added")).toBe(true);
+  });
+
+  it("leaves ordinary repetition alone", () => {
+    // Arabic repeats short function words constantly; the rule needs a run
+    // long enough that repeating it is not a style.
+    const codes = validate("Homes and offices", "منازل و مكاتب").map((i) => i.code);
+    expect(codes).not.toContain("self-repeat");
+  });
+});
