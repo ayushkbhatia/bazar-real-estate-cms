@@ -117,7 +117,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/areas/[slug]/page.tsx": 4,
   "app/[locale]/(public)/areas/_components/area-spotlights.tsx": 2,
   "app/[locale]/(public)/areas/_components/community-types.tsx": 2,
-  "app/[locale]/(public)/careers/page.tsx": 6,
   "app/[locale]/(public)/concierge/page.tsx": 2,
   "app/[locale]/(public)/contact-qr/_components/contact-card.tsx": 1,
   "app/[locale]/(public)/contact/_components/hq-map.tsx": 3,
@@ -146,8 +145,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/market-reports/_components/velocity-strip.tsx": 1,
   "app/[locale]/(public)/market-reports/page.tsx": 2,
   "app/[locale]/(public)/new-this-week/page.tsx": 2,
-  "app/[locale]/(public)/newsletter/confirm/[token]/page.tsx": 9,
-  "app/[locale]/(public)/newsletter/unsubscribe/[token]/page.tsx": 5,
   "app/[locale]/(public)/p/[slug]/_components/action-row.tsx": 3,
   "app/[locale]/(public)/p/[slug]/_components/advisor-note.tsx": 1,
   "app/[locale]/(public)/p/[slug]/_components/agent-card.tsx": 3,
@@ -172,7 +169,7 @@ const REMAINING: Readonly<Record<string, number>> = {
 };
 
 /** What the ratchet held when it landed. Lowering it is the point. */
-const TOTAL_CEILING = 321;
+const TOTAL_CEILING = 301;
 
 /**
  * Three shapes, matching the three ways a literal reaches a reader.

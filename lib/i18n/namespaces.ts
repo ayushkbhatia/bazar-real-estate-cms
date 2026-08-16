@@ -40,6 +40,16 @@ export const NAMESPACES = [
   "tools",
   "forms",
   "guides",
+  /*
+   * The long tail: standalone marketing and utility routes that belong to no
+   * feature cluster — careers, partners, the newsletter confirmation pages.
+   *
+   * Server-only on purpose, and NOT on `CLIENT_NAMESPACES`. Every one of these
+   * routes is a Server Component, so the strings never cross into a payload,
+   * and the whole point of W6 is to finish the extraction without adding
+   * kilobytes to all 78 prerendered routes to do it.
+   */
+  "pages",
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];

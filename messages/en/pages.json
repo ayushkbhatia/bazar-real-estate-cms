@@ -1,0 +1,37 @@
+{
+  "careers": {
+    "eyebrow": "Careers",
+    "title": "We hire by exception.",
+    "intro": "Bazar caps senior advisor headcount at twelve. We add operations and junior roles cautiously. Open roles are listed below — if nothing fits, we keep a folder open for senior advisor introductions year-round at",
+    "why1Label": "01 · Fewer, bigger",
+    "why1Body": "You will close more, but slower. Advisors on the book average 12 transactions a year, not 60. Each one matters.",
+    "why2Label": "02 · Real ownership",
+    "why2Body": "Senior advisors take a profit share on their book after year one — not a sliding commission tier. The economics scale with you.",
+    "why3Label": "03 · Operations behind you",
+    "why3Body": "KYC, conveyancing, audit, photography, marketing — all in-house. You sell the property; we run the process around it.",
+    "openRoles": "Open roles",
+    "positionsOpen": "{count, plural, =0 {No positions currently open.} one {# position currently open.} other {# positions currently open.}}",
+    "posted": "Posted {date}",
+    "apply": "Apply",
+    "applySubject": "Application — {title}",
+    "youWill": "You will",
+    "youBring": "You bring"
+  },
+  "newsletter": {
+    "eyebrow": "Newsletter",
+    "confirmedTitle": "You're in.",
+    "confirmedBody": "We've confirmed {email}. The first Bazar Brief lands in your inbox next Wednesday.",
+    "readInsights": "Read recent insights",
+    "browseMarketplace": "Browse marketplace",
+    "expiredTitle": "This link has expired.",
+    "notFoundTitle": "We couldn't find that link.",
+    "errorTitle": "Something went wrong.",
+    "backToInsights": "Back to Insights",
+    "removedTitle": "You've been removed.",
+    "alreadyRemovedTitle": "Already removed.",
+    "removedBody": "{email} won't receive the Bazar Brief any more. We're sorry to see you go.",
+    "alreadyRemovedBody": "This link is no longer active. If you're still receiving emails, contact us at {email}.",
+    "expiredBody": "Confirmation links are valid for 14 days. Please subscribe again and watch your inbox.",
+    "notFoundBody": "It may already have been used. Try subscribing again from the Insights page."
+  }
+}
