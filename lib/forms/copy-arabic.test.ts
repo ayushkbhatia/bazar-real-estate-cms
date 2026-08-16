@@ -89,13 +89,24 @@ describe("mergeCopy carries the Arabic through", () => {
     expect(localiseRow(resolved!.copy as Record<string, unknown>, "en").submit_label).toBe("Send");
   });
 
-  it("falls back to English where the Arabic is blank", () => {
+  it("falls back to English where nothing has translated it", () => {
+    /*
+     * Uses a string the generated store has never seen.
+     *
+     * A blank twin is no longer the same as an untranslated one: `resolveForm`
+     * now fills blanks from the store (`lib/forms/arabic.ts`), so clearing
+     * `submit_label_ar` on a common label like "Send" gets it filled straight
+     * back — correctly. What still falls back to English is copy nobody has
+     * translated at all.
+     */
     const resolved = resolveForm(
       key,
-      { enabled: true, copy: { submit_label: "Send", submit_label_ar: "" } } as never,
+      { enabled: true, copy: { submit_label: "Dispatch my particulars forthwith" } } as never,
       null,
     );
-    expect(localiseRow(resolved!.copy as Record<string, unknown>, "ar").submit_label).toBe("Send");
+    expect(
+      localiseRow(resolved!.copy as Record<string, unknown>, "ar").submit_label,
+    ).toBe("Dispatch my particulars forthwith");
   });
 });
 
