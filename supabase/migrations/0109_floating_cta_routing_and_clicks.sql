@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════════
--- 0108 · Floating CTAs — an admin copy on email, and a record of clicks
+-- 0109 · Floating CTAs — an admin copy on email, and a record of clicks
 -- ═══════════════════════════════════════════════════════════════════════
 --
 -- Two gaps the rail shipped with:
@@ -34,7 +34,7 @@ alter table public.floating_ctas
   add column if not exists cc_destination text;
 
 comment on column public.floating_ctas.cc_destination is
-  'Address added as ?cc= on every mailto this button builds. Visitor-removable — see 0108 header.';
+  'Address added as ?cc= on every mailto this button builds. Visitor-removable — see 0109 header.';
 
 -- ───────────────────────────────────────────────────────────────
 -- 2 · The click log

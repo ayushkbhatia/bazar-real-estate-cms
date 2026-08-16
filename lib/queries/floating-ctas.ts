@@ -215,7 +215,7 @@ export const CTA_CLICK_WINDOW_DAYS = 30;
  * would read as "no activity" rather than "not signed in".
  *
  * Returns empty rather than throwing when the table is missing — the CTA
- * editor above it must keep working on a database where 0108 hasn't run.
+ * editor above it must keep working on a database where 0109 hasn't run.
  */
 export async function listCtaClicks(
   supabase: SupabaseClient<Database>,
