@@ -8,8 +8,8 @@ import {
 
 describe("renderCtaTemplate", () => {
   const ctx = {
-    advisorName: "Layla Al Mansoori",
-    contextRef: "BAZ-AD-04891",
+    advisor: "Layla Al Mansoori",
+    context: "BAZ-AD-04891",
     url: "https://www.bazarrealestate.ae/p/x",
   };
 
@@ -39,14 +39,14 @@ describe("renderCtaTemplate", () => {
     expect(
       renderCtaTemplate(
         "Hi {advisor}, I'm enquiring about {context} on bazar.ae",
-        { advisorName: null, contextRef: "" },
+        { advisor: null, context: "" },
       ),
     ).toBe("Hi Bazar, I'm enquiring about on bazar.ae");
   });
 
   it("drops a separator left stranded by an empty token", () => {
     expect(
-      renderCtaTemplate("Bazar enquiry · {context}", { contextRef: "" }),
+      renderCtaTemplate("Bazar enquiry · {context}", { context: "" }),
     ).toBe("Bazar enquiry");
   });
 
@@ -55,19 +55,19 @@ describe("renderCtaTemplate", () => {
     // into "Bazar enquiry· Al Naseem" on every off-plan page.
     expect(
       renderCtaTemplate("Bazar enquiry · {context}", {
-        contextRef: "Al Naseem",
+        context: "Al Naseem",
       }),
     ).toBe("Bazar enquiry · Al Naseem");
   });
 
   it("keeps ordinary punctuation spacing intact", () => {
     expect(
-      renderCtaTemplate("Ref: {context}. Thanks!", { contextRef: "BAZ-1" }),
+      renderCtaTemplate("Ref: {context}. Thanks!", { context: "BAZ-1" }),
     ).toBe("Ref: BAZ-1. Thanks!");
   });
 
   it("keeps paragraph breaks but collapses runs of blank lines", () => {
-    expect(renderCtaTemplate("A\n\n{context}\n\n\n\nB", { contextRef: "" })).toBe(
+    expect(renderCtaTemplate("A\n\n{context}\n\n\n\nB", { context: "" })).toBe(
       "A\n\nB",
     );
   });
@@ -76,6 +76,40 @@ describe("renderCtaTemplate", () => {
     expect(renderCtaTemplate(null, ctx)).toBe("");
   });
 });
+
+  it("fills the listing tokens a property page publishes", () => {
+    expect(
+      renderCtaTemplate(
+        "I'm interested in {property_title} ({reference}) — {beds} bed, {price}, {area_name}.",
+        {
+          property_title: "Marina Bay Tower",
+          reference: "BAZ-AD-04891",
+          beds: "2",
+          price: "AED 2.4M",
+          area_name: "Al Reem Island",
+        },
+      ),
+    ).toBe(
+      "I'm interested in Marina Bay Tower (BAZ-AD-04891) — 2 bed, AED 2.4M, Al Reem Island.",
+    );
+  });
+
+  it("degrades a listing token used on a page that has no listing", () => {
+    // The same template on a blog post: the parenthetical collapses rather
+    // than printing an empty pair of brackets or the literal token.
+    expect(
+      renderCtaTemplate("I'm interested in {property_title} {reference}", {}),
+    ).toBe("I'm interested in");
+  });
+
+  it("prefers a published {advisor_first} over splitting the full name", () => {
+    expect(
+      renderCtaTemplate("Hi {advisor_first}", {
+        advisor: "Al Mansoori, Layla",
+        advisor_first: "Layla",
+      }),
+    ).toBe("Hi Layla");
+  });
 
 describe("readableForeground", () => {
   it("picks near-black on WhatsApp green — white would fail contrast", () => {

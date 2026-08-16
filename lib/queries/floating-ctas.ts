@@ -18,6 +18,7 @@ export type FloatingCtaRow = {
   kind: FloatingCtaKind;
   label: string;
   destination: string | null;
+  cc_destination: string | null;
   message_template: string | null;
   /* Arabic twins, present on the admin path and folded away on the public one. */
   label_ar?: string | null;
@@ -32,7 +33,7 @@ export type FloatingCtaRow = {
 };
 
 const COLUMNS =
-  "id, key, kind, label, label_ar, destination, message_template, message_template_ar, subject_template, subject_template_ar, scope, use_advisor_contact, color, enabled, sort_order";
+  "id, key, kind, label, label_ar, destination, cc_destination, message_template, message_template_ar, subject_template, subject_template_ar, scope, use_advisor_contact, color, enabled, sort_order";
 
 /**
  * The rail as it shipped before it was CMS-managed.
@@ -49,6 +50,7 @@ export const SEED_FLOATING_CTAS: FloatingCtaRow[] = [
     kind: "whatsapp",
     label: "WhatsApp Bazar",
     destination: null,
+    cc_destination: null,
     message_template: "Hi {advisor}, I'm enquiring about {context} on bazar.ae",
     subject_template: null,
     scope: "all_pages",
@@ -63,6 +65,7 @@ export const SEED_FLOATING_CTAS: FloatingCtaRow[] = [
     kind: "call",
     label: "Call",
     destination: null,
+    cc_destination: null,
     message_template: null,
     subject_template: null,
     scope: "detail_pages",
@@ -77,6 +80,7 @@ export const SEED_FLOATING_CTAS: FloatingCtaRow[] = [
     kind: "email",
     label: "Email",
     destination: null,
+    cc_destination: null,
     message_template:
       "Hi {advisor_first},\n\nI'd like to know more about {context}.\n\n{url}",
     subject_template: "Bazar enquiry · {context}",
@@ -172,5 +176,94 @@ export async function listFloatingCtasForAdmin(
     rows: narrow((data ?? []) as Record<string, unknown>[]),
     missingTable: false,
     error: null,
+  };
+}
+
+// ───────────────────────────────────────────────────────────────
+// Click log
+// ───────────────────────────────────────────────────────────────
+
+export type CtaClickRow = {
+  id: string;
+  cta_key: string;
+  kind: FloatingCtaKind;
+  path: string;
+  page_title: string | null;
+  destination: string | null;
+  source: "advisor" | "cta" | "fallback";
+  advisor_name: string | null;
+  context_ref: string | null;
+  created_at: string;
+};
+
+export type CtaClickSummary = {
+  /** Clicks per button key over the window, newest-first by count. */
+  byKey: { cta_key: string; kind: string; count: number }[];
+  /** How many reached the page's own advisor rather than the switchboard. */
+  toAdvisor: number;
+  total: number;
+};
+
+/** How far back the admin panel counts. A month is one reporting cycle. */
+export const CTA_CLICK_WINDOW_DAYS = 30;
+
+/**
+ * Recent clicks plus a rollup, for /admin/floating-ctas.
+ *
+ * Takes the caller's authenticated client: `cta_clicks` is staff-read under
+ * RLS, so an anonymous client would silently return nothing and the panel
+ * would read as "no activity" rather than "not signed in".
+ *
+ * Returns empty rather than throwing when the table is missing — the CTA
+ * editor above it must keep working on a database where 0108 hasn't run.
+ */
+export async function listCtaClicks(
+  supabase: SupabaseClient<Database>,
+  limit = 50,
+): Promise<{ rows: CtaClickRow[]; summary: CtaClickSummary }> {
+  const since = new Date(
+    Date.now() - CTA_CLICK_WINDOW_DAYS * 86_400_000,
+  ).toISOString();
+  const empty = {
+    rows: [] as CtaClickRow[],
+    summary: { byKey: [], toAdvisor: 0, total: 0 },
+  };
+
+  const { data, error } = await supabase
+    .from("cta_clicks")
+    .select(
+      "id, cta_key, kind, path, page_title, destination, source, advisor_name, context_ref, created_at",
+    )
+    .gte("created_at", since)
+    .order("created_at", { ascending: false })
+    // One page of history, and the rollup is computed from the same window.
+    // A separate count query per button would be four round-trips to say what
+    // this one already knows.
+    .limit(500);
+
+  if (error) {
+    console.error("[listCtaClicks]", error.message);
+    return empty;
+  }
+
+  const rows = (data ?? []) as CtaClickRow[];
+  const counts = new Map<string, { kind: string; count: number }>();
+  let toAdvisor = 0;
+  for (const row of rows) {
+    if (row.source === "advisor") toAdvisor += 1;
+    const existing = counts.get(row.cta_key);
+    if (existing) existing.count += 1;
+    else counts.set(row.cta_key, { kind: row.kind, count: 1 });
+  }
+
+  return {
+    rows: rows.slice(0, limit),
+    summary: {
+      byKey: [...counts.entries()]
+        .map(([cta_key, v]) => ({ cta_key, kind: v.kind, count: v.count }))
+        .sort((a, b) => b.count - a.count),
+      toAdvisor,
+      total: rows.length,
+    },
   };
 }

@@ -726,6 +726,89 @@ export type Database = {
           },
         ]
       }
+      cta_clicks: {
+        Row: {
+          advisor_id: string | null
+          advisor_name: string | null
+          context_ref: string | null
+          created_at: string
+          cta_id: string | null
+          cta_key: string
+          destination: string | null
+          development_id: string | null
+          id: string
+          kind: string
+          locale: string | null
+          page_title: string | null
+          path: string
+          property_id: string | null
+          source: string
+        }
+        Insert: {
+          advisor_id?: string | null
+          advisor_name?: string | null
+          context_ref?: string | null
+          created_at?: string
+          cta_id?: string | null
+          cta_key: string
+          destination?: string | null
+          development_id?: string | null
+          id?: string
+          kind: string
+          locale?: string | null
+          page_title?: string | null
+          path: string
+          property_id?: string | null
+          source?: string
+        }
+        Update: {
+          advisor_id?: string | null
+          advisor_name?: string | null
+          context_ref?: string | null
+          created_at?: string
+          cta_id?: string | null
+          cta_key?: string
+          destination?: string | null
+          development_id?: string | null
+          id?: string
+          kind?: string
+          locale?: string | null
+          page_title?: string | null
+          path?: string
+          property_id?: string | null
+          source?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cta_clicks_advisor_id_fkey"
+            columns: ["advisor_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cta_clicks_cta_id_fkey"
+            columns: ["cta_id"]
+            isOneToOne: false
+            referencedRelation: "floating_ctas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cta_clicks_development_id_fkey"
+            columns: ["development_id"]
+            isOneToOne: false
+            referencedRelation: "developments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cta_clicks_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       developer_profiles: {
         Row: {
           awards: Json
@@ -1376,6 +1459,7 @@ export type Database = {
       }
       floating_ctas: {
         Row: {
+          cc_destination: string | null
           color: string | null
           created_at: string
           destination: string | null
@@ -1395,6 +1479,7 @@ export type Database = {
           use_advisor_contact: boolean
         }
         Insert: {
+          cc_destination?: string | null
           color?: string | null
           created_at?: string
           destination?: string | null
@@ -1414,6 +1499,7 @@ export type Database = {
           use_advisor_contact?: boolean
         }
         Update: {
+          cc_destination?: string | null
           color?: string | null
           created_at?: string
           destination?: string | null

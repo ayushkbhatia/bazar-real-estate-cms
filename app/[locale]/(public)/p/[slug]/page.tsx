@@ -736,7 +736,26 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           advisorName={leadAdvisor.display_name}
           advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone ?? null}
           advisorEmail={leadAdvisor.email ?? null}
-          contextRef={property.reference}
+          advisorId={leadAdvisor.user_id}
+          propertyId={property.id}
+          /* `{context}` is the listing's headline, not its reference. A
+             visitor opening WhatsApp should see the home they were looking at;
+             BAZ-AD-07620 means nothing to them and everything to us, so the
+             reference stays available as its own token and is recorded on
+             every click regardless. */
+          contextRef={property.title}
+          tokens={{
+            property_title: property.title,
+            reference: property.reference,
+            price: formatPriceAED(property.price_aed),
+            beds: property.beds === null ? null : String(property.beds),
+            baths: property.baths === null ? null : String(property.baths),
+            property_type: titleCase(property.type),
+            area_name: property.areas?.name ?? null,
+            development_name: property.developments?.name ?? null,
+            advisor_title: leadAdvisor.title,
+            advisor_brn: leadAdvisor.brn,
+          }}
           kind="property"
         />
       ) : null}
