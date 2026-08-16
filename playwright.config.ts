@@ -36,7 +36,28 @@ export default defineConfig({
     command: `npm run build && npm run start -- --port ${PORT}`,
     url: `http://127.0.0.1:${PORT}`,
     reuseExistingServer: !process.env.CI,
-    timeout: 180_000,
+    /*
+     * This budget covers a full production build AND the server coming up,
+     * because the command is `build && start` rather than a dev server.
+     *
+     * It was 180s, which the build has now outgrown. A cold `npm run build`
+     * measures 52s on a fast local machine; a GitHub runner is routinely 2-3x
+     * slower, which puts the build alone at 100-150s before `next start` has
+     * booted or answered a request. The result is a timeout that fires with no
+     * error in the log — the failure reads as "webServer timed out" and looks
+     * like a hang rather than a budget, so the natural response is to re-run
+     * it, which sometimes works and teaches everyone to ignore a red E2E.
+     *
+     * It bit main directly: the merge commit for #390 went red on a run whose
+     * only failure was this timeout, and the same commit passed on its PR.
+     * A red main with no bad commit behind it is the specific thing ADR-0007
+     * warns about for content-dependent gates, and it is just as corrosive
+     * when the cause is a budget.
+     *
+     * 420s is roughly 3x the observed CI build, so it absorbs runner variance
+     * and still fails in a sensible time if the server genuinely hangs.
+     */
+    timeout: 420_000,
     stdout: "ignore",
     stderr: "pipe",
   },
