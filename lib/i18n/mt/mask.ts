@@ -115,14 +115,61 @@ const SENTINEL = (n: number) => `⟦${n}⟧`;
  */
 export const SENTINEL_RE = /⟦\s*(\d+)\s*⟧/gu;
 
+/**
+ * One regex matching any of `terms`, longest first.
+ *
+ * Longest-first matters because alternation is first-match-wins at a given
+ * position: with `Al Maryah` ahead of `Al Maryah Island`, the island loses its
+ * last word and the model is handed a dangling "Island" to translate.
+ *
+ * The boundaries are the explicit lookarounds `glossary.ts` already settled on
+ * rather than `\b`, because `\b` is wrong at the edge of a term containing a
+ * hyphen or an apostrophe — and this list is full of them ("Al Raha Beach",
+ * "Jumeirah Golf Estates", "Saadiyat Reserve").
+ */
+function termsRe(terms: readonly string[]): RegExp | null {
+  const usable = [...new Set(terms.filter((t) => t.trim()))].sort(
+    (a, b) => b.length - a.length,
+  );
+  if (!usable.length) return null;
+  const alt = usable
+    .map((t) => t.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|");
+  return new RegExp(`(?<![\\w-])(?:${alt})(?![\\w-])`, "giu");
+}
+
 /** Collect non-overlapping matches across all patterns, earliest-then-longest. */
-function protectedSpans(text: string): { start: number; end: number; kind: string }[] {
+function protectedSpans(
+  text: string,
+  terms?: readonly string[],
+): { start: number; end: number; kind: string }[] {
   const found: { start: number; end: number; kind: string }[] = [];
   for (const { name, re } of PATTERNS) {
     re.lastIndex = 0;
     for (const m of text.matchAll(re)) {
       if (m.index === undefined) continue;
       found.push({ start: m.index, end: m.index + m[0].length, kind: name });
+    }
+  }
+
+  /*
+   * Proper nouns, if the caller supplied any.
+   *
+   * These join the same `found` array rather than getting their own pass, so
+   * the existing earliest-start-then-longest tie-break resolves every overlap
+   * for free — a development called "Saadiyat Lagoons" beats the area
+   * "Saadiyat Island" only where it actually appears, and "AED 2M" still beats
+   * a term that happens to contain a number.
+   */
+  const tre = terms && terms.length ? termsRe(terms) : null;
+  if (tre) {
+    for (const m of text.matchAll(tre)) {
+      if (m.index === undefined) continue;
+      found.push({
+        start: m.index,
+        end: m.index + m[0].length,
+        kind: "proper-noun",
+      });
     }
   }
   // Earliest start wins; on a tie the longer span wins, so `AED 2,500,000`
@@ -139,8 +186,17 @@ function protectedSpans(text: string): { start: number; end: number; kind: strin
   return kept;
 }
 
-export function mask(text: string): MaskResult {
-  const spans = protectedSpans(text);
+/**
+ * @param terms Proper nouns to protect — area, development and developer
+ *   names. Masking these is not a polish step: `validate()` rejects any Latin
+ *   run of four or more characters as `latin-leak`, so an unmasked name means
+ *   the model either preserves it (rejected, field stays English) or invents a
+ *   fresh transliteration (accepted, and different on the next record). With a
+ *   term list the name travels as a sentinel and `unmask`'s `overrides` puts
+ *   the one canonical Arabic form back.
+ */
+export function mask(text: string, terms?: readonly string[]): MaskResult {
+  const spans = protectedSpans(text, terms);
   const tokens: string[] = [];
   const kinds: string[] = [];
   let out = "";
