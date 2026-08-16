@@ -33,9 +33,40 @@ function stored(overrides: Partial<StoredField> & { key: string }): StoredField 
 
 describe("resolveForm", () => {
   it("renders the registry's fields when nothing is stored", () => {
+    /*
+     * Compared with the Arabic twins stripped.
+     *
+     * `resolveForm` now fills blank `_ar` keys from the generated store
+     * (`lib/forms/arabic.ts`), so a resolved field carries `label_ar` where the
+     * registry field does not. That is additive by construction — the English
+     * is untouched — and asserting raw equality here would be asserting that
+     * the form has no Arabic, which is the opposite of what we want.
+     */
     const def = getFormDef("home_list_property")!;
     const form = resolveForm("home_list_property", null, null)!;
-    expect(form.fields).toEqual(def.fields);
+    const withoutArabic = (f: Record<string, unknown>) =>
+      Object.fromEntries(
+        Object.entries(f)
+          .filter(([k]) => !k.endsWith("_ar"))
+          .map(([k, v]) => [
+            k,
+            Array.isArray(v)
+              ? v.map((o) =>
+                  o && typeof o === "object"
+                    ? Object.fromEntries(
+                        Object.entries(o as Record<string, unknown>).filter(
+                          ([ok]) => !ok.endsWith("_ar"),
+                        ),
+                      )
+                    : o,
+                )
+              : v,
+          ]),
+      );
+
+    expect(form.fields.map((f) => withoutArabic(f as never))).toEqual(
+      def.fields.map((f) => withoutArabic(f as never)),
+    );
     expect(form.usingDefaults).toBe(true);
   });
 

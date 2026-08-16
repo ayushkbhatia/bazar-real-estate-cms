@@ -3,8 +3,24 @@
     "ar": "1",
     "by": "machine"
   },
+  "2": {
+    "ar": "2",
+    "by": "machine"
+  },
+  "3": {
+    "ar": "3",
+    "by": "machine"
+  },
   "4": {
     "ar": "4",
+    "by": "machine"
+  },
+  "5": {
+    "ar": "5",
+    "by": "machine"
+  },
+  "6": {
+    "ar": "6",
     "by": "machine"
   },
   "7": {
@@ -42,6 +58,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.333Z"
+  },
+  "+1": {
+    "ar": "+1",
+    "by": "machine"
   },
   "+1.75%": {
     "ar": "+1.75%",
@@ -119,6 +139,10 @@
     "ar": "+30.66%",
     "by": "machine"
   },
+  "+44": {
+    "ar": "+44",
+    "by": "machine"
+  },
   "+5.49%": {
     "ar": "+5.49%",
     "by": "machine"
@@ -133,6 +157,18 @@
   },
   "+8.95%": {
     "ar": "+8.95%",
+    "by": "machine"
+  },
+  "+966": {
+    "ar": "+966",
+    "by": "machine"
+  },
+  "+971": {
+    "ar": "+971",
+    "by": "machine"
+  },
+  "+971 50 123 4567": {
+    "ar": "+971 50 123 4567",
     "by": "machine"
   },
   "- Get in touch with us, and a member of our team will contact you shortly to assist with your enquiry.": {
@@ -151,15 +187,55 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:35:49.472Z"
   },
+  "1,450": {
+    "ar": "1,450",
+    "by": "machine"
+  },
+  "10 km berm park": {
+    "ar": "حديقة ساتر ترابي بطول 10 كم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
   "10,000+": {
     "ar": "10,000+",
     "by": "machine"
+  },
+  "100 sq. km": {
+    "ar": "100 كم مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "100 sq. km of designated free-zone land and facilities.": {
+    "ar": "100 كم مربع من الأراضي والمرافق المخصصة للمنطقة الحرة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.094Z"
+  },
+  "12-Month Apartment Index Change": {
+    "ar": "التغير في مؤشر الشقة خلال 12 شهراً",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "12-Month Off-Plan Index Change": {
+    "ar": "تغيّر مؤشر العقارات على الخارطة خلال 12 شهرًا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
   },
   "12-Month Rental Index Change": {
     "ar": "التغير في مؤشر الإيجارات خلال 12 شهراً",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
+  },
+  "12-Month Studio Index Change": {
+    "ar": "التغير السنوي لمؤشر الاستوديو خلال 12 شهراً",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
   },
   "12-Month Villa Index Change": {
     "ar": "التغير في مؤشر الفيلا خلال 12 شهراً",
@@ -207,9 +283,51 @@
     "ar": "2–6",
     "by": "machine"
   },
+  "3 Bedrooms": {
+    "ar": "3 غرف نوم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
+  "30% of the masterplan is dedicated to natural spaces.": {
+    "ar": "30% من المخطط الرئيسي مخصص للمساحات الطبيعية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "300,000+ sq. m.": {
+    "ar": "أكثر من 300,000 متر مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "321 Sports": {
+    "ar": "321 سبورتس",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
   "370,000+": {
     "ar": "370,000+",
     "by": "machine"
+  },
+  "4 Bedrooms": {
+    "ar": "4 غرف نوم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
+  "4,678 – 20,171 sq. ft.": {
+    "ar": "20,171 sq. ft. – 4,678",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
+  "40 Million sq. m.": {
+    "ar": "40 مليون متر مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.844Z"
   },
   "40/60": {
     "ar": "40/60",
@@ -223,9 +341,69 @@
     "ar": "4–7",
     "by": "machine"
   },
+  "5 Bedrooms": {
+    "ar": "5 غرف نوم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
+  "50 000 0000": {
+    "ar": "50 000 0000",
+    "by": "machine"
+  },
+  "50 123 4567": {
+    "ar": "50 123 4567",
+    "by": "machine"
+  },
+  "550 sq. km": {
+    "ar": "موقع بمساحة 550 كم مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "6+ Bedrooms": {
+    "ar": "6+ غرف نوم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
+  "665,000+ sq. m.": {
+    "ar": "أكثر من 665,000 متر مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.118Z"
+  },
   "78%": {
     "ar": "78%",
     "by": "machine"
+  },
+  "8+": {
+    "ar": "8+",
+    "by": "machine"
+  },
+  "A Bazar advisor reviews the instant estimate against the latest comparables and sends you the prepared PDF within 24 hours.": {
+    "ar": "يراجع مستشار من بازار التقدير الفوري مقارنةً بأحدث الصفقات المماثلة، ويرسل إليك ملف PDF الجاهز خلال 24 ساعة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:16:01.429Z"
+  },
+  "A Bazar advisor will review your figures and send the full report within 24 hours.": {
+    "ar": "سيقوم أحد مستشاري بازار بمراجعة أرقامك وإرسال التقرير الكامل خلال 24 ساعة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:16:01.429Z"
+  },
+  "A Blue Flag public beach at the foot of the towers.": {
+    "ar": "شاطئ عام حاصل على العلم الأزرق عند أقدام الأبراج.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
+  "A central island location with direct connections to Downtown Abu Dhabi, Al Maryah Island and the E12 highway network.": {
+    "ar": "موقع مركزي في الجزيرة مع اتصال مباشر بـوسط مدينة أبوظبي وجزيرة الماريه وشبكة طريق E12.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
   },
   "A central waterfront location positioned between Downtown Abu Dhabi and Al Reem Island.": {
     "ar": "موقع مركزي على الواجهة المائية بين وسط مدينة أبوظبي وجزيرة الريم.",
@@ -275,6 +453,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:48:50.155Z"
   },
+  "A growing collection of villas, mansions, townhouses and apartments.": {
+    "ar": "مجموعة متنامية من الفلل والقصور والتاون هاوس والشقق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
   "A growing family-focused residential destination positioned along the Abu Dhabi–Dubai corridor, offering established communities alongside new development and convenient connections to both emirates.": {
     "ar": "وجهة سكنية متنامية موجّهة للعائلات تقع على امتداد محور أبوظبي–دبي، وتوفّر مجتمعات قائمة إلى جانب مشاريع جديدة وارتباطات مريحة بالإمارتين.",
     "by": "machine",
@@ -299,11 +483,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:52:17.843Z"
   },
+  "A modern waterfront community combining high-rise residential living with parks, promenades, retail, dining and convenient access to Abu Dhabi’s financial and business districts. It offers a strong balance between city convenience and island living.": {
+    "ar": "مجتمع عصري على الواجهة المائية يجمع بين السكن في الأبراج العالية والحدائق والممشى والمتاجر والمطاعم مع سهولة الوصول إلى المناطق المالية والتجارية في أبوظبي. ويوفّر توازناً قوياً بين سهولة الحياة في المدينة وأجواء السكن في الجزيرة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
+  "A nature-led, low-density island community set within Abu Dhabi’s protected mangrove environment between Saadiyat and Yas Islands. It combines premium waterfront residences with greenery, wellness and a quieter coastal lifestyle.": {
+    "ar": "مجتمع جزري منخفض الكثافة يستلهم من الطبيعة، يقع ضمن بيئة أشجار القرم المحمية في أبوظبي بين جزيرتي السعديات وياس. يجمع بين مساكن راقية على الواجهة المائية والمساحات الخضراء والعافية ونمط حياة ساحلي أكثر هدوءاً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.843Z"
+  },
   "A new coastal destination with beaches, leisure and waterfront residences.": {
     "ar": "وجهة ساحلية جديدة تضم شواطئ ومرافق ترفيهية ومساكن على الواجهة المائية.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:20:13.722Z"
+  },
+  "A new waterfront destination by Aldar positioned between Yas Island and Saadiyat Island, designed around coastal living, wellness, sustainability and extensive green and blue spaces. It combines island privacy with convenient access to Abu Dhabi’s major lifestyle destinations.": {
+    "ar": "وجهة جديدة على الواجهة المائية من الدار، تقع بين جزيرة ياس وجزيرة السعديات، ومصممة حول الحياة الساحلية والعافية والاستدامة والمساحات الخضراء والزرقاء الواسعة. تجمع بين خصوصية الجزيرة وسهولة الوصول إلى أبرز وجهات نمط الحياة في أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
   },
   "A partner, not just a broker.": {
     "ar": "شريك، وليس مجرد وسيط عقاري.",
@@ -317,11 +519,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
   },
+  "A private beachfront community on the northern shore of Saadiyat Island — a closed collection of large villas across four phases, each with its own pool and direct access to the beach. It is one of the most exclusive addresses on the island.": {
+    "ar": "مجتمع خاص على الواجهة البحرية في الشاطئ الشمالي من جزيرة السعديات — مجموعة مغلقة من الفلل الكبيرة موزّعة على أربع مراحل، لكل منها مسبح خاص ووصول مباشر إلى الشاطئ. وهو أحد أكثر العناوين حصرية في الجزيرة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
   "A professional point of contact throughout the tenancy.": {
     "ar": "نقطة تواصل احترافية طوال فترة الإيجار.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "A quieter suburban setting away from the dense city centre.": {
+    "ar": "محيط ضاحية أكثر هدوءًا بعيدًا عن مركز المدينة المزدحم.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
   },
   "A range of commercial property opportunities.": {
     "ar": "مجموعة من الفرص العقارية التجارية.",
@@ -341,6 +555,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:46:01.783Z"
   },
+  "A skyline-focused waterfront aerial showing Reem Island’s residential towers, waterways and green spaces.": {
+    "ar": "صورة جوية للواجهة البحرية تركز على أفق المدينة وتُظهر الأبراج السكنية في جزيرة الريم والممرات المائية والمساحات الخضراء.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
   "A sophisticated skyline image showing ADGM, The Galleria, waterfront towers and the promenade.": {
     "ar": "صورة راقية لأفق المدينة تُظهر ADGM وذا غاليريا والأبراج المطلة على الواجهة المائية والممشى.",
     "by": "machine",
@@ -352,6 +572,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
+  },
+  "A strong selection of larger villas and family homes.": {
+    "ar": "العديد من الفلل الكبيرة والمنازل العائلية المختارة بعناية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
   },
   "A vibrant waterfront community with strong rental demand.": {
     "ar": "مجتمع نابض بالحياة على الواجهة المائية مع طلب قوي على الإيجار.",
@@ -365,9 +591,39 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "A waterfront district positioned between central Abu Dhabi and Yas Island.": {
+    "ar": "منطقة على الواجهة المائية تقع بين وسط أبوظبي وجزيرة ياس.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:12:50.795Z"
+  },
+  "A well-connected suburban location positioned close to Zayed International Airport, Masdar City and the main routes towards Yas Island and central Abu Dhabi.": {
+    "ar": "موقع سكني ضاحيةٌ جيد الاتصال يقع بالقرب من مطار زايد الدولي ومدينة مصدر والطرق الرئيسية المؤدية إلى جزيرة ياس ووسط أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
+  "A wide aerial image showing Hudayriyat’s coastline, waterfront, greenery and residential masterplan, with Abu Dhabi’s skyline visible in the distance.": {
+    "ar": "صورة جوية واسعة تُظهر ساحل الحديريات والواجهة المائية والمساحات الخضراء والمخطط السكني الرئيسي، مع ظهور أفق أبوظبي في الأفق البعيد.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "A wide residential view highlighting villas, greenery, quiet streets and Khalifa City’s spacious low-rise character.": {
+    "ar": "منظر سكني واسع يبرز الفلل والمساحات الخضراء والشوارع الهادئة وطابع مدينة خليفة الفسيح المنخفض الارتفاع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
   "ADGM": {
     "ar": "ADGM",
     "by": "machine"
+  },
+  "ADGM / Al Maryah Island": {
+    "ar": "ADGM / جزيرة الماريه",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
   },
   "ADGM Courts": {
     "ar": "ADGM كورتس",
@@ -399,6 +655,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "AED": {
+    "ar": "AED",
+    "by": "machine"
+  },
   "AED 1,128 / sq. ft.": {
     "ar": "AED 1,128 / قدم مربع",
     "by": "machine",
@@ -410,6 +670,24 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
+  },
+  "AED 1,713 / sq. ft.": {
+    "ar": "AED 1,713 / قدم مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "AED 1,742 / sq. ft.": {
+    "ar": "AED 1,742 / قدم مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "AED 1,775 / sq. ft.": {
+    "ar": "AED 1,775 / قدم مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
   },
   "AED 1,974 / sq. ft.": {
     "ar": "AED 1,974 / قدم مربع",
@@ -423,11 +701,31 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
   },
+  "AED 110 / sq. ft.": {
+    "ar": "AED 110 / القدم المربعة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
+  "AED 15 Billion": {
+    "ar": "AED 15 Billion",
+    "by": "machine"
+  },
   "AED 151 / sq. ft.": {
     "ar": "AED 151 / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
+  },
+  "AED 15M+": {
+    "ar": "AED 15M+",
+    "by": "machine"
+  },
+  "AED 1M – 2M": {
+    "ar": "AED 1M – 2M",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
   },
   "AED 2,189 / sq. ft.": {
     "ar": "AED 2,189 / قدم مربع",
@@ -435,11 +733,65 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
   },
+  "AED 2,208 / sq. ft.": {
+    "ar": "AED 2,208 / قدم مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "AED 2M – 4M": {
+    "ar": "AED 2M – 4M",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
+  },
+  "AED 3,845 / sq. ft.": {
+    "ar": "AED 3,845 / قدم مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
+  "AED 3,876 / sq. ft.": {
+    "ar": "AED 3,876 / قدم مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
+  "AED 4,251 / sq. ft.": {
+    "ar": "AED 4,251 / قدم مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
+  "AED 4M – 8M": {
+    "ar": "AED 4M – 8M",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
+  },
+  "AED 53 / sq. ft.": {
+    "ar": "AED 53 / قدم مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
   "AED 89 / sq. ft.": {
     "ar": "AED 89 / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
+  },
+  "AED 8M – 15M": {
+    "ar": "AED 8M – 15M",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
+  },
+  "AED 952 / sq. ft.": {
+    "ar": "AED 952 / قدم مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
   },
   "ALDAR HQ": {
     "ar": "ALDAR HQ",
@@ -460,6 +812,12 @@
   "Abu Dhabi": {
     "ar": "أبوظبي",
     "by": "machine"
+  },
+  "Abu Dhabi City": {
+    "ar": "أبوظبي سيتي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
   },
   "Abu Dhabi City Centre": {
     "ar": "وسط مدينة أبوظبي",
@@ -491,6 +849,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:35:49.468Z"
   },
+  "Abu Dhabi Golf Club": {
+    "ar": "نادي أبوظبي للغولف",
+    "by": "machine"
+  },
   "Abu Dhabi Landlord Guide: How to Rent Out Your Property": {
     "ar": "دليل أبوظبي للمُلاك: كيف تؤجر عقارك",
     "by": "machine",
@@ -514,6 +876,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
+  },
+  "Abu Dhabi Royal Equestrian Arts": {
+    "ar": "أبوظبي فنون الفروسية الملكية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.844Z"
   },
   "Abu Dhabi coverage": {
     "ar": "تغطية أبوظبي",
@@ -581,6 +949,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:16:12.763Z"
   },
+  "Abu Dhabi’s waterfront address — a landscaped promenade and Blue Flag beach running the length of the city’s north-western shore, backed by a wall of established residential towers with sea views, and within walking distance of the central business district.": {
+    "ar": "أبوظبي هو العنوان البحري للمدينة — ممشى مُنسَّق وشاطئ حاصل على العلم الأزرق يمتدان على طول الساحل الشمالي الغربي للمدينة، تسنده مجموعة من الأبراج السكنية القائمة المطلة على البحر، وعلى مسافة قريبة سيرًا على الأقدام من منطقة الأعمال المركزية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
   "Access": {
     "ar": "الوصول",
     "by": "machine",
@@ -611,9 +985,79 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
   },
+  "Active Living": {
+    "ar": "الحياة النشطة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "Aerial coastal image showing Fahid’s turquoise waterfront, mangroves, beaches and new residential communities.": {
+    "ar": "صورة جوية ساحلية تُظهر واجهة الفهيد المائية الفيروزية وأشجار القرم والشواطئ والمجتمعات السكنية الجديدة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
+  "Aerial image emphasising the mangroves, waterways, villas and low-density character of Jubail Island.": {
+    "ar": "صورة جوية تبرز أشجار القرم والممرات المائية والفلل والطابع منخفض الكثافة في جزيرة الجبيل.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.843Z"
+  },
+  "Aerial of the KEZAD industrial estate and Khalifa Port, showing warehousing, plots and the port terminals.": {
+    "ar": "صورة جوية لمنطقة كيزاد الصناعية وميناء خليفة، تُظهر المستودعات والقطع الأرضية ومحطات الميناء.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "Ain Al Maha": {
+    "ar": "عين المها",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
+  },
+  "Airport Connectivity": {
+    "ar": "الربط بالمطار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "Al Bandar": {
+    "ar": "البندر",
+    "by": "machine"
+  },
   "Al Bateen": {
     "ar": "البطين",
     "by": "machine"
+  },
+  "Al Forsan International Sports Resort": {
+    "ar": "منتجع الفرسان الرياضي الدولي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
+  "Al Forsan International Sports Resort and Abu Dhabi Golf Club are both located in Khalifa City.": {
+    "ar": "منتجع الفرسان الرياضي الدولي ونادي أبوظبي للغولف يقعان كلاهما في مدينة خليفة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "Al Forsan Village": {
+    "ar": "الفرسان فيليدج",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
+  },
+  "Al Forsan Village appears among current Khalifa City sale activity, while Al Rayyana is prominent within the apartment rental market.": {
+    "ar": "تظهر قرية الفرسان ضمن نشاط بيع مدينة خليفة الحالي، بينما تبرز الريانة في سوق تأجير الشقة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
+  },
+  "Al Forsan occupies approximately 1.6 sq. km in Khalifa City, while Abu Dhabi Golf Club spans around 162 hectares.": {
+    "ar": "يشغل الفرسان مساحة تبلغ نحو 1.6 كيلومتر مربع في مدينة خليفة، فيما يمتد نادي أبوظبي للغولف على مساحة تقارب 162 هكتاراً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
   },
   "Al Ghadeer": {
     "ar": "الغدير",
@@ -667,11 +1111,33 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:44:00.195Z"
   },
+  "Al Khalidiyah": {
+    "ar": "الخالدية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
   "Al Maktoum International Airport": {
     "ar": "مطار آل مكتوم الدولي",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
+  },
+  "Al Markaziyah": {
+    "ar": "المركزية",
+    "by": "machine"
+  },
+  "Al Markaziyah, Al Khalidiyah and Al Bateen run behind the waterfront, each with its own character and price point.": {
+    "ar": "المركزية والخالدية والبطين تمتد خلف الواجهة البحرية، ولكل منها طابعها الخاص ومستوى أسعارها.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
+  "Al Maryah & Al Reem": {
+    "ar": "المارية والريم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:11:02.438Z"
   },
   "Al Maryah Island": {
     "ar": "جزيرة الماريه",
@@ -701,6 +1167,22 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:35:49.472Z"
   },
+  "Al Muneera": {
+    "ar": "المنيرة",
+    "by": "machine"
+  },
+  "Al Muneera Beach Plaza": {
+    "ar": "المنيرة بيتش بلازا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:12:50.795Z"
+  },
+  "Al Naseem Community": {
+    "ar": "مجتمع النسيم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
   "Al Raha": {
     "ar": "الراحة",
     "by": "machine"
@@ -725,6 +1207,18 @@
     "ar": "حدائق الراحة",
     "by": "machine"
   },
+  "Al Raha Gardens Community Centre": {
+    "ar": "حدائق الراحة المركز المجتمعي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.118Z"
+  },
+  "Al Raha Gardens at a Glance": {
+    "ar": "حدائق الراحة في لمحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.118Z"
+  },
   "Al Raha Mall": {
     "ar": "الراحة مول",
     "by": "machine",
@@ -743,8 +1237,36 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:52:17.843Z"
   },
+  "Al Rayyana": {
+    "ar": "الريانة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
+  },
   "Al Reem Island": {
     "ar": "جزيرة الريم",
+    "by": "machine"
+  },
+  "Al Reem Island Property Market at a Glance": {
+    "ar": "سوق العقارات في جزيرة الريم في لمحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
+  "Al Tharwaniyah": {
+    "ar": "الثروانية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
+  "Al Waha": {
+    "ar": "الواحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:11:02.439Z"
+  },
+  "Al Zeina": {
+    "ar": "الزينة",
     "by": "machine"
   },
   "Al Zeina combines apartments, townhouses, sky villas and private beach facilities, while Al Muneera includes apartments, townhouses and villas.": {
@@ -758,6 +1280,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
+  },
+  "Aldar HQ is located at Al Raha Beach, while Al Muneera Beach Plaza forms part of the community’s waterfront retail offering.": {
+    "ar": "يقع المقر الرئيسي لشركة الدار في شاطئ الراحة، بينما يشكّل المنيرة بيتش بلازا جزءاً من العروض التجارية على الواجهة البحرية في المجتمع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.117Z"
   },
   "Aldar Properties": {
     "ar": "الدار العقارية",
@@ -799,6 +1327,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:03:22.147Z"
   },
+  "Almost entirely apartments, from studios to four-bedroom units, in established residential towers. Villas are rare on this stretch.": {
+    "ar": "شقق بشكل شبه كامل، من الاستوديوهات إلى وحدات بأربع غرف نوم، في أبراج سكنية قائمة. أما الفلل فنادرة في هذا النطاق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
   "An English common-law jurisdiction with its own courts and regulator.": {
     "ar": "اختصاص قضائي يقوم على القانون الإنجليزي العام، وله محاكمه وجهته التنظيمية الخاصة.",
     "by": "machine",
@@ -817,11 +1351,47 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:52:17.843Z"
   },
+  "An expanding selection of premium coastal developments.": {
+    "ar": "تشكيلة متنامية من المشاريع الساحلية الفاخرة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "An extensive network of sport, cycling, running and recreation facilities.": {
+    "ar": "شبكة واسعة من مرافق الرياضة وركوب الدراجات والجري والترفيه.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
   "An instant, data-backed range for your unit — built from registered Abu Dhabi transactions and comparable listings.": {
     "ar": "نطاق سعري فوري مدعوم بالبيانات لوحدتك — مبني على معاملات أبوظبي المسجّلة والعروض المماثلة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "An upscale, walkable stretch of cafés and residential towers.": {
+    "ar": "امتداد راقٍ من المقاهي والأبراج السكنية يسهل التنقل فيه سيراً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
+  "Annual rent. The top of the scale means “and above”.": {
+    "ar": "الإيجار السنوي. أعلى قيمة في المقياس تعني \"وما فوق\".",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
+  },
+  "Anything else we should know?": {
+    "ar": "هل من شيء آخر تودّ إخبارنا به؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
+  "Anything else? (optional)": {
+    "ar": "أي شيء آخر؟ (اختياري)",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
   },
   "Apartment": {
     "ar": "شقة",
@@ -865,11 +1435,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Apartments dominate the established market, with newer developments also introducing townhouses and villas.": {
+    "ar": "الشقق تهيمن على السوق القائم، مع طرح مشاريع أحدث لمنازل تاون هاوس وفلل أيضاً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Apartments, townhouses and villas.": {
+    "ar": "شقق وتاون هاوس وفلل.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:11:02.439Z"
+  },
   "Apartments, townhouses, villas and sky villas, almost all of it ready stock rather than off-plan.": {
     "ar": "شقق وتاون هاوس وفلل وفلل سماوية، ومعظمها جاهز للتسليم وليس على الخارطة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
+  },
+  "Approximately 40 million sq. m.": {
+    "ar": "المساحة نحو 40 مليون متر مربع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
   },
   "Are there residential properties on Al Maryah Island?": {
     "ar": "هل توجد عقارات سكنية في جزيرة الماريه؟",
@@ -997,6 +1585,54 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:01:23.670Z"
   },
+  "Beach-level view along the Mamsha promenade showing the low-rise residences, the boardwalk and the restaurants at ground level.": {
+    "ar": "منظر من مستوى الشاطئ على امتداد ممشى السعديات يُظهر المباني السكنية المنخفضة والممشى الخشبي والمطاعم في الطابق الأرضي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
+  "Beaches, mangroves and waterfront views.": {
+    "ar": "عوامل الشاطئ وأشجار القرم وإطلالات على الواجهة المائية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Beachfront Apartments": {
+    "ar": "شقق على الواجهة البحرية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.962Z"
+  },
+  "Beachfront Villas": {
+    "ar": "فلل على الواجهة البحرية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
+  "Beachfront aerial of Hidd Al Saadiyat showing the villa rows, private pools and the open shoreline in front of them.": {
+    "ar": "لقطة جوية لواجهة الشاطئ في حد السعديات تُظهر صفوف الفيلات والمسابح الخاصة والشاطئ المفتوح أمامها.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
+  "Beachfront in the City": {
+    "ar": "واجهة بحرية في المدينة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
+  "Bedrooms": {
+    "ar": "غرف النوم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
+  "Bedrooms per Villa": {
+    "ar": "غرف النوم لكل فيلا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
   "Before you commit": {
     "ar": "نصائح قبل أن تلتزم",
     "by": "machine",
@@ -1009,11 +1645,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Beside Khalifa Port, approximately 40 minutes from Downtown Abu Dhabi.": {
+    "ar": "بجوار ميناء خليفة، على بُعد 40 دقيقة تقريبًا من وسط مدينة أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "Best time to call": {
+    "ar": "أفضل وقت للاتصال",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
+  },
   "Better property decisions start with the right guidance.": {
     "ar": "القرارات العقارية الأفضل تبدأ بالإرشاد الصحيح.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Between Yas Island and Saadiyat Island.": {
+    "ar": "بين جزيرة ياس وجزيرة السعديات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
   },
   "Between central Abu Dhabi, the airport and Yas Island.": {
     "ar": "أبوظبي بين وسط والمطار وجزيرة ياس.",
@@ -1030,6 +1684,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Book my call": {
+    "ar": "احجز مكالمتي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
   },
   "Branded residences and premium apartments beside ADGM Square.": {
     "ar": "المساكن ذات العلامات التجارية والشقق الفاخرة بجوار ساحة ADGM.",
@@ -1199,11 +1859,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.334Z"
   },
+  "Budget": {
+    "ar": "الميزانية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
+  },
+  "Budget, bedrooms, must-haves…": {
+    "ar": "الميزانية، غرف النوم، المتطلبات الأساسية…",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
+  },
   "Budget-led": {
     "ar": "احسب حسب الميزانية",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
+  },
+  "Building": {
+    "ar": "البناية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
   },
   "Built on strong relationships with leading developers, banks, and trusted industry partners.": {
     "ar": "قائمة على علاقات قوية مع كبار المطورين والبنوك وشركاء موثوقين في القطاع.",
@@ -1217,11 +1895,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
   },
+  "Built-up area": {
+    "ar": "المساحة المبنية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
+  },
   "Business districts": {
     "ar": "مناطق الأعمال",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.333Z"
+  },
+  "Buy": {
+    "ar": "شراء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
   },
   "Buy a Property": {
     "ar": "شراء عقار",
@@ -1265,6 +1955,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Buying timeline": {
+    "ar": "الجدول الزمني للشراء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
+  },
   "Buying with Bazar": {
     "ar": "الشراء مع بازار",
     "by": "machine",
@@ -1278,10 +1974,10 @@
     "at": "2026-08-16T14:16:31.019Z"
   },
   "By submitting you agree to be contacted by a Bazar advisor.": {
-    "ar": "بإرسال النموذج فإنك توافق على أن يتواصل معك مستشار من بازار.",
+    "ar": "بالإرسال، فأنت توافق على أن يتواصل معك مستشار من بازار.",
     "by": "machine",
     "model": "claude-opus-5",
-    "at": "2026-08-16T12:37:24.288Z"
+    "at": "2026-08-16T16:14:58.870Z"
   },
   "Call now": {
     "ar": "اتصل الآن",
@@ -1361,11 +2057,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.334Z"
   },
+  "Can you live inside the ADGM jurisdiction?": {
+    "ar": "ADGM هل يمكنك السكن داخل نطاق",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:11:02.439Z"
+  },
+  "Category": {
+    "ar": "الفئة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
   "Central Location": {
     "ar": "موقع مركزي",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
+  },
+  "Central towers within walking distance of the business district.": {
+    "ar": "أبراج مركزية على مسافة قصيرة سيرًا من منطقة الأعمال.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
   },
   "Centred on Al Maryah Island and extending across Al Reem Island, immediately east of Downtown Abu Dhabi.": {
     "ar": "يتمركز في جزيرة الماريه ويمتد عبر جزيرة الريم، إلى الشرق مباشرة من وسط مدينة أبوظبي.",
@@ -1433,6 +2147,30 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "Close to Al Forsan and Abu Dhabi Golf Club.": {
+    "ar": "على مقربة من الفرسان ونادي أبوظبي للغولف.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "Close to Downtown and Abu Dhabi’s financial district.": {
+    "ar": "قريب من وسط المدينة والحي المالي في أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Coastal Setting": {
+    "ar": "موقع ساحلي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Coastal communities surrounded by beaches and open water.": {
+    "ar": "مجتمعات ساحلية محاطة بالشواطئ والمياه المفتوحة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
   "Combined Financial District Area": {
     "ar": "منطقة الحي المالي المجمّعة",
     "by": "machine",
@@ -1444,6 +2182,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
+  },
+  "Commercial": {
+    "ar": "تجاري",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
   },
   "Commercial Buildings": {
     "ar": "العقارات التجارية",
@@ -1475,11 +2219,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.325Z"
   },
+  "Commercial Property for Lease in KIZAD": {
+    "ar": "عقارات تجارية للإيجار في KIZAD",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
+  "Commercial Property for Sale in KIZAD": {
+    "ar": "عقارات تجارية للبيع في KIZAD",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
   "Commercial Real Estate": {
     "ar": "العقارات التجارية",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Commercial Villa": {
+    "ar": "فيلا تجارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
   },
   "Commercial districts": {
     "ar": "الأحياء التجارية",
@@ -1517,6 +2279,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
   },
+  "Community figures published for the Hidd Al Saadiyat masterplan.": {
+    "ar": "بيانات المجتمع المنشورة للمخطط الرئيسي لـ حد السعديات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
+  "Community or building": {
+    "ar": "المجتمع أو المبنى",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
+  },
   "Compare locations, projects and properties based on your budget and lifestyle requirements.": {
     "ar": "قارن بين المواقع والمشاريع والعقارات وفقاً لميزانيتك ومتطلبات نمط حياتك.",
     "by": "machine",
@@ -1541,6 +2315,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Comparing banks": {
+    "ar": "مقارنة البنوك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
+  },
   "Comparing suitable properties and current market positioning.": {
     "ar": "مقارنة العقارات المناسبة والتموضع الحالي في السوق.",
     "by": "machine",
@@ -1558,6 +2338,24 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
+  },
+  "Connected to the Capital": {
+    "ar": "متصل بالعاصمة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Consent to be contacted": {
+    "ar": "الموافقة على التواصل معي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
+  },
+  "Consented to contact by phone, WhatsApp and email.": {
+    "ar": "موافقة على التواصل عبر الهاتف والواتساب والبريد الإلكتروني.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
   },
   "Contact": {
     "ar": "اتصل بنا",
@@ -1577,6 +2375,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:47:46.675Z"
   },
+  "Continued infrastructure improvements strengthen access across Abu Dhabi.": {
+    "ar": "تُعزّز التحسينات المستمرة في البنية التحتية سهولة الوصول في مختلف أنحاء أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
   "Convenient Location": {
     "ar": "موقع ملائم",
     "by": "machine",
@@ -1589,17 +2393,85 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
   },
+  "Convenient access to Zayed International Airport.": {
+    "ar": "الوصول بسهولة إلى مطار زايد الدولي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
   "Convenient access to major employment and lifestyle destinations across both emirates.": {
     "ar": "وصول سهل إلى أبرز وجهات العمل ونمط الحياة في الإمارتين.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "Conveniently Connected": {
+    "ar": "منتصلة بسهولة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
   "Coordination of handovers, access and property documentation.": {
     "ar": "تنسيق عمليات التسليم والوصول ووثائق العقار.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "Corniche": {
+    "ar": "الكورنيش",
+    "by": "machine"
+  },
+  "Corniche Beach": {
+    "ar": "الكورنيش بيتش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "Corniche Beach holds Blue Flag certification and is one of the few places in the city where you can live directly on a public beach.": {
+    "ar": "؛يحمل شاطئ الكورنيش شهادة العلم الأزرق، وهو أحد الأماكن القليلة في المدينة التي يمكنك السكن فيها مباشرة على شاطئ عام.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "Corniche Promenade": {
+    "ar": "ممشى الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "Corniche Road Towers": {
+    "ar": "أبراج طريق الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
+  "Corniche promenade at golden hour with the beach in the foreground and the residential and office towers behind.": {
+    "ar": "الكورنيش الممشى عند الساعة الذهبية مع الشاطئ في المقدمة وأبراج السكن والمكاتب في الخلفية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "Corridor Position": {
+    "ar": "موقع الممر",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
+  "Cultural District": {
+    "ar": "المنطقة الثقافية",
+    "by": "machine"
+  },
+  "Cultural District Access": {
+    "ar": "الوصول إلى المنطقة الثقافية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
+  "Current projects include apartments, townhouses and penthouses, alongside premium beachfront residences.": {
+    "ar": "المشاريع الحالية تشمل شققاً وتاون هاوس وبنتهاوس، إلى جانب مساكن راقية على الواجهة البحرية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
   },
   "Customer Focus": {
     "ar": "التركيز على العميل",
@@ -1625,6 +2497,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Deep, liquid tenant demand across studios to four-bedroom apartments.": {
+    "ar": "طلب عميق ونشط من المستأجرين يشمل الاستوديوهات وحتى الشقق المكوّنة من أربع غرف نوم.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
+  "Deep-water port frontage and terminal-adjacent operations.": {
+    "ar": "واجهة ميناء ذات مياه عميقة وعمليات ملاصقة للمحطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.094Z"
+  },
   "Delivering premium standards and exceptional service throughout every client experience.": {
     "ar": "تقديم معايير متميزة وخدمة استثنائية في كل تجربة مع عملائنا.",
     "by": "machine",
@@ -1642,6 +2526,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
+  },
+  "Designed around walking, cycling, fitness and wellbeing.": {
+    "ar": "صُمّم حول المشي وركوب الدراجات واللياقة والعافية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
   },
   "Designed for comfortable and convenient family living.": {
     "ar": "صُمم لحياة عائلية مريحة وعملية.",
@@ -1661,6 +2551,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:45:16.170Z"
   },
+  "Direct access to Khalifa Port’s deep-water terminals.": {
+    "ar": "وصول مباشر إلى محطات المياه العميقة في ميناء خليفة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
+  "Direct beach access from a closed collection of homes.": {
+    "ar": "شاطئ خاص يمكن الوصول إليه مباشرة من مجموعة سكنية مغلقة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
   "Direct relationships with the region's leading developers give Bazar clients early access to landmark communities, new launches, and off-plan opportunities.": {
     "ar": "علاقاتنا المباشرة مع كبرى شركات التطوير في المنطقة تمنح عملاء بازار وصولاً مبكراً إلى المجتمعات المميزة والإطلاقات الجديدة والفرص على الخارطة.",
     "by": "machine",
@@ -1673,11 +2575,35 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:21:24.195Z"
   },
+  "Discover Abu Dhabi’s newest premium coastal opportunities with Bazar Real Estate.": {
+    "ar": "اكتشف أحدث الفرص الساحلية المميزة في أبوظبي مع بازار العقارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
   "Discover Our Company": {
     "ar": "اكتشف شركتنا",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
+  },
+  "Discover a destination centred around sport, recreation and waterfront experiences.": {
+    "ar": "اكتشف وجهة تتمحور حول الرياضة والترفيه وتجارب الواجهة المائية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "Discover available rental opportunities across Hudayriyat Island’s growing residential communities.": {
+    "ar": "اكتشف فرص الإيجار المتاحة في المجتمعات السكنية المتنامية في جزيرة الحديريات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "Discover available rental properties across Jubail Island’s low-density residential communities.": {
+    "ar": "اكتشف العقارات المتاحة للإيجار في المجتمعات السكنية منخفضة الكثافة في جزيرة الجبيل.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
   },
   "Discover commercial spaces designed for shops, showrooms, and customer-facing businesses.": {
     "ar": "المساحات التجارية المصمّمة للمحلات وصالات العرض والأعمال التي تستقبل العملاء.",
@@ -1703,6 +2629,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
   },
+  "Discover premium homes surrounded by nature with Bazar Real Estate.": {
+    "ar": "اكتشف منازل فاخرة تحيط بها الطبيعة مع بازار العقارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
   "Discover premium rental residences in the heart of Abu Dhabi’s financial and lifestyle district.": {
     "ar": "اكتشف مساكن إيجارية فاخرة في قلب المنطقة المالية والحيوية في أبوظبي.",
     "by": "machine",
@@ -1727,6 +2659,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:11:22.357Z"
   },
+  "Discover rental homes across one of Abu Dhabi’s established suburban residential destinations.": {
+    "ar": "اكتشف منازل للإيجار في واحدة من الوجهات السكنية الضاحوية العريقة في أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
+  },
   "Discover rental homes across one of Abu Dhabi’s most established eastern-corridor districts.": {
     "ar": "استكشف المنازل المعروضة للإيجار في واحدة من أعرق مناطق الممر الشرقي في أبوظبي.",
     "by": "machine",
@@ -1738,6 +2676,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:44:00.195Z"
+  },
+  "Discover rental villas and townhouses in one of Abu Dhabi’s most established gated communities.": {
+    "ar": "اكتشف الفلل والتاون هاوس للإيجار في واحد من أعرق المجمعات السكنية المغلقة في أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
+  "Discover some of the island’s leading residential communities:": {
+    "ar": "اكتشف بعضًا من أبرز المجتمعات السكنية في الجزيرة:",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
   },
   "Discover the right place to live, connect and grow.": {
     "ar": "اكتشف المكان المناسب للسكن والتواصل والنمو.",
@@ -1781,11 +2731,35 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.744Z"
   },
+  "Drag both ends. The top of the scale means six or more.": {
+    "ar": "اسحب الطرفين. أعلى المقياس يعني ستة أو أكثر.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
+  "Drag either handle. Leave it alone if you'd rather not say.": {
+    "ar": "اسحب أيًّا من المقبضين. اتركه دون تغيير إذا كنت تفضّل عدم التحديد.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
   "Drawing on over 20 years of local expertise, strong developer relationships, and in-depth market knowledge, we deliver tailored property guidance that creates lasting value and a seamless client experience.": {
     "ar": "اعتمادًا على أكثر من 20 عامًا من الخبرة المحلية، وعلاقات قوية مع المطورين العقاريين، ومعرفة عميقة بالسوق، نقدّم استشارات عقارية مصمّمة خصيصًا تصنع قيمة دائمة وتجربة سلسة للعملاء.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Dual Licensing": {
+    "ar": "الترخيص المزدوج",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
+  "Dubai": {
+    "ar": "دبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
   },
   "Dubai & Wider UAE": {
     "ar": "دبي وباقي الإمارات",
@@ -1809,6 +2783,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:11:22.357Z"
   },
+  "Economic Zones": {
+    "ar": "المناطق الاقتصادية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
   "Eden House Al Maryah Island": {
     "ar": "إيدن هاوس جزيرة الماريه",
     "by": "machine",
@@ -1821,6 +2801,36 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Eleven precincts of villas and townhouses behind a single gate.": {
+    "ar": "مجمع مسوّر يضم أحد عشر حيًّا من الفلل والتاون هاوس.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
+  "Email": {
+    "ar": "البريد الإلكتروني",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
+  },
+  "Email me a code": {
+    "ar": "أرسل لي رمزًا عبر البريد الإلكتروني",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:16:01.429Z"
+  },
+  "Emirates Palace": {
+    "ar": "قصر الإمارات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "Enquire About Available Space": {
+    "ar": "استفسر عن المساحات المتاحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
   "Enquire Now": {
     "ar": "استفسر الآن",
     "by": "machine",
@@ -1832,6 +2842,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Established Villa Communities": {
+    "ar": "مجتمعات الفيلا القائمة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
   },
   "Established homes ready for handover.": {
     "ar": "منازل قائمة جاهزة للتسليم.",
@@ -1857,11 +2873,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
   },
+  "Established parks, walkways and community centres rather than a new build site.": {
+    "ar": "حدائق ومسارات مشي ومراكز مجتمعية قائمة، لا موقع بناء جديد.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
   "Estimate your monthly payments before making your move": {
     "ar": "قدّر أقساطك الشهرية قبل اتخاذ خطوتك",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:01:23.673Z"
+  },
+  "Evening": {
+    "ar": "الفترة المسائية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
   },
   "Every advisor registered, vetted and named on your file": {
     "ar": "كل مستشار مسجّل ومدقّق ومُدرج باسمه في ملفك",
@@ -1899,6 +2927,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Every residence has its own pool and covered parking.": {
+    "ar": "كل مسكن يضم مسبحاً خاصاً به وموقفاً مغطى للسيارات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
   "Everything You Need to Know": {
     "ar": "كل ما تحتاج إلى معرفته",
     "by": "machine",
@@ -1928,6 +2962,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Expected Price": {
+    "ar": "السعر المتوقع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
   },
   "Experienced local team": {
     "ar": "فريق محلي ذو خبرة",
@@ -1977,6 +3017,24 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
   },
+  "Explore Al Reem Island": {
+    "ar": "جزيرة الريم اكتشف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
+  "Explore Hudayriyat Island": {
+    "ar": "جزيرة الحديريات استكشف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
+  "Explore Jubail Island": {
+    "ar": "جزيرة الجبيل استكشف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.844Z"
+  },
   "Explore New Projects": {
     "ar": "مشاريع جديدة",
     "by": "machine",
@@ -1995,6 +3053,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "Explore Saadiyat’s beachfront villa market with Bazar Real Estate.": {
+    "ar": "اكتشف سوق فيلا الواجهة البحرية في السعديات مع بازار العقارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
   "Explore all locations": {
     "ar": "استكشف جميع المواقع",
     "by": "machine",
@@ -2012,6 +3076,24 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:44:00.195Z"
+  },
+  "Explore available apartments, townhouses, villas and investment properties across Al Reem Island.": {
+    "ar": "استكشف الشقق والتاون هاوس والفلل والعقارات الاستثمارية المتاحة في جزيرة الريم.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Explore available villas, townhouses, apartments and premium residential opportunities across Hudayriyat Island.": {
+    "ar": "استكشف الفلل والتاون هاوس والشقق والفرص السكنية المميزة المتاحة في جزيرة الحديريات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
+  "Explore beachfront apartments, townhouses and penthouses on Saadiyat’s promenade.": {
+    "ar": "استكشف الشقق والتاون هاوس والبنتهاوس المطلة على الشاطئ في ممشى السعديات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.962Z"
   },
   "Explore communities designed around sea views, canals, promenades, and relaxed waterfront living.": {
     "ar": "استكشف مجتمعات مصممة حول إطلالات البحر والقنوات المائية والممشى والحياة الهادئة على الواجهة البحرية.",
@@ -2055,6 +3137,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Explore gated family homes with Bazar Real Estate.": {
+    "ar": "اكتشف منازل عائلية ضمن مجمعات مغلقة مع بازار العقارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
   "Explore homes inside Abu Dhabi’s financial district with Bazar Real Estate.": {
     "ar": "اكتشف المنازل داخل الحي المالي في أبوظبي مع بازار العقارية.",
     "by": "machine",
@@ -2066,6 +3154,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
+  },
+  "Explore industrial and logistics opportunities with Bazar Real Estate.": {
+    "ar": "استكشف الفرص الصناعية واللوجستية مع بازار العقارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
+  "Explore large beachfront villas across one of Saadiyat Island’s most private communities.": {
+    "ar": "استكشف فلل واسعة على الواجهة البحرية في واحد من أكثر المجتمعات خصوصية في جزيرة السعديات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
   },
   "Explore locations": {
     "ar": "استكشف المواقع",
@@ -2097,11 +3197,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:16:12.762Z"
   },
+  "Explore opportunities to buy, rent or invest with trusted property guidance from Bazar Real Estate.": {
+    "ar": "اكتشف فرص الشراء أو الإيجار أو الاستثمار مع إرشادات عقارية موثوقة من بازار العقارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.843Z"
+  },
   "Explore practical guidance on selling, renting, property documentation, pricing and the steps involved in listing your property.": {
     "ar": "استكشف إرشادات عملية حول البيع والتأجير ووثائق العقار والتسعير والخطوات المتعلقة بنشر إعلان عقاري لعقارك.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Explore premium apartments, townhouses, penthouses and beachfront residences.": {
+    "ar": "استكشف شققاً فاخرة ومنازل تاون هاوس وبنتهاوس ومساكن على الواجهة البحرية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
   },
   "Explore previously owned homes coming back to the market, with the title deed already issued.": {
     "ar": "اكتشف المنازل المملوكة سابقًا التي تعود إلى السوق، مع صدور سند الملكية بالفعل.",
@@ -2120,6 +3232,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.270Z"
+  },
+  "Explore properties for sale, rent and investment with Bazar Real Estate.": {
+    "ar": "استكشف العقارات المعروضة للبيع والإيجار والاستثمار مع بازار العقارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
   },
   "Explore ready, resale and off-plan properties across Abu Dhabi, with expert guidance from search to purchase.": {
     "ar": "اكتشف العقارات الجاهزة وعقارات إعادة البيع والعقارات على الخارطة في أبوظبي، مع إرشاد متخصص من البحث حتى الشراء.",
@@ -2145,6 +3263,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.902Z"
   },
+  "Explore sea-facing apartments and central city residences along Abu Dhabi’s waterfront.": {
+    "ar": "استكشف الشقق المطلة على البحر والمساكن في قلب المدينة على امتداد واجهة أبوظبي البحرية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
+  "Explore spacious homes for sale and rent with trusted property guidance from Bazar Real Estate.": {
+    "ar": "استكشف منازل واسعة للبيع والإيجار مع إرشادات عقارية موثوقة من بازار العقارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
   "Explore spacious villas designed for family living, privacy, outdoor space, and long-term comfort.": {
     "ar": "استكشف فللاً واسعة مصممة للحياة العائلية والخصوصية والمساحات الخارجية والراحة على المدى الطويل.",
     "by": "machine",
@@ -2156,6 +3286,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
+  },
+  "Explore spacious villas, apartments and residential opportunities across Khalifa City.": {
+    "ar": "استكشف الفلل الواسعة والشقق والفرص السكنية في مختلف أنحاء مدينة خليفة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
   },
   "Explore the latest off-plan projects across Abu Dhabi's top communities — from waterfront apartments to branded residences.": {
     "ar": "اكتشف أحدث المشاريع على الخارطة في أبرز مجتمعات أبوظبي — من الشقق المطلة على الواجهة المائية إلى المساكن ذات العلامات التجارية.",
@@ -2175,17 +3311,35 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:11:22.356Z"
   },
+  "Explore townhouses and family villas across the eleven Al Raha Gardens precincts.": {
+    "ar": "استكشف التاون هاوس والفلل العائلية في مناطق حدائق الراحة الإحدى عشرة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
   "Explore transactions": {
     "ar": "استعراض المعاملات",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Explore warehousing, industrial plots and logistics facilities across the Khalifa Economic Zones.": {
+    "ar": "المستودعات والقطع الصناعية والمرافق اللوجستية في مناطق خليفة الاقتصادية — تعرّف عليها.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
   "Explore waterfront and gated-community homes with Bazar Real Estate.": {
     "ar": "استكشف المنازل المطلة على الواجهة المائية ومنازل المجمعات السكنية المغلقة مع بازار العقارية.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
+  },
+  "Explore waterfront apartments in central Abu Dhabi with Bazar Real Estate.": {
+    "ar": "استكشف الشقق المطلة على الواجهة المائية في وسط أبوظبي مع بازار العقارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
   },
   "Explore waterfront apartments, townhouses and family villas across the Al Raha communities.": {
     "ar": "استكشف الشقق المطلة على الواجهة المائية والتاون هاوس والفلل العائلية في مجتمعات الراحة.",
@@ -2205,6 +3359,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Explore waterfront homes for sale and rent with Bazar Real Estate.": {
+    "ar": "منازل على الواجهة المائية للبيع والإيجار مع بازار العقارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.117Z"
+  },
+  "Explore waterfront villas, apartments, townhouses, mansions and premium residential opportunities surrounded by nature.": {
+    "ar": "اكتشف الفلل والشقق والتاون هاوس والقصور والفرص السكنية المميزة على الواجهة المائية وسط أحضان الطبيعة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
+  },
   "Expo City Dubai": {
     "ar": "إكسبو سيتي دبي",
     "by": "machine",
@@ -2220,6 +3386,34 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:01:23.673Z"
+  },
+  "Fahid Beach Residences": {
+    "ar": "فهيد بيتش ريزيدنسز",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
+  "Fahid Island": {
+    "ar": "جزيرة فاهد",
+    "by": "machine"
+  },
+  "Fahid Island Property Market at a Glance": {
+    "ar": "نظرة عامة على سوق العقارات في جزيرة فاهد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
+  "Fahid Island is positioned between Yas Island and Saadiyat Island.": {
+    "ar": "جزيرة فاهد تقع بين جزيرة ياس وجزيرة السعديات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Family Lifestyle": {
+    "ar": "السلوب الحياة العائلية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
   },
   "Family-Focused Living": {
     "ar": "حياة تركّز على العائلة",
@@ -2299,17 +3493,83 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
   },
+  "Find Al Maryah Island on the map.": {
+    "ar": "اعثر على جزيرة الماريه على الخريطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:12:50.794Z"
+  },
   "Find Al Raha Beach on the map.": {
     "ar": "شاطئ الراحة على الخريطة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
   },
+  "Find Al Raha Gardens on the map.": {
+    "ar": "حدائق الراحة على الخريطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.118Z"
+  },
   "Find Al Raha on the map.": {
     "ar": "اعثر على الراحة على الخريطة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:52:17.843Z"
+  },
+  "Find Al Reem Island on the map.": {
+    "ar": "جزيرة الريم على الخريطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
+  "Find Corniche on the map.": {
+    "ar": "الكورنيش على الخريطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "Find Fahid Island on the map.": {
+    "ar": "جزيرة فاهد على الخريطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
+  "Find Hidd Al Saadiyat on the map.": {
+    "ar": "حد السعديات على الخريطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
+  "Find Hudayriyat Island on the map.": {
+    "ar": "جزيرة الحديريات على الخريطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "Find Jubail Island on the map.": {
+    "ar": "جزيرة الجبيل على الخريطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.844Z"
+  },
+  "Find KIZAD on the map.": {
+    "ar": "KIZAD على الخريطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.093Z"
+  },
+  "Find Khalifa City on the map.": {
+    "ar": "ابحث عن مدينة خليفة على الخريطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
+  "Find Mamsha Al Saadiyat on the map.": {
+    "ar": "اعثر على ممشى السعديات على الخريطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
   },
   "Find Your Commercial Space": {
     "ar": "اعثر على مساحتك التجارية",
@@ -2347,11 +3607,65 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
   },
+  "Find Your Property in Al Raha Beach": {
+    "ar": "عقارك في شاطئ الراحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.117Z"
+  },
+  "Find Your Property in Al Raha Gardens": {
+    "ar": "العثور على عقارك في حدائق الراحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
+  "Find Your Property in Hidd Al Saadiyat": {
+    "ar": "عقارك في حد السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "Find Your Property in Khalifa City": {
+    "ar": "عقارك في مدينة خليفة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
   "Find Your Property on Al Maryah Island": {
     "ar": "ابحث عن عقارك على جزيرة الماريه",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:52:17.843Z"
+  },
+  "Find Your Property on Al Reem Island": {
+    "ar": "ابحث عن عقارك على جزيرة الريم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "Find Your Property on Fahid Island": {
+    "ar": "اعثر على عقارك على جزيرة فاهد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Find Your Property on Hudayriyat Island": {
+    "ar": "ابحث عن عقارك على جزيرة الحديريات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "Find Your Property on Jubail Island": {
+    "ar": "اعثر على عقارك في جزيرة الجبيل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
+  "Find Your Property on the Corniche": {
+    "ar": "ابحث عن عقارك في الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
   },
   "Find a home worth keeping.": {
     "ar": "استثمر في منزل يستحق البقاء.",
@@ -2389,11 +3703,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
   },
+  "Find rental apartments with direct beach and promenade frontage.": {
+    "ar": "اعثر على شقق للإيجار بواجهة مباشرة على الشاطئ والكورنيش.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.962Z"
+  },
   "Find rental homes within walking or short-drive distance of ADGM Square.": {
     "ar": "ابحث عن منازل للإيجار على مسافة قريبة سيرًا أو بالسيارة من ساحة ADGM.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.744Z"
+  },
+  "Find rental properties across one of Abu Dhabi’s most established urban waterfront communities.": {
+    "ar": "ابحث عن عقارات للإيجار في واحد من أعرق مجتمعات الواجهة المائية الحضرية في أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
   },
   "Find strategically located commercial plots with potential for development and investment.": {
     "ar": "أراضٍ تجارية في مواقع استراتيجية تتمتع بإمكانات للتطوير والاستثمار.",
@@ -2443,6 +3769,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Find warehousing, workshop and light-industrial space available to lease.": {
+    "ar": "ابحث عن مستودعات وورش ومساحات صناعية خفيفة متاحة للإيجار.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
   "Find your area first. The home follows.": {
     "ar": "ابحث عن منطقتك أولاً. المنزل يأتي بعد ذلك.",
     "by": "machine",
@@ -2454,6 +3786,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:59:18.464Z"
+  },
+  "First name": {
+    "ar": "الاسم الأول",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
   },
   "First-Time Buyers": {
     "ar": "المشترون لأول مرة",
@@ -2478,6 +3816,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.334Z"
+  },
+  "Flexible": {
+    "ar": "مرن",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
   },
   "Flexible commercial ownership options": {
     "ar": "خيارات مرنة للتملك التجاري",
@@ -2515,6 +3859,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Free-zone and mainland options within one integrated platform.": {
+    "ar": "خيارات المناطق الحرة والبر الرئيسي ضمن منصة واحدة متكاملة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
   "Frequently Asked Questions": {
     "ar": "الأسئلة الشائعة",
     "by": "machine",
@@ -2550,6 +3900,60 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
+  },
+  "Frequently Asked Questions About Al Raha Gardens": {
+    "ar": "الأسئلة الشائعة حول حدائق الراحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
+  "Frequently Asked Questions About Al Reem Island": {
+    "ar": "الأسئلة الشائعة حول جزيرة الريم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Frequently Asked Questions About Corniche": {
+    "ar": "الأسئلة الشائعة حول الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
+  "Frequently Asked Questions About Fahid Island": {
+    "ar": "الأسئلة الشائعة حول جزيرة فاهد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Frequently Asked Questions About Hidd Al Saadiyat": {
+    "ar": "الأسئلة الشائعة حول حد السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "Frequently Asked Questions About Hudayriyat Island": {
+    "ar": "أسئلة شائعة حول جزيرة الحديريات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "Frequently Asked Questions About Jubail Island": {
+    "ar": "الأسئلة الشائعة حول جزيرة الجبيل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
+  "Frequently Asked Questions About KIZAD": {
+    "ar": "الأسئلة الشائعة حول KIZAD",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
+  "Frequently Asked Questions About Khalifa City": {
+    "ar": "أسئلة شائعة حول مدينة خليفة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
   },
   "Frequently asked questions": {
     "ar": "الأسئلة الشائعة",
@@ -2587,6 +3991,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
   },
+  "From the central Tara Park area:": {
+    "ar": "من منطقة تارا بارك المركزية:",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
   "From the financial free-zone on Al Maryah to the mixed-use towers on Al Reem, the right address depends on who needs to reach you.": {
     "ar": "المنطقة المالية الحرة في المارية إلى الأبراج متعددة الاستخدامات في الريم، يعتمد اختيار العنوان المناسب على من يحتاج للوصول إليك.",
     "by": "machine",
@@ -2605,6 +4015,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.557Z"
   },
+  "Full Name": {
+    "ar": "الاسم الكامل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
+  },
+  "Full name": {
+    "ar": "الاسم الكامل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
+  },
   "Full-building acquisitions and leasebacks for occupiers and investors buying income rather than a unit.": {
     "ar": "استحواذات المباني الكاملة وإعادة التأجير للمستخدمين والمستثمرين الذين يشترون دخلاً لا وحدة عقارية.",
     "by": "machine",
@@ -2616,6 +4038,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.270Z"
+  },
+  "Fully furnished": {
+    "ar": "مفروش بالكامل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
+  },
+  "Furnishing": {
+    "ar": "التأثيث",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
   },
   "Future Palm Jebel Ali": {
     "ar": "احتمالات النخلة – نخلة جبل علي",
@@ -2659,6 +4093,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Get a free consultation on industrial, logistics and warehousing opportunities across the Khalifa Economic Zones.": {
+    "ar": "استشارة مجانية حول الفرص الصناعية واللوجستية والتخزينية في مناطق خليفة الاقتصادية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
   "Get a free property consultation and discover available homes across the Al Raha communities.": {
     "ar": "احصل على استشارة عقارية مجانية واكتشف المنازل المتاحة في مجتمعات الراحة.",
     "by": "machine",
@@ -2671,11 +4111,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "Get a free property consultation and discover available opportunities that match your requirements.": {
+    "ar": "احصل على استشارة عقارية مجانية واكتشف الفرص المتاحة التي تناسب متطلباتك.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
   "Get a free property consultation and discover available properties for sale or rent.": {
     "ar": "احصل على استشارة عقارية مجانية واكتشف العقارات المتاحة للبيع أو للإيجار.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
+  },
+  "Get a free property consultation and discover the latest residential opportunities and new launches.": {
+    "ar": "احصل على استشارة عقارية مجانية واكتشف أحدث الفرص السكنية والمشاريع الجديدة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Get a free property consultation and explore available waterfront and nature-focused homes.": {
+    "ar": "احصل على استشارة عقارية مجانية واستكشف المنازل المتاحة على الواجهة المائية والمحاطة بالطبيعة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
   },
   "Get a free property consultation and explore premium residential opportunities.": {
     "ar": "احصل على استشارة عقارية مجانية واكتشف فرص السكن المتميزة.",
@@ -2683,11 +4141,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
   },
+  "Get a free property consultation and find a home that matches your requirements.": {
+    "ar": "احصل على استشارة عقارية مجانية واعثر على منزل يناسب متطلباتك.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "Get a free property consultation on Saadiyat Island’s beachfront villa market.": {
+    "ar": "احصل على استشارة عقارية مجانية حول سوق الفيلا على الواجهة البحرية في جزيرة السعديات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
   "Get a free property consultation on living or investing within Abu Dhabi’s financial district.": {
     "ar": "احصل على استشارة عقارية مجانية حول السكن أو الاستثمار في المنطقة المالية في أبوظبي.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
+  },
+  "Get a free property consultation on waterfront apartments in central Abu Dhabi.": {
+    "ar": "احصل على استشارة عقارية مجانية حول الشقق المطلة على الواجهة المائية في وسط أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
   },
   "Get directions": {
     "ar": "احصل على الاتجاهات",
@@ -2713,6 +4189,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:18:59.996Z"
   },
+  "Get the full advisor report": {
+    "ar": "احصل على تقرير المستشار الكامل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
+  },
   "Get valuable insights, key market movements and expert perspectives on Abu Dhabi real estate.": {
     "ar": "احصل على رؤى قيّمة وأبرز تحركات السوق ووجهات نظر الخبراء حول العقارات في أبوظبي.",
     "by": "machine",
@@ -2724,6 +4206,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Ground-level homes opening onto the promenade.": {
+    "ar": "منازل في الطابق الأرضي تُطل على الممشى.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.961Z"
   },
   "Growing Infrastructure": {
     "ar": "بنية تحتية متنامية",
@@ -2767,6 +4255,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:48:50.155Z"
   },
+  "Haven't started": {
+    "ar": "عدم البدء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
+  },
   "Head office": {
     "ar": "المكتب الرئيسي",
     "by": "machine",
@@ -2784,6 +4278,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:48:50.155Z"
+  },
+  "Hidd Al Saadiyat": {
+    "ar": "حد السعديات",
+    "by": "machine"
+  },
+  "Hidd Al Saadiyat at a Glance": {
+    "ar": "حد السعديات في لمحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
   },
   "High-visibility showroom and light-industrial space with the access and ceiling heights those uses need.": {
     "ar": "صالة عرض ومساحة صناعية خفيفة بموقع بارز، مع سهولة الوصول وارتفاعات الأسقف التي تتطلبها هذه الاستخدامات.",
@@ -2808,6 +4312,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "How close is Al Reem Island to Downtown Abu Dhabi?": {
+    "ar": "جزيرة الريم كم تبعد عن وسط مدينة أبوظبي؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
   },
   "How do I choose between a waterfront and a gated community?": {
     "ar": "كيف أختار بين مجتمع على الواجهة المائية ومجتمع سكني مغلق؟",
@@ -2839,11 +4349,41 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
   },
+  "How far is Hudayriyat Island from Downtown Abu Dhabi?": {
+    "ar": "كم تبعد جزيرة الحديريات عن وسط مدينة أبوظبي؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
   "How it works": {
     "ar": "كيف تتم العملية",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "How large are the villas?": {
+    "ar": "ما مساحة الفلل؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "How large is Jubail Island?": {
+    "ar": "جزيرة الجبيل ما مساحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
+  "How many precincts are there in Al Raha Gardens?": {
+    "ar": "كم عدد المناطق في حدائق الراحة؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
+  "How many villas are there in Hidd Al Saadiyat?": {
+    "ar": "كم عدد الفلل في حد السعديات؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
   },
   "How we can help": {
     "ar": "كيف يمكننا المساعدة",
@@ -2867,11 +4407,41 @@
     "ar": "جزيرة الحديريات",
     "by": "machine"
   },
+  "Hudayriyat Island Property Market at a Glance": {
+    "ar": "لمحة سريعة عن سوق العقارات في جزيرة الحديريات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "Hudayriyat is known for its waterfront setting, premium residential communities and strong focus on sport, wellness and outdoor recreation.": {
+    "ar": "تشتهر الحديريات بموقعها على الواجهة المائية ومجتمعاتها السكنية الراقية وتركيزها الكبير على الرياضة والعافية والأنشطة الترفيهية في الهواء الطلق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "Human-scale blocks rather than towers.": {
+    "ar": "مبانٍ بمقياس إنساني بدلاً من الأبراج.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.962Z"
+  },
   "I agree that Bazar Real Estate may contact me about this property by phone, WhatsApp and email.": {
     "ar": "أوافق على أن تتواصل معي بازار العقارية بشأن هذا العقار عبر الهاتف والواتساب والبريد الإلكتروني.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "I'm Interested In": {
+    "ar": "أنا مهتم بـ",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
+  },
+  "I'm interested in": {
+    "ar": "أنا مهتم بـ",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
   },
   "IMKAN Properties": {
     "ar": "إمكان العقارية",
@@ -2882,6 +4452,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
+  },
+  "In the Heart of the City": {
+    "ar": "في قلب المدينة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
   },
   "In the UAE market": {
     "ar": "في سوق الإمارات",
@@ -2894,6 +4470,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:20:52.139Z"
+  },
+  "Industrial & Logistics Plots": {
+    "ar": "أراضٍ صناعية ولوجستية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.094Z"
+  },
+  "Inland from Al Raha Beach, off Sheikh Zayed Bin Sultan Street, between central Abu Dhabi and Khalifa City.": {
+    "ar": "في الداخل من شاطئ الراحة، بعيداً عن شارع الشيخ زايد بن سلطان، بين وسط أبوظبي ومدينة خليفة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.118Z"
   },
   "Innovation": {
     "ar": "الابتكار",
@@ -2913,6 +4501,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
   },
+  "International schools and Al Raha Mall within a short drive.": {
+    "ar": "المدارس الدولية والراحة مول على بعد مسافة قصيرة بالسيارة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
   "Investing": {
     "ar": "الاستثمار",
     "by": "machine",
@@ -2931,6 +4525,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
   },
+  "Is Al Raha Beach close to Yas Island?": {
+    "ar": "شاطئ الراحة قريب من جزيرة ياس؟هل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.117Z"
+  },
+  "Is Al Raha Gardens gated?": {
+    "ar": "حدائق الراحة مجمع مغلق؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
   "Is Al Raha close to the airport?": {
     "ar": "هل الراحة قريب من المطار؟",
     "by": "machine",
@@ -2948,6 +4554,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
+  },
+  "Is the Corniche beach public?": {
+    "ar": "هل شاطئ الكورنيش عام؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
+  "Is there residential property in KIZAD?": {
+    "ar": "هل توجد عقارات سكنية في KIZAD؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
   },
   "It covers Al Maryah Island and, following a 2023 UAE Cabinet resolution, the whole of Al Reem Island.": {
     "ar": "يغطي جزيرة الماريه، وبموجب قرار مجلس الوزراء الإماراتي الصادر عام 2023، جزيرة الريم بالكامل.",
@@ -2979,6 +4597,24 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
   },
+  "It is an established suburban residential area known for spacious homes and convenient airport connectivity.": {
+    "ar": "منطقة سكنية ضاحية عريقة تشتهر بمنازلها الواسعة وسهولة الوصول منها إلى المطار.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "It is approximately 15–20 minutes from central Abu Dhabi, depending on traffic and the exact destination.": {
+    "ar": "تبعد حوالي 15–20 دقيقة عن وسط أبوظبي، حسب حركة المرور والوجهة تحديدًا.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "It is one of Abu Dhabi’s leading mixed-use waterfront destinations, combining residential, retail and commercial development.": {
+    "ar": "هي إحدى الوجهات الرائدة متعددة الاستخدامات على الواجهة المائية في أبوظبي، وتجمع بين التطوير السكني والتجزئة والتجاري.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
   "It is positioned close to the Abu Dhabi–Dubai border.": {
     "ar": "موقعه قريب من الحدود بين أبوظبي ودبي.",
     "by": "machine",
@@ -2991,11 +4627,33 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.270Z"
   },
+  "Its masterplan places a strong emphasis on coastal wellness, walkability and access to nature.": {
+    "ar": "يركّز مخططه الرئيسي بشكل كبير على العافية الساحلية وسهولة التنقل سيراً على الأقدام والوصول إلى الطبيعة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
   "I’m Interested In": {
     "ar": "أنا مهتم بـ",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Jubail Island": {
+    "ar": "جزيرة الجبيل",
+    "by": "machine"
+  },
+  "Jubail Island at a Glance": {
+    "ar": "جزيرة الجبيل في لمحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.843Z"
+  },
+  "Jubail Island’s official FAQ lists six distinct village communities.": {
+    "ar": "جزيرة الجبيل تُدرج ست مجتمعات سكنية مختلفة في قسم الأسئلة الشائعة الرسمي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
   },
   "Jumeirah Residences Al Maryah Island": {
     "ar": "جميرا ريزيدنسز جزيرة الماريه",
@@ -3009,13 +4667,53 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
   },
+  "Just curious about value": {
+    "ar": "مجرد استفسار عن القيمة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:16:01.429Z"
+  },
+  "Just exploring": {
+    "ar": "مجرد استطلاع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
+  },
   "KIZAD": {
     "ar": "KIZAD",
     "by": "machine"
   },
+  "KIZAD is the original Khalifa Industrial Zone, opened in 2012. KEZAD Group, launched in 2022 by AD Ports Group, is the wider platform that now operates KIZAD alongside ZonesCorp and KEZAD Communities.": {
+    "ar": "KIZAD هي منطقة خليفة الصناعية الأصلية التي افتُتحت في عام 2012. أما مجموعة كيزاد، التي أطلقتها مجموعة موانئ أبوظبي في عام 2022، فهي المنصة الأوسع التي تدير حالياً KIZAD إلى جانب زونز كورب ومجتمعات كيزاد.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
   "Khalifa City": {
     "ar": "مدينة خليفة",
     "by": "machine"
+  },
+  "Khalifa City Property Market at a Glance": {
+    "ar": "لمحة عن سوق العقارات في مدينة خليفة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
+  "Khalifa Industrial Zone Abu Dhabi, now part of KEZAD Group, is the emirate’s flagship trade, logistics and industrial platform — built beside Khalifa Port and combining free-zone and mainland licensing with purpose-built warehousing, land plots and staff residential communities.": {
+    "ar": "منطقة خليفة الصناعية أبوظبي، التي باتت جزءاً من مجموعة كيزاد، هي المنصة الرائدة للتجارة والخدمات اللوجستية والصناعة في الإمارة — أُنشئت بجوار ميناء خليفة وتجمع بين تراخيص المنطقة الحرة والبر الرئيسي مع مستودعات مصممة خصيصاً وقطع أراضٍ ومجمعات سكنية للموظفين.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "Khalifa Port": {
+    "ar": "ميناء خليفة",
+    "by": "machine"
+  },
+  "Khalifa Port Cluster": {
+    "ar": "مجمع ميناء خليفة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.094Z"
   },
   "Know Your Property’s Market Value": {
     "ar": "التعرف على القيمة السوقية لعقارك",
@@ -3034,6 +4732,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.478Z"
+  },
+  "Large homes, premium plots and carefully planned communities.": {
+    "ar": "منازل واسعة وقطع أراضٍ مميزة ومجتمعات مخططة بعناية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
+  "Last name": {
+    "ar": "اسم العائلة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
   },
   "Learn more": {
     "ar": "معرفة المزيد",
@@ -3089,17 +4799,35 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Leave an email and the plan opens right here.": {
+    "ar": "اترك بريدك الإلكتروني ويُفتح المخطط هنا مباشرة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
+  },
   "Leave the Management to Us": {
     "ar": "اترك الإدارة لنا",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Leave your details, and a member of our team will get back to you shortly with more information about {project}.": {
+    "ar": "اترك بياناتك وسيتواصل معك أحد أعضاء فريقنا قريبًا لتزويدك بمزيد من المعلومات عن {project}.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
+  },
   "Let Us Manage Your Property": {
     "ar": "دع إدارة عقارك بين أيدينا",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Lifestyle & Island Highlights": {
+    "ar": "أبرز معالم نمط الحياة والجزيرة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
   },
   "List Your Property": {
     "ar": "أدرج عقارك",
@@ -3112,6 +4840,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
+  },
+  "Living on the Corniche": {
+    "ar": "الحياة على الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.192Z"
   },
   "Local expertise across the capital’s key communities and property markets.": {
     "ar": "خبرة محلية تغطي أبرز مجتمعات العاصمة وأسواقها العقارية.",
@@ -3131,17 +4865,65 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
   },
+  "Located 15 minutes from Downtown Abu Dhabi.": {
+    "ar": "على بُعد 15 دقيقة من وسط مدينة أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.843Z"
+  },
+  "Located 15–20 minutes from Downtown Abu Dhabi.": {
+    "ar": "تقع على بُعد 15–20 دقيقة من وسط مدينة أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "Located 20 minutes from Downtown Abu Dhabi.": {
+    "ar": "عل بُعد 20 دقيقة من وسط مدينة أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:12:50.795Z"
+  },
+  "Located 25 minutes from Downtown Abu Dhabi.": {
+    "ar": "موقع يبعد 25 دقيقة عن وسط مدينة أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
+  "Located 40 minutes from Downtown Abu Dhabi.": {
+    "ar": "على بُعد 40 دقيقة من وسط مدينة أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:11:02.439Z"
+  },
   "Located approximately 20 minutes from Downtown Abu Dhabi.": {
     "ar": "على بعد حوالي 20 دقيقة من وسط مدينة أبوظبي.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:52:17.843Z"
   },
+  "Located between Saadiyat Island and Yas Island within Abu Dhabi’s coastal residential corridor.": {
+    "ar": "موقعه بين جزيرة السعديات وجزيرة ياس ضمن الشريط السكني الساحلي في أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.844Z"
+  },
+  "Located just off Abu Dhabi’s southwest coast, opposite Al Bateen and connected to the city by bridge.": {
+    "ar": "تقع قبالة الساحل الجنوبي الغربي لـأبوظبي، مقابل البطين ومتصلة بالمدينة عبر جسر.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
   "Located on the Abu Dhabi–Dubai border within an important growth corridor connecting both emirates.": {
     "ar": "تقع على الحدود بين أبوظبي ودبي ضمن ممر نمو مهم يربط الإمارتين.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
+  },
+  "Location": {
+    "ar": "موقع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
   },
   "Location & Community Guidance": {
     "ar": "المشورة بشأن الموقع والمجتمع",
@@ -3185,11 +4967,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:16:12.763Z"
   },
+  "Long-Term Growth": {
+    "ar": "نمو طويل الأجل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
   "Long-form market analysis, advisor field notes, and the occasional contrarian take. One email every Wednesday.": {
     "ar": "تحليلات معمّقة للسوق، وملاحظات ميدانية من المستشارين، ورأي مخالف بين الحين والآخر. رسالة واحدة كل أربعاء.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:46:01.781Z"
+  },
+  "Looking for Space in KIZAD?": {
+    "ar": "هل تبحث عن مساحة في KIZAD؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
   },
   "Looking for a Property Near ADGM?": {
     "ar": "تبحث عن عقار بالقرب من ADGM؟",
@@ -3209,17 +5003,83 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
   },
+  "Looking for a Property in Al Raha Gardens?": {
+    "ar": "هل تبحث عن عقار في حدائق الراحة؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
   "Looking for a Property in Al Raha?": {
     "ar": "عن عقار في الراحة؟تبحث",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
   },
+  "Looking for a Property in Hidd Al Saadiyat?": {
+    "ar": "هل تبحث عن عقار في حد السعديات؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "Looking for a Property in Khalifa City?": {
+    "ar": "هل تبحث عن عقار في مدينة خليفة؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
   "Looking for a Property on Al Maryah Island?": {
     "ar": "تبحث عن عقار في جزيرة الماريه؟",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
+  },
+  "Looking for a Property on Al Reem Island?": {
+    "ar": "تبحث عن عقار في جزيرة الريم؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Looking for a Property on Fahid Island?": {
+    "ar": "هل تبحث عن عقار في جزيرة فاهد؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Looking for a Property on Hudayriyat Island?": {
+    "ar": "هل تبحث عن عقار في جزيرة الحديريات؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "Looking for a Property on Jubail Island?": {
+    "ar": "تبحث عن عقار في جزيرة الجبيل؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
+  "Looking for a Property on the Corniche?": {
+    "ar": "هل تبحث عن عقار في الكورنيش؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
+  "Looking for industrial or logistics space in KIZAD? Speak with our commercial team about current and upcoming availability.": {
+    "ar": "تبحث عن مساحة صناعية أو لوجستية في KIZAD؟ تحدث مع فريقنا التجاري حول المساحات المتاحة حالياً والمرتقبة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
+  "Looking to rent on Fahid Island? Speak with our property consultants about current and upcoming availability.": {
+    "ar": "تبحث عن الاستئجار في جزيرة فاهد؟ تحدّث مع مستشاري العقارات لدينا حول الوحدات المتاحة حالياً والمتوقعة قريباً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
+  "Looking to rent on Hudayriyat Island? Speak with our team about current and upcoming availability.": {
+    "ar": "تبحث عن الاستئجار في جزيرة الحديريات؟ تحدث مع فريقنا حول الوحدات المتاحة حالياً والقادمة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
   },
   "Looking to sell in Abu Dhabi? Our experts support you at every step — from valuation to closing.": {
     "ar": "تفكر في البيع في أبوظبي؟ خبراؤنا يرافقونك في كل خطوة — من التقييم حتى إتمام الصفقة.",
@@ -3244,6 +5104,24 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Low-Density Environment": {
+    "ar": "بيئة منخفضة الكثافة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
+  },
+  "Low-Rise Living": {
+    "ar": "السكن في المباني المنخفضة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.962Z"
+  },
+  "Lower-rise, quieter, with the marina and private schools.": {
+    "ar": "المنطقة أقل ارتفاعاً وأكثر هدوءاً، مع المارينا والمدارس الخاصة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
   },
   "Luxury Communities": {
     "ar": "المجتمعات الفاخرة",
@@ -3293,6 +5171,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Mamsha Al Saadiyat": {
+    "ar": "ممشى السعديات",
+    "by": "machine"
+  },
   "Mamsha Al Saadiyat\nHidd Al Saadiyat\nAl Muneera\nAl Bandar\nAl Zeina\nYas Acres\nReem Hills\nGardenia Bay": {
     "ar": "ممشى السعديات\nحد السعديات\nالمنيرة\nالبندر\nالزينة\nياس ايكرز\nريم هيلز\nجاردينيا باي",
     "by": "machine",
@@ -3305,11 +5187,41 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:50:29.646Z"
   },
+  "Mamsha Al Saadiyat Residences": {
+    "ar": "ممشى السعديات ريزيدنسز",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.961Z"
+  },
+  "Mamsha Al Saadiyat at a Glance": {
+    "ar": "لمحة عن ممشى السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
+  "Manage Your Property": {
+    "ar": "إدارة عقارك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
+  },
   "Management Begins": {
     "ar": "تبدأ الإدارة",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "Manarat Al Saadiyat": {
+    "ar": "منارة السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
+  "Marina Mall": {
+    "ar": "مارينا مول",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
   },
   "Marinas & Waterfront Dining": {
     "ar": "المراسي والمطاعم على الواجهة البحرية",
@@ -3335,9 +5247,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
   },
+  "Marsa Al Jubail": {
+    "ar": "مرسى الجبيل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.844Z"
+  },
   "Masdar City": {
     "ar": "مدينة مصدر",
     "by": "machine"
+  },
+  "Masterplan Development Value": {
+    "ar": "قيمة تطوير المخطط الرئيسي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.843Z"
   },
   "Match me with an advisor": {
     "ar": "اربطني بمستشار",
@@ -3357,17 +5281,41 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Mature Landscaping": {
+    "ar": "تنسيق حدائق ناضج",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
   "Mature retail, schools, clinics and community facilities.": {
     "ar": "منشآت تجزئة ومدارس وعيادات ومرافق مجتمعية متكاملة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
   },
+  "Maysan": {
+    "ar": "ميسان",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Message": {
+    "ar": "الرسالة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
   "Midpoint": {
     "ar": "المنتصف",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Mobile": {
+    "ar": "المتحرك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
   },
   "Modern apartments in Abu Dhabi’s prime communities, designed for every lifestyle.": {
     "ar": "شقق عصرية في أرقى مجتمعات أبوظبي، مصممة لتناسب كل نمط حياة.",
@@ -3397,11 +5345,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:47:46.675Z"
   },
+  "More than 30 km of waterfront.": {
+    "ar": "أكثر من 30 كم من الواجهة المائية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
+  },
   "More than day-to-day management": {
     "ar": "أكثر من مجرد إدارة يومية",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "Morning": {
+    "ar": "؛صباحًا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
   },
   "Mortgage Support": {
     "ar": "دعم تمويل عقاري",
@@ -3439,6 +5399,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Name (optional)": {
+    "ar": "الاسم (اختياري)",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:16:01.429Z"
+  },
   "Negotiation & closing": {
     "ar": "التفاوض والإتمام",
     "by": "machine",
@@ -3456,6 +5422,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.607Z"
+  },
+  "New Residential Market": {
+    "ar": "السوق السكني الجديد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
   },
   "New branded residences are expanding the island’s residential offering.": {
     "ar": "المساكن الجديدة ذات العلامات التجارية توسّع العرض السكني في الجزيرة.",
@@ -3499,6 +5471,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "Next 3 months": {
+    "ar": "الأشهر الـ3 القادمة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
+  },
+  "Next 6 months": {
+    "ar": "الأشهر الـ6 القادمة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
+  },
   "Next step": {
     "ar": "الخطوة التالية",
     "by": "machine",
@@ -3517,11 +5501,35 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Northern Saadiyat Island, approximately 15 minutes from Downtown Abu Dhabi.": {
+    "ar": "جزيرة السعديات الشمالية، على بُعد 15 دقيقة تقريبًا من وسط مدينة أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
   "Not sure whether to sell, rent or hold? Get professional guidance based on your property, objectives and current market conditions.": {
     "ar": "غير متأكد من البيع أو التأجير أو الاحتفاظ بالعقار؟ احصل على استشارة احترافية تستند إلى عقارك وأهدافك وظروف السوق الحالية.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Not sure yet — help me choose": {
+    "ar": "لست متأكداً بعد — ساعدني في الاختيار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
+  },
+  "Number of Bedrooms": {
+    "ar": "عدد غرف النوم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
+  "Off-Plan Apartment Sale Index — Jun 2026": {
+    "ar": "مؤشر مبيعات الشقة على الخارطة — يونيو 2026",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
   },
   "Off-Plan Properties": {
     "ar": "عقارات على الخارطة",
@@ -3534,6 +5542,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
+  },
+  "Off-Plan Property Sale Index": {
+    "ar": "مؤشر مبيعات العقارات على الخارطة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
   },
   "Off-Plan Sales": {
     "ar": "على الخارطة المبيعات",
@@ -3565,6 +5579,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
   },
+  "Office": {
+    "ar": "مكتب",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
+  },
   "Office Spaces": {
     "ar": "مساحات مكتبية",
     "by": "machine",
@@ -3583,6 +5603,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:59:18.465Z"
   },
+  "Offices, government, retail and dining within walking distance.": {
+    "ar": "مكاتب وجهات حكومية ومتاجر ومطاعم على مسافة قريبة سيراً على الأقدام.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
   "Offices, retail and land.": {
     "ar": "مكاتب ومحلات تجارية وأراضٍ.",
     "by": "machine",
@@ -3599,11 +5625,35 @@
     "ar": "أوهانا للتطوير العقاري",
     "by": "machine"
   },
+  "On Saadiyat Island": {
+    "ar": "في جزيرة السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
+  "On the Abu Dhabi–Dubai corridor beside Khalifa Port, roughly midway between the two cities.": {
+    "ar": "على محور أبوظبي–دبي بجوار ميناء خليفة، في منتصف المسافة تقريبًا بين المدينتين.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.093Z"
+  },
+  "On the beach in front of the Saadiyat Cultural District, between the Louvre Abu Dhabi and Saadiyat Beach Golf Club.": {
+    "ar": "المنطقة الثقافية على الشاطئ أمام السعديات، بين اللوفر أبوظبي ونادي شاطئ السعديات للغولف.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
   "On the map": {
     "ar": "على الخريطة",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
+  },
+  "On the northern shore of Saadiyat Island, next to Saadiyat Marina and a short drive from the Cultural District.": {
+    "ar": "جزيرة السعديات على الشاطئ الشمالي من، بجوار مرسى السعديات وعلى مسافة قصيرة بالسيارة من المنطقة الثقافية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
   },
   "Once agreed, our team manages the day-to-day requirements of your property.": {
     "ar": "بعد الاتفاق، يتولى فريقنا إدارة المتطلبات اليومية لعقارك.",
@@ -3623,6 +5673,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:20:52.140Z"
   },
+  "One of Abu Dhabi’s most distinctive island destinations, offering premium waterfront living alongside beaches, cycling, world-class sports facilities and an extensive range of outdoor and leisure experiences.": {
+    "ar": "من أبرز الوجهات الجزرية المميزة في أبوظبي، حيث تقدم حياة راقية على الواجهة المائية إلى جانب الشواطئ وركوب الدراجات ومرافق رياضية عالمية المستوى ومجموعة واسعة من التجارب الخارجية والترفيهية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
   "One of our property consultants will be in contact with you shortly to talk through what you are looking for and the options available.": {
     "ar": "سيتواصل معك أحد مستشاري العقارات لدينا قريبًا لمناقشة ما تبحث عنه والخيارات المتاحة.",
     "by": "machine",
@@ -3635,6 +5691,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "One of our property consultants will be in contact with you shortly.": {
+    "ar": "سيتواصل معك أحد مستشارينا العقاريين قريبًا.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
+  },
+  "One of the few residential stretches with uninterrupted Gulf frontage.": {
+    "ar": "واحدة من الامتدادات السكنية القليلة المطلة على الخليج دون انقطاع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
   "One point of contact": {
     "ar": "نقطة تواصل واحدة",
     "by": "machine",
@@ -3646,6 +5714,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "One to four-bedroom apartments with Gulf views.": {
+    "ar": "شقق من غرفة نوم واحدة إلى أربع غرف نوم بإطلالات على الخليج.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.961Z"
   },
   "Ongoing attention to the condition and maintenance of your property.": {
     "ar": "إدارة مستمرة لحالة عقارك وأعمال صيانته.",
@@ -3803,6 +5877,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
   },
+  "Outdoor Living": {
+    "ar": "المعيشة الخارجية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
   "Over 20 Years": {
     "ar": "أكثر من 20 عاماً",
     "by": "machine",
@@ -3845,6 +5925,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Parks, schools, clinics and malls already in place.": {
+    "ar": "مرافق قائمة بالفعل من حدائق ومدارس وعيادات ومراكز تسوق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
   "Payment & Mortgage Considerations": {
     "ar": "اعتبارات الدفع والحصول على تمويل عقاري",
     "by": "machine",
@@ -3862,6 +5948,36 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.270Z"
+  },
+  "Perfectly Positioned": {
+    "ar": "في موقع مثالي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Phone": {
+    "ar": "الهاتف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
+  },
+  "Phone (optional)": {
+    "ar": "رقم الهاتف (اختياري)",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:16:01.429Z"
+  },
+  "Phone Number": {
+    "ar": "رقم الهاتف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
+  },
+  "Phone number": {
+    "ar": "رقم الهاتف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
   },
   "Photography, listing and portal spend are on us. Commission on completion only": {
     "ar": "عبء التصوير والإعلان العقاري والإنفاق على المنصات علينا. العمولة عند إتمام الصفقة فقط",
@@ -3917,17 +6033,41 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:20:13.722Z"
   },
+  "Port-Side Location": {
+    "ar": "موقع بجوار الميناء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
   "Positioned between Abu Dhabi and Dubai.": {
     "ar": "أبوظبي في موقع بين ودبي.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "Pre-Built Warehousing": {
+    "ar": "مستودعات جاهزة البناء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
   "Pre-approval support": {
     "ar": "الدعم في الموافقة المبدئية",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
+  },
+  "Preferred Location": {
+    "ar": "الموقع المفضل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
+  "Premium Communities": {
+    "ar": "مجتمعات متميزة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
   },
   "Premium residences created with globally recognised lifestyle and hospitality brands.": {
     "ar": "منازل سكنية فاخرة تم تطويرها بالتعاون مع علامات عالمية رائدة في أسلوب الحياة والضيافة.",
@@ -3959,11 +6099,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
   },
+  "Privacy": {
+    "ar": "الخصوصية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
+  "Privacy & Space": {
+    "ar": "الخصوصية والمساحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
+  },
   "Private Beaches": {
     "ar": "شواطئ خاصة",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
+  },
+  "Private Pools": {
+    "ar": "مسابح خاصة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
   },
   "Private beaches, promenades and marina frontage.": {
     "ar": "واجهات بحرية على المارينا وممشى وشواطئ خاصة.",
@@ -4031,6 +6189,30 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
   },
+  "Properties for Rent in Al Raha Gardens": {
+    "ar": "عقارات للإيجار في حدائق الراحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
+  "Properties for Rent in Hidd Al Saadiyat": {
+    "ar": "عقارات للإيجار في حد السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
+  "Properties for Rent in Khalifa City": {
+    "ar": "عقارات للإيجار في مدينة خليفة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
+  },
+  "Properties for Rent in Mamsha Al Saadiyat": {
+    "ar": "عقارات للإيجار في ممشى السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.962Z"
+  },
   "Properties for Rent in the ADGM District": {
     "ar": "ADGM عقارات للإيجار في منطقة",
     "by": "machine",
@@ -4042,6 +6224,36 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.019Z"
+  },
+  "Properties for Rent on Al Reem Island": {
+    "ar": "عقارات للإيجار في جزيرة الريم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Properties for Rent on Fahid Island": {
+    "ar": "عقارات للإيجار في جزيرة فاهد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
+  "Properties for Rent on Hudayriyat Island": {
+    "ar": "عقارات للإيجار في جزيرة الحديريات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
+  "Properties for Rent on Jubail Island": {
+    "ar": "عقارات للإيجار في جزيرة الجبيل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
+  },
+  "Properties for Rent on the Corniche": {
+    "ar": "عقارات للإيجار في الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
   },
   "Properties for Sale in Al Ghadeer": {
     "ar": "عقارات للبيع في الغدير",
@@ -4061,6 +6273,30 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
   },
+  "Properties for Sale in Al Raha Gardens": {
+    "ar": "عقارات للبيع في حدائق الراحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
+  "Properties for Sale in Hidd Al Saadiyat": {
+    "ar": "عقارات للبيع في حد السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
+  "Properties for Sale in Khalifa City": {
+    "ar": "عقارات للبيع في مدينة خليفة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
+  },
+  "Properties for Sale in Mamsha Al Saadiyat": {
+    "ar": "عقارات للبيع في ممشى السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.962Z"
+  },
   "Properties for Sale in the ADGM District": {
     "ar": "ADGM عقارات للبيع في منطقة",
     "by": "machine",
@@ -4072,6 +6308,36 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
+  },
+  "Properties for Sale on Al Reem Island": {
+    "ar": "عقارات للبيع في جزيرة الريم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Properties for Sale on Fahid Island": {
+    "ar": "عقارات للبيع في جزيرة فاهد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
+  "Properties for Sale on Hudayriyat Island": {
+    "ar": "عقارات للبيع في جزيرة الحديريات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
+  "Properties for Sale on Jubail Island": {
+    "ar": "عقارات للبيع في جزيرة الجبيل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
+  },
+  "Properties for Sale on the Corniche": {
+    "ar": "عقارات للبيع في الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
   },
   "Properties for rent": {
     "ar": "عقارات للإيجار",
@@ -4127,6 +6393,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Property Location": {
+    "ar": "موقع العقار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
+  },
   "Property Management": {
     "ar": "إدارة العقارات",
     "by": "machine",
@@ -4144,6 +6416,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:17:31.300Z"
+  },
+  "Property Purpose": {
+    "ar": "الغرض من العقار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
   },
   "Property Rental Index": {
     "ar": "مؤشر إيجارات العقارات",
@@ -4169,11 +6447,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
   },
+  "Property Sale Price Index — Apr 2026": {
+    "ar": "مؤشر أسعار بيع العقارات — أبريل 2026",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
   "Property Sales": {
     "ar": "بيع العقارات",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
+  },
+  "Property Status": {
+    "ar": "حالة العقار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
+  "Property Type": {
+    "ar": "نوع العقار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
   },
   "Property Variety": {
     "ar": "العقارات المتنوعة",
@@ -4192,6 +6488,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
+  },
+  "Property purpose": {
+    "ar": "الغرض من العقار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
+  },
+  "Property type": {
+    "ar": "نوع العقار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
   },
   "Property types": {
     "ar": "أنواع العقارات",
@@ -4216,6 +6524,24 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "Provide your details to receive the brochure with complete project information.": {
+    "ar": "أدخل بياناتك لاستلام الكتيّب المتضمّن كامل معلومات المشروع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
+  },
+  "Purpose-built staff residential cities across more than 40 complexes.": {
+    "ar": "مدن سكنية مخصّصة للموظفين في أكثر من 40 مجمّعاً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.093Z"
+  },
+  "Purpose-built staff residential cities on the same estate.": {
+    "ar": "مدن سكنية للموظفين مصممة خصيصًا ضمن المجمع نفسه.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
   },
   "Questions": {
     "ar": "الأسئلة",
@@ -4245,6 +6571,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "Ready": {
+    "ar": "جاهز",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
   "Ready + off-plan": {
     "ar": "جاهز + على الخارطة",
     "by": "machine",
@@ -4269,6 +6601,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
   },
+  "Ready and off-plan apartments alongside newer townhouse and villa communities.": {
+    "ar": "شقق جاهزة وعلى الخارطة إلى جانب مجتمعات أحدث من التاون هاوس والفيلا.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Ready to buy": {
+    "ar": "جاهز للشراء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
+  },
   "Recognised by Leading UAE Developers": {
     "ar": "معتمدون لدى كبرى المطوّرين العقاريين في الإمارات",
     "by": "machine",
@@ -4286,6 +6630,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.479Z"
+  },
+  "Refinancing": {
+    "ar": "إعادة التمويل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:16:01.429Z"
+  },
+  "Register Your Interest": {
+    "ar": "سجّل اهتمامك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
   },
   "Registered sales by community, building and property type": {
     "ar": "التصرفات العقارية المسجّلة حسب المنطقة والمبنى ونوع العقار",
@@ -4305,11 +6661,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:03:22.147Z"
   },
+  "Rent": {
+    "ar": "الإيجار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
+  },
   "Rent Collection": {
     "ar": "خدمة تحصيل الإيجار",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "Rent Your Property": {
+    "ar": "أجّر عقارك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
   },
   "Rent a Property": {
     "ar": "استئجار عقار",
@@ -4347,6 +6715,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Rental stock in Hidd Al Saadiyat is limited and moves quickly.": {
+    "ar": "المعروض الإيجاري في حد السعديات محدود ويُشغل بسرعة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
+  "Rental stock in Hidd Al Saadiyat is limited. Speak with our team about current and upcoming availability.": {
+    "ar": "المعروض للإيجار في حد السعديات محدود. تحدّث مع فريقنا حول الوحدات المتاحة حالياً والمتوقّع توفرها قريباً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
   "Rentals": {
     "ar": "العقارات المؤجرة",
     "by": "machine",
@@ -4375,11 +6755,29 @@
     "ar": "ريبورتاج العقارية",
     "by": "machine"
   },
+  "Reportage Village Abu Dhabi": {
+    "ar": "أبوظبي قرية ريبورتاج",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
+  },
+  "Repton School Abu Dhabi": {
+    "ar": "أبوظبي مدرسة ريبتون",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
   "Request Property Management Support": {
     "ar": "طلب دعم إدارة العقارات",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "Request a Consultation": {
+    "ar": "طلب استشارة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
   },
   "Request a Free Consultation": {
     "ar": "طلب استشارة مجانية",
@@ -4423,6 +6821,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
   },
+  "Residential Phases": {
+    "ar": "المراحل السكنية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
+  "Residential Precincts": {
+    "ar": "مناطق سكنية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.118Z"
+  },
   "Residential and commercial rentals across the city's most connected communities — matched to your budget, lifestyle and move-in date.": {
     "ar": "إيجارات سكنية وتجارية في أكثر مجتمعات المدينة اتصالاً — تتناسب مع ميزانيتك ونمط حياتك وموعد انتقالك.",
     "by": "machine",
@@ -4434,6 +6844,30 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:12:41.012Z"
+  },
+  "Residential communities integrated within mangrove landscapes.": {
+    "ar": "مجتمعات سكنية متكاملة ضمن مناظر أشجار القرم.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
+  },
+  "Residential environments designed around outdoor living and green spaces.": {
+    "ar": "بيئات سكنية مصممة حول الحياة في الهواء الطلق والمساحات الخضراء.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "Residential towers and communities positioned around canals and promenades.": {
+    "ar": "أبراج ومجتمعات سكنية تقع حول القنوات والممشى المائي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Restaurants, cafés and retail at ground level.": {
+    "ar": "المطاعم والمقاهي والمتاجر في الطابق الأرضي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.962Z"
   },
   "Retail Spaces": {
     "ar": "محلات تجارية",
@@ -4453,9 +6887,45 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "Roughly midway between Abu Dhabi and Dubai on the main freight route.": {
+    "ar": "علىٰ منتصف الطريق تقريبًا بين أبوظبي ودبي على مسار الشحن الرئيسي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
+  "Saadiyat Beach Golf Club": {
+    "ar": "النادي شاطئ السعديات للغولف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
+  "Saadiyat Cultural District, approximately 15 minutes from Downtown Abu Dhabi.": {
+    "ar": "تقع سعديات المنطقة الثقافية على بُعد 15 دقيقة تقريبًا من وسط مدينة أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
   "Saadiyat Island": {
     "ar": "جزيرة السعديات",
     "by": "machine"
+  },
+  "Saadiyat Island, Al Reem, Yas…": {
+    "ar": "جزيرة السعديات، الريم، ياس…",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:09:10.478Z"
+  },
+  "Saadiyat Island’s beachfront apartment address — a low-rise promenade of one to four-bedroom apartments, townhouses and penthouses opening directly onto the sand, with the Cultural District and its museums a short walk inland.": {
+    "ar": "عنوان شقة الواجهة البحرية في جزيرة السعديات — ممشى منخفض الارتفاع من شقق بغرفة نوم واحدة حتى أربع غرف نوم، ومنازل تاون هاوس وبنتهاوس تفتح مباشرة على الرمال، مع المنطقة الثقافية ومتاحفه على مسافة قصيرة سيراً نحو الداخل.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
+  "Saadiyat Marina": {
+    "ar": "مارينا السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
   },
   "Sale and lease agreements in Abu Dhabi are transacted through ADREC-registered brokers. A licensed advisor keeps the paperwork compliant, handles negotiation, and files the transfer with the Department of Municipalities and Transport on your behalf.": {
     "ar": "تُبرم عقود البيع والإيجار في أبوظبي عبر وسطاء مسجّلين لدى ADREC. ويتولى المستشار المرخّص ضمان توافق المستندات مع الأنظمة، وإدارة التفاوض، وتسجيل نقل الملكية لدى دائرة البلديات والنقل نيابةً عنك.",
@@ -4475,6 +6945,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:47:46.675Z"
   },
+  "Schools & Retail": {
+    "ar": "المدارس والمتاجر",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
+  "Sea-facing apartments directly on the waterfront.": {
+    "ar": "عقارات سكنية بإطلالة على البحر مباشرة على الواجهة المائية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
   "Search based on your financing position.": {
     "ar": "البحث بناءً على وضعك التمويلي.",
     "by": "machine",
@@ -4492,6 +6974,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Seef Al Jubail": {
+    "ar": "سيف الجبيل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
   },
   "Selected opportunities": {
     "ar": "فرص مختارة",
@@ -4523,17 +7011,59 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Selling soon": {
+    "ar": "البيع قريباً",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:16:01.429Z"
+  },
   "Selling: a 2% transfer fee to the municipality, agency commission of 2% plus VAT, and a developer NOC fee — typically AED 500 to 5,000. Renting out: Tawtheeq registration, ADDC connection charges, and agency commission where applicable.": {
     "ar": "البيع: رسوم نقل ملكية بنسبة 2% للبلدية، وعمولة الوساطة 2% إضافة إلى ضريبة القيمة المضافة، ورسوم شهادة عدم ممانعة من المطور العقاري — عادة من AED 500 إلى 5,000. التأجير: تسجيل توثيق، ورسوم توصيل شركة أبوظبي للتوزيع، وعمولة الوساطة عند الاقتضاء.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Semi-furnished": {
+    "ar": "نصف مفروش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
+  },
+  "Send": {
+    "ar": "إرسال",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
+  },
+  "Send enquiry": {
+    "ar": "إرسال الاستفسار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
+  },
   "Send us an enquiry instead.": {
     "ar": "أرسل لنا استفسارك بدلاً من ذلك.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:47:46.675Z"
+  },
+  "Sending…": {
+    "ar": "جارٍ الإرسال…",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
+  },
+  "Serviced industrial land plots, pre-built warehousing, workshop and logistics facilities, on free-zone or mainland terms.": {
+    "ar": "قطع أراضٍ صناعية مجهّزة بالخدمات، ومستودعات جاهزة، ومنشآت ورش ولوجستيات، بشروط المناطق الحرة أو البر الرئيسي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
+  "Serviced land for manufacturing, warehousing and distribution.": {
+    "ar": "أراضٍ مجهّزة بالخدمات للتصنيع والتخزين والتوزيع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.094Z"
   },
   "Services": {
     "ar": "الخدمات",
@@ -4583,6 +7113,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.902Z"
   },
+  "Show me the plan": {
+    "ar": "أرني الخطة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
+  },
   "Showrooms": {
     "ar": "صالات العرض",
     "by": "machine",
@@ -4613,6 +7149,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
   },
+  "Something else": {
+    "ar": "شيء آخر",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:16:01.429Z"
+  },
+  "Sorbonne University Abu Dhabi": {
+    "ar": "أبوظبي جامعة السوربون",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
   "Speak with a Property Expert": {
     "ar": "تحدث مع خبير عقاري",
     "by": "machine",
@@ -4624,6 +7172,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "Staff Residential Cities": {
+    "ar": "المدن السكنية للموظفين",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.093Z"
+  },
+  "Start Your Mortgage Pre-Approval": {
+    "ar": "ابدأ طلب موافقة مبدئية على تمويل عقاري",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
   },
   "Start a buying enquiry": {
     "ar": "بدء طلب شراء",
@@ -4655,11 +7215,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "Strategically positioned between Yas Island and Saadiyat Island.": {
+    "ar": "موقع استراتيجي بين جزيرة ياس وجزيرة السعديات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
   "Street-front units, mall space and F&B pitches in the catchments where footfall actually is.": {
     "ar": "المنافذ الواجهات الشارعية ومساحات المولات ومواقع المطاعم والمقاهي في النطاقات التي تشهد حركة زوار فعلية.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.333Z"
+  },
+  "Street-level or low aerial view of Al Raha Gardens showing villa rooftops, mature landscaping and the community parks.": {
+    "ar": "منظر من مستوى الشارع أو من ارتفاع منخفض لـحدائق الراحة يُظهر أسطح الفيلا والمساحات الخضراء الناضجة وحدائق المجتمع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.117Z"
   },
   "Strong Abu Dhabi presence": {
     "ar": "حضور قوي في أبوظبي",
@@ -4672,6 +7244,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Submit Enquiry for {project}": {
+    "ar": "إرسال الاستفسار عن {project}",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
   },
   "Submit Your Enquiry": {
     "ar": "إرسال استفسارك",
@@ -4690,6 +7268,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Submitting…": {
+    "ar": "جارٍ الإرسال…",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.873Z"
   },
   "Suitable options based on your requirements.": {
     "ar": "خيارات مناسبة بناءً على متطلباتك.",
@@ -4715,6 +7299,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Surf Abu Dhabi": {
+    "ar": "ركوب الأمواج في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
   "Takes about two minutes. Nothing is published without your written go-ahead.": {
     "ar": "يستغرق الأمر دقيقتين تقريبًا. ولا يُنشر أي شيء دون موافقتك الخطية.",
     "by": "machine",
@@ -4733,6 +7323,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:57:32.463Z"
   },
+  "Tara Park": {
+    "ar": "تارا بارك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
   "Taraf": {
     "ar": "ترف",
     "by": "machine"
@@ -4742,6 +7338,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Tell us about your brief — area, budget, timeline.": {
+    "ar": "أخبرنا عن متطلباتك — المنطقة، الميزانية، الجدول الزمني.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
   },
   "Tell us about your property and management requirements.": {
     "ar": "أخبرنا عن عقارك ومتطلبات إدارته.",
@@ -4845,17 +7447,35 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:01:23.673Z"
   },
+  "Thank you for subscribing.": {
+    "ar": "شكرًا لاشتراكك.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
+  },
   "Thank you — we have your details.": {
     "ar": "شكرًا لك — لقد استلمنا بياناتك.",
     "by": "machine",
     "model": "claude-opus-5",
-    "at": "2026-08-16T12:41:48.294Z"
+    "at": "2026-08-16T16:12:56.314Z"
+  },
+  "Thank you.": {
+    "ar": "شكرًا لك.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
   },
   "The 2023 expansion to Al Reem multiplied the district’s area tenfold.": {
     "ar": "أدت توسعة عام 2023 في الريم إلى مضاعفة مساحة المنطقة عشرة أضعاف.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
+  },
+  "The Beach House": {
+    "ar": "بيت الشاطئ",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
   },
   "The Canopies at Yas Point\nThe Artery Residences\nSeamont Residences\nBashayer Residences\nFahid Beach Residences\nBRABUS Island": {
     "ar": "ذا كانوبيز في ياس بوينت\nذا أرتري رزيدنسز\nسيمونت ريزيدنسز\nبشاير ريسيدنسز\nفهيد بيتش ريزيدنسز\nجزيرة برابوس",
@@ -4869,17 +7489,63 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:18:09.430Z"
   },
+  "The Corniche at a Glance": {
+    "ar": "الكورنيش في لمحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "The Galleria": {
+    "ar": "ذا غاليريا",
+    "by": "machine"
+  },
   "The Galleria Al Maryah Island": {
     "ar": "منطقة جزيرة الماريه في ذا غاليريا",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.478Z"
   },
+  "The Galleria, Cleveland Clinic and the waterfront promenade on the doorstep.": {
+    "ar": "ذا غاليريا وكليفلاند كلينك وممشى الواجهة المائية على بُعد خطوات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:11:02.439Z"
+  },
+  "The Louvre, marina and golf club minutes away.": {
+    "ar": "متحف اللوفر والمارينا ونادي الغولف على بُعد دقائق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "The Phases": {
+    "ar": "المراحل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
+  "The Precincts": {
+    "ar": "المناطق",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:17:08.882Z"
+  },
   "The area offers apartments, townhouses and villas across established waterfront communities.": {
     "ar": "المنطقة تضم شققاً وتاون هاوس وفلل ضمن مجتمعات واجهة بحرية راسخة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
+  },
+  "The community comprises 464 villas in eight configurations across four phases.": {
+    "ar": "المجتمع يضم 464 فيلا بثمانية تصاميم على أربع مراحل.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
+  },
+  "The current Hudayriyat Golf Estates location guidance places the development around 20 minutes from Downtown and 30 minutes from Zayed International Airport.": {
+    "ar": "موقع مشروع الحديريات جولف إستيتس وفق الإرشادات الحالية يبعد نحو 20 دقيقة عن وسط المدينة و30 دقيقة عن مطار زايد الدولي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
   },
   "The deepest apartment market within the jurisdiction.": {
     "ar": "سوق الشقة الأعمق ضمن نطاق الاختصاص.",
@@ -4917,17 +7583,41 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
   },
+  "The island includes apartments, townhouses, villas, mansions and residential plots across different communities.": {
+    "ar": "التتضم الجزيرة شققًا وتاون هاوس وفلل وقصورًا وأراضي سكنية في مجتمعات مختلفة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "The market is strongly villa-oriented but also includes apartments and newer residential developments. Current Bayut index data covers both apartments and villas.": {
+    "ar": "المعروض في السوق ينحاز بقوة إلى الفلل، لكنه يشمل أيضًا الشقق والمشاريع السكنية الأحدث. وتغطي بيانات مؤشر بيوت الحالية الشقق والفلل معًا.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
   "The newly launched Al Ghadeer Gardens comprises 437 villas and townhouses.": {
     "ar": "الغدير غاردنز الذي تم إطلاقه حديثًا يضم 437 فيلا ومنزلًا مستقلًا.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:44:00.195Z"
   },
+  "The official masterplan contains six distinct villages.": {
+    "ar": "المخطط الرئيسي المعتمد يضم ست قرى متمايزة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
   "The original title deed, your passport and Emirates ID, a developer NOC, Form A (the agency agreement you sign with us) and Form F / MOU once a buyer is agreed. If the property is mortgaged, your bank will also need to issue a liability letter.": {
     "ar": "سند الملكية الأصلي، وجواز سفرك وبطاقة الهوية الإماراتية، وشهادة عدم ممانعة من المطور العقاري، والنموذج A (اتفاقية الوساطة التي توقّعها معنا)، والنموذج F / مذكرة التفاهم بعد الاتفاق مع المشتري. وإذا كان العقار مرهوناً، سيلزم أيضاً أن يصدر البنك خطاب المديونية.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "The plan is below, and a copy is on its way to your inbox.": {
+    "ar": "اطّلع على الخطة أدناه، ونسخة منها في طريقها إلى بريدك الإلكتروني.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
   },
   "The upcoming school is planned to accommodate more than 2,800 students.": {
     "ar": "من المخطط أن تستوعب المدرسة الجديدة أكثر من 2,800 طالب.",
@@ -4941,11 +7631,71 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "The wider masterplan has a development value exceeding AED 40 billion and approximately 11 km of coastline.": {
+    "ar": "تبلغ القيمة التطويرية للمخطط الرئيسي الأوسع أكثر من AED 40 billion مع نحو 11 كم من الواجهة الساحلية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
+  "The wider masterplan includes 53.5 km of coastline, 16 km of beaches and a planned 220 km cycling network.": {
+    "ar": "المخطط الرئيسي الأوسع يضم 53.5 كم من السواحل و16 كم من الشواطئ وشبكة دراجات هوائية مخططة بطول 220 كم.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
+  "The zone’s housing is purpose-built staff accommodation operated by KEZAD Communities rather than an open residential sale market.": {
+    "ar": "السكن في المنطقة عبارة عن مساكن موظفين مُنشأة لهذا الغرض تديرها مجتمعات كيزاد، وليس سوقاً مفتوحاً لبيع العقارات السكنية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
+  "These developments form part of Fahid’s emerging premium residential market.": {
+    "ar": "تُشكّل هذه المشاريع جزءاً من سوق فهيد السكني الفاخر الناشئ.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
+  "This month": {
+    "ar": "هذا الشهر",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:12:56.314Z"
+  },
+  "Three and four-bedroom townhouses; three to five-bedroom villas.": {
+    "ar": "تاون هاوس بثلاث وأربع غرف نوم؛ فلل بثلاث إلى خمس غرف نوم.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:17:08.882Z"
+  },
+  "Three to five-bedroom villas with Arabesque detailing and private terraces.": {
+    "ar": "فلل من ثلاث إلى خمس غرف نوم بتفاصيل أرابيسك وتراسات خاصة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:17:08.882Z"
+  },
+  "Three to six-bedroom villas and three and four-bedroom townhouses, developed by Aldar.": {
+    "ar": "فلل من ثلاث إلى ست غرف نوم وتاون هاوس من ثلاث وأربع غرف نوم، من تطوير الدار.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
+  "Three to six-bedroom villas with pool, clubhouse and community centre.": {
+    "ar": "فلل من ثلاث إلى ست غرف نوم مع مسبح ونادٍ ومركز مجتمعي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:17:08.882Z"
+  },
   "Thursday": {
     "ar": "الخميس",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "Timeline": {
+    "ar": "التسلسل الزمني",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:05:14.877Z"
   },
   "To guide clients through the UAE real estate market with clarity, integrity, and strategic insight.": {
     "ar": "توجيه العملاء في سوق العقارات الإماراتي بوضوح ونزاهة ورؤية استراتيجية.",
@@ -4958,6 +7708,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Top-floor residences with terraces over the beach.": {
+    "ar": "المساكن في الطابق العلوي مع تراسات تطل على الشاطئ.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.961Z"
+  },
+  "Total Area Across KEZAD Group": {
+    "ar": "إجمالي المساحة في مجموعة كيزاد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
   },
   "Townhouses": {
     "ar": "تاون هاوس",
@@ -5049,17 +7811,35 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Two new marine bridges opened in March 2026, providing direct links to Sheikh Khalifa Bin Zayed Highway and improving connectivity toward Saadiyat and the E12 corridor.": {
+    "ar": "افتُتح جسران بحريان جديدان في March 2026، ما يوفر روابط مباشرة مع طريق الشيخ خليفة بن زايد ويحسّن الاتصال باتجاه السعديات وممر E12.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
   "UAE market experience": {
     "ar": "خبرة في سوق الإمارات",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
   },
+  "Under AED 1M": {
+    "ar": "أقل من AED 1M",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
+  },
   "Understand the market and buying process before making your first property decision.": {
     "ar": "افهم السوق وإجراءات الشراء قبل اتخاذ قرارك العقاري الأول.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Understand your borrowing potential and take the next step toward securing the right property with confidence.": {
+    "ar": "افهم قدرتك على الاقتراض واتخذ الخطوة التالية نحو الحصول على العقار المناسب بثقة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
   },
   "Understand your buying power.": {
     "ar": "اعرف قدرتك الشرائية.",
@@ -5103,6 +7883,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Unlocked.": {
+    "ar": "إتاحة الوصول.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
+  },
   "Vacant": {
     "ar": "افرغ",
     "by": "machine",
@@ -5114,6 +7900,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:57:32.465Z"
+  },
+  "Velodrome Abu Dhabi": {
+    "ar": "فيلودروم أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
   },
   "View All Properties for Rent": {
     "ar": "عرض جميع العقارات للإيجار",
@@ -5193,11 +7985,35 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.269Z"
   },
+  "Villas are offered in eight configurations across the four phases, all with a private pool and beach access.": {
+    "ar": "التصميمات متوفرة في ثمانية تكوينات عبر المراحل الأربع، وجميعها بمسبح خاص ومنفذ إلى الشاطئ.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
+  "Villas from roughly 4,700 to over 20,000 sq. ft.": {
+    "ar": "فلل من نحو 4,700 إلى أكثر من 20,000 sq. ft.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
   "Walk to Work": {
     "ar": "امشِ إلى العمل",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
+  },
+  "Walkable Central Living": {
+    "ar": "سكن مركزي على مسافة المشي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
+  "Walkable Promenade": {
+    "ar": "ممشى للمشاة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:01:35.962Z"
   },
   "Walkable Waterfront": {
     "ar": "الواجهة المائية المخصصة للمشاة",
@@ -5217,11 +8033,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Waterfront Lifestyle": {
+    "ar": "نمط الحياة على الواجهة المائية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
   "Waterfront Promenades": {
     "ar": "ممشيات الواجهة المائية",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
+  },
+  "Waterfront Restaurants": {
+    "ar": "من المطاعم المطلة على الواجهة المائية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
   },
   "Waterfront apartment cluster within Al Raha — promenade restaurants, the marina, and a string of low-rise blocks along the channel between mainland and the islands.": {
     "ar": "مجمع شقة على الواجهة المائية ضمن الراحة — مطاعم على الممشى، والمرسى، وسلسلة من المباني المنخفضة الارتفاع على امتداد القناة بين البر الرئيسي والجزر.",
@@ -5234,6 +8062,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
+  },
+  "Waterfront apartments, townhouses and sky villas along the channel.": {
+    "ar": "شقق وتاون هاوس وفلل سماوية على الواجهة المائية بمحاذاة القناة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:12:50.794Z"
   },
   "Waterfront communities lead on views, promenades, and lifestyle; gated communities lead on privacy, security, and space for families. Tell an advisor how you want to live and we'll shortlist areas that fit — often across both categories.": {
     "ar": "مجتمعات الواجهة البحرية تتميز بالإطلالات والممشى وأسلوب الحياة؛ أما المجتمعات المسوّرة فتتميز بالخصوصية والأمان والمساحة للعائلات. أخبر أحد مستشارينا كيف ترغب في العيش وسنضع لك قائمة مختصرة بالمناطق المناسبة — غالباً من كلتا الفئتين.",
@@ -5289,11 +8123,35 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
   },
+  "We use your email for the verification code and the report delivery. See our privacy notice for what happens next.": {
+    "ar": "نستخدم بريدك الإلكتروني لإرسال رمز التحقق وتسليم التقرير. اطّلع على إشعار الخصوصية لمعرفة الخطوات التالية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:16:01.429Z"
+  },
+  "We've received your brief. An advisor will reach out within 2 hours during business hours, and by next morning otherwise.": {
+    "ar": "لقد استلمنا طلبك. سيتواصل معك أحد المستشارين خلال 2 ساعة ضمن ساعات العمل، وفي صباح اليوم التالي خارجها.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
+  },
   "Wednesday": {
     "ar": "الأربعاء",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "Wellness-Led Masterplan": {
+    "ar": "مخطط رئيسي تقوده العافية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "What are the four phases?": {
+    "ar": "ما هي المراحل الأربع؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:39:13.993Z"
   },
   "What are the main communities?": {
     "ar": "ما هي المجتمعات الرئيسية؟",
@@ -5306,6 +8164,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "What are you looking for in {area}?": {
+    "ar": "عمّ تبحث في {area}؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:14:58.870Z"
   },
   "What documents do I need to sell my property?": {
     "ar": "ما المستندات المطلوبة لبيع عقاري؟",
@@ -5343,17 +8207,65 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
   },
+  "What is Hudayriyat Island known for?": {
+    "ar": "بماذا تشتهر جزيرة الحديريات؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "What is Khalifa City known for?": {
+    "ar": "بماذا تشتهر مدينة خليفة؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
   "What is the difference between Al Raha Beach and Al Raha Gardens?": {
     "ar": "شاطئ الراحة ما الفرق بين حدائق الراحة و؟",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
   },
+  "What is the difference between KIZAD and KEZAD?": {
+    "ar": "KIZAD ما الفرق بين وكيزاد؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
+  "What kind of properties are on the Corniche?": {
+    "ar": "ما نوع العقارات المتوفرة في الكورنيش؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
+  "What kind of property is available?": {
+    "ar": "النوع المتاح من العقارات؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
+  "What major attractions are nearby?": {
+    "ar": "ما هي المعالم الرئيسية القريبة؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:53:12.099Z"
+  },
+  "What makes Fahid Island different?": {
+    "ar": "جزيرة فاهد ما الذي يميّز",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
   "What properties are available in Al Raha?": {
     "ar": "مـا العقارات المتاحة في الراحة؟",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
+  },
+  "What properties are available on Hudayriyat Island?": {
+    "ar": "ما هي العقارات المتاحة في جزيرة الحديريات؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
   },
   "What properties are available?": {
     "ar": "ما العقارات المتاحة؟",
@@ -5439,6 +8351,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "Where is Fahid Island?": {
+    "ar": "جزيرة فاهد أين يقع؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Where is the property?": {
+    "ar": "أين يقع العقار؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
+  },
   "Where should the advisor reach you?": {
     "ar": "أين يمكن للمستشار التواصل معك؟",
     "by": "machine",
@@ -5499,6 +8423,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:16:12.763Z"
   },
+  "Which neighbourhoods sit behind the Corniche?": {
+    "ar": "أي الأحياء تقع خلف الكورنيش؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
   "Who is it for?": {
     "ar": "لمن هذا؟",
     "by": "machine",
@@ -5535,6 +8465,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
   },
+  "Why Choose Al Ghadeer?": {
+    "ar": "الغدير لماذا تختار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:11:02.439Z"
+  },
   "Why Choose Al Maryah Island?": {
     "ar": "جزيرة الماريه لماذا تختار",
     "by": "machine",
@@ -5547,11 +8483,65 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
   },
+  "Why Choose Al Raha Gardens?": {
+    "ar": "حدائق الراحة لماذا تختار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
   "Why Choose Al Raha?": {
     "ar": "الراحة لماذا تختار",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
+  },
+  "Why Choose Al Reem Island?": {
+    "ar": "جزيرة الريم لماذا تختار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Why Choose Corniche?": {
+    "ar": "الكورنيش لماذا تختار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
+  "Why Choose Fahid Island?": {
+    "ar": "جزيرة فاهد لماذا تختار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Why Choose Hidd Al Saadiyat?": {
+    "ar": "حد السعديات لماذا تختار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
+  "Why Choose Hudayriyat Island?": {
+    "ar": "جزيرة الحديريات لماذا تختار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "Why Choose Jubail Island?": {
+    "ar": "جزيرة الجبيل لماذا تختار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
+  },
+  "Why Choose KIZAD?": {
+    "ar": "KIZAD لماذا تختار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
+  "Why Choose Khalifa City?": {
+    "ar": "مدينة خليفة لماذا تختار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
   },
   "Wide community image showing villas, townhouses, greenery and landscaped pedestrian spaces.": {
     "ar": "صورة واسعة للمجتمع تُظهر الفلل والتاون هاوس والمساحات الخضراء والممرات المشاة المنسّقة.",
@@ -5607,11 +8597,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "Within Al Raha, approximately 20 minutes from Downtown Abu Dhabi.": {
+    "ar": "داخل الراحة، على بُعد 20 دقيقة تقريبًا من وسط مدينة أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.117Z"
+  },
   "Written by the advisors who do this daily — the paperwork, the fees, and the mistakes that cost owners months.": {
     "ar": "المستشارون الذين يمارسون هذا العمل يوميًا هم من كتبه — المعاملات الورقية، والرسوم، والأخطاء التي تكلّف المُلّاك شهورًا.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Yacht Club": {
+    "ar": "نادي اليخوت",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
   },
   "Yas Acres\nAl Raha Gardens\nBloom Living\nAl Ghadeer\nSaadiyat Lagoons\nNoya\nNoya Viva\nFay Al Reeman": {
     "ar": "ياس ايكرز\nحدائق الراحة\nبلوم ليفينج\nالغدير\nالسعديات لاغونز\nنويا\nنويا فيفا\nفay الريمان",
@@ -5653,6 +8655,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Yes. Corniche Beach is a Blue Flag certified public beach with both free and paid sections along the promenade.": {
+    "ar": "نعم. شاطئ الكورنيش شاطئ عام حاصل على شهادة العلم الأزرق، ويضم أقسامًا مجانية وأخرى مدفوعة على امتداد الممشى.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:29:04.054Z"
+  },
+  "Yes. It is a gated community with its own parks, clubhouses, pools and community centres.": {
+    "ar": "نعم. إنه مجمع سكني مغلق يضم حدائق ونوادي ومسابح ومراكز مجتمعية خاصة به.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
   "Yes. It is especially helpful for owners who are not based near their property or prefer professional support.": {
     "ar": "نعم. تُعد الخدمة مفيدة بشكل خاص للملاك غير المقيمين بالقرب من عقاراتهم أو الذين يفضلون الدعم المهني.",
     "by": "machine",
@@ -5670,6 +8684,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:52:17.843Z"
+  },
+  "Yes. The area is approximately 20 minutes from Yas Island from the Al Raha Beach Resort area.": {
+    "ar": "نعم. تبعد المنطقة حوالي 20 دقيقة عن جزيرة ياس انطلاقًا من منطقة منتجع شاطئ الراحة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.117Z"
   },
   "Yes. The buyer normally takes on the existing tenancy contract for its remaining term. If you need the property vacant at handover, UAE tenancy law requires twelve months' written notice served through a notary or registered post.": {
     "ar": "نعم. يتولى المشتري عادةً عقد الإيجار القائم للمدة المتبقية منه. وإذا كنت بحاجة إلى العقار خالياً عند التسليم، فإن قانون الإيجارات في الإمارات يشترط إشعاراً خطياً قبل اثني عشر شهراً يُرسل عبر كاتب العدل أو البريد المسجّل.",
@@ -5725,6 +8745,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
   },
+  "You're booked.": {
+    "ar": "تم حجزك بنجاح.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:11:12.348Z"
+  },
   "Your Future Has an Address": {
     "ar": "مستقبلك له عنوان",
     "by": "machine",
@@ -5765,7 +8791,7 @@
     "ar": "تم إرسال بياناتك بنجاح.",
     "by": "machine",
     "model": "claude-opus-5",
-    "at": "2026-08-16T14:16:31.032Z"
+    "at": "2026-08-16T16:05:14.877Z"
   },
   "Your listing will be published across Property Finder, Bayut, our website, and other leading property portals.": {
     "ar": "إعلانك العقاري سيُنشر على بروبرتي فايندر وبيوت وموقعنا الإلكتروني وغيرها من أبرز المنصات العقارية.",
@@ -5791,6 +8817,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "You’re now subscribed to our newsletter and will receive the latest updates, insights, and opportunities directly to your email every week.": {
+    "ar": "لقد اشتركت الآن في نشرتنا الإخبارية، وستصلك أحدث التحديثات والرؤى والفرص مباشرة إلى بريدك الإلكتروني كل أسبوع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T16:07:12.027Z"
+  },
   "Zayed City": {
     "ar": "مدينة زايد",
     "by": "machine"
@@ -5800,6 +8832,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
+  },
+  "Zone Highlights": {
+    "ar": "أبرز معالم المنطقة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.093Z"
   },
   "Zoom into an area and tap a property to open its details — or pick a community below to focus the map.": {
     "ar": "كبّر منطقة معينة واضغط على عقار لعرض تفاصيله — أو اختر مجتمعًا أدناه لتركيز الخريطة عليه.",
@@ -5812,6 +8850,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
+  },
+  "abu dhabi golf club": {
+    "ar": "نادي أبوظبي للغولف",
+    "by": "machine"
   },
   "abu dhabi · corniche": {
     "ar": "أبوظبي · الكورنيش",
@@ -5831,6 +8873,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:35:49.472Z"
   },
+  "adjacent": {
+    "ar": "الملاصق",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:11:02.439Z"
+  },
   "advisor response": {
     "ar": "رد المستشار",
     "by": "machine",
@@ -5849,6 +8897,22 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
   },
+  "al bateen": {
+    "ar": "البطين",
+    "by": "machine"
+  },
+  "al forsan international sports resort": {
+    "ar": "منتجع الفرسان الرياضي الدولي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:49:10.239Z"
+  },
+  "al forsan village": {
+    "ar": "الفرسان قرية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
+  },
   "al ghadeer gardens": {
     "ar": "حدائق الغدير",
     "by": "machine",
@@ -5866,6 +8930,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:44:00.195Z"
+  },
+  "al khalidiyah park": {
+    "ar": "حديقة الخالدية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "al markaziyah": {
+    "ar": "المركزية",
+    "by": "machine"
   },
   "al maryah island": {
     "ar": "جزيرة الماريه",
@@ -5889,6 +8963,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
   },
+  "al naseem community": {
+    "ar": "مجتمع النسيم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
   "al raha beach": {
     "ar": "شاطئ الراحة",
     "by": "machine"
@@ -5903,11 +8983,23 @@
     "ar": "حدائق الراحة",
     "by": "machine"
   },
+  "al raha gardens community centre": {
+    "ar": "المركز المجتمعي في حدائق الراحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:15:04.118Z"
+  },
   "al raha mall": {
     "ar": "الراحة مول",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:52:17.843Z"
+  },
+  "al rayyana": {
+    "ar": "الريانة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
   },
   "al reem island": {
     "ar": "جزيرة الريم",
@@ -5919,11 +9011,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "al tharwaniyah": {
+    "ar": "الثروانية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:19:16.443Z"
+  },
   "al waha": {
     "ar": "الواحة",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:44:00.195Z"
+  },
+  "al zeina": {
+    "ar": "الزينة",
+    "by": "machine"
   },
   "apartments": {
     "ar": "شقق",
@@ -5942,6 +9044,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.744Z"
+  },
+  "approx. 10 min from the Al Forsan area": {
+    "ar": "حوالي 10 دقائق من منطقة الفرسان",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
   },
   "approx. 12 min": {
     "ar": "حوالي 12 دقيقة",
@@ -5967,17 +9075,53 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
   },
+  "approx. 30 min": {
+    "ar": "حوالي 30 دقيقة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
+  "approx. 35 min": {
+    "ar": "حوالي 35 دقيقة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
   "approx. 4 min": {
     "ar": "حوالي 4 دقائق",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
   },
+  "approx. 40 min": {
+    "ar": "أي حوالي 40 دقيقة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
+  "approx. 45 min": {
+    "ar": "نحو 45 دقيقة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:57:09.582Z"
+  },
   "approx. 5 min": {
     "ar": "،حوالي 5 دقائق",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
+  },
+  "approx. 50 min": {
+    "ar": "~50 دقيقة تقريبًا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:33:06.379Z"
+  },
+  "bashayer": {
+    "ar": "بشاير",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
   },
   "business districts": {
     "ar": "المناطق التجارية",
@@ -6009,17 +9153,65 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:31:57.617Z"
   },
+  "corniche beach": {
+    "ar": "الكورنيش شاطئ",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "corniche promenade": {
+    "ar": "ممشى الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "directly opposite the island": {
+    "ar": "مقابل الجزيرة مباشرة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:43:22.108Z"
+  },
   "dubai skyline": {
     "ar": "أفق دبي",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "easy access": {
+    "ar": "سهولة الوصول",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
+  },
   "eden house al maryah island": {
     "ar": "جزيرة الماريه إيدن هاوس",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.479Z"
+  },
+  "emirates palace": {
+    "ar": "قصر الإمارات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
+  "fahid beach residences": {
+    "ar": "فهد بيتش ريزيدنسز",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
+  "fahid beach terraces": {
+    "ar": "تراسات شاطئ فهيد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
+  },
+  "five-star hospitality": {
+    "ar": "ضيافة خمس نجوم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
   },
   "flexible payment plans": {
     "ar": "خطط سداد مرنة",
@@ -6033,6 +9225,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "golf & sports facilities": {
+    "ar": "منشآت الغولف والرياضة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
+  },
+  "hudayriyat golf estates": {
+    "ar": "غولف إستيتس الحديريات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
   "hudayriyat island · coastline aerial": {
     "ar": "جزيرة الحديريات · تصوير جوي للساحل",
     "by": "machine",
@@ -6045,11 +9249,33 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:12:41.012Z"
   },
+  "industrial & logistics plots": {
+    "ar": "أراضي صناعية ولوجستية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.094Z"
+  },
+  "jubail mangrove park": {
+    "ar": "حديقة الجبيل لأشجار القرم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.844Z"
+  },
   "jumeirah residences al maryah island": {
     "ar": "مساكن جميرا جزيرة الماريه",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.479Z"
+  },
+  "khalifa port": {
+    "ar": "ميناء خليفة",
+    "by": "machine"
+  },
+  "khalifa port cluster": {
+    "ar": "ميناء خليفة مجمع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.094Z"
   },
   "leading communities": {
     "ar": "المجتمعات الرائدة",
@@ -6063,6 +9289,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "logistics & distribution parks": {
+    "ar": "حدائق الخدمات اللوجستية والتوزيع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.093Z"
+  },
+  "louvre abu dhabi": {
+    "ar": "اللوفر أبوظبي",
+    "by": "machine"
+  },
   "luxury residence · beachfront": {
     "ar": "إقامة فاخرة · على الواجهة البحرية",
     "by": "machine",
@@ -6075,11 +9311,53 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "manarat al saadiyat": {
+    "ar": "منارة السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
+  "marina mall": {
+    "ar": "مارينا مول",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:25:18.593Z"
+  },
   "marinas & waterfront dining": {
     "ar": "مراسي القوارب ومطاعم الواجهة المائية",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
+  },
+  "marsa al jubail": {
+    "ar": "مرسى الجبيل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:45:15.844Z"
+  },
+  "maysan": {
+    "ar": "ميسان",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
+  },
+  "nawayef village": {
+    "ar": "قرية نوايف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
+  "nearby international schools": {
+    "ar": "المدارس الدولية القريبة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:17:08.882Z"
+  },
+  "neighbouring destination": {
+    "ar": "وجهة مجاورة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
   },
   "of Abu Dhabi real estate": {
     "ar": "لعقارات أبوظبي",
@@ -6129,6 +9407,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
   },
+  "pre-built warehousing": {
+    "ar": "مستودعات جاهزة البناء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.093Z"
+  },
   "private beaches": {
     "ar": "شواطئ خاصة",
     "by": "machine",
@@ -6146,6 +9430,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:18:09.430Z"
+  },
+  "qaryat al hidd": {
+    "ar": "قرية الحد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
   },
   "ready properties": {
     "ar": "عقارات جاهزة",
@@ -6177,6 +9467,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "reportage village abu dhabi": {
+    "ar": "ريبورتاج فيليدج أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:51:11.583Z"
+  },
   "resale apartment": {
     "ar": "شقة إعادة بيع",
     "by": "machine",
@@ -6188,6 +9484,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "saadiyat beach golf club": {
+    "ar": "نادي شاطئ السعديات للغولف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
+  "saadiyat marina": {
+    "ar": "السعديات مارينا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
   },
   "selling a property": {
     "ar": "بيع عقار",
@@ -6201,11 +9509,47 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.334Z"
   },
+  "sorbonne university abu dhabi": {
+    "ar": "جامعة السوربون أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:21:17.942Z"
+  },
+  "souk al jubail": {
+    "ar": "سوق الجبيل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:47:18.127Z"
+  },
+  "soul beach": {
+    "ar": "سول بيتش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
+  "staff residential cities": {
+    "ar": "مدن سكنية للموظفين",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:55:03.093Z"
+  },
   "support from search to contract": {
     "ar": "الدعم من البحث حتى العقد",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:12:41.013Z"
+  },
+  "surrounding community": {
+    "ar": "المجتمع المحيط",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:37:03.040Z"
+  },
+  "tara park": {
+    "ar": "تارا بارك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:23:18.817Z"
   },
   "tenant management": {
     "ar": "إدارة المستأجرين",
@@ -6218,6 +9562,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:21:24.194Z"
+  },
+  "the beach house": {
+    "ar": "بيت الشاطئ",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:31:14.076Z"
   },
   "the galleria al maryah island": {
     "ar": "ذا غاليريا جزيرة الماريه",
@@ -6243,17 +9593,47 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
   },
+  "velodrome abu dhabi": {
+    "ar": "أبوظبي فيلودروم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:41:24.841Z"
+  },
   "villas": {
     "ar": "أملاك فلل",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:31:57.617Z"
   },
+  "walking distance": {
+    "ar": "على مسافة قريبة سيراً",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:26:57.193Z"
+  },
   "waterfront promenade · canal": {
     "ar": "ممشى الواجهة المائية · القناة",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
+  },
+  "waterfront promenades": {
+    "ar": "ممشى الواجهة المائية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:12:50.795Z"
+  },
+  "waterfront restaurants": {
+    "ar": "مطاعم على الواجهة المائية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:59:23.131Z"
+  },
+  "wellness facilities": {
+    "ar": "منشآت العافية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:11:02.439Z"
   },
   "whole buildings": {
     "ar": "مبانٍ كاملة",
@@ -6266,6 +9646,20 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
+  },
+  "yacht club": {
+    "ar": "نادي اليخوت",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-16T15:34:49.618Z"
+  },
+  "you@email.com": {
+    "ar": "you@email.com",
+    "by": "machine"
+  },
+  "you@example.com": {
+    "ar": "you@example.com",
+    "by": "machine"
   },
   "{advisor} calls to confirm the details and answer anything outstanding.": {
     "ar": "{advisor} مكالمات لتأكيد التفاصيل والإجابة عن أي استفسارات معلّقة.",

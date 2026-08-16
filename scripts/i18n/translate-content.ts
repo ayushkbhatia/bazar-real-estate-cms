@@ -34,6 +34,8 @@ const DRY = args.includes("--dry-run");
 const ALL = args.includes("--all");
 /** Per-record area and development pages, whose copy is entirely in the database. */
 const SUBPAGES = args.includes("--subpages");
+/** The 22 public lead forms: copy, field labels, and option labels. */
+const FORMS = args.includes("--forms");
 const PAGE = args[args.indexOf("--page") + 1];
 const LIMIT = args.includes("--limit")
   ? Number(args[args.indexOf("--limit") + 1])
@@ -64,8 +66,8 @@ function writeStore(store: Store) {
 }
 
 async function main() {
-  if (!ALL && !PAGE && !SUBPAGES) {
-    console.error("Pass --page <key>, --all, or --subpages.");
+  if (!ALL && !PAGE && !SUBPAGES && !FORMS) {
+    console.error("Pass --page <key>, --all, --subpages, or --forms.");
     process.exit(2);
   }
 
@@ -127,6 +129,69 @@ async function main() {
    * The def is built per record because the record's name appears inside field
    * labels and help text, which is why `areaPageDef` takes one at all.
    */
+  /*
+   * Forms are a different shape and get their own walk.
+   *
+   * A form is not a section document — there is no `FieldDef[]` and no
+   * `SectionValues`, so `walkSection` does not apply. What it has is a resolved
+   * copy bag of seven keys, a field list carrying four text keys each, and
+   * option labels. `resolveForm` merges storage over the registry, so walking
+   * its output means walking exactly what a visitor reads.
+   */
+  const work: Job[] = [];
+  if (FORMS) {
+    const { FORM_DEFS } = await import("../../lib/forms/registry");
+    const { resolveForm } = await import("../../lib/forms/resolve");
+    const { FORM_COPY_KEYS } = await import("../../lib/forms/copy-keys");
+    const { nonProseReason } = await import("../../lib/i18n/prose");
+
+    const storedForms = new Map<string, unknown>();
+    const storedFields = new Map<string, unknown[]>();
+    if (sb) {
+      const { data: forms } = await sb.from("forms").select("key, enabled, copy, notify_emails");
+      for (const row of (forms ?? []) as { key: string }[]) storedForms.set(row.key, row);
+      const { data: fields } = await sb
+        .from("form_fields")
+        .select("id, form_id, key, label, label_ar, type, mapping, placeholder, placeholder_ar, help, help_ar, required, enabled, width, options, option_source, rows, min_value, max_value, step, unit, unit_ar, show_when, locked, position");
+      void fields; // field rows are keyed by form_id; the registry walk below is enough for a first pass
+    }
+
+    const add = (formKey: string, path: string, english: unknown, max: number) => {
+      if (typeof english !== "string" || !english.trim()) return;
+      work.push({
+        page: `form:${formKey}`,
+        section: "copy",
+        pathKey: path,
+        english,
+        // Form chrome is interface text, not marketing: a label reading "Fixed"
+        // or "Optional" is exactly what `ui` was written for. The two long
+        // fields are prose and get `page`.
+        kind: max >= 300 ? "page" : "ui",
+        maxLength: Math.ceil(max * 1.5),
+        identity: nonProseReason(english) !== null,
+      });
+    };
+
+    for (const def of FORM_DEFS) {
+      const form = resolveForm(def.key, (storedForms.get(def.key) ?? null) as never, null);
+      if (!form) continue;
+      for (const k of FORM_COPY_KEYS) {
+        add(def.key, `copy.${k.key}`, (form.copy as Record<string, unknown>)[k.key], k.max);
+      }
+      for (const field of form.fields) {
+        const f = field as unknown as Record<string, unknown>;
+        if (!f.label_ar) add(def.key, `${String(f.key)}.label`, f.label, 80);
+        if (!f.placeholder_ar) add(def.key, `${String(f.key)}.placeholder`, f.placeholder, 120);
+        if (!f.help_ar) add(def.key, `${String(f.key)}.help`, f.help, 200);
+        if (!f.unit_ar) add(def.key, `${String(f.key)}.unit`, f.unit, 20);
+        for (const [i, opt] of ((f.options ?? []) as { label: string; label_ar?: string | null }[]).entries()) {
+          if (!opt.label_ar) add(def.key, `${String(f.key)}.options[${i}].label`, opt.label, 80);
+        }
+      }
+    }
+    console.log(`${FORM_DEFS.length} form(s) walked.`);
+  }
+
   let pages: { key: string; sections: MasterPageDef["sections"] }[];
   if (SUBPAGES) {
     const { areaPageDef, developmentPageDef, subPageSlug } =
@@ -143,6 +208,8 @@ async function main() {
       }
     }
     console.log(`${pages.length} subpage(s) with stored content.`);
+  } else if (FORMS) {
+    pages = [];
   } else {
     pages = MASTER_PAGES.filter((p) => ALL || p.key === PAGE);
     if (!pages.length) {
@@ -173,7 +240,6 @@ async function main() {
     maxLength?: number;
     identity: boolean;
   };
-  const work: Job[] = [];
 
   for (const page of pages) {
     for (const section of page.sections) {

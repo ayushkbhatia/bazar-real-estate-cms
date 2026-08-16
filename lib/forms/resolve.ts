@@ -21,6 +21,7 @@
 
 import { getFormDef } from "./registry";
 import { FORM_COPY_KEYS, copyArKey } from "./copy-keys";
+import { fillFormArabic } from "./arabic";
 import type {
   FormCopy,
   FormDef,
@@ -108,7 +109,15 @@ export function resolveForm(
 ): ResolvedForm | null {
   const def = getFormDef(key);
   if (!def) return null;
-  return {
+  /*
+   * Generated Arabic goes in LAST, and only where nothing else supplied it.
+   *
+   * After the merges, so it sees the English the visitor will actually read —
+   * registry default or editor's text, no difference. Filling the defaults
+   * instead would serve the default's Arabic under replacement English, which
+   * is the bug measured at 303 slots on the master pages.
+   */
+  return fillFormArabic({
     key,
     def,
     enabled: def.alwaysOn ? true : (stored?.enabled ?? true),
@@ -116,7 +125,7 @@ export function resolveForm(
     fields: mergeFields(def, storedFields),
     notifyEmails: stored?.notify_emails ?? [],
     usingDefaults: stored === null && (storedFields?.length ?? 0) === 0,
-  };
+  });
 }
 
 /** The registry defaults for a form, with nothing stored. */

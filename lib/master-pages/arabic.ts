@@ -41,20 +41,10 @@
  * them was a case of the same phrase translated two different ways.
  */
 import { walkSection, applySlots } from "@/lib/i18n/mt/bag";
+import { ARABIC_STORE, type ArabicStore } from "@/lib/i18n/arabic-store";
 import type { FieldDef, SectionValues } from "./types";
-import store from "./arabic/master.json";
 
-export type ArabicValue = {
-  ar: string;
-  by: "machine" | "reviewed" | "human";
-  model?: string;
-  at?: string;
-};
-
-/** English → Arabic. */
-export type ArabicStore = Record<string, ArabicValue>;
-
-export const ARABIC_STORE = store as ArabicStore;
+export { ARABIC_STORE, type ArabicStore, type ArabicValue } from "@/lib/i18n/arabic-store";
 
 /**
  * Fill in any Arabic twin that is still blank, from the store.
