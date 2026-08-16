@@ -40,6 +40,13 @@ export default async function PublicLayout({
         name: branding.brand_name,
       }
     : null;
+  // The footer has its own file — the surface is ink, so the artwork that
+  // works there is normally the reversed variant of the top bar's. No
+  // fallback to `logo_url`: a dark lockup dropped onto the dark footer would
+  // read as a missing image, where the typeset wordmark always reads.
+  const footerLogo = branding.footer_logo_url
+    ? { url: branding.footer_logo_url, name: branding.brand_name }
+    : null;
   return (
     // The provider wraps `children` as well as the rail: a detail page deep in
     // the tree publishes its advisor upward through it, which is how one
@@ -81,7 +88,7 @@ export default async function PublicLayout({
       {/* T1.5 quick win: single-line trust signal above the global footer.
           Wraps the locked PublicFooter rather than editing it. */}
       <FooterTrust />
-      <PublicFooter />
+      <PublicFooter logo={footerLogo} />
     </FloatingCtaProvider>
   );
 }

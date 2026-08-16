@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import Image from "next/image";
 import Link from "next/link";
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
@@ -50,7 +51,18 @@ const SOCIAL: { label: string; href: string }[] = [
   },
 ];
 
-export async function PublicFooter() {
+export async function PublicFooter({
+  /*
+   * The brand lockup, resolved by the layout from `site_settings`
+   * (Brand & identity → Footer logo). Threaded in rather than read here so
+   * this component stays presentational and has no data dependency of its
+   * own — same contract the top bar's logo uses. Null keeps the typeset
+   * wordmark below, which is what every page drew before the setting existed.
+   */
+  logo,
+}: {
+  logo?: { url: string; name: string } | null;
+} = {}) {
   /*
    * Ambient locale, not a prop. The root layout calls `setRequestLocale`
    * before this renders, so the read is cached rather than a dynamic API —
@@ -62,9 +74,28 @@ export async function PublicFooter() {
       <div className="grid grid-cols-2 gap-10 md:grid-cols-[1.5fr_repeat(3,1fr)_1.15fr] md:gap-12 pb-12">
         {/* Brand + socials */}
         <div className="col-span-2 md:col-span-1">
-          <div className="serif italic text-[28px] text-white leading-none">
-            Bazar
-          </div>
+          {logo ? (
+            /*
+             * `h-10 w-auto` on a fill-less image: the file's own aspect ratio
+             * decides the width, so a square mark and a wide lockup both land
+             * at the same optical height. Explicit width/height are the
+             * intrinsic hint next/image needs when the box is not fixed —
+             * the CSS above overrides both.
+             */
+            <Image
+              src={logo.url}
+              alt={logo.name}
+              width={320}
+              height={80}
+              sizes="240px"
+              className="h-10 w-auto object-contain object-start"
+              priority={false}
+            />
+          ) : (
+            <div className="serif italic text-[28px] text-white leading-none">
+              Bazar
+            </div>
+          )}
           <p className="mt-3 max-w-[280px] text-[13px] leading-[1.6] text-[oklch(0.7_0.005_80)]">
             Bazar Real Estate is a leading UAE real estate agency, serving the
             property market with expertise since 2005.

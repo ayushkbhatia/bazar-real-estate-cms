@@ -38,6 +38,7 @@ import {
 } from "./_actions";
 import {
   FaviconField,
+  FooterLogoField,
   LogoField,
   type LogoOption,
 } from "./_brand-image-fields";
@@ -63,6 +64,7 @@ export function BrandForm({
   const logoUrl = form.watch("logo_url");
   const logoStyle = form.watch("logo_style");
   const faviconUrl = form.watch("favicon_url");
+  const footerLogoUrl = form.watch("footer_logo_url");
 
   function onSubmit(values: BrandSettingsInput) {
     startTransition(async () => {
@@ -80,7 +82,7 @@ export function BrandForm({
   return (
     <SectionCard
       title="Brand & identity"
-      subtitle="Logo, favicon, public-facing name, tagline, and footer contact info."
+      subtitle="Logo, favicon, footer logo, public-facing name, tagline, and footer contact info."
     >
       <form
         onSubmit={form.handleSubmit(onSubmit)}
@@ -111,6 +113,17 @@ export function BrandForm({
             })
           }
           error={form.formState.errors.favicon_url?.message}
+        />
+        <FooterLogoField
+          value={footerLogoUrl ?? ""}
+          options={logoOptions}
+          onChange={(url) =>
+            form.setValue("footer_logo_url", url === "" ? null : url, {
+              shouldDirty: true,
+              shouldValidate: true,
+            })
+          }
+          error={form.formState.errors.footer_logo_url?.message}
         />
         <Field
           label="Brand name"

@@ -26,6 +26,7 @@ const DEFAULTS: SiteSettings = {
     logo_url: null,
     logo_style: "mark_and_name",
     favicon_url: null,
+    footer_logo_url: null,
     orn: null,
     contact_email: null,
     contact_phone: null,
@@ -51,6 +52,7 @@ function shape(raw: Record<string, unknown> | null | undefined): SiteSettings {
     logo_url: raw.logo_url ?? null,
     logo_style: raw.logo_style ?? DEFAULTS.brand.logo_style,
     favicon_url: raw.favicon_url ?? null,
+    footer_logo_url: raw.footer_logo_url ?? null,
     orn: raw.orn ?? null,
     contact_email: raw.contact_email ?? null,
     contact_phone: raw.contact_phone ?? null,
@@ -84,7 +86,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   const { data, error } = await supabase
     .from("site_settings")
     .select(
-      "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
+      "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
     )
     .eq("id", 1)
     .maybeSingle();
@@ -99,6 +101,7 @@ export type PublicBranding = {
   logo_url: string | null;
   logo_style: LogoStyle;
   favicon_url: string | null;
+  footer_logo_url: string | null;
 };
 
 const BRANDING_DEFAULTS: PublicBranding = {
@@ -107,6 +110,7 @@ const BRANDING_DEFAULTS: PublicBranding = {
   logo_url: null,
   logo_style: "mark_and_name",
   favicon_url: null,
+  footer_logo_url: null,
 };
 
 /**
@@ -131,7 +135,7 @@ export async function getPublicBranding(
     const { data } = await supabase
       .from("site_settings")
       .select(
-        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url",
+        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url",
       )
       .eq("id", 1)
       .maybeSingle();
@@ -152,6 +156,7 @@ export async function getPublicBranding(
         ? (style as LogoStyle)
         : "mark_and_name",
       favicon_url: (row.favicon_url as string | null) ?? null,
+      footer_logo_url: (row.footer_logo_url as string | null) ?? null,
     };
   } catch {
     return BRANDING_DEFAULTS;
@@ -170,7 +175,7 @@ export async function getPublicSiteSettings(
     const { data } = await supabase
       .from("site_settings")
       .select(
-        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
+        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
       )
       .eq("id", 1)
       .maybeSingle();

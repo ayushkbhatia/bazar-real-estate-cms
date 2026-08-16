@@ -95,6 +95,28 @@ describe("brandSettingsSchema", () => {
     expect(bad.success).toBe(false);
   });
 
+  it("validates footer_logo_url on the same rules as logo_url", () => {
+    const ok = brandSettingsSchema.safeParse({
+      brand_name: "Bazar",
+      footer_logo_url: "https://cdn.example.com/logo-reversed.png",
+    });
+    expect(ok.success).toBe(true);
+
+    const cleared = brandSettingsSchema.safeParse({
+      brand_name: "Bazar",
+      footer_logo_url: "",
+    });
+    expect(cleared.success && cleared.data.footer_logo_url).toBeNull();
+
+    // Lands in an <img src> in the public footer, so the same scheme guard
+    // that protects the top bar applies here.
+    const bad = brandSettingsSchema.safeParse({
+      brand_name: "Bazar",
+      footer_logo_url: "javascript:alert(1)",
+    });
+    expect(bad.success).toBe(false);
+  });
+
   it("accepts both logo styles and rejects anything else", () => {
     for (const logo_style of LOGO_STYLES) {
       const r = brandSettingsSchema.safeParse({ brand_name: "Bazar", logo_style });
