@@ -14,20 +14,48 @@ import { test, expect } from "@playwright/test";
  * where a percentage belongs, that the WhatsApp handoff carries the scenario
  * actually on screen, that the affordability badge tracks the cap the page
  * quotes. Those are what the wiring guarantees; the numbers are the client's.
+ *
+ * The same rule applies one level up, which is what this file originally
+ * missed: an editor owns section VISIBILITY as well as the figures inside it.
+ * Five of the six sections carry a switch in Pages & blocks, so any spec
+ * touching one has to establish it is on the page before asserting anything
+ * about it — with `count()`, so an off section skips rather than spending a
+ * 30-second timeout discovering it is absent.
  */
 
 const MONEY = /AED\s?[0-9,]+/;
 
-test("mortgage tool renders the headline numbers for the opening scenario", async ({
-  page,
-}) => {
+test("the calculator renders its headline numbers", async ({ page }) => {
   await page.goto("/tools/mortgage");
 
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 
+  // Scenario is the one section Pages & blocks cannot switch off, so the
+  // monthly figure is always on the page.
   await expect(page.getByTestId("monthly-payment")).toContainText(MONEY);
+});
 
-  // Cash-to-close table shows the expected statutory lines.
+test("cash to close breaks out the statutory lines, when it is switched on", async ({
+  page,
+}) => {
+  await page.goto("/tools/mortgage");
+
+  // Cash to close carries its own switch — see the note on CashToCloseSection,
+  // which says removing it is meant to be one click in Pages & blocks — and it
+  // is switched off in production today. This spec asserted it unconditionally
+  // and so went red on an editorial decision with no commit behind it, which
+  // is the exact failure mode the header of this file was written to prevent.
+  // The rule generalises: an editor owns section VISIBILITY as well as the
+  // figures inside it.
+  //
+  // `count()` resolves immediately; a visibility assertion on an absent
+  // section would burn the full timeout before the skip could be reached.
+  const section = page.getByTestId("cash-to-close-section");
+  test.skip(
+    (await section.count()) === 0,
+    "Cash to close is switched off in Pages & blocks.",
+  );
+
   const total = page.getByTestId("cash-to-close-total");
   await expect(total).toBeVisible();
   await expect(total).toContainText(MONEY);
