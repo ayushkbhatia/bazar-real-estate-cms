@@ -20,6 +20,47 @@ export type Issue = {
     | "sentinel-invented"
     | "numeral-drift"
     | "latin-leak"
+    /**
+     * The field's own LABEL leaked into its value.
+     *
+     * Every derived twin is labelled `<English label> (العربية)`, and on short
+     * inputs the model sometimes answers the label rather than translating the
+     * value: "Who we are" came back as "العربية: من نحن". Fluent, contains the
+     * right translation, and unusable — it renders the word "Arabic" on the
+     * page. Back-translation cannot see it, because the meaning survives.
+     */
+    | "label-leak"
+    /**
+     * Punctuation the English does not have, on a string too short to have
+     * earned it.
+     *
+     * "Head office" came back as "العنوان الرئيسي: المكتب الرئيسي" — the label
+     * and the value, colon-separated. A two-word label does not acquire a
+     * colon in translation.
+     */
+    | "punctuation-added"
+    /**
+     * A sentence continues after its own full stop.
+     *
+     * "Discover leading communities across Abu Dhabi." came back as
+     * "المجتمعات الرائدة في أبوظبي.اكتشف" — the verb stranded past the
+     * terminator. Every content word is present, so the round trip passes it
+     * and the page renders a broken sentence.
+     */
+    | "orphan-tail"
+    /**
+     * The model deliberated in the output.
+     *
+     * "Browse Properties" came back as `براوز? No — "تصفح العقارات"تصفح العقارات`
+     * — a rejected transliteration, an aside in English, a quoted answer, and
+     * then the answer again. `refusal` does not cover it (the model answered),
+     * `latin-leak` does not (the English run is two characters), and the round
+     * trip does not (the correct phrase is in there twice).
+     *
+     * The tell is the duplication: a translation does not contain the same
+     * eight-character Arabic run twice in a row.
+     */
+    | "self-repeat"
     | "too-long"
     | "glossary"
     | "markup"
@@ -275,6 +316,48 @@ export function validate(
 
   if (output.length === 0) {
     return [{ code: "empty", detail: "model returned nothing" }];
+  }
+
+  /*
+   * Three shapes that survive both the semantic gate and everything above,
+   * because they are malformations rather than mistranslations: the words are
+   * all correct and all present, and only their arrangement is wrong.
+   */
+  if (/العربية|\(Arabic\)/u.test(output) && !/arabic/i.test(sourceMasked)) {
+    issues.push({
+      code: "label-leak",
+      detail: "the field's Arabic label appears in its value",
+    });
+  }
+
+  if (
+    !/[:："«»]/u.test(sourceMasked) &&
+    /[:："«»]/u.test(output) &&
+    sourceMasked.trim().split(/\s+/).length <= 4
+  ) {
+    issues.push({
+      code: "punctuation-added",
+      detail: "a colon or quote mark the English does not have, on a short label",
+    });
+  }
+
+  // The same substantial Arabic run twice, back to back — the shape a model
+  // leaves when it answers, second-guesses itself, and answers again.
+  const repeat = /([\u0600-\u06FF][\u0600-\u06FF\s]{7,}?)\s*\1/u.exec(output);
+  if (repeat) {
+    issues.push({
+      code: "self-repeat",
+      detail: `"${repeat[1]!.trim().slice(0, 30)}" appears twice in a row`,
+    });
+  }
+
+  // A full stop with no space after it, followed by more Arabic. Not a decimal
+  // (those are digits both sides) and not an ellipsis.
+  if (/[\u0600-\u06FF]\.(?!\.)[\u0600-\u06FF]/u.test(output)) {
+    issues.push({
+      code: "orphan-tail",
+      detail: "text continues immediately after a full stop",
+    });
   }
 
   const md = markdownAdded(sourceMasked, output);

@@ -180,17 +180,48 @@ async function main() {
   const { default: Anthropic } = await import("@anthropic-ai/sdk");
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
   const { translateField } = await import("../../lib/i18n/mt/translate");
+  const { backTranslate, equivalence, restoreNames } =
+    await import("../../lib/i18n/mt/backtranslate");
 
   const nouns = nounMap();
   const terms = nounTerms();
+  const { mask, unmask } = await import("../../lib/i18n/mt/mask");
+  const { overridesFor } = await import("../../lib/i18n/mt/proper-nouns");
   console.log(`\nProtecting ${terms.length} proper nouns.\n`);
 
   let ok = 0;
   const failures: string[] = [];
+  /** Translated and structurally clean; still has to survive the round trip. */
+  const candidates: { job: Job; ar: string; model: string }[] = [];
 
   for (const [i, w] of model.entries()) {
     const label = `${w.page}/${w.section}.${w.pathKey}`;
     process.stdout.write(`[${i + 1}/${model.length}] ${label} … `);
+
+    /*
+     * A value that is ENTIRELY protected content needs no model at all.
+     *
+     * "Al Bateen" masks to a single sentinel, so the model is handed "⟦0⟧" and
+     * asked to translate nothing; whatever it returns, the answer was already
+     * decided by `overridesFor`. Sending it anyway wasted a call and then
+     * failed the round trip, because البطين back-translates as "the belly" —
+     * the anatomical sense of the root — and the comparator rightly rejected a
+     * proper noun that had become a body part.
+     *
+     * The same applies to "ADREC & DLD", a bare phone number, or a price.
+     */
+    const masked = mask(w.english, terms);
+    if (masked.masked.replace(/⟦\d+⟧/gu, "").trim() === "") {
+      const resolved = unmask(masked.masked, masked.tokens, overridesFor(masked, nouns));
+      ((store[w.page] ??= {})[w.section] ??= {})[w.pathKey] = {
+        en: w.english,
+        ar: resolved,
+        by: "machine",
+      };
+      ok++;
+      console.log(`${resolved}   [protected content, no model call]`);
+      continue;
+    }
 
     const result = await translateField({
       client,
@@ -207,15 +238,79 @@ async function main() {
       continue;
     }
 
-    ((store[w.page] ??= {})[w.section] ??= {})[w.pathKey] = {
-      en: w.english,
-      ar: result.text,
-      by: "machine",
-      model: result.model,
-      at: new Date().toISOString(),
-    };
-    ok++;
+    candidates.push({ job: w, ar: result.text, model: result.model });
     console.log(result.text.slice(0, 60));
+  }
+
+  /*
+   * The semantic gate.
+   *
+   * The nineteen structural checks have already run inside `translateField`.
+   * They cannot see a sentence that is fluent, correctly formed, the right
+   * length and about something else — which on the first /home run was six of
+   * thirty-eight strings, every one of them reported clean.
+   *
+   * So each survivor is translated BACK to English by a model told nothing
+   * about the domain, and a second model compares the two English strings. It
+   * never sees the Arabic, so fluent Arabic cannot persuade it.
+   *
+   * Calibrated against 177 human-approved catalogue entries, 60 deliberately
+   * mismatched pairs and 8 failures this project has actually shipped:
+   * 8/8 known-bad caught, 60/60 mismatches rejected, and a 25% false-positive
+   * rate that is uniform across length bands — round-tripping a terse term
+   * through Arabic is simply lossy ("Deposit" comes back as "advance
+   * payment").
+   *
+   * A blocked slot is NOT written, so it renders English — the designed
+   * fallback — and appears in the report as something for a human to write.
+   * That is the trade the false-positive rate buys: roughly three quarters of
+   * the corpus translated and round-trip-verified, and a short list of the
+   * rest, instead of everything translated and six in thirty-eight wrong.
+   */
+  if (candidates.length) {
+    console.log(`\nRound-tripping ${candidates.length} translation(s)…`);
+    const backs = await backTranslate({
+      client,
+      // Proper nouns go back to English first — see `restoreNames`. Without
+      // this, البطين round-trips as "ventricle" and a correct translation is
+      // rejected for a word the model was never asked to choose.
+      items: candidates.map((c, i) => ({
+        id: String(i),
+        arabic: restoreNames(c.ar, nouns),
+      })),
+    });
+    const backOf = new Map(backs.map((b) => [b.id, b.english]));
+    const verdicts = await equivalence({
+      client,
+      pairs: candidates.map((c, i) => ({
+        id: String(i),
+        source: c.job.english,
+        back: backOf.get(String(i)) ?? "",
+      })),
+    });
+    const verdictOf = new Map(verdicts.map((v) => [v.id, v]));
+
+    for (const [i, c] of candidates.entries()) {
+      const v = verdictOf.get(String(i));
+      const label = `${c.job.page}/${c.job.section}.${c.job.pathKey}`;
+      if (!v?.same) {
+        console.log(
+          `  BLOCKED ${label}\n      en:   ${JSON.stringify(c.job.english.slice(0, 60))}` +
+            `\n      back: ${JSON.stringify((backOf.get(String(i)) ?? "").slice(0, 60))}` +
+            `\n      why:  ${v?.reason ?? "no verdict"}`,
+        );
+        failures.push(`${label} — round trip: ${v?.reason ?? "no verdict"}`);
+        continue;
+      }
+      ((store[c.job.page] ??= {})[c.job.section] ??= {})[c.job.pathKey] = {
+        en: c.job.english,
+        ar: c.ar,
+        by: "machine",
+        model: c.model,
+        at: new Date().toISOString(),
+      };
+      ok++;
+    }
   }
 
   writeStore(store);
