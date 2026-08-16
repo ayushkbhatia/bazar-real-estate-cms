@@ -43,6 +43,8 @@ const socialList = (max = 8): ListFieldDef => ({
   fields: [
     text("network", "Network", {
       max: 40,
+      // Switches the icon and the URL builder — a value, not a label.
+      i18n: false,
       help: "Instagram, Facebook, TikTok, YouTube, LinkedIn or X — picks the icon.",
     }),
     link("href", "Profile URL"),
@@ -103,7 +105,11 @@ export const CONTACT_QR_PAGE: MasterPageDef = {
           max: 60,
           optional: true,
         }),
-        text("mobile_number", "Mobile — number", { max: 40, optional: true }),
+        text("mobile_number", "Mobile — number", {
+          max: 40,
+          optional: true,
+          i18n: false,
+        }),
 
         text("landline_label", "Landline — label", { max: 60, optional: true }),
         text("landline_label_ar", "Landline — label (Arabic)", {
@@ -113,6 +119,7 @@ export const CONTACT_QR_PAGE: MasterPageDef = {
         text("landline_number", "Landline — number", {
           max: 40,
           optional: true,
+          i18n: false,
         }),
 
         text("whatsapp_label", "WhatsApp — label", { max: 60, optional: true }),
@@ -123,6 +130,7 @@ export const CONTACT_QR_PAGE: MasterPageDef = {
         text("whatsapp_number", "WhatsApp — number", {
           max: 40,
           optional: true,
+          i18n: false,
           help: "Leave blank to hide the row — the mobile number above already reaches WhatsApp.",
         }),
         text("whatsapp_message", "WhatsApp — prefilled message", {
@@ -135,7 +143,11 @@ export const CONTACT_QR_PAGE: MasterPageDef = {
           max: 60,
           optional: true,
         }),
-        text("email_address", "Email — address", { max: 120, optional: true }),
+        text("email_address", "Email — address", {
+          max: 120,
+          optional: true,
+          i18n: false,
+        }),
 
         text("website_label", "Website — label", { max: 60, optional: true }),
         text("website_label_ar", "Website — label (Arabic)", {

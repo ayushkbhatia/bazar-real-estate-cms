@@ -172,6 +172,11 @@ const HOME: MasterPageDef = {
             text("slug", "Area slug", {
               max: 140,
               optional: true,
+              // A lookup key, not a label. Folded into Arabic the area
+              // resolves to nothing and the card silently disappears — a
+              // failure an Arabic proofreader cannot see, because the Arabic
+              // reads fine and what broke was the lookup.
+              i18n: false,
               help: "Matches the live listing count to this card.",
             }),
           ],
@@ -1040,6 +1045,9 @@ const OFF_PLAN: MasterPageDef = {
         body({ max: 400 }),
         text("group_limit", "Projects per area", {
           max: 3,
+          // A number the renderer parses. `numeral-drift` is script-blind, so
+          // an Arabic-Indic "٣" would validate cleanly and parse to NaN.
+          i18n: false,
           optional: true,
           help: "How many cards each area's rail holds, e.g. 12. Leave blank to include every published project — the rail scrolls either way.",
         }),
@@ -1244,6 +1252,11 @@ const AREAS: MasterPageDef = {
             text("slug", "Area slug", {
               max: 140,
               optional: true,
+              // A lookup key, not a label. Folded into Arabic the area
+              // resolves to nothing and the card silently disappears — a
+              // failure an Arabic proofreader cannot see, because the Arabic
+              // reads fine and what broke was the lookup.
+              i18n: false,
               help: "Matches the live listing count to this card.",
             }),
           ],

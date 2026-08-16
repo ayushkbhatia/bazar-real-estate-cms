@@ -265,6 +265,8 @@ export const SELL_PAGE: MasterPageDef = {
             toggle("primary", "Filled button"),
             text("visual", "Motif", {
               max: 20,
+              // A render token the card switches on, not a word anyone reads.
+              i18n: false,
               optional: true,
               help: "One of: range, transactions, guides. Anything else (or blank) leaves the card without a motif.",
             }),
