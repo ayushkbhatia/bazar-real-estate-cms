@@ -41,6 +41,21 @@ const PATTERNS: { name: string; re: RegExp }[] = [
     name: "permit",
     re: /\b(?:ORN|BRN|RERA|DLD|ADREC|DMT)\s*[:#-]?\s*\d[\d-]*/giu,
   },
+  /*
+   * The regulators, standing alone.
+   *
+   * The `permit` pattern above only matches an acronym followed by a number,
+   * so a bare "ADREC & DLD" reached the model — and came back expanded into
+   * "دائرة البلديات والنقل ودائرة الأراضي", which is both a translation of a
+   * name that is never translated AND the wrong department. These are the
+   * bodies that licence the firm; naming the wrong one on a regulated
+   * advertising surface is a compliance problem, not a style one.
+   *
+   * Latin by law and by convention, exactly as `contact-qr.ts` writes them in
+   * the client's own Arabic: "خاضعة لإشراف ADREC وDLD".
+   */
+  { name: "regulator", re: /\b(?:ADREC|ADGM|RERA|DLD|DMT|ORN|BRN|KIZAD)\b/gu },
+
   // Listing references: BR-1042, BZ-7, and the bare slug tail.
   { name: "reference", re: /\b[A-Z]{2,4}-\d{1,6}\b/gu },
 

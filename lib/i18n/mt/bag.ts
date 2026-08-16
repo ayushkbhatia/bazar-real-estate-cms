@@ -90,31 +90,30 @@ const CONTROL_KEYS = new Set(["cta_label", "cta", "submit_label", "save_label"])
 /**
  * Which register to translate a field in.
  *
- * Length- and role-driven rather than surface-driven, and the distinction that
- * matters is `ui` vs `title`.
+ * Almost everything here is `page`, and that is the correction that matters.
  *
- * `UI_SYSTEM_PROMPT` exists to stop one specific failure: a model told it is
- * translating property listings resolves an ambiguous single word toward
- * property vocabulary — "Optional" became فاخر, "Comfortable" became شقة مريحة.
- * Its fix is blunt, and correctly so: *"You are NOT translating a property
- * listing."*
+ * The first version of this function split by length and shape — long textarea
+ * to `body`, short text to `title`, buttons to `ui` — on the reasoning that
+ * master-page copy IS property marketing and should use the listing registers.
+ * Run against the real `home` page that produced confident nonsense: under
+ * `title` ("a listing headline"), the heading "Reviews and comments" came back
+ * as a fully furnished studio with a canal view, "Where to live" became
+ * "apartments for living", and "Your next location starts here" became "your
+ * next APARTMENT starts here".
  *
- * Applied to master-page copy that is a category error. "Off-plan projects for
- * sale", "Twenty years of Abu Dhabi, properly understood" — these ARE property
- * marketing, and every one of them wants the property sense of every ambiguous
- * word. Under the `ui` prompt they come back in the register of a bank's form
- * controls, which is the mirror image of the bug that prompt was written for.
+ * The listing registers do not describe a tone, they describe a task, and the
+ * model performed the task it was given. `page` names the actual one:
+ * translating copy that already exists, faithfully. See `PAGE_SYSTEM_PROMPT`.
  *
- * So `ui` is reserved for the short, control-shaped strings where the original
- * failure genuinely recurs — a button reading "Fixed" or "Compare" behaves the
- * same whether it sits on a calculator or a hero.
+ * `ui` survives for the genuinely control-shaped strings, where the failure it
+ * was written for — an ambiguous single word resolving toward property
+ * vocabulary — is still the real risk. A button reading "Fixed" or "Compare"
+ * behaves the same whether it sits on a calculator or a hero.
  */
 export function kindForField(field: SimpleFieldDef): MtKind {
-  if (field.kind === "textarea") {
-    return (field.max ?? 600) > 400 ? "body" : "summary";
-  }
-  if (CONTROL_KEYS.has(field.key)) return "ui";
-  return (field.max ?? 160) <= 24 ? "ui" : "title";
+  return CONTROL_KEYS.has(field.key) || (field.max ?? 160) <= 24
+    ? "ui"
+    : "page";
 }
 
 function str(v: unknown): string | null {
