@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { mask, unmask } from "./mask";
+import { overridesFor } from "./proper-nouns";
 import { buildPrompt, retryHint, systemPromptFor, type MtKind } from "./prompt";
 import { validate, type Issue } from "./validate";
 
@@ -126,6 +127,15 @@ export async function translateField(input: {
    */
   overrides?: Record<number, string>;
   /**
+   * Place, developer and project names to protect and substitute.
+   *
+   * Passed as a map rather than as a sentinel-keyed `overrides` because the
+   * indices depend on what `mask` matched, which the caller cannot know before
+   * calling it. Supplying this is what makes `overrides` reachable at all —
+   * see `lib/i18n/mt/proper-nouns.ts`.
+   */
+  properNouns?: Map<string, string | null>;
+  /**
    * Extra checks on the raw output, run beside the standard ones and folded
    * into the same retry.
    *
@@ -146,7 +156,15 @@ export async function translateField(input: {
     return { ok: false, issues: [{ code: "empty", detail: "nothing to translate" }], raw: "", model };
   }
 
-  const { masked, tokens } = mask(source);
+  const { masked, tokens, kinds } = mask(
+    source,
+    input.properNouns ? [...input.properNouns.keys()] : undefined,
+  );
+  // Caller-supplied overrides win, so the low-level escape hatch still works.
+  const overrides = {
+    ...overridesFor({ tokens, kinds }, input.properNouns),
+    ...(input.overrides ?? {}),
+  };
   const prompt = buildPrompt({ text: masked, kind: input.kind, maxLength: input.maxLength });
 
   const messages: { role: "user" | "assistant"; content: string }[] = [
@@ -242,7 +260,7 @@ export async function translateField(input: {
     if (lastIssues.length === 0) {
       return {
         ok: true,
-        text: unmask(out, tokens, input.overrides),
+        text: unmask(out, tokens, overrides),
         model,
         retried: attempt > 0,
       };
@@ -257,7 +275,7 @@ export async function translateField(input: {
     issues: lastIssues,
     // Unmasked so a reviewer reads real text rather than sentinels. It is not
     // written anywhere public — only shown in the failure surface.
-    raw: unmask(lastRaw, tokens, input.overrides),
+    raw: unmask(lastRaw, tokens, overrides),
     model,
   };
 }
