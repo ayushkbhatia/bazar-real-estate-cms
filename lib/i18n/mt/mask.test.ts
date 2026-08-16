@@ -88,3 +88,58 @@ describe("unmasking", () => {
     );
   });
 });
+
+describe("mask · proper nouns", () => {
+  const TERMS = ["Saadiyat Island", "Al Maryah Island", "Al Maryah", "Yas Island", "Aldar Properties", "Bazar"];
+
+  it("protects a name the model would otherwise re-invent", () => {
+    const { masked, tokens, kinds } = mask("A villa on Saadiyat Island.", TERMS);
+    expect(masked).toBe("A villa on ⟦0⟧.");
+    expect(tokens[0]).toBe("Saadiyat Island");
+    expect(kinds[0]).toBe("proper-noun");
+  });
+
+  it("prefers the longest name, so an island keeps its last word", () => {
+    // With "Al Maryah" winning, the model is handed a dangling "Island".
+    const { tokens } = mask("Offices at Al Maryah Island.", TERMS);
+    expect(tokens).toEqual(["Al Maryah Island"]);
+  });
+
+  it("lets a price still beat a name that contains one", () => {
+    const { tokens, kinds } = mask("Aldar Properties from AED 2.5M.", TERMS);
+    expect(tokens[0]).toBe("Aldar Properties");
+    expect(kinds[1]).toBe("price");
+  });
+
+  it("does not match inside a longer word", () => {
+    // The explicit lookarounds, not \b — "Bazargan" is not "Bazar".
+    const { tokens } = mask("Bazargan Trading", TERMS);
+    expect(tokens).toEqual([]);
+  });
+
+  it("matches case-insensitively, and unmask restores what was written", () => {
+    const { masked, tokens } = mask("SAADIYAT ISLAND is here", TERMS);
+    expect(masked).toBe("⟦0⟧ is here");
+    expect(unmask(masked, tokens)).toBe("SAADIYAT ISLAND is here");
+  });
+
+  it("substitutes the canonical Arabic through overrides — the whole point", () => {
+    const { masked, tokens } = mask("A villa on Saadiyat Island.", TERMS);
+    expect(unmask(masked, tokens, { 0: "جزيرة السعديات" })).toBe(
+      "A villa on جزيرة السعديات.",
+    );
+  });
+
+  it("leaves an unmapped name in Latin rather than inventing one", () => {
+    // An entry with no approved Arabic still travels as a sentinel, so it
+    // cannot trip `latin-leak` — and the English survives verbatim.
+    const { masked, tokens } = mask("Near Yas Island.", TERMS);
+    expect(unmask(masked, tokens, {})).toBe("Near Yas Island.");
+  });
+
+  it("changes nothing when no terms are given", () => {
+    expect(mask("A villa on Saadiyat Island.")).toEqual(
+      mask("A villa on Saadiyat Island.", []),
+    );
+  });
+});
