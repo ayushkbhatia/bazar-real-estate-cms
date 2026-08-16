@@ -19,8 +19,21 @@ const cards = (page: MasterPageDef, key: string): Card[] =>
 
 describe("service master pages", () => {
   it("registers both landings under their public paths", () => {
-    expect(manage).toBe(PROPERTY_MANAGEMENT_PAGE);
-    expect(consultation).toBe(PROPERTY_CONSULTATION_PAGE);
+    /*
+     * Identity, not equality — but of the KEY, not the object.
+     *
+     * `MASTER_PAGES` is `withArabicDefaults(RAW_MASTER_PAGES)`, which returns a
+     * new page object for any page that has generated Arabic to fold into its
+     * defaults. So `toBe(PROPERTY_MANAGEMENT_PAGE)` stopped holding the moment
+     * /services/manage was translated, and it was asserting the wrong thing
+     * anyway: what matters is that the registry exposes THIS page under THIS
+     * path, not that no wrapper ever copied it.
+     */
+    expect(manage.key).toBe(PROPERTY_MANAGEMENT_PAGE.key);
+    expect(consultation.key).toBe(PROPERTY_CONSULTATION_PAGE.key);
+    expect(manage.sections.map((s) => s.key)).toEqual(
+      PROPERTY_MANAGEMENT_PAGE.sections.map((s) => s.key),
+    );
     expect(manage.path).toBe("/services/manage");
     expect(consultation.path).toBe("/services/consultation");
   });
