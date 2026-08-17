@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Home, Check } from "lucide-react";
@@ -20,6 +21,11 @@ export function MortgageCalculatorSection({
   eyebrow = "Mortgage calculator",
   heading = "Estimate your monthly payments before making your move",
 }: SectionCopy = {}) {
+  // `common`, not `tools`: `tools` is route-scoped to /tools and /concierge
+  // (see ROUTE_NAMESPACES) and this teaser renders on the home page, where
+  // that bag is never mounted. Seven keys on an already-global namespace is
+  // the cheaper of the two honest options.
+  const t = useTranslations("common.mortgageTeaser");
   const { prefs } = usePreferences();
   const money = (n: number) => formatMoneyValue(n, prefs);
   const [price, setPrice] = useState(2_500_000);
@@ -55,7 +61,7 @@ export function MortgageCalculatorSection({
         {/* Inputs */}
         <div className="flex flex-col gap-6 rounded-2xl bg-[oklch(0.22_0.005_80)] p-6 md:rounded-none md:p-11">
           <Slider
-            label="Property price"
+            label={t("propertyPrice")}
             display={money(price)}
             value={price}
             min={500_000}
@@ -64,7 +70,7 @@ export function MortgageCalculatorSection({
             onChange={setPrice}
           />
           <Slider
-            label="Down payment"
+            label={t("downPayment")}
             display={`${downPct}%  ·  ${money(down)}`}
             value={downPct}
             min={5}
@@ -74,7 +80,7 @@ export function MortgageCalculatorSection({
           />
           <div className="grid gap-6 sm:grid-cols-2">
             <Slider
-              label="Interest rate"
+              label={t("interestRate")}
               display={`${rate.toFixed(2)}%`}
               value={rate}
               min={1.5}
@@ -83,7 +89,7 @@ export function MortgageCalculatorSection({
               onChange={setRate}
             />
             <Slider
-              label="Loan term"
+              label={t("loanTerm")}
               display={`${years} years`}
               value={years}
               min={5}
@@ -100,7 +106,7 @@ export function MortgageCalculatorSection({
             className="text-[11px] font-medium uppercase text-white/75"
             style={{ letterSpacing: "0.12em" }}
           >
-            Estimated monthly payment
+            {t("estimatedMonthly")}
           </div>
           <div className="serif mt-3 text-[40px] md:text-[52px] leading-none tracking-tight">
             {money(summary.monthlyPaymentAed)}
@@ -108,7 +114,7 @@ export function MortgageCalculatorSection({
           <div className="mt-7 flex flex-col gap-3.5">
             {[
               ["Loan amount", money(summary.principalAed)],
-              ["Down payment", money(down)],
+              [t("downPayment"), money(down)],
               ["Total interest", money(summary.totalInterestAed)],
             ].map(([l, v]) => (
               <div
@@ -125,13 +131,13 @@ export function MortgageCalculatorSection({
               href="/buy"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white px-4 text-[13.5px] font-medium text-bz-ink transition-colors hover:bg-white/90"
             >
-              <Home size={16} /> View properties
+              <Home size={16} /> {t("viewProperties")}
             </Link>
             <Link
               href="/tools/mortgage"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-white/40 px-4 text-[13.5px] font-medium text-white transition-colors hover:bg-white/10"
             >
-              <Check size={16} /> Get pre-approval today
+              <Check size={16} /> {t("getPreApproval")}
             </Link>
           </div>
         </div>

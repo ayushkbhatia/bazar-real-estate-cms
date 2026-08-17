@@ -87,5 +87,28 @@
     "startingPrice": "السعر يبدأ من",
     "totalUnits": "إجمالي الوحدات",
     "paymentPlan": "خطة السداد"
+  },
+  "agent": {
+    "ourTeam": "فريقنا",
+    "whatsapp": "واتساب",
+    "email": "البريد الإلكتروني",
+    "yearsInMarket": "سنوات في السوق",
+    "closedLifetime": "إجمالي الصفقات المنجزة",
+    "closedQtd": "الصفقات المنجزة هذا الربع",
+    "getInTouch": "تواصل معنا",
+    "sendABrief": "أرسل طلبك"
+  },
+  "area": {
+    "medianApt": "متوسط سعر الشقة /",
+    "medianVilla": "متوسط سعر الفيلا /",
+    "valuationPrompt": "اعرف تقدير المستشار لقيمته، مجاناً.",
+    "allAreas": "جميع المناطق"
+  },
+  "home": {
+    "offPlan": "على الخارطة",
+    "startingFrom": "يبدأ من",
+    "view": "عرض",
+    "establishedIn": "تأسست في أبوظبي",
+    "knowMore": "اعرف المزيد"
   }
 }

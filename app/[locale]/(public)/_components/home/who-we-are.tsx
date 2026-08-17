@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
@@ -14,7 +15,7 @@ const STATS: [string, string][] = [
   ["Al Bateen", "Head office"],
 ];
 
-export function WhoWeAre({
+export async function WhoWeAre({
   eyebrow = "Who we are",
   heading = "About Bazar Real Estate",
   body = "Established in 2005, Bazar Real Estate L.L.C. is a leading award-winning real estate agency in the UAE, recognized for its market expertise, professional excellence, and trusted presence in the region's ever-evolving property market.",
@@ -28,6 +29,7 @@ export function WhoWeAre({
   imageAlt?: string | null;
   imageLabel?: string | null;
 } = {}) {
+  const th = await getTranslations("pages.home");
   return (
     <section className="px-4 md:px-12 py-8 md:py-10">
       <div className="grid items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] md:gap-16">
@@ -57,7 +59,7 @@ export function WhoWeAre({
               2005
             </div>
             <div className="mt-1 text-[12px] text-bz-muted">
-              Established in Abu Dhabi
+              {th("establishedIn")}
             </div>
           </div>
         </div>
@@ -89,7 +91,7 @@ export function WhoWeAre({
             href="/about"
             className="mt-5 inline-flex h-11 items-center gap-2 rounded-md bg-bz-ink px-5 text-[13.5px] font-medium text-bz-bg transition-colors hover:bg-bz-ink/90"
           >
-            Know more <ArrowRight size={15} />
+            {th("knowMore")} <ArrowRight size={15} />
           </Link>
         </div>
       </div>

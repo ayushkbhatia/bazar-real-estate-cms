@@ -87,5 +87,28 @@
     "startingPrice": "Starting price",
     "totalUnits": "Total units",
     "paymentPlan": "Payment plan"
+  },
+  "agent": {
+    "ourTeam": "Our team",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "yearsInMarket": "Years in market",
+    "closedLifetime": "Closed lifetime",
+    "closedQtd": "Closed QTD",
+    "getInTouch": "Get in touch",
+    "sendABrief": "Send a brief"
+  },
+  "area": {
+    "medianApt": "Median apt /",
+    "medianVilla": "Median villa /",
+    "valuationPrompt": "See what an advisor would price it at, free.",
+    "allAreas": "All areas"
+  },
+  "home": {
+    "offPlan": "Off-plan",
+    "startingFrom": "Starting from",
+    "view": "View",
+    "establishedIn": "Established in Abu Dhabi",
+    "knowMore": "Know more"
   }
 }

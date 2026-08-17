@@ -37,5 +37,14 @@
       "sat": "Sat"
     },
     "seeDaily": "See daily hours"
+  },
+  "mortgageTeaser": {
+    "estimatedMonthly": "Estimated monthly payment",
+    "viewProperties": "View properties",
+    "getPreApproval": "Get pre-approval today",
+    "propertyPrice": "Property price",
+    "downPayment": "Down payment",
+    "interestRate": "Interest rate",
+    "loanTerm": "Loan term"
   }
 }

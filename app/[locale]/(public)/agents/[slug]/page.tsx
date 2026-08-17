@@ -64,6 +64,8 @@ export default async function AgentProfilePage({
    */
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "editorial" });
+  // `t` is this page's editorial namespace; `ta` is the shared `pages` bag.
+  const ta = await getTranslations({ locale, namespace: "pages.agent" });
   const { slug } = await params;
   const agent = await getAgentBySlug(slug);
   if (!agent) notFound();
@@ -135,7 +137,7 @@ export default async function AgentProfilePage({
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
         >
           <ArrowLeft size={13} strokeWidth={1.8} />
-          Our team
+          {ta("ourTeam")}
         </Link>
       </div>
 
@@ -186,13 +188,13 @@ export default async function AgentProfilePage({
               <Button asChild variant="outline">
                 <a href={waUrl} target="_blank" rel="noopener noreferrer">
                   <MessageCircle size={14} strokeWidth={1.7} />
-                  WhatsApp
+                  {ta("whatsapp")}
                 </a>
               </Button>
               <Button asChild variant="ghost">
                 <a href={`mailto:${email}`}>
                   <Mail size={14} strokeWidth={1.7} />
-                  Email
+                  {ta("email")}
                 </a>
               </Button>
             </div>
@@ -206,7 +208,7 @@ export default async function AgentProfilePage({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
             <div>
               <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-                Years in market
+                {ta("yearsInMarket")}
               </div>
               <div
                 className="serif text-[36px] mt-1 leading-none"
@@ -225,7 +227,7 @@ export default async function AgentProfilePage({
             </div>
             <div>
               <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-                Closed lifetime
+                {ta("closedLifetime")}
               </div>
               <div
                 className="serif text-[36px] mt-1 leading-none"
@@ -236,7 +238,7 @@ export default async function AgentProfilePage({
             </div>
             <div>
               <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-                Closed QTD
+                {ta("closedQtd")}
               </div>
               <div
                 className="serif text-[36px] mt-1 leading-none"
@@ -406,7 +408,7 @@ export default async function AgentProfilePage({
       <section className="px-4 md:px-12 py-16 max-w-[1280px]">
         <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-6 md:p-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
           <div>
-            <Eyebrow className="text-bz-accent-fg/70">Get in touch</Eyebrow>
+            <Eyebrow className="text-bz-accent-fg/70">{ta("getInTouch")}</Eyebrow>
             <h3
               className="serif text-[28px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.012em" }}
@@ -415,7 +417,7 @@ export default async function AgentProfilePage({
             </h3>
           </div>
           <Button asChild size="lg" variant="secondary">
-            <Link href="/contact">Send a brief</Link>
+            <Link href="/contact">{ta("sendABrief")}</Link>
           </Button>
         </div>
       </section>
