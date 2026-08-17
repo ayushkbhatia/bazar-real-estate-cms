@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { MapPin } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
@@ -18,23 +19,31 @@ function formatPosted(iso: string): string {
   });
 }
 
-export default function CareersPage() {
+export default async function CareersPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // The locale is passed explicitly. Without it `getTranslations` falls
+  // through to `headers()`, which makes the route dynamic and silently
+  // discards its revalidate — the failure `check:routes` exists to catch.
+  const t = await getTranslations({
+    locale: (await params).locale,
+    namespace: "pages.careers",
+  });
   return (
     <div className="bg-bz-bg">
       {/* Hero */}
       <section className="px-12 pt-20 pb-14 max-w-[1200px]">
-        <Eyebrow>Careers</Eyebrow>
+        <Eyebrow>{t("eyebrow")}</Eyebrow>
         <h1
           className="serif text-[80px] mt-3 font-normal leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
         >
-          We hire by exception.
+          {t("title")}
         </h1>
         <p className="mt-8 text-[17px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-          Bazar caps senior advisor headcount at twelve. We add operations and
-          junior roles cautiously. Open roles are listed below — if nothing
-          fits, we keep a folder open for senior advisor introductions year-round
-          at{" "}
+          {t("intro")}{" "}
           <a
             href="mailto:careers@bazar.ae"
             className="text-bz-ink underline underline-offset-2 hover:text-bz-accent"
@@ -50,29 +59,26 @@ export default function CareersPage() {
         <div className="px-12 py-12 max-w-[1200px] grid grid-cols-3 gap-12">
           <div>
             <div className="text-[11.5px] uppercase tracking-wider text-bz-accent">
-              01 · Fewer, bigger
+              {t("why1Label")}
             </div>
             <p className="mt-3 text-[14px] text-bz-ink-2 leading-relaxed">
-              You will close more, but slower. Advisors on the book average 12
-              transactions a year, not 60. Each one matters.
+              {t("why1Body")}
             </p>
           </div>
           <div>
             <div className="text-[11.5px] uppercase tracking-wider text-bz-accent">
-              02 · Real ownership
+              {t("why2Label")}
             </div>
             <p className="mt-3 text-[14px] text-bz-ink-2 leading-relaxed">
-              Senior advisors take a profit share on their book after year one
-              — not a sliding commission tier. The economics scale with you.
+              {t("why2Body")}
             </p>
           </div>
           <div>
             <div className="text-[11.5px] uppercase tracking-wider text-bz-accent">
-              03 · Operations behind you
+              {t("why3Label")}
             </div>
             <p className="mt-3 text-[14px] text-bz-ink-2 leading-relaxed">
-              KYC, conveyancing, audit, photography, marketing — all in-house.
-              You sell the property; we run the process around it.
+              {t("why3Body")}
             </p>
           </div>
         </div>
@@ -80,12 +86,12 @@ export default function CareersPage() {
 
       {/* Open roles */}
       <section className="px-12 py-20 max-w-[1200px]">
-        <Eyebrow>Open roles</Eyebrow>
+        <Eyebrow>{t("openRoles")}</Eyebrow>
         <h2
           className="serif text-[44px] mt-3 leading-[1.05]"
           style={{ letterSpacing: "-0.02em" }}
         >
-          {SEED_CAREERS.length} positions currently open.
+          {t("positionsOpen", { count: SEED_CAREERS.length })}
         </h2>
 
         <ul className="mt-12 flex flex-col gap-10">
@@ -103,7 +109,9 @@ export default function CareersPage() {
                     <span>·</span>
                     <span>{role.type}</span>
                     <span>·</span>
-                    <span className="mono">Posted {formatPosted(role.posted)}</span>
+                    <span className="mono">
+                      {t("posted", { date: formatPosted(role.posted) })}
+                    </span>
                   </div>
                   <h3
                     className="serif text-[28px] mt-3 leading-tight"
@@ -118,9 +126,9 @@ export default function CareersPage() {
                 </div>
                 <Button asChild>
                   <a
-                    href={`mailto:${role.apply_email}?subject=${encodeURIComponent(`Application — ${role.title}`)}`}
+                    href={`mailto:${role.apply_email}?subject=${encodeURIComponent(t("applySubject", { title: role.title }))}`}
                   >
-                    Apply
+                    {t("apply")}
                   </a>
                 </Button>
               </div>
@@ -132,7 +140,7 @@ export default function CareersPage() {
               <div className="mt-8 grid grid-cols-2 gap-10">
                 <div>
                   <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-                    You will
+                    {t("youWill")}
                   </div>
                   <ul className="mt-3 flex flex-col gap-1.5">
                     {role.responsibilities.map((r) => (
@@ -147,7 +155,7 @@ export default function CareersPage() {
                 </div>
                 <div>
                   <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-                    You bring
+                    {t("youBring")}
                   </div>
                   <ul className="mt-3 flex flex-col gap-1.5">
                     {role.requirements.map((r) => (
