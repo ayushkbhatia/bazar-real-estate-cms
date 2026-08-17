@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
@@ -15,7 +15,7 @@ const STATS: [string, string][] = [
   ["Al Bateen", "Head office"],
 ];
 
-export async function WhoWeAre({
+export function WhoWeAre({
   eyebrow = "Who we are",
   heading = "About Bazar Real Estate",
   body = "Established in 2005, Bazar Real Estate L.L.C. is a leading award-winning real estate agency in the UAE, recognized for its market expertise, professional excellence, and trusted presence in the region's ever-evolving property market.",
@@ -29,7 +29,20 @@ export async function WhoWeAre({
   imageAlt?: string | null;
   imageLabel?: string | null;
 } = {}) {
-  const th = await getTranslations("pages.home");
+  /*
+   * `useTranslations`, and the keys live on `common`.
+   *
+   * This component is a Page Builder block (`about_bazar`), and
+   * `render.test.tsx` renders every block through React Testing Library —
+   * which cannot render an async component. Making it async to reach
+   * `getTranslations` broke that, and my own "ignore the pre-existing
+   * failures" filter hid it locally.
+   *
+   * `useTranslations` works in both a Server Component and a client render,
+   * but only for a namespace that crosses into the payload — so these two
+   * keys sit on `common` rather than the server-only `pages` bag.
+   */
+  const th = useTranslations("common.whoWeAre");
   return (
     <section className="px-4 md:px-12 py-8 md:py-10">
       <div className="grid items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] md:gap-16">

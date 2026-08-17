@@ -46,5 +46,9 @@
     "downPayment": "Down payment",
     "interestRate": "Interest rate",
     "loanTerm": "Loan term"
+  },
+  "whoWeAre": {
+    "establishedIn": "Established in Abu Dhabi",
+    "knowMore": "Know more"
   }
 }
