@@ -6,6 +6,7 @@ A luxury real-estate marketplace **and** full operations CMS for [bazar.ae](http
 
 - **[docs/PROJECT_UNDERSTANDING.md](docs/PROJECT_UNDERSTANDING.md)** — what we're building, who Bazar is, IA, data model, compliance, roadmap. Required reading for any new contributor (human or AI).
 - **[docs/FOLLOWUPS.md](docs/FOLLOWUPS.md)** — cross-session backlog of small "noticed during a PR, not worth bloating it" items. Pick from here when you have a slot; add to it when you finish a PR and spot something.
+- **[docs/decisions/ADR-0008](docs/decisions/ADR-0008-machine-generated-arabic-first-draft.md)** — curated Arabic is a gated machine FIRST DRAFT the client edits, not hand-authored. Amends ADR-0007 §4; read it before assuming a surface needs writing by hand.
 - **[docs/I18N.md](docs/I18N.md)** — Arabic + RTL: what you must do when you add a new page, component, section, block, form field or public column. Read before adding any of those.
 - **[AGENTS.md](AGENTS.md)** — Next.js 16 has breaking changes from earlier versions; consult `node_modules/next/dist/docs/` when in doubt.
 - **[docs/decisions/](docs/decisions/)** — Architecture Decision Records. Read these before assuming the spec is current; we deliberately diverged from the original brief in four places (FTS+Meilisearch, MapLibre+Mapbox, Vercel cron, Postgres+Mailchimp).
