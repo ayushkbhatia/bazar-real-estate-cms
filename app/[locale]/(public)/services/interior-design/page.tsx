@@ -1,3 +1,5 @@
+import { asLocale } from "@/lib/i18n/locales";
+import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ServicePage } from "../_components/service-page";
@@ -15,7 +17,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function InteriorDesignPage() {
+export default async function InteriorDesignPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // `ServicePage` reads its copy through `getTranslations`, which needs the
+  // request locale set. Without it the route drops out of the CDN — which is
+  // exactly what `check:routes` caught.
+  setRequestLocale(asLocale((await params).locale));
+
   const service = getSeedServiceBySlug(slug);
   if (!service) notFound();
   return <ServicePage service={service} />;

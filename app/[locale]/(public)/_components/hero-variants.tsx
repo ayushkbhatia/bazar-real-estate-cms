@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
@@ -103,27 +104,27 @@ export function HeroFullBleed({ copy }: { copy?: HeroCopy } = {}) {
   );
 }
 
-export function HeroEditorial() {
+export async function HeroEditorial() {
+  const t = await getTranslations("pages.hero");
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 md:min-h-[640px] bg-bz-bg">
       <div className="px-4 py-12 md:px-12 md:py-20 flex flex-col justify-center order-2 md:order-1">
-        <Eyebrow>The Bazar approach</Eyebrow>
+        <Eyebrow>{t("editorialEyebrow")}</Eyebrow>
         <h1
           className="serif text-[40px] md:text-[68px] mt-4 leading-[1.0] font-normal max-w-[15ch]"
           style={{ letterSpacing: "-0.028em" }}
         >
-          Abu Dhabi, properly understood.
+          {t("editorialTitle")}
         </h1>
         <p className="mt-6 max-w-[52ch] text-[16px] text-bz-ink-2 leading-relaxed">
-          Twelve capped senior advisors. Fiduciary-aligned. Off-market deal
-          flow. We close fewer deals by design.
+          {t("editorialBody")}
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild size="lg">
-            <Link href="/about">About Bazar</Link>
+            <Link href="/about">{t("aboutBazar")}</Link>
           </Button>
           <Button asChild size="lg" variant="outline">
-            <Link href="/agents">Meet the team</Link>
+            <Link href="/agents">{t("meetTheTeam")}</Link>
           </Button>
         </div>
       </div>
@@ -135,7 +136,8 @@ export function HeroEditorial() {
   );
 }
 
-export function HeroMap() {
+export async function HeroMap() {
+  const t = await getTranslations("pages.hero");
   return (
     <section className="relative min-h-[520px] md:h-[640px] bg-bz-surface overflow-hidden">
       <PlaceholderImage
@@ -144,20 +146,19 @@ export function HeroMap() {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-bz-bg/85 via-bz-bg/40 to-transparent" />
       <div className="relative px-4 py-12 md:px-12 md:py-16">
-        <Eyebrow>Start with the map</Eyebrow>
+        <Eyebrow>{t("mapEyebrow")}</Eyebrow>
         <h1
           className="serif text-[40px] md:text-[64px] mt-4 leading-[1.02] font-normal max-w-[14ch]"
           style={{ letterSpacing: "-0.025em" }}
         >
-          Draw the area you want.
+          {t("mapTitle")}
         </h1>
         <p className="mt-4 max-w-[52ch] text-[16px] text-bz-ink-2 leading-relaxed">
-          Filter by polygon, commute time, or pin density. The map is the
-          primary view for advisors and serious buyers.
+          {t("mapBody")}
         </p>
         <div className="mt-8 flex gap-3">
           <Button asChild size="lg">
-            <Link href="/buy/search?view=map">Open the map</Link>
+            <Link href="/buy/search?view=map">{t("openTheMap")}</Link>
           </Button>
         </div>
       </div>
@@ -165,25 +166,25 @@ export function HeroMap() {
   );
 }
 
-export function HeroConcierge() {
+export async function HeroConcierge() {
+  const t = await getTranslations("pages.hero");
   return (
     <section className="bg-bz-ink text-white px-4 py-12 md:px-12 md:py-20">
       <div className="grid grid-cols-1 md:grid-cols-[1fr_460px] gap-10 md:gap-16 items-start max-w-[1400px] mx-auto">
         <div>
-          <Eyebrow className="text-white/60">AI concierge</Eyebrow>
+          <Eyebrow className="text-white/60">{t("conciergeEyebrow")}</Eyebrow>
           <h1
             className="serif text-[40px] md:text-[68px] mt-4 leading-[1.0] font-normal max-w-[15ch]"
             style={{ letterSpacing: "-0.028em" }}
           >
-            Tell us the brief. We&apos;ll narrow it down.
+            {t("conciergeTitle")}
           </h1>
           <p className="mt-6 max-w-[58ch] text-[16px] text-white/80 leading-relaxed">
-            Talk to the Bazar concierge. We&apos;ll triangulate area, budget,
-            timeline, and constraints — then hand you to the advisor who fits.
+            {t("conciergeBody")}
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild size="lg">
-              <Link href="/concierge">Start a brief</Link>
+              <Link href="/concierge">{t("startABrief")}</Link>
             </Button>
             <Button
               asChild
@@ -191,29 +192,29 @@ export function HeroConcierge() {
               variant="outline"
               className="bg-white/10 border-white/30 text-white hover:bg-white/20"
             >
-              <Link href="/contact">Talk to a human</Link>
+              <Link href="/contact">{t("talkToAHuman")}</Link>
             </Button>
           </div>
         </div>
         <aside className="rounded-lg border border-white/15 bg-white/5 backdrop-blur p-6">
           <div className="text-[11px] uppercase tracking-widest text-white/50 mb-3">
-            Concierge brief · sample
+            {t("sampleLabel")}
           </div>
           <div className="flex flex-col gap-2 text-[13px]">
             <div className="rounded-md bg-white/10 px-3 py-2">
-              Budget · <span className="mono">AED 6–9M</span>
+              {t("sampleBudget")} <span className="mono">AED 6–9M</span>
             </div>
             <div className="rounded-md bg-white/10 px-3 py-2">
-              Area · Saadiyat or Yas
+              {t("sampleArea")}
             </div>
             <div className="rounded-md bg-white/10 px-3 py-2">
-              Type · 3-bed apartment or villa
+              {t("sampleType")}
             </div>
             <div className="rounded-md bg-white/10 px-3 py-2">
-              Timeline · Move-in by Q4
+              {t("sampleTimeline")}
             </div>
             <div className="rounded-md bg-white/10 px-3 py-2">
-              Constraint · Beachfront, school district
+              {t("sampleConstraint")}
             </div>
           </div>
         </aside>
