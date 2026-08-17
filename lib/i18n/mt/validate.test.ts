@@ -393,3 +393,62 @@ describe("glossary stems survive broken plurals", () => {
     expect(codes("leasehold title", "عقد إيجار")).toContain("glossary");
   });
 });
+
+/**
+ * Transpositions inside a single number.
+ *
+ * `digitRuns` sorts, and has to — Arabic word order differs, so a number's
+ * position in the sentence moves legitimately and an ordered comparison would
+ * fire on almost every correct translation. The cost was that a rewrite INSIDE
+ * one number was invisible: the digits either side of a separator are one
+ * value, and sorting made 4.7 and 7.4 the same multiset.
+ *
+ * All three of these were ACCEPTED with no issue at all before the fix, and
+ * the first two are material misstatements on a DLD/ADREC-regulated surface
+ * rather than clumsy prose. Both are live text in the article corpus.
+ */
+describe("numbers rewritten inside themselves", () => {
+  const codes = (en: string, ar: string) => validate(en, ar).map((i) => i.code);
+
+  it("catches a transposed regulatory clause number", () => {
+    expect(
+      codes(
+        "Clause 4.7 requires the permit to name the principal-side brokerage.",
+        "يتطلب البند 7.4 أن يحدد التصريح الوسيط الرئيسي.",
+      ),
+    ).toContain("numeral-drift");
+  });
+
+  it("catches an inverted payment plan", () => {
+    expect(
+      codes(
+        "The payment plan is 30/70 with an 18-month post-handover tail.",
+        "خطة السداد هي 70/30 مع فترة 18 شهرا بعد التسليم.",
+      ),
+    ).toContain("numeral-drift");
+  });
+
+  it("still lets Arabic move a number to a different position", () => {
+    // The whole reason digitRuns sorts. This must stay quiet.
+    expect(codes("Villa at ⟦0⟧, ref ⟦1⟧", "⟦1⟧ فيلا بسعر ⟦0⟧")).toEqual([]);
+  });
+
+  it("ignores the thousands separator when comparing compounds", () => {
+    // `compoundNumerals` strips it, so 1,200 and 1200 are one token either way
+    // and neither is a compound. Note this does NOT make the whole check quiet:
+    // `digitRuns` splits on the comma — "1,200" is the two runs ["1","200"] —
+    // so a dropped separator has always tripped `numeral-drift` by that route,
+    // and still does. Pre-existing, conservative, and left alone here.
+    expect(codes("1,200 units delivered", "تم تسليم 1200 وحدة")).toContain(
+      "numeral-drift",
+    );
+    // The point of the new check: no compound is invented by the comma strip.
+    expect(codes("1,200 units", "1,200 وحدة")).toEqual([]);
+  });
+
+  it("keeps a genuinely unchanged compound quiet", () => {
+    expect(codes("Clause 4.7 applies", "ينطبق البند 4.7")).not.toContain(
+      "numeral-drift",
+    );
+  });
+});

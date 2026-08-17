@@ -91,7 +91,21 @@ const PATTERNS: { name: string; re: RegExp }[] = [
    * Ordered after `price` so the currency-qualified form still wins the
    * earliest-start-longest-span tie-break and `AED 2M` masks as one token.
    */
-  { name: "magnitude", re: /\b\d(?:[\d,.]*\d)?[MK]\b/gu },
+  /*
+   * The spelled-out words joined `[MK]` because only the suffix form was
+   * covered, and `million` is otherwise protected ONLY when `AED` precedes it
+   * (the `price` rule above). A bare quantity is not: from the Marsa Al
+   * Saadiyat launch article, "will span approximately 6.4 million square
+   * metres" came back as "6.4 مليار متر مربع" — مليار is BILLION. Every digit
+   * survived, so `numeral-drift` saw nothing, and the unit was inflated a
+   * thousandfold on a DLD-regulated advertising surface. That article alone
+   * carries eight such quantities: 6.4 million m², 58,000 residents, 350
+   * berths, 140 km, 6,000 guests.
+   */
+  {
+    name: "magnitude",
+    re: /\b\d(?:[\d,.]*\d)?\s?(?:[MK]\b|million\b|billion\b|thousand\b)/giu,
+  },
 
   // Measurements. ft², sq ft, sqft, m², sqm — all with an optional thousands
   // separator.

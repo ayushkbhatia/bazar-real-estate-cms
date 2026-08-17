@@ -80,8 +80,8 @@ export function arabicNumeral(token: string): string | null {
     return null;
   }
 
-  // A bare magnitude with no currency beside it: 80K, 1M.
-  const bare = /^([\d,.]+)\s?([MKmk])$/u.exec(t);
+  // A bare magnitude with no currency beside it: 80K, 1M, "6.4 million".
+  const bare = /^([\d,.]+)\s?([A-Za-z]+)$/u.exec(t);
   if (bare) {
     const word = MAGNITUDES[bare[2]!.toLowerCase()];
     if (word) return `${bare[1]} ${word}`;
