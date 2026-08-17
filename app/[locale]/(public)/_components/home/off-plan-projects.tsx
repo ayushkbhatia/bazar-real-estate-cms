@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, MapPin } from "lucide-react";
@@ -39,6 +40,7 @@ export async function OffPlanProjects({
    */
   developments?: Awaited<ReturnType<typeof listPublishedDevelopments>>;
 } = {}) {
+  const th = await getTranslations("pages.home");
   const developments = prefetched ?? (await listPublishedDevelopments());
 
   // A pick that no longer resolves — unpublished, renamed, deleted — is
@@ -93,7 +95,7 @@ export async function OffPlanProjects({
                 )}
                 <span className="absolute start-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-bz-navy px-2.5 py-1 text-[11px] font-medium text-bz-bg">
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-current" />
-                  Off-plan
+                  {th("offPlan")}
                 </span>
               </div>
               <div className="p-5">
@@ -115,7 +117,7 @@ export async function OffPlanProjects({
                 ) : null}
                 <div className="mt-5 flex items-end justify-between border-t border-bz-border pt-4">
                   <div>
-                    <div className="text-[11px] text-bz-muted">Starting from</div>
+                    <div className="text-[11px] text-bz-muted">{th("startingFrom")}</div>
                     <div className="mt-0.5 text-[20px] font-medium tracking-tight text-bz-navy">
                       <PriceText
                         aed={d.starting_price}
@@ -128,8 +130,7 @@ export async function OffPlanProjects({
                       </div>
                     ) : null}
                   </div>
-                  <span className="inline-flex items-center gap-1 text-[13px] text-bz-ink-2 group-hover:text-bz-accent transition-colors">
-                    View <ArrowRight size={13} strokeWidth={1.7} />
+                  <span className="inline-flex items-center gap-1 text-[13px] text-bz-ink-2 group-hover:text-bz-accent transition-colors">{th("view")}<ArrowRight size={13} strokeWidth={1.7} />
                   </span>
                 </div>
               </div>

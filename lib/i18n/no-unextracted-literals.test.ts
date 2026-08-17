@@ -83,9 +83,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/forms/form-renderer.tsx": 2,
   "app/[locale]/(public)/_components/hero-search.tsx": 6,
   "app/[locale]/(public)/_components/home/home-testimonials.tsx": 1,
-  "app/[locale]/(public)/_components/home/mortgage-calculator-section.tsx": 7,
-  "app/[locale]/(public)/_components/home/off-plan-projects.tsx": 2,
-  "app/[locale]/(public)/_components/home/who-we-are.tsx": 2,
   "app/[locale]/(public)/_components/market-context-link.tsx": 3,
   "app/[locale]/(public)/_components/marketing/buy-category-explorer.tsx": 2,
   "app/[locale]/(public)/_components/marketing/buy-properties-map.tsx": 1,
@@ -102,11 +99,9 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/shortlist-drawer.tsx": 7,
   "app/[locale]/(public)/_components/trust-strip.tsx": 2,
   "app/[locale]/(public)/about/page.tsx": 1,
-  "app/[locale]/(public)/agents/[slug]/page.tsx": 8,
   "app/[locale]/(public)/agents/page.tsx": 2,
   "app/[locale]/(public)/areas/[slug]/_components/lifestyle-dossier.tsx": 3,
   "app/[locale]/(public)/areas/[slug]/opengraph-image.tsx": 2,
-  "app/[locale]/(public)/areas/[slug]/page.tsx": 4,
   "app/[locale]/(public)/concierge/page.tsx": 2,
   "app/[locale]/(public)/contact-qr/_components/contact-card.tsx": 1,
   "app/[locale]/(public)/contact/_components/hq-map.tsx": 3,
@@ -157,7 +152,7 @@ const REMAINING: Readonly<Record<string, number>> = {
 };
 
 /** What the ratchet held when it landed. Lowering it is the point. */
-const TOTAL_CEILING = 233;
+const TOTAL_CEILING = 210;
 
 /**
  * Three shapes, matching the three ways a literal reaches a reader.

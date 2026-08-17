@@ -37,5 +37,18 @@
       "sat": "السبت"
     },
     "seeDaily": "عرض ساعات العمل اليومية"
+  },
+  "mortgageTeaser": {
+    "estimatedMonthly": "القسط الشهري التقديري",
+    "viewProperties": "تصفح العقارات",
+    "getPreApproval": "احصل على موافقة مبدئية اليوم",
+    "propertyPrice": "سعر العقار",
+    "downPayment": "الدفعة الأولى",
+    "interestRate": "معدل الفائدة",
+    "loanTerm": "مدة القرض"
+  },
+  "whoWeAre": {
+    "establishedIn": "تأسست في أبوظبي",
+    "knowMore": "اعرف المزيد"
   }
 }

@@ -142,6 +142,8 @@ export default async function CommunityProfilePage({
   // Locale from params, never ambient — see #373 and #374. This route carries
   // `revalidate: 300`.
   const t = await getTranslations({ locale, namespace: "area" });
+  // `t` is the area namespace; `tp` is the shared `pages` bag W6 extracts into.
+  const tp = await getTranslations({ locale, namespace: "pages.area" });
   // The catalogue row is what makes an area real: any area in `areas` gets a
   // page, whether or not it has a seed guide or a published `area_guides`
   // overlay. Only a slug that matches nothing at all 404s.
@@ -338,7 +340,7 @@ export default async function CommunityProfilePage({
                 <Stat
                   label={
                     <>
-                      Median apt / <AreaUnitText />
+                      {tp("medianApt")} <AreaUnitText />
                     </>
                   }
                   value={
@@ -352,7 +354,7 @@ export default async function CommunityProfilePage({
                 <Stat
                   label={
                     <>
-                      Median villa / <AreaUnitText />
+                      {tp("medianVilla")} <AreaUnitText />
                     </>
                   }
                   value={
@@ -622,7 +624,7 @@ export default async function CommunityProfilePage({
                 className="serif text-[28px] mt-2 leading-tight max-w-[36ch]"
                 style={{ letterSpacing: "-0.018em" }}
               >
-                See what an advisor would price it at, free.
+                {tp("valuationPrompt")}
               </h2>
               <p className="mt-3 text-[14px] text-bz-ink-2 max-w-[58ch]">
                 Instant data-backed range from our model, then a senior advisor
@@ -738,7 +740,7 @@ export default async function CommunityProfilePage({
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
         >
           <ArrowLeft size={13} strokeWidth={1.8} />
-          All areas
+          {tp("allAreas")}
         </Link>
       </div>
 

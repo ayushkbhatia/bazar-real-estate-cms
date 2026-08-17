@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
@@ -28,6 +29,20 @@ export function WhoWeAre({
   imageAlt?: string | null;
   imageLabel?: string | null;
 } = {}) {
+  /*
+   * `useTranslations`, and the keys live on `common`.
+   *
+   * This component is a Page Builder block (`about_bazar`), and
+   * `render.test.tsx` renders every block through React Testing Library —
+   * which cannot render an async component. Making it async to reach
+   * `getTranslations` broke that, and my own "ignore the pre-existing
+   * failures" filter hid it locally.
+   *
+   * `useTranslations` works in both a Server Component and a client render,
+   * but only for a namespace that crosses into the payload — so these two
+   * keys sit on `common` rather than the server-only `pages` bag.
+   */
+  const th = useTranslations("common.whoWeAre");
   return (
     <section className="px-4 md:px-12 py-8 md:py-10">
       <div className="grid items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] md:gap-16">
@@ -57,7 +72,7 @@ export function WhoWeAre({
               2005
             </div>
             <div className="mt-1 text-[12px] text-bz-muted">
-              Established in Abu Dhabi
+              {th("establishedIn")}
             </div>
           </div>
         </div>
@@ -89,7 +104,7 @@ export function WhoWeAre({
             href="/about"
             className="mt-5 inline-flex h-11 items-center gap-2 rounded-md bg-bz-ink px-5 text-[13.5px] font-medium text-bz-bg transition-colors hover:bg-bz-ink/90"
           >
-            Know more <ArrowRight size={15} />
+            {th("knowMore")} <ArrowRight size={15} />
           </Link>
         </div>
       </div>

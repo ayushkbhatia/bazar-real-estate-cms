@@ -248,7 +248,22 @@ describe("message catalogues", () => {
    */
   it("gives the same Arabic to the same English", () => {
     /** English strings that legitimately translate two ways, and why. */
-    const ALLOWED_DIVERGENCE: ReadonlySet<string> = new Set([]);
+    const ALLOWED_DIVERGENCE: ReadonlySet<string> = new Set([
+      /*
+       * "View" is two different words in English and this site uses both.
+       *
+       *   property.spec.view  the NOUN — the outlook from a property, which is
+       *                       الإطلالة and sits in a specification table beside
+       *                       "Floor" and "Orientation".
+       *   pages.home.view     the VERB on a project card's button, which is
+       *                       عرض and cannot be الإطلالة without the button
+       *                       reading "Outlook".
+       *
+       * One Arabic cannot serve both, and picking either breaks the other
+       * surface in a way no other check would see.
+       */
+      "View",
+    ]);
 
     const byEnglish = new Map<string, Map<string, string>>();
     for (const ns of namespaces(DEFAULT_LOCALE)) {
