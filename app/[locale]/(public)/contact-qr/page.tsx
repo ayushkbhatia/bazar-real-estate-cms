@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -36,8 +37,18 @@ export const revalidate = 300;
  * EN/AR toggle on top. The enquiry form and the explore links below it ship
  * switched off and can be re-enabled from /admin/pages/master/contact-qr.
  */
-export default async function ContactQrPage() {
-  const data = await loadContactQrContent();
+export default async function ContactQrPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // `_content.ts` reads master-page content, which resolves its locale from the
+  // request. Without this the read has no locale to find and the whole route
+  // drops out of the CDN — which is what `check:routes` caught.
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
+
+  const data = await loadContactQrContent(locale);
   const { content } = data;
 
   const v = (key: string) => content.section(key)?.values ?? {};

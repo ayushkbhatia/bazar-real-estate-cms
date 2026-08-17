@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import { getForm } from "@/lib/queries/forms";
 import Link from "next/link";
@@ -96,7 +97,17 @@ function fillCategory(template: string, label: string): string {
  * forces dynamic rendering, discarded the `revalidate = 300` above and kept
  * /insights out of the CDN. proxy.ts redirects the old querystring form.
  */
-export default async function InsightsIndexPage() {
+export default async function InsightsIndexPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Before any other await. `getMasterPageContent` resolves its locale from
+  // the request, and without this `getLocale()` has nothing to resolve — the
+  // page renders English content under `lang="ar"` in an RTL layout, which is
+  // the failure `lib/i18n/current.ts` describes: it looks finished.
+  setRequestLocale(asLocale((await params).locale));
+
   const [categories, content, newsletterForm] = await Promise.all([
     listArticleCategories(),
     getMasterPageContent("insights"),

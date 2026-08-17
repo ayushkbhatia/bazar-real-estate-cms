@@ -429,21 +429,31 @@ export const DOMAINS: Domain[] = [
 
   // ── Navigation and chrome ────────────────────────────────────────────────
   {
+    /*
+     * The navigation was "hand" until the Arabic review build.
+     *
+     * Hand-authoring was the right call for a surface a visitor reads on every
+     * page — but nobody wrote any, and 126 empty columns meant an otherwise
+     * fully Arabic page carried an English nav across the top of it. A machine
+     * first draft the client corrects beats an English menu they cannot review
+     * around, and the strategy has to say what actually happens rather than
+     * what was once intended. See ADR-0009.
+     */
     table: "megamenu_tabs",
     columns: [
       {
         column: "label",
-        strategy: "hand",
+        strategy: "machine",
         evidence: "components/brand/public-mega-nav.tsx:212",
       },
       {
         column: "panel_title",
-        strategy: "hand",
+        strategy: "machine",
         evidence: "components/brand/megamenu-panel.tsx:212",
       },
       {
         column: "right_column_title",
-        strategy: "hand",
+        strategy: "machine",
         evidence: "components/brand/megamenu-panel.tsx:270",
       },
     ],
@@ -453,7 +463,7 @@ export const DOMAINS: Domain[] = [
     columns: [
       {
         column: "heading",
-        strategy: "hand",
+        strategy: "machine",
         evidence: "components/brand/megamenu-panel.tsx:88",
       },
     ],
@@ -463,12 +473,12 @@ export const DOMAINS: Domain[] = [
     columns: [
       {
         column: "label",
-        strategy: "hand",
+        strategy: "machine",
         evidence: "components/brand/megamenu-panel.tsx:101",
       },
       {
         column: "badge_label",
-        strategy: "hand",
+        strategy: "machine",
         evidence: "components/brand/megamenu-panel.tsx:58",
       },
     ],
@@ -478,17 +488,17 @@ export const DOMAINS: Domain[] = [
     columns: [
       {
         column: "headline",
-        strategy: "hand",
+        strategy: "machine",
         evidence: "components/brand/megamenu-tile.tsx:126",
       },
       {
         column: "badge_label",
-        strategy: "hand",
+        strategy: "machine",
         evidence: "components/brand/megamenu-tile.tsx:114",
       },
       {
         column: "cta_label",
-        strategy: "hand",
+        strategy: "machine",
         evidence: "components/brand/megamenu-tile.tsx:137",
       },
     ],

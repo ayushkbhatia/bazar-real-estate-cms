@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -187,7 +188,17 @@ function Photo({
   return <PlaceholderImage label={image?.label ?? label} className={className} />;
 }
 
-export default async function AboutPage() {
+export default async function AboutPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Before any other await. `getMasterPageContent` resolves its locale from
+  // the request, and without this `getLocale()` has nothing to resolve — the
+  // page renders English content under `lang="ar"` in an RTL layout, which is
+  // the failure `lib/i18n/current.ts` describes: it looks finished.
+  setRequestLocale(asLocale((await params).locale));
+
   const content = await getMasterPageContent("about");
 
   // Section copy, images and order come from /admin/pages/master/about.

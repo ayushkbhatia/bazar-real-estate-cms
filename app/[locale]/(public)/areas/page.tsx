@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import type { Metadata } from "next";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -57,7 +58,17 @@ function imageProps(value: unknown): {
 
 const s = (v: unknown): string | null => (typeof v === "string" ? v : null);
 
-export default async function AreasPage() {
+export default async function AreasPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Before any other await. `getMasterPageContent` resolves its locale from
+  // the request, and without this `getLocale()` has nothing to resolve — the
+  // page renders English content under `lang="ar"` in an RTL layout, which is
+  // the failure `lib/i18n/current.ts` describes: it looks finished.
+  setRequestLocale(asLocale((await params).locale));
+
   const [content, listForm] = await Promise.all([
     getMasterPageContent("areas"),
     getForm("areas_list_property"),

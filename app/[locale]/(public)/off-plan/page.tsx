@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -51,7 +52,17 @@ const SECTION = "px-4 md:px-12 py-14 md:py-20 border-t border-bz-border";
 // Old deep-links (/off-plan?type=apartment) are redirected to /off-plan/search
 // by proxy.ts. No `searchParams` here — reading it would make the route fully
 // dynamic and discard the `revalidate = 300` above.
-export default async function NewProjectsPage() {
+export default async function NewProjectsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Before any other await. `getMasterPageContent` resolves its locale from
+  // the request, and without this `getLocale()` has nothing to resolve — the
+  // page renders English content under `lang="ar"` in an RTL layout, which is
+  // the failure `lib/i18n/current.ts` describes: it looks finished.
+  setRequestLocale(asLocale((await params).locale));
+
   const [content, developments, areaCounts, interestForm] = await Promise.all([
     getMasterPageContent("off-plan"),
     listPublishedDevelopments(),

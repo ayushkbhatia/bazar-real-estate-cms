@@ -76,7 +76,29 @@ const DEFAULT_FAVICON = "/favicon.ico";
  * routes into dynamic rendering — the value is baked at build and busted by
  * the `revalidatePath("/", "layout")` in the brand settings action.
  */
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  /*
+   * Arabic is served but not indexed.
+   *
+   * The pages exist so the client can review them; they are not ready to be a
+   * search result. Those are different decisions and this keeps them separate
+   * — 2,237 strings have been generated and nobody has read them yet, and an
+   * indexed URL is far harder to take back than a deployed one (once /ar is in
+   * an index, un-shipping is a 410-and-Search-Console exercise rather than a
+   * flag flip, which is the reason `LOCALES` exists as its own list).
+   *
+   * Removing this and the `/ar` line in `robots.ts` is the launch.
+   *
+   * `params` is a route param, not a dynamic API, so reading it here does not
+   * take the route off prerendering — `check:routes` proves it.
+   */
+  const { locale } = await params;
+  const unreviewed = locale === "ar";
+
   // Explicitly English. This reads only `favicon_url`, which has no Arabic
   // twin — and letting it fall through to the ambient locale would call a
   // dynamic API inside generateMetadata, which takes the whole route off
@@ -94,6 +116,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase: new URL(SITE_URL),
+    ...(unreviewed ? { robots: { index: false, follow: false } } : {}),
     title: {
       default: "Bazar Real Estate — Abu Dhabi, properly understood",
       template: "%s · Bazar",

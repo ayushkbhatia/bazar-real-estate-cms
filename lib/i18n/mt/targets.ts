@@ -18,8 +18,15 @@ export type MtTarget = {
   column: string;
   /** Hard cap on the Arabic, where the design or the column imposes one. */
   maxLength?: number;
-  /** Prose register, which changes the prompt. */
-  kind: "title" | "summary" | "body" | "alt";
+  /**
+   * Prose register, which changes the prompt.
+   *
+   * `ui` joined this union when the navigation became a target. It was already
+   * an `MtKind` — `MtKind` is `MtTarget["kind"] | "ui" | "page"` — so the
+   * registers existed and only a flat COLUMN could not ask for one. A nav
+   * label is chrome, and chrome is what `UI_SYSTEM_PROMPT` was written for.
+   */
+  kind: "title" | "summary" | "body" | "alt" | "ui";
 };
 
 export const MT_TARGETS: MtTarget[] = [
@@ -53,6 +60,25 @@ export const MT_TARGETS: MtTarget[] = [
   // page whose images announce themselves in English is worse for a screen
   // reader than one with no alt text at all, because the reader switches
   // voice mid-sentence.
+  /*
+   * The navigation. Read on every page, and the most visible English left on
+   * an otherwise Arabic site — 126 strings across five tables, none of which
+   * had an Arabic value.
+   *
+   * `kind: "ui"` deliberately: a nav label is chrome, and the failure
+   * `UI_SYSTEM_PROMPT` exists for — an ambiguous single word resolving toward
+   * property vocabulary — is exactly the risk on "Buy", "Rent", "Areas".
+   */
+  { table: "megamenu_tabs", column: "label", kind: "ui", maxLength: 90 },
+  { table: "megamenu_tabs", column: "panel_title", kind: "ui", maxLength: 120 },
+  { table: "megamenu_tabs", column: "right_column_title", kind: "ui", maxLength: 120 },
+  { table: "megamenu_columns", column: "heading", kind: "ui", maxLength: 120 },
+  { table: "megamenu_items", column: "label", kind: "ui", maxLength: 120 },
+  { table: "megamenu_items", column: "badge_label", kind: "ui", maxLength: 60 },
+  { table: "megamenu_featured_tiles", column: "headline", kind: "title", maxLength: 180 },
+  { table: "megamenu_featured_tiles", column: "badge_label", kind: "ui", maxLength: 60 },
+  { table: "megamenu_featured_tiles", column: "cta_label", kind: "ui", maxLength: 90 },
+
   // 450 = 1.5x the 300 that `mediaUploadSchema` allows
   // (`lib/schemas/media-upload.ts:64`). This said 200, which was below even
   // the English limit.

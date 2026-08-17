@@ -2,6 +2,7 @@ import {
   getMasterPageContent,
   type MasterPageContent,
 } from "@/lib/queries/master-pages";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { img, list, str } from "@/lib/master-pages";
 import type { SectionValues } from "@/lib/master-pages";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
@@ -85,8 +86,19 @@ export type ContactQrContent = {
 
 const CARD_BLOCKS: CardBlock[] = ["card", "details", "follow"];
 
-export async function loadContactQrContent(): Promise<ContactQrContent> {
-  const content = await getMasterPageContent("contact-qr");
+/**
+ * @param locale Explicit, because this is called from BOTH sides of the locale
+ *   boundary. `app/contact-qr/vcard/route.ts` sits outside `[locale]`, so an
+ *   ambient locale read there reaches for `headers()` and takes a static route
+ *   dynamic — which `check:routes` caught the moment `getMasterPageContent`
+ *   started resolving its own locale. The page passes its route locale; the
+ *   vCard passes English, because a .vcf downloaded into a phone's contacts is
+ *   not a page a visitor is reading in Arabic.
+ */
+export async function loadContactQrContent(
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<ContactQrContent> {
+  const content = await getMasterPageContent("contact-qr", locale);
   const v = (key: string) => content.section(key)?.values ?? {};
   const cardV = v("card");
   const detailsV = v("details");
