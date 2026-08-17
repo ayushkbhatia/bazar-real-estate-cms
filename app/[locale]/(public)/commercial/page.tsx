@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import { listFeaturedByType } from "@/lib/queries/curated-listings";
 import { BuyRentLanding } from "../_components/marketing/buy-rent-landing";
@@ -33,7 +34,17 @@ export async function generateMetadata({
 // await it — makes the route fully dynamic and discards the `revalidate` above.
 // This page was landing-and-search in one file, which is why it was the last
 // marketing route that could never be cached.
-export default async function CommercialPage() {
+export default async function CommercialPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Before any other await. `getMasterPageContent` resolves its locale from
+  // the request, and without this `getLocale()` has nothing to resolve — the
+  // page renders English content under `lang="ar"` in an RTL layout, which is
+  // the failure `lib/i18n/current.ts` describes: it looks finished.
+  setRequestLocale(asLocale((await params).locale));
+
   const [content, rows] = await Promise.all([
     getMasterPageContent("commercial"),
     listFeaturedByType({ mode: "commercial", limit: 4 }),

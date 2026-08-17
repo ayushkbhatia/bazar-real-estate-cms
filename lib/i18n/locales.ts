@@ -13,8 +13,11 @@
  *   LOCALES      the locales actually served right now. Gates routing, the
  *                sitemap, `generateStaticParams`, and the navbar toggle.
  *
- * Arabic is written and reviewable but not yet served, so it is in the first
- * list and not the second. Enabling it in P3 is one line here.
+ * Arabic is now served. It is NOT indexed: `app/[locale]/layout.tsx` emits
+ * `robots: noindex` for it and `robots.ts` disallows `/ar`, so the client can
+ * review the whole site in Arabic without a single URL entering a search
+ * index. Removing those two is the actual launch, and it is deliberately a
+ * separate decision from making the pages exist.
  *
  * This split is also the kill switch: once `/ar` is indexed, un-shipping it is
  * a 410-and-Search-Console exercise rather than a flag flip, so the flag has to
@@ -42,7 +45,7 @@ export const DEFAULT_LOCALE = "en" satisfies Locale;
  * prerendered alongside 234 /en/*, chrome mirrored, Arabic font loaded on
  * /ar/* and absent from English pages.
  */
-export const LOCALES: readonly Locale[] = ["en"];
+export const LOCALES: readonly Locale[] = ["en", "ar"];
 
 /** Text direction per locale. Arabic is the only RTL locale in scope. */
 export const LOCALE_DIR: Record<Locale, "ltr" | "rtl"> = {

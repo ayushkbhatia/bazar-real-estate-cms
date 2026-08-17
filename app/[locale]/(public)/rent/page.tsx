@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import { listNewThisWeek } from "@/lib/queries/curated-listings";
 import { BuyRentLanding } from "../_components/marketing/buy-rent-landing";
@@ -32,7 +33,17 @@ export async function generateMetadata({
 // Old deep-links (/rent?beds=2) are redirected to /rent/search by proxy.ts.
 // No `searchParams` here — reading it would make the route fully dynamic and
 // discard the `revalidate` above. See lib/filters/search-redirect.ts.
-export default async function RentPage() {
+export default async function RentPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Before any other await. `getMasterPageContent` resolves its locale from
+  // the request, and without this `getLocale()` has nothing to resolve — the
+  // page renders English content under `lang="ar"` in an RTL layout, which is
+  // the failure `lib/i18n/current.ts` describes: it looks finished.
+  setRequestLocale(asLocale((await params).locale));
+
   const [content, rows, areas] = await Promise.all([
     getMasterPageContent("rent"),
     listNewThisWeek({ limit: 4 }),

@@ -17,7 +17,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
-import { localiseDeep } from "@/lib/i18n/localise";
+import { localiseDeep, localiseRow } from "@/lib/i18n/localise";
 import { type Locale } from "@/lib/i18n/locales";
 import type { Database, Json } from "@/db/types";
 import {
@@ -218,18 +218,42 @@ function localiseFields(
 }
 
 /** The effective form for a public page. Never null for a registry key. */
+
+/**
+ * Fold a resolved form down to one locale.
+ *
+ * Has to happen AFTER `resolveForm`, not before, and that ordering is the
+ * whole point. `localiseFields` above folds the STORED rows — but a form with
+ * no stored rows falls back to the registry defaults, and `fillFormArabic`
+ * (inside `resolveForm`) is what puts Arabic on those. Folding only the stored
+ * rows meant a form that had never been edited in the CMS rendered its labels
+ * in English on `/ar`, with the Arabic sitting right there in `label_ar`
+ * unread.
+ *
+ * `resolveForm` itself must NOT fold: the admin editor reads through it and
+ * needs both languages, or it renders blank Arabic inputs over stored content
+ * and saves the blanks back — which is exactly how #390 destroyed data.
+ */
+function localiseResolved(form: ResolvedForm, locale: Locale): ResolvedForm {
+  return {
+    ...form,
+    copy: localiseRow(form.copy as Record<string, unknown>, locale) as typeof form.copy,
+    fields: localiseDeep(form.fields, locale),
+  };
+}
+
 export async function getForm(key: string): Promise<ResolvedForm> {
   const fallback = defaultForm(key);
   if (!fallback) throw new Error(`Unknown form: ${key}`);
   const { forms, fields } = await loadAll();
   const locale = await currentLocale();
-  return (
+  const resolved =
     resolveForm(
       key,
       forms.get(key) ?? null,
       localiseFields(fields.get(key) ?? null, locale),
-    ) ?? fallback
-  );
+    ) ?? fallback;
+  return localiseResolved(resolved, locale);
 }
 
 /** Several at once, keyed by form key. */
@@ -246,7 +270,7 @@ export async function getForms(
         forms.get(key) ?? null,
         localiseFields(fields.get(key) ?? null, locale),
       ) ?? defaultForm(key);
-    if (resolved) out[key] = resolved;
+    if (resolved) out[key] = localiseResolved(resolved, locale);
   }
   return out;
 }

@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -52,7 +53,17 @@ function heroTitle(
   );
 }
 
-export default async function DevelopersPage() {
+export default async function DevelopersPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Before any other await. `getMasterPageContent` resolves its locale from
+  // the request, and without this `getLocale()` has nothing to resolve — the
+  // page renders English content under `lang="ar"` in an RTL layout, which is
+  // the failure `lib/i18n/current.ts` describes: it looks finished.
+  setRequestLocale(asLocale((await params).locale));
+
   // Section copy and order come from /admin/pages/master/developers. Anything
   // untouched falls back to the literals this page shipped with. The card grid
   // is the code-owned directory merged with the live catalogue, so a developer

@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import * as React from "react";
 import Link from "next/link";
@@ -66,7 +67,17 @@ function badgeFor(row: ListingRow):
   return undefined;
 }
 
-export default async function HomePage() {
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Before any other await. `getMasterPageContent` resolves its locale from
+  // the request, and without this `getLocale()` has nothing to resolve — the
+  // page renders English content under `lang="ar"` in an RTL layout, which is
+  // the failure `lib/i18n/current.ts` describes: it looks finished.
+  setRequestLocale(asLocale((await params).locale));
+
   const [{ rows: latest }, settings, content, listForm] = await Promise.all([
     listPublishedProperties({ mode: "buy", limit: HOME_FEATURED_LISTING_COUNT }),
     getPublicSiteSettings(),

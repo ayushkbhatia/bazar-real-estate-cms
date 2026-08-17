@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import {
   listExclusiveProperties,
@@ -38,7 +39,17 @@ export async function generateMetadata({
 // route by proxy.ts. Deliberately no `searchParams` here: reading it — even
 // just to await it — makes the route fully dynamic and silently discards the
 // `revalidate = 300` above, which is what took this page out of the CDN.
-export default async function BuyPage() {
+export default async function BuyPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Before any other await. `getMasterPageContent` resolves its locale from
+  // the request, and without this `getLocale()` has nothing to resolve — the
+  // page renders English content under `lang="ar"` in an RTL layout, which is
+  // the failure `lib/i18n/current.ts` describes: it looks finished.
+  setRequestLocale(asLocale((await params).locale));
+
   const [
     content,
     exclusiveRows,

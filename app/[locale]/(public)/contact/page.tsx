@@ -1,3 +1,4 @@
+import { setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -132,7 +133,17 @@ function ContactWhatsAppLink({ label }: { label: string }) {
  */
 const COLUMN_KEYS = ["contact_details", "enquiry_form"];
 
-export default async function ContactPage() {
+export default async function ContactPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Before any other await. `getMasterPageContent` resolves its locale from
+  // the request, and without this `getLocale()` has nothing to resolve — the
+  // page renders English content under `lang="ar"` in an RTL layout, which is
+  // the failure `lib/i18n/current.ts` describes: it looks finished.
+  setRequestLocale(asLocale((await params).locale));
+
   // Section copy, links and order come from /admin/pages/master/contact.
   // Anything untouched falls back to the literals the page shipped with.
   const content = await getMasterPageContent("contact");
