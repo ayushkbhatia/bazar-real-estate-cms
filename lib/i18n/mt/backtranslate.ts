@@ -206,8 +206,34 @@ export type Equivalence = {
   shortcut?: boolean;
 };
 
-/** Above this the pair agrees outright; the p99 of the null distribution. */
-export const LEXICAL_SHORTCUT = 0.7;
+/**
+ * The only lexical agreement safe to trust without asking a model: an exact
+ * match after normalisation.
+ *
+ * This used to be a 0.7 token-overlap threshold, and it was a hole in the gate.
+ * "Your next location starts here" round-tripping as "Your next apartment
+ * starts from here" scores above it — three of four content words survive and
+ * the one that changed is the one carrying the meaning — so the pair was
+ * declared SAME with no model consulted at all.
+ *
+ * The calibration data said so from the beginning and I read it as a cost
+ * saving: the NULL distribution, pairs known to be unrelated, reached a maximum
+ * lexical score of 1.00. A threshold below that cannot separate agreement from
+ * coincidence, whatever value it takes.
+ *
+ * Exact equality is different in kind rather than degree — two identical
+ * strings mean the same thing by definition — and it still skips the call for
+ * the genuinely trivial round trips, which is where the saving actually was.
+ *
+ * Found by swapping the model: Anthropic's back-translation said "begins" and
+ * fell below 0.7, so the hole never opened. A second provider walked straight
+ * into it.
+ */
+export function lexicallyIdentical(a: string, b: string): boolean {
+  const norm = (t: string) =>
+    t.toLowerCase().replace(/[^a-z0-9⟦⟧\s]/g, " ").split(/\s+/).filter(Boolean).join(" ");
+  return norm(a) === norm(b) && norm(a).length > 0;
+}
 
 export async function equivalence(input: {
   client: MtClient;
@@ -218,8 +244,8 @@ export async function equivalence(input: {
   const out: Equivalence[] = [];
 
   for (const pair of input.pairs) {
-    if (lexicalAgreement(pair.source, pair.back) >= LEXICAL_SHORTCUT) {
-      out.push({ id: pair.id, same: true, reason: "lexically identical", shortcut: true });
+    if (lexicallyIdentical(pair.source, pair.back)) {
+      out.push({ id: pair.id, same: true, reason: "identical after normalisation", shortcut: true });
       continue;
     }
     const response = await input.client.messages.create({

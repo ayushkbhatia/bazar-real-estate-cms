@@ -364,20 +364,30 @@ async function main() {
     return;
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!process.env.ANTHROPIC_API_KEY && !process.env.HF_TOKEN) {
     writeStore(store);
     console.error(
-      "\nANTHROPIC_API_KEY is not set. The verbatim slots were written; " +
-        "translating the rest needs a key.\n" +
-        "Note this is an AUTHORING-time key only — nothing in production ever " +
-        "calls a model to render the Arabic this produces.",
+      "\nNo model credentials. The verbatim slots were written; translating " +
+        "the rest needs ANTHROPIC_API_KEY, or HF_TOKEN for the Hugging Face " +
+        "router.\n" +
+        "Either way this is an AUTHORING-time key only — nothing in production " +
+        "ever calls a model to render the Arabic this produces.",
     );
     process.exit(2);
   }
 
-  const { default: Anthropic } = await import("@anthropic-ai/sdk");
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const { mtClientFromEnv } = await import("../../lib/i18n/mt/hf-client");
+  const { client, proseModel, fastModel, provider } = await mtClientFromEnv();
   const { translateField } = await import("../../lib/i18n/mt/translate");
+  console.log(`Provider: ${provider} · ${proseModel}`);
+  if (provider !== "anthropic") {
+    console.log(
+      "Note: every calibration figure in this repo — the 8/8 known-bad recall,\n" +
+        "the 25% false-positive rate, the register decisions — was measured\n" +
+        "against Anthropic. Expect a different pass rate. What ships is still\n" +
+        "gated the same way, so a weaker model costs coverage, not correctness.",
+    );
+  }
   const { backTranslate, equivalence, restoreNames, restoreGlossary } =
     await import("../../lib/i18n/mt/backtranslate");
 
@@ -423,6 +433,10 @@ async function main() {
         kind: w.kind as never,
         maxLength: w.maxLength,
         properNouns: nouns,
+        model: w.kind === "alt" ? fastModel : proseModel,
+        // One model, so there is nowhere to fall back TO. On Anthropic this is
+        // the Haiku re-roll; on a single-model provider it would just repeat.
+        fallbackModel: provider === "anthropic" ? undefined : null,
       });
 
       if (!result.ok) {
@@ -438,6 +452,7 @@ async function main() {
     if (candidates.length) {
       const backs = await backTranslate({
         client,
+        model: fastModel,
         items: candidates.map((c, i) => ({
           id: String(i),
           arabic: restoreGlossary(restoreNames(c.ar, nouns)),
@@ -446,6 +461,7 @@ async function main() {
       const backOf = new Map(backs.map((b) => [b.id, b.english]));
       const verdicts = await equivalence({
         client,
+        model: fastModel,
         pairs: candidates.map((c, i) => ({
           id: String(i),
           source: c.job.english,
