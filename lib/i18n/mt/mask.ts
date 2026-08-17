@@ -131,7 +131,7 @@ const PATTERNS: { name: string; re: RegExp }[] = [
   // a different check. Five occurrences across two market-report articles.
   {
     name: "date",
-    re: /\b\d{4}-\d{2}-\d{2}\b|\b[QH][1-4]\s?\d{4}\b|\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b/giu,
+    re: /\b\d{4}-\d{2}-\d{2}\b|\b[QH][1-4]\s?\d{4}\b|\b[QH][1-4]\b(?!\s?\d)|\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b/giu,
   },
 ];
 

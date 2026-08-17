@@ -807,7 +807,86 @@ export const PROPER_NOUNS: NounEntry[] = [
   },];
 
 /** Every English name, longest first — the term list `mask()` wants. */
-export function nounTerms(nouns: readonly NounEntry[] = PROPER_NOUNS): string[] {
+/**
+ * Short forms, as editorial prose actually writes them.
+ *
+ * `NounEntry.en` is documented as "the English name, exactly as it appears in
+ * the database", and the list was built that way — every entry is a full legal
+ * or cartographic name. Articles do not write those. A field note says "Aldar,
+ * Bloom, IMKAN and the smaller developers", not "Aldar Properties, Bloom
+ * Holding, IMKAN Properties", and `mask` matches whole terms, so none of the
+ * three was protected. The model then mangled the unprotected run and the
+ * block was rejected with `latin-leak: untranslated: ldar, Bloom, IMKAN` — the
+ * "A" of Aldar having been absorbed into an Arabic word.
+ *
+ * Each short form carries its OWN Arabic rather than the parent's, because
+ * they are different strings: bare "Aldar" is الدار, not الدار العقارية.
+ *
+ * Deliberately conservative. A short form is here only if it is unambiguous in
+ * running English text. `National` (National Holding), `Zayed` (also a
+ * person's name, and Sheikh Zayed appears in prose), `Bayviews`, `Ohana` and
+ * `Bulgari` are all left out: masking an ordinary word, or a person, is a
+ * worse failure than leaving a name Latin, which is normal on UAE sites and
+ * never wrong.
+ */
+const SHORT_FORMS: NounEntry[] = [
+  {
+    en: "Aldar",
+    ar: "الدار",
+    kind: "developer",
+    confidence: "established",
+    source: "Short form of Aldar Properties (الدار العقارية); Aldar's own Arabic releases use الدار standalone.",
+  },
+  {
+    en: "Bloom",
+    ar: "بلووم",
+    kind: "developer",
+    confidence: "established",
+    source: "Short form of Bloom Holding (بلووم القابضة).",
+  },
+  {
+    en: "IMKAN",
+    ar: "إمكان",
+    kind: "developer",
+    confidence: "established",
+    source: "Short form of IMKAN Properties (إمكان العقارية).",
+  },
+  {
+    en: "Sobha",
+    ar: "شوبا",
+    kind: "developer",
+    confidence: "established",
+    source: "Short form of Sobha Realty (شوبا العقارية).",
+  },
+  {
+    en: "Saadiyat",
+    ar: "السعديات",
+    kind: "area",
+    confidence: "official",
+    source: "Short form of Saadiyat Island (جزيرة السعديات). The island name without جزيرة is how it is written attributively — 'a Saadiyat villa' is 'فيلا في السعديات'.",
+  },
+  {
+    en: "Hudayriyat",
+    ar: "الحديريات",
+    kind: "area",
+    confidence: "official",
+    source: "Short form of Hudayriyat Island (جزيرة الحديريات).",
+  },
+  {
+    en: "Masdar",
+    ar: "مصدر",
+    kind: "area",
+    confidence: "official",
+    source: "Short form of Masdar City (مدينة مصدر).",
+  },
+];
+
+/** The full list every caller masks against. */
+export const ALL_NOUNS: NounEntry[] = [...PROPER_NOUNS, ...SHORT_FORMS];
+
+export function nounTerms(
+  nouns: readonly NounEntry[] = ALL_NOUNS,
+): string[] {
   return nouns.map((n) => n.en).sort((a, b) => b.length - a.length);
 }
 
@@ -818,7 +897,7 @@ export function nounTerms(nouns: readonly NounEntry[] = PROPER_NOUNS): string[] 
  * a caller can tell "no approved Arabic" apart from "not a known name".
  */
 export function nounMap(
-  nouns: readonly NounEntry[] = PROPER_NOUNS,
+  nouns: readonly NounEntry[] = ALL_NOUNS,
 ): Map<string, string | null> {
   return new Map(nouns.map((n) => [n.en.toLowerCase(), n.ar]));
 }

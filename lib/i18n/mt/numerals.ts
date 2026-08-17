@@ -95,6 +95,19 @@ export function arabicNumeral(token: string): string | null {
   const half = /^H([12])\s?(\d{4})$/u.exec(t);
   if (half) return `${HALVES[half[1]!]} ${half[2]}`;
 
+  /*
+   * A bare period with no year: "handing over within a 90-day window in Q3".
+   *
+   * Unmasked, the model renders it الربع الثالث and the digit disappears, so
+   * `numeral-drift` reports [3, 60, 90, 90] became [60, 90, 90] and the block
+   * keeps its English — a correct translation rejected because the check
+   * counts digits and Arabic spells this one out.
+   */
+  const bareQ = /^Q([1-4])$/u.exec(t);
+  if (bareQ) return QUARTERS[bareQ[1]!]!;
+  const bareH = /^H([12])$/u.exec(t);
+  if (bareH) return HALVES[bareH[1]!]!.replace(/ من$/u, "");
+
   // September 2026
   const month = /^([A-Za-z]+)\s+(\d{4})$/u.exec(t);
   if (month) {
