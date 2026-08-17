@@ -102,3 +102,49 @@ describe("huggingFaceClient", () => {
     expect(out.stop_reason).not.toBe("refusal");
   });
 });
+
+describe("mtClientFromEnv", () => {
+  const saved = { ...process.env };
+  afterEach(() => {
+    process.env = { ...saved };
+  });
+
+  it("honours an explicit MT_PROVIDER over a key that happens to be set", async () => {
+    /*
+     * The case that made this necessary: `ANTHROPIC_API_KEY` was revoked
+     * mid-session while still sitting in `.env.local`. "Set" and "works" are
+     * different things, and a present-means-preferred rule picks the dead one.
+     */
+    const { mtClientFromEnv } = await import("./hf-client");
+    process.env.ANTHROPIC_API_KEY = "sk-ant-revoked";
+    process.env.HF_TOKEN = "hf_live";
+    process.env.MT_PROVIDER = "huggingface";
+    const { provider } = await mtClientFromEnv();
+    expect(provider).toBe("huggingface");
+  });
+
+  it("still prefers Anthropic when nothing is forced", async () => {
+    // Every calibration figure in the repo was measured against it, so the
+    // default must not drift silently.
+    const { mtClientFromEnv } = await import("./hf-client");
+    process.env.ANTHROPIC_API_KEY = "sk-ant-x";
+    process.env.HF_TOKEN = "hf_x";
+    delete process.env.MT_PROVIDER;
+    const { provider } = await mtClientFromEnv();
+    expect(provider).toBe("anthropic");
+  });
+
+  it("rejects a provider name it does not know", async () => {
+    const { mtClientFromEnv } = await import("./hf-client");
+    process.env.MT_PROVIDER = "ollama";
+    await expect(mtClientFromEnv()).rejects.toThrow(/MT_PROVIDER/);
+  });
+
+  it("says what to set when there are no credentials at all", async () => {
+    const { mtClientFromEnv } = await import("./hf-client");
+    delete process.env.ANTHROPIC_API_KEY;
+    delete process.env.HF_TOKEN;
+    delete process.env.MT_PROVIDER;
+    await expect(mtClientFromEnv()).rejects.toThrow(/HF_TOKEN/);
+  });
+});

@@ -161,8 +161,32 @@ export async function mtClientFromEnv(): Promise<{
 }> {
   const hfToken = process.env.HF_TOKEN;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  /*
+   * An explicit choice beats the heuristic, because "the key is set" and "the
+   * key works" are different things.
+   *
+   * This repo's `ANTHROPIC_API_KEY` was revoked mid-session while still sitting
+   * in `.env.local`, so a present-means-preferred rule picks a dead key and
+   * fails every call. Probing it would cost a request per run and still race
+   * with the next revocation; saying which provider you want does not.
+   */
+  const forced = process.env.MT_PROVIDER;
+  if (forced && forced !== "anthropic" && forced !== "huggingface") {
+    throw new Error(`MT_PROVIDER must be "anthropic" or "huggingface", got "${forced}"`);
+  }
 
-  if (anthropicKey) {
+  if (forced === "huggingface") {
+    if (!hfToken) throw new Error("MT_PROVIDER=huggingface but HF_TOKEN is not set.");
+    const prose = process.env.HF_MODEL ?? "Qwen/Qwen2.5-72B-Instruct";
+    return {
+      client: huggingFaceClient({ token: hfToken, model: prose }),
+      proseModel: prose,
+      fastModel: process.env.HF_MODEL_FAST ?? prose,
+      provider: "huggingface",
+    };
+  }
+
+  if (anthropicKey && forced !== "huggingface") {
     const { default: Anthropic } = await import("@anthropic-ai/sdk");
     const { MT_MODEL_PROSE } = await import("./translate");
     return {

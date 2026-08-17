@@ -46,6 +46,8 @@ const SDK_IMPORTERS: Readonly<Record<string, string>> = {
     "the AI Concierge — a chat product, not a render path; already degrades closed without a key",
   "app/[locale]/(admin)/admin/properties/[id]/_translate-actions.ts":
     "the per-field admin translate button; staff-only, and returns a typed error when the key is unset",
+  "lib/i18n/mt/hf-client.ts":
+    "the provider shim — imports the SDK lazily inside `mtClientFromEnv`, which only the authoring scripts call. The reachability half of this file is what actually guards it: no public entry point can reach this module at all.",
 };
 
 function sourceFiles(): string[] {
