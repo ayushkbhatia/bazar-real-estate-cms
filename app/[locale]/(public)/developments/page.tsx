@@ -1,3 +1,7 @@
+import type { Locale } from "@/lib/i18n/locales";
+import { asLocale } from "@/lib/i18n/locales";
+import { setRequestLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -20,13 +24,24 @@ export const metadata: Metadata = {
 
 export const revalidate = 120;
 
-export default async function DevelopmentsIndexPage() {
+export default async function DevelopmentsIndexPage({
+  params,
+}: {
+  locale: Locale;
+  params: Promise<{ locale: string }>;
+}) {
+  // Explicit locale, not the ambient lookup: `getTranslations("ns")` reaches
+  // for `headers()` and takes this route and its siblings off prerendering,
+  // which is what `check:routes` caught.
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
+  const t = await getTranslations({ locale, namespace: "pages.developments" });
   const developments = await listPublishedDevelopments();
 
   return (
     <div className="bg-bz-bg">
       <section className="px-12 pt-16 pb-10 border-b border-bz-border">
-        <Eyebrow>Off-plan developments</Eyebrow>
+        <Eyebrow>{t("eyebrow")}</Eyebrow>
         <h1
           className="serif text-[64px] font-normal mt-3 leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
@@ -43,7 +58,7 @@ export default async function DevelopmentsIndexPage() {
       <section className="px-12 py-12">
         {developments.length === 0 ? (
           <div className="py-24 text-center">
-            <Eyebrow>Empty</Eyebrow>
+            <Eyebrow>{t("empty")}</Eyebrow>
             <p className="mt-3 text-[15px] text-bz-muted">
               No published developments yet. Sign in to /admin to add one.
             </p>
@@ -51,7 +66,7 @@ export default async function DevelopmentsIndexPage() {
         ) : (
           <div className="grid grid-cols-2 gap-6">
             {developments.map((d) => (
-              <DevelopmentCard key={d.id} d={d} />
+              <DevelopmentCard locale={locale} key={d.id} d={d} />
             ))}
           </div>
         )}
@@ -60,11 +75,14 @@ export default async function DevelopmentsIndexPage() {
   );
 }
 
-function DevelopmentCard({
+async function DevelopmentCard({
+  locale,
   d,
 }: {
+  locale: Locale;
   d: Awaited<ReturnType<typeof listPublishedDevelopments>>[number];
 }) {
+  const t = await getTranslations({ locale, namespace: "pages.developments" });
   return (
     <Link
       href={developmentUrl(d)}
@@ -112,15 +130,15 @@ function DevelopmentCard({
         <div className="mt-5 pt-5 border-t border-bz-border grid grid-cols-3 gap-4">
           <Stat
             value={<PriceText aed={d.starting_price} />}
-            label="From"
+            label={t("from")}
           />
           <Stat
             value={d.bedrooms_text ?? "—"}
-            label="Bedrooms"
+            label={t("bedrooms")}
           />
           <Stat
             value={quarterLabel(d.handover_date)}
-            label="Handover"
+            label={t("handover")}
           />
         </div>
       </div>

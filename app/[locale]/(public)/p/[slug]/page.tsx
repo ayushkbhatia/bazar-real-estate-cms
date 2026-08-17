@@ -243,6 +243,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
    * page still renders, just uncached, with its `revalidate` discarded.
    */
   const t = await getTranslations({ locale, namespace: "property" });
+  // `t` is already this page's own namespace; `tp` is the shared
+  // `pages` bag for the strings W6 extracted out of the JSX.
+  const tp = await getTranslations({ locale, namespace: "pages.property" });
   const ref = extractReferenceFromSlug(slug);
   if (!ref) notFound();
 
@@ -552,7 +555,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           {property.description ? (
             <div>
-              <Eyebrow>Why this one</Eyebrow>
+              <Eyebrow>{tp("whyThisOne")}</Eyebrow>
               <p className="mt-3 text-[16.5px] leading-[1.7] text-bz-ink whitespace-pre-line max-w-[64ch]">
                 {property.description}
               </p>
@@ -570,7 +573,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           {property.amenities.length > 0 ? (
             <div>
-              <Eyebrow>Features &amp; amenities</Eyebrow>
+              <Eyebrow>{tp("featuresAmenities")}</Eyebrow>
               <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5 text-[14px]">
                 {orderAmenities(property.amenities, amenityOptions).map((a) => (
                   <li key={a} className="flex items-center gap-2">
@@ -584,7 +587,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           {/* Location */}
           <div id="location" className="scroll-mt-16">
-            <Eyebrow>Location</Eyebrow>
+            <Eyebrow>{tp("location")}</Eyebrow>
             <h3
               className="serif text-[24px] mt-2 mb-4"
               style={{ letterSpacing: "-0.012em" }}
@@ -600,7 +603,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               />
             ) : (
               <PlaceholderImage
-                label="No coordinates set on this listing"
+                label={tp("noCoordinates")}
                 className="aspect-[16/9] rounded-lg"
               />
             )}
@@ -640,7 +643,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             id="send-brief"
             className="bg-bz-surface border border-bz-border rounded-lg p-5 scroll-mt-24"
           >
-            <Eyebrow>Enquire about this property</Eyebrow>
+            <Eyebrow>{tp("enquireAbout")}</Eyebrow>
             <h4 className="serif text-[18px] mt-2 leading-tight mb-4">
               Ask anything about{" "}
               <span className="mono text-[14px]">{property.reference}</span>.
