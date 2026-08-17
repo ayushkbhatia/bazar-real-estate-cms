@@ -136,6 +136,17 @@ export async function translateField(input: {
    */
   properNouns?: Map<string, string | null>;
   /**
+   * Override the model, for a provider whose names are not Anthropic's.
+   *
+   * `modelFor` returns `claude-*` identifiers, which are meaningless to the
+   * Hugging Face router. Passing the name in keeps the register-to-model
+   * mapping here — where the reasoning for it lives — while letting the caller
+   * decide which vendor is answering. See `lib/i18n/mt/hf-client.ts`.
+   */
+  model?: string;
+  /** Where to go on a refusal. `null` disables the fallback entirely. */
+  fallbackModel?: string | null;
+  /**
    * Extra checks on the raw output, run beside the standard ones and folded
    * into the same retry.
    *
@@ -148,7 +159,7 @@ export async function translateField(input: {
   extraIssues?: (output: string) => string[];
 }): Promise<TranslateResult> {
   const source = input.text.trim();
-  const primary = modelFor(input.kind);
+  const primary = input.model ?? modelFor(input.kind);
   // Reassigned once, if the primary refuses — see `fallbackModelFor`.
   let model = primary;
 
@@ -238,7 +249,7 @@ export async function translateField(input: {
       }
       // Out of re-rolls on a refusal: try the other model once, from a clean
       // count. Everything else has already had every chance it is going to get.
-      const fallback = switched ? null : fallbackModelFor(input.kind);
+      const fallback = switched ? null : (input.fallbackModel !== undefined ? input.fallbackModel : fallbackModelFor(input.kind));
       if (stop === "refusal" && fallback && fallback !== model) {
         switched = true;
         model = fallback;
