@@ -68,5 +68,24 @@
     "previous": "السابق",
     "orTryOur": "أو جرّب",
     "first": "أولاً."
+  },
+  "property": {
+    "whyThisOne": "لماذا هذا العقار",
+    "featuresAmenities": "المزايا والمرافق",
+    "location": "الموقع",
+    "noCoordinates": "لا توجد إحداثيات محددة لهذا العقار",
+    "enquireAbout": "استفسر عن هذا العقار"
+  },
+  "developments": {
+    "eyebrow": "مشاريع على الخارطة",
+    "empty": "لا يوجد",
+    "from": "من",
+    "bedrooms": "غرف النوم",
+    "handover": "التسليم"
+  },
+  "development": {
+    "startingPrice": "السعر يبدأ من",
+    "totalUnits": "إجمالي الوحدات",
+    "paymentPlan": "خطة السداد"
   }
 }

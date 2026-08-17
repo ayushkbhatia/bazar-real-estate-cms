@@ -162,6 +162,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
    */
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "development" });
+  // `t` is already this page's own namespace; `tp` is the shared
+  // `pages` bag for the strings W6 extracted out of the JSX.
+  const tp = await getTranslations({ locale, namespace: "pages.development" });
   const { slug } = await params;
   const development = await getPublishedDevelopmentBySlug(slug);
   if (!development) notFound();
@@ -783,11 +786,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             >
               <HeroStat
                 value={<PriceText aed={development.starting_price} />}
-                label="Starting price"
+                label={tp("startingPrice")}
               />
               <HeroStat
                 value={development.bedrooms_text ?? "—"}
-                label="Bedrooms"
+                label={tp("bedrooms")}
               />
               <HeroStat
                 value={
@@ -795,11 +798,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                     ? development.total_units.toString()
                     : "—"
                 }
-                label="Total units"
+                label={tp("totalUnits")}
               />
               <HeroStat
                 value={quarterLabel(development.handover_date)}
-                label="Handover"
+                label={tp("handover")}
               />
               {development.payment_plan ? (
                 // "60/40 Payment Plan" → value "60/40", label "Payment plan".
@@ -807,7 +810,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 // value's first word, which read as a stutter.
                 <HeroStat
                   value={development.payment_plan.name.split(" ")[0]}
-                  label="Payment plan"
+                  label={tp("paymentPlan")}
                 />
               ) : null}
               {/* Wraps on narrow screens — "Register your interest" is a wider

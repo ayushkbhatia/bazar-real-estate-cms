@@ -68,5 +68,24 @@
     "previous": "Previous",
     "orTryOur": "Or try our",
     "first": "first."
+  },
+  "property": {
+    "whyThisOne": "Why this one",
+    "featuresAmenities": "Features & amenities",
+    "location": "Location",
+    "noCoordinates": "No coordinates set on this listing",
+    "enquireAbout": "Enquire about this property"
+  },
+  "developments": {
+    "eyebrow": "Off-plan developments",
+    "empty": "Empty",
+    "from": "From",
+    "bedrooms": "Bedrooms",
+    "handover": "Handover"
+  },
+  "development": {
+    "startingPrice": "Starting price",
+    "totalUnits": "Total units",
+    "paymentPlan": "Payment plan"
   }
 }
