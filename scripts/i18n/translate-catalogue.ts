@@ -15,7 +15,8 @@
  *   npm run i18n:translate -- --stale       # + keys whose English changed since
  *   npm run i18n:translate -- --dry-run     # list the work, translate nothing
  *
- * Needs ANTHROPIC_API_KEY. Without it, --dry-run still works and still reports
+ * Needs ANTHROPIC_API_KEY, or HF_TOKEN for the Hugging Face router (see
+ * `lib/i18n/mt/hf-client.ts`). Without either, --dry-run still works and reports
  * what would be translated, which is the useful half when checking scope.
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
@@ -196,20 +197,31 @@ async function main() {
   for (const w of work) console.log(`  ${w.id.padEnd(34)} ${w.why}`);
   if (DRY) return;
 
-  const { default: Anthropic } = await import("@anthropic-ai/sdk");
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!process.env.ANTHROPIC_API_KEY && !process.env.HF_TOKEN) {
     console.error(
-      "\nANTHROPIC_API_KEY is not set. --dry-run works without it; a real run does not.",
+      "\nNo model credentials. --dry-run works without them; a real run needs " +
+        "ANTHROPIC_API_KEY, or HF_TOKEN for the Hugging Face router.",
     );
     process.exit(2);
   }
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+  /*
+   * Through the provider shim, like the content and record translators.
+   *
+   * This script was the last one still constructing the Anthropic SDK itself,
+   * which is why the W6b message keys had to be hand-written the day the key
+   * was revoked: the content pipeline had a second provider and the CATALOGUE
+   * did not. One `mtClientFromEnv` and it does.
+   */
+  const { mtClientFromEnv } = await import("../../lib/i18n/mt/hf-client");
+  const { client, proseModel, provider } = await mtClientFromEnv();
+  console.log(`Provider: ${provider} · ${proseModel}\n`);
 
   // Imported lazily so --dry-run needs neither the SDK nor a key. Run through
   // tsx: the lib chain uses extensionless imports, which Node's own
   // type-stripping will not resolve.
-  const { translateField, MT_MODEL_PROSE } =
-    await import("../../lib/i18n/mt/translate");
+  const { translateField } = await import("../../lib/i18n/mt/translate");
+  const MT_MODEL_PROSE = proseModel;
   const { translatePluralMessage, catalogueIssues, refuse, stripMarkdownHeading } =
     await import("../../lib/i18n/catalogue-mt");
   const { parseMessage } = await import("../../lib/i18n/icu");
@@ -258,6 +270,10 @@ async function main() {
     } else {
       const res = await translateField({
         client,
+        model: proseModel,
+        // One model, so there is nowhere to fall back TO. On Anthropic this is
+        // the Haiku re-roll; elsewhere it would just repeat the same call.
+        fallbackModel: provider === "anthropic" ? undefined : null,
         text: item.english,
         /*
          * `ui`, not `title`.
