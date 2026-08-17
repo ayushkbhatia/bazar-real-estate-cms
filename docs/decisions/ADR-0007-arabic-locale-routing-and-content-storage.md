@@ -24,6 +24,8 @@ the hundreds and grow weekly, so hand-authoring Arabic per field is not
 operationally viable. Curated surfaces — master pages, developments and areas
 sub-pages, navigation, and Page Builder landing pages — are where the client's
 brand voice lives, and a machine translation of those is not acceptable.
+(Amended: see [ADR-0008](ADR-0008-machine-generated-arabic-first-draft.md) for
+what happened when nobody hand-authored them.)
 
 ## Decision
 
@@ -82,6 +84,16 @@ address a list item stably by `field_path`, and it makes an Arabic full-text
 search column impossible.
 
 ### 4. Machine translation for listings, hand-authored everywhere else
+
+> **Amended by [ADR-0008](ADR-0008-machine-generated-arabic-first-draft.md).**
+> The rule below held for a year and produced twelve Arabic values across the
+> whole curated corpus. Curated surfaces now receive a machine-generated FIRST
+> DRAFT — gated, committed as reviewable source, and overwritten the moment an
+> editor touches the field. The reasoning here is not withdrawn: machine
+> translation is still not acceptable as the published voice. ADR-0008 changes
+> what a human starts from, not what ships. Read it before treating this
+> section as current.
+
 
 `properties.{title, short_description, description}` and image alt text are
 machine-translated, auto-published, and badged in the CMS as machine-written so
@@ -155,3 +167,5 @@ Recorded here so they are not silently decided by engineering:
   layer an Arabic FTS column has to coexist with.
 - [ADR-0006](ADR-0006-currency-aed-usd-only.md) — the preferences layer whose
   `Locale` reservation this cashes in.
+- [ADR-0008](ADR-0008-machine-generated-arabic-first-draft.md) — amends §4:
+  curated surfaces get a gated machine first draft rather than staying blank.
