@@ -82,7 +82,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/footer-trust.tsx": 1,
   "app/[locale]/(public)/_components/forms/form-renderer.tsx": 2,
   "app/[locale]/(public)/_components/hero-search.tsx": 6,
-  "app/[locale]/(public)/_components/hero-variants.tsx": 17,
   "app/[locale]/(public)/_components/home/home-faqs.tsx": 1,
   "app/[locale]/(public)/_components/home/home-testimonials.tsx": 3,
   "app/[locale]/(public)/_components/home/list-your-property.tsx": 1,
@@ -162,14 +161,13 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/price-drops/page.tsx": 2,
   "app/[locale]/(public)/qr/page.tsx": 1,
   "app/[locale]/(public)/services/_components/service-card.tsx": 1,
-  "app/[locale]/(public)/services/_components/service-page.tsx": 9,
   "app/[locale]/(public)/services/sell/_components/list-property-form.tsx": 3,
   "app/[locale]/(public)/sitemap/page.tsx": 2,
   "app/[locale]/(public)/status/page.tsx": 9,
 };
 
 /** What the ratchet held when it landed. Lowering it is the point. */
-const TOTAL_CEILING = 301;
+const TOTAL_CEILING = 275;
 
 /**
  * Three shapes, matching the three ways a literal reaches a reader.

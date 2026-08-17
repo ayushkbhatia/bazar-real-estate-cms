@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -11,7 +12,8 @@ import { FloatingCtaTarget } from "../../_components/floating-cta-context";
  * Imported manually by each sub-route's page.tsx so the Next.js
  * routing tree stays flat.
  */
-export function ServicePage({ service }: { service: SeedService }) {
+export async function ServicePage({ service }: { service: SeedService }) {
+  const t = await getTranslations("pages.service");
   const orderedSlugs = SEED_SERVICES.map((s) => s.slug);
   const idx = orderedSlugs.indexOf(service.slug);
   const prev = idx > 0 ? SEED_SERVICES[idx - 1] : null;
@@ -26,9 +28,7 @@ export function ServicePage({ service }: { service: SeedService }) {
           href="/services"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
         >
-          <ArrowLeft size={13} strokeWidth={1.8} />
-          All services
-        </Link>
+          <ArrowLeft size={13} strokeWidth={1.8} />{t("allServices")}</Link>
       </div>
 
       {/* Hero */}
@@ -49,21 +49,17 @@ export function ServicePage({ service }: { service: SeedService }) {
       <section className="border-y border-bz-border bg-bz-surface">
         <div className="px-4 md:px-12 py-14 max-w-[1200px] grid grid-cols-1 md:grid-cols-[1fr_360px] gap-16 items-start">
           <div>
-            <Eyebrow>Overview</Eyebrow>
+            <Eyebrow>{t("overview")}</Eyebrow>
             <p className="mt-4 text-[16px] text-bz-ink leading-relaxed">
               {service.intro}
             </p>
           </div>
           <aside className="rounded-lg border border-bz-border bg-bz-bg p-6">
-            <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-              Who this is for
-            </div>
+            <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">{t("whoThisIsFor")}</div>
             <p className="mt-3 text-[14px] text-bz-ink leading-relaxed">
               {service.for_whom}
             </p>
-            <div className="mt-6 text-[11.5px] uppercase tracking-wider text-bz-muted">
-              Pricing
-            </div>
+            <div className="mt-6 text-[11.5px] uppercase tracking-wider text-bz-muted">{t("pricing")}</div>
             <p className="mono mt-2 text-[13px] text-bz-ink-2">
               {service.pricing}
             </p>
@@ -73,13 +69,11 @@ export function ServicePage({ service }: { service: SeedService }) {
 
       {/* Process steps */}
       <section className="px-4 md:px-12 py-12 md:py-20 max-w-[1200px]">
-        <Eyebrow>The process</Eyebrow>
+        <Eyebrow>{t("theProcess")}</Eyebrow>
         <h2
           className="serif text-[30px] md:text-[40px] mt-3 leading-[1.05] max-w-[24ch]"
           style={{ letterSpacing: "-0.018em" }}
-        >
-          What happens, step by step.
-        </h2>
+        >{t("processSub")}</h2>
         <ol className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
           {service.process_steps.map((step, i) => (
             <li key={step.title}>
@@ -104,7 +98,7 @@ export function ServicePage({ service }: { service: SeedService }) {
       <section className="px-4 md:px-12 pb-20 max-w-[1200px]">
         <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-6 md:p-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
           <div>
-            <Eyebrow className="text-bz-accent-fg/70">Next step</Eyebrow>
+            <Eyebrow className="text-bz-accent-fg/70">{t("nextStep")}</Eyebrow>
             <h3
               className="serif text-[28px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.012em" }}
@@ -113,19 +107,19 @@ export function ServicePage({ service }: { service: SeedService }) {
             </h3>
             {service.related_tool ? (
               <p className="mt-3 text-[14px] opacity-90">
-                Or try our{" "}
+                {t("orTryOur")}{" "}
                 <Link
                   href={service.related_tool.href}
                   className="underline underline-offset-2 hover:opacity-100"
                 >
                   {service.related_tool.label}
                 </Link>{" "}
-                first.
+                {t("first")}
               </p>
             ) : null}
           </div>
           <Button asChild size="lg" variant="secondary">
-            <Link href="/contact">Talk to an advisor</Link>
+            <Link href="/contact">{t("talkToAdvisor")}</Link>
           </Button>
         </div>
       </section>
@@ -140,9 +134,7 @@ export function ServicePage({ service }: { service: SeedService }) {
             >
               <ArrowLeft size={14} strokeWidth={1.7} />
               <span>
-                <span className="text-bz-muted text-[11px] uppercase tracking-wider block">
-                  Previous
-                </span>
+                <span className="text-bz-muted text-[11px] uppercase tracking-wider block">{t("previous")}</span>
                 {prev.name}
               </span>
             </Link>

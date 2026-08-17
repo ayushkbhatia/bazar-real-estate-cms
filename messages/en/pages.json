@@ -33,5 +33,40 @@
     "alreadyRemovedBody": "This link is no longer active. If you're still receiving emails, contact us at {email}.",
     "expiredBody": "Confirmation links are valid for 14 days. Please subscribe again and watch your inbox.",
     "notFoundBody": "It may already have been used. Try subscribing again from the Insights page."
+  },
+  "hero": {
+    "editorialEyebrow": "The Bazar approach",
+    "editorialTitle": "Abu Dhabi, properly understood.",
+    "editorialBody": "Twelve capped senior advisors. Fiduciary-aligned. Off-market deal flow. We close fewer deals by design.",
+    "aboutBazar": "About Bazar",
+    "meetTheTeam": "Meet the team",
+    "mapEyebrow": "Start with the map",
+    "mapTitle": "Draw the area you want.",
+    "mapBody": "Filter by polygon, commute time, or pin density. The map is the primary view for advisors and serious buyers.",
+    "openTheMap": "Open the map",
+    "conciergeEyebrow": "AI concierge",
+    "conciergeTitle": "Tell us the brief. We'll narrow it down.",
+    "conciergeBody": "Talk to the Bazar concierge. We'll triangulate area, budget, timeline, and constraints — then hand you to the advisor who fits.",
+    "startABrief": "Start a brief",
+    "talkToAHuman": "Talk to a human",
+    "sampleLabel": "Concierge brief · sample",
+    "sampleBudget": "Budget ·",
+    "sampleArea": "Area · Saadiyat or Yas",
+    "sampleType": "Type · 3-bed apartment or villa",
+    "sampleTimeline": "Timeline · Move-in by Q4",
+    "sampleConstraint": "Constraint · Beachfront, school district"
+  },
+  "service": {
+    "allServices": "All services",
+    "overview": "Overview",
+    "whoThisIsFor": "Who this is for",
+    "pricing": "Pricing",
+    "theProcess": "The process",
+    "processSub": "What happens, step by step.",
+    "nextStep": "Next step",
+    "talkToAdvisor": "Talk to an advisor",
+    "previous": "Previous",
+    "orTryOur": "Or try our",
+    "first": "first."
   }
 }
