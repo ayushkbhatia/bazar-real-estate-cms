@@ -235,6 +235,28 @@ describe("malformations that survive the semantic gate", () => {
     expect(codes("Available in Arabic", "متوفر بالعربية")).not.toContain("label-leak");
   });
 
+  /**
+   * The country, not a label.
+   *
+   * `العربية` is the middle word of الإمارات العربية المتحدة, so the original
+   * bare-substring test rejected any correct translation that named the UAE in
+   * full — 21 of the 902 translation units in the article corpus do. The first
+   * body block of the H1-2026 sales report was one, and it kept its English
+   * through two runs before the cause was found.
+   */
+  it("does not fire on the full name of the United Arab Emirates", () => {
+    expect(
+      codes(
+        "one of the UAE's most resilient real estate markets",
+        "أحد أكثر أسواق العقارات مرونة في الإمارات العربية المتحدة",
+      ),
+    ).not.toContain("label-leak");
+  });
+
+  it("still catches a parenthesised label, the shape twins.ts builds", () => {
+    expect(codes("Who we are", "من نحن (العربية)")).toContain("label-leak");
+  });
+
   it("catches a colon a two-word label did not earn", () => {
     expect(
       codes("Head office", "العنوان الرئيسي: المكتب الرئيسي"),
@@ -327,5 +349,47 @@ describe("self-repeat and newline-delimited lists", () => {
     expect(
       validate("Browse Properties", "تصفح العقارات تصفح العقارات").map((i) => i.code),
     ).toContain("self-repeat");
+  });
+});
+
+/**
+ * Arabic broken plurals.
+ *
+ * The glossary docblock promises a `stem` that "survives inflection", and for a
+ * SOUND plural it does — مطور is still there in المطورين. A BROKEN plural
+ * rewrites the consonant skeleton instead, so the singular stem is simply
+ * absent from a perfectly correct sentence. Measured against the real corpus:
+ * "Median apartment prices…" came back as "بلغت أسعار الشقق المتوسطة…", which
+ * is right, and was rejected — so the block kept its English. Two of eleven
+ * blocks in one article were lost that way.
+ */
+describe("glossary stems survive broken plurals", () => {
+  const codes = (en: string, ar: string) => validate(en, ar).map((i) => i.code);
+
+  it("accepts الشقق for apartment", () => {
+    expect(codes("Median apartment prices rose", "ارتفعت أسعار الشقق")).not.toContain(
+      "glossary",
+    );
+  });
+
+  it("accepts الفلل for villa", () => {
+    expect(codes("villa prices climbed", "ارتفعت أسعار الفلل")).not.toContain("glossary");
+  });
+
+  it("accepts الوسطاء for broker", () => {
+    expect(codes("every broker must register", "يجب على الوسطاء التسجيل")).not.toContain(
+      "glossary",
+    );
+  });
+
+  it("still rejects a rendering with no form of the term at all", () => {
+    // Nothing resembling شقة or شقق — the half of the check that must stay.
+    expect(codes("apartment prices rose", "ارتفعت الأسعار كثيرًا")).toContain("glossary");
+  });
+
+  it("still rejects a forbidden rendering", () => {
+    // Tenure is the load-bearing case: leasehold as إيجار calls a long-dated
+    // usufruct a rental agreement.
+    expect(codes("leasehold title", "عقد إيجار")).toContain("glossary");
   });
 });

@@ -324,6 +324,23 @@ function foreignScript(text: string): string[] {
   ];
 }
 
+/**
+ * The field's own Arabic label, left in the value.
+ *
+ * Shape matters here, and it used not to. The test was a bare `العربية`, which
+ * also sits in the middle of الإمارات العربية المتحدة — the ordinary full name
+ * of the country this site sells property in. So a correct translation naming
+ * the UAE was rejected as a leaked label and the field kept its English. 21 of
+ * the 902 units in the article corpus name it.
+ *
+ * A leak has one of two shapes and nothing else: parenthesised, the way
+ * `twins.ts:83` builds it as `${label} (العربية)`; or label-colon-value, which
+ * is what the model actually produced — `"Who we are"` came back as
+ * `"العربية: من نحن"`. Requiring one of those two keeps the check and drops
+ * the country.
+ */
+const LEAKED_LABEL = /\((?:العربية|Arabic)\)|(?:العربية|Arabic)\s*[:：]/u;
+
 export function validate(
   sourceMasked: string,
   outputMasked: string,
@@ -341,7 +358,19 @@ export function validate(
    * because they are malformations rather than mistranslations: the words are
    * all correct and all present, and only their arrangement is wrong.
    */
-  if (/العربية|\(Arabic\)/u.test(output) && !/arabic/i.test(sourceMasked)) {
+  /*
+   * The two halves used to be asymmetric — `\(Arabic\)` in parentheses, but a
+   * bare `العربية` — and the bare one matches the middle of
+   * الإمارات العربية المتحدة, the ordinary full name of the country this site
+   * sells property in. So any correct translation naming the UAE in full was
+   * rejected and kept its English. 21 of 902 units in the article corpus name
+   * it, and the first body block of the H1-2026 sales report was one of them.
+   *
+   * A leaked label has a shape: `twins.ts` builds it as
+   * `${label} (العربية)`, parenthesised. Requiring the parentheses matches the
+   * thing this is looking for and nothing else.
+   */
+  if (LEAKED_LABEL.test(output) && !/arabic/i.test(sourceMasked)) {
     issues.push({
       code: "label-leak",
       detail: "the field's Arabic label appears in its value",
@@ -559,10 +588,13 @@ export function validate(
         });
       }
     }
-    if (!output.includes(entry.stem) && !termRe(entry.en).test(output)) {
+    // `alsoStems` carries the broken plurals, whose consonant skeleton differs
+    // from the singular — شقة is genuinely absent from the correct الشقق.
+    const stems = [entry.stem, ...(entry.alsoStems ?? [])];
+    if (!stems.some((s) => output.includes(s)) && !termRe(entry.en).test(output)) {
       issues.push({
         code: "glossary",
-        detail: `"${entry.en}" has no rendering containing ${entry.stem}`,
+        detail: `"${entry.en}" has no rendering containing ${stems.join(" or ")}`,
       });
     }
   }
