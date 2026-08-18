@@ -4,9 +4,12 @@
  * Floating preferences trigger that sits alongside `PublicMegaNav` in the
  * (public) layout.
  *
- * Composes the megamenu rather than wrapping it (per the locked-files rule):
- * the popover renders as a sibling element inside the same header strip,
- * positioned via flexbox utility on the parent.
+ * Composes the megamenu rather than wrapping it (per the locked-files rule).
+ * Not "inside the same header strip positioned via flexbox", as this said for
+ * months — the layout renders it `fixed top-[84px] end-4`, i.e. floating 12px
+ * BELOW the 72px bar, because the bar's inline-end is occupied at every
+ * breakpoint and `PublicMegaNav` has no slot for it. Scoping a change from the
+ * old description started from a model the code never implemented.
  */
 
 import { Coins } from "lucide-react";

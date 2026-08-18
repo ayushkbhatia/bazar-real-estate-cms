@@ -3,6 +3,8 @@
 import { useTranslations } from "next-intl";
 
 import { usePathname } from "next/navigation";
+
+import { useSearchSuffix } from "@/lib/i18n/use-search-suffix";
 import { Check } from "lucide-react";
 import { LOCALES, LOCALE_DIR, type Locale } from "@/lib/i18n/locales";
 import { localeUrl } from "@/lib/i18n/locales";
@@ -22,13 +24,22 @@ import { cn } from "@/lib/utils";
  * It preserves the current path, so a visitor reading a listing in English
  * lands on the same listing in Arabic rather than being dumped at the home
  * page — which is the single most common way a language switch annoys people.
- * The querystring rides along too, so an in-progress search survives.
+ *
+ * The querystring rides along for the same reason. This docblock claimed that
+ * from the day it was written and the code did not do it: the href was built
+ * from `usePathname()` alone, so switching locale on
+ * `/buy/search?beds=3&type=villa&price_max=4000000` dropped every filter and
+ * landed on an unfiltered `/ar/buy/search`. On a search-led site that is the
+ * second most common way a language switch annoys people, and it was
+ * documented as handled.
  *
  * Renders nothing while only one locale is served, so this can ship before
  * Arabic does without leaving a dead control on the page.
  */
 export function LanguageSwitch({ current }: { current: Locale }) {
   const pathname = usePathname();
+  // Carried so a locale switch mid-search keeps the filters.
+  const suffix = useSearchSuffix();
   // Above the early return: hooks must run in the same order on every render.
   const t = useTranslations("common");
   /*
@@ -57,7 +68,7 @@ export function LanguageSwitch({ current }: { current: Locale }) {
         return (
           <a
             key={locale}
-            href={localeUrl(bare, locale)}
+            href={`${localeUrl(bare, locale)}${suffix}`}
             hrefLang={locale}
             lang={locale}
             dir={LOCALE_DIR[locale]}

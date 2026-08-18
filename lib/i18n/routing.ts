@@ -10,12 +10,18 @@ import { DEFAULT_LOCALE, LOCALES, type Locale } from "./locales";
  * the prerendered `/en/buy` artifact is what gets served (measured, not
  * assumed — see the P1 ISR spike).
  *
- * Only *served* locales count as prefixes. While `LOCALES` is `["en"]`,
- * `/ar/anything` is not a locale-prefixed path at all — it is an ordinary
- * unprefixed path that happens to start with the letters "ar", and it rewrites
- * to `/en/ar/anything` like everything else. That is deliberate: it is what
- * keeps the one hand-authored Arabic page (`/ar/legal/privacy`) serving from
- * its physical route until P3 moves it into the locale tree.
+ * Only *served* locales count as prefixes, which mattered while `LOCALES` was
+ * `["en"]`: `/ar/anything` was then not a locale-prefixed path at all, just an
+ * unprefixed path starting with the letters "ar", and it rewrote to
+ * `/en/ar/anything` like everything else. That is what kept the one
+ * hand-authored Arabic page serving from its physical route before the flip.
+ *
+ * `ar` is served now, so that no longer applies: `/ar/legal/privacy` resolves
+ * as locale=ar + /legal/privacy and is answered by the branch in
+ * `legal/privacy/page.tsx`. The physical route under `(public)/ar/` is now
+ * reachable only as `/ar/ar/legal/privacy` — a live duplicate whose own
+ * docblock says to delete it in the PR that added "ar" here. It outlived that
+ * PR. See docs/FOLLOWUPS.md.
  */
 
 /** The served locale a path is prefixed with, or null if it is unprefixed. */

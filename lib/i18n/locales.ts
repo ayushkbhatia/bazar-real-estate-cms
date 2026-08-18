@@ -34,11 +34,18 @@ export const DEFAULT_LOCALE = "en" satisfies Locale;
 /**
  * Locales currently served.
  *
- * Arabic is BUILT and verified but not yet switched on: adding "ar" here is
- * the public launch — it puts /ar/* in the sitemap, emits hreflang pointing at
- * it, and makes it indexable. Once indexed, un-shipping is a 410-and-Search-
- * Console exercise rather than a revert, which is why the flag exists and why
- * flipping it is a decision rather than a step.
+ * Arabic IS switched on. This paragraph described the decision to flip it and
+ * was not updated when the flip happened, so it read as "not yet switched on"
+ * directly above a list containing "ar".
+ *
+ * What the flip did NOT do is make Arabic public in the search sense: the
+ * routes serve, but `app/[locale]/layout.tsx` still emits
+ * `robots: { index: false, follow: false }` for `ar`, `app/robots.ts` still
+ * carries `Disallow: /ar`, and `app/sitemap.ts` lists no `/ar` URL. That is
+ * deliberate — the Arabic corpus is a machine first draft the client is still
+ * reviewing (ADR-0008), and un-indexing is a 410-and-Search-Console exercise
+ * rather than a revert. Removing the noindex is the remaining decision, and it
+ * is a separate one from this list.
  *
  * Everything downstream loops over this list, so the flip is one line. It was
  * exercised locally against a full build before shipping: 234 /ar/* routes
