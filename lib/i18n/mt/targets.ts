@@ -26,7 +26,22 @@ export type MtTarget = {
    * registers existed and only a flat COLUMN could not ask for one. A nav
    * label is chrome, and chrome is what `UI_SYSTEM_PROMPT` was written for.
    */
-  kind: "title" | "summary" | "body" | "alt" | "ui";
+  kind: "title" | "summary" | "body" | "alt" | "ui" | "page";
+  /**
+   * Tiptap HTML. The column is split into blocks by `lib/i18n/mt/html.ts` and
+   * translated one block at a time; the model never sees a tag.
+   *
+   * Without it the whole document goes into a prompt. That is not a
+   * hypothetical: `properties.description` has been registered here since the
+   * pipeline landed, and `translate-records.ts` passes the raw column value to
+   * `translateField`. Most bodies fail loudly — `latin-leak` fires on any
+   * four-letter Latin run, and `strong`, `blockquote` and `figcaption` are all
+   * such runs. The quiet half is worse: a body whose only markup is `<p>`,
+   * `<em>` and `<br>` produces no such run, so a translation with silently
+   * restructured markup passes all nineteen checks and is written. Nothing in
+   * `validate.ts` compares tags between source and output.
+   */
+  html?: true;
 };
 
 export const MT_TARGETS: MtTarget[] = [
@@ -54,7 +69,7 @@ export const MT_TARGETS: MtTarget[] = [
     kind: "summary",
     maxLength: 480,
   },
-  { table: "properties", column: "description", kind: "body" },
+  { table: "properties", column: "description", kind: "body", html: true },
 
   // Alt text. Bulk, low-stakes, and the accessibility win is real: an Arabic
   // page whose images announce themselves in English is worse for a screen
@@ -83,6 +98,35 @@ export const MT_TARGETS: MtTarget[] = [
   // (`lib/schemas/media-upload.ts:64`). This said 200, which was below even
   // the English limit.
   { table: "media_assets", column: "alt_text", kind: "alt", maxLength: 450 },
+
+  /*
+   * Editorial. 32 rows — 18 published, 14 archived — and the largest single
+   * block of English left on the Arabic site: 37 of the 190 `/ar` routes are
+   * under `/ar/insights`, and every one of them rendered an Arabic shell
+   * around an English article.
+   *
+   * `title` takes the `page` register rather than `title`, which is measured
+   * rather than assumed. `title`'s register reads "a listing headline"
+   * (`prompt.ts:41`), and on these headlines it produces listing grammar:
+   * "Abu Dhabi Property Sales Surge in H1 2026" came back as
+   * "…بمقدار أبوظبي" — "by an amount of Abu Dhabi" — and
+   * "A Landlord's Guide to Property Management in Abu Dhabi" silently dropped
+   * "Property Management" entirely. Under `page` both are correct. Four
+   * headlines A/B'd: `page` better on two, equal on two, worse on none.
+   *
+   * The caps are the ones `articleEditSchema` already enforces on save
+   * (`lib/schemas/article.ts:155,158` — 240 and 480, "1.5x their English
+   * siblings, matching arMax"). Generating past them would write Arabic the
+   * CMS then refuses to save, so the client could not edit the page at all.
+   *
+   * `body_html` takes no cap: 300,000 is a DoS ceiling, not a design
+   * constraint, and the cap is per CALL — each call carries one block of a few
+   * hundred characters, so the number would be noise in the prompt and dead in
+   * the validator.
+   */
+  { table: "articles", column: "title", kind: "page", maxLength: 240 },
+  { table: "articles", column: "excerpt", kind: "summary", maxLength: 480 },
+  { table: "articles", column: "body_html", kind: "body", html: true },
 ];
 
 /**

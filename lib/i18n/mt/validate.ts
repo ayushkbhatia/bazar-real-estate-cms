@@ -200,6 +200,40 @@ function digitRuns(text: string): string[] {
   return runs.map(toWesternDigits).sort();
 }
 
+/**
+ * Numerals whose INTERNAL order carries meaning: `4.7`, `30/70`, `2026-01-05`.
+ *
+ * `digitRuns` sorts, and it has to: Arabic word order differs from English, so
+ * a number's position in the sentence legitimately moves and an ordered
+ * comparison would fire on almost every correct translation. But sorting a
+ * multiset of bare digits also makes a *transposition inside one number*
+ * invisible, and the digits either side of a separator are one value, not two.
+ *
+ * Three real failures, all of which the validator accepted with no issue at
+ * all before this existed, and all three from live rows in the article corpus:
+ *
+ *   "Clause 4.7 requires…"           -> "…البند 7.4"    a different clause of
+ *                                                        an ADREC permit rule
+ *   "The payment plan is 30/70…"     -> "…هي 70/30"     the payment terms,
+ *                                                        inverted
+ *   "…closed at 41 transactions"     -> "…14 معاملة"    unaffected — one run,
+ *                                                        caught by digitRuns
+ *
+ * The first two are material misstatements on a DLD/ADREC-regulated
+ * advertising surface, which is a different class of problem from a clumsy
+ * sentence. So compound numerals are compared as whole tokens — still as a
+ * multiset, so the sentence may reorder freely, but `4.7` and `7.4` are no
+ * longer the same token.
+ *
+ * Commas are stripped first: a thousands separator is cosmetic, and a model
+ * that writes 1200 for 1,200 has not changed the value.
+ */
+function compoundNumerals(text: string): string[] {
+  const stripped = toWesternDigits(text).replace(/(?<=\d),(?=\d{3}\b)/gu, "");
+  const runs = stripped.match(/\d+(?:[.:/\u2013-]\d+)+/gu) ?? [];
+  return runs.sort();
+}
+
 /** Normalise Arabic-Indic digits to Western so the comparison is script-blind. */
 export function toWesternDigits(s: string): string {
   return s.replace(/[٠-٩۰-۹]/gu, (d) => {
@@ -324,6 +358,23 @@ function foreignScript(text: string): string[] {
   ];
 }
 
+/**
+ * The field's own Arabic label, left in the value.
+ *
+ * Shape matters here, and it used not to. The test was a bare `العربية`, which
+ * also sits in the middle of الإمارات العربية المتحدة — the ordinary full name
+ * of the country this site sells property in. So a correct translation naming
+ * the UAE was rejected as a leaked label and the field kept its English. 21 of
+ * the 902 units in the article corpus name it.
+ *
+ * A leak has one of two shapes and nothing else: parenthesised, the way
+ * `twins.ts:83` builds it as `${label} (العربية)`; or label-colon-value, which
+ * is what the model actually produced — `"Who we are"` came back as
+ * `"العربية: من نحن"`. Requiring one of those two keeps the check and drops
+ * the country.
+ */
+const LEAKED_LABEL = /\((?:العربية|Arabic)\)|(?:العربية|Arabic)\s*[:：]/u;
+
 export function validate(
   sourceMasked: string,
   outputMasked: string,
@@ -341,7 +392,19 @@ export function validate(
    * because they are malformations rather than mistranslations: the words are
    * all correct and all present, and only their arrangement is wrong.
    */
-  if (/العربية|\(Arabic\)/u.test(output) && !/arabic/i.test(sourceMasked)) {
+  /*
+   * The two halves used to be asymmetric — `\(Arabic\)` in parentheses, but a
+   * bare `العربية` — and the bare one matches the middle of
+   * الإمارات العربية المتحدة, the ordinary full name of the country this site
+   * sells property in. So any correct translation naming the UAE in full was
+   * rejected and kept its English. 21 of 902 units in the article corpus name
+   * it, and the first body block of the H1-2026 sales report was one of them.
+   *
+   * A leaked label has a shape: `twins.ts` builds it as
+   * `${label} (العربية)`, parenthesised. Requiring the parentheses matches the
+   * thing this is looking for and nothing else.
+   */
+  if (LEAKED_LABEL.test(output) && !/arabic/i.test(sourceMasked)) {
     issues.push({
       code: "label-leak",
       detail: "the field's Arabic label appears in its value",
@@ -504,6 +567,21 @@ export function validate(
     });
   }
 
+  /*
+   * Same defect, one level down: the digits are all present and one number has
+   * been rewritten internally. See `compoundNumerals`.
+   */
+  {
+    const before = compoundNumerals(sourceMasked);
+    const after = compoundNumerals(output);
+    if (before.join("|") !== after.join("|")) {
+      issues.push({
+        code: "numeral-drift",
+        detail: `compound numbers changed: [${before.join(", ")}] became [${after.join(", ")}]`,
+      });
+    }
+  }
+
   // ── Untranslated Latin left in the output.
   //
   // Every 4+ Latin run counts, whether or not it was in the source. One that
@@ -559,10 +637,13 @@ export function validate(
         });
       }
     }
-    if (!output.includes(entry.stem) && !termRe(entry.en).test(output)) {
+    // `alsoStems` carries the broken plurals, whose consonant skeleton differs
+    // from the singular — شقة is genuinely absent from the correct الشقق.
+    const stems = [entry.stem, ...(entry.alsoStems ?? [])];
+    if (!stems.some((s) => output.includes(s)) && !termRe(entry.en).test(output)) {
       issues.push({
         code: "glossary",
-        detail: `"${entry.en}" has no rendering containing ${entry.stem}`,
+        detail: `"${entry.en}" has no rendering containing ${stems.join(" or ")}`,
       });
     }
   }

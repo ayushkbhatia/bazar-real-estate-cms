@@ -179,4 +179,35 @@ describe("the denylist and the registry agree on regulatory identifiers", () => 
     expect(cap("title")).toBe(240);
     expect(cap("short_description")).toBe(480);
   });
+
+  it("keeps the article caps at what articleEditSchema will accept", () => {
+    // Same drift, different table. `articleEditSchema` caps `title_ar` at 240
+    // and `excerpt_ar` at 480 (lib/schemas/article.ts:155,158), so a generator
+    // told it may write 360 produces Arabic the CMS then refuses to save —
+    // and the client cannot edit the article at all until someone trims it by
+    // hand. The number here has to be the number zod enforces, not a guess.
+    const cap = (column: string) =>
+      MT_TARGETS.find((t) => t.table === "articles" && t.column === column)
+        ?.maxLength;
+    expect(cap("title")).toBe(240);
+    expect(cap("excerpt")).toBe(480);
+    // Per CALL, and a call carries one block — a document-level ceiling here
+    // would be noise in the prompt and dead in the validator.
+    expect(cap("body_html")).toBeUndefined();
+  });
+
+  it("marks every Tiptap column as html so the walker runs", () => {
+    // `translate-records.ts` branches on this and nothing else. A rich-text
+    // column that is missing it has its whole document put in a prompt, which
+    // mostly fails loudly on `latin-leak` and sometimes does not — a body
+    // whose only markup is <p>/<em>/<br> has no four-letter Latin run, so the
+    // model can restructure the markup and pass all nineteen checks.
+    const html = (table: string, column: string) =>
+      MT_TARGETS.find((t) => t.table === table && t.column === column)?.html;
+    expect(html("articles", "body_html")).toBe(true);
+    expect(html("properties", "description")).toBe(true);
+    // And nothing that is plain text claims to be markup.
+    expect(html("properties", "title")).toBeUndefined();
+    expect(html("media_assets", "alt_text")).toBeUndefined();
+  });
 });

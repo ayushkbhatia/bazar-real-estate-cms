@@ -27,6 +27,24 @@ export type GlossaryEntry = {
   ar: string;
   /** Substring of `ar` that survives ال- prefixing and inflection. */
   stem: string;
+  /**
+   * Further stems that are also correct, for terms whose plural is *broken*.
+   *
+   * The docblock above promises a stem that "survives inflection", and for a
+   * sound plural it does: مطور is still there in المطورين, إعلان in إعلانات.
+   * An Arabic broken plural changes the consonant skeleton instead, so the
+   * singular stem is simply absent from a perfectly correct sentence — شقة
+   * does not appear in الشقق, nor فيلا in الفلل, nor وسيط in الوسطاء.
+   *
+   * Measured, not theorised: `"Median apartment prices…"` came back as
+   * `"بلغت أسعار الشقق المتوسطة…"` — correct Arabic — and was rejected, so the
+   * block kept its English. Two of eleven blocks in one article were lost that
+   * way before this existed.
+   *
+   * These only ever WIDEN what is accepted. A wrong rendering is still caught
+   * by `forbidden`, which is the half of the check that rejects.
+   */
+  alsoStems?: string[];
   /** Renderings that are wrong here, even where they are valid Arabic. */
   forbidden?: string[];
   /** Why, when the reason is not obvious. Shown to a reviewer, not the model. */
@@ -70,6 +88,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     en: "title deed",
     ar: "سند الملكية",
     stem: "سند الملكية",
+    alsoStems: ["سندات الملكية", "سند ملكية"],
   },
   {
     en: "off-plan",
@@ -113,13 +132,13 @@ export const GLOSSARY: GlossaryEntry[] = [
   },
 
   // ── Property types. ──────────────────────────────────────────────────────
-  { en: "villa", ar: "فيلا", stem: "فيلا" },
+  { en: "villa", ar: "فيلا", stem: "فيلا", alsoStems: ["فلل"] },
   { en: "townhouse", ar: "تاون هاوس", stem: "تاون هاوس" },
-  { en: "apartment", ar: "شقة", stem: "شقة" },
+  { en: "apartment", ar: "شقة", stem: "شقة", alsoStems: ["شقق"] },
   { en: "penthouse", ar: "بنتهاوس", stem: "بنتهاوس" },
   { en: "duplex", ar: "دوبلكس", stem: "دوبلكس" },
   { en: "studio", ar: "استوديو", stem: "استوديو" },
-  { en: "plot", ar: "أرض", stem: "أرض" },
+  { en: "plot", ar: "أرض", stem: "أرض", alsoStems: ["أراض"] },
   { en: "showroom", ar: "صالة عرض", stem: "صالة عرض" },
 
   // ── Features that have a house rendering. ────────────────────────────────
@@ -137,6 +156,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     en: "broker",
     ar: "وسيط عقاري",
     stem: "وسيط",
+    alsoStems: ["وسطاء"],
   },
   {
     en: "developer",

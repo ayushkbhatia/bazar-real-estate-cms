@@ -340,13 +340,15 @@ export const DOMAINS: Domain[] = [
     columns: [
       {
         column: "title",
-        strategy: "hand",
+        strategy: "machine",
         evidence: "insights/[slug]/page.tsx:164",
+        note: "Machine first draft the client edits in the CMS (ADR-0008). Said 'hand' until articles joined MT_TARGETS, which made it a file describing a workflow nobody used.",
       },
       {
         column: "excerpt",
-        strategy: "hand",
+        strategy: "machine",
         evidence: "insights/[slug]/page.tsx:168",
+        note: "As title — machine first draft, hand-edited. See ADR-0008.",
       },
       {
         column: "body_html",

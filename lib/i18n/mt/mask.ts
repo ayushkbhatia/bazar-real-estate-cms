@@ -91,7 +91,21 @@ const PATTERNS: { name: string; re: RegExp }[] = [
    * Ordered after `price` so the currency-qualified form still wins the
    * earliest-start-longest-span tie-break and `AED 2M` masks as one token.
    */
-  { name: "magnitude", re: /\b\d(?:[\d,.]*\d)?[MK]\b/gu },
+  /*
+   * The spelled-out words joined `[MK]` because only the suffix form was
+   * covered, and `million` is otherwise protected ONLY when `AED` precedes it
+   * (the `price` rule above). A bare quantity is not: from the Marsa Al
+   * Saadiyat launch article, "will span approximately 6.4 million square
+   * metres" came back as "6.4 مليار متر مربع" — مليار is BILLION. Every digit
+   * survived, so `numeral-drift` saw nothing, and the unit was inflated a
+   * thousandfold on a DLD-regulated advertising surface. That article alone
+   * carries eight such quantities: 6.4 million m², 58,000 residents, 350
+   * berths, 140 km, 6,000 guests.
+   */
+  {
+    name: "magnitude",
+    re: /\b\d(?:[\d,.]*\d)?\s?(?:[MK]\b|million\b|billion\b|thousand\b)/giu,
+  },
 
   // Measurements. ft², sq ft, sqft, m², sqm — all with an optional thousands
   // separator.
@@ -106,10 +120,18 @@ const PATTERNS: { name: string; re: RegExp }[] = [
 
   { name: "percent", re: /\b\d(?:[\d.]*\d)?\s?%/gu },
 
-  // ISO dates and the two written forms used in the corpus.
+  // ISO dates and the written forms used in the corpus.
+  //
+  // `H1 2026` joined the quarter form because it was NOT matched, and the
+  // failure was loud: the model read the bare "H1" as prose, rendered it
+  // النصف الأول, and left the year to fend for itself — so the headline
+  // "Abu Dhabi Property Sales Surge in H1 2026" came back reading
+  // "…النصف الأول من 1 2026". The excerpt containing it failed `numeral-drift`
+  // outright (`[1, 2026]` became `[2026]`), which is the same defect caught by
+  // a different check. Five occurrences across two market-report articles.
   {
     name: "date",
-    re: /\b\d{4}-\d{2}-\d{2}\b|\bQ[1-4]\s?\d{4}\b|\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b/giu,
+    re: /\b\d{4}-\d{2}-\d{2}\b|\b[QH][1-4]\s?\d{4}\b|\b[QH][1-4]\b(?!\s?\d)|\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4}\b/giu,
   },
 ];
 

@@ -235,6 +235,28 @@ describe("malformations that survive the semantic gate", () => {
     expect(codes("Available in Arabic", "متوفر بالعربية")).not.toContain("label-leak");
   });
 
+  /**
+   * The country, not a label.
+   *
+   * `العربية` is the middle word of الإمارات العربية المتحدة, so the original
+   * bare-substring test rejected any correct translation that named the UAE in
+   * full — 21 of the 902 translation units in the article corpus do. The first
+   * body block of the H1-2026 sales report was one, and it kept its English
+   * through two runs before the cause was found.
+   */
+  it("does not fire on the full name of the United Arab Emirates", () => {
+    expect(
+      codes(
+        "one of the UAE's most resilient real estate markets",
+        "أحد أكثر أسواق العقارات مرونة في الإمارات العربية المتحدة",
+      ),
+    ).not.toContain("label-leak");
+  });
+
+  it("still catches a parenthesised label, the shape twins.ts builds", () => {
+    expect(codes("Who we are", "من نحن (العربية)")).toContain("label-leak");
+  });
+
   it("catches a colon a two-word label did not earn", () => {
     expect(
       codes("Head office", "العنوان الرئيسي: المكتب الرئيسي"),
@@ -327,5 +349,106 @@ describe("self-repeat and newline-delimited lists", () => {
     expect(
       validate("Browse Properties", "تصفح العقارات تصفح العقارات").map((i) => i.code),
     ).toContain("self-repeat");
+  });
+});
+
+/**
+ * Arabic broken plurals.
+ *
+ * The glossary docblock promises a `stem` that "survives inflection", and for a
+ * SOUND plural it does — مطور is still there in المطورين. A BROKEN plural
+ * rewrites the consonant skeleton instead, so the singular stem is simply
+ * absent from a perfectly correct sentence. Measured against the real corpus:
+ * "Median apartment prices…" came back as "بلغت أسعار الشقق المتوسطة…", which
+ * is right, and was rejected — so the block kept its English. Two of eleven
+ * blocks in one article were lost that way.
+ */
+describe("glossary stems survive broken plurals", () => {
+  const codes = (en: string, ar: string) => validate(en, ar).map((i) => i.code);
+
+  it("accepts الشقق for apartment", () => {
+    expect(codes("Median apartment prices rose", "ارتفعت أسعار الشقق")).not.toContain(
+      "glossary",
+    );
+  });
+
+  it("accepts الفلل for villa", () => {
+    expect(codes("villa prices climbed", "ارتفعت أسعار الفلل")).not.toContain("glossary");
+  });
+
+  it("accepts الوسطاء for broker", () => {
+    expect(codes("every broker must register", "يجب على الوسطاء التسجيل")).not.toContain(
+      "glossary",
+    );
+  });
+
+  it("still rejects a rendering with no form of the term at all", () => {
+    // Nothing resembling شقة or شقق — the half of the check that must stay.
+    expect(codes("apartment prices rose", "ارتفعت الأسعار كثيرًا")).toContain("glossary");
+  });
+
+  it("still rejects a forbidden rendering", () => {
+    // Tenure is the load-bearing case: leasehold as إيجار calls a long-dated
+    // usufruct a rental agreement.
+    expect(codes("leasehold title", "عقد إيجار")).toContain("glossary");
+  });
+});
+
+/**
+ * Transpositions inside a single number.
+ *
+ * `digitRuns` sorts, and has to — Arabic word order differs, so a number's
+ * position in the sentence moves legitimately and an ordered comparison would
+ * fire on almost every correct translation. The cost was that a rewrite INSIDE
+ * one number was invisible: the digits either side of a separator are one
+ * value, and sorting made 4.7 and 7.4 the same multiset.
+ *
+ * All three of these were ACCEPTED with no issue at all before the fix, and
+ * the first two are material misstatements on a DLD/ADREC-regulated surface
+ * rather than clumsy prose. Both are live text in the article corpus.
+ */
+describe("numbers rewritten inside themselves", () => {
+  const codes = (en: string, ar: string) => validate(en, ar).map((i) => i.code);
+
+  it("catches a transposed regulatory clause number", () => {
+    expect(
+      codes(
+        "Clause 4.7 requires the permit to name the principal-side brokerage.",
+        "يتطلب البند 7.4 أن يحدد التصريح الوسيط الرئيسي.",
+      ),
+    ).toContain("numeral-drift");
+  });
+
+  it("catches an inverted payment plan", () => {
+    expect(
+      codes(
+        "The payment plan is 30/70 with an 18-month post-handover tail.",
+        "خطة السداد هي 70/30 مع فترة 18 شهرا بعد التسليم.",
+      ),
+    ).toContain("numeral-drift");
+  });
+
+  it("still lets Arabic move a number to a different position", () => {
+    // The whole reason digitRuns sorts. This must stay quiet.
+    expect(codes("Villa at ⟦0⟧, ref ⟦1⟧", "⟦1⟧ فيلا بسعر ⟦0⟧")).toEqual([]);
+  });
+
+  it("ignores the thousands separator when comparing compounds", () => {
+    // `compoundNumerals` strips it, so 1,200 and 1200 are one token either way
+    // and neither is a compound. Note this does NOT make the whole check quiet:
+    // `digitRuns` splits on the comma — "1,200" is the two runs ["1","200"] —
+    // so a dropped separator has always tripped `numeral-drift` by that route,
+    // and still does. Pre-existing, conservative, and left alone here.
+    expect(codes("1,200 units delivered", "تم تسليم 1200 وحدة")).toContain(
+      "numeral-drift",
+    );
+    // The point of the new check: no compound is invented by the comma strip.
+    expect(codes("1,200 units", "1,200 وحدة")).toEqual([]);
+  });
+
+  it("keeps a genuinely unchanged compound quiet", () => {
+    expect(codes("Clause 4.7 applies", "ينطبق البند 4.7")).not.toContain(
+      "numeral-drift",
+    );
   });
 });

@@ -111,7 +111,68 @@ async function main() {
   const { backTranslate, equivalence, restoreNames, restoreGlossary } =
     await import("../../lib/i18n/mt/backtranslate");
   const { nounMap } = await import("../../lib/i18n/mt/proper-nouns");
+  const { toSlots, fromSlots, markIssues, normaliseModelEntities } =
+    await import("../../lib/i18n/mt/html");
+  const { mask } = await import("../../lib/i18n/mt/mask");
+  const { numeralOverrides } = await import("../../lib/i18n/mt/numerals");
   const nouns = nounMap();
+  const nounTermList = [...nouns.keys()];
+
+  /**
+   * Arabic for the magnitude words and month names that masking swallows.
+   *
+   * `mask()` is run here purely to learn the indices — it is a pure function of
+   * the text and the term list, so calling it again inside `translateField`
+   * assigns the same ones. Cheaper than plumbing the token list out.
+   */
+  const numerals = (text: string) => numeralOverrides(mask(text, nounTermList));
+
+  /**
+   * A Tiptap column, translated a block at a time.
+   *
+   * Mirrors the property CMS button (`admin/properties/[id]/_translate-actions.ts`),
+   * which is the one working slot-walk in the repo — including its two
+   * deliberate omissions. No `maxLength`, because the cap is per call and a
+   * block is a few hundred characters. And no back-translation: the round trip
+   * is one model call per block on top of the two `translateField` already
+   * makes, and the equivalence judge is calibrated at 19-25% false positives on
+   * catalogue strings — on a two-word `<figcaption>` or a bare `<li>` it is far
+   * worse, and every false positive silently keeps a block in English.
+   *
+   * What it does NOT copy: the button passes no `properNouns`, so area and
+   * developer names go unprotected there. The script has always passed them and
+   * keeps doing so.
+   */
+  async function translateHtml(html: string) {
+    const doc = toSlots(html);
+    const blocks = await Promise.all(
+      doc.slots.map(async (slot) => {
+        const result = await translateField({
+          client,
+          text: slot.text,
+          kind: "body",
+          properNouns: nouns,
+          overrides: numerals(slot.text),
+          model: proseModel,
+          fallbackModel: provider === "anthropic" ? undefined : null,
+          extraIssues: (out) => markIssues(slot, out),
+        });
+        // `fromSlots` re-encodes every gap and is deliberately NOT an entity
+        // normaliser, so skipping this double-encodes every "&" the model
+        // re-escaped and renders "&amp;" on the page.
+        return result.ok ? normaliseModelEntities(result.text) : null;
+      }),
+    );
+    const rejected = blocks.filter((b) => b === null).length;
+    return {
+      html: rejected < blocks.length ? fromSlots(doc, blocks) : null,
+      total: blocks.length,
+      rejected,
+      // Blocks whose own text contains the marker syntax. Never offered to the
+      // model, and a retry will not change that.
+      skipped: doc.skipped,
+    };
+  }
   console.log(`\nProvider: ${provider} · ${proseModel}\n`);
 
   let ok = 0;
@@ -125,12 +186,41 @@ async function main() {
     for (const [i, w] of batch.entries()) {
       const label = `${w.target.table}.${w.target.column} ${w.id.slice(0, 8)}`;
       process.stdout.write(`[${start + i + 1}/${todo.length}] ${label} … `);
+      /*
+       * A rich-text column takes the slot walker and skips the semantic gate
+       * below, so it is written here rather than joining `candidates`.
+       */
+      if (w.target.html) {
+        const out = await translateHtml(w.english);
+        const note =
+          `${out.total - out.rejected}/${out.total} blocks` +
+          (out.skipped ? ` (${out.skipped} unsafe to translate)` : "");
+        if (!out.html) {
+          console.log(`FAILED (every block rejected — ${note})`);
+          failures.push(`${label} — every block rejected`);
+          continue;
+        }
+        const { error } = await sb
+          .from(w.target.table)
+          .update({ [arColumn(w.target)]: out.html })
+          .eq("id", w.id);
+        if (error) {
+          console.log(`WRITE FAILED (${error.message})`);
+          failures.push(`${label} — write: ${error.message}`);
+          continue;
+        }
+        ok++;
+        console.log(note);
+        continue;
+      }
+
       const result = await translateField({
         client,
         text: w.english,
         kind: w.target.kind,
         maxLength: w.target.maxLength,
         properNouns: nouns,
+        overrides: numerals(w.english),
         model: w.target.kind === "alt" ? fastModel : proseModel,
         fallbackModel: provider === "anthropic" ? undefined : null,
       });
