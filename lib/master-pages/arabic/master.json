@@ -43,6 +43,11 @@
     "ar": "464",
     "by": "machine"
   },
+  "1313": {
+    "ar": "١٣١٣",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "2023": {
     "ar": "2023",
     "by": "machine"
@@ -177,6 +182,36 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "1 - 3": {
+    "ar": "١ - ٣",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "1 - 5": {
+    "ar": "١ - ٥",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "1 - 6": {
+    "ar": "١ - ٦",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "1 Bedroom": {
+    "ar": "غرفة نوم 1",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "1 Bedroom Apartment": {
+    "ar": "شقة غرفة نوم 1",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "1 Bedroom Apartments": {
+    "ar": "شقق غرفة نوم 1",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "1,000+": {
     "ar": "1,000+",
     "by": "machine"
@@ -190,6 +225,11 @@
   "1,450": {
     "ar": "1,450",
     "by": "machine"
+  },
+  "1,500 ft² shell-and-core office in ADGM Square.": {
+    "ar": "1,500 ft² مكتب بنيته الأساسية في ADGM سكوير.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "10 km berm park": {
     "ar": "حديقة ساتر ترابي بطول 10 كم",
@@ -259,6 +299,26 @@
     "ar": "16,585",
     "by": "machine"
   },
+  "1–3 bed": {
+    "ar": "1–3 غرفة نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "1–4 bed": {
+    "ar": "1–4 غرفة نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "2 Bedroom": {
+    "ar": "2 غرفة نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "2 Bedroom Apartment": {
+    "ar": "شقة بـ 2 غرفة نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "2 Islands": {
     "ar": "جزيرتان (2)",
     "by": "machine",
@@ -287,6 +347,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
   },
+  "24/7 Security": {
+    "ar": "الحماية 24/7",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "24h security": {
+    "ar": "الأمن على مدار 24 ساعة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "27 sq. km": {
     "ar": "27 كم مربع",
     "by": "machine",
@@ -297,9 +367,34 @@
     "ar": "2h",
     "by": "machine"
   },
+  "2–4 bed": {
+    "ar": "2–4 غرفة نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "2–5 bed": {
+    "ar": "2–5 غرفة نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "2–6": {
     "ar": "2–6",
     "by": "machine"
+  },
+  "3 - 6": {
+    "ar": "٣ - ٦",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "3 Bedroom": {
+    "ar": "3 غرفة نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "3 Bedroom Par Villa": {
+    "ar": "3 غرفة نوم فيلا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "3 Bedrooms": {
     "ar": "3 غرف نوم",
@@ -335,6 +430,21 @@
     "ar": "370,000+",
     "by": "machine"
   },
+  "3–6 bed": {
+    "ar": "3–6 غرفة نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "4 - 6": {
+    "ar": "٤ - ٦",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "4 Bedroom": {
+    "ar": "4 غرفة نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "4 Bedrooms": {
     "ar": "4 غرف نوم",
     "by": "machine",
@@ -369,6 +479,11 @@
     "ar": "40/60",
     "by": "machine"
   },
+  "42,000 ft² fitted warehouse in KIZAD with yard area.": {
+    "ar": "42,000 ft² مستودع مجهز في KIZAD مع مساحة ساحة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "4–6": {
     "ar": "4–6",
     "by": "machine"
@@ -376,6 +491,11 @@
   "4–7": {
     "ar": "4–7",
     "by": "machine"
+  },
+  "5 Bedroom": {
+    "ar": "غرفة نوم 5",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "5 Bedrooms": {
     "ar": "5 غرف نوم",
@@ -415,6 +535,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:53:12.099Z"
   },
+  "6 Bedroom": {
+    "ar": "6 غرفة نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "6+ Bedrooms": {
     "ar": "6+ غرف نوم",
     "by": "machine",
@@ -442,8 +567,8 @@
     "at": "2026-08-17T08:49:03.945Z"
   },
   "A Bazar advisor reviews the instant estimate against the latest comparables and sends you the prepared PDF within 24 hours.": {
-    "ar": "يراجع مستشار من بازار التقدير الفوري مقارنةً بأحدث الصفقات المماثلة، ويرسل إليك ملف PDF الجاهز خلال 24 ساعة.",
-    "by": "machine",
+    "ar": "يراجع مستشار من بازار التقدير الفوري مقارنةً بأحدث الصفقات المماثلة ويرسل إليك ملف PDF المُعد خلال 24 ساعة.",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
   },
@@ -489,6 +614,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
   },
+  "A contemporary 3-bedroom residence offering approximately 3,453 sq. ft. of thoughtfully planned living space. Designed across two levels, the home features a dedicated majlis, spacious living and dining areas, private outdoor space and family-focused layouts surrounded by the landscaped setting of The Terraces.": {
+    "ar": "مسكن عصري من 3 غرف نوم يوفر حوالي 3,453 sq. ft. من مساحة عيش مخططة بعناية. مصمم على مستويين، يضم المنزل مجلسًا مخصصًا، ومساحات معيشة وطعام واسعة، ومساحة خارجية خاصة، وتصاميم موجهة للأسرة محاطة بمناظر الطبيعة المزروعة في التراسات.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "A contemporary one-bedroom residence featuring a bright open-plan layout, modern finishes, generous living spaces, and a private balcony designed around the lifestyle of Al Reem Island.": {
+    "ar": "مسكن عصري من غرفة نوم واحدة يتميز بتصميم مفتوح ومشرق، وأعمال حديثة، ومساحات معيشة سخية، وشرفة خاصة مصممة حول نمط حياة جزيرة الريم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "A dedicated property consultant will review your enquiry and guide you through the next steps.": {
     "ar": "سيقوم مستشار عقاري مختص بمراجعة استفسارك وإرشادك إلى الخطوات التالية.",
     "by": "machine",
@@ -519,6 +654,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "A distinctive waterfront address designed for modern island living.": {
+    "ar": "عنوان مميز على الواجهة المائية مصمم للحياة الحديثة على الجزيرة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "A few lines is plenty — area, budget, timeline. An advisor will come back to you shortly.": {
     "ar": "بضعة أسطر تكفي — المنطقة، الميزانية، الإطار الزمني. سيعاود أحد المستشارين التواصل معك قريبًا.",
     "by": "machine",
@@ -530,6 +670,21 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:55:36.746Z"
+  },
+  "A generous three-bedroom residence designed for family living, with spacious interiors, refined finishes, outdoor areas, and a premium waterfront setting.": {
+    "ar": "مسكن سخي بثلاث غرف نوم مصمم للحياة العائلية، مع مساحات داخلية واسعة، وأعمال إنشائية راقية، ومساحات خارجية، ومكان متميز على الواجهة المائية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "A generously proportioned three-bedroom + maid residence designed for family living, with expansive interiors, contemporary finishes, landscaped views, and access to Tara Park’s full range of amenities.": {
+    "ar": "مسكن سخي الحجم يتكون من ثلاث غرف نوم + غرفة خادمة مصمم للحياة العائلية، مع مساحات داخلية واسعة، وأعمال إنجاز عصرية، ومشاهد مزروعة، ووصول إلى كامل المرافق في تارا بارك.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "A generously proportioned three-bedroom + maid residence designed for modern family living, with spacious interiors, refined finishes, private outdoor areas, and access to Muheira’s resort-style amenities.": {
+    "ar": "مسكن سخي الحجم يتكون من ثلاث غرف نوم + غرفة خادمة مصمم للحياة العائلية الحديثة، مع مساحات داخلية واسعة، وأعمال إنجاز راقية، ومناطق خارجية خاصة، ووصول إلى المرافق المنتجعية في محييرة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "A growing collection of villas, mansions, townhouses and apartments.": {
     "ar": "مجموعة متنامية من الفلل والقصور والتاون هاوس والشقق.",
@@ -548,6 +703,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.269Z"
+  },
+  "A larger 4-bedroom residence offering up to approximately 4,524 sq. ft., designed for enhanced privacy and more expansive family living. The layout includes a majlis, maid’s room, spacious family areas, private garden, balconies and a rooftop terrace, with a larger plot providing additional outdoor space.": {
+    "ar": "مسكن أكبر بـ 4 غرف نوم يوفر ما يصل إلى حوالي 4,524 sq. ft.، مصمم لزيادة الخصوصية والحياة العائلية الموسعة. يتضمن التخطيط مجلسًا، وغرفة خادمة، ومساحات عائلية واسعة، وحديقة خاصة، وشرفات وتراسًا سطحيًا، مع أرض أكبر توفر مساحة خارجية إضافية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "A leading, award-winning real estate agency serving buyers, sellers and investors across the UAE since 2005.": {
     "ar": "وكالة عقارية رائدة حائزة على جوائز، تخدم المشترين والبائعين والمستثمرين في جميع أنحاء الإمارات منذ عام 2005.",
@@ -717,6 +877,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
   },
+  "A spacious 4-bedroom twin villa offering approximately 4,194 sq. ft. of living space across three levels. The residence features a dedicated majlis, maid’s room, family lounge, private backyard, balconies and an upper-level terrace, creating generous indoor and outdoor spaces for modern family living.": {
+    "ar": "فيلا توين فسيحة تتكون من 4 غرف نوم وتقدم 4,194 sq. ft. من مساحة المعيشة على ثلاث طوابق. تتميز السكن بمجلس مخصص، وغرفة خادمة، وصالة عائلية، وحديقة خلفية خاصة، وشرفات وتراس في الطابق العلوي، مما يخلق مساحات داخلية وخارجية سخية للحياة العائلية الحديثة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "A spacious two-bedroom + maid apartment offering modern interiors, generous living areas, flexible layouts, and access to landscaped communal spaces and premium amenities.": {
+    "ar": "شقة فسيحة بغرفتين نوم + غرفة خادمة تقدم ديكورات حديثة، مناطق معيشة سخية، تصاميم مرنة، ووصول إلى المساحات المشتركة المزروعة والمرافق الراقية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "A spacious two-bedroom + maid residence offering well-planned interiors, comfortable living and dining areas, contemporary finishes, and outdoor space within Muheira’s waterfront community.": {
+    "ar": "مساحة واسعة لشقة غرفتين نوم + خادمة تقدم تصاميم داخلية مُدروسة، مناطق معيشة وطعام مريحة، إنهاءات عصرية، ومساحة خارجية ضمن مجتمع مياه محييرة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "A strategically connected island close to Zayed International Airport and major routes towards Abu Dhabi and Dubai.": {
     "ar": "جزيرة استراتيجية متصلة بالقرب من مطار زايد الدولي وطرق رئيسية نحو أبوظبي ودبي.",
     "by": "machine",
@@ -740,6 +915,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:51:11.583Z"
+  },
+  "A thoughtfully designed residence with open-plan living, contemporary interiors, generous natural light, and a private outdoor space overlooking Hudayriyat Island.": {
+    "ar": "مسكن مصمم بعناية مع مساحات مفتوحة للحياة، وديكورات عصرية، وإضاءة طبيعية وافرة، ومساحة خارجية خاصة تطل على جزيرة الحديريات.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "A trusted name in UAE real estate since 2005 — over 20 years of trust, transparency, and proven market experience across Abu Dhabi and the wider UAE.": {
     "ar": "اسم موثوق في القطاع العقاري الإماراتي منذ عام 2005 — أكثر من 20 عامًا من الثقة والشفافية والخبرة السوقية المثبتة في أبوظبي وسائر أنحاء الإمارات.",
@@ -971,6 +1151,11 @@
     "ar": "ALDAR HQ",
     "by": "machine"
   },
+  "ALDAR is one of the UAE’s leading real estate developers, known for creating major residential, commercial and mixed-use communities across Abu Dhabi’s key destinations.": {
+    "ar": "الدار هو أحد أكبر مطوري العقارات في دولة الإمارات العربية المتحدة، المعروف بخلق مجتمعات سكنية وتجارية ومختلطة رئيسية في الوجهات الرئيسية لـ أبوظبي.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "About Bazar Real Estate": {
     "ar": "بازار نبذة عن العقارية",
     "by": "machine",
@@ -1047,6 +1232,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:35:49.468Z"
   },
+  "Abu Dhabi Global Market — financial free-zone on Al Maryah Island. Freehold mixed-use towers and the ADGM courts.": {
+    "ar": "أبوظبي سوق عالمي — منطقة مالية حرة في جزيرة الماريه. أبراج مختلطة تملك حر ومحاكم ADGM.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Abu Dhabi Golf Club": {
     "ar": "نادي أبوظبي للغولف",
     "by": "machine"
@@ -1058,8 +1248,8 @@
     "at": "2026-08-16T13:28:31.966Z"
   },
   "Abu Dhabi Landlord Guide: Property Management": {
-    "ar": "دليل المالك من أبوظبي: إدارة العقارات",
-    "by": "machine",
+    "ar": "دليل الملاك في أبوظبي: إدارة العقارات",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
@@ -1086,6 +1276,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:45:15.844Z"
+  },
+  "Abu Dhabi Skyline Views": {
+    "ar": "أبوظبي آفاق المدينة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Abu Dhabi University": {
     "ar": "أبوظبي الجامعة",
@@ -1146,6 +1341,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:57:32.465Z"
+  },
+  "Abu Dhabi's leisure & destination developer — Yas Island.": {
+    "ar": "مطور عقاري للترفيه والوجهات في أبوظبي — جزيرة ياس.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Abu Dhabi-based diversified developer with retail, hospitality, and residential projects across the emirate.": {
+    "ar": "مطور عقاري متنوع مقره أبو ظبي مع مشاريع تجارية وضيافة وسكنية عبر الإمارة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Abu Dhabi.": {
     "ar": "أبوظبي.",
@@ -1409,6 +1614,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:11:02.438Z"
   },
+  "Al Maryah Central retail unit, 3,200 ft².": {
+    "ar": "المارية وحدة تجزئة مركزية، 3,200 ft².",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Al Maryah Island": {
     "ar": "جزيرة الماريه",
     "by": "machine"
@@ -1446,6 +1656,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:12:50.795Z"
+  },
+  "Al Naseem": {
+    "ar": "النسيم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Al Naseem Community": {
     "ar": "مجتمع النسيم",
@@ -1567,6 +1782,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "Aldar eco-themed cluster on Saadiyat — low-density villas and townhouses with mangrove views.": {
+    "ar": "الدار تجمع مُرَكَّز على السعديات — فيلات وشقق متصلة ذات كثافة منخفضة مع إطلالة على الغابات المنغروفية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Aldar’s circular headquarters on Al Raha Beach is one of the most recognisable buildings on the Abu Dhabi coastline.": {
     "ar": "المقر الدائري لشركة الدار في شاطئ الراحة هو أحد أكثر المباني تميزاً على ساحل أبوظبي.",
     "by": "machine",
@@ -1626,6 +1846,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:52:17.843Z"
+  },
+  "An exceptional 6-bedroom estate villa offering approximately 6,383 sq. ft., with a private pool, landscaped garden, private lift, staff accommodation and expansive living areas across three levels.": {
+    "ar": "فيلا استثنائية مكونة من 6 غرف نوم تقدم مساحة تبلغ حوالي 6,383 sq. ft.، مع حوض سباحة خاص، حديقة مناظر طبيعية، مصعد خاص، مسكن للعمال، ومساحات معيشة واسعة على ثلاث طوابق.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "An expanding selection of premium coastal developments.": {
     "ar": "تشكيلة متنامية من المشاريع الساحلية الفاخرة.",
@@ -1717,11 +1942,46 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Apartments & Villas on Yas Island": {
+    "ar": "شقق وفيلات في جزيرة ياس",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Apartments dominate the established market, with newer developments also introducing townhouses and villas.": {
     "ar": "الشقق تهيمن على السوق القائم، مع طرح مشاريع أحدث لمنازل تاون هاوس وفلل أيضاً.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Apartments in AlJurf": {
+    "ar": "شقق في الجرف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Apartments on Al Reem Island": {
+    "ar": "شقق في جزيرة الريم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Apartments on AlJurf": {
+    "ar": "شقق في الجرف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Apartments on Hudayriyat Island": {
+    "ar": "شقق في جزيرة الحديريات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Apartments on Yas Island": {
+    "ar": "شقق في جزيرة ياس",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Apartments, Townhouses & Villas on Yas Island": {
+    "ar": "شقق، فيلات صغيرة وفيلات في جزيرة ياس",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Apartments, townhouses and villas.": {
     "ar": "شقق وتاون هاوس وفلل.",
@@ -1759,6 +2019,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:17:50.899Z"
   },
+  "Arada is a UAE-based master developer focused on creating integrated communities and lifestyle destinations across the UAE and international markets.": {
+    "ar": "آرادة هي مطور عقاري رئيسي مقره الإمارات العربية المتحدة يركز على إنشاء مجتمعات متكاملة وجهات للحياة في الإمارات العربية المتحدة والأسواق الدولية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Are there residential properties on Al Maryah Island?": {
     "ar": "هل توجد عقارات سكنية في جزيرة الماريه؟",
     "by": "machine",
@@ -1788,6 +2053,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T17:00:34.989Z"
+  },
+  "Associate Advisor · Lettings desk": {
+    "ar": "المستشار المشارك · مكتب الإيجارات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Associate Advisor · Yas & Al Raha": {
+    "ar": "المستشار المشارك · ياس و الراحة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "At Bazar Real Estate, we go beyond property transactions. We act as a trusted partner for clients navigating Abu Dhabi and the wider UAE real estate market, combining local expertise with a modern, investor-focused approach.\n\nWith direct relationships with leading developers, financial partners, and key industry stakeholders, Bazar provides clients with the knowledge, access, and confidence needed to make informed property decisions.": {
     "ar": "في بازار العقارية، نتجاوز حدود المعاملات العقارية. فنحن شريك موثوق للعملاء في أبوظبي وسوق العقارات في الإمارات عمومًا، ونجمع بين الخبرة المحلية ونهج عصري يركّز على المستثمر.\n\nوبفضل العلاقات المباشرة مع كبار المطوّرين والشركاء الماليين والجهات الرئيسية في القطاع، توفّر بازار لعملائها المعرفة وسهولة الوصول والثقة اللازمة لاتخاذ قرارات عقارية مدروسة.",
@@ -1825,6 +2100,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:00:53.574Z"
   },
+  "BBQ Terraces": {
+    "ar": "شرفات الشواء",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Baccarat Residences Saadiyat\nMandarin Oriental Residences\nNobu Residences Abu Dhabi\nW Residences Abu Dhabi\nHudayriyat Golf Estates": {
     "ar": "باكارات ريزيدنسز السعديات\nماندارين أورينتال ريزيدنسز\nنوبو ريزيدنسز أبوظبي\nدبليو ريزيدنسز أبوظبي\nالحديريات غولف إستيتس",
     "by": "machine",
@@ -1832,8 +2112,8 @@
     "at": "2026-08-16T13:20:13.723Z"
   },
   "Back": {
-    "ar": "عودة",
-    "by": "machine",
+    "ar": "رجوع",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
@@ -1849,11 +2129,21 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:13:20.229Z"
   },
+  "Balcony": {
+    "ar": "شرفة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Banking coordination": {
     "ar": "​التنسيق المصرفي",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
+  },
+  "Baraka develops residential, commercial and lifestyle destinations with a focus on modern design, sustainability and long-term community value.": {
+    "ar": "تقوم باراكا بتطوير وجهات سكنية وتجارية ونمط حياة مع التركيز على التصميم الحديث والاستدامة والقيمة المجتمعية على المدى الطويل.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Based in Abu Dhabi, serving the UAE.": {
     "ar": "أبوظبي مقرنا في، ونخدم كافة أنحاء الإمارات.",
@@ -1867,11 +2157,36 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
   },
+  "Basement": {
+    "ar": "باصنت",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Bashayer Residences": {
+    "ar": "بشاير ريسيدنسز",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Bay view": {
+    "ar": "منظر الخليج",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Bayviews Saadiyat two-bedroom unit, 50/50 plan.": {
+    "ar": "Bayviews Saadiyat وحدة غرفتين، خطة 50/50.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Bazar Real Estate": {
     "ar": "أملاك بازار العقارية",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:48:50.153Z"
+  },
+  "Bazar Real Estate - Your Trusted Abu Dhabi Real Estate Partner": {
+    "ar": "بازار العقارات - شريكك الموثوق أبوظبي في العقارات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Bazar Real Estate L.L.C.": {
     "ar": "بازار للعقارات ذات مسؤولية محدودة",
@@ -1909,6 +2224,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Bazar exclusive · launched 2023": {
+    "ar": "بازار حصري · تم إطلاقه في 2023",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Bazar exclusive · pre-launch access": {
+    "ar": "بازار حصرية · الوصول المبكر",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Bazar exclusive · public release pending": {
+    "ar": "بازار حصرية · الإفراج العام قيد الانتظار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Bazar is a twelve-advisor boutique real-estate firm covering Abu Dhabi. Fiduciary advisory, off-market access, and numerically honest analysis.": {
     "ar": "بازار شركة عقارية متخصصة تضم اثني عشر مستشارًا وتغطي أبوظبي. استشارات ائتمانية، ووصول إلى الفرص خارج السوق، وتحليل صادق بالأرقام.",
     "by": "machine",
@@ -1926,6 +2256,16 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:34:19.126Z"
+  },
+  "Beach access": {
+    "ar": "وصول إلى الشاطئ",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Beach view": {
+    "ar": "منظر شاطئ",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Beach-level view along the Mamsha promenade showing the low-rise residences, the boardwalk and the restaurants at ground level.": {
     "ar": "منظر من مستوى الشاطئ على امتداد ممشى السعديات يُظهر المباني السكنية المنخفضة والممشى الخشبي والمطاعم في الطابق الأرضي.",
@@ -1956,6 +2296,11 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:49:03.944Z"
+  },
+  "Beachfront": {
+    "ar": "واجهة شاطئية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Beachfront Apartments": {
     "ar": "شقق على الواجهة البحرية",
@@ -1992,6 +2337,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:26:57.193Z"
+  },
+  "Beachfront villa enclave on north Saadiyat. Freehold for all nationalities; large plots, low density.": {
+    "ar": "منطقة فيلات شاطئية على الساحل الشمالي لالسعديات. تملك حر لجميع الجنسيات؛ قطع أرض كبيرة، كثافة منخفضة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Bedrooms": {
     "ar": "غرف النوم",
@@ -2059,15 +2409,30 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
   },
+  "Binghatti is a Dubai-based developer recognised for distinctive architecture, luxury residences and high-profile branded collaborations.": {
+    "ar": "بينغاتي هي شركة مطورة عقارية مقرها دبي معروفة بتصميمها المميز، ومساكنها الفاخرة، وتعاوناتها البارزة مع العلامات التجارية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Bloom Holding": {
     "ar": "بلووم القابضة",
     "by": "machine"
+  },
+  "Bloom Holding is an Abu Dhabi-based group developing integrated residential communities alongside education, hospitality and related real estate assets.": {
+    "ar": "بلووم القابضة هي مجموعة مقرها أبو ظبي تطور مجتمعات سكنية متكاملة إلى جانب أصول عقارية متعلقة بالتعليم والضيافة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Bloom Living": {
     "ar": "بلوم ليفينغ",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:22:28.880Z"
+  },
+  "Boardwalk": {
+    "ar": "الرصيف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Book a consultation": {
     "ar": "احجز استشارة",
@@ -2080,6 +2445,21 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
+  },
+  "Boutique private island off Saadiyat — ultra-prime villa-only inventory, accessed by ferry.": {
+    "ar": "جزيرة خاصة صغيرة قبالة السعديات — مخزون فاخر للفيلات فقط، يتم الوصول إليها بواسطة العبارة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Branded Residences": {
+    "ar": "المساكن المعروفة بالعلامة التجارية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Branded living · Bazar exclusive": {
+    "ar": "الحياة المميزة · بازار حصرية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Branded residences and premium apartments beside ADGM Square.": {
     "ar": "المساكن ذات العلامات التجارية والشقق الفاخرة بجوار ساحة ADGM.",
@@ -2280,8 +2660,8 @@
     "at": "2026-08-16T10:37:34.607Z"
   },
   "Building": {
-    "ar": "البناية",
-    "by": "machine",
+    "ar": "مبنى",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:07:12.027Z"
   },
@@ -2290,6 +2670,11 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:55:36.746Z"
+  },
+  "Built his book in the Reem 2010s tower wave. Omar is the second call after the first quote — he tells you what the building is actually like to live in, not just what the brochure says.": {
+    "ar": "بني كتابه في موجة برج ريم في العقد 2010. عمر هو الاتصال الثاني بعد الاقتباس الأول — يخبرك بما هو عليه المبنى فعليًا للعيش فيه، وليس فقط ما تقوله الكتالوج.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Built on strong relationships with leading developers, banks, and trusted industry partners.": {
     "ar": "قائمة على علاقات قوية مع كبار المطورين والبنوك وشركاء موثوقين في القطاع.",
@@ -2309,11 +2694,31 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:04:18.238Z"
   },
+  "Built-In Appliances": {
+    "ar": "التجهيزات المثبتة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Built-In Wardrobes": {
+    "ar": "الخزائن المدمجة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Built-up area": {
     "ar": "المساحة المبنية",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:12:56.314Z"
+  },
+  "Bulgari Residences two-bedroom unit.": {
+    "ar": "Bulgari Residences وحدة غرفتين نوم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Burtville Developments is an Abu Dhabi-focused developer creating contemporary residential projects with an emphasis on quality, modern design and premium living experiences.": {
+    "ar": "برتڤيل للتطوير العقاري هو مطور عقاري يركز على أبو ظبي، ينشئ مشاريع سكنية عصرية مع التركيز على الجودة، التصميم الحديث، وتجارب العيش الفاخرة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Business districts": {
     "ar": "مناطق الأعمال",
@@ -2356,6 +2761,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
+  },
+  "Buyer's guide": {
+    "ar": "دليل المشتري",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Buyers can find apartments, villas, townhouses, branded residences and ultra-luxury homes across the island.": {
     "ar": "يمكن للمشترين العثور على شقق وفيلات وبيوت متصلة ومنازل فاخرة ومميزة في جميع أنحاء الجزيرة.",
@@ -2404,6 +2814,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
+  },
+  "Call": {
+    "ar": "اتصل",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Call now": {
     "ar": "اتصل الآن",
@@ -2495,6 +2910,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:11:02.439Z"
   },
+  "Canal Views": {
+    "ar": "مناظر القناة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Cantilevered Nudra villa with rooftop terrace and private pool on Saadiyat Beach.": {
+    "ar": "فيلا نودرا معلقة مع تراس سطح خاص وحوض سباحة خاص في شاطئ السعديات.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Capital District": {
     "ar": "منطقة العاصمة",
     "by": "machine",
@@ -2502,8 +2927,8 @@
     "at": "2026-08-17T09:22:28.880Z"
   },
   "Category": {
-    "ar": "الفئة",
-    "by": "machine",
+    "ar": "القسم",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:09:10.478Z"
   },
@@ -2513,11 +2938,26 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:35:35.378Z"
   },
+  "Central Air Conditioning": {
+    "ar": "التدفئة والتهوية المركزيتان",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Central Location": {
     "ar": "موقع مركزي",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
+  },
+  "Central Park": {
+    "ar": "الحديقة المركزية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Central business island linking downtown to Reem — The Galleria Mall, Cleveland Clinic, and ADGM offices.": {
+    "ar": "جزيرة الأعمال المركزية التي تربط وسط المدينة بريم — ذا غاليريا مول، كليفلاند كلينك، وADGM مكاتب.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Central towers within walking distance of the business district.": {
     "ar": "أبراج مركزية على مسافة قصيرة سيرًا من منطقة الأعمال.",
@@ -2531,11 +2971,31 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.478Z"
   },
+  "Chef’s Kitchen": {
+    "ar": "مطبخ الشيف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Choose an off-plan apartment close to the city’s key destinations.": {
     "ar": "اختر شقة على الخارطة بالقرب من أبرز وجهات المدينة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:18:09.430Z"
+  },
+  "Choose from a selection of 2-bedroom layouts designed for modern living.": {
+    "ar": "اختر من مجموعة من تخطيطات غرف النوم 2 المخصصة للحياة العصرية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Choose from a selection of 3-bedroom layouts designed for modern living.": {
+    "ar": "اختر من مجموعة من تخطيطات غرف النوم 3 المصممة للحياة العصرية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Choose from a selection of 6-bedroom layouts designed for modern living.": {
+    "ar": "اختر من مجموعة من تخطيطات غرف النوم 6 المصممة للحياة العصرية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Choose spacious villas created for privacy and family life.": {
     "ar": "فلل واسعة مصممة للخصوصية وحياة العائلة.",
@@ -2548,6 +3008,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "City Views": {
+    "ar": "وجهات المدينة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "City view": {
+    "ar": "منظر المدينة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Clear Administration": {
     "ar": "إدارة واضحة",
@@ -2591,6 +3061,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "Clinic": {
+    "ar": "عيادة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Close to Abu Dhabi’s international airport and major highways.": {
     "ar": "قريب من مطار أبوظبي الدولي والطرق الرئيسية.",
     "by": "machine",
@@ -2608,6 +3083,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Clubhouse": {
+    "ar": "نادي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Co-Working Spaces": {
+    "ar": "مساحات العمل المشتركة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Coastal Setting": {
     "ar": "موقع ساحلي",
@@ -2759,6 +3244,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:31:24.298Z"
   },
+  "Community Centre": {
+    "ar": "مركز المجتمع",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Community Lifestyle": {
     "ar": "النمط المعيشي للمجتمع",
     "by": "machine",
@@ -2788,6 +3278,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
+  },
+  "Community view": {
+    "ar": "عرض المجتمع",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Compare locations, projects and properties based on your budget and lifestyle requirements.": {
     "ar": "قارن بين المواقع والمشاريع والعقارات وفقاً لميزانيتك ومتطلبات نمط حياتك.",
@@ -2837,9 +3332,14 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
-  "Connected to Abu Dhabi": {
-    "ar": "متصل بـأبوظبي",
+  "Concierge": {
+    "ar": "كونسيرج",
     "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Connected to Abu Dhabi": {
+    "ar": "استمتع بسهولة الوصول إلى أبوظبي",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:31:24.298Z"
   },
@@ -2957,6 +3457,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Corner three-bedroom with dual aspect over the marina and the central park.": {
+    "ar": "شقة ثلاثية الغرف في الزاوية مع منظر مزدوج على المارينا والبارك المركزي.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Corniche": {
     "ar": "الكورنيش",
     "by": "machine"
@@ -2997,6 +3502,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:57:09.582Z"
   },
+  "Covered Parking": {
+    "ar": "موقف مغطى",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Covered parking": {
+    "ar": "موقف مغطى",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Cultural Destination": {
     "ar": "وجهة ثقافية",
     "by": "machine",
@@ -3013,6 +3528,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:37:03.040Z"
   },
+  "Cultural island home to the Louvre Abu Dhabi, beach villas, and Mamsha Al Saadiyat.": {
+    "ar": "جزيرة ثقافية موطن اللوفر أبوظبي والفلل الشاطئية وممشى السعديات.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Current projects include apartments, townhouses and penthouses, alongside premium beachfront residences.": {
     "ar": "المشاريع الحالية تشمل شققاً وتاون هاوس وبنتهاوس، إلى جانب مساكن راقية على الواجهة البحرية.",
     "by": "machine",
@@ -3024,6 +3544,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Cycling Trails": {
+    "ar": "مسارات الدراجات الهوائية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "DAMAC is a Dubai-based luxury property developer known for large-scale communities, premium residences and internationally recognised branded developments.": {
+    "ar": "داماك هي مطور عقاري فاخر مقره دبي، معروف بالمجتمعات الكبيرة، والمساكن الفاخرة، والمشاريع المعروفة دوليًا.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "DLD-sourced · updated each quarter": {
     "ar": "مصدرها DLD · تُحدَّث كل ربع سنة",
@@ -3114,6 +3644,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T17:00:34.989Z"
+  },
+  "Deyaar is a Dubai-based developer with a diversified portfolio spanning residential, commercial, hospitality and property management developments.": {
+    "ar": "ديار هي شركة مطور عقاري مقرها دبي، ولديها محفظة متنوعة تشمل مشاريع سكنية وتجارية وضيافة وإدارة العقارات.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Dining & Retail": {
+    "ar": "الطعام والتجزئة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Direct Water Frontage": {
     "ar": "واجهة مائية مباشرة",
@@ -3355,6 +3895,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
   },
+  "Dog Park": {
+    "ar": "حديقة الكلاب",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Download Brochure": {
     "ar": "تحميل الكتيب",
     "by": "machine",
@@ -3385,6 +3930,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "Driver's room": {
+    "ar": "غرفة السائق",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Driver’s Room": {
+    "ar": "غرفة السائق",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Dual Licensing": {
     "ar": "الترخيص المزدوج",
     "by": "machine",
@@ -3409,9 +3964,19 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "Dubai Properties is a major residential developer and part of Dubai Holding, known for creating established communities and destinations across Dubai.": {
+    "ar": "دبي للعقارات هو مطور عقاري رئيسي وجزء من دبي هولدينج، معروف بخلق مجتمعات ووجهات متميزة عبر دبي.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Eagle Hills": {
     "ar": "إيجل هيلز",
     "by": "machine"
+  },
+  "Eagle Hills is an Abu Dhabi-headquartered international developer specialising in large-scale waterfront, residential and mixed-use master developments.": {
+    "ar": "إيجل هيلز هو مطور عقاري دولي مقره أبو ظبي متخصص في تطوير المشاريع السكنية والمتعددة الاستخدامات والواقعة على الواجهات المائية الكبيرة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Early access to upcoming residential projects.": {
     "ar": "الوصول المبكر إلى المشاريع السكنية القادمة.",
@@ -3467,6 +4032,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:19:16.443Z"
   },
+  "Emaar is a globally recognised Dubai-based developer behind landmark residential, retail, hospitality and mixed-use destinations in the UAE and internationally.": {
+    "ar": "إعمار هي شركة مطورة عقارية معروفة عالميًا ومقرها دبي، وراء وجهات سكنية وتجارية وضيافة ومختلطة رائدة في الإمارات العربية المتحدة ودولياً.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Email": {
     "ar": "البريد الإلكتروني",
     "by": "machine",
@@ -3474,8 +4044,8 @@
     "at": "2026-08-16T16:05:14.877Z"
   },
   "Email me a code": {
-    "ar": "أرسل لي رمزًا عبر البريد الإلكتروني",
-    "by": "machine",
+    "ar": "أرسل لي رمزاً عبر البريد الإلكتروني",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
   },
@@ -3484,6 +4054,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:25:18.593Z"
+  },
+  "En-Suite Bathrooms": {
+    "ar": "الحمامات المرفقة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Energy-efficient urban design and environmentally conscious buildings.": {
     "ar": "تصميم حضري صديق للطاقة ومباني واعية بيئيًا.",
@@ -3515,6 +4090,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
   },
+  "Entertainment-led island with Ferrari World, Yas Marina Circuit, and waterfront living.": {
+    "ar": "جزيرة ترفيهية مع فيراري وورلد، ياس مارينا سيركويت، وحياة على الواجهة المائية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Entry points below the established island markets.": {
     "ar": "نقاط دخول أقل من أسواق الجزر المعروفة.",
     "by": "machine",
@@ -3526,6 +4106,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Established Aldar villa community within Al Raha, built around 2010. Mature trees, schools, mosques.": {
+    "ar": "مجتمع فيلات الدار داخل الراحة، تم بناؤه حول عام 2010. أشجار ناضجة، مدارس، مساجد.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Established Community": {
     "ar": "مجتمع مُستقر",
@@ -3557,11 +4142,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:01:23.673Z"
   },
+  "Established in Abu Dhabi in 2005, Bazar Real Estate L.L.C. is an award-winning UAE real estate company providing trusted property guidance across Abu Dhabi and the wider UAE. We support buyers, sellers, landlords, tenants and investors through transparent advice, strong market knowledge and established relationships with leading developers and financial institutions.": {
+    "ar": "تأسست بازار عقارات L.L.C. في أبوظبي في عام 2005، وهي شركة عقارات رائدة في الإمارات العربية المتحدة تقدم إرشادات عقارية موثوقة في أبوظبي وجميع أنحاء الإمارات العربية المتحدة. ندعم المشترين والبائعين والملاك والمستأجرين والمستثمرين من خلال نصائح شفافة ومعرفة قوية بالسوق وعلاقات متميزة مع المطورين الرائدين والمؤسسات المالية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Established in Abu Dhabi in 2005, Bazar Real Estate was built on extensive local market knowledge and a practical understanding of the UAE property sector.\n\nOver the years, the company has earned a trusted reputation for professionalism, transparency and informed real estate guidance. Its journey reflects the continued growth of the UAE market, from established neighbourhoods to landmark projects and new investment destinations.": {
     "ar": "تأسست بازار العقارية في أبوظبي عام 2005، وقامت على معرفة واسعة بالسوق المحلي وفهم عملي لقطاع العقارات في الإمارات.\n\nوعلى مدى السنوات، اكتسبت الشركة سمعة موثوقة في الاحترافية والشفافية والإرشاد العقاري المبني على المعرفة. وتعكس مسيرتها النمو المستمر لسوق الإمارات، من الأحياء العريقة إلى المشاريع البارزة ووجهات الاستثمار الجديدة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
+  },
+  "Established mainland community: Al Raha Beach, Al Raha Gardens.": {
+    "ar": "مجتمع رئيسي مُؤسَّس: شاطئ الراحة، حدائق الراحة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Established parks, walkways and community centres rather than a new build site.": {
     "ar": "حدائق ومسارات مشي ومراكز مجتمعية قائمة، لا موقع بناء جديد.",
@@ -3582,8 +4177,8 @@
     "at": "2026-08-17T08:13:20.229Z"
   },
   "Evening": {
-    "ar": "الفترة المسائية",
-    "by": "machine",
+    "ar": "المساء",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:12:56.314Z"
   },
@@ -3664,6 +4259,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Expansive 5-bedroom estate villas offering approximately 5,418 sq. ft., featuring a private pool, lift, landscaped backyard and generous living spaces designed for modern family life.": {
+    "ar": "فيلات شاسعة بـ 5 غرف نوم تقدم مساحة تبلغ حوالي 5,418 sq. ft.، وتتميز بوجود حوض سباحة خاص، ومصعد، وحديقة خلفية مزروعة، ومساحات معيشة سخية مصممة لحياة العائلة الحديثة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Expected Price": {
     "ar": "السعر المتوقع",
@@ -4181,6 +4781,51 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:17:50.899Z"
   },
+  "Explore the different 1-bedroom floor plans available.": {
+    "ar": "استكشف الخطط الأرضية المختلفة للغرفة 1.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Explore the different 2-bedroom floor plans available": {
+    "ar": "استكشف الخطط الأرضية المختلفة للشقق ذات 2 غرفتي النوم المتاحة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Explore the different 2-bedroom floor plans available.": {
+    "ar": "استكشف الخطط الأرضية المختلفة للشقق ذات 2 غرفتي النوم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Explore the different 3-bedroom floor plans available": {
+    "ar": "استكشف الخطط الأرضية المختلفة للشقق ذات الـ 3 غرف نوم المتاحة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Explore the different 3-bedroom floor plans available.": {
+    "ar": "استكشف الخطط الأرضية المختلفة للشقق ذات الـ 3 غرف نوم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Explore the different 4-bedroom floor plans available.": {
+    "ar": "استكشف الخطط الأرضية المختلفة المتاحة للشقق ذات الـ 4 غرف نوم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Explore the different 5-bedroom floor plans available.": {
+    "ar": "استكشف الخطط الأرضية المختلفة للشقق ذات 5 غرف نوم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Explore the different 6-bedroom floor plans available.": {
+    "ar": "استكشف الخطط الأرضية المختلفة المتاحة للشقق ذات الـ 6 غرف نوم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Explore the different studio apartment floor plans available.": {
+    "ar": "استكشف الخطط الأرضية المختلفة لشقق الاستوديو المتاحة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Explore the latest off-plan developments across Abu Dhabi's top communities — from waterfront apartments to branded residences.": {
     "ar": "اكتشف أحدث المشاريع على الخارطة في أبرز مجتمعات أبوظبي — من الشقق المطلة على الواجهة المائية إلى المساكن ذات العلامات التجارية.",
     "by": "machine",
@@ -4363,6 +5008,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:51:11.583Z"
   },
+  "Family Lounge": {
+    "ar": "صالة العائلة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Family Pool": {
+    "ar": "حوض سباحة عائلي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Family townhouse in Al Raha Gardens with private garden.": {
+    "ar": "تاون هاوس عائلي في حدائق الراحة مع حديقة خاصة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Family-Focused Living": {
     "ar": "حياة تركّز على العائلة",
     "by": "machine",
@@ -4380,6 +5040,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
+  },
+  "Fatima handles the landlord side of the lettings desk — asset management, renewal negotiations, and the annual cycle work that most agents won't touch. Owns the relationships, not just the transactions.": {
+    "ar": "تتولى فاطمة الجانب الخاص بالمالك في مكتب الإيجارات — إدارة الأصول، مفاوضات التجديد، والعمل الدوري السنوي الذي لا يلمسه معظم الوكلاء. تمتلك العلاقات، وليس فقط المعاملات.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Featured Properties, Selected for You": {
     "ar": "العقارات المميزة، مختارة لك",
@@ -4405,6 +5070,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:01:23.673Z"
   },
+  "Field note": {
+    "ar": "ملاحظة الحقل",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Figures published by ADGM on the expansion of its jurisdiction. Businesses on Al Reem Island transitioned to ADGM licensing by the end of 2024.": {
     "ar": "أرقام نشرتها ADGM حول توسّع نطاق اختصاصها. انتقلت الشركات في جزيرة الريم إلى تراخيص ADGM بحلول نهاية عام 2024.",
     "by": "machine",
@@ -4428,6 +5098,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:11:22.357Z"
+  },
+  "Final phase release": {
+    "ar": "الإطلاق النهائي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Financial Centre": {
     "ar": "المركز المالي",
@@ -4879,6 +5554,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
   },
+  "Find the right residential, commercial, or land opportunity.": {
+    "ar": "ابحث عن الفرصة السكنية أو التجارية أو الأرضية المناسبة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Find the setting that fits your life.": {
     "ar": "اعثر على المكان الذي يناسب حياتك.",
     "by": "machine",
@@ -4932,6 +5612,36 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.334Z"
+  },
+  "Fitness Studio": {
+    "ar": "استوديو لياقة بدنية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Five-bedroom Al Raha Gardens villa in the Sidra cluster.": {
+    "ar": "فيلا بخمس غرف نوم في تجمع السدرة حدائق الراحة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Five-bedroom Hidd villa for rent, 12-month lease.": {
+    "ar": "فيلا هيد بخمس غرف نوم للإيجار، عقد لمدة 12 شهر.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Five-bedroom Hidd villa with private beach plot.": {
+    "ar": "فيلا هيد ذات خمس غرف نوم مع أرض شاطئ خاص.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Five-bedroom Saadiyat Lagoons villa on a corner plot with extended garden.": {
+    "ar": "فيلا السعديات لاغونز ذات خمس غرف نوم على أرض زاوية مع حديقة ممتدة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Five-bedroom Yas Acres Magnolias villa with rear-garden swimming pool.": {
+    "ar": "فيلا ياس ايكرز ماجنولياز بخمس غرف نوم مع حوض سباحة في الحديقة الخلفية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Five-star hospitality, dining, golf and premium communities.": {
     "ar": "ضيافة وطعام وغولف ومجتمعات فاخرة خمس نجوم.",
@@ -4992,6 +5702,31 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:39:23.852Z"
+  },
+  "Four-bedroom Al Raha Gardens villa for rent.": {
+    "ar": "فيلا حدائق الراحة بغرف نوم أربع للإيجار.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Four-bedroom Al Raha Gardens villa with private garden.": {
+    "ar": "فيلا حدائق الراحة بغرف نوم أربع وحديقة خاصة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Four-bedroom West Yas villa with garden and community amenity.": {
+    "ar": "فيلا بغرفتي نوم أربع في ياس الغربية مع حديقة ومرافق المجتمع.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Four-bedroom Yas Acres villa for rent, suitable for relocating families.": {
+    "ar": "فيلا ياس ايكرز بغرف نوم أربع للإيجار، مناسبة للعائلات المهاجرة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Four-bedroom Yas Acres villa in the Magnolias cluster with single-row positioning.": {
+    "ar": "فيلا بغرفتي نوم ياس ايكرز في تجمع الماغنوليا مع موقع صف واحد.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Four-bedroom villas on the water, around 10,000 sq. ft.": {
     "ar": "فيلاات بغرفتي نوم أربع على المياه، حول 10,000 sq. ft.",
@@ -5257,6 +5992,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:07:12.027Z"
   },
+  "Full office floor in ADGM Square, fitted, available immediately.": {
+    "ar": "طابق مكتب كامل في ADGM مربع، مجهز، متاح فورًا.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Full-building acquisitions and leasebacks for occupiers and investors buying income rather than a unit.": {
     "ar": "استحواذات المباني الكاملة وإعادة التأجير للمستخدمين والمستثمرين الذين يشترون دخلاً لا وحدة عقارية.",
     "by": "machine",
@@ -5268,6 +6008,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.270Z"
+  },
+  "Fully Fitted Kitchen": {
+    "ar": "مطبخ مجهز بالكامل",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Fully furnished": {
     "ar": "مفروش بالكامل",
@@ -5287,11 +6032,36 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "Gaming Room": {
+    "ar": "غرفة الألعاب",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Garden": {
+    "ar": "حديقة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Garden Views": {
+    "ar": "مناظر الحديقة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Garden view": {
+    "ar": "منظر الحديقة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Gated Communities": {
     "ar": "المجمعات السكنية المغلقة",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
+  },
+  "Gated Community": {
+    "ar": "مجتمع محاط بسياج",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Gated Family Living": {
     "ar": "حياة عائلية محصنة",
@@ -5521,11 +6291,31 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:04:18.238Z"
   },
+  "Golf Course": {
+    "ar": "ملعب جولف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Golf view": {
+    "ar": "منظر للغولف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Government Precinct": {
     "ar": "المنطقة الحكومية",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:22:28.880Z"
+  },
+  "Green Spaces": {
+    "ar": "المساحات الخضراء",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Ground-floor one-bedroom with direct garden access and 240 ft² wraparound terrace.": {
+    "ar": "شقة بغرفة نوم واحدة في الطابق الأرضي مع وصول مباشر إلى الحديقة وتراس 240 ft² محيط.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Ground-level homes opening onto the promenade.": {
     "ar": "منازل في الطابق الأرضي تُطل على الممشى.",
@@ -5545,6 +6335,16 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:17:50.899Z"
   },
+  "Guest Bathroom": {
+    "ar": "حمام ضيوف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Guest Bedroom": {
+    "ar": "غرفة نوم ضيوف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Guidance for Every Property Journey": {
     "ar": "استشارات لكل رحلة عقارية",
     "by": "machine",
@@ -5556,6 +6356,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Gym": {
+    "ar": "صالة رياضية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "H1 2026 residential sales value": {
     "ar": "قيمة المبيعات السكنية في النصف 1 من 2026",
@@ -5605,6 +6410,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Helping tenants find suitable homes and commercial spaces.": {
+    "ar": "مساعدتنا المستأجرين على العثور على منازل ومساحات تجارية مناسبة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Hi Bazar, I just scanned your QR code.": {
     "ar": "بازار مرحباً، لقد قمت للتو بمسح رمز الاستجابة السريعة الخاص بك.",
     "by": "machine",
@@ -5633,6 +6443,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Home Office": {
+    "ar": "مكتب منزلي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Home to ADGM and major international businesses.": {
     "ar": "؛موطن ADGM وكبرى الشركات العالمية",
     "by": "machine",
@@ -5650,6 +6465,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:39:55.777Z"
+  },
+  "Hotel-residence developer with UAE and international assets — Fairmont, Raffles, and other branded resorts.": {
+    "ar": "مطور عقاري لفندق السكن مع أصول في الإمارات والخارج — فنادق فيرمونت، رافلز وغيرها من المنتجعات المعروفة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "How can we help?": {
     "ar": "كيف يمكننا مساعدتك؟",
@@ -5783,6 +6603,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Hudayriyat Golf Estates": {
+    "ar": "الحديريات مشاريع الغولف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Hudayriyat Golf Estates\nNawayef Village\nAl Naseem Community\nBloom Living\nReem Hills\nYas Park Gate": {
     "ar": "الحديريات غولف إستيتس\nقرية نوايف\nمجتمع النسيم\nبلوم ليفينغ\nريم هيلز\nياس بارك غيت",
     "by": "machine",
@@ -5829,9 +6654,19 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
   },
+  "ICT Real Estate Development is an Abu Dhabi-based developer delivering premium residential and mixed-use projects across strategically located communities in the capital.": {
+    "ar": "آي سي تي للتطوير العقاري هو مطور عقاري مقره أبو ظبي يوفر مشاريع سكنية فاخرة ومختلطة في مجتمعات استراتيجية في العاصمة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "IMKAN Properties": {
     "ar": "إمكان العقارية",
     "by": "machine"
+  },
+  "IMKAN is an Abu Dhabi-based developer known for its research-led approach to creating distinctive residential communities and lifestyle destinations.": {
+    "ar": "إمكان هو مطور عقاري مقره أبو ظبي معروف بنهاجه القائم على البحث لخلق مجتمعات سكنية ومواقع نمط حياة مميزة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Immediate access to the city’s largest industrial employment base.": {
     "ar": "الوصول الفوري إلى أكبر قاعدة تشغيل صناعية في المدينة.",
@@ -5875,11 +6710,26 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:20:52.139Z"
   },
+  "Industrial": {
+    "ar": "صناعي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Industrial & Logistics Plots": {
     "ar": "أراضٍ صناعية ولوجستية",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:55:03.094Z"
+  },
+  "Industrial and light-industrial mainland district — warehousing, auto trade, and workforce housing.": {
+    "ar": "منطقة البر الرئيسي الصناعية والصناعية الخفيفة — المستودعات، تجارة السيارات، وسكن العمال.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Infinity Pool": {
+    "ar": "حوض سباحة لا نهائي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Inland from Al Raha Beach, off Sheikh Zayed Bin Sultan Street, between central Abu Dhabi and Khalifa City.": {
     "ar": "في الداخل من شاطئ الراحة، بعيداً عن شارع الشيخ زايد بن سلطان، بين وسط أبوظبي ومدينة خليفة.",
@@ -6091,6 +6941,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Jacuzzi": {
+    "ar": "جاكوزي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Jogging Trails": {
+    "ar": "مسارات الجري",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Joined Bazar from a London buyer-broker after his own relocation to Yas in 2022. James handles the British and European relocation briefs — knows which schools have actual waitlists vs theoretical ones.": {
+    "ar": "انضم إلى بازار من شركة وساطة لشراء العقارات في لندن بعد إعادة توطينه في ياس في عام 2022. يتعامل جيمس مع ملفات إعادة التوطين البريطانية والأوروبية — يعلم أي المدارس لديها قوائم انتظار حقيقية مقابل النظيرية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Jubail Island": {
     "ar": "جزيرة الجبيل",
     "by": "machine"
@@ -6132,8 +6997,8 @@
     "at": "2026-08-16T14:48:17.018Z"
   },
   "Just curious about value": {
-    "ar": "مجرد استفسار عن القيمة",
-    "by": "machine",
+    "ar": "مجرد فضول لمعرفة القيمة",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
   },
@@ -6159,6 +7024,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:57:09.582Z"
   },
+  "Karim represents buyers only — never sellers, never developers, never dual-sided. His brief intake is forty-five minutes, in person, before he agrees to take the work. Most acquisitions close at 6–11% below the original ask.": {
+    "ar": "كريم يمثل المشترين فقط — لا البائعين، لا المطورين، لا الطرفين. استشارته الأولية تستغرق خمسة وأربعين دقيقة، شخصيًا، قبل أن يوافق على العمل. معظم الصفقات تغلق بخصم 6–11% من السعر الأصلي.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Khalid works the Al Raha and Khalifa City villa market that doesn't list. His database is twenty years of dinner-table relationships. If you're looking for a five-bed family villa nobody else has shown you, this is the call.": {
+    "ar": "خالد يعمل في سوق الفيلات في الراحة ومدينة خليفة التي لا تُدرج في القوائم. قاعدة بياناته هي علاقات استمرت عشرين عامًا على طاولة العشاء. إذا كنت تبحث عن فيلا عائلية بخمس غرف نوم لم يظهرها لك أحد آخر، فهذه هي المكالمة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Khalifa City": {
     "ar": "مدينة خليفة",
     "by": "machine"
@@ -6168,6 +7043,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:49:10.239Z"
+  },
+  "Khalifa Industrial Zone Abu Dhabi — logistics and industrial real estate close to Khalifa Port.": {
+    "ar": "منطقة خليفة الصناعية أبوظبي — عقارات لوجستية وصناعية قريبة من ميناء خليفة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Khalifa Industrial Zone Abu Dhabi, now part of KEZAD Group, is the emirate’s flagship trade, logistics and industrial platform — built beside Khalifa Port and combining free-zone and mainland licensing with purpose-built warehousing, land plots and staff residential communities.": {
     "ar": "منطقة خليفة الصناعية أبوظبي، التي باتت جزءاً من مجموعة كيزاد، هي المنصة الرائدة للتجارة والخدمات اللوجستية والصناعة في الإمارة — أُنشئت بجوار ميناء خليفة وتجمع بين تراخيص المنطقة الحرة والبر الرئيسي مع مستودعات مصممة خصيصاً وقطع أراضٍ ومجمعات سكنية للموظفين.",
@@ -6185,15 +7065,50 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:55:03.094Z"
   },
+  "Kids' club": {
+    "ar": "نادي الأطفال",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Kids’ Club": {
+    "ar": "نادي الأطفال",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Kids’ Play Area": {
+    "ar": "منطقة لعب الأطفال",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Kids’ Pool": {
+    "ar": "حوض السباحة للأطفال",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Kitchen Appliances": {
+    "ar": "أجهزة المطبخ",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Know Your Property’s Market Value": {
     "ar": "التعرف على القيمة السوقية لعقارك",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
-  "Land": {
-    "ar": "العقارات المستقلة (الأراضي)",
+  "Lagoon view": {
+    "ar": "منظر البحيرة الصغيرة",
     "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Lagoon-fed villa community on Saadiyat — 312 freehold villas across 4 km of crystal waterways.": {
+    "ar": "مجتمع فيلات مغذى بالبحيرة في السعديات — 312 فيلا تملك حر عبر 4 كم من ممرات مائية بلورية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Land": {
+    "ar": "أرض",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.334Z"
   },
@@ -6202,6 +7117,16 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:58:50.310Z"
+  },
+  "Landlord Guide": {
+    "ar": "دليل المالك",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Landlord Guides": {
+    "ar": "دليل الملاك",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Landmarks & Attractions": {
     "ar": "المعالم وأماكن الجذب",
@@ -6238,6 +7163,71 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:51:24.295Z"
+  },
+  "Latest Developments": {
+    "ar": "أحدث التطورات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Laundry Room": {
+    "ar": "غرفة الغسيل",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Layout A": {
+    "ar": "التصميم أ",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Layout B": {
+    "ar": "التصميم ب",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Layout Type 1A": {
+    "ar": "نوع التخطيط 1أ",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Layout Type 1B": {
+    "ar": "نوع التخطيط 1B",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Layout Type 1C": {
+    "ar": "نوع التخطيط 1C",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Layout Type 1D": {
+    "ar": "نوع التخطيط 1D",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Layout Type 1F": {
+    "ar": "نوع التخطيط 1F",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Layout Type 2B": {
+    "ar": "نوع التخطيط 2B",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Layout Type 2C": {
+    "ar": "نوع التخطيط 2C",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Layout Type 4B": {
+    "ar": "نوع التخطيط 4B",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Layout Type 4C": {
+    "ar": "نوع التخطيط 4C",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Learn more": {
     "ar": "معرفة المزيد",
@@ -6329,6 +7319,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:31:14.076Z"
   },
+  "Light industrial unit in Mussafah, 8,400 ft².": {
+    "ar": "وحدة صناعية خفيفة في مصفح، 8,400 ft².",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Lina runs the rent side of the practice. She's the advisor diplomats and senior expats keep on retainer — knows which buildings actually deliver on the brochure and which to avoid in August.": {
+    "ar": "تدير لينا الجانب الإيجاري للمكتب. إنها المستشارة التي يحتفظ بها الدبلوماسيون والوافدون الكبار — تعرف أي المباني تفي بالوعود في الكتالوج وأيها يجب تجنبها في أغسطس.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "List Your Property": {
     "ar": "أدرج عقارك",
     "by": "machine",
@@ -6370,6 +7370,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:26:57.192Z"
+  },
+  "Lobby": {
+    "ar": "لوبي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Local expertise across the capital’s key communities and property markets.": {
     "ar": "خبرة محلية تغطي أبرز مجتمعات العاصمة وأسواقها العقارية.",
@@ -6468,8 +7473,8 @@
     "at": "2026-08-16T14:42:11.183Z"
   },
   "Location": {
-    "ar": "موقع",
-    "by": "machine",
+    "ar": "الموقع",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:09:10.478Z"
   },
@@ -6767,6 +7772,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:11:25.039Z"
   },
+  "Luxury": {
+    "ar": "فخامة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Luxury Communities": {
     "ar": "المجتمعات الفاخرة",
     "by": "machine",
@@ -6791,6 +7801,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Maid's room": {
+    "ar": "غرفة خادمة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Maid’s Room": {
+    "ar": "غرفة الخادمة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Mainland community of villas and low-rise apartments, popular with families working near the airport.": {
+    "ar": "مجتمع رئيسي من الفلل والشقق منخفضة الارتفاع، شائع بين العائلات العاملة بالقرب من المطار.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Mainly apartments in mid-rise buildings, from compact one-bedroom to three-bedroom layouts, plus a substantial commercial and industrial market.": {
     "ar": "معظمها شقق في مباني متوسطة الارتفاع، من غرفة نوم واحدة مدمجة إلى تخطيطات لثلاث غرف نوم، بالإضافة إلى سوق تجاري وصناعي كبير.",
     "by": "machine",
@@ -6814,6 +7839,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
+  },
+  "Majlis": {
+    "ar": "مجلس",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Major new residential destinations such as Yas Point continue to expand the market.": {
     "ar": "وجهات سكنية رئيسية مثل ياس بوينت تستمر في توسيع السوق.",
@@ -6867,6 +7897,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:14:21.433Z"
   },
+  "Mamsha Phase 4, three-bed launch unit.": {
+    "ar": "ممشى المرحلة 4، وحدة إطلاق بثلاث غرف نوم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Manage Your Property": {
     "ar": "إدارة عقارك",
     "by": "machine",
@@ -6879,6 +7914,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Managing Director": {
+    "ar": "المدير التنفيذي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Managing properties with ongoing care and professional service.": {
+    "ar": "إدارة العقارات مع الرعاية المستمرة والخدمة الاحترافية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Manarat Al Saadiyat": {
     "ar": "منارة السعديات",
     "by": "machine",
@@ -6889,17 +7934,32 @@
     "ar": "ماندارين أورينتال ريزيدنسز",
     "by": "machine"
   },
+  "Mandarin Oriental Residences three-bedroom hotel-branded unit.": {
+    "ar": "ماندارين أورينتال ريزيدنسز وحدة من ثلاث غرف نوم مُنَسَّقة على طراز الفندق.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Marfaa Al Jubail": {
     "ar": "مارفا الجبيل",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:13:20.229Z"
   },
+  "Marina": {
+    "ar": "مارينا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Marina Mall": {
     "ar": "مارينا مول",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:25:18.593Z"
+  },
+  "Marina view": {
+    "ar": "منظر على المارينا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Marinas & Waterfront Dining": {
     "ar": "المراسي والمطاعم على الواجهة البحرية",
@@ -6919,6 +7979,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Market News": {
+    "ar": "أخبار السوق",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Market Reports": {
+    "ar": "التقارير السوقية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Market and sell your property or land with professional support.": {
+    "ar": "سوق وبيع عقارك أو أرضك بدعم احترافي.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Market data: June 2026.": {
     "ar": "June 2026 :بيانات السوق",
     "by": "machine",
@@ -6936,6 +8011,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
+  },
+  "Market report": {
+    "ar": "تقرير السوق",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Marsa Al Jubail": {
     "ar": "مرسى الجبيل",
@@ -7043,11 +8123,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:23:18.817Z"
   },
+  "Meraas is a Dubai-based developer known for creating premium residential communities and landmark lifestyle destinations such as Bluewaters and City Walk.": {
+    "ar": "مِراس هو مطور عقاري مقره دبي معروف بإنشاء مجتمعات سكنية فاخرة ووجهات حياة راقية مثل بلوواترز و سيتي ووك.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Message": {
     "ar": "الرسالة",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:09:10.478Z"
+  },
+  "Mid-island skyline of high-rise towers, schools, and waterfront apartments.": {
+    "ar": "مناظر السماء في وسط الجزيرة مع أبراج شاهقة، مدارس، وشقق على الواجهة المائية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Midpoint": {
     "ar": "المنتصف",
@@ -7062,8 +8152,8 @@
     "at": "2026-08-17T09:22:28.880Z"
   },
   "Mobile": {
-    "ar": "المتحرك",
-    "by": "machine",
+    "ar": "الهاتف المتحرك",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:12:56.314Z"
   },
@@ -7082,6 +8172,11 @@
   "Modon Properties": {
     "ar": "مُدن العقارية",
     "by": "machine"
+  },
+  "Modon is an Abu Dhabi-based developer and investment group creating large-scale residential, leisure, hospitality and mixed-use destinations.": {
+    "ar": "مودون هي مجموعة استثمارية ومطور عقاري مقرها أبو ظبي، تنشئ وجهات سكنية وترفيهية وضيافة ومختلطة على نطاق واسع.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Mohamed bin Zayed University of Artificial Intelligence (MBZUAI)": {
     "ar": "جامعة محمد بن زايد للذكاء الاصطناعي (مباي)",
@@ -7142,8 +8237,8 @@
     "at": "2026-08-16T12:41:48.294Z"
   },
   "Morning": {
-    "ar": "؛صباحًا",
-    "by": "machine",
+    "ar": "الصباح",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:12:56.314Z"
   },
@@ -7165,6 +8260,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Mosque": {
+    "ar": "مسجد",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Most Abu Dhabi launches spread the price across construction milestones — a common structure is 40% during the build and 60% on handover, though plans vary by developer and project. We break down each plan alongside the numbers before you commit.": {
     "ar": "تُوزّع معظم الإطلاقات في أبوظبي السعر على مراحل الإنشاء — وأحد الهياكل الشائعة هو 40% أثناء البناء و60% عند التسليم، مع اختلاف الخطط حسب المطور العقاري والمشروع. نفصّل لك كل خطة إلى جانب الأرقام قبل أن تلتزم.",
     "by": "machine",
@@ -7177,11 +8277,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Move-In Guide": {
+    "ar": "دليل الانتقال",
+    "by": "reviewed",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Move-in support": {
     "ar": "دعم الانتقال",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
+  },
+  "Multi-Purpose Sports Courts": {
+    "ar": "ملاعب متعددة الأغراض",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Mussafah": {
     "ar": "مصفح",
@@ -7232,6 +8342,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:39:55.777Z"
+  },
+  "Nakheel is a Dubai master developer internationally recognised for transformative waterfront destinations including Palm Jumeirah and Palm Jebel Ali.": {
+    "ar": "نخيل هو مطور عقاري رئيسي في دبي معترف به دوليًا لوجهات مائية تحويلية مثل جزيرة النخلة جميرا وجزيرة النخلة جبل علي.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Name (optional)": {
     "ar": "الاسم (اختياري)",
@@ -7329,6 +8444,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
   },
+  "New launch · public release": {
+    "ar": "إطلاق جديد · الإعلان العام",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "New launches with structured payment plans.": {
     "ar": "مشاريع جديدة بخطط سداد منظّمة.",
     "by": "machine",
@@ -7365,6 +8485,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Nine Yards is an Abu Dhabi-based real estate developer focused on premium, design-led residential developments in prominent UAE destinations.": {
+    "ar": "ناين ياردز هو مطور عقاري مقره أبو ظبي يركز على تطوير مشاريع سكنية فاخرة ومتميزة في وجهات بارزة في الإمارات العربية المتحدة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "No phone to hand?": {
     "ar": "لا يوجد هاتف بمتناولك؟",
     "by": "machine",
@@ -7394,6 +8519,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.877Z"
+  },
+  "Nshama is a Dubai-based developer focused on contemporary master-planned communities and is best known for Town Square Dubai.": {
+    "ar": "نشاما هو مطور عقاري مقره دبي يركز على المجتمعات المخططة بشكل معاصر وأشهر ما عُرف به هو تاون سكوير دبي.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Number of Bedrooms": {
     "ar": "عدد غرف النوم",
@@ -7465,6 +8595,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:18:09.429Z"
   },
+  "Off-plan watch": {
+    "ar": "مراقبة على الخارطة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Off-plan, handled end to end.": {
     "ar": "العقارات على الخارطة، تُدار من البداية إلى النهاية.",
     "by": "machine",
@@ -7522,6 +8657,16 @@
   "Ohana Development": {
     "ar": "أوهانا للتطوير العقاري",
     "by": "machine"
+  },
+  "Ohana Development is a private Middle Eastern developer specialising in luxury residential communities, branded residences and family-focused developments.": {
+    "ar": "أوهانا للتطوير العقاري هو مطور عقاري خاص متخصص في مجتمعات سكنية فاخرة، ومساكن مُعلَّمة، ومشاريع موجهة للأسر.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Omar": {
+    "ar": "عمر",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "On Saadiyat Island": {
     "ar": "في جزيرة السعديات",
@@ -7589,6 +8734,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:20:52.140Z"
   },
+  "One of Abu Dhabi's rising lifestyle destinations, shaped around waterfront living, sport, and wellness.": {
+    "ar": "واحدة من أبوظبي الوجهات النمطية الصاعدة، التي تشكلت حول الحياة المائية، الرياضة، والرفاهية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "One of Abu Dhabi’s leading lifestyle and entertainment destinations, bringing together waterfront communities, beaches, golf, luxury hospitality and world-famous attractions including Ferrari World, Yas Waterworld and Warner Bros. World.": {
     "ar": "واحدة من أبوظبي الوجهات الرائدة للحياة والترفيه، تجمع بين المجتمعات المائية، الشواطئ، الجولف، الضيافة الفاخرة والمعالم العالمية الشهيرة مثل فيراري وورلد، ياس ووتر وورلد ووارنر بروس وورلد.",
     "by": "machine",
@@ -7654,6 +8804,26 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:15:33.556Z"
+  },
+  "One-bedroom Corniche apartment for rent.": {
+    "ar": "شقة الكورنيش غرفة نوم للإيجار.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "One-bedroom Saadiyat Beach Residences for rent.": {
+    "ar": "شقق شاطئ السعديات ذات غرفة نوم للإيجار.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "One-bedroom Sky Tower furnished rent.": {
+    "ar": "غرفة نوم واحدة برج سكاي مفروش للإيجار.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "One-bedroom Sky Tower with skyline view.": {
+    "ar": "شقة غرفة واحدة في برج السماء مع إطلالة على الأفق",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Ongoing attention to the condition and maintenance of your property.": {
     "ar": "إدارة مستمرة لحالة عقارك وأعمال صيانته.",
@@ -7823,6 +8993,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
   },
+  "Outdoor Cinema": {
+    "ar": "سينما خارجية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Outdoor Living": {
     "ar": "المعيشة الخارجية",
     "by": "machine",
@@ -7871,11 +9046,41 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "Padel Courts": {
+    "ar": "ملاعب البادل",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Pantry": {
+    "ar": "مطبخ صغير",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Paperwork": {
     "ar": "سجلات ومستندات",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Park Views": {
+    "ar": "وجهات نظر على الحديقة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Park view": {
+    "ar": "منظر الحديقة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Parking": {
+    "ar": "موقف سيارات",
+    "by": "reviewed",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Parks": {
+    "ar": "الحدائق",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Parks, schools, clinics and malls already in place.": {
     "ar": "مرافق قائمة بالفعل من حدائق ومدارس وعيادات ومراكز تسوق.",
@@ -7907,6 +9112,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:33:06.379Z"
   },
+  "Pet Facilities": {
+    "ar": "مرافق الحيوانات الأليفة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Pet friendly": {
+    "ar": "متوافق مع الحيوانات الأليفة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Phone": {
     "ar": "الهاتف",
     "by": "machine",
@@ -7914,8 +9129,8 @@
     "at": "2026-08-16T16:07:12.027Z"
   },
   "Phone (optional)": {
-    "ar": "رقم الهاتف (اختياري)",
-    "by": "machine",
+    "ar": "الهاتف (اختياري)",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
   },
@@ -7936,6 +9151,36 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Placeholder copy — say what sets the 2-bedroom homes apart: aspect, ceiling height, terrace depth, who they suit.": {
+    "ar": "النسخة الاحتياطية — قل ما يميز منازل غرفتي النوم [2]: الاتجاه، ارتفاع السقف، عمق الشرفة، من تناسبهم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Placeholder copy — say what sets the 3-bedroom homes apart: aspect, ceiling height, terrace depth, who they suit.": {
+    "ar": "النسخة الاحتياطية — قل ما يميز منازل غرف النوم 3: الاتجاه، ارتفاع السقف، عمق الشرفة، من يناسبهم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Placeholder copy — say what sets the 4-bedroom homes apart: aspect, ceiling height, terrace depth, who they suit.": {
+    "ar": "النسخة الاحتياطية — قل ما يميز منازل غرف النوم 4: الاتجاه، ارتفاع السقف، عمق الشرفة، من تناسبهم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Placeholder copy — say what sets the 5-bedroom homes apart: aspect, ceiling height, terrace depth, who they suit.": {
+    "ar": "النسخة الاحتياطية — قل ما يميز منازل غرف النوم 5: الاتجاه، ارتفاع السقف، عمق الشرفة، من تناسبهم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Placeholder copy — say what sets the 6-bedroom homes apart: aspect, ceiling height, terrace depth, who they suit.": {
+    "ar": "النسخة الاحتياطية — قل ما يميز منازل الـ 6 غرف نوم: الاتجاه، ارتفاع السقف، عمق الشرفة، من تناسبهم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Placeholder layout — upload the plan drawing and describe how it differs from the others in this unit type.": {
+    "ar": "التصميم المرجعي — رفع رسم الخطة ووصف كيف يختلف عن الآخرين في نوع الوحدة هذا.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Plan 2030": {
     "ar": "خطة 2030",
@@ -7967,6 +9212,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:29:57.232Z"
   },
+  "Playground": {
+    "ar": "ملعب",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Please tell us what you are looking for.": {
     "ar": "مرجو إخبارنا بما تبحث عنه.",
     "by": "machine",
@@ -7990,6 +9240,21 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:47:46.674Z"
+  },
+  "Policy & regulation": {
+    "ar": "السياسة والتنظيم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Pool": {
+    "ar": "حوض سباحة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Pool view": {
+    "ar": "منظر حوض السباحة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Popular family-friendly communities": {
     "ar": "المجمعات السكنية الأنسب للعائلات",
@@ -8045,6 +9310,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:13:45.709Z"
   },
+  "Powder Room": {
+    "ar": "حمام صغير",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Pre-Built Warehousing": {
     "ar": "مستودعات جاهزة البناء",
     "by": "machine",
@@ -8056,6 +9326,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
+  },
+  "Pre-launch · Bazar access only": {
+    "ar": "قبل الإطلاق · بازار الوصول فقط",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Preferred Location": {
     "ar": "الموقع المفضل",
@@ -8141,17 +9416,52 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
   },
+  "Private Elevator": {
+    "ar": "مصعد خاص",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Private Garage": {
+    "ar": "مرآب خاص",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Private Garden": {
+    "ar": "حديقة خاصة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Private Parking": {
+    "ar": "موقف خاص",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Private Pools": {
     "ar": "مسابح خاصة",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:37:03.040Z"
   },
+  "Private Swimming Pool": {
+    "ar": "حوض سباحة خاص",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Private Terrace": {
+    "ar": "شرفة خاصة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Private beaches, promenades and marina frontage.": {
     "ar": "واجهات بحرية على المارينا وممشى وشواطئ خاصة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
+  },
+  "Private pool": {
+    "ar": "حوض سباحة خاص",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Professional management helps maintain your property, support tenants and keep everything organised.": {
     "ar": "الإدارة الاحترافية تساعد في الحفاظ على عقارك ودعم المستأجرين وتنظيم كل شيء.",
@@ -8194,6 +9504,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Promenade": {
+    "ar": "الساحة المشاة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Promenade view": {
+    "ar": "منظر الممشى",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Promenades connect business, lifestyle and leisure destinations.": {
     "ar": "الممرات تربط وجهات الأعمال والحياة اليومية والترفيه.",
@@ -8508,8 +9828,8 @@
     "at": "2026-08-16T12:48:50.155Z"
   },
   "Properties for sale": {
-    "ar": "قائمة العقارات للبيع",
-    "by": "machine",
+    "ar": "شقق وفلل للبيع",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:48:50.155Z"
   },
@@ -8579,6 +9899,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "Property Management Guide": {
+    "ar": "دليل إدارة العقارات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Property Management in Abu Dhabi": {
     "ar": "إدارة العقارات في أبوظبي",
     "by": "machine",
@@ -8608,6 +9933,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:07:12.027Z"
+  },
+  "Property Regulations": {
+    "ar": "لوائح العقار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Property Rental Index": {
     "ar": "مؤشر إيجارات العقارات",
@@ -8729,6 +10059,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
   },
+  "Providing property consultations to help you buy or sell with confidence.": {
+    "ar": "تقديم استشارات عقارية لمساعدتك في الشراء أو البيع بثقة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Purpose-built staff residential cities across more than 40 complexes.": {
     "ar": "مدن سكنية مخصّصة للموظفين في أكثر من 40 مجمّعاً.",
     "by": "machine",
@@ -8759,9 +10094,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
   },
+  "RAK Properties is Ras Al Khaimah’s leading listed developer, creating residential, hospitality and waterfront destinations across the emirate.": {
+    "ar": "رأس الخيمة العقارية هو المطور العقاري الرائد المدرج في رأس الخيمة، ينشئ وجهات سكنية وضيافة وساحلية عبر الإمارة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Radiant Real Estate": {
     "ar": "Radiant Real Estate",
     "by": "machine"
+  },
+  "Radiant Real Estate is an Abu Dhabi-based developer specialising in contemporary residential and mixed-use developments with a focus on quality, innovation and modern urban living.": {
+    "ar": "Radiant Real Estate هو مطور عقاري مقره أبو ظبي متخصص في المشاريع السكنية والمتعددة الاستخدامات المعاصرة مع التركيز على الجودة والابتكار والحياة الحضرية الحديثة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Radiant Terraces": {
+    "ar": "الشرفات المشرقة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Rashid founded Bazar in 2018 after twelve years on the institutional side. He still personally handles the firm's family-office mandates and sits on every offer above AED 30M.": {
+    "ar": "راشد أسس بازار في 2018 بعد اثني عشر عامًا في الجانب المؤسسي. لا يزال يتعامل شخصيًا مع تفويضات مكاتب العائلات ويشارك في كل عرض يتجاوز AED 30 مليون.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Reach the right audience through leading property platforms and digital marketing.": {
     "ar": "الوصول إلى الجمهور المناسب عبر أبرز منصات العقارات والتسويق الرقمي.",
@@ -8847,6 +10202,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.479Z"
   },
+  "Reem-focused tower specialist.": {
+    "ar": "متخصص برج ريم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Refinancing": {
     "ar": "إعادة التمويل",
     "by": "machine",
@@ -8924,6 +10284,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
+  },
+  "Rental Process Guide": {
+    "ar": "دليل عملية الإيجار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Rental areas": {
     "ar": "أملاك للإيجار",
@@ -9013,6 +10378,11 @@
     "ar": "ريبورتاج العقارية",
     "by": "machine"
   },
+  "Reportage Properties is an Abu Dhabi-founded developer known for delivering modern and value-focused residential communities across the UAE and international markets.": {
+    "ar": "ريبورتاج العقارية هو مطور عقاري تأسس في أبو ظبي معروف بتقديم مجتمعات سكنية حديثة ومرتكزة على القيمة في جميع أنحاء الإمارات العربية المتحدة والأسواق الدولية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Reportage Village Abu Dhabi": {
     "ar": "أبوظبي قرية ريبورتاج",
     "by": "machine",
@@ -9055,11 +10425,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
   },
+  "Required Documents Guide": {
+    "ar": "دليل الوثائق المطلوبة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Resale Properties": {
     "ar": "العقارات المعاد بيعها",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Reserve view": {
+    "ar": "احجز المشهد",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Residences opening straight onto the sand — rare in Abu Dhabi.": {
     "ar": "شقق تفتح مباشرة على الرمال — نادرة في أبوظبي.",
@@ -9068,8 +10448,8 @@
     "at": "2026-08-17T08:15:33.556Z"
   },
   "Residential": {
-    "ar": "السكني",
-    "by": "machine",
+    "ar": "سكني",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:12:41.013Z"
   },
@@ -9078,6 +10458,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
+  },
+  "Residential & mixed-use developments.": {
+    "ar": "المشاريع السكنية والمتعددة الاستخدامات.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Residential Living on Al Maryah Island": {
     "ar": "السكن في جزيرة الماريه",
@@ -9181,6 +10566,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:03:22.147Z"
   },
+  "Rooftop": {
+    "ar": "سقف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Rooted in Abu Dhabi, reaching the wider UAE.": {
     "ar": "متجذرون في أبوظبي، ونمتد إلى مختلف أنحاء الإمارات.",
     "by": "machine",
@@ -9204,6 +10594,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:35:35.378Z"
+  },
+  "SAAS Properties is a UAE-based boutique developer specialising in premium residential projects defined by contemporary architecture, high-quality finishes and carefully considered design.": {
+    "ar": "ساس العقارية هو مطور عقاري صغير مقره الإمارات العربية المتحدة يختص في مشاريع سكنية فاخرة تتميز بالهندسة المعمارية المعاصرة، التشطيبات عالية الجودة والتصميم المدروس بعناية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "SAMANA Developers is a Dubai-based developer known for lifestyle-focused residences, resort-style amenities and distinctive concepts such as private pools within apartments.": {
+    "ar": "سامانا للتطوير العقاري هو مطور عقاري مقره دبي معروف بمساكن تركز على أسلوب الحياة، والمرافق تشبه منتجعات، ومفاهيم مميزة مثل حمامات السباحة الخاصة داخل الشقق.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Saadiyat Beach": {
     "ar": "شاطئ السعديات",
@@ -9311,11 +10711,21 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:10:31.711Z"
   },
+  "Sarah models the deal before she shows it. Her clients see a spreadsheet first, the property second. She closed the largest off-plan block transaction Bazar handled in 2025.": {
+    "ar": "تقوم سارة بنمذجة الصفقة قبل عرضها. يرى عملاؤها الجدول أولاً، ثم العقار ثانياً. أغلقت الصفقة الأكبر على الخارطة التي تعاملت معها بازار في عام 2025.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Saturday": {
     "ar": "السبت",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "Sauna": {
+    "ar": "ساونا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Scan the code to reach Bazar Real Estate — buying, selling, renting, listing, or investment enquiries across Abu Dhabi and the UAE.": {
     "ar": "امسح الرمز للتواصل مع بازار العقارية — استفسارات البيع أو الشراء أو الإيجار أو الإعلان العقاري أو الاستثمار في أبوظبي والإمارات.",
@@ -9347,11 +10757,21 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:04:18.238Z"
   },
+  "Sea View": {
+    "ar": "إطلالة على البحر",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Sea Views": {
     "ar": "محلات إطلالات بحرية",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:35:35.378Z"
+  },
+  "Sea view": {
+    "ar": "إطلالة على البحر",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Sea-facing apartments directly on the waterfront.": {
     "ar": "عقارات سكنية بإطلالة على البحر مباشرة على الواجهة المائية.",
@@ -9419,6 +10839,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.473Z"
   },
+  "Seller's guide": {
+    "ar": "دليل البائع",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Selling": {
     "ar": "مبيعات",
     "by": "machine",
@@ -9432,8 +10857,8 @@
     "at": "2026-08-16T12:37:24.288Z"
   },
   "Selling soon": {
-    "ar": "البيع قريباً",
-    "by": "machine",
+    "ar": "نية البيع قريباً",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
   },
@@ -9444,8 +10869,8 @@
     "at": "2026-08-16T12:26:41.479Z"
   },
   "Semi-furnished": {
-    "ar": "نصف مفروش",
-    "by": "machine",
+    "ar": "شبه مفروش",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:12:56.314Z"
   },
@@ -9472,6 +10897,46 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
+  },
+  "Senior Advisor · Buyer briefs": {
+    "ar": "المستشار الرئيسي · ملخصات المشتري",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Senior Advisor · Dubai & Abu Dhabi": {
+    "ar": "المستشار الرئيسي · دبي و أبوظبي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Senior Advisor · Investment desk": {
+    "ar": "المستشار الرئيسي · مكتب الاستثمار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Senior Advisor · Off-plan & Investment": {
+    "ar": "المستشار الرئيسي · على الخارطة والاستثمار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Senior Advisor · Reem & Maryah": {
+    "ar": "المستشار الرئيسي · ريم ومرياه",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Senior Advisor · Saadiyat": {
+    "ar": "المستشار الرئيسي · السعديات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Senior Advisor · Saadiyat villas": {
+    "ar": "المستشار الرئيسي · السعديات فيلات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Senior Advisor · Tenant & rental": {
+    "ar": "المستشار الرئيسي · المستأجر والإيجار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Serviced industrial land plots, pre-built warehousing, workshop and logistics facilities, on free-zone or mainland terms.": {
     "ar": "قطع أراضٍ صناعية مجهّزة بالخدمات، ومستودعات جاهزة، ومنشآت ورش ولوجستيات، بشروط المناطق الحرة أو البر الرئيسي.",
@@ -9593,17 +11058,67 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Six low-rise beachfront residences pressed against an 800m boardwalk in the Saadiyat Cultural District.": {
+    "ar": "ستة منازل شاطئية منخفضة الارتفاع ملاصقة لمسار 800 مليون في السعديات المنطقة الثقافية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Six-bedroom Hidd villa with private pool and 8,400 ft² plot.": {
+    "ar": "فيلا هيد ذات ست غرف نوم مع حوض سباحة خاص وأرض 8,400 ft².",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Six-bedroom Yas Acres signature villa with private pool.": {
+    "ar": "فيلا توقيعية بست غرف نوم ياس ايكرز مع حوض سباحة خاص.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Skyline image of ADGM Square on Al Maryah Island with the towers, the promenade and Al Reem beyond.": {
     "ar": "ADGM سكوير في جزيرة الماريه صورة أفق تُظهر الأبراج والممشى وجزيرة الريم في الخلفية.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:35:49.472Z"
   },
+  "Skyline view": {
+    "ar": "منظر المدينة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Smart Home Features": {
+    "ar": "ميزات المنزل الذكي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Smart home": {
+    "ar": "منزل ذكي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Smart solutions for evolving market needs.": {
     "ar": "حلول ذكية لاحتياجات السوق المتغيرة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Sobha City Abu Dhabi": {
+    "ar": "شوبا سيتي أبوظبي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Sobha Realty": {
+    "ar": "شوبا العقارية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Sobha Realty is a luxury developer recognised for its vertically integrated approach, premium craftsmanship and large-scale residential communities across the UAE.": {
+    "ar": "شوبا العقارية هو مطور عقاري فاخر معروف بنهجه المتكامل رأسيًا، وحرفية متميزة، ومجمعات سكنية كبيرة الحجم في جميع أنحاء دولة الإمارات العربية المتحدة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Solaya by Aldar two-bedroom Yas Island launch unit.": {
+    "ar": "Solaya by Aldar وحدة إطلاق بغرفتين نوم جزيرة ياس.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Some banks offer mortgage options for eligible non-residents, subject to bank criteria and approval. We connect you with suitable partners.": {
     "ar": "تقدّم بعض البنوك خيارات تمويل عقاري لغير المقيمين المؤهلين، وفقًا لمعايير البنك وموافقته. نوصلك بالشركاء المناسبين.",
@@ -9612,8 +11127,8 @@
     "at": "2026-08-16T12:19:33.086Z"
   },
   "Something else": {
-    "ar": "شيء آخر",
-    "by": "machine",
+    "ar": "اختيار آخر",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
   },
@@ -9635,11 +11150,31 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:14:21.433Z"
   },
+  "Spa": {
+    "ar": "سبا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Space & Privacy": {
     "ar": "مساحة وخصوصية",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:58:50.310Z"
+  },
+  "Spacious 3-bedroom + maid apartment at Yas Park Place, offering 1,703 sq. ft. of modern living with a private balcony, premium finishes and direct access to Yas Central Park.": {
+    "ar": "شقة فسيحة بـ 3 غرف نوم + غرفة خادمة في ياس بارك بليس، تقدم 1,703 sq. ft. من الحياة العصرية مع شرفة خاصة، وأعمال إنشائية فاخرة، ووصول مباشر إلى حديقة ياس سنترال.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Spacious 3-bedroom apartments at River Cove Residences offer approximately 1,814 sq. ft., with generous layouts, private balconies and contemporary waterfront living within Sobha City Abu Dhabi.": {
+    "ar": "شقق فسيحة بـ 3 غرف نوم في شوبا سيتي أبوظبي تقدم مساحة تبلغ حوالي 1,814 sq. ft.، مع تصاميم سخية، وشرفات خاصة، وحياة عصرية على ضفاف الماء.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Spacious 4-bedroom estate villas offering approximately 4,516 sq. ft., with a private pool, landscaped garden, private lift and generous family living spaces surrounded by greenery.": {
+    "ar": "فيلات ريفية فسيحة بـ 4 غرف نوم تقدم مساحة تبلغ حوالي 4,516 sq. ft.، مع حوض سباحة خاص، حديقة منسقة، مصعد خاص ومساحات معيشة سخية محاطة بالخضرة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Speak with a Property Expert": {
     "ar": "تحدث مع خبير عقاري",
@@ -9647,11 +11182,26 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "Specialises in the Saadiyat villa clusters that rarely list publicly — Hidd, Saadiyat Reserve, Lagoons. Noor's last three closes were all off-market introductions; none of them ever appeared on a portal.": {
+    "ar": "تخصص في مجمعات الفيلات في السعديات التي نادراً ما تُدرج علناً — هيد، سعديات ريزيرف، اللاغونز. كانت آخر ثلاث عمليات إغلاق لنوّر جميعها مقدّمات خارج السوق؛ لم يظهر أي منها على بوابة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Spend less time managing the day-to-day responsibilities of your property and more time focusing on your investment. Speak with our team about professional property management in Abu Dhabi.": {
     "ar": "خصّص وقتاً أقل لإدارة المسؤوليات اليومية لعقارك ووقتاً أكبر للتركيز على استثمارك. تحدّث مع فريقنا حول إدارة العقارات الاحترافية في أبوظبي.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "Splash Pad": {
+    "ar": "حوض اللعب المائي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Sports Courts": {
+    "ar": "ملاعب رياضية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Staff Residential Cities": {
     "ar": "المدن السكنية للموظفين",
@@ -9701,6 +11251,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T17:03:51.667Z"
   },
+  "Storage": {
+    "ar": "تخزين",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Storage Room": {
+    "ar": "غرفة التخزين",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Strategic Location": {
     "ar": "الموقع الاستراتيجي",
     "by": "machine",
@@ -9748,6 +11308,36 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Studio": {
+    "ar": "استوديو",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Studio Apartment": {
+    "ar": "شقة استوديو",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Studio in Yas Bay with marina and arena views.": {
+    "ar": "استوديو في ياس باي مع مناظر على المارينا والملعب.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Studios, 1 - 3": {
+    "ar": "استوديوهات، ١ - ٣",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Studios, 1 - 4": {
+    "ar": "استوديوهات، ١ - ٤",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Study Room": {
+    "ar": "غرفة الدراسة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Submit Enquiry for {project}": {
     "ar": "إرسال الاستفسار عن {project}",
@@ -9821,11 +11411,26 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:17:50.899Z"
   },
+  "Sustainable urban district east of the airport — research campuses, low-rise apartments, and Etihad Eco-Villa.": {
+    "ar": "منطقة حضرية مستدامة شرق المطار — حرم جامعي للبحوث، شقق منخفضة الارتفاع، وبيت عتيقة لشركة الاتحاد للطيران.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Swimming Pool": {
+    "ar": "حوض سباحة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Swimming Pools & Clubhouses": {
     "ar": "المسبحات وصالات النادي",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:10:31.711Z"
+  },
+  "TARAF is a boutique UAE developer specialising in limited-edition, design-led luxury residences across Dubai and Abu Dhabi.": {
+    "ar": "ترف هو مطور عقاري بتيني في دولة الإمارات العربية المتحدة متخصص في المساكن الفاخرة ذات الطراز المحدود في دبي وأبوظبي.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Takes about two minutes. Nothing is published without your written go-ahead.": {
     "ar": "يستغرق الأمر دقيقتين تقريبًا. ولا يُنشر أي شيء دون موافقتك الخطية.",
@@ -9854,6 +11459,11 @@
   "Taraf": {
     "ar": "ترف",
     "by": "machine"
+  },
+  "Taraf Holding": {
+    "ar": "احتفاظ ترف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Tell us about the property. We match you with the senior Bazar advisor who covers your community — the same person runs it from valuation through to transfer.": {
     "ar": "أخبرنا عن العقار. نوصّلك بكبير مستشاري بازار المسؤول عن مجتمعك السكني — والشخص نفسه يتابع الأمر من التقييم وحتى نقل الملكية.",
@@ -9945,6 +11555,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
   },
+  "Tenant Guides": {
+    "ar": "دليل المستأجر",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Tenant Support": {
     "ar": "دعم المستأجرين",
     "by": "machine",
@@ -10004,6 +11619,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
+  },
+  "The Artery Residences": {
+    "ar": "ذا أرتري رزيدنسز",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "The Bazar Brief — market reports, field notes, and advisor commentary": {
     "ar": "موجز بازار — تقارير السوق وملاحظات ميدانية وتعليقات المستشارين",
@@ -10121,6 +11741,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
   },
+  "The capital of the United Arab Emirates.": {
+    "ar": "عاصمة دولة الإمارات العربية المتحدة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "The community comprises 464 villas in eight configurations across four phases.": {
     "ar": "المجتمع يضم 464 فيلا بثمانية تصاميم على أربع مراحل.",
     "by": "machine",
@@ -10150,6 +11775,11 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:23:53.572Z"
+  },
+  "The eight-kilometre waterfront promenade and surrounding addresses.": {
+    "ar": "الكورنيش المائي البالغ طوله ثماني كيلومترات والعناوين المحيطة به.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "The essentials on ownership, investment, and choosing where to live.": {
     "ar": "معلومات أساسية عن التملّك والاستثمار واختيار مكان السكن.",
@@ -10320,8 +11950,8 @@
     "at": "2026-08-16T16:37:41.735Z"
   },
   "This month": {
-    "ar": "هذا الشهر",
-    "by": "machine",
+    "ar": "الشهر الحالي",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:12:56.314Z"
   },
@@ -10355,11 +11985,76 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:17:08.882Z"
   },
+  "Three-bedroom Al Raha Beach apartment with sea view.": {
+    "ar": "شقة شاطئ الراحة ثلاثية الغرف مع إطلالة على البحر.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Three-bedroom Bayviews Saadiyat unit.": {
+    "ar": "وحدة Bayviews Saadiyat ثلاثية الغرف.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Three-bedroom Corniche apartment for rent with sea view.": {
+    "ar": "شقة الكورنيش ثلاثية الغرف للإيجار بإطلالة على البحر.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Three-bedroom Mamsha furnished rental with sea view.": {
+    "ar": "شقة مفروشة بثلاث غرف نوم في ممشى بإطلالة على البحر.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Three-bedroom Marina Heights for rent, includes maid's room.": {
+    "ar": "شقة بثلاث غرف نوم في مارينا هايتس للإيجار، تشمل غرفة خادمة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Three-bedroom Reem Hills Phase 4 townhouse.": {
+    "ar": "تاون هاوس ريم هيلز - المرحلة الرابعة بثلاث غرف نوم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Three-bedroom Sigma Towers apartment with full sea view.": {
+    "ar": "شقة ثلاثية الغرف في برج سيجما مع إطلالة كاملة على البحر.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Three-bedroom West Yas villa for rent.": {
+    "ar": "فيلا غرف ثلاث في ياس الغربية للإيجار.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Three-bedroom Yas Acres townhouse, end-row positioning.": {
+    "ar": "تاون هاوس ياس ايكرز بثلاث غرف نوم، موضع في نهاية الصف.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Three-bedroom Yas Bay apartment with direct marina aspect.": {
+    "ar": "شقة ثلاثية الغرف في ياس باي مع إطلالة مباشرة على المارينا.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Three-bedroom beachfront residence with direct lagoon access on Saadiyat.": {
+    "ar": "منزل شاطئي بثلاث غرف نوم مع وصول مباشر إلى الممر المائي في السعديات.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Three-bedroom penthouse with private terrace and 270° views.": {
+    "ar": "شقة بنتهاوس بثلاث غرف نوم مع تراس خاص ومشهد بزاوية 270 درجة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Thursday": {
     "ar": "الخميس",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "Tiger Properties is part of Tiger Group, a long-established UAE development and construction group with a portfolio spanning residential, commercial and mixed-use projects.": {
+    "ar": "تايجر العقارية جزء من مجموعة تايجر، وهي مجموعة تطوير وبناء راسخة في دولة الإمارات العربية المتحدة تضم محفظة مشاريع سكنية وتجارية ومختلطة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Timeline": {
     "ar": "التسلسل الزمني",
@@ -10378,6 +12073,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Top-floor Reflection penthouse with 360° views.": {
+    "ar": "بنتهاوس ريفليكس في الطابق العلوي مع مناظر بزاوية 360°.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Top-floor duplex apartment with direct sea views and 4,200 ft² across two levels.": {
+    "ar": "شقة دوبلكس في الطابق العلوي مع إطلالة مباشرة على البحر و4,200 ft² على مستويين.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Top-floor residences with terraces over the beach.": {
     "ar": "المساكن في الطابق العلوي مع تراسات تطل على الشاطئ.",
@@ -10451,6 +12156,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
   },
+  "Twelve years working the Saadiyat curve, from the first Mamsha handovers through Nudra and Hidd Al Saadiyat. Mariam is the advisor families ask for when the deal needs to close quietly.": {
+    "ar": "اثنا عشر عامًا في العمل على منحنى السعديات، من أول تسليمات ممشى مرورًا بنودرة وحد السعديات. مريم هي المستشارة التي يطلبها الأسر عندما يحتاج الصفقة إلى الإغلاق بهدوء.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Two Decades of Trusted Expertise": {
     "ar": "خبرة موثوقة على مدى عقدين",
     "by": "machine",
@@ -10504,6 +12214,96 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:04:18.238Z"
+  },
+  "Two-bedroom Al Raha Beach apartment for rent.": {
+    "ar": "شقة شاطئ الراحة ذات غرفتي نوم للإيجار.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom Al Raha Beach apartment with marina views.": {
+    "ar": "شقة شاطئ الراحة بغرفتين نوم ومشاهد على المارينا.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom Mamsha apartment overlooking the cultural district promenade.": {
+    "ar": "شقة بغرفتين نوم في مامشا تطل على المنطقة الثقافية الكورنيش.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom Mamsha rental, 12-month furnished lease available.": {
+    "ar": "شقة مامشة بغرفتين للإيجار، عقد إيجار مفروش لمدة 12 شهرًا متاح.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom Reflection apartment for rent.": {
+    "ar": "شقة ريفليكس ذات غرفتين للإيجار.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom Reflection apartment on the 38th floor.": {
+    "ar": "شقة بغرفتين نوم في الطابق 38.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom Saadiyat Beach Residences with full kitchen and study.": {
+    "ar": "شقق شاطئ السعديات ذات غرفتي نوم مع مطبخ كامل وغرفة دراسة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom Sun Tower with sea view, available furnished or unfurnished.": {
+    "ar": "شقة بغرفتين في برج الشمس بإطلالة على البحر، متاحة مفروشة أو غير مفروشة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom Sun Tower with sea view.": {
+    "ar": "شقة بغرفتين في برج الشمس بإطلالة على البحر.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom Yas Bay marina view furnished rental.": {
+    "ar": "شقة مفروشة بغرفتين نوم في ياس باي مع منظر على المارينا.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom on the marina lane with direct boardwalk access.": {
+    "ar": "شقة بغرفتين نوم على ممر المارينا مع إمكانية الوصول مباشرة إلى الممشى.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom park-facing apartment in Yas Bay.": {
+    "ar": "شقة بغرفتين تطل على الحديقة في ياس باي.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom penthouse with 270° skyline views over Al Reem.": {
+    "ar": "شقة بنتهاوس بغرفتين نوم مع إطلالة بزاوية 270° على الريم.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Two-bedroom rental with Corniche and skyline views.": {
+    "ar": "شقة مؤجرة بغرفتين نوم الكورنيش ومشهد للسماء.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Type 1": {
+    "ar": "نوع 1",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Type 2": {
+    "ar": "نوع 2",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Type 3": {
+    "ar": "نوع 3",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Type 4": {
+    "ar": "نوع 4",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "UAE Space Agency": {
     "ar": "وكالة الفضاء الإماراتية",
@@ -10589,9 +12389,14 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T17:03:51.667Z"
   },
-  "Vacant": {
-    "ar": "افرغ",
+  "Utility Room": {
+    "ar": "غرفة الخدمات",
     "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Vacant": {
+    "ar": "شاغر",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:59:18.465Z"
   },
@@ -10673,6 +12478,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.269Z"
   },
+  "Villa A · 3-bed": {
+    "ar": "فيلا أ · 3 غرف نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Villa C · 4-bed": {
+    "ar": "فيلا C · 4 غرف نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Villa D · 5-bed": {
+    "ar": "فيلا D · 5 غرف نوم",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Villa Sale Price Index — June 2026": {
     "ar": "مؤشر أسعار بيع الفيلا — June 2026",
     "by": "machine",
@@ -10696,6 +12516,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.269Z"
+  },
+  "Villas & Townhouses on Hudayriyat Island": {
+    "ar": "فيلات وشقق متصلة في جزيرة الحديريات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Villas and townhouses alongside mid-rise apartments.": {
     "ar": "فيلاات وشقق متصلة بجانب شقق سكنية متوسطة الارتفاع.",
@@ -10721,6 +12546,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:12:21.893Z"
   },
+  "Villas on Hudayriyat Island": {
+    "ar": "فيلات على جزيرة الحديريات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Villas range from roughly 4,994 to 6,361 sq. ft. across the released phases.": {
     "ar": "الفلل تتراوح من حوالي 4,994 إلى 6,361 sq. ft. عبر المراحل المطروحة.",
     "by": "machine",
@@ -10732,6 +12562,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
+  },
+  "Walk-In Closet": {
+    "ar": "خزانة ملابس مفتوحة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Walk-in closet": {
+    "ar": "خزانة ملابس مفتوحة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Walkable Central Living": {
     "ar": "سكن مركزي على مسافة المشي",
@@ -10805,6 +12645,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:07:43.953Z"
   },
+  "Waterfront Promenade": {
+    "ar": "ممشى الواجهة المائية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "Waterfront Promenades": {
     "ar": "ممشيات الواجهة المائية",
     "by": "machine",
@@ -10816,6 +12661,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:59:23.131Z"
+  },
+  "Waterfront Views": {
+    "ar": "المناظر المائية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Waterfront apartment cluster within Al Raha — promenade restaurants and the marina.": {
+    "ar": "تجمع شقق على الواجهة المائية داخل الراحة — مطاعم الكورنيش والمرسى.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Waterfront apartment cluster within Al Raha — promenade restaurants, the marina, and a string of low-rise blocks along the channel between mainland and the islands.": {
     "ar": "مجمع شقة على الواجهة المائية ضمن الراحة — مطاعم على الممشى، والمرسى، وسلسلة من المباني المنخفضة الارتفاع على امتداد القناة بين البر الرئيسي والجزر.",
@@ -10840,6 +12695,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
+  },
+  "Waterfront two-bedroom in Yas Bay with marina views.": {
+    "ar": "شقة مائية بغرفتين نوم في ياس باي مع إطلالة على المارينا.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Waterfront view showing Al Raha’s residential buildings, marina, promenade and beach.": {
     "ar": "منظر لواجهة المياه يُظهر المباني السكنية والمارينا والممشى والشاطئ في الراحة.",
@@ -10890,8 +12750,8 @@
     "at": "2026-08-16T13:23:54.616Z"
   },
   "We use your email for the verification code and the report delivery. See our privacy notice for what happens next.": {
-    "ar": "نستخدم بريدك الإلكتروني لإرسال رمز التحقق وتسليم التقرير. اطّلع على إشعار الخصوصية لمعرفة الخطوات التالية.",
-    "by": "machine",
+    "ar": "نستخدم بريدك الإلكتروني لإرسال رمز التحقق والتقرير. اطلع على إشعار الخصوصية لمعرفة الخطوات التالية.",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
   },
@@ -10918,6 +12778,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Wellness-first · pre-launch": {
+    "ar": "الصحة أولاً · قبل الإطلاق",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "What are the four phases?": {
     "ar": "ما هي المراحل الأربع؟",
@@ -11158,6 +13023,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
+  },
+  "WhatsApp": {
+    "ar": "واتساب",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "WhatsApp us instead": {
     "ar": "راسلنا عبر واتساب بدلاً من ذلك",
@@ -11642,8 +13512,8 @@
     "at": "2026-08-16T14:37:59.478Z"
   },
   "Years in market": {
-    "ar": "منذ سنوات في السوق",
-    "by": "machine",
+    "ar": "سنوات في السوق",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:03:22.147Z"
   },
@@ -11772,6 +13642,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
+  },
+  "Yoga & Wellness Studio": {
+    "ar": "استوديو اليوجا والرفاهية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "You reserve a home before (or during) construction, directly from the developer. You typically pay in staged instalments through the build and take handover once the project completes — often at a lower entry price than a comparable ready home.": {
     "ar": "تحجز منزلاً قبل البناء (أو أثناءه) مباشرة من المطور العقاري. وتدفع عادةً على أقساط مرحلية خلال فترة البناء، وتستلم عند التسليم بعد اكتمال المشروع — غالباً بسعر دخول أقل من منزل جاهز مماثل.",
