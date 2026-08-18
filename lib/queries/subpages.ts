@@ -2,6 +2,7 @@ import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
+import { type Locale } from "@/lib/i18n/locales";
 import { mediaPublicUrl } from "@/lib/media";
 import { attachImageUrls } from "@/lib/queries/section-images";
 import {
@@ -45,16 +46,35 @@ function build(
 }
 
 /**
+ * Which language the sections come back in.
+ *
+ * Both loaders took no locale and `resolveSections` defaults to English, so
+ * every `/ar/areas/<slug>` and `/ar/developments/<slug>` rendered its section
+ * document in English no matter what Arabic was stored — 44 routes, and the
+ * two biggest per-record surfaces on the site.
+ *
+ * The same functions feed the CMS editors, where the consequence was worse
+ * than a wrong language. `applyLocale` strips every `_ar` key on the way out,
+ * so the editor received values with no Arabic in them, rendered its Arabic
+ * inputs blank, and wrote that blank back on save — silently destroying
+ * whatever the client had typed. `admin/pages/master/[key]` already passed
+ * "bilingual" for exactly this reason; the sub-page editors were never given
+ * the option.
+ */
+
+/**
  * Section document for one development page. Cookie-free client, like the
  * master pages: `/developments/[slug]` is public content and reading cookies
  * would drop it out of ISR.
  */
-export async function getDevelopmentPageContent(record: {
-  name: string;
-  slug: string;
-}): Promise<SubPageContent> {
+export async function getDevelopmentPageContent(
+  record: { name: string; slug: string },
+  /** Pass "bilingual" from an editor; omit on a public page. */
+  locale?: Locale | "bilingual",
+): Promise<SubPageContent> {
+  const fold = locale ?? (await currentLocale());
   const def = developmentPageDef(record);
-  if (!isSupabaseConfigured) return build(resolveSections(def, null), true);
+  if (!isSupabaseConfigured) return build(resolveSections(def, null, fold), true);
 
   try {
     const supabase = createSupabasePublicClient();
@@ -63,10 +83,10 @@ export async function getDevelopmentPageContent(record: {
       .select("blocks")
       .eq("slug", subPageSlug("development", record.slug))
       .maybeSingle();
-    if (error || !data) return build(resolveSections(def, null), true);
+    if (error || !data) return build(resolveSections(def, null, fold), true);
 
     const stored = parseStoredSections(data.blocks);
-    const sections = resolveSections(def, stored);
+    const sections = resolveSections(def, stored, fold);
     // Without this every picked image resolves to a null URL and the section
     // silently falls back to its record media — which is what made the
     // renders gallery look dormant after an upload.
@@ -74,7 +94,7 @@ export async function getDevelopmentPageContent(record: {
     return build(sections, stored === null);
   } catch (error) {
     console.error(`[subpages] failed to load "${record.slug}"`, error);
-    return build(resolveSections(def, null), true);
+    return build(resolveSections(def, null, fold), true);
   }
 }
 
@@ -82,12 +102,14 @@ export async function getDevelopmentPageContent(record: {
  * Section document for one area guide. Same contract as the development
  * variant — cookie-free read, defaults when there's nothing stored.
  */
-export async function getAreaPageContent(record: {
-  name: string;
-  slug: string;
-}): Promise<SubPageContent> {
+export async function getAreaPageContent(
+  record: { name: string; slug: string },
+  /** Pass "bilingual" from an editor; omit on a public page. */
+  locale?: Locale | "bilingual",
+): Promise<SubPageContent> {
+  const fold = locale ?? (await currentLocale());
   const def = areaPageDef(record);
-  if (!isSupabaseConfigured) return build(resolveSections(def, null), true);
+  if (!isSupabaseConfigured) return build(resolveSections(def, null, fold), true);
 
   try {
     const supabase = createSupabasePublicClient();
@@ -96,15 +118,15 @@ export async function getAreaPageContent(record: {
       .select("blocks")
       .eq("slug", subPageSlug("area", record.slug))
       .maybeSingle();
-    if (error || !data) return build(resolveSections(def, null), true);
+    if (error || !data) return build(resolveSections(def, null, fold), true);
 
     const stored = parseStoredSections(data.blocks);
-    const sections = resolveSections(def, stored);
+    const sections = resolveSections(def, stored, fold);
     await attachImageUrls(sections);
     return build(sections, stored === null);
   } catch (error) {
     console.error(`[subpages] failed to load area "${record.slug}"`, error);
-    return build(resolveSections(def, null), true);
+    return build(resolveSections(def, null, fold), true);
   }
 }
 

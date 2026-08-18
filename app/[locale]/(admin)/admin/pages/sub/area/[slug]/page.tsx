@@ -67,7 +67,10 @@ export default async function AreaSubPage({ params }: PageProps) {
   if (!area) notFound();
 
   const [content, media, chrome] = await Promise.all([
-    getAreaPageContent({ name: area.name, slug: area.slug }),
+    // "bilingual" keeps the `_ar` twins in `values`. Without it the fold
+    // strips them, the Arabic inputs render blank, and the save writes that
+    // blank back over whatever the client typed.
+    getAreaPageContent({ name: area.name, slug: area.slug }, "bilingual"),
     fetchMedia(),
     getSearchPreviewChrome(),
   ]);

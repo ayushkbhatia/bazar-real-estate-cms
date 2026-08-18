@@ -6,6 +6,7 @@ import { getPublicBranding } from "@/lib/queries/site-settings";
 import { asLocale } from "@/lib/i18n/locales";
 import { getAdvisorWhatsAppNumber } from "@/lib/whatsapp";
 import { PreferencesPopover } from "./_components/preferences-popover";
+import { LocaleToggle } from "./_components/locale-toggle";
 import { MobilePreferences } from "./_components/mobile-preferences";
 import { ShortlistDrawer } from "./_components/shortlist-drawer";
 import { FooterTrust } from "./_components/footer-trust";
@@ -62,11 +63,40 @@ export default async function PublicLayout({
         logo={logo}
         footerSlot={<MobilePreferences />}
       />
-      {/* Gate matches PublicMegaNav's xl breakpoint — below it the drawer
-          carries the preferences entry via footerSlot, so an md gate here
-          would render both controls at once between 768 and 1279. */}
-      <div className="hidden xl:flex fixed top-[84px] end-4 z-30">
-        <PreferencesPopover />
+      {/*
+        The header chrome that could not go in the header.
+
+        `PublicMegaNav` takes exactly one slot — `footerSlot`, and only the
+        mobile drawer renders it — so anything else has to compose alongside
+        the bar rather than inside it. That is the same reason `FooterTrust`
+        wraps `PublicFooter` instead of editing it.
+
+        Position is measured, not guessed. The bar is 72px and the inline-end
+        is occupied at EVERY breakpoint: the xl+ CTA sits at end-12, and below
+        xl the `ms-auto` cluster (List + hamburger) takes the same edge and
+        flips to the physical left under `dir="rtl"`. The free middle only
+        exists between md and xl. So there is no horizontal slot inside the bar
+        that is safe at all widths, and this sits just under it instead.
+
+        z-20, deliberately below the megamenu panel's z-30: the panel docks at
+        top-[72px] and would otherwise be overlapped by a control floating at
+        84. The preferences pill has had that bug quietly since it shipped —
+        it was hard to notice while the pill was the only thing there.
+      */}
+      <div className="fixed top-[84px] end-4 z-20 flex items-center gap-2">
+        {/*
+          Locale is not gated on xl. Currency and area units are a refinement
+          an interested visitor goes looking for; the language is how someone
+          reads the site at all, and gating it at 1280 hides it from every
+          phone — which on a Gulf property site is most of the traffic.
+        */}
+        <LocaleToggle current={active} />
+        {/* Gate matches PublicMegaNav's xl breakpoint — below it the drawer
+            carries the preferences entry via footerSlot, so an md gate here
+            would render both controls at once between 768 and 1279. */}
+        <div className="hidden xl:flex">
+          <PreferencesPopover />
+        </div>
       </div>
       <main className="flex-1">{children}</main>
       {/*

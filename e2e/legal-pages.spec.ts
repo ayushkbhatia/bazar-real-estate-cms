@@ -50,7 +50,21 @@ test("the Arabic privacy policy renders right-to-left and links both ways", asyn
   page,
 }) => {
   await page.goto("/legal/privacy");
-  await page.getByRole("link", { name: "العربية" }).click();
+  /*
+   * Scoped to the DOCUMENT's own switcher, not the page.
+   *
+   * There are now two links to the Arabic policy on this page and they are
+   * different things: this one, inside the legal doc's nav, which exists
+   * because only privacy has an Arabic edition; and the site-wide locale
+   * toggle in the header chrome, whose accessible name is also "العربية".
+   * An unscoped `getByRole` matches both and Playwright's strict mode fails
+   * the click. This test is about the document linking both ways, so it says
+   * which link it means — the toggle has its own spec.
+   */
+  const englishSwitcher = page.getByRole("navigation", {
+    name: "Legal documents",
+  });
+  await englishSwitcher.getByRole("link", { name: "العربية" }).click();
   await expect(page).toHaveURL(/\/ar\/legal\/privacy$/);
 
   // The document — not the whole app chrome — carries lang/dir.
@@ -71,6 +85,8 @@ test("the Arabic privacy policy renders right-to-left and links both ways", asyn
   await expect(switcher.getByRole("link")).toHaveCount(1);
   await expect(switcher.getByRole("link", { name: "English" })).toBeVisible();
 
-  await page.getByRole("link", { name: "English" }).click();
+  // Same ambiguity in the other direction — the header toggle also offers
+  // "English" — so return through the document's switcher too.
+  await switcher.getByRole("link", { name: "English" }).click();
   await expect(page).toHaveURL(/\/legal\/privacy$/);
 });
