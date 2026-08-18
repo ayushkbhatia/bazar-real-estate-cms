@@ -131,10 +131,13 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
 
   const [content, media, options, role, links, unitTypes, units, chrome] =
     await Promise.all([
-      getDevelopmentPageContent({
-        name: development.name,
-        slug: development.slug,
-      }),
+      // "bilingual" keeps the `_ar` twins in `values`. Without it the fold
+      // strips them, the Arabic inputs render blank, and the save writes that
+      // blank back over whatever the client typed.
+      getDevelopmentPageContent(
+        { name: development.name, slug: development.slug },
+        "bilingual",
+      ),
       fetchMedia(),
       fetchContentOptions(development.id),
       getStaffRole(),
