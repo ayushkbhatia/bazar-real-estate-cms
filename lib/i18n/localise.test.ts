@@ -98,10 +98,58 @@ describe("localiseDeep", () => {
   });
 
   it("falls back per field, not per row", () => {
-    // The second item has no Arabic; the first still gets its own.
+    /*
+     * The second item has no typed Arabic; the first still gets its own. The
+     * point is that the fallback is per FIELD — one blank twin does not drag
+     * its siblings back to English.
+     *
+     * The values here are deliberately ones the shared store has never seen,
+     * because a blank twin no longer means English: it means "ask the store".
+     * "Villas" used to sit in this assertion and now resolves to الفلل, which
+     * is the improvement, not a regression — see the store test below.
+     */
+    const out = localiseDeep(
+      {
+        ...tab,
+        columns: [
+          {
+            ...tab.columns[0]!,
+            items: [
+              tab.columns[0]!.items[0]!,
+              { label: "Kensington duplex wing", label_ar: null },
+            ],
+          },
+        ],
+      },
+      "ar",
+    );
+    expect(out.columns[0]!.items[0]!.label).toBe("شقق");
+    expect(out.columns[0]!.items[1]!.label).toBe("Kensington duplex wing");
+  });
+
+  it("resolves a blank twin through the shared store", () => {
+    /*
+     * The gap this closed. `fillArabic` has always given master-page sections
+     * this fallback, and the flat columns never had it — so section documents
+     * rendered ~88% Arabic and flat columns ~10%, from the same store, for the
+     * same content. "Villas" has an entry; nobody typed it into this row.
+     */
     const out = localiseDeep(tab, "ar");
-    expect(out.columns[0].items[1].label).toBe("Villas");
-    expect(out.featured[0].cta_label).toBe("See more");
+    expect(out.columns[0]!.items[1]!.label).toBe("الفلل");
+  });
+
+  it("only asks the store for columns that declare a twin", () => {
+    /*
+     * `localiseRow` sees EVERY column — id, slug, status, storage_key, prices.
+     * A bare `arabicFor(value)` would swap any of them on a coincidental hit,
+     * so the lookup is gated on the twin column being present on the row.
+     * `status: "Villas"` is nonsense on purpose: it is exactly the shape that
+     * would break if the guard were on the value instead of the key.
+     */
+    const row = { id: "abc", status: "Villas", label: "Villas", label_ar: null };
+    const out = localiseDeep(row, "ar");
+    expect(out.status).toBe("Villas");
+    expect(out.label).toBe("الفلل");
   });
 
   it("strips _ar at every depth", () => {

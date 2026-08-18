@@ -1,3 +1,4 @@
+import { arabicFor } from "@/lib/i18n/arabic-store";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 
 /**
@@ -44,8 +45,38 @@ export function localiseRow<T extends Record<string, unknown>>(
   const out: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(row)) {
     if (key.endsWith(AR_SUFFIX)) continue; // never leaks to a renderer
-    const twin = row[`${key}${AR_SUFFIX}`];
-    out[key] = locale !== DEFAULT_LOCALE && !isBlank(twin) ? twin : value;
+    const twinKey = `${key}${AR_SUFFIX}`;
+    const twin = row[twinKey];
+    if (locale === DEFAULT_LOCALE) {
+      out[key] = value;
+      continue;
+    }
+    if (!isBlank(twin)) {
+      out[key] = twin;
+      continue;
+    }
+    /*
+     * Nothing typed into the twin — ask the store before giving up.
+     *
+     * This is the same fallback `fillArabic` gives master-page sections
+     * (`lib/master-pages/arabic.ts`), and the flat columns simply never had
+     * it. The consequence was measurable and lopsided: section documents
+     * render ~88% Arabic because a blank twin still resolves through the
+     * store, while flat columns sat at ~10% because a blank twin fell
+     * straight back to English. Same content, same store, two answers.
+     *
+     * Guarded on the twin COLUMN being present rather than on the value, so
+     * the lookup only ever runs for a column the schema declares
+     * translatable. `localiseRow` sees every column on the row — `id`,
+     * `slug`, `status`, `storage_key`, prices — and a bare
+     * `arabicFor(value)` would happily swap any of them for a coincidental
+     * store hit. `in` distinguishes "twin exists and is null" from "no twin
+     * here", which `undefined` alone cannot.
+     */
+    out[key] =
+      twinKey in row && typeof value === "string"
+        ? (arabicFor(value) ?? value)
+        : value;
   }
   return out as T;
 }

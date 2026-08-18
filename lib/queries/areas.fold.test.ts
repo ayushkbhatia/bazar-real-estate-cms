@@ -65,14 +65,31 @@ describe("areas.name / areas.description on /areas/[slug]", () => {
     expectNoTwinsLeak(ar, "area profile");
   });
 
-  it("leaves the English name when the twin is blank", () => {
+  it("resolves a blank twin through the shared store", () => {
+    /*
+     * A blank twin asks the store before giving up. For an AREA NAME that is
+     * exactly right: جزيرة السعديات is the approved form from the curated
+     * proper-noun list (`lib/i18n/mt/proper-nouns.ts`), so the store is the
+     * one place that answer should come from rather than each row carrying
+     * its own copy.
+     */
     const ar = composeAreaProfile({
       row: { ...ROW, name_ar: "   " },
       guide: null,
       seed: null,
       locale: "ar" as Locale,
     });
-    expect(ar?.name).toBe("Saadiyat Island");
+    expect(ar?.name).toBe("جزيرة السعديات");
+  });
+
+  it("leaves the English name when nothing has translated it", () => {
+    const ar = composeAreaProfile({
+      row: { ...ROW, name: "Umm Yifeenah", name_ar: "   " },
+      guide: null,
+      seed: null,
+      locale: "ar" as Locale,
+    });
+    expect(ar?.name).toBe("Umm Yifeenah");
   });
 });
 

@@ -137,10 +137,25 @@ describe("form fields · the fold reaches Arabic", () => {
     expect("label_ar" in folded[0]!).toBe(false);
   });
 
-  it("falls back to English where the Arabic is blank", () => {
+  it("resolves a blank twin through the shared store", () => {
+    /*
+     * A blank `_ar` no longer means English — it means "ask the store", the
+     * same fallback `fillFormArabic` and `fillArabic` already gave forms and
+     * master-page sections. Before this, `localiseDeep` returned "Budget" here
+     * while `resolveForm` two tests below returned الميزانية for the same
+     * field: one store, two answers, depending on which function you happened
+     * to call. They agree now.
+     */
     const folded = localiseDeep([field({ label_ar: null, help_ar: "" })], "ar");
-    expect(folded[0]!.label).toBe("Budget");
-    expect(folded[0]!.help).toBe("Roughly what you plan to spend.");
+    expect(folded[0]!.label).toBe("الميزانية");
+  });
+
+  it("keeps English when the store has never seen the phrase", () => {
+    const folded = localiseDeep(
+      [field({ label: "Preferred completion quarter", label_ar: null })],
+      "ar",
+    );
+    expect(folded[0]!.label).toBe("Preferred completion quarter");
   });
 
   it("survives resolveForm, which is what the page actually calls", () => {
