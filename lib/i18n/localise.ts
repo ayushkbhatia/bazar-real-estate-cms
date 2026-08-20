@@ -133,3 +133,35 @@ export function missingTranslations(
   }
   return out.sort();
 }
+
+/**
+ * Fold named join objects that sit one level below the row.
+ *
+ * `localiseRow` walks a single level and stops, which is the right default —
+ * `localiseDeep` at the row level would recurse into jsonb bags nobody asked
+ * it to touch. The cost is that a PostgREST join arrives as one opaque value
+ * and its twin pairs with nothing: `areas: { name, name_ar }` came back with
+ * the English name on every Arabic listing card and development page.
+ *
+ * So the joins are folded by name, deliberately, rather than by recursing.
+ * The caller says which keys are joins, because only the caller knows.
+ *
+ * `pickHero` solves the same problem for nested media and predates this; it
+ * stays as it is because it also picks a row out of an array, which this does
+ * not do.
+ */
+export function localiseJoins<T extends Record<string, unknown>>(
+  row: T,
+  keys: readonly string[],
+  locale: Locale = DEFAULT_LOCALE,
+): T {
+  if (locale === DEFAULT_LOCALE) return row;
+  const out: Record<string, unknown> = { ...row };
+  for (const key of keys) {
+    const join = out[key];
+    if (join && typeof join === "object" && !Array.isArray(join)) {
+      out[key] = localiseRow(join as Record<string, unknown>, locale);
+    }
+  }
+  return out as T;
+}

@@ -1,4 +1,20 @@
 {
+  "agent": {
+    "ourTeam": "فريقنا",
+    "whatsapp": "واتساب",
+    "email": "البريد الإلكتروني",
+    "yearsInMarket": "سنوات في السوق",
+    "closedLifetime": "إجمالي الصفقات المنجزة",
+    "closedQtd": "الصفقات المنجزة هذا الربع",
+    "getInTouch": "تواصل معنا",
+    "sendABrief": "أرسل طلبك"
+  },
+  "area": {
+    "medianApt": "متوسط سعر الشقة /",
+    "medianVilla": "متوسط سعر الفيلا /",
+    "valuationPrompt": "اعرف تقدير المستشار لقيمته، مجاناً.",
+    "allAreas": "جميع المناطق"
+  },
   "careers": {
     "eyebrow": "الوظائف",
     "title": "نوظّف على سبيل الاستثناء.",
@@ -17,22 +33,19 @@
     "youWill": "مهامك",
     "youBring": "ما تحتاجه"
   },
-  "newsletter": {
-    "eyebrow": "النشرة البريدية",
-    "confirmedTitle": "تم تسجيلك.",
-    "confirmedBody": "أكّدنا اشتراك {email}. سيصلك أول عدد من نشرة بازار إلى بريدك الأربعاء المقبل.",
-    "readInsights": "اقرأ أحدث الرؤى",
-    "browseMarketplace": "تصفّح العقارات",
-    "expiredTitle": "انتهت صلاحية هذا الرابط.",
-    "expiredBody": "روابط التأكيد صالحة لمدة 14 يوماً. يرجى الاشتراك مجدداً ومتابعة بريدك.",
-    "notFoundTitle": "لم نعثر على هذا الرابط.",
-    "notFoundBody": "قد يكون استُخدم من قبل. جرّب الاشتراك مرة أخرى من صفحة الرؤى.",
-    "errorTitle": "حدث خطأ ما.",
-    "backToInsights": "العودة إلى الرؤى",
-    "removedTitle": "تم إلغاء اشتراكك.",
-    "removedBody": "لن يصل {email} أي عدد من نشرة بازار بعد الآن. يؤسفنا رحيلك.",
-    "alreadyRemovedTitle": "أُلغي الاشتراك مسبقاً.",
-    "alreadyRemovedBody": "لم يعد هذا الرابط فعّالاً. إن كنت لا تزال تتلقى رسائل، تواصل معنا على {email}."
+  "development": {
+    "bedrooms": "غرف النوم",
+    "handover": "التسليم",
+    "paymentPlan": "خطة السداد",
+    "startingPrice": "السعر يبدأ من",
+    "totalUnits": "إجمالي الوحدات"
+  },
+  "developments": {
+    "eyebrow": "مشاريع على الخارطة",
+    "empty": "لا يوجد",
+    "from": "من",
+    "bedrooms": "غرف النوم",
+    "handover": "التسليم"
   },
   "hero": {
     "editorialEyebrow": "منهج بازار",
@@ -56,6 +69,35 @@
     "sampleTimeline": "الإطار الزمني · الانتقال بحلول الربع الرابع",
     "sampleConstraint": "الشروط · على الشاطئ، ضمن نطاق المدارس"
   },
+  "home": {
+    "offPlan": "على الخارطة",
+    "startingFrom": "يبدأ من",
+    "view": "عرض"
+  },
+  "newsletter": {
+    "eyebrow": "النشرة البريدية",
+    "confirmedTitle": "تم تسجيلك.",
+    "confirmedBody": "أكّدنا اشتراك {email}. سيصلك أول عدد من نشرة بازار إلى بريدك الأربعاء المقبل.",
+    "readInsights": "اقرأ أحدث الرؤى",
+    "browseMarketplace": "تصفّح العقارات",
+    "expiredTitle": "انتهت صلاحية هذا الرابط.",
+    "expiredBody": "روابط التأكيد صالحة لمدة 14 يوماً. يرجى الاشتراك مجدداً ومتابعة بريدك.",
+    "notFoundTitle": "لم نعثر على هذا الرابط.",
+    "notFoundBody": "قد يكون استُخدم من قبل. جرّب الاشتراك مرة أخرى من صفحة الرؤى.",
+    "errorTitle": "حدث خطأ ما.",
+    "backToInsights": "العودة إلى الرؤى",
+    "removedTitle": "تم إلغاء اشتراكك.",
+    "removedBody": "لن يصل {email} أي عدد من نشرة بازار بعد الآن. يؤسفنا رحيلك.",
+    "alreadyRemovedTitle": "أُلغي الاشتراك مسبقاً.",
+    "alreadyRemovedBody": "لم يعد هذا الرابط فعّالاً. إن كنت لا تزال تتلقى رسائل، تواصل معنا على {email}."
+  },
+  "property": {
+    "whyThisOne": "لماذا هذا العقار",
+    "featuresAmenities": "المزايا والمرافق",
+    "location": "الموقع",
+    "noCoordinates": "لا توجد إحداثيات محددة لهذا العقار",
+    "enquireAbout": "استفسر عن هذا العقار"
+  },
   "service": {
     "allServices": "جميع الخدمات",
     "overview": "نظرة عامة",
@@ -68,45 +110,5 @@
     "previous": "السابق",
     "orTryOur": "أو جرّب",
     "first": "أولاً."
-  },
-  "property": {
-    "whyThisOne": "لماذا هذا العقار",
-    "featuresAmenities": "المزايا والمرافق",
-    "location": "الموقع",
-    "noCoordinates": "لا توجد إحداثيات محددة لهذا العقار",
-    "enquireAbout": "استفسر عن هذا العقار"
-  },
-  "developments": {
-    "eyebrow": "مشاريع على الخارطة",
-    "empty": "لا يوجد",
-    "from": "من",
-    "bedrooms": "غرف النوم",
-    "handover": "التسليم"
-  },
-  "development": {
-    "startingPrice": "السعر يبدأ من",
-    "totalUnits": "إجمالي الوحدات",
-    "paymentPlan": "خطة السداد"
-  },
-  "agent": {
-    "ourTeam": "فريقنا",
-    "whatsapp": "واتساب",
-    "email": "البريد الإلكتروني",
-    "yearsInMarket": "سنوات في السوق",
-    "closedLifetime": "إجمالي الصفقات المنجزة",
-    "closedQtd": "الصفقات المنجزة هذا الربع",
-    "getInTouch": "تواصل معنا",
-    "sendABrief": "أرسل طلبك"
-  },
-  "area": {
-    "medianApt": "متوسط سعر الشقة /",
-    "medianVilla": "متوسط سعر الفيلا /",
-    "valuationPrompt": "اعرف تقدير المستشار لقيمته، مجاناً.",
-    "allAreas": "جميع المناطق"
-  },
-  "home": {
-    "offPlan": "على الخارطة",
-    "startingFrom": "يبدأ من",
-    "view": "عرض"
   }
 }

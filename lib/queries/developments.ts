@@ -6,7 +6,7 @@ import {
   readSearchAppearance,
 } from "@/lib/schemas/seo";
 import { currentLocale } from "@/lib/i18n/current";
-import { localiseRow } from "@/lib/i18n/localise";
+import { localiseJoins, localiseRow } from "@/lib/i18n/localise";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import type { Database } from "@/db/types";
 import {
@@ -34,7 +34,7 @@ export type DevelopmentUnit = DevelopmentUnitFromUtils;
 export type UnitFilter = UnitFilterFromUtils;
 
 const INDEX_FIELDS =
-  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, published_at, developers:developer_id(name, slug), areas:area_id(name, slug), hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar)";
+  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, published_at, developers:developer_id(name, name_ar, slug), areas:area_id(name, name_ar, slug), hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar)";
 
 // `masterplan_id` is joined the same way as `hero_image_id`, because it is
 // stored the same way: the CMS's Page images card writes both to columns on
@@ -43,7 +43,7 @@ const INDEX_FIELDS =
 // a masterplan row to — so an uploaded site plan silently never appeared.
 /** Exported so a test can pin the media joins — see developments.test.ts. */
 export const DETAIL_FIELDS =
-  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, vision, vision_ar, facts, payment_plan, master_plan, amenities, amenities_ar, escrow_account, seo, published_at, developer_id, area_id, lead_advisor_id, hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar), masterplan:masterplan_id(storage_key, filename, alt_text, alt_text_ar), developers:developer_id(id, name, slug, founded_year, description, stats), areas:area_id(name, slug)";
+  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, vision, vision_ar, facts, payment_plan, master_plan, amenities, amenities_ar, escrow_account, seo, published_at, developer_id, area_id, lead_advisor_id, hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar), masterplan:masterplan_id(storage_key, filename, alt_text, alt_text_ar), developers:developer_id(id, name, name_ar, slug, founded_year, description, description_ar, stats), areas:area_id(name, name_ar, slug)";
 
 type HeroMedia = {
   storage_key: string;
@@ -194,7 +194,14 @@ export async function listPublishedDevelopments(
   const locale = await currentLocale();
   return data.map((r) =>
     shapeIndexRow(
-      localiseRow(r as unknown as Record<string, unknown>, locale),
+      // The joined developer and area sit one level down, where `localiseRow`
+      // does not reach — so "MODON Properties" and "Hudayriyat Island" stayed
+      // English on /ar while both had `name_ar`.
+      localiseJoins(
+        localiseRow(r as unknown as Record<string, unknown>, locale),
+        ["developers", "areas"],
+        locale,
+      ),
       locale,
     ),
   );
@@ -222,7 +229,11 @@ export async function getPublishedDevelopmentBySlug(
   // buildMegamenu, reshape and toAgentProfile.
   const locale = await currentLocale();
   return shapeDetail(
-    localiseRow(data as unknown as Record<string, unknown>, locale),
+    localiseJoins(
+      localiseRow(data as unknown as Record<string, unknown>, locale),
+      ["developers", "areas"],
+      locale,
+    ),
     locale,
   );
 }
