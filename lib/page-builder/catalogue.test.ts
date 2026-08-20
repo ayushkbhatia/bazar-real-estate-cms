@@ -33,9 +33,17 @@ const KNOWN_TYPES_V1 = [
   "why_band",
 ] as const;
 
+/**
+ * Keys added after v1, protected the same way and for the same reason. A new
+ * list rather than an edit to the one above: `KNOWN_TYPES_V1` records what
+ * shipped in v1, and rewriting history to make a later addition look original
+ * would cost the next reader the one fact these lists exist to carry.
+ */
+const KNOWN_TYPES_V2 = ["testimonials"] as const;
+
 describe("block catalogue", () => {
-  it("keeps every v1 key", () => {
-    for (const key of KNOWN_TYPES_V1) {
+  it("keeps every published key", () => {
+    for (const key of [...KNOWN_TYPES_V1, ...KNOWN_TYPES_V2]) {
       expect(getBlockDef(key), `block "${key}" was renamed or removed`).not.toBeNull();
     }
   });

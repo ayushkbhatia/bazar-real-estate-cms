@@ -155,7 +155,7 @@ export default async function AdminPagesPage() {
                 >
                   <span className="text-[13.5px] font-medium">{k.label}</span>
                   <span className="mono text-[11px] text-bz-muted">
-                    {k.publicPath}/…
+                    {k.pathLabel ?? `${k.publicPath}/…`}
                   </span>
                   <span className="mt-1 text-[11.5px] text-bz-muted-2">
                     {subPageCounts[k.kind] ?? 0}{" "}

@@ -40,7 +40,7 @@ export default async function SubPageKindsIndex() {
               >
                 <span className="text-[13.5px] font-medium">{k.label}</span>
                 <span className="mono text-[11px] text-bz-muted">
-                  {k.publicPath}/…
+                  {k.pathLabel ?? `${k.publicPath}/…`}
                 </span>
                 <span className="mt-1 text-[12px] text-bz-muted">
                   {k.description}
