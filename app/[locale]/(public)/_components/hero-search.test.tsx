@@ -7,8 +7,10 @@ vi.mock("next/navigation", () => ({
 }));
 
 import { HeroSearch } from "./hero-search";
-import { HERO_TABS } from "@/lib/hero-search-config";
+import { defaultSearchBar } from "@/lib/search-bar";
 import { PreferencesProvider } from "@/lib/preferences";
+
+const BAR = defaultSearchBar();
 
 /**
  * The hero card was narrowed to 55% of its former desktop width. These specs
@@ -27,7 +29,7 @@ function renderCard() {
   // reads `usePreferences` and needs the provider the public layout supplies.
   const { container } = render(
     <PreferencesProvider>
-      <HeroSearch />
+      <HeroSearch tabs={BAR.tabs} copy={BAR.copy} />
     </PreferencesProvider>,
   );
   const form = container.querySelector("form");
@@ -78,7 +80,7 @@ describe("<HeroSearch> mode buttons", () => {
   }
 
   it("renders one button per configured tab", () => {
-    expect(tabButtons()).toHaveLength(HERO_TABS.length);
+    expect(tabButtons()).toHaveLength(BAR.tabs.length);
   });
 
   it("pins each button to its intrinsic width so the narrower card cannot squeeze it", () => {

@@ -13,24 +13,40 @@ import {
   formatPrice,
   usePreferences,
 } from "@/lib/preferences";
-import {
-  HERO_TABS,
-  buildHeroSearchUrl,
-  type Range,
-} from "@/lib/hero-search-config";
+import { buildHeroSearchUrl, type Range } from "@/lib/hero-search-config";
+import type {
+  SearchBarCopy,
+  SearchBarCopyKey,
+  SearchBarTab,
+} from "@/lib/search-bar";
 
 const EMPTY_RANGE: Range = { min: null, max: null };
 
+/**
+ * The tabbed search bar over the home hero.
+ *
+ * Its tabs, placeholders, property types and button all arrive resolved from
+ * the server (`getSearchBar`), already folded to one locale — so this
+ * component never sees an `_ar` key and never decides which language to
+ * render. What it still owns is the eight shared labels, which fall back to
+ * the message catalogue when the CMS has no override: `copy.type_label` is an
+ * editor's word for "Property type", and `tr("filters.propertyType")` is the
+ * site's own, already translated.
+ */
 export function HeroSearch({
+  tabs,
+  copy,
   defaultMode = "off-plan",
 }: {
+  tabs: SearchBarTab[];
+  copy: SearchBarCopy;
   defaultMode?: string;
 }) {
   const tr = useTranslations("search");
   const { prefs } = usePreferences();
   const router = useRouter();
   const [mode, setMode] = useState(
-    HERO_TABS.some((t) => t.value === defaultMode) ? defaultMode : "off-plan",
+    tabs.some((t) => t.key === defaultMode) ? defaultMode : tabs[0].key,
   );
   const [q, setQ] = useState("");
   const [type, setType] = useState("");
@@ -40,9 +56,13 @@ export function HeroSearch({
   const [pending, startTransition] = useTransition();
 
   const tab = useMemo(
-    () => HERO_TABS.find((t) => t.value === mode) ?? HERO_TABS[0],
-    [mode],
+    () => tabs.find((t) => t.key === mode) ?? tabs[0],
+    [mode, tabs],
   );
+
+  /** An editor's override, or the site's own already-translated wording. */
+  const label = (key: SearchBarCopyKey, message: string) =>
+    copy[key]?.trim() || tr(message);
 
   // Switching tab resets the range/dropdown state — the price ceiling and
   // type list differ per tab, so carrying values over would be misleading.
@@ -70,21 +90,23 @@ export function HeroSearch({
           12.5px). `shrink-0` + `whitespace-nowrap` pin each button to its own
           width so the narrower lg card can never squeeze them; the trade-off is
           that a fifth tab or a much longer label would overflow visibly rather
-          than shrink silently. Labels live in lib/hero-search-config.ts. */}
+          than shrink silently. Labels are editable at /admin/forms/search-bar
+          — which is also where a fifth tab would be added, so the note above
+          is a warning to whoever adds one. */}
       <div
         className="flex gap-1 px-1 pt-1"
         role="tablist"
         aria-label={tr("filters.searchType")}
       >
-        {HERO_TABS.map((t) => {
-          const active = mode === t.value;
+        {tabs.map((t) => {
+          const active = mode === t.key;
           return (
             <button
-              key={t.value}
+              key={t.key}
               type="button"
               role="tab"
               aria-selected={active}
-              onClick={() => switchTab(t.value)}
+              onClick={() => switchTab(t.key)}
               className={
                 active
                   ? "h-8 shrink-0 whitespace-nowrap px-3.5 rounded-md text-[12.5px] bg-white text-bz-ink font-medium"
@@ -119,17 +141,19 @@ export function HeroSearch({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <label className="flex flex-col gap-1">
             <span className="text-[11px] font-medium text-bz-muted">
-              {tr("filters.propertyType")}
+              {label("type_label", "filters.propertyType")}
             </span>
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
               className="h-10 px-3 rounded-md bg-white text-bz-ink text-[13px] outline-none border border-bz-border focus:border-bz-accent"
             >
-              <option value="">{tr("filters.anyType")}</option>
-              {tab.types.map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
+              <option value="">
+                {label("any_type_label", "filters.anyType")}
+              </option>
+              {tab.types.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
                 </option>
               ))}
             </select>
@@ -138,14 +162,16 @@ export function HeroSearch({
           {tab.beds ? (
             <label className="flex flex-col gap-1">
               <span className="text-[11px] font-medium text-bz-muted">
-                {tr("filters.bedrooms")}
+                {label("beds_label", "filters.bedrooms")}
               </span>
               <select
                 value={beds}
                 onChange={(e) => setBeds(e.target.value)}
                 className="h-10 px-3 rounded-md bg-white text-bz-ink text-[13px] outline-none border border-bz-border focus:border-bz-accent"
               >
-                <option value="">{tr("filters.anyBeds")}</option>
+                <option value="">
+                  {label("any_beds_label", "filters.anyBeds")}
+                </option>
                 {[1, 2, 3, 4, 5, 6].map((n) => (
                   <option key={n} value={n}>
                     {n === 6
@@ -158,7 +184,8 @@ export function HeroSearch({
           ) : tab.size ? (
             <div className="flex flex-col gap-1">
               <span className="text-[11px] font-medium text-bz-muted">
-                Size ({areaUnitLabel(prefs.area_unit)})
+                {label("size_label", "filters.size")} (
+                {areaUnitLabel(prefs.area_unit)})
               </span>
               <div className="px-1 pt-1.5">
                 <DualRangeSlider
@@ -178,7 +205,7 @@ export function HeroSearch({
         {/* Row 3: price slider */}
         <div className="flex flex-col gap-1">
           <span className="text-[11px] font-medium text-bz-muted">
-            {tr("filters.priceRange")}
+            {label("price_label", "filters.priceRange")}
           </span>
           <div className="px-1 pt-1.5">
             {/*
@@ -205,7 +232,9 @@ export function HeroSearch({
           disabled={pending}
           className="h-11 md:h-10 w-full"
         >
-          {pending ? "Searching…" : "Search"}
+          {pending
+            ? label("pending_label", "filters.searching")
+            : label("submit_label", "filters.search")}
         </Button>
       </div>
     </form>

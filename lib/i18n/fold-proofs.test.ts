@@ -103,6 +103,8 @@ const FOLD_PROOFS: Record<string, string> = {
   "properties.address_line": "lib/queries/properties.fold.test.ts",
   "properties.view": "lib/queries/properties.fold.test.ts",
   "properties.orientation": "lib/queries/properties.fold.test.ts",
+  "search_bar_tabs.label": "lib/queries/search-bar.fold.test.ts",
+  "search_bar_tabs.placeholder": "lib/queries/search-bar.fold.test.ts",
 };
 
 describe("WIRED_READ fold proofs", () => {

@@ -1,12 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { HERO_TABS, buildHeroSearchUrl } from "./hero-search-config";
+import { buildHeroSearchUrl } from "./hero-search-config";
+import { defaultSearchBar } from "./search-bar";
 
-const tab = (v: string) => HERO_TABS.find((t) => t.value === v)!;
+const HERO_TABS = defaultSearchBar().tabs;
+const tab = (v: string) => HERO_TABS.find((t) => t.key === v)!;
 const base = { q: "", type: "", beds: "", price: { min: null, max: null }, size: { min: null, max: null } };
 
 describe("HERO_TABS", () => {
   it("is ordered Off-Plan, Buy, Rent, Commercial", () => {
-    expect(HERO_TABS.map((t) => t.value)).toEqual([
+    expect(HERO_TABS.map((t) => t.key)).toEqual([
       "off-plan",
       "buy",
       "rent",
@@ -18,7 +20,7 @@ describe("HERO_TABS", () => {
     const c = tab("commercial");
     expect(c.beds).toBe(false);
     expect(c.size?.max).toBe(200_000);
-    expect(c.types.map(([v]) => v)).toEqual([
+    expect(c.types.map((t) => t.value)).toEqual([
       "land",
       "office",
       "building",

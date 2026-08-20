@@ -2926,6 +2926,101 @@ export type Database = {
         }
         Relationships: []
       }
+      search_bar: {
+        Row: {
+          copy: Json
+          created_at: string
+          id: string
+          key: string
+          updated_at: string
+        }
+        Insert: {
+          copy?: Json
+          created_at?: string
+          id?: string
+          key: string
+          updated_at?: string
+        }
+        Update: {
+          copy?: Json
+          created_at?: string
+          id?: string
+          key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      search_bar_tabs: {
+        Row: {
+          bar_id: string
+          beds: boolean
+          created_at: string
+          enabled: boolean
+          id: string
+          key: string
+          label: string
+          label_ar: string | null
+          placeholder: string
+          placeholder_ar: string | null
+          position: number
+          price_max: number
+          price_step: number
+          route: string
+          size_max: number | null
+          size_step: number | null
+          types: Json
+          updated_at: string
+        }
+        Insert: {
+          bar_id: string
+          beds?: boolean
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key: string
+          label: string
+          label_ar?: string | null
+          placeholder: string
+          placeholder_ar?: string | null
+          position?: number
+          price_max: number
+          price_step: number
+          route: string
+          size_max?: number | null
+          size_step?: number | null
+          types?: Json
+          updated_at?: string
+        }
+        Update: {
+          bar_id?: string
+          beds?: boolean
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key?: string
+          label?: string
+          label_ar?: string | null
+          placeholder?: string
+          placeholder_ar?: string | null
+          position?: number
+          price_max?: number
+          price_step?: number
+          route?: string
+          size_max?: number | null
+          size_step?: number | null
+          types?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "search_bar_tabs_bar_id_fkey"
+            columns: ["bar_id"]
+            isOneToOne: false
+            referencedRelation: "search_bar"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       site_settings: {
         Row: {
           accent_token: string

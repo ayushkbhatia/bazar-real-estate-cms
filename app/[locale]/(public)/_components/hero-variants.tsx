@@ -4,6 +4,8 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
 import { HeroSearch } from "./hero-search";
+import { getSearchBar } from "@/lib/queries/search-bar";
+import { activeTabs } from "@/lib/search-bar";
 import { HeroVideoBg } from "./hero-video-bg";
 
 export type HeroVariant = "fullbleed" | "editorial" | "map" | "concierge";
@@ -47,7 +49,16 @@ function guessVideoMime(url: string): string {
   return url.toLowerCase().endsWith(".webm") ? "video/webm" : "video/mp4";
 }
 
-export function HeroFullBleed({ copy }: { copy?: HeroCopy } = {}) {
+/**
+ * Async because the search bar it carries is CMS-resolved.
+ *
+ * Read here rather than threaded down from the home page: `getSearchBar` is
+ * `cache`d, so a second caller costs nothing, and the alternative is a prop
+ * every future surface that mounts a hero has to remember to pass. A failure
+ * inside it resolves to the registry, so this await has no error branch.
+ */
+export async function HeroFullBleed({ copy }: { copy?: HeroCopy } = {}) {
+  const bar = await getSearchBar();
   const videoSrc = copy?.media?.videoUrl ?? BUILT_IN_VIDEO;
   return (
     <section className="relative bg-bz-ink overflow-hidden">
@@ -83,7 +94,7 @@ export function HeroFullBleed({ copy }: { copy?: HeroCopy } = {}) {
           {copy?.subtitle ??
             "Curated marketplace and bespoke advisory for buyers, sellers, and investors across the United Arab Emirates."}
         </p>
-        <HeroSearch />
+        <HeroSearch tabs={activeTabs(bar)} copy={bar.copy} />
         <div className="mt-5 flex gap-3 text-[13.5px]">
           <Link
             href={copy?.link1?.href ?? "/off-plan"}
@@ -223,7 +234,7 @@ export async function HeroConcierge() {
   );
 }
 
-export function HeroForVariant({
+export async function HeroForVariant({
   variant,
   copy,
 }: {

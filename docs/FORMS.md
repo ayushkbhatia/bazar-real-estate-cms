@@ -94,6 +94,44 @@ morning is legible in the advisor's inbox this afternoon.
 read at the time. Renaming a question next month must not silently relabel the
 answers people already gave to the old one.
 
+## The search bar, which is not a form
+
+`/admin/forms/search-bar` edits the tabbed search bar over the home hero. It
+sits in the Forms Manager because that is where an editor looks for "the words
+on a control", and it is a separate section rather than a card in the grid
+because it captures nothing: no handler, no lead, no responses tab that could
+ever fill.
+
+What it owns:
+
+- the four tabs — label, key, route, order, and whether each one shows;
+- per tab: the search box placeholder, the property-type dropdown, whether the
+  visitor is asked for bedrooms or given a size slider, and the two slider
+  ceilings;
+- the eight shared labels around the fields, and the button.
+
+It resolves exactly like a form — `lib/search-bar/registry.ts` defaults ⊕
+`search_bar` + `search_bar_tabs` rows, merged at read time, falling back to the
+registry on any failure. Migration `0111_search_bar.sql` seeds nothing, so
+applying it is a no-op for the public site until someone saves.
+
+Two things differ from a form, both on purpose:
+
+- **Copy merges, tabs replace.** An absent copy key means "not overridden"; a
+  saved tab list is the truth, so a tab an editor retired stays retired.
+- **Every shared label defaults to blank, and blank is not a hole.** Those
+  eight strings already exist, translated, in `messages/{en,ar}/search.json`
+  and are shared with the filter bar on the results pages. A registry default
+  would fork them, so the default is absence and the component asks the
+  catalogue. The editor shows the catalogue's wording as the input's
+  placeholder — clearing the box is how you revert.
+
+The tab labels, placeholders and property-type labels are different: they exist
+nowhere else, so they are real strings in the registry with present-and-null
+Arabic twins, resolved through `ARABIC_STORE` at read time. That is what fixed
+the bug this section was built for — /ar rendered an English search bar over an
+Arabic page, because a literal has no twin to fold.
+
 ## When the page knows more than the visitor typed
 
 A form sitting under a tool has context no field can hold. The mortgage
