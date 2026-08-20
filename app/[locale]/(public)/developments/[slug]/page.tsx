@@ -25,6 +25,7 @@ import {
   listFloorPlans,
 } from "@/lib/queries/developments";
 import { quarterLabel } from "@/lib/schemas/development";
+import { handoverQuarter, quarterArgs } from "@/lib/developments/handover";
 import { PaymentPlanSection, type CalculatorUnit } from "./_payment-plan";
 import { UnitsTable } from "./_units-table";
 import { LeadAdvisorBanner } from "./_components/lead-advisor-banner";
@@ -165,9 +166,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   // `t` is already this page's own namespace; `tp` is the shared
   // `pages` bag for the strings W6 extracted out of the JSX.
   const tp = await getTranslations({ locale, namespace: "pages.development" });
+  const tc = await getTranslations({ locale, namespace: "development.card" });
   const { slug } = await params;
   const development = await getPublishedDevelopmentBySlug(slug);
   if (!development) notFound();
+  const handover = handoverQuarter(development.handover_date);
 
   // The two hero lead forms. Fields, copy and button come from /admin/forms.
   const leadForms = await getForms([
@@ -753,11 +756,11 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
               </span>
             ) : null}
             <span className="inline-flex items-center h-[26px] px-2.5 rounded-full text-[11.5px] font-medium bg-black/70 text-white">
-              Off-plan
+              {tc("offPlan")}
             </span>
-            {development.handover_date ? (
+            {handover ? (
               <span className="inline-flex items-center h-[26px] px-2.5 rounded-full text-[11.5px] font-medium bg-white/15 text-white backdrop-blur-sm">
-                Handover {quarterLabel(development.handover_date)}
+                {tc("handover", quarterArgs(handover))}
               </span>
             ) : null}
           </div>
@@ -801,7 +804,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 label={tp("totalUnits")}
               />
               <HeroStat
-                value={quarterLabel(development.handover_date)}
+                value={
+                  handover ? tc("quarter", quarterArgs(handover)) : "—"
+                }
                 label={tp("handover")}
               />
               {development.payment_plan ? (

@@ -11,7 +11,7 @@ import {
   developmentUrl,
   listPublishedDevelopments,
 } from "@/lib/queries/developments";
-import { quarterLabel } from "@/lib/schemas/development";
+import { handoverQuarter, quarterArgs } from "@/lib/developments/handover";
 import { PriceText } from "../_components/area-text";
 import { mediaPublicUrl } from "@/lib/media";
 
@@ -83,6 +83,7 @@ async function DevelopmentCard({
   d: Awaited<ReturnType<typeof listPublishedDevelopments>>[number];
 }) {
   const t = await getTranslations({ locale, namespace: "pages.developments" });
+  const tc = await getTranslations({ locale, namespace: "development.card" });
   return (
     <Link
       href={developmentUrl(d)}
@@ -137,7 +138,11 @@ async function DevelopmentCard({
             label={t("bedrooms")}
           />
           <Stat
-            value={quarterLabel(d.handover_date)}
+            value={
+              handoverQuarter(d.handover_date)
+                ? tc("quarter", quarterArgs(handoverQuarter(d.handover_date)!))
+                : "—"
+            }
             label={t("handover")}
           />
         </div>

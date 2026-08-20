@@ -16546,5 +16546,25 @@
     "ar": "رسوم الخدمات هي مبالغ تُدفع مقابل صيانة المبنى أو المجتمع والمرافق والمساحات المشتركة.",
     "by": "machine",
     "model": "claude-opus-5"
+  },
+  "Our developer partners": {
+    "ar": "شركاؤنا من المطوّرين",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Our Footprint": {
+    "ar": "حضورنا",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Our footprint": {
+    "ar": "حضورنا",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Trusted by the region’s builders.": {
+    "ar": "موضع ثقة كبرى شركات التطوير في المنطقة.",
+    "by": "machine",
+    "model": "claude-opus-5"
   }
 }

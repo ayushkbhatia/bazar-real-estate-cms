@@ -1049,3 +1049,22 @@ shows the trail.)
   drop the circle on `/ar`, keep the Latin initials in both locales (they are
   decorative, not content), or replace the circle with a neutral glyph. Small,
   visible, and only visible to Arabic readers.
+
+- [i18n] `development-faq.tsx` writes its questions and answers as English
+  template literals — "When does {name} hand over?", "Currently scheduled for
+  Q4 2029. Developers occasionally adjust handover quarters…" — so every
+  development detail page carries a paragraph of English inside the Arabic
+  accordion. It is generated prose rather than a label, so it cannot ride the
+  `development.card.*` keys the handover badges now use: each sentence needs
+  its own ICU message with the name, quarter and plan interpolated. Bounded
+  (one file, ~8 entries) but a copy job, not a rename.
+  `app/[locale]/(public)/developments/[slug]/_components/development-faq.tsx:104`.
+
+- [i18n] Payment-plan milestone labels ("On Handover", "On Booking") are typed
+  into the development record by staff, not written in code, so the Arabic
+  payment schedule prints them in English between two Arabic columns. The
+  column has no `_ar` twin and `payment_plan` is a jsonb bag, so this is a
+  schema question — a twin inside the bag, like `types[].label_ar` on
+  `search_bar_tabs` — plus an editor for it. Wrong to fix by translating in the
+  renderer: the labels are a small closed vocabulary today and arbitrary text
+  tomorrow.
