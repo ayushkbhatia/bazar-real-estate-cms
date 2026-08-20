@@ -2198,6 +2198,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T17:00:34.989Z"
   },
+  "Arrange viewings": {
+    "ar": "ترتيب الزيارات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:07.915Z"
+  },
   "Associate Advisor · Lettings desk": {
     "ar": "المستشار المشارك · مكتب الإيجارات",
     "by": "machine",
@@ -2577,6 +2583,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
   },
+  "Beyond property": {
+    "ar": "ما وراء العقارات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:58.859Z"
+  },
+  "Beyond the Capital": {
+    "ar": "خارج العاصمة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:58.859Z"
+  },
   "Binghatti is a Dubai-based developer recognised for distinctive architecture, luxury residences and high-profile branded collaborations.": {
     "ar": "بينغاتي هي شركة مطورة عقارية مقرها دبي معروفة بتصميمها المميز، ومساكنها الفاخرة، وتعاوناتها البارزة مع العلامات التجارية.",
     "by": "machine",
@@ -2731,6 +2749,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.270Z"
   },
+  "Browse properties": {
+    "ar": "تصفح العقارات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:26:39.210Z"
+  },
   "Browse properties for sale in Abu Dhabi, including apartments, villas, townhouses, and investment opportunities across leading communities.": {
     "ar": "تصفّح العقارات المعروضة للبيع في أبوظبي، بما في ذلك الشقق والفلل والتاون هاوس والفرص الاستثمارية في أبرز المجتمعات.",
     "by": "machine",
@@ -2814,6 +2838,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
+  },
+  "Budget guidance": {
+    "ar": "إرشادات الميزانية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:07.915Z"
   },
   "Budget, bedrooms, must-haves…": {
     "ar": "الميزانية، غرف النوم، المتطلبات الأساسية…",
@@ -3583,6 +3613,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:47:46.675Z"
   },
+  "Continue": {
+    "ar": "استمر",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.707Z"
+  },
   "Continued Growth": {
     "ar": "النمو المستمر",
     "by": "machine",
@@ -4144,6 +4180,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "Dubai & the Wider UAE": {
+    "ar": "دبي والمناطق الأوسع في الإمارات العربية المتحدة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:58.859Z"
+  },
   "Dubai Parks and Resorts": {
     "ar": "دبي باركس آند ريزورتس",
     "by": "machine",
@@ -4200,6 +4242,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.479Z"
   },
+  "Edit": {
+    "ar": "تعديل",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.707Z"
+  },
   "Efficient coordination of property maintenance and repairs.": {
     "ar": "تنسيق فعّال لأعمال صيانة العقارات وإصلاحها.",
     "by": "machine",
@@ -4240,6 +4288,12 @@
     "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
+  },
+  "Email us": {
+    "ar": "أرسل لنا بريدًا إلكترونيًا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:26:13.946Z"
   },
   "Emirates Palace": {
     "ar": "قصر الإمارات",
@@ -4428,6 +4482,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Excellence": {
+    "ar": "التميز",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:58.859Z"
+  },
   "Exclusive Residential Market": {
     "ar": "سوق السكن الحصري",
     "by": "machine",
@@ -4498,6 +4558,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
+  },
+  "Expert support from pricing and enquiries through viewings and negotiations.": {
+    "ar": "الدعم الخبرائي من التسعير والاستفسارات حتى المشاهدات والمفاوضات.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.707Z"
   },
   "Explore Abu Dhabi real estate with Bazar Real Estate. Discover properties, new projects, trusted advice, and tailored support for buyers and investors.": {
     "ar": "استكشف عقارات أبوظبي مع بازار العقارية. اكتشف العقارات والمشاريع الجديدة والاستشارات الموثوقة والدعم المخصص للمشترين والمستثمرين.",
@@ -5853,6 +5919,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:16:12.762Z"
   },
+  "For Additional Enquiries": {
+    "ar": "للاستفسارات الإضافية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.707Z"
+  },
   "For Property Owners": {
     "ar": "لملاك العقارات",
     "by": "machine",
@@ -5876,6 +5948,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Founded in Abu Dhabi in 2005, Bazar Real Estate L.L.C. is an award-winning UAE real estate company recognised for trusted service, transparent guidance and more than two decades of market expertise.": {
+    "ar": "تأسست بازار عقارات L.L.C. في أبوظبي عام 2005، وهي شركة عقارات رائدة في دولة الإمارات العربية المتحدة معروفة بخدمتها الموثوقة، وإرشادها الشفاف، وخبرتها السوقية التي تزيد على عقدين.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:58.859Z"
   },
   "Four gated phases away from the island’s busier districts.": {
     "ar": "أربع مراحل مسوّرة بعيدًا عن أحياء الجزيرة الأكثر ازدحامًا.",
@@ -6543,6 +6621,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:17:31.300Z"
   },
+  "Guidance from search to completion.": {
+    "ar": "الإرشاد من البحث إلى الإتمام.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:07.915Z"
+  },
   "Guidance through the main steps involved in the property transaction.": {
     "ar": "إرشاد خلال الخطوات الرئيسية في المعاملة العقارية.",
     "by": "machine",
@@ -6623,6 +6707,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:34:49.618Z"
   },
+  "High": {
+    "ar": "عالي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.707Z"
+  },
   "High-visibility showroom and light-industrial space with the access and ceiling heights those uses need.": {
     "ar": "صالة عرض ومساحة صناعية خفيفة بموقع بارز، مع سهولة الوصول وارتفاعات الأسقف التي تتطلبها هذه الاستخدامات.",
     "by": "machine",
@@ -6651,6 +6741,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:17:50.899Z"
+  },
+  "Homebuyers": {
+    "ar": "المشتريون",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:07.919Z"
   },
   "Homes Completed & Handed Over by April 2026": {
     "ar": "منازل مكتملة ومُسلَّمة من April 2026",
@@ -7319,6 +7415,12 @@
     "ar": "دليل الملاك",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Landlords": {
+    "ar": "المالكون",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.707Z"
   },
   "Landmarks & Attractions": {
     "ar": "المعالم وأماكن الجذب",
@@ -8100,6 +8202,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.877Z"
   },
+  "Management": {
+    "ar": "إدارة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.707Z"
+  },
   "Management Begins": {
     "ar": "تبدأ الإدارة",
     "by": "machine",
@@ -8208,6 +8316,12 @@
     "ar": "تقرير السوق",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Marketing exposure": {
+    "ar": "التغطية التسويقية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:07.915Z"
   },
   "Marsa Al Jubail": {
     "ar": "مرسى الجبيل",
@@ -8325,6 +8439,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:09:10.478Z"
+  },
+  "Message us on WhatsApp": {
+    "ar": "ارسل لنا رسالة على واتساب",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:26:13.947Z"
   },
   "Mid-island skyline of high-rise towers, schools, and waterfront apartments.": {
     "ar": "مناظر السماء في وسط الجزيرة مع أبراج شاهقة، مدارس، وشقق على الواجهة المائية.",
@@ -9053,6 +9173,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:47:46.675Z"
   },
+  "Opening hours": {
+    "ar": "أوقات العمل",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:26:13.947Z"
+  },
   "Opens our contact page.": {
     "ar": "موقع اتصل بنا يفتح صفحة الاتصال لدينا.",
     "by": "machine",
@@ -9143,6 +9269,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "Our partners": {
+    "ar": "شركاؤنا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:26:22.471Z"
+  },
   "Our property management experts ensure your Abu Dhabi property is professionally managed, maintained and protected.": {
     "ar": "خبراء إدارة الأملاك لدينا يضمنون إدارة عقارك في أبوظبي وصيانته وحمايته باحترافية.",
     "by": "machine",
@@ -9190,6 +9322,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
+  },
+  "Our values": {
+    "ar": "قيمنا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:58.859Z"
   },
   "Outdoor Cinema": {
     "ar": "سينما خارجية",
@@ -9291,6 +9429,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:29:04.054Z"
+  },
+  "Partnering with the UAE’s Leading Property Developers": {
+    "ar": "الشراكة مع أكبر مطوري العقارات في دولة الإمارات العربية المتحدة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:26:22.472Z"
   },
   "Payment & Mortgage Considerations": {
     "ar": "اعتبارات الدفع والحصول على تمويل عقاري",
@@ -9397,6 +9541,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:09:24.791Z"
+  },
+  "Plan before selecting a property.": {
+    "ar": "خطط قبل اختيار العقار.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:07.915Z"
   },
   "Planned Residents": {
     "ar": "السكان المخطط لهم",
@@ -9666,6 +9816,18 @@
     "ar": "حوض سباحة خاص",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Process support": {
+    "ar": "دعم العملية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:07.915Z"
+  },
+  "Professional Property Marketing": {
+    "ar": "تسويق عقاري محترف",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.707Z"
   },
   "Professional management helps maintain your property, support tenants and keep everything organised.": {
     "ar": "الإدارة الاحترافية تساعد في الحفاظ على عقارك ودعم المستأجرين وتنظيم كل شيء.",
@@ -10037,6 +10199,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:48:50.155Z"
   },
+  "Property": {
+    "ar": "العقار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.706Z"
+  },
+  "Property Care": {
+    "ar": "العناية بالعقار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:01.521Z"
+  },
   "Property Consultation": {
     "ar": "استشارة عقارية",
     "by": "machine",
@@ -10179,6 +10353,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
   },
+  "Property Solutions Built Around You": {
+    "ar": "حلول عقارية مبنية حولك",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:58.859Z"
+  },
   "Property Status": {
     "ar": "حالة العقار",
     "by": "machine",
@@ -10256,6 +10436,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "Provide market guidance": {
+    "ar": "نقدم إرشادات السوق",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:07.914Z"
   },
   "Provide your details to receive the brochure with complete project information.": {
     "ar": "أدخل بياناتك لاستلام الكتيّب المتضمّن كامل معلومات المشروع.",
@@ -10381,6 +10567,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T17:02:41.676Z"
+  },
+  "Real Estate Partner": {
+    "ar": "شريك عقاري",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:58.857Z"
   },
   "Real Estate Services in Abu Dhabi | Bazar Real Estate": {
     "ar": "خدمات عقارية في أبوظبي | بازار العقارية",
@@ -10511,6 +10703,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:39:23.853Z"
+  },
+  "Rental guidance": {
+    "ar": "نصائح الإيجار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:07.915Z"
   },
   "Rental payment management and tracking.": {
     "ar": "إدارة ومتابعة مدفوعات الإيجار.",
@@ -11196,6 +11394,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:17:50.899Z"
   },
+  "Share Your Property Details": {
+    "ar": "شارك تفاصيل العقار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:01.521Z"
+  },
   "Share of Yas Island’s Total Area": {
     "ar": "حصة جزيرة ياس من المساحة الإجمالية",
     "by": "machine",
@@ -11220,6 +11424,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
   },
+  "Sheikha Salama Building, Office 4\nZayed The First Street, Al Bateen\nAbu Dhabi, United Arab Emirates": {
+    "ar": "مبنى الشيخة سلامة، المكتب 4\nشارع زايد الأول، البطين\nأبوظبي، الإمارات العربية المتحدة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:58.859Z"
+  },
   "Shell-and-core is delivered as a bare structure with services brought to the floor; fitted space is ready to occupy. The rent difference rarely reflects the true cost difference, which is what we help you work out.": {
     "ar": "التسليم على الهيكل يكون بمساحة خالية مع إيصال الخدمات إلى الطابق، أما المساحة المجهّزة فتكون جاهزة للإشغال. ونادراً ما يعكس فرق الإيجار الفرق الحقيقي في التكلفة، وهو ما نساعدك على حسابه.",
     "by": "machine",
@@ -11237,6 +11447,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.902Z"
+  },
+  "Shortlist rentals": {
+    "ar": "قائمة العقارات المختارة للإيجار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:07.915Z"
   },
   "Show me the plan": {
     "ar": "أرني الخطة",
@@ -11431,6 +11647,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Start with a Conversation": {
+    "ar": "ابدأ بالحوار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:07.920Z"
+  },
   "Start with a clear understanding of current market conditions and comparable property performance.": {
     "ar": "ابدأ بفهم واضح لأوضاع السوق الحالية وأداء العقارات المماثلة.",
     "by": "machine",
@@ -11591,6 +11813,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
   },
+  "Support the process": {
+    "ar": "دعم العملية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:07.915Z"
+  },
   "Support with tenancy registration, renewals and documentation.": {
     "ar": "الدعم في تسجيل عقود الإيجار والتجديدات والمستندات.",
     "by": "machine",
@@ -11642,6 +11870,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Talk to Bazar Real Estate": {
+    "ar": "تحدث إلى بازار عقارات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:26:39.209Z"
+  },
   "Talk to an Advisor": {
     "ar": "تحدث إلى مستشار",
     "by": "machine",
@@ -11668,6 +11902,12 @@
     "ar": "احتفاظ ترف",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Targeted Market Exposure": {
+    "ar": "التعرض المستهدف للسوق",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.707Z"
   },
   "Tell us about the property. We match you with the senior Bazar advisor who covers your community — the same person runs it from valuation through to transfer.": {
     "ar": "أخبرنا عن العقار. نوصّلك بكبير مستشاري بازار المسؤول عن مجتمعك السكني — والشخص نفسه يتابع الأمر من التقييم وحتى نقل الملكية.",
@@ -11763,6 +12003,12 @@
     "ar": "دليل المستأجر",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Tenant Management": {
+    "ar": "إدارة المستأجرين",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:01.519Z"
   },
   "Tenant Support": {
     "ar": "دعم المستأجرين",
@@ -12670,6 +12916,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:18:09.430Z"
   },
+  "View developments": {
+    "ar": "اعرض المشاريع",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:26:22.472Z"
+  },
   "View off-plan apartments": {
     "ar": "عرض الشقق على الخارطة",
     "by": "machine",
@@ -12790,6 +13042,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:51:24.295Z"
+  },
+  "Visit our office": {
+    "ar": "زور مكتبنا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:26:13.947Z"
   },
   "Walk to Work": {
     "ar": "امشِ إلى العمل",
@@ -12989,6 +13247,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:49:38.249Z"
   },
+  "We review the property, tenancy status and required services.": {
+    "ar": "نراجع العقار، حالة الإيجار والخدمات المطلوبة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:01.521Z"
+  },
   "We support clients with property opportunities and professional real estate services across Dubai and the wider UAE.": {
     "ar": "ندعم عملاءنا بفرص عقارية وخدمات عقارية احترافية في دبي وسائر أنحاء الإمارات.",
     "by": "machine",
@@ -13077,6 +13341,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:00:53.574Z"
+  },
+  "What happens next": {
+    "ar": "ماذا يحدث بعد ذلك",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.707Z"
   },
   "What is ADGM?": {
     "ar": "ADGM ما هو؟",
@@ -14738,6 +15008,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:16:35.301Z"
   },
+  "move-in and move-out": {
+    "ar": "الانتقال والخروج",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:25:01.521Z"
+  },
   "mussafah bridge": {
     "ar": "مصفح جسر",
     "by": "machine",
@@ -15285,6 +15561,12 @@
   "~10%": {
     "ar": "~10%",
     "by": "machine"
+  },
+  "— Your enquiry will be handled by a dedicated consultant, who will connect you with the right advisor for your property.": {
+    "ar": "— سيتم التعامل مع استفسارك من قبل مستشار مخصص، الذي سيقوم بتوصيلك بالمستشار المناسب لعقاراتك.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T10:24:46.707Z"
   },
   "— assigned to the advisor who covers your community.": {
     "ar": "— يُحال إلى المستشار المسؤول عن مجتمعك السكني.",
