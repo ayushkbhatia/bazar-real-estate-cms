@@ -356,7 +356,7 @@ export const FORM_DEFS: FormDef[] = [
     headingSource: {
       pageKey: "contact",
       sectionKey: "enquiry_form",
-      note: "Form title, sub-copy and the WhatsApp link label beside it.",
+      note: "Form title, sub-copy, the WhatsApp link label beside it, and the toast that confirms a sent enquiry.",
     },
     copy: copy({ ...ENQUIRY_SUCCESS, submit_label: "Submit" }),
     fields: enquiryFields({

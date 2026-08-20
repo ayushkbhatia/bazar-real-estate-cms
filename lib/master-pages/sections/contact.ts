@@ -20,6 +20,11 @@
  * or blank name falls back to an icon keyed off the tile's link, then to a
  * generic one, so a tile can never render iconless.
  *
+ * The HQ band's map is pinned to the office in code — its coordinates and the
+ * Google Maps destination are geography, not copy. Everything written on the
+ * band (eyebrow, heading, button, pin bubble, small print) is a field, because
+ * all five were English on `/ar/contact` for as long as they were literals.
+ *
  * Every `defaults` value is the copy the page rendered before it became
  * editable, so an un-edited page renders byte-identically to before.
  */
@@ -176,12 +181,18 @@ export const CONTACT_PAGE: MasterPageDef = {
           max: 60,
           optional: true,
         }),
+        text("success_toast", "Sent · toast", {
+          max: 120,
+          optional: true,
+          help: "The pop-up that confirms a sent enquiry. The confirmation panel that replaces the form has its own wording, in Forms.",
+        }),
       ],
       defaults: {
         form_title: "Send us an enquiry",
         form_sub:
           "Tell us what you're looking for, and our team will get back to you shortly.",
         whatsapp_label: "WhatsApp us instead",
+        success_toast: "Enquiry sent — we'll be in touch within 2 hours.",
       },
     },
     {
@@ -234,9 +245,24 @@ export const CONTACT_PAGE: MasterPageDef = {
       label: "HQ map",
       description: "Full-width map of the Al Bateen head office.",
       dataNote:
-        "The office coordinates, the map heading and the 'Get directions' link are set in code — this section switches the map on or off and moves it up or down the page.",
-      fields: [],
-      defaults: {},
+        "The office coordinates and the destination the 'Get directions' button opens are set in code — the map is pinned to the head office, so moving it is a deploy rather than an edit. Everything written on the band is below.",
+      fields: [
+        eyebrow(),
+        heading({ max: 80 }),
+        text("directions_label", "Directions button", { max: 60 }),
+        text("pin_label", "Map pin label", {
+          max: 80,
+          help: "Shown in the bubble when the pin on the map is tapped.",
+        }),
+        area("note", "Small print", { max: 300 }),
+      ],
+      defaults: {
+        eyebrow: "HQ",
+        heading: "Al Bateen, Abu Dhabi.",
+        directions_label: "Get directions",
+        pin_label: "Bazar HQ — Al Bateen",
+        note: "By appointment only. We don't walk-in business — every meeting is briefed in advance.",
+      },
     },
   ],
 };

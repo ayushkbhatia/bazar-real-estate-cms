@@ -16566,5 +16566,80 @@
     "ar": "موضع ثقة كبرى شركات التطوير في المنطقة.",
     "by": "machine",
     "model": "claude-opus-5"
+  },
+  "Let's talk": {
+    "ar": "لنتحدث",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "property.": {
+    "ar": "عن العقارات.",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "Speak With a": {
+    "ar": "تحدث مع",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "We reply within 2 hours on business days": {
+    "ar": "نرد خلال ساعتين في أيام العمل",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "Send us an enquiry": {
+    "ar": "أرسل لنا استفسارًا",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "Enquiry sent — we'll be in touch within 2 hours.": {
+    "ar": "تم إرسال الاستفسار — سنتواصل معك خلال ساعتين.",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "Name": {
+    "ar": "الاسم",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "I'm looking to": {
+    "ar": "أرغب في",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "Sell": {
+    "ar": "بيع",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "Tell us more": {
+    "ar": "أخبرنا المزيد",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "We'll connect you with the right member of our team.": {
+    "ar": "سنوصلك بالعضو المناسب في فريقنا.",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "HQ": {
+    "ar": "المقر الرئيسي",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "Al Bateen, Abu Dhabi.": {
+    "ar": "البطين، أبوظبي.",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "Bazar HQ — Al Bateen": {
+    "ar": "مقر بازار الرئيسي — البطين",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
+  "By appointment only. We don't walk-in business — every meeting is briefed in advance.": {
+    "ar": "بموعد مسبق فقط. لا نستقبل زيارات دون موعد — كل اجتماع يُحضَّر له مسبقًا.",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
   }
 }
