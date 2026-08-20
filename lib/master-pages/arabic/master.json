@@ -6897,6 +6897,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Guiding buyers with financing and mortgage assistance.": {
+    "ar": "إرشاد المشترين عبر المساعدة في التمويل والتمويل العقاري.",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Gym": {
     "ar": "صالة رياضية",
     "by": "machine",
@@ -7306,6 +7311,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
+  },
+  "Insights": {
+    "ar": "الرؤى",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Inspections & updates": {
     "ar": "المعاينات والتحديثات",
