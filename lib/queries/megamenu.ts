@@ -40,6 +40,9 @@ type RawTab = {
   panel_title_href: string | null;
   right_column_title: string | null;
   status: "draft" | "published";
+  label_ar?: string | null;
+  panel_title_ar?: string | null;
+  right_column_title_ar?: string | null;
 };
 type RawColumn = {
   id: string;
@@ -47,6 +50,7 @@ type RawColumn = {
   zone: "left" | "right";
   position: number;
   heading: string | null;
+  heading_ar?: string | null;
 };
 type RawItem = {
   id: string;
@@ -59,6 +63,8 @@ type RawItem = {
   icon: string | null;
   badge_label: string | null;
   badge_variant: MegamenuItem["badge_variant"];
+  label_ar?: string | null;
+  badge_label_ar?: string | null;
 };
 type RawTile = {
   id: string;
@@ -74,7 +80,36 @@ type RawTile = {
   media_url?: string | null;
   media?: { storage_key: string; deleted_at: string | null } | null;
   cta_label: string | null;
+  badge_label_ar?: string | null;
+  headline_ar?: string | null;
+  cta_label_ar?: string | null;
 };
+
+/**
+ * Copy every `<field>_ar` twin from a raw row onto the object the shaper built
+ * from it.
+ *
+ * `buildMegamenu` constructs explicit literals (`label: i.label`), so a twin is
+ * dropped unless someone remembers to add a line for it. That is exactly how
+ * the admin editor lost its Arabic on reload: the selects fetched the twins,
+ * the save action wrote them, and the shaper silently threw them away between
+ * the two — every field reappearing blank while the public menu rendered the
+ * Arabic fine.
+ *
+ * Carrying them by suffix instead of by name means a twin added to any of the
+ * four tables later needs no change here, which is the same promise the public
+ * read already makes for the fold.
+ *
+ * Harmless on the public path: `localiseDeep` folds each twin into its English
+ * key *before* shaping and leaves the `_ar` keys in place, so the renderers go
+ * on reading the folded base field and simply ignore the twins riding along.
+ */
+function withTwins<T extends object>(raw: object, shaped: T): T {
+  for (const [key, value] of Object.entries(raw)) {
+    if (key.endsWith("_ar")) (shaped as Record<string, unknown>)[key] = value;
+  }
+  return shaped;
+}
 
 function buildMegamenu(
   tabs: RawTab[],
@@ -110,65 +145,75 @@ function buildMegamenu(
   const shapedTabs: MegamenuTab[] = tabs.map((t) => {
     const left = (columnsByTabZone.get(`${t.id}::left`) ?? [])
       .sort((a, b) => a.position - b.position)
-      .map<MegamenuColumn>((c) => ({
-        id: c.id,
-        zone: "left",
-        position: c.position,
-        heading: c.heading,
-        items: (itemsByColumn.get(c.id) ?? [])
-          .sort((a, b) => a.position - b.position)
-          .map<MegamenuItem>((i) => ({
-            id: i.id,
-            position: i.position,
-            label: i.label,
-            href: i.href,
-            target_kind: i.target_kind,
-            target_id: i.target_id,
-            icon: i.icon,
-            badge_label: i.badge_label,
-            badge_variant: i.badge_variant,
-          })),
-      }));
+      .map<MegamenuColumn>((c) =>
+        withTwins(c, {
+          id: c.id,
+          zone: "left" as const,
+          position: c.position,
+          heading: c.heading,
+          items: (itemsByColumn.get(c.id) ?? [])
+            .sort((a, b) => a.position - b.position)
+            .map<MegamenuItem>((i) =>
+              withTwins(i, {
+                id: i.id,
+                position: i.position,
+                label: i.label,
+                href: i.href,
+                target_kind: i.target_kind,
+                target_id: i.target_id,
+                icon: i.icon,
+                badge_label: i.badge_label,
+                badge_variant: i.badge_variant,
+              }),
+            ),
+        }),
+      );
     const right = (columnsByTabZone.get(`${t.id}::right`) ?? [])
       .sort((a, b) => a.position - b.position)
-      .map<MegamenuColumn>((c) => ({
-        id: c.id,
-        zone: "right",
-        position: c.position,
-        heading: c.heading,
-        items: (itemsByColumn.get(c.id) ?? [])
-          .sort((a, b) => a.position - b.position)
-          .map<MegamenuItem>((i) => ({
-            id: i.id,
-            position: i.position,
-            label: i.label,
-            href: i.href,
-            target_kind: i.target_kind,
-            target_id: i.target_id,
-            icon: i.icon,
-            badge_label: i.badge_label,
-            badge_variant: i.badge_variant,
-          })),
-      }));
+      .map<MegamenuColumn>((c) =>
+        withTwins(c, {
+          id: c.id,
+          zone: "right" as const,
+          position: c.position,
+          heading: c.heading,
+          items: (itemsByColumn.get(c.id) ?? [])
+            .sort((a, b) => a.position - b.position)
+            .map<MegamenuItem>((i) =>
+              withTwins(i, {
+                id: i.id,
+                position: i.position,
+                label: i.label,
+                href: i.href,
+                target_kind: i.target_kind,
+                target_id: i.target_id,
+                icon: i.icon,
+                badge_label: i.badge_label,
+                badge_variant: i.badge_variant,
+              }),
+            ),
+        }),
+      );
     const featured = (tilesByTab.get(t.id) ?? [])
       .sort((a, b) => a.position - b.position)
-      .map<MegamenuFeaturedTile>((tl) => ({
-        id: tl.id,
-        position: tl.position,
-        variant: tl.variant,
-        badge_label: tl.badge_label,
-        badge_kind: tl.badge_kind,
-        headline: tl.headline,
-        href: tl.href,
-        media_asset_id: tl.media_asset_id,
-        // A trashed asset falls back to the placeholder rather than 404-ing.
-        media_url:
-          tl.media && !tl.media.deleted_at
-            ? mediaPublicUrl(tl.media.storage_key)
-            : null,
-        cta_label: tl.cta_label,
-      }));
-    return {
+      .map<MegamenuFeaturedTile>((tl) =>
+        withTwins(tl, {
+          id: tl.id,
+          position: tl.position,
+          variant: tl.variant,
+          badge_label: tl.badge_label,
+          badge_kind: tl.badge_kind,
+          headline: tl.headline,
+          href: tl.href,
+          media_asset_id: tl.media_asset_id,
+          // A trashed asset falls back to the placeholder rather than 404-ing.
+          media_url:
+            tl.media && !tl.media.deleted_at
+              ? mediaPublicUrl(tl.media.storage_key)
+              : null,
+          cta_label: tl.cta_label,
+        }),
+      );
+    return withTwins(t, {
       id: t.id,
       slug: t.slug,
       label: t.label,
@@ -181,7 +226,7 @@ function buildMegamenu(
       status: t.status,
       columns: { left, right },
       featured,
-    };
+    });
   });
 
   shapedTabs.sort((a, b) => a.position - b.position);
