@@ -123,6 +123,8 @@ export default async function HomePage({
   const listV = v("list_your_property");
   const mortgageV = v("mortgage_calculator");
   const whoV = v("who_we_are");
+  const developersV = v("developers");
+  const partnersV = v("partners");
   const faqV = v("faqs");
   const testimonialsV = v("testimonials");
   const listImage = img(listV, "image");
@@ -322,8 +324,24 @@ export default async function HomePage({
       />
     ),
 
-    developers: <DevelopersSection key="developers" />,
-    partners: <PartnerEcosystemSection key="partners" />,
+    developers: (
+      <DevelopersSection
+        key="developers"
+        eyebrow={str(developersV, "eyebrow")}
+        heading={str(developersV, "heading")}
+        body={str(developersV, "body")}
+        ctaLabel={str(developersV, "cta_label")}
+      />
+    ),
+    partners: (
+      <PartnerEcosystemSection
+        key="partners"
+        eyebrow={str(partnersV, "eyebrow")}
+        heading={str(partnersV, "heading")}
+        body={str(partnersV, "body")}
+        ctaLabel={str(partnersV, "cta_label")}
+      />
+    ),
 
     faqs: (
       <HomeFaqs

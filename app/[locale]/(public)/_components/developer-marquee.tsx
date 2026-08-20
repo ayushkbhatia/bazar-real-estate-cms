@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "@/components/i18n/link";
 import { DEVELOPERS_SORTED } from "@/lib/developers/directory-data";
@@ -33,12 +34,13 @@ const TILES: Tile[] = DEVELOPERS_SORTED.flatMap((d) => {
 });
 
 export function DeveloperMarquee() {
+  const t = useTranslations("common");
   // Two copies of the set → the second copy scrolls into the gap the first
   // leaves, giving a seamless -50% loop.
   const loop = [...TILES, ...TILES];
 
   return (
-    <div className="bz-devmarquee" aria-label="Developer partners">
+    <div className="bz-devmarquee" aria-label={t("marquee.developers")}>
       <div className="bz-devmarquee__track">
         {loop.map((t, i) => {
           // The second copy is decorative: hidden from the accessibility tree,
@@ -134,6 +136,27 @@ export function DeveloperMarquee() {
         @keyframes bz-devmarquee-scroll {
           from { transform: translate3d(0, 0, 0); }
           to { transform: translate3d(-50%, 0, 0); }
+        }
+        /*
+         * RTL runs the other way, and this is not cosmetic.
+         *
+         * The track is width:max-content inside an overflow:hidden box.
+         * Under dir=rtl the flex row is laid out from the right, so the
+         * track's overflow spills to the LEFT and its right edge starts flush
+         * with the container's. Animating to -50% then drags the whole strip
+         * further left into empty space: the logos run off the start of the
+         * page and never come back, which is exactly what /ar showed.
+         *
+         * Mirroring the sign restores the loop — moving right pulls the copy
+         * that is off-screen left into view — and the doubled track makes the
+         * wrap seamless in both directions.
+         */
+        [dir="rtl"] .bz-devmarquee__track {
+          animation-name: bz-devmarquee-scroll-rtl;
+        }
+        @keyframes bz-devmarquee-scroll-rtl {
+          from { transform: translate3d(0, 0, 0); }
+          to { transform: translate3d(50%, 0, 0); }
         }
         @media (prefers-reduced-motion: reduce) {
           .bz-devmarquee__track { animation: none; }

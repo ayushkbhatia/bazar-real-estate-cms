@@ -6,31 +6,15 @@ import type { SectionCopy } from "./section-copy";
 
 /**
  * Home "FAQs" (handoff §7). Single-open accordion, first item open, plus
- * icon rotates to a close indicator. Copy is verbatim from the client
- * audit. Sticky left heading on desktop.
+ * icon rotates to a close indicator. Sticky left heading on desktop.
+ *
+ * The questions arrive as `items`. They used to be a hardcoded array here
+ * with the CMS list as an override, which meant the section that shipped with
+ * an empty list rendered five questions an editor could not see — and, on
+ * /ar, five English questions with nowhere to put the Arabic. They are the
+ * registry's default now (`HOME_FAQ_ITEMS`), which puts them in the editor
+ * with a twin each.
  */
-const FAQS: [string, string][] = [
-  [
-    "What is the benefit of buying off-plan?",
-    "Off-plan properties often offer flexible payment plans, lower entry prices, and potential capital growth before handover.",
-  ],
-  [
-    "What should I check before buying a property?",
-    "Check the location, developer, price, payment plan, ownership type, service charges, and expected rental demand.",
-  ],
-  [
-    "What is mortgage pre-approval?",
-    "Mortgage pre-approval shows how much a bank may be willing to lend before you choose a property.",
-  ],
-  [
-    "What is a payment plan?",
-    "A payment plan is the schedule of instalments paid to the developer or seller over a set period.",
-  ],
-  [
-    "What are service charges?",
-    "Service charges are fees paid for building or community maintenance, facilities, and shared areas.",
-  ],
-];
 
 export function HomeFaqs({
   eyebrow = "FAQs",
@@ -59,7 +43,7 @@ export function HomeFaqs({
         </div>
 
         <div>
-          {(items && items.length > 0 ? items : FAQS).map(([q, a], i) => {
+          {(items ?? []).map(([q, a], i) => {
             const on = open === i;
             return (
               <div key={q} className="border-t border-bz-border">

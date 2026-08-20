@@ -39,6 +39,10 @@
     "comingSoon": "{emirate} is coming soon",
     "curating": "We’re curating listings here now."
   },
+  "marquee": {
+    "partners": "Banking and regulatory partners",
+    "developers": "Developer partners"
+  },
   "mortgageTeaser": {
     "estimatedMonthly": "Estimated monthly payment",
     "viewProperties": "View properties",
