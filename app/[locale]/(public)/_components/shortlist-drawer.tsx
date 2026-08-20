@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 /**
  * T3-B: floating shortlist drawer.
  *
@@ -84,6 +86,8 @@ function subscribeCompare(callback: () => void): () => void {
 }
 
 export function ShortlistDrawer() {
+  // `common` is already client-global — these were simply never wired.
+  const t = useTranslations("common");
   const { prefs } = usePreferences();
   const [open, setOpen] = useState(false);
   // `useSyncExternalStore` is the React-blessed bridge to localStorage —
@@ -245,7 +249,7 @@ export function ShortlistDrawer() {
       >
         <SheetHeader className="px-6 pt-6 pb-3 border-b border-bz-border">
           <SheetTitle className="serif text-[24px] leading-tight">
-            Your shortlist
+            {t("shortlist.title")}
           </SheetTitle>
           <SheetDescription>
             {ids.length} of {SHORTLIST_CAP} · saved to this browser
@@ -254,10 +258,10 @@ export function ShortlistDrawer() {
 
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {loading ? (
-            <p className="text-[13px] text-bz-ink-2 italic">Loading…</p>
+            <p className="text-[13px] text-bz-ink-2 italic">{t("shortlist.loading")}</p>
           ) : items.length === 0 ? (
             <p className="text-[13px] text-bz-ink-2">
-              Nothing to show — try saving a few listings first.
+              {t("shortlist.empty")}
             </p>
           ) : (
             <ul className="flex flex-col gap-4">
@@ -337,7 +341,7 @@ export function ShortlistDrawer() {
           {compareIds.length < 2 ? (
             <Button disabled>
               <Scale size={14} strokeWidth={1.7} />
-              Select 2 to compare
+              {t("shortlist.selectTwo")}
             </Button>
           ) : (
             <Button asChild>
@@ -358,7 +362,7 @@ export function ShortlistDrawer() {
             <Button asChild variant="outline">
               <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
                 <Send size={14} strokeWidth={1.7} />
-                WhatsApp these to an advisor
+                {t("shortlist.whatsapp")}
               </a>
             </Button>
           ) : null}
@@ -366,7 +370,7 @@ export function ShortlistDrawer() {
             <Button asChild variant="outline">
               <a href={mailtoHref}>
                 <Mail size={14} strokeWidth={1.7} />
-                Email me these
+                {t("shortlist.email")}
               </a>
             </Button>
           ) : null}
@@ -376,7 +380,7 @@ export function ShortlistDrawer() {
               onClick={clearAll}
               className="text-[12px] text-bz-ink-2 hover:text-bz-ink transition-colors mt-2 self-start"
             >
-              Clear shortlist
+              {t("shortlist.clear")}
             </button>
           ) : null}
         </div>
