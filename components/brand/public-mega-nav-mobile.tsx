@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { useState } from "react";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import {

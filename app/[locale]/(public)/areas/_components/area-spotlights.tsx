@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { SectionHead } from "../../_components/marketing/section-head";

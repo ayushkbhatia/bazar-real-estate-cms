@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";

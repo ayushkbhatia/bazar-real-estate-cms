@@ -1,7 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import { getForm } from "@/lib/queries/forms";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { Eyebrow } from "@/components/brand/eyebrow";

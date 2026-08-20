@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { Phone, MessageCircle } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import Image from "next/image";

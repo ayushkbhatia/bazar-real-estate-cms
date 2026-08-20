@@ -1,7 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { ManagedForm } from "../_components/forms/managed-form";

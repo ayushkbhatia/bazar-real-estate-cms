@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { Home, Check } from "lucide-react";
 import { totals } from "@/lib/mortgage";
 import { formatMoneyValue, usePreferences } from "@/lib/preferences";

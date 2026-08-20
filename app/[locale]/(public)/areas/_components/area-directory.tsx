@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { listAreaDirectory } from "@/lib/queries/area-profile";
 

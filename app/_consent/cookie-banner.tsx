@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {

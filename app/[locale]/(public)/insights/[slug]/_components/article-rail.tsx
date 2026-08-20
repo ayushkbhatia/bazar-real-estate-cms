@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { NewsletterSignup } from "@/app/[locale]/(public)/_components/newsletter-signup";

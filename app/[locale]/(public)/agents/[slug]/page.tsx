@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ArrowLeft, Mail, MessageCircle, Phone, Star } from "lucide-react";

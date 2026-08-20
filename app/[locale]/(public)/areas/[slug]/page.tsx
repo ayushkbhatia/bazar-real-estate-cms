@@ -3,7 +3,7 @@ import type { Locale } from "@/lib/i18n/locales";
 import * as React from "react";
 import { getForm } from "@/lib/queries/forms";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ArrowLeft } from "lucide-react";

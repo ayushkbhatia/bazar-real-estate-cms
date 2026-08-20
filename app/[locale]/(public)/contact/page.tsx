@@ -2,7 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import {
   Mail,
   MapPin,

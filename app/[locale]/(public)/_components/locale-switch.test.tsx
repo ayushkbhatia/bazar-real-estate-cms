@@ -8,6 +8,12 @@
  * dropped every filter and landed on an unfiltered listing page. Nothing
  * caught it because the claim lived in prose.
  *
+ * The `?setlang=` on every href is the second thing pinned here. It is what
+ * makes a locale choice outlive the click — the proxy reads it, writes the
+ * preference cookie, and strips it — so an href that lost it would silently
+ * restore the bug this whole change exists to fix: Arabic chrome, then the
+ * next link drops you back into English.
+ *
  * The suffix is read off `window.location.search` in an effect rather than
  * from `useSearchParams`, so these tests drive jsdom's real history rather
  * than a mocked hook. Mocking the hook would keep passing after the hook was
@@ -41,29 +47,43 @@ describe("locale controls", () => {
   it("keeps the path, so a visitor stays on the page they were reading", () => {
     at("/p/marsa-villa-42");
     renderWithIntl(<LanguageSwitch current="en" />);
-    expect(hrefs()).toEqual(["/p/marsa-villa-42", "/ar/p/marsa-villa-42"]);
+    expect(hrefs()).toEqual([
+      "/p/marsa-villa-42?setlang=en",
+      "/ar/p/marsa-villa-42?setlang=ar",
+    ]);
   });
 
   it("keeps the querystring, so an in-progress search survives", () => {
     at("/buy/search", "beds=3&type=villa");
     renderWithIntl(<LanguageSwitch current="en" />);
     expect(hrefs()).toEqual([
-      "/buy/search?beds=3&type=villa",
-      "/ar/buy/search?beds=3&type=villa",
+      "/buy/search?beds=3&type=villa&setlang=en",
+      "/ar/buy/search?beds=3&type=villa&setlang=ar",
     ]);
   });
 
-  it("appends no bare ? when there is no query", () => {
+  it("states the choice, so it outlives the click", () => {
     at("/buy");
     renderWithIntl(<LocaleToggle current="en" />);
-    expect(hrefs()).toEqual(["/buy", "/ar/buy"]);
+    expect(hrefs()).toEqual(["/buy?setlang=en", "/ar/buy?setlang=ar"]);
+  });
+
+  it("replaces a stale setlang rather than appending a second one", () => {
+    // A URL copied mid-switch. `searchParams.get` returns the FIRST match, so
+    // an appended param would leave the proxy reading the old choice.
+    at("/buy", "setlang=ar&beds=2");
+    renderWithIntl(<LocaleToggle current="ar" />);
+    expect(hrefs()).toEqual([
+      "/buy?setlang=en&beds=2",
+      "/ar/buy?setlang=ar&beds=2",
+    ]);
   });
 
   it("strips the current prefix rather than compounding it", () => {
     // The /ar/ar/… shape: re-prefixing without stripping first.
     at("/ar/buy");
     renderWithIntl(<LocaleToggle current="ar" />);
-    expect(hrefs()).toEqual(["/buy", "/ar/buy"]);
+    expect(hrefs()).toEqual(["/buy?setlang=en", "/ar/buy?setlang=ar"]);
   });
 
   it("labels each option in its own language", () => {
@@ -97,8 +117,8 @@ describe("locale controls", () => {
     renderWithIntl(<LocaleToggle current="en" />);
     expect(hrefs()).toEqual(fromList);
     expect(fromList).toEqual([
-      "/areas/saadiyat-island?sort=price",
-      "/ar/areas/saadiyat-island?sort=price",
+      "/areas/saadiyat-island?sort=price&setlang=en",
+      "/ar/areas/saadiyat-island?sort=price&setlang=ar",
     ]);
   });
 });

@@ -1,6 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 
 const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {

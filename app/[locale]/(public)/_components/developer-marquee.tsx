@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { DEVELOPERS_SORTED } from "@/lib/developers/directory-data";
 import { trimmedLogo, type TrimmedLogo } from "@/lib/developers/logos";
 

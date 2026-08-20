@@ -27,7 +27,7 @@ import {
   useRef,
   useState,
 } from "react";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import maplibregl, { type Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {

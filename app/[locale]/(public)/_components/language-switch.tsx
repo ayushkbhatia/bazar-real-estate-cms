@@ -7,8 +7,7 @@ import { usePathname } from "next/navigation";
 import { useSearchSuffix } from "@/lib/i18n/use-search-suffix";
 import { Check } from "lucide-react";
 import { LOCALES, LOCALE_DIR, type Locale } from "@/lib/i18n/locales";
-import { localeUrl } from "@/lib/i18n/locales";
-import { stripLocalePrefix } from "@/lib/i18n/routing";
+import { localeSwitchHref, stripLocalePrefix } from "@/lib/i18n/routing";
 import { cn } from "@/lib/utils";
 
 /**
@@ -32,6 +31,12 @@ import { cn } from "@/lib/utils";
  * landed on an unfiltered `/ar/buy/search`. On a search-led site that is the
  * second most common way a language switch annoys people, and it was
  * documented as handled.
+ *
+ * The `?setlang=` the href carries is what makes the choice outlive the click.
+ * Without it the locale was a property of the page rather than of the session:
+ * the next link took the visitor back to English, because every internal href
+ * in the repo is written unprefixed. The proxy consumes and strips the param,
+ * so it costs one redirect on the switch and never appears in a shared URL.
  *
  * Renders nothing while only one locale is served, so this can ship before
  * Arabic does without leaving a dead control on the page.
@@ -68,7 +73,7 @@ export function LanguageSwitch({ current }: { current: Locale }) {
         return (
           <a
             key={locale}
-            href={`${localeUrl(bare, locale)}${suffix}`}
+            href={localeSwitchHref(bare, suffix, locale)}
             hrefLang={locale}
             lang={locale}
             dir={LOCALE_DIR[locale]}

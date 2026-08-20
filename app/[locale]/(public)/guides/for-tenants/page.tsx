@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale } from "@/lib/i18n/locales";
 import { ArrowRight } from "lucide-react";

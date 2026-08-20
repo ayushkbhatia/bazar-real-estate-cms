@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { ArrowRight, Mail, Scale, Send, Trash2 } from "lucide-react";
 import {
   Sheet,

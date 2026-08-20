@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Plus, Heart, Clock, Search } from "lucide-react";

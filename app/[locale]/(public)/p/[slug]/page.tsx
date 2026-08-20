@@ -6,7 +6,7 @@ import type { Locale } from "@/lib/i18n/locales";
 import type { Metadata } from "next";
 import { getForm } from "@/lib/queries/forms";
 import { notFound, redirect } from "next/navigation";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import {
   ChevronRight,
   BedDouble,
