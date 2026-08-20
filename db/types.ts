@@ -1596,6 +1596,185 @@ export type Database = {
           },
         ]
       }
+      footer_columns: {
+        Row: {
+          created_at: string
+          heading: string | null
+          heading_ar: string | null
+          id: string
+          is_visible: boolean
+          kind: Database["public"]["Enums"]["footer_column_kind"]
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          heading?: string | null
+          heading_ar?: string | null
+          id?: string
+          is_visible?: boolean
+          kind?: Database["public"]["Enums"]["footer_column_kind"]
+          position: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          heading?: string | null
+          heading_ar?: string | null
+          id?: string
+          is_visible?: boolean
+          kind?: Database["public"]["Enums"]["footer_column_kind"]
+          position?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      footer_contact_items: {
+        Row: {
+          body: string
+          body_ar: string | null
+          created_at: string
+          id: string
+          is_visible: boolean
+          kind: Database["public"]["Enums"]["footer_contact_kind"]
+          label: string
+          label_ar: string | null
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          body_ar?: string | null
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          kind?: Database["public"]["Enums"]["footer_contact_kind"]
+          label: string
+          label_ar?: string | null
+          position: number
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          body_ar?: string | null
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          kind?: Database["public"]["Enums"]["footer_contact_kind"]
+          label?: string
+          label_ar?: string | null
+          position?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      footer_links: {
+        Row: {
+          column_id: string
+          created_at: string
+          href: string
+          id: string
+          label: string
+          label_ar: string | null
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          column_id: string
+          created_at?: string
+          href: string
+          id?: string
+          label: string
+          label_ar?: string | null
+          position: number
+          updated_at?: string
+        }
+        Update: {
+          column_id?: string
+          created_at?: string
+          href?: string
+          id?: string
+          label?: string
+          label_ar?: string | null
+          position?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "footer_links_column_id_fkey"
+            columns: ["column_id"]
+            isOneToOne: false
+            referencedRelation: "footer_columns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      footer_settings: {
+        Row: {
+          blurb: string | null
+          blurb_ar: string | null
+          contact_heading: string | null
+          contact_heading_ar: string | null
+          created_at: string
+          id: string
+          legal_line: string | null
+          legal_line_ar: string | null
+          updated_at: string
+        }
+        Insert: {
+          blurb?: string | null
+          blurb_ar?: string | null
+          contact_heading?: string | null
+          contact_heading_ar?: string | null
+          created_at?: string
+          id?: string
+          legal_line?: string | null
+          legal_line_ar?: string | null
+          updated_at?: string
+        }
+        Update: {
+          blurb?: string | null
+          blurb_ar?: string | null
+          contact_heading?: string | null
+          contact_heading_ar?: string | null
+          created_at?: string
+          id?: string
+          legal_line?: string | null
+          legal_line_ar?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      footer_socials: {
+        Row: {
+          created_at: string
+          href: string
+          id: string
+          is_visible: boolean
+          label: string
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          href: string
+          id?: string
+          is_visible?: boolean
+          label: string
+          position: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          href?: string
+          id?: string
+          is_visible?: boolean
+          label?: string
+          position?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       form_fields: {
         Row: {
           created_at: string
@@ -3589,6 +3768,8 @@ export type Database = {
         | "six_months"
         | "twelve_months"
         | "browsing"
+      footer_column_kind: "links" | "legal"
+      footer_contact_kind: "phone" | "email" | "address" | "text"
       integration_kind:
         | "mapbox"
         | "meilisearch"
@@ -3915,6 +4096,8 @@ export const Constants = {
         "twelve_months",
         "browsing",
       ],
+      footer_column_kind: ["links", "legal"],
+      footer_contact_kind: ["phone", "email", "address", "text"],
       integration_kind: [
         "mapbox",
         "meilisearch",
