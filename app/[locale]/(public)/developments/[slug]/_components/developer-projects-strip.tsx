@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "@/components/i18n/link";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
@@ -6,7 +7,7 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { mediaPublicUrl } from "@/lib/media";
 import { developmentUrl } from "@/lib/queries/developments";
 import type { DevelopmentIndexRow } from "@/lib/queries/developments";
-import { quarterLabel } from "@/lib/schemas/development";
+import { handoverQuarter, quarterArgs } from "@/lib/developments/handover";
 
 type Props = {
   developerName: string;
@@ -17,7 +18,7 @@ type Props = {
   intro?: string | null;
 };
 
-export function DeveloperProjectsStrip({
+export async function DeveloperProjectsStrip({
   developerName,
   siblings,
   eyebrow,
@@ -25,6 +26,7 @@ export function DeveloperProjectsStrip({
   intro,
 }: Props) {
   if (!siblings.length) return null;
+  const tc = await getTranslations("development.card");
   return (
     <section className="px-4 md:px-12 py-16 scroll-mt-16 border-t border-bz-border">
       <div className="flex items-end justify-between flex-wrap gap-3 mb-6">
@@ -83,9 +85,9 @@ export function DeveloperProjectsStrip({
                 >
                   {d.name}
                 </div>
-                {d.handover_date ? (
+                {handoverQuarter(d.handover_date) ? (
                   <div className="mt-1 text-[12px] text-bz-muted">
-                    Handover {quarterLabel(d.handover_date)}
+                    {tc("handover", quarterArgs(handoverQuarter(d.handover_date)!))}
                   </div>
                 ) : null}
               </div>

@@ -9,6 +9,7 @@ import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { developmentUrl } from "@/lib/queries/development-utils";
 import { mediaPublicUrl } from "@/lib/media";
 import { PriceText } from "../area-text";
+import { handoverQuarter, quarterArgs } from "@/lib/developments/handover";
 import {
   HOME_OFFPLAN_CARD_COUNT,
   type SectionCopy,
@@ -41,6 +42,7 @@ export async function OffPlanProjects({
   developments?: Awaited<ReturnType<typeof listPublishedDevelopments>>;
 } = {}) {
   const th = await getTranslations("pages.home");
+  const tc = await getTranslations("development.card");
   const developments = prefetched ?? (await listPublishedDevelopments());
 
   // A pick that no longer resolves — unpublished, renamed, deleted — is
@@ -74,7 +76,9 @@ export async function OffPlanProjects({
       </div>
 
       <CarouselGrid cols={3}>
-        {projects.map((d, i) => (
+        {projects.map((d, i) => {
+          const handover = handoverQuarter(d.handover_date);
+          return (
           <Link key={d.id} href={developmentUrl(d)} className="group block">
             <div className="overflow-hidden rounded-lg border border-bz-border bg-bz-surface">
               <div className="relative aspect-[3/2]">
@@ -121,12 +125,12 @@ export async function OffPlanProjects({
                     <div className="mt-0.5 text-[20px] font-medium tracking-tight text-bz-navy">
                       <PriceText
                         aed={d.starting_price}
-                        fallback="Price on request"
+                        fallback={tc("priceOnRequest")}
                       />
                     </div>
-                    {d.handover_date ? (
+                    {handover ? (
                       <div className="mt-1.5 text-[11px] text-bz-muted">
-                        Handover {formatHandover(d.handover_date)}
+                        {tc("handover", quarterArgs(handover))}
                       </div>
                     ) : null}
                   </div>
@@ -136,15 +140,10 @@ export async function OffPlanProjects({
               </div>
             </div>
           </Link>
-        ))}
+          );
+        })}
       </CarouselGrid>
     </section>
   );
 }
 
-/** "2027-11-01" → "Q4 2027"; passthrough if already free-text. */
-function formatHandover(raw: string): string {
-  const d = new Date(raw);
-  if (Number.isNaN(d.getTime())) return raw;
-  return `Q${Math.floor(d.getUTCMonth() / 3) + 1} ${d.getUTCFullYear()}`;
-}

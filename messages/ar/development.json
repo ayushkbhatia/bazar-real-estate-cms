@@ -1,4 +1,13 @@
 {
+  "card": {
+    "handover": "التسليم {q, select, 1 {الربع الأول} 2 {الربع الثاني} 3 {الربع الثالث} 4 {الربع الرابع} other {الربع {q}}} {year}",
+    "handoverLabel": "التسليم",
+    "quarter": "{q, select, 1 {الربع الأول} 2 {الربع الثاني} 3 {الربع الثالث} 4 {الربع الرابع} other {الربع {q}}} {year}",
+    "from": "من",
+    "bedrooms": "غرف النوم",
+    "offPlan": "على الخارطة",
+    "priceOnRequest": "السعر عند الطلب"
+  },
   "facts": {
     "architecture": "التصميم المعماري",
     "landscape": "حديقة منسّقة",
@@ -8,6 +17,13 @@
     "rera_escrow": "حساب الضمان لدى ريرا",
     "service_charge_estimate": "رسوم الخدمات",
     "tenure": "نوع الملكية"
+  },
+  "payment": {
+    "instalments": "{count, plural, zero {# أقساط} one {قسط واحد} two {قسطان} few {# أقساط} many {# قسطاً} other {# قسط}}",
+    "onHandover": "{pct}% عند تسليم المفاتيح",
+    "overMonths": "{pct}٪ على مدى {months} شهرًا",
+    "overInstalments": "{pct}% فوق {instalments}",
+    "afterHandover": "{pct}% بعد التسليم"
   },
   "units": {
     "type": "النوع",
@@ -28,12 +44,5 @@
     "filterVillas": "فلل · {count}",
     "filterTownhouses": "تاون هاوس · {count}",
     "filterLagoon": "إطلالة على البحيرة · {count}"
-  },
-  "payment": {
-    "instalments": "{count, plural, zero {# أقساط} one {قسط واحد} two {قسطان} few {# أقساط} many {# قسطاً} other {# قسط}}",
-    "onHandover": "{pct}% عند تسليم المفاتيح",
-    "overMonths": "{pct}٪ على مدى {months} شهرًا",
-    "overInstalments": "{pct}% فوق {instalments}",
-    "afterHandover": "{pct}% بعد التسليم"
   }
 }

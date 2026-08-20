@@ -1,4 +1,13 @@
 {
+  "card": {
+    "handover": "Handover {q, select, 1 {Q1} 2 {Q2} 3 {Q3} 4 {Q4} other {Q{q}}} {year}",
+    "handoverLabel": "Handover",
+    "quarter": "{q, select, 1 {Q1} 2 {Q2} 3 {Q3} 4 {Q4} other {Q{q}}} {year}",
+    "from": "From",
+    "bedrooms": "Bedrooms",
+    "offPlan": "Off-plan",
+    "priceOnRequest": "Price on request"
+  },
   "facts": {
     "architecture": "Architecture",
     "landscape": "Landscape",
@@ -8,6 +17,13 @@
     "rera_escrow": "RERA escrow",
     "service_charge_estimate": "Service charge",
     "tenure": "Tenure"
+  },
+  "payment": {
+    "instalments": "{count, plural, one {# instalment} other {# instalments}}",
+    "onHandover": "{pct}% on key-handover",
+    "overMonths": "{pct}% over {months} months",
+    "overInstalments": "{pct}% over {instalments}",
+    "afterHandover": "{pct}% after handover"
   },
   "units": {
     "type": "Type",
@@ -28,12 +44,5 @@
     "filterVillas": "Villas · {count}",
     "filterTownhouses": "Townhouses · {count}",
     "filterLagoon": "Lagoon access · {count}"
-  },
-  "payment": {
-    "instalments": "{count, plural, one {# instalment} other {# instalments}}",
-    "onHandover": "{pct}% on key-handover",
-    "overMonths": "{pct}% over {months} months",
-    "overInstalments": "{pct}% over {instalments}",
-    "afterHandover": "{pct}% after handover"
   }
 }

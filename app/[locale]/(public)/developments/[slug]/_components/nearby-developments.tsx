@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "@/components/i18n/link";
 import Image from "next/image";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -5,7 +6,7 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { mediaPublicUrl } from "@/lib/media";
 import { developmentUrl } from "@/lib/queries/developments";
 import type { DevelopmentIndexRow } from "@/lib/queries/developments";
-import { quarterLabel } from "@/lib/schemas/development";
+import { handoverQuarter, quarterArgs } from "@/lib/developments/handover";
 
 type Props = {
   areaName: string;
@@ -25,7 +26,7 @@ type Props = {
  * editor. They default rather than fall back to a stored string so a hundred
  * project pages don't each carry a copy of the same sentence.
  */
-export function NearbyDevelopments({
+export async function NearbyDevelopments({
   areaName,
   nearby,
   eyebrow,
@@ -33,6 +34,7 @@ export function NearbyDevelopments({
   intro,
 }: Props) {
   if (!nearby.length) return null;
+  const tc = await getTranslations("development.card");
 
   return (
     <section className="px-4 md:px-12 py-16 scroll-mt-16 border-t border-bz-border bg-bz-surface-2">
@@ -81,9 +83,9 @@ export function NearbyDevelopments({
                 >
                   {d.name}
                 </div>
-                {d.handover_date ? (
+                {handoverQuarter(d.handover_date) ? (
                   <div className="mt-1.5 text-[12px] text-bz-muted">
-                    Handover {quarterLabel(d.handover_date)}
+                    {tc("handover", quarterArgs(handoverQuarter(d.handover_date)!))}
                   </div>
                 ) : null}
                 {d.tagline ? (

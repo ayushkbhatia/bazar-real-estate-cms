@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "@/components/i18n/link";
 import Image from "next/image";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
@@ -6,7 +7,7 @@ import {
   developmentUrl,
   type listPublishedDevelopments,
 } from "@/lib/queries/developments";
-import { quarterLabel } from "@/lib/schemas/development";
+import { handoverQuarter, quarterArgs } from "@/lib/developments/handover";
 import { PriceText } from "../area-text";
 
 type Development = Awaited<
@@ -17,7 +18,9 @@ type Development = Awaited<
  * Featured off-plan development card for the New Projects master page. Mirrors
  * the card on /developments so the two surfaces stay visually consistent.
  */
-export function DevelopmentCard({ d }: { d: Development }) {
+export async function DevelopmentCard({ d }: { d: Development }) {
+  const tc = await getTranslations("development.card");
+  const handover = handoverQuarter(d.handover_date);
   return (
     <Link
       href={developmentUrl(d)}
@@ -60,9 +63,12 @@ export function DevelopmentCard({ d }: { d: Development }) {
         ) : null}
         <div className="mt-5 pt-4 border-t border-bz-border grid grid-cols-3 gap-3">
           {([
-            ["From", <PriceText key="from" aed={d.starting_price} />],
-            ["Bedrooms", d.bedrooms_text ?? "—"],
-            ["Handover", quarterLabel(d.handover_date)],
+            [tc("from"), <PriceText key="from" aed={d.starting_price} />],
+            [tc("bedrooms"), d.bedrooms_text ?? "—"],
+            [
+              tc("handoverLabel"),
+              handover ? tc("quarter", quarterArgs(handover)) : "—",
+            ],
           ] as [string, React.ReactNode][]).map(([label, value]) => (
             <div key={label}>
               <div className="text-[10.5px] uppercase tracking-wide text-bz-muted">
