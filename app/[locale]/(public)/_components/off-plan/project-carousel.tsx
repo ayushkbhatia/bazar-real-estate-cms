@@ -15,7 +15,7 @@
  */
 
 import * as React from "react";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { ArrowRight, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import {
   clampInlineScroll,

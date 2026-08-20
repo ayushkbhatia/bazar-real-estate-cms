@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decodePrefs, encodePrefs } from "./cookie";
+import { chosenLocale, decodePrefs, encodePrefs } from "./cookie";
 import {
   areaUnitLabel,
   convertArea,
@@ -77,6 +77,46 @@ describe("preferences/cookie", () => {
     expect(decodePrefs(null)).toEqual(DEFAULT_PREFERENCES);
     expect(decodePrefs(undefined)).toEqual(DEFAULT_PREFERENCES);
     expect(decodePrefs("")).toEqual(DEFAULT_PREFERENCES);
+  });
+
+  it("carries a chosen locale alongside the other two", () => {
+    // The proxy reads `l` on every request to decide whether an unprefixed URL
+    // belongs in /ar. It has to survive a currency change written by the
+    // popover, which re-encodes the whole cookie from a decode.
+    const encoded = encodePrefs({
+      currency: "USD",
+      area_unit: "ft2",
+      locale: "ar",
+    });
+    expect(encoded).toBe("c=USD&l=ar");
+    expect(decodePrefs(encoded).locale).toBe("ar");
+  });
+});
+
+/**
+ * `chosenLocale` answers a narrower question than `decodePrefs`: not "what
+ * locale applies" but "did the visitor say". The proxy needs the distinction —
+ * silence means leave today's behaviour alone, and English means *pinned*,
+ * which is the only way out of a sticky Arabic session.
+ */
+describe("preferences/chosenLocale", () => {
+  it("is null when the visitor has never chosen", () => {
+    expect(chosenLocale(null)).toBeNull();
+    expect(chosenLocale("")).toBeNull();
+    // A cookie that only carries currency is silence about language.
+    expect(chosenLocale("c=USD&a=m2")).toBeNull();
+  });
+
+  it("reads a choice out of a full cookie", () => {
+    expect(chosenLocale("c=USD&a=m2&l=ar")).toBe("ar");
+    expect(chosenLocale("l=ar")).toBe("ar");
+  });
+
+  it("ignores a locale we do not serve", () => {
+    // A stale value from a pulled experiment must not redirect anyone into a
+    // 404. `en` is not in the cookie by design — it encodes as absence.
+    expect(chosenLocale("l=fr")).toBeNull();
+    expect(chosenLocale("l=")).toBeNull();
   });
 });
 

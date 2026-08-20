@@ -11,8 +11,10 @@
  * A visitor who reads Arabic has no way to know the site has an Arabic side.
  *
  * So this is a second presentation of one decision, not a second decision. Both
- * build their hrefs the same way and neither owns state — the locale IS the
- * URL.
+ * build their hrefs through `localeSwitchHref`, and neither owns state — the
+ * locale IS the URL, and the `?setlang=` the helper adds is what tells the
+ * proxy to remember the choice for the rest of the session rather than for the
+ * one page.
  *
  * ## Why an anchor, and why no `next/link`
  *
@@ -36,8 +38,8 @@ import { usePathname } from "next/navigation";
 import { useSearchSuffix } from "@/lib/i18n/use-search-suffix";
 import { useTranslations } from "next-intl";
 
-import { LOCALES, LOCALE_DIR, localeUrl, type Locale } from "@/lib/i18n/locales";
-import { stripLocalePrefix } from "@/lib/i18n/routing";
+import { LOCALES, LOCALE_DIR, type Locale } from "@/lib/i18n/locales";
+import { localeSwitchHref, stripLocalePrefix } from "@/lib/i18n/routing";
 import { cn } from "@/lib/utils";
 
 /** Short label per locale, each in its own language. */
@@ -82,7 +84,7 @@ export function LocaleToggle({ current }: { current: Locale }) {
         return (
           <a
             key={locale}
-            href={`${localeUrl(bare, locale)}${suffix}`}
+            href={localeSwitchHref(bare, suffix, locale)}
             hrefLang={locale}
             lang={locale}
             dir={LOCALE_DIR[locale]}

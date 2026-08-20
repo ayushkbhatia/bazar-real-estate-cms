@@ -31,6 +31,19 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [i18n] The hero search panel and the "Insights" nav tab are still English on
+  `/ar`.
+  Spotted while fixing locale stickiness (the whole navbar is Arabic on `/ar`
+  except that one tab). Two separate causes, worth confirming before either is
+  touched: the megamenu tab label comes from the DB (`megamenu_tabs`) and its
+  `title_ar` looks unpopulated, while `HeroSearch`'s mode tabs
+  ("Buy / Rent / Off-Plan / Commercial"), its "Area, building, community or
+  emirate" placeholder and its "Search" button are literals in
+  `app/[locale]/(public)/_components/hero-search.tsx` that no message wave has
+  reached. The hero is the first thing an Arabic visitor sees, so this is the
+  most visible remaining hole. Done = both read from `messages/` (or the DB
+  twin), with `no-unextracted-literals` covering the hero.
+
 - [off-plan] The landing's "View all in <area>" links go to a page that cannot
   answer them.
   `app/[locale]/(public)/off-plan/page.tsx` builds `viewAllHref` as

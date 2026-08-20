@@ -1,7 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
 import * as React from "react";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { Button } from "@/components/ui/button";
 import {
   listPublishedProperties,

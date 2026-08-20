@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { getTranslations } from "next-intl/server";
 import { ArrowLeft, Check } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";

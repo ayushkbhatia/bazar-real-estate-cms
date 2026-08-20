@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";

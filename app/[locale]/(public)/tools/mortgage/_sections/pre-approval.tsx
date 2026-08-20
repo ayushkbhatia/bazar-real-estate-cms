@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { useTranslations } from "next-intl";
 import { ArrowRight, Calendar, MessageCircle } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";

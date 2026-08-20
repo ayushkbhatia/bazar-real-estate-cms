@@ -1,7 +1,7 @@
 import { asLocale } from "@/lib/i18n/locales";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { notFound } from "next/navigation";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import {

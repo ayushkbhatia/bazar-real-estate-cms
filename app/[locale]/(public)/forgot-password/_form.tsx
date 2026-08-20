@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import Link from "next/link";
+import Link from "@/components/i18n/link";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Wordmark } from "@/components/brand/wordmark";
 import { Button } from "@/components/ui/button";
