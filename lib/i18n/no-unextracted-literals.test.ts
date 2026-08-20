@@ -133,9 +133,7 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/p/[slug]/_components/advisor-note.tsx": 1,
   "app/[locale]/(public)/p/[slug]/_components/agent-card.tsx": 3,
   "app/[locale]/(public)/p/[slug]/_components/enquiry-dialog.tsx": 1,
-  "app/[locale]/(public)/p/[slug]/_components/floor-plan-section.tsx": 5,
   "app/[locale]/(public)/p/[slug]/_components/floor-plan-viewer.tsx": 3,
-  "app/[locale]/(public)/p/[slug]/_components/gallery-tabs.tsx": 3,
   "app/[locale]/(public)/p/[slug]/_components/gallery.tsx": 1,
   "app/[locale]/(public)/p/[slug]/_components/property-faq.tsx": 1,
   "app/[locale]/(public)/p/[slug]/_components/specification.tsx": 3,
@@ -152,7 +150,7 @@ const REMAINING: Readonly<Record<string, number>> = {
 };
 
 /** What the ratchet held when it landed. Lowering it is the point. */
-const TOTAL_CEILING = 210;
+const TOTAL_CEILING = 201;
 
 /**
  * Three shapes, matching the three ways a literal reaches a reader.

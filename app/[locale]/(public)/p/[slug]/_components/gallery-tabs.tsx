@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Camera, LayoutGrid, Map } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FloorPlanViewer } from "./floor-plan-viewer";
@@ -31,6 +32,9 @@ export function GalleryTabs({
   floorPlanUrl?: string | null;
   reference: string;
 }) {
+  // `property` is on CLIENT_NAMESPACES, so this crosses to the browser
+  // already — the tab labels were simply never wired to it.
+  const t = useTranslations("property");
   const [active, setActive] = useState<PanelKey>("photos");
 
   function scrollToLocation() {
@@ -46,16 +50,16 @@ export function GalleryTabs({
             `role="tablist"` whose children aren't all `role="tab"` fails
             axe's aria-required-children — so it sits outside the group
             rather than inside it pretending to be a tab. */}
-        <div role="tablist" aria-label="Gallery views" className="flex gap-5">
+        <div role="tablist" aria-label={t("floorPlan.tabs")} className="flex gap-5">
           <TabButton
             icon={Camera}
-            label="Photos"
+            label={t("floorPlan.photos")}
             isActive={active === "photos"}
             onClick={() => setActive("photos")}
           />
           <TabButton
             icon={LayoutGrid}
-            label="Floor plan"
+            label={t("floorPlan.heading")}
             isActive={active === "floor_plan"}
             onClick={() => setActive("floor_plan")}
           />
