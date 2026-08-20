@@ -135,7 +135,7 @@ describe("localiseDeep", () => {
      * same content. "Villas" has an entry; nobody typed it into this row.
      */
     const out = localiseDeep(tab, "ar");
-    expect(out.columns[0]!.items[1]!.label).toBe("الفلل");
+    expect(out.columns[0]!.items[1]!.label).toBe("فلل");
   });
 
   it("only asks the store for columns that declare a twin", () => {
@@ -149,7 +149,7 @@ describe("localiseDeep", () => {
     const row = { id: "abc", status: "Villas", label: "Villas", label_ar: null };
     const out = localiseDeep(row, "ar");
     expect(out.status).toBe("Villas");
-    expect(out.label).toBe("الفلل");
+    expect(out.label).toBe("فلل");
   });
 
   it("strips _ar at every depth", () => {

@@ -26,12 +26,22 @@
  * translated, and `PROTECTED_FIELDS` makes adding the wrong one a test failure.
  */
 import { createClient } from "@supabase/supabase-js";
-import { MT_TARGETS, arColumn, isProtected, type MtTarget } from "../../lib/i18n/mt/targets";
+import { arabicFor } from "../../lib/i18n/arabic-store";
+import {
+  MT_TARGETS,
+  arColumn,
+  isProtected,
+  type MtTarget,
+} from "../../lib/i18n/mt/targets";
 
 const args = process.argv.slice(2);
 const DRY = args.includes("--dry-run");
-const TABLE = args.includes("--table") ? args[args.indexOf("--table") + 1] : null;
-const LIMIT = args.includes("--limit") ? Number(args[args.indexOf("--limit") + 1]) : Infinity;
+const TABLE = args.includes("--table")
+  ? args[args.indexOf("--table") + 1]
+  : null;
+const LIMIT = args.includes("--limit")
+  ? Number(args[args.indexOf("--limit") + 1])
+  : Infinity;
 
 type Row = Record<string, unknown> & { id: string };
 
@@ -39,7 +49,9 @@ async function main() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) {
-    console.error("NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.");
+    console.error(
+      "NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required.",
+    );
     process.exit(2);
   }
   const sb = createClient(url, key, { auth: { persistSession: false } });
@@ -62,7 +74,9 @@ async function main() {
    */
   for (const t of targets) {
     if (isProtected(t.table, t.column)) {
-      console.error(`REFUSING ${t.table}.${t.column}: it is in PROTECTED_FIELDS.`);
+      console.error(
+        `REFUSING ${t.table}.${t.column}: it is in PROTECTED_FIELDS.`,
+      );
       process.exit(1);
     }
   }
@@ -70,10 +84,13 @@ async function main() {
   type Job = { target: MtTarget; id: string; english: string };
   const work: Job[] = [];
   const byTable = new Map<string, MtTarget[]>();
-  for (const t of targets) byTable.set(t.table, [...(byTable.get(t.table) ?? []), t]);
+  for (const t of targets)
+    byTable.set(t.table, [...(byTable.get(t.table) ?? []), t]);
 
   for (const [table, cols] of byTable) {
-    const select = ["id", ...cols.flatMap((c) => [c.column, arColumn(c)])].join(", ");
+    const select = ["id", ...cols.flatMap((c) => [c.column, arColumn(c)])].join(
+      ", ",
+    );
     const { data, error } = await sb.from(table).select(select);
     if (error) {
       console.error(`${table}: ${error.message}`);
@@ -85,6 +102,22 @@ async function main() {
         // Already translated, or nothing to translate. A twin an editor wrote
         // outranks anything generated, so it is never revisited.
         if (row[arColumn(col)]) continue;
+        /*
+         * The store already answers this English — do not generate a second
+         * Arabic for it.
+         *
+         * `localiseRow` resolves a blank twin through `ARABIC_STORE`, so a row
+         * the store covers already renders Arabic. Writing a freshly generated
+         * value into the column shadows it with a DIFFERENT string, and the same
+         * name then reads one way in the megamenu and another on its own page.
+         *
+         * Measured: a megamenu run filled 27 twins where only 12 were genuine
+         * gaps, and left 37 store/column disagreements behind —
+         * "Sobha City Abu Dhabi" as مدينة شوبا أبوظبي in the column against
+         * شوبا سيتي أبوظبي in the store. `reconcile-columns.ts` cleans that up;
+         * this stops it happening again.
+         */
+        if (typeof english === "string" && arabicFor(english.trim())) continue;
         if (typeof english !== "string" || !english.trim()) continue;
         work.push({ target: col, id: row.id, english });
       }
@@ -274,7 +307,9 @@ async function main() {
         ok++;
       }
     }
-    console.log(`── chunk ${Math.floor(start / CHUNK) + 1}: ${ok} written, ${failures.length} blocked\n`);
+    console.log(
+      `── chunk ${Math.floor(start / CHUNK) + 1}: ${ok} written, ${failures.length} blocked\n`,
+    );
   }
 
   console.log(`\nWrote ${ok}. ${failures.length} blocked and left English.`);
