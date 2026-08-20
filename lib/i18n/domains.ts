@@ -620,6 +620,43 @@ export const DOMAINS: Domain[] = [
     ],
   },
   {
+    table: "search_bar",
+    columns: [
+      {
+        column: "copy",
+        strategy: "hand",
+        evidence: "_components/hero-search.tsx",
+        inBag: true,
+        note:
+          "Overrides for eight labels that otherwise come from the message " +
+          "catalogue. Blank is the norm and is not a translation hole — the " +
+          "catalogue's Arabic renders instead.",
+      },
+    ],
+  },
+  {
+    table: "search_bar_tabs",
+    columns: [
+      {
+        column: "label",
+        strategy: "hand",
+        evidence: "_components/hero-search.tsx",
+      },
+      {
+        column: "placeholder",
+        strategy: "hand",
+        evidence: "_components/hero-search.tsx",
+      },
+      {
+        column: "types",
+        strategy: "hand",
+        evidence: "_components/hero-search.tsx",
+        inBag: true,
+        note: "[{value, label, label_ar}] — `value` is a PROPERTY_TYPES member and never translated.",
+      },
+    ],
+  },
+  {
     table: "form_fields",
     columns: [
       {
@@ -936,6 +973,8 @@ export const WIRED_EDITOR: string[] = [
   "megamenu_featured_tiles.cta_label",
   "site_settings.brand_name",
   "site_settings.brand_tagline",
+  "search_bar_tabs.label",
+  "search_bar_tabs.placeholder",
 ];
 
 /** Columns whose public read path folds the locale today. */
@@ -994,6 +1033,8 @@ export const WIRED_READ: string[] = [
   "megamenu_featured_tiles.cta_label",
   "site_settings.brand_name",
   "site_settings.brand_tagline",
+  "search_bar_tabs.label",
+  "search_bar_tabs.placeholder",
 ];
 
 /** Registered columns that need Arabic, as `table.column`. */

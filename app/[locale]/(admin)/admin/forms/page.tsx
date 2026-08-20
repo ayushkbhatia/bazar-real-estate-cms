@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { requireRole } from "@/lib/auth";
 import { listFormsForAdmin, type AdminFormSummary } from "@/lib/queries/forms";
 import { FORM_GROUP_LABELS, type FormGroup } from "@/lib/forms/types";
+import { SEARCH_BAR_DEF } from "@/lib/search-bar";
 
 export const dynamic = "force-dynamic";
 
@@ -139,6 +140,39 @@ export default async function AdminFormsPage() {
             ) : null}
           </div>
         )}
+
+        {/*
+          Not a form, and deliberately not listed as one.
+          The hero search bar captures nothing, files no lead and has no
+          responses — giving it a card in the grid above would promise an
+          editor a Responses tab that can never fill. Its own section says
+          what it is instead.
+        */}
+        <section className="flex flex-col gap-3">
+          <h3 className="eyebrow">Search</h3>
+          <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <li>
+              <Link
+                href="/admin/forms/search-bar"
+                className="flex h-full flex-col gap-1.5 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
+              >
+                <span className="text-[13.5px] font-medium leading-snug">
+                  {SEARCH_BAR_DEF.name}
+                </span>
+                <span className="mono text-[11px] text-bz-muted">
+                  {SEARCH_BAR_DEF.surface} · {SEARCH_BAR_DEF.path}
+                </span>
+                <p className="text-[12px] text-bz-muted-2 leading-relaxed line-clamp-2">
+                  {SEARCH_BAR_DEF.description}
+                </p>
+                <div className="mt-auto pt-2 text-[11.5px] text-bz-muted-2">
+                  {SEARCH_BAR_DEF.tabs.length} tabs · searches, doesn&apos;t
+                  collect
+                </div>
+              </Link>
+            </li>
+          </ul>
+        </section>
 
         {GROUP_ORDER.map((group) => {
           const groupRows = rows.filter((r) => r.def.group === group);
