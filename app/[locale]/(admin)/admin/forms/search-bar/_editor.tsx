@@ -505,7 +505,7 @@ function TabDetail({
       <div className="grid gap-4 sm:grid-cols-2">
         <NumberPair
           label="Price ceiling (AED)"
-          help="The right-hand end of the slider. Steps are what each notch moves by."
+          help="The top of the slider's range. Steps are what each notch moves by."
           value={tab.price}
           onChange={(price) => onPatch({ price })}
         />
