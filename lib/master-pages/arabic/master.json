@@ -231,6 +231,18 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "1. Acceptance of Terms": {
+    "ar": "قبول الشروط [1]",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
+  },
+  "1. What Are Cookies": {
+    "ar": "ما هي الكوكيز [1]",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
+  },
   "10 km berm park": {
     "ar": "حديقة ساتر ترابي بطول 10 كم",
     "by": "machine",
@@ -240,6 +252,12 @@
   "10,000+": {
     "ar": "10,000+",
     "by": "machine"
+  },
+  "10. Prohibited Use": {
+    "ar": "10. الاستخدام الممنوع",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
   },
   "100 sq. km": {
     "ar": "100 كم مربع",
@@ -252,6 +270,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:55:03.094Z"
+  },
+  "11. Third-Party Links and Services": {
+    "ar": "11. الروابط والخدمات الخارجية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
   },
   "12-Month Apartment Index Change": {
     "ar": "التغير في مؤشر الشقة خلال 12 شهراً",
@@ -289,15 +313,51 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
   },
+  "12. Disclaimers": {
+    "ar": "12. إخلاء المسؤولية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
+  },
   "120 homes at the core of Yas Acres.": {
     "ar": "120 منزلًا في قلب ياس ايكرز.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:02:01.875Z"
   },
+  "13. Limitation of Liability": {
+    "ar": "13. حدود المسؤولية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
+  },
+  "15. Termination": {
+    "ar": "15. الإنهاء",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
+  },
   "16,585": {
     "ar": "16,585",
     "by": "machine"
+  },
+  "16. Governing Law and Dispute Resolution": {
+    "ar": "16. القانون الحاكم وحل النزاعات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
+  },
+  "17. Changes to These Terms": {
+    "ar": "17. تعديلات على هذه الشروط",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
+  },
+  "18. Contact Us": {
+    "ar": "18. تواصل معنا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
   },
   "1–3 bed": {
     "ar": "1–3 غرفة نوم",
@@ -325,6 +385,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:35:49.472Z"
   },
+  "2. Eligibility and Accounts": {
+    "ar": "2. الاستحقاق والحسابات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
+  },
+  "2. How We Use Cookies": {
+    "ar": "2. كيف نستخدم الكوكيز",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
+  },
   "20+": {
     "ar": "20+",
     "by": "machine"
@@ -346,6 +418,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
+  },
+  "22 May 2026": {
+    "ar": "22 May 2026",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
   },
   "24/7 Security": {
     "ar": "الحماية 24/7",
@@ -401,6 +479,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:09:10.478Z"
+  },
+  "3. Description of Service": {
+    "ar": "3. وصف الخدمة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
+  },
+  "3. Specific Cookies": {
+    "ar": "3. ملفات تعريف الارتباط المحددة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
   },
   "30% of the masterplan is dedicated to natural spaces.": {
     "ar": "30% من المخطط الرئيسي مخصص للمساحات الطبيعية.",
@@ -463,6 +553,18 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:13:45.709Z"
   },
+  "4. Advisor / Agency Relationship": {
+    "ar": "4. العلاقة بين المستشار والوكيل",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
+  },
+  "4. Third-Party Cookies": {
+    "ar": "4. الكوكيز التابعة لجهات خارجية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
+  },
   "40 Million sq. m.": {
     "ar": "40 مليون متر مربع",
     "by": "machine",
@@ -521,6 +623,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:51:24.295Z"
   },
+  "5. Managing Your Preferences": {
+    "ar": "5. إدارة تفضيلاتك",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
+  },
   "50 000 0000": {
     "ar": "50 000 0000",
     "by": "machine"
@@ -546,11 +654,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:09:10.478Z"
   },
+  "6. Listings &amp; Compliance": {
+    "ar": "6. القوائم والامتثال",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
+  },
   "665,000+ sq. m.": {
     "ar": "أكثر من 665,000 متر مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:15:04.118Z"
+  },
+  "7. Changes to This Policy": {
+    "ar": "7. تغييرات على هذه السياسة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
+  },
+  "7. User Content and Conduct": {
+    "ar": "7. محتوى المستخدم وسلوكه",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
   },
   "78%": {
     "ar": "78%",
@@ -559,6 +685,24 @@
   "8+": {
     "ar": "8+",
     "by": "machine"
+  },
+  "8. AI Tools (Concierge, Valuation)": {
+    "ar": "8. أدوات الذكاء الاصطناعي (الكونسيرج، التقييم)",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
+  },
+  "8. Questions": {
+    "ar": "8. أسئلة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
+  },
+  "9. Intellectual Property": {
+    "ar": "9. الملكية الفكرية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
   },
   "900,000+ sq. m.": {
     "ar": "900,000+ متر مربع",
@@ -2188,6 +2332,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Bazar Real Estate Brokerage LLC\nAbu Dhabi, United Arab Emirates\nORN 28041\nEmail: \ndpo@bazarrealestate.ae": {
+    "ar": "بازار وساطة عقارات LLC\nأبوظبي، الإمارات العربية المتحدة\nORN 28041\nالبريد الإلكتروني: \ndpo@bazarrealestate.ae",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
+  },
   "Bazar Real Estate L.L.C.": {
     "ar": "بازار للعقارات ذات مسؤولية محدودة",
     "by": "machine",
@@ -2218,6 +2368,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:47:46.675Z"
   },
+  "Bazar acts as a fiduciary advisor to its clients. Where there is no\nsigned advisory or buyer-representation agreement, Bazar represents\nthe seller of any specific listing. We disclose this upfront on every\nenquiry, consistent with UAE brokerage disclosure requirements.": {
+    "ar": "بازار يعمل كمستشار وصي لعملائه. في حالة عدم توقيع اتفاقية استشارية أو تمثيل المشتري، بازار يمثل البائع لأي إعلان عقاري محدد. نكشف عن هذا في كل استفسار، متوافقًا مع متطلبات الإفصاح الوسيط في دولة الإمارات العربية المتحدة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
+  },
   "Bazar advisory desk": {
     "ar": "بازار مكتب الاستشارات",
     "by": "machine",
@@ -2245,11 +2401,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T17:02:41.676Z"
   },
+  "Bazar owns or licenses all content on the Service — text, design,\nlisting photography we commission, and software. You may not copy,\nrepublish, or create derivative works from it outside of normal\nbrowsing use, except as these terms expressly allow.": {
+    "ar": "بازار تمتلك أو ترخص لكافة المحتوى في الخدمة — النص، التصميم، صور الإعلانات العقارية التي نقوم بتكليفها، والبرمجيات. لا يُسمح لك بنسخ، إعادة نشر، أو إنشاء أعمال مشتقة منه خارج استخدام التصفح العادي، إلا بموجب ما تنص عليه هذه الشروط صراحة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
+  },
   "Bazar · Abu Dhabi": {
     "ar": "بازار · أبوظبي",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:01:23.670Z"
+  },
+  "Bazar's aggregate liability arising from your use of the Service\nis capped at the lesser of AED 10,000 or fees paid to Bazar in the\ntwelve months preceding the claim. This cap does not apply to\nliability that cannot be limited under UAE law (including liability\nfor fraud or wilful misconduct).": {
+    "ar": "مسؤولية بازار الناجمة عن استخدامك للخدمة محددة بحد أقصى قدره الأقل من AED 10,000 أو الرسوم المدفوعة لبازار خلال الاثني عشر شهراً السابقة للادعاء. لا ينطبق هذا الحد على المسؤولية التي لا يمكن تقييدها وفقاً لقانون دولة الإمارات العربية المتحدة (بما في ذلك المسؤولية عن الاحتيال أو الإهمال الجسيم).",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
   },
   "Beach Club": {
     "ar": "نادي الشاطئ",
@@ -2814,6 +2982,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
+  },
+  "By using bazar.ae and the services it links to (the \"Service\")\nyou agree to these terms. The Service is operated by Bazar Real Estate\nBrokerage LLC (\"Bazar\", \"we\"), a UAE-licensed\nbrokerage (ORN 28041). If you don't agree, don't use the\nService.": {
+    "ar": "باستخدام بازار.ae والخدمات المرتبطة بها (الـ\"خدمة\")، فإنك توافق على هذه الشروط. تُدار الخدمة من قِبل بازار للوساطة العقارية المحدودة (\"بازار\"، \"نحن\")، وهي وساطة مرخصة في دولة الإمارات العربية المتحدة (ORN 28041). إذا لم تكن موافقًا، فلا تستخدم الخدمة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
   },
   "Call": {
     "ar": "اتصل",
@@ -3451,6 +3625,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:19:16.443Z"
   },
+  "Cookie policy": {
+    "ar": "سياسة الكوكيز",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.241Z"
+  },
+  "Cookies are small text files a website stores on your device to\nremember information between visits. We also use similar\ntechnologies (local storage, pixels) for the same purposes — this\npolicy covers all of them under \"cookies\" for simplicity.": {
+    "ar": "الكوكيز هي ملفات نصية صغيرة يخزنها الموقع على جهازك لتخزين المعلومات بين الزيارات. نستخدم أيضًا تقنيات مشابهة (تخزين محلي، بكسل) للأغراض نفسها — يغطي هذا السياسة جميعها تحت مسمى \"الكوكيز\" من باب التبسيط.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
+  },
   "Coordination of handovers, access and property documentation.": {
     "ar": "تنسيق عمليات التسليم والوصول ووثائق العقار.",
     "by": "machine",
@@ -4042,6 +4228,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.877Z"
+  },
+  "Email \ndpo@bazarrealestate.ae \nwith any questions about the cookies we use or your stored\npreferences.": {
+    "ar": "أرسل بريدًا إلكترونيًا إلى dpo@bazarrealestate.ae بأي أسئلة حول الكوكيز التي نستخدمها أو تفضيلاتك المخزنة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
   },
   "Email me a code": {
     "ar": "أرسل لي رمزاً عبر البريد الإلكتروني",
@@ -8348,6 +8540,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Name \nCategory \nProvider \nPurpose \nRetention \n))}\nWe'll add a row here (and bump the effective date) before\nactivating any new cookie, including marketing pixels.": {
+    "ar": "اسم \nفئة \nمزود \nغرض \nالاحتفاظ \n))))\nسنضيف صفًا هنا (وسيتم تحديث التاريخ الفعلي) قبل\nتفعيل أي ملف تعريف ارتباط جديد، بما في ذلك بيكسلات التسويق.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
+  },
   "Name (optional)": {
     "ar": "الاسم (اختياري)",
     "by": "machine",
@@ -9003,6 +9201,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:49:10.239Z"
+  },
+  "Outputs from the AI concierge and the auto-valuation tool are\ninformational. They are not financial, legal, or tax advice, and do\nnot replace a licensed advisor's judgment. We review and\noverride AI-generated valuations before they are used in any binding\ncontext. Concierge conversations may be retained per our \nPrivacy Policy to improve response\nquality.": {
+    "ar": "النتائج التي تنتجها خدمة الاستقبال الذكائي وأداة التقييم التلقائي هي معلوماتية. ليست نصائح مالية أو قانونية أو ضريبية، ولا تحل محل رأي مستشار مرخص. نراجع ونلغي التقييمات التي تولدها الذكاء الاصطناعي قبل استخدامها في أي سياق ملزم. قد تحتفظ المحادثات مع الخدمة الاستقبالية وفقًا لسياسة الخصوصية لدينا لتحسين جودة الرد.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
   },
   "Over 20 Years": {
     "ar": "أكثر من 20 عاماً",
@@ -11590,6 +11794,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:10:31.711Z"
   },
+  "Terms of service": {
+    "ar": "شروط الخدمة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.626Z"
+  },
   "Testimonials": {
     "ar": "آراء العملاء",
     "by": "machine",
@@ -11734,6 +11944,18 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:15:33.556Z"
+  },
+  "The Service is provided on an as-is, as-available basis. To the\nmaximum extent permitted by UAE law, Bazar disclaims implied\nwarranties of merchantability, fitness for a particular purpose, and\nnon-infringement. We don't warrant that the Service will be\nuninterrupted, error-free, or that listing data is complete or\ncurrent at every moment.": {
+    "ar": "يُقدم الخدمة على أساسها الحالي، وعلى أساس توافرها. إلى أقصى حد يسمح به القانون الإماراتي، بازار ينفي الضمانات الضمنية للجودة، الصلاحية لغرض معين، وعدم الانتهاك. لا نضمن أن تكون الخدمة مستمرة وخالية من الأخطاء، أو أن تكون بيانات الإعلانات العقارية كاملة ومحدثة في كل لحظة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
+  },
+  "The Service may link to developer microsites, property portals, or\npayment processors we don't control. We aren't responsible\nfor their content, availability, or practices — review their own\nterms before relying on them.": {
+    "ar": "الخدمة قد تربط بمواقع إلكترونية لمطوري عقارات، أو بوابات عقارية، أو معالجي مدفوعات لا نتحكم فيها. لسنا مسؤولين عن محتواها، أو توافرها، أو ممارساتها — راجع شروطهم الخاصة قبل الاعتماد عليها.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
   },
   "The area offers apartments, townhouses and villas across established waterfront communities.": {
     "ar": "المنطقة تضم شققاً وتاون هاوس وفلل ضمن مجتمعات واجهة بحرية راسخة.",
@@ -11895,6 +12117,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
   },
+  "The terms you agree to by using bazar.ae and the services it links to.": {
+    "ar": "الشروط التي توافق عليها باستخدام بازار.ae والخدمات المرتبطة بها.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
+  },
   "The upcoming school is planned to accommodate more than 2,800 students.": {
     "ar": "من المخطط أن تستوعب المدرسة الجديدة أكثر من 2,800 طالب.",
     "by": "machine",
@@ -11942,6 +12170,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:31:14.076Z"
+  },
+  "These terms are governed by the laws of the Emirate of Abu Dhabi and\nthe federal laws of the UAE. Disputes are subject to the exclusive\njurisdiction of the Abu Dhabi courts.": {
+    "ar": "هذه الشروط تخضع لقوانين إمارة أبوظبي وقوانين دولة الإمارات العربية المتحدة. الخلافات تخضع لولاية محاكم أبوظبي حصريًا.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
   },
   "They range from roughly 4,678 sq. ft. to 20,171 sq. ft., with four to seven bedrooms.": {
     "ar": "تتراوح من 4,678 sq. ft. إلى 20,171 sq. ft. تقريبًا، مع أربع إلى سبع غرف نوم.",
@@ -12743,6 +12977,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:46:01.783Z"
   },
+  "We may suspend or terminate access for anyone who violates these\nterms. To have the personal data we hold about you erased, email \ndpo@bazarrealestate.ae .\nSections that by their nature should survive termination (fees owed,\nliability caps, governing law) continue to apply.": {
+    "ar": "قد نعلق أو ننهي الوصول لأي شخص ينتهك هذه الشروط. لإزالة البيانات الشخصية التي نحتفظ بها عنك، أرسل بريدًا إلكترونيًا إلى dpo@bazarrealestate.ae. الأقسام التي بطبيعتها يجب أن تستمر بعد الإنهاء (الرسوم المستحقة، حدود المسؤولية، القانون الحاكم) تظل سارية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
+  },
+  "We respect the browser's Global Privacy Control signal where it\nis present: when GPC is set, analytics and marketing default to off\nregardless of your prior choice.": {
+    "ar": "نحترم إشارة التحكم العالمي في الخصوصية حيثما تكون موجودة: عندما يتم تعيين GPC، يتم إيقاف التحليلات والتسويق افتراضيًا بغض النظر عن اختيارك السابق.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
+  },
   "We support clients with property opportunities and professional real estate services across Dubai and the wider UAE.": {
     "ar": "ندعم عملاءنا بفرص عقارية وخدمات عقارية احترافية في دبي وسائر أنحاء الإمارات.",
     "by": "machine",
@@ -13012,6 +13258,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "What we store on your device, why, and how to change it.": {
+    "ar": "ما نخزنه على جهازك، ولماذا، وكيفية تغييره.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:49:38.249Z"
+  },
   "What your consultation covers": {
     "ar": "ما تشمله استشارتك",
     "by": "machine",
@@ -13034,6 +13286,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "When you submit an enquiry, review, or other content, you grant Bazar\na worldwide, non-exclusive licence to use it to provide the Service.\nDon't submit content you don't have the right to share, and\ndon't submit content that is false, defamatory, or infringes a\nthird party's rights.": {
+    "ar": "عندما تقدم استفسارًا أو مراجعة أو محتوى آخر، فإنك تمنح بازار\nترخيصًا عالميًا غير حصري لاستخدامه لتقديم الخدمة.\nلا تقدم محتوى لا تملك الحق في مشاركته، ولا تقدم محتوى كاذبًا أو مسيئًا أو ينتهك حقوق طرف ثالث.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
   },
   "Where demand, new supply, and lifestyle are converging right now.": {
     "ar": "حيث يلتقي الطلب والمعروض الجديد ونمط الحياة في الوقت الحالي.",
@@ -13647,6 +13905,18 @@
     "ar": "استوديو اليوجا والرفاهية",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "You agree to indemnify Bazar against claims arising from your breach\nof these terms or your misuse of the Service, to the extent permitted\nby UAE law.": {
+    "ar": "توافق على تعويض بازار عن المطالبات الناشئة عن مخالفتك لهذه الشروط أو استغلالك الخاطئ للخدمة، بحسبما يسمح به القانون الإماراتي.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:48:08.045Z"
+  },
+  "You must be at least 18 to create an account. You're responsible\nfor keeping your login credentials confidential and for all activity\nunder your account. Tell us immediately at \ndpo@bazarrealestate.ae if\nyou suspect unauthorised access.": {
+    "ar": "يجب أن تكون على الأقل 18 عامًا لإنشاء حساب. أنت مسؤول عن الحفاظ على سرية بيانات تسجيل الدخول الخاصة بك وعن جميع الأنشطة تحت حسابك. أبلغنا فورًا على dpo@bazarrealestate.ae إذا كنت تشك في وصول غير مصرح به.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
   },
   "You reserve a home before (or during) construction, directly from the developer. You typically pay in staged instalments through the build and take handover once the project completes — often at a lower entry price than a comparable ready home.": {
     "ar": "تحجز منزلاً قبل البناء (أو أثناءه) مباشرة من المطور العقاري. وتدفع عادةً على أقساط مرحلية خلال فترة البناء، وتستلم عند التسليم بعد اكتمال المشروع — غالباً بسعر دخول أقل من منزل جاهز مماثل.",
@@ -15027,5 +15297,23 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "• \nEvery published listing carries a valid Trakheesi/DARI permit number\nand an assigned BRN-licensed advisor. Listings without valid permits\nare not publishable through the CMS.\n• \nWe do not knowingly publish listings sourced from another agency\nwithout a cooperating-broker arrangement.\n• \nListing data is provided by the assigned advisor and reviewed by our\ncompliance team, but Bazar does not independently verify every\nphysical detail of a property before publication.": {
+    "ar": "• \nكل إعلان عقاري منشور يحمل رقم ترخيص صالح من تراخيسي/داري\nومستشار مرخص من BRN. لا يمكن نشر الإعلانات العقارية دون تراخيص صالحة من خلال نظام إدارة المحتوى.\n• \nلا ننشر بوعي إعلانات عقارية مصدرها وكالة أخرى\nدون وجود ترتيب مع وسيط متعاون.\n• \nتوفّر بيانات الإعلان العقاري من قبل المستشار المكلف وتراجعها فريق الامتثال لدينا، لكن بازار لا تتحقق بشكل مستقل من كل تفاصيل العقار المادية قبل النشر.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
+  },
+  "• \nYou may browse the marketplace, submit enquiries, save listings, and\nuse the calculator tools without an account. Some features (saved\nsearches, viewings)\nrequire an account.\n• \nThe catalogue is curated. Bazar selects which listings appear; we do\nnot guarantee that any specific property is or remains available.\n• \nPrices and figures shown are estimates unless explicitly described\nas a final offer. Final terms are confirmed in writing per\ntransaction.\n• We may add, change, or discontinue features at any time.": {
+    "ar": "• \nيمكنك تصفح السوق، وإرسال استفسارات، وحفظ العقارات، واستخدام أدوات الحاسبة دون حساب. بعض الميزات (البحث المحفوظ، الزيارات)\nتتطلب حسابًا.\n• \nالكتالوج مختار. بازار تختار العقارات المعروضة؛ لا نضمن توفر أي عقار محدد أو استمرار توفره.\n• \nالأسعار والأرقام المعروضة تقديرية ما لم يتم وصفها صراحة كعرض نهائي. الشروط النهائية تؤكد بالكتابة لكل معاملة.\n• \nقد نضيف، نغير، أو نوقف الميزات في أي وقت.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
+  },
+  "• No scraping, automated downloading, or bulk extraction. \n• No publishing of listings sourced from this Service elsewhere. \n• No attempt to circumvent rate limits, bot protection, or auth. \n• No misrepresentation of identity, residency, or proof of funds. \n• \nNo use of the Service to send unsolicited communications to other\nusers.": {
+    "ar": "• لا تقم بنسخ البيانات، التحميل التلقائي، أو استخراج البيانات بالجملة.\n• لا تنشر قوائم تم جمعها من هذه الخدمة في مكان آخر.\n• لا تحاول تجاوز حدود السرعة، حماية الروبوتات، أو التحقق من الهوية.\n• لا تقم بتقديم معلومات غير صحيحة حول الهوية، الإقامة، أو البرهان على الأموال.\n• \nلا تستخدم الخدمة لإرسال رسائل غير مرغوب فيها إلى المستخدمين الآخرين.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T09:47:12.629Z"
   }
 }
