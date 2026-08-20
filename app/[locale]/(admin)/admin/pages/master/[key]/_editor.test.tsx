@@ -12,6 +12,11 @@ import {
   type SectionDef,
 } from "@/lib/master-pages";
 import { areaPageDef, developmentPageDef } from "@/lib/master-pages/subpages";
+import {
+  LIBRARY_SECTIONS,
+  librarySectionPageDef,
+} from "@/lib/master-pages/library";
+import { arKey, isTranslatable } from "@/lib/master-pages/twins";
 import { MasterPageEditor } from "./_editor";
 
 /**
@@ -228,6 +233,123 @@ describe("sub-pages", () => {
         usingDefaults
         media={MEDIA}
         seeds={SEEDS}
+        actions={{ save: vi.fn(), reset: vi.fn() }}
+        allowReorder={false}
+        initial={sections.map((s) => ({
+          key: s.key,
+          def: s.def,
+          enabled: s.enabled,
+          values: s.values,
+        }))}
+      />,
+    );
+    expect(screen.queryAllByLabelText(/^Reorder /)).toHaveLength(0);
+  });
+});
+
+/**
+ * The section library — the fourth registry, and the one whose editor a
+ * marketing manager reaches through Pages → Sub-pages → Sections.
+ *
+ * It goes through `MasterPageEditor` with injected actions, exactly like the
+ * record-backed sub-pages, so the assertions are the same shape. The Arabic
+ * one is the reason this block exists rather than being covered by inspection:
+ * the twins are DERIVED, so nothing in the section definition mentions them,
+ * and "the Arabic inputs are there" is only observable by rendering.
+ */
+describe("library sections", () => {
+  const CASES = LIBRARY_SECTIONS.map(
+    (entry) =>
+      [entry.label, librarySectionPageDef(entry) as MasterPageDef] as const,
+  );
+
+  it.each(CASES)("%s draws every declared field", (_label, def) => {
+    const sections = mount(def);
+    const found = rows();
+    expect(found).toHaveLength(sections.length);
+    sections.forEach((section, i) => {
+      const panel = openPanel(found[i]);
+      for (const field of section.def.fields) expectField(panel, field);
+      closePanel(found[i]);
+    });
+  });
+
+  it.each(CASES)("%s offers one Arabic twin per prose field, per item", (_l, def) => {
+    // The twin renders as a collapsed "العربية" disclosure under its English
+    // sibling (see `_fields/arabic-twin.tsx`), so the count of disclosures —
+    // not a derived label — is what proves every slot is reachable.
+    const sections = mount(def);
+    const found = rows();
+    sections.forEach((section, i) => {
+      const expected = section.def.fields.reduce((n, field) => {
+        if (!isListField(field)) return n + (isTranslatable(field) ? 1 : 0);
+        const items = Array.isArray(section.values[field.key])
+          ? (section.values[field.key] as unknown[]).length
+          : 0;
+        return n + items * field.fields.filter(isTranslatable).length;
+      }, 0);
+      expect(expected, `${section.key} has nothing to translate`).toBeGreaterThan(0);
+
+      const panel = openPanel(found[i]);
+      expect(
+        within(panel).queryAllByText("العربية").length,
+        `${section.key} is missing Arabic inputs`,
+      ).toBe(expected);
+      closePanel(found[i]);
+    });
+  });
+
+  it("arrives with the shipped Arabic already filled in, not blank", () => {
+    // Mounted "bilingual" because that is what the route passes, and it is the
+    // whole difference: the English fold strips every `_ar` key on the way out,
+    // so an editor given folded values would see nine empty boxes and write
+    // those blanks back on save.
+    const entry = LIBRARY_SECTIONS[0]!;
+    const def = librarySectionPageDef(entry) as MasterPageDef;
+    const sections = resolveSections(def, null, "bilingual");
+    render(
+      <MasterPageEditor
+        pageKey={entry.key}
+        pageLabel={entry.label}
+        path="/"
+        usingDefaults
+        media={[]}
+        seeds={{}}
+        actions={{ save: vi.fn(), reset: vi.fn() }}
+        allowReorder={false}
+        initial={sections.map((s) => ({
+          key: s.key,
+          def: s.def,
+          enabled: s.enabled,
+          values: s.values,
+        }))}
+      />,
+    );
+    // `fillArabic` supplies every twin from the store, so a translator opens
+    // this screen to a first draft. A "— not set" means a registry string has
+    // no entry in lib/master-pages/arabic/master.json.
+    const panel = openPanel(rows()[0]!);
+    expect(within(panel).queryAllByText("— not set")).toHaveLength(0);
+    expect(within(panel).queryAllByText("● set").length).toBeGreaterThan(0);
+  });
+
+  it("keeps the reviews' Arabic twins addressable by the one naming rule", () => {
+    // `arKey` is the only place the suffix is written. If this drifts, the
+    // editor writes `quote_arabic` and the read fold looks for `quote_ar`.
+    expect(arKey("quote")).toBe("quote_ar");
+  });
+
+  it("offers no reorder handle — one section is not an arrangement", () => {
+    const def = librarySectionPageDef(LIBRARY_SECTIONS[0]!) as MasterPageDef;
+    const sections = resolveSections(def, null);
+    render(
+      <MasterPageEditor
+        pageKey={LIBRARY_SECTIONS[0]!.key}
+        pageLabel={LIBRARY_SECTIONS[0]!.label}
+        path="/"
+        usingDefaults
+        media={[]}
+        seeds={{}}
         actions={{ save: vi.fn(), reset: vi.fn() }}
         allowReorder={false}
         initial={sections.map((s) => ({

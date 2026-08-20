@@ -20,7 +20,7 @@ import type {
 
 export const SUBPAGE_SLUG_PREFIX = "subpage/";
 
-export type SubPageKind = "development" | "area" | "developer";
+export type SubPageKind = "development" | "area" | "developer" | "section";
 
 /**
  * Sub-page kinds, rendered as blocks on the Pages index the same way master
@@ -37,9 +37,30 @@ export type SubPageKindDef = {
   adminPath: string;
   /** Noun for counts — "project page". */
   itemLabel: string;
+  /**
+   * What the index card prints in place of `<publicPath>/…`.
+   *
+   * Every record-backed kind owns a route prefix, so the path *is* the useful
+   * label. A library section owns none — it renders inside other people's
+   * pages — and printing "//…" for it would be worse than saying so.
+   */
+  pathLabel?: string;
 };
 
 export const SUBPAGE_KINDS: SubPageKindDef[] = [
+  {
+    kind: "section",
+    label: "Sections",
+    // Not a route. `pathLabel` is what actually renders; this is only here
+    // because the shape is shared and a null path would spread through both
+    // index pages for one entry's benefit.
+    publicPath: "/",
+    pathLabel: "Reused across pages",
+    adminPath: "/admin/pages/sub/section",
+    description:
+      "Content that belongs to the site rather than to one page — edited once, rendered everywhere it is placed.",
+    itemLabel: "section",
+  },
   {
     kind: "area",
     label: "Areas",

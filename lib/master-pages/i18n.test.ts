@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MASTER_PAGES } from "./pages";
 import { AREA_SECTIONS, DEVELOPMENT_SECTIONS } from "./subpages";
+import { LIBRARY_SECTIONS } from "./library";
 import { BLOCK_DEFS } from "@/lib/page-builder/catalogue";
 import { mergeValues, validateFieldValues } from "./index";
 import { applyLocale, arabicCoverage } from "./i18n";
@@ -35,6 +36,11 @@ function allSectionDefs(): { origin: string; def: SectionDef }[] {
   }
   for (const section of AREA_SECTIONS) {
     out.push({ origin: "subpage:area", def: section });
+  }
+  // The section library — content owned by the site rather than by a page.
+  // Same document shape, same twins, so the same five assertions apply.
+  for (const entry of LIBRARY_SECTIONS) {
+    out.push({ origin: `library:${entry.key}`, def: entry.section });
   }
   return out;
 }

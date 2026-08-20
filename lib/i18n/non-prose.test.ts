@@ -8,6 +8,7 @@ import {
   DEVELOPMENT_SECTIONS,
 } from "@/lib/master-pages/subpages";
 import { BLOCK_DEFS } from "@/lib/page-builder/catalogue";
+import { LIBRARY_SECTIONS } from "@/lib/master-pages/library";
 import { isTranslatable } from "@/lib/master-pages/twins";
 import type { FieldDef, ListFieldDef, SectionDef } from "@/lib/master-pages/types";
 import { nonProseReason } from "./prose";
@@ -73,6 +74,10 @@ function everySlot(): Slot[] {
   }
   for (const b of BLOCK_DEFS) {
     out.push(...collect(`block/${b.key}`, b.fields, b.defaults));
+  }
+  for (const entry of LIBRARY_SECTIONS) {
+    const s = entry.section;
+    out.push(...collect(`library/${entry.key}·${s.key}`, s.fields, s.defaults));
   }
   return out;
 }

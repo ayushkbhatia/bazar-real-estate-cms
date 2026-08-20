@@ -19,6 +19,7 @@ import { ImageBand } from "../../_components/marketing/image-band";
 import { ServiceHero } from "../../services/_components/service-hero";
 import { OffPlanProjects } from "../../_components/home/off-plan-projects";
 import { WhoWeAre } from "../../_components/home/who-we-are";
+import { HomeTestimonials } from "../../_components/home/home-testimonials";
 
 /**
  * Block key → component.
@@ -47,6 +48,7 @@ export const RENDERED_KEYS = [
   "chips",
   "about_bazar",
   "why_band",
+  "testimonials",
 ] as const;
 
 /**
@@ -246,6 +248,20 @@ export function BlockNode({
 
     case "why_band":
       return <WhyBand {...adapt.whyBandProps(v)} />;
+
+    case "testimonials": {
+      const p = adapt.testimonialsProps(v, data);
+      // The shared list can be emptied in the section library. A heading over
+      // no cards reads as a broken page, so the whole block goes.
+      if (p.items.length === 0) return null;
+      return (
+        <HomeTestimonials
+          eyebrow={p.eyebrow}
+          heading={p.heading}
+          items={p.items}
+        />
+      );
+    }
 
     default:
       // A block type this build doesn't know. It is kept in storage — see

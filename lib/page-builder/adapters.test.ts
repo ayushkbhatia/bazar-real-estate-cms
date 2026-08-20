@@ -6,7 +6,7 @@ import { heroMedia } from "./blocks/openers";
 import { featuredProperties, featuredDevelopments } from "./blocks/listings";
 import { faq, featureScroll, propTypes, steps, tiles } from "./blocks/content";
 import { chips, ctaBand } from "./blocks/conversion";
-import { aboutBazar, whyBand } from "./blocks/trust";
+import { aboutBazar, whyBand, testimonials } from "./blocks/trust";
 import type { BlockDef } from "./types";
 import type { ListingRow } from "@/lib/queries/properties";
 
@@ -190,5 +190,49 @@ describe("images", () => {
     });
     expect(p.imageUrl).toBeNull();
     expect(p.image).toBe("hero");
+  });
+});
+
+/**
+ * The one block whose copy is not its own. Everything else here reads `values`;
+ * this reads the shared list the section library holds, so the tests are about
+ * what happens between "the library said N" and "this placement wants M".
+ */
+describe("testimonials", () => {
+  const review = (id: string) => ({
+    id,
+    quote: `Quote ${id}`,
+    attribution: `Client ${id}`,
+  });
+
+  it("keeps its own framing and takes the reviews from the library", () => {
+    const p = adapt.testimonialsProps(
+      defaults(testimonials),
+      data({ testimonials: [review("a"), review("b"), review("c")] }),
+    );
+    expect(p.eyebrow).toBe("Testimonials");
+    expect(p.heading).toBe("Reviews and comments");
+    expect(p.items.map((t) => t.id)).toEqual(["a", "b", "c"]);
+  });
+
+  it("re-slices per block, so two placements can show different counts", () => {
+    // `collectDataRequest` fetches the largest slice any block asked for; a
+    // block set lower must not inherit the greedier one's list.
+    const fetched = data({
+      testimonials: ["a", "b", "c", "d", "e", "f"].map(review),
+    });
+    expect(
+      adapt.testimonialsProps({ ...defaults(testimonials), limit: "2" }, fetched)
+        .items,
+    ).toHaveLength(2);
+    expect(
+      adapt.testimonialsProps({ ...defaults(testimonials), limit: "6" }, fetched)
+        .items,
+    ).toHaveLength(6);
+  });
+
+  it("shows nothing when the library is empty, so no orphan heading renders", () => {
+    const p = adapt.testimonialsProps(defaults(testimonials), data());
+    expect(p.items).toHaveLength(0);
   });
 });

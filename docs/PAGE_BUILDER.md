@@ -14,20 +14,38 @@ component already shipping on `/`, `/buy`, `/rent`, `/services/*` or
 `/developments/[slug]`. That is what makes "mobile-optimised out of the box" a
 structural property rather than a promise repeated per block.
 
-## Where it sits among the three content systems
+## Where it sits among the content systems
 
-| | `pages.blocks` | Master pages | **Page Builder** |
-|---|---|---|---|
-| Route | `/pages/[slug]` | 16 fixed routes | `/lp/[slug]` |
-| Composition | open, 5 generic primitives | **fixed** in code | **open**, 14 designed sections |
-| Content | editable | editable | editable |
-| Images | never resolved — placeholder art only | real | real |
-| Draft/live split | none | none | **yes** |
-| Storage | `pages.blocks` | `pages.blocks` under `master/` | `landing_pages` |
+| | `pages.blocks` | Master pages | Section library | **Page Builder** |
+|---|---|---|---|---|
+| Route | `/pages/[slug]` | 16 fixed routes | none — it renders inside others | `/lp/[slug]` |
+| Composition | open, 5 generic primitives | **fixed** in code | one section, no page | **open**, designed sections |
+| Content | editable | editable | editable | editable |
+| Images | never resolved — placeholder art only | real | real | real |
+| Draft/live split | none | none | none | **yes** |
+| Storage | `pages.blocks` | `pages.blocks` under `master/` | `pages.blocks` under `subpage/section/` | `landing_pages` |
 
 Master pages deliberately kept their fixed composition
-(`lib/master-pages/types.ts:1-15`). The Page Builder is the third system because
+(`lib/master-pages/types.ts:1-15`). The Page Builder is a separate system because
 a campaign page needs both halves: designed sections, arranged freely.
+
+### Shared content: the `testimonials` block is the exception
+
+Every other block owns its copy, which is right for a campaign page — it exists
+nowhere else, which is why `document.ts` goes to such lengths never to lose it.
+Client testimonials are the opposite: the same three quotes are already on the
+home page, so a per-block copy would mean the site quoting one client two ways
+the first time somebody fixed a typo on one page.
+
+So `testimonials` declares `needs: ["testimonials"]` and reads the section
+library (`lib/master-pages/library.ts`, edited at
+`/admin/pages/sub/section/testimonials`). What the block owns is what belongs to
+*this* page: the eyebrow, the heading, and how many cards to show. Two blocks on
+one page still make one fetch — `collectDataRequest` asks for the largest slice
+anyone wanted and each adapter re-slices.
+
+If you add a second shared section, it goes in the library and follows this
+shape. Do not copy shared copy into `defaults`.
 
 ## Files
 
@@ -35,7 +53,7 @@ a campaign page needs both halves: designed sections, arranged freely.
 lib/page-builder/
   types.ts            BlockDef · BlockInstance · ResolvedBlock · budgets · slug rules
   catalogue.ts        BLOCK_DEFS · getBlockDef · newBlockInstance · mintBlockId
-  blocks/             the 14 definitions, grouped as the picker shows them
+  blocks/             the block definitions, grouped as the picker shows them
   presets.ts          3 starting layouts (+ Blank)
   document.ts         parse · resolve · validate — and the data-loss rules
   data.ts             collectDataRequest (pure) · resolveLandingData (batched)
@@ -68,8 +86,10 @@ the database on save, never taken from the client, so a stale tab can reorder or
 hide it but cannot corrupt it.
 
 **Consequence: never rename a `BlockDef.key`.** Add a new one and mark the old
-`deprecated: true`. `catalogue.test.ts` holds a frozen `KNOWN_TYPES_V1` that
-fails the build if you try.
+`deprecated: true`. `catalogue.test.ts` holds frozen `KNOWN_TYPES_V1` /
+`KNOWN_TYPES_V2` lists that fail the build if you try. A key added later goes in
+the later list rather than being backdated into V1 — which shipped when is the
+fact those lists carry.
 
 ### 2. Data is fetched once, up front
 

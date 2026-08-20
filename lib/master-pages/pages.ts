@@ -356,7 +356,11 @@ const HOME: MasterPageDef = {
       key: "testimonials",
       label: "Testimonials",
       description: "Client reviews.",
-      dataNote: "Reviews come from the reviews table.",
+      // It used to say "the reviews table", which was never true — the quotes
+      // were a hardcoded seed. They are now a library section, edited once and
+      // read by this page and by any landing page that places the block.
+      dataNote:
+        "The reviews themselves are edited in Pages → Sub-pages → Sections → Testimonials, because the home page is not their only reader. The eyebrow and heading below belong to this page.",
       fields: [eyebrow(), heading()],
       defaults: {
         eyebrow: "Testimonials",

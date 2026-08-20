@@ -102,6 +102,17 @@ const DATA: LandingData = {
   forms: {
     contact_enquiry: { key: "contact_enquiry", enabled: true } as never,
   },
+  // Shared content, not per-block copy: the testimonials block reads the list
+  // the section library holds, so an empty `LandingData` is the "somebody
+  // emptied the library" case rather than "nobody filled the block in".
+  testimonials: [
+    {
+      id: "review-0",
+      quote: "They told us when to walk away.",
+      attribution: "Couple buying on Saadiyat Reserve",
+      context: "Off-market resale, 2025",
+    },
+  ],
 };
 
 /**
@@ -180,6 +191,7 @@ describe("blocks with nothing to show", () => {
       "faq",
       "steps",
       "chips",
+      "testimonials",
     ]) {
       const def = BLOCK_DEFS.find((d) => d.key === key)!;
       const [block] = resolveDocument([newBlockInstance(def)]);

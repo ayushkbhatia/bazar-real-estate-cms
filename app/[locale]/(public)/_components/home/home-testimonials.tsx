@@ -1,12 +1,21 @@
 import { Star } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { CarouselGrid } from "@/components/brand/mobile";
-import { SEED_TESTIMONIALS } from "@/lib/seeds/awards";
+import { SEED_TESTIMONIALS, type Testimonial } from "@/lib/seeds/awards";
 import type { SectionCopy } from "./section-copy";
 
+/** How many cards the section leads with. Three is the design's soft cap. */
+export const HOME_TESTIMONIAL_COUNT = 3;
+
 /**
- * Home "Testimonials" (handoff §8). Three review cards fed by the curated
- * SEED_TESTIMONIALS. Desktop 3-up grid, mobile snap carousel.
+ * Home "Testimonials" (handoff §8). Three review cards. Desktop 3-up grid,
+ * mobile snap carousel.
+ *
+ * `items` comes from the section library (`/admin/pages/sub/section/testimonials`),
+ * already folded to the request's locale by `resolveSections`, so this component
+ * never learns Arabic exists. `SEED_TESTIMONIALS` stays as the fallback for a
+ * caller that passes nothing — the same relationship every other section here
+ * has with the literals it ships with.
  */
 function initialsOf(name: string): string {
   const words = name.split(/\s+/).filter(Boolean);
@@ -18,8 +27,9 @@ function initialsOf(name: string): string {
 export function HomeTestimonials({
   eyebrow = "Testimonials",
   heading = "Reviews and comments",
-}: SectionCopy = {}) {
-  const reviews = SEED_TESTIMONIALS.slice(0, 3);
+  items,
+}: SectionCopy & { items?: Testimonial[] } = {}) {
+  const reviews = (items ?? SEED_TESTIMONIALS).slice(0, HOME_TESTIMONIAL_COUNT);
   if (reviews.length === 0) return null;
 
   return (

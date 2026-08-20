@@ -1038,3 +1038,14 @@ shows the trail.)
   never an option. Promote it to `_components/marketing/` beside `SectionHead`
   and update the four call sites — a move plus four import lines, left out of
   the section split so that diff stayed readable.
+
+- [i18n] The testimonial card's avatar monogram is built from the first and
+  last word of the attribution (`initialsOf` in
+  `app/[locale]/(public)/_components/home/home-testimonials.tsx`), which was
+  written when the attribution could only be English. Now that the reviews are
+  translated, `/ar` draws two-letter Arabic monograms — "زوجان … ريزيرف" gives
+  **زر**, which is a word ("button"), not initials. Arabic has no monogram
+  convention to fall back on, so this needs a decision rather than a patch:
+  drop the circle on `/ar`, keep the Latin initials in both locales (they are
+  decorative, not content), or replace the circle with a neutral glyph. Small,
+  visible, and only visible to Arabic readers.

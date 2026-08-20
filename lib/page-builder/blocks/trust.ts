@@ -75,4 +75,52 @@ export const whyBand: BlockDef = {
   },
 };
 
-export const TRUST_BLOCKS = [aboutBazar, whyBand];
+/**
+ * Client reviews — `HomeTestimonials`.
+ *
+ * The one block in the catalogue whose *content* is not authored here. Every
+ * other block owns its copy, which is right for a campaign page: it exists
+ * nowhere else, so `document.ts` goes to some length to never lose it. A client
+ * testimonial is the opposite — the same three quotes are already on the home
+ * page, and a per-block copy would mean the site quoting one client two ways
+ * the first time somebody fixed a typo on one page.
+ *
+ * So the quotes come from the section library (`lib/master-pages/library.ts`)
+ * via `needs: ["testimonials"]`, and what an editor sets here is what belongs
+ * to *this* page: the framing above the cards, and how many to show.
+ */
+export const testimonials: BlockDef = {
+  key: "testimonials",
+  label: "Testimonials",
+  description:
+    "Client review cards. The quotes are the shared set — edit them in Pages → Sub-pages → Sections.",
+  group: "trust",
+  singleton: true,
+  needs: ["testimonials"],
+  queryCost: 1,
+  dataNote:
+    "The reviews come from the Testimonials section library, so an edit there updates this page and every other one that shows them.",
+  fields: [
+    { key: "eyebrow", label: "Eyebrow", kind: "text", max: 60, optional: true },
+    { key: "heading", label: "Heading", kind: "text", max: 120 },
+    {
+      key: "limit",
+      label: "How many to show",
+      kind: "select",
+      options: [
+        { value: "2", label: "2" },
+        { value: "3", label: "3" },
+        { value: "4", label: "4" },
+        { value: "6", label: "6" },
+      ],
+      help: "Taken from the top of the shared list, skipping any review switched off.",
+    },
+  ],
+  defaults: {
+    eyebrow: "Testimonials",
+    heading: "Reviews and comments",
+    limit: "3",
+  },
+};
+
+export const TRUST_BLOCKS = [aboutBazar, whyBand, testimonials];

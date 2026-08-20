@@ -16,6 +16,7 @@ import {
   subPageSlug,
   type SubPageKind,
 } from "@/lib/master-pages/subpages";
+import { LIBRARY_SECTIONS } from "@/lib/master-pages/library";
 
 export type SubPageContent = {
   sections: ResolvedSection[];
@@ -246,12 +247,17 @@ export async function listDevelopmentSubPages(
 
 /**
  * How many records back each sub-page kind — the count on the Pages index
- * blocks. One query per kind; there is one kind today.
+ * blocks. One query per record-backed kind.
+ *
+ * `section` is counted from the registry rather than queried: a library section
+ * exists because code declares it, and its document is created on first save,
+ * so counting rows would report zero for a section that is live and rendering.
  */
 export async function countSubPagesByKind(): Promise<
   Partial<Record<SubPageKind, number>>
 > {
-  if (!isSupabaseConfigured) return {};
+  const sections = LIBRARY_SECTIONS.length;
+  if (!isSupabaseConfigured) return { section: sections };
   const supabase = createSupabasePublicClient();
   const [developments, areas, developers] = await Promise.all([
     supabase.from("developments").select("id", { count: "exact", head: true }),
@@ -262,6 +268,7 @@ export async function countSubPagesByKind(): Promise<
     development: developments.count ?? 0,
     area: areas.count ?? 0,
     developer: developers.count ?? 0,
+    section: sections,
   };
 }
 

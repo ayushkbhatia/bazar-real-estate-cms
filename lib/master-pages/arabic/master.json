@@ -3724,6 +3724,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:57:09.582Z"
   },
+  "Couple buying on Saadiyat Reserve": {
+    "ar": "زوجان يشتريان في سعديات ريزيرف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Covered Parking": {
     "ar": "موقف مغطى",
     "by": "machine",
@@ -4457,6 +4463,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:50:29.646Z"
+  },
+  "Every other broker pitched me the buildings their developer was paying them most for. Bazar walked me through five projects, told me which two were worth my attention, and rejected the other three on principle. I trust them now.": {
+    "ar": "كل وسيط آخر كان يعرض عليّ المباني التي يدفع مطوّرها أعلى عمولة. أما بازار فاستعرض معي خمسة مشاريع، وأخبرني أيّ مشروعين يستحقان اهتمامي، ورفض الثلاثة الباقية من حيث المبدأ. أثق بهم الآن.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Every property decision is different. We start by understanding what you are trying to achieve before recommending the opportunities that best match your requirements.": {
     "ar": "كل قرار عقاري يختلف عن غيره. نبدأ بفهم ما تسعى إلى تحقيقه قبل أن نوصي بالفرص الأنسب لمتطلباتك.",
@@ -5847,6 +5859,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.877Z"
   },
+  "First time we'd bought property anywhere. They explained transfer fees, escrow timing, the residency visa pathway, and the wider area economics in a single hour. Nothing felt rushed.": {
+    "ar": "كانت أول مرة نشتري فيها عقاراً في أي مكان. شرحوا لنا رسوم نقل الملكية، وتوقيت حساب الضمان، ومسار تأشيرة الإقامة، واقتصاد المنطقة الأوسع، في ساعة واحدة. ولم نشعر بأي استعجال.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "First-Time Buyers": {
     "ar": "المشترون لأول مرة",
     "by": "machine",
@@ -5858,6 +5876,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
+  },
+  "First-time buyer, Saadiyat Island": {
+    "ar": "مشترٍ لأول مرة، جزيرة السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "First-time buyers\nUAE residents\nNon-resident buyers\nInvestors\nEnd-users\nCash vs. mortgage": {
     "ar": "المشترون لأول مرة\nالمقيمون في الإمارات\nالمشترون غير المقيمين\nالمستثمرون\nالمستخدمون النهائيون\nنقدًا مقابل تمويل عقاري",
@@ -8895,6 +8919,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "Off-market resale, 2025": {
+    "ar": "إعادة بيع خارج السوق، 2025",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Off-plan projects for sale": {
     "ar": "مشاريع على الخارطة للبيع",
     "by": "machine",
@@ -8917,6 +8947,12 @@
     "ar": "مراقبة على الخارطة",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Off-plan, Hudayriyat": {
+    "ar": "على الخارطة، الحديريات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Off-plan, handled end to end.": {
     "ar": "العقارات على الخارطة، تُدار من البداية إلى النهاية.",
@@ -10838,6 +10874,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
+  "Resale, 2026": {
+    "ar": "إعادة بيع، 2026",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Reserve view": {
     "ar": "احجز المشهد",
     "by": "machine",
@@ -10961,6 +11003,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:16:12.762Z"
+  },
+  "Returning investor, London": {
+    "ar": "مستثمر عائد، لندن",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Reviews and comments": {
     "ar": "التقييمات والتعليقات",
@@ -12428,6 +12476,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:37:41.735Z"
+  },
+  "They told us when to walk away from a deal we'd already shaken hands on. Six months later the project was repriced down 14%. That call was the entire fee, repaid many times over.": {
+    "ar": "نصحونا بالانسحاب من صفقة كنا قد صافحنا عليها بالفعل. وبعد ستة أشهر أُعيد تسعير المشروع بانخفاض 14%. تلك النصيحة وحدها غطّت الأتعاب كاملةً، وأضعافاً مضاعفة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "This month": {
     "ar": "الشهر الحالي",
