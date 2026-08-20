@@ -1398,8 +1398,8 @@
     "at": "2026-08-16T13:28:31.966Z"
   },
   "Abu Dhabi Locations": {
-    "ar": "أبوظبي المواقع",
-    "by": "machine",
+    "ar": "مواقع أبوظبي",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.554Z"
   },
@@ -2638,8 +2638,8 @@
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Branded Residences": {
-    "ar": "المساكن المعروفة بالعلامة التجارية",
-    "by": "machine",
+    "ar": "مساكن بعلامات تجارية",
+    "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Branded living · Bazar exclusive": {
@@ -3347,8 +3347,8 @@
     "at": "2026-08-16T13:16:12.763Z"
   },
   "Commercial Properties": {
-    "ar": "العقارات التجارية",
-    "by": "machine",
+    "ar": "عقارات تجارية",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
   },
@@ -5288,8 +5288,8 @@
     "at": "2026-08-16T14:46:09.616Z"
   },
   "Family-Friendly Communities": {
-    "ar": "مجتمعات مناسبة للعائلات",
-    "by": "machine",
+    "ar": "مجتمعات مناسبة للأسرة",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
@@ -6323,8 +6323,8 @@
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Gated Communities": {
-    "ar": "المجمعات السكنية المغلقة",
-    "by": "machine",
+    "ar": "المجتمعات المغلقة",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
@@ -6687,8 +6687,8 @@
     "at": "2026-08-16T12:19:33.085Z"
   },
   "Helping tenants find suitable homes and commercial spaces.": {
-    "ar": "مساعدتنا المستأجرين على العثور على منازل ومساحات تجارية مناسبة.",
-    "by": "machine",
+    "ar": "مساعدتنا المستأجرين في العثور على منازل ومساحات تجارية مناسبة.",
+    "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Hi Bazar, I just scanned your QR code.": {
@@ -6892,8 +6892,8 @@
     "at": "2026-08-16T12:19:33.085Z"
   },
   "Hudayriyat Golf Estates": {
-    "ar": "الحديريات مشاريع الغولف",
-    "by": "machine",
+    "ar": "حديريات غولف إستيتس",
+    "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Hudayriyat Golf Estates\nNawayef Village\nAl Naseem Community\nBloom Living\nReem Hills\nYas Park Gate": {
@@ -7625,7 +7625,7 @@
   },
   "List Your Property": {
     "ar": "أدرج عقارك",
-    "by": "machine",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
   },
@@ -8072,8 +8072,8 @@
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Luxury Communities": {
-    "ar": "المجتمعات الفاخرة",
-    "by": "machine",
+    "ar": "مجتمعات فاخرة",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T11:00:32.154Z"
   },
@@ -8220,8 +8220,8 @@
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Managing properties with ongoing care and professional service.": {
-    "ar": "إدارة العقارات مع الرعاية المستمرة والخدمة الاحترافية.",
-    "by": "machine",
+    "ar": "إدارة العقارات بعناية مستمرة وخدمة احترافية.",
+    "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Manarat Al Saadiyat": {
@@ -8290,8 +8290,8 @@
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Market and sell your property or land with professional support.": {
-    "ar": "سوق وبيع عقارك أو أرضك بدعم احترافي.",
-    "by": "machine",
+    "ar": "بيع وتسويق عقارك أو أرضك بدعم محترف.",
+    "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Market data: June 2026.": {
@@ -8866,8 +8866,8 @@
     "at": "2026-08-16T15:29:04.054Z"
   },
   "Off-Plan Properties": {
-    "ar": "عقارات على الخارطة",
-    "by": "machine",
+    "ar": "عقارات تحت الإنشاء",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
@@ -10360,8 +10360,8 @@
     "at": "2026-08-20T10:25:58.859Z"
   },
   "Property Status": {
-    "ar": "حالة العقار",
-    "by": "machine",
+    "ar": "طرق شراء العقار",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:09:10.478Z"
   },
@@ -10490,8 +10490,8 @@
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Radiant Real Estate": {
-    "ar": "Radiant Real Estate",
-    "by": "machine"
+    "ar": "راديانت العقارية",
+    "by": "reviewed"
   },
   "Radiant Real Estate is an Abu Dhabi-based developer specialising in contemporary residential and mixed-use developments with a focus on quality, innovation and modern urban living.": {
     "ar": "Radiant Real Estate هو مطور عقاري مقره أبو ظبي متخصص في المشاريع السكنية والمتعددة الاستخدامات المعاصرة مع التركيز على الجودة والابتكار والحياة الحضرية الحديثة.",
@@ -10499,8 +10499,8 @@
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Radiant Terraces": {
-    "ar": "الشرفات المشرقة",
-    "by": "machine",
+    "ar": "التراسات المشرقة",
+    "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Rashid founded Bazar in 2018 after twelve years on the institutional side. He still personally handles the firm's family-office mandates and sits on every offer above AED 30M.": {
@@ -10533,8 +10533,8 @@
     "at": "2026-08-17T08:11:25.039Z"
   },
   "Ready Properties": {
-    "ar": "العقارات الجاهزة",
-    "by": "machine",
+    "ar": "عقارات جاهزة",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
@@ -10641,7 +10641,7 @@
   },
   "Rent": {
     "ar": "الإيجار",
-    "by": "machine",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:07:12.027Z"
   },
@@ -10658,8 +10658,8 @@
     "at": "2026-08-16T16:05:14.877Z"
   },
   "Rent a Property": {
-    "ar": "استئجار عقار",
-    "by": "machine",
+    "ar": "استأجر عقارًا",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
@@ -10682,8 +10682,8 @@
     "at": "2026-08-16T10:37:34.607Z"
   },
   "Rental Process Guide": {
-    "ar": "دليل عملية الإيجار",
-    "by": "machine",
+    "ar": "دليل إجراءات الإيجار",
+    "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Rental areas": {
@@ -10828,13 +10828,13 @@
     "at": "2026-08-16T12:19:33.086Z"
   },
   "Required Documents Guide": {
-    "ar": "دليل الوثائق المطلوبة",
-    "by": "machine",
+    "ar": "دليل المستندات المطلوبة",
+    "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Resale Properties": {
-    "ar": "العقارات المعاد بيعها",
-    "by": "machine",
+    "ar": "عقارات إعادة البيع",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
   },
@@ -11224,8 +11224,8 @@
     "at": "2026-08-16T12:32:10.244Z"
   },
   "Sell Your Property": {
-    "ar": "سجّل عقارك للبيع",
-    "by": "machine",
+    "ar": "بيع العقار الخاص بك",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
@@ -11899,8 +11899,8 @@
     "by": "machine"
   },
   "Taraf Holding": {
-    "ar": "احتفاظ ترف",
-    "by": "machine",
+    "ar": "طرف القابضة",
+    "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
   "Targeted Market Exposure": {
@@ -12998,8 +12998,8 @@
     "at": "2026-08-17T08:34:19.127Z"
   },
   "Villas": {
-    "ar": "الفلل",
-    "by": "machine",
+    "ar": "فلل",
+    "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.269Z"
   },
