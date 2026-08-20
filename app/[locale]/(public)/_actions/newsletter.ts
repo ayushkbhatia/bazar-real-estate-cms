@@ -64,6 +64,7 @@ export async function subscribeToNewsletter(
 
   const email = normaliseEmail(parsed.data.email);
   const source = parsed.data.source;
+  const locale = parsed.data.locale;
 
   // If they're already confirmed, short-circuit politely.
   const existing = await getSubscriberByEmail(email);
@@ -92,6 +93,7 @@ export async function subscribeToNewsletter(
         email,
         status: "pending",
         source,
+        locale,
         confirmation_token: token,
         subscribed_at: new Date().toISOString(),
         confirmed_at: null,

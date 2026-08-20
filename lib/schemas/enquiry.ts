@@ -46,6 +46,16 @@ export const ENQUIRY_INTENTS = [
  */
 export const enquirySchema = z
   .object({
+    /**
+     * The locale the visitor submitted in.
+     *
+     * Constrained rather than trusted: the value crosses from the client and
+     * the column carries `check (locale in ('en','ar'))` from migration 0100,
+     * so an unknown string would fail the INSERT and lose the lead outright.
+     * Defaulting keeps the lead and loses only the attribution — the right way
+     * round.
+     */
+    locale: z.enum(["en", "ar"]).default("en"),
     name: z.string().min(2, "Name is too short").max(120, "Name is too long"),
     email: z
       .union([z.string().email("Enter a valid email"), z.literal("")])

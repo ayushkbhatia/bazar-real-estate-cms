@@ -13,6 +13,13 @@ export type NewsletterSource = (typeof NEWSLETTER_SOURCES)[number];
 export const newsletterSignupSchema = z.object({
   email: z.string().email("Enter a valid email").max(254),
   source: z.enum(NEWSLETTER_SOURCES).default("insights_header"),
+  /**
+   * The locale the visitor subscribed in. Same contract as `enquirySchema`:
+   * constrained, because the column carries a check from migration 0100, and
+   * defaulted rather than rejected so a bad value costs the attribution and
+   * not the subscriber.
+   */
+  locale: z.enum(["en", "ar"]).default("en"),
 });
 
 export type NewsletterSignupInput = z.infer<typeof newsletterSignupSchema>;
