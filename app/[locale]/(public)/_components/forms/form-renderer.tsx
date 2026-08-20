@@ -1,5 +1,7 @@
 "use client";
 
+import { useLocale } from "next-intl";
+
 /**
  * The one form component the CMS drives.
  *
@@ -120,6 +122,9 @@ export function FormRenderer({
   const style = successStyle ?? (stacked ? "note" : "soft");
 
   const router = useRouter();
+  // The locale the visitor is submitting in. Threaded to the action rather
+  // than read there — see `FormSubmitContext.locale`.
+  const locale = useLocale();
   const [values, setValues] = useState<Values>(() =>
     initialValues(form, tokens),
   );
@@ -187,6 +192,8 @@ export function FormRenderer({
     startTransition(async () => {
       const result = await submitForm(form.key, normalised, {
         ...context,
+        // The form renders under `[locale]`, so this IS the segment.
+        locale,
         path:
           context?.path ??
           (typeof window === "undefined" ? null : window.location.pathname),

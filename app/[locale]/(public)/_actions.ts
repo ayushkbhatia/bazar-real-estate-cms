@@ -156,6 +156,11 @@ export async function createEnquiry(
     budget_max: data.budget_max ?? null,
     account_id: user?.id ?? null,
     assigned_agent_id: assignedAgentId,
+    // Migration 0100 added this column and nothing ever wrote it, so every row
+    // read `en` — Arabic leads included. Its own docblock calls it "the one
+    // part of the i18n epic that is NOT retro-fittable": a lead's language
+    // cannot be inferred afterwards, so an unrecorded day is lost for good.
+    locale: data.locale,
     inferred_constraints:
       inferred as unknown as Database["public"]["Tables"]["enquiries"]["Insert"]["inferred_constraints"],
   };

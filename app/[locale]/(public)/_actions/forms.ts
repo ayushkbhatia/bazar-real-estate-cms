@@ -39,6 +39,21 @@ export type FormSubmitContext = {
   /** The page the visitor was on, slug included. */
   path?: string | null;
   /**
+   * The locale the visitor submitted in.
+   *
+   * Threaded from the client rather than read from the request, because the
+   * ambient read fails in the one way that matters here: `currentLocale()`
+   * catches a missing request scope and returns English, so a server action
+   * where `getLocale()` does not resolve records `en` for an Arabic lead and
+   * reports nothing. That is indistinguishable from the bug this fixes, on a
+   * column migration 0100 calls "the one part of the i18n epic that is NOT
+   * retro-fittable" — you cannot infer a lead's language after the fact.
+   *
+   * `useLocale()` in the renderer cannot be wrong: the form is rendered under
+   * `[locale]`, so the value is the segment itself.
+   */
+  locale?: string | null;
+  /**
    * The state of the tool the form sits under, in the visitor's own units —
    * the mortgage calculator's price, deposit, term, rate and monthly today.
    *
@@ -128,6 +143,7 @@ export async function submitForm(
   switch (form.def.handler) {
     case "newsletter": {
       const result = await subscribeToNewsletter({
+        locale: context.locale ?? undefined,
         email: lead.email,
         source: form.def.newsletterSource ?? "insights_header",
       });
@@ -196,6 +212,7 @@ export async function submitForm(
         source: form.def.enquirySource ?? "contact_page",
         property_id: lead.propertyId ?? context.propertyId ?? null,
         development_id: lead.developmentId ?? context.developmentId ?? null,
+        locale: context.locale ?? undefined,
       });
       if (result.status === "error") {
         return {
