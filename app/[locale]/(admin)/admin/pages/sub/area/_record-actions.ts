@@ -167,6 +167,8 @@ export type CreateAreaResult =
 
 export async function createArea(raw: {
   name: string;
+  /** Arabic name, collected at creation — see the note on `areaCreateSchema`. */
+  name_ar?: string | null;
   slug: string;
   kind: string;
   parent_id: string | null;
@@ -231,6 +233,7 @@ export async function createArea(raw: {
     .from("areas")
     .insert({
       name: input.name,
+      name_ar: input.name_ar ?? null,
       slug: input.slug,
       kind: input.kind,
       parent_id: input.parent_id ?? null,

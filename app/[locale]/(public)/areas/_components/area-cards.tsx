@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
@@ -52,6 +53,7 @@ export async function AreaCards({
   /** Configured in the areas master page. Empty ⇒ the marquee order. */
   cards?: AreaCard[];
 } = {}) {
+  const t = await getTranslations("area");
   const entries = await listAreasWithCounts();
 
   if (cards && cards.length > 0) {
@@ -67,8 +69,8 @@ export async function AreaCards({
           name: c.name ?? slug,
           countLabel:
             count !== undefined
-              ? `${count.toLocaleString("en-US")} homes for sale`
-              : "Explore homes",
+              ? t("cards.homesForSale", { count })
+              : t("cards.exploreHomes"),
           imgLabel: c.imageLabel ?? slug,
           imgUrl: c.imageUrl,
           imgAlt: c.imageAlt,
@@ -96,7 +98,7 @@ export async function AreaCards({
         key: c.id,
         href: `/areas/${c.slug}`,
         name: c.name,
-        countLabel: `${c.listing_count.toLocaleString("en-US")} homes for sale`,
+        countLabel: t("cards.homesForSale", { count: c.listing_count }),
         imgLabel: c.slug,
       }))}
     />

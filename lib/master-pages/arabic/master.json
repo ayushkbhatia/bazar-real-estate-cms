@@ -15622,5 +15622,180 @@
     "ar": "المنطقة أو الإمارة",
     "by": "machine",
     "model": "claude-opus-5"
+  },
+  "Submit": {
+    "ar": "إرسال",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Subscribe": {
+    "ar": "اشترك",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Subscribing…": {
+    "ar": "جارٍ الاشتراك…",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Searching…": {
+    "ar": "جارٍ البحث…",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Finding…": {
+    "ar": "جارٍ البحث عن العقارات…",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Unlocking…": {
+    "ar": "جارٍ فتح الملف…",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Find My Property": {
+    "ar": "ابحث عن عقاري",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Find Rentals": {
+    "ar": "ابحث عن إيجارات",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Register interest": {
+    "ar": "تسجيل الاهتمام",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Register my interest": {
+    "ar": "سجّل اهتمامي",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Request a free consultation": {
+    "ar": "اطلب استشارة مجانية",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Request pre-approval": {
+    "ar": "اطلب موافقة مبدئية",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Request the brochure": {
+    "ar": "اطلب الكتيّب",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "See this floor plan": {
+    "ar": "اطّلع على هذا المخطط",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Start your pre-approval": {
+    "ar": "ابدأ موافقتك المبدئية",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Express your interest in {project}": {
+    "ar": "سجّل اهتمامك بمشروع {project}",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Get the {project} brochure": {
+    "ar": "احصل على كتيّب {project}",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Your {project} brochure": {
+    "ar": "كتيّب {project}",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Leave your details and the advisor for {project} will come back with pricing, availability and the payment plan.": {
+    "ar": "اترك بياناتك وسيعود إليك مستشار مشروع {project} بالأسعار والتوافر وخطة السداد.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Tell us where to reach you and the PDF opens straight away.": {
+    "ar": "أخبرنا كيف نصل إليك ويُفتح ملف PDF على الفور.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Check your inbox.": {
+    "ar": "تفقّد بريدك الإلكتروني.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Interest registered.": {
+    "ar": "تم تسجيل اهتمامك.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Your scenario is with the mortgage desk.": {
+    "ar": "سيناريوك الآن لدى قسم التمويل العقاري.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "An advisor will be in touch shortly about listing your property.": {
+    "ar": "سيتواصل معك أحد مستشارينا قريبًا بشأن إدراج عقارك.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "An advisor will be in touch shortly about the project you registered for.": {
+    "ar": "سيتواصل معك أحد مستشارينا قريبًا بشأن المشروع الذي سجّلت اهتمامك به.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "An advisor will call you in the window you picked. Your reference is on screen — quote it if you call us first.": {
+    "ar": "سيتصل بك أحد مستشارينا في الموعد الذي اخترته. رقمك المرجعي ظاهر على الشاشة — اذكره إذا اتصلت بنا أولًا.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "We send the scenario above to our mortgage desk. An advisor comes back with what our partner banks will actually lend.": {
+    "ar": "نرسل السيناريو أعلاه إلى قسم التمويل العقاري لدينا، ويعود إليك أحد المستشارين بما ستقرضه البنوك الشريكة فعليًا.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "An advisor will come back within one business day with the rates our partner banks can hold, and the documents they'll need from you.": {
+    "ar": "سيعود إليك أحد مستشارينا خلال يوم عمل واحد بالأسعار التي تستطيع البنوك الشريكة تثبيتها، وبالمستندات التي ستطلبها منك.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Thanks — we've got it.": {
+    "ar": "شكرًا لك — وصلنا طلبك.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Thanks — we've got your brief.": {
+    "ar": "شكرًا لك — وصلنا موجزك.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "We're showing you the matching rentals now. An advisor will follow up with anything that isn't listed yet.": {
+    "ar": "نعرض عليك الآن الإيجارات المطابقة. وسيتابع معك أحد المستشارين بشأن ما لم يُدرج بعد.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "We've passed your details to the advisor for this project — they'll send the brochure shortly.": {
+    "ar": "أرسلنا بياناتك إلى مستشار هذا المشروع — وسيرسل لك الكتيّب قريبًا.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "We've received your brief for {area}. An advisor will reach out within 2 hours during business hours, and by next morning otherwise.": {
+    "ar": "استلمنا موجزك الخاص بـ{area}. سيتواصل معك أحد المستشارين خلال ساعتين في أوقات العمل، وفي صباح اليوم التالي خارجها.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "We've sent a confirmation link — click it and you're on the list.": {
+    "ar": "أرسلنا لك رابط تأكيد — اضغط عليه لتنضم إلى القائمة.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "You're verified.": {
+    "ar": "تم التحقق منك.",
+    "by": "machine",
+    "model": "claude-opus-5"
   }
 }
