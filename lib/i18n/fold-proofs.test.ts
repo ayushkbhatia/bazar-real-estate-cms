@@ -105,6 +105,13 @@ const FOLD_PROOFS: Record<string, string> = {
   "properties.orientation": "lib/queries/properties.fold.test.ts",
   "search_bar_tabs.label": "lib/queries/search-bar.fold.test.ts",
   "search_bar_tabs.placeholder": "lib/queries/search-bar.fold.test.ts",
+  "footer_settings.blurb": "lib/queries/footer.fold.test.ts",
+  "footer_settings.contact_heading": "lib/queries/footer.fold.test.ts",
+  "footer_settings.legal_line": "lib/queries/footer.fold.test.ts",
+  "footer_columns.heading": "lib/queries/footer.fold.test.ts",
+  "footer_links.label": "lib/queries/footer.fold.test.ts",
+  "footer_contact_items.label": "lib/queries/footer.fold.test.ts",
+  "footer_contact_items.body": "lib/queries/footer.fold.test.ts",
 };
 
 describe("WIRED_READ fold proofs", () => {

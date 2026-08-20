@@ -89,10 +89,14 @@ lib/
   forms/                   # Forms Manager: registry of every public lead form,
                            #   resolver (DB over code defaults), validator,
                            #   submission mapping. See docs/FORMS.md.
-  page-builder/            # Page Builder: catalogue of 14 reusable public
+  page-builder/            # Page Builder: catalogue of reusable public
                            #   sections, document parse/resolve, batched data
                            #   loader, values→props adapters, publish gate.
                            #   See docs/PAGE_BUILDER.md.
+  master-pages/library.ts  # Section library: content owned by the SITE, not by
+                           #   a page (testimonials today). One document, read by
+                           #   the home page and by the Page Builder block.
+                           #   Edited at /admin/pages/sub/section.
   env.ts                   # zod-validated env loader (use `env.X`, never raw process.env.X)
   utils.ts                 # cn() helper
   posthog.tsx              # client analytics provider (no-op without keys)
@@ -177,10 +181,10 @@ All env vars are loaded via `lib/env.ts` (zod-validated). Don't read `process.en
 - **Editorial & content** — `/insights` blog with category routing, `/pages/[slug]` block-based editor, `/about`, `/agents`, `/agents/[slug]`, `/services` + 5 sub-pages, `/areas/[slug]` guides, `/developers/[slug]` profiles, `/contact`.
 - **AI Concierge** — `/concierge` route with Claude Haiku function-calling, streaming SSE, hand-off to human advisor.
 - **Tools** — `/tools/valuation` (DLD-comparable model + PDF download), `/tools/mortgage` (Central-Bank-rate aware + PDF; six reorderable Pages & blocks sections), `/tools/compare`.
-- **Admin CMS** — properties (publishability gates, agent assignment, bulk reassign/off-market/archive), developments, deals (Kanban stages, documents, KYC), enquiries (auto-reply + escalation crons, threads, assignment), valuations, audit log + bulk-operations view, users + roles, settings (integrations panel for Meilisearch / Mapbox / Mailchimp / Resend; **Mortgage** — the calculator's opening scenario, closing-cost percentages, Central Bank LTV tiers and DBR thresholds), pages, blog, analytics with PDF export, **Forms Manager** (every public lead form's visibility, copy, CTA, field list/types/order + its responses — `/admin/forms`; the home hero's search bar, tabs and all, at `/admin/forms/search-bar`), **Page Builder** (campaign landing pages assembled from 14 pre-built sections, draft/preview/publish, served at `/lp/<slug>` — `/admin/page-builder`).
+- **Admin CMS** — properties (publishability gates, agent assignment, bulk reassign/off-market/archive), developments, deals (Kanban stages, documents, KYC), enquiries (auto-reply + escalation crons, threads, assignment), valuations, audit log + bulk-operations view, users + roles, settings (integrations panel for Meilisearch / Mapbox / Mailchimp / Resend; **Mortgage** — the calculator's opening scenario, closing-cost percentages, Central Bank LTV tiers and DBR thresholds), pages, blog, analytics with PDF export, **Forms Manager** (every public lead form's visibility, copy, CTA, field list/types/order + its responses — `/admin/forms`; the home hero's search bar, tabs and all, at `/admin/forms/search-bar`), **Page Builder** (campaign landing pages assembled from pre-built sections, draft/preview/publish, served at `/lp/<slug>` — `/admin/page-builder`), **Footer** (the site footer's columns, links, socials, contact entries and legal line, each with an Arabic twin — `/admin/footer`), **Sections** (site-wide content edited once and rendered wherever it is placed — testimonials today, at `/admin/pages/sub/section`).
 - **Compliance** — PDPL DSR export + delete flows, cookie consent banner, all legal pages (`/legal/privacy|terms|cookies`).
 - **Integrations** — Meilisearch sync, Voyage embeddings backfill, Mapbox geocoding + isochrones, Mailchimp two-way sync via webhook, Sentry, PostHog (consent-gated, with sign-in identify), Vercel Analytics, syndication push to portals, DLD weekly import, BRN validation, permit expiry alerts.
-- **Infra** — 110 migrations, 80+ vitest specs, Playwright specs, 7 cron jobs, full CI gate.
+- **Infra** — 116 migrations, 80+ vitest specs, Playwright specs, 7 cron jobs, full CI gate.
   **Known gap**: the crons have never run in production — no Edge Function deployed, `app_settings` empty, `CRON_SECRET` unset. See docs/FOLLOWUPS.md.
 
 See [docs/PROJECT_UNDERSTANDING.md](docs/PROJECT_UNDERSTANDING.md) for the full roadmap and what's next.

@@ -70,8 +70,7 @@ const REPO_ROOT = join(import.meta.dirname, "..", "..");
  */
 const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/area-map/area-chips.tsx": 1,
-  "app/[locale]/(public)/_components/area-map/area-map-home.tsx": 1,
-  "app/[locale]/(public)/_components/area-map/area-map.tsx": 6,
+  "app/[locale]/(public)/_components/area-map/area-map.tsx": 5,
   "app/[locale]/(public)/_components/commute-time-tool.tsx": 3,
   "app/[locale]/(public)/_components/curated-grid.tsx": 1,
   "app/[locale]/(public)/_components/developer-marquee.tsx": 1,
@@ -84,7 +83,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/home/home-testimonials.tsx": 1,
   "app/[locale]/(public)/_components/market-context-link.tsx": 3,
   "app/[locale]/(public)/_components/marketing/buy-category-explorer.tsx": 2,
-  "app/[locale]/(public)/_components/marketing/buy-properties-map.tsx": 1,
   "app/[locale]/(public)/_components/marketing/buy-rent-landing.tsx": 2,
   "app/[locale]/(public)/_components/mode-segmented.tsx": 1,
   "app/[locale]/(public)/_components/more-filters-drawer.tsx": 1,
@@ -148,7 +146,7 @@ const REMAINING: Readonly<Record<string, number>> = {
 };
 
 /** What the ratchet held when it landed. Lowering it is the point. */
-const TOTAL_CEILING = 181;
+const TOTAL_CEILING = 178;
 
 /**
  * Three shapes, matching the three ways a literal reaches a reader.

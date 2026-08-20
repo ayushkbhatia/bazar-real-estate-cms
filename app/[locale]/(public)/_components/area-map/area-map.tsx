@@ -47,15 +47,20 @@ import {
   formatPricePerArea,
   usePreferences,
 } from "@/lib/preferences";
+import { useTranslations } from "next-intl";
 import { useIsRtl } from "@/lib/dom/use-is-rtl";
+import { emirateMessageKey } from "@/lib/areas/emirates";
 
-// City overviews — where the camera sits per emirate (matches the handoff).
-const CITIES: Record<
-  string,
-  { label: string; center: [number, number]; zoom: number }
-> = {
-  "abu-dhabi": { label: "Abu Dhabi", center: [54.46, 24.48], zoom: 10.6 },
-  dubai: { label: "Dubai", center: [55.22, 25.14], zoom: 10.4 },
+/*
+ * City overviews — where the camera sits per emirate (matches the handoff).
+ *
+ * Camera only. The name a visitor reads comes from the message catalogue via
+ * `emirateMessageKey`: this object used to carry a `label` too, and that label
+ * printed "Abu Dhabi" into the area card on the Arabic site.
+ */
+const CITIES: Record<string, { center: [number, number]; zoom: number }> = {
+  "abu-dhabi": { center: [54.46, 24.48], zoom: 10.6 },
+  dubai: { center: [55.22, 25.14], zoom: 10.4 },
 };
 
 const DOT_REVEAL_ZOOM = 12.5;
@@ -397,6 +402,7 @@ export function AreaMap({
   const visibleAreas = areas.filter((a) => a.emirate === emirate);
   const city = CITIES[emirate] ?? CITIES["abu-dhabi"];
   const emirateEmpty = visibleAreas.length === 0;
+  const t = useTranslations("common");
 
   return (
     <div className={`bzmap ${className ?? ""}`.trim()}>
@@ -430,10 +436,10 @@ export function AreaMap({
       {map && emirateEmpty && (
         <div className="bzmap-empty">
           <div className="serif" style={{ fontSize: 22, color: "var(--bz-ink)" }}>
-            {city.label} is coming soon
+            {t("map.comingSoon", { emirate: t(emirateMessageKey(emirate)) })}
           </div>
           <div style={{ fontSize: 13, color: "var(--bz-ink-2)" }}>
-            We&rsquo;re curating listings here now.
+            {t("map.curating")}
           </div>
         </div>
       )}
@@ -547,8 +553,9 @@ function Flyout({
   onClose: () => void;
   onZoomToListings: () => void;
 }) {
+  const t = useTranslations("common");
   const { prefs } = usePreferences();
-  const emirateLabel = CITIES[area.emirate]?.label ?? "Abu Dhabi";
+  const emirateLabel = t(emirateMessageKey(area.emirate));
   // Stored AED/ft²; shown in the visitor's currency per their area unit.
   const median =
     area.medianPerFt2 != null

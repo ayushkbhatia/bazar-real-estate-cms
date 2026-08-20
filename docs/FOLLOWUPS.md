@@ -43,6 +43,17 @@ quick grep can show "what's outstanding in my area."
   reached. The hero is the first thing an Arabic visitor sees, so this is the
   most visible remaining hole. Done = both read from `messages/` (or the DB
   twin), with `no-unextracted-literals` covering the hero.
+- [i18n] The `footer` message namespace is now read by nothing.
+  The footer's copy moved into `footer_*` tables (migrations 0112/0113), so
+  `messages/en/footer.json` and `messages/ar/footer.json` — `rights`, `orn`,
+  `privacy`, `terms`, `cookies`, `sitemap` — have no consumer left. They were
+  kept rather than deleted because removing a namespace also means editing
+  `NAMESPACES` in `lib/i18n/namespaces.ts`, the `pickClientMessages` case in
+  `lib/i18n/namespaces.test.ts:238`, and the hardcoded list in
+  `lib/i18n/icu.test.ts:173` — i18n infra churn that had nothing to do with the
+  footer PR. "Done" is deleting both files and those three references. Note the
+  Arabic in them is the client's own wording and is already carried into the
+  0112 seed, so nothing is lost.
 
 - [off-plan] The landing's "View all in <area>" links go to a page that cannot
   answer them.
@@ -1027,3 +1038,14 @@ shows the trail.)
   never an option. Promote it to `_components/marketing/` beside `SectionHead`
   and update the four call sites — a move plus four import lines, left out of
   the section split so that diff stayed readable.
+
+- [i18n] The testimonial card's avatar monogram is built from the first and
+  last word of the attribution (`initialsOf` in
+  `app/[locale]/(public)/_components/home/home-testimonials.tsx`), which was
+  written when the attribution could only be English. Now that the reviews are
+  translated, `/ar` draws two-letter Arabic monograms — "زوجان … ريزيرف" gives
+  **زر**, which is a word ("button"), not initials. Arabic has no monogram
+  convention to fall back on, so this needs a decision rather than a patch:
+  drop the circle on `/ar`, keep the Latin initials in both locales (they are
+  decorative, not content), or replace the circle with a neutral glyph. Small,
+  visible, and only visible to Arabic readers.

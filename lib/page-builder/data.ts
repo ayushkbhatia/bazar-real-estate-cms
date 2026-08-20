@@ -27,8 +27,10 @@ import {
 import { listPropertiesByReference } from "@/lib/queries/featured-properties";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { getForms } from "@/lib/queries/forms";
+import { getTestimonials } from "@/lib/queries/content-sections";
 import type { ListingRow } from "@/lib/queries/properties";
 import type { ResolvedForm } from "@/lib/forms";
+import type { Testimonial } from "@/lib/seeds/awards";
 import type { ResolvedBlock } from "./types";
 
 type DevelopmentRow = Awaited<ReturnType<typeof listPublishedDevelopments>>[number];
@@ -41,6 +43,12 @@ export type LandingDataRequest = {
   queries: QueryKey[];
   developments: boolean;
   formKeys: string[];
+  /**
+   * How many reviews the hungriest testimonial block on the page wants. Null
+   * means no block asked. One number rather than one request per block: the
+   * list is shared, so the largest slice covers every block that reads it.
+   */
+  testimonials: number | null;
 };
 
 export type LandingData = {
@@ -48,6 +56,7 @@ export type LandingData = {
   propertiesByQuery: Map<QueryKey, ListingRow[]>;
   developments: DevelopmentRow[];
   forms: Record<string, ResolvedForm>;
+  testimonials: Testimonial[];
 };
 
 export const EMPTY_LANDING_DATA: LandingData = {
@@ -55,6 +64,7 @@ export const EMPTY_LANDING_DATA: LandingData = {
   propertiesByQuery: new Map(),
   developments: [],
   forms: {},
+  testimonials: [],
 };
 
 /**
@@ -77,6 +87,7 @@ export function collectDataRequest(
   const queries = new Set<QueryKey>();
   const formKeys = new Set<string>();
   let developments = false;
+  let testimonials: number | null = null;
 
   for (const block of blocks) {
     if (!block.enabled || !block.def) continue;
@@ -89,6 +100,11 @@ export function collectDataRequest(
     }
 
     if (needs.includes("developments")) developments = true;
+
+    if (needs.includes("testimonials")) {
+      const want = Number.parseInt(str(values, "limit") ?? "3", 10) || 3;
+      testimonials = Math.max(testimonials ?? 0, want);
+    }
 
     if (needs.includes("properties_picked") || needs.includes("properties_query")) {
       const source = str(values, "source") ?? "picked";
@@ -109,6 +125,7 @@ export function collectDataRequest(
     queries: [...queries],
     developments,
     formKeys: [...formKeys],
+    testimonials,
   };
 }
 
@@ -136,18 +153,22 @@ async function runQuery(key: QueryKey): Promise<ListingRow[]> {
 export async function resolveLandingData(
   request: LandingDataRequest,
 ): Promise<LandingData> {
-  const [refRows, queryResults, developments, forms] = await Promise.all([
-    request.propertyRefs.length > 0
-      ? listPropertiesByReference(request.propertyRefs)
-      : Promise.resolve([] as ListingRow[]),
-    Promise.all(request.queries.map((key) => runQuery(key))),
-    request.developments
-      ? listPublishedDevelopments()
-      : Promise.resolve([] as DevelopmentRow[]),
-    request.formKeys.length > 0
-      ? getForms(request.formKeys)
-      : Promise.resolve({} as Record<string, ResolvedForm>),
-  ]);
+  const [refRows, queryResults, developments, forms, testimonials] =
+    await Promise.all([
+      request.propertyRefs.length > 0
+        ? listPropertiesByReference(request.propertyRefs)
+        : Promise.resolve([] as ListingRow[]),
+      Promise.all(request.queries.map((key) => runQuery(key))),
+      request.developments
+        ? listPublishedDevelopments()
+        : Promise.resolve([] as DevelopmentRow[]),
+      request.formKeys.length > 0
+        ? getForms(request.formKeys)
+        : Promise.resolve({} as Record<string, ResolvedForm>),
+      request.testimonials !== null
+        ? getTestimonials(request.testimonials)
+        : Promise.resolve([] as Testimonial[]),
+    ]);
 
   return {
     propertiesByRef: new Map(refRows.map((r) => [r.reference, r])),
@@ -156,6 +177,7 @@ export async function resolveLandingData(
     ),
     developments,
     forms,
+    testimonials,
   };
 }
 

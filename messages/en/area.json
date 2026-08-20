@@ -39,5 +39,9 @@
   },
   "form": {
     "successToast": "Request sent — an advisor will be in touch."
+  },
+  "cards": {
+    "exploreHomes": "Explore homes",
+    "homesForSale": "{count, plural, one {# home for sale} other {# homes for sale}}"
   }
 }

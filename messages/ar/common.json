@@ -1,9 +1,15 @@
 {
+  "allAreas": "جميع المناطق",
   "back": "رجوع",
   "brand": "بازار",
   "browseBuy": "تصفّح العقارات للبيع",
   "close": "إغلاق",
   "currencyAndUnits": "العملة ووحدات القياس",
+  "emirate": "الإمارة",
+  "emirates": {
+    "abuDhabi": "أبوظبي",
+    "dubai": "دبي"
+  },
   "hours": {
     "open": "مفتوح",
     "closed": "مغلق",
@@ -29,6 +35,10 @@
   "languageArabic": "العربية",
   "languageEnglish": "English",
   "loading": "جارٍ التحميل",
+  "map": {
+    "comingSoon": "{emirate} قريباً",
+    "curating": "نعمل على تنسيق قوائمنا العقارية هنا الآن."
+  },
   "mortgageTeaser": {
     "estimatedMonthly": "القسط الشهري التقديري",
     "viewProperties": "تصفح العقارات",

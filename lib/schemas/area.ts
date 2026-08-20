@@ -40,6 +40,20 @@ export const AREA_KIND_LABELS: Record<AreaKind, string> = {
 /** Fields the "Add area" wizard collects. */
 export const areaCreateSchema = z.object({
   name: z.string().min(2, "Name is too short").max(120, "Name is too long"),
+  /*
+   * Collected at creation, not left to a second visit to the record editor.
+   *
+   * An area's name is the most-printed string it has — every listing card,
+   * every map flyout, the guide page's own heading — and a blank twin falls
+   * back to English on /ar. The editor was the only place to type it, so an
+   * area created from the property wizard rendered its name in English on the
+   * Arabic site until someone remembered to go back. Optional, because a
+   * blank one still resolves through ARABIC_STORE and then to English; the
+   * point is that the box is in front of the person who knows the answer.
+   *
+   * 180 = 1.5x the English cap, matching `arMax` and `areaEditSchema`.
+   */
+  name_ar: z.string().max(180).nullable().optional(),
   slug: z
     .string()
     .min(2, "Slug is too short")
@@ -55,8 +69,8 @@ export type AreaCreateInput = z.infer<typeof areaCreateSchema>;
 export const areaEditSchema = areaCreateSchema.extend({
   /* Arabic twins. `.optional()` because updateArea writes an explicit field
    * list rather than replacing the row, so an omitted key leaves the stored
-   * value alone. Caps are 1.5x their English siblings, matching arMax. */
-  name_ar: z.string().max(180).nullable().optional(),
+   * value alone. Caps are 1.5x their English siblings, matching arMax.
+   * `name_ar` is inherited from `areaCreateSchema`, which now collects it. */
   description: z.string().max(2000).nullable().optional(),
   description_ar: z.string().max(3000).nullable().optional(),
   // Shared with the Search appearance card, which writes the same
@@ -74,6 +88,7 @@ export const areaEditSchema = areaCreateSchema.extend({
 export type AreaEditInput = z.infer<typeof areaEditSchema>;
 
 const NULLABLE_TEXT = [
+  "name_ar",
   "description",
   "meta_title",
   "meta_description",

@@ -25,8 +25,12 @@ import { WhoWeAre } from "./_components/home/who-we-are";
 import { DevelopersSection } from "./_components/developers-section";
 import { PartnerEcosystemSection } from "./_components/partner-ecosystem-section";
 import { HomeFaqs } from "./_components/home/home-faqs";
-import { HomeTestimonials } from "./_components/home/home-testimonials";
+import {
+  HomeTestimonials,
+  HOME_TESTIMONIAL_COUNT,
+} from "./_components/home/home-testimonials";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { getTestimonials } from "@/lib/queries/content-sections";
 import { getForm } from "@/lib/queries/forms";
 import { listPropertiesByReference } from "@/lib/queries/featured-properties";
 import { HOME_FEATURED_LISTING_COUNT } from "./_components/home/section-copy";
@@ -78,12 +82,21 @@ export default async function HomePage({
   // the failure `lib/i18n/current.ts` describes: it looks finished.
   setRequestLocale(asLocale((await params).locale));
 
-  const [{ rows: latest }, settings, content, listForm] = await Promise.all([
-    listPublishedProperties({ mode: "buy", limit: HOME_FEATURED_LISTING_COUNT }),
-    getPublicSiteSettings(),
-    getMasterPageContent("home"),
-    getForm("home_list_property"),
-  ]);
+  const [{ rows: latest }, settings, content, listForm, testimonials] =
+    await Promise.all([
+      listPublishedProperties({
+        mode: "buy",
+        limit: HOME_FEATURED_LISTING_COUNT,
+      }),
+      getPublicSiteSettings(),
+      getMasterPageContent("home"),
+      getForm("home_list_property"),
+      // The reviews themselves live in the section library, not on this page —
+      // /admin/pages/sub/section/testimonials. Fetched here rather than inside
+      // the component so the section stays a pure render and the page keeps one
+      // round of parallel reads.
+      getTestimonials(HOME_TESTIMONIAL_COUNT),
+    ]);
 
   // Hero variant is driven entirely by site_settings now — the page used to
   // also accept a `?hero=` querystring override, but reading `searchParams`
@@ -327,6 +340,7 @@ export default async function HomePage({
         key="testimonials"
         eyebrow={str(testimonialsV, "eyebrow")}
         heading={str(testimonialsV, "heading")}
+        items={testimonials}
       />
     ),
   };

@@ -28,17 +28,14 @@
  * out of the audited page-load window entirely.
  */
 
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
 import { AreaMapLazy } from "./area-map-lazy";
 import { AreaChips } from "./area-chips";
 import type { AreaPin, AreaDot } from "@/lib/queries/area-map";
-
-const EMIRATES: { slug: string; label: string }[] = [
-  { slug: "abu-dhabi", label: "Abu Dhabi" },
-  { slug: "dubai", label: "Dubai" },
-];
+import { EMIRATE_SLUGS, emirateMessageKey } from "@/lib/areas/emirates";
 
 /**
  * True once `ref`'s element has genuinely scrolled into (most of) the
@@ -89,7 +86,7 @@ export function AreaMapHome({
   heading,
   body,
   allHref = "/areas",
-  allLabel = "All areas",
+  allLabel,
 }: {
   areas: AreaPin[];
   dots: AreaDot[];
@@ -103,10 +100,12 @@ export function AreaMapHome({
   heading?: string | null;
   /** Optional paragraph under the heading. Nothing renders when blank. */
   body?: string | null;
-  /** "All …" link target + label (defaults to the areas index). */
+  /** "All …" link target (defaults to the areas index). */
   allHref?: string;
+  /** Overrides the link's label; blank uses the catalogue's "All areas". */
   allLabel?: string;
 }) {
+  const t = useTranslations("common");
   const [emirate, setEmirate] = useState("abu-dhabi");
   const [focusSlug, setFocusSlug] = useState<string | null>(null);
   const [frameRef, mapReady] = useNearViewport<HTMLDivElement>();
@@ -142,7 +141,7 @@ export function AreaMapHome({
             href={allHref}
             className="hidden items-center gap-1.5 text-sm text-bz-ink-2 transition-colors hover:text-bz-ink md:inline-flex"
           >
-            {allLabel} <ArrowRight size={14} />
+            {allLabel ?? t("allAreas")} <ArrowRight size={14} />
           </Link>
         </div>
       </div>
@@ -187,21 +186,22 @@ function EmirateToggle({
   emirate: string;
   onChange: (slug: string) => void;
 }) {
+  const t = useTranslations("common");
   return (
     <div
       className="flex gap-0.5 rounded-lg bg-bz-surface-2 p-[3px]"
       role="tablist"
-      aria-label="Emirate"
+      aria-label={t("emirate")}
     >
-      {EMIRATES.map((e) => {
-        const active = emirate === e.slug;
+      {EMIRATE_SLUGS.map((slug) => {
+        const active = emirate === slug;
         return (
           <button
-            key={e.slug}
+            key={slug}
             type="button"
             role="tab"
             aria-selected={active}
-            onClick={() => onChange(e.slug)}
+            onClick={() => onChange(slug)}
             className={[
               "h-[34px] rounded-md px-4 text-sm font-medium transition-colors",
               active
@@ -209,7 +209,7 @@ function EmirateToggle({
                 : "text-bz-ink-2 hover:text-bz-ink",
             ].join(" ")}
           >
-            {e.label}
+            {t(emirateMessageKey(slug))}
           </button>
         );
       })}

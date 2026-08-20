@@ -121,7 +121,29 @@ describe("collectDataRequest", () => {
       queries: [],
       developments: false,
       formKeys: [],
+      testimonials: null,
     });
+  });
+
+  /**
+   * The shared-content case. Two testimonial blocks are not two lists — there
+   * is one list in the section library — so the request carries a single
+   * number, the largest slice any block asked for, and the adapter re-slices
+   * per block.
+   */
+  it("collapses every testimonial block to one request for the largest slice", () => {
+    const request = collectDataRequest(
+      resolve([
+        inst("testimonials", { limit: "2" }),
+        inst("testimonials", { limit: "6" }),
+      ]),
+    );
+    expect(request.testimonials).toBe(6);
+  });
+
+  it("asks for no reviews when no block shows them", () => {
+    const request = collectDataRequest(resolve([inst("faq", { items: [] })]));
+    expect(request.testimonials).toBeNull();
   });
 
   it("dedups form keys across hero and lead band", () => {

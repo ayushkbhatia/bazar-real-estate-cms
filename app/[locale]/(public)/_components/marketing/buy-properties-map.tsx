@@ -9,6 +9,7 @@
  * accessible area chips below.
  */
 
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
@@ -17,11 +18,7 @@ import { AreaMapLazy } from "../area-map/area-map-lazy";
 import { AreaChips } from "../area-map/area-chips";
 import { fluid } from "./fluid";
 import type { AreaPin, AreaDot } from "@/lib/queries/area-map";
-
-const EMIRATES: { slug: string; label: string }[] = [
-  { slug: "abu-dhabi", label: "Abu Dhabi" },
-  { slug: "dubai", label: "Dubai" },
-];
+import { EMIRATE_SLUGS, emirateMessageKey } from "@/lib/areas/emirates";
 
 /** True once `ref`'s element has scrolled to within `rootMargin` of view. */
 function useNearViewport<T extends Element>(
@@ -156,21 +153,22 @@ function EmirateToggle({
   emirate: string;
   onChange: (slug: string) => void;
 }) {
+  const t = useTranslations("common");
   return (
     <div
       className="flex gap-0.5 rounded-lg bg-bz-surface-2 p-[3px]"
       role="tablist"
-      aria-label="Emirate"
+      aria-label={t("emirate")}
     >
-      {EMIRATES.map((e) => {
-        const active = emirate === e.slug;
+      {EMIRATE_SLUGS.map((slug) => {
+        const active = emirate === slug;
         return (
           <button
-            key={e.slug}
+            key={slug}
             type="button"
             role="tab"
             aria-selected={active}
-            onClick={() => onChange(e.slug)}
+            onClick={() => onChange(slug)}
             className={[
               "h-[34px] rounded-md px-4 text-sm font-medium transition-colors",
               active
@@ -178,7 +176,7 @@ function EmirateToggle({
                 : "text-bz-ink-2 hover:text-bz-ink",
             ].join(" ")}
           >
-            {e.label}
+            {t(emirateMessageKey(slug))}
           </button>
         );
       })}

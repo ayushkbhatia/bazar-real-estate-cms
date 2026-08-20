@@ -74,7 +74,13 @@ export type BlockNeed =
   | "developments"
   | "areas"
   /** `values.form_key` — a form from the Forms Manager. */
-  | "form";
+  | "form"
+  /**
+   * The shared client reviews from the section library. No per-block input:
+   * the whole point of that section is that there is one list, so two
+   * testimonial blocks on one page still collapse to a single fetch.
+   */
+  | "testimonials";
 
 export type BlockDef = {
   /**

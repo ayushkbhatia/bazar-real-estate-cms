@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ArabicTwin } from "../../../_fields/arabic-twin";
 import { slugify } from "@/lib/slug";
 import {
   AREA_KINDS,
@@ -58,6 +59,7 @@ export function NewAreaDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
+  const [nameAr, setNameAr] = useState("");
   const [slug, setSlug] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [kind, setKind] = useState<AreaKind>("area");
@@ -102,6 +104,7 @@ export function NewAreaDialog({
     setSlug("");
     setSlugTouched(false);
     setKind("area");
+    setNameAr("");
     setParentId("");
     setUseGeo(true);
     setErrors({});
@@ -112,6 +115,7 @@ export function NewAreaDialog({
     startTransition(async () => {
       const result = await createArea({
         name,
+        name_ar: nameAr.trim() || null,
         slug: effectiveSlug,
         kind,
         parent_id: selectedParent || null,
@@ -169,6 +173,18 @@ export function NewAreaDialog({
               onChange={(e) => setName(e.target.value)}
             />
             <FieldError message={errors.name} />
+            {/*
+              Asked here rather than left to the record editor. The area's name
+              is the most-printed string it has — listing cards, map flyouts,
+              the guide heading — and the person filing the listing is the one
+              who knows it. A blank twin still falls back to English, so this
+              is a prompt, not a gate.
+            */}
+            <ArabicTwin
+              field={{ key: "name_ar", label: "Name", kind: "text", max: 120 }}
+              value={nameAr}
+              onChange={setNameAr}
+            />
           </div>
 
           <div className="flex flex-col gap-1.5">

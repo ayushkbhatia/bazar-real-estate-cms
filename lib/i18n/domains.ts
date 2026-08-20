@@ -505,6 +505,86 @@ export const DOMAINS: Domain[] = [
       },
     ],
   },
+  /*
+   * The footer, which was the last piece of site chrome holding its own copy.
+   *
+   * Until 0111 the columns, the link labels, the contact block and the brand
+   * blurb were `const` arrays inside `components/brand/public-footer.tsx`, so
+   * there was nothing for this file to register and nothing anyone could
+   * translate — /ar reversed the footer's layout and left every word in it
+   * English. Strategy is "hand" rather than "machine" throughout: it is ~30
+   * short strings on every page of the site, the place names among them have
+   * curated forms in `lib/i18n/mt/proper-nouns.ts`, and the legal line is the
+   * client's own wording. 0112 seeds all of it.
+   */
+  {
+    table: "footer_settings",
+    columns: [
+      {
+        column: "blurb",
+        strategy: "hand",
+        evidence: "components/brand/public-footer.tsx:81",
+      },
+      {
+        column: "contact_heading",
+        strategy: "hand",
+        evidence: "components/brand/public-footer.tsx:131",
+      },
+      {
+        column: "legal_line",
+        strategy: "hand",
+        evidence: "components/brand/public-footer.tsx:170",
+        note: "Rendered twice — also by _components/footer-trust.tsx, from this one column.",
+      },
+    ],
+  },
+  {
+    table: "footer_columns",
+    columns: [
+      {
+        column: "heading",
+        strategy: "hand",
+        evidence: "components/brand/public-footer.tsx:109",
+      },
+    ],
+  },
+  {
+    table: "footer_links",
+    columns: [
+      {
+        column: "label",
+        strategy: "hand",
+        evidence: "components/brand/public-footer.tsx:119",
+      },
+    ],
+  },
+  {
+    table: "footer_socials",
+    columns: [
+      {
+        column: "label",
+        strategy: "never",
+        evidence: "components/brand/public-footer.tsx:97",
+        note: "A network wordmark. docs/I18N.md names a social network name as the example of a text field holding an identity; the pill is rendered dir=\"ltr\" for the same reason.",
+      },
+    ],
+  },
+  {
+    table: "footer_contact_items",
+    columns: [
+      {
+        column: "label",
+        strategy: "hand",
+        evidence: "components/brand/public-footer.tsx:138",
+      },
+      {
+        column: "body",
+        strategy: "hand",
+        evidence: "components/brand/public-footer.tsx:155",
+        note: "Mixed values: the office address is prose and needs Arabic, the phone and email rows are identities and are left blank so the English shows through. Translatable because the field as a whole holds words — docs/I18N.md, 'judge the field by the values it actually holds'.",
+      },
+    ],
+  },
   {
     table: "floating_ctas",
     columns: [
@@ -975,6 +1055,13 @@ export const WIRED_EDITOR: string[] = [
   "site_settings.brand_tagline",
   "search_bar_tabs.label",
   "search_bar_tabs.placeholder",
+  "footer_settings.blurb",
+  "footer_settings.contact_heading",
+  "footer_settings.legal_line",
+  "footer_columns.heading",
+  "footer_links.label",
+  "footer_contact_items.label",
+  "footer_contact_items.body",
 ];
 
 /** Columns whose public read path folds the locale today. */
@@ -1035,6 +1122,13 @@ export const WIRED_READ: string[] = [
   "site_settings.brand_tagline",
   "search_bar_tabs.label",
   "search_bar_tabs.placeholder",
+  "footer_settings.blurb",
+  "footer_settings.contact_heading",
+  "footer_settings.legal_line",
+  "footer_columns.heading",
+  "footer_links.label",
+  "footer_contact_items.label",
+  "footer_contact_items.body",
 ];
 
 /** Registered columns that need Arabic, as `table.column`. */

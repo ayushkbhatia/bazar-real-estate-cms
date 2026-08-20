@@ -1,9 +1,15 @@
 {
+  "allAreas": "All areas",
   "back": "Back",
   "brand": "Bazar",
   "browseBuy": "Browse buy",
   "close": "Close",
   "currencyAndUnits": "Currency & units",
+  "emirate": "Emirate",
+  "emirates": {
+    "abuDhabi": "Abu Dhabi",
+    "dubai": "Dubai"
+  },
   "hours": {
     "open": "Open",
     "closed": "Closed",
@@ -29,6 +35,10 @@
   "languageArabic": "العربية",
   "languageEnglish": "English",
   "loading": "Loading",
+  "map": {
+    "comingSoon": "{emirate} is coming soon",
+    "curating": "We’re curating listings here now."
+  },
   "mortgageTeaser": {
     "estimatedMonthly": "Estimated monthly payment",
     "viewProperties": "View properties",

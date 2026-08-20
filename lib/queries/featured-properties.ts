@@ -15,7 +15,7 @@ import type { ListingRow } from "@/lib/queries/properties";
  */
 
 const FIELDS =
-  "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
+  "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, name_ar, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 type MediaJoin = {
   role: string;
@@ -34,6 +34,33 @@ function pickHero(joins: MediaJoin[] | null, locale: Locale) {
     hero.media as unknown as Record<string, unknown>,
     locale,
   ) as unknown as typeof hero.media;
+}
+
+/**
+ * The row, plus the area joined onto it.
+ *
+ * `localiseRow` walks a single level and stops, so `areas: {name, name_ar}`
+ * arrives as one opaque value and its twin never pairs with anything. This is
+ * the same blind spot `lib/queries/properties.ts` documents and folds around —
+ * and this module, which feeds the home page's featured row, was missed. The
+ * join did not even SELECT `name_ar`, so "Saadiyat Island" and "Yas Island"
+ * printed in English on every card of the Arabic home page while
+ * `جزيرة السعديات` sat in `areas.name_ar` unread.
+ *
+ * Exported so `featured-properties.fold.test.ts` can run the real fold rather
+ * than a stand-in — the whole point of `fold-harness.ts` is that a fold
+ * applied one step too late type-checks and does nothing.
+ */
+export function foldRow(
+  row: Record<string, unknown>,
+  locale: Locale,
+): Record<string, unknown> {
+  const folded = localiseRow(row, locale) as Record<string, unknown>;
+  const area = folded.areas;
+  if (area && typeof area === "object" && !Array.isArray(area)) {
+    folded.areas = localiseRow(area as Record<string, unknown>, locale);
+  }
+  return folded;
 }
 
 /**
@@ -69,10 +96,10 @@ export async function listPropertiesByReference(
   ).map(({ property_media, ...rest }) => ({
     // `...rest` is a passthrough spread, so an unfolded twin leaks as well as
     // rendering English.
-    ...(localiseRow(
-      rest as unknown as Record<string, unknown>,
-      locale,
-    ) as unknown as Omit<ListingRow, "hero">),
+    ...(foldRow(rest as unknown as Record<string, unknown>, locale) as unknown as Omit<
+      ListingRow,
+      "hero"
+    >),
     hero: pickHero(property_media, locale),
   })) as ListingRow[];
 

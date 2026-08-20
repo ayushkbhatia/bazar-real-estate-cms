@@ -3,6 +3,7 @@ import { PublicFooter } from "@/components/brand/public-footer";
 import { getPublishedMegamenuHydrated } from "@/lib/queries/megamenu-hydrate";
 import { listFloatingCtas } from "@/lib/queries/floating-ctas";
 import { getPublicBranding } from "@/lib/queries/site-settings";
+import { getPublicFooter } from "@/lib/queries/footer";
 import { asLocale } from "@/lib/i18n/locales";
 import { getAdvisorWhatsAppNumber } from "@/lib/whatsapp";
 import { PreferencesPopover } from "./_components/preferences-popover";
@@ -27,10 +28,13 @@ export default async function PublicLayout({
   // /legal, a page whose entire body is a redirect.
   const { locale } = await params;
   const active = asLocale(locale);
-  const [megamenu, floatingCtas, branding] = await Promise.all([
+  const [megamenu, floatingCtas, branding, footer] = await Promise.all([
     getPublishedMegamenuHydrated(active),
     listFloatingCtas(),
     getPublicBranding(active),
+    // Same contract as the megamenu above: the locale is threaded in rather
+    // than read ambiently, so the layout does not force its subtree dynamic.
+    getPublicFooter(active),
   ]);
   // Resolved here rather than inside the nav so the brand component stays a
   // presentational client component with no data dependency of its own.
@@ -116,9 +120,10 @@ export default async function PublicLayout({
         fallbackPhone={getAdvisorWhatsAppNumber()}
       />
       {/* T1.5 quick win: single-line trust signal above the global footer.
-          Wraps the locked PublicFooter rather than editing it. */}
-      <FooterTrust />
-      <PublicFooter logo={footerLogo} />
+          Reads the same `footer_settings.legal_line` the footer's own bottom
+          bar does, so the two can no longer drift apart. */}
+      <FooterTrust legalLine={footer.settings.legal_line} />
+      <PublicFooter data={footer} logo={footerLogo} />
     </FloatingCtaProvider>
   );
 }

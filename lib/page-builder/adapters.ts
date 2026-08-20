@@ -315,3 +315,19 @@ export function whyBandProps(values: SectionValues) {
     stats: stats.length > 0 ? stats : undefined,
   };
 }
+
+/**
+ * The one adapter that reads `data` for its *copy* rather than for records.
+ *
+ * `limit` is applied here as well as in `collectDataRequest` — the request asks
+ * for the largest slice any block on the page wants, so a second block set to
+ * two would otherwise render the first block's four.
+ */
+export function testimonialsProps(values: SectionValues, data: LandingData) {
+  const limit = Number.parseInt(str(values, "limit") ?? "3", 10) || 3;
+  return {
+    eyebrow: str(values, "eyebrow"),
+    heading: str(values, "heading"),
+    items: data.testimonials.slice(0, limit),
+  };
+}

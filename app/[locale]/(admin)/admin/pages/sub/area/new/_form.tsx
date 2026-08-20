@@ -14,6 +14,7 @@ import {
   type AreaKind,
 } from "@/lib/schemas/area";
 import { createArea } from "../_record-actions";
+import { ArabicTwin } from "../../../../_fields/arabic-twin";
 
 const fieldCls =
   "bz-field w-full rounded border border-bz-border px-2 py-1.5 bg-bz-bg outline-none focus:border-bz-accent text-[13px]";
@@ -25,6 +26,7 @@ export function NewAreaForm({
 }) {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [nameAr, setNameAr] = useState("");
   const [slugTouched, setSlugTouched] = useState(false);
   const [slug, setSlug] = useState("");
   const [kind, setKind] = useState<AreaKind>("area");
@@ -40,6 +42,7 @@ export function NewAreaForm({
     startTransition(async () => {
       const result = await createArea({
         name,
+        name_ar: nameAr.trim() || null,
         slug: effectiveSlug,
         kind,
         parent_id: parentId || null,
@@ -66,6 +69,14 @@ export function NewAreaForm({
             onChange={(e) => setName(e.target.value)}
           />
           <FieldError message={errors.name} />
+          {/* Same reasoning as the property wizard's dialog: the name is the
+              most-printed string an area has, and this is the one moment
+              someone who knows its Arabic is looking at the record. */}
+          <ArabicTwin
+            field={{ key: "name_ar", label: "Area name", kind: "text", max: 120 }}
+            value={nameAr}
+            onChange={setNameAr}
+          />
         </div>
 
         <div className="flex flex-col gap-1.5">

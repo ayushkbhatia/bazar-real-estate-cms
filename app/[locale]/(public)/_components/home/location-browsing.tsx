@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
@@ -46,6 +47,7 @@ export async function LocationBrowsing({
   /** Configured in the home master page. Empty ⇒ top 8 published areas. */
   cards?: LocationCard[];
 } = {}) {
+  const t = await getTranslations("area");
   const entries = await listAreasWithCounts();
   const total = entries.reduce((n, e) => n + e.listing_count, 0);
   const countBySlug = new Map(entries.map((e) => [e.slug, e.listing_count]));
@@ -73,8 +75,8 @@ export async function LocationBrowsing({
               name: c.name ?? slug,
               countLabel:
                 count !== undefined
-                  ? `${count.toLocaleString("en-US")} homes for sale`
-                  : "Explore homes",
+                  ? t("cards.homesForSale", { count })
+                  : t("cards.exploreHomes"),
               imgLabel: c.imageLabel ?? slug,
               imgUrl: c.imageUrl,
               imgAlt: c.imageAlt,
@@ -84,7 +86,7 @@ export async function LocationBrowsing({
           key: c.id,
           href: `/areas/${c.slug}`,
           name: c.name,
-          countLabel: `${c.listing_count.toLocaleString("en-US")} homes for sale`,
+          countLabel: t("cards.homesForSale", { count: c.listing_count }),
           imgLabel: c.slug,
         }));
 
@@ -114,7 +116,7 @@ export async function LocationBrowsing({
         <Tile
           href={overviewHref ?? "/areas"}
           name={overviewName ?? "Abu Dhabi"}
-          countLabel={`${total.toLocaleString("en-US")} homes for sale`}
+          countLabel={t("cards.homesForSale", { count: total })}
           imgLabel={overviewImageLabel ?? "abu dhabi"}
           imgUrl={overviewImageUrl}
           imgAlt={overviewImageAlt}

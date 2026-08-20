@@ -2063,11 +2063,31 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.745Z"
   },
+  "An advisor will be in touch shortly about listing your property.": {
+    "ar": "سيتواصل معك أحد مستشارينا قريبًا بشأن إدراج عقارك.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "An advisor will be in touch shortly about the project you registered for.": {
+    "ar": "سيتواصل معك أحد مستشارينا قريبًا بشأن المشروع الذي سجّلت اهتمامك به.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "An advisor will call you in the window you picked. Your reference is on screen — quote it if you call us first.": {
+    "ar": "سيتصل بك أحد مستشارينا في الموعد الذي اخترته. رقمك المرجعي ظاهر على الشاشة — اذكره إذا اتصلت بنا أولًا.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "An advisor will call you {when}.": {
     "ar": "سيتصل بك أحد المستشارين {when}.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "An advisor will come back within one business day with the rates our partner banks can hold, and the documents they'll need from you.": {
+    "ar": "سيعود إليك أحد مستشارينا خلال يوم عمل واحد بالأسعار التي تستطيع البنوك الشريكة تثبيتها، وبالمستندات التي ستطلبها منك.",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "An established mainland district on Abu Dhabi’s eastern waterfront, bringing together the waterfront apartments of Al Raha Beach, the gated villa precincts of Al Raha Gardens and a mature spread of schools, retail and workplaces along the Sheikh Zayed Bin Sultan Street corridor.": {
     "ar": "منطقة راسخة على البر الرئيسي في الواجهة المائية الشرقية لـأبوظبي، تجمع بين الشقق المطلة على الواجهة المائية في شاطئ الراحة، ومجمعات الفيلات المسوّرة في حدائق الراحة، وانتشار ناضج للمدارس والمتاجر وأماكن العمل على امتداد شارع الشيخ زايد بن سلطان.",
@@ -3275,6 +3295,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.478Z"
   },
+  "Check your inbox.": {
+    "ar": "تفقّد بريدك الإلكتروني.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Chef’s Kitchen": {
     "ar": "مطبخ الشيف",
     "by": "machine",
@@ -3847,6 +3872,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:57:09.582Z"
+  },
+  "Couple buying on Saadiyat Reserve": {
+    "ar": "زوجان يشتريان في سعديات ريزيرف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Covered Parking": {
     "ar": "موقف مغطى",
@@ -4624,6 +4655,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:50:29.646Z"
   },
+  "Every other broker pitched me the buildings their developer was paying them most for. Bazar walked me through five projects, told me which two were worth my attention, and rejected the other three on principle. I trust them now.": {
+    "ar": "كل وسيط آخر كان يعرض عليّ المباني التي يدفع مطوّرها أعلى عمولة. أما بازار فاستعرض معي خمسة مشاريع، وأخبرني أيّ مشروعين يستحقان اهتمامي، ورفض الثلاثة الباقية من حيث المبدأ. أثق بهم الآن.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Every property decision is different. We start by understanding what you are trying to achieve before recommending the opportunities that best match your requirements.": {
     "ar": "كل قرار عقاري يختلف عن غيره. نبدأ بفهم ما تسعى إلى تحقيقه قبل أن نوصي بالفرص الأنسب لمتطلباتك.",
     "by": "machine",
@@ -5364,6 +5401,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "Express your interest in {project}": {
+    "ar": "سجّل اهتمامك بمشروع {project}",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Extensive walking, cycling, waterfront and nature experiences.": {
     "ar": "تجارب متنوعة للمشي وركوب الدراجات والاستمتاع بالواجهة المائية والطبيعة.",
     "by": "machine",
@@ -5654,11 +5696,21 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:29:57.232Z"
   },
+  "Find My Property": {
+    "ar": "ابحث عن عقاري",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Find Nurai Island on the map.": {
     "ar": "ابحث عن جزيرة نوراي على الخريطة.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:34:19.126Z"
+  },
+  "Find Rentals": {
+    "ar": "ابحث عن إيجارات",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Find Saadiyat Island on the map.": {
     "ar": "ابحث عن جزيرة السعديات على الخريطة.",
@@ -6019,11 +6071,22 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:59:18.464Z"
   },
+  "Finding…": {
+    "ar": "جارٍ البحث عن العقارات…",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "First name": {
     "ar": "الاسم الأول",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.877Z"
+  },
+  "First time we'd bought property anywhere. They explained transfer fees, escrow timing, the residency visa pathway, and the wider area economics in a single hour. Nothing felt rushed.": {
+    "ar": "كانت أول مرة نشتري فيها عقاراً في أي مكان. شرحوا لنا رسوم نقل الملكية، وتوقيت حساب الضمان، ومسار تأشيرة الإقامة، واقتصاد المنطقة الأوسع، في ساعة واحدة. ولم نشعر بأي استعجال.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "First-Time Buyers": {
     "ar": "المشترون لأول مرة",
@@ -6036,6 +6099,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
+  },
+  "First-time buyer, Saadiyat Island": {
+    "ar": "مشترٍ لأول مرة، جزيرة السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "First-time buyers\nUAE residents\nNon-resident buyers\nInvestors\nEnd-users\nCash vs. mortgage": {
     "ar": "المشترون لأول مرة\nالمقيمون في الإمارات\nالمشترون غير المقيمين\nالمستثمرون\nالمستخدمون النهائيون\nنقدًا مقابل تمويل عقاري",
@@ -6733,6 +6802,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
   },
+  "Get the {project} brochure": {
+    "ar": "احصل على كتيّب {project}",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Get valuable insights, key market movements and expert perspectives on Abu Dhabi real estate.": {
     "ar": "احصل على رؤى قيّمة وأبرز تحركات السوق ووجهات نظر الخبراء حول العقارات في أبوظبي.",
     "by": "machine",
@@ -7238,6 +7312,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
+  },
+  "Interest registered.": {
+    "ar": "تم تسجيل اهتمامك.",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "International schools and Al Raha Mall within a short drive.": {
     "ar": "المدارس الدولية والراحة مول على بعد مسافة قصيرة بالسيارة.",
@@ -7808,6 +7887,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "Leave your details and the advisor for {project} will come back with pricing, availability and the payment plan.": {
+    "ar": "اترك بياناتك وسيعود إليك مستشار مشروع {project} بالأسعار والتوافر وخطة السداد.",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Leave your details, and a member of our team will get back to you shortly with more information about {project}.": {
     "ar": "اترك بياناتك وسيتواصل معك أحد أعضاء فريقنا قريبًا لتزويدك بمزيد من المعلومات عن {project}.",
@@ -9186,6 +9270,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "Off-market resale, 2025": {
+    "ar": "إعادة بيع خارج السوق، 2025",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Off-plan projects for sale": {
     "ar": "مشاريع على الخارطة للبيع",
     "by": "machine",
@@ -9208,6 +9298,12 @@
     "ar": "مراقبة على الخارطة",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Off-plan, Hudayriyat": {
+    "ar": "على الخارطة، الحديريات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Off-plan, handled end to end.": {
     "ar": "العقارات على الخارطة، تُدار من البداية إلى النهاية.",
@@ -10942,6 +11038,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.877Z"
   },
+  "Register interest": {
+    "ar": "تسجيل الاهتمام",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Register my interest": {
+    "ar": "سجّل اهتمامي",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Registered sales by community, building and property type": {
     "ar": "التصرفات العقارية المسجّلة حسب المنطقة والمبنى ونوع العقار",
     "by": "machine",
@@ -11148,6 +11254,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Request a free consultation": {
+    "ar": "اطلب استشارة مجانية",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Request a valuation": {
     "ar": "تقييم اطلب",
     "by": "machine",
@@ -11160,6 +11271,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
   },
+  "Request pre-approval": {
+    "ar": "اطلب موافقة مبدئية",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Request the brochure": {
+    "ar": "اطلب الكتيّب",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Required Documents Guide": {
     "ar": "دليل المستندات المطلوبة",
     "by": "reviewed",
@@ -11170,6 +11291,12 @@
     "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Resale, 2026": {
+    "ar": "إعادة بيع، 2026",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Reserve view": {
     "ar": "احجز المشهد",
@@ -11311,6 +11438,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:16:12.762Z"
+  },
+  "Returning investor, London": {
+    "ar": "مستثمر عائد، لندن",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Reviews and comments": {
     "ar": "التقييمات والتعليقات",
@@ -11555,6 +11688,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
   },
+  "Searching…": {
+    "ar": "جارٍ البحث…",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Seclusion without leaving the cultural and beach district behind.": {
     "ar": "العزلة دون مغادرة الحي الثقافي والشاطئي.",
     "by": "machine",
@@ -11566,6 +11704,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "See this floor plan": {
+    "ar": "اطّلع على هذا المخطط",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "See what buyers actually paid": {
     "ar": "العقود: ما دفعه المشترون فعلياً",
@@ -12039,6 +12182,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Start your pre-approval": {
+    "ar": "ابدأ موافقتك المبدئية",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Start your property search": {
     "ar": "سابدأ رحلة البحث عن عقارك",
     "by": "machine",
@@ -12139,6 +12287,11 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Submit": {
+    "ar": "إرسال",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Submit Enquiry for {project}": {
     "ar": "إرسال الاستفسار عن {project}",
     "by": "machine",
@@ -12168,6 +12321,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.873Z"
+  },
+  "Subscribe": {
+    "ar": "اشترك",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Subscribing…": {
+    "ar": "جارٍ الاشتراك…",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Suitable options based on your requirements.": {
     "ar": "خيارات مناسبة بناءً على متطلباتك.",
@@ -12367,6 +12530,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:16:12.763Z"
   },
+  "Tell us where to reach you and the PDF opens straight away.": {
+    "ar": "أخبرنا كيف نصل إليك ويُفتح ملف PDF على الفور.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Tenant Demand": {
     "ar": "الطلب من المستأجرين",
     "by": "machine",
@@ -12443,6 +12611,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:12:56.314Z"
+  },
+  "Thanks — we've got it.": {
+    "ar": "شكرًا لك — وصلنا طلبك.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Thanks — we've got your brief.": {
+    "ar": "شكرًا لك — وصلنا موجزك.",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "The 2023 expansion to Al Reem multiplied the district’s area tenfold.": {
     "ar": "أدت توسعة عام 2023 في الريم إلى مضاعفة مساحة المنطقة عشرة أضعاف.",
@@ -12814,6 +12992,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:37:41.735Z"
+  },
+  "They told us when to walk away from a deal we'd already shaken hands on. Six months later the project was repriced down 14%. That call was the entire fee, repaid many times over.": {
+    "ar": "نصحونا بالانسحاب من صفقة كنا قد صافحنا عليها بالفعل. وبعد ستة أشهر أُعيد تسعير المشروع بانخفاض 14%. تلك النصيحة وحدها غطّت الأتعاب كاملةً، وأضعافاً مضاعفة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "This month": {
     "ar": "الشهر الحالي",
@@ -13254,6 +13438,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
   },
+  "Unlocking…": {
+    "ar": "جارٍ فتح الملف…",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Use our UAE mortgage calculator to estimate monthly payments, explore financing options, and better understand your potential home loan.": {
     "ar": "استخدم حاسبة تمويل عقاري في الإمارات لتقدير الأقساط الشهرية، واستكشاف خيارات التمويل، وفهم قرضك السكني المحتمل بشكل أفضل.",
     "by": "machine",
@@ -13662,6 +13851,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T10:25:01.521Z"
   },
+  "We send the scenario above to our mortgage desk. An advisor comes back with what our partner banks will actually lend.": {
+    "ar": "نرسل السيناريو أعلاه إلى قسم التمويل العقاري لدينا، ويعود إليك أحد المستشارين بما ستقرضه البنوك الشريكة فعليًا.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "We support clients with property opportunities and professional real estate services across Dubai and the wider UAE.": {
     "ar": "ندعم عملاءنا بفرص عقارية وخدمات عقارية احترافية في دبي وسائر أنحاء الإمارات.",
     "by": "machine",
@@ -13674,11 +13868,31 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
   },
+  "We're showing you the matching rentals now. An advisor will follow up with anything that isn't listed yet.": {
+    "ar": "نعرض عليك الآن الإيجارات المطابقة. وسيتابع معك أحد المستشارين بشأن ما لم يُدرج بعد.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "We've passed your details to the advisor for this project — they'll send the brochure shortly.": {
+    "ar": "أرسلنا بياناتك إلى مستشار هذا المشروع — وسيرسل لك الكتيّب قريبًا.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "We've received your brief for {area}. An advisor will reach out within 2 hours during business hours, and by next morning otherwise.": {
+    "ar": "استلمنا موجزك الخاص بـ{area}. سيتواصل معك أحد المستشارين خلال ساعتين في أوقات العمل، وفي صباح اليوم التالي خارجها.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "We've received your brief. An advisor will reach out within 2 hours during business hours, and by next morning otherwise.": {
     "ar": "لقد استلمنا طلبك. سيتواصل معك أحد المستشارين خلال 2 ساعة ضمن ساعات العمل، وفي صباح اليوم التالي خارجها.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
+  },
+  "We've sent a confirmation link — click it and you're on the list.": {
+    "ar": "أرسلنا لك رابط تأكيد — اضغط عليه لتنضم إلى القائمة.",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Wednesday": {
     "ar": "الأربعاء",
@@ -14663,6 +14877,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
   },
+  "You're verified.": {
+    "ar": "تم التحقق منك.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "You've scanned our code — save Bazar Real Estate to your phone in one tap, or call, WhatsApp or email an advisor in Abu Dhabi.": {
     "ar": "لقد مسحت رمزنا — احفظ بازار للعقارات في هاتفك بنقرة واحدة، أو اتصل بأحد المستشارين في أبوظبي أو راسله عبر واتساب أو البريد الإلكتروني.",
     "by": "machine",
@@ -14734,6 +14953,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Your scenario is with the mortgage desk.": {
+    "ar": "سيناريوك الآن لدى قسم التمويل العقاري.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Your {project} brochure": {
+    "ar": "كتيّب {project}",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "You’re now subscribed to our newsletter and will receive the latest updates, insights, and opportunities directly to your email every week.": {
     "ar": "لقد اشتركت الآن في نشرتنا الإخبارية، وستصلك أحدث التحديثات والرؤى والفرص مباشرة إلى بريدك الإلكتروني كل أسبوع.",
