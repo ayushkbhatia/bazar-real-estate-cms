@@ -122,9 +122,15 @@ const ALLOWED: Readonly<Record<string, string>> = {
   // settled Arabic form (الأسئلة الشائعة). Contrast "ADREC & DLD", which the
   // heuristic correctly leaves alone and which must stay Latin.
   'master/off-plan·faq.faq_eyebrow': "an acronym that does have an Arabic form",
+
+  // Same case as FAQ: two capitals read as a code, and "HQ" is an ordinary
+  // word with a settled Arabic form (المقر الرئيسي). It was a literal in
+  // hq-map.tsx until it became a field, and it rendered "HQ" on /ar/contact
+  // for exactly that reason.
+  'master/contact·hq_map.eyebrow': "an abbreviation that does have an Arabic form",
 };
 
-const ALLOWED_CEILING = 11;
+const ALLOWED_CEILING = 12;
 
 describe("G-16 · translatable fields hold prose", () => {
   it("finds no data-shaped value outside the allowlist", () => {

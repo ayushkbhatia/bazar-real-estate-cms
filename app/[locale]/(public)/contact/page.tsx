@@ -152,6 +152,7 @@ export default async function ContactPage({
   const detailsV = v("contact_details");
   const formV = v("enquiry_form");
   const helpV = v("help");
+  const mapV = v("hq_map");
 
   const phones = [
     str(detailsV, "phone_1") ?? "+971 2 632 2223",
@@ -335,7 +336,10 @@ export default async function ContactPage({
             formKey="contact_enquiry"
             successStyle="soft"
             allowAnother
-            successToast="Enquiry sent — we'll be in touch within 2 hours."
+            successToast={
+              str(formV, "success_toast") ??
+              "Enquiry sent — we'll be in touch within 2 hours."
+            }
             toastErrors
           />
         </div>
@@ -392,7 +396,16 @@ export default async function ContactPage({
       </section>
     ),
 
-    hq_map: <HqMap key="hq_map" />,
+    hq_map: (
+      <HqMap
+        key="hq_map"
+        eyebrow={str(mapV, "eyebrow") ?? "HQ"}
+        heading={str(mapV, "heading") ?? "Al Bateen, Abu Dhabi."}
+        directionsLabel={str(mapV, "directions_label") ?? "Get directions"}
+        pinLabel={str(mapV, "pin_label") ?? "Bazar HQ — Al Bateen"}
+        note={str(mapV, "note")}
+      />
+    ),
   };
 
   // Group the runs of grid-column sections so the pair shares one wrapper.
