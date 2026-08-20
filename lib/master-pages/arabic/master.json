@@ -586,6 +586,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "46 km of beaches": {
+    "ar": "46 كم من الشواطئ",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:34:12.173Z"
+  },
   "4–6": {
     "ar": "4–6",
     "by": "machine"
@@ -1169,6 +1175,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
   },
+  "AED 1,687 / sq. ft.": {
+    "ar": "AED 1,687 / قدم مربعة",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
+  },
   "AED 1,713 / sq. ft.": {
     "ar": "AED 1,713 / قدم مربع",
     "by": "machine",
@@ -1204,6 +1216,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:21:17.942Z"
+  },
+  "AED 129 / sq. ft.": {
+    "ar": "AED 129 / قدم مربعة",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
   },
   "AED 15 Billion": {
     "ar": "AED 15 Billion",
@@ -1882,6 +1900,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:21:17.942Z"
   },
+  "Al Sabeel Building": {
+    "ar": "مبنى السبيل",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:32:05.909Z"
+  },
   "Al Tharwaniyah": {
     "ar": "الثروانية",
     "by": "machine",
@@ -1909,6 +1933,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
+  },
+  "Aldar HQ": {
+    "ar": "مقر الدار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T13:31:25.775Z"
   },
   "Aldar HQ is located at Al Raha Beach, while Al Muneera Beach Plaza forms part of the community’s waterfront retail offering.": {
     "ar": "يقع المقر الرئيسي لشركة الدار في شاطئ الراحة، بينما يشكّل المنيرة بيتش بلازا جزءاً من العروض التجارية على الواجهة البحرية في المجتمع.",
@@ -1990,6 +2020,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:52:17.843Z"
+  },
+  "An established suburban community known for spacious homes, a relaxed family-friendly environment, international schools and convenient access to major highways, Yas Island and Zayed International Airport.": {
+    "ar": "مجتمع حضري راسخ يشتهر بمساكنه الواسعة، وبيئته الهادئة العائلية، والمدارس الدولية، والوصول السهل إلى الطرق السريعة الرئيسية، جزيرة ياس ومطار زايد الدولي.",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:34:12.173Z"
   },
   "An exceptional 6-bedroom estate villa offering approximately 6,383 sq. ft., with a private pool, landscaped garden, private lift, staff accommodation and expansive living areas across three levels.": {
     "ar": "فيلا استثنائية مكونة من 6 غرف نوم تقدم مساحة تبلغ حوالي 6,383 sq. ft.، مع حوض سباحة خاص، حديقة مناظر طبيعية، مصعد خاص، مسكن للعمال، ومساحات معيشة واسعة على ثلاث طوابق.",
@@ -2180,11 +2216,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Area or emirate": {
+    "ar": "المنطقة أو الإمارة",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Area spotlights": {
     "ar": "أضواء على المناطق",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T11:00:32.153Z"
+  },
+  "Area, building, community or emirate": {
+    "ar": "المنطقة أو المبنى أو المجمع أو الإمارة",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Areas FAQ": {
     "ar": "الأسئلة الشائعة عن المناطق",
@@ -3453,11 +3499,23 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Community Highlights": {
+    "ar": "أبرز معالم المجتمع",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:32:05.909Z"
+  },
   "Community Lifestyle": {
     "ar": "النمط المعيشي للمجتمع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
+  },
+  "Community Parks": {
+    "ar": "متنزهات المجتمع",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:32:05.909Z"
   },
   "Community figures published by Aldar. Tenure varies by buyer nationality — your advisor will confirm eligibility.": {
     "ar": "الأرقام المجتمعية المنشورة من قبل ألدار. مدة الملكية تختلف حسب جنسية المشتري — سيؤكد مستشارك الأهلية.",
@@ -3564,6 +3622,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Connectivity": {
+    "ar": "إمكانية الاتصال",
+    "by": "reviewed",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:33:26.238Z"
   },
   "Consent to be contacted": {
     "ar": "الموافقة على التواصل معي",
@@ -4266,6 +4330,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:19:16.443Z"
   },
+  "Eleven — Muzera, Al Mariah, Samra, Sidra, Yasmina, Qattouf, Khannour, Hemaim, Al Tharwaniyah, Lehwieh and Al Ward.": {
+    "ar": "إليفن — مُزيرة، المارية، سمرة، سدرة، ياسمينة، قطوف، خنور، هميم، الثروانية، لحويهة والورد",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:33:26.238Z"
+  },
   "Emaar is a globally recognised Dubai-based developer behind landmark residential, retail, hospitality and mixed-use destinations in the UAE and internationally.": {
     "ar": "إعمار هي شركة مطورة عقارية معروفة عالميًا ومقرها دبي، وراء وجهات سكنية وتجارية وضيافة ومختلطة رائدة في الإمارات العربية المتحدة ودولياً.",
     "by": "machine",
@@ -4364,11 +4434,23 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:09:40.655Z"
   },
+  "Established Rental Market": {
+    "ar": "سوق تأجير راسخ",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:34:12.173Z"
+  },
   "Established Villa Communities": {
     "ar": "مجتمعات الفيلا القائمة",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:51:11.583Z"
+  },
+  "Established Waterfront Living": {
+    "ar": "الحياة المائية الراسخة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T13:31:25.775Z"
   },
   "Established homes ready for handover.": {
     "ar": "منازل قائمة جاهزة للتسليم.",
@@ -5253,6 +5335,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:33:06.379Z"
+  },
+  "Fahid Mangrove Boardwalk": {
+    "ar": "ممشى فهد للمنغروف",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:34:12.173Z"
   },
   "Family Formats": {
     "ar": "صيغ العائلة",
@@ -6477,6 +6565,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:39:13.993Z"
   },
+  "Get a free property consultation on Saadiyat’s beachfront apartment market.": {
+    "ar": "احصل على استشارة عقارية مجانية حول سوق الشقق على الواجهة البحرية في السعديات",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
+  },
   "Get a free property consultation on Saadiyat’s mangrove villa community.": {
     "ar": "احصل على استشارة عقارية مجانية حول مجتمع الفيلات في مانغروف ساديات.",
     "by": "machine",
@@ -7296,11 +7390,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.877Z"
   },
+  "KEZAD Communities": {
+    "ar": "مجتمعات كيزاد",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
+  },
   "KEZAD Free Zone": {
     "ar": "منطقة كيزاد الحرة",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:14:21.433Z"
+  },
+  "KEZAD Group is the largest operator of purpose-built economic zones and workers’ residential cities in the UAE.": {
+    "ar": "مجموعة كيزاد هي أكبر مشغل للمدن الاقتصادية والسكنية العمالية المُنشأة خصيصًا في دولة الإمارات العربية المتحدة.",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
+  },
+  "KEZAD at a Glance": {
+    "ar": "نظرة عامة على كيزاد",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
   },
   "KIZAD": {
     "ar": "KIZAD",
@@ -7352,6 +7464,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:55:03.094Z"
+  },
+  "Khannour": {
+    "ar": "خنور",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:32:05.909Z"
   },
   "Kids' club": {
     "ar": "نادي الأطفال",
@@ -7879,6 +7997,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:53:12.099Z"
+  },
+  "Looking for a Property in Mamsha Al Saadiyat?": {
+    "ar": "تبحث عن عقار في ممشى السعديات؟",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
   },
   "Looking for a Property in Masdar City?": {
     "ar": "تبحث عن عقار في مدينة مصدر؟",
@@ -8481,6 +8605,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:11:22.357Z"
   },
+  "Modern architectural image showing Masdar City’s distinctive buildings, shaded streets, green spaces and sustainable urban design.": {
+    "ar": "صورة معمارية حديثة تُظهر مباني مدينة مصدر المميزة، والشوارع المظللة، والمساحات الخضراء، والتصميم الحضري المستدام.",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
+  },
   "Modon Properties": {
     "ar": "مُدن العقارية",
     "by": "machine"
@@ -8690,6 +8820,18 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:39:23.853Z"
   },
+  "Nature-First Living": {
+    "ar": "مُتعة العيش وفق الطبيعة",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:34:12.173Z"
+  },
+  "Nawayef Park Views": {
+    "ar": "نوايايف بارك فيوز",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:34:12.173Z"
+  },
   "Nawayef Village": {
     "ar": "قرية نوايف",
     "by": "machine",
@@ -8859,6 +9001,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:34:19.126Z"
   },
+  "Off-Plan": {
+    "ar": "على الخارطة",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Off-Plan Apartment Sale Index — Jun 2026": {
     "ar": "مؤشر مبيعات الشقة على الخارطة — يونيو 2026",
     "by": "machine",
@@ -9003,6 +9150,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:55:03.093Z"
+  },
+  "On the Doorstep": {
+    "ar": "على العتبة",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
   },
   "On the beach in front of the Saadiyat Cultural District, between the Louvre Abu Dhabi and Saadiyat Beach Golf Club.": {
     "ar": "المنطقة الثقافية على الشاطئ أمام السعديات، بين اللوفر أبوظبي ونادي شاطئ السعديات للغولف.",
@@ -9746,6 +9899,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
   },
+  "Prime Position": {
+    "ar": "موقِع متميز",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:34:12.173Z"
+  },
   "Privacy": {
     "ar": "الخصوصية",
     "by": "machine",
@@ -10466,6 +10625,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:57:09.582Z"
   },
+  "Qaryat Al Hidd": {
+    "ar": "قريّة الحد",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:34:12.173Z"
+  },
   "Questions": {
     "ar": "الأسئلة",
     "by": "machine",
@@ -10955,6 +11120,11 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:51:24.295Z"
+  },
+  "Retail Space": {
+    "ar": "محل تجاري",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Retail Spaces": {
     "ar": "محلات تجارية",
@@ -12576,6 +12746,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:53:12.099Z"
   },
+  "Townhouse": {
+    "ar": "تاون هاوس",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Townhouses": {
     "ar": "تاون هاوس",
     "by": "machine",
@@ -13450,6 +13625,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:33:06.379Z"
   },
+  "What properties are available at Mamsha Al Saadiyat?": {
+    "ar": "ما هي العقارات المتاحة في ممشى السعديات؟",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
+  },
   "What properties are available in Al Raha?": {
     "ar": "مـا العقارات المتاحة في الراحة؟",
     "by": "machine",
@@ -13797,6 +13978,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:51:11.583Z"
   },
+  "Why Choose Mamsha Al Saadiyat?": {
+    "ar": "لماذا تختار ممشى السعديات؟",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
+  },
   "Why Choose Mussafah?": {
     "ar": "لماذا تختار مصفح؟",
     "by": "machine",
@@ -14032,6 +14219,12 @@
   "Yas Point": {
     "ar": "ياس بوينت",
     "by": "machine"
+  },
+  "Yasmina": {
+    "ar": "ياسمينة",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:33:26.238Z"
   },
   "Year the Jurisdiction Expanded to Al Reem": {
     "ar": "عام توسّع الاختصاص القضائي ليشمل الريم",
@@ -14530,6 +14723,12 @@
     "ar": "الزينة",
     "by": "machine"
   },
+  "aldar hq": {
+    "ar": "مقر الدار",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-20T13:31:25.774Z"
+  },
   "apartments": {
     "ar": "شقق",
     "by": "machine",
@@ -14722,6 +14921,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:31:57.617Z"
   },
+  "community parks": {
+    "ar": "متنزهات المجتمع",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:32:05.909Z"
+  },
   "community recreation": {
     "ar": "أنشطة المجتمع",
     "by": "machine",
@@ -14776,6 +14981,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:25:18.593Z"
   },
+  "established villa communities": {
+    "ar": "مجتمعات الفلل الراسخة",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
+  },
   "fahid beach residences": {
     "ar": "فهد بيتش ريزيدنسز",
     "by": "machine",
@@ -14817,6 +15028,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:13:45.709Z"
+  },
+  "hemaim": {
+    "ar": "الحيمي",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:33:26.238Z"
   },
   "hudayriyat golf estates": {
     "ar": "غولف إستيتس الحديريات",
@@ -14866,6 +15083,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.479Z"
   },
+  "kezad communities": {
+    "ar": "مجتمعات كيزاد",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
+  },
+  "kezad free zone": {
+    "ar": "منطقة كيزاد الحرة",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:35:03.278Z"
+  },
   "khalifa port": {
     "ar": "ميناء خليفة",
     "by": "machine"
@@ -14875,6 +15104,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:55:03.094Z"
+  },
+  "khannour": {
+    "ar": "خنور",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:32:05.909Z"
+  },
+  "landscaped parks": {
+    "ar": "حدائق مُخططة",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:32:05.907Z"
   },
   "landscaped public realm": {
     "ar": "المجال العام المُعَدّ بعناية",
@@ -15047,6 +15288,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:12:21.893Z"
+  },
+  "nawayef park views": {
+    "ar": "إطلالات على نويّف بارك",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:34:12.173Z"
   },
   "nawayef village": {
     "ar": "قرية نوايف",
@@ -15514,6 +15761,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:05:44.923Z"
   },
+  "yasmina": {
+    "ar": "ياسمينة",
+    "by": "machine",
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "at": "2026-08-20T13:33:26.238Z"
+  },
   "you@email.com": {
     "ar": "you@email.com",
     "by": "machine"
@@ -15597,30 +15850,5 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
-  },
-  "Off-Plan": {
-    "ar": "على الخارطة",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Townhouse": {
-    "ar": "تاون هاوس",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Retail Space": {
-    "ar": "محل تجاري",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Area, building, community or emirate": {
-    "ar": "المنطقة أو المبنى أو المجمع أو الإمارة",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Area or emirate": {
-    "ar": "المنطقة أو الإمارة",
-    "by": "machine",
-    "model": "claude-opus-5"
   }
 }
