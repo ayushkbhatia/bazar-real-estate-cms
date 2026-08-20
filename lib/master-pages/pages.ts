@@ -28,6 +28,7 @@ import {
   propTypeList,
 } from "./fields";
 import { DEVELOPERS_PAGE } from "./sections/developers";
+import { LEGAL_TERMS_PAGE, LEGAL_COOKIES_PAGE } from "./sections/legal";
 import { SERVICES_PAGE } from "./sections/services";
 import { INSIGHTS_PAGE } from "./sections/insights";
 import { ABOUT_PAGE } from "./sections/about";
@@ -1550,4 +1551,9 @@ export const MASTER_PAGES: MasterPageDef[] = [
   QR_PAGE,
   CONTACT_QR_PAGE,
   MORTGAGE_PAGE,
+  // Appended, not inserted: `/admin/pages` lists this array in order, and
+  // the two legal documents belong at the end of that list rather than above
+  // the marketing pages an editor touches weekly.
+  LEGAL_TERMS_PAGE,
+  LEGAL_COOKIES_PAGE,
 ];

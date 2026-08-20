@@ -38,6 +38,9 @@ describe("registry", () => {
       "qr",
       "contact-qr",
       "mortgage",
+      // The two legal documents, appended — see `pages.ts`.
+      "legal-terms",
+      "legal-cookies",
     ]);
     for (const page of MASTER_PAGES) {
       const keys = page.sections.map((s) => s.key);

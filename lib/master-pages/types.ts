@@ -232,7 +232,12 @@ export type MasterPageKey =
   | "consultation"
   | "qr"
   | "contact-qr"
-  | "mortgage";
+  | "mortgage"
+  // The two legal documents that were hardcoded JSX. Privacy stays a route —
+  // the client supplied that one as a signed bilingual PDF and it is
+  // transcribed verbatim, so there is nothing for an editor to change.
+  | "legal-terms"
+  | "legal-cookies";
 
 export type MasterPageDef = {
   key: MasterPageKey;

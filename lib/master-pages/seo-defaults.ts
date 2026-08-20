@@ -121,6 +121,16 @@ export const MASTER_PAGE_SEO_DEFAULTS: Record<
     description:
       "You've scanned our code — save Bazar Real Estate to your phone in one tap, or call, WhatsApp or email an advisor in Abu Dhabi.",
   },
+  "legal-terms": {
+    title: "Terms of service",
+    description:
+      "Terms of service for Bazar Real Estate's marketplace, advisory, and tools.",
+  },
+  "legal-cookies": {
+    title: "Cookie policy",
+    description:
+      "What Bazar Real Estate stores on your device, why, and how to change it.",
+  },
   mortgage: {
     title: "Mortgage calculator",
     description:
