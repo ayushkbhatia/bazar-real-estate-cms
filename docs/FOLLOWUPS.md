@@ -43,6 +43,17 @@ quick grep can show "what's outstanding in my area."
   reached. The hero is the first thing an Arabic visitor sees, so this is the
   most visible remaining hole. Done = both read from `messages/` (or the DB
   twin), with `no-unextracted-literals` covering the hero.
+- [i18n] The `footer` message namespace is now read by nothing.
+  The footer's copy moved into `footer_*` tables (migrations 0112/0113), so
+  `messages/en/footer.json` and `messages/ar/footer.json` — `rights`, `orn`,
+  `privacy`, `terms`, `cookies`, `sitemap` — have no consumer left. They were
+  kept rather than deleted because removing a namespace also means editing
+  `NAMESPACES` in `lib/i18n/namespaces.ts`, the `pickClientMessages` case in
+  `lib/i18n/namespaces.test.ts:238`, and the hardcoded list in
+  `lib/i18n/icu.test.ts:173` — i18n infra churn that had nothing to do with the
+  footer PR. "Done" is deleting both files and those three references. Note the
+  Arabic in them is the client's own wording and is already carried into the
+  0112 seed, so nothing is lost.
 
 - [off-plan] The landing's "View all in <area>" links go to a page that cannot
   answer them.

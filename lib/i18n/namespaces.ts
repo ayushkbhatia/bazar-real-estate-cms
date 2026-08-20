@@ -29,6 +29,13 @@
 export const NAMESPACES = [
   "common",
   "nav",
+  /*
+   * Read by nothing since the footer's copy moved into `footer_*`
+   * (migrations 0112/0113) and `public-footer.tsx` became presentational.
+   * Kept because deleting a namespace also touches `namespaces.test.ts` and
+   * `icu.test.ts`, which is infra churn unrelated to that change. Tracked in
+   * docs/FOLLOWUPS.md.
+   */
   "footer",
   "consent",
   "listing",
