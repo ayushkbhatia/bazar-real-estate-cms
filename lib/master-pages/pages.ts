@@ -32,6 +32,7 @@ import { LEGAL_TERMS_PAGE, LEGAL_COOKIES_PAGE } from "./sections/legal";
 import { SERVICES_PAGE } from "./sections/services";
 import { INSIGHTS_PAGE } from "./sections/insights";
 import { ABOUT_PAGE } from "./sections/about";
+import { PARTNER_BAND_DEFAULTS } from "./sections/partner-band";
 import { CONTACT_PAGE } from "./sections/contact";
 import { SELL_PAGE } from "./sections/sell";
 import { PROPERTY_MANAGEMENT_PAGE } from "./sections/property-management";
@@ -82,6 +83,36 @@ const SALE_PROP_TYPE_COPY: [string, string][] = [
 // ────────────────────────────────────────────────────────────────────────
 // Home
 // ────────────────────────────────────────────────────────────────────────
+/**
+ * The home page's opening five questions, verbatim from the client audit.
+ *
+ * Exported so the seed migration that writes them into the live document can
+ * import the same array — two copies of five answers is two chances for the
+ * page and the CMS to disagree about what the site says.
+ */
+export const HOME_FAQ_ITEMS = [
+  {
+    q: "What is the benefit of buying off-plan?",
+    a: "Off-plan properties often offer flexible payment plans, lower entry prices, and potential capital growth before handover.",
+  },
+  {
+    q: "What should I check before buying a property?",
+    a: "Check the location, developer, price, payment plan, ownership type, service charges, and expected rental demand.",
+  },
+  {
+    q: "What is mortgage pre-approval?",
+    a: "Mortgage pre-approval shows how much a bank may be willing to lend before you choose a property.",
+  },
+  {
+    q: "What is a payment plan?",
+    a: "A payment plan is the schedule of instalments paid to the developer or seller over a set period.",
+  },
+  {
+    q: "What are service charges?",
+    a: "Service charges are fees paid for building or community maintenance, facilities, and shared areas.",
+  },
+];
+
 const HOME: MasterPageDef = {
   key: "home",
   label: "Home",
@@ -325,20 +356,35 @@ const HOME: MasterPageDef = {
         ],
       },
     },
+    /*
+     * Both bands used to declare `fields: []` — presentational, nothing to
+     * edit. That was true of the LOGOS, which come from the catalogue, and
+     * wrong about the words around them: the eyebrow, headline, standfirst
+     * and button label were literals in the components, so /ar rendered four
+     * English strings in the middle of an Arabic page with no CMS field to
+     * put the Arabic in. The defaults below are those literals verbatim.
+     */
     {
       key: "developers",
       label: "Developer partners",
-      description: "Marquee of developer logos.",
-      dataNote: "Logos come from the developers catalogue.",
-      fields: [],
-      defaults: {},
+      description: "Marquee of developer logos, and the words around it.",
+      dataNote: "The logos themselves come from the developers catalogue.",
+      fields: [eyebrow(), heading(), body({ max: 400 }), text("cta_label", "Button label", { max: 60, optional: true })],
+      defaults: {
+        eyebrow: "Our Developers",
+        heading: "The developers shaping the UAE.",
+        body: "Direct relationships with the region's leading developers give our clients early access to landmark communities, new launches, and off-plan releases.",
+        cta_label: "All developers",
+      },
     },
     {
       key: "partners",
       label: "Partner ecosystem",
       description: "Shared partner band (also used on /about).",
-      fields: [],
-      defaults: {},
+      dataNote:
+        "The logos come from the partner list in code. Editing the copy here changes the home page only — /about carries its own copy for the same band.",
+      fields: [eyebrow(), heading(), body({ max: 400 }), text("cta_label", "Button label", { max: 60, optional: true })],
+      defaults: PARTNER_BAND_DEFAULTS,
     },
     {
       key: "faqs",
@@ -349,7 +395,16 @@ const HOME: MasterPageDef = {
         eyebrow: "FAQs",
         heading: "Frequently asked questions",
         body: "Clear guidance for every step of your real estate journey.",
-        items: [],
+        /*
+         * The five questions used to live in `home-faqs.tsx` as a hardcoded
+         * array the component fell back to whenever this list was empty —
+         * which it always was, because the section shipped with `items: []`.
+         * So the CMS showed an editor no questions while the page rendered
+         * five, and on /ar those five were English with nowhere to put the
+         * Arabic. They are the section's default now, and the component
+         * renders what it is given.
+         */
+        items: HOME_FAQ_ITEMS,
       },
     },
     {

@@ -73,8 +73,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/area-map/area-map.tsx": 5,
   "app/[locale]/(public)/_components/commute-time-tool.tsx": 3,
   "app/[locale]/(public)/_components/curated-grid.tsx": 1,
-  "app/[locale]/(public)/_components/developer-marquee.tsx": 1,
-  "app/[locale]/(public)/_components/developers-section.tsx": 3,
   "app/[locale]/(public)/_components/draw-area-tool.tsx": 2,
   "app/[locale]/(public)/_components/dual-range-slider.tsx": 2,
   "app/[locale]/(public)/_components/filter-bar.tsx": 4,
@@ -89,8 +87,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/off-plan/offplan-map-explorer.tsx": 1,
   "app/[locale]/(public)/_components/off-plan/project-interest-form.tsx": 2,
   "app/[locale]/(public)/_components/pagination.tsx": 3,
-  "app/[locale]/(public)/_components/partner-ecosystem-section.tsx": 3,
-  "app/[locale]/(public)/_components/partner-marquee.tsx": 1,
   "app/[locale]/(public)/_components/preferences-controls.tsx": 2,
   "app/[locale]/(public)/_components/search-list.tsx": 1,
   "app/[locale]/(public)/_components/trust-strip.tsx": 2,
@@ -146,7 +142,7 @@ const REMAINING: Readonly<Record<string, number>> = {
 };
 
 /** What the ratchet held when it landed. Lowering it is the point. */
-const TOTAL_CEILING = 178;
+const TOTAL_CEILING = 170;
 
 /**
  * Three shapes, matching the three ways a literal reaches a reader.

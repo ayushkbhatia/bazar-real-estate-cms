@@ -612,7 +612,15 @@ export default async function AboutPage({
     ),
 
     /* Partner ecosystem — banking + regulatory (shared with home) */
-    partner_ecosystem: <PartnerEcosystemSection key="partner_ecosystem" />,
+    partner_ecosystem: (
+      <PartnerEcosystemSection
+        key="partner_ecosystem"
+        eyebrow={str(v("partner_ecosystem"), "eyebrow")}
+        heading={str(v("partner_ecosystem"), "heading")}
+        body={str(v("partner_ecosystem"), "body")}
+        ctaLabel={str(v("partner_ecosystem"), "cta_label")}
+      />
+    ),
 
     /* Location — 1:1 with the /contact HQ map + details */
     location: (

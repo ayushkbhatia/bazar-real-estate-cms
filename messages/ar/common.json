@@ -39,6 +39,10 @@
     "comingSoon": "{emirate} قريباً",
     "curating": "نعمل على تنسيق قوائمنا العقارية هنا الآن."
   },
+  "marquee": {
+    "partners": "الشركاء المصرفيون والجهات التنظيمية",
+    "developers": "شركاؤنا من المطوّرين"
+  },
   "mortgageTeaser": {
     "estimatedMonthly": "القسط الشهري التقديري",
     "viewProperties": "تصفح العقارات",

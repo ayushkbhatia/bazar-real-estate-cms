@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { ECOSYSTEM_PARTNERS } from "./partners-data";
 
@@ -11,12 +12,13 @@ import { ECOSYSTEM_PARTNERS } from "./partners-data";
  * set reads evenly on both mobile and desktop.
  */
 export function PartnerMarquee() {
+  const t = useTranslations("common");
   // Two copies of the set → the second copy scrolls into the gap the first
   // leaves, giving a seamless -50% loop.
   const loop = [...ECOSYSTEM_PARTNERS, ...ECOSYSTEM_PARTNERS];
 
   return (
-    <div className="bz-marquee" aria-label="Banking and regulatory partners">
+    <div className="bz-marquee" aria-label={t("marquee.partners")}>
       <div className="bz-marquee__track">
         {loop.map((p, i) => (
           <div
@@ -84,6 +86,27 @@ export function PartnerMarquee() {
         @keyframes bz-marquee-scroll {
           from { transform: translate3d(0, 0, 0); }
           to { transform: translate3d(-50%, 0, 0); }
+        }
+        /*
+         * RTL runs the other way, and this is not cosmetic.
+         *
+         * The track is width:max-content inside an overflow:hidden box.
+         * Under dir=rtl the flex row is laid out from the right, so the
+         * track's overflow spills to the LEFT and its right edge starts flush
+         * with the container's. Animating to -50% then drags the whole strip
+         * further left into empty space: the logos run off the start of the
+         * page and never come back, which is exactly what /ar showed.
+         *
+         * Mirroring the sign restores the loop — moving right pulls the copy
+         * that is off-screen left into view — and the doubled track makes the
+         * wrap seamless in both directions.
+         */
+        [dir="rtl"] .bz-marquee__track {
+          animation-name: bz-marquee-scroll-rtl;
+        }
+        @keyframes bz-marquee-scroll-rtl {
+          from { transform: translate3d(0, 0, 0); }
+          to { transform: translate3d(50%, 0, 0); }
         }
         @media (prefers-reduced-motion: reduce) {
           .bz-marquee__track { animation: none; }

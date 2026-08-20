@@ -16461,5 +16461,90 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
+  },
+  "Our Partner Ecosystem": {
+    "ar": "منظومة شركائنا",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "The banks and regulators behind every deal.": {
+    "ar": "البنوك والجهات التنظيمية التي تقف خلف كل صفقة.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Direct relationships with the UAE's leading financial institutions and real-estate authorities.": {
+    "ar": "علاقات مباشرة مع أبرز المؤسسات المالية والجهات العقارية في الإمارات.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "All partners": {
+    "ar": "جميع الشركاء",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Our Developers": {
+    "ar": "مطوّرونا",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "The developers shaping the UAE.": {
+    "ar": "المطوّرون الذين يرسمون ملامح الإمارات.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Direct relationships with the region's leading developers give our clients early access to landmark communities, new launches, and off-plan releases.": {
+    "ar": "علاقاتنا المباشرة مع أبرز مطوّري المنطقة تمنح عملاءنا أولوية الوصول إلى المجتمعات المميزة والإطلاقات الجديدة والمشاريع على الخارطة.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "What is the benefit of buying off-plan?": {
+    "ar": "ما فائدة الشراء على الخارطة؟",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Off-plan properties often offer flexible payment plans, lower entry prices, and potential capital growth before handover.": {
+    "ar": "غالباً ما توفّر العقارات على الخارطة خطط سداد مرنة وأسعار دخول أقل وإمكانية نمو رأس المال قبل التسليم.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "What should I check before buying a property?": {
+    "ar": "ما الذي ينبغي التحقق منه قبل شراء عقار؟",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Check the location, developer, price, payment plan, ownership type, service charges, and expected rental demand.": {
+    "ar": "تحقّق من الموقع والمطوّر والسعر وخطة السداد ونوع الملكية ورسوم الخدمات والطلب الإيجاري المتوقع.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "What is mortgage pre-approval?": {
+    "ar": "ما هي الموافقة المبدئية على التمويل العقاري؟",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Mortgage pre-approval shows how much a bank may be willing to lend before you choose a property.": {
+    "ar": "توضّح الموافقة المبدئية المبلغ الذي قد يوافق البنك على إقراضه قبل أن تختار العقار.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "What is a payment plan?": {
+    "ar": "ما هي خطة السداد؟",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "A payment plan is the schedule of instalments paid to the developer or seller over a set period.": {
+    "ar": "خطة السداد هي جدول الأقساط التي تُدفع للمطوّر أو البائع على مدى فترة محددة.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "What are service charges?": {
+    "ar": "ما هي رسوم الخدمات؟",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Service charges are fees paid for building or community maintenance, facilities, and shared areas.": {
+    "ar": "رسوم الخدمات هي مبالغ تُدفع مقابل صيانة المبنى أو المجتمع والمرافق والمساحات المشتركة.",
+    "by": "machine",
+    "model": "claude-opus-5"
   }
 }

@@ -10,6 +10,7 @@ import {
   body,
   chipList,
 } from "../fields";
+import { PARTNER_BAND_DEFAULTS } from "./partner-band";
 
 /**
  * /about — the company page.
@@ -326,11 +327,16 @@ export const ABOUT_PAGE: MasterPageDef = {
     {
       key: "partner_ecosystem",
       label: "Partner ecosystem",
-      description: "The bank and regulator logo marquee.",
+      description: "The bank and regulator logo marquee, and the words around it.",
       dataNote:
-        "Shared with the home page — its copy and logos are set in code, so editing it here isn't possible. It can still be moved or switched off.",
-      fields: [],
-      defaults: {},
+        "The logos come from the partner list in code. The copy below is this page's own — the home page carries its own copy of the same band.",
+      fields: [
+        eyebrow(),
+        heading(),
+        body({ max: 400 }),
+        text("cta_label", "Button label", { max: 60, optional: true }),
+      ],
+      defaults: PARTNER_BAND_DEFAULTS,
     },
     {
       key: "location",
