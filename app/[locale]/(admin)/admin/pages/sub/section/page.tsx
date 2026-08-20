@@ -17,13 +17,25 @@ export default async function LibrarySectionIndex() {
   const entries = await Promise.all(
     LIBRARY_SECTIONS.map(async (entry) => {
       const content = await getLibrarySectionContent(entry.key, "bilingual");
-      const items = list<Record<string, unknown>>(content.section.values, "items");
+      // Two shapes share this card. A `list` section owns a repeating `items`
+      // list and the useful number is how many of them a visitor sees; a
+      // `fields` section owns a flat bag of copy and the useful number is how
+      // many strings it holds. Reading `items` off both — which is what this
+      // did — makes every copy section report "0 of 0 … shown".
+      const items =
+        entry.shape === "list"
+          ? list<Record<string, unknown>>(content.section.values, "items")
+          : [];
       return {
         entry,
-        // Switched-off items still exist; the count is what an editor manages,
-        // not what a visitor sees.
-        count: items.length,
-        live: items.filter((i) => i.enabled !== false).length,
+        summary:
+          entry.shape === "list"
+            ? // Switched-off items still exist; the count is what an editor
+              // manages, not what a visitor sees.
+              `${items.filter((i) => i.enabled !== false).length} of ${items.length} ${
+                items.length === 1 ? entry.itemLabel : `${entry.itemLabel}s`
+              } shown`
+            : `${entry.section.fields.length} ${entry.itemLabel}s`,
         edited: !content.usingDefaults,
       };
     }),
@@ -53,7 +65,7 @@ export default async function LibrarySectionIndex() {
           built in the Page Builder.
         </p>
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {entries.map(({ entry, count, live, edited }) => (
+          {entries.map(({ entry, summary, edited }) => (
             <li key={entry.key}>
               <Link
                 href={`/admin/pages/sub/section/${entry.key}`}
@@ -67,8 +79,7 @@ export default async function LibrarySectionIndex() {
                   {entry.description}
                 </span>
                 <span className="mt-1 text-[11.5px] text-bz-muted-2">
-                  {live} of {count}{" "}
-                  {count === 1 ? entry.itemLabel : `${entry.itemLabel}s`} shown
+                  {summary}
                   {edited ? "" : " · never edited"}
                 </span>
               </Link>

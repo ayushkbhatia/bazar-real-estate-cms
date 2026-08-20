@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "@/components/i18n/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { asLocale } from "@/lib/i18n/locales";
+import { asLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { Check, X, Plus } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
@@ -11,6 +11,11 @@ import {
   getComparableProperties,
   type ComparableProperty,
 } from "@/lib/queries/compare";
+import {
+  getCompareCopy,
+  type SectionCopy,
+} from "@/lib/queries/content-sections";
+import { arabicFor } from "@/lib/i18n/arabic-store";
 import {
   buildAttributeGroups,
   type CellValue,
@@ -29,11 +34,22 @@ import { PickerDrawer } from "./_components/picker-drawer";
 import { InvestmentMetrics } from "./_components/investment-metrics";
 import { VerdictBand } from "./_components/verdict-band";
 
-export const metadata: Metadata = {
-  title: "Compare properties",
-  description:
-    "Compare up to 4 Abu Dhabi properties side-by-side across price, specifications, location, amenities, and investment fundamentals. Share the URL to send the comparison to a partner or advisor.",
-};
+/**
+ * A static `metadata` export cannot see the locale, so `/ar/tools/compare`
+ * shipped an English `<title>` and an English `og:description` — the two
+ * strings a shared link is judged by. It is also the pair the client is most
+ * likely to want to rewrite, so both come from the CMS document rather than
+ * from a literal here.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = asLocale((await params).locale);
+  const copy = await getCompareCopy(locale);
+  return { title: copy.meta_title, description: copy.meta_description };
+}
 
 export const dynamic = "force-dynamic";
 
@@ -72,6 +88,10 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
   const locale = asLocale((await params).locale);
   setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "tools" });
+  // Editable at /admin/pages/sub/section/compare. The attribute NAMES stay in
+  // `t` — they are the property vocabulary the filter bar and the listing page
+  // share, not copy belonging to this screen.
+  const copy = await getCompareCopy(locale);
   const { ids: idsRaw, diff: diffRaw } = await searchParams;
   const requestedIds = parseIds(idsRaw);
   const showDiff = diffRaw !== "0"; // default on
@@ -79,7 +99,7 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
   const properties = await getComparableProperties(requestedIds);
 
   if (requestedIds.length === 0) {
-    return <EmptyState t={t} />;
+    return <EmptyState copy={copy} />;
   }
 
   // Some ids may not resolve (unpublished, deleted, bad uuid). Keep the
@@ -112,7 +132,7 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
               className="serif text-[28px] md:text-[36px] mt-1.5"
               style={{ letterSpacing: "-0.02em" }}
             >
-              {t("compare.heading")}
+              {copy.heading}
             </h1>
           </div>
           <CompareToolbar
@@ -135,14 +155,14 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
                     property={slot}
                     pickIndex={i}
                     showTestId={false}
-                    t={t}
+                    copy={copy}
                   />
                 ) : (
                   <EmptySlot
                     index={i}
                     requestedIds={requestedIds}
                     showTestId={false}
-                    t={t}
+                    copy={copy}
                   />
                 )}
               </div>
@@ -153,11 +173,17 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
         {diffRows.length > 0 ? (
           <section className="px-4 pt-8">
             <Eyebrow className="text-bz-ink">
-              {t("compare.whatDiffers")}
+              {copy.what_differs}
             </Eyebrow>
             <div className="mt-3 divide-y divide-bz-border">
               {diffRows.map((r) => (
-                <MobileAttrRow key={r.key} row={r} present={present} t={t} />
+                <MobileAttrRow
+                key={r.key}
+                row={r}
+                present={present}
+                t={t}
+                locale={locale}
+              />
               ))}
             </div>
           </section>
@@ -166,7 +192,7 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
         <section className="px-4 pt-8 pb-4">
           <details className="rounded-lg border border-bz-border bg-bz-surface">
             <summary className="cursor-pointer list-none px-4 py-3 text-[14px] font-medium flex items-center justify-between">
-              {t("compare.fullComparison")}
+              {copy.full_comparison}
               <span className="text-[12px] text-bz-muted">
                 {t("compare.propertyCount", { count: present.length })}
               </span>
@@ -179,7 +205,13 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
                   </Eyebrow>
                   <div className="mt-1 divide-y divide-bz-border">
                     {group.rows.map((r) => (
-                      <MobileAttrRow key={r.key} row={r} present={present} t={t} />
+                      <MobileAttrRow
+                key={r.key}
+                row={r}
+                present={present}
+                t={t}
+                locale={locale}
+              />
                     ))}
                   </div>
                 </div>
@@ -202,14 +234,14 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
                 key={`card-${i}-${slot.id}`}
                 property={slot}
                 pickIndex={i}
-                t={t}
+                copy={copy}
               />
             ) : (
               <EmptySlot
                 key={`empty-${i}`}
                 index={i}
                 requestedIds={requestedIds}
-                t={t}
+                copy={copy}
               />
             ),
           )}
@@ -245,7 +277,7 @@ export default async function ComparePage({ params, searchParams }: PageProps) {
                       style={{ width: 220 }}
                       className="py-3.5 pe-4 text-[13px] text-bz-muted"
                     >
-                      {rowLabel(r, t)}
+                      {rowLabel(r, t, locale)}
                     </td>
                     {slots.map((slot, i) => {
                       // Cells for *present* properties are indexed by their
@@ -312,14 +344,18 @@ function MobileAttrRow({
   row,
   present,
   t,
+  locale,
 }: {
   row: AttributeRow;
   present: ComparableProperty[];
   t: T;
+  locale: Locale;
 }) {
   return (
     <div className="py-3">
-      <div className="text-[12px] text-bz-muted">{rowLabel(row, t)}</div>
+      <div className="text-[12px] text-bz-muted">
+        {rowLabel(row, t, locale)}
+      </div>
       <div className="mt-1.5 flex flex-col gap-1">
         {present.map((p, i) => (
           <div
@@ -342,13 +378,23 @@ function MobileAttrRow({
 /**
  * The row's name: a message, unless the row is an amenity.
  *
- * An amenity row is named by an amenity string out of the database, which gets
- * its Arabic through the DB read fold rather than the catalogue — so it
- * carries `dataLabel` and prints verbatim. Everything else is code copy and
- * resolves through `key`.
+ * An amenity row is named by an amenity string out of the database, so it
+ * carries `dataLabel` and cannot resolve through the catalogue. The comment
+ * here used to say it "gets its Arabic through the DB read fold" — it does
+ * not, and never did: `properties.amenities` is a bare `text[]` with no `_ar`
+ * sibling for `localiseRow` to pair it with, so the Arabic table printed
+ * "Concierge" and "Family Pool" down the side of an otherwise Arabic page.
+ *
+ * `arabicFor` is the same fallback `localiseRow` reaches for when a twin
+ * column is blank — one store keyed by the English, so an amenity gets the
+ * identical Arabic here, on the property page and in the filter facet. An
+ * amenity nobody has translated falls back to its English, which is the
+ * designed direction.
  */
-function rowLabel(row: AttributeRow, t: T): string {
-  return row.dataLabel ?? t(`compare.row.${row.key}`);
+function rowLabel(row: AttributeRow, t: T, locale: Locale): string {
+  if (!row.dataLabel) return t(`compare.row.${row.key}`);
+  if (locale === DEFAULT_LOCALE) return row.dataLabel;
+  return arabicFor(row.dataLabel) ?? row.dataLabel;
 }
 
 function renderCell(value: CellValue, t: T) {
@@ -404,14 +450,14 @@ function PropertyCard({
   property,
   pickIndex,
   showTestId = true,
-  t,
+  copy,
 }: {
   property: ComparableProperty;
   pickIndex: number;
   /** Suppressed on the mobile rail so the desktop matrix testids stay
    *  unique for the e2e specs (both trees are in the DOM at once). */
   showTestId?: boolean;
-  t: T;
+  copy: SectionCopy;
 }) {
   return (
     <article
@@ -426,7 +472,7 @@ function PropertyCard({
       {pickIndex === 0 ? (
         <div className="absolute top-2 start-2 z-10">
           <span className="bg-bz-navy text-bz-bg text-[10px] uppercase tracking-wider font-medium rounded-sm px-1.5 py-1">
-            {t("compare.bestFit")}
+            {copy.best_fit}
           </span>
         </div>
       ) : null}
@@ -469,12 +515,12 @@ function EmptySlot({
   index,
   requestedIds,
   showTestId = true,
-  t,
+  copy,
 }: {
   index: number;
   requestedIds: string[];
   showTestId?: boolean;
-  t: T;
+  copy: SectionCopy;
 }) {
   // If this slot index is occupied in the URL but couldn't be resolved,
   // show a different message than for genuinely empty slots.
@@ -488,28 +534,22 @@ function EmptySlot({
         <Plus size={16} strokeWidth={1.8} />
       </div>
       <div className="text-[13px] text-bz-ink-2">
-        {t(
-          isUnresolved
-            ? "compare.unresolvedTitle"
-            : "compare.emptySlotTitle",
-        )}
+        {isUnresolved ? copy.unresolved_title : copy.slot_title}
       </div>
       <p className="text-[11px] text-center max-w-[160px]">
-        {t(
-          isUnresolved ? "compare.unresolvedBody" : "compare.emptySlotBody",
-        )}
+        {isUnresolved ? copy.unresolved_body : copy.slot_body}
       </p>
       {/* An unresolved slot already holds an id, so there's nothing to add
           into — only the genuinely empty ones get the picker. */}
       {isUnresolved ? (
         <Button asChild variant="outline" size="sm" className="mt-2">
-          <Link href="/buy">{t("compare.browse")}</Link>
+          <Link href="/buy">{copy.unresolved_cta}</Link>
         </Button>
       ) : (
         <div className="mt-2">
           <PickerDrawer requestedIds={requestedIds}>
             <Button variant="outline" size="sm">
-              {t("compare.addFromShortlist")}
+              {copy.slot_cta}
             </Button>
           </PickerDrawer>
         </div>
@@ -518,22 +558,22 @@ function EmptySlot({
   );
 }
 
-function EmptyState({ t }: { t: T }) {
+function EmptyState({ copy }: { copy: SectionCopy }) {
   return (
     <div className="bg-bz-bg px-4 md:px-12 py-12 md:py-20">
-      <Eyebrow>{t("compare.emptyEyebrow")}</Eyebrow>
+      <Eyebrow>{copy.empty_eyebrow}</Eyebrow>
       <h1
         className="serif text-[30px] md:text-[48px] mt-2 max-w-[18ch]"
         style={{ letterSpacing: "-0.025em" }}
       >
-        {t("compare.emptyHeading")}
+        {copy.empty_heading}
       </h1>
       <p className="mt-4 max-w-[58ch] text-[15px] text-bz-ink-2 leading-relaxed">
-        {t("compare.emptyBody")}
+        {copy.empty_body}
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Button asChild>
-          <Link href="/buy">{t("compare.browseMarketplace")}</Link>
+          <Link href="/buy">{copy.empty_cta}</Link>
         </Button>
       </div>
     </div>

@@ -16641,5 +16641,105 @@
     "ar": "بموعد مسبق فقط. لا نستقبل زيارات دون موعد — كل اجتماع يُحضَّر له مسبقًا.",
     "by": "human",
     "at": "2026-08-20T00:00:00.000Z"
+  },
+  "Shortlist": {
+    "ar": "القائمة المختصرة",
+    "by": "human"
+  },
+  "Your shortlist": {
+    "ar": "قائمتك المختصرة",
+    "by": "human"
+  },
+  "saved to this browser": {
+    "ar": "محفوظة في هذا المتصفح",
+    "by": "human"
+  },
+  "Nothing to show — try saving a few listings first.": {
+    "ar": "لا يوجد ما يُعرض — احفظ بعض القوائم العقارية أولًا.",
+    "by": "human"
+  },
+  "Tick up to four to put side by side. Everything else stays on your shortlist.": {
+    "ar": "اختر حتى أربعة عقارات لعرضها جنبًا إلى جنب. ويبقى الباقي في قائمتك المختصرة.",
+    "by": "human"
+  },
+  "WhatsApp these to an advisor": {
+    "ar": "أرسلها إلى مستشار عبر واتساب",
+    "by": "human"
+  },
+  "Email me these": {
+    "ar": "أرسلها إليّ بالبريد الإلكتروني",
+    "by": "human"
+  },
+  "Clear shortlist": {
+    "ar": "مسح القائمة المختصرة",
+    "by": "human"
+  },
+  "United Arab Emirates": {
+    "ar": "الإمارات العربية المتحدة",
+    "by": "human"
+  },
+  "Side by side": {
+    "ar": "جنبًا إلى جنب",
+    "by": "human"
+  },
+  "Compare properties": {
+    "ar": "مقارنة العقارات",
+    "by": "human"
+  },
+  "Compare up to 4 Abu Dhabi properties side-by-side across price, specifications, location, amenities, and investment fundamentals. Share the URL to send the comparison to a partner or advisor.": {
+    "ar": "قارن حتى أربعة عقارات في أبوظبي جنبًا إلى جنب من حيث السعر والمواصفات والموقع والمرافق وأساسيات الاستثمار. شارك الرابط لإرسال المقارنة إلى شريك أو مستشار.",
+    "by": "human"
+  },
+  "What differs": {
+    "ar": "ما يختلف",
+    "by": "human"
+  },
+  "Full comparison": {
+    "ar": "المقارنة الكاملة",
+    "by": "human"
+  },
+  "Best fit · advisor pick": {
+    "ar": "الأنسب · اختيار المستشار",
+    "by": "human"
+  },
+  "Compare": {
+    "ar": "مقارنة",
+    "by": "human"
+  },
+  "Stack properties side by side.": {
+    "ar": "ضع العقارات جنبًا إلى جنب.",
+    "by": "human"
+  },
+  "Pull two to four properties into a comparison and we'll line up price, specs, location, amenities, and investment fundamentals. Share the URL to send the same comparison to a partner or advisor.": {
+    "ar": "قارن بين عقارين إلى أربعة عقارات وسنعرض السعر والمواصفات والموقع والمرافق وأساسيات الاستثمار جنبًا إلى جنب. شارك الرابط لإرسال المقارنة نفسها إلى شريك أو مستشار.",
+    "by": "human"
+  },
+  "Browse the marketplace": {
+    "ar": "تصفّح السوق",
+    "by": "human"
+  },
+  "Add another property": {
+    "ar": "إضافة عقار آخر",
+    "by": "human"
+  },
+  "Pull one in from your shortlist, or go find another": {
+    "ar": "اختر واحداً من قائمتك المختصرة، أو ابحث عن غيره",
+    "by": "human"
+  },
+  "Add from shortlist": {
+    "ar": "إضافة من القائمة المختصرة",
+    "by": "human"
+  },
+  "Couldn't load this property": {
+    "ar": "لا يمكن تحميل هذا العقار",
+    "by": "human"
+  },
+  "It may be off-market or no longer published.": {
+    "ar": "قد يكون غير مطروح للبيع أو لم يعد منشوراً.",
+    "by": "human"
+  },
+  "Browse": {
+    "ar": "تصفّح",
+    "by": "human"
   }
 }

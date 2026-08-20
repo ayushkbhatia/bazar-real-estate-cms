@@ -4,6 +4,7 @@ import { getPublishedMegamenuHydrated } from "@/lib/queries/megamenu-hydrate";
 import { listFloatingCtas } from "@/lib/queries/floating-ctas";
 import { getPublicBranding } from "@/lib/queries/site-settings";
 import { getPublicFooter } from "@/lib/queries/footer";
+import { getShortlistCopy } from "@/lib/queries/content-sections";
 import { asLocale } from "@/lib/i18n/locales";
 import { getAdvisorWhatsAppNumber } from "@/lib/whatsapp";
 import { PreferencesPopover } from "./_components/preferences-popover";
@@ -28,14 +29,20 @@ export default async function PublicLayout({
   // /legal, a page whose entire body is a redirect.
   const { locale } = await params;
   const active = asLocale(locale);
-  const [megamenu, floatingCtas, branding, footer] = await Promise.all([
-    getPublishedMegamenuHydrated(active),
-    listFloatingCtas(),
-    getPublicBranding(active),
-    // Same contract as the megamenu above: the locale is threaded in rather
-    // than read ambiently, so the layout does not force its subtree dynamic.
-    getPublicFooter(active),
-  ]);
+  const [megamenu, floatingCtas, branding, footer, shortlistCopy] =
+    await Promise.all([
+      getPublishedMegamenuHydrated(active),
+      listFloatingCtas(),
+      getPublicBranding(active),
+      // Same contract as the megamenu above: the locale is threaded in rather
+      // than read ambiently, so the layout does not force its subtree dynamic.
+      getPublicFooter(active),
+      // The shortlist card is a client component and cannot read its own
+      // document, so its copy is resolved here and handed down. Same
+      // cookie-free public client as the four above, so it costs a round trip
+      // and not the subtree's render mode.
+      getShortlistCopy(active),
+    ]);
   // Resolved here rather than inside the nav so the brand component stays a
   // presentational client component with no data dependency of its own.
   const logo = branding.logo_url
@@ -109,7 +116,7 @@ export default async function PublicLayout({
         clean for fresh visitors.  Sits bottom-left so it doesn't fight
         with the floating CTA rail at bottom-right.
       */}
-      <ShortlistDrawer />
+      <ShortlistDrawer copy={shortlistCopy} />
       {/* Floating contact CTAs, from `floating_ctas` (see
           /admin/floating-ctas). Mounted here rather than per page so
           WhatsApp floats site-wide; the rail itself decides which buttons
