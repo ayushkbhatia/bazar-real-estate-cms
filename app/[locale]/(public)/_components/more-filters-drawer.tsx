@@ -71,6 +71,9 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
   // still un-extracted English, and G-13's ratchet is shrink-only, so a new
   // literal would have to be paid for by removing an old one.
   const t = useTranslations("search");
+  // The badge already has one rendering in `listing`; adding a second here
+  // would give the same English two Arabics, which `messages.test.ts` refuses.
+  const tl = useTranslations("listing");
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -169,7 +172,7 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
       </SheetTrigger>
       <SheetContent side="right" className="w-[420px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>More filters</SheetTitle>
+          <SheetTitle>{t("filters.moreFilters")}</SheetTitle>
         </SheetHeader>
 
         <div className="px-6 py-4 flex flex-col gap-6">
@@ -198,7 +201,7 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
 
           {/* Year built */}
           <div>
-            <Label>Year built</Label>
+            <Label>{t("filters.yearBuilt")}</Label>
             <div className="grid grid-cols-2 gap-3 mt-1.5">
               <Input
                 type="number"
@@ -221,7 +224,7 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
 
           {/* Tenure */}
           <div>
-            <Label htmlFor="tenure-pick">Tenure</Label>
+            <Label htmlFor="tenure-pick">{t("filters.tenure")}</Label>
             <select
               id="tenure-pick"
               value={state.tenure}
@@ -266,7 +269,7 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
 
           {/* Furnishing */}
           <div>
-            <Label htmlFor="furnishing-pick">Furnishing</Label>
+            <Label htmlFor="furnishing-pick">{t("filters.furnishing")}</Label>
             <select
               id="furnishing-pick"
               value={state.furnishing}
@@ -295,16 +298,16 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
               className="mt-1"
             />
             <span>
-              <span className="text-[14px] text-bz-ink">Bazar Verified</span>
+              <span className="text-[14px] text-bz-ink">{tl("verified")}</span>
               <span className="block text-[12px] text-bz-muted mt-0.5 leading-relaxed">
-                Listings inspected by a Bazar advisor in the last 90 days.
+                {t("filters.verifiedHelp")}
               </span>
             </span>
           </label>
 
           {/* Amenities */}
           <div>
-            <Label>Amenities</Label>
+            <Label>{t("filters.amenities")}</Label>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {AMENITIES.map((a) => {
                 const active = state.amenities.has(a);

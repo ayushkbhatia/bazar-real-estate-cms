@@ -81,14 +81,13 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/filter-bar.tsx": 4,
   "app/[locale]/(public)/_components/footer-trust.tsx": 1,
   "app/[locale]/(public)/_components/forms/form-renderer.tsx": 2,
-  "app/[locale]/(public)/_components/hero-search.tsx": 6,
   "app/[locale]/(public)/_components/home/home-testimonials.tsx": 1,
   "app/[locale]/(public)/_components/market-context-link.tsx": 3,
   "app/[locale]/(public)/_components/marketing/buy-category-explorer.tsx": 2,
   "app/[locale]/(public)/_components/marketing/buy-properties-map.tsx": 1,
   "app/[locale]/(public)/_components/marketing/buy-rent-landing.tsx": 2,
   "app/[locale]/(public)/_components/mode-segmented.tsx": 1,
-  "app/[locale]/(public)/_components/more-filters-drawer.tsx": 8,
+  "app/[locale]/(public)/_components/more-filters-drawer.tsx": 1,
   "app/[locale]/(public)/_components/off-plan/offplan-map-explorer.tsx": 1,
   "app/[locale]/(public)/_components/off-plan/project-interest-form.tsx": 2,
   "app/[locale]/(public)/_components/pagination.tsx": 3,
@@ -96,7 +95,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/partner-marquee.tsx": 1,
   "app/[locale]/(public)/_components/preferences-controls.tsx": 2,
   "app/[locale]/(public)/_components/search-list.tsx": 1,
-  "app/[locale]/(public)/_components/shortlist-drawer.tsx": 7,
   "app/[locale]/(public)/_components/trust-strip.tsx": 2,
   "app/[locale]/(public)/about/page.tsx": 1,
   "app/[locale]/(public)/agents/page.tsx": 2,
@@ -150,7 +148,7 @@ const REMAINING: Readonly<Record<string, number>> = {
 };
 
 /** What the ratchet held when it landed. Lowering it is the point. */
-const TOTAL_CEILING = 201;
+const TOTAL_CEILING = 181;
 
 /**
  * Three shapes, matching the three ways a literal reaches a reader.

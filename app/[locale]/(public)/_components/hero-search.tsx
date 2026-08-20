@@ -74,7 +74,7 @@ export function HeroSearch({
       <div
         className="flex gap-1 px-1 pt-1"
         role="tablist"
-        aria-label="Search type"
+        aria-label={tr("filters.searchType")}
       >
         {HERO_TABS.map((t) => {
           const active = mode === t.value;
@@ -119,14 +119,14 @@ export function HeroSearch({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <label className="flex flex-col gap-1">
             <span className="text-[11px] font-medium text-bz-muted">
-              Property type
+              {tr("filters.propertyType")}
             </span>
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
               className="h-10 px-3 rounded-md bg-white text-bz-ink text-[13px] outline-none border border-bz-border focus:border-bz-accent"
             >
-              <option value="">Any type</option>
+              <option value="">{tr("filters.anyType")}</option>
               {tab.types.map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
@@ -138,14 +138,14 @@ export function HeroSearch({
           {tab.beds ? (
             <label className="flex flex-col gap-1">
               <span className="text-[11px] font-medium text-bz-muted">
-                Bedrooms
+                {tr("filters.bedrooms")}
               </span>
               <select
                 value={beds}
                 onChange={(e) => setBeds(e.target.value)}
                 className="h-10 px-3 rounded-md bg-white text-bz-ink text-[13px] outline-none border border-bz-border focus:border-bz-accent"
               >
-                <option value="">Any beds</option>
+                <option value="">{tr("filters.anyBeds")}</option>
                 {[1, 2, 3, 4, 5, 6].map((n) => (
                   <option key={n} value={n}>
                     {n === 6
@@ -178,7 +178,7 @@ export function HeroSearch({
         {/* Row 3: price slider */}
         <div className="flex flex-col gap-1">
           <span className="text-[11px] font-medium text-bz-muted">
-            Price range
+            {tr("filters.priceRange")}
           </span>
           <div className="px-1 pt-1.5">
             {/*

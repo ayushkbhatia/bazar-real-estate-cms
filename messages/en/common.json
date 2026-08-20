@@ -1,21 +1,8 @@
 {
-  "brand": "Bazar",
-  "tagline": "Abu Dhabi",
-  "language": "Language",
-  "languageEnglish": "English",
-  "languageArabic": "العربية",
-  "preferences": "Display preferences",
-  "preferencesHelp": "Choose how prices and areas display across the site. Saved to this browser.",
-  "close": "Close",
   "back": "Back",
-  "readMore": "Read more",
-  "viewAll": "View all",
-  "loading": "Loading",
-  "search": "Search",
-  "notFoundTitle": "This page isn't here.",
-  "notFoundBody": "The link may be out of date, or the page has been moved. The home page is the quickest way back to the catalogue.",
-  "returnHome": "Return home",
+  "brand": "Bazar",
   "browseBuy": "Browse buy",
+  "close": "Close",
   "currencyAndUnits": "Currency & units",
   "hours": {
     "open": "Open",
@@ -38,6 +25,10 @@
     },
     "seeDaily": "See daily hours"
   },
+  "language": "Language",
+  "languageArabic": "العربية",
+  "languageEnglish": "English",
+  "loading": "Loading",
   "mortgageTeaser": {
     "estimatedMonthly": "Estimated monthly payment",
     "viewProperties": "View properties",
@@ -47,6 +38,24 @@
     "interestRate": "Interest rate",
     "loanTerm": "Loan term"
   },
+  "notFoundBody": "The link may be out of date, or the page has been moved. The home page is the quickest way back to the catalogue.",
+  "notFoundTitle": "This page isn't here.",
+  "preferences": "Display preferences",
+  "preferencesHelp": "Choose how prices and areas display across the site. Saved to this browser.",
+  "readMore": "Read more",
+  "returnHome": "Return home",
+  "search": "Search",
+  "shortlist": {
+    "clear": "Clear shortlist",
+    "email": "Email me these",
+    "empty": "Nothing to show — try saving a few listings first.",
+    "loading": "Loading…",
+    "selectTwo": "Select 2 to compare",
+    "title": "Your shortlist",
+    "whatsapp": "WhatsApp these to an advisor"
+  },
+  "tagline": "Abu Dhabi",
+  "viewAll": "View all",
   "whoWeAre": {
     "establishedIn": "Established in Abu Dhabi",
     "knowMore": "Know more"
