@@ -1,4 +1,45 @@
 {
+  "fallbackArea": "United Arab Emirates",
+  "fallbackCity": "Abu Dhabi",
+  "faq": {
+    "locationQ": "Where is {reference} located?",
+    "locationA": "{title} sits within {place}. The interactive map on this page anchors it to the wider community along with commute times to key destinations.",
+    "nonResidentQ": "Can a non-resident buy {reference}?",
+    "verifyQ": "Where can I verify this listing?",
+    "verifyA": "Permit number {permit} is registered with the DLD. You can verify the listing — and confirm Bazar is the assigned broker — directly through the DLD's public Trakheesi portal.",
+    "includesQ": "What does a {beds}-bed {type} in {place} typically include?",
+    "includesA": "A {beds}-bed {type} in {place} typically comes with {baths}, a private balcony or terrace, dedicated parking, and access to the building's pool / gym amenity set. Specifications vary per tower; your Bazar advisor will share the full schedule for {reference} on request.",
+    "bathroomCount": "{count, plural, one {# bathroom} other {# bathrooms}}",
+    "tenureFreehold": "Yes — this is a freehold title. Non-resident buyers can take ownership in their own name.",
+    "tenureLeasehold": "This is a leasehold title. Non-resident ownership rules vary by lease term and area — your Bazar advisor will clarify the exact eligibility.",
+    "tenureUnknown": "Tenure varies by community. Your Bazar advisor will confirm the specific title structure and what it means for non-resident ownership before any offer is filed."
+  },
+  "floorPlan": {
+    "heading": "Floor plan",
+    "unitLayout": "Unit layout",
+    "none": "No floor plan attached yet. Enquire about this property and the advisor will email one back — typically within 2 hours.",
+    "alt": "Floor plan for {reference}",
+    "tabs": "Gallery views",
+    "photos": "Photos",
+    "map": "Map"
+  },
+  "furnishing": {
+    "unfurnished": "Unfurnished",
+    "semi": "Semi-furnished",
+    "fully": "Fully furnished"
+  },
+  "gallery": {
+    "morePhotos": "{count, plural, one {+# photo} other {+# photos}}",
+    "close": "Close gallery",
+    "previous": "Previous photo"
+  },
+  "listedAgo": "{days, plural, =0 {today} one {1 day ago} other {# days ago}}",
+  "mode": {
+    "buy": "For sale",
+    "rent": "For rent",
+    "off_plan": "Off-plan",
+    "commercial": "Commercial"
+  },
   "spec": {
     "development": "Development",
     "furnishing": "Furnishing",
@@ -20,37 +61,5 @@
     "type": "Type",
     "tenure": "Tenure",
     "yearBuilt": "Year built"
-  },
-  "furnishing": {
-    "unfurnished": "Unfurnished",
-    "semi": "Semi-furnished",
-    "fully": "Fully furnished"
-  },
-  "mode": {
-    "buy": "For sale",
-    "rent": "For rent",
-    "off_plan": "Off-plan",
-    "commercial": "Commercial"
-  },
-  "gallery": {
-    "morePhotos": "{count, plural, one {+# photo} other {+# photos}}",
-    "close": "Close gallery",
-    "previous": "Previous photo"
-  },
-  "listedAgo": "{days, plural, =0 {today} one {1 day ago} other {# days ago}}",
-  "faq": {
-    "locationQ": "Where is {reference} located?",
-    "locationA": "{title} sits within {place}. The interactive map on this page anchors it to the wider community along with commute times to key destinations.",
-    "nonResidentQ": "Can a non-resident buy {reference}?",
-    "verifyQ": "Where can I verify this listing?",
-    "verifyA": "Permit number {permit} is registered with the DLD. You can verify the listing — and confirm Bazar is the assigned broker — directly through the DLD's public Trakheesi portal.",
-    "includesQ": "What does a {beds}-bed {type} in {place} typically include?",
-    "includesA": "A {beds}-bed {type} in {place} typically comes with {baths}, a private balcony or terrace, dedicated parking, and access to the building's pool / gym amenity set. Specifications vary per tower; your Bazar advisor will share the full schedule for {reference} on request.",
-    "bathroomCount": "{count, plural, one {# bathroom} other {# bathrooms}}",
-    "tenureFreehold": "Yes — this is a freehold title. Non-resident buyers can take ownership in their own name.",
-    "tenureLeasehold": "This is a leasehold title. Non-resident ownership rules vary by lease term and area — your Bazar advisor will clarify the exact eligibility.",
-    "tenureUnknown": "Tenure varies by community. Your Bazar advisor will confirm the specific title structure and what it means for non-resident ownership before any offer is filed."
-  },
-  "fallbackArea": "United Arab Emirates",
-  "fallbackCity": "Abu Dhabi"
+  }
 }

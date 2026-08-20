@@ -4,6 +4,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import type { PropertyFilters } from "@/lib/filters/property";
 import type { Database } from "@/db/types";
 import { currentLocale } from "@/lib/i18n/current";
+import { arabicFor } from "@/lib/i18n/arabic-store";
 import { localiseRow } from "@/lib/i18n/localise";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 
@@ -21,10 +22,10 @@ type Form = Database["public"]["Enums"]["property_form"];
  * `pickHero`.
  */
 const LISTING_FIELDS =
-  "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
+  "id, reference, slug, title, title_ar, short_description, short_description_ar, price_aed, mode, property_form, status, type, beds, baths, built_up_ft2, flags, geo, published_at, created_at, areas:area_id(name, name_ar, slug), property_media(role, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 const DETAIL_FIELDS =
-  "id, reference, slug, title, title_ar, short_description, short_description_ar, description, description_ar, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, view_ar, orientation, orientation_ar, parking_bays, service_charge_per_ft2, amenities, flags, dld_plot_number, listing_permit_no, address_line, address_line_ar, floor, published_at, created_at, updated_at, areas:area_id(name, slug), developments:development_id(name, slug), property_media(role, sort_order, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
+  "id, reference, slug, title, title_ar, short_description, short_description_ar, description, description_ar, price_aed, mode, status, type, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, view_ar, orientation, orientation_ar, parking_bays, service_charge_per_ft2, amenities, flags, dld_plot_number, listing_permit_no, address_line, address_line_ar, floor, published_at, created_at, updated_at, areas:area_id(name, name_ar, slug), developments:development_id(name, name_ar, slug), property_media(role, sort_order, media:media_assets(storage_key, filename, alt_text, alt_text_ar))";
 
 type RawMediaJoin = {
   role: Database["public"]["Enums"]["property_media_role"];
@@ -125,8 +126,46 @@ function attachHero<T extends { property_media?: RawMediaJoin[] | null }>(
   const folded = localiseRow(
     rest as unknown as Record<string, unknown>,
     locale,
-  ) as unknown as Omit<T, "property_media">;
-  return { ...folded, hero: pickHero(property_media, locale) };
+  ) as unknown as Record<string, unknown>;
+
+  /*
+   * The joined area and development, one level down.
+   *
+   * Same blind spot `pickHero` exists for: `localiseRow` walks a single level,
+   * so `areas: { name, name_ar }` arrives as one opaque value and its twin
+   * never pairs with anything. The join did not even SELECT `name_ar` until
+   * now, so "Hudayriyat Island" rendered in English on every Arabic listing
+   * card and detail page while `جزيرة الحديريات` sat in the store and in
+   * `areas.name_ar`.
+   */
+  for (const key of ["areas", "developments"] as const) {
+    const join = folded[key];
+    if (join && typeof join === "object" && !Array.isArray(join)) {
+      folded[key] = localiseRow(join as Record<string, unknown>, locale);
+    }
+  }
+
+  /*
+   * Amenities are a bare `text[]` with no twin column, which `localiseDeep`'s
+   * docblock calls out as passing "untouched — there is no twin to pair them
+   * with at that depth". True, and it left every amenity chip in English on
+   * /ar even though the store holds Arabic for all 99 of them.
+   *
+   * There is no per-row twin to add here: the values are a shared vocabulary
+   * from `amenities_taxonomy`, not this listing's prose. So the store IS the
+   * translation, and this asks it directly. An unknown value keeps its
+   * English, exactly as `arabicFor` does everywhere else.
+   */
+  if (locale !== DEFAULT_LOCALE && Array.isArray(folded.amenities)) {
+    folded.amenities = (folded.amenities as unknown[]).map((value) =>
+      typeof value === "string" ? (arabicFor(value) ?? value) : value,
+    );
+  }
+
+  return {
+    ...(folded as unknown as Omit<T, "property_media">),
+    hero: pickHero(property_media, locale),
+  };
 }
 
 /** Resolve an area slug into its UUID. Returns null if not found. */

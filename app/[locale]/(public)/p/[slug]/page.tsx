@@ -1,4 +1,7 @@
 import { getTranslations } from "next-intl/server";
+
+import { arabicFor } from "@/lib/i18n/arabic-store";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import type { Locale } from "@/lib/i18n/locales";
 import type { Metadata } from "next";
 import { getForm } from "@/lib/queries/forms";
@@ -528,7 +531,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           <FactTile
             icon={<Home size={16} strokeWidth={1.6} />}
             label={t("stat.type")}
-            value={titleCase(property.type)}
+            value={term(property.type, locale)}
           />
           <FactTile
             icon={<KeyRound size={16} strokeWidth={1.6} />}
@@ -564,6 +567,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           {/* Floor plan section */}
           <FloorPlanSection
+            locale={locale}
             imageUrl={floorPlanUrl}
             beds={property.beds}
             baths={property.baths}
@@ -784,6 +788,28 @@ function FactTile({
       <div className="text-[16px] font-medium mt-1">{value}</div>
     </div>
   );
+}
+
+/**
+ * A DB enum as a reader sees it: title-cased, then translated if the store
+ * knows the term.
+ *
+ * `titleCase` alone turned `apartment` into "Apartment" and stopped, so the
+ * spec table said "Apartment" under an Arabic label while شقة sat in the
+ * store. `arabicFor` keeps the English for anything it has never seen —
+ * Townhouse, Duplex and Plot have no entry yet, and an untranslated term is a
+ * better outcome than a guessed one.
+ *
+ * TENURE deliberately does not use this. `Freehold` has Arabic and
+ * `Leasehold`, `Usufruct` and `Musataha` do not, so one field would come back
+ * half-translated; and those last two are a known collision — both render حق
+ * انتفاع, which misstates what a buyer is acquiring. That is a vocabulary
+ * decision for the client, tracked separately, not something to settle here.
+ */
+function term(value: string, locale: Locale): string {
+  const english = titleCase(value);
+  if (locale === DEFAULT_LOCALE) return english;
+  return arabicFor(english) ?? english;
 }
 
 function titleCase(s: string): string {

@@ -1,4 +1,7 @@
+import { getTranslations } from "next-intl/server";
 import { LayoutGrid, Maximize2, BedDouble } from "lucide-react";
+
+import type { Locale } from "@/lib/i18n/locales";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { AreaText } from "../../../_components/area-text";
 import { FloorPlanViewer } from "./floor-plan-viewer";
@@ -9,33 +12,43 @@ import { FloorPlanViewer } from "./floor-plan-viewer";
  * uploaded yet (Sprint 7c Media tab), shows a clear "request from advisor"
  * call-out instead of a generic placeholder.
  */
-export function FloorPlanSection({
+export async function FloorPlanSection({
   imageUrl,
   beds,
   baths,
   builtUpFt2,
   reference,
+  locale,
 }: {
   imageUrl: string | null;
   beds: number;
   baths: number;
   builtUpFt2: number | null;
   reference: string;
+  /*
+   * Threaded rather than read ambiently. `getTranslations("property")` alone
+   * calls `getLocale()`, which reaches `headers()` unless `setRequestLocale`
+   * has already run in the same render — and that de-prerenders the route and
+   * everything above it. The page's own docblock spells this out; this
+   * component follows it rather than reinventing the reasoning.
+   */
+  locale: Locale;
 }) {
+  const t = await getTranslations({ locale, namespace: "property" });
   return (
     <section id="floor-plan" className="scroll-mt-16">
-      <Eyebrow>Floor plan</Eyebrow>
+      <Eyebrow>{t("floorPlan.heading")}</Eyebrow>
       <h3
         className="serif text-[24px] mt-2 mb-4 leading-tight"
         style={{ letterSpacing: "-0.012em" }}
       >
-        Unit layout
+        {t("floorPlan.unitLayout")}
       </h3>
 
       {imageUrl ? (
         <FloorPlanViewer
           src={imageUrl}
-          alt={`Floor plan for ${reference}`}
+          alt={t("floorPlan.alt", { reference })}
           // The section sits in the detail grid: `px-4 md:px-12` page padding,
           // then `lg:grid-cols-[1fr_360px]` with a `gap-12`. So above lg the
           // slot is 100vw − 96 − 360 − 48. Measured 936px at a 1440 viewport.
@@ -50,8 +63,7 @@ export function FloorPlanSection({
               className="text-bz-muted-2 mx-auto mb-3"
             />
             <p className="text-[13.5px] text-bz-ink-2 leading-relaxed">
-              No floor plan attached yet. Enquire about this property and the
-              advisor will email one back — typically within 2 hours.
+              {t("floorPlan.none")}
             </p>
           </div>
         </div>
@@ -61,17 +73,17 @@ export function FloorPlanSection({
       <div className="mt-4 grid grid-cols-3 gap-3 max-w-[480px]">
         <FactPill
           icon={<BedDouble size={13} strokeWidth={1.6} />}
-          label="Bedrooms"
+          label={t("stat.bedrooms")}
           value={String(beds)}
         />
         <FactPill
           icon={<LayoutGrid size={13} strokeWidth={1.6} />}
-          label="Bathrooms"
+          label={t("stat.bathrooms")}
           value={String(baths)}
         />
         <FactPill
           icon={<Maximize2 size={13} strokeWidth={1.6} />}
-          label="Built-up"
+          label={t("stat.builtUp")}
           value={<AreaText ft2={builtUpFt2} />}
         />
       </div>
