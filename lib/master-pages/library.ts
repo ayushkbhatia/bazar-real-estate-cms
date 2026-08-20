@@ -35,6 +35,7 @@
  */
 
 import { SEED_TESTIMONIALS, type Testimonial } from "@/lib/seeds/awards";
+import { area, text as textField } from "./fields";
 import type {
   FieldDef,
   ItemValue,
@@ -46,7 +47,7 @@ import type {
 } from "./types";
 
 /** Keys are storage. Renaming one orphans its document — add, never rename. */
-export type LibrarySectionKey = "testimonials";
+export type LibrarySectionKey = "testimonials" | "shortlist" | "compare";
 
 export type LibrarySectionDef = {
   key: LibrarySectionKey;
@@ -61,6 +62,17 @@ export type LibrarySectionDef = {
    * content is that its blast radius is invisible from the form.
    */
   usedOn: { label: string; href: string }[];
+  /**
+   * What the entry's index card counts.
+   *
+   * `list` sections own a repeating `items` list and the card says "3 of 12
+   * reviews shown"; `fields` sections own a flat bag of copy and the card
+   * says how many strings it holds. The index used to assume the first shape
+   * for everything, so a copy section reported "0 of 0 … shown".
+   */
+  shape: "list" | "fields";
+  /** Label for the editor's revert control — "Reset to the shipped reviews". */
+  resetLabel: string;
   /** The one editable section this library entry owns. */
   section: SectionDef;
 };
@@ -141,6 +153,8 @@ const TESTIMONIALS: LibrarySectionDef = {
   description:
     "Client reviews, edited once and read by every surface that shows them.",
   itemLabel: "review",
+  shape: "list",
+  resetLabel: "Reset to the shipped reviews",
   usedOn: [
     { label: "Home", href: "/" },
     { label: "Any landing page with the Testimonials block", href: "/admin/page-builder" },
@@ -148,7 +162,182 @@ const TESTIMONIALS: LibrarySectionDef = {
   section: TESTIMONIALS_SECTION,
 };
 
-export const LIBRARY_SECTIONS: LibrarySectionDef[] = [TESTIMONIALS];
+
+/**
+ * The shortlist card — the drawer that opens from the floating pill.
+ *
+ * ## Why its copy is here rather than in `messages/`
+ *
+ * The drawer is a client component in the public layout, so every string in it
+ * used to be one of two things: a `common.shortlist.*` message, or an English
+ * literal nobody had extracted. Neither is editable by the client, and the
+ * second was not even translated — the card rendered "8 of 25 · saved to this
+ * browser" and "Compare 4 side-by-side" in English on `/ar`.
+ *
+ * Moving the prose here fixes both at once: a library section gets its Arabic
+ * twin derived (docs/I18N.md, "I added a new section"), so `/ar` renders Arabic
+ * with nothing further to do, and the client can rewrite any of it at
+ * /admin/pages/sub/section/shortlist.
+ *
+ * ## What deliberately did NOT move
+ *
+ * Anything carrying a count stays in the `common` catalogue as ICU — the
+ * counts, the bed/bath line, the compare button. Arabic has six plural
+ * categories and a CMS text input cannot express them; an editor typing
+ * "{count} عقارات" would be wrong for one, two and eleven and nobody here could
+ * see it. `savedCount` interpolates `storage_note` below, so the editable half
+ * of that line is still editable and the numbers are still ICU's problem.
+ */
+const SHORTLIST_SECTION: SectionDef = {
+  key: "shortlist",
+  label: "Shortlist card",
+  description:
+    "The panel that slides out when a visitor opens their saved listings.",
+  locked: true,
+  dataNote:
+    "Lines with a number in them — “8 of 25”, “Compare 4 side-by-side”, “3b · 2ba” — are not here. Arabic changes the wording of a sentence depending on the number, so those are handled in code; the words around them are the fields below.",
+  fields: [
+    textField("trigger_label", "Button label", {
+      max: 40,
+      help: "The floating pill in the corner. The count is added after it — “Shortlist · 8”.",
+    }),
+    textField("title", "Panel heading", { max: 60 }),
+    textField("storage_note", "Storage note", {
+      max: 80,
+      help: "Reads after the count: “8 of 25 · saved to this browser”. Write only the part after the dot.",
+    }),
+    area("empty", "Empty state", {
+      max: 240,
+      optional: false,
+      help: "Shown when the saved listings can't be loaded.",
+    }),
+    area("pick_help", "Picking help", {
+      max: 300,
+      optional: false,
+      help: "Shown under the compare button once the visitor has saved more than four. Explains that the table takes four and the rest stay saved.",
+    }),
+    textField("whatsapp_label", "WhatsApp button", { max: 80 }),
+    textField("email_label", "Email button", { max: 80 }),
+    textField("clear_label", "Clear link", { max: 60 }),
+    textField("area_fallback", "Area fallback", {
+      max: 80,
+      help: "Printed under a listing whose area is missing from the catalogue.",
+    }),
+  ],
+  defaults: {
+    trigger_label: "Shortlist",
+    title: "Your shortlist",
+    storage_note: "saved to this browser",
+    empty: "Nothing to show — try saving a few listings first.",
+    pick_help:
+      "Tick up to four to put side by side. Everything else stays on your shortlist.",
+    whatsapp_label: "WhatsApp these to an advisor",
+    email_label: "Email me these",
+    clear_label: "Clear shortlist",
+    area_fallback: "United Arab Emirates",
+  },
+};
+
+const SHORTLIST: LibrarySectionDef = {
+  key: "shortlist",
+  label: "Shortlist card",
+  description:
+    "The saved-listings panel, which opens over whatever page the visitor is on.",
+  itemLabel: "line of copy",
+  shape: "fields",
+  resetLabel: "Reset to the shipped wording",
+  usedOn: [{ label: "Every public page", href: "/" }],
+  section: SHORTLIST_SECTION,
+};
+
+/**
+ * The compare page's narrative copy.
+ *
+ * Scoped to the words a marketer would rewrite: the heading, the two empty
+ * states, the slot prompts, the search-result metadata. The attribute NAMES —
+ * "Asking price", "Tenure", "Freehold" — stay in the `tools` catalogue,
+ * because they are a vocabulary the table shares with the filter bar and the
+ * property page rather than copy belonging to this one screen. Forking them
+ * here would let /tools/compare call a villa something the rest of the site
+ * does not.
+ */
+const COMPARE_SECTION: SectionDef = {
+  key: "compare",
+  label: "Compare page",
+  description: "The side-by-side comparison table at /tools/compare.",
+  locked: true,
+  dataNote:
+    "Row names (“Asking price”, “Tenure”) and the values in them come from the property vocabulary the whole site shares, not from this page — amenities are edited at Settings → Fields.",
+  fields: [
+    textField("heading", "Page heading", { max: 80 }),
+    textField("meta_title", "Browser tab title", {
+      max: 80,
+      help: "Shown in the browser tab and when the link is shared.",
+    }),
+    area("meta_description", "Search description", {
+      max: 320,
+      optional: false,
+      help: "The grey line under the link in search results.",
+    }),
+    textField("what_differs", "“What differs” heading", { max: 60 }),
+    textField("full_comparison", "“Full comparison” heading", { max: 60 }),
+    textField("best_fit", "Best-fit badge", {
+      max: 60,
+      help: "The tag on the first column.",
+    }),
+    textField("empty_eyebrow", "Empty page · eyebrow", { max: 40 }),
+    textField("empty_heading", "Empty page · heading", { max: 120 }),
+    area("empty_body", "Empty page · body", { max: 500, optional: false }),
+    textField("empty_cta", "Empty page · button", { max: 60 }),
+    textField("slot_title", "Empty column · heading", { max: 80 }),
+    area("slot_body", "Empty column · body", { max: 200, optional: false }),
+    textField("slot_cta", "Empty column · button", { max: 60 }),
+    textField("unresolved_title", "Missing listing · heading", { max: 80 }),
+    area("unresolved_body", "Missing listing · body", {
+      max: 200,
+      optional: false,
+    }),
+    textField("unresolved_cta", "Missing listing · button", { max: 60 }),
+  ],
+  defaults: {
+    heading: "Side by side",
+    meta_title: "Compare properties",
+    meta_description:
+      "Compare up to 4 Abu Dhabi properties side-by-side across price, specifications, location, amenities, and investment fundamentals. Share the URL to send the comparison to a partner or advisor.",
+    what_differs: "What differs",
+    full_comparison: "Full comparison",
+    best_fit: "Best fit · advisor pick",
+    empty_eyebrow: "Compare",
+    empty_heading: "Stack properties side by side.",
+    empty_body:
+      "Pull two to four properties into a comparison and we'll line up price, specs, location, amenities, and investment fundamentals. Share the URL to send the same comparison to a partner or advisor.",
+    empty_cta: "Browse the marketplace",
+    slot_title: "Add another property",
+    slot_body: "Pull one in from your shortlist, or go find another",
+    slot_cta: "Add from shortlist",
+    unresolved_title: "Couldn't load this property",
+    unresolved_body: "It may be off-market or no longer published.",
+    unresolved_cta: "Browse",
+  },
+};
+
+const COMPARE: LibrarySectionDef = {
+  key: "compare",
+  label: "Compare page",
+  description:
+    "The comparison table's own wording — the heading, the empty states and the column prompts.",
+  itemLabel: "line of copy",
+  shape: "fields",
+  resetLabel: "Reset to the shipped wording",
+  usedOn: [{ label: "Compare", href: "/tools/compare" }],
+  section: COMPARE_SECTION,
+};
+
+export const LIBRARY_SECTIONS: LibrarySectionDef[] = [
+  TESTIMONIALS,
+  SHORTLIST,
+  COMPARE,
+];
 
 export function getLibrarySection(key: string): LibrarySectionDef | null {
   return LIBRARY_SECTIONS.find((s) => s.key === key) ?? null;

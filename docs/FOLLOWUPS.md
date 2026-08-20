@@ -1068,3 +1068,31 @@ shows the trail.)
   `search_bar_tabs` — plus an editor for it. Wrong to fix by translating in the
   renderer: the labels are a small closed vocabulary today and arbitrary text
   tomorrow.
+
+- [i18n] The shadcn `Sheet` primitive labels its close button with a hardcoded
+  English `Close`, so every slide-out on the Arabic site hands screen-reader
+  users a control they cannot read. The shortlist card now composes around it
+  (`showCloseButton={false}` plus its own `SheetClose`), which is the pattern
+  available without editing `components/ui/*` — but three Sheets still carry
+  the primitive's label: `more-filters-drawer.tsx`, the compare
+  `picker-drawer.tsx`, and `components/brand/public-mega-nav-mobile.tsx`. The
+  clean fix is one optional `closeLabel` prop on `SheetContent`, which is an
+  edit to a shadcn primitive and therefore a decision (re-adding the component
+  would drop it) rather than a patch. `components/ui/sheet.tsx:79`.
+
+- [i18n] `amenityLabel()` matches a stored amenity against the taxonomy by
+  normalised English label, but `listAmenitiesTaxonomy()` folds that taxonomy
+  to Arabic before the comparison — so on `/ar` nothing matches, the helper
+  returns its input, and the property page's "Features & amenities" grid prints
+  the English. The compare table's amenity rows now go through `arabicFor()`
+  instead and are correct, which makes the two surfaces disagree on the same
+  page's worth of words. Fix in `lib/amenities.ts`: match on an unfolded label
+  (or on `code`) and render the folded one.
+  `app/[locale]/(public)/p/[slug]/page.tsx:585`.
+
+- [i18n] `ListingCard`'s save control is labelled `Save to shortlist` /
+  `Remove from shortlist` in English on every locale — the aria-label on the
+  button that fills the shortlist card this epic just translated. It lives in
+  `components/brand/`, which is off-limits to incidental edits, so it wants its
+  own pass together with the rest of that directory's literals.
+  `components/brand/listing-card.tsx`.

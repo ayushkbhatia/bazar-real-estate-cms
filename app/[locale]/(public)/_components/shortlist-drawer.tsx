@@ -10,20 +10,38 @@ import { useTranslations } from "next-intl";
  * fetches a minimal property snapshot via `/api/shortlist`.  Clicking
  * `Compare side-by-side` routes to the existing `/tools/compare?ids=…`
  * page so we keep the deeper-experience flow intact.
+ *
+ * ## Where the words come from
+ *
+ * Two sources, split on one rule: **anything with a number in it stays in the
+ * message catalogue.** Arabic agrees a sentence with its count across six
+ * plural categories, which a CMS text input cannot express and an
+ * English-reading reviewer cannot check — so the counts, the bed/bath line and
+ * the compare button are ICU in the `common` catalogue.
+ *
+ * Everything else is `copy`, resolved from the `shortlist` library section and
+ * threaded down from the public layout (this is a client component, so it
+ * cannot read the document itself). That is what makes the panel editable at
+ * /admin/pages/sub/section/shortlist, and it is also what gives it Arabic: a
+ * library section's `text`/`textarea` fields get their `_ar` twin derived and
+ * folded for free. See docs/I18N.md, "I added a new section".
  */
 
 import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import Link from "@/components/i18n/link";
 import { ArrowRight, Mail, Scale, Send, Trash2 } from "lucide-react";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   COMPARE_CAP,
@@ -38,6 +56,10 @@ import {
   usePreferences,
 } from "@/lib/preferences";
 import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
+import { isolateForLocale } from "@/lib/i18n/bidi";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
+import { localeFromPathname } from "@/lib/i18n/routing";
+import type { SectionCopy } from "@/lib/queries/content-sections";
 
 type ShortlistItem = {
   id: string;
@@ -85,11 +107,17 @@ function subscribeCompare(callback: () => void): () => void {
   return () => window.removeEventListener("storage", onStorage);
 }
 
-export function ShortlistDrawer() {
+export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
   // `common` is already client-global — these were simply never wired.
   const t = useTranslations("common");
   const { prefs } = usePreferences();
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  // The drawer's own URL, for the plain-text hand-offs and for deciding
+  // whether a Latin run needs isolating. `usePathname` rather than
+  // `useLocale()` for the reason `components/i18n/link.tsx` documents: this
+  // component mounts in the layout, and the pathname needs no provider.
+  const locale = localeFromPathname(pathname ?? "/") ?? DEFAULT_LOCALE;
   // `useSyncExternalStore` is the React-blessed bridge to localStorage —
   // gives us cross-tab + in-tab updates without the setState-in-effect
   // anti-pattern.
@@ -106,6 +134,27 @@ export function ShortlistDrawer() {
   // four is the behaviour splitting the caps was meant to kill. The visitor
   // picks. `null` = untouched, see `compareIds` below.
   const [picked, setPicked] = useState<string[] | null>(null);
+
+  /*
+   * Close when the URL changes.
+   *
+   * The drawer mounts in the public layout, so a client-side navigation out
+   * of it re-renders `children` and leaves this component — and its `open`
+   * state — exactly as it was. The Radix overlay therefore stayed on top of
+   * the page it had just navigated to, which read as "Compare side-by-side
+   * does nothing": the URL changed, the compare page rendered underneath,
+   * and the visitor could not see any of it. Every listing link in the list
+   * had the same problem.
+   *
+   * Adjusted during render rather than in an effect — React's own
+   * prescription for "reset state when a prop changes", and it avoids
+   * painting the stale-open panel for a frame the way an effect would.
+   */
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    if (open) setOpen(false);
+  }
 
   // Drop stale items when the id set empties without needing a setState in
   // the subscription effect (which would trip
@@ -127,7 +176,9 @@ export function ShortlistDrawer() {
     // pre-fetch toggle pattern.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
-    fetch(`/api/shortlist?ids=${encodeURIComponent(ids.join(","))}`)
+    fetch(
+      `/api/shortlist?ids=${encodeURIComponent(ids.join(","))}&locale=${locale}`,
+    )
       .then((r) => (r.ok ? r.json() : { items: [] }))
       .then((data: { items: ShortlistItem[] }) => {
         if (!cancelled) setItems(data.items ?? []);
@@ -141,7 +192,7 @@ export function ShortlistDrawer() {
     return () => {
       cancelled = true;
     };
-  }, [ids, open]);
+  }, [ids, open, locale]);
 
   const removeId = useCallback(
     (id: string) => {
@@ -185,14 +236,16 @@ export function ShortlistDrawer() {
   // is looking at — `DEFAULT_PREFERENCES`, not `prefs`. A Bazar advisor reads
   // these, and the desk works in dirhams; a brief saying "$1.14M" makes them
   // convert back, and a rounding error in that direction is a commercial one.
+  //
+  // Both are plain text, so there is no element to hang a `dir` on and the
+  // isolation has to be done with characters (docs/I18N.md). A reference like
+  // `BAZ-AD-01302` renders as `01302-BAZ-AD` inside an Arabic line without it.
+  // `isolateForLocale` leaves the English payloads byte-identical.
+  const line = (i: ShortlistItem) =>
+    `• ${isolateForLocale(i.title, locale)} (${isolateForLocale(i.reference, locale)}) — ${isolateForLocale(formatPrice(i.price_aed, DEFAULT_PREFERENCES), locale)}`;
   const whatsappMessage = items.length
-    ? `Hi — I'd like to talk about these ${items.length} on bazar.ae:\n\n` +
-      items
-        .map(
-          (i) =>
-            `• ${i.title} (${i.reference}) — ${formatPrice(i.price_aed, DEFAULT_PREFERENCES)}`,
-        )
-        .join("\n")
+    ? `${t("shortlist.whatsappIntro", { count: items.length })}\n\n` +
+      items.map(line).join("\n")
     : null;
   const whatsappHref = whatsappMessage
     ? buildAdvisorWhatsAppLink(whatsappMessage)
@@ -203,15 +256,15 @@ export function ShortlistDrawer() {
   // forward to whoever they want); on mobile this opens the system mail
   // composer with all the property refs baked in.
   const mailtoHref = items.length
-    ? `mailto:?subject=${encodeURIComponent("My Bazar shortlist")}&body=${encodeURIComponent(
-        `Here are the ${items.length} ${items.length === 1 ? "property" : "properties"} I'm tracking on bazar.ae:\n\n` +
+    ? `mailto:?subject=${encodeURIComponent(t("shortlist.emailSubject"))}&body=${encodeURIComponent(
+        `${t("shortlist.emailIntro", { count: items.length })}\n\n` +
           items
             .map(
               (i) =>
-                `• ${i.title} (${i.reference}) — ${formatPrice(i.price_aed, DEFAULT_PREFERENCES)}\n  https://bazar.ae/p/${i.slug}-${i.reference}`,
+                `${line(i)}\n  ${isolateForLocale(`https://bazar.ae/p/${i.slug}-${i.reference}`, locale)}`,
             )
             .join("\n\n") +
-          "\n\n— Sent from Bazar Real Estate",
+          `\n\n${t("shortlist.emailSignoff")}`,
       )}`
     : null;
 
@@ -224,7 +277,7 @@ export function ShortlistDrawer() {
       <SheetTrigger asChild>
         <button
           type="button"
-          aria-label={`Shortlist (${ids.length})`}
+          aria-label={t("shortlist.triggerAria", { count: ids.length })}
           // Mobile sits above the floating-CTA dock (which is fixed to
           // bottom-0 and ~64px tall over the safe-area inset), so the two
           // don't overlap. Desktop keeps the original bottom-left corner,
@@ -232,7 +285,9 @@ export function ShortlistDrawer() {
           className="fixed start-3 md:start-4 bottom-[calc(var(--bz-bar-safe)+64px)] md:bottom-6 z-40 inline-flex items-center gap-2 h-11 px-4 rounded-full bg-bz-ink text-bz-bg shadow-lg hover:bg-bz-ink/90 text-[13px]"
         >
           <Scale size={14} strokeWidth={1.8} />
-          <span>Shortlist · {ids.length}</span>
+          <span>
+            {copy.trigger_label} · {ids.length}
+          </span>
         </button>
       </SheetTrigger>
       {/* `data-[side=left]:w-full` rather than a bare `w-full`: the sheet
@@ -243,16 +298,32 @@ export function ShortlistDrawer() {
           specificity and lets tailwind-merge drop the base. Desktop width is
           unaffected — the primitive's `data-[side=left]:sm:max-w-sm` caps it
           there, and outranks anything unqualified we'd add here. */}
+      {/* `showCloseButton={false}` and our own X below. The primitive's is
+          labelled with a hardcoded English "Close" — an unreadable control for
+          the one group of visitors who depend on it most. `components/ui/*`
+          are shadcn primitives we re-add rather than edit, so this composes
+          around it the way FooterTrust composes around PublicFooter. The other
+          three Sheets on the public site still carry the English label; see
+          docs/FOLLOWUPS.md. */}
       <SheetContent
         side="left"
+        showCloseButton={false}
         className="data-[side=left]:w-full p-0 flex flex-col"
       >
+        <SheetClose className="absolute top-3 end-3 inline-flex items-center justify-center size-8 rounded-md text-bz-ink-2 hover:text-bz-ink hover:bg-bz-surface-2 transition-colors">
+          <X size={16} strokeWidth={1.8} />
+          <span className="sr-only">{t("close")}</span>
+        </SheetClose>
         <SheetHeader className="px-6 pt-6 pb-3 border-b border-bz-border">
           <SheetTitle className="serif text-[24px] leading-tight">
-            {t("shortlist.title")}
+            {copy.title}
           </SheetTitle>
           <SheetDescription>
-            {ids.length} of {SHORTLIST_CAP} · saved to this browser
+            {t("shortlist.savedCount", {
+              count: ids.length,
+              max: SHORTLIST_CAP,
+              note: copy.storage_note,
+            })}
           </SheetDescription>
         </SheetHeader>
 
@@ -260,9 +331,7 @@ export function ShortlistDrawer() {
           {loading ? (
             <p className="text-[13px] text-bz-ink-2 italic">{t("shortlist.loading")}</p>
           ) : items.length === 0 ? (
-            <p className="text-[13px] text-bz-ink-2">
-              {t("shortlist.empty")}
-            </p>
+            <p className="text-[13px] text-bz-ink-2">{copy.empty}</p>
           ) : (
             <ul className="flex flex-col gap-4">
               {items.map((item) => {
@@ -276,13 +345,14 @@ export function ShortlistDrawer() {
                         disabled={!inCompare && compareFull}
                         onChange={() => togglePicked(item.id)}
                         className="w-4 h-4 accent-bz-accent disabled:cursor-not-allowed disabled:opacity-40"
-                        aria-label={
+                        aria-label={t(
                           inCompare
-                            ? `Remove ${item.title} from the comparison`
+                            ? "shortlist.removeFromCompare"
                             : compareFull
-                              ? `Comparison is full — deselect one to add ${item.title}`
-                              : `Add ${item.title} to the comparison`
-                        }
+                              ? "shortlist.compareFull"
+                              : "shortlist.addToCompare",
+                          { title: item.title },
+                        )}
                       />
                     </label>
                     <Link
@@ -307,21 +377,26 @@ export function ShortlistDrawer() {
                         {item.title}
                       </Link>
                       <div className="text-[11.5px] text-bz-ink-2 mt-0.5 truncate">
-                        {item.area_name ?? "United Arab Emirates"}
+                        {item.area_name ?? copy.area_fallback}
                       </div>
                       <div className="mt-1 flex items-baseline justify-between gap-2">
                         <span className="mono text-[12.5px] text-bz-ink">
                           {formatPrice(item.price_aed, prefs)}
                         </span>
                         <span className="text-[11px] text-bz-ink-2">
-                          {item.beds}b · {item.baths}ba
+                          {t("shortlist.bedsBaths", {
+                            beds: item.beds,
+                            baths: item.baths,
+                          })}
                         </span>
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => removeId(item.id)}
-                      aria-label={`Remove ${item.title} from shortlist`}
+                      aria-label={t("shortlist.removeFromShortlist", {
+                        title: item.title,
+                      })}
                       className="text-bz-ink-2 hover:text-bz-ink transition-colors shrink-0"
                     >
                       <Trash2 size={14} strokeWidth={1.7} />
@@ -347,22 +422,21 @@ export function ShortlistDrawer() {
             <Button asChild>
               <Link href={compareHref}>
                 <Scale size={14} strokeWidth={1.7} />
-                Compare {compareIds.length} side-by-side
+                {t("shortlist.compareCta", { count: compareIds.length })}
                 <ArrowRight size={14} strokeWidth={1.7} className="ms-auto" />
               </Link>
             </Button>
           )}
           {items.length > COMPARE_CAP ? (
             <p className="text-[11.5px] text-bz-ink-2 -mt-0.5">
-              Tick up to {COMPARE_CAP} to put side by side. Everything else
-              stays on your shortlist.
+              {copy.pick_help}
             </p>
           ) : null}
           {whatsappHref ? (
             <Button asChild variant="outline">
               <a href={whatsappHref} target="_blank" rel="noopener noreferrer">
                 <Send size={14} strokeWidth={1.7} />
-                {t("shortlist.whatsapp")}
+                {copy.whatsapp_label}
               </a>
             </Button>
           ) : null}
@@ -370,7 +444,7 @@ export function ShortlistDrawer() {
             <Button asChild variant="outline">
               <a href={mailtoHref}>
                 <Mail size={14} strokeWidth={1.7} />
-                {t("shortlist.email")}
+                {copy.email_label}
               </a>
             </Button>
           ) : null}
@@ -380,7 +454,7 @@ export function ShortlistDrawer() {
               onClick={clearAll}
               className="text-[12px] text-bz-ink-2 hover:text-bz-ink transition-colors mt-2 self-start"
             >
-              {t("shortlist.clear")}
+              {copy.clear_label}
             </button>
           ) : null}
         </div>

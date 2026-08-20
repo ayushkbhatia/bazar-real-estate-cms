@@ -21,6 +21,7 @@ import { attachImageUrls } from "@/lib/queries/section-images";
 import {
   parseStoredSections,
   resolveSections,
+  str,
   type ResolvedSection,
 } from "@/lib/master-pages";
 import {
@@ -94,4 +95,55 @@ export const getTestimonials = cache(
     const content = await getLibrarySectionContent("testimonials", locale);
     return testimonialsFrom(content.section.values, limit);
   },
+);
+
+
+/* ── flat copy sections ───────────────────────────────────────────────── */
+
+/**
+ * A copy-only library section, read as a plain `Record<field, string>`.
+ *
+ * `resolveSections` has already merged the stored document over the registry
+ * defaults and folded the result to one locale, so every key is present and
+ * every value is a string — a blank Arabic twin fell back to its English
+ * sibling upstream rather than leaving a hole here.
+ *
+ * Returned as a bag rather than a typed object per section: the field list is
+ * declared once in the registry, and a second hand-written interface would be
+ * a second place to forget a field.
+ */
+export type SectionCopy = Record<string, string>;
+
+async function copyFor(
+  key: LibrarySectionKey,
+  locale?: Locale,
+): Promise<SectionCopy> {
+  const content = await getLibrarySectionContent(key, locale);
+  const def = content.section.def;
+  const out: SectionCopy = {};
+  for (const field of def.fields) {
+    // Falls back to the registry default rather than to "": an editor who
+    // clears an optional field should get the shipped wording back, not a
+    // gap in the middle of a sentence.
+    out[field.key] =
+      str(content.section.values, field.key) ||
+      String(def.defaults[field.key] ?? "");
+  }
+  return out;
+}
+
+/**
+ * The shortlist drawer's copy.
+ *
+ * `cache()` because the public layout reads it on every page and a landing
+ * page could read it again; none of the loaders in this directory is
+ * React-cached by default, so a second call is a second round-trip.
+ */
+export const getShortlistCopy = cache(
+  (locale?: Locale): Promise<SectionCopy> => copyFor("shortlist", locale),
+);
+
+/** The compare page's copy. Read twice per render — page body and metadata. */
+export const getCompareCopy = cache(
+  (locale?: Locale): Promise<SectionCopy> => copyFor("compare", locale),
 );

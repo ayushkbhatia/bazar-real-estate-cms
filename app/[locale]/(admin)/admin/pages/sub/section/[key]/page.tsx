@@ -57,13 +57,18 @@ export default async function LibrarySectionEditorPage({ params }: PageProps) {
         </span>
       }
       secondary={
+        // The first surface the entry declares, rather than a hardcoded "/".
+        // Testimonials render on the home page; the shortlist card renders
+        // over every page; the compare copy renders on /tools/compare, and
+        // sending an editor to the home page to check it would show them
+        // nothing.
         <Link
-          href="/"
+          href={entry.usedOn[0]?.href ?? "/"}
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-muted hover:text-bz-ink"
         >
-          View on the home page
+          View on {entry.usedOn[0]?.label ?? "the site"}
           <ExternalLink size={12} />
         </Link>
       }
@@ -94,14 +99,14 @@ export default async function LibrarySectionEditorPage({ params }: PageProps) {
         <MasterPageEditor
           pageKey={entry.key}
           pageLabel={entry.label}
-          path="/"
+          path={entry.usedOn[0]?.href ?? "/"}
           usingDefaults={content.usingDefaults}
           media={[]}
           seeds={{}}
           actions={ACTIONS}
           // One section, so there is nothing to reorder.
           allowReorder={false}
-          resetLabel="Reset to the shipped reviews"
+          resetLabel={entry.resetLabel}
           initial={[
             {
               key: content.section.key,
