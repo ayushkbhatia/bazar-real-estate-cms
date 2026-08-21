@@ -80,8 +80,8 @@ export default async function SearchHeaderEditorPage({ params }: PageProps) {
             This page only
           </h2>
           <p className="mt-1 text-[12.5px] text-bz-ink-2 leading-relaxed">
-            {entry.description} Each search facet keeps its own wording, so
-            editing this one changes{" "}
+            {entry.description} Each search facet keeps its own wording — on
+            the page and in a search result — so editing this one changes{" "}
             <Link href={entry.publicPath} className="text-bz-ink underline">
               {entry.publicPath}
             </Link>{" "}

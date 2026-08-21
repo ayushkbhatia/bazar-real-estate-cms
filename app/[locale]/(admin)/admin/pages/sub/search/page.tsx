@@ -49,8 +49,9 @@ export default async function SearchHeaderIndex() {
       <div className="flex flex-col gap-5 max-w-[900px]">
         <p className="text-[13px] text-bz-ink-2 leading-relaxed">
           The eyebrow, headline and sub-title above the filter bar on each
-          search page. The listings, the result count and the filters
-          underneath come from the catalogue and are not edited here.
+          search page, plus the title and description it publishes to a search
+          engine. The listings, the result count and the filters underneath
+          come from the catalogue and are not edited here.
         </p>
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {entries.map(({ entry, headline, edited }) => (

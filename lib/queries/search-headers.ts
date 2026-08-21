@@ -125,3 +125,43 @@ export const getSearchHeaderCopy = cache(
     };
   },
 );
+
+/**
+ * The snippet a search page publishes — browser tab title and search
+ * description, in the request's language.
+ *
+ * Read separately from `getSearchHeaderCopy` because `generateMetadata` and the
+ * page body are two different render passes; `cache()` collapses them back to
+ * one round-trip per request, which is the whole reason it is here.
+ *
+ * Both halves fall back to the shipped default, folded to the same locale.
+ * There is deliberately no all-or-nothing gate of the kind `masterPageMetadata`
+ * applies: that gate exists because three master pages had a translated title
+ * over an English description, which reads as broken rather than untranslated.
+ * It cannot arise here — every facet ships both halves in Arabic, and
+ * `search-headers.test.ts` asserts it — and where an editor supplies only one
+ * twin that is their decision, exactly as it is on a master page.
+ */
+export type SearchHeaderMeta = { title: string; description: string };
+
+export const getSearchHeaderMeta = cache(
+  async (
+    mode: PropertyMode,
+    form?: PropertyForm | null,
+    locale?: Locale,
+  ): Promise<SearchHeaderMeta> => {
+    const entry = searchHeaderFor(mode, form);
+    const fold = locale ?? (await currentLocale());
+    const content = await getSearchHeaderContent(entry.key, fold);
+    const values = content.section.values;
+    const shipped = () =>
+      resolveSections(searchHeaderPageDef(entry), null, fold)[0]!.values;
+    return {
+      title: str(values, "meta_title") ?? str(shipped(), "meta_title") ?? "",
+      description:
+        str(values, "meta_description") ??
+        str(shipped(), "meta_description") ??
+        "",
+    };
+  },
+);

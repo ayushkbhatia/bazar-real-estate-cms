@@ -1,7 +1,8 @@
 /**
- * The search-results page headers — the eyebrow, headline and sub-title that
- * sit above the filter bar on `/buy/search`, `/rent/search`, `/off-plan/search`,
- * `/commercial/search`, `/buy/ready` and `/buy/resale`.
+ * The search-results page headers — the eyebrow, headline and sub-title above
+ * the filter bar on `/buy/search`, `/rent/search`, `/off-plan/search`,
+ * `/commercial/search`, `/buy/ready` and `/buy/resale`, plus the title and
+ * description each of them publishes to a search engine.
  *
  * ## Why a fifth registry rather than a message key
  *
@@ -16,7 +17,7 @@
  *                     `buy` would put two competing heroes in one document.
  *  - sub-pages      — those exist once per database record. A search header
  *                     exists once per *facet*, and a facet is not a row.
- *  - page builder   — open composition; these are three fixed fields.
+ *  - page builder   — open composition; these are five fixed fields.
  *  - section library — that is content one edit changes on EVERY surface. A
  *                     search header is the opposite: it is the one thing that
  *                     must differ per route, because /buy/ready and /buy/resale
@@ -31,10 +32,38 @@
  * A `SearchHeaderDef` wraps a plain `SectionDef`, so `resolveSections`,
  * `validateSections`, `mergeValues`, the shared field editor and — the reason
  * that matters — `withArabicTwinsDeep` all work with no new code. See
- * docs/I18N.md, "I added a new section": nothing to do. The Arabic defaults
- * below are hand-declared rather than left to the store because they already
- * existed, curated, in `messages/ar/search.json`; they were moved here verbatim
- * when the catalogue keys were retired, so `/ar` renders exactly what it did.
+ * docs/I18N.md, "I added a new section": nothing to do.
+ *
+ * ## The Arabic, and where it comes from
+ *
+ * Hand-declared in `defaults` beside each English sibling rather than left to
+ * `lib/master-pages/arabic/master.json`, which ADR-0008 §3 names as the home
+ * for a machine draft. The deviation is deliberate and it is about keeping ONE
+ * mechanism in one section: the three copy fields were moved here verbatim from
+ * `messages/ar/search.json` — curated Arabic that predates this file and
+ * outranks any draft — so storing only the other two would split five fields
+ * across two sources and make "where does this string's Arabic live" a question
+ * with two answers. Declaring in `defaults` keeps everything ADR-0008 §3
+ * actually wants: reviewed as a pull-request diff with the English on the line
+ * above, revertable with `git revert`, and checked in CI with no credentials.
+ *
+ * Provenance, since a per-entry `by`/`model`/`at` is what the store buys and
+ * this does not:
+ *
+ *  - `eyebrow_ar`, `title_ar`, `subtitle_ar` — CURATED. Lifted verbatim from
+ *    `search.mode.*` / `search.form.*` in `messages/ar/search.json` when those
+ *    keys were retired.
+ *  - `meta_title_ar`, `meta_description_ar` — MACHINE FIRST DRAFT (claude-opus-5,
+ *    2026-08-21) under ADR-0008: the client edits them at
+ *    /admin/pages/sub/search/<key> and their edit wins structurally, because
+ *    `mergeValues` never overwrites a twin that already holds a value. They
+ *    passed the structural gates in `lib/i18n/mt/validate.ts`; the semantic
+ *    round trip was NOT run, so the client's review is the only real gate on
+ *    them — which is ADR-0008's own stated position.
+ *
+ * Where a meta string repeats a copy string word for word — `/buy`'s title,
+ * `/off-plan`'s description — the Arabic repeats too. One English, one Arabic,
+ * which is `messages.test.ts`'s strongest assertion applied to content.
  *
  * ## Storage
  *
@@ -86,12 +115,13 @@ export type SearchHeaderDef = {
 export const SEARCH_HEADER_SECTION_KEY = "header";
 
 /**
- * The three fields, identical on all seven facets.
+ * The five fields, identical on all seven facets.
  *
- * `eyebrow` and `subtitle` are optional and `title` is not, and that split is
- * deliberate. A blank eyebrow or sub-title is a legible editorial choice and
- * the page simply drops the element; a blank h1 is a broken page, so clearing
- * it falls back to the shipped headline rather than rendering an empty heading.
+ * `eyebrow` and `subtitle` are optional and the other three are not, and that
+ * split is deliberate. A blank eyebrow or sub-title is a legible editorial
+ * choice and the page simply drops the element; a blank h1 is a broken page, so
+ * clearing it falls back to the shipped headline rather than rendering an empty
+ * heading, and a blank snippet is a search result with no words in it.
  */
 function headerFields(): FieldDef[] {
   return [
@@ -109,6 +139,26 @@ function headerFields(): FieldDef[] {
       optional: true,
       help: "The line under the headline. Leave blank to drop it.",
     }),
+    /*
+     * The search-engine snippet, in the same document as the copy above it
+     * rather than in `pages.seo`.
+     *
+     * `search_appearance` is keyed by `MasterPageKey` and stored on the
+     * `master/<key>` row — it has no address for a facet of a search route,
+     * and giving it one would mean a second storage shape for two strings.
+     * The `compare` library section already holds its own `meta_title` and
+     * `meta_description` as ordinary section fields for exactly this reason,
+     * and this follows it.
+     */
+    text("meta_title", "Browser tab title", {
+      max: 80,
+      help: "Shown in the browser tab and in search results. “ · Bazar” is added after it.",
+    }),
+    area("meta_description", "Search description", {
+      max: 320,
+      optional: false,
+      help: "The grey line under the link in search results.",
+    }),
   ];
 }
 
@@ -120,7 +170,8 @@ function headerSection(
   return {
     key: SEARCH_HEADER_SECTION_KEY,
     label,
-    description: "The eyebrow, headline and sub-title above the filter bar.",
+    description:
+      "The eyebrow, headline and sub-title above the filter bar, and what the page publishes to a search engine.",
     // Nothing to hide it from: the section *is* the document, and the page is
     // structurally built around its heading.
     locked: true,
@@ -138,13 +189,20 @@ function headerSection(
  * is not here, and finding that out by scrolling a form is the slow way.
  */
 const DATA_NOTE =
-  "Only these three lines. The result count, the filter chips and the listings under them are drawn from the catalogue, and the filter labels are shared with the rest of the site.";
+  "Only this page's own words. The result count, the filter chips and the listings under them are drawn from the catalogue, and the filter labels are shared with the rest of the site.";
 
 /*
- * Defaults are the copy these pages have rendered since they shipped, lifted
- * verbatim from `search.mode.*` / `search.form.*` in `messages/` when those
- * keys were retired — English and Arabic both, so an un-edited document renders
- * byte-identically to before this existed on `/en` and on `/ar`.
+ * Defaults are what these pages have published since they shipped: the copy
+ * lifted verbatim from `search.mode.*` / `search.form.*` in `messages/` when
+ * those keys were retired, and the snippet lifted verbatim from each route's
+ * own `export const metadata`. An un-edited document therefore renders
+ * byte-identically to before this existed — on `/en`, and on `/ar` for the copy.
+ *
+ * The one addition is `/ar`'s snippet, which did not exist: all six routes
+ * declared an English literal and published it in both languages. That is the
+ * failure `metadata-arabic.test.ts` calls worse than an untranslated page,
+ * because an Arabic page carrying an English title into a search result looks
+ * finished.
  */
 const BUY: SearchHeaderDef = {
   key: "buy",
@@ -163,6 +221,16 @@ const BUY: SearchHeaderDef = {
       "Curated freehold and leasehold listings across the United Arab Emirates.",
     subtitle_ar:
       "تملك حر وحق انتفاع: قوائم عقارية منتقاة في الإمارات العربية المتحدة.",
+    meta_title: "Properties for sale",
+    // Same English as the headline, so the same Arabic. Diverging here would
+    // give one string two translations on one page.
+    meta_title_ar: "شقق وفلل للبيع",
+    meta_description:
+      "Curated freehold and leasehold properties for sale across the United Arab Emirates.",
+    // "تملك حر" and "حق انتفاع", not "التملك الحر" — `lib/i18n/mt/glossary.ts`
+    // holds the settled UAE-practice renderings and the check is a stem match.
+    meta_description_ar:
+      "عقارات منتقاة للبيع بنظام تملك حر وحق انتفاع في مختلف أنحاء الإمارات العربية المتحدة.",
   }),
 };
 
@@ -182,6 +250,12 @@ const RENT: SearchHeaderDef = {
       "Long-let homes from advisor-vetted landlords. Furnished and unfurnished.",
     subtitle_ar:
       "منازل للإيجار طويل الأمد من ملاك موثوقين لدى مستشارينا. مفروشة وغير مفروشة.",
+    meta_title: "Properties for rent",
+    meta_title_ar: "عقارات للإيجار",
+    meta_description:
+      "Long-let homes from advisor-vetted landlords across the United Arab Emirates.",
+    meta_description_ar:
+      "منازل للإيجار طويل الأمد من ملاك موثوقين لدى مستشارينا في مختلف أنحاء الإمارات العربية المتحدة.",
   }),
 };
 
@@ -200,6 +274,13 @@ const OFF_PLAN: SearchHeaderDef = {
     subtitle:
       "Pre-launch and on-sale developments from Abu Dhabi's leading developers.",
     subtitle_ar: "مشاريع قبل الطرح وأخرى معروضة للبيع من أبرز مطوّري أبوظبي.",
+    meta_title: "Off-plan developments",
+    meta_title_ar: "مشاريع على الخارطة",
+    // Word for word the sub-title above, so word for word the same Arabic.
+    meta_description:
+      "Pre-launch and on-sale developments from Abu Dhabi's leading developers.",
+    meta_description_ar:
+      "مشاريع قبل الطرح وأخرى معروضة للبيع من أبرز مطوّري أبوظبي.",
   }),
 };
 
@@ -218,6 +299,12 @@ const COMMERCIAL: SearchHeaderDef = {
     subtitle: "Office, retail, and industrial leases and freeholds.",
     subtitle_ar:
       "إيجارات وتملك حر للمكاتب والمحلات التجارية والوحدات الصناعية.",
+    meta_title: "Commercial property for sale and lease",
+    meta_title_ar: "عقارات تجارية للبيع والإيجار",
+    meta_description:
+      "Office, retail, and industrial leases and freeholds across the United Arab Emirates.",
+    meta_description_ar:
+      "إيجارات وتملك حر للمكاتب والمحلات التجارية والوحدات الصناعية في مختلف أنحاء الإمارات العربية المتحدة.",
   }),
 };
 
@@ -246,6 +333,12 @@ const READY_NEW: SearchHeaderDef = {
       "Completed, handed over, and bought direct from the developer — a first sale with no previous owner on the title.",
     subtitle_ar:
       "مكتمل ومُسلَّم ومُشترى مباشرة من المطور العقاري — بيع أول دون مالك سابق في سند الملكية.",
+    meta_title: "Ready homes, never lived in",
+    meta_title_ar: "منازل جاهزة، لم تُسكن من قبل",
+    meta_description:
+      "Completed properties for sale direct from the developer — a first sale with no previous owner on the title, ready to move into.",
+    meta_description_ar:
+      "عقارات مكتملة للبيع مباشرة من المطور العقاري — بيع أول دون مالك سابق في سند الملكية، جاهزة للسكن.",
   }),
 };
 
@@ -265,6 +358,14 @@ const RESALE: SearchHeaderDef = {
       "Completed homes bought from the current owner, with established communities, real service-charge history and a negotiable price.",
     subtitle_ar:
       "منازل جاهزة بالشراء من المالك الحالي، في مجتمعات قائمة، مع سجل فعلي لرسوم الخدمات وسعر قابل للتفاوض.",
+    meta_title: "Resale homes for sale",
+    // "Resale homes for sale" doubles back on itself in Arabic — إعادة البيع
+    // already carries "for sale". The compressed form is the faithful one.
+    meta_title_ar: "عقارات إعادة البيع",
+    meta_description:
+      "Previously owned properties for sale across the United Arab Emirates — bought from the current owner, in established communities with a known service-charge history.",
+    meta_description_ar:
+      "عقارات مملوكة سابقاً معروضة للبيع في مختلف أنحاء الإمارات العربية المتحدة — تُشترى من المالك الحالي، في مجتمعات قائمة بسجل معروف لرسوم الخدمات.",
   }),
 };
 
@@ -293,6 +394,17 @@ const OFF_PLAN_SALE: SearchHeaderDef = {
       "Bought from the developer before handover — a purchase on a payment plan, with the longest run to completion and the earliest choice of unit.",
     subtitle_ar:
       "تُشترى من المطوّر قبل التسليم — عملية شراء بخطة سداد، بأطول مدة حتى الإنجاز وأسبقية في اختيار الوحدة.",
+    meta_title: "Off-plan homes for sale",
+    meta_title_ar: "عقارات على الخارطة للبيع",
+    /*
+     * The one snippet with no literal to lift: `/buy/search?form=off_plan` is a
+     * facet of a route, so it published the umbrella's metadata. Written to the
+     * shape of its five siblings.
+     */
+    meta_description:
+      "Off-plan properties for sale across the United Arab Emirates — bought from the developer before handover, on a payment plan, with the earliest choice of unit.",
+    meta_description_ar:
+      "عقارات على الخارطة للبيع في مختلف أنحاء الإمارات العربية المتحدة — تُشترى من المطور العقاري قبل التسليم، بخطة السداد، مع أسبقية في اختيار الوحدة.",
   }),
 };
 

@@ -8,6 +8,7 @@ import {
   searchHeaderPageDef,
 } from "./search-headers";
 import { mergeValues, resolveSections, str, validateSections } from "./index";
+import { validate } from "@/lib/i18n/mt/validate";
 import { arabicTwins } from "./twins";
 import { SUBPAGE_KINDS, subPageSlug } from "./subpages";
 import { PROPERTY_FORMS, PROPERTY_MODES } from "@/lib/schemas/property";
@@ -93,11 +94,20 @@ describe("addressing", () => {
   });
 });
 
+/** Every field an editor can type prose into, English side. */
+const PROSE_KEYS = [
+  "eyebrow",
+  "title",
+  "subtitle",
+  "meta_title",
+  "meta_description",
+] as const;
+
 describe("defaults", () => {
   it("ships a headline for every facet, in English and in Arabic", () => {
     for (const entry of SEARCH_HEADERS) {
       const d = entry.section.defaults;
-      for (const key of ["eyebrow", "title", "subtitle"]) {
+      for (const key of PROSE_KEYS) {
         expect(d[key], `${entry.key}.${key}`).toBeTruthy();
         expect(d[`${key}_ar`], `${entry.key}.${key}_ar`).toBeTruthy();
         expect(
@@ -123,9 +133,15 @@ describe("defaults", () => {
 });
 
 describe("Arabic", () => {
-  it("derives a twin for each of the three fields", () => {
+  it("derives a twin for each of the five fields", () => {
     const twins = arabicTwins(BUY.section.fields).map((f) => f.key);
-    expect(twins).toEqual(["eyebrow_ar", "title_ar", "subtitle_ar"]);
+    expect(twins).toEqual([
+      "eyebrow_ar",
+      "title_ar",
+      "subtitle_ar",
+      "meta_title_ar",
+      "meta_description_ar",
+    ]);
   });
 
   it("folds to Arabic on read, with no storage keys left behind", () => {
@@ -157,6 +173,10 @@ describe("Arabic", () => {
           title_ar: "منازل تستحق الاقتناء",
           subtitle: null,
           subtitle_ar: null,
+          meta_title: "Homes worth keeping",
+          meta_title_ar: "منازل تستحق الاقتناء",
+          meta_description: "Every listing an advisor has stood inside.",
+          meta_description_ar: "كل عقار وقف بداخله أحد مستشارينا.",
         },
       },
     ];
@@ -173,7 +193,13 @@ describe("validation", () => {
       {
         key: SEARCH_HEADER_SECTION_KEY,
         enabled: true,
-        values: { eyebrow: "For sale", title: "", subtitle: null },
+        values: {
+          eyebrow: "For sale",
+          title: "",
+          subtitle: null,
+          meta_title: "Properties for sale",
+          meta_description: "Curated listings across the UAE.",
+        },
       },
     ]);
     expect(result.ok).toBe(false);
@@ -184,7 +210,13 @@ describe("validation", () => {
       {
         key: SEARCH_HEADER_SECTION_KEY,
         enabled: true,
-        values: { eyebrow: "", title: "Properties for sale", subtitle: "" },
+        values: {
+          eyebrow: "",
+          title: "Properties for sale",
+          subtitle: "",
+          meta_title: "Properties for sale",
+          meta_description: "Curated listings across the UAE.",
+        },
       },
     ]);
     expect(result.ok).toBe(true);
@@ -196,5 +228,129 @@ describe("validation", () => {
     const merged = mergeValues(BUY.section, { title: "Only a title" } as never);
     expect(str(merged, "title")).toBe("Only a title");
     expect(str(merged, "eyebrow")).toBe(BUY.section.defaults.eyebrow);
+  });
+});
+
+/**
+ * The search-engine snippet.
+ *
+ * It sits in this document rather than in `pages.seo` because
+ * `search_appearance` is keyed by `MasterPageKey` and has no address for a
+ * facet of a search route. What it must not lose in the move is the invariant
+ * `metadata-arabic.test.ts` protects on the master pages: never half a snippet.
+ */
+describe("the snippet", () => {
+  it("ships both halves in Arabic on every facet", () => {
+    /*
+     * The reason `getSearchHeaderMeta` needs no all-or-nothing gate. An Arabic
+     * title over an English description reads as broken rather than
+     * untranslated — it tells a searcher the page is in a language it is not —
+     * and the master-page loader carries a gate for exactly that. Here the
+     * condition is made impossible at the source instead, which is the cheaper
+     * of the two and the one a reader can check.
+     */
+    for (const entry of SEARCH_HEADERS) {
+      const d = entry.section.defaults;
+      expect(
+        Boolean(d.meta_title_ar) && Boolean(d.meta_description_ar),
+        `${entry.key} would publish half an Arabic snippet`,
+      ).toBe(true);
+    }
+  });
+
+  it("keeps every title inside what a search result shows", () => {
+    // Google truncates around 60 characters. The field caps at 80 and the
+    // layout appends " · Bazar"; a default that arrives already over the cap
+    // is one nobody can fix without noticing it first.
+    for (const entry of SEARCH_HEADERS) {
+      expect(
+        String(entry.section.defaults.meta_title).length,
+        entry.key,
+      ).toBeLessThanOrEqual(80);
+    }
+  });
+
+  it("gives the buy off-plan facet its own snippet, not the umbrella's", () => {
+    // The facet has no route of its own, so before this it published
+    // /buy/search's metadata over a different h1.
+    expect(getSearchHeader("off-plan-sale")!.section.defaults.meta_title).not.toBe(
+      getSearchHeader("buy")!.section.defaults.meta_title,
+    );
+  });
+
+  it("says the same thing in Arabic wherever it repeats in English", () => {
+    // One English, one Arabic — `messages.test.ts`'s strongest assertion,
+    // applied within this registry. /buy's title and /off-plan's description
+    // each appear twice; a second translation of either would put two Arabics
+    // for one English on one page.
+    const byEnglish = new Map<string, Set<string>>();
+    for (const entry of SEARCH_HEADERS) {
+      const d = entry.section.defaults as Record<string, string>;
+      for (const key of PROSE_KEYS) {
+        const set = byEnglish.get(d[key]!) ?? new Set<string>();
+        set.add(d[`${key}_ar`]!);
+        byEnglish.set(d[key]!, set);
+      }
+    }
+    const clashes = [...byEnglish.entries()]
+      .filter(([, arabics]) => arabics.size > 1)
+      .map(([english, arabics]) => `${english}\n  ${[...arabics].join("\n  ")}`);
+    expect(clashes, clashes.join("\n\n")).toEqual([]);
+  });
+});
+
+/**
+ * G-19-shaped: the shipped Arabic passes the same structural gates a generated
+ * string has to pass before the pipeline will write it (ADR-0008 §4).
+ *
+ * Worth running on committed defaults and not only on pipeline output, because
+ * these were hand-placed — the copy lifted from `messages/ar/search.json`, the
+ * snippet drafted for this change — so no pipeline ever checked them. The
+ * glossary half is the load-bearing one: rendering "leasehold" as إيجار calls a
+ * long-dated usufruct a rental agreement, and a fluent wrong word is worse than
+ * an awkward right one because nobody reviewing it notices.
+ */
+describe("the shipped Arabic passes the structural gates", () => {
+  /**
+   * Slots that trip a gate and ship anyway, with the reason. **Shrink only.**
+   */
+  const ALLOWED: Readonly<Record<string, string>> = {
+    // Curated copy from `messages/ar/search.json`, unchanged by this registry.
+    // Both hits are matcher limitations rather than wrong words: مطوّر carries
+    // a shadda and the glossary stem مطور does not, and "بخطة سداد" is the
+    // indefinite of the glossary's "خطة السداد". Neither misstates anything.
+    "off-plan-sale.subtitle": "diacritic and article; the matcher does not normalise either",
+  };
+
+  it("finds every slot, so the assertion below is not vacuous", () => {
+    expect(SEARCH_HEADERS.length * PROSE_KEYS.length).toBe(35);
+  });
+
+  it("has no unexplained failure", () => {
+    const failures: string[] = [];
+    for (const entry of SEARCH_HEADERS) {
+      const d = entry.section.defaults as Record<string, string>;
+      for (const key of PROSE_KEYS) {
+        const path = `${entry.key}.${key}`;
+        const issues = validate(d[key]!, d[`${key}_ar`]!);
+        if (issues.length === 0 || path in ALLOWED) continue;
+        failures.push(
+          `${path}: ${issues.map((i) => `${i.code} — ${i.detail}`).join("; ")}` +
+            `\n    en: ${d[key]}\n    ar: ${d[`${key}_ar`]}`,
+        );
+      }
+    }
+    expect(failures, failures.join("\n\n")).toEqual([]);
+  });
+
+  it("keeps the allowlist honest — an entry that now passes must be removed", () => {
+    for (const [path, reason] of Object.entries(ALLOWED)) {
+      const [key, field] = path.split(".") as [string, string];
+      const d = getSearchHeader(key)!.section.defaults as Record<string, string>;
+      expect(
+        validate(d[field]!, d[`${field}_ar`]!).length,
+        `${path} passes now — delete its allowlist entry (${reason})`,
+      ).toBeGreaterThan(0);
+    }
   });
 });

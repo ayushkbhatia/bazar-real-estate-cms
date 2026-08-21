@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { asLocale } from "@/lib/i18n/locales";
+import { getSearchHeaderMeta } from "@/lib/queries/search-headers";
 import { SearchList } from "../../_components/search-list";
 import { parseFilters } from "@/lib/filters/property";
 
@@ -11,16 +13,24 @@ export const dynamic = "force-dynamic";
  * Resale = previously owned. The seller is the current owner, not the
  * developer. Sibling route to /buy/ready; the two must never share an h1.
  */
-export function generateMetadata(): Metadata {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = asLocale((await params).locale);
+  // The snippet is CMS content — see the note on /rent/search. `alternates`
+  // is not: a canonical is routing, not copy, and stays with the route.
+  const meta = await getSearchHeaderMeta("buy", "resale", locale);
   return {
-    title: "Resale homes for sale",
-    description:
-      "Previously owned properties for sale across the United Arab Emirates — bought from the current owner, in established communities with a known service-charge history.",
+    title: meta.title,
+    description: meta.description,
     alternates: { canonical: "/buy/resale" },
   };
 }
 
 type PageProps = {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
