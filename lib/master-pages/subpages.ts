@@ -493,12 +493,18 @@ export const AREA_SECTIONS: SectionDef[] = [
   {
     key: "hero",
     label: "Hero",
-    description: "Eyebrow, area name, the opening paragraph and the position line.",
+    description:
+      "Eyebrow, the vibe inside it, area name, the opening paragraph and the position line.",
     locked: true,
     dataNote:
       "Blank fields use the guide copy that ships with the area. The cover image is set in Page images below.",
     fields: [
       optionalText("eyebrow", "Eyebrow", "Blank keeps “Community guide · …”."),
+      optionalText(
+        "vibe",
+        "Vibe",
+        "The two or three words after “Community guide · ” — “Emerging, waterfront, active-lifestyle”. Blank keeps the vibe that ships with the area.",
+      ),
       optionalText("heading", "Heading", "Blank uses the area name."),
       optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
       optionalText(
@@ -507,7 +513,7 @@ export const AREA_SECTIONS: SectionDef[] = [
         "The small mono line below — “Located 15–20 minutes from Downtown Abu Dhabi.”",
       ),
     ],
-    defaults: { eyebrow: null, heading: null, intro: null, position: null },
+    defaults: { eyebrow: null, vibe: null, heading: null, intro: null, position: null },
   },
 
   // 2 ── Cover image

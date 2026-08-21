@@ -9,6 +9,8 @@ import { FORM_COPY_KEYS, FORM_COPY_ALL_KEYS, copyArKey } from "./copy-keys";
 import { formCopySchema } from "@/lib/schemas/form";
 import { localiseRow } from "@/lib/i18n/localise";
 import { FORM_DEFS } from "./registry";
+import { defaultForm } from "./resolve";
+import { arabicFor } from "@/lib/i18n/arabic-store";
 
 const REPO_ROOT = join(import.meta.dirname, "..", "..");
 
@@ -129,5 +131,53 @@ describe("the save payload cannot forget a key", () => {
     for (const { key } of FORM_COPY_KEYS) {
       expect(payload, `${key} is hand-listed in the payload`).not.toContain(`${key}:`);
     }
+  });
+});
+
+/**
+ * The store is what fills a blank `_ar` twin, so a string it has never seen
+ * renders in English inside an otherwise Arabic form. That is not theoretical:
+ * "Email Address", "Renting" and "Plot / land" sat in English on all 24
+ * `/ar/areas/*` guides, and nothing failed.
+ *
+ * This pins the half that lives in code. The other half — the labels an editor
+ * has retyped in the CMS, which is where those three actually came from — is
+ * covered by `scripts/i18n/translate-content.ts --forms`, which reads the live
+ * `form_fields` rows.
+ */
+describe("every English string a form ships with has Arabic", () => {
+  const gaps: string[] = [];
+  for (const def of FORM_DEFS) {
+    const form = defaultForm(def.key)!;
+    const check = (where: string, english: unknown) => {
+      if (typeof english !== "string" || !english.trim()) return;
+      if (!arabicFor(english)) gaps.push(`${def.key}/${where}: ${english}`);
+    };
+    for (const [key, value] of Object.entries(form.copy)) {
+      if (!key.endsWith("_ar")) check(`copy.${key}`, value);
+    }
+    for (const field of form.fields) {
+      const f = field as unknown as Record<string, unknown>;
+      if (!f.label_ar) check(`${f.key}.label`, f.label);
+      if (!f.placeholder_ar) check(`${f.key}.placeholder`, f.placeholder);
+      if (!f.help_ar) check(`${f.key}.help`, f.help);
+      if (!f.unit_ar) check(`${f.key}.unit`, f.unit);
+      for (const opt of (f.options ?? []) as {
+        label: string;
+        label_ar?: string | null;
+      }[]) {
+        if (!opt.label_ar) check(`${f.key}.option`, opt.label);
+      }
+    }
+  }
+
+  it("leaves nothing for the store to miss", () => {
+    expect(
+      gaps,
+      "Untranslated form copy. Run:\n" +
+        "  npx tsx --env-file-if-exists=.env.local " +
+        "scripts/i18n/translate-content.ts --forms\n\n" +
+        gaps.join("\n"),
+    ).toEqual([]);
   });
 });

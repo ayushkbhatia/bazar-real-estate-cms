@@ -12,7 +12,11 @@ describe("localiseRow", () => {
     label: "Buy",
     label_ar: "شراء",
     href: "/buy",
-    heading: "Resale",
+    // Deliberately not a phrase the site says. A blank twin falls back to
+    // ARABIC_STORE, so a real label here — this was "Resale" — passes only
+    // until someone translates that word, and then fails a test about holes
+    // for a reason that has nothing to do with holes.
+    heading: "Nothing in the store says this",
     heading_ar: null,
   };
 
@@ -35,7 +39,9 @@ describe("localiseRow", () => {
 
   it("leaves the English in place when Arabic is blank", () => {
     // Invariant 2: an untranslated row renders complete, never a hole.
-    expect(localiseRow(row, "ar").heading).toBe("Resale");
+    expect(localiseRow(row, "ar").heading).toBe(
+      "Nothing in the store says this",
+    );
   });
 
   it("treats whitespace as blank", () => {

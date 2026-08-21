@@ -1,6 +1,6 @@
 {
   "hero": {
-    "guide": "شهد المجتمع",
+    "guide": "دليل المجتمع",
     "guideWithVibe": "دليل المجتمع · {vibe}"
   },
   "stats": {
@@ -11,19 +11,20 @@
     "landmarks": "المعالم والوجهات البارزة",
     "communities": "المجتمعات السكنية",
     "connectivity": "إمكانية الاتصال",
-    "whyHere": "منازل هنا",
+    "whyHere": "لماذا هنا",
     "lifestyle": "أسلوب حياة",
     "location": "الموقع",
     "schools": "منشآت تعليمية على مقربة",
     "amenities": "المرافق",
     "advisors": "مستشارون يغطون هذه المنطقة",
     "similar": "مناطق مماثلة",
-    "freeConsultation": "شارة مجانيةاست",
-    "connectedHeading": "استمتع بسهولة الوصول إلى أبوظبي"
+    "freeConsultation": "استشارة مجانية",
+    "connectedHeading": "استمتع بسهولة الوصول إلى أبوظبي",
+    "faq": "الأسئلة الشائعة"
   },
   "cta": {
     "forSale": "للبيع",
-    "toRent": "شقة للإيجار",
+    "toRent": "للإيجار",
     "viewAllSale": "عرض جميع العقارات للبيع",
     "viewAllRent": "شاهد جميع العقارات للإيجار",
     "enquireRentals": "استفسر عن الإيجارات",

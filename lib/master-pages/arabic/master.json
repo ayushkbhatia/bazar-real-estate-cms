@@ -176,6 +176,12 @@
     "ar": "+971 50 123 4567",
     "by": "machine"
   },
+  "+971 50 …": {
+    "ar": "+971 50 …",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "- Get in touch with us, and a member of our team will contact you shortly to assist with your enquiry.": {
     "ar": "تواصل معنا، وسيتصل بك أحد أعضاء فريقنا قريبًا لمساعدتك في استفسارك.",
     "by": "machine",
@@ -384,6 +390,12 @@
     "ar": "شقة بـ 2 غرفة نوم",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "2 Bedrooms": {
+    "ar": "2 غرف نوم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "2 Islands": {
     "ar": "جزيرتان (2)",
@@ -1670,6 +1682,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:34:19.126Z"
   },
+  "Afternoon": {
+    "ar": "ما بعد الظهر",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Ain Al Maha": {
     "ar": "عين المها",
     "by": "machine",
@@ -2136,6 +2154,24 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
   },
+  "Any": {
+    "ar": "الكل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Any commercial type": {
+    "ar": "أي نوع تجاري",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Any residential type": {
+    "ar": "أي نوع سكني",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Anything else we should know?": {
     "ar": "هل من شيء آخر تودّ إخبارنا به؟",
     "by": "machine",
@@ -2147,6 +2183,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.877Z"
+  },
+  "Anything we should know about the property or the tenancy?": {
+    "ar": "هل من معلومات تودّ إخبارنا بها عن العقار أو عقد الإيجار؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Anything we should know?": {
+    "ar": "هل من شيء ينبغي أن نعرفه؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Apartment": {
     "ar": "شقة",
@@ -2959,6 +3007,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
   },
+  "Budget Range": {
+    "ar": "نطاق الميزانية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Budget guidance": {
     "ar": "إرشادات الميزانية",
     "by": "machine",
@@ -3096,6 +3150,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Buying Timeline": {
+    "ar": "الإطار الزمني للشراء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Buying a Property": {
     "ar": "شراء عقار",
@@ -4301,6 +4361,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:23:53.572Z"
   },
+  "Download the {project} Brochure": {
+    "ar": "حمّل كتيّب {project}",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Downtown Abu Dhabi": {
     "ar": "أبوظبي وسط المدينة",
     "by": "machine",
@@ -4461,6 +4527,18 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:49:38.249Z"
+  },
+  "Email Address": {
+    "ar": "البريد الإلكتروني",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Email address": {
+    "ar": "البريد الإلكتروني",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Email me a code": {
     "ar": "أرسل لي رمزاً عبر البريد الإلكتروني",
@@ -5419,8 +5497,10 @@
     "at": "2026-08-17T09:23:53.572Z"
   },
   "FAQ": {
-    "ar": "FAQ",
-    "by": "machine"
+    "ar": "الأسئلة الشائعة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "FAQs": {
     "ar": "الأسئلة الشائعة",
@@ -6075,6 +6155,12 @@
     "ar": "جارٍ البحث عن العقارات…",
     "by": "machine",
     "model": "claude-opus-5"
+  },
+  "First Name": {
+    "ar": "الاسم الأول",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "First name": {
     "ar": "الاسم الأول",
@@ -7142,6 +7228,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:39:13.993Z"
   },
+  "How soon?": {
+    "ar": "ما مدى الاستعجال؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "How sustainable are its buildings?": {
     "ar": "ما مدى استدامة مبانيها؟",
     "by": "machine",
@@ -7199,6 +7291,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "I want to": {
+    "ar": "أرغب في",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "I'm Interested In": {
     "ar": "أنا مهتم بـ",
     "by": "machine",
@@ -7210,6 +7308,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
+  },
+  "I'm thinking about…": {
+    "ar": "أفكّر في…",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "ICT Real Estate Development is an Abu Dhabi-based developer delivering premium residential and mixed-use projects across strategically located communities in the capital.": {
     "ar": "آي سي تي للتطوير العقاري هو مطور عقاري مقره أبو ظبي يوفر مشاريع سكنية فاخرة ومختلطة في مجتمعات استراتيجية في العاصمة.",
@@ -7748,6 +7852,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:49:10.239Z"
+  },
+  "Last Name": {
+    "ar": "اسم العائلة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Last name": {
     "ar": "اسم العائلة",
@@ -9321,6 +9431,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
   },
+  "Offer in hand": {
+    "ar": "لديّ عرض شراء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Office": {
     "ar": "مكتب",
     "by": "machine",
@@ -9986,6 +10102,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:16:12.763Z"
   },
+  "Plot / land": {
+    "ar": "أرض / قطعة أرض",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Plots with the zoning and permitted use confirmed before you commit to a design.": {
     "ar": "أراضٍ مؤكدة تصنيفها العمراني والاستخدام المسموح به قبل التزامك بأي تصميم.",
     "by": "machine",
@@ -10291,6 +10413,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Project of Interest": {
+    "ar": "المشروع الذي يهمك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Project of interest": {
+    "ar": "المشروع الذي يهمك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Promenade": {
     "ar": "الساحة المشاة",
@@ -11124,6 +11258,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
   },
+  "Rent out": {
+    "ar": "تأجير",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Rental Process Guide": {
     "ar": "دليل إجراءات الإيجار",
     "by": "reviewed",
@@ -11213,6 +11353,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
   },
+  "Renting": {
+    "ar": "الإيجار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Renting out your property": {
     "ar": "تأجير عقارك",
     "by": "machine",
@@ -11245,6 +11391,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:21:17.942Z"
+  },
+  "Request Mortgage Pre-Approval": {
+    "ar": "اطلب موافقة مبدئية على تمويل عقاري",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Request Property Management Support": {
     "ar": "طلب دعم إدارة العقارات",
@@ -11295,6 +11447,12 @@
     "ar": "دليل المستندات المطلوبة",
     "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Resale": {
+    "ar": "إعادة بيع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Resale Properties": {
     "ar": "عقارات إعادة البيع",
@@ -11732,6 +11890,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:47:18.127Z"
   },
+  "Select a type": {
+    "ar": "اختر نوعاً",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Selected central Reem locations are approximately five minutes from Downtown.": {
     "ar": "المواقع المختارة في وسط ريم تبعد حوالي خمس دقائق عن وسط المدينة.",
     "by": "machine",
@@ -11743,6 +11907,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Self-employed, buying off-plan, rate you've been quoted elsewhere…": {
+    "ar": "أعمل لحسابي الخاص، أشتري على الخارطة، سعر فائدة عُرض عليك في مكان آخر…",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Sell Your Property": {
     "ar": "بيع العقار الخاص بك",
@@ -12040,6 +12210,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "So we know how to address the report": {
+    "ar": "حتى نعرف كيفية توجيه التقرير",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Sobha City Abu Dhabi": {
     "ar": "شوبا سيتي أبوظبي",
@@ -12348,6 +12524,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Sumbitting…": {
+    "ar": "جارٍ الإرسال…",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Sunday": {
     "ar": "الأحد",
     "by": "machine",
@@ -12527,6 +12709,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.269Z"
+  },
+  "Tell us what you're looking for.": {
+    "ar": "أخبرنا بما تبحث عنه.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Tell us what your business needs.": {
     "ar": "تحدّث إلينا عن احتياجات عملك.",
@@ -13370,6 +13558,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Type here": {
+    "ar": "اكتب هنا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "UAE Space Agency": {
     "ar": "وكالة الفضاء الإماراتية",
     "by": "machine",
@@ -13441,6 +13635,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Unfurnished": {
+    "ar": "غير مفروش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Unlocked.": {
     "ar": "إتاحة الوصول.",
@@ -13927,6 +14127,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "What Stage Are You At?": {
+    "ar": "في أي مرحلة أنت؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "What are the four phases?": {
     "ar": "ما هي المراحل الأربع؟",
     "by": "machine",
@@ -14179,6 +14385,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:49:38.249Z"
   },
+  "What would you like to know?": {
+    "ar": "ما الذي تودّ معرفته؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "What your consultation covers": {
     "ar": "ما تشمله استشارتك",
     "by": "machine",
@@ -14207,6 +14419,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
+  },
+  "Where are you up to?": {
+    "ar": "في أي مرحلة أنت؟",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Where demand, new supply, and lifestyle are converging right now.": {
     "ar": "حيث يلتقي الطلب والمعروض الجديد ونمط الحياة في الوقت الحالي.",
@@ -14573,6 +14791,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:12:41.013Z"
+  },
+  "Within 2 months": {
+    "ar": "خلال شهرين",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Within 24 hours": {
     "ar": "المدة خلال 24 ساعة",
@@ -14945,6 +15169,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Your name": {
+    "ar": "اسمك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Your next location starts here": {
     "ar": "موقعك التالي يبدأ من هنا",

@@ -175,6 +175,30 @@ function schoolsFrom(
   return [];
 }
 
+/**
+ * The vibe, in the locale being rendered.
+ *
+ * `seed.vibe` is English editorial that lives in code, and it is read straight
+ * into the hero eyebrow — "Community guide · Emerging, waterfront,
+ * active-lifestyle". On `/ar` that put three English words inside an otherwise
+ * Arabic eyebrow on all 24 area guides, which is the most visible untranslated
+ * string on the route.
+ *
+ * So Arabic reads `vibe_ar` and stops there. Falling back to the English would
+ * reintroduce exactly the bug, and the eyebrow degrades cleanly without it —
+ * `t("hero.guide")` renders "دليل المجتمع" on its own. That is the same
+ * direction the section document already takes: a hero value whose `_ar` twin
+ * is blank folds to null on `/ar` rather than to its English, which is why the
+ * position line is absent rather than English on those pages today.
+ *
+ * English is untouched: the branch only fires off the default locale.
+ */
+function vibeFor(seed: SeedAreaGuide | null, locale: Locale): string | null {
+  if (!seed) return null;
+  if (locale !== DEFAULT_LOCALE) return seed.vibe_ar ?? null;
+  return seed.vibe ?? null;
+}
+
 function amenitiesFrom(
   guide: AreaGuideRow | null,
   seed: SeedAreaGuide | null,
@@ -245,7 +269,7 @@ export function composeAreaProfile(input: {
       row?.description ||
       "",
     position: seed?.position ?? null,
-    vibe: seed?.vibe ?? null,
+    vibe: vibeFor(seed, locale),
     heroLabel: seed?.hero_label ?? slug,
     stats: statsFromGuide(guide) ?? statsFromSeed(seed),
     schools: schoolsFrom(guide, seed),

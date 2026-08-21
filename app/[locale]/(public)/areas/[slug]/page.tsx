@@ -260,6 +260,11 @@ export default async function CommunityProfilePage({
 
   const heroIntro = sv("hero", "intro") ?? profile.intro;
   const heroPosition = sv("hero", "position") ?? profile.position;
+  // The two or three words inside the eyebrow. The section document wins so an
+  // editor can retune one area without retyping "Community guide · " around
+  // it; `profile.vibe` is the guide seed, and is null on `/ar` until the seed
+  // carries an Arabic twin — see `vibeFor` in lib/queries/area-profile.ts.
+  const heroVibe = sv("hero", "vibe") ?? profile.vibe;
   const stats = profile.stats;
   const buyHref = `/buy/search?area=${profile.slug}`;
   const rentHref = `/rent/search?area=${profile.slug}`;
@@ -271,8 +276,8 @@ export default async function CommunityProfilePage({
         <section className="px-4 md:px-12 pt-8 pb-12">
           <Eyebrow>
             {sv("hero", "eyebrow") ??
-              (profile.vibe
-                ? t("hero.guideWithVibe", { vibe: profile.vibe })
+              (heroVibe
+                ? t("hero.guideWithVibe", { vibe: heroVibe })
                 : t("hero.guide"))}
           </Eyebrow>
           <h1
@@ -510,6 +515,7 @@ export default async function CommunityProfilePage({
     ),
     faq: (
       <AreaFaq
+        eyebrow={t("bands.faq")}
         heading={
           sv("faq", "heading") ??
           `Frequently asked questions about ${profile.name}`

@@ -191,15 +191,45 @@ async function main() {
     const { FORM_COPY_KEYS } = await import("../../lib/forms/copy-keys");
     const { nonProseReason } = await import("../../lib/i18n/prose");
 
+    /*
+     * The LIVE fields, not just the registry ones.
+     *
+     * This walk used to read `form_fields` and then discard it — the rows are
+     * keyed by `form_id` rather than by form key, and joining them was left as
+     * "enough for a first pass". It was not: the registry says "Email address"
+     * and the client's CMS says "Email Address", and the store is keyed by the
+     * exact English, so every label an editor has retyped falls outside the
+     * corpus. That is not a rare case — all seven fields on the area guide's
+     * consultation form were retyped, and three of them are still English on
+     * every `/ar/areas/*` page today.
+     *
+     * The join is one extra select on `forms.id`, and after it `resolveForm`
+     * gets the same two arguments the site gives it, so this walk sees exactly
+     * the strings a visitor reads.
+     */
     const storedForms = new Map<string, unknown>();
     const storedFields = new Map<string, unknown[]>();
     if (sb) {
-      const { data: forms } = await sb.from("forms").select("key, enabled, copy, notify_emails");
-      for (const row of (forms ?? []) as { key: string }[]) storedForms.set(row.key, row);
+      const { data: forms } = await sb.from("forms").select("id, key, enabled, copy, notify_emails");
+      const keyById = new Map<string, string>();
+      for (const row of (forms ?? []) as { id: string; key: string }[]) {
+        storedForms.set(row.key, row);
+        keyById.set(row.id, row.key);
+      }
       const { data: fields } = await sb
         .from("form_fields")
         .select("id, form_id, key, label, label_ar, type, mapping, placeholder, placeholder_ar, help, help_ar, required, enabled, width, options, option_source, rows, min_value, max_value, step, unit, unit_ar, show_when, locked, position");
-      void fields; // field rows are keyed by form_id; the registry walk below is enough for a first pass
+      for (const row of (fields ?? []) as { form_id: string }[]) {
+        const key = keyById.get(row.form_id);
+        if (!key) continue;
+        const list = storedFields.get(key) ?? [];
+        list.push(row);
+        storedFields.set(key, list);
+      }
+      console.log(
+        `Read ${storedForms.size} stored form(s) and ` +
+          `${(fields ?? []).length} stored field row(s).`,
+      );
     }
 
     const add = (formKey: string, path: string, english: unknown, max: number) => {
@@ -219,7 +249,11 @@ async function main() {
     };
 
     for (const def of FORM_DEFS) {
-      const form = resolveForm(def.key, (storedForms.get(def.key) ?? null) as never, null);
+      const form = resolveForm(
+        def.key,
+        (storedForms.get(def.key) ?? null) as never,
+        (storedFields.get(def.key) ?? null) as never,
+      );
       if (!form) continue;
       for (const k of FORM_COPY_KEYS) {
         add(def.key, `copy.${k.key}`, (form.copy as Record<string, unknown>)[k.key], k.max);
@@ -325,7 +359,19 @@ async function main() {
     const en = w.english.trim();
     if (seen.has(en)) return false;
     seen.add(en);
-    return true;
+    /*
+     * The section walk drops a translated slot for us — `walkSection` runs
+     * after `withArabicDefaults`, so an entry already in the store comes back
+     * with `arabic` populated. The `--forms` and `--seo` walks have no such
+     * step and pushed every string they found, so a second run re-translated
+     * the whole corpus and OVERWROTE it, downgrading any entry a person had
+     * since corrected to `by: "reviewed"` back to a fresh machine draft.
+     *
+     * Checking the store here makes all three walks agree: a string that has
+     * Arabic is done. Re-running `--forms` after an editor retypes one label
+     * now costs one call rather than ninety.
+     */
+    return !store[en];
   });
   if (unique.length !== work.length) {
     console.log(

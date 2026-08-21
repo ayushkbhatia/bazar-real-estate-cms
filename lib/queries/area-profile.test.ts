@@ -125,4 +125,51 @@ describe("composeAreaProfile", () => {
     expect(p.position).toBe(seed.position);
     expect(p.vibe).toBe(seed.vibe);
   });
+
+  /*
+   * The hero eyebrow reads "Community guide · {vibe}", so an English vibe on
+   * `/ar` is three English words inside an otherwise Arabic line — on all 24
+   * area guides, which is what made it the most visible untranslated string on
+   * the route.
+   */
+  describe("the vibe follows the locale", () => {
+    it("gives the Arabic vibe on ar", () => {
+      const p = composeAreaProfile({
+        row: null,
+        guide: null,
+        seed,
+        locale: "ar",
+      })!;
+      expect(p.vibe).toBe(seed.vibe_ar);
+      expect(p.vibe).not.toBe(seed.vibe);
+    });
+
+    it("drops the vibe rather than falling back to English", () => {
+      const untranslated = { ...seed, vibe_ar: undefined };
+      const p = composeAreaProfile({
+        row: null,
+        guide: null,
+        seed: untranslated,
+        locale: "ar",
+      })!;
+      expect(p.vibe).toBeNull();
+    });
+
+    it("leaves English untouched", () => {
+      const p = composeAreaProfile({
+        row: null,
+        guide: null,
+        seed,
+        locale: "en",
+      })!;
+      expect(p.vibe).toBe(seed.vibe);
+    });
+  });
+
+  it("ships an Arabic vibe for every seed that has an English one", () => {
+    const missing = SEED_AREA_GUIDES.filter((s) => s.vibe && !s.vibe_ar).map(
+      (s) => s.slug,
+    );
+    expect(missing).toEqual([]);
+  });
 });
