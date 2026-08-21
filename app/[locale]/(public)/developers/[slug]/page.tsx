@@ -15,6 +15,7 @@ import {
 import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { mediaPublicUrl } from "@/lib/media";
 import { propertyUrl } from "@/lib/queries/property-utils";
+import { getDeveloperPageCopy } from "@/lib/queries/developer-page";
 import { DevelopmentCard } from "../../_components/marketing/development-card";
 import { ListingCardPriced } from "../../_components/listing-card-priced";
 import { entryLogo, findDirectoryEntry, listDirectory } from "../_directory";
@@ -44,12 +45,12 @@ export const revalidate = 300;
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: Locale }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const [entry, detail] = await Promise.all([
-    findDirectoryEntry(slug),
-    getDeveloperBySlug(slug),
+    findDirectoryEntry(slug, locale),
+    getDeveloperBySlug(slug, locale),
   ]);
   const name = entry?.name ?? detail?.name;
   if (!name) return { title: "Developer not found" };
@@ -75,6 +76,9 @@ export default async function DeveloperProfilePage({
    */
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "editorial" });
+  // The two card badges are shared listing vocabulary rather than page copy,
+  // so they come from `messages/` — not from the editable document below.
+  const tListing = await getTranslations({ locale, namespace: "listing" });
   const { slug } = await params;
   // Identity resolves from either side. The directory carries the logo and
   // descriptor for the 30 curated partners, so a developer listed there
@@ -83,8 +87,8 @@ export default async function DeveloperProfilePage({
   // because app/sitemap.ts advertises every DB developer and a 404 on an
   // advertised URL is a soft-404 against the whole section.
   const [entry, detail] = await Promise.all([
-    findDirectoryEntry(slug),
-    getDeveloperBySlug(slug),
+    findDirectoryEntry(slug, locale),
+    getDeveloperBySlug(slug, locale),
   ]);
   if (!entry && !detail) notFound();
   // Draft: off the grid, off the sitemap, and gone from its own URL. Anything
@@ -102,6 +106,14 @@ export default async function DeveloperProfilePage({
     developerId ? countDeveloperListings(developerId) : Promise.resolve(0),
   ]);
   const description = detail?.description ?? entry?.blurb ?? null;
+  /*
+   * The page's own words, with `{name}` already substituted. Read after `name`
+   * resolves rather than in the Promise.all above, because the substitution is
+   * what makes the headings a sentence — and the token's POSITION differs
+   * between the two languages, which is why this cannot go back to being
+   * `{name}` + a literal suffix in the JSX.
+   */
+  const copy = await getDeveloperPageCopy(name, locale);
   // Upload first, then the shipped art. An uploaded logo reaches the entry via
   // the directory merge; `detail.logo_url` covers a slug the merge didn't
   // fold (the superseded directory slug), so both paths land on the same mark.
@@ -111,16 +123,19 @@ export default async function DeveloperProfilePage({
 
   return (
     <div className="bg-bz-bg">
-      {/* Crumb */}
-      <div className="px-4 md:px-12 pt-10">
-        <Link
-          href="/developers"
-          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
-        >
-          <ArrowLeft size={13} strokeWidth={1.8} />
-          All developers
-        </Link>
-      </div>
+      {/* Crumb. Dropped entirely when an editor clears the label — a bare
+          arrow with no words is worse than no crumb. */}
+      {copy.backLabel ? (
+        <div className="px-4 md:px-12 pt-10">
+          <Link
+            href="/developers"
+            className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
+          >
+            <ArrowLeft size={13} strokeWidth={1.8} />
+            {copy.backLabel}
+          </Link>
+        </div>
+      ) : null}
 
       {/* Hero — logo, name, short description */}
       <section className="px-4 md:px-12 pt-8 pb-14 md:pb-16 border-b border-bz-border">
@@ -173,22 +188,26 @@ export default async function DeveloperProfilePage({
               className="serif text-[30px] md:text-[36px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.02em" }}
             >
-              {name}&apos;s projects.
+              {copy.projectsHeading}
             </h2>
           </div>
-          <Button asChild variant="outline">
-            <Link href="/off-plan">Browse all off-plan</Link>
-          </Button>
+          {copy.projectsCtaLabel ? (
+            <Button asChild variant="outline">
+              <Link href={copy.projectsCtaHref}>{copy.projectsCtaLabel}</Link>
+            </Button>
+          ) : null}
         </div>
 
         {developments.length === 0 ? (
           <div className="mt-10 py-16 text-center border border-dashed border-bz-border rounded-xl">
-            <p className="text-[14px] text-bz-ink-2">
-              No developments published for {name} yet.
-            </p>
-            <Button asChild variant="ghost" className="mt-4">
-              <Link href="/off-plan">Explore the wider off-plan market</Link>
-            </Button>
+            <p className="text-[14px] text-bz-ink-2">{copy.projectsEmpty}</p>
+            {copy.projectsEmptyCtaLabel ? (
+              <Button asChild variant="ghost" className="mt-4">
+                <Link href={copy.projectsEmptyCtaHref}>
+                  {copy.projectsEmptyCtaLabel}
+                </Link>
+              </Button>
+            ) : null}
           </div>
         ) : (
           // The same card /off-plan and /developments render — cover image,
@@ -213,15 +232,16 @@ export default async function DeveloperProfilePage({
                 className="serif text-[30px] md:text-[36px] mt-2 leading-tight"
                 style={{ letterSpacing: "-0.02em" }}
               >
-                Properties from this developer.
+                {copy.listingsHeading}
               </h2>
             </div>
             {/* No "view all" link: the search has no developer facet, so one
                 would drop the visitor into unfiltered results. State the count
                 instead until that filter exists. */}
-            {listingTotal > listings.length ? (
+            {listingTotal > listings.length &&
+            copy.listingsCount(listings.length, listingTotal) ? (
               <span className="text-[12.5px] text-bz-muted">
-                Showing {listings.length} of {listingTotal}
+                {copy.listingsCount(listings.length, listingTotal)}
               </span>
             ) : null}
           </div>
@@ -232,15 +252,15 @@ export default async function DeveloperProfilePage({
                 <ListingCardPriced
                   priceAed={row.price_aed}
                   title={row.title}
-                  location={row.area?.name ?? "United Arab Emirates"}
+                  location={row.area?.name ?? t("fallbackArea")}
                   beds={row.beds}
                   baths={row.baths}
                   area={row.built_up_ft2 ?? 0}
                   badge={
                     row.flags?.exclusive
-                      ? "Exclusive"
+                      ? tListing("badge.exclusive")
                       : row.flags?.vacant_on_transfer
-                        ? "Vacant on transfer"
+                        ? tListing("badge.vacantOnTransfer")
                         : undefined
                   }
                   badgeKind={row.flags?.exclusive ? "ink" : "accent"}

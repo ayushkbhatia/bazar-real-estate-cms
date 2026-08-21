@@ -5,6 +5,7 @@ import {
   Database,
   ExternalLink,
   Plus,
+  Type,
 } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Button } from "@/components/ui/button";
@@ -64,12 +65,22 @@ export default async function DeveloperSubPagesIndex() {
         </span>
       }
       primary={
-        <Button asChild>
-          <Link href="/admin/pages/sub/developer/new">
-            <Plus size={14} strokeWidth={1.8} />
-            Add developer
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* The shared wording sits beside the records rather than inside one,
+              because it belongs to all 32 pages and to none of them. */}
+          <Button asChild variant="outline">
+            <Link href="/admin/pages/sub/developer/copy">
+              <Type size={14} strokeWidth={1.8} />
+              Page copy
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="/admin/pages/sub/developer/new">
+              <Plus size={14} strokeWidth={1.8} />
+              Add developer
+            </Link>
+          </Button>
+        </div>
       }
     >
       <div className="flex flex-col gap-5">
@@ -78,7 +89,15 @@ export default async function DeveloperSubPagesIndex() {
           <span className="text-bz-ink">Record</span> opens the name, link,
           logo, founding year and description behind{" "}
           <span className="mono">/developers/&lt;slug&gt;</span>. Adding one
-          here makes it pickable on every property and project.
+          here makes it pickable on every property and project.{" "}
+          <Link
+            href="/admin/pages/sub/developer/copy"
+            className="text-bz-ink underline"
+          >
+            Page copy
+          </Link>{" "}
+          holds the headings and buttons every one of those pages shares, in
+          English and Arabic.
         </p>
 
         <div className="text-[12.5px] text-bz-muted">

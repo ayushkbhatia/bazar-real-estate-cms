@@ -7,5 +7,9 @@
   "offPlan": "Off-plan",
   "verified": "Bazar Verified",
   "bedsShort": "bd",
-  "bathsShort": "ba"
+  "bathsShort": "ba",
+  "badge": {
+    "exclusive": "Exclusive",
+    "vacantOnTransfer": "Vacant on transfer"
+  }
 }

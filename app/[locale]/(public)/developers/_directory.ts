@@ -18,6 +18,7 @@ import {
   listDevelopers,
   type DeveloperListEntry,
 } from "@/lib/queries/developers-extras";
+import { type Locale } from "@/lib/i18n/locales";
 import { developerNameKey } from "@/lib/schemas/developer";
 import { trimmedLogo, type TrimmedLogo } from "@/lib/developers/logos";
 import { DEVELOPERS, type DeveloperDir } from "@/lib/developers/directory-data";
@@ -25,6 +26,14 @@ import { DEVELOPERS, type DeveloperDir } from "@/lib/developers/directory-data";
 export type DirectoryEntry = {
   slug: string;
   name: string;
+  /**
+   * The English name, never folded. Identity only — see `mergeDirectory`.
+   *
+   * Carried on the entry as well as on the row because `findDirectoryEntry`
+   * re-runs the same name match over the MERGED list to resolve a superseded
+   * directory slug, and it would hit the identical empty-key collapse on /ar.
+   */
+  name_en: string;
   blurb: string | null;
   /** Trimmed art from /public — preferred, it is optically normalised. */
   trimmed: TrimmedLogo | null;
@@ -45,6 +54,8 @@ function fromDir(d: DeveloperDir): DirectoryEntry {
   return {
     slug: d.slug,
     name: d.name,
+    // The code-owned set is English by definition — it is source, not content.
+    name_en: d.name,
     blurb: d.blurb,
     trimmed: trimmedLogo(d.slug) ?? null,
     master: { src: d.logo, w: d.w, h: d.h },
@@ -68,6 +79,13 @@ function fromDir(d: DeveloperDir): DirectoryEntry {
  * every property and project references, so it's the profile page that has
  * anything to show. The directory slug keeps working — `getDeveloperDir` still
  * resolves it — so no existing link breaks.
+ *
+ * The name match runs on `row.name_en`, never on `row.name`. `slugify` keeps
+ * `[a-z0-9]` and nothing else, so an Arabic display name reduces to the empty
+ * string: on `/ar` every row shared one key, rows merged into each other, and
+ * the grid lost three developers while listing three others twice. The empty
+ * key is rejected outright below as well, so no future non-Latin name can
+ * reintroduce it.
  */
 export function mergeDirectory(
   dir: DeveloperDir[],
@@ -80,14 +98,22 @@ export function mergeDirectory(
   const keyToSlug = new Map<string, string>(
     dir.map((d) => [developerNameKey(d.name), d.slug]),
   );
+  /** Identity, not display text — see the note above. Empty never matches. */
+  const nameKey = (row: DeveloperListEntry): string | null => {
+    const key = developerNameKey(row.name_en ?? row.name);
+    return key === "" ? null : key;
+  };
 
   for (const row of rows) {
     // `listDevelopers` falls back to seed rows with a `seed:` id when the table
     // is unreachable. Those are not catalogue rows and must not claim to be.
     const inCatalogue = !row.id.startsWith("seed:");
+    const key = nameKey(row);
     const matchedSlug = bySlug.has(row.slug)
       ? row.slug
-      : keyToSlug.get(developerNameKey(row.name));
+      : key
+        ? keyToSlug.get(key)
+        : undefined;
     const existing = matchedSlug ? bySlug.get(matchedSlug) : undefined;
 
     if (existing && matchedSlug) {
@@ -99,6 +125,7 @@ export function mergeDirectory(
         // but a blank description keeps the written blurb rather than emptying
         // the card.
         name: row.name,
+        name_en: row.name_en ?? row.name,
         blurb: row.description ?? existing.blurb,
         uploaded: row.logo_url,
         inCatalogue: existing.inCatalogue || inCatalogue,
@@ -106,13 +133,14 @@ export function mergeDirectory(
         // unpublishing MODON would leave its shipped card on the grid.
         published: inCatalogue ? row.published : existing.published,
       });
-      keyToSlug.set(developerNameKey(row.name), row.slug);
+      if (key) keyToSlug.set(key, row.slug);
       continue;
     }
 
     bySlug.set(row.slug, {
       slug: row.slug,
       name: row.name,
+      name_en: row.name_en ?? row.name,
       blurb: row.description,
       trimmed: null,
       master: null,
@@ -120,7 +148,7 @@ export function mergeDirectory(
       inCatalogue,
       published: inCatalogue ? row.published : true,
     });
-    keyToSlug.set(developerNameKey(row.name), row.slug);
+    if (key) keyToSlug.set(key, row.slug);
   }
 
   return [...bySlug.values()].sort((a, b) => a.name.localeCompare(b.name));
@@ -132,10 +160,12 @@ export function mergeDirectory(
  * Falls back to the code-owned set alone when Supabase is unreachable, so the
  * grid never empties out.
  */
-export async function listAllDirectory(): Promise<DirectoryEntry[]> {
+export async function listAllDirectory(
+  locale?: Locale,
+): Promise<DirectoryEntry[]> {
   let rows: DeveloperListEntry[] = [];
   try {
-    rows = await listDevelopers();
+    rows = await listDevelopers(locale);
   } catch {
     rows = [];
   }
@@ -143,8 +173,10 @@ export async function listAllDirectory(): Promise<DirectoryEntry[]> {
 }
 
 /** Every developer the public should see. Drafts are dropped. */
-export async function listDirectory(): Promise<DirectoryEntry[]> {
-  return (await listAllDirectory()).filter((d) => d.published);
+export async function listDirectory(
+  locale?: Locale,
+): Promise<DirectoryEntry[]> {
+  return (await listAllDirectory(locale)).filter((d) => d.published);
 }
 
 /**
@@ -160,10 +192,11 @@ export async function listDirectory(): Promise<DirectoryEntry[]> {
  */
 export async function findDirectoryEntry(
   slug: string,
+  locale?: Locale,
 ): Promise<DirectoryEntry | null> {
   // Drafts included: the profile page decides what to do with one, and the
   // superseded-slug lookup below has to find them either way.
-  const merged = await listAllDirectory();
+  const merged = await listAllDirectory(locale);
   const hit = merged.find((d) => d.slug === slug);
   if (hit) return hit;
 
@@ -174,8 +207,13 @@ export async function findDirectoryEntry(
   // Return the merged entry rather than the directory one: its `slug` is where
   // the grid now links and where the projects are, so the page can canonicalise
   // to it instead of leaving two URLs competing for the same developer.
+  // `name_en`, not `name`: on /ar the merged names are Arabic and every one of
+  // them slugifies to "", so this would return the first entry in the list for
+  // any superseded slug.
   const key = developerNameKey(dir.name);
-  return merged.find((d) => developerNameKey(d.name) === key) ?? fromDir(dir);
+  return (
+    merged.find((d) => developerNameKey(d.name_en) === key) ?? fromDir(dir)
+  );
 }
 
 /**

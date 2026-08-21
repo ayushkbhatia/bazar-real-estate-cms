@@ -10,6 +10,7 @@ import {
 import { BLOCK_DEFS } from "@/lib/page-builder/catalogue";
 import { LIBRARY_SECTIONS } from "@/lib/master-pages/library";
 import { SEARCH_HEADERS } from "@/lib/master-pages/search-headers";
+import { DEVELOPER_PAGE_SECTION } from "@/lib/master-pages/developer-page";
 import { isTranslatable } from "@/lib/master-pages/twins";
 import type { FieldDef, ListFieldDef, SectionDef } from "@/lib/master-pages/types";
 import { nonProseReason } from "./prose";
@@ -85,6 +86,10 @@ function everySlot(): Slot[] {
     out.push(
       ...collect(`search-header/${entry.key}·${s.key}`, s.fields, s.defaults),
     );
+  }
+  {
+    const s = DEVELOPER_PAGE_SECTION;
+    out.push(...collect(`developer-page·${s.key}`, s.fields, s.defaults));
   }
   return out;
 }
