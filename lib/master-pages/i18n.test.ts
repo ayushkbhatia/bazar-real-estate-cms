@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { MASTER_PAGES } from "./pages";
 import { AREA_SECTIONS, DEVELOPMENT_SECTIONS } from "./subpages";
 import { LIBRARY_SECTIONS } from "./library";
+import { SEARCH_HEADERS } from "./search-headers";
 import { BLOCK_DEFS } from "@/lib/page-builder/catalogue";
 import { mergeValues, validateFieldValues } from "./index";
 import { applyLocale, arabicCoverage } from "./i18n";
@@ -41,6 +42,12 @@ function allSectionDefs(): { origin: string; def: SectionDef }[] {
   // Same document shape, same twins, so the same five assertions apply.
   for (const entry of LIBRARY_SECTIONS) {
     out.push({ origin: `library:${entry.key}`, def: entry.section });
+  }
+  // The search-results headers — one document per search facet. Their Arabic
+  // is hand-declared in `defaults` rather than pulled from the store, so the
+  // twin-derivation assertions are what keeps the editor able to save it.
+  for (const entry of SEARCH_HEADERS) {
+    out.push({ origin: `search-header:${entry.key}`, def: entry.section });
   }
   return out;
 }

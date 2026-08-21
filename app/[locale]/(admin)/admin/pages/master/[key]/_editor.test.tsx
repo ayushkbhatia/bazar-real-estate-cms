@@ -16,6 +16,10 @@ import {
   LIBRARY_SECTIONS,
   librarySectionPageDef,
 } from "@/lib/master-pages/library";
+import {
+  SEARCH_HEADERS,
+  searchHeaderPageDef,
+} from "@/lib/master-pages/search-headers";
 import { arKey, isTranslatable } from "@/lib/master-pages/twins";
 import { MasterPageEditor } from "./_editor";
 
@@ -244,6 +248,69 @@ describe("sub-pages", () => {
       />,
     );
     expect(screen.queryAllByLabelText(/^Reorder /)).toHaveLength(0);
+  });
+});
+
+/**
+ * The search-results headers — the fifth registry, reached through
+ * Pages → Sub-pages → Search results.
+ *
+ * Seven documents over six routes, each one three fields. They go through
+ * `MasterPageEditor` with injected actions exactly like the library sections,
+ * so the assertions are the same shape — and the Arabic one earns its place the
+ * same way: the twins are DERIVED, so nothing in the section definition
+ * mentions them and "the Arabic inputs are there" is only observable by
+ * rendering.
+ *
+ * The last assertion is the one specific to this registry. Its Arabic is
+ * hand-declared in `defaults` rather than resolved from the store, so an empty
+ * box here would mean a facet shipping English on `/ar` — which is the exact
+ * hole the six search routes had before the copy moved out of `messages/`.
+ */
+describe("search headers", () => {
+  const CASES = SEARCH_HEADERS.map(
+    (entry) => [entry.label, searchHeaderPageDef(entry) as MasterPageDef] as const,
+  );
+
+  it.each(CASES)("%s draws every declared field", (_label, def) => {
+    const sections = mount(def);
+    expect(sections).toHaveLength(1);
+    const found = rows();
+    const panel = openPanel(found[0]!);
+    for (const field of sections[0]!.def.fields) expectField(panel, field);
+  });
+
+  it.each(CASES)("%s arrives with its Arabic already filled in", (_l, def) => {
+    // "bilingual", because that is what the route passes. The English fold
+    // strips every `_ar` key on the way out, so an editor given folded values
+    // would see three empty boxes and write those blanks back on save.
+    const [section] = resolveSections(def, null, "bilingual");
+    render(
+      <MasterPageEditor
+        pageKey={def.key}
+        pageLabel={def.label}
+        path={def.path}
+        usingDefaults
+        media={[]}
+        seeds={{}}
+        actions={{ save: vi.fn(), reset: vi.fn() }}
+        allowReorder={false}
+        initial={[
+          {
+            key: section!.key,
+            def: section!.def,
+            enabled: section!.enabled,
+            values: section!.values,
+          },
+        ]}
+      />,
+    );
+    const panel = openPanel(rows()[0]!);
+    // One collapsed "العربية" disclosure per prose field, all three filled.
+    expect(within(panel).queryAllByText("العربية")).toHaveLength(
+      section!.def.fields.filter(isTranslatable).length,
+    );
+    expect(within(panel).queryAllByText("— not set")).toHaveLength(0);
   });
 });
 
