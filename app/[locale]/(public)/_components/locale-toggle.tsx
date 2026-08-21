@@ -32,6 +32,25 @@
  * labelled only in the language you cannot read is useless to the one person
  * who needs it. The accessible name carries the full word, so a screen reader
  * announces "العربية" rather than the bare letter.
+ *
+ * ## Order is pinned LTR
+ *
+ * The pill used to inherit `<html dir>`, so `EN | ع` on the English site
+ * became `ع | EN` on the Arabic one — the two options traded places every
+ * time the control was used. That is measurable: `EN` sits at x≈310 on
+ * `/contact-qr` and x≈65 on `/ar/contact-qr`.
+ *
+ * A control whose halves move cannot be operated by position, and a language
+ * switch is operated by position — it is two glyphs in a pill, tapped without
+ * re-reading. Tap the wrong half and you get the locale you are already in:
+ * a navigation to the current page, a proxy redirect back to it, and no
+ * visible change at all. The control reads as dead while every href is right.
+ *
+ * The QR card's `CardLocaleToggle` is where this was caught, because `EN` and
+ * `AR` are two Latin pairs of identical width and nothing cues you to re-read.
+ * The defect is the same here and is fixed the same way. Only the ORDER of
+ * two siblings is pinned — the page around it still flips, and each option
+ * keeps its own `dir`/`lang` so `ع` renders and announces correctly.
  */
 
 import { useTranslations } from "next-intl";
@@ -63,12 +82,12 @@ export function LocaleToggle({ current }: { current: Locale }) {
 
   return (
     <div
-      // `group/locale` rather than a bare `group`: the header this sits inside
-      // has its own hover groups, and an unnamed one would be captured by the
-      // nearest ancestor.
       className="flex items-center rounded-full border border-bz-border bg-bz-surface/95 p-0.5 shadow-sm backdrop-blur-sm"
       role="group"
       aria-label={t("language")}
+      // Pinned, not inherited. See "Order is pinned LTR" above: English left,
+      // Arabic right, in both locales, so a tap means the same thing twice.
+      dir="ltr"
     >
       {LOCALES.map((locale) => {
         const active = locale === current;

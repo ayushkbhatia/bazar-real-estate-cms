@@ -39,6 +39,32 @@
  * pairs are a matched set, and the accessible name carries the full `العربية`
  * either way, so a screen reader announces the language rather than the
  * abbreviation.
+ *
+ * ## Why the pill is pinned LTR
+ *
+ * It was not, and that made it feel broken in a way the hrefs never explain.
+ *
+ * The group inherited the card's `dir`, so under RTL the two options swapped
+ * sides: `EN | AR` on the English page became `AR | EN` on the Arabic one.
+ * The reasoning was that the active language should sit on the leading edge
+ * of the reading order, which sounds right and is wrong here — it means the
+ * control's two halves trade places every single time you use it.
+ *
+ * Walk it through. On `/contact-qr` you tap the RIGHT half to get Arabic. You
+ * land on `/ar/contact-qr`. To go back you tap the half you did not tap last
+ * time — the left one — and that is now `AR`, the option already active. It
+ * navigates to the page you are on, the proxy redirects to the page you are
+ * on, and the page you are on renders again. Nothing moves. The control reads
+ * as dead, and every href involved was correct.
+ *
+ * `EN` and `AR` are two Latin pairs of the same width; nobody re-reads them
+ * before tapping, they tap the side. So the side has to mean the same thing
+ * every time. English left, Arabic right, in both locales.
+ *
+ * This does not fight the RTL layout — the card around it still flips, and
+ * each option still carries its own `dir` and `lang` so `ع` (in the header's
+ * variant of this control) renders correctly. It is only the ORDER of two
+ * siblings that is pinned, because that order is not prose.
  */
 
 import { useTranslations } from "next-intl";
@@ -68,13 +94,13 @@ export function CardLocaleToggle({ current }: { current: Locale }) {
   if (LOCALES.length < 2) return null;
 
   return (
-    /*
-      Written in DOM order EN, AR — the card's `dir` flips it, so the active
-      language always sits on the leading edge of the reading order.
-    */
     <div
       role="group"
       aria-label={t("language")}
+      // Pinned, not inherited. See "Why the pill is pinned LTR" above: without
+      // this the two options swap sides between locales and half the taps land
+      // on the option that is already active.
+      dir="ltr"
       className="mx-auto flex w-fit items-center gap-1 rounded-full bg-bz-surface-2 p-1"
     >
       {LOCALES.map((locale) => {
