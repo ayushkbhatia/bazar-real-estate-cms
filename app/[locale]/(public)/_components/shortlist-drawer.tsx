@@ -25,9 +25,42 @@ import { useTranslations } from "next-intl";
  * /admin/pages/sub/section/shortlist, and it is also what gives it Arabic: a
  * library section's `text`/`textarea` fields get their `_ar` twin derived and
  * folded for free. See docs/I18N.md, "I added a new section".
+ *
+ * ## Why removal is deferred, and why the fetch is incremental
+ *
+ * Deleting a row used to blank the whole panel for a network round trip. The
+ * chain was: write the store, `ids` changes identity, the fetch effect refires,
+ * `setLoading(true)`, and the render swapped the entire list for a "Loading…"
+ * line — then put back every row except the deleted one. Two separate causes,
+ * fixed separately:
+ *
+ *   1. **The fetch only asks for ids it has no snapshot for.** Removing an id
+ *      leaves nothing missing, so no request is made at all. The cache is
+ *      merged into, never replaced, and only a *locale* change invalidates it
+ *      (the titles and area names come back in the other language).
+ *   2. **A populated list never yields to the loading state.** The skeleton is
+ *      for a cold open, not for a refresh.
+ *
+ * The exit animation then rides on the deferral: the click marks the row
+ * `data-exiting`, which collapses its grid row from `1fr` to `0fr`. The rows
+ * below slide up continuously because the departing box is *shrinking* — no
+ * FLIP measuring, no layout maths, and it is direction-agnostic, so Arabic
+ * gets it for free (the only transform is on the Y axis). The store write
+ * happens `EXIT_MS` later, which is what keeps `ids` — and therefore the row's
+ * position and data — stable for the length of the animation.
+ *
+ * Deferring a write means it can be dropped, so it is flushed on unmount and
+ * every commit re-reads the store rather than trusting a captured `ids`: two
+ * quick deletes must not resurrect each other.
  */
 
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import Link from "@/components/i18n/link";
@@ -56,6 +89,7 @@ import {
   usePreferences,
 } from "@/lib/preferences";
 import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
+import { cn } from "@/lib/utils";
 import { isolateForLocale } from "@/lib/i18n/bidi";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { localeFromPathname } from "@/lib/i18n/routing";
@@ -73,6 +107,17 @@ type ShortlistItem = {
   hero_url: string | null;
   hero_alt: string | null;
 };
+
+/**
+ * How long a row takes to collapse out of the list.
+ *
+ * Has to agree with the `duration-300` on the row's transition: too short and
+ * the row unmounts mid-collapse, too long and an empty gap sits there after the
+ * animation has finished.
+ */
+const EXIT_MS = 300;
+/** Per-row delay when the whole list goes at once, so "Clear" cascades. */
+const CLEAR_STAGGER_MS = 45;
 
 // Cache the last snapshot we returned from `getCompareSnapshot` so React's
 // snapshot-equality check can short-circuit re-renders. Re-deriving from
@@ -128,12 +173,39 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
   );
   const [rawItems, setItems] = useState<ShortlistItem[]>([]);
   const [loading, setLoading] = useState(false);
+  /*
+   * Rows that have been deleted but are still on screen, collapsing.
+   *
+   * They are still in `ids` — the store write is what waits — so nothing about
+   * their position or their data has to be remembered here. `clearing` is
+   * separate because it is the only case that staggers, and a stagger applied
+   * to a single delete would just make it feel slow.
+   */
+  const [exiting, setExiting] = useState<string[]>([]);
+  const [clearing, setClearing] = useState(false);
+  const timersRef = useRef<number[]>([]);
+  const pendingRef = useRef<Set<string>>(new Set<string>());
   // Which of the shortlist goes to the compare table. The shortlist holds up
   // to `SHORTLIST_CAP`; the table holds four columns, so with more than four
   // saved *something* has to choose — and letting it silently take the first
   // four is the behaviour splitting the caps was meant to kill. The visitor
   // picks. `null` = untouched, see `compareIds` below.
   const [picked, setPicked] = useState<string[] | null>(null);
+
+  /*
+   * A locale change invalidates the snapshot cache.
+   *
+   * The rows carry `title` and `area_name` already folded to one language by
+   * `/api/shortlist`, so they are wrong the moment the visitor switches. The
+   * incremental fetch below would never notice — nothing is *missing* — so the
+   * cache is dropped here and refilled. Adjusted during render rather than in
+   * an effect, the same way `lastPath` below is, and for the same reason.
+   */
+  const [lastLocale, setLastLocale] = useState(locale);
+  if (locale !== lastLocale) {
+    setLastLocale(locale);
+    setItems([]);
+  }
 
   /*
    * Close when the URL changes.
@@ -156,20 +228,35 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
     if (open) setOpen(false);
   }
 
-  // Drop stale items when the id set empties without needing a setState in
-  // the subscription effect (which would trip
-  // `react-hooks/set-state-in-effect`). Also filter to ensure removed
-  // entries vanish even before the next fetch lands.
-  const items =
-    ids.length === 0 ? [] : rawItems.filter((i) => ids.includes(i.id));
+  /*
+   * The rows to render, in shortlist order.
+   *
+   * Ordered by `ids` rather than by the response, because the response now
+   * only ever carries the ids that were missing — trusting its order would
+   * shuffle the list every time a listing was added.
+   *
+   * Exiting rows are still in `ids`, so they are still here: that is what lets
+   * them animate in place instead of vanishing.
+   */
+  const byId = new Map(rawItems.map((i) => [i.id, i]));
+  const items = ids
+    .map((id) => byId.get(id))
+    .filter((i): i is ShortlistItem => i !== undefined);
 
-  // Re-fetch when the drawer opens or the id-set changes. We deliberately
-  // avoid clearing `items` here when `ids` becomes empty — the render path
-  // derives the visible list from both, so an empty `ids` array naturally
-  // hides everything without an unnecessary setState in the effect.
+  /*
+   * Ask only for what we do not already hold.
+   *
+   * This is the line that fixes the delete flash: after a removal nothing is
+   * missing, so the effect does not fire, `loading` never goes true, and the
+   * remaining rows are never unmounted. Joined into a string because the
+   * array is a fresh identity every render and would re-run the effect
+   * forever as a dependency.
+   */
+  const missingKey = ids.filter((id) => !byId.has(id)).join(",");
+
   useEffect(() => {
-    if (ids.length === 0) return;
     if (!open) return; // lazy: only fetch when the drawer is opened
+    if (missingKey === "") return;
     let cancelled = false;
     // Loading flag is a UI hint that has to fire before the network round
     // trip starts — the React Compiler lint rule is too strict for this
@@ -177,14 +264,21 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     fetch(
-      `/api/shortlist?ids=${encodeURIComponent(ids.join(","))}&locale=${locale}`,
+      `/api/shortlist?ids=${encodeURIComponent(missingKey)}&locale=${locale}`,
     )
       .then((r) => (r.ok ? r.json() : { items: [] }))
       .then((data: { items: ShortlistItem[] }) => {
-        if (!cancelled) setItems(data.items ?? []);
+        if (cancelled) return;
+        // Merge, never replace: the response holds only the ids we asked
+        // for, and everything already on screen has to survive it.
+        setItems((prev) => {
+          const merged = new Map(prev.map((i) => [i.id, i]));
+          for (const item of data.items ?? []) merged.set(item.id, item);
+          return [...merged.values()];
+        });
       })
       .catch(() => {
-        if (!cancelled) setItems([]);
+        /* keep whatever is already on screen */
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -192,21 +286,89 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
     return () => {
       cancelled = true;
     };
-  }, [ids, open, locale]);
+  }, [open, missingKey, locale]);
 
-  const removeId = useCallback(
-    (id: string) => {
-      // `saveCompareIds` already dispatches a synthetic storage event so
-      // the subscribers (including this hook) repaint with the new set.
-      saveCompareIds(ids.filter((x) => x !== id));
-    },
-    [ids],
-  );
+  /**
+   * Write the deletions we have been holding back.
+   *
+   * Reads the store rather than closing over `ids`: by the time a timer fires,
+   * another removal may already have committed, and a captured array would put
+   * its row back.
+   */
+  const flushPending = useCallback(() => {
+    const pending = pendingRef.current;
+    if (pending.size === 0) return;
+    saveCompareIds(loadCompareIds().filter((x) => !pending.has(x)));
+    pending.clear();
+  }, []);
+
+  /*
+   * A deferred write can be lost — to a navigation, a tab close, the drawer
+   * unmounting when the last row goes. Flushing on teardown is what makes the
+   * deferral invisible rather than occasionally destructive.
+   */
+  useEffect(() => {
+    const timers = timersRef.current;
+    return () => {
+      for (const t of timers) window.clearTimeout(t);
+      timers.length = 0;
+      flushPending();
+    };
+  }, [flushPending]);
+
+  const removeId = useCallback((id: string) => {
+    if (pendingRef.current.has(id)) return; // already on its way out
+    pendingRef.current.add(id);
+    setExiting((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    timersRef.current.push(
+      window.setTimeout(() => {
+        pendingRef.current.delete(id);
+        // `saveCompareIds` dispatches a synthetic storage event, so the
+        // `useSyncExternalStore` subscription repaints with the new set —
+        // and the row, already collapsed to nothing, unmounts unseen.
+        saveCompareIds(loadCompareIds().filter((x) => x !== id));
+        setExiting((prev) => prev.filter((x) => x !== id));
+      }, EXIT_MS),
+    );
+  }, []);
 
   const clearAll = useCallback(() => {
-    saveCompareIds([]);
-    setPicked(null);
-  }, []);
+    const live = loadCompareIds();
+    if (live.length === 0) return;
+    // Any single removal already in flight is folded into this one, so its
+    // timer does not fire mid-cascade and un-mark a row that is still leaving.
+    for (const t of timersRef.current) window.clearTimeout(t);
+    timersRef.current.length = 0;
+    for (const id of live) pendingRef.current.add(id);
+    setClearing(true);
+    setExiting(live);
+    timersRef.current.push(
+      window.setTimeout(
+        () => {
+          flushPending();
+          setExiting([]);
+          setClearing(false);
+          setPicked(null);
+        },
+        EXIT_MS + (live.length - 1) * CLEAR_STAGGER_MS,
+      ),
+    );
+  }, [flushPending]);
+
+  /*
+   * What the panel counts, links and sends.
+   *
+   * A row that is on its way out is gone as far as every number is concerned —
+   * the header count, the compare button, the two hand-off payloads — even
+   * though it is still on screen for another 300ms. Anything else would show
+   * the visitor a count that contradicts what they just did.
+   */
+  const activeIds = exiting.length
+    ? ids.filter((id) => !exiting.includes(id))
+    : ids;
+  const activeItems = exiting.length
+    ? items.filter((i) => !exiting.includes(i.id))
+    : items;
 
   // `compareIds` is derived, not synced: `picked === null` means "hasn't
   // touched the checkboxes" and falls back to the first four, so the
@@ -214,8 +376,8 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
   // `ids` on every render is what keeps a removed listing from lingering in
   // the selection, and avoids a reconciling effect (which
   // `react-hooks/set-state-in-effect` would reject anyway).
-  const compareIds = (picked ?? ids.slice(0, COMPARE_CAP)).filter((id) =>
-    ids.includes(id),
+  const compareIds = (picked ?? activeIds.slice(0, COMPARE_CAP)).filter((id) =>
+    activeIds.includes(id),
   );
   const compareFull = compareIds.length >= COMPARE_CAP;
 
@@ -243,9 +405,9 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
   // `isolateForLocale` leaves the English payloads byte-identical.
   const line = (i: ShortlistItem) =>
     `• ${isolateForLocale(i.title, locale)} (${isolateForLocale(i.reference, locale)}) — ${isolateForLocale(formatPrice(i.price_aed, DEFAULT_PREFERENCES), locale)}`;
-  const whatsappMessage = items.length
-    ? `${t("shortlist.whatsappIntro", { count: items.length })}\n\n` +
-      items.map(line).join("\n")
+  const whatsappMessage = activeItems.length
+    ? `${t("shortlist.whatsappIntro", { count: activeItems.length })}\n\n` +
+      activeItems.map(line).join("\n")
     : null;
   const whatsappHref = whatsappMessage
     ? buildAdvisorWhatsAppLink(whatsappMessage)
@@ -255,10 +417,10 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
   // as the email body. Sends to the visitor's own email by default (they
   // forward to whoever they want); on mobile this opens the system mail
   // composer with all the property refs baked in.
-  const mailtoHref = items.length
+  const mailtoHref = activeItems.length
     ? `mailto:?subject=${encodeURIComponent(t("shortlist.emailSubject"))}&body=${encodeURIComponent(
-        `${t("shortlist.emailIntro", { count: items.length })}\n\n` +
-          items
+        `${t("shortlist.emailIntro", { count: activeItems.length })}\n\n` +
+          activeItems
             .map(
               (i) =>
                 `${line(i)}\n  ${isolateForLocale(`https://bazar.ae/p/${i.slug}-${i.reference}`, locale)}`,
@@ -268,16 +430,27 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
       )}`
     : null;
 
-  // Hide the trigger entirely until there's at least one shortlisted item
-  // so the corner isn't crowded for users who haven't engaged yet.
-  if (ids.length === 0) return null;
+  /*
+   * Nothing saved and nothing open: no trigger, no panel.
+   *
+   * The `open` half matters — deleting the last row used to unmount the whole
+   * component, so the panel the visitor was reading disappeared from under
+   * them mid-animation. Now it stays and shows its empty line, and they close
+   * it themselves.
+   */
+  if (ids.length === 0 && !open) return null;
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+      {/* Hidden once the list is empty — the corner is not worth crowding for
+          a visitor who has not engaged yet — but the panel above survives it. */}
+      <SheetTrigger
+        asChild
+        className={activeIds.length === 0 ? "hidden" : undefined}
+      >
         <button
           type="button"
-          aria-label={t("shortlist.triggerAria", { count: ids.length })}
+          aria-label={t("shortlist.triggerAria", { count: activeIds.length })}
           // Mobile sits above the floating-CTA dock (which is fixed to
           // bottom-0 and ~64px tall over the safe-area inset), so the two
           // don't overlap. Desktop keeps the original bottom-left corner,
@@ -286,7 +459,7 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
         >
           <Scale size={14} strokeWidth={1.8} />
           <span>
-            {copy.trigger_label} · {ids.length}
+            {copy.trigger_label} · {activeIds.length}
           </span>
         </button>
       </SheetTrigger>
@@ -320,7 +493,7 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
           </SheetTitle>
           <SheetDescription>
             {t("shortlist.savedCount", {
-              count: ids.length,
+              count: activeIds.length,
               max: SHORTLIST_CAP,
               note: copy.storage_note,
             })}
@@ -328,79 +501,118 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto px-6 py-4">
-          {loading ? (
-            <p className="text-[13px] text-bz-ink-2 italic">{t("shortlist.loading")}</p>
+          {/* A populated list never yields to the loading state — that swap is
+              what made deleting a row blank the panel. The skeleton is for a
+              cold open only, and by then there is nothing to preserve. */}
+          {loading && items.length === 0 ? (
+            <SkeletonRows label={t("shortlist.loading")} />
           ) : items.length === 0 ? (
             <p className="text-[13px] text-bz-ink-2">{copy.empty}</p>
           ) : (
-            <ul className="flex flex-col gap-4">
-              {items.map((item) => {
+            /* `-mb-4` swallows the last row's `pb-4`. The spacing lives on the
+               row rather than in a `gap` so that it collapses *with* the row —
+               a gap would survive the exit and leave a 16px hole behind. */
+            <ul className="flex flex-col -mb-4">
+              {items.map((item, index) => {
                 const inCompare = compareIds.includes(item.id);
+                const isExiting = exiting.includes(item.id);
                 return (
-                  <li key={item.id} className="flex gap-3">
-                    <label className="flex items-center shrink-0 self-stretch cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={inCompare}
-                        disabled={!inCompare && compareFull}
-                        onChange={() => togglePicked(item.id)}
-                        className="w-4 h-4 accent-bz-accent disabled:cursor-not-allowed disabled:opacity-40"
-                        aria-label={t(
-                          inCompare
-                            ? "shortlist.removeFromCompare"
-                            : compareFull
-                              ? "shortlist.compareFull"
-                              : "shortlist.addToCompare",
-                          { title: item.title },
-                        )}
-                      />
-                    </label>
-                    <Link
-                      href={`/p/${item.slug}-${item.reference}`}
-                      className="block relative w-20 h-20 rounded-md overflow-hidden bg-bz-surface-2 shrink-0"
-                    >
-                      {item.hero_url ? (
-                        <Image
-                          src={item.hero_url}
-                          alt={item.hero_alt ?? item.title}
-                          fill
-                          sizes="80px"
-                          className="object-cover"
-                        />
-                      ) : null}
-                    </Link>
-                    <div className="flex-1 min-w-0">
-                      <Link
-                        href={`/p/${item.slug}-${item.reference}`}
-                        className="block text-[13.5px] font-medium text-bz-ink hover:text-bz-accent transition-colors truncate"
-                      >
-                        {item.title}
-                      </Link>
-                      <div className="text-[11.5px] text-bz-ink-2 mt-0.5 truncate">
-                        {item.area_name ?? copy.area_fallback}
-                      </div>
-                      <div className="mt-1 flex items-baseline justify-between gap-2">
-                        <span className="mono text-[12.5px] text-bz-ink">
-                          {formatPrice(item.price_aed, prefs)}
-                        </span>
-                        <span className="text-[11px] text-bz-ink-2">
-                          {t("shortlist.bedsBaths", {
-                            beds: item.beds,
-                            baths: item.baths,
+                  /* The exit: `1fr` → `0fr` on a single-row grid, with the
+                     content clipped by the `overflow-hidden` child. The rows
+                     below slide up because this box is shrinking, which is
+                     why there is no FLIP maths here and why it needs nothing
+                     for Arabic: a collapsing height and a 4px lift are both
+                     on the Y axis, which RTL does not mirror. */
+                  <li
+                    key={item.id}
+                    data-exiting={isExiting ? "true" : undefined}
+                    style={
+                      clearing
+                        ? { transitionDelay: `${index * CLEAR_STAGGER_MS}ms` }
+                        : undefined
+                    }
+                    className={cn(
+                      "grid grid-rows-[1fr] ease-out",
+                      // `translate`, NOT `transform`: Tailwind v4 compiles
+                      // `-translate-y-1` to the standalone `translate` property,
+                      // so naming `transform` here transitions a property the
+                      // utility never sets and the 4px lift snaps instead of
+                      // easing. Verified in the browser — `transform` stays
+                      // `none` in both states while `translate` goes `0px -4px`.
+                      "transition-[grid-template-rows,opacity,translate] duration-300",
+                      "data-[exiting=true]:grid-rows-[0fr]",
+                      "data-[exiting=true]:opacity-0",
+                      "data-[exiting=true]:-translate-y-1",
+                      "motion-reduce:transition-none",
+                    )}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="flex gap-3 pb-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-300 ease-out motion-reduce:animate-none">
+                        <label className="flex items-center shrink-0 self-stretch cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={inCompare}
+                            disabled={!inCompare && compareFull}
+                            onChange={() => togglePicked(item.id)}
+                            className="w-4 h-4 accent-bz-accent disabled:cursor-not-allowed disabled:opacity-40"
+                            aria-label={t(
+                              inCompare
+                                ? "shortlist.removeFromCompare"
+                                : compareFull
+                                  ? "shortlist.compareFull"
+                                  : "shortlist.addToCompare",
+                              { title: item.title },
+                            )}
+                          />
+                        </label>
+                        <Link
+                          href={`/p/${item.slug}-${item.reference}`}
+                          className="block relative w-20 h-20 rounded-md overflow-hidden bg-bz-surface-2 shrink-0"
+                        >
+                          {item.hero_url ? (
+                            <Image
+                              src={item.hero_url}
+                              alt={item.hero_alt ?? item.title}
+                              fill
+                              sizes="80px"
+                              className="object-cover"
+                            />
+                          ) : null}
+                        </Link>
+                        <div className="flex-1 min-w-0">
+                          <Link
+                            href={`/p/${item.slug}-${item.reference}`}
+                            className="block text-[13.5px] font-medium text-bz-ink hover:text-bz-accent transition-colors truncate"
+                          >
+                            {item.title}
+                          </Link>
+                          <div className="text-[11.5px] text-bz-ink-2 mt-0.5 truncate">
+                            {item.area_name ?? copy.area_fallback}
+                          </div>
+                          <div className="mt-1 flex items-baseline justify-between gap-2">
+                            <span className="mono text-[12.5px] text-bz-ink">
+                              {formatPrice(item.price_aed, prefs)}
+                            </span>
+                            <span className="text-[11px] text-bz-ink-2">
+                              {t("shortlist.bedsBaths", {
+                                beds: item.beds,
+                                baths: item.baths,
+                              })}
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeId(item.id)}
+                          aria-label={t("shortlist.removeFromShortlist", {
+                            title: item.title,
                           })}
-                        </span>
+                          className="text-bz-ink-2 hover:text-bz-ink transition-colors shrink-0"
+                        >
+                          <Trash2 size={14} strokeWidth={1.7} />
+                        </button>
                       </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => removeId(item.id)}
-                      aria-label={t("shortlist.removeFromShortlist", {
-                        title: item.title,
-                      })}
-                      className="text-bz-ink-2 hover:text-bz-ink transition-colors shrink-0"
-                    >
-                      <Trash2 size={14} strokeWidth={1.7} />
-                    </button>
                   </li>
                 );
               })}
@@ -427,7 +639,7 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
               </Link>
             </Button>
           )}
-          {items.length > COMPARE_CAP ? (
+          {activeItems.length > COMPARE_CAP ? (
             <p className="text-[11.5px] text-bz-ink-2 -mt-0.5">
               {copy.pick_help}
             </p>
@@ -448,7 +660,7 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
               </a>
             </Button>
           ) : null}
-          {items.length > 0 ? (
+          {activeItems.length > 0 ? (
             <button
               type="button"
               onClick={clearAll}
@@ -460,5 +672,36 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+/**
+ * The cold-open placeholder.
+ *
+ * Mirrors the real row's geometry — 80px thumbnail, three text lines — so the
+ * panel does not jolt when the data lands. Purely decorative, hence
+ * `aria-hidden`; the announcement is the visually-hidden status line, which is
+ * also what keeps `shortlist.loading` a live catalogue key in both locales.
+ */
+function SkeletonRows({ label }: { label: string }) {
+  return (
+    <>
+      <p role="status" className="sr-only">
+        {label}
+      </p>
+      <ul className="flex flex-col -mb-4 animate-pulse" aria-hidden="true">
+        {[0, 1, 2].map((i) => (
+          <li key={i} className="flex gap-3 pb-4">
+            <div className="w-4 h-4 self-center shrink-0 rounded-sm bg-bz-surface-2" />
+            <div className="w-20 h-20 shrink-0 rounded-md bg-bz-surface-2" />
+            <div className="flex-1 min-w-0 pt-1.5">
+              <div className="h-3 w-3/4 rounded bg-bz-surface-2" />
+              <div className="h-2.5 w-1/2 rounded bg-bz-surface-2 mt-2" />
+              <div className="h-3 w-2/5 rounded bg-bz-surface-2 mt-3.5" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
