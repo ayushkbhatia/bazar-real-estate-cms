@@ -32,6 +32,10 @@ const DOCS: Record<string, unknown> = {
         title_ar: "منازل تستحق الاقتناء",
         subtitle: "Every listing an advisor has stood inside.",
         subtitle_ar: "كل عقار وقف بداخله أحد مستشارينا.",
+        meta_title: "Homes worth keeping",
+        meta_title_ar: "منازل تستحق الاقتناء",
+        meta_description: "Every listing an advisor has stood inside.",
+        meta_description_ar: "كل عقار وقف بداخله أحد مستشارينا.",
       },
     },
   ],
@@ -47,6 +51,10 @@ const DOCS: Record<string, unknown> = {
         title_ar: "",
         subtitle: "",
         subtitle_ar: "",
+        meta_title: "",
+        meta_title_ar: "",
+        meta_description: "",
+        meta_description_ar: "",
       },
     },
   ],
@@ -75,7 +83,7 @@ vi.mock("@/lib/supabase/public", () => ({
   }),
 }));
 
-import { getSearchHeaderCopy } from "./search-headers";
+import { getSearchHeaderCopy, getSearchHeaderMeta } from "./search-headers";
 import { getSearchHeader } from "@/lib/master-pages/search-headers";
 
 describe("a saved header reaches the page", () => {
@@ -133,5 +141,48 @@ describe("a cleared field", () => {
     expect((await getSearchHeaderCopy("buy", "resale", "ar")).title).toBe(
       shipped.title_ar,
     );
+  });
+});
+
+describe("the search-engine snippet", () => {
+  it("publishes the editor's snippet on /en", async () => {
+    expect(await getSearchHeaderMeta("buy", null, "en")).toEqual({
+      title: "Homes worth keeping",
+      description: "Every listing an advisor has stood inside.",
+    });
+  });
+
+  it("publishes it in Arabic on /ar", async () => {
+    expect(await getSearchHeaderMeta("buy", null, "ar")).toEqual({
+      title: "منازل تستحق الاقتناء",
+      description: "كل عقار وقف بداخله أحد مستشارينا.",
+    });
+  });
+
+  it("gives an unsaved facet its shipped Arabic snippet, not English", async () => {
+    // The whole point of this change: before it, all six routes declared an
+    // English literal and published it on `/ar` too.
+    const shipped = getSearchHeader("off-plan")!.section.defaults;
+    expect(await getSearchHeaderMeta("off_plan", null, "ar")).toEqual({
+      title: shipped.meta_title_ar,
+      description: shipped.meta_description_ar,
+    });
+  });
+
+  it("gives the buy off-plan facet its own snippet, not the umbrella's", async () => {
+    const shipped = getSearchHeader("off-plan-sale")!.section.defaults;
+    // `buy` IS saved in this fixture, so a facet that fell through to the
+    // umbrella document would return "Homes worth keeping" here.
+    expect((await getSearchHeaderMeta("buy", "off_plan", "en")).title).toBe(
+      shipped.meta_title,
+    );
+  });
+
+  it("puts the shipped snippet back when an editor clears it", async () => {
+    const shipped = getSearchHeader("resale")!.section.defaults;
+    expect(await getSearchHeaderMeta("buy", "resale", "ar")).toEqual({
+      title: shipped.meta_title_ar,
+      description: shipped.meta_description_ar,
+    });
   });
 });

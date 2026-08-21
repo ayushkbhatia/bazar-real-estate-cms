@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { asLocale } from "@/lib/i18n/locales";
+import { getSearchHeaderMeta } from "@/lib/queries/search-headers";
 import { SearchList } from "../../_components/search-list";
 import { parseFilters } from "@/lib/filters/property";
 
@@ -13,16 +15,24 @@ export const dynamic = "force-dynamic";
  * developer never sold is still ready-new. Do not describe it as "recently
  * built".
  */
-export function generateMetadata(): Metadata {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const locale = asLocale((await params).locale);
+  // The snippet is CMS content — see the note on /rent/search. `alternates`
+  // is not: a canonical is routing, not copy, and stays with the route.
+  const meta = await getSearchHeaderMeta("buy", "ready_new", locale);
   return {
-    title: "Ready homes, never lived in",
-    description:
-      "Completed properties for sale direct from the developer — a first sale with no previous owner on the title, ready to move into.",
+    title: meta.title,
+    description: meta.description,
     alternates: { canonical: "/buy/ready" },
   };
 }
 
 type PageProps = {
+  params: Promise<{ locale: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 

@@ -75,7 +75,7 @@ export const SUBPAGE_KINDS: SubPageKindDef[] = [
     pathLabel: "The six search routes",
     adminPath: "/admin/pages/sub/search",
     description:
-      "The eyebrow, headline and sub-title above the filter bar on each search page.",
+      "The eyebrow, headline and sub-title above the filter bar on each search page, and the snippet it publishes to a search engine.",
     itemLabel: "search page",
   },
   {

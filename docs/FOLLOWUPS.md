@@ -31,6 +31,21 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [i18n] The glossary matcher rejects correct Arabic over a shadda or an
+  article.
+  Surfaced running `lib/i18n/mt/validate.ts` over the shipped search-header
+  defaults (PR after #448). `off-plan-sale.subtitle` — curated copy that came
+  from `messages/ar/search.json`, not a machine draft — fails two glossary
+  stems: `مطوّر` does not contain `مطور` because of the shadda, and
+  `بخطة سداد` does not contain `السداد` because it is indefinite. The docblock
+  in `lib/i18n/mt/glossary.ts` promises a stem that "survives inflection" and
+  the `extraStems` field already exists for broken plurals, so neither case is
+  outside its intended scope. Done = `termRe`/the stem check normalises Arabic
+  diacritics (and ideally tolerates the definite/indefinite pair), and the
+  allowlist entry in `lib/master-pages/search-headers.test.ts` is deleted —
+  that spec already fails if the entry starts passing, so it will tell you.
+  Worth checking how many strings elsewhere are silently kept English by the
+  same two causes before deciding the shape of the fix.
 - [i18n] The hero search panel and the "Insights" nav tab are still English on
   `/ar`.
   Spotted while fixing locale stickiness (the whole navbar is Arabic on `/ar`
