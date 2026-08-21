@@ -1,5 +1,7 @@
 {
   "allAreas": "All areas",
+  "allCommercial": "All commercial",
+  "allRentals": "All rentals",
   "back": "Back",
   "brand": "Bazar",
   "browseBuy": "Browse buy",
@@ -10,6 +12,7 @@
     "abuDhabi": "Abu Dhabi",
     "dubai": "Dubai"
   },
+  "handpicked": "Handpicked",
   "hours": {
     "open": "Open",
     "closed": "Closed",
@@ -36,8 +39,29 @@
   "languageEnglish": "English",
   "loading": "Loading",
   "map": {
+    "areaGuide": "View community guide",
+    "backToCity": "Back to city view",
     "comingSoon": "{emirate} is coming soon",
-    "curating": "We’re curating listings here now."
+    "count": {
+      "listing": "Listings",
+      "project": "Projects"
+    },
+    "curating": "We’re curating listings here now.",
+    "dotCta": {
+      "listing": "View property",
+      "project": "View project"
+    },
+    "median": "Median /{unit}",
+    "pinHint": {
+      "listing": "Click an area pin — zoom in to see individual listings",
+      "project": "Click an area pin — zoom in to see individual projects"
+    },
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "zoomTo": {
+      "listing": "{count, plural, one {Zoom to # listing} other {Zoom to # listings}}",
+      "project": "{count, plural, one {Zoom to # project} other {Zoom to # projects}}"
+    }
   },
   "marquee": {
     "partners": "Banking and regulatory partners",
@@ -56,6 +80,8 @@
   "notFoundTitle": "This page isn't here.",
   "preferences": "Display preferences",
   "preferencesHelp": "Choose how prices and areas display across the site. Saved to this browser.",
+  "propertyType": "Property type",
+  "propertyTypes": "Property types",
   "readMore": "Read more",
   "returnHome": "Return home",
   "search": "Search",
@@ -80,5 +106,6 @@
   "whoWeAre": {
     "establishedIn": "Established in Abu Dhabi",
     "knowMore": "Know more"
-  }
+  },
+  "whyBazar": "Why Bazar"
 }

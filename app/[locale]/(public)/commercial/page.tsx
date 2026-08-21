@@ -104,7 +104,6 @@ export default async function CommercialPage({
           // emirate-wide published count on this page.
           mode="commercial"
           allHref="/commercial/search"
-          allLabel="All commercial"
         />
       }
       mapAbove

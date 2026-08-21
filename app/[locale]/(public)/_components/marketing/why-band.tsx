@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { fluid } from "./fluid";
 
@@ -17,12 +18,25 @@ type Props = {
  * `WhyBand`).
  */
 export function WhyBand({
-  eyebrow = "Why Bazar",
+  eyebrow,
   title,
   body,
   stats,
   wide,
 }: Props) {
+  /*
+   * `useTranslations`, not `getTranslations`, and the key lives on `common`.
+   *
+   * This is a Page Builder block (`why_band`) and `render.test.tsx` renders
+   * every block through React Testing Library, which cannot render an async
+   * component — the same constraint `who-we-are.tsx` documents. `common` is on
+   * CLIENT_NAMESPACES, so the key crosses into that render.
+   *
+   * The default used to be the literal "Why Bazar". Three callers pass an
+   * eyebrow from the CMS; `BuyRentLanding` passes none, so /buy, /rent and
+   * /commercial rendered the English default under `lang="ar"`.
+   */
+  const t = useTranslations("common");
   const cap = wide ? "" : " max-w-[1200px]";
   return (
     <section className="bg-bz-navy text-white px-4 md:px-12 py-16 md:py-20">
@@ -35,7 +49,9 @@ export function WhyBand({
         }
       >
         <div>
-          <Eyebrow className="text-bz-taupe-light">{eyebrow}</Eyebrow>
+          <Eyebrow className="text-bz-taupe-light">
+            {eyebrow ?? t("whyBazar")}
+          </Eyebrow>
           <h2
             className="serif text-white mt-4 max-w-[720px]"
             style={{

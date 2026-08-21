@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 /**
  * The one form component the CMS drives.
@@ -654,6 +654,7 @@ function RangeField({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const t = useTranslations("forms");
   const bounds = rangeBounds(field);
   const current = parseRangeValue(value);
   const summary = formatRangeLabel(field, value);
@@ -670,7 +671,7 @@ function RangeField({
         onChange={(range) => onChange(formatRangeValue(range.min, range.max))}
       />
       <span className="text-[12px] text-bz-ink-2" aria-live="polite">
-        {summary || "Any budget"}
+        {summary || t("field.rangeAny")}
       </span>
     </div>
   );
@@ -703,6 +704,7 @@ function DialPhone({
   stacked: boolean;
   onChange: (value: string) => void;
 }) {
+  const t = useTranslations("forms");
   const codes = options.length > 0 ? options : [{ label: "+971", value: "+971" }];
   const match = codes.find((c) => value.startsWith(c.value || c.label));
   const dial = match ? match.value || match.label : codes[0]!.value || codes[0]!.label;
@@ -714,7 +716,7 @@ function DialPhone({
   return (
     <div className="flex gap-2">
       <select
-        aria-label="Dialing code"
+        aria-label={t("field.dialingCode")}
         value={dial}
         onChange={(e) => onChange(join(e.target.value, national))}
         className={cn(
@@ -762,6 +764,7 @@ function SuccessPanel({
   onAnother: (() => void) | null;
   className?: string;
 }) {
+  const t = useTranslations("forms");
   if (style === "serif") {
     return (
       <div className={cn("flex flex-col", className)}>
@@ -775,7 +778,7 @@ function SuccessPanel({
             onClick={onAnother}
             className="mt-5 self-start text-[12.5px] text-bz-ink-2 underline underline-offset-4"
           >
-            Send another
+            {t("field.sendAnother")}
           </button>
         ) : null}
       </div>
@@ -793,7 +796,7 @@ function SuccessPanel({
             onClick={onAnother}
             className="text-[12.5px] text-bz-ink-2 underline mt-3"
           >
-            Send another
+            {t("field.sendAnother")}
           </button>
         ) : null}
       </div>
@@ -817,7 +820,7 @@ function SuccessPanel({
             onClick={onAnother}
             className="mt-3 text-[12.5px] text-bz-ink-2 underline"
           >
-            Send another
+            {t("field.sendAnother")}
           </button>
         ) : null}
       </div>

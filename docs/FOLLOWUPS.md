@@ -31,6 +31,54 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [i18n] Thirteen form strings are still English on `/ar` because the
+  back-translation gate refused every draft of them.
+  Left over from the `--forms` run in the /rent translation PR, which wrote 22
+  of 35 and blocked these: `services_sell_list_property` (`furnishing`
+  "Unfurnished", `intent` label + "Rent out", `urgency` label),
+  `offplan_project_interest.project`, `buy_hero_enquiry.property_type` and
+  `.commercial_type` placeholders (hand-authored since — the /rent hero shows
+  them), `buy_lead_band.pending_label`, `areas_guide_consultation.intent`
+  "Renting" and `property_type` "Plot / land",
+  `mortgage_preapproval.stage` "Offer in hand",
+  `valuation_report_gate.name` placeholder and `.intent` label. The gate is
+  doing its job — each verdict names a real semantic drift — so done is
+  hand-authored `by: "human"` entries in `lib/master-pages/arabic/master.json`
+  written by someone who reads Arabic, not another model run. Re-run
+  `npm run i18n:content -- --forms --dry-run` for the current list.
+
+- [i18n] `formatRangeLabel` builds its summary in English on both locales.
+  `lib/forms/types.ts:308` returns `Up to 500,000`, `20,000+` and
+  `20,000 – 500,000`, and the range slider under every budget and bedroom
+  field renders it. The empty case is now `forms.field.rangeAny`, so only the
+  three filled shapes are left. They want ICU messages with the formatted
+  number interpolated, and the number itself already formats through
+  `toLocaleString("en-US")` (Western digits, per ADR-0007) so only the words
+  move.
+
+- [i18n] The "List" badge in the mega-nav is English on `/ar`.
+  A DB-driven nav item pointing at `/services/sell`; the neighbouring
+  `megamenu_tabs.title_ar` gap is already an entry above, but this one is a
+  different column on a different table. Worth doing in one pass with it —
+  find which column holds the badge, add its twin, fold it on read.
+
+- [infra] `AreaMapLazy` re-declares `AreaMap`'s props and spreads them, so a
+  prop that no longer exists still typechecks.
+  `app/[locale]/(public)/_components/area-map/area-map-lazy.tsx:23` lists the
+  props again by hand and `next/dynamic` erases the component's real type at
+  the call site. Renaming `countNoun` to `countKind` in `area-map.tsx` left the
+  wrapper declaring and forwarding the dead prop with `tsc --noEmit` clean —
+  the map would simply have fallen back to its default on every surface. Done =
+  the wrapper takes `ComponentProps<typeof AreaMap>` (or a shared exported
+  `AreaMapProps`) instead of a copy.
+
+- [content] `buy_lead_band.pending_label` reads "Sumbitting…" in production.
+  A typo in the client's own copy, spotted while walking the forms corpus. Not
+  ours to change silently — it wants raising with the client, or fixing in
+  `/admin/forms/buy_lead_band` with their say-so. Its Arabic is blocked at the
+  gate for the same reason (the round trip reads "Different verb, changes
+  action"), so fixing the English unblocks the translation too.
+
 - [i18n] The glossary matcher rejects correct Arabic over a shadda or an
   article.
   Surfaced running `lib/i18n/mt/validate.ts` over the shipped search-header

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { ARABIC_STORE } from "./arabic-store";
 import { localiseDeep, localiseRow, missingTranslations } from "./localise";
 
 /**
@@ -39,9 +40,14 @@ describe("localiseRow", () => {
 
   it("leaves the English in place when Arabic is blank", () => {
     // Invariant 2: an untranslated row renders complete, never a hole.
-    expect(localiseRow(row, "ar").heading).toBe(
-      "Nothing in the store says this",
-    );
+    // …and say so out loud, so the next translation run that reaches this
+    // string fails on the premise rather than on the assertion.
+    expect(
+      ARABIC_STORE[row.heading],
+      `The fixture's English must stay untranslated for this to test the ` +
+        `fallback. Change the fixture string, not the store.`,
+    ).toBeUndefined();
+    expect(localiseRow(row, "ar").heading).toBe(row.heading);
   });
 
   it("treats whitespace as blank", () => {

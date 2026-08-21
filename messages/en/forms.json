@@ -1,4 +1,9 @@
 {
+  "field": {
+    "dialingCode": "Dialing code",
+    "rangeAny": "Any",
+    "sendAnother": "Send another"
+  },
   "gate": {
     "trigger": "Get the full advisor report",
     "title": "Get the full advisor report",

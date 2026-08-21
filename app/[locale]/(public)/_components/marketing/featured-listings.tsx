@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,17 +20,25 @@ type Props = {
  * DB may be empty on a fresh client environment) (the handoff's `FeaturedRow`).
  */
 export function FeaturedListings({
-  eyebrow = "Handpicked",
+  eyebrow,
   title,
   ctaLabel,
   ctaHref,
   items,
 }: Props) {
+  // `useTranslations` rather than `getTranslations`: this renders inside
+  // `buy-category-explorer.tsx`, a Client Component, so it cannot be async.
+  // `common` is on CLIENT_NAMESPACES, which is what lets the key cross.
+  const t = useTranslations("common");
   if (!items.length) return null;
   return (
     <div>
       <div className="flex flex-wrap justify-between items-end gap-4 mb-8">
-        <SectionHead eyebrow={eyebrow} title={title} size={40} />
+        <SectionHead
+          eyebrow={eyebrow ?? t("handpicked")}
+          title={title}
+          size={40}
+        />
         {ctaLabel ? (
           <Button asChild variant="outline">
             <Link href={ctaHref ?? "#"}>

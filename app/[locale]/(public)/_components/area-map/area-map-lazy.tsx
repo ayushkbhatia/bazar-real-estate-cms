@@ -29,8 +29,7 @@ export function AreaMapLazy(props: {
   mode?: "explore" | "detail";
   centerSlug?: string;
   dotHref?: (dot: AreaDot) => string;
-  dotCtaLabel?: string;
-  countNoun?: { singular: string; plural: string };
+  countKind?: "listing" | "project";
   className?: string;
 }) {
   return <AreaMap {...props} />;

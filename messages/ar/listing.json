@@ -11,5 +11,6 @@
   "badge": {
     "exclusive": "حصري",
     "vacantOnTransfer": "شاغر عند نقل الملكية"
-  }
+  },
+  "priceOnRequest": "السعر عند الطلب"
 }
