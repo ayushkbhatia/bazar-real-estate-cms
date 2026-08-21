@@ -44,5 +44,21 @@
   "cards": {
     "exploreHomes": "Explore homes",
     "homesForSale": "{count, plural, one {# home for sale} other {# homes for sale}}"
+  },
+  "lifestyle": {
+    "heading": "What it feels like to live in {area}.",
+    "commute": "Commute snapshot",
+    "rhythm": "The rhythm of the week",
+    "dining": "Where the advisors take their clients",
+    "minutes": "{count} min",
+    "curated": "Curated by the {area} advisor desk. We update this list whenever a regular spot slips or a new one earns its place."
+  },
+  "valuation": {
+    "eyebrow": "Own property in {area}?",
+    "body": "Instant data-backed range from our model, then a senior advisor reviews and sends a refined valuation within 24 hours.",
+    "cta": "Value my {area} property"
+  },
+  "advisors": {
+    "heading": "Who to talk to about {area}."
   }
 }

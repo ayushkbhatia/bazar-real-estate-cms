@@ -232,6 +232,12 @@
     "ar": "11",
     "by": "machine"
   },
+  "11 km from Corniche, 20 minutes to airport": {
+    "ar": "11 كم من الكورنيش، و20 دقيقة إلى المطار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "11. Third-Party Links and Services": {
     "ar": "11. الروابط والخدمات الخارجية",
     "by": "machine",
@@ -383,6 +389,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:49:38.249Z"
   },
+  "20 km from Corniche, 12 minutes to airport": {
+    "ar": "20 كم من الكورنيش، و12 دقيقة إلى المطار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "20+": {
     "ar": "20+",
     "by": "machine"
@@ -424,6 +436,12 @@
     "ar": "الأمن على مدار 24 ساعة",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "25 km from Corniche, 15 minutes to airport": {
+    "ar": "25 كم من الكورنيش، و15 دقيقة إلى المطار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "27 sq. km": {
     "ar": "27 كم مربع",
@@ -473,6 +491,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:09:10.478Z"
+  },
+  "3 km from Corniche, 28 minutes to airport": {
+    "ar": "3 كم من الكورنيش، و28 دقيقة إلى المطار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "3. Description of Service": {
     "ar": "3. وصف الخدمة",
@@ -727,6 +751,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:49:38.249Z"
+  },
+  "9-hole golf course": {
+    "ar": "ملعب غولف من 9 حفر",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "9. Intellectual Property": {
     "ar": "9. الملكية الفكرية",
@@ -1182,6 +1212,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:35:49.472Z"
   },
+  "ADPorts logistics hub": {
+    "ar": "مركز موانئ أبوظبي اللوجستي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "ADREC & DLD": {
     "ar": "ADREC وDLD",
     "by": "machine",
@@ -1458,6 +1494,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Abu Dhabi Global Market — financial free-zone on Al Maryah Island. Mixed-use freehold towers, the ADGM courts, and the Galleria Mall a five-minute walk away.": {
+    "ar": "سوق أبوظبي العالمي — منطقة حرة مالية في جزيرة الماريه. أبراج تملك حر متعددة الاستخدامات، ومحاكم سوق أبوظبي العالمي، وذا غاليريا على بعد خمس دقائق سيراً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Abu Dhabi Golf Club": {
     "ar": "نادي أبوظبي للغولف",
     "by": "machine"
@@ -1479,6 +1521,12 @@
     "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.554Z"
+  },
+  "Abu Dhabi Mall": {
+    "ar": "أبوظبي مول",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Abu Dhabi Market Expertise": {
     "ar": "خبرة في سوق أبوظبي",
@@ -1508,6 +1556,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:13:45.709Z"
+  },
+  "Abu Dhabi airport": {
+    "ar": "مطار أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Abu Dhabi coverage": {
     "ar": "تغطية أبوظبي",
@@ -1873,6 +1927,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
   },
+  "Al Maryah Island · 8 min from Corniche": {
+    "ar": "جزيرة الماريه · 8 دقائق من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Al Maryah Vista": {
     "ar": "المارية فيستا",
     "by": "machine",
@@ -1920,6 +1980,12 @@
     "ar": "شاطئ الراحة",
     "by": "machine"
   },
+  "Al Raha Beach Hotel": {
+    "ar": "فندق شاطئ الراحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Al Raha Beach Property Market at a Glance": {
     "ar": "لمحة عن سوق العقارات في شاطئ الراحة",
     "by": "machine",
@@ -1931,6 +1997,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.167Z"
+  },
+  "Al Raha Beach promenade": {
+    "ar": "ممشى شاطئ الراحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Al Raha Gardens": {
     "ar": "حدائق الراحة",
@@ -1965,6 +2037,30 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:52:17.843Z"
+  },
+  "Al Raha is the mainland family suburb — established communities like Al Raha Gardens and Al Raha Beach, plus the newer Khalifa City expansions. Anchored by major schools and the Khalifa University corridor.": {
+    "ar": "الراحة هي ضاحية العائلات على البر الرئيسي — مجتمعات عريقة مثل حدائق الراحة وشاطئ الراحة، إضافة إلى توسعات مدينة خليفة الأحدث. ترتكز على مدارس كبرى وعلى محور جامعة خليفة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Al Raha is where families settle when Saadiyat feels too quiet and Yas feels too loud. School-run mornings start early and traffic into Al Yasmina and Brighton College anchors the rhythm. Weekends are split between Al Raha Beach (less crowded than Saadiyat) and Yas across the bridge. The clubhouse pools see more weekday use than weekend — by Friday everyone's heading somewhere louder.": {
+    "ar": "الراحة هي حيث تستقر العائلات حين تبدو السعديات هادئة أكثر من اللازم وياس صاخبة أكثر من اللازم. تبدأ صباحات توصيل المدارس مبكراً، وتضبط الحركة نحو أكاديمية الياسمينة وكلية برايتون إيقاع اليوم. وتنقسم عطلة نهاية الأسبوع بين شاطئ الراحة (أقل ازدحاماً من السعديات) وياس عبر الجسر. تشهد مسابح النادي الاجتماعي استخداماً في أيام الأسبوع أكثر من العطلة — فبحلول الجمعة يتجه الجميع إلى مكان أكثر صخباً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Al Raha · 16 min from Corniche": {
+    "ar": "الراحة · 16 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Al Raha · 18 min from Corniche": {
+    "ar": "الراحة · 18 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Al Rayyana": {
     "ar": "الريانة",
@@ -2011,6 +2107,12 @@
   "Al Ward": {
     "ar": "الورد",
     "by": "machine"
+  },
+  "Al Yasmina Academy": {
+    "ar": "أكاديمية الياسمينة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Al Zeina": {
     "ar": "الزينة",
@@ -2061,6 +2163,18 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Aldar's eco-themed cluster on Saadiyat — low-density villas and townhouses with mangrove views and protected coastline access.": {
+    "ar": "مجمّع الدار ذو الطابع البيئي في السعديات — فلل وتاون هاوس بكثافة منخفضة تطل على أشجار القرم ومع منفذ إلى ساحل محمي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Aldar's family-oriented villa community on Yas Island. Park frontage, golf access, and walking-distance schools. Built around 2020 and well-established now.": {
+    "ar": "مجتمع فلل عائلي من الدار في جزيرة ياس. واجهات على الحديقة ومنفذ إلى الغولف ومدارس على مسافة مشي. بُني نحو عام 2020 وأصبح اليوم مجتمعاً مكتملاً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Aldar’s circular headquarters on Al Raha Beach is one of the most recognisable buildings on the Abu Dhabi coastline.": {
     "ar": "المقر الدائري لشركة الدار في شاطئ الراحة هو أحد أكثر المباني تميزاً على ساحل أبوظبي.",
     "by": "machine",
@@ -2107,6 +2221,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:29:04.054Z"
+  },
+  "American": {
+    "ar": "أمريكي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "American/UK": {
+    "ar": "أمريكي/بريطاني",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Among the lowest entry points for apartments on the Abu Dhabi mainland.": {
     "ar": "من أدنى نقاط الدخول للشقق في البر الرئيسي لـ أبوظبي",
@@ -2405,11 +2531,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T17:00:34.989Z"
   },
+  "Argentinian, Reem Mall": {
+    "ar": "أرجنتيني، ريم مول",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Arrange viewings": {
     "ar": "ترتيب الزيارات",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T10:24:07.915Z"
+  },
+  "Asian / waterfront": {
+    "ar": "آسيوي / على الواجهة البحرية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Associate Advisor · Lettings desk": {
     "ar": "المستشار المشارك · مكتب الإيجارات",
@@ -2461,6 +2599,12 @@
     "ar": "شرفات الشواء",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "BMX & bike park": {
+    "ar": "حديقة الدراجات الهوائية وBMX",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Baccarat Residences Saadiyat": {
     "ar": "Baccarat Residences Saadiyat",
@@ -2656,6 +2800,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Beach pavilion": {
+    "ar": "جناح الشاطئ",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Beach view": {
     "ar": "منظر شاطئ",
     "by": "machine",
@@ -2737,6 +2887,30 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Beachfront villa enclave on the north of Saadiyat. Freehold for all nationalities; large plots, low density, walking distance to Saadiyat Beach Club.": {
+    "ar": "مجمّع فلل على شاطئ شمال السعديات. تملك حر لجميع الجنسيات؛ قطع أراضٍ كبيرة وكثافة منخفضة ومسافة مشي إلى نادي شاطئ السعديات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Beachfront, low-density, family": {
+    "ar": "على الشاطئ، كثافة منخفضة، عائلي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Beachfront, low-density, villas only": {
+    "ar": "على الشاطئ، كثافة منخفضة، فلل فقط",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Beachfront, low-rise, freehold": {
+    "ar": "على الشاطئ، مبانٍ منخفضة، تملك حر",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Bedrooms": {
     "ar": "غرف النوم",
     "by": "machine",
@@ -2783,6 +2957,24 @@
     "ar": "الأنسب · اختيار المستشار",
     "by": "human"
   },
+  "Best omakase outside the city centre.": {
+    "ar": "أفضل أوماكاسي خارج وسط المدينة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Best on Friday afternoons facing the F1 paddock.": {
+    "ar": "الأفضل بعد ظهر الجمعة في مواجهة بادوك الفورمولا 1.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Best pho on the city side.": {
+    "ar": "أفضل فو في جانب المدينة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Best time to call": {
     "ar": "أفضل وقت للاتصال",
     "by": "machine",
@@ -2812,6 +3004,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
+  },
+  "Between downtown and Reem · 8 min from Corniche": {
+    "ar": "بين وسط المدينة والريم · 8 دقائق من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Beyond property": {
     "ar": "ما وراء العقارات",
@@ -2868,10 +3066,28 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-21T14:33:00.729Z"
   },
+  "Boutik Mall": {
+    "ar": "بوتيك مول",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Boutique private island off Saadiyat — ultra-prime villa-only inventory, accessed by ferry.": {
     "ar": "جزيرة خاصة صغيرة قبالة السعديات — مخزون فاخر للفيلات فقط، يتم الوصول إليها بواسطة العبارة.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Boutique private island off the north coast of Saadiyat. Ultra-prime villa-only inventory, accessed by ferry from a private jetty. Tiny number of resales each year.": {
+    "ar": "جزيرة خاصة بطابع بوتيكي قبالة الساحل الشمالي للسعديات. معروضات فلل فائقة التميّز حصراً، يُوصل إليها بالعبّارة من رصيف خاص. عدد ضئيل من عمليات إعادة البيع كل عام.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Boutique resort": {
+    "ar": "منتجع بوتيك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Branded Residences": {
     "ar": "مساكن بعلامات تجارية",
@@ -2894,6 +3110,24 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:29:07.869Z"
+  },
+  "Brighton College": {
+    "ar": "كلية برايتون",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "British": {
+    "ar": "بريطاني",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "British School Al Khubairat": {
+    "ar": "المدرسة البريطانية الخبيرات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Browse": {
     "ar": "تصفّح",
@@ -3174,6 +3408,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.333Z"
   },
+  "Business, retail, branded residences": {
+    "ar": "أعمال، تجزئة، مساكن بعلامات تجارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Buy": {
     "ar": "شراء",
     "by": "machine",
@@ -3279,6 +3519,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
+  },
+  "Café, Boutik Mall": {
+    "ar": "مقهى، بوتيك مول",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Call": {
     "ar": "اتصل",
@@ -3424,6 +3670,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Central business island linking downtown to Reem. The Galleria Mall, Cleveland Clinic, ADGM offices, and a tight cluster of branded residential towers.": {
+    "ar": "جزيرة الأعمال المركزية التي تربط وسط المدينة بالريم. تضم ذا غاليريا وكليفلاند كلينك أبوظبي ومكاتب سوق أبوظبي العالمي ومجموعة متراصة من الأبراج السكنية ذات العلامات التجارية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Central towers within walking distance of the business district.": {
     "ar": "أبراج مركزية على مسافة قصيرة سيرًا من منطقة الأعمال.",
     "by": "machine",
@@ -3457,6 +3709,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Chinese, Emirates Palace": {
+    "ar": "صيني، قصر الإمارات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Choose an off-plan apartment close to the city’s key destinations.": {
     "ar": "اختر شقة على الخارطة بالقرب من أبرز وجهات المدينة.",
     "by": "machine",
@@ -3489,6 +3747,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "Circuit X sports hub": {
+    "ar": "مجمّع سيركيت إكس الرياضي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "City Views": {
     "ar": "وجهات المدينة",
@@ -3533,6 +3797,12 @@
   "Clear shortlist": {
     "ar": "مسح القائمة المختصرة",
     "by": "human"
+  },
+  "Cleveland Clinic": {
+    "ar": "كليفلاند كلينك أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Cleveland Clinic Abu Dhabi": {
     "ar": "أبوظبي كليفلاند كلينك",
@@ -3782,6 +4052,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
   },
+  "Community park": {
+    "ar": "حديقة المجتمع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Community pools": {
+    "ar": "مسابح المجتمع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Community view": {
     "ar": "عرض المجتمع",
     "by": "machine",
@@ -4029,6 +4311,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:26:57.193Z"
   },
+  "Corniche beach": {
+    "ar": "شاطئ الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Corniche promenade at golden hour with the beach in the foreground and the residential and office towers behind.": {
     "ar": "الكورنيش الممشى عند الساعة الذهبية مع الشاطئ في المقدمة وأبراج السكن والمكاتب في الخلفية.",
     "by": "machine",
@@ -4060,6 +4348,18 @@
     "ar": "موقف مغطى",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Cranleigh Abu Dhabi": {
+    "ar": "كرانلي أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Crystal lagoons": {
+    "ar": "بحيرات كريستالية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Cultural Destination": {
     "ar": "وجهة ثقافية",
@@ -4512,6 +4812,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.744Z"
   },
+  "Downtown, 30 minutes to airport": {
+    "ar": "وسط المدينة، و30 دقيقة إلى المطار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Drag both ends. The top of the scale means six or more.": {
     "ar": "اسحب الطرفين. أعلى المقياس يعني ستة أو أكثر.",
     "by": "machine",
@@ -4608,6 +4914,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:49:03.945Z"
   },
+  "Eco-themed, low-density, villas + townhouses": {
+    "ar": "بيئي الطابع، كثافة منخفضة، فلل وتاون هاوس",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Economic Zones": {
     "ar": "المناطق الاقتصادية",
     "by": "machine",
@@ -4695,6 +5007,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T10:26:13.946Z"
   },
+  "Emerging, waterfront, active-lifestyle": {
+    "ar": "وجهة ناشئة، على الواجهة البحرية، بنمط حياة نشط",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Emirates Palace": {
     "ar": "قصر الإمارات",
     "by": "machine",
@@ -4769,6 +5087,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Established Aldar villa community within Al Raha, built around 2010. Mature trees, walking-distance schools and mosques, family-favourite for the long lease tail.": {
+    "ar": "مجتمع فلل عريق من الدار ضمن الراحة، بُني نحو عام 2010. أشجار وارفة ومدارس ومساجد على مسافة مشي، ومفضّل لدى العائلات لطول أمد عقد الانتفاع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Established Community": {
     "ar": "مجتمع مُستقر",
     "by": "machine",
@@ -4839,6 +5163,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:19:16.443Z"
   },
+  "Established, central, mixed-density": {
+    "ar": "عريق، مركزي، كثافة متنوعة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Estimate your monthly payments before making your move": {
     "ar": "قدّر أقساطك الشهرية قبل اتخاذ خطوتك",
     "by": "machine",
@@ -4850,6 +5180,24 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:13:20.229Z"
+  },
+  "Etihad Arena": {
+    "ar": "أرينا الاتحاد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Etihad Eco-Villa": {
+    "ar": "فيلا الاتحاد البيئية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Etihad Plaza": {
+    "ar": "بلازا الاتحاد",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Etihad Towers": {
     "ar": "أبراج الاتحاد",
@@ -5737,6 +6085,24 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Family, suburban, leasehold villas": {
+    "ar": "عائلي، ضواحٍ، فلل بنظام حق الانتفاع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Family, villas, golf-adjacent": {
+    "ar": "عائلي، فلل، بمحاذاة الغولف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Family, villas, mature community": {
+    "ar": "عائلي، فلل، مجتمع مكتمل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Family-Focused Living": {
     "ar": "حياة تركّز على العائلة",
     "by": "machine",
@@ -5784,11 +6150,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:01:23.673Z"
   },
+  "Ferrari World": {
+    "ar": "عالم فيراري",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Ferrari World Abu Dhabi": {
     "ar": "عالم فيراري أبوظبي",
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:38:58.509Z"
+  },
+  "Ferry-only access": {
+    "ar": "الوصول بالعبّارة فقط",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Field note": {
     "ar": "ملاحظة الحقل",
@@ -5835,6 +6213,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
+  },
+  "Financial district, mixed-use, freehold": {
+    "ar": "حي مالي، متعدد الاستخدامات، تملك حر",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Find ADGM on the map.": {
     "ar": "ADGM على الخريطة.",
@@ -6533,6 +6917,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:10:31.711Z"
   },
+  "French, Shangri-La": {
+    "ar": "فرنسي، شانغريلا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Frequently Asked Questions": {
     "ar": "الأسئلة الشائعة",
     "by": "machine",
@@ -6695,6 +7085,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
   },
+  "Friday brunch is the social anchor of the island.": {
+    "ar": "برانش الجمعة هو المرتكز الاجتماعي للجزيرة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "From first render to handover, Bazar advises on the launches worth your capital — payment plans, escrow protection, developer track record, and resale timing. One team, from reservation to keys.": {
     "ar": "من أول صورة تخيلية وحتى التسليم، تقدّم بازار المشورة بشأن الإطلاقات التي تستحق رأس مالك — خطط السداد، وحماية حساب الضمان، وسجل المطور العقاري، وتوقيت إعادة البيع. فريق واحد، من الحجز إلى استلام المفاتيح.",
     "by": "machine",
@@ -6804,6 +7200,24 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
+  },
+  "GEMS American Academy": {
+    "ar": "أكاديمية جيمس الأمريكية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Galleria Mall": {
+    "ar": "ذا غاليريا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Galleria Maryah": {
+    "ar": "غاليريا الماريه",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Gaming Room": {
     "ar": "غرفة الألعاب",
@@ -7445,6 +7859,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Hudayriyat Beach": {
+    "ar": "شاطئ الحديريات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Hudayriyat Golf Estates": {
     "ar": "حديريات غولف إستيتس",
     "by": "reviewed",
@@ -7465,6 +7885,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:39:13.993Z"
+  },
+  "Hudayriyat is Abu Dhabi's emerging lifestyle island — a master-planned destination shaped around waterfront living, sport, and wellness. Modon is delivering villas, apartments, and mansions alongside a fast-growing spread of beach, leisure, and active-lifestyle facilities.": {
+    "ar": "الحديريات هي جزيرة أبوظبي الناشئة لنمط الحياة — وجهة مخططة بعناية تتمحور حول الحياة على الواجهة البحرية والرياضة والعافية. تطرح مدن فللاً وشققاً وقصوراً إلى جانب توسّع سريع في مرافق الشاطئ والترفيه والحياة النشطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Hudayriyat is known for its waterfront setting, premium residential communities and strong focus on sport, wellness and outdoor recreation.": {
     "ar": "تشتهر الحديريات بموقعها على الواجهة المائية ومجتمعاتها السكنية الراقية وتركيزها الكبير على الرياضة والعافية والأنشطة الترفيهية في الهواء الطلق.",
@@ -7591,6 +8017,30 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Industrial and light-industrial mainland district — warehousing, auto trade, and workforce housing. Residential is overwhelmingly leasehold.": {
+    "ar": "حي صناعي وصناعي خفيف على البر الرئيسي — مستودعات وتجارة سيارات وإسكان عمالي. الغالبية العظمى من الوحدات السكنية بنظام حق الانتفاع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Industrial corridor · 35 min from Corniche": {
+    "ar": "المحور الصناعي · 35 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Industrial, leasehold, workforce": {
+    "ar": "صناعي، حق انتفاع، إسكان عمالي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Industrial, logistics, leasehold": {
+    "ar": "صناعي، خدمات لوجستية، حق انتفاع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Infinity Pool": {
     "ar": "حوض سباحة لا نهائي",
     "by": "machine",
@@ -7635,6 +8085,12 @@
     "ar": "تم تسجيل اهتمامك.",
     "by": "machine",
     "model": "claude-opus-5"
+  },
+  "International Community School": {
+    "ar": "المدرسة المجتمعية الدولية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "International schools and Al Raha Mall within a short drive.": {
     "ar": "المدارس الدولية والراحة مول على بعد مسافة قصيرة بالسيارة.",
@@ -7814,6 +8270,24 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:23:53.572Z"
   },
+  "Italian, Marina Mall": {
+    "ar": "إيطالي، مارينا مول",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Italian, Sun & Sky Tower": {
+    "ar": "إيطالي، برج صن آند سكاي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Italian, Yacht Club": {
+    "ar": "إيطالي، نادي اليخوت",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Its masterplan places a strong emphasis on coastal wellness, walkability and access to nature.": {
     "ar": "يركّز مخططه الرئيسي بشكل كبير على العافية الساحلية وسهولة التنقل سيراً على الأقدام والوصول إلى الطبيعة.",
     "by": "machine",
@@ -7830,6 +8304,12 @@
     "ar": "جاكوزي",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Japanese, Saadiyat Rotana": {
+    "ar": "ياباني، روتانا السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Jogging Trails": {
     "ar": "مسارات الجري",
@@ -7947,6 +8427,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:49:10.239Z"
   },
+  "Khalifa Industrial Zone Abu Dhabi — a master-planned logistics and industrial zone next to Khalifa Port. Mostly warehousing and light-industrial stock with limited residential support.": {
+    "ar": "منطقة خليفة الصناعية بأبوظبي — منطقة لوجستية وصناعية مخططة بجوار ميناء خليفة. معظم المعروضات مستودعات ووحدات صناعية خفيفة مع دعم سكني محدود.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Khalifa Industrial Zone Abu Dhabi — logistics and industrial real estate close to Khalifa Port.": {
     "ar": "منطقة خليفة الصناعية أبوظبي — عقارات لوجستية وصناعية قريبة من ميناء خليفة.",
     "by": "machine",
@@ -7958,6 +8444,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:53:12.099Z"
   },
+  "Khalifa Park": {
+    "ar": "حديقة خليفة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Khalifa Port": {
     "ar": "ميناء خليفة",
     "by": "machine"
@@ -7967,6 +8459,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:55:03.094Z"
+  },
+  "Khalifa University": {
+    "ar": "جامعة خليفة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Khannour": {
     "ar": "خنور",
@@ -8014,6 +8512,18 @@
     "ar": "مجتمع فيلات مغذى بالبحيرة في السعديات — 312 فيلا تملك حر عبر 4 كم من ممرات مائية بلورية.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Lagoon-fed villa community on Saadiyat — 312 freehold villas across 4 km of crystal waterways. Aldar's third Saadiyat phase, currently in pre-launch.": {
+    "ar": "مجتمع فلل تغذّيه البحيرات في السعديات — 312 فيلا تملك حر على امتداد 4 كم من الممرات المائية الكريستالية. المرحلة الثالثة للدار في السعديات، وهي حالياً في مرحلة ما قبل الإطلاق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Lagoons, villas, pre-launch": {
+    "ar": "بحيرات، فلل، ما قبل الإطلاق",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Land": {
     "ar": "أرض",
@@ -8263,6 +8773,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:31:14.076Z"
+  },
+  "Lifestyle-led, mid-density, all ages": {
+    "ar": "مدفوع بنمط الحياة، كثافة متوسطة، لجميع الأعمار",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Light industrial unit in Mussafah, 8,400 ft².": {
     "ar": "وحدة صناعية خفيفة في مصفح، 8,400 ft².",
@@ -8680,11 +9196,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Loud where Saadiyat is quiet — F1 weekend turns the entire island into a concert venue, Yas Mall fills up Thursday evenings, and the marina restaurants run late. Daytime is still domestic and slow; the noise is concentrated at the entertainment cluster. If you want a 5-minute walk to a brunch spot but a 25-minute drive to a quiet beach, Yas is the trade.": {
+    "ar": "صاخبة حيث تكون السعديات هادئة — تحوّل عطلة الفورمولا 1 الجزيرة بأكملها إلى ساحة حفلات، ويمتلئ ياس مول مساء الخميس، وتعمل مطاعم المارينا حتى وقت متأخر. أما النهار فيبقى عائلياً وهادئاً؛ والضجيج متركّز في مجمّع الترفيه. إن أردت 5 دقائق مشياً إلى مكان برانش مقابل 25 دقيقة بالسيارة إلى شاطئ هادئ، فهذه هي مقايضة ياس.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Loud, casual, late. Reliable Saturday night spot.": {
+    "ar": "صاخب وغير رسمي ويعمل حتى وقت متأخر. خيار موثوق لليلة السبت.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Louvre Abu Dhabi": {
     "ar": "أبوظبي اللوفر",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:50:20.011Z"
+  },
+  "Louvre nearby": {
+    "ar": "اللوفر على مقربة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Low": {
     "ar": "منخفض",
@@ -8779,10 +9313,34 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Mainland community of villas and low-rise apartments east of the Abu Dhabi airport. Popular with families who want garden space and shorter commutes to the airport corridor.": {
+    "ar": "مجتمع على البر الرئيسي من الفلل والشقق المنخفضة شرق مطار أبوظبي. يحظى بإقبال العائلات الباحثة عن مساحة حديقة وتنقّل أقصر نحو محور المطار.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Mainland community of villas and low-rise apartments, popular with families working near the airport.": {
     "ar": "مجتمع رئيسي من الفلل والشقق منخفضة الارتفاع، شائع بين العائلات العاملة بالقرب من المطار.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Mainland east · 5 min from airport, 22 min from Corniche": {
+    "ar": "شرق البر الرئيسي · 5 دقائق من المطار، و22 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Mainland · 12 min from airport, 25 min from Corniche": {
+    "ar": "البر الرئيسي · 12 دقيقة من المطار، و25 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Mainland · 20 min from Corniche": {
+    "ar": "البر الرئيسي · 20 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Mainly apartments in mid-rise buildings, from compact one-bedroom to three-bedroom layouts, plus a substantial commercial and industrial market.": {
     "ar": "معظمها شقق في مباني متوسطة الارتفاع، من غرفة نوم واحدة مدمجة إلى تخطيطات لثلاث غرف نوم، بالإضافة إلى سوق تجاري وصناعي كبير.",
@@ -8878,6 +9436,18 @@
     "ar": "Mamsha Townhouses",
     "by": "machine"
   },
+  "Mamsha boardwalk": {
+    "ar": "ممشى السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Mamsha clubhouse": {
+    "ar": "نادي ممشى السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Manage Your Property": {
     "ar": "إدارة عقارك",
     "by": "machine",
@@ -8920,6 +9490,12 @@
     "ar": "ماندارين أورينتال ريزيدنسز وحدة من ثلاث غرف نوم مُنَسَّقة على طراز الفندق.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Mangrove walk": {
+    "ar": "ممشى القرم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Marfaa Al Jubail": {
     "ar": "مارفا الجبيل",
@@ -9021,6 +9597,12 @@
     "ar": "مرسى السعديات",
     "by": "machine"
   },
+  "Marsana promenade": {
+    "ar": "ممشى مرسانا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Masdar City": {
     "ar": "مدينة مصدر",
     "by": "machine"
@@ -9042,6 +9624,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:17:50.899Z"
+  },
+  "Masdar Institute": {
+    "ar": "معهد مصدر",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Masdar Park": {
     "ar": "حديقة مصدر",
@@ -9132,6 +9720,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:23:18.817Z"
+  },
+  "Mediterranean": {
+    "ar": "متوسطي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Mediterranean, Yas Acres": {
+    "ar": "متوسطي، ياس ايكرز",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Meraas is a Dubai-based developer known for creating premium residential communities and landmark lifestyle destinations such as Bluewaters and City Walk.": {
     "ar": "مِراس هو مطور عقاري مقره دبي معروف بإنشاء مجتمعات سكنية فاخرة ووجهات حياة راقية مثل بلوواترز و سيتي ووك.",
@@ -9233,6 +9833,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:18:59.996Z"
+  },
+  "Montessori": {
+    "ar": "مونتيسوري",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Mon–Sat 9am–7pm GST": {
     "ar": "الاثنين–السبت 9 صباحًا–7 مساءً بتوقيت الخليج",
@@ -9380,6 +9986,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:29:57.232Z"
   },
+  "Mussafah industrial belt": {
+    "ar": "الحزام الصناعي بالمصفح",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Mussafah is a working district rather than a landmark-led one — these are the anchors residents use.": {
     "ar": "مصفح هو منطقة عمل وليس منطقة معالم — هذه هي النقاط المرجعية التي يستخدمها السكان.",
     "by": "machine",
@@ -9389,6 +10001,12 @@
   "Muzera": {
     "ar": "Muzera",
     "by": "machine"
+  },
+  "NYU Abu Dhabi": {
+    "ar": "جامعة نيويورك أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Nad Al Jubail": {
     "ar": "ند الجبيل",
@@ -9588,6 +10206,12 @@
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:38:01.546Z"
   },
+  "North Saadiyat · 15 min from Corniche": {
+    "ar": "شمال السعديات · 15 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Northern Saadiyat Island, approximately 15 minutes from Downtown Abu Dhabi.": {
     "ar": "جزيرة السعديات الشمالية، على بُعد 15 دقيقة تقريبًا من وسط مدينة أبوظبي.",
     "by": "machine",
@@ -9634,6 +10258,12 @@
   "Oasis Residences": {
     "ar": "Oasis Residences",
     "by": "machine"
+  },
+  "Off the south-west coast, ~15 minutes from the Corniche": {
+    "ar": "قبالة الساحل الجنوبي الغربي، نحو 15 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Off-Plan": {
     "ar": "على الخارطة",
@@ -10675,11 +11305,23 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Private beach": {
+    "ar": "شاطئ خاص",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Private beaches, promenades and marina frontage.": {
     "ar": "واجهات بحرية على المارينا وممشى وشواطئ خاصة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:54:28.771Z"
+  },
+  "Private island off Saadiyat · 25 min from Corniche (with ferry)": {
+    "ar": "جزيرة خاصة قبالة السعديات · 25 دقيقة من الكورنيش (بالعبّارة)",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Private pool": {
     "ar": "حوض سباحة خاص",
@@ -11400,6 +12042,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
   },
+  "Quiet enough for a serious lunch.": {
+    "ar": "هادئ بما يكفي لغداء عمل جاد.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Quiet weekday mornings — the beach is genuinely empty most days. Things pick up Thursday evening, peak around Friday brunch (book Buddha Bar Beach a week ahead), then ease into a slower Saturday. The island feels lived-in rather than visited; weekend traffic is half what you'd see on Yas.": {
+    "ar": "صباحات هادئة في أيام الأسبوع — الشاطئ خالٍ فعلاً في معظم الأيام. تنشط الحركة مساء الخميس وتبلغ ذروتها مع برانش الجمعة (احجز في Buddha Bar Beach قبل أسبوع)، ثم تهدأ تدريجياً يوم السبت. تشعر أن الجزيرة مأهولة لا مزارة؛ وحركة عطلة نهاية الأسبوع فيها نصف ما تراه في ياس.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "RAK Properties is Ras Al Khaimah’s leading listed developer, creating residential, hospitality and waterfront destinations across the emirate.": {
     "ar": "رأس الخيمة العقارية هو المطور العقاري الرائد المدرج في رأس الخيمة، ينشئ وجهات سكنية وضيافة وساحلية عبر الإمارة.",
     "by": "machine",
@@ -11511,6 +12165,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
   },
+  "Redwood Montessori": {
+    "ar": "ريدوود مونتيسوري",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Reem Hills": {
     "ar": "ريم هيلز",
     "by": "machine",
@@ -11522,6 +12182,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.479Z"
+  },
+  "Reem is the mid-island skyline — high-rise towers, schools, retail, and a five-minute crossing to downtown. The newest waterfront stock sits in Marina Square and Shams Abu Dhabi.": {
+    "ar": "الريم هي أفق الجزيرة الوسطى — أبراج شاهقة ومدارس ومتاجر وعبور لا يتجاوز خمس دقائق إلى وسط المدينة. وتقع أحدث المعروضات على الواجهة البحرية في مارينا سكوير وشمس أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Reem is the only Abu Dhabi address where you can walk to the supermarket and the office on the same morning. Density brings life — mid-week dinners stay busy, the building lobbies have neighbours who recognise each other. It's the closest the city has to a Manhattan rhythm, with Sun Tower brunches and a hum of weekday foot traffic that Saadiyat will never have.": {
+    "ar": "الريم هي العنوان الوحيد في أبوظبي الذي يمكنك فيه المشي إلى المتجر وإلى المكتب في الصباح نفسه. الكثافة تصنع الحياة — عشاء منتصف الأسبوع يبقى مزدحماً، وفي ردهات المباني جيران يعرف بعضهم بعضاً. هذا أقرب ما في المدينة إلى إيقاع مانهاتن، مع برانش برج صن وحركة مشاة يومية لن تجدها السعديات أبداً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Reem-focused tower specialist.": {
     "ar": "متخصص برج ريم",
@@ -11743,6 +12415,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:51:11.583Z"
+  },
+  "Repton Abu Dhabi": {
+    "ar": "ريبتون أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Repton School Abu Dhabi": {
     "ar": "أبوظبي مدرسة ريبتون",
@@ -12017,10 +12695,22 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "SABIS Yas": {
+    "ar": "سابيس ياس",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "SAMANA Developers is a Dubai-based developer known for lifestyle-focused residences, resort-style amenities and distinctive concepts such as private pools within apartments.": {
     "ar": "سامانا للتطوير العقاري هو مطور عقاري مقره دبي معروف بمساكن تركز على أسلوب الحياة، والمرافق تشبه منتجعات، ومفاهيم مميزة مثل حمامات السباحة الخاصة داخل الشقق.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Saadiyat": {
+    "ar": "السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Saadiyat Address": {
     "ar": "السعديات العنوان",
@@ -12032,11 +12722,23 @@
     "ar": "شاطئ السعديات",
     "by": "machine"
   },
+  "Saadiyat Beach Club": {
+    "ar": "نادي شاطئ السعديات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Saadiyat Beach Golf Club": {
     "ar": "النادي شاطئ السعديات للغولف",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:34:49.618Z"
+  },
+  "Saadiyat Cultural District · 14 min from Corniche": {
+    "ar": "حي السعديات الثقافي · 14 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Saadiyat Cultural District, approximately 15 minutes from Downtown Abu Dhabi.": {
     "ar": "تقع سعديات المنطقة الثقافية على بُعد 15 دقيقة تقريبًا من وسط مدينة أبوظبي.",
@@ -12128,6 +12830,24 @@
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:36:47.834Z"
   },
+  "Saadiyat is the cultural island — home to the Louvre Abu Dhabi, the upcoming Guggenheim, and a 9-km stretch of unbuilt-on beach. Stock is a mix of Mamsha apartments, Hidd waterfront villas, and the Nudra cluster.": {
+    "ar": "السعديات هي الجزيرة الثقافية — موطن اللوفر أبوظبي، وغوغنهايم المرتقب، وامتداد شاطئي غير مبنيّ يبلغ 9 كيلومترات. تتنوع المعروضات بين شقق ممشى السعديات وفلل الحد على الواجهة البحرية ومجمّع ندرة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Saadiyat · 16 min from Corniche": {
+    "ar": "السعديات · 16 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Saadiyat · 18 min from Corniche": {
+    "ar": "السعديات · 18 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Sale and lease agreements in Abu Dhabi are transacted through ADREC-registered brokers. A licensed advisor keeps the paperwork compliant, handles negotiation, and files the transfer with the Department of Municipalities and Transport on your behalf.": {
     "ar": "تُبرم عقود البيع والإيجار في أبوظبي عبر وسطاء مسجّلين لدى ADREC. ويتولى المستشار المرخّص ضمان توافق المستندات مع الأنظمة، وإدارة التفاوض، وتسجيل نقل الملكية لدى دائرة البلديات والنقل نيابةً عنك.",
     "by": "machine",
@@ -12218,6 +12938,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:26:57.193Z"
+  },
+  "Seafood, Yas Marina": {
+    "ar": "مأكولات بحرية، مارينا ياس",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Search based on your financing position.": {
     "ar": "البحث بناءً على وضعك التمويلي.",
@@ -12531,6 +13257,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:11:25.039Z"
   },
+  "Short drive across to Yas — worth it for the patio.": {
+    "ar": "قيادة قصيرة عبوراً إلى ياس — تستحق العناء من أجل الفناء.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Shortlist": {
     "ar": "القائمة المختصرة",
     "by": "human"
@@ -12567,6 +13299,12 @@
     "ar": "Sidra",
     "by": "machine"
   },
+  "Sidra mosque": {
+    "ar": "مسجد السدرة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Similar Projects": {
     "ar": "المشاريع المشابهة",
     "by": "machine",
@@ -12583,6 +13321,12 @@
     "ar": "ستة منازل شاطئية منخفضة الارتفاع ملاصقة لمسار 800 مليون في السعديات المنطقة الثقافية.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Six low-rise beachfront residences pressed against an 800m boardwalk in the Saadiyat Cultural District. First true freehold beachfront cluster on Saadiyat — Mamsha set the bar.": {
+    "ar": "ستة مبانٍ سكنية منخفضة على الشاطئ تمتد بمحاذاة ممشى خشبي بطول 800 متر في حي السعديات الثقافي. أول مجمّع تملك حر حقيقي على شاطئ السعديات — ممشى السعديات هو من وضع المعيار.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Six-bedroom Hidd villa with private pool and 8,400 ft² plot.": {
     "ar": "فيلا هيد ذات ست غرف نوم مع حوض سباحة خاص وأرض 8,400 ft².",
@@ -12709,6 +13453,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Spanish, Al Raha Beach": {
+    "ar": "إسباني، شاطئ الراحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Speak With a": {
     "ar": "تحدث مع",
     "by": "human",
@@ -12719,6 +13469,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Special-occasion dinner. Make the reservation in advance.": {
+    "ar": "عشاء المناسبات الخاصة. احجز مسبقاً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Specialises in the Saadiyat villa clusters that rarely list publicly — Hidd, Saadiyat Reserve, Lagoons. Noor's last three closes were all off-market introductions; none of them ever appeared on a portal.": {
     "ar": "تخصص في مجمعات الفيلات في السعديات التي نادراً ما تُدرج علناً — هيد، سعديات ريزيرف، اللاغونز. كانت آخر ثلاث عمليات إغلاق لنوّر جميعها مقدّمات خارج السوق؛ لم يظهر أي منها على بوابة.",
@@ -12809,6 +13565,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T17:03:51.667Z"
+  },
+  "Steak, Al Raha Beach Hotel": {
+    "ar": "ستيك، فندق شاطئ الراحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Still the room for an occasion dinner.": {
+    "ar": "لا يزال المكان المناسب لعشاء المناسبات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Storage": {
     "ar": "تخزين",
@@ -12954,6 +13722,12 @@
     "by": "machine",
     "model": "claude-opus-5"
   },
+  "Suburban, low-density, family": {
+    "ar": "ضواحٍ، كثافة منخفضة، عائلي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Suitable options based on your requirements.": {
     "ar": "خيارات مناسبة بناءً على متطلباتك.",
     "by": "machine",
@@ -12966,11 +13740,29 @@
     "model": "claude-opus-5",
     "at": "2026-08-21"
   },
+  "Sun & Sky Towers": {
+    "ar": "برجا صن آند سكاي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Sunday": {
     "ar": "الأحد",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "Sunday brunch with kids welcome — the family-friendly default.": {
+    "ar": "برانش الأحد مع ترحيب بالأطفال — الخيار العائلي الافتراضي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Sunday-night fixture. Reliable, never trendy.": {
+    "ar": "موعد ثابت ليلة الأحد. موثوق ولا يسعى وراء الموضة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Supermarkets, schools, clinics and transport already in place.": {
     "ar": "المتاجر، المدارس، العيادات والنقل متوفرة بالفعل.",
@@ -13002,6 +13794,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:41:24.841Z"
   },
+  "Surprisingly good for a mall steakhouse. Weekday lunch staple.": {
+    "ar": "جيد إلى حد مفاجئ لمطعم ستيك داخل مركز تسوق. خيار غداء ثابت في أيام الأسبوع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Sustainability Performance": {
     "ar": "أداء الاستدامة",
     "by": "machine",
@@ -13018,6 +13816,18 @@
     "ar": "منطقة حضرية مستدامة شرق المطار — حرم جامعي للبحوث، شقق منخفضة الارتفاع، وبيت عتيقة لشركة الاتحاد للطيران.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Sustainable urban district east of the airport — research campuses, low-rise residential, Etihad Eco-Villa, and one of the few car-light master-plans in the emirate.": {
+    "ar": "حي حضري مستدام شرق المطار — حرم بحثية ووحدات سكنية منخفضة وفيلا الاتحاد البيئية، وأحد المخططات القليلة في الإمارة التي تقلّل الاعتماد على السيارة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "Sustainable, walkable, research-led": {
+    "ar": "مستدام، صديق للمشاة، قائم على البحث",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Swimming Pool": {
     "ar": "حوض سباحة",
@@ -13058,6 +13868,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:57:32.463Z"
+  },
+  "Tapas, Yas Marina": {
+    "ar": "تاباس، مارينا ياس",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Tara Park": {
     "ar": "تارا بارك",
@@ -13225,6 +14041,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:37:34.607Z"
   },
+  "Tennis": {
+    "ar": "التنس",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Tenure for Eligible Buyers": {
     "ar": "التملك للمشترين المؤهلين",
     "by": "machine",
@@ -13336,6 +14158,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:25:18.593Z"
   },
+  "The Corniche is for people who still want to be in the city. Mornings are joggers and dog-walkers along the eight-kilometre promenade; evenings shift to families and the Friday-night crowd at Marina Mall. Stock skews older, so floor plates are bigger than the new towers on Reem — corner units with proper balconies still trade at a discount to anything new-build.": {
+    "ar": "الكورنيش لمن لا يزال يريد أن يكون في قلب المدينة. الصباح للعدّائين ولمن يتنزهون بكلابهم على امتداد الممشى البالغ ثمانية كيلومترات؛ والمساء ينتقل إلى العائلات وإلى زحام ليلة الجمعة في مارينا مول. المعروضات أقدم عموماً، لذا فمساحات الطوابق أكبر من أبراج الريم الجديدة — ولا تزال الوحدات الركنية ذات الشرفات الحقيقية تُتداول بخصم مقارنةً بأي بناء جديد.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "The Cultural District, beaches and golf club minutes away.": {
     "ar": "الالمنطقة الثقافية، الشواطئ ونادي الجولف على بعد دقائق.",
     "by": "machine",
@@ -13363,6 +14191,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.478Z"
+  },
+  "The Galleria Mall": {
+    "ar": "ذا غاليريا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "The Galleria, Cleveland Clinic and the waterfront promenade on the doorstep.": {
     "ar": "ذا غاليريا وكليفلاند كلينك وممشى الواجهة المائية على بُعد خطوات.",
@@ -13489,6 +14323,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:23:53.572Z"
   },
+  "The eight-kilometre Corniche promenade and the older Abu Dhabi addresses that face it. Stock is a mix of refreshed 1990s towers, newer high-rises, and the Capital Plaza low-rises.": {
+    "ar": "ممشى الكورنيش الممتد ثمانية كيلومترات والعناوين الأعرق في أبوظبي المطلة عليه. تتنوع المعروضات بين أبراج من حقبة 1990 جرى تجديدها والأبراج الأحدث ومباني كابيتال بلازا المنخفضة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "The eight-kilometre waterfront promenade and surrounding addresses.": {
     "ar": "الكورنيش المائي البالغ طوله ثماني كيلومترات والعناوين المحيطة به.",
     "by": "machine",
@@ -13523,6 +14363,12 @@
     "by": "machine",
     "model": "claude-haiku-4-5-20251001",
     "at": "2026-08-16T12:50:29.645Z"
+  },
+  "The grown-up dinner option — high-touch service, no music.": {
+    "ar": "خيار العشاء الراقي — خدمة عالية العناية بلا موسيقى.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "The island covers approximately 27 sq. km.": {
     "ar": "الجزيرة تغطي حوالي 27 كم مربع.",
@@ -13601,6 +14447,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "The penthouse view from 75 floors up — best at sunset.": {
+    "ar": "إطلالة البنتهاوس من ارتفاع 75 طابقاً — الأجمل عند الغروب.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "The plan is below, and a copy is on its way to your inbox.": {
     "ar": "اطّلع على الخطة أدناه، ونسخة منها في طريقها إلى بريدك الإلكتروني.",
@@ -14086,6 +14938,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
   },
+  "Ultra-prime, private, villa-only": {
+    "ar": "فائق التميّز، خاص، فلل فقط",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Under AED 1M": {
     "ar": "أقل من AED 1M",
     "by": "machine",
@@ -14156,6 +15014,12 @@
     "ar": "الإمارات العربية المتحدة",
     "by": "human"
   },
+  "University": {
+    "ar": "جامعة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Unlocked.": {
     "ar": "إتاحة الوصول.",
     "by": "machine",
@@ -14166,6 +15030,12 @@
     "ar": "جارٍ فتح الملف…",
     "by": "machine",
     "model": "claude-opus-5"
+  },
+  "Urban, high-rise, mid-income to executive": {
+    "ar": "حضري، أبراج شاهقة، من الدخل المتوسط إلى التنفيذي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Use our UAE mortgage calculator to estimate monthly payments, explore financing options, and better understand your potential home loan.": {
     "ar": "استخدم حاسبة تمويل عقاري في الإمارات لتقدير الأقساط الشهرية، واستكشاف خيارات التمويل، وفهم قرضك السكني المحتمل بشكل أفضل.",
@@ -14195,6 +15065,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:41:24.841Z"
+  },
+  "Vietnamese, Shangri-La": {
+    "ar": "فيتنامي، شانغريلا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "View All Properties for Rent": {
     "ar": "عرض جميع العقارات للإيجار",
@@ -14521,6 +15397,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
   },
+  "Waterfront, apartments, established": {
+    "ar": "على الواجهة البحرية، شقق، حي عريق",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Ways to Own": {
     "ar": "طرق التملك",
     "by": "machine",
@@ -14662,6 +15544,18 @@
     "ar": "الصحة أولاً · قبل الإطلاق",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "West Yas Academy": {
+    "ar": "أكاديمية ويست ياس",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
+  "West Yas mall": {
+    "ar": "ويست ياس مول",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "What Stage Are You At?": {
     "ar": "في أي مرحلة أنت؟",
@@ -14995,6 +15889,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
   },
+  "Where Reem residents work remotely on Tuesday mornings.": {
+    "ar": "حيث يعمل سكان الريم عن بُعد صباح الثلاثاء.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Where are you up to?": {
     "ar": "في أي مرحلة أنت؟",
     "by": "machine",
@@ -15054,6 +15954,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "Where the corporate dinners happen.": {
+    "ar": "حيث تُقام عشاءات الشركات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Where to Live Around ADGM": {
     "ar": "أين تسكن حول ADGM",
@@ -15483,15 +16389,33 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:13:45.709Z"
   },
+  "Yas Island · 18 min from Corniche": {
+    "ar": "جزيرة ياس · 18 دقيقة من الكورنيش",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Yas Island’s flagship villa community — seven phases of townhouses, duplexes and family villas laid out around a golf course in Yas North, with schools, parks and retail built into the masterplan.": {
     "ar": "مجتمع الفيلات الرئيسي في جزيرة ياس — سبعة مراحل من البيوت المتصلة والشقق المزدوجة وفيلات العائلات موزعة حول ملعب الغولف في ياس نورث، مع مدارس وحدائق ومراكز تجارية مدمجة في الخطة الرئيسية.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:00:53.574Z"
   },
+  "Yas Links golf": {
+    "ar": "ملعب ياس لينكس للغولف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Yas Mall": {
     "ar": "ياس مول",
     "by": "machine"
+  },
+  "Yas Mall (10 min)": {
+    "ar": "ياس مول (10 دقائق)",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Yas Marina": {
     "ar": "ياس مارينا",
@@ -15519,11 +16443,23 @@
     "ar": "ياس بوينت",
     "by": "machine"
   },
+  "Yas is the entertainment island. Ferrari World, Yas Marina Circuit, Yas Waterworld, and Yas Mall sit alongside Yas Acres, Mayan, and the new Yas Bay residential stock.": {
+    "ar": "ياس هي جزيرة الترفيه. يقع عالم فيراري وحلبة مرسى ياس وياس ووتروورلد وياس مول إلى جانب ياس ايكرز ومايان ومعروضات خليج ياس السكنية الجديدة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
+  },
   "Yasmina": {
     "ar": "ياسمينة",
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:33:26.238Z"
+  },
+  "Yasmina British Academy": {
+    "ar": "أكاديمية الياسمينة البريطانية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-08-21"
   },
   "Year the Jurisdiction Expanded to Al Reem": {
     "ar": "عام توسّع الاختصاص القضائي ليشمل الريم",

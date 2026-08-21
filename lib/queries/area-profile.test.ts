@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { composeAreaProfile, type AreaRecordRow } from "./area-profile";
 import { SEED_AREA_GUIDES } from "@/lib/seeds/areas";
+import { arabicFor } from "@/lib/i18n/arabic-store";
+import { PROPER_NOUNS } from "@/lib/i18n/mt/proper-nouns";
 import type { AreaGuideRow } from "@/lib/types/sprint-8";
 
 const seed = SEED_AREA_GUIDES.find((s) => s.slug === "saadiyat-island")!;
@@ -140,12 +142,14 @@ describe("composeAreaProfile", () => {
         seed,
         locale: "ar",
       })!;
-      expect(p.vibe).toBe(seed.vibe_ar);
+      expect(p.vibe).toBe(arabicFor(seed.vibe));
       expect(p.vibe).not.toBe(seed.vibe);
     });
 
     it("drops the vibe rather than falling back to English", () => {
-      const untranslated = { ...seed, vibe_ar: undefined };
+      // A vibe the store has never seen. Every real one is translated, so the
+      // fall-through is only reachable with a made-up value.
+      const untranslated = { ...seed, vibe: "Nothing in the store says this" };
       const p = composeAreaProfile({
         row: null,
         guide: null,
@@ -166,10 +170,120 @@ describe("composeAreaProfile", () => {
     });
   });
 
-  it("ships an Arabic vibe for every seed that has an English one", () => {
-    const missing = SEED_AREA_GUIDES.filter((s) => s.vibe && !s.vibe_ar).map(
-      (s) => s.slug,
+  /**
+   * The whole seed folds, not just the fields somebody remembered.
+   *
+   * `intro` was wired for Arabic and `amenities` was not, and the only reason
+   * is that the fold used to happen per read site. `localiseSeed` runs once in
+   * `composeAreaProfile`, so this asserts against the composed profile rather
+   * than against the helper.
+   */
+  describe("the seed folds to the locale", () => {
+    const saadiyat = SEED_AREA_GUIDES.find((s) => s.slug === "saadiyat-island")!;
+    const ar = () =>
+      composeAreaProfile({
+        row: null,
+        guide: null,
+        seed: saadiyat,
+        locale: "ar",
+      })!;
+
+    it("translates the intro, the position line and the amenities", () => {
+      const p = ar();
+      expect(p.intro).toBe(arabicFor(saadiyat.intro));
+      expect(p.position).toBe(arabicFor(saadiyat.position));
+      expect(p.amenities).toEqual(
+        saadiyat.amenities.map((a) => arabicFor(a) ?? a),
+      );
+      expect(p.amenities).not.toEqual(saadiyat.amenities);
+    });
+
+    it("reaches inside the school rows", () => {
+      const p = ar();
+      expect(p.schools[0]!.name).toBe(arabicFor(saadiyat.schools[0]!.name));
+      expect(p.schools[0]!.curriculum).toBe(
+        arabicFor(saadiyat.schools[0]!.curriculum),
+      );
+    });
+
+    it("reaches inside the dossier the lifestyle band renders", () => {
+      const seed = ar().seed!;
+      expect(seed.lifestyle_prose).toBe(arabicFor(saadiyat.lifestyle_prose));
+      expect(seed.commute_chips![0]!.label).toBe(
+        arabicFor(saadiyat.commute_chips![0]!.label),
+      );
+      const pick = seed.dining_picks![0]!;
+      expect(pick.note).toBe(arabicFor(saadiyat.dining_picks![0]!.note));
+      // A venue brand that keeps its Latin name is left alone rather than
+      // transliterated — see PROPER_NOUNS, confidence "keep-latin".
+      expect(pick.name).toBe(saadiyat.dining_picks![0]!.name);
+    });
+
+    it("keeps the non-prose fields out of the fold", () => {
+      const p = ar();
+      expect(p.slug).toBe(saadiyat.slug);
+      expect(p.similarSlugs).toEqual(saadiyat.similar_areas);
+      expect(p.seed!.commute_chips![0]!.mode).toBe(
+        saadiyat.commute_chips![0]!.mode,
+      );
+    });
+
+    it("changes nothing in English", () => {
+      const p = composeAreaProfile({
+        row: null,
+        guide: null,
+        seed: saadiyat,
+        locale: "en",
+      })!;
+      expect(p.intro).toBe(saadiyat.intro);
+      expect(p.amenities).toEqual(saadiyat.amenities);
+      expect(p.seed!.lifestyle_prose).toBe(saadiyat.lifestyle_prose);
+    });
+  });
+
+  /**
+   * Every English string the seed renders publicly, and the store's answer for
+   * it. A new seed — or a reworded intro — fails here rather than shipping an
+   * English paragraph onto an Arabic page.
+   *
+   * Names are exempt where the store deliberately has no answer: a venue brand
+   * that keeps its Latin name is registered in `PROPER_NOUNS` as `keep-latin`,
+   * which is a decision, not a gap.
+   */
+  it("ships Arabic for every string the seed renders", () => {
+    const latin = new Set(
+      PROPER_NOUNS.filter((n) => n.confidence === "keep-latin").map((n) =>
+        n.en.toLowerCase(),
+      ),
     );
-    expect(missing).toEqual([]);
+    const gaps: string[] = [];
+    const check = (where: string, value: string | null | undefined) => {
+      if (!value || latin.has(value.toLowerCase())) return;
+      if (!arabicFor(value)) gaps.push(`${where}: ${value}`);
+    };
+    for (const s of SEED_AREA_GUIDES) {
+      check(`${s.slug}.intro`, s.intro);
+      check(`${s.slug}.position`, s.position);
+      check(`${s.slug}.vibe`, s.vibe);
+      check(`${s.slug}.lifestyle_prose`, s.lifestyle_prose);
+      s.amenities.forEach((a) => check(`${s.slug}.amenities`, a));
+      s.schools.forEach((x) => {
+        check(`${s.slug}.schools.name`, x.name);
+        check(`${s.slug}.schools.curriculum`, x.curriculum);
+      });
+      s.commute_chips?.forEach((c) => check(`${s.slug}.commute_chips`, c.label));
+      s.dining_picks?.forEach((d) => {
+        check(`${s.slug}.dining_picks.name`, d.name);
+        check(`${s.slug}.dining_picks.kind`, d.kind);
+        check(`${s.slug}.dining_picks.note`, d.note);
+      });
+    }
+    expect(
+      gaps,
+      "Seed copy with no Arabic. Either translate it into " +
+        "lib/master-pages/arabic/master.json, or — for a brand that keeps its " +
+        "Latin name — register it in PROPER_NOUNS as keep-latin.\n\n" +
+        gaps.join("\n"),
+    ).toEqual([]);
   });
 });

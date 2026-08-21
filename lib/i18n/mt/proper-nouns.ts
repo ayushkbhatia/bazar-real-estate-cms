@@ -1989,6 +1989,172 @@ export const PROPER_NOUNS: NounEntry[] = [
     source:
       "Arabic-origin cluster name whose settled written form was not found in use. Kept Latin rather than guessing — the developer's own Arabic collateral should decide it.",
   },
+
+  /*
+   * Venues — restaurants, hotels and clubs named in the area guides.
+   *
+   * They join for the reason the file's header gives: an unmasked Latin name
+   * inside Arabic prose is a  rejection, so the string stays
+   * English and the whole paragraph is lost over one restaurant. Masked, the
+   * name survives verbatim and the prose around it translates.
+   *
+   * All keep-latin, which is the answer rather than a gap. Every one is a
+   * brand that writes itself in Latin in its own Arabic listings. The venues
+   * whose names ARE Arabic — نادي شاطئ السعديات, ممشى السعديات — are
+   * translated in the store instead, because there is nothing to protect.
+   */
+  {
+    en: "Aquarium",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Beach House",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Boa Steakhouse",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Bord Eau",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Buddha Bar Beach",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Cafe Bateel",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Cipriani",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Diablito",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Four Seasons",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Hakkasan Abu Dhabi",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Hoi An",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "ICAD",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Maté",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Niri",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Rosewood Hotel",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Rosso Sky Lounge",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Sevilo",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Sloboda",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
+  {
+    en: "Talea by Antonio Guida",
+    ar: null,
+    kind: "brand",
+    confidence: "keep-latin",
+    source:
+      "Venue brand on an area guide's lifestyle dossier. UAE Arabic press and the venue's own Arabic listings keep the Latin name — see the keep-latin note at the top of this file.",
+  },
 ];
 
 /** Every English name, longest first — the term list `mask()` wants. */
