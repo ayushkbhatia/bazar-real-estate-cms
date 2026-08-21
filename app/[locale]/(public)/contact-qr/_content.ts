@@ -7,11 +7,7 @@ import { img, list, str } from "@/lib/master-pages";
 import type { SectionValues } from "@/lib/master-pages";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { vCardFilename, type VCardInput } from "@/lib/vcard";
-import type {
-  Bilingual,
-  CardBlock,
-  ContactRow,
-} from "./_components/contact-card";
+import type { CardBlock, ContactRow } from "./_components/contact-card";
 
 /**
  * The contact card's content, resolved once and shared by the two things that
@@ -35,18 +31,20 @@ function telHref(display: string): string {
 }
 
 /**
- * A field and its `_ar` twin. A blank Arabic value falls back to the English
- * one rather than leaving a hole — an editor who adds a row and only fills the
- * English label gets a card that still reads in both directions.
+ * One label, in the locale this content was loaded for.
+ *
+ * There is no `_ar` read here and there must not be one. `resolveSections`
+ * folds each twin over its English sibling and drops the twin key, so by the
+ * time these values arrive the Arabic is already IN `key` on `/ar` and
+ * `key_ar` is gone. Reading it returned the English string on both faces,
+ * which is what left the card's old EN/AR toggle changing nothing.
+ *
+ * A blank Arabic value still falls back to the English one — that happens
+ * inside the fold (`lib/master-pages/i18n.ts`), so an editor who adds a row
+ * and fills only the English label gets a card that reads in both directions.
  */
-function bi(values: SectionValues, key: string): Bilingual {
-  const en = str(values, key) ?? "";
-  return { en, ar: str(values, `${key}_ar`) ?? en };
-}
-
-/** Same string on both faces — numbers, addresses in Latin script, links. */
-function same(value: string): Bilingual {
-  return { en: value, ar: value };
+function label(values: SectionValues, key: string): string {
+  return str(values, key) ?? "";
 }
 
 /**
@@ -72,14 +70,14 @@ export type ContactQrContent = {
   name: string;
   logoUrl: string;
   logoAlt: string;
-  tagline: Bilingual;
-  saveLabel: Bilingual;
+  tagline: string;
+  saveLabel: string;
   rows: ContactRow[];
-  followLabel: Bilingual;
+  followLabel: string;
   socials: { network: string; href: string }[];
-  mapLabel: Bilingual;
+  mapLabel: string;
   mapHref: string | null;
-  footerNote: Bilingual;
+  footerNote: string;
   vcard: VCardInput;
   vcardFilename: string;
 };
@@ -116,7 +114,6 @@ export async function loadContactQrContent(
     websiteHref?.replace(/^https?:\/\//, "").replace(/\/$/, "") ??
     null;
   const officeAddress = str(detailsV, "office_address");
-  const officeAddressAr = str(detailsV, "office_address_ar") ?? officeAddress;
 
   // Null whenever no number is configured — the row is dropped rather than
   // rendered as a dead link. The mobile number above already reaches WhatsApp,
@@ -130,8 +127,8 @@ export async function loadContactQrContent(
   if (mobile) {
     rows.push({
       kind: "mobile",
-      label: bi(detailsV, "mobile_label"),
-      value: same(mobile),
+      label: label(detailsV, "mobile_label"),
+      value: mobile,
       href: telHref(mobile),
       testId: "qr-mobile-link",
     });
@@ -139,8 +136,8 @@ export async function loadContactQrContent(
   if (landline) {
     rows.push({
       kind: "landline",
-      label: bi(detailsV, "landline_label"),
-      value: same(landline),
+      label: label(detailsV, "landline_label"),
+      value: landline,
       href: telHref(landline),
       testId: "qr-call-link",
     });
@@ -148,8 +145,8 @@ export async function loadContactQrContent(
   if (waHref) {
     rows.push({
       kind: "whatsapp",
-      label: bi(detailsV, "whatsapp_label"),
-      value: same(str(detailsV, "whatsapp_number") ?? ""),
+      label: label(detailsV, "whatsapp_label"),
+      value: str(detailsV, "whatsapp_number") ?? "",
       href: waHref,
       external: true,
       testId: "qr-whatsapp-link",
@@ -158,8 +155,8 @@ export async function loadContactQrContent(
   if (email) {
     rows.push({
       kind: "email",
-      label: bi(detailsV, "email_label"),
-      value: same(email),
+      label: label(detailsV, "email_label"),
+      value: email,
       href: `mailto:${email}`,
       testId: "qr-email-link",
     });
@@ -167,8 +164,8 @@ export async function loadContactQrContent(
   if (websiteDisplay) {
     rows.push({
       kind: "website",
-      label: bi(detailsV, "website_label"),
-      value: same(websiteDisplay),
+      label: label(detailsV, "website_label"),
+      value: websiteDisplay,
       href: websiteHref,
       external: true,
       testId: "qr-website-link",
@@ -177,8 +174,8 @@ export async function loadContactQrContent(
   if (officeAddress) {
     rows.push({
       kind: "office",
-      label: bi(detailsV, "office_label"),
-      value: { en: officeAddress, ar: officeAddressAr ?? officeAddress },
+      label: label(detailsV, "office_label"),
+      value: officeAddress,
       href: null,
     });
   }
@@ -198,14 +195,14 @@ export async function loadContactQrContent(
     name,
     logoUrl: logo?.url ?? BUNDLED_LOGO,
     logoAlt: logo?.alt ?? name,
-    tagline: bi(cardV, "tagline"),
-    saveLabel: bi(cardV, "save_label"),
+    tagline: label(cardV, "tagline"),
+    saveLabel: label(cardV, "save_label"),
     rows,
-    followLabel: bi(followV, "follow_label"),
+    followLabel: label(followV, "follow_label"),
     socials,
-    mapLabel: bi(followV, "map_label"),
+    mapLabel: label(followV, "map_label"),
     mapHref: str(followV, "map_href"),
-    footerNote: bi(followV, "footer_note"),
+    footerNote: label(followV, "footer_note"),
     vcard: {
       fullName: name,
       organisation: name,

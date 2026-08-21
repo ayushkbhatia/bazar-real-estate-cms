@@ -95,7 +95,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/areas/[slug]/_components/lifestyle-dossier.tsx": 3,
   "app/[locale]/(public)/areas/[slug]/opengraph-image.tsx": 2,
   "app/[locale]/(public)/concierge/page.tsx": 2,
-  "app/[locale]/(public)/contact-qr/_components/contact-card.tsx": 1,
   "app/[locale]/(public)/data-deleted/page.tsx": 4,
   "app/[locale]/(public)/developers/[slug]/page.tsx": 4,
   "app/[locale]/(public)/developments/[slug]/_components/brochure-gate.tsx": 2,

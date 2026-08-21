@@ -1,5 +1,9 @@
 /**
- * The two locale controls build the same href, and both carry the querystring.
+ * The three locale controls build the same href, and all carry the querystring.
+ *
+ * Three, since the QR contact card's EN/AR pill stopped being a private
+ * `useState` and became the third presentation of this one decision. All of
+ * them go through `useLocaleHrefs`, which is the only place the href is built.
  *
  * The querystring half is the regression this file exists for.
  * `LanguageSwitch`'s docblock promised "the querystring rides along too, so an
@@ -24,6 +28,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { screen } from "@testing-library/react";
 
+import { CardLocaleToggle } from "../contact-qr/_components/card-locale-toggle";
 import { LanguageSwitch } from "./language-switch";
 import { LocaleToggle } from "./locale-toggle";
 import { renderWithIntl } from "@/lib/i18n/test-utils";
@@ -105,20 +110,44 @@ describe("locale controls", () => {
     ).toBeNull();
   });
 
-  it("gives both controls identical targets", () => {
-    // Two presentations of one decision, so a divergence here means one of
-    // them was edited alone.
+  it("gives all three controls identical targets", () => {
+    // Three presentations of one decision, so a divergence here means one of
+    // them was edited alone. The QR card's pill joined this list when it
+    // stopped holding its own `useState` language: it had drifted into a
+    // control that flipped `dir` and the font while the copy stayed in
+    // whatever language the server folded to, which on /ar/contact-qr meant
+    // pressing EN produced Arabic text laid out left-to-right.
     at("/areas/saadiyat-island", "sort=price");
+    const expected = [
+      "/areas/saadiyat-island?sort=price&setlang=en",
+      "/ar/areas/saadiyat-island?sort=price&setlang=ar",
+    ];
 
     const list = renderWithIntl(<LanguageSwitch current="en" />);
     const fromList = hrefs();
     list.unmount();
 
-    renderWithIntl(<LocaleToggle current="en" />);
+    const pill = renderWithIntl(<LocaleToggle current="en" />);
     expect(hrefs()).toEqual(fromList);
-    expect(fromList).toEqual([
-      "/areas/saadiyat-island?sort=price&setlang=en",
-      "/ar/areas/saadiyat-island?sort=price&setlang=ar",
-    ]);
+    pill.unmount();
+
+    renderWithIntl(<CardLocaleToggle current="en" />);
+    expect(hrefs()).toEqual(fromList);
+    expect(fromList).toEqual(expected);
+  });
+
+  it("marks the QR card's active language without a pressed state", () => {
+    // It is a link to the other language now, not a button holding a value —
+    // `aria-pressed` on an anchor is a lie to assistive tech.
+    at("/ar/contact-qr");
+    renderWithIntl(<CardLocaleToggle current="ar" />);
+
+    const arabic = screen.getByRole("link", { name: "العربية" });
+    expect(arabic.getAttribute("aria-current")).toBe("true");
+    expect(arabic.getAttribute("aria-pressed")).toBeNull();
+    expect(arabic.getAttribute("href")).toBe("/ar/contact-qr?setlang=ar");
+    expect(
+      screen.getByRole("link", { name: "English" }).getAttribute("href"),
+    ).toBe("/contact-qr?setlang=en");
   });
 });

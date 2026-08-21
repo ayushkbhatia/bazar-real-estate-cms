@@ -2,12 +2,9 @@
 
 import { useTranslations } from "next-intl";
 
-import { usePathname } from "next/navigation";
-
-import { useSearchSuffix } from "@/lib/i18n/use-search-suffix";
 import { Check } from "lucide-react";
 import { LOCALES, LOCALE_DIR, type Locale } from "@/lib/i18n/locales";
-import { localeSwitchHref, stripLocalePrefix } from "@/lib/i18n/routing";
+import { useLocaleHrefs } from "@/lib/i18n/use-locale-hrefs";
 import { cn } from "@/lib/utils";
 
 /**
@@ -42,10 +39,8 @@ import { cn } from "@/lib/utils";
  * Arabic does without leaving a dead control on the page.
  */
 export function LanguageSwitch({ current }: { current: Locale }) {
-  const pathname = usePathname();
-  // Carried so a locale switch mid-search keeps the filters.
-  const suffix = useSearchSuffix();
   // Above the early return: hooks must run in the same order on every render.
+  const hrefFor = useLocaleHrefs();
   const t = useTranslations("common");
   /*
    * Each option is labelled in its OWN language, which is why these two keys
@@ -61,11 +56,6 @@ export function LanguageSwitch({ current }: { current: Locale }) {
 
   if (LOCALES.length < 2) return null;
 
-  // `usePathname` returns the visitor-facing path, which is already
-  // unprefixed for English and `/ar/…` for Arabic. Strip whatever is there and
-  // re-prefix for the target so the two cannot compound.
-  const bare = stripLocalePrefix(pathname ?? "/");
-
   return (
     <div className="px-2 py-1.5">
       {LOCALES.map((locale) => {
@@ -73,7 +63,7 @@ export function LanguageSwitch({ current }: { current: Locale }) {
         return (
           <a
             key={locale}
-            href={localeSwitchHref(bare, suffix, locale)}
+            href={hrefFor(locale)}
             hrefLang={locale}
             lang={locale}
             dir={LOCALE_DIR[locale]}
