@@ -14,7 +14,18 @@ import {
   type TrendPoint,
 } from "@/lib/queries/market-reports";
 
-export type SellHeroStat = { value: string; label: string };
+/**
+ * A live rail figure and the `pages.sell.*` key that names it.
+ *
+ * A key rather than a label, because this module is a query: it counts rows
+ * and knows nothing about the locale the page is rendering in. The page turns
+ * the key into words. An editor who fills the stat list in Pages & blocks
+ * replaces the whole rail — those strings are CMS copy with their own Arabic
+ * twin, and never reach here.
+ */
+export type SellHeroStat = { value: string; labelKey: SellHeroStatKey };
+
+export type SellHeroStatKey = "statListings" | "statAreas" | "statAdvisors";
 
 /** The area the transactions card samples — Bazar's core sales patch. */
 const SPARK_AREA_SLUG = "saadiyat-island";
@@ -44,17 +55,17 @@ export async function getSellHeroStats(): Promise<SellHeroStat[]> {
     if (listings.count)
       stats.push({
         value: String(listings.count),
-        label: "Live listings marketed by Bazar",
+        labelKey: "statListings",
       });
     if (areas.count)
       stats.push({
         value: String(areas.count),
-        label: "Abu Dhabi communities covered",
+        labelKey: "statAreas",
       });
     if (advisors.count)
       stats.push({
         value: String(advisors.count),
-        label: "ADREC-registered advisors on the desk",
+        labelKey: "statAdvisors",
       });
     return stats;
   } catch {

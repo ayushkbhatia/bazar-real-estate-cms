@@ -128,7 +128,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/price-drops/page.tsx": 2,
   "app/[locale]/(public)/qr/page.tsx": 1,
   "app/[locale]/(public)/services/_components/service-card.tsx": 1,
-  "app/[locale]/(public)/services/sell/_components/list-property-form.tsx": 3,
   "app/[locale]/(public)/sitemap/page.tsx": 2,
   "app/[locale]/(public)/status/page.tsx": 9,
 };

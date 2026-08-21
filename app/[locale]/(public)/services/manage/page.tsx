@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import type { Metadata } from "next";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
@@ -47,13 +47,23 @@ export default async function PropertyManagementPage({
   // the request, and without this `getLocale()` has nothing to resolve — the
   // page renders English content under `lang="ar"` in an RTL layout, which is
   // the failure `lib/i18n/current.ts` describes: it looks finished.
-  setRequestLocale(asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
 
-  const [content, areas, leadForm] = await Promise.all([
+  const [content, areas, leadForm, t] = await Promise.all([
     getMasterPageContent("manage"),
-    listLeadAreaOptions(),
+    listLeadAreaOptions(locale),
     getForm("services_manage_lead"),
+    getTranslations("forms"),
   ]);
+
+  // Label and value deliberately differ: the visitor picks Arabic, the desk
+  // reads the English in the brief. The keys are the same twelve strings the
+  // /services/sell form uses, so the two pages cannot drift apart.
+  const propertyTypeOptions = SERVICE_PROPERTY_TYPES.map((type) => ({
+    label: t(`sell.type.${type}`),
+    value: type,
+  }));
 
   const v = (key: string) => content.section(key)?.values ?? {};
   const heroV = v("hero");
@@ -82,7 +92,7 @@ export default async function PropertyManagementPage({
           <ServiceLeadForm
             form={leadForm}
             areas={areas.map((a) => a.name)}
-            propertyTypes={SERVICE_PROPERTY_TYPES}
+            propertyTypes={propertyTypeOptions}
             copy={{
               title: str(formV, "form_title"),
               sub: str(formV, "form_sub"),

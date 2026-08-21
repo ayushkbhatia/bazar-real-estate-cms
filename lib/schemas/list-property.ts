@@ -286,8 +286,15 @@ type SummaryInput = {
 };
 
 /**
- * The one-line brief shown on the step-2 chip, on the confirmation, and in the
- * enquiry the desk works: "For sale · Saadiyat Island · Apartment · 2 bed".
+ * The one-line brief written into the enquiry the desk works:
+ * "For sale · Saadiyat Island · Apartment · 2 bed".
+ *
+ * **English, in both locales, on purpose.** This string is filed, not
+ * displayed: it rides into `inferred_constraints` and the brief an advisor
+ * reads. What the visitor sees on the step-2 chip and the confirmation is
+ * `summaryParts` below, formatted through the message catalogue — the two are
+ * deliberately separate, because folding them would either put Arabic in front
+ * of the desk or English in front of an Arabic owner.
  */
 export function buildSummary(input: SummaryInput): string {
   const beds = bedroomsApply(input.category, input.property_type)
@@ -304,6 +311,54 @@ export function buildSummary(input: SummaryInput): string {
     .join(" · ");
 }
 
+/** What the visitor's summary is made of, before any language is chosen. */
+export type SummaryParts = {
+  intent: LpIntent;
+  /** As typed or picked — already in the visitor's language. */
+  location: string;
+  /** English, and a `forms.sell.type.*` message key. Blank until answered. */
+  propertyType: string;
+  /**
+   * The bedroom answer, split so ICU can agree with it. `"8+"` arrives as
+   * `{ count: 8, plus: true }` — a token no plural rule can take, which is why
+   * it needs its own message rather than a `+` glued on after formatting.
+   */
+  bedrooms: { studio: true } | { count: number; plus: boolean } | null;
+  areaSqft: number | null;
+};
+
+/** The separator between summary parts. One place, so both builders agree. */
+export const SUMMARY_SEPARATOR = " · ";
+
+/**
+ * The same summary, decomposed for a renderer that has a translator.
+ *
+ * Splitting rather than translating here keeps `lib/schemas` free of
+ * next-intl: the schema is imported by the server action, and a message
+ * catalogue read there would answer in English regardless of the page the
+ * lead came from.
+ */
+export function summaryParts(input: SummaryInput): SummaryParts {
+  const raw = bedroomsApply(input.category, input.property_type)
+    ? input.bedrooms
+    : null;
+
+  let bedrooms: SummaryParts["bedrooms"] = null;
+  if (raw === "Studio") bedrooms = { studio: true };
+  else if (raw) {
+    const count = Number.parseInt(raw, 10);
+    if (Number.isFinite(count)) bedrooms = { count, plus: raw.endsWith("+") };
+  }
+
+  return {
+    intent: input.intent,
+    location: input.location.trim(),
+    propertyType: input.property_type,
+    bedrooms,
+    areaSqft: input.area_sqft && input.area_sqft > 0 ? input.area_sqft : null,
+  };
+}
+
 /**
  * What the advisor reads in the enquiry thread. `brief_raw` is the body of the
  * first message the `on_enquiry_created` trigger writes, so this is the lead as
@@ -316,7 +371,10 @@ export function buildBrief(
     `Owner lead · ${input.intent === "sell" ? "wants to sell" : "wants to rent out"}`,
     `Reference: ${input.reference}`,
     "",
-    `Location: ${input.location.trim()}`,
+    // The slug rides along when the owner picked from the suggestion list. On
+    // `/ar` the typed half of that line is Arabic — it is what they entered —
+    // and the desk still needs one English handle for the community.
+    `Location: ${input.location.trim()}${input.area_slug ? ` (${input.area_slug})` : ""}`,
     `Category: ${LP_CATEGORY_LABELS[input.category]} · ${input.property_type}`,
   ];
   if (bedroomsApply(input.category, input.property_type) && input.bedrooms) {

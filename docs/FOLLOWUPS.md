@@ -1184,3 +1184,29 @@ shows the trail.)
   next one from keying on folded display text. A guard would be a test that
   feeds an Arabic name to every `slugify`-derived key helper and fails on `""`.
   `lib/slug.ts:8`.
+
+- [i18n] `MoreFiltersDrawer` prints `Any` above three selects, and the option
+  lists under them are raw enum members — `TENURES`, `FURNISHINGS` and
+  `PROPERTY_FORM_LABELS` all render their English on `/ar`. Extracting the
+  three `Any` labels alone would be a half-fix that reads worse than the whole
+  English, because the options directly beneath them would stay Latin, so this
+  wants one pass that does the values too. It sits behind the filter bar on all
+  six search routes. `app/[locale]/(public)/_components/more-filters-drawer.tsx:236`.
+
+- [i18n] The nav's `List` CTA — the pill top-right that links to
+  `/services/sell` — is English on `/ar`. It comes from the megamenu tables
+  rather than from code, so the fix is a data migration against
+  `megamenu_items.label_ar` (the column exists and is both wired and folded),
+  not an edit to the nav component.
+
+- [i18n] Roughly 40 strings still fail the back-translation gate on every
+  `npm run i18n:content` run and stay English by design. Three groups, and only
+  the first is worth work: the `/legal/terms` and `/legal/cookies` clause
+  bodies (a client dependency — their Arabic is the client's own, exactly as
+  the privacy policy's was); a dozen area- and development-page fragments
+  (`"Space"`, `"Built Stock"`, `"Interior Renders"`) where a round trip cannot
+  confirm a one-word noun; and three `img` placeholder captions, which are only
+  ever rendered when a card has no image picked and are therefore invisible on
+  every page that has one. Anything in the second group that a client reports
+  should be hand-authored into `lib/master-pages/arabic/master.json` with
+  `by: "human"`, which is what this PR did for six of them.

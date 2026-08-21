@@ -6360,5 +6360,73 @@
     "model": "claude-opus-5",
     "sourceHash": "6af5cf3d4854",
     "reviewed": false
+  },
+  "forms.sell.summaryIntent.sell": {
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "sourceHash": "aedf56fc02b4",
+    "reviewed": false
+  },
+  "forms.sell.summaryIntent.rent_out": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "9ccb3ff88683",
+    "reviewed": false,
+    "note": "MT wrote للايجار without the hamza. Same word, standard orthography."
+  },
+  "forms.sell.summaryBeds": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "d3a3f4240939",
+    "reviewed": false,
+    "note": "Aligned to listing.bedrooms, which is already reviewed and holds the same noun. MT put the plural غرف in the `many` branch, where 11–99 takes the accusative singular غرفة."
+  },
+  "forms.sell.summaryBedsPlus": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "46aaa44af69a",
+    "reviewed": false,
+    "note": "MT returned summaryBeds verbatim and dropped the +, which is the only thing this message exists for. `8+` is an open range, so every branch takes the plural — the count is indeterminate and cannot agree."
+  },
+  "forms.sell.summaryArea": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "dad501fef650",
+    "reviewed": false,
+    "note": "MT wrote م² — square METRES. The figure is square feet; the form's own input is labelled ft². A wrong unit on an owner's built-up area is a factual error, not a style one."
+  },
+  "forms.sell.selectPlaceholder": {
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "sourceHash": "2a78025de6aa",
+    "reviewed": false
+  },
+  "forms.sell.stepAnnounce": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "b7156ab9633c",
+    "reviewed": false,
+    "note": "Definite article: this announces a specific step in a known sequence."
+  },
+  "pages.sell.statListings": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "b3d8d2eb0567",
+    "reviewed": false,
+    "note": "MT transliterated the brand as بزار. lib/i18n/mt/proper-nouns.ts holds بازار as `official`, sourced from the client's own catalogue. Also إعلانات عقارية, the term the rest of the catalogue uses for listings."
+  },
+  "pages.sell.statAreas": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "5f3def0e0c83",
+    "reviewed": false,
+    "note": "أبوظبي closed up, matching the rest of the corpus; MT wrote أبو ظبي."
+  },
+  "pages.sell.statAdvisors": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "1bce04081174",
+    "reviewed": false,
+    "note": "MT rendered 'on the desk' literally as على الطاولة — a physical table — and hung ADREC off the end. مسجّلون لدى ADREC is the phrasing the sell page's own FAQ already uses."
   }
 }

@@ -33,9 +33,10 @@ import {
   LP_TYPES,
   LP_URGENCIES,
   bedroomsApply,
-  buildSummary,
+  summaryParts,
   listPropertySchema,
   parseAreaSqft,
+  SUMMARY_SEPARATOR,
   type ListPropertyInput,
   type LpCategory,
 } from "@/lib/schemas/list-property";
@@ -257,6 +258,39 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
   const values = watch();
   const showBedrooms = bedroomsApply(values.category, values.property_type);
 
+  /**
+   * The summary the visitor reads — the step-2 chip and the confirmation line.
+   *
+   * Built here rather than taken from the server's `result.summary`, which is
+   * the English one filed with the lead (see `buildSummary`). The location is
+   * whatever they typed or picked, already in their language; everything else
+   * is a key.
+   */
+  const formatSummary = useCallback(
+    (input: ListPropertyInput) => {
+      const parts = summaryParts(input);
+      const beds = parts.bedrooms;
+      return [
+        t(`sell.summaryIntent.${parts.intent}`),
+        parts.location,
+        parts.propertyType ? t(`sell.type.${parts.propertyType}`) : null,
+        beds == null
+          ? null
+          : "studio" in beds
+            ? t("sell.bedroomsStudio")
+            : t(beds.plus ? "sell.summaryBedsPlus" : "sell.summaryBeds", {
+                count: beds.count,
+              }),
+        parts.areaSqft == null
+          ? null
+          : t("sell.summaryArea", { value: parts.areaSqft }),
+      ]
+        .filter(Boolean)
+        .join(SUMMARY_SEPARATOR);
+    },
+    [t],
+  );
+
   // Owners are a high-value lead and the qualification half is the tedious
   // half — a refresh or a stray back-navigation must not cost them.
   const restored = useRef(false);
@@ -322,7 +356,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
         }
         setConfirmation({
           reference: result.reference,
-          summary: result.summary,
+          summary: formatSummary(input),
           callPhrase: t(`sell.callPhrase.${result.callWindow}`),
           advisor: result.advisor,
         });
@@ -359,7 +393,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
     setStep(1);
   };
 
-  const summary = buildSummary(values);
+  const summary = formatSummary(values);
 
   return (
     <div className="rounded-lg border border-bz-border bg-bz-surface overflow-hidden">
@@ -367,10 +401,10 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
 
       <p aria-live="polite" className="sr-only">
         {step === 1
-          ? `Step 1 of 2 — ${c.step1Label}`
+          ? t("sell.stepAnnounce", { step: 1, total: 2, label: c.step1Label })
           : step === 2
-            ? `Step 2 of 2 — ${c.step2Label}`
-            : "Enquiry sent. You are matched with an advisor."}
+            ? t("sell.stepAnnounce", { step: 2, total: 2, label: c.step2Label })
+            : t("sell.sent")}
       </p>
 
       <form
@@ -382,7 +416,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
         {/* `hidden` rather than a display class: the inactive step must leave
             the tab order and the accessibility tree, not just the viewport. */}
         <div hidden={step !== 1}>
-          <FieldShell label="I am looking to" required>
+          <FieldShell label={t("sell.fieldIntent")} required>
             <div className="grid grid-cols-2 gap-1.5">
               {LP_INTENTS.map((v) => (
                 <button
@@ -414,7 +448,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
           />
 
           <FieldShell
-            label="Category & type"
+            label={t("sell.fieldCategory")}
             required
             error={errors.property_type?.message}
             className="mt-6"
@@ -518,7 +552,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                 }
                 className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
               >
-                <option value="">Select</option>
+                <option value="">{t("sell.selectPlaceholder")}</option>
                 {LP_FURNISHINGS.map((f) => (
                   <option key={f} value={f}>
                     {t(`sell.furnishing.${f}`)}

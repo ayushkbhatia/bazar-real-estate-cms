@@ -15,6 +15,8 @@
  */
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { localiseRow } from "@/lib/i18n/localise";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
 import { listAgents } from "@/lib/queries/agents";
 import { getPublicSiteSettings } from "@/lib/queries/site-settings";
@@ -28,6 +30,13 @@ export type LeadAreaOption = {
   /** Right-hand context in the suggestion row ("Abu Dhabi", "Saadiyat Island"). */
   context: string;
 };
+
+/**
+ * The context shown beside a top-level area, and the one string here that is
+ * not a row. It folds through the same store as everything else — the entry
+ * exists ("Abu Dhabi" → "أبوظبي") — so it does not need its own catalogue key.
+ */
+const DEFAULT_CONTEXT = "Abu Dhabi";
 
 /**
  * Rendered when Supabase isn't configured (local preview, e2e without creds) so
@@ -50,33 +59,60 @@ const FALLBACK_AREAS: LeadAreaOption[] = [
   slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
   name,
   parentSlug: null,
-  context: "Abu Dhabi",
+  context: DEFAULT_CONTEXT,
 }));
 
 /**
  * Areas and sub-communities, for the location combobox. Buildings are excluded:
  * the index is a routing aid, and an owner typing their tower name still gets
  * through as free text.
+ *
+ * **The locale is a parameter, and it must stay one.** `matchAdvisor` below
+ * calls this from a Server Action, where next-intl's `requestLocale` is
+ * undefined — so an ambient `currentLocale()` read would answer `en` there and
+ * `ar` on the page, silently, which is the trap docs/I18N.md describes for
+ * route handlers. Routing wants the English index (it matches free text against
+ * `name`, and `normalise` keeps only `a-z0-9`); a page wants the visitor's. The
+ * default is English so every existing caller keeps the index it was written
+ * against, and only a renderer asks for anything else.
  */
-export async function listLeadAreaOptions(): Promise<LeadAreaOption[]> {
+export async function listLeadAreaOptions(
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<LeadAreaOption[]> {
   if (!isSupabaseConfigured) return FALLBACK_AREAS;
   try {
     const supabase = createSupabasePublicClient();
     const { data, error } = await supabase
       .from("areas")
-      .select("id, slug, name, kind, parent_id")
+      .select("id, slug, name, name_ar, kind, parent_id")
       .in("kind", ["area", "sub_community"])
       .order("name", { ascending: true });
     if (error || !data || data.length === 0) return FALLBACK_AREAS;
+
+    // `slug` and `parentSlug` are identity and never fold — an Arabic slug
+    // resolves to no area at all, which is the failure docs/I18N.md warns is
+    // invisible to an Arabic proofreader. Only `name` and `context` are read.
+    const fold = (row: { name: string; name_ar?: string | null }) =>
+      (
+        localiseRow(row as unknown as Record<string, unknown>, locale) as {
+          name: string;
+        }
+      ).name;
 
     const byId = new Map(data.map((r) => [r.id, r]));
     return data.map((r) => {
       const parent = r.parent_id ? byId.get(r.parent_id) : null;
       return {
         slug: r.slug,
-        name: r.name,
+        name: fold(r),
         parentSlug: parent ? parent.slug : null,
-        context: parent ? parent.name : "Abu Dhabi",
+        // `name_ar: null` is load-bearing, not tidiness: `localiseRow` only
+        // asks the store for a column whose twin KEY is present, so that it
+        // cannot swap a slug or a price for a coincidental store hit. Passing
+        // `{ name }` alone leaves this in English.
+        context: parent
+          ? fold(parent)
+          : fold({ name: DEFAULT_CONTEXT, name_ar: null }),
       };
     });
   } catch {
@@ -89,6 +125,13 @@ export async function listLeadAreaOptions(): Promise<LeadAreaOption[]> {
  * have typed a building ("Mamsha, Saadiyat"), so this is a containment match
  * against the index rather than an equality check, longest name first so
  * "Saadiyat Lagoons" wins over "Saadiyat Island".
+ *
+ * Callers should hand this the ENGLISH index — `listLeadAreaOptions()` with no
+ * argument — because `normalise` keeps only `a-z0-9`. An Arabic name normalises
+ * to the empty string, and `"anything".includes("")` is true, so a folded index
+ * would match the first option for any input at all. The empty-needle guard
+ * below makes that a miss rather than a misroute, but it is a backstop, not the
+ * contract: an Arabic index simply cannot answer a containment question here.
  */
 export function resolveAreaSlugs(
   location: string,
@@ -98,11 +141,15 @@ export function resolveAreaSlugs(
   const picked = pickedSlug
     ? options.find((o) => o.slug === pickedSlug)
     : undefined;
+  const typed = normalise(location);
   const match =
     picked ??
     [...options]
       .sort((a, b) => b.name.length - a.name.length)
-      .find((o) => normalise(location).includes(normalise(o.name)));
+      .find((o) => {
+        const name = normalise(o.name);
+        return name.length > 0 && typed.includes(name);
+      });
   if (!match) return [];
   return match.parentSlug ? [match.slug, match.parentSlug] : [match.slug];
 }

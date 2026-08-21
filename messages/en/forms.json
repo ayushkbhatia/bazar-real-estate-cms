@@ -102,6 +102,15 @@
     "sent": "Enquiry sent. You are matched with an advisor.",
     "fixErrors": "Please fix the errors below.",
     "sendFailed": "Something went wrong sending that. Try again — your answers are still here.",
-    "unavailable": "We can't take the form right now. Call the desk and we'll take the details by phone."
+    "unavailable": "We can't take the form right now. Call the desk and we'll take the details by phone.",
+    "summaryIntent": {
+      "sell": "For sale",
+      "rent_out": "To rent out"
+    },
+    "summaryBeds": "{count, plural, one {# bed} other {# bed}}",
+    "summaryBedsPlus": "{count, plural, one {#+ bed} other {#+ bed}}",
+    "summaryArea": "{value, number} ft²",
+    "selectPlaceholder": "Select",
+    "stepAnnounce": "Step {step} of {total} — {label}"
   }
 }

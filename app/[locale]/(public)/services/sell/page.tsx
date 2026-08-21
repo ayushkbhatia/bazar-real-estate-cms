@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import { getForm } from "@/lib/queries/forms";
 import type { Metadata } from "next";
@@ -47,16 +47,18 @@ export default async function ListYourPropertyPage({
   // the request, and without this `getLocale()` has nothing to resolve — the
   // page renders English content under `lang="ar"` in an RTL layout, which is
   // the failure `lib/i18n/current.ts` describes: it looks finished.
-  setRequestLocale(asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
 
-  const [areas, liveStats, spark, settings, content, listForm] =
+  const [areas, liveStats, spark, settings, content, listForm, t] =
     await Promise.all([
-      listLeadAreaOptions(),
+      listLeadAreaOptions(locale),
       getSellHeroStats(),
       getTransactionSpark(),
       getPublicSiteSettings(),
       getMasterPageContent("sell"),
       getForm("services_sell_list_property"),
+      getTranslations("pages"),
     ]);
 
   const v = (key: string) => content.section(key)?.values ?? {};
@@ -84,7 +86,7 @@ export default async function ListYourPropertyPage({
   const stats: [string, string][] =
     editorStats.length > 0
       ? editorStats
-      : liveStats.map((s) => [s.value, s.label]);
+      : liveStats.map((s) => [s.value, t(`sell.${s.labelKey}`)]);
 
   const faqItems = faqPairs(faqV);
 
