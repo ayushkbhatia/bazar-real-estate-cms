@@ -16741,5 +16741,13 @@
   "Browse": {
     "ar": "تصفّح",
     "by": "human"
+  },
+  "Privacy policy": {
+    "ar": "سياسة الخصوصية",
+    "by": "human"
+  },
+  "How Bazar Real Estate L.L.C. collects, uses, stores, discloses, and protects personal data, issued under UAE PDPL (Federal Decree-Law No. 45 of 2021).": {
+    "ar": "كيفية قيام شركة بازار العقارية ذ.م.م بجمع البيانات الشخصية واستخدامها وتخزينها والإفصاح عنها وحمايتها، وفقًا للمرسوم بقانون اتحادي رقم ٤٥ لسنة ٢٠٢١ بشأن حماية البيانات الشخصية.",
+    "by": "human"
   }
 }

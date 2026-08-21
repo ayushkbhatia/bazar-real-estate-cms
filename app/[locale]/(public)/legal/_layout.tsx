@@ -1,5 +1,4 @@
 import Link from "@/components/i18n/link";
-import { AlertTriangle } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +30,6 @@ export function LegalDocFrame({
   effective,
   dateLabel = "Effective",
   contactEmail = "dpo@bazarrealestate.ae",
-  draft = true,
   locale = "en",
   translation,
   children,
@@ -43,8 +41,6 @@ export function LegalDocFrame({
   dateLabel?: string;
   /** Privacy routes rights requests to info@ per the client's final text. */
   contactEmail?: string;
-  /** Terms and cookies are still in-house drafts; privacy no longer is. */
-  draft?: boolean;
   /** "ar" sets direction, typeface and chrome copy for the Arabic edition. */
   locale?: LegalLocale;
   /** The same document in the other language, when one exists. */
@@ -109,39 +105,27 @@ export function LegalDocFrame({
             );
           })}
         {translation ? (
-          <Link
+          /*
+            A plain anchor, and deliberately so.
+
+            `components/i18n/link` prefixes every href with the CURRENT locale,
+            which is exactly wrong for the one link whose whole job is to leave
+            it: on /ar/legal/privacy the "English" switch asked for
+            /legal/privacy and was handed back /ar/legal/privacy — a link to
+            the page the reader is already on. The href here is built by
+            `localeSwitchHref`, so it already carries its target prefix and the
+            `setlang` param that makes the choice stick.
+          */
+          <a
             href={translation.href}
             lang={translation.locale}
             dir={translation.locale === "ar" ? "rtl" : "ltr"}
             className="h-8 px-3 inline-flex items-center rounded text-[12.5px] border border-bz-border bg-bz-surface text-bz-ink-2 transition-colors hover:border-bz-border-strong"
           >
             {translation.label}
-          </Link>
+          </a>
         ) : null}
       </nav>
-
-      {draft ? (
-        <div className="mt-10 flex gap-3 items-start p-4 rounded-lg border border-[oklch(0.9_0.05_75)] bg-[oklch(0.97_0.04_85)]">
-          <AlertTriangle
-            size={18}
-            strokeWidth={1.6}
-            className="text-[oklch(0.45_0.13_60)] flex-shrink-0 mt-0.5"
-            aria-hidden="true"
-          />
-          <div>
-            <p className="text-[13.5px] text-bz-ink leading-snug font-medium">
-              Lawyer-drafted copy in progress.
-            </p>
-            <p className="text-[12.5px] text-bz-muted leading-snug mt-1">
-              This page is a working draft. A UAE-licensed counsel is finalising
-              the formal text against UAE PDPL (Federal Decree-Law 45/2021) and
-              UAE Consumer Protection Law (Federal Decree-Law 15/2020). Until
-              the next revision, statements here describe Bazar&apos;s intended
-              practice rather than a binding contract.
-            </p>
-          </div>
-        </div>
-      ) : null}
 
       <article className="bz-prose text-[15.5px] leading-[1.7] text-bz-ink mt-10">
         {children}

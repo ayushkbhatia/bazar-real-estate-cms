@@ -841,11 +841,19 @@ shows the trail.)
   a typo for "نجمعها" in the client's source document. Published verbatim —
   their text, their call. Worth raising when the retention placeholder is.
 
-- [legal] Terms and cookies still carry the "lawyer-drafted copy in progress"
-  banner and the dpo@ mailbox.
-  Privacy now has client-final text (banner off, info@ contact) via the new
-  LegalDocFrame `draft` / `contactEmail` / `dateLabel` props. When the client
-  sends final terms and cookie copy, pass the same props there.
+- [legal] Terms and cookies still publish in-house drafts on the dpo@ mailbox.
+  The "lawyer-drafted copy in progress" banner is gone from all three documents
+  (the client asked for it removed) and `LegalDocFrame` no longer has a `draft`
+  prop, so nothing on the page now says the text is provisional. When the
+  client sends final terms and cookie copy, it is a CMS edit at
+  /admin/pages/master/legal-terms and /admin/pages/master/legal-cookies —
+  including the mailbox, which privacy already overrides to info@.
+
+- [legal] `intro` (Standfirst) is an editable field that renders nowhere.
+  `LEGAL_TERMS_PAGE` and `LEGAL_COOKIES_PAGE` declare it with copy in the
+  defaults; `LegalDocument` never reads it. Either render it under the date or
+  drop the field — an editor typing into a box that changes nothing is worse
+  than either. Privacy deliberately does not declare one.
 
 - [legal] The site's entity details contradict the published privacy policy.
   The policy says "Bazar Real Estate L.L.C.", regulated by ADREC. The footer,

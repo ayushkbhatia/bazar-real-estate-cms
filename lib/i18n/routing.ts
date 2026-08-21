@@ -18,11 +18,10 @@ import { isNonLocalisedPath } from "./non-localised";
  * hand-authored Arabic page serving from its physical route before the flip.
  *
  * `ar` is served now, so that no longer applies: `/ar/legal/privacy` resolves
- * as locale=ar + /legal/privacy and is answered by the branch in
- * `legal/privacy/page.tsx`. The physical route under `(public)/ar/` is now
- * reachable only as `/ar/ar/legal/privacy` — a live duplicate whose own
- * docblock says to delete it in the PR that added "ar" here. It outlived that
- * PR. See docs/FOLLOWUPS.md.
+ * as locale=ar + /legal/privacy, and the privacy policy serves both languages
+ * from its master page. The physical route under `(public)/ar/` — reachable
+ * only as `/ar/ar/legal/privacy` once the flip happened, and a stale copy of
+ * the Arabic from the moment the CMS owned it — is gone.
  */
 
 /** The served locale a path is prefixed with, or null if it is unprefixed. */

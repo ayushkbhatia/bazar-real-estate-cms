@@ -259,9 +259,13 @@ export type MasterPageKey =
   | "qr"
   | "contact-qr"
   | "mortgage"
-  // The two legal documents that were hardcoded JSX. Privacy stays a route —
-  // the client supplied that one as a signed bilingual PDF and it is
-  // transcribed verbatim, so there is nothing for an editor to change.
+  // The three legal documents, all of them hardcoded JSX until they were not.
+  // Privacy was held back on the reasoning that a verbatim transcription of a
+  // signed bilingual PDF gives an editor nothing to change. That was wrong in
+  // the ordinary case: the policy names a CRM the client may swap, a mailbox,
+  // an office address and a "Last updated" date, and every one of those
+  // changes without a lawyer being involved.
+  | "legal-privacy"
   | "legal-terms"
   | "legal-cookies";
 
