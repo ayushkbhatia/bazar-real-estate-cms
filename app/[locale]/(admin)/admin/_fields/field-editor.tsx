@@ -20,6 +20,7 @@ import {
   isTranslatable,
 } from "@/lib/master-pages";
 import { ArabicTwin } from "./arabic-twin";
+import { ArabicImageTwin } from "./arabic-image-twin";
 import { UploadButton, VideoUploadButton } from "./upload-button";
 import { fieldCls, type MediaOption, type Seeds } from "./types";
 
@@ -470,6 +471,14 @@ export function ScalarField({
                 </button>
               ) : null}
             </div>
+            {field.arabicVariant ? (
+              <ArabicImageTwin
+                value={v}
+                options={imageOptions}
+                onChange={onChange}
+                onMediaAdded={onMediaAdded}
+              />
+            ) : null}
           </div>
         </div>
       </div>

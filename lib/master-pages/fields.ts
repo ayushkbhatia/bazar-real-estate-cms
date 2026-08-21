@@ -46,11 +46,17 @@ export const link = (
   ...extra,
 });
 
-export const image = (key: string, label: string, help?: string): ImageFieldDef => ({
+export const image = (
+  key: string,
+  label: string,
+  help?: string,
+  extra?: Omit<Partial<ImageFieldDef>, "key" | "kind">,
+): ImageFieldDef => ({
   key,
   label,
   kind: "image",
   help,
+  ...extra,
 });
 
 export const video = (key: string, label: string, help?: string): VideoFieldDef => ({

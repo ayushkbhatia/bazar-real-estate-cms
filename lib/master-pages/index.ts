@@ -348,9 +348,14 @@ export function normaliseScalar(
     // all of them is pure jsonb weight for content that has no Arabic. It also
     // keeps the stored shape byte-identical for English-only pages, so this
     // change rewrites nothing already in the database.
+    //
+    // `media_id_ar` is the Arabic rendering of the artwork and is preserved on
+    // the same terms, for the same reason.
     const altAr = trimOrNull(v.alt_ar);
+    const mediaIdAr = trimOrNull(v.media_id_ar);
     return {
       media_id: trimOrNull(v.media_id),
+      ...(mediaIdAr === null ? {} : { media_id_ar: mediaIdAr }),
       alt: trimOrNull(v.alt),
       ...(altAr === null ? {} : { alt_ar: altAr }),
       label: trimOrNull(v.label),

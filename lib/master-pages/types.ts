@@ -82,6 +82,22 @@ export type ImageFieldDef = {
   label: string;
   kind: "image";
   help?: string;
+  /**
+   * Offer a second picker for the Arabic rendering of this image.
+   *
+   * Opt-in per field rather than on by default. Most images on the site are
+   * photography — a skyline, a lobby, a coastline — and carry no language, so
+   * a second picker under every one of them would be a hundred pieces of
+   * furniture nobody uses. The ones that need it are the images with English
+   * *inside* them: the "List your property" card, where the artwork itself is
+   * typeset copy that stays English under `lang="ar"`.
+   *
+   * The picked asset is stored as `media_id_ar` inside the same `ImageValue`,
+   * beside `alt_ar` — the twin lives next to its sibling at whatever depth the
+   * sibling lives, same rule as everywhere else. `applyLocale` swaps it in
+   * before `attachImageUrls` resolves the URL, so no renderer changes.
+   */
+  arabicVariant?: boolean;
 };
 
 /**
@@ -162,6 +178,16 @@ export type ImageValue = {
    * values written before this existed.
    */
   alt_ar?: string | null;
+  /**
+   * The asset to render instead of `media_id` under Arabic — an image whose
+   * artwork is typeset English, redrawn in Arabic. Blank keeps the English
+   * asset, exactly as a blank `alt_ar` keeps the English alt text.
+   *
+   * Only surfaced in the editor for a field declaring `arabicVariant`, but
+   * stored, validated and folded generically, so turning the flag on for
+   * another image is a one-word change.
+   */
+  media_id_ar?: string | null;
   /** Placeholder caption used when no asset is picked. */
   label: string | null;
   /**
