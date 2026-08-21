@@ -19,9 +19,6 @@
     "/agents/[slug]": {
       "revalidate": false
     },
-    "/ar/legal/privacy": {
-      "revalidate": false
-    },
     "/areas": {
       "revalidate": 300
     },

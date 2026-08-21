@@ -1,12 +1,13 @@
 import { test, expect } from "@playwright/test";
 
-// Privacy now carries the client's final, lawyer-supplied text — no draft
-// banner, and rights requests route to info@. Terms and cookies are still
-// in-house drafts on the DPO mailbox.
+// All three documents are master pages now, and none of them carries the
+// "lawyer-drafted copy in progress" banner — the client asked for it gone.
+// Privacy routes rights requests to info@ from its CMS field; terms and
+// cookies take the frame's dpo@ default.
 const LEGAL_DOCS = [
-  { slug: "privacy", draft: false, contact: "info@bazarrealestate.ae" },
-  { slug: "terms", draft: true, contact: "dpo@bazarrealestate.ae" },
-  { slug: "cookies", draft: true, contact: "dpo@bazarrealestate.ae" },
+  { slug: "privacy", contact: "info@bazarrealestate.ae" },
+  { slug: "terms", contact: "dpo@bazarrealestate.ae" },
+  { slug: "cookies", contact: "dpo@bazarrealestate.ae" },
 ] as const;
 
 test("/legal redirects to /legal/privacy", async ({ page }) => {
@@ -19,9 +20,11 @@ for (const doc of LEGAL_DOCS) {
     page,
   }) => {
     await page.goto(`/legal/${doc.slug}`);
+    // The draft banner was removed from the frame outright — assert it stays
+    // removed, on every document, rather than just deleting the assertion.
     await expect(
       page.getByText(/lawyer-drafted copy in progress/i),
-    ).toHaveCount(doc.draft ? 1 : 0);
+    ).toHaveCount(0);
     // Tab nav surfaces the other two siblings
     const nav = page.getByRole("navigation", { name: /legal documents/i });
     await expect(nav.getByRole("link", { name: /privacy/i })).toBeVisible();
@@ -78,9 +81,9 @@ test("the Arabic privacy policy renders right-to-left and links both ways", asyn
     page.getByRole("link", { name: "info@bazarrealestate.ae" }).first(),
   ).toBeVisible();
 
-  // Only privacy is translated, so the doc's own switcher must not offer
-  // tabs that would land the reader back in English without warning. (The
-  // site footer still links all three English docs — that is separate.)
+  // The Arabic edition offers the language switch alone: the document tabs
+  // would land the reader back in English without warning. (The site footer
+  // still links all three English docs — that is separate.)
   const switcher = page.getByRole("navigation", { name: "لغة المستند" });
   await expect(switcher.getByRole("link")).toHaveCount(1);
   await expect(switcher.getByRole("link", { name: "English" })).toBeVisible();

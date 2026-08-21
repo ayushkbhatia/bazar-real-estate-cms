@@ -51,7 +51,21 @@ export const LEGAL_TERMS_PAGE: MasterPageDef = {
       description: "The document heading, its effective date, and every clause in order.",
       fields: [
         text("title", "Title", { max: 120 }),
-        text("effective", "Effective date", { max: 40 }),
+        // Editable because the frame's fixed "Effective" prefix has already
+        // been fought once: an editor typed "Last updated: August 2026" into
+        // the date field and the page published "Effective Last updated:
+        // August 2026". Privacy declares the same pair.
+        text("date_label", "Date label", {
+          max: 40,
+          help: 'Sits before the date — "Effective" or "Last updated".',
+        }),
+        text("effective", "Date", { max: 40 }),
+        text("contact_email", "Contact mailbox", {
+          max: 160,
+          // A mailbox, not prose — see sections/legal-privacy.ts.
+          i18n: false,
+          help: "Printed under the document as the route for PDPL requests.",
+        }),
         area("intro", "Standfirst", { max: 400, optional: true }),
         {
           key: "clauses",
@@ -68,7 +82,9 @@ export const LEGAL_TERMS_PAGE: MasterPageDef = {
       ],
       defaults: {
         title: "Terms of service",
+        date_label: "Effective",
         effective: "22 May 2026",
+        contact_email: "dpo@bazarrealestate.ae",
         intro: "The terms you agree to by using bazar.ae and the services it links to.",
         clauses: [
             { heading: "1. Acceptance of Terms", body: "By using bazar.ae and the services it links to (the \"Service\")\nyou agree to these terms. The Service is operated by Bazar Real Estate\nBrokerage LLC (\"Bazar\", \"we\"), a UAE-licensed\nbrokerage (ORN 28041). If you don't agree, don't use the\nService." },
@@ -107,7 +123,21 @@ export const LEGAL_COOKIES_PAGE: MasterPageDef = {
       description: "The document heading, its effective date, and every clause in order.",
       fields: [
         text("title", "Title", { max: 120 }),
-        text("effective", "Effective date", { max: 40 }),
+        // Editable because the frame's fixed "Effective" prefix has already
+        // been fought once: an editor typed "Last updated: August 2026" into
+        // the date field and the page published "Effective Last updated:
+        // August 2026". Privacy declares the same pair.
+        text("date_label", "Date label", {
+          max: 40,
+          help: 'Sits before the date — "Effective" or "Last updated".',
+        }),
+        text("effective", "Date", { max: 40 }),
+        text("contact_email", "Contact mailbox", {
+          max: 160,
+          // A mailbox, not prose — see sections/legal-privacy.ts.
+          i18n: false,
+          help: "Printed under the document as the route for PDPL requests.",
+        }),
         area("intro", "Standfirst", { max: 400, optional: true }),
         {
           key: "clauses",
@@ -124,7 +154,9 @@ export const LEGAL_COOKIES_PAGE: MasterPageDef = {
       ],
       defaults: {
         title: "Cookie policy",
+        date_label: "Effective",
         effective: "22 May 2026",
+        contact_email: "dpo@bazarrealestate.ae",
         intro: "What we store on your device, why, and how to change it.",
         clauses: [
             { heading: "1. What Are Cookies", body: "Cookies are small text files a website stores on your device to\nremember information between visits. We also use similar\ntechnologies (local storage, pixels) for the same purposes — this\npolicy covers all of them under \"cookies\" for simplicity." },

@@ -38,7 +38,8 @@ describe("registry", () => {
       "qr",
       "contact-qr",
       "mortgage",
-      // The two legal documents, appended — see `pages.ts`.
+      // The three legal documents, appended — see `pages.ts`.
+      "legal-privacy",
       "legal-terms",
       "legal-cookies",
     ]);

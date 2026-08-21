@@ -121,6 +121,11 @@ export const MASTER_PAGE_SEO_DEFAULTS: Record<
     description:
       "You've scanned our code — save Bazar Real Estate to your phone in one tap, or call, WhatsApp or email an advisor in Abu Dhabi.",
   },
+  "legal-privacy": {
+    title: "Privacy policy",
+    description:
+      "How Bazar Real Estate L.L.C. collects, uses, stores, discloses, and protects personal data, issued under UAE PDPL (Federal Decree-Law No. 45 of 2021).",
+  },
   "legal-terms": {
     title: "Terms of service",
     description:

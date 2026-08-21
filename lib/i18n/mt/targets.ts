@@ -187,14 +187,17 @@ export const PROTECTED_FIELDS: { table: string; column: string; why: string }[] 
 
 /**
  * Legal and consent copy is protected too, but it cannot be listed above
- * because none of it is a database column: `/legal/*` is JSX under
- * `app/[locale]/(public)/legal/` and the consent strings live in the banner
- * component. There is nothing for a table-and-column denylist to name.
+ * because none of it is a database column: the consent strings live in the
+ * banner component, and the three `/legal/*` documents are master pages whose
+ * content sits in `pages.blocks`. There is nothing for a table-and-column
+ * denylist to name.
  *
- * Their protection is structural instead — no MT target can reach them, and
- * the Arabic for those surfaces is hand-authored through the message
- * catalogue, where a translator sees them as ordinary strings. Recorded here
- * so the absence reads as a decision rather than an oversight.
+ * Their protection is structural instead — no MT target can reach them. The
+ * privacy policy's Arabic is the client's own, hand-declared beside its
+ * English in `lib/master-pages/sections/legal-privacy.ts`, which is also what
+ * makes `scripts/i18n/translate-content.ts` skip it: every slot comes back
+ * with its Arabic already filled, so there is no work to do. Recorded here so
+ * the absence reads as a decision rather than an oversight.
  */
 export const PROTECTED_NON_COLUMNS = [
   "app/[locale]/(public)/legal/** — lawyer-signed copy",
