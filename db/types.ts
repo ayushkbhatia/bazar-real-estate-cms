@@ -1345,6 +1345,8 @@ export type Database = {
         Row: {
           account_id: string | null
           ack_sent_at: string | null
+          archived_at: string | null
+          archived_by: string | null
           assigned_agent_id: string | null
           brief_raw: string | null
           budget_max: number | null
@@ -1373,6 +1375,8 @@ export type Database = {
         Insert: {
           account_id?: string | null
           ack_sent_at?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
           assigned_agent_id?: string | null
           brief_raw?: string | null
           budget_max?: number | null
@@ -1401,6 +1405,8 @@ export type Database = {
         Update: {
           account_id?: string | null
           ack_sent_at?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
           assigned_agent_id?: string | null
           brief_raw?: string | null
           budget_max?: number | null

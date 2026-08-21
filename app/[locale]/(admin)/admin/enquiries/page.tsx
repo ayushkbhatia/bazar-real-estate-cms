@@ -1,11 +1,13 @@
 import Link from "next/link";
-import { ChevronRight, KanbanSquare, ListTree } from "lucide-react";
+import { Archive, ChevronRight, KanbanSquare, ListTree } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { LiveDot } from "@/lib/realtime/live-dot";
 import { listEnquiries, type EnquiryListRow } from "@/lib/queries/enquiries";
+import { getStaffRole } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/db/types";
 import { KanbanBoard } from "./_kanban";
+import { ArchiveEnquiryButton } from "./_archive-button";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,7 @@ type PageProps = {
     status?: string;
     temperature?: string;
     view?: string;
+    archived?: string;
   }>;
 };
 
@@ -77,9 +80,14 @@ function summariseSource(s: EnquiryListRow["source"]): string {
 function ScopeTabs({
   current,
   hot,
+  archived,
+  canArchive,
 }: {
   current: string;
   hot: boolean;
+  archived: boolean;
+  /** Only admins may archive, so only they get the tab that shows the pile. */
+  canArchive: boolean;
 }) {
   return (
     <nav className="flex gap-1">
@@ -89,7 +97,7 @@ function ScopeTabs({
           href={s.value === "all" ? "/admin/enquiries" : `?scope=${s.value}`}
           className={cn(
             "px-3 h-8 inline-flex items-center rounded text-[13px] transition-colors",
-            current === s.value
+            !archived && current === s.value
               ? "bg-bz-navy text-bz-bg"
               : "text-bz-ink-2 hover:bg-bz-surface-2",
           )}
@@ -108,6 +116,20 @@ function ScopeTabs({
       >
         Hot only
       </Link>
+      {canArchive ? (
+        <Link
+          href="?archived=1"
+          className={cn(
+            "px-3 h-8 inline-flex items-center gap-1.5 rounded text-[13px] transition-colors",
+            archived
+              ? "bg-bz-navy text-bz-bg"
+              : "text-bz-ink-2 hover:bg-bz-surface-2",
+          )}
+        >
+          <Archive size={12.5} strokeWidth={1.7} />
+          Archived
+        </Link>
+      ) : null}
     </nav>
   );
 }
@@ -133,7 +155,16 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
       : null
   ) as Database["public"]["Enums"]["enquiry_status"] | null;
   const temperature = raw.temperature === "hot" ? "hot" : null;
-  const view = raw.view === "kanban" ? "kanban" : "list";
+
+  // The archive is admin-only to read as well as to write. Resolving the role
+  // before the query matters: a non-admin who types ?archived=1 must get the
+  // ordinary inbox, not an empty page that confirms the archive exists.
+  const canArchive = (await getStaffRole()) === "admin";
+  const archived = canArchive && raw.archived === "1";
+
+  // The archive is a flat pile, not a pipeline — a Kanban of leads nobody is
+  // working is noise, so that view stays on the live inbox.
+  const view = !archived && raw.view === "kanban" ? "kanban" : "list";
 
   // In Kanban mode the status filter is meaningless — the columns ARE
   // the status partition — but scope + temperature still apply.
@@ -141,6 +172,7 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
     scope,
     status: view === "kanban" ? null : status,
     temperature,
+    archived,
     limit: 200,
   });
 
@@ -148,7 +180,7 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
     <CmsShell
       title="Enquiries"
       breadcrumbs="Inbox"
-      primary={<ViewToggle view={view} />}
+      primary={archived ? null : <ViewToggle view={view} />}
       live={
         <LiveDot
           channel="public:enquiries:list"
@@ -159,7 +191,12 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
     >
       <div className="flex flex-col gap-5">
         <div className="flex items-baseline justify-between gap-4">
-          <ScopeTabs current={scope} hot={temperature === "hot"} />
+          <ScopeTabs
+            current={scope}
+            hot={temperature === "hot"}
+            archived={archived}
+            canArchive={canArchive}
+          />
           <div className="text-[13px] text-bz-muted">
             {total} {total === 1 ? "enquiry" : "enquiries"}
           </div>
@@ -169,15 +206,23 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
           <KanbanBoard rows={rows} />
         ) : rows.length === 0 ? (
           <div className="bg-bz-surface border border-bz-border rounded-lg p-12 text-center text-bz-muted">
-            No enquiries match this view.
+            {archived
+              ? "Nothing archived yet."
+              : "No enquiries match this view."}
           </div>
         ) : (
           <ul className="flex flex-col gap-2">
             {rows.map((row) => (
-              <li key={row.id}>
+              // The card is the <li>, not the <Link>: the archive control has
+              // to be a sibling of the anchor, because a button nested inside
+              // one is invalid markup and swallows the navigation click.
+              <li
+                key={row.id}
+                className="flex items-stretch bg-bz-surface border border-bz-border rounded-lg hover:border-bz-border-strong transition-colors"
+              >
                 <Link
                   href={`/admin/enquiries/${row.id}`}
-                  className="block bg-bz-surface border border-bz-border rounded-lg p-4 hover:border-bz-border-strong transition-colors"
+                  className="block flex-1 min-w-0 p-4"
                 >
                   <div className="flex items-start gap-4">
                     <div className="flex-1 min-w-0">
@@ -239,7 +284,9 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
                     </div>
                     <div className="flex flex-col items-end gap-2 flex-shrink-0">
                       <span className="text-[11.5px] text-bz-muted mono">
-                        {relative(row.created_at)} ago
+                        {row.archived_at
+                          ? `archived ${relative(row.archived_at)} ago`
+                          : `${relative(row.created_at)} ago`}
                       </span>
                       <ChevronRight
                         size={14}
@@ -249,6 +296,15 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
                     </div>
                   </div>
                 </Link>
+                {canArchive ? (
+                  <div className="flex items-center pe-3 ps-1 flex-shrink-0">
+                    <ArchiveEnquiryButton
+                      enquiryId={row.id}
+                      name={row.name}
+                      archived={row.archived_at !== null}
+                    />
+                  </div>
+                ) : null}
               </li>
             ))}
           </ul>
