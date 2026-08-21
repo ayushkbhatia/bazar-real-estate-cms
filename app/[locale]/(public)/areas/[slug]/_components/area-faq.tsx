@@ -14,10 +14,18 @@ export type AreaFaqEntry = { q: string; a: string };
  * client JavaScript.
  */
 export function AreaFaq({
+  eyebrow,
   heading,
   intro,
   entries,
 }: {
+  /**
+   * Supplied by the page rather than written here: this used to be the literal
+   * "FAQ", which rendered in English above an Arabic accordion on all 24 area
+   * guides. It is a prop rather than a `getTranslations` call so the component
+   * stays free of the request-scoped locale.
+   */
+  eyebrow: string;
   heading: string;
   intro?: string | null;
   entries: AreaFaqEntry[];
@@ -43,7 +51,7 @@ export function AreaFaq({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
       />
-      <Eyebrow>FAQ</Eyebrow>
+      <Eyebrow>{eyebrow}</Eyebrow>
       <h2
         className="serif mt-2 font-normal leading-tight max-w-[28ch]"
         style={{ fontSize: fluid(34), letterSpacing: "-0.02em" }}
