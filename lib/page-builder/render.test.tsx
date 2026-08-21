@@ -182,9 +182,9 @@ describe("every catalogue block renders", () => {
 
 describe("blocks with nothing to show", () => {
   it("render nothing rather than an orphan heading", () => {
-    // A rail whose picks were all unpublished, and list blocks nobody filled
-    // in. Each must disappear entirely — a heading over an empty grid reads as
-    // a broken page.
+    // A rail whose picks were all unpublished, and list blocks an editor
+    // emptied. Each must disappear entirely — a heading over an empty grid
+    // reads as a broken page.
     for (const key of [
       "featured_properties",
       "tiles",
@@ -194,11 +194,67 @@ describe("blocks with nothing to show", () => {
       "testimonials",
     ]) {
       const def = BLOCK_DEFS.find((d) => d.key === key)!;
-      const [block] = resolveDocument([newBlockInstance(def)]);
+      const instance = newBlockInstance(def);
+      const [block] = resolveDocument([
+        { ...instance, values: { ...instance.values, items: [], picks: [] } },
+      ]);
       const { container } = render(
         <BlockNode block={block} data={EMPTY_LANDING_DATA} />,
       );
       expect(container.textContent?.trim(), key).toBe("");
+    }
+  });
+
+  /**
+   * The bug this pairs with: `rowsRequired` is what the editor and the publish
+   * gate read to say "this section wouldn't appear". If a block declares it and
+   * still renders while empty the warning is a lie; if a block renders nothing
+   * while empty and doesn't declare it, the silence is back.
+   */
+  it("declare rowsRequired for exactly the lists that gate rendering", () => {
+    for (const def of BLOCK_DEFS) {
+      if (!def.rowsRequired) continue;
+      const instance = newBlockInstance(def);
+      const [block] = resolveDocument([
+        {
+          ...instance,
+          values: { ...instance.values, [def.rowsRequired.key]: [] },
+        },
+      ]);
+      const { container, unmount } = render(
+        <BlockNode block={block} data={DATA} />,
+      );
+      expect(
+        container.textContent?.trim(),
+        `${def.key} declares rowsRequired but still renders with an empty ${def.rowsRequired.key}`,
+      ).toBe("");
+      unmount();
+    }
+  });
+
+  /**
+   * The other half of the same fact: a block with no `rowsRequired` must be
+   * visible the moment it is added. That is what failed in production — a
+   * `lead_gen` page published with four sections and two of them missing.
+   */
+  it("renders every other block straight from its defaults", () => {
+    for (const def of BLOCK_DEFS) {
+      if (def.rowsRequired) continue;
+      // Both of these draw from live records rather than from the document, so
+      // "empty" is a catalogue state and the gate deliberately says nothing.
+      if (def.key === "featured_developments" || def.key === "testimonials") continue;
+      const [block] = resolveDocument([newBlockInstance(def)]);
+      const { container, unmount } = render(
+        <BlockNode block={block} data={DATA} />,
+      );
+      // innerHTML rather than textContent: the photo band is a legitimately
+      // wordless section, and what this asserts is that the block drew
+      // something at all rather than being dropped.
+      expect(
+        container.innerHTML.trim().length > 0,
+        `${def.key} renders nothing from its own defaults — adding it would change nothing on the page`,
+      ).toBe(true);
+      unmount();
     }
   });
 });

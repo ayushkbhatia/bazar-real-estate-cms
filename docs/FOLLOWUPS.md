@@ -1210,3 +1210,11 @@ shows the trail.)
   every page that has one. Anything in the second group that a client reports
   should be hand-authored into `lib/master-pages/arabic/master.json` with
   `by: "human"`, which is what this PR did for six of them.
+
+- [i18n] Two strings the page-builder catalogue now ships as block defaults
+  have no entry in `lib/master-pages/arabic/master.json`, so they fold to
+  English on `/ar`: `"Ready-to-Move Properties"` (the /buy category tile) and
+  `"Guidance from offer to completion."` (the last of the /services buying
+  steps). Both were already missing for the master pages that render them —
+  the block defaults reuse that copy verbatim rather than introducing it — so
+  one `npm run i18n:content` pass fixes them in both places at once.

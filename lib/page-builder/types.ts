@@ -112,6 +112,28 @@ export type BlockDef = {
   providesH1?: boolean;
   /** Content the block pulls from live records and an editor cannot type. */
   dataNote?: string;
+  /**
+   * The list this block cannot render without.
+   *
+   * Several catalogue components draw nothing at all when their list is empty
+   * — a heading over an empty grid reads as a broken page, so `_render.tsx`
+   * drops the whole section. That is right on the public side and invisible on
+   * the editing side: a marketing manager who adds "How it works", never opens
+   * it, and publishes gets a page with the section silently missing. Declaring
+   * the list here is what lets the editor say so on the row and the publish
+   * gate refuse, both from the same fact.
+   *
+   * Keep it in step with the `items.length === 0` guards in `_render.tsx` —
+   * `render.test.tsx` fails if a declared block still renders while empty.
+   */
+  rowsRequired?: {
+    /** The list field. */
+    key: string;
+    /** The sub-field that has to carry text for a row to count at all. */
+    itemKey: string;
+    /** Only when another field holds this value — `source: "picked"`. */
+    onlyWhen?: { key: string; value: string };
+  };
   /** Out of the picker, still resolves and renders. The rename escape hatch. */
   deprecated?: boolean;
   /**

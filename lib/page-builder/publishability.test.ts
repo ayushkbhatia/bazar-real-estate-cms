@@ -51,6 +51,33 @@ describe("evaluateLandingPublishability", () => {
     expect(result.ok).toBe(true);
   });
 
+  /**
+   * The regression this check was added for: a page published with four
+   * sections and two of them missing from the live URL, because both lists
+   * were empty and an empty list renders nothing at all.
+   */
+  it("blocks a page whose section would render nothing", () => {
+    const result = evaluate([
+      make(heroMedia, { title: "Saadiyat Lagoons" }),
+      make(faq, { items: [] }),
+    ]);
+    expect(result.ok).toBe(false);
+    expect(has(result.blockers, "FAQ has nothing in it")).toBe(true);
+    expect(
+      result.checks.find((c) => c.label === "Every section has something to show")
+        ?.passed,
+    ).toBe(false);
+  });
+
+  it("ignores an empty section that is switched off", () => {
+    const result = evaluate([
+      make(heroMedia, { title: "Saadiyat Lagoons" }),
+      make(faq, { items: [{ q: "When?", a: "Q4." }] }),
+      { ...make(faq, { items: [] }), enabled: false },
+    ]);
+    expect(result.ok).toBe(true);
+  });
+
   it("blocks a page with no title", () => {
     const result = evaluate(validPage(), { title: "  " });
     expect(result.ok).toBe(false);

@@ -58,7 +58,8 @@ lib/page-builder/
   document.ts         parse · resolve · validate — and the data-loss rules
   data.ts             collectDataRequest (pure) · resolveLandingData (batched)
   adapters.ts         values → component props, one pure fn per block
-  publishability.ts   evaluateLandingPublishability — pure, 10 blockers
+  publishability.ts   evaluateLandingPublishability — pure, 11 blockers
+  content-gap.ts      which sections would render nothing — editor + gate
 
 lib/queries/landing-pages.ts     public + admin reads
 lib/schemas/landing-page.ts      metadata zod + slug rules
@@ -142,10 +143,34 @@ Every media reference must be the `ImageValue` shape `{media_id, alt, label}` �
 - Four new components exist (`feature-rows`, `prose-band`, `cta-band`,
   `image-band`); everything else was already audited.
 
+### 6. A block must be visible the moment it is added
+
+Every list-driven component renders **nothing** when its list is empty — a
+heading over an empty grid reads as a broken page, so `_render.tsx` drops the
+whole section. Shipping the blocks with `items: []` therefore made "add
+section" a no-op: a page assembled from the `lead_gen` preset published with
+four sections and two of them missing from the live URL, with the editor, the
+save and the publish gate all silent about it.
+
+So a block either **ships with rows** — the copy already live on /buy,
+/services or the home page, never invented for the catalogue — or declares
+`rowsRequired` and is reported by `lib/page-builder/content-gap.ts`, which the
+editor reads to mark the row and the gate reads to refuse the publish. Two
+blocks take the second path, because their rows can only be campaign-specific:
+`feature_scroll` and `featured_properties` on the hand-picked source.
+
+Blocks whose emptiness is a *catalogue* state rather than a blank the editor
+left — `featured_developments` with no picks falls back to the three most
+recent, `testimonials` reads the section library — declare neither. Blocking a
+publish on those would take a campaign page down because an unrelated record
+went off-market, which is the same rule pick resolution already follows.
+
 ## Adding a block
 
 1. Define it in `lib/page-builder/blocks/*.ts`. `defaults` must equal what the
-   component renders today, so adding the block changes nothing visually.
+   component renders today, so adding the block changes nothing visually —
+   including its list fields, per decision 6. If the rows can only be
+   campaign-specific, declare `rowsRequired` instead.
 2. Add an adapter in `adapters.ts` — pure, `(values, data) => props`.
 3. Add a case in `app/[locale]/(public)/lp/[slug]/_render.tsx` **and** its key to
    `RENDERED_KEYS`. `catalogue.test.ts` fails if the two disagree.
@@ -155,13 +180,13 @@ Every media reference must be the `ImageValue` shape `{media_id, alt, label}` �
 
 ## The publish gate
 
-`evaluateLandingPublishability` — pure, ten blockers, shared by the publish card
-and the action so the button and the server can't disagree.
+`evaluateLandingPublishability` — pure, eleven blockers, shared by the publish
+card and the action so the button and the server can't disagree.
 
 Title · slug valid and unreserved · at least one renderable section · no
 unavailable sections · required copy filled · exactly one H1 · alt text on every
 picked photo · every form still live in `/admin/forms` · every link resolvable ·
-within the query budget.
+within the query budget · no section that would render nothing.
 
 Two advisory-only checks (hero present, search visibility decided) and two
 deliberate non-checks: **contrast** is unreachable because every colour is a
@@ -177,6 +202,7 @@ resolve — the same rule `lib/master-pages/index.ts:253` states.
 | `document.test.ts` | **the data-loss guard** — unknown blocks round-trip byte-identically |
 | `data.test.ts` | **the egress guard** — call counts, dedup, zero-query pages |
 | `publishability.test.ts` | one case per blocker |
+| `content-gap.test.ts` | **the visibility guard** — no preset assembles an invisible section, and an emptied list is reported |
 | `adapters.test.ts` | untouched defaults produce the component's own behaviour |
 | `render.test.tsx` | every block produces DOM; each preset has exactly one H1 |
 | `_block-editor.test.tsx` | reorder, duplicate, hide, unknown-block card, 44px targets |

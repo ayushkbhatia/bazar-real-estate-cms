@@ -1,5 +1,35 @@
 import { emptyImage } from "@/lib/master-pages";
+import { HOME_FAQ_ITEMS } from "@/lib/master-pages/pages";
+import { SALE_PROP_TYPES } from "@/app/[locale]/(public)/_components/marketing/ad-data";
 import type { BlockDef } from "../types";
+
+/**
+ * Starter rows.
+ *
+ * Every list-driven component in the catalogue renders *nothing* when its list
+ * is empty — see the guards in `_render.tsx`. Shipping these blocks with
+ * `items: []` therefore meant adding a section and getting a page that looks
+ * exactly as it did before, which is what the `lead_gen` preset did: four
+ * blocks, two of them invisible the moment they were published.
+ *
+ * So they ship filled, the way every master-page section does
+ * (`lib/master-pages/pages.ts` — `categoryTiles`, `propTypeItems`,
+ * `faqItems`). The copy is not invented for the catalogue: it is the wording
+ * already live on /buy, /services and the home page, so an unedited block
+ * states nothing the client has not already said in public.
+ *
+ * Blocks whose rows can only be campaign-specific — the feature rows, the
+ * hand-picked listing rails — stay empty on purpose and lean on
+ * `rowsRequired` instead: the editor flags them and the publish gate refuses.
+ */
+
+const TYPE_HREF: Record<string, string> = {
+  Apartments: "/buy/search?type=apartment",
+  Villas: "/buy/search?type=villa",
+  Townhouses: "/buy/search?type=townhouse",
+  Penthouses: "/buy/search?type=penthouse",
+  "Commercial Properties": "/commercial",
+};
 
 /** Alternating image/copy rows — the project-page feature scroll. */
 export const featureScroll: BlockDef = {
@@ -27,6 +57,10 @@ export const featureScroll: BlockDef = {
       ],
     },
   ],
+  // Deliberately empty: what sets *this* campaign apart is the one thing no
+  // default can supply. The editor row says so and the gate refuses to publish
+  // it blank, which is the honest version of shipping invented copy.
+  rowsRequired: { key: "items", itemKey: "title" },
   defaults: {
     eyebrow: "The detail",
     heading: "What sets it apart",
@@ -60,10 +94,41 @@ export const tiles: BlockDef = {
       ],
     },
   ],
+  rowsRequired: { key: "items", itemKey: "name" },
   defaults: {
     eyebrow: "Ways to browse",
     title: "Start where it suits you",
-    items: [],
+    // The four tiles /buy ships with, verbatim.
+    items: [
+      {
+        name: "Off-Plan Properties",
+        desc: "New launches with structured payment plans.",
+        cta: "Browse off-plan",
+        href: "/off-plan",
+        image: emptyImage("off-plan tower · render"),
+      },
+      {
+        name: "Resale Properties",
+        desc: "Established homes ready for handover.",
+        cta: "Browse resale",
+        href: "/buy/search",
+        image: emptyImage("resale apartment"),
+      },
+      {
+        name: "Ready-to-Move Properties",
+        desc: "Vacant, keys-in-hand homes.",
+        cta: "Browse ready",
+        href: "/buy/search",
+        image: emptyImage("ready villa · interior"),
+      },
+      {
+        name: "Commercial Properties",
+        desc: "Offices, retail and land.",
+        cta: "Browse commercial",
+        href: "/commercial",
+        image: emptyImage("commercial tower"),
+      },
+    ],
   },
 };
 
@@ -113,12 +178,23 @@ export const propTypes: BlockDef = {
       ],
     },
   ],
+  rowsRequired: { key: "items", itemKey: "name" },
   defaults: {
     eyebrow: "What's available",
     title: "Property types",
     cols: "3",
     aspect: "4/3",
-    items: [],
+    // The same five cards the /buy and /rent grids carry.
+    items: SALE_PROP_TYPES.map(([name, desc]) => ({
+      name,
+      desc,
+      cta:
+        name === "Commercial Properties"
+          ? "Browse commercial"
+          : `Browse ${name.toLowerCase()}`,
+      href: TYPE_HREF[name] ?? "/buy/search",
+      image: emptyImage(name.toLowerCase()),
+    })),
   },
 };
 
@@ -143,10 +219,30 @@ export const steps: BlockDef = {
       ],
     },
   ],
+  rowsRequired: { key: "items", itemKey: "title" },
   defaults: {
     eyebrow: "How it works",
     title: "From first call to keys",
-    items: [],
+    // The buying flow as /services states it.
+    items: [
+      {
+        title: "Understand your needs",
+        desc: "Location, budget, property type, and goals.",
+      },
+      {
+        title: "Shortlist properties",
+        desc: "Suitable options based on your requirements.",
+      },
+      {
+        title: "Provide market guidance",
+        desc: "Insight on value, demand, and growth potential.",
+      },
+      {
+        title: "Arrange viewings",
+        desc: "Clear property comparisons and viewing support.",
+      },
+      { title: "Support the process", desc: "Guidance from offer to completion." },
+    ],
   },
 };
 
@@ -176,10 +272,13 @@ export const faq: BlockDef = {
       ],
     },
   ],
+  rowsRequired: { key: "items", itemKey: "q" },
   defaults: {
     eyebrow: "Questions",
     title: "Frequently asked",
-    items: [],
+    // The home page's five, so a campaign page answers what the site already
+    // answers rather than a second, subtly different set.
+    items: HOME_FAQ_ITEMS.map((item) => ({ q: item.q, a: item.a })),
   },
 };
 

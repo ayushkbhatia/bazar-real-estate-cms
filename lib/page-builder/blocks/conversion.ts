@@ -1,4 +1,5 @@
 import { emptyImage } from "@/lib/master-pages";
+import { AD_COMMUNITIES } from "@/app/[locale]/(public)/_components/marketing/ad-data";
 import type { BlockDef } from "../types";
 
 /** Copy + photo + live lead form — `LeadBand`. */
@@ -112,11 +113,15 @@ export const chips: BlockDef = {
     { key: "cta_label", label: "Button", kind: "text", max: 40, optional: true },
     { key: "cta_href", label: "Button link", kind: "link", optional: true },
   ],
+  rowsRequired: { key: "items", itemKey: "label" },
   defaults: {
     eyebrow: "Where",
     title: "Communities we know well",
     sub: null,
-    items: [],
+    // The eight the /buy and /rent chip clouds carry. Unlinked, as they are
+    // there — a chip with no href renders as a plain pill rather than a dead
+    // link, and a campaign usually wants them pointing at its own search.
+    items: AD_COMMUNITIES.map((label) => ({ label, href: null })),
     icon: true,
     cta_label: null,
     cta_href: null,
