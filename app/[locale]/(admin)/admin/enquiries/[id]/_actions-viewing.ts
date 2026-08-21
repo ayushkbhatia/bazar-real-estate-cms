@@ -75,12 +75,19 @@ export async function createViewing(input: {
   const { data: enquiry } = await supabase
     .from("enquiries")
     .select(
-      "id, name, email, property_id, account_id, properties:property_id(reference, title, address_line)",
+      "id, name, email, property_id, account_id, archived_at, properties:property_id(reference, title, address_line)",
     )
     .eq("id", input.enquiryId)
     .maybeSingle();
   if (!enquiry)
     return { status: "error", message: "Enquiry not found / not allowed." };
+  // Booking emails the lead a calendar invite — an archived lead must not
+  // get one, so this is checked before the viewing row is written.
+  if (enquiry.archived_at !== null)
+    return {
+      status: "error",
+      message: "This enquiry is archived — restore it before booking.",
+    };
 
   const endsAt = new Date(startsAt.getTime() + minutes * 60_000);
   const propRow = enquiry.properties as

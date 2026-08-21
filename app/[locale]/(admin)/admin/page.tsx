@@ -61,6 +61,7 @@ async function fetchKpis() {
           supabase
             .from("enquiries")
             .select("id", { count: "exact", head: true })
+            .is("archived_at", null)
             .eq("status", status)
             .then(({ count }) => [status, count ?? 0] as const),
         ),

@@ -30,11 +30,15 @@ export type EnquiryListRow = {
   assigned_agent_id: string | null;
   staff: { display_name: string; slug: string } | null;
   unread_count: number;
+  /** Set when an admin archived the lead. Orthogonal to `status`. */
+  archived_at: string | null;
+  archived_by: string | null;
 };
 
 const LIST_FIELDS = `
   id, name, email, phone, brief_raw, source, status, temperature,
   created_at, first_response_at, property_id, development_id, assigned_agent_id,
+  archived_at, archived_by,
   properties:property_id(reference, title, slug),
   developments:development_id(name, slug),
   staff:assigned_agent_id(display_name, slug),
@@ -48,6 +52,12 @@ type ListFilter = {
   /** 'mine' restricts to the current staff user's assigned leads. */
   scope?: "all" | "mine" | "unassigned";
   temperature?: EnquiryTemperature | null;
+  /**
+   * Which side of the archive to read. Defaults to the live inbox — an
+   * archived lead is out of the working set, so it must not reappear in a
+   * scope tab, the Kanban board or a count unless the caller asked for it.
+   */
+  archived?: boolean;
   limit?: number;
   offset?: number;
 };
@@ -65,6 +75,10 @@ export async function listEnquiries(filter: ListFilter = {}): Promise<{
     .from("enquiries")
     .select(LIST_FIELDS, { count: "exact" });
 
+  query = filter.archived
+    ? query.not("archived_at", "is", null)
+    : query.is("archived_at", null);
+
   if (filter.status) query = query.eq("status", filter.status);
   if (filter.temperature) query = query.eq("temperature", filter.temperature);
   if (filter.scope === "mine" && user)
@@ -72,8 +86,13 @@ export async function listEnquiries(filter: ListFilter = {}): Promise<{
   if (filter.scope === "unassigned")
     query = query.is("assigned_agent_id", null);
 
+  // The archive reads as a filing cabinet — most recently filed first, which
+  // is also the order its partial index is built in. The live inbox stays on
+  // submission order.
   query = query
-    .order("created_at", { ascending: false })
+    .order(filter.archived ? "archived_at" : "created_at", {
+      ascending: false,
+    })
     .range(
       filter.offset ?? 0,
       (filter.offset ?? 0) + (filter.limit ?? 100) - 1,
@@ -119,6 +138,8 @@ export async function listEnquiries(filter: ListFilter = {}): Promise<{
       assigned_agent_id: row.assigned_agent_id,
       staff: row.staff,
       unread_count,
+      archived_at: row.archived_at,
+      archived_by: row.archived_by,
     };
   });
 
@@ -158,7 +179,7 @@ export async function getEnquiryById(
     .select(
       `id, name, email, phone, brief_raw, source, status, temperature,
        created_at, first_response_at, property_id, development_id,
-       assigned_agent_id,
+       assigned_agent_id, archived_at, archived_by,
        budget_min, budget_max, timeline, pre_approved, internal_notes,
        inferred_constraints, closed_at, close_reason, account_id,
        properties:property_id(reference, title, slug),
@@ -264,6 +285,8 @@ export async function listEnquiriesForUser(): Promise<EnquiryListRow[]> {
       assigned_agent_id: row.assigned_agent_id,
       staff: row.staff,
       unread_count,
+      archived_at: row.archived_at,
+      archived_by: row.archived_by,
     };
   });
 }
@@ -286,10 +309,14 @@ export async function fetchInboxKpis(): Promise<DashboardKpis> {
   const supabase = await createSupabaseServerClient();
   const todayIso = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
+  // Every enquiry count here is a "needs attention" number, so all three
+  // exclude the archive — an archived lead that still counted as unassigned
+  // would keep nagging from the dashboard after being deliberately filed.
   const [todayCount, active, unassigned, hot] = await Promise.all([
     supabase
       .from("enquiries")
       .select("id", { count: "exact", head: true })
+      .is("archived_at", null)
       .gte("created_at", todayIso),
     supabase
       .from("properties")
@@ -299,12 +326,14 @@ export async function fetchInboxKpis(): Promise<DashboardKpis> {
     supabase
       .from("enquiries")
       .select("id", { count: "exact", head: true })
+      .is("archived_at", null)
       .is("assigned_agent_id", null)
       .neq("status", "closed_won")
       .neq("status", "closed_lost"),
     supabase
       .from("enquiries")
       .select("id", { count: "exact", head: true })
+      .is("archived_at", null)
       .eq("temperature", "hot"),
   ]);
 

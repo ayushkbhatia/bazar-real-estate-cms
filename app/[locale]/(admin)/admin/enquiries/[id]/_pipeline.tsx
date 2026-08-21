@@ -23,9 +23,13 @@ const TEMPERATURES: Temperature[] = ["cold", "warm", "hot"];
 export function StatusPipeline({
   enquiryId,
   current,
+  /** Archived leads are frozen — the server action refuses the write, so the
+   *  stage the lead reached stays readable but is no longer a control. */
+  readOnly = false,
 }: {
   enquiryId: string;
   current: Status;
+  readOnly?: boolean;
 }) {
   const [pending, start] = useTransition();
   const idx = STATUS_FLOW.findIndex((s) => s.value === current);
@@ -39,7 +43,7 @@ export function StatusPipeline({
           <li key={s.value}>
             <button
               type="button"
-              disabled={pending || active}
+              disabled={pending || active || readOnly}
               onClick={() => {
                 start(async () => {
                   const r = await setEnquiryStatus(enquiryId, s.value);
@@ -68,9 +72,11 @@ export function StatusPipeline({
 export function TemperatureToggle({
   enquiryId,
   current,
+  readOnly = false,
 }: {
   enquiryId: string;
   current: Temperature;
+  readOnly?: boolean;
 }) {
   const [pending, start] = useTransition();
   return (
@@ -81,7 +87,7 @@ export function TemperatureToggle({
           <button
             key={t}
             type="button"
-            disabled={pending || active}
+            disabled={pending || active || readOnly}
             onClick={() => {
               start(async () => {
                 const r = await setEnquiryTemperature(enquiryId, t);

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import * as Sentry from "@sentry/nextjs";
 import {
+  Archive,
   ChevronRight,
   ExternalLink,
   Mail,
@@ -13,6 +14,7 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { getEnquiryById } from "@/lib/queries/enquiries";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { currentStaffRow } from "@/lib/queries/staff";
+import { getStaffRole } from "@/lib/auth";
 import { LiveDot } from "@/lib/realtime/live-dot";
 import { PresencePile } from "@/lib/realtime/presence-pile";
 import { EscalationBanner } from "./_escalation-banner";
@@ -23,6 +25,7 @@ import { StatusPipeline, TemperatureToggle } from "./_pipeline";
 import { AssignToMeButton } from "./_assign-button";
 import { NotesEditor } from "./_notes";
 import { EnquiryComposer, type ComposerAsset } from "./_composer";
+import { ArchiveEnquiryButton } from "../_archive-button";
 import { listPublishedAssets } from "@/lib/queries/content-assets";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
 import type { TokenContext } from "@/lib/content-assets/tokens";
@@ -74,18 +77,21 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
   // `[]` on failure and `currentStaffRow` returns null, so neither rejects. A
   // rejection here would turn a missing enquiry into a 500 instead of the
   // 404 below.
-  const [enquiry, me, emailAssets, whatsappAssets] = await Promise.all([
+  const [enquiry, me, role, emailAssets, whatsappAssets] = await Promise.all([
     getEnquiryById(id),
     currentStaffRow(),
+    getStaffRole(),
     listPublishedAssets("email"),
     listPublishedAssets("whatsapp"),
   ]);
   if (!enquiry) notFound();
+  const isArchived = enquiry.archived_at !== null;
+  const canArchive = role === "admin";
   const now = serverNow();
 
   // Best-effort mark-read on each staff view. Failures shouldn't block
   // page render — but they shouldn't disappear silently either.
-  if (enquiry.unread_count > 0) {
+  if (enquiry.unread_count > 0 && !isArchived) {
     await markConversationRead(id).catch((err: unknown) => {
       Sentry.captureException(err, {
         tags: { component: "enquiry/mark-read" },
@@ -170,13 +176,35 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
     >
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
         <div className="flex flex-col gap-5 min-w-0">
-          <EscalationBanner
-            createdAt={enquiry.created_at}
-            firstResponseAt={enquiry.first_response_at}
-            assignedAgentId={enquiry.assigned_agent_id}
-            status={enquiry.status}
-            nowMs={now}
-          />
+          {isArchived ? (
+            <div className="flex items-start gap-3 rounded-lg border border-bz-border bg-bz-surface-2 px-4 py-3">
+              <Archive
+                size={15}
+                strokeWidth={1.8}
+                className="text-bz-muted mt-0.5 flex-shrink-0"
+              />
+              <div className="text-[13px] leading-relaxed">
+                <span className="font-medium">This enquiry is archived.</span>{" "}
+                <span className="text-bz-ink-2">
+                  Filed {formatDateTime(enquiry.archived_at!)}. It stays out of
+                  the inbox, the pipeline and the dashboard counts, and it
+                  can&apos;t be replied to or reassigned until an admin
+                  restores it.
+                </span>
+              </div>
+            </div>
+          ) : (
+            // An archived lead has no SLA left to breach — the escalation
+            // cron skips it, so the banner would be claiming a countdown
+            // that nothing is running.
+            <EscalationBanner
+              createdAt={enquiry.created_at}
+              firstResponseAt={enquiry.first_response_at}
+              assignedAgentId={enquiry.assigned_agent_id}
+              status={enquiry.status}
+              nowMs={now}
+            />
+          )}
           {/* Header */}
           <div className="bg-bz-surface border border-bz-border rounded-lg p-5">
             <div className="flex items-baseline justify-between flex-wrap gap-3">
@@ -188,7 +216,11 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
               </span>
             </div>
             <div className="mt-3">
-              <StatusPipeline enquiryId={enquiry.id} current={enquiry.status} />
+              <StatusPipeline
+                enquiryId={enquiry.id}
+                current={enquiry.status}
+                readOnly={isArchived}
+              />
             </div>
             <div className="mt-4 flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-2">
@@ -196,20 +228,33 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                 <TemperatureToggle
                   enquiryId={enquiry.id}
                   current={enquiry.temperature}
+                  readOnly={isArchived}
                 />
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <ScheduleViewingButton enquiryId={enquiry.id} />
-                {enquiry.assigned_agent_id == null ? (
-                  <AssignToMeButton enquiryId={enquiry.id} />
-                ) : (
-                  <span className="text-[12px] text-bz-muted">
-                    Assigned to{" "}
-                    <span className="text-bz-ink-2">
-                      {enquiry.staff?.display_name ?? "an advisor"}
-                    </span>
-                  </span>
+                {isArchived ? null : (
+                  <>
+                    <ScheduleViewingButton enquiryId={enquiry.id} />
+                    {enquiry.assigned_agent_id == null ? (
+                      <AssignToMeButton enquiryId={enquiry.id} />
+                    ) : (
+                      <span className="text-[12px] text-bz-muted">
+                        Assigned to{" "}
+                        <span className="text-bz-ink-2">
+                          {enquiry.staff?.display_name ?? "an advisor"}
+                        </span>
+                      </span>
+                    )}
+                  </>
                 )}
+                {canArchive ? (
+                  <ArchiveEnquiryButton
+                    enquiryId={enquiry.id}
+                    name={enquiry.name}
+                    archived={isArchived}
+                    presentation="button"
+                  />
+                ) : null}
               </div>
             </div>
           </div>
@@ -252,18 +297,26 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                 </li>
               ))}
             </ul>
-            <EnquiryComposer
-              enquiryId={enquiry.id}
-              tokenContext={tokenContext}
-              hasEmail={Boolean(enquiry.email)}
-              hasPhone={Boolean(enquiry.phone)}
-              assets={{
-                email: emailAssets.map(toComposerAsset),
-                whatsapp: whatsappAssets.map(toComposerAsset),
-              }}
-              // By reference — an arrow wrapper here can't cross the boundary.
-              send={sendEnquiryTouch}
-            />
+            {isArchived ? (
+              <p className="mt-4 rounded-md border border-dashed border-bz-border px-3.5 py-3 text-[12.5px] text-bz-muted">
+                Replying is disabled while this enquiry is archived — the send
+                action refuses it, so the composer is hidden rather than
+                failing after you&apos;ve written the message.
+              </p>
+            ) : (
+              <EnquiryComposer
+                enquiryId={enquiry.id}
+                tokenContext={tokenContext}
+                hasEmail={Boolean(enquiry.email)}
+                hasPhone={Boolean(enquiry.phone)}
+                assets={{
+                  email: emailAssets.map(toComposerAsset),
+                  whatsapp: whatsappAssets.map(toComposerAsset),
+                }}
+                // By reference — an arrow wrapper here can't cross the boundary.
+                send={sendEnquiryTouch}
+              />
+            )}
           </div>
         </div>
 

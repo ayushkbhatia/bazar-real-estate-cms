@@ -17,6 +17,16 @@ const ENQUIRY_READ_ROLES = [
   "agent",
   "support",
 ] as const;
+/**
+ * Archiving takes a lead out of every advisor's inbox, so it is the one
+ * enquiry action reserved for the top role. `admin` is that role — the
+ * `staff_role` enum has no separate super-admin tier; `admin` is the
+ * "Full access" one (see `lib/schemas/staff.ts#ROLE_DESCRIPTION`).
+ *
+ * Migration 0116 enforces the same rule in Postgres with a BEFORE UPDATE
+ * trigger, so a direct PostgREST call can't route around this line.
+ */
+const ENQUIRY_ARCHIVE_ROLES = ["admin"] as const;
 
 type Status = Database["public"]["Enums"]["enquiry_status"];
 type Temperature = Database["public"]["Enums"]["enquiry_temperature"];
@@ -82,6 +92,10 @@ export async function setEnquiryStatus(
       closed_at: closing ? new Date().toISOString() : null,
     })
     .eq("id", enquiryId)
+    // An archived lead is out of the working set; nothing else may move it
+    // until an admin restores it. Costs one predicate per write and closes
+    // the gap left by the detail page still being reachable by URL.
+    .is("archived_at", null)
     .select("id")
     .maybeSingle();
 
@@ -122,6 +136,7 @@ export async function setEnquiryTemperature(
     .from("enquiries")
     .update({ temperature: next })
     .eq("id", enquiryId)
+    .is("archived_at", null)
     .select("id")
     .maybeSingle();
 
@@ -158,6 +173,7 @@ export async function assignEnquiryToMe(
     .from("enquiries")
     .update({ assigned_agent_id: ctx.user.id })
     .eq("id", enquiryId)
+    .is("archived_at", null)
     .select("id")
     .maybeSingle();
 
@@ -241,12 +257,19 @@ export async function sendEnquiryTouch(
   const { data: enquiry } = await ctx.supabase
     .from("enquiries")
     .select(
-      "first_response_at, name, email, phone, property_id, properties:property_id(reference)",
+      "first_response_at, name, email, phone, property_id, archived_at, properties:property_id(reference)",
     )
     .eq("id", enquiryId)
     .maybeSingle();
   if (!enquiry)
     return { status: "error", message: "Enquiry not found / not allowed." };
+  // Checked before the send, not after: the outward work here is a real
+  // email or a WhatsApp hand-off, and an archived lead must not receive one.
+  if (enquiry.archived_at !== null)
+    return {
+      status: "error",
+      message: "This enquiry is archived — restore it before replying.",
+    };
 
   const { data: staffRow } = await ctx.supabase
     .from("staff")
@@ -363,6 +386,78 @@ export async function sendEnquiryTouch(
   };
 }
 
+/**
+ * Archive or restore a lead. Admin-only, audited, reversible.
+ *
+ * Archiving is not a status change and not a delete: the pipeline stage,
+ * the conversation and the audit trail all survive untouched, and the row
+ * simply stops appearing in the inbox, the Kanban board, the dashboard
+ * counts and the escalation cron. Restoring puts it back exactly where it
+ * was — which is why `status` is deliberately never written here.
+ *
+ * Nothing is erased, so this is not a PDPL deletion route; that stays with
+ * the DSR console.
+ */
+export async function setEnquiryArchived(
+  enquiryId: string,
+  archived: boolean,
+): Promise<EnquiryActionResult> {
+  if (isSupabaseConfigured) await requireRole(ENQUIRY_ARCHIVE_ROLES);
+  const ctx = await getStaffSupabase();
+  if (isStaffErr(ctx)) return { status: "error", message: ctx.error };
+
+  const { data: before } = await ctx.supabase
+    .from("enquiries")
+    .select("archived_at, status")
+    .eq("id", enquiryId)
+    .maybeSingle();
+  if (!before) return { status: "error", message: "Not found / not allowed." };
+
+  // Guard the no-op rather than writing a fresh timestamp over an existing
+  // one: a second archive would otherwise move the filing date and log a
+  // meaningless audit row.
+  if (archived && before.archived_at !== null)
+    return { status: "error", message: "Already archived." };
+  if (!archived && before.archived_at === null)
+    return { status: "error", message: "This enquiry isn't archived." };
+
+  const nowIso = new Date().toISOString();
+  const { error, data } = await ctx.supabase
+    .from("enquiries")
+    .update({
+      archived_at: archived ? nowIso : null,
+      // Cleared on restore so the pair never disagrees about whether the
+      // row is filed and who filed it.
+      archived_by: archived ? ctx.user.id : null,
+    })
+    .eq("id", enquiryId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return { status: "error", message: error.message };
+  if (!data) return { status: "error", message: "Not found / not allowed." };
+
+  await logAudit({
+    action: archived ? "enquiry.archived" : "enquiry.restored",
+    target_kind: "enquiry",
+    target_id: enquiryId,
+    before: { archived_at: before.archived_at, status: before.status },
+    after: {
+      archived_at: archived ? nowIso : null,
+      archived_by: archived ? ctx.user.id : null,
+      status: before.status,
+    },
+  });
+
+  revalidatePath("/admin/enquiries");
+  revalidatePath(`/admin/enquiries/${enquiryId}`);
+  revalidatePath("/admin");
+  return {
+    status: "ok",
+    message: archived ? "Enquiry archived." : "Enquiry restored.",
+  };
+}
+
 export async function updateInternalNotes(
   enquiryId: string,
   notes: string,
@@ -374,6 +469,8 @@ export async function updateInternalNotes(
   const trimmed = notes.trim().slice(0, 4000);
   const { error, data } = await ctx.supabase
     .from("enquiries")
+    // Deliberately NOT archive-guarded: "archived as spam, see ticket 412"
+    // is exactly the note someone needs to leave on a filed lead.
     .update({ internal_notes: trimmed === "" ? null : trimmed })
     .eq("id", enquiryId)
     .select("id")

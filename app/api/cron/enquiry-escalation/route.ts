@@ -58,6 +58,9 @@ export async function GET(req: NextRequest) {
       )
       .is("assigned_agent_id", null)
       .is("escalated_at", null)
+      // An archived lead was deliberately taken out of the working set;
+      // escalating it to a manager an hour later undoes that decision.
+      .is("archived_at", null)
       .lte("created_at", sixtyMinAgo);
     if (error) throw error;
 

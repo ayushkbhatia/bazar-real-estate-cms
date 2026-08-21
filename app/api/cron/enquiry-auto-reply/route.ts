@@ -62,7 +62,10 @@ export async function GET(req: NextRequest) {
         "id, name, email, brief_raw, property_id, created_at, properties(reference, title)",
       )
       .gte("created_at", fiveMinAgo)
-      .is("ack_sent_at", null);
+      .is("ack_sent_at", null)
+      // Spam filed within the acknowledgement window shouldn't get an
+      // auto-reply on its way out.
+      .is("archived_at", null);
     if (error) throw error;
 
     let sent = 0;
