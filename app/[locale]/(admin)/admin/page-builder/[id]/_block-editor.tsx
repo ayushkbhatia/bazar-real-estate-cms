@@ -23,6 +23,7 @@ import {
   mintBlockId,
   newBlockInstance,
 } from "@/lib/page-builder/catalogue";
+import { blockContentGap } from "@/lib/page-builder/content-gap";
 import type { BlockDef, BlockInstance } from "@/lib/page-builder/types";
 import { FieldEditor } from "../../_fields/field-editor";
 import type { MediaOption, Seeds } from "../../_fields/types";
@@ -146,6 +147,13 @@ export function BlockEditor({
   }
 
   const hiddenCount = blocks.filter((b) => !b.enabled).length;
+  // Sections that are switched on but would draw nothing. The publish gate
+  // refuses these; saying so up here is what stops an editor assembling six of
+  // them before finding out.
+  const emptyCount = blocks.filter((b) => {
+    const def = getBlockDef(b.type);
+    return b.enabled && def !== null && blockContentGap(def, b.values) !== null;
+  }).length;
   const usedTypes = blocks.map((b) => b.type);
 
   return (
@@ -156,6 +164,9 @@ export function BlockEditor({
           <p className="text-[11.5px] text-bz-muted">
             {blocks.length} section{blocks.length === 1 ? "" : "s"}
             {hiddenCount > 0 ? ` · ${hiddenCount} hidden` : ""}
+            {emptyCount > 0
+              ? ` · ${emptyCount} won't appear until filled in`
+              : ""}
             {dirty ? " · unsaved changes" : ""}
           </p>
         </div>
@@ -259,6 +270,11 @@ function BlockRow({
   onMediaAdded: (m: MediaOption) => void;
 }) {
   const def = getBlockDef(block.type);
+  // Non-null only when this section would render nothing at all — see
+  // lib/page-builder/content-gap.ts. Shown on the row rather than behind the
+  // expander, because the whole failure is that an unopened section looks fine.
+  const gap =
+    def && block.enabled ? blockContentGap(def, block.values) : null;
 
   // A block this build doesn't recognise. It is kept, not dropped — its copy
   // exists nowhere else — but there is no field editor to render for it, so the
@@ -336,6 +352,13 @@ function BlockRow({
           />
         </IconButton>
       </div>
+
+      {gap ? (
+        <p className="mx-3 mb-2.5 rounded border border-[oklch(0.85_0.09_75)] bg-[oklch(0.97_0.03_85)] px-2.5 py-2 text-[11.5px] text-[oklch(0.42_0.09_60)] flex items-start gap-1.5">
+          <AlertTriangle size={12} strokeWidth={1.8} className="mt-0.5 shrink-0" />
+          {gap}
+        </p>
+      ) : null}
 
       {expanded ? (
         <div className="border-t border-bz-border px-3 py-3 flex flex-col gap-3">

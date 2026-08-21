@@ -206,8 +206,9 @@ describe("newBlockInstance", () => {
     const a = newBlockInstance(faq);
     const b = newBlockInstance(faq);
     expect(a.id).not.toBe(b.id);
+    const before = (faq.defaults.items as unknown[]).length;
     (a.values.items as unknown[]).push({ q: "?", a: "!" });
-    expect(b.values.items).toEqual([]);
-    expect(faq.defaults.items).toEqual([]);
+    expect((b.values.items as unknown[]).length).toBe(before);
+    expect((faq.defaults.items as unknown[]).length).toBe(before);
   });
 });

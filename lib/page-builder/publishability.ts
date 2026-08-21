@@ -28,6 +28,7 @@ import {
   type SectionValues,
   type ValidationIssue,
 } from "@/lib/master-pages";
+import { contentGaps } from "./content-gap";
 import {
   LANDING_QUERY_BUDGET,
   LANDING_SLUG_RE,
@@ -183,6 +184,22 @@ export function evaluateLandingPublishability(
     cost <= LANDING_QUERY_BUDGET,
     cost > LANDING_QUERY_BUDGET
       ? `This page would run ${cost} catalogue queries every time it refreshes — the cap is ${LANDING_QUERY_BUDGET}. Remove a live-inventory section.`
+      : undefined,
+  );
+
+  // 11 — sections that would draw nothing. `_render.tsx` drops a list block
+  // whose list is empty, which is right on the public side and silent on the
+  // editing side: the section is in the editor, the save succeeds, and the
+  // published page is missing it. This is the check that makes it audible.
+  const gaps = contentGaps(renderable);
+  add(
+    "Every section has something to show",
+    gaps.length === 0,
+    gaps.length > 0
+      ? `${gaps
+          .slice(0, 3)
+          .map((g) => `${g.label} has nothing in it`)
+          .join(", ")} — a section with an empty list doesn't render at all. Fill it in or remove it.`
       : undefined,
   );
 

@@ -74,6 +74,15 @@ export const featuredProperties: BlockDef = {
     },
     { key: "cta_href", label: "Button link", kind: "link", optional: true },
   ],
+  // Hand-picked is the default source, and a rail with nothing picked renders
+  // nothing at all — `FeaturedListings` returns null rather than leave an
+  // orphan heading. The other three sources fill themselves from live
+  // inventory, so the requirement only applies to this one.
+  rowsRequired: {
+    key: "picks",
+    itemKey: "slug",
+    onlyWhen: { key: "source", value: "picked" },
+  },
   defaults: {
     eyebrow: "Handpicked",
     title: "Featured properties",

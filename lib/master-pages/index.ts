@@ -273,6 +273,13 @@ export function validateFieldValues(
   for (const field of withArabicTwinsDeep(fields)) {
     const value = (incoming as Record<string, unknown>)[field.key];
     if (isListField(field)) {
+      // Absent means "unchanged", exactly as it does for a scalar below —
+      // reading merges the registry default back in. Coercing an absent key to
+      // `[]` wrote an empty list over the default, and an empty list is not a
+      // neutral value here: every list-driven section renders nothing at all
+      // when its list is empty (lib/page-builder/content-gap.ts). Only a list
+      // the client actually submitted empty counts as emptied.
+      if (value === undefined) continue;
       const arr = Array.isArray(value) ? value : [];
       if (arr.length > field.max) {
         issues.push({

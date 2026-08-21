@@ -55,13 +55,25 @@ describe("adapters over untouched defaults", () => {
     expect(adapt.whyBandProps(defaults(whyBand)).stats).toBeUndefined();
   });
 
-  it("list-driven blocks render nothing before an editor fills them", () => {
-    expect(adapt.faqProps(defaults(faq)).items).toEqual([]);
-    expect(adapt.stepsProps(defaults(steps)).steps).toEqual([]);
-    expect(adapt.tilesProps(defaults(tiles)).items).toEqual([]);
-    expect(adapt.propTypesProps(defaults(propTypes)).items).toEqual([]);
+  /**
+   * The rows a block ships with are the ones the page renders. This used to
+   * assert the opposite — every list started empty, so adding a section put
+   * nothing on the page and the editor was never told. See
+   * lib/page-builder/content-gap.ts.
+   */
+  it("list-driven blocks render their starter rows", () => {
+    expect(adapt.faqProps(defaults(faq)).items.length).toBeGreaterThan(0);
+    expect(adapt.stepsProps(defaults(steps)).steps.length).toBeGreaterThan(0);
+    expect(adapt.tilesProps(defaults(tiles)).items.length).toBeGreaterThan(0);
+    expect(
+      adapt.propTypesProps(defaults(propTypes)).items.length,
+    ).toBeGreaterThan(0);
+    expect(adapt.chipsProps(defaults(chips)).chips.length).toBeGreaterThan(0);
+  });
+
+  /** The one whose rows can only be campaign-specific. */
+  it("leaves the feature rows empty, for the gate to catch", () => {
     expect(adapt.featureRowsProps(defaults(featureScroll)).items).toEqual([]);
-    expect(adapt.chipsProps(defaults(chips)).chips).toEqual([]);
   });
 });
 
