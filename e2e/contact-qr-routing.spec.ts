@@ -110,9 +110,18 @@ test("the toggle's halves do not trade places between locales", async ({
   const rtl = { en: await centreX("qr-lang-en"), ar: await centreX("qr-lang-ar") };
   expect(rtl.en).toBeLessThan(rtl.ar);
 
-  // Same side, same pixels — the card itself is still flipped around it.
-  expect(rtl.en).toBe(ltr.en);
-  expect(rtl.ar).toBe(ltr.ar);
+  /*
+   * Same side, near-identical pixels — the card itself is still flipped
+   * around it.
+   *
+   * A tolerance rather than exact equality, because the card is `mx-auto`
+   * centred and a centred box rounds one pixel differently between LTR and
+   * RTL: CI read 609 against 610 and failed a green change. The bug this
+   * guards against moves EN by the pill's full width (~60px), so 2px of slack
+   * costs nothing and stops the spec flaking on sub-pixel centring.
+   */
+  expect(Math.abs(rtl.en - ltr.en)).toBeLessThanOrEqual(2);
+  expect(Math.abs(rtl.ar - ltr.ar)).toBeLessThanOrEqual(2);
   await expect(
     page.getByTestId("qr-lang-en").locator("xpath=ancestor::*[@dir][2]"),
   ).toHaveAttribute("dir", "rtl");
