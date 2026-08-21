@@ -11,5 +11,6 @@
   "badge": {
     "exclusive": "Exclusive",
     "vacantOnTransfer": "Vacant on transfer"
-  }
+  },
+  "priceOnRequest": "Price on request"
 }

@@ -955,6 +955,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "A payment plan is the schedule of instalments paid to the developer or seller over a set period.": {
+    "ar": "خطة السداد هي جدول الأقساط التي تُدفع للمطوّر أو البائع على مدى فترة محددة.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "A pioneering sustainable urban community designed around low-carbon living, innovation, walkability and green spaces. It combines residential neighbourhoods with a major business and technology ecosystem focused on sustainability and clean energy.": {
     "ar": "مجتمع حضري رائد مصمم حول حياة منخفضة الكربون، الابتكار، المشي، والمساحات الخضراء. يجمع بين الأحياء السكنية ونظام أعمال وتكنولوجيا رئيسي يركز على الاستدامة والطاقة النظيفة.",
     "by": "machine",
@@ -1634,6 +1639,14 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:43:22.108Z"
   },
+  "Add another property": {
+    "ar": "إضافة عقار آخر",
+    "by": "human"
+  },
+  "Add from shortlist": {
+    "ar": "إضافة من القائمة المختصرة",
+    "by": "human"
+  },
   "Aerial coastal image showing Fahid’s turquoise waterfront, mangroves, beaches and new residential communities.": {
     "ar": "صورة جوية ساحلية تُظهر واجهة الفهيد المائية الفيروزية وأشجار القرم والشواطئ والمجتمعات السكنية الجديدة.",
     "by": "machine",
@@ -1713,6 +1726,11 @@
   "Al Bateen": {
     "ar": "البطين",
     "by": "machine"
+  },
+  "Al Bateen, Abu Dhabi.": {
+    "ar": "البطين، أبوظبي.",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Al Forsan International Sports Resort": {
     "ar": "منتجع الفرسان الرياضي الدولي",
@@ -2056,6 +2074,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:03:22.146Z"
+  },
+  "All partners": {
+    "ar": "جميع الشركاء",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "All properties": {
     "ar": "جميع العقارات",
@@ -2495,6 +2518,11 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Bazar HQ — Al Bateen": {
+    "ar": "مقر بازار الرئيسي — البطين",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Bazar Real Estate": {
     "ar": "أملاك بازار العقارية",
     "by": "machine",
@@ -2721,6 +2749,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:53:12.099Z"
   },
+  "Best fit · advisor pick": {
+    "ar": "الأنسب · اختيار المستشار",
+    "by": "human"
+  },
   "Best time to call": {
     "ar": "أفضل وقت للاتصال",
     "by": "machine",
@@ -2826,6 +2858,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:29:07.869Z"
+  },
+  "Browse": {
+    "ar": "تصفّح",
+    "by": "human"
   },
   "Browse All Commercial Properties": {
     "ar": "تصفح جميع العقارات التجارية",
@@ -2976,6 +3012,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.334Z"
+  },
+  "Browse the marketplace": {
+    "ar": "تصفّح السوق",
+    "by": "human"
   },
   "Browse the newest and upcoming residential developments across the emirate.": {
     "ar": "تصفّح أحدث المشاريع السكنية والقادمة في أنحاء الإمارة.",
@@ -3181,6 +3221,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:57:32.465Z"
   },
+  "By appointment only. We don't walk-in business — every meeting is briefed in advance.": {
+    "ar": "بموعد مسبق فقط. لا نستقبل زيارات دون موعد — كل اجتماع يُحضَّر له مسبقًا.",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "By submitting you agree to be contacted by a Bazar Real Estate.": {
     "ar": "بإرسالك النموذج فإنك توافق على أن تتواصل معك بازار للعقارات.",
     "by": "machine",
@@ -3355,6 +3400,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.478Z"
   },
+  "Check the location, developer, price, payment plan, ownership type, service charges, and expected rental demand.": {
+    "ar": "تحقّق من الموقع والمطوّر والسعر وخطة السداد ونوع الملكية ورسوم الخدمات والطلب الإيجاري المتوقع.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Check your inbox.": {
     "ar": "تفقّد بريدك الإلكتروني.",
     "by": "machine",
@@ -3437,6 +3487,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
+  },
+  "Clear shortlist": {
+    "ar": "مسح القائمة المختصرة",
+    "by": "human"
   },
   "Cleveland Clinic Abu Dhabi": {
     "ar": "أبوظبي كليفلاند كلينك",
@@ -3691,6 +3745,10 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Compare": {
+    "ar": "مقارنة",
+    "by": "human"
+  },
   "Compare locations, projects and properties based on your budget and lifestyle requirements.": {
     "ar": "قارن بين المواقع والمشاريع والعقارات وفقاً لميزانيتك ومتطلبات نمط حياتك.",
     "by": "machine",
@@ -3708,6 +3766,14 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Compare properties": {
+    "ar": "مقارنة العقارات",
+    "by": "human"
+  },
+  "Compare up to 4 Abu Dhabi properties side-by-side across price, specifications, location, amenities, and investment fundamentals. Share the URL to send the comparison to a partner or advisor.": {
+    "ar": "قارن حتى أربعة عقارات في أبوظبي جنبًا إلى جنب من حيث السعر والمواصفات والموقع والمرافق وأساسيات الاستثمار. شارك الرابط لإرسال المقارنة إلى شريك أو مستشار.",
+    "by": "human"
   },
   "Comparing available developments, property types and opportunities.": {
     "ar": "مقارنة المشاريع المتاحة وأنواع العقارات والفرص.",
@@ -3933,6 +3999,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:57:09.582Z"
   },
+  "Couldn't load this property": {
+    "ar": "لا يمكن تحميل هذا العقار",
+    "by": "human"
+  },
   "Couple buying on Saadiyat Reserve": {
     "ar": "زوجان يشتريان في سعديات ريزيرف",
     "by": "machine",
@@ -4104,6 +4174,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Direct Access": {
+    "ar": "الوصول المباشر",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T13:49:22.637Z"
+  },
   "Direct Water Frontage": {
     "ar": "واجهة مائية مباشرة",
     "by": "machine",
@@ -4134,11 +4210,21 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T17:00:34.989Z"
   },
+  "Direct relationships with the UAE's leading financial institutions and real-estate authorities.": {
+    "ar": "علاقات مباشرة مع أبرز المؤسسات المالية والجهات العقارية في الإمارات.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Direct relationships with the region's leading developers give Bazar clients early access to landmark communities, new launches, and off-plan opportunities.": {
     "ar": "علاقاتنا المباشرة مع كبرى شركات التطوير في المنطقة تمنح عملاء بازار وصولاً مبكراً إلى المجتمعات المميزة والإطلاقات الجديدة والفرص على الخارطة.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:45:16.172Z"
+  },
+  "Direct relationships with the region's leading developers give our clients early access to landmark communities, new launches, and off-plan releases.": {
+    "ar": "علاقاتنا المباشرة مع أبرز مطوّري المنطقة تمنح عملاءنا أولوية الوصول إلى المجتمعات المميزة والإطلاقات الجديدة والمشاريع على الخارطة.",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Direct relationships with the region’s leading developers provide clients with early access to landmark communities, new launches and off-plan opportunities.": {
     "ar": "علاقاتنا المباشرة مع كبار المطورين في المنطقة تتيح لعملائنا وصولاً مبكراً إلى المجتمعات المميزة والإطلاقات الجديدة والفرص على الخارطة.",
@@ -4546,6 +4632,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
   },
+  "Email me these": {
+    "ar": "أرسلها إليّ بالبريد الإلكتروني",
+    "by": "human"
+  },
   "Email us": {
     "ar": "أرسل لنا بريدًا إلكترونيًا",
     "by": "machine",
@@ -4592,6 +4682,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
+  },
+  "Enquiry sent — we'll be in touch within 2 hours.": {
+    "ar": "تم إرسال الاستفسار — سنتواصل معك خلال ساعتين.",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Entertainment-led island with Ferrari World, Yas Marina Circuit, and waterfront living.": {
     "ar": "جزيرة ترفيهية مع فيراري وورلد، ياس مارينا سيركويت، وحياة على الواجهة المائية.",
@@ -6086,6 +6181,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:11:22.355Z"
   },
+  "Find the Right Rental Property": {
+    "ar": "اعثر على العقار المناسب للإيجار",
+    "by": "human"
+  },
   "Find the community that matches your lifestyle.": {
     "ar": "ابحث عن المجتمع الذي يناسب أسلوب حياتك.",
     "by": "machine",
@@ -6589,6 +6688,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:07:12.027Z"
   },
+  "Full comparison": {
+    "ar": "المقارنة الكاملة",
+    "by": "human"
+  },
   "Full name": {
     "ar": "الاسم الكامل",
     "by": "machine",
@@ -6882,6 +6985,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:18:59.996Z"
   },
+  "Get matched": {
+    "ar": "لنجد ما يناسبك",
+    "by": "human"
+  },
   "Get the full advisor report": {
     "ar": "احصل على تقرير المستشار الكامل",
     "by": "machine",
@@ -7011,6 +7118,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
   },
+  "HQ": {
+    "ar": "المقر الرئيسي",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Have a look around.": {
     "ar": "ألق نظرة على المكان.",
     "by": "machine",
@@ -7113,6 +7225,10 @@
     "ar": "مطور عقاري لفندق السكن مع أصول في الإمارات والخارج — فنادق فيرمونت، رافلز وغيرها من المنتجعات المعروفة.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "How Bazar Real Estate L.L.C. collects, uses, stores, discloses, and protects personal data, issued under UAE PDPL (Federal Decree-Law No. 45 of 2021).": {
+    "ar": "كيفية قيام شركة بازار العقارية ذ.م.م بجمع البيانات الشخصية واستخدامها وتخزينها والإفصاح عنها وحمايتها، وفقًا للمرسوم بقانون اتحادي رقم ٤٥ لسنة ٢٠٢١ بشأن حماية البيانات الشخصية.",
+    "by": "human"
   },
   "How can we help?": {
     "ar": "كيف يمكننا مساعدتك؟",
@@ -7308,6 +7424,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
+  },
+  "I'm looking to": {
+    "ar": "أرغب في",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "I'm thinking about…": {
     "ar": "أفكّر في…",
@@ -7587,6 +7708,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.270Z"
+  },
+  "It may be off-market or no longer published.": {
+    "ar": "قد يكون غير مطروح للبيع أو لم يعد منشوراً.",
+    "by": "human"
   },
   "It sits in the Arabian Gulf just off Saadiyat Island, reached by a short boat transfer from the Saadiyat shore.": {
     "ar": "يقع في الخليج العربي قبالة جزيرة السعديات، ويمكن الوصول إليه عن طريق نقل قصير بالقارب من شاطئ السعديات.",
@@ -8030,6 +8155,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Let's talk": {
+    "ar": "لنتحدث",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Lifestyle & Island Highlights": {
     "ar": "أبرز معالم نمط الحياة والجزيرة",
@@ -9044,6 +9174,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Mortgage pre-approval shows how much a bank may be willing to lend before you choose a property.": {
+    "ar": "توضّح الموافقة المبدئية المبلغ الذي قد يوافق البنك على إقراضه قبل أن تختار العقار.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Mosque": {
     "ar": "مسجد",
     "by": "machine",
@@ -9131,6 +9266,11 @@
     "ar": "نخيل هو مطور عقاري رئيسي في دبي معترف به دوليًا لوجهات مائية تحويلية مثل جزيرة النخلة جميرا وجزيرة النخلة جبل علي.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Name": {
+    "ar": "الاسم",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "Name \nCategory \nProvider \nPurpose \nRetention \n))}\nWe'll add a row here (and bump the effective date) before\nactivating any new cookie, including marketing pixels.": {
     "ar": "اسم \nفئة \nمزود \nغرض \nالاحتفاظ \n))))\nسنضيف صفًا هنا (وسيتم تحديث التاريخ الفعلي) قبل\nتفعيل أي ملف تعريف ارتباط جديد، بما في ذلك بيكسلات التسويق.",
@@ -9328,6 +9468,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.877Z"
   },
+  "Nothing to show — try saving a few listings first.": {
+    "ar": "لا يوجد ما يُعرض — احفظ بعض القوائم العقارية أولًا.",
+    "by": "human"
+  },
   "Nshama is a Dubai-based developer focused on contemporary master-planned communities and is best known for Town Square Dubai.": {
     "ar": "نشاما هو مطور عقاري مقره دبي يركز على المجتمعات المخططة بشكل معاصر وأشهر ما عُرف به هو تاون سكوير دبي.",
     "by": "machine",
@@ -9401,6 +9545,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:32:42.363Z"
+  },
+  "Off-plan properties often offer flexible payment plans, lower entry prices, and potential capital growth before handover.": {
+    "ar": "غالباً ما توفّر العقارات على الخارطة خطط سداد مرنة وأسعار دخول أقل وإمكانية نمو رأس المال قبل التسليم.",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Off-plan questions, answered.": {
     "ar": "الأسئلة حول العقارات على الخارطة، مُجابة.",
@@ -9728,11 +9877,26 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
   },
+  "Our Developers": {
+    "ar": "مطوّرونا",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Our Footprint": {
+    "ar": "حضورنا",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Our Head Office": {
     "ar": "مكتبنا الرئيسي",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
+  },
+  "Our Partner Ecosystem": {
+    "ar": "منظومة شركائنا",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Our Partners": {
     "ar": "شركاؤنا",
@@ -9769,6 +9933,16 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Our developer partners": {
+    "ar": "شركاؤنا من المطوّرين",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Our footprint": {
+    "ar": "حضورنا",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Our home market": {
     "ar": "سوقنا المحلي",
@@ -10300,6 +10474,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:47:18.127Z"
+  },
+  "Privacy policy": {
+    "ar": "سياسة الخصوصية",
+    "by": "human"
   },
   "Private Beach Access": {
     "ar": "الوصول إلى شاطئ خاص",
@@ -11014,6 +11192,14 @@
     "ar": "تقديم استشارات عقارية لمساعدتك في الشراء أو البيع بثقة.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Pull one in from your shortlist, or go find another": {
+    "ar": "اختر واحداً من قائمتك المختصرة، أو ابحث عن غيره",
+    "by": "human"
+  },
+  "Pull two to four properties into a comparison and we'll line up price, specs, location, amenities, and investment fundamentals. Share the URL to send the same comparison to a partner or advisor.": {
+    "ar": "قارن بين عقارين إلى أربعة عقارات وسنعرض السعر والمواصفات والموقع والمرافق وأساسيات الاستثمار جنبًا إلى جنب. شارك الرابط لإرسال المقارنة نفسها إلى شريك أو مستشار.",
+    "by": "human"
   },
   "Purpose-built staff residential cities across more than 40 complexes.": {
     "ar": "مدن سكنية مخصّصة للموظفين في أكثر من 40 مجمّعاً.",
@@ -11914,6 +12100,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-21"
   },
+  "Sell": {
+    "ar": "بيع",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Sell Your Property": {
     "ar": "بيع العقار الخاص بك",
     "by": "reviewed",
@@ -11979,6 +12170,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:12:56.314Z"
   },
+  "Send us an enquiry": {
+    "ar": "أرسل لنا استفسارًا",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Send us an enquiry instead.": {
     "ar": "أرسل لنا استفسارك بدلاً من ذلك.",
     "by": "machine",
@@ -12030,6 +12226,11 @@
     "ar": "المستشار الرئيسي · المستأجر والإيجار",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Service charges are fees paid for building or community maintenance, facilities, and shared areas.": {
+    "ar": "رسوم الخدمات هي مبالغ تُدفع مقابل صيانة المبنى أو المجتمع والمرافق والمساحات المشتركة.",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Serviced industrial land plots, pre-built warehousing, workshop and logistics facilities, on free-zone or mainland terms.": {
     "ar": "قطع أراضٍ صناعية مجهّزة بالخدمات، ومستودعات جاهزة، ومنشآت ورش ولوجستيات، بشروط المناطق الحرة أو البر الرئيسي.",
@@ -12133,6 +12334,10 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:11:25.039Z"
   },
+  "Shortlist": {
+    "ar": "القائمة المختصرة",
+    "by": "human"
+  },
   "Shortlist properties": {
     "ar": "العقارات المختارة",
     "by": "machine",
@@ -12156,6 +12361,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.334Z"
+  },
+  "Side by side": {
+    "ar": "جنبًا إلى جنب",
+    "by": "human"
   },
   "Similar Projects": {
     "ar": "المشاريع المشابهة",
@@ -12293,6 +12502,11 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Speak With a": {
+    "ar": "تحدث مع",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Speak with a Property Expert": {
     "ar": "تحدث مع خبير عقاري",
     "by": "machine",
@@ -12319,6 +12533,10 @@
     "ar": "ملاعب رياضية",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Stack properties side by side.": {
+    "ar": "ضع العقارات جنبًا إلى جنب.",
+    "by": "human"
   },
   "Staff Residential Cities": {
     "ar": "المدن السكنية للموظفين",
@@ -12668,6 +12886,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T17:00:34.989Z"
   },
+  "Tell us more": {
+    "ar": "أخبرنا المزيد",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "Tell us the use, the headcount and the timing — we'll come back with options that fit, not a list to wade through.": {
     "ar": "أخبرنا بالاستخدام وعدد الموظفين والتوقيت — وسنعود إليك بخيارات مناسبة، لا بقائمة طويلة تحتاج إلى تصفّحها.",
     "by": "machine",
@@ -12715,6 +12938,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-21"
+  },
+  "Tell us what you're looking to rent.": {
+    "ar": "أخبرنا بما تبحث عنه للاستئجار.",
+    "by": "human"
   },
   "Tell us what your business needs.": {
     "ar": "تحدّث إلينا عن احتياجات عملك.",
@@ -12971,6 +13198,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
   },
+  "The banks and regulators behind every deal.": {
+    "ar": "البنوك والجهات التنظيمية التي تقف خلف كل صفقة.",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "The capital of the United Arab Emirates.": {
     "ar": "عاصمة دولة الإمارات العربية المتحدة.",
     "by": "machine",
@@ -12999,6 +13231,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:45:16.172Z"
+  },
+  "The developers shaping the UAE.": {
+    "ar": "المطوّرون الذين يرسمون ملامح الإمارات.",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "The district spans more than 4,900 hectares and is planned to accommodate over 370,000 residents.": {
     "ar": "المنطقة تغطي أكثر من 4,900 هكتار وتُخطَّط لاستيعاب أكثر من 370,000 ساكن.",
@@ -13299,6 +13536,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
   },
+  "Tick up to four to put side by side. Everything else stays on your shortlist.": {
+    "ar": "اختر حتى أربعة عقارات لعرضها جنبًا إلى جنب. ويبقى الباقي في قائمتك المختصرة.",
+    "by": "human"
+  },
   "Tiger Properties is part of Tiger Group, a long-established UAE development and construction group with a portfolio spanning residential, commercial and mixed-use projects.": {
     "ar": "تايجر العقارية جزء من مجموعة تايجر، وهي مجموعة تطوير وبناء راسخة في دولة الإمارات العربية المتحدة تضم محفظة مشاريع سكنية وتجارية ومختلطة.",
     "by": "machine",
@@ -13396,6 +13637,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "Trusted by the region’s builders.": {
+    "ar": "موضع ثقة كبرى شركات التطوير في المنطقة.",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Trusted developer relationships": {
     "ar": "مطور عقاري بعلاقات موثوقة",
@@ -13641,6 +13887,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-21"
+  },
+  "United Arab Emirates": {
+    "ar": "الإمارات العربية المتحدة",
+    "by": "human"
   },
   "Unlocked.": {
     "ar": "إتاحة الوصول.",
@@ -14049,6 +14299,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:48:08.045Z"
   },
+  "We reply within 2 hours on business days": {
+    "ar": "نرد خلال ساعتين في أيام العمل",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "We respect the browser's Global Privacy Control signal where it\nis present: when GPC is set, analytics and marketing default to off\nregardless of your prior choice.": {
     "ar": "نحترم إشارة التحكم العالمي في الخصوصية حيثما تكون موجودة: عندما يتم تعيين GPC، يتم إيقاف التحليلات والتسويق افتراضيًا بغض النظر عن اختيارك السابق.",
     "by": "machine",
@@ -14077,6 +14332,11 @@
     "by": "reviewed",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
+  },
+  "We'll connect you with the right member of our team.": {
+    "ar": "سنوصلك بالعضو المناسب في فريقنا.",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
   },
   "We're showing you the matching rentals now. An advisor will follow up with anything that isn't listed yet.": {
     "ar": "نعرض عليك الآن الإيجارات المطابقة. وسيتابع معك أحد المستشارين بشأن ما لم يُدرج بعد.",
@@ -14133,6 +14393,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-21"
   },
+  "What are service charges?": {
+    "ar": "ما هي رسوم الخدمات؟",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "What are the four phases?": {
     "ar": "ما هي المراحل الأربع؟",
     "by": "machine",
@@ -14156,6 +14421,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
+  },
+  "What differs": {
+    "ar": "ما يختلف",
+    "by": "human"
   },
   "What documents do I need to sell my property?": {
     "ar": "ما المستندات المطلوبة لبيع عقاري؟",
@@ -14247,11 +14516,26 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:13:45.706Z"
   },
+  "What is a payment plan?": {
+    "ar": "ما هي خطة السداد؟",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "What is mortgage pre-approval?": {
+    "ar": "ما هي الموافقة المبدئية على التمويل العقاري؟",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "What is nearby?": {
     "ar": "ماذا يوجد بالقرب؟",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:15:33.556Z"
+  },
+  "What is the benefit of buying off-plan?": {
+    "ar": "ما فائدة الشراء على الخارطة؟",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "What is the difference between Al Raha Beach and Al Raha Gardens?": {
     "ar": "شاطئ الراحة ما الفرق بين حدائق الراحة و؟",
@@ -14343,6 +14627,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "What should I check before buying a property?": {
+    "ar": "ما الذي ينبغي التحقق منه قبل شراء عقار؟",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "What surrounds the community?": {
     "ar": "ما الذي يحيط بالمجتمع؟",
     "by": "machine",
@@ -14407,6 +14696,10 @@
     "ar": "واتساب",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "WhatsApp these to an advisor": {
+    "ar": "أرسلها إلى مستشار عبر واتساب",
+    "by": "human"
   },
   "WhatsApp us instead": {
     "ar": "راسلنا عبر واتساب بدلاً من ذلك",
@@ -15198,6 +15491,10 @@
     "ar": "سيناريوك الآن لدى قسم التمويل العقاري.",
     "by": "machine",
     "model": "claude-opus-5"
+  },
+  "Your shortlist": {
+    "ar": "قائمتك المختصرة",
+    "by": "human"
   },
   "Your {project} brochure": {
     "ar": "كتيّب {project}",
@@ -16190,6 +16487,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:18:09.430Z"
   },
+  "property.": {
+    "ar": "عن العقارات.",
+    "by": "human",
+    "at": "2026-08-20T00:00:00.000Z"
+  },
   "qaryat al hidd": {
     "ar": "قرية الحد",
     "by": "machine",
@@ -16305,6 +16607,10 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:10:31.711Z"
+  },
+  "saved to this browser": {
+    "ar": "محفوظة في هذا المتصفح",
+    "by": "human"
   },
   "selling a property": {
     "ar": "بيع عقار",
@@ -16691,293 +16997,5 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
-  },
-  "Our Partner Ecosystem": {
-    "ar": "منظومة شركائنا",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "The banks and regulators behind every deal.": {
-    "ar": "البنوك والجهات التنظيمية التي تقف خلف كل صفقة.",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Direct relationships with the UAE's leading financial institutions and real-estate authorities.": {
-    "ar": "علاقات مباشرة مع أبرز المؤسسات المالية والجهات العقارية في الإمارات.",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "All partners": {
-    "ar": "جميع الشركاء",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Our Developers": {
-    "ar": "مطوّرونا",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "The developers shaping the UAE.": {
-    "ar": "المطوّرون الذين يرسمون ملامح الإمارات.",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Direct relationships with the region's leading developers give our clients early access to landmark communities, new launches, and off-plan releases.": {
-    "ar": "علاقاتنا المباشرة مع أبرز مطوّري المنطقة تمنح عملاءنا أولوية الوصول إلى المجتمعات المميزة والإطلاقات الجديدة والمشاريع على الخارطة.",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "What is the benefit of buying off-plan?": {
-    "ar": "ما فائدة الشراء على الخارطة؟",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Off-plan properties often offer flexible payment plans, lower entry prices, and potential capital growth before handover.": {
-    "ar": "غالباً ما توفّر العقارات على الخارطة خطط سداد مرنة وأسعار دخول أقل وإمكانية نمو رأس المال قبل التسليم.",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "What should I check before buying a property?": {
-    "ar": "ما الذي ينبغي التحقق منه قبل شراء عقار؟",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Check the location, developer, price, payment plan, ownership type, service charges, and expected rental demand.": {
-    "ar": "تحقّق من الموقع والمطوّر والسعر وخطة السداد ونوع الملكية ورسوم الخدمات والطلب الإيجاري المتوقع.",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "What is mortgage pre-approval?": {
-    "ar": "ما هي الموافقة المبدئية على التمويل العقاري؟",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Mortgage pre-approval shows how much a bank may be willing to lend before you choose a property.": {
-    "ar": "توضّح الموافقة المبدئية المبلغ الذي قد يوافق البنك على إقراضه قبل أن تختار العقار.",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "What is a payment plan?": {
-    "ar": "ما هي خطة السداد؟",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "A payment plan is the schedule of instalments paid to the developer or seller over a set period.": {
-    "ar": "خطة السداد هي جدول الأقساط التي تُدفع للمطوّر أو البائع على مدى فترة محددة.",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "What are service charges?": {
-    "ar": "ما هي رسوم الخدمات؟",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Service charges are fees paid for building or community maintenance, facilities, and shared areas.": {
-    "ar": "رسوم الخدمات هي مبالغ تُدفع مقابل صيانة المبنى أو المجتمع والمرافق والمساحات المشتركة.",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Our developer partners": {
-    "ar": "شركاؤنا من المطوّرين",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Our Footprint": {
-    "ar": "حضورنا",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Our footprint": {
-    "ar": "حضورنا",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Trusted by the region’s builders.": {
-    "ar": "موضع ثقة كبرى شركات التطوير في المنطقة.",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Let's talk": {
-    "ar": "لنتحدث",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "property.": {
-    "ar": "عن العقارات.",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "Speak With a": {
-    "ar": "تحدث مع",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "We reply within 2 hours on business days": {
-    "ar": "نرد خلال ساعتين في أيام العمل",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "Send us an enquiry": {
-    "ar": "أرسل لنا استفسارًا",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "Enquiry sent — we'll be in touch within 2 hours.": {
-    "ar": "تم إرسال الاستفسار — سنتواصل معك خلال ساعتين.",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "Name": {
-    "ar": "الاسم",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "I'm looking to": {
-    "ar": "أرغب في",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "Sell": {
-    "ar": "بيع",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "Tell us more": {
-    "ar": "أخبرنا المزيد",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "We'll connect you with the right member of our team.": {
-    "ar": "سنوصلك بالعضو المناسب في فريقنا.",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "HQ": {
-    "ar": "المقر الرئيسي",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "Al Bateen, Abu Dhabi.": {
-    "ar": "البطين، أبوظبي.",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "Bazar HQ — Al Bateen": {
-    "ar": "مقر بازار الرئيسي — البطين",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "By appointment only. We don't walk-in business — every meeting is briefed in advance.": {
-    "ar": "بموعد مسبق فقط. لا نستقبل زيارات دون موعد — كل اجتماع يُحضَّر له مسبقًا.",
-    "by": "human",
-    "at": "2026-08-20T00:00:00.000Z"
-  },
-  "Shortlist": {
-    "ar": "القائمة المختصرة",
-    "by": "human"
-  },
-  "Your shortlist": {
-    "ar": "قائمتك المختصرة",
-    "by": "human"
-  },
-  "saved to this browser": {
-    "ar": "محفوظة في هذا المتصفح",
-    "by": "human"
-  },
-  "Nothing to show — try saving a few listings first.": {
-    "ar": "لا يوجد ما يُعرض — احفظ بعض القوائم العقارية أولًا.",
-    "by": "human"
-  },
-  "Tick up to four to put side by side. Everything else stays on your shortlist.": {
-    "ar": "اختر حتى أربعة عقارات لعرضها جنبًا إلى جنب. ويبقى الباقي في قائمتك المختصرة.",
-    "by": "human"
-  },
-  "WhatsApp these to an advisor": {
-    "ar": "أرسلها إلى مستشار عبر واتساب",
-    "by": "human"
-  },
-  "Email me these": {
-    "ar": "أرسلها إليّ بالبريد الإلكتروني",
-    "by": "human"
-  },
-  "Clear shortlist": {
-    "ar": "مسح القائمة المختصرة",
-    "by": "human"
-  },
-  "United Arab Emirates": {
-    "ar": "الإمارات العربية المتحدة",
-    "by": "human"
-  },
-  "Side by side": {
-    "ar": "جنبًا إلى جنب",
-    "by": "human"
-  },
-  "Compare properties": {
-    "ar": "مقارنة العقارات",
-    "by": "human"
-  },
-  "Compare up to 4 Abu Dhabi properties side-by-side across price, specifications, location, amenities, and investment fundamentals. Share the URL to send the comparison to a partner or advisor.": {
-    "ar": "قارن حتى أربعة عقارات في أبوظبي جنبًا إلى جنب من حيث السعر والمواصفات والموقع والمرافق وأساسيات الاستثمار. شارك الرابط لإرسال المقارنة إلى شريك أو مستشار.",
-    "by": "human"
-  },
-  "What differs": {
-    "ar": "ما يختلف",
-    "by": "human"
-  },
-  "Full comparison": {
-    "ar": "المقارنة الكاملة",
-    "by": "human"
-  },
-  "Best fit · advisor pick": {
-    "ar": "الأنسب · اختيار المستشار",
-    "by": "human"
-  },
-  "Compare": {
-    "ar": "مقارنة",
-    "by": "human"
-  },
-  "Stack properties side by side.": {
-    "ar": "ضع العقارات جنبًا إلى جنب.",
-    "by": "human"
-  },
-  "Pull two to four properties into a comparison and we'll line up price, specs, location, amenities, and investment fundamentals. Share the URL to send the same comparison to a partner or advisor.": {
-    "ar": "قارن بين عقارين إلى أربعة عقارات وسنعرض السعر والمواصفات والموقع والمرافق وأساسيات الاستثمار جنبًا إلى جنب. شارك الرابط لإرسال المقارنة نفسها إلى شريك أو مستشار.",
-    "by": "human"
-  },
-  "Browse the marketplace": {
-    "ar": "تصفّح السوق",
-    "by": "human"
-  },
-  "Add another property": {
-    "ar": "إضافة عقار آخر",
-    "by": "human"
-  },
-  "Pull one in from your shortlist, or go find another": {
-    "ar": "اختر واحداً من قائمتك المختصرة، أو ابحث عن غيره",
-    "by": "human"
-  },
-  "Add from shortlist": {
-    "ar": "إضافة من القائمة المختصرة",
-    "by": "human"
-  },
-  "Couldn't load this property": {
-    "ar": "لا يمكن تحميل هذا العقار",
-    "by": "human"
-  },
-  "It may be off-market or no longer published.": {
-    "ar": "قد يكون غير مطروح للبيع أو لم يعد منشوراً.",
-    "by": "human"
-  },
-  "Browse": {
-    "ar": "تصفّح",
-    "by": "human"
-  },
-  "Privacy policy": {
-    "ar": "سياسة الخصوصية",
-    "by": "human"
-  },
-  "How Bazar Real Estate L.L.C. collects, uses, stores, discloses, and protects personal data, issued under UAE PDPL (Federal Decree-Law No. 45 of 2021).": {
-    "ar": "كيفية قيام شركة بازار العقارية ذ.م.م بجمع البيانات الشخصية واستخدامها وتخزينها والإفصاح عنها وحمايتها، وفقًا للمرسوم بقانون اتحادي رقم ٤٥ لسنة ٢٠٢١ بشأن حماية البيانات الشخصية.",
-    "by": "human"
   }
 }

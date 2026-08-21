@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import Link from "@/components/i18n/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -119,6 +120,8 @@ const SECTION = "px-4 md:px-12 py-14 md:py-[72px] border-t border-bz-border";
  * It's opt-in: /buy passes it, /rent keeps its original 1200px cap.
  */
 export function BuyRentLanding(p: BuyRentLandingProps) {
+  // `useTranslations` works in a Server Component and keeps this one sync.
+  const t = useTranslations("common");
   const interactive = !!(p.categories && p.categories.length > 0);
   // Content wrapper cap — empty (full-bleed) when `wide`, else the original
   // constrained widths so /rent renders exactly as before.
@@ -335,7 +338,6 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
             />
           ) : (
             <FeaturedListings
-              eyebrow="Handpicked"
               title={p.featuredTitle}
               ctaLabel={p.featuredCta}
               ctaHref={p.featuredCtaHref}
@@ -365,7 +367,7 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
       <section key="prop_types" className={SECTION}>
         <div className={wrap}>
           <SectionHead
-            eyebrow="Property types"
+            eyebrow={t("propertyTypes")}
             title={p.propTypesTitle}
             size={40}
             className="mb-9"

@@ -14,6 +14,7 @@
  * No cookies / headers / searchParams here, so the host page stays static/ISR.
  */
 
+import { getTranslations } from "next-intl/server";
 import {
   listAreaPins,
   listAreaListingDots,
@@ -27,7 +28,6 @@ export async function RentAreaMap({
   body = null,
   mode = "rent",
   allHref = "/rent/search",
-  allLabel = "All rentals",
 }: {
   /** Section eyebrow — editable from the master page. */
   eyebrow?: string;
@@ -37,10 +37,19 @@ export async function RentAreaMap({
   body?: string | null;
   /** Listing mode the dots *and* the area counts are scoped to. */
   mode?: ListingMode;
-  /** "All …" link target + label, pointing at this mode's search. */
+  /**
+   * "All …" link target, pointing at this mode's search.
+   *
+   * The LABEL is no longer a parameter with an English default. It followed
+   * `mode` in every caller, so the only thing passing it bought was two
+   * hard-coded English strings ("All rentals" here, "All commercial" on
+   * /commercial) that `AreaMapHome`'s own catalogue fallback was then unable
+   * to replace — the link read English on `/ar/rent` and `/ar/commercial`
+   * while everything around it was Arabic.
+   */
   allHref?: string;
-  allLabel?: string;
 } = {}) {
+  const t = await getTranslations("common");
   const [abuDhabi, dubai, dots] = await Promise.all([
     listAreaPins("abu-dhabi", { mode }),
     listAreaPins("dubai", { mode }),
@@ -60,7 +69,7 @@ export async function RentAreaMap({
       heading={heading}
       body={body ?? undefined}
       allHref={allHref}
-      allLabel={allLabel}
+      allLabel={t(mode === "commercial" ? "allCommercial" : "allRentals")}
     />
   );
 }

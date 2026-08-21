@@ -39,7 +39,6 @@ export type OffplanGroupView = {
   viewAllLabel?: string | null;
 };
 
-const COUNT_NOUN = { singular: "project", plural: "projects" };
 const dotHref = (d: AreaDot) => `/off-plan/${d.slug}`;
 
 /** True once `ref`'s element has scrolled to within `rootMargin` of view. */
@@ -131,8 +130,7 @@ export function OffplanMapExplorer({
             onSelectArea={setFocusSlug}
             mode="explore"
             dotHref={dotHref}
-            dotCtaLabel="View project"
-            countNoun={COUNT_NOUN}
+            countKind="project"
             className="absolute inset-0"
           />
         ) : (

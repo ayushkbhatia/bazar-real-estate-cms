@@ -188,7 +188,7 @@ async function main() {
   if (FORMS) {
     const { FORM_DEFS } = await import("../../lib/forms/registry");
     const { resolveForm } = await import("../../lib/forms/resolve");
-    const { FORM_COPY_KEYS } = await import("../../lib/forms/copy-keys");
+    const { FORM_COPY_KEYS, copyArKey } = await import("../../lib/forms/copy-keys");
     const { nonProseReason } = await import("../../lib/i18n/prose");
 
     /*
@@ -255,8 +255,15 @@ async function main() {
         (storedFields.get(def.key) ?? null) as never,
       );
       if (!form) continue;
+      const copy = form.copy as Record<string, unknown>;
       for (const k of FORM_COPY_KEYS) {
-        add(def.key, `copy.${k.key}`, (form.copy as Record<string, unknown>)[k.key], k.max);
+        // `resolveForm` has already filled every twin the store can supply, so
+        // a blank one is genuinely missing. Without this guard the copy keys
+        // were added unconditionally and every run re-translated all 22 forms'
+        // chrome — burning the budget and overwriting reviewed entries with a
+        // fresh machine draft. The field loop below has always guarded.
+        if (copy[copyArKey(k.key)]) continue;
+        add(def.key, `copy.${k.key}`, copy[k.key], k.max);
       }
       for (const field of form.fields) {
         const f = field as unknown as Record<string, unknown>;

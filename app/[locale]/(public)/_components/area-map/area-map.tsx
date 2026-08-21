@@ -91,17 +91,27 @@ type Props = {
    * project dot at its off-plan detail page.
    */
   dotHref?: (dot: AreaDot) => string;
-  /** Dot popup CTA label. Defaults to "View property". */
-  dotCtaLabel?: string;
   /**
-   * Noun for a pin's count in the flyout ("6 Listings" / "Zoom to 6
-   * listings"). Defaults to listings; the off-plan map passes projects.
+   * What a pin counts, and therefore what every noun on this map reads as:
+   * the flyout's stat label, its zoom button, the hint under the pins and the
+   * dot popup's CTA. Defaults to listings; the New Projects map passes
+   * projects.
+   *
+   * A KIND rather than the noun itself. It used to be
+   * `countNoun: { singular, plural }` — two English words handed in by the
+   * caller, then title-cased and pluralised here with a `count === 1`
+   * ternary. Arabic has six plural categories and no title case, so no
+   * translation of those strings was possible; the map printed "Listings" and
+   * "Zoom to 6 listings" in English on every `/ar` page that shows it.
+   * Passing the kind moves the words into the catalogue, where ICU can
+   * inflect them.
    */
-  countNoun?: { singular: string; plural: string };
+  countKind?: CountKind;
   className?: string;
 };
 
-const DEFAULT_COUNT_NOUN = { singular: "listing", plural: "listings" };
+/** The two things a dot can be. Keys `common.map.*` in the catalogue. */
+type CountKind = "listing" | "project";
 const DEFAULT_DOT_HREF = (d: AreaDot) =>
   `/p/${d.slug}-${d.reference.toLowerCase()}`;
 
@@ -176,8 +186,7 @@ export function AreaMap({
   mode = "explore",
   centerSlug,
   dotHref = DEFAULT_DOT_HREF,
-  dotCtaLabel = "View property",
-  countNoun = DEFAULT_COUNT_NOUN,
+  countKind = "listing",
   className,
 }: Props) {
   const rtl = useIsRtl();
@@ -419,8 +428,7 @@ export function AreaMap({
           dot={dot}
           onCloseDot={() => setDot(null)}
           dotHref={dotHref}
-          dotCtaLabel={dotCtaLabel}
-          countNoun={countNoun}
+          countKind={countKind}
         />
       )}
 
@@ -459,8 +467,7 @@ function Overlay({
   dot,
   onCloseDot,
   dotHref,
-  dotCtaLabel,
-  countNoun,
+  countKind,
 }: {
   map: MapLibreMap;
   areas: AreaPin[];
@@ -470,9 +477,9 @@ function Overlay({
   dot: AreaDot | null;
   onCloseDot: () => void;
   dotHref: (dot: AreaDot) => string;
-  dotCtaLabel: string;
-  countNoun: { singular: string; plural: string };
+  countKind: CountKind;
 }) {
+  const t = useTranslations("common");
   useRafRerenderOnMove(map);
   const z = map.getZoom();
   const el = map.getContainer();
@@ -513,7 +520,7 @@ function Overlay({
       {selected && (
         <Flyout
           area={selected}
-          countNoun={countNoun}
+          countKind={countKind}
           onClose={() => onSelectArea(null)}
           onZoomToListings={() => onZoomToListings(selected)}
         />
@@ -524,15 +531,14 @@ function Overlay({
           map={map}
           dot={dot}
           href={dotHref(dot)}
-          ctaLabel={dotCtaLabel}
+          countKind={countKind}
           onClose={onCloseDot}
         />
       )}
 
       {!dot && z < DOT_REVEAL_ZOOM && (
         <div className="bzmap-hint">
-          <MapPin size={13} strokeWidth={2} /> Click an area pin — zoom in to see
-          individual {countNoun.plural}
+          <MapPin size={13} strokeWidth={2} /> {t(`map.pinHint.${countKind}`)}
         </div>
       )}
     </>
@@ -544,12 +550,12 @@ function Overlay({
 // ─────────────────────────────────────────────────────────────────────
 function Flyout({
   area,
-  countNoun,
+  countKind,
   onClose,
   onZoomToListings,
 }: {
   area: AreaPin;
-  countNoun: { singular: string; plural: string };
+  countKind: CountKind;
   onClose: () => void;
   onZoomToListings: () => void;
 }) {
@@ -565,13 +571,11 @@ function Flyout({
     area.yoyChange != null
       ? `${area.yoyChange > 0 ? "+" : ""}${area.yoyChange}%`
       : "—";
-  const countLabel =
-    countNoun.plural.charAt(0).toUpperCase() + countNoun.plural.slice(1);
   const stats: [string, string][] = [
     // Em dash at 0, same as a missing median — the map may be scoped to a
     // mode this area has no inventory in.
-    [area.count > 0 ? String(area.count) : "—", countLabel],
-    [median, `Median /${areaUnitLabel(prefs.area_unit)}`],
+    [area.count > 0 ? String(area.count) : "—", t(`map.count.${countKind}`)],
+    [median, t("map.median", { unit: areaUnitLabel(prefs.area_unit) })],
     [yoy, "YoY"],
   ];
 
@@ -581,7 +585,7 @@ function Flyout({
         <button
           type="button"
           className="bzmap-flyout__close"
-          aria-label="Close"
+          aria-label={t("close")}
           onClick={onClose}
         >
           <X size={16} />
@@ -623,7 +627,7 @@ function Flyout({
           href={`/areas/${area.slug}`}
           className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-bz-ink px-4 text-sm font-medium text-bz-bg transition-colors hover:bg-bz-ink/90"
         >
-          View community guide <ArrowRight size={15} />
+          {t("map.areaGuide")} <ArrowRight size={15} />
         </Link>
         {/* Nothing to zoom to when the area has no inventory in this mode —
             the button would frame an empty patch of map. */}
@@ -633,8 +637,8 @@ function Flyout({
             onClick={onZoomToListings}
             className="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-bz-border px-4 text-sm text-bz-ink-2 transition-colors hover:bg-bz-surface-2"
           >
-            <Search size={14} /> Zoom to {area.count}{" "}
-            {area.count === 1 ? countNoun.singular : countNoun.plural}
+            <Search size={14} />{" "}
+            {t(`map.zoomTo.${countKind}`, { count: area.count })}
           </button>
         ) : null}
       </div>
@@ -649,15 +653,17 @@ function DotPopupCard({
   map,
   dot,
   href,
-  ctaLabel,
+  countKind,
   onClose,
 }: {
   map: MapLibreMap;
   dot: AreaDot;
   href: string;
-  ctaLabel: string;
+  countKind: CountKind;
   onClose: () => void;
 }) {
+  const t = useTranslations("common");
+  const tl = useTranslations("listing");
   const { prefs } = usePreferences();
   const p = map.project([dot.lng, dot.lat]);
   return (
@@ -666,7 +672,7 @@ function DotPopupCard({
         <button
           type="button"
           className="bzmap-flyout__close"
-          aria-label="Close"
+          aria-label={t("close")}
           style={{ width: 26, height: 26 }}
           onClick={onClose}
         >
@@ -675,7 +681,7 @@ function DotPopupCard({
         <div className="serif" style={{ fontSize: 19, letterSpacing: "-0.015em" }}>
           {dot.priceAed > 0
             ? formatPrice(dot.priceAed, prefs)
-            : "Price on request"}
+            : tl("priceOnRequest")}
         </div>
         <div style={{ fontSize: 12, color: "var(--bz-ink-2)", marginTop: 3 }}>
           {dot.title}
@@ -695,7 +701,7 @@ function DotPopupCard({
             marginTop: 10,
           }}
         >
-          {ctaLabel} <ArrowRight size={13} />
+          {t(`map.dotCta.${countKind}`)} <ArrowRight size={13} />
         </Link>
       </div>
     </div>
@@ -716,19 +722,28 @@ function ZoomControls({
   reset: { center: [number, number]; zoom: number };
   showReset: boolean;
 }) {
+  const t = useTranslations("common");
   return (
     <div className="bzmap__ctrls">
-      <button type="button" aria-label="Zoom in" onClick={() => map.zoomIn()}>
+      <button
+        type="button"
+        aria-label={t("map.zoomIn")}
+        onClick={() => map.zoomIn()}
+      >
         <Plus size={16} />
       </button>
-      <button type="button" aria-label="Zoom out" onClick={() => map.zoomOut()}>
+      <button
+        type="button"
+        aria-label={t("map.zoomOut")}
+        onClick={() => map.zoomOut()}
+      >
         <Minus size={16} />
       </button>
       {showReset && <hr />}
       {showReset && (
         <button
           type="button"
-          aria-label="Back to city view"
+          aria-label={t("map.backToCity")}
           onClick={() =>
             reduced
               ? map.jumpTo({ center: reset.center, zoom: reset.zoom })

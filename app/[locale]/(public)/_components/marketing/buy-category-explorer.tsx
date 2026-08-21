@@ -11,6 +11,7 @@
  */
 
 import { createContext, useContext, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { FeaturedCardProps } from "./map-listing";
 import { FeaturedListings } from "./featured-listings";
 
@@ -47,12 +48,13 @@ export function HeroCategoryChips({
 }: {
   categories: BuyCategory[];
 }) {
+  const t = useTranslations("common");
   const { active, setActive } = useBuyCategory();
   return (
     <div
       className="flex flex-wrap gap-2 mt-7"
       role="group"
-      aria-label="Property type"
+      aria-label={t("propertyType")}
     >
       {categories.map((c) => {
         const on = c.key === active;
@@ -103,7 +105,6 @@ export function CategoryFeatured({
   const href = hasBucket ? ctaHrefByCategory?.[active] ?? ctaHref : ctaHref;
   return (
     <FeaturedListings
-      eyebrow="Handpicked"
       title={title}
       ctaLabel={ctaLabel}
       ctaHref={href}
