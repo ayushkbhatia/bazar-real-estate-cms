@@ -529,7 +529,13 @@ function roleLabel(role: string): string {
   return role.charAt(0).toUpperCase() + role.slice(1).replace(/_/g, " ");
 }
 
-/** Walk a page's `blocks` jsonb for every `media_id` it embeds. */
+/**
+ * Walk a page's `blocks` jsonb for every `media_id` it embeds.
+ *
+ * `media_id_ar` counts too — the Arabic rendering of an image is used by the
+ * page just as much as the English one, and missing it would report the asset
+ * as unused and invite someone to bin it.
+ */
 export function collectMediaIds(blocks: unknown): string[] {
   const found = new Set<string>();
   const walk = (node: unknown) => {
@@ -541,7 +547,11 @@ export function collectMediaIds(blocks: unknown): string[] {
     for (const [key, value] of Object.entries(
       node as Record<string, unknown>,
     )) {
-      if (key === "media_id" && typeof value === "string" && value) {
+      if (
+        (key === "media_id" || key === "media_id_ar") &&
+        typeof value === "string" &&
+        value
+      ) {
         found.add(value);
       } else {
         walk(value);

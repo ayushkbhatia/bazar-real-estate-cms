@@ -32,6 +32,37 @@ function isBlank(value: unknown): boolean {
   return value === null || value === undefined || value === "";
 }
 
+/**
+ * Fold a media value — an `ImageValue` — a level deeper than the rest.
+ *
+ * The twins live INSIDE the object rather than beside it, so the swap has to
+ * happen key by key: `alt_ar` replaces `alt`, `media_id_ar` replaces
+ * `media_id`, and everything else (`label`, and the `url`/`mime` a resolver
+ * attaches later) survives untouched. Replacing the whole object instead would
+ * throw away the placeholder caption of any image with no Arabic asset.
+ *
+ * Shared by the scalar path and the list-item path. Before it was shared, an
+ * image inside a list field was folded by the generic branch, which looked for
+ * a sibling key named `image_ar` — a key that never exists — and so left the
+ * English alt text in place on every card on the site.
+ */
+function foldMedia(
+  media: Record<string, unknown>,
+  path: string,
+  fellBack: string[],
+): Record<string, unknown> {
+  const { alt_ar, media_id_ar, ...rest } = media;
+  // Only count a fallback where there was English worth translating.
+  if (isBlank(alt_ar) && !isBlank(media.alt)) fellBack.push(`${path}.alt`);
+  return {
+    ...rest,
+    // A blank Arabic asset keeps the English artwork, which is the right
+    // default for the ~99% of images that carry no language at all.
+    media_id: isBlank(media_id_ar) ? media.media_id : media_id_ar,
+    alt: isBlank(alt_ar) ? media.alt : alt_ar,
+  };
+}
+
 /** Fold one item inside a list field. */
 function foldItem(
   item: Record<string, ItemValue>,
@@ -46,6 +77,17 @@ function foldItem(
 
     if (locale === DEFAULT_LOCALE) {
       out[key] = value;
+      continue;
+    }
+
+    // Media inside a list item — a card's photo — folds a level deeper, same
+    // as a scalar image field does.
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      out[key] = foldMedia(
+        value as Record<string, unknown>,
+        `${path}.${key}`,
+        fellBack,
+      ) as ItemValue;
       continue;
     }
 
@@ -64,8 +106,9 @@ function foldItem(
 /**
  * Fold a section's values to `locale`.
  *
- * Media values are folded a level deeper: `alt_ar` replaces `alt` inside the
- * object rather than replacing the object, so `media_id` survives.
+ * Media values are folded a level deeper: `alt_ar` replaces `alt` and
+ * `media_id_ar` replaces `media_id` inside the object rather than replacing
+ * the object, so the placeholder caption survives.
  */
 export function applyLocale(
   values: SectionValues,
@@ -92,21 +135,17 @@ export function applyLocale(
       continue;
     }
 
-    // Media: the alt text is translatable, the asset is not.
+    // Media: the alt text and, where the artwork is typeset copy, the asset
+    // itself are translatable.
     if (value && typeof value === "object") {
-      const media = value as Record<string, unknown>;
-      if (locale === DEFAULT_LOCALE) {
-        out[key] = value;
-      } else {
-        const { alt_ar, ...rest } = media;
-        out[key] = {
-          ...rest,
-          alt: isBlank(alt_ar) ? media.alt : alt_ar,
-        } as SectionValues[string];
-        if (isBlank(alt_ar) && !isBlank(media.alt)) {
-          fellBack.push(`${sectionKey}${key}.alt`);
-        }
-      }
+      out[key] =
+        locale === DEFAULT_LOCALE
+          ? value
+          : (foldMedia(
+              value as Record<string, unknown>,
+              `${sectionKey}${key}`,
+              fellBack,
+            ) as SectionValues[string]);
       continue;
     }
 

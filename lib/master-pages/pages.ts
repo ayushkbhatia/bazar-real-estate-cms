@@ -311,7 +311,12 @@ const HOME: MasterPageDef = {
       key: "list_your_property",
       label: "List your property",
       description: "Seller lead-capture band with a form.",
-      fields: [eyebrow(), heading(), body(), image("image", "Photo")],
+      fields: [
+        eyebrow(),
+        heading(),
+        body(),
+        image("image", "Photo", undefined, { arabicVariant: true }),
+      ],
       defaults: {
         eyebrow: "List your property",
         heading: "List your property",
@@ -1413,7 +1418,12 @@ const AREAS: MasterPageDef = {
       label: "List your property",
       description: "Lead-capture band with the seller enquiry form.",
       dataNote: "The form fields themselves aren't editable here.",
-      fields: [eyebrow(), heading(), body(), image("image", "Image")],
+      fields: [
+        eyebrow(),
+        heading(),
+        body(),
+        image("image", "Image", undefined, { arabicVariant: true }),
+      ],
       defaults: {
         eyebrow: "List your property",
         heading: "List your property",
