@@ -42,6 +42,12 @@ import {
   type BandStat,
 } from "./_components/area-bands";
 import { AreaFaq, type AreaFaqEntry } from "./_components/area-faq";
+import {
+  liveAmenities,
+  liveChips,
+  liveDining,
+  liveSchools,
+} from "./_components/band-sources";
 import { AreaLeadForm } from "./_components/area-lead-form";
 import { AreaListingsBand } from "./_components/area-listings-band";
 import {
@@ -265,6 +271,8 @@ export default async function CommunityProfilePage({
   // it; `profile.vibe` is the guide seed, and is null on `/ar` until the seed
   // carries an Arabic twin — see `vibeFor` in lib/queries/area-profile.ts.
   const heroVibe = sv("hero", "vibe") ?? profile.vibe;
+  const bandSchools = liveSchools(values("schools"), profile.schools);
+  const bandAmenities = liveAmenities(values("schools"), profile.amenities);
   const stats = profile.stats;
   const buyHref = `/buy/search?area=${profile.slug}`;
   const rentHref = `/rent/search?area=${profile.slug}`;
@@ -546,14 +554,14 @@ export default async function CommunityProfilePage({
     schools: (
       <>
         {/* Schools + amenities — each column drops when it has nothing. */}
-        {profile.schools.length > 0 || profile.amenities.length > 0 ? (
+        {bandSchools.length > 0 || bandAmenities.length > 0 ? (
           <section className="px-4 md:px-12 py-16">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-              {profile.schools.length > 0 ? (
+              {bandSchools.length > 0 ? (
                 <div>
                   <Eyebrow>{t("bands.schools")}</Eyebrow>
                   <ul className="mt-5 flex flex-col gap-3">
-                    {profile.schools.map((s) => (
+                    {bandSchools.map((s) => (
                       <li
                         key={s.name}
                         className="flex items-baseline justify-between gap-4 border-b border-bz-border pb-3"
@@ -592,11 +600,11 @@ export default async function CommunityProfilePage({
                   </ul>
                 </div>
               ) : null}
-              {profile.amenities.length > 0 ? (
+              {bandAmenities.length > 0 ? (
                 <div>
                   <Eyebrow>{t("bands.amenities")}</Eyebrow>
                   <ul className="mt-5 grid grid-cols-1 gap-2">
-                    {profile.amenities.map((a) => (
+                    {bandAmenities.map((a) => (
                       <li key={a} className="text-[14px] text-bz-ink">
                         · {a}
                       </li>
@@ -625,7 +633,10 @@ export default async function CommunityProfilePage({
         <section className="px-4 md:px-12 py-12 border-t border-bz-border bg-bz-surface-2">
           <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-6 items-center">
             <div>
-              <Eyebrow>Own property in {profile.name}?</Eyebrow>
+              <Eyebrow>
+                {sv("valuation", "eyebrow") ??
+                  t("valuation.eyebrow", { area: profile.name })}
+              </Eyebrow>
               <h2
                 className="serif text-[28px] mt-2 leading-tight max-w-[36ch]"
                 style={{ letterSpacing: "-0.018em" }}
@@ -633,14 +644,16 @@ export default async function CommunityProfilePage({
                 {tp("valuationPrompt")}
               </h2>
               <p className="mt-3 text-[14px] text-bz-ink-2 max-w-[58ch]">
-                Instant data-backed range from our model, then a senior advisor
-                reviews and sends a refined valuation within 24 hours.
+                {sv("valuation", "body") ?? t("valuation.body")}
               </p>
             </div>
             {gateForm.enabled ? (
               <ValuationLeadGate
                 form={gateForm}
-                triggerLabel={`Value my ${profile.name} property`}
+                triggerLabel={
+                  sv("valuation", "cta_label") ??
+                  t("valuation.cta", { area: profile.name })
+                }
               />
             ) : null}
           </div>
@@ -651,7 +664,15 @@ export default async function CommunityProfilePage({
       <>
         {/* T3-E: lifestyle dossier — commute chips, prose, dining picks.
           Seed-shaped, so it only draws for editorially-enriched areas. */}
-        {profile.seed ? <LifestyleDossier area={profile.seed} /> : null}
+        {profile.seed ? (
+          <LifestyleDossier
+            area={profile.seed}
+            heading={sv("lifestyle", "heading")}
+            chips={liveChips(values("lifestyle"))}
+            prose={sv("lifestyle", "prose")}
+            dining={liveDining(values("lifestyle"))}
+          />
+        ) : null}
       </>
     ),
     advisors: (
@@ -664,7 +685,8 @@ export default async function CommunityProfilePage({
               className="serif text-[32px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.015em" }}
             >
-              Who to talk to about {profile.name}.
+              {sv("advisors", "heading") ??
+                t("advisors.heading", { area: profile.name })}
             </h2>
             <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-8">
               {advisors.map((a) => (

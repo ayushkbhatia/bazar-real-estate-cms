@@ -13,12 +13,6 @@ export type SeedAreaGuide = {
   intro: string;
   position: string;
   vibe: string;
-  /**
-   * The vibe in Arabic. Optional so a seed written before this existed still
-   * type-checks; `vibeFor` in lib/queries/area-profile.ts drops the eyebrow's
-   * descriptor rather than rendering the English one when it is missing.
-   */
-  vibe_ar?: string;
   stats: {
     median_apt_aed_per_ft2: number;
     median_villa_aed_per_ft2: number;
@@ -62,7 +56,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Hudayriyat is Abu Dhabi's emerging lifestyle island — a master-planned destination shaped around waterfront living, sport, and wellness. Modon is delivering villas, apartments, and mansions alongside a fast-growing spread of beach, leisure, and active-lifestyle facilities.",
     position: "Off the south-west coast, ~15 minutes from the Corniche",
     vibe: "Emerging, waterfront, active-lifestyle",
-    vibe_ar: "وجهة ناشئة، على الواجهة البحرية، بنمط حياة نشط",
     stats: {
       median_apt_aed_per_ft2: 1650,
       median_villa_aed_per_ft2: 2100,
@@ -86,7 +79,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Saadiyat is the cultural island — home to the Louvre Abu Dhabi, the upcoming Guggenheim, and a 9-km stretch of unbuilt-on beach. Stock is a mix of Mamsha apartments, Hidd waterfront villas, and the Nudra cluster.",
     position: "11 km from Corniche, 20 minutes to airport",
     vibe: "Beachfront, low-density, family",
-    vibe_ar: "على الشاطئ، كثافة منخفضة، عائلي",
     stats: {
       median_apt_aed_per_ft2: 1980,
       median_villa_aed_per_ft2: 2640,
@@ -160,7 +152,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Yas is the entertainment island. Ferrari World, Yas Marina Circuit, Yas Waterworld, and Yas Mall sit alongside Yas Acres, Mayan, and the new Yas Bay residential stock.",
     position: "25 km from Corniche, 15 minutes to airport",
     vibe: "Lifestyle-led, mid-density, all ages",
-    vibe_ar: "مدفوع بنمط الحياة، كثافة متوسطة، لجميع الأعمار",
     stats: {
       median_apt_aed_per_ft2: 1480,
       median_villa_aed_per_ft2: 1820,
@@ -224,7 +215,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Reem is the mid-island skyline — high-rise towers, schools, retail, and a five-minute crossing to downtown. The newest waterfront stock sits in Marina Square and Shams Abu Dhabi.",
     position: "3 km from Corniche, 28 minutes to airport",
     vibe: "Urban, high-rise, mid-income to executive",
-    vibe_ar: "حضري، أبراج شاهقة، من الدخل المتوسط إلى التنفيذي",
     stats: {
       median_apt_aed_per_ft2: 1310,
       median_villa_aed_per_ft2: 0,
@@ -286,7 +276,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Al Raha is the mainland family suburb — established communities like Al Raha Gardens and Al Raha Beach, plus the newer Khalifa City expansions. Anchored by major schools and the Khalifa University corridor.",
     position: "20 km from Corniche, 12 minutes to airport",
     vibe: "Suburban, low-density, family",
-    vibe_ar: "ضواحٍ، كثافة منخفضة، عائلي",
     stats: {
       median_apt_aed_per_ft2: 1180,
       median_villa_aed_per_ft2: 1420,
@@ -355,7 +344,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "The eight-kilometre Corniche promenade and the older Abu Dhabi addresses that face it. Stock is a mix of refreshed 1990s towers, newer high-rises, and the Capital Plaza low-rises.",
     position: "Downtown, 30 minutes to airport",
     vibe: "Established, central, mixed-density",
-    vibe_ar: "عريق، مركزي، كثافة متنوعة",
     stats: {
       median_apt_aed_per_ft2: 1240,
       median_villa_aed_per_ft2: 0,
@@ -428,7 +416,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Abu Dhabi Global Market — financial free-zone on Al Maryah Island. Mixed-use freehold towers, the ADGM courts, and the Galleria Mall a five-minute walk away.",
     position: "Al Maryah Island · 8 min from Corniche",
     vibe: "Financial district, mixed-use, freehold",
-    vibe_ar: "حي مالي، متعدد الاستخدامات، تملك حر",
     stats: {
       median_apt_aed_per_ft2: 1850,
       median_villa_aed_per_ft2: 0,
@@ -447,7 +434,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Central business island linking downtown to Reem. The Galleria Mall, Cleveland Clinic, ADGM offices, and a tight cluster of branded residential towers.",
     position: "Between downtown and Reem · 8 min from Corniche",
     vibe: "Business, retail, branded residences",
-    vibe_ar: "أعمال، تجزئة، مساكن بعلامات تجارية",
     stats: {
       median_apt_aed_per_ft2: 1780,
       median_villa_aed_per_ft2: 0,
@@ -466,7 +452,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Beachfront villa enclave on the north of Saadiyat. Freehold for all nationalities; large plots, low density, walking distance to Saadiyat Beach Club.",
     position: "North Saadiyat · 15 min from Corniche",
     vibe: "Beachfront, low-density, villas only",
-    vibe_ar: "على الشاطئ، كثافة منخفضة، فلل فقط",
     stats: {
       median_apt_aed_per_ft2: 0,
       median_villa_aed_per_ft2: 2880,
@@ -485,7 +470,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Mainland community of villas and low-rise apartments east of the Abu Dhabi airport. Popular with families who want garden space and shorter commutes to the airport corridor.",
     position: "Mainland · 12 min from airport, 25 min from Corniche",
     vibe: "Family, suburban, leasehold villas",
-    vibe_ar: "عائلي، ضواحٍ، فلل بنظام حق الانتفاع",
     stats: {
       median_apt_aed_per_ft2: 720,
       median_villa_aed_per_ft2: 1180,
@@ -504,7 +488,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Khalifa Industrial Zone Abu Dhabi — a master-planned logistics and industrial zone next to Khalifa Port. Mostly warehousing and light-industrial stock with limited residential support.",
     position: "Industrial corridor · 35 min from Corniche",
     vibe: "Industrial, logistics, leasehold",
-    vibe_ar: "صناعي، خدمات لوجستية، حق انتفاع",
     stats: {
       median_apt_aed_per_ft2: 0,
       median_villa_aed_per_ft2: 0,
@@ -523,7 +506,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Sustainable urban district east of the airport — research campuses, low-rise residential, Etihad Eco-Villa, and one of the few car-light master-plans in the emirate.",
     position: "Mainland east · 5 min from airport, 22 min from Corniche",
     vibe: "Sustainable, walkable, research-led",
-    vibe_ar: "مستدام، صديق للمشاة، قائم على البحث",
     stats: {
       median_apt_aed_per_ft2: 1080,
       median_villa_aed_per_ft2: 1240,
@@ -542,7 +524,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Industrial and light-industrial mainland district — warehousing, auto trade, and workforce housing. Residential is overwhelmingly leasehold.",
     position: "Mainland · 20 min from Corniche",
     vibe: "Industrial, leasehold, workforce",
-    vibe_ar: "صناعي، حق انتفاع، إسكان عمالي",
     stats: {
       median_apt_aed_per_ft2: 480,
       median_villa_aed_per_ft2: 0,
@@ -561,7 +542,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Boutique private island off the north coast of Saadiyat. Ultra-prime villa-only inventory, accessed by ferry from a private jetty. Tiny number of resales each year.",
     position: "Private island off Saadiyat · 25 min from Corniche (with ferry)",
     vibe: "Ultra-prime, private, villa-only",
-    vibe_ar: "فائق التميّز، خاص، فلل فقط",
     stats: {
       median_apt_aed_per_ft2: 0,
       median_villa_aed_per_ft2: 5200,
@@ -580,7 +560,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Aldar's family-oriented villa community on Yas Island. Park frontage, golf access, and walking-distance schools. Built around 2020 and well-established now.",
     position: "Yas Island · 18 min from Corniche",
     vibe: "Family, villas, golf-adjacent",
-    vibe_ar: "عائلي، فلل، بمحاذاة الغولف",
     stats: {
       median_apt_aed_per_ft2: 0,
       median_villa_aed_per_ft2: 1480,
@@ -599,7 +578,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Waterfront apartment cluster within Al Raha — promenade restaurants, the marina, and a string of low-rise blocks along the channel between mainland and the islands.",
     position: "Al Raha · 16 min from Corniche",
     vibe: "Waterfront, apartments, established",
-    vibe_ar: "على الواجهة البحرية، شقق، حي عريق",
     stats: {
       median_apt_aed_per_ft2: 1180,
       median_villa_aed_per_ft2: 0,
@@ -618,7 +596,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Established Aldar villa community within Al Raha, built around 2010. Mature trees, walking-distance schools and mosques, family-favourite for the long lease tail.",
     position: "Al Raha · 18 min from Corniche",
     vibe: "Family, villas, mature community",
-    vibe_ar: "عائلي، فلل، مجتمع مكتمل",
     stats: {
       median_apt_aed_per_ft2: 0,
       median_villa_aed_per_ft2: 1320,
@@ -637,7 +614,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Six low-rise beachfront residences pressed against an 800m boardwalk in the Saadiyat Cultural District. First true freehold beachfront cluster on Saadiyat — Mamsha set the bar.",
     position: "Saadiyat Cultural District · 14 min from Corniche",
     vibe: "Beachfront, low-rise, freehold",
-    vibe_ar: "على الشاطئ، مبانٍ منخفضة، تملك حر",
     stats: {
       median_apt_aed_per_ft2: 2120,
       median_villa_aed_per_ft2: 0,
@@ -656,7 +632,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Lagoon-fed villa community on Saadiyat — 312 freehold villas across 4 km of crystal waterways. Aldar's third Saadiyat phase, currently in pre-launch.",
     position: "Saadiyat · 16 min from Corniche",
     vibe: "Lagoons, villas, pre-launch",
-    vibe_ar: "بحيرات، فلل، ما قبل الإطلاق",
     stats: {
       median_apt_aed_per_ft2: 0,
       median_villa_aed_per_ft2: 2480,
@@ -675,7 +650,6 @@ export const SEED_AREA_GUIDES: SeedAreaGuide[] = [
       "Aldar's eco-themed cluster on Saadiyat — low-density villas and townhouses with mangrove views and protected coastline access.",
     position: "Saadiyat · 18 min from Corniche",
     vibe: "Eco-themed, low-density, villas + townhouses",
-    vibe_ar: "بيئي الطابع، كثافة منخفضة، فلل وتاون هاوس",
     stats: {
       median_apt_aed_per_ft2: 0,
       median_villa_aed_per_ft2: 2240,

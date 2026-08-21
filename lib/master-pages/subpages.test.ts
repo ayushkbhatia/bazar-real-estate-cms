@@ -288,8 +288,13 @@ describe("reordering and gallery", () => {
     // Area guides render their own eyebrow from the hero section only, so
     // declaring one per section there would put a dead field in front of an
     // editor — the exact problem the development template just shed.
+    //
+    // `valuation` is the one exception, and it earns it by rendering an
+    // eyebrow of its own that has nothing to do with the hero's: "Own property
+    // in <area>?" rather than "Community guide · …". The rule is "no DEAD
+    // eyebrow field", and that one is live.
     for (const s of AREA_SECTIONS) {
-      if (s.key === "hero") continue;
+      if (s.key === "hero" || s.key === "valuation") continue;
       expect(s.fields.map((f) => f.key)).not.toContain("eyebrow");
     }
   });
@@ -395,10 +400,31 @@ describe("area sub-pages", () => {
     // the fields have to still be there when they do.
     for (const key of LEGACY) {
       const section = AREA_SECTIONS.find((s) => s.key === key)!;
-      expect(section.fields.map((f) => f.key), key).toEqual([
+      expect(section.fields.map((f) => f.key).slice(0, 2), key).toEqual([
         "heading",
         "intro",
       ]);
+    }
+  });
+
+  /**
+   * Four of the six older bands render CONTENT, not just a heading — schools,
+   * amenities, commute chips, prose, dining picks, and the valuation band's
+   * own eyebrow and button. All of it came from `lib/seeds/areas.ts` with no
+   * field here to override it, so switching a band on published English
+   * editorial from a code file that no editor could reach.
+   */
+  it("gives every older band that renders content a field for it", () => {
+    const owed: Record<string, string[]> = {
+      schools: ["schools", "amenities"],
+      valuation: ["eyebrow", "body", "cta_label"],
+      lifestyle: ["chips", "prose", "dining"],
+    };
+    for (const [key, keys] of Object.entries(owed)) {
+      const have = AREA_SECTIONS.find((s) => s.key === key)!.fields.map(
+        (f) => f.key,
+      );
+      for (const k of keys) expect(have, `${key}.${k}`).toContain(k);
     }
   });
 

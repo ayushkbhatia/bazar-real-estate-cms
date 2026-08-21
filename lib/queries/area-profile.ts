@@ -21,6 +21,7 @@ import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
+import { arabicFor } from "@/lib/i18n/arabic-store";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { SEED_AREA_GUIDES, type SeedAreaGuide } from "@/lib/seeds/areas";
 import type { AreaGuideRow } from "@/lib/types/sprint-8";
@@ -176,27 +177,120 @@ function schoolsFrom(
 }
 
 /**
- * The vibe, in the locale being rendered.
+ * The seed guide, in the locale being rendered.
  *
- * `seed.vibe` is English editorial that lives in code, and it is read straight
- * into the hero eyebrow — "Community guide · Emerging, waterfront,
- * active-lifestyle". On `/ar` that put three English words inside an otherwise
- * Arabic eyebrow on all 24 area guides, which is the most visible untranslated
- * string on the route.
+ * ## Why the seed needed this at all
  *
- * So Arabic reads `vibe_ar` and stops there. Falling back to the English would
- * reintroduce exactly the bug, and the eyebrow degrades cleanly without it —
- * `t("hero.guide")` renders "دليل المجتمع" on its own. That is the same
- * direction the section document already takes: a hero value whose `_ar` twin
- * is blank folds to null on `/ar` rather than to its English, which is why the
- * position line is absent rather than English on those pages today.
+ * `lib/seeds/areas.ts` is English editorial that lives in code: the intro, the
+ * position line, the vibe, the amenity list, the school names, the commute
+ * chips, the lifestyle prose and the dining picks. None of it had an Arabic
+ * twin and none of it had an editor, so every word of it rendered in English
+ * on `/ar` — 212 strings across 20 guides.
  *
- * English is untouched: the branch only fires off the default locale.
+ * ## Why the store rather than `_ar` keys in the seed file
+ *
+ * A `vibe_ar` beside every `vibe` was the first shape, and it was wrong for
+ * one reason that outweighs how obvious it reads: it is a SECOND place Arabic
+ * lives. The site has one store, keyed by the English it translates, and
+ * `store-catalogue-agree.test.ts` exists to keep the message catalogue from
+ * becoming a second one. 212 hand-maintained twins in a data file would be a
+ * third, with nothing keeping it in step and no way for
+ * `scripts/i18n/translate-content.ts` to fill it.
+ *
+ * Through the store, the seed joins on the same terms as everything else: the
+ * pipeline can write it, `arabicFor` reads it, and "Saadiyat Beach Club" has
+ * one Arabic wherever it appears.
+ *
+ * ## Why an explicit path list
+ *
+ * `localiseRow` guards its own store lookup on the twin COLUMN existing,
+ * because a bare `arabicFor(value)` over a whole row would swap an `id`, a
+ * `slug` or a status for a coincidental store hit. A seed object has no twin
+ * columns to guard on, so the guard is this list instead: these paths carry
+ * prose, and nothing else is looked up.
  */
-function vibeFor(seed: SeedAreaGuide | null, locale: Locale): string | null {
-  if (!seed) return null;
-  if (locale !== DEFAULT_LOCALE) return seed.vibe_ar ?? null;
-  return seed.vibe ?? null;
+const TRANSLATABLE = {
+  /** Top-level strings. */
+  own: ["intro", "position", "vibe", "lifestyle_prose"] as const,
+  /** `field: [keys within each entry]`. */
+  lists: {
+    schools: ["name", "curriculum"],
+    commute_chips: ["label"],
+    dining_picks: ["name", "kind", "note"],
+  } as Record<string, string[]>,
+  /** Arrays of bare strings. */
+  strings: ["amenities"] as const,
+};
+
+function ar(value: unknown): string | null {
+  return typeof value === "string" ? arabicFor(value) : null;
+}
+
+function localiseSeed(
+  seed: SeedAreaGuide | null,
+  locale: Locale,
+): SeedAreaGuide | null {
+  if (!seed || locale === DEFAULT_LOCALE) return seed;
+  const out = { ...seed } as unknown as Record<string, unknown>;
+
+  /*
+   * Untranslated falls back to English, which is invariant 2 of `localiseRow`
+   * — "an untranslated row renders complete, never a hole". `vibe` is the one
+   * deliberate exception, below.
+   */
+  for (const key of TRANSLATABLE.own) {
+    const found = ar(out[key]);
+    if (found) out[key] = found;
+  }
+
+  for (const [field, keys] of Object.entries(TRANSLATABLE.lists)) {
+    const list = out[field];
+    if (!Array.isArray(list)) continue;
+    out[field] = list.map((entry) => {
+      if (!entry || typeof entry !== "object") return entry;
+      const row = { ...(entry as Record<string, unknown>) };
+      for (const key of keys) {
+        const found = ar(row[key]);
+        if (found) row[key] = found;
+      }
+      return row;
+    });
+  }
+
+  for (const field of TRANSLATABLE.strings) {
+    const list = out[field];
+    if (!Array.isArray(list)) continue;
+    out[field] = list.map((v) => ar(v) ?? v);
+  }
+
+  return out as unknown as SeedAreaGuide;
+}
+
+/**
+ * The vibe, and the one place the fold does NOT fall back to English.
+ *
+ * It is read into the hero eyebrow — "Community guide · Emerging, waterfront,
+ * active-lifestyle" — so an untranslated vibe is three English words inside an
+ * otherwise Arabic line, which reads worse than no descriptor at all. The
+ * eyebrow degrades cleanly without one: `t("hero.guide")` renders
+ * "دليل المجتمع" on its own.
+ *
+ * That is also the direction the section document already takes. A hero value
+ * whose `_ar` twin is blank folds to null on `/ar` rather than to its English,
+ * which is why the position line is absent rather than English on those pages.
+ *
+ * `localised` is the seed AFTER `localiseSeed`, so `vibe` is already Arabic
+ * where the store had it; the comparison against the raw seed is what
+ * distinguishes "translated" from "fell through".
+ */
+function vibeFor(
+  raw: SeedAreaGuide | null,
+  localised: SeedAreaGuide | null,
+  locale: Locale,
+): string | null {
+  if (!raw || !localised) return null;
+  if (locale === DEFAULT_LOCALE) return raw.vibe ?? null;
+  return localised.vibe && localised.vibe !== raw.vibe ? localised.vibe : null;
 }
 
 function amenitiesFrom(
@@ -221,10 +315,17 @@ export function composeAreaProfile(input: {
   seed: SeedAreaGuide | null;
   locale?: Locale;
 }): AreaProfile | null {
-  const { guide: rawGuide, seed } = input;
-  if (!input.row && !seed) return null;
+  const { guide: rawGuide, seed: rawSeed } = input;
+  if (!input.row && !rawSeed) return null;
 
   const locale = input.locale ?? DEFAULT_LOCALE;
+  /*
+   * Folded ONCE, here, and every read below goes through the result — the
+   * bands, the lifestyle dossier and `profile.seed` all see the same language.
+   * Folding at each read site instead is how `intro` came to be handled and
+   * `amenities` did not.
+   */
+  const seed = localiseSeed(rawSeed, locale);
   // Folded here rather than by the caller, because the intro precedence below
   // has to know whether a translation exists — see the comment on `intro`.
   const row = input.row
@@ -269,7 +370,7 @@ export function composeAreaProfile(input: {
       row?.description ||
       "",
     position: seed?.position ?? null,
-    vibe: vibeFor(seed, locale),
+    vibe: vibeFor(rawSeed, seed, locale),
     heroLabel: seed?.hero_label ?? slug,
     stats: statsFromGuide(guide) ?? statsFromSeed(seed),
     schools: schoolsFrom(guide, seed),

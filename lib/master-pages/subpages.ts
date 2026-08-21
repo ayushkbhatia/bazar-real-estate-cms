@@ -849,10 +849,77 @@ export const AREA_SECTIONS: SectionDef[] = [
     },
   }),
 
-  // ── Older bands, kept and still editable, but off unless switched on ──
+  /*
+   * ── Older bands, kept and still editable, but off unless switched on ──
+   *
+   * Four of the six drew their CONTENT from `lib/seeds/areas.ts` and had only
+   * a heading and an intro here, so the schools, the amenities, the commute
+   * chips, the prose and the dining picks were English editorial in code that
+   * no editor could reach. Switching a band on published that English on `/ar`
+   * with no way to fix it short of a deploy.
+   *
+   * They get their content fields below. The seed stays as the fallback — a
+   * blank field keeps what ships with the area, exactly as the thirteen live
+   * bands behave — and it is folded through the store on `/ar`, so the
+   * fallback is Arabic too. See `localiseSeed` in lib/queries/area-profile.ts.
+   */
   areaSection("schools", "Schools & amenities", "Nearby schools and facilities.", {
     defaultEnabled: false,
-    dataNote: "Both columns come from the area's guide record.",
+    dataNote:
+      "Leave either list empty and that column falls back to the schools and amenities that ship with the area.",
+    extraFields: [
+      {
+        key: "schools",
+        label: "Schools",
+        kind: "list",
+        itemLabel: "school",
+        max: 10,
+        help: "Switch one off to hide it without losing the entry.",
+        fields: [
+          showToggle("Show this school"),
+          { key: "name", label: "Name", kind: "text", max: 90 },
+          {
+            key: "curriculum",
+            label: "Curriculum",
+            kind: "text",
+            max: 60,
+            optional: true,
+            help: "\u201cBritish\u201d, \u201cAmerican\u201d, \u201cIB\u201d.",
+          },
+          {
+            key: "rating",
+            label: "ADEK / KHDA rating",
+            kind: "text",
+            max: 40,
+            optional: true,
+            i18n: false,
+            help: "\u201cOutstanding\u201d, \u201cVery good\u201d. Blank hides the rating.",
+          },
+          {
+            key: "distance",
+            label: "Distance",
+            kind: "text",
+            max: 20,
+            optional: true,
+            i18n: false,
+            help: "The figure only \u2014 \u201c1.2\u201d renders as \u201c1.2 km\u201d.",
+          },
+        ],
+      },
+      {
+        key: "amenities",
+        label: "Amenities",
+        kind: "list",
+        itemLabel: "amenity",
+        max: 16,
+        help: "The facilities column beside the schools.",
+        fields: [
+          showToggle("Show this amenity"),
+          { key: "name", label: "Name", kind: "text", max: 90 },
+        ],
+      },
+    ],
+    defaults: { schools: [], amenities: [] },
   }),
   areaSection("reports", "Market reports", "Rail linking to the area's reports.", {
     defaultEnabled: false,
@@ -860,10 +927,97 @@ export const AREA_SECTIONS: SectionDef[] = [
   }),
   areaSection("valuation", "Valuation prompt", "Lead capture for owners.", {
     defaultEnabled: false,
+    extraFields: [
+      optionalText(
+        "eyebrow",
+        "Eyebrow",
+        "Blank keeps \u201cOwn property in <area>?\u201d.",
+      ),
+      optionalBody(
+        "body",
+        "Supporting copy",
+        "The paragraph under the headline. Blank keeps the built-in copy.",
+      ),
+      {
+        key: "cta_label",
+        label: "Button label",
+        kind: "text",
+        max: 60,
+        optional: true,
+        help: "Blank keeps \u201cValue my <area> property\u201d.",
+      },
+    ],
+    defaults: { eyebrow: null, body: null, cta_label: null },
   }),
   areaSection("lifestyle", "Lifestyle dossier", "Commute chips, prose, dining.", {
     defaultEnabled: false,
-    dataNote: "Drawn from the area's guide seed, so it only draws for enriched areas.",
+    dataNote:
+      "Every list falls back to what ships with the area, so a blank band still draws for an enriched area.",
+    extraFields: [
+      {
+        key: "chips",
+        label: "Commute snapshot",
+        kind: "list",
+        itemLabel: "destination",
+        max: 8,
+        help: "Each chip is a destination and a travel time.",
+        fields: [
+          showToggle("Show this destination"),
+          { key: "label", label: "Destination", kind: "text", max: 60 },
+          {
+            key: "minutes",
+            label: "Minutes",
+            kind: "text",
+            max: 5,
+            i18n: false,
+            help: "The figure only \u2014 \u201c14\u201d renders as \u201c14 min\u201d.",
+          },
+          {
+            key: "mode",
+            label: "Mode",
+            kind: "select",
+            options: [
+              { value: "car", label: "Car" },
+              { value: "metro", label: "Metro" },
+              { value: "walk", label: "Walk" },
+            ],
+          },
+        ],
+      },
+      optionalBody(
+        "prose",
+        "The rhythm of the week",
+        "What the area actually feels like to live in. Blank keeps the copy that ships with the area.",
+      ),
+      {
+        key: "dining",
+        label: "Dining picks",
+        kind: "list",
+        itemLabel: "restaurant",
+        max: 8,
+        help: "Where the advisors take their clients.",
+        fields: [
+          showToggle("Show this restaurant"),
+          { key: "name", label: "Name", kind: "text", max: 90 },
+          {
+            key: "kind",
+            label: "Cuisine / location",
+            kind: "text",
+            max: 90,
+            optional: true,
+            help: "\u201cJapanese, Saadiyat Rotana\u201d.",
+          },
+          {
+            key: "note",
+            label: "Note",
+            kind: "textarea",
+            max: 240,
+            optional: true,
+          },
+        ],
+      },
+    ],
+    defaults: { chips: [], prose: null, dining: [] },
   }),
   areaSection("advisors", "Advisors", "Advisors who cover this area.", {
     defaultEnabled: false,
