@@ -1,57 +1,4 @@
 {
-  "1": {
-    "ar": "1",
-    "by": "machine"
-  },
-  "2": {
-    "ar": "2",
-    "by": "machine"
-  },
-  "3": {
-    "ar": "3",
-    "by": "machine"
-  },
-  "4": {
-    "ar": "4",
-    "by": "machine"
-  },
-  "5": {
-    "ar": "5",
-    "by": "machine"
-  },
-  "6": {
-    "ar": "6",
-    "by": "machine"
-  },
-  "7": {
-    "ar": "7",
-    "by": "machine"
-  },
-  "8": {
-    "ar": "8",
-    "by": "machine"
-  },
-  "11": {
-    "ar": "11",
-    "by": "machine"
-  },
-  "12": {
-    "ar": "12",
-    "by": "machine"
-  },
-  "464": {
-    "ar": "464",
-    "by": "machine"
-  },
-  "1313": {
-    "ar": "١٣١٣",
-    "by": "machine",
-    "model": "Qwen/Qwen2.5-72B-Instruct"
-  },
-  "2023": {
-    "ar": "2023",
-    "by": "machine"
-  },
   "& commercial": {
     "ar": "& تجاري",
     "by": "machine",
@@ -188,6 +135,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "1": {
+    "ar": "1",
+    "by": "machine"
+  },
   "1 - 3": {
     "ar": "١ - ٣",
     "by": "machine",
@@ -277,11 +228,19 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:55:03.094Z"
   },
+  "11": {
+    "ar": "11",
+    "by": "machine"
+  },
   "11. Third-Party Links and Services": {
     "ar": "11. الروابط والخدمات الخارجية",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
+  },
+  "12": {
+    "ar": "12",
+    "by": "machine"
   },
   "12-Month Apartment Index Change": {
     "ar": "التغير في مؤشر الشقة خلال 12 شهراً",
@@ -337,6 +296,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:48:08.045Z"
   },
+  "1313": {
+    "ar": "١٣١٣",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
   "15. Termination": {
     "ar": "15. الإنهاء",
     "by": "machine",
@@ -380,6 +344,10 @@
     "ar": "1–4 غرفة نوم",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "2": {
+    "ar": "2",
+    "by": "machine"
   },
   "2 Bedroom": {
     "ar": "2 غرفة نوم",
@@ -437,6 +405,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
   },
+  "2023": {
+    "ar": "2023",
+    "by": "machine"
+  },
   "22 May 2026": {
     "ar": "22 May 2026",
     "by": "machine",
@@ -475,6 +447,10 @@
   },
   "2–6": {
     "ar": "2–6",
+    "by": "machine"
+  },
+  "3": {
+    "ar": "3",
     "by": "machine"
   },
   "3 - 6": {
@@ -549,6 +525,10 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "4": {
+    "ar": "4",
+    "by": "machine"
+  },
   "4 - 6": {
     "ar": "٤ - ٦",
     "by": "machine",
@@ -616,12 +596,20 @@
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:34:12.173Z"
   },
+  "464": {
+    "ar": "464",
+    "by": "machine"
+  },
   "4–6": {
     "ar": "4–6",
     "by": "machine"
   },
   "4–7": {
     "ar": "4–7",
+    "by": "machine"
+  },
+  "5": {
+    "ar": "5",
     "by": "machine"
   },
   "5 Bedroom": {
@@ -673,6 +661,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:53:12.099Z"
   },
+  "6": {
+    "ar": "6",
+    "by": "machine"
+  },
   "6 Bedroom": {
     "ar": "6 غرفة نوم",
     "by": "machine",
@@ -696,6 +688,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:15:04.118Z"
   },
+  "7": {
+    "ar": "7",
+    "by": "machine"
+  },
   "7. Changes to This Policy": {
     "ar": "7. تغييرات على هذه السياسة",
     "by": "machine",
@@ -710,6 +706,10 @@
   },
   "78%": {
     "ar": "78%",
+    "by": "machine"
+  },
+  "8": {
+    "ar": "8",
     "by": "machine"
   },
   "8+": {
@@ -1838,6 +1838,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:46:09.616Z"
   },
+  "Al Mariah": {
+    "ar": "الماريه",
+    "by": "machine"
+  },
   "Al Markaziyah": {
     "ar": "المركزية",
     "by": "machine"
@@ -1984,6 +1988,14 @@
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:32:05.909Z"
   },
+  "Al Seef": {
+    "ar": "السيف",
+    "by": "machine"
+  },
+  "Al Suhoul": {
+    "ar": "السهول",
+    "by": "machine"
+  },
   "Al Tharwaniyah": {
     "ar": "الثروانية",
     "by": "machine",
@@ -1995,6 +2007,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:11:02.439Z"
+  },
+  "Al Ward": {
+    "ar": "الورد",
+    "by": "machine"
   },
   "Al Zeina": {
     "ar": "الزينة",
@@ -2446,6 +2462,10 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Baccarat Residences Saadiyat": {
+    "ar": "Baccarat Residences Saadiyat",
+    "by": "machine"
+  },
   "Baccarat Residences Saadiyat\nMandarin Oriental Residences\nNobu Residences Abu Dhabi\nW Residences Abu Dhabi\nHudayriyat Golf Estates": {
     "ar": "باكارات ريزيدنسز السعديات\nماندارين أورينتال ريزيدنسز\nنوبو ريزيدنسز أبوظبي\nدبليو ريزيدنسز أبوظبي\nالحديريات غولف إستيتس",
     "by": "machine",
@@ -2502,6 +2522,10 @@
     "ar": "باصنت",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Bashayer": {
+    "ar": "Bashayer",
+    "by": "machine"
   },
   "Bashayer Residences": {
     "ar": "بشاير ريسيدنسز",
@@ -2749,6 +2773,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:53:12.099Z"
   },
+  "Bespoke real estate advisory and a curated marketplace for buyers, sellers, and investors across the United Arab Emirates.": {
+    "ar": "استشارات عقارية مخصصة وسوق منتقى للمشترين والبائعين والمستثمرين في دولة الإمارات العربية المتحدة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:33:36.322Z"
+  },
   "Best fit · advisor pick": {
     "ar": "الأنسب · اختيار المستشار",
     "by": "human"
@@ -2831,6 +2861,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
+  },
+  "Both. The industrial sectors are the district’s core, with two established residential clusters — Shabiya and Mussafah Gardens — built alongside them.": {
+    "ar": "كلاهما. تشكل القطاعات الصناعية نواة المنطقة، مع وجود تجمعين سكنيين مُستقرَّين — الشعبية وحدائق مصفح — مُقامَين بجانبهما.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:33:00.729Z"
   },
   "Boutique private island off Saadiyat — ultra-prime villa-only inventory, accessed by ferry.": {
     "ar": "جزيرة خاصة صغيرة قبالة السعديات — مخزون فاخر للفيلات فقط، يتم الوصول إليها بواسطة العبارة.",
@@ -3399,6 +3435,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.478Z"
+  },
+  "Changes to These Terms": {
+    "ar": "تغييرات في هذه الشروط",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
   },
   "Check the location, developer, price, payment plan, ownership type, service charges, and expected rental demand.": {
     "ar": "تحقّق من الموقع والمطوّر والسعر وخطة السداد ونوع الملكية ورسوم الخدمات والطلب الإيجاري المتوقع.",
@@ -4080,6 +4122,17 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Day 2–3": {
+    "ar": "اليوم 2–3",
+    "by": "human",
+    "at": "2026-08-21"
+  },
+  "Dedicated Listing Support": {
+    "ar": "دعم مخصص لإعلانات العقارات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.737Z"
+  },
   "Dedicated Support": {
     "ar": "التزام بالدعم",
     "by": "machine",
@@ -4693,6 +4746,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Entire Agreement": {
+    "ar": "الاتفاقية الكاملة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
+  },
   "Entry points below the established island markets.": {
     "ar": "نقاط دخول أقل من أسواق الجزر المعروفة.",
     "by": "machine",
@@ -4791,6 +4850,10 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:13:20.229Z"
+  },
+  "Etihad Towers": {
+    "ar": "أبراج الاتحاد",
+    "by": "machine"
   },
   "Evening": {
     "ar": "المساء",
@@ -5642,6 +5705,10 @@
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:34:12.173Z"
+  },
+  "Fahid Waterfront Promenade": {
+    "ar": "Fahid Waterfront Promenade",
+    "by": "machine"
   },
   "Family Formats": {
     "ar": "صيغ العائلة",
@@ -7028,6 +7095,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Governing Law and Jurisdiction": {
+    "ar": "القانون الحاكم والاختصاص القضائي",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
+  },
   "Government Precinct": {
     "ar": "المنطقة الحكومية",
     "by": "machine",
@@ -7157,6 +7230,10 @@
     "ar": "مساعدتنا المستأجرين في العثور على منازل ومساحات تجارية مناسبة.",
     "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Hemaim": {
+    "ar": "Hemaim",
+    "by": "machine"
   },
   "Hi Bazar, I just scanned your QR code.": {
     "ar": "بازار مرحباً، لقد قمت للتو بمسح رمز الاستجابة السريعة الخاص بك.",
@@ -7450,6 +7527,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "If any provision of these Terms is found to be invalid, unlawful or unenforceable, the remaining provisions will continue in full force and effect to the extent permitted by law.": {
+    "ar": "إذا وُجِدَ أيُّ حُكْمٍ من هذه الشُّروط باطلاً، غير قانوني، أو غير قابل للتنفيذ، فسَتَبْقَى البَقِيَّة مُسْتَمِرَّةً في القُوَّةِ والثَّأثيرِ بِمَقْدَرِ ما يُسْتَحِيلُ قَانُونِيًّا.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
+  },
   "Immediate access to the city’s largest industrial employment base.": {
     "ar": "الوصول الفوري إلى أكبر قاعدة تشغيل صناعية في المدينة.",
     "by": "machine",
@@ -7642,6 +7725,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:13:20.229Z"
+  },
+  "Island Spa": {
+    "ar": "سبا الجزيرة",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:34:43.717Z"
   },
   "It covers Al Maryah Island and, following a 2023 UAE Cabinet resolution, the whole of Al Reem Island.": {
     "ar": "يغطي جزيرة الماريه، وبموجب قرار مجلس الوزراء الإماراتي الصادر عام 2023، جزيرة الريم بالكامل.",
@@ -8061,6 +8150,10 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Lea": {
+    "ar": "Lea",
+    "by": "machine"
+  },
   "Learn more": {
     "ar": "معرفة المزيد",
     "by": "machine",
@@ -8144,6 +8237,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
   },
+  "Lehwieh": {
+    "ar": "Lehwieh",
+    "by": "machine"
+  },
   "Leonardo Residences": {
     "ar": "مجمع ليوناردو السكني",
     "by": "machine",
@@ -8176,6 +8273,11 @@
     "ar": "تدير لينا الجانب الإيجاري للمكتب. إنها المستشارة التي يحتفظ بها الدبلوماسيون والوافدون الكبار — تعرف أي المباني تفي بالوعود في الكتالوج وأيها يجب تجنبها في أغسطس.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "List Your": {
+    "ar": "أدرج",
+    "by": "human",
+    "at": "2026-08-21"
   },
   "List Your Property": {
     "ar": "أدرج عقارك",
@@ -8367,6 +8469,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:16:12.763Z"
+  },
+  "Logistics & Distribution Parks": {
+    "ar": "المجمعات اللوجستية والتوزيعية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:32:28.819Z"
   },
   "Long-Term Growth": {
     "ar": "نمو طويل الأجل",
@@ -8751,6 +8859,10 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:14:21.433Z"
   },
+  "Mamsha Gardens": {
+    "ar": "Mamsha Gardens",
+    "by": "machine"
+  },
   "Mamsha Penthouses": {
     "ar": "شقق بنتهاوس ممشى",
     "by": "machine",
@@ -8761,6 +8873,10 @@
     "ar": "ممشى المرحلة 4، وحدة إطلاق بثلاث غرف نوم.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Mamsha Townhouses": {
+    "ar": "Mamsha Townhouses",
+    "by": "machine"
   },
   "Manage Your Property": {
     "ar": "إدارة عقارك",
@@ -8883,6 +8999,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Marketing Communications": {
+    "ar": "الاتصالات التسويقية",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
+  },
   "Marketing exposure": {
     "ar": "التغطية التسويقية",
     "by": "machine",
@@ -8894,6 +9016,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:45:15.844Z"
+  },
+  "Marsa Al Saadiyat": {
+    "ar": "مرسى السعديات",
+    "by": "machine"
   },
   "Masdar City": {
     "ar": "مدينة مصدر",
@@ -9207,6 +9333,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "Muheira": {
+    "ar": "Muheira",
+    "by": "machine"
+  },
   "Multi-Purpose Sports Courts": {
     "ar": "ملاعب متعددة الأغراض",
     "by": "machine",
@@ -9255,6 +9385,10 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:29:57.232Z"
+  },
+  "Muzera": {
+    "ar": "Muzera",
+    "by": "machine"
   },
   "Nad Al Jubail": {
     "ar": "ند الجبيل",
@@ -9307,6 +9441,10 @@
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:34:12.173Z"
+  },
+  "Nawayef East": {
+    "ar": "Nawayef East",
+    "by": "machine"
   },
   "Nawayef Park Views": {
     "ar": "نوايايف بارك فيوز",
@@ -9492,6 +9630,10 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:34:19.126Z"
+  },
+  "Oasis Residences": {
+    "ar": "Oasis Residences",
+    "by": "machine"
   },
   "Off-Plan": {
     "ar": "على الخارطة",
@@ -9858,6 +10000,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:19:56.344Z"
+  },
+  "Or send a brief": {
+    "ar": "أو أرسل ملخصًا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
   },
   "Organised management of property, tenancy and payment records.": {
     "ar": "إدارة منظّمة لسجلات العقارات والإيجارات والمدفوعات.",
@@ -10974,6 +11122,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "Property Enquiries": {
+    "ar": "استفسارات العقارات",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
+  },
   "Property Expert": {
     "ar": "خبير عقاري",
     "by": "machine",
@@ -10985,6 +11139,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "Property Inspections": {
+    "ar": "معاينة العقارات",
+    "by": "human",
+    "at": "2026-08-21"
   },
   "Property Investment": {
     "ar": "الاستثمار العقاري",
@@ -11219,6 +11378,10 @@
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:34:12.173Z"
   },
+  "Qattouf": {
+    "ar": "Qattouf",
+    "by": "machine"
+  },
   "Questions": {
     "ar": "الأسئلة",
     "by": "machine",
@@ -11256,6 +11419,10 @@
     "by": "reviewed",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Ras Al Hidd": {
+    "ar": "رأس الحد",
+    "by": "machine"
+  },
   "Rashid founded Bazar in 2018 after twelve years on the institutional side. He still personally handles the firm's family-office mandates and sits on every offer above AED 30M.": {
     "ar": "راشد أسس بازار في 2018 بعد اثني عشر عامًا في الجانب المؤسسي. لا يزال يتعامل شخصيًا مع تفويضات مكاتب العائلات ويشارك في كل عرض يتجاوز AED 30 مليون.",
     "by": "machine",
@@ -11266,6 +11433,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Read the Guides": {
+    "ar": "اقرأ الأدلة",
+    "by": "human",
+    "at": "2026-08-21"
   },
   "Ready": {
     "ar": "جاهز",
@@ -11850,6 +12022,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Saadiyat Address": {
+    "ar": "السعديات العنوان",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:34:43.719Z"
+  },
   "Saadiyat Beach": {
     "ar": "شاطئ السعديات",
     "by": "machine"
@@ -11989,6 +12167,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:47:46.675Z"
+  },
+  "Scan to connect": {
+    "ar": "امسح للتواصل",
+    "by": "human",
+    "at": "2026-08-21"
   },
   "Scan to contact Bazar Real Estate": {
     "ar": "امسح للتواصل مع بازار العقارية",
@@ -12280,6 +12463,20 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:04:18.238Z"
   },
+  "Seven — The Redwoods, The Aspens, The Magnolias, The Dahlias, The Cedars, Lea and the mixed-use North Bay.": {
+    "ar": "سبعة — The Redwoods، The Aspens، The Magnolias، The Dahlias، The Cedars، Lea والمتعددة الاستخدامات North Bay.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:33:15.264Z"
+  },
+  "Shabiya": {
+    "ar": "الشعبية",
+    "by": "machine"
+  },
+  "Shabiya Community Centres": {
+    "ar": "مراكز مجتمع الشعبية",
+    "by": "machine"
+  },
   "Shaded streets, public spaces and sustainable mobility form part of the city’s design approach.": {
     "ar": "الشوارع المظللة، والمساحات العامة، والتنقل المستدام تشكل جزءًا من نهج تصميم المدينة.",
     "by": "machine",
@@ -12366,6 +12563,10 @@
     "ar": "جنبًا إلى جنب",
     "by": "human"
   },
+  "Sidra": {
+    "ar": "Sidra",
+    "by": "machine"
+  },
   "Similar Projects": {
     "ar": "المشاريع المشابهة",
     "by": "machine",
@@ -12451,6 +12652,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
+  },
+  "Some cookies above are set by vendors we use to run the Service\n(Supabase, PostHog, Vercel), not by Bazar directly. Their processing\nof data collected via cookies is also covered by our \nPrivacy Policy .": {
+    "ar": "بعض ملفات الكوكيز أعلاه يتم تعيينها من قبل موردين نستخدمهم لتشغيل الخدمة (سواباس، بوستهوج، فيرسيل)، وليس من قبل بازار مباشرة. معالجة البيانات التي يتم جمعها عبر ملفات الكوكيز تخضع أيضًا لسياسة الخصوصية لدينا.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:31:00.119Z"
   },
   "Something else": {
     "ar": "اختيار آخر",
@@ -12671,6 +12878,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Studio Apartment Sale Index — Jun 2026": {
+    "ar": "مؤشر مبيعات الشقق الاستوديو — حزيران 2026",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:32:13.591Z"
+  },
   "Studio in Yas Bay with marina and arena views.": {
     "ar": "استوديو في ياس باي مع مناظر على المارينا والملعب.",
     "by": "machine",
@@ -12720,6 +12933,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "Submitting": {
+    "ar": "جارٍ الإرسال",
+    "by": "human",
+    "at": "2026-08-21"
+  },
   "Submitting…": {
     "ar": "جارٍ الإرسال…",
     "by": "machine",
@@ -12753,6 +12971,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "Supermarkets, schools, clinics and transport already in place.": {
+    "ar": "المتاجر، المدارس، العيادات والنقل متوفرة بالفعل.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:33:00.729Z"
   },
   "Support from offer to completion.": {
     "ar": "نرافقك من تقديم العرض حتى إتمام الصفقة.",
@@ -13013,6 +13237,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.626Z"
   },
+  "Terms of service for Bazar Real Estate's marketplace, advisory, and tools.": {
+    "ar": "شروط الخدمة لسوق بازار العقارية ومستشارها وأدواتها.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:33:36.325Z"
+  },
   "Testimonials": {
     "ar": "آراء العملاء",
     "by": "machine",
@@ -13058,6 +13288,10 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "The Aspens": {
+    "ar": "The Aspens",
+    "by": "machine"
+  },
   "The Bazar Brief — market reports, field notes, and advisor commentary": {
     "ar": "موجز بازار — تقارير السوق وملاحظات ميدانية وتعليقات المستشارين",
     "by": "machine",
@@ -13085,6 +13319,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:20:13.722Z"
+  },
+  "The Cedars": {
+    "ar": "The Cedars",
+    "by": "machine"
   },
   "The Complete Off-Plan Selection": {
     "ar": "التشكيلة الكاملة على الخارطة",
@@ -13162,6 +13400,10 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:04:18.233Z"
   },
+  "The Mamsha Promenade": {
+    "ar": "ممشى السعديات",
+    "by": "machine"
+  },
   "The Phases": {
     "ar": "المراحل",
     "by": "machine",
@@ -13173,6 +13415,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:17:08.882Z"
+  },
+  "The Redwoods": {
+    "ar": "The Redwoods",
+    "by": "machine"
   },
   "The Saadiyat Cultural District — including the Louvre Abu Dhabi and Manarat Al Saadiyat — is within walking distance.": {
     "ar": "الساديات المنطقة الثقافية — بما في ذلك اللوفر أبوظبي ومانارات الساديات — على مسافة قصيرة سيراً على الأقدام.",
@@ -13398,6 +13644,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:59:23.131Z"
   },
+  "These Terms shall be governed by and interpreted in accordance with the applicable laws of the United Arab Emirates and the Emirate of Abu Dhabi.\n\nSubject to any mandatory jurisdictional requirements under applicable law, disputes relating to these Terms or use of the Website shall be subject to the jurisdiction of the competent courts of Abu Dhabi, United Arab Emirates.": {
+    "ar": "هذه الشروط تخضع وتفسر وفقًا للقوانين المعمول بها في دولة الإمارات العربية المتحدة وإمارة أبوظبي.\n\nباستثناء أي متطلبات اختصاص إلزامية بموجب القانون المعمول به، تخضع النزاعات المتعلقة بهذه الشروط أو استخدام الموقع لاختصاص المحاكم المختصة في أبوظبي، دولة الإمارات العربية المتحدة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
+  },
+  "These Terms, together with any policies expressly incorporated by reference, constitute the terms governing use of the Website.\n\nSeparate contractual documents may apply to particular property transactions or services.": {
+    "ar": "هذه الشروط، بالإضافة إلى السياسات المدرجة بالرجوع إليها صراحة، تشكل الشروط الحاكمة لاستخدام الموقع الإلكتروني.\n\nمستندات عقدية منفصلة قد تنطبق على معاملات أو خدمات عقارية معينة.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:31:00.119Z"
+  },
   "These are among Modon’s current residential developments across Hudayriyat Island.": {
     "ar": "هذه من بين المشاريع السكنية الحالية لشركة مودون في جزيرة الحديريات.",
     "by": "machine",
@@ -13556,6 +13814,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
+  },
+  "To the fullest extent permitted by applicable law, Bazar Real Estate shall not be liable for losses arising solely from reliance on general information displayed on the Website, interruptions to Website availability, third-party websites or services, or information supplied by third parties.\n\nNothing in these Terms excludes or limits liability where such liability cannot legally be excluded or limited under applicable law.": {
+    "ar": "وفقاً لأقصى حد يسمح به القانون الساري، بازار للعقارات لن تكون مسؤولة عن الخسائر الناتجة فقط عن الاعتماد على المعلومات العامة المعروضة على الموقع، أو انقطاعات خدمة الموقع، أو المواقع أو الخدمات التابعة لجهات خارجية، أو المعلومات المقدمة من قبل أطراف ثالثة.\n\nلا شيء في هذه الشروط يستثنى أو يحد من المسؤولية حيث لا يمكن قانونياً استثناؤها أو تقييدها وفقاً للقانون الساري.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
   },
   "Today": {
     "ar": "اليوم",
@@ -14293,6 +14557,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:46:01.783Z"
   },
+  "We may amend these Terms from time to time to reflect changes to our Website, services, business practices or applicable legal requirements.\n\nThe revised Terms will take effect when published on this page unless otherwise stated.\n\nThe “Last Updated” date at the top of this page identifies the most recent revision.": {
+    "ar": "قد نقوم بتعديل هذه الشروط من وقت لآخر لتعكس التغييرات في موقعنا الإلكتروني، الخدمات، الممارسات التجارية أو المتطلبات القانونية المعمول بها.\n\nستدخل الشروط المعدلة حيز التنفيذ عند نشرها على هذه الصفحة ما لم يُذكر خلاف ذلك.\n\nتاريخ \"آخر تحديث\" في أعلى هذه الصفحة يحدد آخر تعديل.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
+  },
   "We may suspend or terminate access for anyone who violates these\nterms. To have the personal data we hold about you erased, email \ndpo@bazarrealestate.ae .\nSections that by their nature should survive termination (fees owed,\nliability caps, governing law) continue to apply.": {
     "ar": "قد نعلق أو ننهي الوصول لأي شخص ينتهك هذه الشروط. لإزالة البيانات الشخصية التي نحتفظ بها عنك، أرسل بريدًا إلكترونيًا إلى dpo@bazarrealestate.ae. الأقسام التي بطبيعتها يجب أن تستمر بعد الإنهاء (الرسوم المستحقة، حدود المسؤولية، القانون الحاكم) تظل سارية.",
     "by": "machine",
@@ -14337,6 +14607,12 @@
     "ar": "سنوصلك بالعضو المناسب في فريقنا.",
     "by": "human",
     "at": "2026-08-20T00:00:00.000Z"
+  },
+  "We'll update the effective date whenever this policy changes\nmaterially, and re-surface the consent banner if the change affects\nwhat we collect.": {
+    "ar": "سنوفرخ التاريخ الفعلي كلما تغيرت هذه السياسة بشكل جوهري، وسنبين لافتة الموافقة مرة أخرى إذا أثر التغيير على ما نجمع.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:31:00.119Z"
   },
   "We're showing you the matching rentals now. An advisor will follow up with anything that isn't listed yet.": {
     "ar": "نعرض عليك الآن الإيجارات المطابقة. وسيتابع معك أحد المستشارين بشأن ما لم يُدرج بعد.",
@@ -14707,6 +14983,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
   },
+  "When you submit an enquiry through the Website, WhatsApp, telephone, email or another communication channel, you authorise Bazar Real Estate to contact you regarding your enquiry and relevant property services.\n\nSubmitting an enquiry does not:\n•\tReserve a property;\n•\tGuarantee availability;\n•\tCreate a buyer, seller, landlord, tenant or agency agreement;\n•\tGuarantee financing or mortgage approval; or\n•\tRequire Bazar Real Estate or any third party to complete a transaction.\n\nAny formal relationship will be governed by the relevant agreements and documentation entered into separately between the applicable parties.": {
+    "ar": "عندما ترسل استفسارًا عبر الموقع الإلكتروني أو واتساب أو الهاتف أو البريد الإلكتروني أو قناة اتصال أخرى، فإنك تُرخِّص لـ بازار العقارية بالتواصل معك بشأن استفسارك والخدمات العقارية ذات الصلة.\n\nإرسال استفسار لا يُعد:\n•\tحجزًا للعقار؛\n•\tضمانًا للتوافر؛\n•\tإنشاء اتفاقية بين المشتري والبائع أو المالك أو المستأجر أو الوكيل العقاري؛\n•\tضمانًا للتمويل أو موافقة تمويل عقاري؛ أو\n•\tالتزامًا لـ بازار العقارية أو أي طرف ثالث بإتمام المعاملة.\n\nأي علاقة رسمية ستُحكمها الاتفاقيات والمستندات المبرمة منفصلًا بين الأطراف المعنية.",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
+  },
   "When you submit an enquiry, review, or other content, you grant Bazar\na worldwide, non-exclusive licence to use it to provide the Service.\nDon't submit content you don't have the right to share, and\ndon't submit content that is false, defamatory, or infringes a\nthird party's rights.": {
     "ar": "عندما تقدم استفسارًا أو مراجعة أو محتوى آخر، فإنك تمنح بازار\nترخيصًا عالميًا غير حصري لاستخدامه لتقديم الخدمة.\nلا تقدم محتوى لا تملك الحق في مشاركته، ولا تقدم محتوى كاذبًا أو مسيئًا أو ينتهك حقوق طرف ثالث.",
     "by": "machine",
@@ -14832,6 +15114,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:29:04.054Z"
+  },
+  "While you're here": {
+    "ar": "بينما أنت هنا",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct",
+    "at": "2026-08-21T14:30:16.738Z"
   },
   "Who developed Nurai Island?": {
     "ar": "من طوّر جزيرة نوراي؟",
@@ -15675,6 +15963,10 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:25:18.593Z"
   },
+  "al mariah": {
+    "ar": "الماريه",
+    "by": "machine"
+  },
   "al markaziyah": {
     "ar": "المركزية",
     "by": "machine"
@@ -15761,6 +16053,14 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:29:07.869Z"
   },
+  "al seef": {
+    "ar": "السيف",
+    "by": "machine"
+  },
+  "al suhoul": {
+    "ar": "السهول",
+    "by": "machine"
+  },
   "al tharwaniyah": {
     "ar": "الثروانية",
     "by": "machine",
@@ -15772,6 +16072,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:44:00.195Z"
+  },
+  "al ward": {
+    "ar": "الورد",
+    "by": "machine"
   },
   "al zeina": {
     "ar": "الزينة",
@@ -16053,6 +16357,10 @@
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:35:03.278Z"
   },
+  "etihad towers": {
+    "ar": "أبراج الاتحاد",
+    "by": "machine"
+  },
   "fahid beach residences": {
     "ar": "فهد بيتش ريزيدنسز",
     "by": "machine",
@@ -16201,6 +16509,10 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:58:50.310Z"
   },
+  "lea": {
+    "ar": "lea",
+    "by": "machine"
+  },
   "leading communities": {
     "ar": "المجتمعات الرائدة",
     "by": "machine",
@@ -16212,6 +16524,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
+  },
+  "lehwieh": {
+    "ar": "lehwieh",
+    "by": "machine"
   },
   "leonardo residences": {
     "ar": "ليوناردو ريزيدنس",
@@ -16269,6 +16585,18 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:14:21.433Z"
   },
+  "mamsha gardens": {
+    "ar": "mamsha gardens",
+    "by": "machine"
+  },
+  "mamsha penthouses": {
+    "ar": "mamsha penthouses",
+    "by": "machine"
+  },
+  "mamsha townhouses": {
+    "ar": "mamsha townhouses",
+    "by": "machine"
+  },
   "manarat al saadiyat": {
     "ar": "منارة السعديات",
     "by": "machine",
@@ -16302,6 +16630,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:45:15.844Z"
+  },
+  "marsa al saadiyat": {
+    "ar": "مرسى السعديات",
+    "by": "machine"
   },
   "marsana": {
     "ar": "مارسانا",
@@ -16339,6 +16671,10 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T10:25:01.521Z"
   },
+  "muheira": {
+    "ar": "muheira",
+    "by": "machine"
+  },
   "mussafah bridge": {
     "ar": "مصفح جسر",
     "by": "machine",
@@ -16366,6 +16702,10 @@
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:35:54.170Z"
+  },
+  "muzera": {
+    "ar": "muzera",
+    "by": "machine"
   },
   "nad al jubail": {
     "ar": "ناد الجبيل",
@@ -16408,6 +16748,14 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:47:18.127Z"
+  },
+  "north bay": {
+    "ar": "north bay",
+    "by": "machine"
+  },
+  "oasis residences": {
+    "ar": "oasis residences",
+    "by": "machine"
   },
   "of Abu Dhabi real estate": {
     "ar": "لعقارات أبوظبي",
@@ -16497,6 +16845,14 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:37:03.040Z"
+  },
+  "qattouf": {
+    "ar": "qattouf",
+    "by": "machine"
+  },
+  "ras al hidd": {
+    "ar": "رأس الحد",
+    "by": "machine"
   },
   "ready properties": {
     "ar": "عقارات جاهزة",
@@ -16612,11 +16968,23 @@
     "ar": "محفوظة في هذا المتصفح",
     "by": "human"
   },
+  "seef al jubail": {
+    "ar": "سيف الجبيل",
+    "by": "machine"
+  },
   "selling a property": {
     "ar": "بيع عقار",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:37:24.288Z"
+  },
+  "shabiya": {
+    "ar": "الشعبية",
+    "by": "machine"
+  },
+  "shabiya community centres": {
+    "ar": "مراكز مجتمع الشعبية",
+    "by": "machine"
   },
   "short boat transfer": {
     "ar": "نقل قصير بالقارب",
@@ -16629,6 +16997,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:48:07.334Z"
+  },
+  "sidra": {
+    "ar": "sidra",
+    "by": "machine"
   },
   "sorbonne university abu dhabi": {
     "ar": "جامعة السوربون أبوظبي",
@@ -16659,6 +17031,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:12:41.013Z"
+  },
+  "surf abu dhabi": {
+    "ar": "surf abu dhabi",
+    "by": "machine"
   },
   "surrounding community": {
     "ar": "المجتمع المحيط",
@@ -16701,6 +17077,10 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:21:24.194Z"
+  },
+  "the aspens": {
+    "ar": "the aspens",
+    "by": "machine"
   },
   "the beach house": {
     "ar": "بيت الشاطئ",

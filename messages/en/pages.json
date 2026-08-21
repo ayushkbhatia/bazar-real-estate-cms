@@ -98,6 +98,11 @@
     "noCoordinates": "No coordinates set on this listing",
     "enquireAbout": "Enquire about this property"
   },
+  "sell": {
+    "statListings": "Live listings marketed by Bazar",
+    "statAreas": "Abu Dhabi communities covered",
+    "statAdvisors": "ADREC-registered advisors on the desk"
+  },
   "service": {
     "allServices": "All services",
     "overview": "Overview",

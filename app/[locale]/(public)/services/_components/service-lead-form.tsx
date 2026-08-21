@@ -22,10 +22,20 @@ type Props = {
   /** Resolved from /admin/forms by the page. */
   form: ResolvedForm;
   copy: ServiceLeadCopy;
-  /** Management only — suggestions for the location field. */
+  /**
+   * Management only — suggestions for the location field, already folded to
+   * the page's locale by `listLeadAreaOptions`.
+   */
   areas?: string[];
-  /** Management only — the Property Type options. */
-  propertyTypes?: readonly string[];
+  /**
+   * Management only — the Property Type options.
+   *
+   * `{label, value}` rather than a bare string list, because the two must be
+   * allowed to differ: the label is what an Arabic visitor reads, the value is
+   * what `serviceLeadSchema` stores and what the advisor reads in the brief.
+   * Folding them together would put Arabic into the desk's copy of the lead.
+   */
+  propertyTypes?: readonly FormOption[];
   /** Consultation only. */
   interestOptions?: InterestOption[];
   className?: string;
@@ -74,10 +84,7 @@ export function ServiceLeadForm({
       }));
     }
     if (field.optionSource === "property_types") {
-      dynamicOptions[field.key] = (propertyTypes ?? []).map((t) => ({
-        label: t,
-        value: t,
-      }));
+      dynamicOptions[field.key] = propertyTypes ? [...propertyTypes] : [];
     }
     if (field.optionSource === "consultation_interests") {
       dynamicOptions[field.key] = (interestOptions ?? []).map((o) => ({
