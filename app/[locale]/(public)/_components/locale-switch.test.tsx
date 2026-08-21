@@ -136,6 +136,45 @@ describe("locale controls", () => {
     expect(fromList).toEqual(expected);
   });
 
+  it.each([
+    ["header pill", LocaleToggle],
+    ["QR card pill", CardLocaleToggle],
+  ])("pins %s to one order, so a tap means the same thing twice", (_n, Pill) => {
+    /*
+     * The regression this exists for is not a wrong href — every href was
+     * right. The two pills inherited `<html dir>`, so `EN | AR` under LTR
+     * rendered `AR | EN` under RTL and the control's two halves traded places
+     * every time it was used.
+     *
+     * On /contact-qr you tap the right half for Arabic. On /ar/contact-qr the
+     * half you did not tap last time is now the option ALREADY active, so the
+     * tap navigates to the page you are on, the proxy redirects to the page
+     * you are on, and nothing moves. Reported as "the toggle does not
+     * respond", with correct hrefs throughout.
+     *
+     * Asserted on the group rather than on measured geometry because jsdom
+     * does no layout. The e2e spec measures the real x positions.
+     */
+    at("/ar/contact-qr");
+    const rtl = renderWithIntl(<Pill current="ar" />);
+    expect(screen.getByRole("group").getAttribute("dir")).toBe("ltr");
+    rtl.unmount();
+
+    at("/contact-qr");
+    renderWithIntl(<Pill current="en" />);
+    expect(screen.getByRole("group").getAttribute("dir")).toBe("ltr");
+  });
+
+  it("keeps each option labelled in its own direction", () => {
+    // Pinning the GROUP must not pin the options: `ع` still needs its own
+    // `dir`/`lang` to render and announce correctly inside an LTR row.
+    at("/ar/buy");
+    renderWithIntl(<LocaleToggle current="ar" />);
+    const arabic = screen.getByRole("link", { name: "العربية" });
+    expect(arabic.getAttribute("dir")).toBe("rtl");
+    expect(arabic.getAttribute("lang")).toBe("ar");
+  });
+
   it("marks the QR card's active language without a pressed state", () => {
     // It is a link to the other language now, not a button holding a value —
     // `aria-pressed` on an anchor is a lie to assistive tech.

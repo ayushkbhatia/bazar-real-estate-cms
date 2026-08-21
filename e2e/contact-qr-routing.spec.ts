@@ -54,9 +54,11 @@ test("the card saves to a phone — the button downloads a parseable vCard", asy
  */
 test("the EN/AR toggle drives the site's language switch", async ({ page }) => {
   await page.goto("/contact-qr");
+  // `[2]`, not `[1]`: the toggle group carries its own pinned `dir="ltr"`, so
+  // the nearest ancestor with a `dir` is the group. The card is the one above.
   const card = page
     .getByTestId("qr-lang-ar")
-    .locator("xpath=ancestor::*[@dir][1]");
+    .locator("xpath=ancestor::*[@dir][2]");
   await expect(card).toHaveAttribute("dir", "ltr");
 
   await page.getByTestId("qr-lang-ar").click();
@@ -77,6 +79,43 @@ test("the EN/AR toggle drives the site's language switch", async ({ page }) => {
   // so it would pass without the switch back ever happening.
   await expect(page).toHaveURL(/^https?:\/\/[^/]+\/contact-qr$/);
   await expect(card).toHaveAttribute("dir", "ltr");
+});
+
+test("the toggle's halves do not trade places between locales", async ({
+  page,
+}) => {
+  /*
+   * The bug that made the card toggle feel dead while every href was correct.
+   *
+   * The pill inherited the card's `dir`, so `EN | AR` on /contact-qr rendered
+   * `AR | EN` on /ar/contact-qr. You tap the right half to reach Arabic; to
+   * come back you tap the half you did not tap, which is now AR — the option
+   * already active. That navigates to the page you are on, the proxy
+   * redirects to the page you are on, and nothing visibly happens.
+   *
+   * So this measures geometry, not markup: EN must occupy the same side in
+   * both locales. jsdom cannot see this, which is why it is here and not in
+   * the unit spec.
+   */
+  const centreX = async (testId: string) => {
+    const box = await page.getByTestId(testId).boundingBox();
+    return Math.round(box!.x + box!.width / 2);
+  };
+
+  await page.goto("/contact-qr");
+  const ltr = { en: await centreX("qr-lang-en"), ar: await centreX("qr-lang-ar") };
+  expect(ltr.en).toBeLessThan(ltr.ar);
+
+  await page.goto("/ar/contact-qr");
+  const rtl = { en: await centreX("qr-lang-en"), ar: await centreX("qr-lang-ar") };
+  expect(rtl.en).toBeLessThan(rtl.ar);
+
+  // Same side, same pixels — the card itself is still flipped around it.
+  expect(rtl.en).toBe(ltr.en);
+  expect(rtl.ar).toBe(ltr.ar);
+  await expect(
+    page.getByTestId("qr-lang-en").locator("xpath=ancestor::*[@dir][2]"),
+  ).toHaveAttribute("dir", "rtl");
 });
 
 test("both language toggles on the QR page agree", async ({ page }) => {
