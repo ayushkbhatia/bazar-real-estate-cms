@@ -12,16 +12,25 @@ const partner: DeveloperDir = {
   h: 600,
 };
 
-const row = (over: Partial<DeveloperListEntry> = {}): DeveloperListEntry => ({
-  id: "d1",
-  slug: "ramhan-developments",
-  name: "Ramhan Developments",
-  founded_year: null,
-  description: null,
-  logo_url: null,
-  published: true,
-  ...over,
-});
+/**
+ * `name_en` defaults to whatever `name` ends up as, so an existing case reads
+ * exactly as it did. A case that sets them apart — an Arabic display name over
+ * an English identity — is what the fold cases below need, and passing
+ * `name_en` explicitly is how they get it.
+ */
+const row = (over: Partial<DeveloperListEntry> = {}): DeveloperListEntry => {
+  const base = {
+    id: "d1",
+    slug: "ramhan-developments",
+    name: "Ramhan Developments",
+    founded_year: null,
+    description: null,
+    logo_url: null,
+    published: true,
+    ...over,
+  };
+  return { ...base, name_en: over.name_en ?? base.name };
+};
 
 describe("mergeDirectory", () => {
   it("shows a developer that only exists in the catalogue", () => {
@@ -159,6 +168,82 @@ describe("publish state", () => {
       [row({ id: "seed:aldar", slug: "aldar", published: false })],
     );
     expect(out[0].published).toBe(true);
+  });
+});
+
+/**
+ * The /ar collapse.
+ *
+ * `developerNameKey` is `slugify`, which keeps `[a-z0-9]` and nothing else, so
+ * an Arabic display name reduces to the empty string. Every folded row shared
+ * that one key: rows matched each other instead of their directory partner,
+ * `imkan`/`modon`/`sobha` listed twice and `ict`/`nakheel`/`samana` vanished
+ * from the grid. The match runs on `name_en` now, and the empty key is
+ * rejected outright.
+ */
+describe("mergeDirectory under an Arabic fold", () => {
+  const modonDir: DeveloperDir = {
+    slug: "modon",
+    name: "Modon Properties",
+    blurb: "Government-backed large-scale communities.",
+    logo: "/developers/modon.png",
+    w: 600,
+    h: 600,
+  };
+
+  const folded = (over: Partial<DeveloperListEntry>) =>
+    row({ description: "وصف عربي.", ...over });
+
+  it("still merges a superseded slug when the name is folded to Arabic", () => {
+    const out = mergeDirectory(
+      [modonDir],
+      [
+        folded({
+          id: "d-modon",
+          slug: "modon-properties",
+          name: "مُدن العقارية",
+          name_en: "MODON Properties",
+        }),
+      ],
+    );
+    expect(out).toHaveLength(1);
+    expect(out[0].slug).toBe("modon-properties");
+    // The shipped art survives the merge, which is the whole reason it exists.
+    expect(out[0].master?.src).toBe("/developers/modon.png");
+    expect(out[0].name).toBe("مُدن العقارية");
+  });
+
+  it("does not let two Arabic-named rows match each other", () => {
+    const out = mergeDirectory(
+      [],
+      [
+        folded({ id: "a", slug: "ict", name: "آي سي تي", name_en: "ICT" }),
+        folded({ id: "b", slug: "nakheel", name: "نخيل", name_en: "Nakheel" }),
+        folded({ id: "c", slug: "samana", name: "سامانا", name_en: "Samana" }),
+      ],
+    );
+    // Three rows in, three entries out. Before the fix the second and third
+    // resolved to the first's empty key and overwrote it.
+    expect(out.map((d) => d.slug).sort()).toEqual([
+      "ict",
+      "nakheel",
+      "samana",
+    ]);
+  });
+
+  it("carries the English name onto the entry for the superseded-slug lookup", () => {
+    const out = mergeDirectory(
+      [modonDir],
+      [
+        folded({
+          id: "d-modon",
+          slug: "modon-properties",
+          name: "مُدن العقارية",
+          name_en: "MODON Properties",
+        }),
+      ],
+    );
+    expect(out[0].name_en).toBe("MODON Properties");
   });
 });
 

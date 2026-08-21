@@ -52,6 +52,18 @@ export type DeveloperListEntry = {
   id: string;
   slug: string;
   name: string;
+  /**
+   * The English name, never folded — an identity key, not display text.
+   *
+   * `mergeDirectory` matches a catalogue row against a shipped directory entry
+   * by `slugify(name)`, and `slugify` keeps `[a-z0-9]` only. Fold `name` to
+   * Arabic first and every row's key is the empty string, so on `/ar` the rows
+   * matched each OTHER: `imkan`, `modon` and `sobha` listed twice while `ict`,
+   * `nakheel` and `samana` disappeared from the grid entirely. Matching on a
+   * value that does not change with the request is the fix; the display name
+   * stays folded.
+   */
+  name_en: string;
   founded_year: number | null;
   description: string | null;
   /* Arabic twins. Optional, because the PUBLIC list folds them away before
@@ -116,10 +128,14 @@ export async function listDevelopers(
         id: r.id,
         slug: r.slug,
         name: r.name,
-        name_ar: r.name_ar ?? null,
+        // From `raw`, not `r`: the fold has already run, so `r.name` is Arabic
+        // on /ar and `r.name_ar` has been stripped. The identity key has to
+        // come from the row as the database returned it.
+        name_en: raw.name,
+        name_ar: raw.name_ar ?? null,
         founded_year: r.founded_year,
         description: r.description,
-        description_ar: r.description_ar ?? null,
+        description_ar: raw.description_ar ?? null,
         logo_url: key ? mediaPublicUrl(key) : null,
         published: r.published_at !== null,
       };
@@ -134,6 +150,7 @@ function seedDeveloperList(): DeveloperListEntry[] {
     id: `seed:${s.slug}`,
     slug: s.slug,
     name: s.name,
+    name_en: s.name,
     founded_year: s.founded_year,
     description: s.blurb,
     logo_url: null,
@@ -193,6 +210,10 @@ export async function listDeveloperRecords(): Promise<DeveloperRecordRow[]> {
         id: r.id,
         slug: r.slug,
         name: r.name,
+        // The admin loader never folds, so English is what `name` already
+        // holds. Set explicitly all the same — the field means "the identity
+        // key", and deriving it here keeps that true on both loaders.
+        name_en: r.name,
         name_ar: r.name_ar ?? null,
         founded_year: r.founded_year,
         description: r.description,
@@ -269,7 +290,11 @@ export async function listDeveloperListings(
       .select(
         // `properties` has three FKs into `areas` (area, sub-community, building),
         // so the embed has to name the constraint — the bare alias is ambiguous.
-        "id, reference, slug, title, title_ar, price_aed, beds, baths, built_up_ft2, flags, published_at, areas!properties_area_id_fkey(name, slug), property_media(role, media:media_assets(storage_key, alt_text, alt_text_ar))",
+        // `areas(name_ar)` as well as `name`: `localiseRow` is one level deep,
+        // so an embedded row has to be folded on its own — and it cannot be
+        // folded at all if its twin was never selected. Without this the cards
+        // printed "Yas Island" under an Arabic title.
+        "id, reference, slug, title, title_ar, price_aed, beds, baths, built_up_ft2, flags, published_at, areas!properties_area_id_fkey(name, name_ar, slug), property_media(role, media:media_assets(storage_key, alt_text, alt_text_ar))",
       )
       .eq("developer_id", developerId)
       .eq("status", "published")
@@ -286,10 +311,17 @@ export async function listDeveloperListings(
         raw as unknown as Record<string, unknown>,
         locale,
       ) as unknown as typeof raw;
-      const areaArr = r.areas as
-        | { name: string; slug: string }
-        | { name: string; slug: string }[]
+      const areaRaw = r.areas as
+        | Record<string, unknown>
+        | Record<string, unknown>[]
         | null;
+      const areaSingle = (Array.isArray(areaRaw) ? areaRaw[0] : areaRaw) ?? null;
+      const area = areaSingle
+        ? (localiseRow(areaSingle, locale) as unknown as {
+            name: string;
+            slug: string;
+          })
+        : null;
       const joins = (r.property_media ?? []) as {
         role: string;
         media: { storage_key: string; alt_text: string | null } | null;
@@ -312,7 +344,7 @@ export async function listDeveloperListings(
         baths: r.baths,
         built_up_ft2: r.built_up_ft2,
         flags: (r.flags as Record<string, unknown> | null) ?? null,
-        area: (Array.isArray(areaArr) ? areaArr[0] : areaArr) ?? null,
+        area: area ? { name: area.name, slug: area.slug } : null,
         hero,
       };
     });
@@ -351,19 +383,40 @@ export async function countDeveloperListings(
 // ─────────────────────────────────────────────────────────────────────
 export async function getDeveloperBySlug(
   slug: string,
+  /**
+   * Overridable; defaults to the locale of the request, like `listDevelopers`.
+   *
+   * This function is the one read path on this table that never folded. The
+   * merged directory entry beside it did — so `/ar/developers` listed
+   * "الدار العقارية" and `/ar/developers/aldar` then rendered
+   * "ALDAR Properties" as its `h1`, because the detail row wins over the entry
+   * and arrived in English. Same table, same request, two answers.
+   */
+  locale?: Locale,
 ): Promise<DeveloperDetail | null> {
   if (!slug) return null;
 
   if (isSupabaseConfigured) {
     try {
       const sb = createSupabasePublicClient();
-      const { data: dev } = await sb
+      const { data: raw } = await sb
         .from("developers")
         .select(
-          "id, slug, name, founded_year, description, logo:logo_id(storage_key)",
+          // `name_ar` and `description_ar` were absent here, so there was
+          // nothing for the fold below to fold. Selecting them is half the
+          // fix; `localiseRow` is the other half.
+          "id, slug, name, name_ar, founded_year, description, description_ar, logo:logo_id(storage_key)",
         )
         .eq("slug", slug)
         .maybeSingle();
+      // Folded before the explicit-literal shape below is built, or it is
+      // discarded — the same ordering every other shaper in this file keeps.
+      const dev = raw
+        ? (localiseRow(
+            raw as unknown as Record<string, unknown>,
+            locale ?? (await currentLocale()),
+          ) as unknown as typeof raw)
+        : null;
       if (dev) {
         const { data: profile } = await sb
           .from("developer_profiles")

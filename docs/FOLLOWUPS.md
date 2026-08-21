@@ -1119,3 +1119,20 @@ shows the trail.)
   `components/brand/`, which is off-limits to incidental edits, so it wants its
   own pass together with the rest of that directory's literals.
   `components/brand/listing-card.tsx`.
+
+- [i18n] The `Exclusive` / `Vacant on transfer` card badges are English string
+  literals in six `badgeFor()` copies, one per surface. The developer profile
+  now reads them from `listing.badge.*` in `messages/`, which the other five
+  can adopt as-is: the home page, the search list, the curated grid, the area
+  listings band and the agent profile. It is a mechanical change and was left
+  out of the developer-page fix only to keep that diff to one route.
+  `app/[locale]/(public)/_components/search-list.tsx:89`.
+
+- [i18n] `slugify()` returns `""` for any all-Arabic string, so anything using
+  it as an identity key collapses on `/ar`. The developer directory hit this —
+  every folded row shared one key, three developers vanished from the grid and
+  three listed twice — and is fixed by matching on an unfolded `name_en`. The
+  general risk stands: `developerNameKey` is one caller, and nothing stops the
+  next one from keying on folded display text. A guard would be a test that
+  feeds an Arabic name to every `slugify`-derived key helper and fails on `""`.
+  `lib/slug.ts:8`.

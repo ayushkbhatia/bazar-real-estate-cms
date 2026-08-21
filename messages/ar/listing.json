@@ -7,5 +7,9 @@
   "offPlan": "على الخارطة",
   "verified": "فيلا مؤكدة من بازار",
   "bedsShort": "غرفة",
-  "bathsShort": "حمام"
+  "bathsShort": "حمام",
+  "badge": {
+    "exclusive": "حصري",
+    "vacantOnTransfer": "شاغر عند نقل الملكية"
+  }
 }

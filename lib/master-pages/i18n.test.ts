@@ -3,6 +3,7 @@ import { MASTER_PAGES } from "./pages";
 import { AREA_SECTIONS, DEVELOPMENT_SECTIONS } from "./subpages";
 import { LIBRARY_SECTIONS } from "./library";
 import { SEARCH_HEADERS } from "./search-headers";
+import { DEVELOPER_PAGE_SECTION } from "./developer-page";
 import { BLOCK_DEFS } from "@/lib/page-builder/catalogue";
 import { mergeValues, validateFieldValues } from "./index";
 import { applyLocale, arabicCoverage } from "./i18n";
@@ -30,8 +31,8 @@ function allSectionDefs(): { origin: string; def: SectionDef }[] {
       out.push({ origin: `master:${page.key}`, def: section });
     }
   }
-  // Two live subpage kinds. `developer` is registered in SUBPAGE_KINDS but has
-  // no [slug] editor route, so it has no section list to check.
+  // Two record-backed subpage kinds. `developer` has no per-record document —
+  // its editable copy is one shared section, added just below.
   for (const section of DEVELOPMENT_SECTIONS) {
     out.push({ origin: "subpage:development", def: section });
   }
@@ -49,6 +50,9 @@ function allSectionDefs(): { origin: string; def: SectionDef }[] {
   for (const entry of SEARCH_HEADERS) {
     out.push({ origin: `search-header:${entry.key}`, def: entry.section });
   }
+  // The shared copy behind every /developers/<slug> page. One document for all
+  // 32 profiles, hand-declared Arabic in `defaults` like the search headers.
+  out.push({ origin: "developer-page:copy", def: DEVELOPER_PAGE_SECTION });
   return out;
 }
 
