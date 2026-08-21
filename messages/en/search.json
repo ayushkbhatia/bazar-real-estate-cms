@@ -29,45 +29,6 @@
     "verifiedHelp": "Listings inspected by a Bazar advisor in the last 90 days.",
     "yearBuilt": "Year built"
   },
-  "form": {
-    "off_plan": {
-      "eyebrow": "Off-plan · for sale",
-      "title": "Off-plan homes for sale",
-      "lede": "Bought from the developer before handover — a purchase on a payment plan, with the longest run to completion and the earliest choice of unit."
-    },
-    "ready_new": {
-      "eyebrow": "Ready · new",
-      "title": "Ready homes, never lived in",
-      "lede": "Completed, handed over, and bought direct from the developer — a first sale with no previous owner on the title."
-    },
-    "resale": {
-      "eyebrow": "Resale",
-      "title": "Resale homes",
-      "lede": "Completed homes bought from the current owner, with established communities, real service-charge history and a negotiable price."
-    }
-  },
-  "mode": {
-    "buy": {
-      "eyebrow": "For sale",
-      "title": "Properties for sale",
-      "lede": "Curated freehold and leasehold listings across the United Arab Emirates."
-    },
-    "rent": {
-      "eyebrow": "For rent",
-      "title": "Properties for rent",
-      "lede": "Long-let homes from advisor-vetted landlords. Furnished and unfurnished."
-    },
-    "off_plan": {
-      "eyebrow": "Off-plan",
-      "title": "New developments",
-      "lede": "Pre-launch and on-sale developments from Abu Dhabi's leading developers."
-    },
-    "commercial": {
-      "eyebrow": "Commercial",
-      "title": "Commercial real estate",
-      "lede": "Office, retail, and industrial leases and freeholds."
-    }
-  },
   "results": {
     "range": "{first}–{last} of {total} properties",
     "none": "0 properties"

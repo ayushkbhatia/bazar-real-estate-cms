@@ -20,7 +20,12 @@ import type {
 
 export const SUBPAGE_SLUG_PREFIX = "subpage/";
 
-export type SubPageKind = "development" | "area" | "developer" | "section";
+export type SubPageKind =
+  | "development"
+  | "area"
+  | "developer"
+  | "section"
+  | "search";
 
 /**
  * Sub-page kinds, rendered as blocks on the Pages index the same way master
@@ -60,6 +65,18 @@ export const SUBPAGE_KINDS: SubPageKindDef[] = [
     description:
       "Content that belongs to the site rather than to one page — edited once, rendered everywhere it is placed.",
     itemLabel: "section",
+  },
+  {
+    kind: "search",
+    label: "Search results",
+    // Six routes and seven facets, so no single prefix describes it — the
+    // `pathLabel` names the shape instead, the way the library entry does.
+    publicPath: "/",
+    pathLabel: "The six search routes",
+    adminPath: "/admin/pages/sub/search",
+    description:
+      "The eyebrow, headline and sub-title above the filter bar on each search page.",
+    itemLabel: "search page",
   },
   {
     kind: "area",

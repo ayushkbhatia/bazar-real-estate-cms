@@ -17,6 +17,7 @@ import {
   type SubPageKind,
 } from "@/lib/master-pages/subpages";
 import { LIBRARY_SECTIONS } from "@/lib/master-pages/library";
+import { SEARCH_HEADERS } from "@/lib/master-pages/search-headers";
 
 export type SubPageContent = {
   sections: ResolvedSection[];
@@ -256,8 +257,12 @@ export async function listDevelopmentSubPages(
 export async function countSubPagesByKind(): Promise<
   Partial<Record<SubPageKind, number>>
 > {
+  // Both are registry-backed rather than record-backed: their count is how
+  // many entries the code declares, and it is the same with or without a
+  // database.
   const sections = LIBRARY_SECTIONS.length;
-  if (!isSupabaseConfigured) return { section: sections };
+  const search = SEARCH_HEADERS.length;
+  if (!isSupabaseConfigured) return { section: sections, search };
   const supabase = createSupabasePublicClient();
   const [developments, areas, developers] = await Promise.all([
     supabase.from("developments").select("id", { count: "exact", head: true }),
@@ -269,6 +274,7 @@ export async function countSubPagesByKind(): Promise<
     area: areas.count ?? 0,
     developer: developers.count ?? 0,
     section: sections,
+    search,
   };
 }
 

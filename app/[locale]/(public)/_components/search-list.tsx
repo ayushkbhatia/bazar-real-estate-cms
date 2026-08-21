@@ -8,6 +8,7 @@ import {
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
+import { getSearchHeaderCopy } from "@/lib/queries/search-headers";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -33,20 +34,6 @@ import { ListingCardPriced } from "./listing-card-priced";
 
 type Mode = Database["public"]["Enums"]["property_mode"];
 type Form = Database["public"]["Enums"]["property_form"];
-
-/**
- * Completion-form copy for the sale sub-routes (/buy/ready, /buy/resale).
- * When a `form` is passed this replaces MODE_COPY so each route gets its own
- * h1 — a shared heading is what made "Ready and Resale both point at /buy"
- * invisible for 27 migrations.
- *
- * `ready_new` is PROVENANCE, not age: it means the developer's first sale,
- * never previously owned. Never describe it as "recently built".
- *
- * `off_plan` joined them in 0110: the column is written on every off-plan row
- * now, so /buy/search?form=off_plan is a real slice of the buy umbrella and
- * gets its own copy rather than borrowing the /off-plan mode heading.
- */
 
 /**
  * Empty state for the form sub-routes. A bare "0 properties" is a dead end on
@@ -194,7 +181,21 @@ export async function SearchList({
   const effectiveForm: Form | undefined =
     form ?? (mode === "buy" ? (filters.form ?? undefined) : undefined);
 
-  const [{ rows, total }, areas] = await Promise.all([
+  /*
+   * The three lines above the filter bar are CMS content, not catalogue
+   * strings — one document per facet, edited at
+   * /admin/pages/sub/search/<key>. `form` wins over `mode` inside
+   * `searchHeaderFor`, mirroring `effectiveForm` above, so /buy/ready and
+   * /buy/resale each get their own h1: a shared heading is what made those two
+   * look identical for 27 migrations. Since 0110 `off_plan` is a written form
+   * too and carries its own document, so /buy/search?form=off_plan is the
+   * off-plan slice *of buy* and must not borrow the /off-plan heading.
+   *
+   * Blank eyebrow and sub-title are honoured — an editor who clears one means
+   * to drop the line — while a blank title falls back to the shipped headline
+   * rather than rendering an empty h1.
+   */
+  const [{ rows, total }, areas, copy] = await Promise.all([
     listPublishedProperties({
       mode,
       form: effectiveForm,
@@ -203,22 +204,9 @@ export async function SearchList({
       offset,
     }),
     fetchAreas(),
+    getSearchHeaderCopy(mode, effectiveForm ?? null),
   ]);
   const t = await getTranslations("search");
-  /*
-   * Mode and form copy live in the search namespace now, keyed by the same
-   * enum values the tables used. `form` wins over `mode` so /buy/ready and
-   * /buy/resale each get their own h1 — a shared heading is what made those
-   * two look identical for 27 migrations. Since 0110 `off_plan` is a written
-   * form too, and it carries its own copy: /buy/search?form=off_plan is the
-   * off-plan slice *of buy*, so it must not borrow the /off-plan heading.
-   */
-  const group = effectiveForm ? `form.${effectiveForm}` : `mode.${mode}`;
-  const copy = {
-    eyebrow: t(`${group}.eyebrow`),
-    title: t(`${group}.title`),
-    lede: t(`${group}.lede`),
-  };
 
   const selectedArea =
     filters.area && areas.length
@@ -233,16 +221,18 @@ export async function SearchList({
   return (
     <>
       <section className="px-4 md:px-12 pt-10 md:pt-16 pb-6 md:pb-10 border-b border-bz-border">
-        <Eyebrow>{copy.eyebrow}</Eyebrow>
+        {copy.eyebrow ? <Eyebrow>{copy.eyebrow}</Eyebrow> : null}
         <h1
           className="serif text-[32px] md:text-[56px] font-normal mt-2 max-w-[24ch]"
           style={{ letterSpacing: "-0.025em" }}
         >
           {copy.title}
         </h1>
-        <p className="mt-4 text-[15px] text-bz-muted max-w-[60ch]">
-          {copy.lede}
-        </p>
+        {copy.subtitle ? (
+          <p className="mt-4 text-[15px] text-bz-muted max-w-[60ch]">
+            {copy.subtitle}
+          </p>
+        ) : null}
       </section>
 
       <FilterBar mode={mode} areas={areas} />
