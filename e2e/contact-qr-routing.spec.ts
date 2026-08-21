@@ -39,22 +39,59 @@ test("the card saves to a phone — the button downloads a parseable vCard", asy
   expect(card).toContain(shown.split(":").pop()!.trim());
 });
 
-test("the EN/AR toggle flips the card's language and direction", async ({
-  page,
-}) => {
+/**
+ * The card's EN/AR pill IS the site's language switch, not a second one.
+ *
+ * It used to hold its own `useState` and swap a bilingual pair per label. That
+ * stopped working the day master-page content began folding its `_ar` twins
+ * down to the request's locale: the server started handing the card one
+ * language, both halves of every pair held the same string, and pressing EN on
+ * /ar/contact-qr left the copy in Arabic while flipping the layout to LTR.
+ *
+ * So the assertion is now about the URL. Following either half must land on
+ * that locale's page, with the `?setlang=` consumed and stripped by the proxy,
+ * and the card must come back rendered in the language it navigated to.
+ */
+test("the EN/AR toggle drives the site's language switch", async ({ page }) => {
   await page.goto("/contact-qr");
-  const card = page.getByTestId("qr-lang-ar").locator("xpath=ancestor::*[@dir][1]");
+  const card = page
+    .getByTestId("qr-lang-ar")
+    .locator("xpath=ancestor::*[@dir][1]");
   await expect(card).toHaveAttribute("dir", "ltr");
 
   await page.getByTestId("qr-lang-ar").click();
+  await expect(page).toHaveURL(/\/ar\/contact-qr$/);
   await expect(card).toHaveAttribute("dir", "rtl");
   await expect(page.getByTestId("qr-lang-ar")).toHaveAttribute(
-    "aria-pressed",
+    "aria-current",
     "true",
   );
+  // The point of the whole change: the card is now RENDERED in the language it
+  // navigated to, rather than keeping the server's copy and flipping `dir`
+  // around it. Asserted on `lang` rather than on any string, because CI reads
+  // the live CMS and an editor owns every word on this card.
+  await expect(card).toHaveAttribute("lang", "ar");
 
   await page.getByTestId("qr-lang-en").click();
+  // Anchored on the origin: `/\/contact-qr$/` also matches `/ar/contact-qr`,
+  // so it would pass without the switch back ever happening.
+  await expect(page).toHaveURL(/^https?:\/\/[^/]+\/contact-qr$/);
   await expect(card).toHaveAttribute("dir", "ltr");
+});
+
+test("both language toggles on the QR page agree", async ({ page }) => {
+  // The header pill and the in-card pill are two presentations of one choice.
+  // Two controls that could disagree is the confusion this change removed, so
+  // this reads every Arabic option on the page and asserts they are one link
+  // repeated — no assumption about which is which, or about their DOM order.
+  await page.goto("/contact-qr");
+
+  const arabic = page.getByRole("link", { name: "العربية" });
+  await expect(arabic).toHaveCount(2);
+  const hrefs = await arabic.evaluateAll((links) =>
+    links.map((l) => l.getAttribute("href")),
+  );
+  expect(new Set(hrefs).size).toBe(1);
 });
 
 test("the old /contact-us/qr still reaches it — printed codes keep working", async ({

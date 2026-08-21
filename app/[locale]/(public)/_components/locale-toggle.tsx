@@ -10,11 +10,12 @@
  * on mobile it is three, behind the hamburger and then "Currency & units".
  * A visitor who reads Arabic has no way to know the site has an Arabic side.
  *
- * So this is a second presentation of one decision, not a second decision. Both
- * build their hrefs through `localeSwitchHref`, and neither owns state — the
- * locale IS the URL, and the `?setlang=` the helper adds is what tells the
- * proxy to remember the choice for the rest of the session rather than for the
- * one page.
+ * So this is one more presentation of one decision, not a second decision. All
+ * three — this, `LanguageSwitch` and the QR card's `CardLocaleToggle` — build
+ * their hrefs through `useLocaleHrefs`, and none of them owns state. The locale
+ * IS the URL, and the `?setlang=` the helper adds is what tells the proxy to
+ * remember the choice for the rest of the session rather than for the one
+ * page.
  *
  * ## Why an anchor, and why no `next/link`
  *
@@ -33,13 +34,10 @@
  * announces "العربية" rather than the bare letter.
  */
 
-import { usePathname } from "next/navigation";
-
-import { useSearchSuffix } from "@/lib/i18n/use-search-suffix";
 import { useTranslations } from "next-intl";
 
 import { LOCALES, LOCALE_DIR, type Locale } from "@/lib/i18n/locales";
-import { localeSwitchHref, stripLocalePrefix } from "@/lib/i18n/routing";
+import { useLocaleHrefs } from "@/lib/i18n/use-locale-hrefs";
 import { cn } from "@/lib/utils";
 
 /** Short label per locale, each in its own language. */
@@ -49,10 +47,8 @@ const SHORT: Record<Locale, string> = {
 };
 
 export function LocaleToggle({ current }: { current: Locale }) {
-  const pathname = usePathname();
-  // Carried so a locale switch mid-search keeps the filters.
-  const suffix = useSearchSuffix();
   // Above the early return — hooks must run in the same order every render.
+  const hrefFor = useLocaleHrefs();
   const t = useTranslations("common");
 
   const full: Record<Locale, string> = {
@@ -64,11 +60,6 @@ export function LocaleToggle({ current }: { current: Locale }) {
   // `LanguageSwitch`, so neither control becomes a dead affordance if `ar` is
   // ever pulled back out of `LOCALES`.
   if (LOCALES.length < 2) return null;
-
-  // `usePathname` is already the visitor-facing path — unprefixed for English,
-  // `/ar/…` for Arabic. Strip whatever is there before re-prefixing so the two
-  // cannot compound into `/ar/ar/…`.
-  const bare = stripLocalePrefix(pathname ?? "/");
 
   return (
     <div
@@ -84,7 +75,7 @@ export function LocaleToggle({ current }: { current: Locale }) {
         return (
           <a
             key={locale}
-            href={localeSwitchHref(bare, suffix, locale)}
+            href={hrefFor(locale)}
             hrefLang={locale}
             lang={locale}
             dir={LOCALE_DIR[locale]}

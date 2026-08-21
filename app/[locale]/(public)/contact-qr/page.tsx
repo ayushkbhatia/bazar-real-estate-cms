@@ -34,8 +34,11 @@ export const revalidate = 300;
  *
  * One card, sized for the phone it is almost always opened on: logo, a single
  * "Add to Contacts" button, and a tappable row per way of reaching us, with an
- * EN/AR toggle on top. The enquiry form and the explore links below it ship
- * switched off and can be re-enabled from /admin/pages/master/contact-qr.
+ * EN/AR toggle on top. That toggle is the site's language switch in the card's
+ * clothing — it links to this same page in the other locale, exactly as the
+ * header pill does, so the card is rendered in one language rather than
+ * carrying both. The enquiry form and the explore links below it ship switched
+ * off and can be re-enabled from /admin/pages/master/contact-qr.
  */
 export default async function ContactQrPage({
   params,
@@ -137,6 +140,7 @@ export default async function ContactQrPage({
           Arabic nodes only (see contact-card.module.css). */}
       <div className={`${bukra.variable} px-4 py-8 md:py-12`}>
         <ContactCard
+          locale={locale}
           blocks={data.blocks}
           name={data.name}
           logoUrl={data.logoUrl}
