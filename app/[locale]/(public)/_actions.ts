@@ -12,7 +12,7 @@ import {
   type EnquiryInput,
 } from "@/lib/schemas/enquiry";
 import { sendEmail } from "@/lib/email";
-import { enquiryReceivedTemplate } from "@/lib/email-templates";
+import { enquiryAcknowledgementEmail } from "@/lib/content-assets/system-emails";
 import {
   checkRateLimit,
   extractClientIp,
@@ -216,7 +216,7 @@ export async function createEnquiry(
       propertyReference = prop?.reference ?? null;
       propertyTitle = prop?.title ?? null;
     }
-    const tpl = enquiryReceivedTemplate({
+    const tpl = await enquiryAcknowledgementEmail({
       name: data.name,
       message: data.message,
       propertyReference,

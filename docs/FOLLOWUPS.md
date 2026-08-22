@@ -1218,3 +1218,30 @@ shows the trail.)
   steps). Both were already missing for the master pages that render them —
   the block defaults reuse that copy verbatim rather than introducing it — so
   one `npm run i18n:content` pass fixes them in both places at once.
+
+- [email] `viewingReminderTemplate` in `lib/email-templates.ts:574` is defined,
+  tested by nobody, and called by nothing — including
+  `app/api/cron/viewing-reminders/`, which sends an in-app notification only.
+  So the "email arm of the viewing reminder" its docstring promises has never
+  sent. Either wire it into that cron and give it a fifth `system_key` row, or
+  delete it; leaving a plausible-looking template no path reaches is how a
+  future reader concludes the reminder email exists.
+  `lib/email-templates.ts:574`.
+
+- [email] `app/api/valuation-lead/route.ts` sends two emails from HTML written
+  inline in the route — the OTP code (line 84) and a "report is on the way"
+  confirmation (line 195). Neither uses the shared Bazar shell, so both look
+  unlike every other email the site sends, and neither is editable in
+  `/admin/content-assets`. The confirmation in particular overlaps in purpose
+  with `valuation_request_ack`. Moving both into `lib/email-templates.ts` is
+  the cheap half; deciding whether the confirmation should be a fifth system
+  email, or should not exist beside the acknowledgement at all, is the real
+  question.
+
+- [email] `supabase/functions/enquiry-auto-reply/index.ts` carries its own copy
+  of the enquiry acknowledgement, so a published `enquiry_auto_reply` override
+  would not apply to it. Harmless today — the function has never been deployed
+  (see the crons gap above) — but it becomes a silent divergence the moment it
+  is. Whatever deploys it should read `content_assets` the way
+  `lib/content-assets/system-resolve.ts` does, or the function should be
+  deleted in favour of the Vercel cron that already covers it.

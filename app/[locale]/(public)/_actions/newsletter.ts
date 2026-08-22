@@ -13,10 +13,8 @@ import {
 } from "@/lib/queries/newsletter";
 import { isSupabaseConfigured, env } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
-import {
-  newsletterConfirmTemplate,
-  newsletterWelcomeTemplate,
-} from "@/lib/newsletter-templates";
+import { newsletterConfirmTemplate } from "@/lib/newsletter-templates";
+import { newsletterWelcomeEmail } from "@/lib/content-assets/system-emails";
 import {
   checkRateLimit,
   extractClientIp,
@@ -183,7 +181,7 @@ export async function confirmNewsletterToken(
     if (error) return { status: "error", message: error.message };
 
     const unsubscribeUrl = `${siteUrl()}/newsletter/unsubscribe/${token}`;
-    const template = newsletterWelcomeTemplate({ unsubscribeUrl });
+    const template = await newsletterWelcomeEmail({ unsubscribeUrl });
     await sendEmail({
       to: row.email,
       subject: template.subject,

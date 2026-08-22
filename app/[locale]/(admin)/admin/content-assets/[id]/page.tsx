@@ -54,6 +54,23 @@ export default async function EditContentAssetPage({ params }: PageProps) {
         </span>
       }
     >
+      {asset.system_key ? (
+        <div className="mb-5 rounded-lg border border-bz-border bg-bz-surface px-4 py-3 text-[13px] text-bz-ink-2">
+          This is one of the four emails Bazar sends on its own.{" "}
+          {asset.status === "published" ? (
+            <>
+              It is <strong>published</strong>, so this wording is what leads
+              receive. Set it back to draft to return to the built-in email.
+            </>
+          ) : (
+            <>
+              It is a <strong>draft</strong>, so Bazar&apos;s built-in wording
+              is what leads receive today. Nothing here sends until you
+              publish it.
+            </>
+          )}
+        </div>
+      ) : null}
       {asset.deleted_at ? (
         <div className="mb-5 rounded-lg border border-bz-border bg-bz-surface-2 px-4 py-3 text-[13px] text-bz-ink-2">
           This asset is in the trash, so it won&apos;t appear in the enquiry
@@ -72,6 +89,7 @@ export default async function EditContentAssetPage({ params }: PageProps) {
         candidates={candidates}
         save={save}
         isNew={false}
+        systemKey={asset.system_key}
       />
     </CmsShell>
   );

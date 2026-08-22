@@ -4,6 +4,7 @@ import type {
   ContentAssetKind,
   ContentAssetStatus,
 } from "@/lib/schemas/content-asset";
+import type { SystemAssetKey } from "@/lib/content-assets/system";
 
 /**
  * Reads for the Content Assets library.
@@ -25,6 +26,11 @@ export type ContentAssetRow = {
   notes: string | null;
   follow_up_after_days: number | null;
   next_asset_id: string | null;
+  /**
+   * Non-null on the four rows that override a transactional email
+   * (migration 0117). Null on everything an advisor writes by hand.
+   */
+  system_key: SystemAssetKey | null;
   status: ContentAssetStatus;
   position: number;
   created_at: string;
@@ -33,12 +39,19 @@ export type ContentAssetRow = {
 };
 
 const FIELDS =
-  "id, kind, slug, name, category, subject, body, notes, follow_up_after_days, next_asset_id, status, position, created_at, updated_at, deleted_at";
+  "id, kind, slug, name, category, subject, body, notes, follow_up_after_days, next_asset_id, system_key, status, position, created_at, updated_at, deleted_at";
 
 export async function listContentAssets(opts?: {
   kind?: ContentAssetKind;
   /** Trash view. Default false — the list shows live assets. */
   trashed?: boolean;
+  /**
+   * "outreach" is what an advisor sends by hand; "system" is the four
+   * transactional emails. They are separate tabs because they answer
+   * different questions — what do I send this lead, versus what does the
+   * site send on its own. Omit for both.
+   */
+  scope?: "outreach" | "system";
 }): Promise<ContentAssetRow[]> {
   if (!isSupabaseConfigured) return [];
   try {
@@ -48,6 +61,8 @@ export async function listContentAssets(opts?: {
       ? q.not("deleted_at", "is", null)
       : q.is("deleted_at", null);
     if (opts?.kind) q = q.eq("kind", opts.kind);
+    if (opts?.scope === "outreach") q = q.is("system_key", null);
+    if (opts?.scope === "system") q = q.not("system_key", "is", null);
     const { data, error } = await q
       .order("kind", { ascending: true })
       .order("position", { ascending: true })
@@ -64,6 +79,10 @@ export async function listContentAssets(opts?: {
  * What the enquiry composer offers: published, untrashed, one channel.
  * An empty list is a legitimate state — the composer falls back to a blank
  * message rather than blocking the advisor.
+ *
+ * System rows are excluded. A published enquiry acknowledgement is an email
+ * the site already sent on its own; offering it to an advisor as something
+ * to send by hand would just send the lead the same message twice.
  */
 export async function listPublishedAssets(
   kind: ContentAssetKind,
@@ -76,6 +95,7 @@ export async function listPublishedAssets(
       .select(FIELDS)
       .eq("kind", kind)
       .eq("status", "published")
+      .is("system_key", null)
       .is("deleted_at", null)
       .order("position", { ascending: true });
     if (error) throw error;
@@ -131,7 +151,11 @@ export async function getContentAsset(
   }
 }
 
-/** Assets selectable as a "next step", excluding self and trashed rows. */
+/**
+ * Assets selectable as a "next step", excluding self, trashed rows and the
+ * system emails — a sequence is advisor choreography, and nothing an advisor
+ * decides can schedule a transactional email.
+ */
 export async function listSequenceCandidates(
   excludeId: string | null,
 ): Promise<Pick<ContentAssetRow, "id" | "name" | "kind">[]> {
@@ -141,6 +165,7 @@ export async function listSequenceCandidates(
     let q = supabase
       .from("content_assets")
       .select("id, name, kind")
+      .is("system_key", null)
       .is("deleted_at", null);
     if (excludeId) q = q.neq("id", excludeId);
     const { data, error } = await q.order("name", { ascending: true });

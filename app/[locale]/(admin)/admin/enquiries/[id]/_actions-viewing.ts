@@ -6,6 +6,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
 import { sendEmail } from "@/lib/email";
 import { buildIcs } from "@/lib/ics";
+import { viewingConfirmationEmail } from "@/lib/content-assets/system-emails";
 import { env } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
 import type { Database } from "@/db/types";
@@ -21,15 +22,6 @@ export type CreateViewingResult =
 const MAX_DURATION = 8 * 60; // 8h
 const MIN_DURATION = 15;
 
-function shellEmailHtml(body: string): string {
-  return `<!doctype html><html><body style="margin:0;padding:0;background:#FAFAF6;color:#1B1A17;font-family:'Geist',ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55">
-<table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width:540px;margin:0 auto;padding:24px">
-<tr><td>
-<div style="font-family:Georgia,serif;font-style:italic;font-size:22px;letter-spacing:-0.01em;margin-bottom:24px">Bazar</div>
-${body}
-<div style="margin-top:32px;padding-top:24px;border-top:1px solid #E5E5DF;font-size:12px;color:#99896e">Bazar Real Estate Brokerage LLC · ORN 28041</div>
-</td></tr></table></body></html>`;
-}
 
 function formatLocalTime(d: Date): string {
   return d.toLocaleString("en-GB", {
@@ -163,37 +155,24 @@ export async function createViewing(input: {
       attendee: { name: enquiry.name, email: enquiry.email },
     });
 
-    const localTime = formatLocalTime(startsAt);
-    const subject = propRow
-      ? `Tentative viewing · ${propRow.reference}`
-      : `Tentative viewing booked`;
-
-    const text =
-      `Hello ${enquiry.name},\n\n` +
-      `We've tentatively scheduled your viewing for ${localTime} (Asia/Dubai).\n\n` +
-      (propRow ? `Listing: ${propRow.reference} · ${propRow.title}\n` : "") +
-      (location ? `Where: ${location}\n` : "") +
-      `Duration: ${minutes} minutes\n\n` +
-      `If this time doesn't work, simply reply and we'll find another.\n\n` +
-      `— Bazar Real Estate\n`;
-
-    const htmlBody = `
-      <p>Hello ${escapeHtml(enquiry.name)},</p>
-      <p>We've tentatively scheduled your viewing for <strong>${escapeHtml(localTime)}</strong> (Asia/Dubai).</p>
-      <ul style="padding-left:18px;line-height:1.7">
-        ${propRow ? `<li>Listing: <strong>${escapeHtml(propRow.reference)}</strong> · ${escapeHtml(propRow.title)}</li>` : ""}
-        ${location ? `<li>Where: ${escapeHtml(location)}</li>` : ""}
-        <li>Duration: ${minutes} minutes</li>
-      </ul>
-      <p>The calendar invite is attached — accept it to add to your calendar.</p>
-      <p style="color:#5a5a55">If this time doesn't work, simply reply and we'll find another.</p>
-    `;
+    // The wording lives in lib/email-templates.ts with every other
+    // transactional email, and /admin/content-assets → System emails can
+    // replace it. This action keeps the booking and the calendar invite.
+    const tpl = await viewingConfirmationEmail({
+      name: enquiry.name,
+      localTime: formatLocalTime(startsAt),
+      durationMinutes: minutes,
+      location,
+      propertyReference: propRow?.reference ?? null,
+      propertyTitle: propRow?.title ?? null,
+      advisorName: null,
+    });
 
     await sendEmail({
       to: enquiry.email,
-      subject,
-      text,
-      html: shellEmailHtml(htmlBody),
+      subject: tpl.subject,
+      text: tpl.text,
+      html: tpl.html,
       // Resend supports attachments inline:
       // (we cast via the SDK's `attachments` field in lib/email if/when needed)
     });
@@ -249,10 +228,4 @@ export async function setViewingStatus(
   if (before?.enquiry_id) revalidatePath(`/admin/enquiries/${before.enquiry_id}`);
 
   return { status: "ok" };
-}
-
-function escapeHtml(s: string): string {
-  return s.replace(/[&<>"]/g, (c) =>
-    c === "&" ? "&amp;" : c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&quot;",
-  );
 }

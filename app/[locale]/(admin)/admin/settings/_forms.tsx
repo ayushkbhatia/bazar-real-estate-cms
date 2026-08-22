@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -16,27 +16,20 @@ import {
   HERO_VARIANT_LABEL,
   ACCENT_TOKENS,
   ACCENT_TOKEN_HEX,
-  EMAIL_TEMPLATE_KEYS,
-  EMAIL_TEMPLATE_LABEL,
   brandSettingsSchema,
   displaySettingsSchema,
-  emailTemplateOverrideSchema,
   leadRoutingSettingsSchema,
   mortgageSettingsSchema,
   MORTGAGE_SETTINGS_DEFAULTS,
   type BrandSettingsInput,
   type DisplaySettingsInput,
-  type EmailTemplateKey,
-  type EmailTemplatesOverrides,
   type LeadRoutingSettings,
   type LeadRoutingRule,
   type MortgageSettings,
 } from "@/lib/schemas/site-settings";
 import {
-  resetEmailTemplate,
   updateBrandSettings,
   updateDisplaySettings,
-  updateEmailTemplate,
   updateLeadRouting,
   updateMortgageSettings,
 } from "./_actions";
@@ -663,134 +656,6 @@ export function LeadRoutingForm({
         </div>
       </form>
     </SectionCard>
-  );
-}
-
-// ───────────────────────────────────────────────────────────────
-// Email templates
-// ───────────────────────────────────────────────────────────────
-export function EmailTemplatesEditor({
-  overrides,
-}: {
-  overrides: EmailTemplatesOverrides;
-}) {
-  const [active, setActive] = useState<EmailTemplateKey>(
-    EMAIL_TEMPLATE_KEYS[0],
-  );
-  return (
-    <SectionCard
-      title="Email templates"
-      subtitle="Overrides for the system-generated transactional emails. Leave empty to use the bundled default."
-    >
-      <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-5 min-h-[280px]">
-        <nav className="flex flex-col gap-1 md:border-e border-bz-border md:pe-3">
-          {EMAIL_TEMPLATE_KEYS.map((k) => {
-            const isActive = active === k;
-            const hasOverride = overrides[k] != null;
-            return (
-              <button
-                key={k}
-                type="button"
-                onClick={() => setActive(k)}
-                className={cn(
-                  "text-start px-2.5 py-2 rounded text-[13px] flex items-center justify-between transition-colors",
-                  isActive
-                    ? "bg-bz-navy text-bz-bg"
-                    : "text-bz-ink-2 hover:bg-bz-surface-2",
-                )}
-              >
-                <span>{EMAIL_TEMPLATE_LABEL[k]}</span>
-                {hasOverride ? (
-                  <span
-                    className={cn(
-                      "w-1.5 h-1.5 rounded-full",
-                      isActive ? "bg-bz-bg" : "bg-bz-accent",
-                    )}
-                    aria-label="overridden"
-                  />
-                ) : null}
-              </button>
-            );
-          })}
-        </nav>
-        <EmailTemplateEditor
-          key={active}
-          templateKey={active}
-          initial={overrides[active] ?? null}
-        />
-      </div>
-    </SectionCard>
-  );
-}
-
-function EmailTemplateEditor({
-  templateKey,
-  initial,
-}: {
-  templateKey: EmailTemplateKey;
-  initial: { subject: string; body: string } | null;
-}) {
-  const form = useForm<{ subject: string; body: string }>({
-    resolver: zodResolver(emailTemplateOverrideSchema),
-    defaultValues: initial ?? { subject: "", body: "" },
-  });
-  const [pending, startTransition] = useTransition();
-
-  function onSubmit(values: { subject: string; body: string }) {
-    startTransition(async () => {
-      const r = await updateEmailTemplate(templateKey, values);
-      if (r.status === "ok") toast.success(r.message ?? "Saved.");
-      else toast.error(r.message);
-    });
-  }
-
-  function onReset() {
-    startTransition(async () => {
-      const r = await resetEmailTemplate(templateKey);
-      if (r.status === "ok") {
-        toast.success(r.message ?? "Reverted.");
-        form.reset({ subject: "", body: "" });
-      } else toast.error(r.message);
-    });
-  }
-
-  return (
-    <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="flex flex-col gap-3"
-    >
-      <Field
-        label="Subject"
-        error={form.formState.errors.subject?.message}
-      >
-        <Input
-          {...form.register("subject")}
-          placeholder="Default subject"
-        />
-      </Field>
-      <Field label="Body (Markdown OK)" error={form.formState.errors.body?.message}>
-        <textarea
-          {...form.register("body")}
-          rows={10}
-          className="w-full rounded border border-bz-border bg-bz-bg px-3 py-2 text-[13px] leading-[1.55] font-mono"
-        />
-      </Field>
-      <div className="flex justify-between gap-2 pt-2 border-t border-bz-border">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={onReset}
-          disabled={pending || initial == null}
-        >
-          <RotateCcw size={12} strokeWidth={1.8} />
-          Revert to default
-        </Button>
-        <Button type="submit" disabled={pending}>
-          {pending ? "Saving…" : "Save template"}
-        </Button>
-      </div>
-    </form>
   );
 }
 
