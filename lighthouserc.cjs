@@ -47,7 +47,14 @@ module.exports = {
       settings: {
         preset: "desktop",
         // CI runners are noisy; CPU + network throttling adds variance we
-        // can't action on. Mobile-emulation pass lives in Phase 7f tooling.
+        // can't action on.
+        //
+        // This opts OUT of Lighthouse's mobile default. The mobile pass it
+        // used to defer ("Phase 7f tooling") now exists as its own config and
+        // its own CI job — see `lighthouserc.mobile.cjs`, which keeps the
+        // default emulation and adds byte budgets. Between them: this file
+        // watches layout and markup quality, that one watches what a phone
+        // actually downloads.
         throttlingMethod: "provided",
         skipAudits: [
           // Heroku-style audits that don't apply on Vercel

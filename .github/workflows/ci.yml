@@ -164,3 +164,73 @@ jobs:
           name: lighthouse-report
           path: .lighthouseci/
           retention-days: 14
+
+  # The mobile counterpart to the job above, and the reason it is a separate
+  # job rather than a second config in the same one: lhci applies one settings
+  # object per run, so desktop and mobile cannot share a process. Running them
+  # in parallel also keeps each inside its own 20-minute cap.
+  #
+  # Lighthouse's DEFAULT emulation is mobile — Moto-G-class CPU throttling plus
+  # simulated slow 4G. `lighthouserc.cjs` opts out of it; this one does not.
+  # (There is no `preset: "mobile"`; passing one fails the run outright.)
+  lighthouse-mobile:
+    name: Lighthouse CI (mobile)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SITE_URL: https://www.bazarrealestate.ae
+
+      # Same editor-owned-catalogue problem as the desktop job: the detail page
+      # has to be resolved, never named. The property detail template is the
+      # one that statically imports MapLibre, so it is the route the script
+      # budget most needs to see.
+      - name: Resolve a published property for the detail-page audit
+        env:
+          SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          json=$(curl -sf \
+            "$SUPABASE_URL/rest/v1/properties?select=slug,reference&status=eq.published&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY") || true
+          slug=$(printf '%s' "$json" | sed -n 's/.*"slug":"\([^"]*\)".*/\1/p')
+          ref=$(printf '%s' "$json" | sed -n 's/.*"reference":"\([^"]*\)".*/\1/p' \
+            | tr '[:upper:]' '[:lower:]')
+          if [ -n "$slug" ] && [ -n "$ref" ]; then
+            echo "LHCI_DETAIL_URL=http://127.0.0.1:3100/p/$slug-$ref" >> "$GITHUB_ENV"
+            echo "Auditing property detail: /p/$slug-$ref"
+          else
+            echo "No published property found — auditing / and /buy only."
+          fi
+
+      - name: Run Lighthouse CI (mobile)
+        run: npx lhci autorun --config=./lighthouserc.mobile.cjs
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SITE_URL: https://www.bazarrealestate.ae
+
+      - name: Upload mobile Lighthouse report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report-mobile
+          path: .lighthouseci/
+          retention-days: 14

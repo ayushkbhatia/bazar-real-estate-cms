@@ -2,6 +2,23 @@ import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 3100;
 
+/**
+ * iPhone 13 minus `defaultBrowserType`.
+ *
+ * The descriptor names WebKit, but CI installs Chromium only
+ * (`npx playwright install --with-deps chromium`), so honouring it fails every
+ * test in the project with "Executable doesn't exist". What this gate actually
+ * needs from the descriptor is the phone viewport, the touch flags and — most
+ * of all — the user agent, because `lib/device.ts` picks the search view
+ * server-side from it.
+ *
+ * `e2e/search-view-mobile-default.spec.ts` strips the same field for the same
+ * reason. The cost is that the gate measures mobile Chromium rather than
+ * mobile Safari; every check here is a geometry or computed-style invariant,
+ * none of which is engine-specific.
+ */
+const { defaultBrowserType: _iphoneBrowser, ...IPHONE } = devices["iPhone 13"];
+
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
@@ -30,6 +47,31 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+      /*
+       * The geometry gate is the mobile project's job. Without this the whole
+       * suite would be collected twice — and CI runs `workers: 1`, so that is
+       * a straight doubling of a job that already sits inside a 20-minute cap.
+       */
+      testIgnore: /mobile-geometry\.spec\.ts/,
+    },
+    {
+      /*
+       * Phone viewport gate. Scoped to the geometry spec on purpose: this is a
+       * net for CSS-breakpoint regressions, not a second full pass of the
+       * suite.
+       *
+       * The device descriptor is used rather than a bare `viewport` because
+       * `lib/device.ts` picks the search view server-side from the user agent —
+       * a viewport-only context would render the desktop tree at a phone width
+       * and the gate would assert against markup no phone ever receives.
+       * See IPHONE above for why `defaultBrowserType` is stripped.
+       *
+       * iPhone 13 is 390px, marginally narrower than the 393px iPhone 16
+       * benchmark the audit used, so it is the stricter of the two.
+       */
+      name: "mobile",
+      use: IPHONE,
+      testMatch: /mobile-geometry\.spec\.ts/,
     },
   ],
   webServer: {
