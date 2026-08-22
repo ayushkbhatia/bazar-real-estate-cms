@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, RotateCcw, Trash2 } from "lucide-react";
+import { Loader2, Lock, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -17,10 +17,17 @@ export function AssetRowActions({
   id,
   name,
   trashed,
+  system = false,
 }: {
   id: string;
   name: string;
   trashed: boolean;
+  /**
+   * A system email has no trash: deleting one would leave a send path with
+   * nothing to say. Unpublishing is what "remove this" means for these, and
+   * that lives in the editor.
+   */
+  system?: boolean;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -38,6 +45,17 @@ export function AssetRowActions({
         toast.error(result.message ?? "Something went wrong.");
       }
     });
+  }
+
+  if (system) {
+    return (
+      <span
+        title="System emails can't be deleted — set one back to draft to return to the built-in wording"
+        className="inline-flex h-6 w-6 items-center justify-center text-bz-muted"
+      >
+        <Lock size={12} strokeWidth={1.8} />
+      </span>
+    );
   }
 
   if (busy) {

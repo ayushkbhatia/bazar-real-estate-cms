@@ -145,33 +145,16 @@ export const leadRoutingSettingsSchema = z.object({
 export type LeadRoutingSettings = z.infer<typeof leadRoutingSettingsSchema>;
 export type LeadRoutingRule = z.infer<typeof leadRoutingRuleSchema>;
 
-/** Email-template overrides. We keep the shape open here — each template
- *  key maps to a { subject, body } override. Concrete keys arrive in
- *  Phase 7 alongside the Resend templates. */
-export const emailTemplateOverrideSchema = z.object({
-  subject: z.string().max(160),
-  body: z.string().max(8000),
-});
-
-export const emailTemplatesSchema = z
-  .record(z.string(), emailTemplateOverrideSchema)
-  .default({});
-export type EmailTemplatesOverrides = z.infer<typeof emailTemplatesSchema>;
-
-export const EMAIL_TEMPLATE_KEYS = [
-  "enquiry_auto_reply",
-  "viewing_confirmation",
-  "valuation_request_ack",
-  "newsletter_welcome",
-] as const;
-export type EmailTemplateKey = (typeof EMAIL_TEMPLATE_KEYS)[number];
-
-export const EMAIL_TEMPLATE_LABEL: Record<EmailTemplateKey, string> = {
-  enquiry_auto_reply: "Enquiry auto-reply",
-  viewing_confirmation: "Viewing confirmation",
-  valuation_request_ack: "Valuation request acknowledgement",
-  newsletter_welcome: "Newsletter welcome",
-};
+/**
+ * Transactional email copy used to live here, as `email_templates` overrides
+ * on site_settings. Nothing ever read the column — every one of those emails
+ * sent from the string literals in lib/email-templates.ts regardless — so the
+ * editor at /admin/settings/templates saved, toasted and changed nothing.
+ *
+ * It now lives in Content Assets, as rows carrying a `system_key`: see
+ * lib/content-assets/system.ts and migration 0117. The `email_templates`
+ * column is left in place, unread, rather than dropped.
+ */
 
 /**
  * The mortgage calculator's assumptions — everything /tools/mortgage computes
@@ -303,5 +286,4 @@ export type SiteSettings = {
   brand: BrandSettingsInput;
   display: DisplaySettingsInput;
   lead_routing: LeadRoutingSettings;
-  email_templates: EmailTemplatesOverrides;
 };

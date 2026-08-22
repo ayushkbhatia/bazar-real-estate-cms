@@ -814,7 +814,7 @@ export const DOMAINS: Domain[] = [
     table: "content_assets",
     columns: [],
     excluded:
-      "No public read path and no anon select policy (0061). subject/body are advisor outreach copy an agent edits by hand and sends one-to-one. Arabic outreach would be a separate asset row, not an _ar twin.",
+      "No public read path and no anon select policy (0061). subject/body are outreach copy an agent edits by hand and sends one-to-one; the four `system_key` rows (0117) are read past RLS by the service role at send time, never by a page. Nothing outbound is localised — every template in lib/email-templates.ts is English — so an Arabic message would be a separate asset row, not an _ar twin.",
   },
   {
     table: "cta_clicks",

@@ -13,7 +13,7 @@ import {
 import { estimateValuation } from "@/lib/valuation";
 import { getAreaSlugById } from "@/lib/queries/areas";
 import { sendEmail } from "@/lib/email";
-import { valuationReceivedTemplate } from "@/lib/email-templates";
+import { valuationAcknowledgementEmail } from "@/lib/content-assets/system-emails";
 import {
   checkRateLimit,
   extractClientIp,
@@ -165,7 +165,7 @@ export async function submitValuation(
 
   // Fire-and-forget acknowledgement email. No-op if Resend is unset.
   if (data.owner_email && estimate) {
-    const tpl = valuationReceivedTemplate({
+    const tpl = await valuationAcknowledgementEmail({
       name: data.owner_name,
       estimateLowAed: estimate.lowAed,
       estimateHighAed: estimate.highAed,

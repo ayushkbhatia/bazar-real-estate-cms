@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Eye } from "lucide-react";
+import { Save, Eye, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -15,7 +15,17 @@ import {
   type ContentAssetKind,
   type ContentAssetStatus,
 } from "@/lib/schemas/content-asset";
-import { TOKENS, renderSample, unknownTokens } from "@/lib/content-assets/tokens";
+import {
+  TOKENS,
+  outOfScopeTokens,
+  renderSample,
+  unknownTokens,
+} from "@/lib/content-assets/tokens";
+import {
+  SYSTEM_ASSETS,
+  allowedTokensFor,
+  type SystemAssetKey,
+} from "@/lib/content-assets/system";
 import type { AssetActionResult } from "./_actions";
 
 export type AssetDraft = {
@@ -49,6 +59,7 @@ export function ContentAssetEditor({
   candidates,
   save,
   isNew,
+  systemKey = null,
 }: {
   initial: AssetDraft;
   candidates: { id: string; name: string; kind: ContentAssetKind }[];
@@ -59,6 +70,13 @@ export function ContentAssetEditor({
    */
   save: (raw: Record<string, unknown>) => Promise<AssetActionResult>;
   isNew: boolean;
+  /**
+   * Set on the four rows that override a transactional email. It turns the
+   * editor from "write a message" into "rewrite the one the site already
+   * sends": identity is fixed, sequencing is meaningless, and the publish
+   * switch decides between this wording and the built-in one.
+   */
+  systemKey?: SystemAssetKey | null;
 }) {
   const router = useRouter();
   const [draft, setDraft] = useState<AssetDraft>(initial);
@@ -71,10 +89,26 @@ export function ContentAssetEditor({
   const [slugLocked, setSlugLocked] = useState(!isNew);
 
   const isEmail = draft.kind === "email";
-  const badTokens = useMemo(
-    () => [...new Set([...unknownTokens(draft.body), ...unknownTokens(draft.subject)])],
-    [draft.body, draft.subject],
-  );
+  const system = systemKey ? SYSTEM_ASSETS[systemKey] : null;
+
+  // The insert strip and the save-time check read the same list, so a token
+  // you can put in is a token you can keep.
+  const tokenDefs = useMemo(() => {
+    const allowed = new Set<string>(allowedTokensFor(systemKey));
+    return TOKENS.filter((t) => allowed.has(t.name));
+  }, [systemKey]);
+
+  const badTokens = useMemo(() => {
+    const allowed = allowedTokensFor(systemKey);
+    return [
+      ...new Set([
+        ...unknownTokens(draft.body),
+        ...unknownTokens(draft.subject),
+        ...outOfScopeTokens(draft.body, allowed),
+        ...outOfScopeTokens(draft.subject, allowed),
+      ]),
+    ];
+  }, [draft.body, draft.subject, systemKey]);
   const preview = useMemo(() => renderSample(draft.body), [draft.body]);
   const previewSubject = useMemo(
     () => renderSample(draft.subject),
@@ -141,6 +175,28 @@ export function ContentAssetEditor({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
       <div className="flex flex-col gap-5 min-w-0">
+        {system ? (
+          <div className="rounded-lg border border-bz-border bg-bz-surface-2 p-5">
+            <div className="flex items-center gap-2">
+              <Lock size={13} strokeWidth={1.8} className="text-bz-muted" />
+              <Eyebrow>System email</Eyebrow>
+            </div>
+            <p className="mt-2 text-[13px] text-bz-ink-2 max-w-[70ch]">
+              {system.trigger}
+            </p>
+            <p className="mt-2 text-[12.5px] text-bz-muted max-w-[70ch]">
+              Bazar has a built-in version of this email that sends today.
+              While this stays a draft, that is what goes out. Publish, and
+              this wording replaces it — and unpublishing puts the built-in
+              one back. The email cannot be deleted, so there is no way to
+              leave a lead with nothing.
+            </p>
+            <div className="mt-3 mono text-[11px] text-bz-muted">
+              {system.slug}
+            </div>
+          </div>
+        ) : null}
+
         <Card>
           <Eyebrow>Asset</Eyebrow>
           <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -152,53 +208,67 @@ export function ContentAssetEditor({
                 placeholder="First response — new enquiry"
               />
             </Field>
-            <Field
-              label="Slug"
-              error={errors.slug}
-              hint="How code refers to this asset."
-            >
-              <input
-                value={draft.slug}
-                onChange={(e) => {
-                  setSlugLocked(true);
-                  set("slug", e.target.value);
-                }}
-                className={cn(inputCls, "mono text-[12.5px]")}
-                placeholder="enquiry-first-response"
-              />
-            </Field>
-            <Field label="Channel" error={errors.kind}>
-              <div className="inline-flex rounded-md border border-bz-border bg-bz-bg p-0.5">
-                {CONTENT_ASSET_KINDS.map((k) => (
-                  <button
-                    key={k}
-                    type="button"
-                    onClick={() => set("kind", k)}
-                    className={cn(
-                      "h-7 px-3 rounded text-[12px] transition-colors",
-                      draft.kind === k
-                        ? "bg-bz-navy text-bz-bg font-medium"
-                        : "text-bz-ink-2 hover:text-bz-ink",
-                    )}
-                  >
-                    {CONTENT_ASSET_KIND_LABELS[k]}
-                  </button>
-                ))}
-              </div>
-            </Field>
-            <Field label="Category" error={errors.category}>
-              <input
-                list="asset-categories"
-                value={draft.category}
-                onChange={(e) => set("category", e.target.value)}
-                className={inputCls}
-              />
-              <datalist id="asset-categories">
-                {CONTENT_ASSET_CATEGORIES.map((c) => (
-                  <option key={c} value={c} />
-                ))}
-              </datalist>
-            </Field>
+            {system ? (
+              <Field
+                label="Channel"
+                hint="A system email is always email, and always this one."
+              >
+                <div className="h-[34px] flex items-center gap-2 px-2 rounded border border-dashed border-bz-border bg-bz-surface-2 text-[13px] text-bz-ink-2">
+                  <Lock size={12} strokeWidth={1.8} className="text-bz-muted" />
+                  {CONTENT_ASSET_KIND_LABELS.email}
+                </div>
+              </Field>
+            ) : (
+              <>
+                <Field
+                  label="Slug"
+                  error={errors.slug}
+                  hint="How code refers to this asset."
+                >
+                  <input
+                    value={draft.slug}
+                    onChange={(e) => {
+                      setSlugLocked(true);
+                      set("slug", e.target.value);
+                    }}
+                    className={cn(inputCls, "mono text-[12.5px]")}
+                    placeholder="enquiry-first-response"
+                  />
+                </Field>
+                <Field label="Channel" error={errors.kind}>
+                  <div className="inline-flex rounded-md border border-bz-border bg-bz-bg p-0.5">
+                    {CONTENT_ASSET_KINDS.map((k) => (
+                      <button
+                        key={k}
+                        type="button"
+                        onClick={() => set("kind", k)}
+                        className={cn(
+                          "h-7 px-3 rounded text-[12px] transition-colors",
+                          draft.kind === k
+                            ? "bg-bz-navy text-bz-bg font-medium"
+                            : "text-bz-ink-2 hover:text-bz-ink",
+                        )}
+                      >
+                        {CONTENT_ASSET_KIND_LABELS[k]}
+                      </button>
+                    ))}
+                  </div>
+                </Field>
+                <Field label="Category" error={errors.category}>
+                  <input
+                    list="asset-categories"
+                    value={draft.category}
+                    onChange={(e) => set("category", e.target.value)}
+                    className={inputCls}
+                  />
+                  <datalist id="asset-categories">
+                    {CONTENT_ASSET_CATEGORIES.map((c) => (
+                      <option key={c} value={c} />
+                    ))}
+                  </datalist>
+                </Field>
+              </>
+            )}
           </div>
         </Card>
 
@@ -226,9 +296,11 @@ export function ContentAssetEditor({
               label="Body"
               error={errors.body}
               hint={
-                isEmail
-                  ? "The middle of the email. The greeting and advisor signature are added when it sends."
-                  : "Sent as written. Keep it short — long WhatsApp messages get skimmed."
+                system
+                  ? "The whole message — greeting, body, sign-off. Only the Bazar header and footer are added when it sends."
+                  : isEmail
+                    ? "The middle of the email. The greeting and advisor signature are added when it sends."
+                    : "Sent as written. Keep it short — long WhatsApp messages get skimmed."
               }
             >
               <textarea
@@ -241,7 +313,7 @@ export function ContentAssetEditor({
             </Field>
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
               <span className="text-[11px] text-bz-muted me-1">Insert:</span>
-              {TOKENS.map((t) => (
+              {tokenDefs.map((t) => (
                 <button
                   key={t.name}
                   type="button"
@@ -259,7 +331,8 @@ export function ContentAssetEditor({
                 <span className="mono">
                   {badTokens.map((t) => `{{${t}}}`).join(", ")}
                 </span>{" "}
-                — these won&apos;t render. Use one from the list above.
+                — nothing fills {badTokens.length > 1 ? "these" : "this"} on
+                this message. Use one from the list above.
               </p>
             ) : null}
           </div>
@@ -311,7 +384,9 @@ export function ContentAssetEditor({
             ))}
           </div>
           <p className="mt-2 text-[11.5px] text-bz-muted">
-            Only published assets appear in the enquiry composer.
+            {system
+              ? "Draft sends Bazar's built-in wording. Published sends this."
+              : "Only published assets appear in the enquiry composer."}
           </p>
           <Button
             type="button"
@@ -324,6 +399,7 @@ export function ContentAssetEditor({
           </Button>
         </Card>
 
+        {system ? null : (
         <Card>
           <Eyebrow>Sequencing</Eyebrow>
           <p className="mt-1 text-[11.5px] text-bz-muted">
@@ -369,6 +445,24 @@ export function ContentAssetEditor({
             </Field>
           </div>
         </Card>
+        )}
+
+        {system ? (
+          <Card>
+            <Eyebrow>When to use this</Eyebrow>
+            <Field label="" error={errors.notes}>
+              <textarea
+                value={draft.notes}
+                onChange={(e) => set("notes", e.target.value)}
+                rows={6}
+                className={cn(inputCls, "resize-y mt-2")}
+              />
+            </Field>
+            <p className="mt-2 text-[11.5px] text-bz-muted">
+              A note for whoever edits this next. Never sent.
+            </p>
+          </Card>
+        ) : null}
       </aside>
     </div>
   );

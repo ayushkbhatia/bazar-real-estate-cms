@@ -20,7 +20,7 @@ import { createClient } from "@supabase/supabase-js";
 import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
-import { enquiryReceivedTemplate } from "@/lib/email-templates";
+import { enquiryAcknowledgementEmail } from "@/lib/content-assets/system-emails";
 import type { Database } from "@/db/types";
 
 function adminClient() {
@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
       const prop = Array.isArray(row.properties)
         ? row.properties[0]
         : row.properties;
-      const tpl = enquiryReceivedTemplate({
+      const tpl = await enquiryAcknowledgementEmail({
         name: row.name ?? "there",
         message: row.brief_raw ?? "",
         propertyReference: prop?.reference ?? null,

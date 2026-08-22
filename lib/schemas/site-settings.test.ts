@@ -2,8 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   ACCENT_TOKENS,
   ACCENT_TOKEN_HEX,
-  EMAIL_TEMPLATE_KEYS,
-  EMAIL_TEMPLATE_LABEL,
   HERO_VARIANTS,
   HERO_VARIANT_DESCRIPTION,
   HERO_VARIANT_LABEL,
@@ -12,8 +10,6 @@ import {
   LOGO_STYLE_LABEL,
   brandSettingsSchema,
   displaySettingsSchema,
-  emailTemplateOverrideSchema,
-  emailTemplatesSchema,
   leadRoutingRuleSchema,
   leadRoutingSettingsSchema,
   mortgageSettingsSchema,
@@ -240,52 +236,6 @@ describe("leadRoutingRuleSchema + leadRoutingSettingsSchema", () => {
       fallback_agent_id: null,
     });
     expect(r.success).toBe(false);
-  });
-});
-
-describe("emailTemplateOverrideSchema", () => {
-  it("requires a string subject + body", () => {
-    const ok = emailTemplateOverrideSchema.safeParse({
-      subject: "Welcome",
-      body: "Hello",
-    });
-    expect(ok.success).toBe(true);
-    const bad = emailTemplateOverrideSchema.safeParse({ subject: 1, body: 2 });
-    expect(bad.success).toBe(false);
-  });
-
-  it("rejects bodies over 8k chars", () => {
-    const r = emailTemplateOverrideSchema.safeParse({
-      subject: "X",
-      body: "a".repeat(8001),
-    });
-    expect(r.success).toBe(false);
-  });
-});
-
-describe("emailTemplatesSchema record", () => {
-  it("accepts an empty overrides map", () => {
-    const r = emailTemplatesSchema.safeParse({});
-    expect(r.success).toBe(true);
-  });
-
-  it("validates each entry against the override schema", () => {
-    const r = emailTemplatesSchema.safeParse({
-      enquiry_auto_reply: { subject: "Hi", body: "Body" },
-    });
-    expect(r.success).toBe(true);
-    const bad = emailTemplatesSchema.safeParse({
-      enquiry_auto_reply: { subject: 1, body: 2 },
-    });
-    expect(bad.success).toBe(false);
-  });
-});
-
-describe("EMAIL_TEMPLATE_KEYS / LABEL", () => {
-  it("every key has a human label", () => {
-    for (const k of EMAIL_TEMPLATE_KEYS) {
-      expect(EMAIL_TEMPLATE_LABEL[k].length).toBeGreaterThan(2);
-    }
   });
 });
 

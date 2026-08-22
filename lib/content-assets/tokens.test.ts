@@ -3,6 +3,7 @@ import {
   TOKENS,
   isTokenName,
   missingTokens,
+  outOfScopeTokens,
   renderSample,
   renderTokens,
   unknownTokens,
@@ -127,5 +128,26 @@ describe("TOKENS", () => {
       expect(t.fallback.trim(), t.name).not.toBe("");
       expect(t.sample.trim(), t.name).not.toBe("");
     }
+  });
+});
+
+describe("outOfScopeTokens", () => {
+  it("flags a correctly-spelled token this message can't fill", () => {
+    expect(
+      outOfScopeTokens("Your viewing is at {{viewing_time}}", [
+        "lead_first_name",
+        "property_reference",
+      ]),
+    ).toEqual(["viewing_time"]);
+  });
+
+  it("passes tokens on the allowed list", () => {
+    expect(
+      outOfScopeTokens("Hi {{lead_first_name}}", ["lead_first_name"]),
+    ).toEqual([]);
+  });
+
+  it("ignores typos — unknownTokens owns those", () => {
+    expect(outOfScopeTokens("{{propery_ref}}", ["lead_first_name"])).toEqual([]);
   });
 });

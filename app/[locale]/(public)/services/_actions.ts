@@ -7,7 +7,7 @@ import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { sendEmail } from "@/lib/email";
-import { enquiryReceivedTemplate } from "@/lib/email-templates";
+import { enquiryAcknowledgementEmail } from "@/lib/content-assets/system-emails";
 import {
   checkRateLimit,
   extractClientIp,
@@ -161,7 +161,7 @@ export async function submitServiceLead(
   revalidatePath("/admin/enquiries");
 
   // Fire-and-forget confirmation. No-op without RESEND_API_KEY.
-  const tpl = enquiryReceivedTemplate({
+  const tpl = await enquiryAcknowledgementEmail({
     name: data.name,
     message: buildServiceBrief(data),
     propertyReference: null,

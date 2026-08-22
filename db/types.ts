@@ -645,6 +645,7 @@ export type Database = {
           slug: string
           status: Database["public"]["Enums"]["content_asset_status"]
           subject: string | null
+          system_key: string | null
           updated_at: string
         }
         Insert: {
@@ -663,6 +664,7 @@ export type Database = {
           slug: string
           status?: Database["public"]["Enums"]["content_asset_status"]
           subject?: string | null
+          system_key?: string | null
           updated_at?: string
         }
         Update: {
@@ -681,6 +683,7 @@ export type Database = {
           slug?: string
           status?: Database["public"]["Enums"]["content_asset_status"]
           subject?: string | null
+          system_key?: string | null
           updated_at?: string
         }
         Relationships: [

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Trash2, Mail, MessageCircle, ArrowRight } from "lucide-react";
+import { Plus, Trash2, Mail, MessageCircle, ArrowRight, Zap } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,7 @@ import {
   type ContentAssetRow,
 } from "@/lib/queries/content-assets";
 import { CONTENT_ASSET_KIND_LABELS } from "@/lib/schemas/content-asset";
+import { SYSTEM_ASSETS } from "@/lib/content-assets/system";
 import { AssetRowActions } from "./_row-actions";
 
 export const dynamic = "force-dynamic";
@@ -51,82 +52,135 @@ function firstLine(body: string): string {
   return line.length > 90 ? `${line.slice(0, 89)}…` : line;
 }
 
+type View = "outreach" | "system" | "trash";
+
+const TABS: { view: View; label: string; href: string }[] = [
+  { view: "outreach", label: "Outreach", href: "/admin/content-assets" },
+  {
+    view: "system",
+    label: "System emails",
+    href: "/admin/content-assets?view=system",
+  },
+  { view: "trash", label: "Trash", href: "/admin/content-assets?view=trash" },
+];
+
 type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function ContentAssetsPage({ searchParams }: PageProps) {
   const sp = await searchParams;
-  const view = (Array.isArray(sp.view) ? sp.view[0] : sp.view) ?? "";
-  const trashed = view === "trash";
+  const raw = (Array.isArray(sp.view) ? sp.view[0] : sp.view) ?? "";
+  const view: View =
+    raw === "trash" ? "trash" : raw === "system" ? "system" : "outreach";
 
-  const [rows, trash] = await Promise.all([
-    listContentAssets({ trashed }),
+  const [rows, system, trash] = await Promise.all([
+    view === "trash"
+      ? listContentAssets({ trashed: true })
+      : listContentAssets({ scope: view }),
+    listContentAssets({ scope: "system" }),
     listContentAssets({ trashed: true }),
   ]);
 
   const byId = new Map(rows.map((r) => [r.id, r]));
+  const publishedSystem = system.filter((r) => r.status === "published").length;
 
   return (
     <CmsShell
       title="Content assets"
       breadcrumbs="Content · Assets"
       primary={
-        <Button asChild>
-          <Link href="/admin/content-assets/new">
-            <Plus size={14} strokeWidth={1.8} />
-            New asset
-          </Link>
-        </Button>
+        view === "system" ? undefined : (
+          <Button asChild>
+            <Link href="/admin/content-assets/new">
+              <Plus size={14} strokeWidth={1.8} />
+              New asset
+            </Link>
+          </Button>
+        )
       }
     >
       <div className="flex flex-col gap-6">
         <p className="text-[13px] text-bz-muted max-w-[70ch]">
-          The outreach library. Email and WhatsApp copy an advisor sends by
-          hand, written once and reused from the enquiry composer. Automatic
-          system mail — the enquiry acknowledgement, escalations, KYC decisions
-          — is not managed here.
+          {view === "system" ? (
+            <>
+              The four emails Bazar sends on its own, with no advisor
+              involved. Each has a built-in version that sends today; a
+              published row here replaces it, and setting one back to draft
+              puts the built-in wording back. They cannot be deleted.
+            </>
+          ) : (
+            <>
+              The outreach library. Email and WhatsApp copy an advisor sends
+              by hand, written once and reused from the enquiry composer.
+              Automatic mail — the acknowledgements and confirmations the site
+              sends by itself — lives under{" "}
+              <Link
+                href="/admin/content-assets?view=system"
+                className="text-bz-ink underline"
+              >
+                System emails
+              </Link>
+              .
+            </>
+          )}
         </p>
 
         <div className="flex flex-wrap items-center gap-3">
           <div className="inline-flex rounded-md border border-bz-border bg-bz-bg p-0.5">
-            <Link
-              href="/admin/content-assets"
-              aria-current={trashed ? undefined : "page"}
-              className={cn(
-                "inline-flex items-center gap-1.5 h-7 px-2.5 rounded text-[12px] transition-colors",
-                trashed
-                  ? "text-bz-ink-2 hover:text-bz-ink"
-                  : "bg-bz-navy text-bz-bg font-medium",
-              )}
-            >
-              Assets
-            </Link>
-            <Link
-              href="/admin/content-assets?view=trash"
-              aria-current={trashed ? "page" : undefined}
-              className={cn(
-                "inline-flex items-center gap-1.5 h-7 px-2.5 rounded text-[12px] transition-colors",
-                trashed
-                  ? "bg-bz-navy text-bz-bg font-medium"
-                  : "text-bz-ink-2 hover:text-bz-ink",
-              )}
-            >
-              <Trash2 size={12} strokeWidth={1.8} />
-              Trash
-              <span
-                className={cn(
-                  "mono text-[10.5px]",
-                  trashed ? "text-bz-bg/80" : "text-bz-muted",
-                )}
-              >
-                {trash.length}
-              </span>
-            </Link>
+            {TABS.map((tab) => {
+              const active = view === tab.view;
+              const count =
+                tab.view === "system"
+                  ? system.length
+                  : tab.view === "trash"
+                    ? trash.length
+                    : null;
+              return (
+                <Link
+                  key={tab.view}
+                  href={tab.href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 h-7 px-2.5 rounded text-[12px] transition-colors",
+                    active
+                      ? "bg-bz-navy text-bz-bg font-medium"
+                      : "text-bz-ink-2 hover:text-bz-ink",
+                  )}
+                >
+                  {tab.view === "trash" ? (
+                    <Trash2 size={12} strokeWidth={1.8} />
+                  ) : tab.view === "system" ? (
+                    <Zap size={12} strokeWidth={1.8} />
+                  ) : null}
+                  {tab.label}
+                  {count === null ? null : (
+                    <span
+                      className={cn(
+                        "mono text-[10.5px]",
+                        active ? "text-bz-bg/80" : "text-bz-muted",
+                      )}
+                    >
+                      {count}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
           <div className="text-[13px] text-bz-muted">
-            {rows.length} {rows.length === 1 ? "asset" : "assets"}
-            {trashed ? " in trash" : ""}
+            {view === "system" ? (
+              publishedSystem === 0 ? (
+                "All four sending Bazar's built-in wording"
+              ) : (
+                `${publishedSystem} of ${system.length} sending your wording`
+              )
+            ) : (
+              <>
+                {rows.length} {rows.length === 1 ? "asset" : "assets"}
+                {view === "trash" ? " in trash" : ""}
+              </>
+            )}
           </div>
         </div>
 
@@ -134,11 +188,17 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[42%]">Asset</TableHead>
-                <TableHead>Channel</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead className="w-[42%]">
+                  {view === "system" ? "Email" : "Asset"}
+                </TableHead>
+                <TableHead>
+                  {view === "system" ? "Sends when" : "Channel"}
+                </TableHead>
+                {view === "system" ? null : <TableHead>Category</TableHead>}
                 <TableHead>Status</TableHead>
-                <TableHead>Follows with</TableHead>
+                <TableHead>
+                  {view === "system" ? "Currently sending" : "Follows with"}
+                </TableHead>
                 <TableHead className="text-end">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -146,11 +206,13 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
               {rows.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={6}
+                    colSpan={view === "system" ? 5 : 6}
                     className="text-center py-16 text-bz-muted"
                   >
-                    {trashed ? (
+                    {view === "trash" ? (
                       "Trash is empty. Assets you delete land here first."
+                    ) : view === "system" ? (
+                      "No system emails found — migration 0117 seeds them."
                     ) : (
                       <>
                         No assets yet — write the first one with{" "}
@@ -170,6 +232,9 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
                   const next = row.next_asset_id
                     ? byId.get(row.next_asset_id)
                     : null;
+                  const def = row.system_key
+                    ? SYSTEM_ASSETS[row.system_key]
+                    : null;
                   return (
                     <TableRow key={row.id}>
                       <TableCell>
@@ -186,16 +251,30 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
                         </Link>
                       </TableCell>
                       <TableCell>
-                        <KindPill kind={row.kind} />
+                        {def ? (
+                          <span className="text-[12px] text-bz-ink-2 block max-w-[40ch]">
+                            {def.trigger}
+                          </span>
+                        ) : (
+                          <KindPill kind={row.kind} />
+                        )}
                       </TableCell>
-                      <TableCell className="text-bz-ink-2 text-[12.5px] capitalize">
-                        {row.category}
-                      </TableCell>
+                      {view === "system" ? null : (
+                        <TableCell className="text-bz-ink-2 text-[12.5px] capitalize">
+                          {row.category}
+                        </TableCell>
+                      )}
                       <TableCell>
                         <StatusPill status={row.status} />
                       </TableCell>
                       <TableCell className="text-[12px] text-bz-muted">
-                        {next ? (
+                        {def ? (
+                          row.status === "published" ? (
+                            <span className="text-bz-ink-2">Your wording</span>
+                          ) : (
+                            "Bazar's built-in wording"
+                          )
+                        ) : next ? (
                           <span className="inline-flex items-center gap-1.5">
                             <ArrowRight size={11} strokeWidth={1.8} />
                             {next.name}
@@ -213,7 +292,8 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
                         <AssetRowActions
                           id={row.id}
                           name={row.name}
-                          trashed={trashed}
+                          trashed={view === "trash"}
+                          system={row.system_key !== null}
                         />
                       </TableCell>
                     </TableRow>

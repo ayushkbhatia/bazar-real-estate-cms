@@ -7,7 +7,6 @@ import { type Locale } from "@/lib/i18n/locales";
 import {
   brandSettingsSchema,
   displaySettingsSchema,
-  emailTemplatesSchema,
   leadRoutingSettingsSchema,
   LOGO_STYLES,
   parseMortgageSettings,
@@ -44,7 +43,6 @@ const DEFAULTS: SiteSettings = {
     rules: [],
     fallback_agent_id: null,
   },
-  email_templates: {},
 };
 
 function shape(raw: Record<string, unknown> | null | undefined): SiteSettings {
@@ -70,18 +68,12 @@ function shape(raw: Record<string, unknown> | null | undefined): SiteSettings {
   const lead_routing = leadRoutingSettingsSchema.safeParse(
     raw.lead_routing ?? DEFAULTS.lead_routing,
   );
-  const email_templates = emailTemplatesSchema.safeParse(
-    raw.email_templates ?? {},
-  );
   return {
     brand: brand.success ? brand.data : DEFAULTS.brand,
     display: display.success ? display.data : DEFAULTS.display,
     lead_routing: lead_routing.success
       ? lead_routing.data
       : DEFAULTS.lead_routing,
-    email_templates: email_templates.success
-      ? email_templates.data
-      : DEFAULTS.email_templates,
   };
 }
 
@@ -121,7 +113,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   const { data, error } = await supabase
     .from("site_settings")
     .select(
-      "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, search_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
+      "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, search_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing",
     )
     .eq("id", 1)
     .maybeSingle();
@@ -241,7 +233,7 @@ export async function getPublicSiteSettings(
     const { data } = await supabase
       .from("site_settings")
       .select(
-        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, search_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing, email_templates",
+        "brand_name, brand_name_ar, brand_tagline, brand_tagline_ar, logo_url, logo_style, favicon_url, footer_logo_url, search_logo_url, orn, contact_email, contact_phone, hero_variant, accent_token, lead_routing",
       )
       .eq("id", 1)
       .maybeSingle();

@@ -33,6 +33,32 @@ function shell(bodyHtml: string): string {
 </body></html>`;
 }
 
+/**
+ * The branded wrapper and its escaper, exported for the system-asset
+ * resolver in lib/content-assets/system.ts. An email the client rewrote in
+ * /admin/content-assets must arrive looking like the built-in one it
+ * replaced — same header, footer and typography — not like a plain note.
+ */
+export const emailShell = shell;
+export const escapeEmailHtml = escape;
+export const emailSiteUrl = siteUrl;
+
+/**
+ * Editor-authored copy → the body half of a branded email. A blank line
+ * starts a new paragraph; a single newline stays a line break, so the
+ * indented "Listing: … / Where: …" blocks people write survive.
+ */
+export function proseEmailHtml(text: string): string {
+  return text
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter((p) => p !== "")
+    .map(
+      (p) => `<p style="margin:0 0 14px">${escape(p).replace(/\n/g, "<br>")}</p>`,
+    )
+    .join("");
+}
+
 export function enquiryReceivedTemplate(opts: {
   name: string;
   message: string;
@@ -171,7 +197,7 @@ export function staffReplyTemplate(opts: {
   return { subject, text, html };
 }
 
-function formatAedShort(n: number): string {
+export function formatAedShort(n: number): string {
   if (n >= 1_000_000) return `AED ${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `AED ${(n / 1_000).toFixed(0)}K`;
   return `AED ${n.toLocaleString()}`;
@@ -490,6 +516,55 @@ export function staffInvitationTemplate(opts: {
     <p><strong>${escape(opts.inviterName)}</strong> invited you to Bazar Real Estate's internal console as <strong>${escape(opts.role)}</strong>.</p>
     <p style="margin-top:22px"><a href="${opts.acceptUrl}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Set your password</a></p>
     <p style="margin-top:18px;font-size:12px;color:#99896e">The link is valid for ${days} days.</p>
+  `);
+
+  return { subject, text, html };
+}
+
+/**
+ * Sent when an advisor books a viewing from an enquiry.
+ *
+ * The wording moved here from app/.../enquiries/[id]/_actions-viewing.ts as
+ * part of consolidating outbound copy: the action keeps the booking and the
+ * calendar invite, this keeps what the lead reads. "Tentative" is load-bearing
+ * — the building has not confirmed access at the point this sends.
+ */
+export function viewingConfirmationTemplate(opts: {
+  name: string;
+  localTime: string;
+  durationMinutes: number;
+  location: string | null;
+  propertyReference: string | null;
+  propertyTitle: string | null;
+}): { subject: string; text: string; html: string } {
+  const subject = opts.propertyReference
+    ? `Tentative viewing · ${opts.propertyReference}`
+    : "Tentative viewing booked";
+
+  const listingLine =
+    opts.propertyReference && opts.propertyTitle
+      ? `${opts.propertyReference} · ${opts.propertyTitle}`
+      : opts.propertyReference;
+
+  const text =
+    `Hello ${opts.name},\n\n` +
+    `We've tentatively scheduled your viewing for ${opts.localTime} (Asia/Dubai).\n\n` +
+    (listingLine ? `Listing: ${listingLine}\n` : "") +
+    (opts.location ? `Where: ${opts.location}\n` : "") +
+    `Duration: ${opts.durationMinutes} minutes\n\n` +
+    `If this time doesn't work, simply reply and we'll find another.\n\n` +
+    `— Bazar Real Estate\n`;
+
+  const html = shell(`
+    <p>Hello ${escape(opts.name)},</p>
+    <p>We&rsquo;ve tentatively scheduled your viewing for <strong>${escape(opts.localTime)}</strong> (Asia/Dubai).</p>
+    <ul style="padding-left:18px;line-height:1.7">
+      ${listingLine ? `<li>Listing: ${escape(listingLine)}</li>` : ""}
+      ${opts.location ? `<li>Where: ${escape(opts.location)}</li>` : ""}
+      <li>Duration: ${opts.durationMinutes} minutes</li>
+    </ul>
+    <p>The calendar invite is attached — accept it to add to your calendar.</p>
+    <p style="color:#5a5a55">If this time doesn&rsquo;t work, simply reply and we&rsquo;ll find another.</p>
   `);
 
   return { subject, text, html };

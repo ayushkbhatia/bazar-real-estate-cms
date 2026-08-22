@@ -7,12 +7,8 @@ import { isSupabaseConfigured } from "@/lib/env";
 import {
   brandSettingsSchema,
   displaySettingsSchema,
-  emailTemplateOverrideSchema,
-  emailTemplatesSchema,
   leadRoutingSettingsSchema,
   mortgageSettingsSchema,
-  EMAIL_TEMPLATE_KEYS,
-  type EmailTemplateKey,
 } from "@/lib/schemas/site-settings";
 import { logAudit } from "@/lib/audit";
 import { requireRole } from "@/lib/auth";
@@ -182,78 +178,3 @@ export async function updateMortgageSettings(
   return result;
 }
 
-export async function updateEmailTemplate(
-  key: string,
-  raw: Record<string, unknown>,
-): Promise<ActionResult> {
-  const gated = await gate();
-  if (gated) return gated;
-  if (!(EMAIL_TEMPLATE_KEYS as readonly string[]).includes(key)) {
-    return { status: "error", message: "Unknown email template." };
-  }
-  const parsedKey = key as EmailTemplateKey;
-  const parsed = emailTemplateOverrideSchema.safeParse(raw);
-  if (!parsed.success) {
-    return {
-      status: "error",
-      message: "Template failed validation.",
-      fieldErrors: fieldErrorsFromZod(parsed.error),
-    };
-  }
-  const supabase = await createSupabaseServerClient();
-  const { data: existing } = await supabase
-    .from("site_settings")
-    .select("email_templates")
-    .eq("id", 1)
-    .maybeSingle();
-  const current = emailTemplatesSchema.safeParse(
-    existing?.email_templates ?? {},
-  );
-  const merged = {
-    ...(current.success ? current.data : {}),
-    [parsedKey]: parsed.data,
-  };
-  const result = await updateRow(supabase, { email_templates: merged });
-  if (result.status === "ok") {
-    await logAudit({
-      action: "settings.email_template_update",
-      target_kind: "email_template",
-      target_id: parsedKey,
-      before: null,
-      after: parsed.data,
-    });
-    revalidatePath("/admin/settings");
-    return { status: "ok", message: "Template saved." };
-  }
-  return result;
-}
-
-export async function resetEmailTemplate(key: string): Promise<ActionResult> {
-  const gated = await gate();
-  if (gated) return gated;
-  if (!(EMAIL_TEMPLATE_KEYS as readonly string[]).includes(key)) {
-    return { status: "error", message: "Unknown email template." };
-  }
-  const supabase = await createSupabaseServerClient();
-  const { data: existing } = await supabase
-    .from("site_settings")
-    .select("email_templates")
-    .eq("id", 1)
-    .maybeSingle();
-  const current = emailTemplatesSchema.safeParse(
-    existing?.email_templates ?? {},
-  );
-  const merged = { ...(current.success ? current.data : {}) };
-  delete merged[key];
-  const result = await updateRow(supabase, { email_templates: merged });
-  if (result.status === "ok") {
-    await logAudit({
-      action: "settings.email_template_reset",
-      target_kind: "email_template",
-      target_id: key,
-    });
-    revalidatePath("/admin/settings");
-    return { status: "ok", message: "Reverted to default." };
-  }
-  return result;
-}
