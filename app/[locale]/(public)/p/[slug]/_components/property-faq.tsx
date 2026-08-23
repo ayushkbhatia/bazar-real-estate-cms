@@ -95,7 +95,7 @@ export function PropertyFaq({
   };
 
   return (
-    <section className="px-12 py-16 border-t border-bz-border">
+    <section className="px-4 md:px-12 py-12 md:py-16 border-t border-bz-border">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}

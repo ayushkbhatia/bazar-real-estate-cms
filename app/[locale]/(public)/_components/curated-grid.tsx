@@ -40,10 +40,10 @@ export function CuratedGrid({
 }: Props) {
   return (
     <article className="bg-bz-bg">
-      <section className="px-12 pt-24 pb-12 border-b border-bz-border">
+      <section className="px-4 md:px-12 pt-14 md:pt-24 pb-12 border-b border-bz-border">
         <Eyebrow>{eyebrow}</Eyebrow>
         <h1
-          className="serif text-[72px] mt-3 leading-[0.98] max-w-[24ch]"
+          className="serif text-[38px] md:text-[72px] mt-3 leading-[0.98] max-w-[24ch]"
           style={{ letterSpacing: "-0.028em" }}
         >
           {title}
@@ -53,7 +53,7 @@ export function CuratedGrid({
         </p>
       </section>
 
-      <section className="px-12 py-16">
+      <section className="px-4 md:px-12 py-16">
         {rows.length === 0 ? (
           <div className="rounded-lg border border-bz-border bg-bz-surface p-9 text-[15px] text-bz-ink-2 max-w-[560px]">
             Nothing matches this curation right now. Try the wider catalogue on{" "}

@@ -40,10 +40,10 @@ export default async function DevelopmentsIndexPage({
 
   return (
     <div className="bg-bz-bg">
-      <section className="px-12 pt-16 pb-10 border-b border-bz-border">
+      <section className="px-4 md:px-12 pt-16 pb-10 border-b border-bz-border">
         <Eyebrow>{t("eyebrow")}</Eyebrow>
         <h1
-          className="serif text-[64px] font-normal mt-3 leading-[0.98]"
+          className="serif text-[36px] md:text-[64px] font-normal mt-3 leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
         >
           New launches in Abu Dhabi
@@ -55,7 +55,7 @@ export default async function DevelopmentsIndexPage({
         </p>
       </section>
 
-      <section className="px-12 py-12">
+      <section className="px-4 md:px-12 py-12">
         {developments.length === 0 ? (
           <div className="py-24 text-center">
             <Eyebrow>{t("empty")}</Eyebrow>
@@ -64,7 +64,19 @@ export default async function DevelopmentsIndexPage({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-6">
+          /*
+            One-up below md. The two-up grid was ungated, so on a 390px screen
+            the 96px of `px-12` gutter left 135px per card; the card's own
+            `px-6` and its `grid-cols-3 gap-4` stat row then cut that into 18px
+            tracks — "AED 2.0M" alone needs 34px, and a 119px development name
+            was clipped into an 85px box. The row *clips* rather than pushes,
+            so no horizontal-scroll check ever saw it; `narrowTracks` in
+            e2e/mobile-geometry.spec.ts was written for this route. One column
+            gives each stat ~92px, which is why the card needs no other change
+            — and it makes the card image's `(max-width: 1024px) 100vw` sizes
+            hint true on a phone instead of wrong by 2x.
+          */
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {developments.map((d) => (
               <DevelopmentCard locale={locale} key={d.id} d={d} />
             ))}

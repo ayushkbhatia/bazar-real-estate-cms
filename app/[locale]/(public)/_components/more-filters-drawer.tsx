@@ -231,7 +231,14 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
               onChange={(e) =>
                 setState((s) => ({ ...s, tenure: e.target.value }))
               }
-              className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-accent"
+              /* 16px until `md` here and on the two selects below: a native
+                 select under 16px makes iOS Safari zoom the viewport as the
+                 picker opens. This drawer is fixed-position, so it keeps its
+                 pre-zoom box while the viewport shrinks around it and the
+                 "Apply filters" footer ends up off-screen — the visitor picks
+                 a tenure and then has nowhere to commit it. The `md:` half
+                 keeps the 14px the drawer is drawn at. */
+              className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[16px] md:text-[14px] focus:outline-none focus:border-bz-accent"
             >
               <option value="">Any</option>
               {TENURES.map((t) => (
@@ -252,7 +259,7 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
                 onChange={(e) =>
                   setState((s) => ({ ...s, form: e.target.value }))
                 }
-                className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-accent"
+                className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[16px] md:text-[14px] focus:outline-none focus:border-bz-accent"
               >
                 <option value="">Any</option>
                 {PROPERTY_FORMS.map((f) => (
@@ -276,7 +283,7 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
               onChange={(e) =>
                 setState((s) => ({ ...s, furnishing: e.target.value }))
               }
-              className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[14px] focus:outline-none focus:border-bz-accent"
+              className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[16px] md:text-[14px] focus:outline-none focus:border-bz-accent"
             >
               <option value="">Any</option>
               {FURNISHINGS.map((f) => (

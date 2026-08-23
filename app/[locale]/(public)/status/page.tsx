@@ -71,7 +71,7 @@ export default async function StatusPage() {
 
   if (!report) {
     return (
-      <section className="px-12 py-20 max-w-[840px] mx-auto">
+      <section className="px-4 md:px-12 py-20 max-w-[840px] mx-auto">
         <Eyebrow>Status</Eyebrow>
         <h1
           className="serif text-[44px] font-normal mt-2"
@@ -90,7 +90,7 @@ export default async function StatusPage() {
   const overall = STATUS_COPY[report.status];
 
   return (
-    <section className="px-12 py-20 max-w-[840px] mx-auto">
+    <section className="px-4 md:px-12 py-20 max-w-[840px] mx-auto">
       <Eyebrow>Status</Eyebrow>
       <h1
         className="serif text-[44px] font-normal mt-2"
@@ -174,7 +174,13 @@ export default async function StatusPage() {
       >
         Last deploy
       </h2>
-      <dl className="mt-4 text-[13px] grid grid-cols-[160px_1fr] gap-y-2 max-w-[480px]">
+      {/*
+        `[&>*]:min-w-0` because a grid item defaults to min-width:auto and the
+        commit ref and branch name are unbreakable `mono` strings: at one
+        column they would size the track to their own min-content and push the
+        page sideways rather than wrap.
+      */}
+      <dl className="mt-4 text-[13px] grid grid-cols-1 md:grid-cols-[160px_1fr] gap-y-2 max-w-[480px] [&>*]:min-w-0">
         <dt className="text-bz-muted">Environment</dt>
         <dd className="mono">{report.deploy.environment}</dd>
         <dt className="text-bz-muted">Commit</dt>

@@ -90,6 +90,7 @@ import {
 } from "@/lib/preferences";
 import { buildAdvisorWhatsAppLink } from "@/lib/whatsapp";
 import { cn } from "@/lib/utils";
+import { useIsRtl } from "@/lib/dom/use-is-rtl";
 import { isolateForLocale } from "@/lib/i18n/bidi";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import { localeFromPathname } from "@/lib/i18n/routing";
@@ -155,6 +156,7 @@ function subscribeCompare(callback: () => void): () => void {
 export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
   // `common` is already client-global — these were simply never wired.
   const t = useTranslations("common");
+  const rtl = useIsRtl();
   const { prefs } = usePreferences();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -463,14 +465,23 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
           </span>
         </button>
       </SheetTrigger>
-      {/* `data-[side=left]:w-full` rather than a bare `w-full`: the sheet
-          primitive sets its width through `data-[side=left]:w-3/4`, and an
+      {/* `side` is a PROP, which is why a hardcoded "left" survived the
+          physical→logical conversion: the guard in
+          `lib/rtl/no-physical-utilities.test.ts` reads className strings, and
+          there is no physical utility here to find. The primitive compiles it
+          to `left-0` + `border-r` + `slide-in-from-left`, so under /ar the
+          panel flew in from the physical left while its own trigger — `start-3`,
+          logical — sat at the physical right, i.e. the opposite edge. The
+          primitive is a shared file, so the flip happens here.
+
+          `data-[side=…]:w-full` on both sides rather than a bare `w-full`: the
+          sheet sets its width through `data-[side=left]:w-3/4`, and an
           attribute-qualified selector outranks a plain class, so a plain
           `w-full` loses and the panel renders three-quarter width with the
           page showing through beside it. Matching the modifier both wins on
           specificity and lets tailwind-merge drop the base. Desktop width is
-          unaffected — the primitive's `data-[side=left]:sm:max-w-sm` caps it
-          there, and outranks anything unqualified we'd add here. */}
+          unaffected — the primitive's `sm:max-w-sm` caps it there for either
+          side, and outranks anything unqualified we'd add here. */}
       {/* `showCloseButton={false}` and our own X below. The primitive's is
           labelled with a hardcoded English "Close" — an unreadable control for
           the one group of visitors who depend on it most. `components/ui/*`
@@ -479,15 +490,21 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
           three Sheets on the public site still carry the English label; see
           docs/FOLLOWUPS.md. */}
       <SheetContent
-        side="left"
+        side={rtl ? "right" : "left"}
         showCloseButton={false}
-        className="data-[side=left]:w-full p-0 flex flex-col"
+        className="data-[side=left]:w-full data-[side=right]:w-full p-0 flex flex-col"
       >
-        <SheetClose className="absolute top-3 end-3 inline-flex items-center justify-center size-8 rounded-md text-bz-ink-2 hover:text-bz-ink hover:bg-bz-surface-2 transition-colors">
+        {/* The panel is `inset-y-0` and full-width on a phone, and the page
+            sets viewport-fit=cover — so a bare `top-3` / `pt-6` puts the close
+            control and the title under the status bar. `calc(env + …)` rather
+            than `pt-safe`, because this sheet is not mobile-only: the token is
+            0px wherever there is no inset, which keeps the desktop panel
+            bit-identical instead of gaining the utility's 18px floor. */}
+        <SheetClose className="absolute top-[calc(var(--bz-safe-top)+0.75rem)] end-3 inline-flex items-center justify-center size-8 rounded-md text-bz-ink-2 hover:text-bz-ink hover:bg-bz-surface-2 transition-colors">
           <X size={16} strokeWidth={1.8} />
           <span className="sr-only">{t("close")}</span>
         </SheetClose>
-        <SheetHeader className="px-6 pt-6 pb-3 border-b border-bz-border">
+        <SheetHeader className="px-6 pt-[calc(var(--bz-safe-top)+1.5rem)] pb-3 border-b border-bz-border">
           <SheetTitle className="serif text-[24px] leading-tight">
             {copy.title}
           </SheetTitle>
@@ -620,7 +637,10 @@ export function ShortlistDrawer({ copy }: { copy: SectionCopy }) {
           )}
         </div>
 
-        <div className="px-6 py-4 border-t border-bz-border flex flex-col gap-2">
+        {/* Same reasoning as the header above, at the other end: the last
+            button in this column sits on the bottom edge of a full-height
+            fixed panel, i.e. under the home indicator. */}
+        <div className="px-6 pt-4 pb-[calc(var(--bz-safe-bottom)+1rem)] border-t border-bz-border flex flex-col gap-2">
           {/* The table takes four columns, so say which four are going and
               let the count move as the visitor ticks boxes. `asChild` on a
               disabled Button still renders a live <Link>, so the

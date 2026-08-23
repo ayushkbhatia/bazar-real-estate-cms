@@ -51,14 +51,14 @@ export function LegalDocFrame({
 
   return (
     <div
-      className="px-12 py-16 max-w-[1100px] mx-auto"
+      className="px-4 md:px-12 py-16 max-w-[1100px] mx-auto"
       lang={isArabic ? "ar" : undefined}
       dir={isArabic ? "rtl" : undefined}
     >
       <Eyebrow>{isArabic ? "قانوني" : "Legal"}</Eyebrow>
       <h1
         className={cn(
-          "text-[56px] font-normal mt-2 leading-[1.05] max-w-[18ch]",
+          "text-[32px] md:text-[56px] font-normal mt-2 leading-[1.05] max-w-[18ch]",
           // Instrument Serif has no Arabic coverage, so .serif would only
           // trigger a fallback we did not choose.
           "serif",

@@ -354,8 +354,18 @@ function rows(fields: FormFieldDef[]): FormFieldDef[][] {
 
 // ── controls ─────────────────────────────────────────────────────────────
 
+/**
+ * Every focusable control below reads 16px until `md`, then drops to the size
+ * the design asks for. iOS Safari zooms the whole viewport when a control it
+ * focuses is under 16px, and there is no way back out except a pinch — so the
+ * first tap on a lead form jolted the page on every iPhone on the site.
+ * `components/ui/input.tsx` already gets this right (`text-base md:text-sm`);
+ * the two hand-rolled idioms here overrode it back down at all widths. The
+ * rule only binds things that take a caret — labels, chips, help text and the
+ * radio/checkbox rows keep their sizes.
+ */
 const STACKED_INPUT =
-  "h-11 w-full rounded-md border border-bz-border bg-bz-surface px-3 text-[13.5px] outline-none focus:border-bz-accent";
+  "h-11 w-full rounded-md border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[13.5px] outline-none focus:border-bz-accent";
 const STACKED_LABEL = "text-[12px] font-medium text-bz-ink-2";
 
 function FieldError({ message, stacked }: { message?: string; stacked: boolean }) {
@@ -418,8 +428,8 @@ function FieldControl({
           className={cn(
             "resize-y outline-none",
             stacked
-              ? "rounded-md border border-bz-border bg-bz-surface px-3 py-2 text-[13.5px] focus:border-bz-accent"
-              : "border border-bz-border rounded p-2 text-[14px] bg-bz-surface focus:border-bz-accent",
+              ? "rounded-md border border-bz-border bg-bz-surface px-3 py-2 text-[16px] md:text-[13.5px] focus:border-bz-accent"
+              : "border border-bz-border rounded p-2 text-[16px] md:text-[14px] bg-bz-surface focus:border-bz-accent",
           )}
         />
       );
@@ -435,8 +445,8 @@ function FieldControl({
           className={cn(
             "outline-none focus:border-bz-accent",
             stacked
-              ? "h-11 rounded-md border border-bz-border bg-bz-surface px-3 text-[13.5px]"
-              : "h-9 rounded border border-bz-border bg-bz-surface px-2 text-[14px]",
+              ? "h-11 rounded-md border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[13.5px]"
+              : "h-9 rounded border border-bz-border bg-bz-surface px-2 text-[16px] md:text-[14px]",
           )}
         >
           <option value="">{field.placeholder ?? "Select an option"}</option>
@@ -719,11 +729,17 @@ function DialPhone({
         aria-label={t("field.dialingCode")}
         value={dial}
         onChange={(e) => onChange(join(e.target.value, national))}
+        /* A dial code is a Latin run: "+971" inside the RTL paragraph of an
+           Arabic page gets its leading "+" reordered to the trailing end and
+           reads as "971+". `dir` carries `unicode-bidi: isolate` in the UA
+           sheet, so the attribute alone fences the run — the same treatment
+           `:lang(ar) .mono` gives prices and reference codes in globals.css. */
+        dir="ltr"
         className={cn(
           "shrink-0 outline-none focus:border-bz-accent",
           stacked
-            ? "h-11 w-[92px] rounded-md border border-bz-border bg-bz-surface px-2 text-[13.5px]"
-            : "h-9 w-[86px] rounded border border-bz-border bg-bz-surface px-2 text-[14px]",
+            ? "h-11 w-[92px] rounded-md border border-bz-border bg-bz-surface px-2 text-[16px] md:text-[13.5px]"
+            : "h-9 w-[86px] rounded border border-bz-border bg-bz-surface px-2 text-[16px] md:text-[14px]",
         )}
       >
         {codes.map((c) => (
@@ -743,8 +759,8 @@ function DialPhone({
         className={cn(
           "w-full outline-none focus:border-bz-accent",
           stacked
-            ? "h-11 rounded-md border border-bz-border bg-bz-surface px-3 text-[13.5px]"
-            : "h-9 rounded border border-bz-border bg-bz-surface px-3 text-[14px]",
+            ? "h-11 rounded-md border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[13.5px]"
+            : "h-9 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px]",
         )}
       />
     </div>

@@ -19,10 +19,10 @@ function formatDate(iso: string): string {
 export default function PressPage() {
   return (
     <div className="bg-bz-bg">
-      <section className="px-12 pt-20 pb-14 max-w-[1200px]">
+      <section className="px-4 md:px-12 pt-20 pb-14 max-w-[1200px]">
         <Eyebrow>Press</Eyebrow>
         <h1
-          className="serif text-[80px] mt-3 font-normal leading-[0.98]"
+          className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
         >
           Bazar in the press.
@@ -40,11 +40,16 @@ export default function PressPage() {
         </p>
       </section>
 
-      <section className="px-12 pb-24 max-w-[1100px]">
+      <section className="px-4 md:px-12 pb-24 max-w-[1100px]">
         <ul className="flex flex-col divide-y divide-bz-border">
           {SEED_PRESS.map((item) => (
             <li key={item.id} className="py-8">
-              <div className="grid grid-cols-[160px_1fr] gap-10">
+              {/* The date/outlet rail is a fixed 160px, which on a phone
+                  claimed more than half the row and left the headline and
+                  excerpt ~94px. Stacked it reads as a dateline above the
+                  story — the same relationship the desktop row states
+                  horizontally. */}
+              <div className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-2 md:gap-10">
                 <div>
                   <div className="mono text-[12px] text-bz-muted">
                     {formatDate(item.date)}

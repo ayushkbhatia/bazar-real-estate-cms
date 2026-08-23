@@ -273,7 +273,12 @@ export function FilterBar({ areas }: Props) {
             placeholder={tr("filters.searchPlaceholder")}
             value={qInput}
             onChange={(e) => onQChange(e.target.value)}
-            className="w-full md:w-[260px] h-9 ps-8 text-[13px]"
+            /* 16px until `md`: iOS Safari zooms the viewport when it focuses
+               a control under 16px. This bar is `sticky top-0`, so the zoom
+               leaves it pinned at its pre-zoom width with its right end past
+               the edge — you type into a search box you can no longer see all
+               of. The `md:` half restores the drawn 13px. */
+            className="w-full md:w-[260px] h-9 ps-8 text-[16px] md:text-[13px]"
             aria-label={tr("filters.searchProperties")}
           />
         </label>
@@ -387,6 +392,9 @@ function PriceRangeInputs({
       <span className="text-[11.5px] uppercase tracking-wider text-bz-muted me-1">
         Price
       </span>
+      {/* Both bounds take the same 16px-until-`md` treatment as the search
+          box above: a `type="number"` box opens the numeric keypad, and the
+          zoom that comes with it lands on a sticky bar. */}
       <Input
         type="number"
         placeholder={`Min ${symbol}`}
@@ -395,7 +403,10 @@ function PriceRangeInputs({
         min={0}
         step={10000}
         onChange={(e) => onChange("price_min", e.target.value)}
-        className={cn("h-9 text-[13px]", stacked ? "flex-1" : "w-[140px]")}
+        className={cn(
+          "h-9 text-[16px] md:text-[13px]",
+          stacked ? "flex-1" : "w-[140px]",
+        )}
       />
       <span className="text-bz-muted">–</span>
       <Input
@@ -406,7 +417,10 @@ function PriceRangeInputs({
         min={0}
         step={10000}
         onChange={(e) => onChange("price_max", e.target.value)}
-        className={cn("h-9 text-[13px]", stacked ? "flex-1" : "w-[140px]")}
+        className={cn(
+          "h-9 text-[16px] md:text-[13px]",
+          stacked ? "flex-1" : "w-[140px]",
+        )}
       />
     </div>
   );

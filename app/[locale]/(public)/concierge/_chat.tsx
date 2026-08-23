@@ -358,7 +358,11 @@ export function ConciergeChat() {
                 }}
                 rows={2}
                 placeholder={t("concierge.composerPlaceholder")}
-                className="border-0 px-3 py-2.5 resize-none bg-transparent outline-none text-[14px]"
+                /* 16px on the phone: a composer under 16px makes iOS Safari
+                   zoom the viewport the moment it takes focus, and it stays
+                   zoomed for the whole conversation because the field never
+                   blurs between turns. 14px from `md` up, as drawn. */
+                className="border-0 px-3 py-2.5 resize-none bg-transparent outline-none text-[16px] md:text-[14px]"
               />
               <div className="flex justify-between items-center px-1.5 pt-1">
                 <button

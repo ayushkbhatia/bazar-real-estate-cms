@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import Image from "next/image";
+import { Dialog as DialogPrimitive } from "radix-ui";
 import { Maximize2, X, ZoomIn, ZoomOut } from "lucide-react";
 
 /**
@@ -114,6 +115,19 @@ export function FloorPlanViewer({
   );
 }
 
+/**
+ * Full-screen plan.
+ *
+ * Radix Dialog rather than a `role="dialog" aria-modal="true"` div with a
+ * hand-rolled ESC listener and a `body.style.overflow` write. This overlay
+ * always had the scroll lock — the 1:1 view is its own scroll container, and
+ * without it the page behind scrolls once the pan hits the end, which reads as
+ * the overlay breaking — but it never had a focus trap, so tabbing walked
+ * straight out into the listing underneath (the sibling photo lightbox
+ * measured 3 of 15 tabs escaping; this markup is the same shape). The
+ * primitive brings the trap, the scrim, the ESC handler, the scroll lock and
+ * focus-return to the "Enlarge" button, so all of it can go.
+ */
 function FloorPlanOverlay({
   src,
   alt,
@@ -133,21 +147,6 @@ function FloorPlanOverlay({
     left: number;
     top: number;
   } | null>(null);
-
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", onKey);
-    // The 1:1 view is its own scroll container; without this the page behind
-    // scrolls once it hits the end, which reads as the overlay breaking.
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      document.body.style.overflow = previous;
-    };
-  }, [onClose]);
 
   const startPan = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const el = panRef.current;
@@ -175,88 +174,105 @@ function FloorPlanOverlay({
   }, []);
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={alt}
-      className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+    <DialogPrimitive.Root
+      open
+      onOpenChange={(nextOpen) => {
+        if (!nextOpen) onClose();
+      }}
     >
-      <div className="absolute top-4 end-4 flex items-center gap-2 z-10">
-        <button
-          type="button"
-          onClick={() => setZoomed((z) => !z)}
-          aria-label={zoomed ? "Fit to screen" : "View at full size"}
-          className="w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/95" />
+        <DialogPrimitive.Content
+          // The plan itself carries the description; without this Radix logs a
+          // missing-`aria-describedby` warning on every open.
+          aria-describedby={undefined}
+          className="fixed inset-0 z-50 flex items-center justify-center outline-none"
         >
+          <DialogPrimitive.Title className="sr-only">
+            {alt}
+          </DialogPrimitive.Title>
+          {/* `calc(env + 1rem)` rather than `pt-safe`: the page sets
+              viewport-fit=cover, so a bare `top-4` puts these controls under
+              the notch on a phone — but the token is 0px everywhere without an
+              inset, so the desktop position is bit-identical. */}
+          <div className="absolute top-[calc(var(--bz-safe-top)+1rem)] end-4 flex items-center gap-2 z-10">
+            <button
+              type="button"
+              onClick={() => setZoomed((z) => !z)}
+              aria-label={zoomed ? "Fit to screen" : "View at full size"}
+              className="w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
+            >
+              {zoomed ? (
+                <ZoomOut size={18} strokeWidth={1.8} />
+              ) : (
+                <ZoomIn size={18} strokeWidth={1.8} />
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close floor plan"
+              className="w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
+            >
+              <X size={18} strokeWidth={1.8} />
+            </button>
+          </div>
+
           {zoomed ? (
-            <ZoomOut size={18} strokeWidth={1.8} />
+            <div
+              ref={panRef}
+              onPointerDown={startPan}
+              onPointerMove={movePan}
+              onPointerUp={endPan}
+              onPointerCancel={endPan}
+              className="w-full h-full overflow-auto overscroll-contain cursor-grab active:cursor-grabbing"
+            >
+              {/* `w-auto h-auto max-w-none` hands layout back to the image so
+                  it occupies its own pixels — the width/height props only carry
+                  the aspect ratio here, and the container scrolls around it. */}
+              <Image
+                src={src}
+                alt={alt}
+                width={NATIVE_REQUEST_W}
+                height={Math.round(NATIVE_REQUEST_W / ratio)}
+                quality={100}
+                sizes={`${NATIVE_REQUEST_W}px`}
+                draggable={false}
+                className="max-w-none w-auto h-auto select-none"
+              />
+            </div>
           ) : (
-            <ZoomIn size={18} strokeWidth={1.8} />
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close floor plan"
+              className="relative w-[min(96vw,1600px)] h-[min(88vh,1000px)] cursor-zoom-out"
+            >
+              <Image
+                src={src}
+                alt={alt}
+                fill
+                sizes="96vw"
+                quality={100}
+                priority
+                className="object-contain"
+              />
+            </button>
           )}
-        </button>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close floor plan"
-          className="w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
-        >
-          <X size={18} strokeWidth={1.8} />
-        </button>
-      </div>
 
-      {zoomed ? (
-        <div
-          ref={panRef}
-          onPointerDown={startPan}
-          onPointerMove={movePan}
-          onPointerUp={endPan}
-          onPointerCancel={endPan}
-          className="w-full h-full overflow-auto overscroll-contain cursor-grab active:cursor-grabbing"
-        >
-          {/* `w-auto h-auto max-w-none` hands layout back to the image so it
-              occupies its own pixels — the width/height props only carry the
-              aspect ratio here, and the container scrolls around it. */}
-          <Image
-            src={src}
-            alt={alt}
-            width={NATIVE_REQUEST_W}
-            height={Math.round(NATIVE_REQUEST_W / ratio)}
-            quality={100}
-            sizes={`${NATIVE_REQUEST_W}px`}
-            draggable={false}
-            className="max-w-none w-auto h-auto select-none"
-          />
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close floor plan"
-          className="relative w-[min(96vw,1600px)] h-[min(88vh,1000px)] cursor-zoom-out"
-        >
-          <Image
-            src={src}
-            alt={alt}
-            fill
-            sizes="96vw"
-            quality={100}
-            priority
-            className="object-contain"
-          />
-        </button>
-      )}
-
-      <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[12px] text-white/70">
-        {zoomed ? "Drag to pan · " : ""}
-        <a
-          href={src}
-          target="_blank"
-          rel="noreferrer"
-          className="underline hover:text-white"
-        >
-          Open the original
-        </a>
-      </p>
-    </div>
+          <p className="absolute bottom-[calc(var(--bz-safe-bottom)+1.25rem)] left-1/2 -translate-x-1/2 text-[12px] text-white/70">
+            {zoomed ? "Drag to pan · " : ""}
+            <a
+              href={src}
+              target="_blank"
+              rel="noreferrer"
+              className="underline hover:text-white"
+            >
+              Open the original
+            </a>
+          </p>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }

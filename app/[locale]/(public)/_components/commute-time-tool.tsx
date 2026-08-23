@@ -41,7 +41,12 @@ export function CommuteTimeTool() {
           <select
             value={target}
             onChange={(e) => setTarget(e.target.value)}
-            className="mt-1 w-full h-9 px-2 rounded-md border border-bz-border bg-bz-bg text-[13px]"
+            /* 16px until `md`: a native select under 16px makes iOS Safari
+               zoom the viewport as the picker opens, and this one hangs off an
+               `absolute end-0` popover — the zoom carried the popover past the
+               right edge, so the destination list opened over nothing. The
+               `md:` half keeps the 13px the popover is drawn at. */
+            className="mt-1 w-full h-9 px-2 rounded-md border border-bz-border bg-bz-bg text-[16px] md:text-[13px]"
           >
             {PRESETS.map((p) => (
               <option key={p.label} value={p.label}>

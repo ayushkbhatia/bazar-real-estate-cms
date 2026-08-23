@@ -34,10 +34,10 @@ export default async function CareersPage({
   return (
     <div className="bg-bz-bg">
       {/* Hero */}
-      <section className="px-12 pt-20 pb-14 max-w-[1200px]">
+      <section className="px-4 md:px-12 pt-20 pb-14 max-w-[1200px]">
         <Eyebrow>{t("eyebrow")}</Eyebrow>
         <h1
-          className="serif text-[80px] mt-3 font-normal leading-[0.98]"
+          className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
         >
           {t("title")}
@@ -56,7 +56,11 @@ export default async function CareersPage({
 
       {/* Why */}
       <section className="border-y border-bz-border bg-bz-surface">
-        <div className="px-12 py-12 max-w-[1200px] grid grid-cols-3 gap-12">
+        {/* Stacked below sm: three columns inside a bare `px-12` measured a
+            67px minimum track at 390px — the narrowest thing on the site after
+            /developments. Widening the gutter alone only takes it to ~87px,
+            which is still a column too narrow to hold a sentence. */}
+        <div className="px-4 md:px-12 py-12 max-w-[1200px] grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-12">
           <div>
             <div className="text-[11.5px] uppercase tracking-wider text-bz-accent">
               {t("why1Label")}
@@ -85,10 +89,16 @@ export default async function CareersPage({
       </section>
 
       {/* Open roles */}
-      <section className="px-12 py-20 max-w-[1200px]">
+      <section className="px-4 md:px-12 py-20 max-w-[1200px]">
         <Eyebrow>{t("openRoles")}</Eyebrow>
         <h2
-          className="serif text-[44px] mt-3 leading-[1.05]"
+          // Stepped with the h1 above, not independently. That h1 is
+          // `text-[40px] md:text-[80px]`, so leaving this at a flat 44px made
+          // the section heading LARGER than the page title on a phone — the
+          // hierarchy inverted at exactly the width where there is least room
+          // to signal it. 30px holds the same ratio to 40px that 44px holds to
+          // 80px, near enough.
+          className="serif text-[30px] md:text-[44px] mt-3 leading-[1.05]"
           style={{ letterSpacing: "-0.02em" }}
         >
           {t("positionsOpen", { count: SEED_CAREERS.length })}
@@ -137,7 +147,7 @@ export default async function CareersPage({
                 {role.intro}
               </p>
 
-              <div className="mt-8 grid grid-cols-2 gap-10">
+              <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
                 <div>
                   <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
                     {t("youWill")}

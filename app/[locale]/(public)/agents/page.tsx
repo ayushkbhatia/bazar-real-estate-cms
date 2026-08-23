@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { getTranslations } from "next-intl/server";
+import Image from "next/image";
 import Link from "@/components/i18n/link";
 import type { Metadata } from "next";
 import { MessageCircle } from "lucide-react";
@@ -19,6 +20,28 @@ function whatsappFor(slug: string, name: string): string | null {
   const number = seed.whatsapp ?? seed.phone ?? null;
   return buildWhatsAppLink(number, `Hi ${name}, found you on bazar.ae`);
 }
+
+/**
+ * Slot width of one portrait in the desk grid.
+ *
+ * Twelve of these render on this page and every one of them was a raw
+ * `<img>` pointing straight at the Supabase original — no srcset, no lazy
+ * loading, so a phone showing one portrait at a time downloaded all twelve
+ * at full size. The arithmetic below is the grid the section actually lays
+ * out: 1 / 2 / 3 columns with a 32px gap, inside a `max-w-[1280px]` section
+ * whose gutters are 16px on mobile and 48px from `md` up. Past 1280 the
+ * section stops growing, so the column settles at (1280 − 96 − 64) / 3.
+ *
+ * Declaring `100vw` instead would be off by ~3x on a laptop and hand back
+ * most of what next/image is here to save — the mistake
+ * components/brand/listing-card.tsx still makes for its 116px thumbnail.
+ */
+const PORTRAIT_SIZES =
+  "(min-width: 1280px) 374px, " +
+  "(min-width: 1024px) calc((100vw - 160px) / 3), " +
+  "(min-width: 768px) calc((100vw - 128px) / 2), " +
+  "(min-width: 640px) calc((100vw - 64px) / 2), " +
+  "calc(100vw - 32px)";
 
 export const metadata: Metadata = {
   title: "Our team",
@@ -76,12 +99,15 @@ export default async function AgentsIndexPage({ params }: { params: Promise<{ lo
                 <div key={a.user_id} className="relative group">
                   <Link href={`/agents/${a.slug}`} className="block">
                     {a.photo_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={a.photo_url}
-                        alt={a.display_name}
-                        className="w-full aspect-[4/5] rounded-md object-cover"
-                      />
+                      <div className="relative w-full aspect-[4/5] rounded-md overflow-hidden">
+                        <Image
+                          src={a.photo_url}
+                          alt={a.display_name}
+                          fill
+                          sizes={PORTRAIT_SIZES}
+                          className="object-cover"
+                        />
+                      </div>
                     ) : (
                       <PlaceholderImage
                         label={a.slug}

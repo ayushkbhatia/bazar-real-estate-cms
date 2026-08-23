@@ -77,7 +77,29 @@ export default defineConfig({
   webServer: {
     command: `npm run build && npm run start -- --port ${PORT}`,
     url: `http://127.0.0.1:${PORT}`,
-    reuseExistingServer: !process.env.CI,
+    /*
+     * Reuse a running server only when you opt in explicitly.
+     *
+     * This was `!process.env.CI`, i.e. "always reuse locally". That reads as a
+     * convenience and is actually a correctness hole: if ANYTHING answers on
+     * this port, Playwright skips `npm run build && npm run start` and tests
+     * whatever that process is serving — including a server from an older
+     * build whose CSS chunks have since been overwritten.
+     *
+     * It bit this repo directly. A `next start` left over from an earlier
+     * build kept answering :3100 while a newer build replaced `.next`. Its
+     * HTML linked a stylesheet that no longer existed, so pages served with NO
+     * Tailwind and no globals.css at all — and the mobile gate ran green
+     * against them, because "no CSS" happens not to trip a geometry
+     * assertion. Hours went into diagnosing a CSS-chunking bug that did not
+     * exist.
+     *
+     * Building every run costs ~50s locally. That is the price of the suite
+     * testing the code in your working tree rather than an artifact of unknown
+     * age. Set PW_REUSE_SERVER=1 when you are iterating on a spec and know the
+     * server is current.
+     */
+    reuseExistingServer: !process.env.CI && !!process.env.PW_REUSE_SERVER,
     /*
      * This budget covers a full production build AND the server coming up,
      * because the command is `build && start` rather than a dev server.

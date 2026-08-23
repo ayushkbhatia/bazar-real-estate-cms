@@ -45,7 +45,7 @@ export function PriceBlock({
   return (
     <div className="flex items-baseline gap-4 flex-wrap">
       <span
-        className="serif text-[56px] font-normal leading-none text-bz-navy"
+        className="serif text-[34px] md:text-[56px] font-normal leading-none text-bz-navy"
         style={{ letterSpacing: "-0.025em" }}
       >
         {headline}

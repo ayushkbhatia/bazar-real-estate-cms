@@ -133,7 +133,11 @@ export function HeroSearch({
             placeholder={tab.placeholder}
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            className="w-full h-11 md:h-10 ps-9 pe-3 rounded-md bg-white text-bz-ink text-[13.5px] outline-none border border-bz-border focus:border-bz-accent"
+            /* 16px until `md`: iOS Safari zooms the viewport when it focuses a
+               control under 16px, and this input is the first thing a visitor
+               taps on the home page — the hero jumped out from under the search
+               bar on every iPhone. The `md:` half restores the drawn size. */
+            className="w-full h-11 md:h-10 ps-9 pe-3 rounded-md bg-white text-bz-ink text-[16px] md:text-[13.5px] outline-none border border-bz-border focus:border-bz-accent"
           />
         </div>
 
@@ -146,7 +150,7 @@ export function HeroSearch({
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="h-10 px-3 rounded-md bg-white text-bz-ink text-[13px] outline-none border border-bz-border focus:border-bz-accent"
+              className="h-10 px-3 rounded-md bg-white text-bz-ink text-[16px] md:text-[13px] outline-none border border-bz-border focus:border-bz-accent"
             >
               <option value="">
                 {label("any_type_label", "filters.anyType")}
@@ -167,7 +171,7 @@ export function HeroSearch({
               <select
                 value={beds}
                 onChange={(e) => setBeds(e.target.value)}
-                className="h-10 px-3 rounded-md bg-white text-bz-ink text-[13px] outline-none border border-bz-border focus:border-bz-accent"
+                className="h-10 px-3 rounded-md bg-white text-bz-ink text-[16px] md:text-[13px] outline-none border border-bz-border focus:border-bz-accent"
               >
                 <option value="">
                   {label("any_beds_label", "filters.anyBeds")}

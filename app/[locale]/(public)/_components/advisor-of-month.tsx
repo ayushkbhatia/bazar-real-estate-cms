@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "@/components/i18n/link";
 import { ArrowUpRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -27,12 +28,20 @@ export async function AdvisorOfMonth() {
     <section className="px-4 md:px-12 py-12 md:py-20 border-t border-bz-border">
       <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-12 items-start max-w-[1200px]">
         <div className="relative aspect-[4/5] rounded-md overflow-hidden">
+          {/* This section is on the home page, so the raw `<img>` here was a
+              full-size Supabase original on the single most-visited route.
+              `fill` reproduces the `absolute inset-0 w-full h-full` it
+              replaced exactly; the slot is the fixed 360px grid track from md
+              up and the section's content width (viewport minus the two 16px
+              gutters) below that. Deliberately not `priority` — the spotlight
+              sits well under the hero on a phone. */}
           {featured.photo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={featured.photo_url}
               alt={featured.display_name}
-              className="absolute inset-0 w-full h-full object-cover"
+              fill
+              sizes="(min-width: 768px) 360px, calc(100vw - 32px)"
+              className="object-cover"
             />
           ) : (
             <PlaceholderImage
