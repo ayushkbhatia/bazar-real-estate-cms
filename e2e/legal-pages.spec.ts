@@ -2,24 +2,29 @@ import { test, expect } from "@playwright/test";
 
 // All three documents are master pages now, and none of them carries the
 // "lawyer-drafted copy in progress" banner — the client asked for it gone.
-// Privacy routes rights requests to info@ from its CMS field; terms and
-// cookies take the frame's dpo@ default.
-const LEGAL_DOCS = [
-  { slug: "privacy", contact: "info@bazarrealestate.ae" },
-  { slug: "terms", contact: "dpo@bazarrealestate.ae" },
-  { slug: "cookies", contact: "dpo@bazarrealestate.ae" },
-] as const;
+//
+// The mailbox each one routes to is deliberately NOT listed here. It is a CMS
+// field (`contact_email` on the doc section, with `dpo@bazarrealestate.ae` as
+// the frame's code default), so the client can repoint it from
+// /admin/pages without touching the repo — and did, moving all three to info@
+// on 23 Aug 2026. This suite ran against the live CMS and went red on a
+// content edit that was correct, with no commit behind it to point at.
+//
+// So the slug list is the fixture and the address is asserted by shape. What
+// PDPL actually obliges is a reachable route for data-subject requests; which
+// mailbox staff answer it from is theirs to choose.
+const LEGAL_DOCS = ["privacy", "terms", "cookies"] as const;
 
 test("/legal redirects to /legal/privacy", async ({ page }) => {
   await page.goto("/legal");
   await expect(page).toHaveURL(/\/legal\/privacy$/);
 });
 
-for (const doc of LEGAL_DOCS) {
-  test(`/legal/${doc.slug} renders the doc and its sibling nav`, async ({
+for (const slug of LEGAL_DOCS) {
+  test(`/legal/${slug} renders the doc and its sibling nav`, async ({
     page,
   }) => {
-    await page.goto(`/legal/${doc.slug}`);
+    await page.goto(`/legal/${slug}`);
     // The draft banner was removed from the frame outright — assert it stays
     // removed, on every document, rather than just deleting the assertion.
     await expect(
@@ -40,12 +45,27 @@ test("every legal page routes data-subject requests to a contact", async ({
   // in #216; requests are keyed by email now (migration 0067) and worked by
   // staff at /admin/dsr. The legal pages must still give subjects a route —
   // that is the PDPL obligation, and it is what this asserts.
-  for (const doc of LEGAL_DOCS) {
-    await page.goto(`/legal/${doc.slug}`);
+  for (const slug of LEGAL_DOCS) {
+    await page.goto(`/legal/${slug}`);
+    // Scoped to the frame's own rights paragraph, not to the first mailto on
+    // the page — the footer and the floating CTA both publish one, and either
+    // would satisfy a document-wide check while the legal contact was missing.
+    // That sentence lives in `legal/_layout.tsx`, so it is code and stable.
+    const rights = page
+      .locator("p", { hasText: /PDPL data-subject requests/i })
+      .first();
+    const contact = rights.getByRole("link").first();
     await expect(
-      page.getByRole("link", { name: doc.contact }).first(),
-      `/legal/${doc.slug} should offer the ${doc.contact} contact`,
+      contact,
+      `/legal/${slug} should offer a data-subject contact`,
     ).toBeVisible();
+    // Any mailbox, but a real one: an empty `contact_email` publishes a bare
+    // `mailto:` that passes a presence check and leaves the subject nowhere
+    // to write.
+    await expect(
+      contact,
+      `/legal/${slug} contact link should carry an address`,
+    ).toHaveAttribute("href", /^mailto:[^@\s]+@[^@\s]+\.[a-z]{2,}$/i);
   }
 });
 
