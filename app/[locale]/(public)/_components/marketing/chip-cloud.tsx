@@ -33,8 +33,14 @@ export function ChipCloud({ chips, icon = MapPin, cta, ctaHref }: Props) {
               {label}
             </>
           );
+          // h-11 on a phone, the original h-10 (40px) from `md` up. The
+          // linked chips are <Link>s with no data-slot, so the
+          // `(pointer: coarse)` 44px floor in globals.css never applied — and
+          // 40px misses it by 4. The unlinked <span> variant shares `cls` and
+          // grows with it: `href` is per-chip, so the two shapes can sit in the
+          // same row and splitting the class would make that row ragged.
           const cls =
-            "inline-flex items-center gap-2 h-10 px-4 rounded-full bg-bz-surface border border-bz-border text-[14px] hover:border-bz-teal transition-colors";
+            "inline-flex items-center gap-2 h-11 md:h-10 px-4 rounded-full bg-bz-surface border border-bz-border text-[14px] hover:border-bz-teal transition-colors";
           return href ? (
             <Link key={label} href={href} className={cls}>
               {inner}

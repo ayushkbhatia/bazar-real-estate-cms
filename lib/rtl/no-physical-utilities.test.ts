@@ -100,10 +100,12 @@ function violations(): string[] {
  * left under `/ar` — and G-5 passes, because there is no physical utility in
  * any source file to find.
  *
- * The fix at a call site does not need the shared primitive: pass
- * `side={isRtl ? "left" : "right"}` from `useIsRtl()`. A logical `side="end"`
- * variant in `sheet.tsx` would be cleaner, but that file is under the
- * shared-files rule.
+ * The fix is now a one-word prop change: `components/ui/sheet.tsx` carries
+ * logical `side="start"|"end"` values built on `inset-inline-*`, so a drawer
+ * follows the document direction with no hook at the call site. Use those.
+ * (`side={isRtl ? "left" : "right"}` also works — it is what the call sites
+ * did before the variant existed — but it forces every width override to be
+ * duplicated across both `data-[side=…]` modifiers.)
  */
 const PHYSICAL_SIDE = /\bside=["'](left|right)["']/;
 
@@ -112,12 +114,7 @@ const PHYSICAL_SIDE = /\bside=["'](left|right)["']/;
  * `KNOWN_FAILURES` in `e2e/mobile-geometry.spec.ts`: a countdown, not a config
  * surface. The assertion below fails if it grows.
  */
-const SIDE_ALLOWLIST: Record<string, string> = {
-  "components/brand/public-mega-nav-mobile.tsx":
-    "Phase 3 — primary mobile nav; opposite edge from its hamburger under /ar",
-  "app/[locale]/(public)/_components/more-filters-drawer.tsx":
-    "Phase 3 — search filter sheet",
-};
+const SIDE_ALLOWLIST: Record<string, string> = {};
 
 function physicalSideProps(): string[] {
   const out: string[] = [];
@@ -155,13 +152,12 @@ describe("logical direction utilities", () => {
     const count = Object.keys(SIDE_ALLOWLIST).length;
     expect(
       count,
-      `SIDE_ALLOWLIST has ${count} entries. It opened at 4 and Phase 7 cleared ` +
-        `two of them (picker-drawer, shortlist-drawer) by driving the prop from ` +
-        `useIsRtl(); the cap was tightened to 2 in the same change. Both ` +
-        `survivors are Phase 3's. It is a countdown — the cap comes down with ` +
-        `the list, never up. If you added one, drive the prop from useIsRtl() ` +
-        `instead of waiving it.`,
-    ).toBeLessThanOrEqual(2);
+      `SIDE_ALLOWLIST has ${count} entries. It opened at 4 and is now EMPTY: ` +
+        `Phase 7 cleared picker-drawer and shortlist-drawer, Phase 3 cleared ` +
+        `public-mega-nav-mobile and more-filters-drawer once sheet.tsx grew a ` +
+        `logical side="end". The cap came down with the list each time and is ` +
+        `now 0. If you added one, use side="end" instead of waiving it.`,
+    ).toBeLessThanOrEqual(0);
   });
 
   it("has no physical direction utility left anywhere", () => {

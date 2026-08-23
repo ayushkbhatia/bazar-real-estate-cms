@@ -254,8 +254,33 @@ export function FilterBar({ areas }: Props) {
 
   return (
     <div
+      /*
+       * Docked UNDER the header, not at `top-0`.
+       *
+       * `public-mega-nav.tsx` is `sticky top-0 z-40 h-[72px]` at EVERY
+       * breakpoint. A second sticky element claiming the same `top-0` loses
+       * the overlap on z-index and parks entirely behind it: measured on
+       * /buy/search at 390px after a 900px scroll, this bar sat at y=0 h=61
+       * with `elementFromPoint` over the Filters button returning the
+       * header's <svg>. That button is the only route into the mobile filter
+       * sheet, so search was unfilterable on a phone.
+       *
+       * The offset is not `md:`-gated because the header is not — and there
+       * is nothing between this bar and the viewport to absorb it: the public
+       * layout is `<body flex flex-col>` → `<main flex-1>` → this, all plain
+       * blocks, so the sticky containing block is the document scroller and
+       * `top` is measured from the viewport at every width.
+       *
+       * z-20 stays. The layout's floating `LocaleToggle` is `fixed
+       * top-[84px] end-4 z-20`, so it now falls inside this bar's band; with
+       * equal z-index the later element in tree order paints on top, and that
+       * is this bar (the toggle is a sibling of `<main>`, not a descendant).
+       * Right way round for the reason above — the Filters button sits at the
+       * same inline end — but it does mean the toggle needs re-siting, and
+       * that belongs to the layout rather than here.
+       */
       className={cn(
-        "sticky top-0 z-20 bg-bz-bg border-b border-bz-border",
+        "sticky top-[var(--bz-header-h)] z-20 bg-bz-bg border-b border-bz-border",
         "px-4 md:px-12 py-3 md:py-4",
         pending && "opacity-90",
       )}

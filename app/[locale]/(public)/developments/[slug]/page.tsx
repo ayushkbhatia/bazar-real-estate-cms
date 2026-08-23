@@ -153,6 +153,27 @@ const ANCHORED_SECTIONS = new Set([
   "faq",
 ]);
 
+/**
+ * Scroll offset for everything the sub-nav jumps to.
+ *
+ * Two sticky bars end up above a jumped-to section, so the anchor has to
+ * clear both: the public header (`--bz-header-h`, 72px) plus this page's own
+ * sub-nav (`h-14`, 56px) = 128px. The old `scroll-mt-16` was 64px — less
+ * than the header alone, so every jump put the heading it aimed at behind
+ * the chrome, and it had been that way since before the header settled at
+ * 72px.
+ *
+ * A const rather than the class written out nine times: the sub-nav's height
+ * and this offset have to move together, and Tailwind still sees the literal
+ * (it scans source text for candidate strings, not JSX attributes).
+ *
+ * Two of the eleven anchored sections are rendered by files this does not
+ * reach — `payment-plan` from `_payment-plan.tsx`, `faq` from
+ * `_components/development-faq.tsx` — and both still carry `scroll-mt-16`.
+ * They are the only jumps on this page that still land short.
+ */
+const ANCHOR_SCROLL_MT = "scroll-mt-[calc(var(--bz-header-h)+3.5rem)]";
+
 export default async function DevelopmentDetailPage({ params }: PageProps) {
   /*
    * Locale from `params`, never ambient. `getTranslations("development")` on
@@ -365,7 +386,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     overview: (
       <section
         id="overview"
-        className="px-4 md:px-12 py-16 grid grid-cols-1 md:grid-cols-2 gap-16 scroll-mt-16"
+        className={`px-4 md:px-12 py-16 grid grid-cols-1 md:grid-cols-2 gap-16 ${ANCHOR_SCROLL_MT}`}
       >
         <div>
           <Eyebrow>{sv("overview", "eyebrow") ?? "Overview"}</Eyebrow>
@@ -406,7 +427,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       </section>
     ),
     "master-plan": (
-      <section id="master-plan" className="px-4 md:px-12 pb-16 scroll-mt-16">
+      <section id="master-plan" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
         <Eyebrow>{sv("master-plan", "eyebrow") ?? "Master plan"}</Eyebrow>
         <h2
           className="serif text-[36px] mt-2"
@@ -468,7 +489,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     ) : null,
     units:
       units.length > 0 ? (
-        <section id="units" className="px-4 md:px-12 py-16 scroll-mt-16">
+        <section id="units" className={`px-4 md:px-12 py-16 ${ANCHOR_SCROLL_MT}`}>
           <div className="flex justify-between items-end flex-wrap gap-4 mb-6">
             <div>
               <Eyebrow>
@@ -496,7 +517,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     // twice on the same page reads as a bug rather than as emphasis.
     "floor-plans":
       legacyFloorPlans.length > 0 ? (
-        <section id="floor-plans" className="px-4 md:px-12 pb-16 scroll-mt-16">
+        <section id="floor-plans" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
           <Eyebrow>{sv("floor-plans", "eyebrow") ?? "Floor plans"}</Eyebrow>
           <h2
             className="serif text-[36px] mt-2"
@@ -559,7 +580,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       ) : null,
     renders:
       interiorTiles.length + exteriorTiles.length > 0 ? (
-        <section id="renders" className="scroll-mt-16">
+        <section id="renders" className={ANCHOR_SCROLL_MT}>
           <RendersGallery
             eyebrow={sv("renders", "eyebrow")}
             heading={sv("renders", "heading")}
@@ -572,7 +593,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         </section>
       ) : null,
     features: (
-      <section id="features" className="scroll-mt-16">
+      <section id="features" className={ANCHOR_SCROLL_MT}>
         <FeatureBlocks
           developmentName={development.name}
           developmentSlug={development.slug}
@@ -589,7 +610,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     "unit-plans": (
       <section
         id="unit-plans"
-        className="scroll-mt-16 border-t border-bz-border"
+        className={`${ANCHOR_SCROLL_MT} border-t border-bz-border`}
       >
         <UnitFloorPlans
           types={unitTypeCards}
@@ -603,7 +624,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       </section>
     ),
     location: (
-      <section id="location" className="px-4 md:px-12 pb-16 scroll-mt-16">
+      <section id="location" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
         <Eyebrow>{sv("location", "eyebrow") ?? "Location"}</Eyebrow>
         <h2
           className="serif text-[32px] mt-2 leading-tight"
@@ -641,7 +662,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       />
     ),
     developer: development.developer_profile ? (
-      <section id="developer" className="px-4 md:px-12 pb-16 scroll-mt-16">
+      <section id="developer" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
         <Eyebrow>{sv("developer", "eyebrow") ?? "Developer"}</Eyebrow>
         {/* The card below is built from the developer's own record, so an
               override introduces a section heading above it rather than
@@ -845,9 +866,25 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* Sub-nav */}
+      {/*
+        Sub-nav — docked under the public header, not at `top-0`.
+
+        `public-mega-nav.tsx` is `sticky top-0 z-40 h-[72px]` at every
+        breakpoint, so this bar's old `top-0 z-[5]` put it in the same 72px
+        band and it lost the overlap on z-index: on a phone it was pinned
+        permanently out of sight, taking the page's whole section index with
+        it. Same defect, same cause, as the search filter bar.
+
+        Not `md:`-gated, because the header is not, and nothing between this
+        bar and the viewport absorbs the offset — the public layout is
+        `<body flex flex-col>` → `<main flex-1>`, all plain blocks, so the
+        sticky containing block is the document scroller at every width.
+
+        `h-14` here is the other half of `ANCHOR_SCROLL_MT`: change one and
+        the anchors land wrong.
+      */}
       <div
-        className="sticky top-0 z-[5] bg-bz-bg border-b border-bz-border px-4 md:px-12 flex items-center gap-7 h-14 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="sticky top-[var(--bz-header-h)] z-[5] bg-bz-bg border-b border-bz-border px-4 md:px-12 flex items-center gap-7 h-14 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{ borderBottom: "1px solid var(--bz-border)" }}
       >
         {navItems.map((item, i) => (

@@ -64,10 +64,17 @@ export function GalleryTabs({
             onClick={() => setActive("floor_plan")}
           />
         </div>
+        {/* `min-h-11` below md, the original auto height restored at md: the
+            strip is `py-2.5` around a 13.5px line, which measures ~40px — under
+            44 on both the tabs and this jump link. `min-h-0` is an exact
+            restore rather than a new desktop value: these are flex items of a
+            row-direction container, where `min-height: auto` already resolves
+            to 0 on the cross axis. Width needs nothing — "Map" plus its 13px
+            icon and `gap-1.5` clears 44px on its own. */}
         <button
           type="button"
           onClick={scrollToLocation}
-          className="py-2.5 inline-flex items-center gap-1.5 text-[13.5px] border-b-2 -mb-px border-transparent text-bz-muted hover:text-bz-ink-2 transition-colors"
+          className="py-2.5 min-h-11 md:min-h-0 inline-flex items-center gap-1.5 text-[13.5px] border-b-2 -mb-px border-transparent text-bz-muted hover:text-bz-ink-2 transition-colors"
         >
           <Map size={13} strokeWidth={1.7} />
           Map
@@ -101,7 +108,8 @@ function TabButton({
       aria-selected={isActive}
       onClick={onClick}
       className={cn(
-        "py-2.5 inline-flex items-center gap-1.5 text-[13.5px] border-b-2 -mb-px transition-colors",
+        // See the note on the Map jump link above for why `min-h-11 md:min-h-0`.
+        "py-2.5 min-h-11 md:min-h-0 inline-flex items-center gap-1.5 text-[13.5px] border-b-2 -mb-px transition-colors",
         isActive
           ? "border-bz-teal text-bz-teal"
           : "border-transparent text-bz-muted hover:text-bz-ink-2",

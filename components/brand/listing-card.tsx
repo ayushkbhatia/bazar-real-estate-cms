@@ -59,6 +59,39 @@ export type ListingCardProps = {
   className?: string;
 };
 
+/**
+ * `sizes` per variant. This is paid in bytes, not pixels: the browser picks a
+ * srcset candidate from this string long before it knows how the card laid
+ * out, so a wrong number is downloaded in full and then scaled away.
+ *
+ * ROW was the wrong one, and it is the expensive one — list is the DEFAULT
+ * view on a phone and pages 24 cards. Its media column is 116px below `sm`
+ * and 200px below `md` (`ROW_CARD_RESPONSIVE` in search-list.tsx, the only
+ * surface that renders this variant; the 280px below is the component's own
+ * desktop column). All three shared the string kept on `default` — so a
+ * 116px slot asked for `100vw`, i.e. 390 CSS px, ~11x the pixel area, before
+ * DPR multiplies both sides of that.
+ *
+ * Written as min-width/px rather than max-width/vw for two reasons. The
+ * min-widths line up exactly with the Tailwind breakpoints that set the
+ * column, so the two cannot drift apart by a fractional pixel. And Next
+ * trims its srcset to `>= deviceSizes[0] * smallest-vw-in-the-string`
+ * (next/dist/shared/lib/get-img-props.js:59) — the `33vw` below floors the
+ * ladder at 256px, while a string with no `vw` in it at all keeps the whole
+ * ladder, including the 128/256/384 entries a 116px slot wants.
+ *
+ * DEFAULT and EDITORIAL keep the old string on purpose. Their slot is set by
+ * whichever grid the call site drops the card into — 1-up on phones, 2-up
+ * beside the search map, 3-up on the curated grid, 4-up in a featured row —
+ * which is nothing this file can measure. `100vw` on a phone over-asks by the
+ * container gutter (~32px of 390) and no more.
+ */
+const MEDIA_SIZES: Record<ListingCardVariant, string> = {
+  default: "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw",
+  editorial: "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw",
+  row: "(min-width: 768px) 280px, (min-width: 640px) 200px, 116px",
+};
+
 const badgeStyles: Record<
   NonNullable<ListingCardProps["badgeKind"]>,
   string
@@ -76,6 +109,7 @@ function Media({
   badge,
   badgeKind = "ink",
   aspect,
+  sizes,
   heroSrc,
   heroAlt,
   priority,
@@ -89,6 +123,8 @@ function Media({
   badge?: string;
   badgeKind?: NonNullable<ListingCardProps["badgeKind"]>;
   aspect: "4/3" | "5/4" | "auto";
+  /** From `MEDIA_SIZES` — the variant's real slot width, see the note there. */
+  sizes: string;
   heroSrc?: string | null;
   heroAlt?: string;
   priority?: boolean;
@@ -141,12 +177,22 @@ function Media({
 
       {/* Right column: shortlist button. Rendered on every card that knows
           its property id — no per-surface opt-in, so a page added later
-          inherits it. */}
+          inherits it.
+
+          The 6px pull-in on coarse pointers is the other half of the
+          shortlist button's touch target: its box goes 32 → 44px there while
+          its circle stays 32px (compare-button.tsx), and the growth is
+          centred, so moving the anchor from 12px to 6px lands the circle back
+          on the same 12px inset the badges use. Without it the circle would
+          drift inward on phones and sit lower than the badge opposite it. The
+          44px box overhangs into the corner of the photo, which is empty. */}
       {shortlistEnabled && propertyId ? (
         <div
           className={cn(
-            "absolute end-3 z-10 flex flex-col gap-2",
-            diff ? "top-[48px]" : "top-3",
+            "absolute end-3 pointer-coarse:end-1.5 z-10 flex flex-col gap-2",
+            diff
+              ? "top-[48px] pointer-coarse:top-[42px]"
+              : "top-3 pointer-coarse:top-1.5",
           )}
         >
           <CompareButton propertyId={propertyId} />
@@ -172,7 +218,7 @@ function Media({
           src={heroSrc}
           alt={heroAlt ?? imgLabel ?? "Property hero"}
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          sizes={sizes}
           priority={priority}
           className="object-cover"
         />
@@ -229,6 +275,7 @@ export function ListingCard({
             badge={badge}
             badgeKind={badgeKind}
             aspect="5/4"
+            sizes={MEDIA_SIZES.editorial}
             heroSrc={heroSrc}
             heroAlt={heroAlt}
             priority={priority}
@@ -279,6 +326,7 @@ export function ListingCard({
             badge={badge}
             badgeKind={badgeKind}
             aspect="auto"
+            sizes={MEDIA_SIZES.row}
             heroSrc={heroSrc}
             heroAlt={heroAlt}
             priority={priority}
@@ -325,14 +373,26 @@ export function ListingCard({
         className,
       )}
     >
+      {/* `priority` is forwarded here, not dropped. This variant is the one
+          that goes one-per-row on a phone, which makes the first card's hero
+          the LCP element on every search and landing page — and it was the
+          only variant of the three not passing the prop through, so the flag
+          the call sites were setting did nothing.
+
+          Safe to forward because no call site hands it to more than the
+          first card or two — `index === 0` (curated-grid, area band, home),
+          `index < 2` (search grid, developers), `i === 0` (featured row).
+          Preloading all 24 would be worse than preloading none. */}
       <Media
         imgLabel={imgLabel}
         mediaDark={mediaDark}
         badge={badge}
         badgeKind={badgeKind}
         aspect="4/3"
+        sizes={MEDIA_SIZES.default}
         heroSrc={heroSrc}
         heroAlt={heroAlt}
+        priority={priority}
         propertyId={propertyId}
         verified={verified}
         shortlistEnabled={shortlistEnabled}

@@ -144,7 +144,15 @@ export function OffplanMapExplorer({
           <button
             type="button"
             onClick={() => setFocusSlug(null)}
-            className="text-[13px] text-bz-ink-2 underline underline-offset-4 hover:text-bz-ink"
+            // Underlined 13px text reads like prose, but it is the only way to
+            // undo the chip filter on /off-plan — tapping the active chip again
+            // also clears it, but nothing on screen says so. A bare text button
+            // is ~18px tall, so `min-h-11` below md with `inline-flex
+            // items-center` to keep the label centred in the taller box.
+            // `md:min-h-0` is an exact restore, not a new desktop value: this
+            // is a flex item of a row-direction container, where `min-height:
+            // auto` already resolves to 0 on the cross axis.
+            className="inline-flex min-h-11 items-center text-[13px] text-bz-ink-2 underline underline-offset-4 hover:text-bz-ink md:min-h-0"
           >
             Show all areas
           </button>

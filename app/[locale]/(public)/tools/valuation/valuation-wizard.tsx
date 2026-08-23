@@ -646,7 +646,11 @@ function Step3({
               <label
                 key={u}
                 className={cn(
-                  "flex items-center gap-2.5 px-3 py-2.5 border rounded text-[12.5px] cursor-pointer",
+                  // `py-2.5` around a 12.5px line is a ~38px row, and the
+                  // painted border makes that row look like the target it
+                  // isn't. `min-h-11` lifts the whole card to 44 on the phone;
+                  // `md:min-h-0` leaves the desktop grid at today's height.
+                  "flex items-center gap-2.5 px-3 py-2.5 min-h-11 md:min-h-0 border rounded text-[12.5px] cursor-pointer",
                   checked
                     ? "bg-bz-surface-2 border-bz-border-strong"
                     : "bg-bz-surface border-bz-border hover:border-bz-border-strong",
@@ -654,6 +658,10 @@ function Step3({
               >
                 <input
                   type="checkbox"
+                  /* The UA paints this at ~13px. `size-5` is the box itself;
+                     the label above is the 44px hit area, and both are needed
+                     — a 20px control in a 20px row still fails 2.5.5. */
+                  className="size-5 md:size-auto shrink-0"
                   checked={checked}
                   onChange={(e) => {
                     const next = e.target.checked
@@ -687,7 +695,10 @@ function Step3({
                 aria-checked={active}
                 role="radio"
                 className={cn(
-                  "flex-1 h-9 rounded text-[12.5px] border transition-colors",
+                  // 36px. `flex-1` already guarantees the width (three of
+                  // them across the card), so height was the only failing
+                  // axis; `md:h-9` is the row exactly as drawn today.
+                  "flex-1 h-11 md:h-9 rounded text-[12.5px] border transition-colors",
                   active
                     ? "bg-bz-navy text-bz-bg border-bz-navy"
                     : "bg-bz-surface-2 text-bz-ink-2 border-transparent hover:border-bz-border-strong",
@@ -712,7 +723,11 @@ function Step3({
                 onClick={() => update("view_description", active ? null : v)}
                 aria-pressed={active}
                 className={cn(
-                  "h-9 px-3 rounded text-[12px] border transition-colors",
+                  // 36px chips in a wrapping row. Height only: the shortest
+                  // view label plus `px-3` still clears 44 across, and these
+                  // toggle off on a second tap, so a miss changes the
+                  // valuation input rather than just failing to.
+                  "h-11 md:h-9 px-3 rounded text-[12px] border transition-colors",
                   active
                     ? "bg-bz-accent text-bz-accent-fg border-bz-accent"
                     : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
@@ -826,9 +841,13 @@ function Step4({
           <FieldError message={errors.owner_phone} />
         </fieldset>
       </div>
-      <label className="flex items-center gap-2.5 text-[12.5px] text-bz-ink-2 cursor-pointer mt-1">
+      {/* Consent, so the tap has to land where the owner meant it to: `size-5`
+          on the ~13px UA box, `min-h-11` on the label so the sentence is part
+          of the target. Both restored above `md`. */}
+      <label className="flex items-center gap-2.5 min-h-11 md:min-h-0 text-[12.5px] text-bz-ink-2 cursor-pointer mt-1">
         <input
           type="checkbox"
+          className="size-5 md:size-auto shrink-0"
           checked={state.marketing_opt_in}
           onChange={(e) => update("marketing_opt_in", e.target.checked)}
         />
@@ -1169,7 +1188,10 @@ function SubmittedConfirmation({
             {valuationId ? (
               <a
                 href={`/api/pdf/valuation/${valuationId}`}
-                className="mt-5 inline-flex items-center gap-1.5 h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[13px] text-bz-ink-2 hover:border-bz-border-strong transition-colors"
+                /* An <a> drawn as a button, so the globals.css floor — which
+                   keys off `data-slot`, not appearance — never touched it.
+                   36px, and it is the whole payoff of the wizard. */
+                className="mt-5 inline-flex items-center gap-1.5 h-11 md:h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[13px] text-bz-ink-2 hover:border-bz-border-strong transition-colors"
               >
                 {pdfLabel(t("valuation.downloadPdf"), locale)}
               </a>

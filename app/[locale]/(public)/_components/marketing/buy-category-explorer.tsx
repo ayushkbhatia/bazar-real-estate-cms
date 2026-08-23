@@ -64,8 +64,14 @@ export function HeroCategoryChips({
             type="button"
             aria-pressed={on}
             onClick={() => setActive(c.key)}
+            // 44px tall on a phone, back to h-9 (36px) from `md` up. These
+            // chips drive the featured grid below them, so a missed tap is a
+            // dead-feeling page, not just a fiddly control — and being
+            // hand-rolled <button>s they are outside the reach of the
+            // data-slot `(pointer: coarse)` floor in globals.css. px-4 already
+            // carries every label ("Villa" is the shortest) past 44px wide.
             className={
-              "inline-flex items-center h-9 px-4 rounded-full border text-[13px] transition-colors " +
+              "inline-flex items-center h-11 md:h-9 px-4 rounded-full border text-[13px] transition-colors " +
               (on
                 ? "bg-bz-navy text-bz-bg border-bz-navy"
                 : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-teal")

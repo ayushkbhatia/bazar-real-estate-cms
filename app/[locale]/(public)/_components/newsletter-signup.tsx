@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { subscribeToNewsletter } from "../_actions/newsletter";
 import type { NewsletterSource } from "@/lib/schemas/newsletter";
 import type { ResolvedForm } from "@/lib/forms/types";
@@ -66,11 +67,20 @@ export function NewsletterSignup({ source, variant = "light", form }: Props) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           aria-label={emailField?.label ?? "Email address"}
-          className={
-            onDark
-              ? "bg-white/10 text-white placeholder:text-white/40 border-white/20"
-              : ""
-          }
+          /*
+            The Input primitive is `h-8`, and the coarse-pointer floor in
+            globals.css only lifts `[data-slot="button"]` — so on a phone this
+            field sat 32px tall beside a 44px Subscribe button in the same
+            flex row. `items-stretch` could not have levelled them: a flex
+            item with a definite height is not stretched. 44px on the phone
+            fixes the tap target and the mismatch in one; `md:h-8` is the
+            desktop pair exactly as it was.
+          */
+          className={cn(
+            "h-11 md:h-8",
+            onDark &&
+              "bg-white/10 text-white placeholder:text-white/40 border-white/20",
+          )}
         />
         <Button type="submit" disabled={pending}>
           <Mail size={14} strokeWidth={1.8} />

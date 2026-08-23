@@ -96,12 +96,32 @@ export default async function PublicLayout({
       */}
       <div className="fixed top-[84px] end-4 z-20 flex items-center gap-2">
         {/*
-          Locale is not gated on xl. Currency and area units are a refinement
-          an interested visitor goes looking for; the language is how someone
-          reads the site at all, and gating it at 1280 hides it from every
-          phone — which on a Gulf property site is most of the traffic.
+          Now gated on xl, like the preferences pill beside it.
+
+          It used to render at every width, on the argument that language is
+          how someone reads the site at all and hiding it at 1280 hides it from
+          every phone. That was right when it was written — the drawer's
+          language row was still the "AR locale & RTL coming soon" placeholder.
+          `mobile-preferences.tsx` now renders a real `LanguageSwitch`, so
+          below xl this was the SECOND locale control, not the only one.
+
+          Being the second one is what made it a defect. It is `fixed` at
+          top-84 with z-20, and Phase 3 moved the sticky search filter bar and
+          the development sub-nav off `top-0` onto `--bz-header-h` (72px) so
+          they stop hiding behind the header. Both now occupy the band this
+          pill floats in, at the same z-20 — so on six search routes and every
+          development page the opaque bar either paints over the pill or the
+          pill covers the inline end of a horizontally scrollable row of links.
+          Raising the pill's z-index only swaps which control is unreachable.
+
+          So: one control below xl, in the drawer where settings live, and the
+          search chrome gets its band back. The cost is that language is two
+          taps on a phone rather than one, which is worth revisiting if the
+          Arabic traffic share says so.
         */}
-        <LocaleToggle current={active} />
+        <div className="hidden xl:flex">
+          <LocaleToggle current={active} />
+        </div>
         {/* Gate matches PublicMegaNav's xl breakpoint — below it the drawer
             carries the preferences entry via footerSlot, so an md gate here
             would render both controls at once between 768 and 1279. */}

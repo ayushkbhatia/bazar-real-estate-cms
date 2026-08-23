@@ -22,6 +22,9 @@ import { trimmedLogo, type TrimmedLogo } from "@/lib/developers/logos";
  * 2. Tiles are links. Every developer has a `/developers/[slug]` profile (the
  *    banking partners have no equivalent sub-page), and pausing the scroll on
  *    hover and focus keeps those targets steady enough to actually click.
+ *    That pause is hover-only, which is no pause at all on a phone — see the
+ *    `@media (hover: none)` branch at the bottom of the stylesheet, where the
+ *    marquee turns into a rail the visitor scrolls.
  */
 
 type Tile = { slug: string; name: string; logo: TrimmedLogo };
@@ -51,7 +54,11 @@ export function DeveloperMarquee() {
             <Link
               key={`${t.slug}-${i}`}
               href={`/developers/${t.slug}`}
-              className="bz-devmarquee__tile"
+              // The `--dup` marker is what lets the hover-less branch of the
+              // stylesheet drop the second copy: it exists only to make the
+              // -50% loop seamless, and a hand-scrolled rail has no loop to
+              // make seamless — it would just be 30 more tiles to swipe past.
+              className={`bz-devmarquee__tile${duplicate ? " bz-devmarquee__tile--dup" : ""}`}
               aria-hidden={duplicate || undefined}
               tabIndex={duplicate ? -1 : undefined}
             >
@@ -160,6 +167,47 @@ export function DeveloperMarquee() {
         }
         @media (prefers-reduced-motion: reduce) {
           .bz-devmarquee__track { animation: none; }
+        }
+        /*
+         * No hover, no pause — and so no way to tap a tile. On a touch device
+         * the two pause rules above never fire, and 30 developer profile links
+         * glide past at the same px/s the partner marquee uses; the tile under
+         * a thumb is not the tile that gets opened. The home page offers no
+         * other route to these profiles.
+         *
+         * So on a hover-less pointer the marquee stops being an animation and
+         * becomes a rail the visitor drives: the track stops and the container
+         * scrolls instead of clipping. overscroll-behavior keeps a swipe that
+         * runs off the end of the rail from turning into the browser's back
+         * gesture.
+         *
+         * Free scroll, not scroll-snap, and that is the mask's doing. The
+         * container fades its first and last 7% to transparent, so a tile
+         * snapped with scroll-snap-align:start comes to rest inside the fade
+         * and reads as half-drawn. scroll-padding could push it clear, except
+         * the mask is a 90deg gradient (physical) while scroll-padding-inline
+         * is logical, so the two would disagree under /ar. A plain scroller
+         * needs neither, and the fade then reads as "there is more here",
+         * which is what it was drawn for.
+         *
+         * overflow-x on its own rather than the shorthand, so the block axis
+         * keeps the hidden it already has: nothing about it needs to change,
+         * and this rule stays about the one axis it is about.
+         *
+         * The RTL selector is repeated on purpose. The rule above it is
+         * (0,2,0) and out-specifies a bare class, so under /ar it would put
+         * animation-name back and the strip would keep moving.
+         */
+        @media (hover: none) {
+          .bz-devmarquee {
+            overflow-x: auto;
+            overscroll-behavior-x: contain;
+            scrollbar-width: none;
+          }
+          .bz-devmarquee::-webkit-scrollbar { display: none; }
+          .bz-devmarquee__track,
+          [dir="rtl"] .bz-devmarquee__track { animation: none; }
+          .bz-devmarquee__tile--dup { display: none; }
         }
       `}</style>
     </div>

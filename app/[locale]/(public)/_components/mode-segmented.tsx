@@ -63,7 +63,13 @@ export function ModeSegmented() {
             aria-checked={active}
             onClick={() => go(path)}
             className={cn(
-              "h-8 px-3 rounded text-[12.5px] transition-colors",
+              // 44px tall on a phone, back to 32px from `md` up. Hand-rolled
+              // <button>s again, so the data-slot `(pointer: coarse)` floor in
+              // globals.css cannot reach them. px-3.5 rather than px-3 on the
+              // same breakpoint because the gate checks width *and* height:
+              // "Buy" is the narrowest pill by some margin and the extra 4px
+              // keeps it clear of the 44px floor on the other axis.
+              "h-11 px-3.5 md:h-8 md:px-3 rounded text-[12.5px] transition-colors",
               active
                 ? "bg-bz-navy text-bz-bg font-medium"
                 : "text-bz-ink-2 hover:text-bz-ink",

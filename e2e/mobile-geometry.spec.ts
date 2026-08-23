@@ -39,10 +39,30 @@ const MIN_CONTROL_FONT_SIZE = 16;
 const MIN_TOUCH_TARGET = 44;
 
 /**
- * Staging. Flip a check to "blocking" in the PR that clears its backlog:
+ * Staging. A check moves to "blocking" in the PR that clears its backlog, and
+ * only once measured green — never on the assumption that a phase finished.
  *
- *   inputZoom    -> blocking at the end of Phase 2 (16px form-control sweep)
- *   touchTargets -> blocking at the end of Phase 8 (residual targets)
+ *   overflow      blocking from the start
+ *   narrowTracks  blocking from the start
+ *   inputZoom     BLOCKING as of Phase 8. Phase 2 swept 18 focusable controls
+ *                 to `text-[16px] md:<original>`; trialled as blocking across
+ *                 all 33 routes and reported zero violations, so it is now
+ *                 load-bearing. Nothing may reintroduce a sub-16px control.
+ *   touchTargets  still "report". Phases 1 and 8 took the sample from 87
+ *                 sub-44px targets across 8 routes to 25 — real progress, not
+ *                 done. Flipping it now would red-line main, which is how a
+ *                 gate becomes noise.
+ *
+ * What the remaining 25 are, measured after Phase 8, so the next pass does not
+ * have to rediscover them:
+ *   - hero-search.tsx mode tabs (Buy/Rent/Off-Plan/Commercial), 32px tall
+ *   - hero-search.tsx type + beds selects, 40px
+ *   - search-list.tsx tool row: "Draw area", "Commute time", 32px
+ *   - sort-dropdown.tsx select, 32px
+ *   - valuation-wizard.tsx intent + timeline chips, 36px
+ *   - agent-card.tsx WhatsApp anchor, 36x36
+ * None were in any Phase 8 stream's file list — that was a gap in how the work
+ * was split, not a stream failing its brief.
  *
  * A "report" check still runs and still attaches its violations to the
  * Playwright report; it just does not fail the run.
@@ -50,7 +70,7 @@ const MIN_TOUCH_TARGET = 44;
 const GATE = {
   overflow: "blocking",
   narrowTracks: "blocking",
-  inputZoom: "report",
+  inputZoom: "blocking",
   touchTargets: "report",
 } as const;
 
