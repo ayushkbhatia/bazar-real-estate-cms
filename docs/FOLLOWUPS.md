@@ -1245,3 +1245,14 @@ shows the trail.)
   is. Whatever deploys it should read `content_assets` the way
   `lib/content-assets/system-resolve.ts` does, or the function should be
   deleted in favour of the Vercel cron that already covers it.
+
+- [e2e] `playwright.config.ts` pairs a fixed port (3100) with
+  `reuseExistingServer: !process.env.CI`, so a local run silently adopts
+  whatever `next start` is already on that port — including a stale one from
+  another worktree. Hit while fixing the a11y/legal red on #466: a leftover
+  server from a different branch served a build predating the CMS edit under
+  test, and both the broken and the fixed spec passed against it. A local run
+  that cannot fail is worse than a slow one; the config's own note about not
+  training people to ignore a red local run applies here. Options: an
+  `E2E_PORT` override, or a readiness check that the reused server is this
+  worktree's build (a `/api/health` carrying the git SHA would do it).
