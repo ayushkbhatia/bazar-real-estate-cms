@@ -49,23 +49,35 @@ export function ListYourProperty({
           <FormRenderer form={form} className="mt-8" />
         </div>
 
-        {/* Photo.
+        {/* Artwork.
             `minmax(0,…)` on the tracks above plus `min-w-0` on the form column
             stop the form's min-content width from collapsing this track to a
             sliver between 768px and ~1024px. `overflow-hidden` here (rather
             than relying on the card's) is what actually clips the absolutely
             positioned <Image> — WebKit does not reliably clip an abspos
             descendant against an ancestor's border-radius, which is why the
-            bleed only showed once a real photo replaced PlaceholderImage
-            (that component brings its own `overflow-hidden`). */}
-        <div className="relative isolate min-w-0 aspect-[16/10] overflow-hidden bg-bz-ink md:aspect-auto md:h-full">
+            bleed only showed once a real picture replaced PlaceholderImage
+            (that component brings its own `overflow-hidden`).
+
+            `object-contain`, not `cover`: what the client ships here is a
+            typeset poster — the headline, the portal logos and the phone are
+            *inside* the picture. The track is about 1.05:1 (its height comes
+            from the form beside it) while the artwork is 4:3, so `cover` scaled
+            it to fill and threw ~14% off each side, beheading the headline on
+            the leading edge. Contain fits the whole artwork; `bg-bz-surface`
+            (the card's own colour, not ink) turns the leftover band above and
+            below into card whitespace rather than black bars. The Arabic twin
+            is a second copy of the same artboard with the type set in Arabic,
+            so it needs exactly the same treatment — and under `dir="rtl"` the
+            tracks swap, which is why nothing here pins a side. */}
+        <div className="relative isolate min-w-0 aspect-[4/3] overflow-hidden bg-bz-surface md:aspect-auto md:h-full">
           {imageUrl ? (
             <Image
               src={imageUrl}
               alt={imageAlt ?? ""}
               fill
               sizes="(max-width: 767px) 100vw, 48vw"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-contain"
             />
           ) : (
             <PlaceholderImage
