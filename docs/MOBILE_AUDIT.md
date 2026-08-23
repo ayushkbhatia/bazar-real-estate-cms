@@ -8,7 +8,9 @@
 
 ## 1. Verdict
 
-The June 2026 mobile build (PRs #109–#114) **holds structurally**. Across 72 route loads at 393px — 38 English routes, 16 detail pages, 18 Arabic RTL routes — there is **zero horizontal overflow**, **zero `100vh` misuse**, and the nav and filter drawers lock scroll, trap focus, and close on ESC correctly. That is a genuinely good result and it should not be re-litigated.
+The June 2026 mobile build (PRs #109–#114) **holds structurally**. Across 33 routes at 390px — English and Arabic — 32 show no horizontal scroll, there is **zero `100vh` misuse**, and the nav and filter drawers lock scroll, trap focus, and close on ESC correctly. That is a genuinely good result and it should not be re-litigated.
+
+> **Correction (2026-08-22, after publication).** This section originally claimed *"zero horizontal overflow across 72 route loads."* That claim was produced by a broken instrument and is withdrawn — see §4.1. The re-measured result is 32 of 33 routes clean, with `/` showing intermittent 368px overflow of unconfirmed cause.
 
 What failed is everything the mobile build did not encode as a rule. It was applied to *routes*, never to the *shared layer*, so the ~155 commits that landed afterward — the Arabic/RTL epic, the Page Builder, the Forms Manager, a dozen new pages — re-introduced the same four defects over and over, because nothing made the wrong thing fail. Two numbers tell the whole story: **8 of the 13 mobile primitives built for that effort have zero consumers anywhere in the repo**, and **Playwright has exactly one project, `Desktop Chrome`**. A responsive single-tree architecture whose entire correctness argument is CSS breakpoints has, in practice, no breakpoint coverage in CI.
 
@@ -38,7 +40,7 @@ Findings carry a confidence tier. This matters: of the audit's 273 raw findings,
 
 Establishing this is as valuable as the defect list, because it bounds the work.
 
-- **No horizontal overflow on any public route**, English or Arabic, index or detail. *(Tier A, 72 route loads)*
+- **No horizontal overflow on 32 of 33 routes**, English and Arabic. *(Tier A, re-measured with a ground-truth scroll test — see §4.1.)* `/` is the exception and is **not** cleared: it measured 368px of real scroll in three observations and 0 in twelve others. Cause unconfirmed.
 - **Viewport units are deliberately correct.** The only `100vh` in the tree is a `lg:block` desktop aside; `globals.css:494` ships `.min-h-dvh-safe` with a comment explaining the iOS URL-bar collapse. *(Tier A)*
 - **Zoom is not disabled** — no `maximumScale`/`user-scalable` in `app/[locale]/layout.tsx:164`. *(Tier A)*
 - **Nav drawer and filter drawer are correct**: body scroll locked, focus trapped 25/25, ESC closes. *(Tier A)*
@@ -58,7 +60,7 @@ All figures from a production build (`npm run build && npm run start`) at 393×8
 
 | Measurement | Result |
 |---|---|
-| Routes probed for overflow (EN + AR) | 72 loads, **0 with overflow** |
+| Routes probed for overflow (EN + AR) | 33 routes, **32 clean, 1 intermittent** (`/`) — see §4.1 |
 | Distinct sub-44px touch targets | **194** |
 | Distinct sub-16px form controls | **22 field classes**, 13–15px |
 | Home hero video transfer | **18.5 MB × 2 = ~37 MB per visit** |
@@ -66,6 +68,31 @@ All figures from a production build (`npm run build && npm run start`) at 393×8
 | Raw `<img>` on mobile-visible routes | **4** (+2 legitimate in `opengraph-image.tsx`) |
 | Playwright mobile-viewport projects | **0** |
 | Lighthouse mobile runs | **0** |
+
+### 4.1 Correction — the overflow measurement was broken
+
+**Every overflow number in the first version of this report came from an instrument that could not detect overflow.** The claim "zero horizontal overflow across 72 route loads" is withdrawn.
+
+The probes — and the CI gate shipped in #463 — compared `documentElement.scrollWidth` against `window.innerWidth`. Under Chromium's mobile emulation **those two values move together**: when content overflows, the layout viewport widens to fit it, so `innerWidth` inflates alongside `scrollWidth` and the difference stays near zero either way.
+
+```
+/         innerWidth 1560   clientWidth 390   scrollWidth 1928   → really scrolls 368px
+/buy      innerWidth  489   clientWidth 390   scrollWidth  489   → does not scroll
+```
+
+The check was structurally incapable of failing. It passed 34/34 in CI by measuring nothing.
+
+`clientWidth` (a stable 390) is the correct reference, but `scrollWidth > clientWidth` false-positives on `/buy`, where the two differ by 99px with no scrollability at all. **Only actually scrolling the document and reading `scrollX` distinguishes the two cases** — that is what the repaired gate does, and it now carries a self-test that fails if anyone reverts it to a width comparison.
+
+**Re-measured result:** 32 of 33 routes have no horizontal scroll. The exception is `/`, which measured **368px in three observations — including one inside the gate itself — and 0 in twelve consecutive runs** against the same server, with and without animations disabled. Real when it occurs; not reliably reproducible. Two candidate sources, neither confirmed: `developer-marquee.tsx`, whose rendered width depends on animation phase, or live CMS content, since the marquee's item count is editor-owned and this suite reads production data.
+
+`/` is deliberately **not** waived in the gate, so CI will report it if it is persistent.
+
+**Why this went unnoticed.** The negative control run before #463 merged exercised three of the four checks — `narrowTracks` caught `/developments`, `inputZoom` fired on 8 routes, `touchTargets` on 6 — and the overflow check was reported as verified alongside them. It was not; it had no failing case to prove itself against. A control that covers most of a suite reads as covering all of it. The repaired gate therefore tests the detector against a page built to overflow and one built not to, so the inert case cannot masquerade as the passing case again.
+
+A related claim also withdrawn: `/agents` was reported at 1448px of overflow. That reading came from a stale server left running on another port; on the current build it measures clean.
+
+---
 
 ---
 
@@ -112,7 +139,7 @@ CLIPPED: needs  34px got  18px "AED 2.0M"                       | serif text-[20
 
 `developments/page.tsx:43` uses bare `px-12`; `:67` forces `grid-cols-2` with no mobile base; each card then runs a `grid-cols-3` stat row inside an 87px box. "AED 2.0M" is rendered at `text-[20px]` into an **18px** column.
 
-This is the report's most important structural lesson: **it clips, it does not overflow.** My own `scrollWidth <= innerWidth` probe reported this page clean. Any CI guard needs a *minimum-usable-column-width* assertion, not just an overflow assertion.
+This is the report's most important structural lesson: **it clips, it does not overflow.** Even a *correct* overflow check reports this page clean — `/developments` measures `scrollWidth == clientWidth == 390` and does not scroll. Any CI guard needs a *minimum-usable-column-width* assertion, not just an overflow assertion.
 
 ### 5.3 Search filter bar becomes unclickable — Tier A
 
@@ -232,7 +259,7 @@ Related RTL-on-mobile findings: the phone field has no `dir="ltr"`, so `+971` re
 
 The blowout gotcha (`min-width:auto` on grid items) is well understood and well guarded. The *worse* pattern is silent: content that **clips inside an ancestor `overflow-hidden`** instead of pushing the page wide — `/developments` (18px columns), `_units-table.tsx`, `investment-metrics.tsx`, `verdict-band.tsx`.
 
-**A `scrollWidth <= innerWidth` assertion catches none of these.** My own probe proved it by reporting `/developments` clean. Any CI guard needs a minimum-track-width assertion too.
+**No overflow assertion catches these — not even a correct one.** `/developments` genuinely does not scroll sideways; it swallows its content instead. Any CI guard needs a minimum-track-width assertion too. (Separately, the overflow probe used in the first draft of this report was itself broken — see §4.1 — but that is a different failure from this one.)
 
 ### 6.7 Nothing in CI runs at a mobile viewport — and the gap was known and deferred
 
@@ -255,14 +282,16 @@ Ordering principle: **the net first** (so later phases cannot silently regress),
 
 Adds a Playwright `mobile` project on `devices["iPhone 13"]`, a mobile Lighthouse job, and one geometry spec over 33 routes (EN + AR) at 390px asserting:
 
-- **(a)** `documentElement.scrollWidth <= innerWidth` — blocking immediately (already green everywhere)
+- **(a)** the document does not actually scroll sideways (`scrollTo(9999,y)` then read `scrollX`) — blocking. **Not** a `scrollWidth`/`innerWidth` comparison; see §4.1
 - **(b)** every resolved grid track ≥ 60px, and no element with `scrollWidth > clientWidth + 8` under an `overflow: hidden` ancestor — **this is the assertion that catches `/developments`**
 - **(c)** no focusable text control with computed `font-size < 16px` — report-only, blocking after Phase 2
 - **(d)** every visible button/link/checkbox ≥ 44×44 with a short allowlist — report-only, blocking after Phase 8
 
 *Why first:* everything after is protected, and (a)–(d) define "done" for the phases that follow.
 
-### Phase 1 — Shared primitives & tokens · S · closes ~40 findings
+### Phase 1 — Shared primitives & tokens · S
+
+> **Scope correction (2026-08-22).** This phase was originally billed as *"closes ~40 findings"* on the assumption that the `pointer: coarse` floor would reach most touch-target violations. Measured attribution across six routes says otherwise: only **17%** of violations come from the `ui/Button` primitive, with **74%** from hand-rolled `<button>` (44%) and `<a>` (30%) elements the rule cannot reach, and 9% from other `ui/*` slots. Realistic reach is **~25%**, not ~65%. The remainder moves to Phase 8, which grows accordingly.
 
 `app/globals.css` primarily; `components/ui/dialog.tsx`, `components/ui/sheet.tsx` if permitted (see §10).
 
@@ -329,6 +358,15 @@ Prefer swapping to the `Chip` / `SegmentedControl` primitives — that is what t
 { name: "mobile", use: { ...devices["iPhone 13"], defaultBrowserType: undefined } }
 ```
 
+**Measuring horizontal overflow — read this before writing the assertion.** Scroll the document and check whether it moved:
+
+```ts
+window.scrollTo(9999, window.scrollY);
+const scrolled = Math.round(window.scrollX);   // > 0 means real overflow
+```
+
+**Never compare `scrollWidth` to `innerWidth`.** Under mobile emulation the layout viewport widens to fit overflowing content, so both grow together and the difference stays ~0 whether or not the page overflows — the check cannot fail. `scrollWidth > clientWidth` is closer but false-positives (99px on `/buy`, which does not scroll). Full account in §4.1. `e2e/mobile-geometry.spec.ts` carries a self-test that fails if this is reverted to a width comparison.
+
 **Targeted specs, one per behavioural phase:**
 
 - *Phase 3* — with the banner open at 393px, assert the CTA dock's box does not intersect it; assert the filter bar's `y >= 72` after `page.mouse.wheel(0, 900)` **and that hit-testing its Filters button returns that button**; on `/ar`, assert the drawer's `x` matches the hamburger's side.
@@ -361,6 +399,8 @@ Recorded because a finding list without its refutations invites re-work.
 | Image handling is clean (58/58 `sizes`) | **Misleading** — presence ≠ correctness (§6.3). |
 | `quality={100}` is wasteful | **Wrong** — floor plans only, documented rationale. |
 | `no-cache` causes the video double-fetch | **Wrong** — disproved by A/B (§5.1). |
+| Zero horizontal overflow across 72 route loads | **Wrong** — the instrument could not detect overflow (§4.1). Re-measured: 32 of 33 clean, `/` intermittent. |
+| `/agents` overflows 1448px | **Wrong** — stale server on another port; clean on the current build. |
 
 **Agent findings that failed to reproduce at runtime** (Tier C — do not action without re-confirming):
 
