@@ -203,7 +203,14 @@ function EmirateToggle({
             aria-selected={active}
             onClick={() => onChange(slug)}
             className={[
-              "h-[34px] rounded-md px-4 text-sm font-medium transition-colors",
+              // 34px is a mouse height, and this pair is the only way to reach
+              // Dubai's areas — there is no second control that switches
+              // emirate. `h-11` below md, the original 34px restored from md
+              // up so the desktop header row keeps its proportions against the
+              // "All areas" link beside it. The 2px `gap-0.5` stays: both
+              // targets clear 44px on their own, which is what 2.5.5 asks of a
+              // segmented control.
+              "h-11 md:h-[34px] rounded-md px-4 text-sm font-medium transition-colors",
               active
                 ? "bg-bz-surface text-bz-ink shadow-sm"
                 : "text-bz-ink-2 hover:text-bz-ink",

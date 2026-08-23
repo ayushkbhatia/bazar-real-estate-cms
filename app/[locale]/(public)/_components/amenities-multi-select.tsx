@@ -32,7 +32,13 @@ export function AmenitiesMultiSelect({
           <button
             type="button"
             onClick={onClear}
-            className="text-[11.5px] text-bz-muted hover:text-bz-ink-2 underline underline-offset-2"
+            // Unstyled text button: with no box of its own it is about as tall
+            // as its 11.5px line box, so it fails the 44px check on both axes
+            // even though the chips beside it now pass. h-11 + px-2 gives it a
+            // thumb-sized box on a phone and `-me-2` cancels the padding at the
+            // row's end edge, so the label stays flush with the chips below it
+            // instead of stepping 8px inward. All three revert at `md`.
+            className="inline-flex items-center h-11 px-2 -me-2 md:h-auto md:px-0 md:me-0 text-[11.5px] text-bz-muted hover:text-bz-ink-2 underline underline-offset-2"
           >
             Clear
           </button>
@@ -48,7 +54,15 @@ export function AmenitiesMultiSelect({
               onClick={() => onToggle(a.label)}
               aria-pressed={active}
               className={cn(
-                "inline-flex items-center h-7 px-2.5 rounded-full text-[11.5px] transition-colors",
+                // 44px tall on a phone (28px from `md` up). Hand-rolled
+                // <button>s, so the data-slot `(pointer: coarse)` floor in
+                // globals.css never reached them. px-4 rides along on the same
+                // breakpoint because the short labels — "Gym", "Spa" — are
+                // three characters at 11.5px and fail the *width* half of the
+                // 44px check at px-2.5; the long ones ("Covered parking") were
+                // always wide enough. Desktop keeps the dense 28px pill the
+                // MoreFilters drawer was laid out around.
+                "inline-flex items-center h-11 px-4 md:h-7 md:px-2.5 rounded-full text-[11.5px] transition-colors",
                 active
                   ? "bg-bz-navy text-bz-bg"
                   : "border border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong",

@@ -368,7 +368,15 @@ export function ConciergeChat() {
                 <button
                   type="button"
                   onClick={() => sendMessage(t("concierge.handOffPrompt"))}
-                  className="text-[11.5px] text-bz-muted hover:text-bz-ink"
+                  /* Bare 11.5px text is a ~14px-tall target. This costs no
+                     layout on a phone: the row is `items-center` and its other
+                     child is a <Button>, which the coarse-pointer floor in
+                     globals.css already holds at 44px — so the row is 44px
+                     tall either way and the min-height only makes the whole of
+                     it tappable instead of the glyphs. `md:min-h-0` hands the
+                     row back to the 28px size="sm" button above the
+                     breakpoint. */
+                  className="inline-flex items-center min-h-11 md:min-h-0 text-[11.5px] text-bz-muted hover:text-bz-ink"
                 >
                   {t("concierge.handOff")}
                 </button>
@@ -386,7 +394,12 @@ export function ConciergeChat() {
                   key={key}
                   type="button"
                   onClick={() => sendMessage(t(`concierge.${key}`))}
-                  className="h-7 px-2.5 rounded text-[11.5px] bg-bz-surface border border-bz-border text-bz-muted hover:text-bz-ink hover:border-bz-ink-2"
+                  /* 28px chips sit directly under the composer, where a
+                     mis-tap sends the wrong brief to the model rather than
+                     merely missing. Full 44px box on the phone — the labels
+                     are whole sentences, so width was never the short axis —
+                     and `md:h-7` keeps the desktop rail as drawn. */
+                  className="h-11 md:h-7 px-2.5 rounded text-[11.5px] bg-bz-surface border border-bz-border text-bz-muted hover:text-bz-ink hover:border-bz-ink-2"
                 >
                   {t(`concierge.${key}`)}
                 </button>
@@ -410,7 +423,14 @@ export function ConciergeChat() {
                     key={c.id}
                     type="button"
                     onClick={() => removeChip(c)}
-                    className="inline-flex items-center gap-1 h-[26px] px-2.5 rounded-full text-[12px] font-medium bg-bz-accent-soft text-bz-accent hover:bg-bz-accent hover:text-white"
+                    /* 26px, and every tap is destructive — the chip IS the
+                       remove control, and a miss edits the brief the model
+                       answers against. Grown rather than given a negative-inset
+                       ::after: reaching 44 that way needs (44-26)/2 = 9px above
+                       and below, and these chips wrap, so two rows 6px apart
+                       (`gap-1.5`) would put 18px of overlay into that gap and
+                       let whichever chip paints last take the tap. */
+                    className="inline-flex items-center gap-1 h-11 md:h-[26px] px-2.5 rounded-full text-[12px] font-medium bg-bz-accent-soft text-bz-accent hover:bg-bz-accent hover:text-white"
                   >
                     {c.label}
                     <X size={10} strokeWidth={2} />
@@ -466,7 +486,12 @@ function EmptyState({ onPick }: { onPick: (s: string) => void }) {
             key={key}
             type="button"
             onClick={() => onPick(t(`concierge.${key}`))}
-            className="text-start px-4 py-3 rounded-lg bg-bz-surface border border-bz-border hover:border-bz-ink-2 text-[13px] text-bz-ink-2 flex justify-between items-center"
+            /* `py-3` around a single 13px line box lands a few px short of 44
+               for the one-line starters (the longer ones wrap and clear it on
+               their own). min-height rather than `h-11` so the wrapping ones
+               keep growing; `md:min-h-0` leaves the desktop card at its
+               content height. */
+            className="text-start px-4 py-3 min-h-11 md:min-h-0 rounded-lg bg-bz-surface border border-bz-border hover:border-bz-ink-2 text-[13px] text-bz-ink-2 flex justify-between items-center"
           >
             {t(`concierge.${key}`)}
             <ArrowRight size={14} strokeWidth={1.6} className="text-bz-muted shrink-0 ms-3" />
@@ -680,7 +705,11 @@ function AdvisorWhatsAppHandoff({
         target="_blank"
         rel="noopener noreferrer"
         data-testid="advisor-whatsapp-handoff"
-        className="inline-flex items-center gap-2 text-[12.5px] text-bz-muted hover:text-bz-accent"
+        /* The exit to a human, as a ~16px-tall line of 12.5px text. It is the
+           only child of a centred flex row, so min-height grows the row and
+           the label stays exactly where it is drawn — no ::after needed, and
+           nothing adjacent for a taller box to steal taps from. */
+        className="inline-flex items-center min-h-11 md:min-h-0 gap-2 text-[12.5px] text-bz-muted hover:text-bz-accent"
       >
         <MessageCircle size={13} strokeWidth={1.6} />
         {t("concierge.whatsAppHandoff")}

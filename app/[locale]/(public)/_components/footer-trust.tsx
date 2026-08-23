@@ -12,11 +12,24 @@
 export function FooterTrust({ legalLine }: { legalLine: string | null }) {
   if (!legalLine) return null;
   return (
+    /*
+      `px-12` is 96px of a 390px viewport, and this strip renders on every
+      public route. It left the licence line 294px to wrap into — the widest
+      gutter on the site spent on the narrowest content. `px-4 md:px-12` gives
+      it 358px and leaves the desktop strip exactly as drawn.
+
+      The type steps with it. 11.5px is fine as a whisper under a 1440px
+      footer; on a phone it is the smallest text on the page, and this is the
+      line carrying the ADM licence number and the regulators (see the seed in
+      0113) — the one piece of copy a buyer is meant to be able to read back.
+    */
     <section
       aria-label="Legal"
-      className="px-12 py-5 border-t border-bz-border bg-bz-surface-2 flex items-center justify-center gap-6 flex-wrap"
+      className="px-4 md:px-12 py-5 border-t border-bz-border bg-bz-surface-2 flex items-center justify-center gap-6 flex-wrap"
     >
-      <div className="text-[11.5px] text-bz-ink-2 text-center">{legalLine}</div>
+      <div className="text-[13px] md:text-[11.5px] text-bz-ink-2 text-center">
+        {legalLine}
+      </div>
     </section>
   );
 }

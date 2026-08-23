@@ -103,7 +103,20 @@ export function LocaleToggle({ current }: { current: Locale }) {
             // language's own full name.
             aria-label={full[locale]}
             className={cn(
-              "min-w-[30px] rounded-full px-2 py-1 text-center text-[12px] leading-none transition-colors",
+              // 30x24 and 21x18 measured — the two smallest targets in the
+              // public chrome, and this is the only language control a phone
+              // gets. Width is taken in the painted box (`min-w-11`), height
+              // is not: the pill is `fixed top-[84px]`, floating over content
+              // on all 37 routes at every scroll position, and 44px of ink
+              // there costs more than it buys. So the extra 20px of height is
+              // a transparent `::after` — a click on a pseudo-element hits its
+              // originating element, so the anchor is 44px to a thumb and 24px
+              // to the eye. It expands on the block axis only: the two options
+              // are adjacent, and inline halos would overlap and hand a tap to
+              // whichever painted last. That is precisely the failure this
+              // file's "Order is pinned LTR" note exists to prevent.
+              "relative min-w-11 rounded-full px-2 py-1 text-center text-[12px] leading-none transition-colors md:min-w-[30px]",
+              "after:absolute after:inset-x-0 after:-inset-y-2.5 md:after:hidden",
               // The Arabic glyph sits lower than Latin caps at the same size,
               // so the two options look vertically misaligned in a shared row
               // unless the line box is normalised.

@@ -20,6 +20,35 @@ const buttonVariants = cva(
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",
       },
+      /*
+       * None of these reach the 44px touch minimum, and none of them should:
+       * the floor is applied at runtime by the `@media (pointer: coarse)`
+       * block in globals.css, keyed off `[data-slot="button"]`, so a thumb
+       * gets 44px while a mouse keeps the 24-36px scale the whole desktop UI
+       * is spaced against. Raising a height here would move every desktop
+       * toolbar, form row and dialog footer instead.
+       *
+       * Three things that block has to be able to rely on, checked rather
+       * than assumed:
+       *
+       *  1. `data-slot` and `data-size` are emitted on every render — both are
+       *     unconditional below, and `size` is defaulted in the destructure,
+       *     so `data-size="default"` exists even when no size is passed.
+       *  2. They survive `asChild`. Radix's Slot merges as
+       *     `{...slotProps, ...overrideProps}` with `overrideProps` seeded
+       *     from the child's own props, so both attributes land on the child
+       *     element unless the child sets the same prop itself.
+       *  3. The four icon sizes all start with "icon", which is what
+       *     `[data-size^="icon"]` matches, so they take the min-WIDTH rule as
+       *     well and stay square. Height alone would make `icon-xs` a 24x44
+       *     lozenge — failing the check it was meant to pass.
+       *
+       * `buttonVariants` is also exported, and a call site using it directly
+       * on a plain <a> would render the styles with none of the attributes and
+       * so miss the floor entirely. There are no such call sites today (grep:
+       * zero outside this file); adding one means opting that element out of
+       * the touch floor.
+       */
       size: {
         default:
           "h-8 gap-1.5 px-2.5 has-data-[icon=inline-end]:pe-2 has-data-[icon=inline-start]:ps-2",

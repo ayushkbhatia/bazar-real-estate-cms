@@ -266,7 +266,10 @@ export function ScenarioSection(props: Props) {
                     aria-checked={active}
                     onClick={() => props.onType(type.value)}
                     className={cn(
-                      "flex-1 h-10 rounded text-[13px] border transition-colors",
+                      // 40px — four short of the floor, which is exactly the
+                      // kind of near-miss nobody notices by eye. `flex-1`
+                      // carries the width; `md:h-10` is today's desktop row.
+                      "flex-1 h-11 md:h-10 rounded text-[13px] border transition-colors",
                       active
                         ? "bg-bz-navy text-bz-bg border-bz-navy"
                         : "bg-bz-surface-2 text-bz-ink-2 border-transparent hover:border-bz-border-strong",
@@ -296,7 +299,10 @@ export function ScenarioSection(props: Props) {
                     aria-checked={active}
                     onClick={() => props.onStatus(b.value)}
                     className={cn(
-                      "flex-1 h-10 rounded text-[11.5px] border transition-colors px-1",
+                      // Same 40px as the row above, and the two must move
+                      // together — they read as one control stack, so a 44/40
+                      // split would look like a mistake rather than a fix.
+                      "flex-1 h-11 md:h-10 rounded text-[11.5px] border transition-colors px-1",
                       active
                         ? "bg-bz-navy text-bz-bg border-bz-navy"
                         : "bg-bz-surface-2 text-bz-ink-2 border-transparent hover:border-bz-border-strong",

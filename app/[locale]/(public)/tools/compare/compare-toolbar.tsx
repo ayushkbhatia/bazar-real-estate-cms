@@ -80,13 +80,20 @@ export function CompareToolbar({
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <label className="flex items-center gap-2 text-[13px] text-bz-ink-2 me-2 cursor-pointer">
+      {/* Both halves are needed. The UA paints a bare checkbox at ~13px, so
+          `size-5` gives the box itself something a thumb can find, and
+          `min-h-11` turns the label — text included — into a 44px band around
+          it; a 20px control inside a 20px label still misses. `md:size-auto`
+          is width/height back to their initial value, i.e. the UA box the
+          desktop toolbar draws today. */}
+      <label className="flex items-center gap-2 min-h-11 md:min-h-0 text-[13px] text-bz-ink-2 me-2 cursor-pointer">
         <input
           type="checkbox"
           checked={showDiff}
           onChange={toggleDiff}
           aria-label={t("compare.highlightDifferences")}
           data-testid="diff-toggle"
+          className="size-5 md:size-auto"
         />
         {t("compare.highlightDifferences")}
       </label>
@@ -146,7 +153,11 @@ function RemoveButtons({
   return (
     <details className="relative">
       <summary
-        className="list-none cursor-pointer text-[12px] text-bz-muted hover:text-bz-ink h-9 px-2 inline-flex items-center"
+        /* A <summary> is the disclosure control, but it is not a <button>,
+           <a> or role="button" — so neither the coarse-pointer floor in
+           globals.css nor `e2e/mobile-geometry`'s touch-target sweep can see
+           it. 36px, and it is the only way into the remove menu on a phone. */
+        className="list-none cursor-pointer text-[12px] text-bz-muted hover:text-bz-ink h-11 md:h-9 px-2 inline-flex items-center"
         aria-label={t("compare.removeMenuAria")}
       >
         {t("compare.removeMenu")}
@@ -158,7 +169,11 @@ function RemoveButtons({
             type="button"
             onClick={() => onRemove(id)}
             data-testid={`remove-${i}`}
-            className="text-start text-[12.5px] px-2.5 py-1.5 rounded hover:bg-bz-surface-2 inline-flex items-center justify-between gap-2"
+            /* ~27px rows (py-1.5 around a 12.5px line) stacked 4px apart in a
+               menu whose every entry drops a property from the comparison.
+               The sweep never reports these — they only exist while the
+               <details> is open — but a thumb still has to hit one. */
+            className="text-start text-[12.5px] px-2.5 py-1.5 min-h-11 md:min-h-0 rounded hover:bg-bz-surface-2 inline-flex items-center justify-between gap-2"
           >
             <span className="truncate mono">{id.slice(0, 8)}…</span>
             <X size={12} strokeWidth={1.8} className="text-bz-muted" />

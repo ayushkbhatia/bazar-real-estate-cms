@@ -34,22 +34,40 @@ export function Pagination({
 
   const pages = pageRange(page, lastPage);
 
+  /*
+   * Every target below is 44px on a phone and back to 36px (`h-9`) from `md`
+   * up. These are <Link>s, not the Button primitive, so the `(pointer: coarse)`
+   * 44px floor in globals.css — which selects on data-slot — never applied to
+   * them. Both axes are widened: a 44x36 number pill fails the same check as a
+   * 36x36 one.
+   *
+   * `flex-wrap` below `md` is the counterweight. At full spread the row is
+   * prev + five numbers + next at 44px, two 24px ellipses and eight 4px gaps —
+   * about 388px, against the 358px that SearchList's `px-4` leaves inside a
+   * 390px viewport. Wrapping the last chevron onto a second centred line is
+   * the graceful failure; without it the row would push the page sideways.
+   * Desktop is unchanged: `md:flex-nowrap` restores the single line, which had
+   * room for the 36px version all along.
+   *
+   * The "…" spans are deliberately left at h-9/w-6 — they are not links and
+   * carry no handler, so they are neither a target nor measured as one.
+   */
   return (
     <nav
       role="navigation"
       aria-label="Pagination"
-      className="flex items-center justify-center gap-1 py-12"
+      className="flex flex-wrap md:flex-nowrap items-center justify-center gap-1 py-12"
     >
       {page > 1 ? (
         <Link
           href={hrefFor(page - 1)}
-          className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong"
+          className="inline-flex items-center justify-center h-11 w-11 md:h-9 md:w-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong"
           aria-label="Previous page"
         >
           <ChevronLeft size={14} strokeWidth={1.7} />
         </Link>
       ) : (
-        <span className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-bz-border bg-bz-bg text-bz-muted opacity-40">
+        <span className="inline-flex items-center justify-center h-11 w-11 md:h-9 md:w-9 rounded-md border border-bz-border bg-bz-bg text-bz-muted opacity-40">
           <ChevronLeft size={14} strokeWidth={1.7} />
         </span>
       )}
@@ -69,8 +87,8 @@ export function Pagination({
             aria-current={p === page ? "page" : undefined}
             className={
               p === page
-                ? "inline-flex items-center justify-center h-9 min-w-9 px-2 rounded-md bg-bz-navy text-bz-bg text-[13px] font-medium"
-                : "inline-flex items-center justify-center h-9 min-w-9 px-2 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[13px] hover:border-bz-border-strong"
+                ? "inline-flex items-center justify-center h-11 min-w-11 md:h-9 md:min-w-9 px-2 rounded-md bg-bz-navy text-bz-bg text-[13px] font-medium"
+                : "inline-flex items-center justify-center h-11 min-w-11 md:h-9 md:min-w-9 px-2 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[13px] hover:border-bz-border-strong"
             }
           >
             {p}
@@ -81,13 +99,13 @@ export function Pagination({
       {page < lastPage ? (
         <Link
           href={hrefFor(page + 1)}
-          className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong"
+          className="inline-flex items-center justify-center h-11 w-11 md:h-9 md:w-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong"
           aria-label="Next page"
         >
           <ChevronRight size={14} strokeWidth={1.7} />
         </Link>
       ) : (
-        <span className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-bz-border bg-bz-bg text-bz-muted opacity-40">
+        <span className="inline-flex items-center justify-center h-11 w-11 md:h-9 md:w-9 rounded-md border border-bz-border bg-bz-bg text-bz-muted opacity-40">
           <ChevronRight size={14} strokeWidth={1.7} />
         </span>
       )}

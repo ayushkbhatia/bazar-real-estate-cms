@@ -170,7 +170,11 @@ function EmirateToggle({
             aria-selected={active}
             onClick={() => onChange(slug)}
             className={[
-              "h-[34px] rounded-md px-4 text-sm font-medium transition-colors",
+              // Same control, same reasoning as the copy in
+              // `area-map/area-map-home.tsx`: 34px is a mouse height and this
+              // pair is the only emirate switch on the page. `h-11` below md,
+              // 34px restored from md up.
+              "h-11 md:h-[34px] rounded-md px-4 text-sm font-medium transition-colors",
               active
                 ? "bg-bz-surface text-bz-ink shadow-sm"
                 : "text-bz-ink-2 hover:text-bz-ink",

@@ -237,15 +237,41 @@ export function PublicMegaNav({ data, logo = null, footerSlot }: Props) {
 
         {/* Mobile right cluster — just the hamburger + CTA */}
         <div className="xl:hidden ms-auto flex items-center gap-2">
-          <Button asChild size="sm">
+          {/* Deliberately no height override. `size="sm"` is 28px, but Slot
+              forwards `data-slot="button"` onto the rendered <a>, so the
+              `(pointer: coarse)` block in app/globals.css already clamps this
+              to 44px through min-height — which `h-7` cannot undo, being a
+              different property. The audit's 28px reading predates that block;
+              adding `h-11 md:h-7` here would only widen the target on
+              fine-pointer windows under 768px, which that block declines to
+              do on purpose.
+
+              What that block does NOT give it is width, and a touch target is
+              judged on both axes. Measured on a phone after the floor landed:
+              43x44 — tall enough, one pixel short, on all eight routes sampled.
+              The four-character label inside `size="sm"`'s px-2.5 is simply
+              narrow. `pointer-coarse:min-w-11` closes it without touching the
+              desktop pill. */}
+          <Button asChild size="sm" className="pointer-coarse:min-w-11">
             <Link href="/services/sell">List</Link>
           </Button>
+          {/*
+            40px at rest, 44px on a touchscreen. None of app/globals.css's
+            `(pointer: coarse)` floors reach this element: it is a hand-rolled
+            <button> with no `data-slot`, and it is not a `sheet-trigger`
+            either — the drawer is controlled from `mobileOpen` up here, so
+            Radix never renders a trigger for it.
+
+            `pointer-coarse:` and not a width breakpoint, matching that block's
+            reasoning: this cluster is visible to 1279px, so `md:` would
+            enlarge the button on a fine-pointer laptop that has no need of it.
+          */}
           <button
             type="button"
             aria-label={mobileOpen ? t("closeMenu") : t("openMenu")}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((s) => !s)}
-            className="h-10 w-10 inline-flex items-center justify-center rounded-md text-bz-ink hover:bg-bz-surface-2"
+            className="size-10 pointer-coarse:size-11 inline-flex items-center justify-center rounded-md text-bz-ink hover:bg-bz-surface-2"
           >
             {mobileOpen ? (
               <X size={20} strokeWidth={1.6} />

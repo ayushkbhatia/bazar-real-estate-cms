@@ -170,12 +170,33 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
           ) : null}
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[420px] overflow-y-auto">
+      {/* `side` is a PROP, which is why a hardcoded physical value survived the
+          repo-wide physical→logical conversion: G-5 in
+          `lib/rtl/no-physical-utilities.test.ts` reads className strings and
+          there is no physical utility here to find. The primitive compiled the
+          old value to `right-0` + `border-l` + `slide-in-from-right`, so under
+          /ar this drawer flew in from the physical right while the trigger that
+          opened it sat on the left. `side="end"` is the logical variant
+          `sheet.tsx` grew for exactly this; the allowlist entry that waived
+          this file is gone with it.
+
+          The width override is `data-[side=end]:`-qualified rather than a bare
+          `w-full` for the reason the primitive documents: its own
+          `data-[side=end]:w-3/4` is (0,2,0) and beats a plain class, so a bare
+          `w-full` would lose and the panel would keep showing the page beside
+          it. Which is also what the `w-[420px]` this replaces was doing —
+          nothing. Above `sm` the primitive's `data-[side=end]:sm:max-w-sm`
+          caps the panel at 384px either way, so only the phone changes. */}
+      <SheetContent side="end" className="data-[side=end]:w-full">
         <SheetHeader>
           <SheetTitle>{t("filters.moreFilters")}</SheetTitle>
         </SheetHeader>
 
-        <div className="px-6 py-4 flex flex-col gap-6">
+        {/* The scroll moved off the panel and onto this column so the footer
+            below can stay pinned: with `overflow-y-auto` on the SheetContent
+            itself, "Apply filters" scrolled away with the fields and the only
+            way back to it was to scroll the whole drawer down again. */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4 flex flex-col gap-6">
           {/* Area — labelled in the visitor's unit, stored as ft² */}
           <div>
             <Label>Area ({areaUnitLabel(unit)})</Label>
@@ -340,7 +361,15 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
           </div>
         </div>
 
-        <div className="px-6 py-4 border-t border-bz-border flex items-center justify-between gap-3">
+        {/* Pinned, and clear of the home indicator. The panel is `inset-y-0`
+            and the page sets viewport-fit=cover, so a plain `py-4` put "Apply
+            filters" inside the iOS gesture strip. `calc(env + 1rem)` rather
+            than `pb-bar-safe`: this drawer is not mobile-only, and
+            `--bz-safe-bottom` is 0px wherever there is no inset, so the
+            desktop panel keeps the 16px it has today (`pb-bar-safe` carries an
+            18px design floor and would move it). Same reasoning, same shape as
+            `tools/compare/_components/picker-drawer.tsx`. */}
+        <div className="shrink-0 px-6 pt-4 pb-[calc(var(--bz-safe-bottom)+1rem)] border-t border-bz-border flex items-center justify-between gap-3">
           <button
             type="button"
             onClick={reset}

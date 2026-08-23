@@ -29,6 +29,35 @@ type Props = {
 // Default to Abu Dhabi if no pins (city centre, zoomed mid).
 const DEFAULT_CENTER: [number, number] = [54.3773, 24.4539];
 
+/**
+ * 44px zoom buttons on a thumb. This map draws MapLibre's own
+ * `NavigationControl` (not the hand-rolled `.bzmap__ctrls` markup the area map
+ * uses), so the 44px mobile rule globals.css gives `.bzmap__ctrls button` never
+ * reaches it — maplibre-gl.css pins `.maplibregl-ctrl-group button` to 29x29.
+ * With `cooperativeGestures` on (see the map constructor below) these buttons
+ * are the only one-finger way to zoom, so 29px is not good enough.
+ *
+ * Two things about the shape of the override:
+ *
+ *   · `!` — maplibre-gl.css is imported straight out of node_modules and is
+ *     therefore unlayered, while Tailwind v4 emits every utility inside
+ *     `@layer utilities`. An unlayered normal declaration out-cascades a
+ *     layered one whatever the specificity, so nothing but an important
+ *     declaration wins. Same cascade reasoning as the unlayered blocks in
+ *     globals.css, applied from a call site instead.
+ *   · `pointer-coarse:` rather than the usual "mobile value, `md:` restore"
+ *     pair, because there is no honest restore to write: `size-auto` is not
+ *     29px, and hard-coding the library's constant rots the day it changes.
+ *     Scoping to coarse pointers leaves the mouse path untouched by
+ *     construction.
+ *
+ * The glyph does not grow with the box — the icon is a background-image whose
+ * SVG carries `width='29' height='29'`, so `background-size: auto` holds it at
+ * 29px and maplibre's `background-position: 50%` centres it in the 44px button.
+ */
+const CTRL_TOUCH_TARGET =
+  "pointer-coarse:[&_.maplibregl-ctrl-group_button]:size-11!";
+
 export function MapView({ pins, className }: Props) {
   const rtl = useIsRtl();
   const { prefs } = usePreferences();
@@ -103,8 +132,23 @@ export function MapView({ pins, className }: Props) {
       const label = formatPrice(pin.price_aed, prefs);
       const el = document.createElement("button");
       el.type = "button";
+      // 28px painted (`h-7`) is a mouse target, and in map view these pills are
+      // the only route from the map into a listing. The painted pill stays 28px
+      // on purpose — 44px price tags at phone map density cover the map they
+      // annotate — and a transparent `::after` with -8px block insets carries
+      // the hit area to 28 + 2×8 = 44px instead. Verified in Chromium by
+      // walking `document.elementFromPoint` down the pill's centre line: 28
+      // consecutive hits on the button before, 44 after.
+      //
+      // Only the block axis needs it. `formatPrice` compacts to "AED 2.4M",
+      // which with `px-2` measures ~70px — already past 44 on the inline axis.
+      //
+      // No `relative` to go with the `absolute`: maplibre-gl.css sets
+      // `.maplibregl-marker { position: absolute }` on this very element, which
+      // is containing block enough for the pseudo — and being unlayered, it
+      // would beat a Tailwind `relative` anyway.
       el.className =
-        "h-7 px-2 rounded-full bg-bz-navy hover:bg-bz-teal transition-colors text-white text-[12px] font-medium shadow-md whitespace-nowrap";
+        "h-7 px-2 rounded-full bg-bz-navy hover:bg-bz-teal transition-colors text-white text-[12px] font-medium shadow-md whitespace-nowrap pointer-coarse:after:absolute pointer-coarse:after:content-[''] pointer-coarse:after:inset-x-0 pointer-coarse:after:-inset-y-2";
       el.textContent = label;
       el.setAttribute("aria-label", `${pin.title} — ${label}`);
 
@@ -147,7 +191,7 @@ export function MapView({ pins, className }: Props) {
   return (
     <div
       ref={containerRef}
-      className={`bzmap ${className ?? ""}`.trim()}
+      className={`bzmap ${CTRL_TOUCH_TARGET} ${className ?? ""}`.trim()}
       dir="ltr"
     />
   );

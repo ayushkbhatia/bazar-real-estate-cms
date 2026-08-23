@@ -138,7 +138,13 @@ export function EligibilityChecker({
                     onClick={() => choose(c.value)}
                     aria-pressed={current === c.value}
                     className={cn(
-                      "w-full text-start p-3 rounded-md border transition-colors",
+                      // `p-3` around one 14px line lands just under 44 for the
+                      // hintless choices; the ones with a hint clear it on
+                      // their own, so this is a floor rather than a height.
+                      // `e2e/mobile-geometry` will never report these — they
+                      // sit inside <li>, which its in-prose exemption skips —
+                      // so the near-miss has to be caught by reading.
+                      "w-full text-start p-3 min-h-11 md:min-h-0 rounded-md border transition-colors",
                       current === c.value
                         ? "border-bz-navy bg-bz-navy/5"
                         : "border-bz-border bg-bz-bg hover:border-bz-ink/40",

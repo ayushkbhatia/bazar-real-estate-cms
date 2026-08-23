@@ -76,6 +76,29 @@ export function CompareButton({ propertyId }: { propertyId: string }) {
   }
 
   return (
+    /*
+     * 32px circle, 44px box (WCAG 2.5.5). The paint moved to the inner
+     * <span> so the box could grow without the circle growing with it — this
+     * control sits on listing-card media on 6 routes and the art is fixed.
+     *
+     * `pointer-coarse:`, not a width breakpoint: the question is whether a
+     * thumb is doing the tapping, so a touchscreen laptop gets the bigger box
+     * and a narrow desktop window does not. Same test globals.css uses for the
+     * primitive floor, deliberately.
+     *
+     * An ::after overlay with negative insets would give a thumb the same
+     * 44px and cost no layout anywhere — but e2e/mobile-geometry.spec.ts
+     * measures `getBoundingClientRect()` on the <button>, and that box does
+     * not grow with an overflowing pseudo-element. `touchTargets` goes
+     * blocking at the end of Phase 8, so a fix the gate cannot see leaves the
+     * gate red on every route that renders a card.
+     *
+     * The growth is centred, so a call site that anchors this by its corner
+     * has to pull the anchor in 6px on coarse pointers to keep the circle
+     * where it was — listing-card.tsx's media overlay does exactly that. The
+     * other two call sites (action-row.tsx, live-listings-rail.tsx) lay it out
+     * in flow, where 44px is simply the row height on a phone.
+     */
     <button
       type="button"
       onClick={toggle}
@@ -85,17 +108,24 @@ export function CompareButton({ propertyId }: { propertyId: string }) {
           ? `Remove from shortlist (${count}/${SHORTLIST_CAP})`
           : `Save to shortlist (${count}/${SHORTLIST_CAP})`
       }
-      className={
-        active
-          ? "w-8 h-8 rounded-full bg-bz-accent-soft border border-bz-accent text-bz-accent flex items-center justify-center transition-colors"
-          : "w-8 h-8 rounded-full bg-white/92 text-bz-ink-2 hover:text-bz-ink flex items-center justify-center transition-colors"
-      }
+      /* `rounded-full` on the outer box too, with nothing painted on it: the
+         UA focus ring follows border-radius, and without it keyboard focus
+         would draw a square around a circle that used to get a round one. */
+      className="size-8 pointer-coarse:size-11 rounded-full flex items-center justify-center"
     >
-      {active ? (
-        <Check size={15} strokeWidth={2} />
-      ) : (
-        <Scale size={15} strokeWidth={1.7} />
-      )}
+      <span
+        className={
+          active
+            ? "size-8 rounded-full bg-bz-accent-soft border border-bz-accent text-bz-accent flex items-center justify-center transition-colors"
+            : "size-8 rounded-full bg-white/92 text-bz-ink-2 hover:text-bz-ink flex items-center justify-center transition-colors"
+        }
+      >
+        {active ? (
+          <Check size={15} strokeWidth={2} />
+        ) : (
+          <Scale size={15} strokeWidth={1.7} />
+        )}
+      </span>
     </button>
   );
 }

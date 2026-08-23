@@ -249,10 +249,16 @@ export default async function InsightsIndexPage({
         <div className="flex gap-2 flex-wrap">
           {/* "All" is always the active chip here — this route is the
               unfiltered index, and each category chip navigates away to its
-              own archive page. */}
+              own archive page.
+
+              32px chips, wrapping over several rows on a phone: the row an
+              editor's category lands in is not knowable from here, so every
+              chip gets the same 44px box below `md` and the same `h-8` above
+              it. Height only — the label always carries " · <count>", so the
+              narrowest chip still clears 44 across. */}
           <Link
             href="/insights"
-            className="h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors bg-bz-navy text-bz-bg border-bz-navy"
+            className="h-11 md:h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors bg-bz-navy text-bz-bg border-bz-navy"
           >
             {str(chipsV, "all_label") ?? "All"} · {counts.total}
           </Link>
@@ -264,7 +270,7 @@ export default async function InsightsIndexPage({
                 key={c.slug}
                 href={`/insights/category/${categoryToUrlSlug(c.slug)}`}
                 className={cn(
-                  "h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors",
+                  "h-11 md:h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors",
                   "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
                 )}
               >

@@ -85,7 +85,18 @@ export function PublicFooter({
                   /* A network name is Latin in every locale, so it is isolated
                      rather than left to inherit the RTL run around it. */
                   dir="ltr"
-                  className="rounded-full border border-[oklch(0.3_0_0)] px-3 py-1.5 text-[11.5px] text-[oklch(0.8_0.005_80)] transition-colors hover:border-bz-teal hover:text-white"
+                  /* Measured at 31px tall; 44px below `md`, and `md:min-h-0`
+                     hands the height back to the padding that draws it today.
+                     The pill is already a flex item of the row above, so its
+                     `display` is blockified either way — `inline-flex` only
+                     buys the centring `min-h-11` needs.
+
+                     `min-w-11` carries no `md:` twin because it is not a
+                     breakpoint concern: the label is CMS copy (0113 seeds
+                     Facebook … LinkedIn, all far wider), but a network that
+                     renamed itself to one letter would draw a 33px pill at
+                     every width. The floor never binds on the seeded set. */
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-[oklch(0.3_0_0)] px-3 py-1.5 text-[11.5px] text-[oklch(0.8_0.005_80)] transition-colors hover:border-bz-teal hover:text-white md:min-h-0"
                 >
                   {s.label}
                 </a>
@@ -102,12 +113,28 @@ export function PublicFooter({
                 {col.heading}
               </h4>
             ) : null}
-            <ul className="flex flex-col gap-2.5 text-[13.5px]">
+            {/*
+              A 13.5px anchor is an 18px-tall target, and every route that
+              renders this footer — 23 of them — renders every one of these.
+              They are a nav list, not running prose, so the exemption that
+              spares inline links (padding them to 44px wrecks a paragraph)
+              does not cover them, and neither does the `(pointer: coarse)`
+              rule in globals.css: that one is keyed off `[data-slot]`, which
+              a plain anchor never carries.
+
+              Below `md` each anchor becomes a 44px block that fills the column
+              width, and the list's own 10px gap goes to 0: two stacked 44px
+              rows already read as separate rows, and keeping the gap on top
+              would have added ~50px per column to a footer that is the last
+              thing anyone wants to scroll past. From `md` the anchor is inline
+              again and the 10px gap draws the density it always has.
+            */}
+            <ul className="flex flex-col gap-0 md:gap-2.5 text-[13.5px]">
               {col.links.map((link) => (
                 <li key={link.id}>
                   <Link
                     href={link.href}
-                    className="transition-colors hover:text-white"
+                    className="flex min-h-11 items-center transition-colors hover:text-white md:inline md:min-h-0"
                   >
                     {link.label}
                   </Link>
@@ -143,7 +170,12 @@ export function PublicFooter({
                           ? "ltr"
                           : undefined
                       }
-                      className="block text-white hover:underline w-fit"
+                      /* Same 44px floor as the link columns. These carry more
+                         weight than any of them on a phone — a `tel:` here is
+                         one tap from a call — and they were the same 18px.
+                         `w-fit` stays so the underline still tracks the number
+                         rather than the column. */
+                      className="flex min-h-11 w-fit items-center text-white hover:underline md:block md:min-h-0"
                     >
                       {line.value}
                     </a>
@@ -161,12 +193,15 @@ export function PublicFooter({
 
       <div className="flex flex-wrap justify-between gap-4 border-t border-[oklch(0.28_0_0)] pt-6 text-[12px] text-[oklch(0.6_0.005_80)]">
         <div>{settings.legal_line}</div>
+        {/* The legal row is the same nav-list case as the columns above, one
+            size smaller: 12px text, so ~15px tall. The 24px gap already gives
+            them separation; only the height was missing. */}
         <div className="flex gap-6">
           {legal.map((link) => (
             <Link
               key={link.id}
               href={link.href}
-              className="hover:text-white"
+              className="flex min-h-11 items-center hover:text-white md:inline md:min-h-0"
             >
               {link.label}
             </Link>
