@@ -135,7 +135,10 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
     <div className="flex flex-wrap gap-2 mt-7">
       {(p.chips ?? []).map((c, i) => {
         const base =
-          "inline-flex items-center h-9 px-4 rounded-full border text-[13px] " +
+          // h-9 is 36px. These are the property-type chips on /rent and
+          // /commercial ("Apartments", "Retail Spaces", …) — navigation, not
+          // prose, so the inline-link exemption does not cover them.
+          "inline-flex items-center h-9 pointer-coarse:h-11 px-4 rounded-full border text-[13px] " +
           (i === 0
             ? "bg-bz-navy text-bz-bg border-bz-navy"
             : "bg-bz-surface text-bz-ink-2 border-bz-border");

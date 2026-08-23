@@ -63,7 +63,7 @@ All figures from a production build (`npm run build && npm run start`) at 393×8
 | Routes probed for overflow (EN + AR) | 33 routes, **32 clean, 1 intermittent** (`/`) — see §4.1 |
 | Distinct sub-44px touch targets | **194** |
 | Distinct sub-16px form controls | **22 field classes**, 13–15px |
-| Home hero video transfer | **18.5 MB × 2 = ~37 MB per visit** |
+| Home hero video transfer | **18.5 MB per visit** — see §5.1; the "×2 = 37 MB" originally reported here is withdrawn |
 | `<Image fill>` usages with a `sizes` attribute | 58 / 58 (but see §6.3 — present ≠ correct) |
 | Raw `<img>` on mobile-visible routes | **4** (+2 legitimate in `opengraph-image.tsx`) |
 | Playwright mobile-viewport projects | **0** |
@@ -98,7 +98,7 @@ A related claim also withdrawn: `/agents` was reported at 1448px of overflow. Th
 
 ## 5. Critical findings
 
-### 5.1 Home hero video — ~37 MB per mobile visit — Tier A
+### 5.1 Home hero video — 18.5 MB per mobile visit — Tier A — **RESOLVED**
 
 Verified on **live production**, not just locally:
 
@@ -108,7 +108,19 @@ content-length: 19,373,164  (18.5 MB)
 cache-control:  no-cache
 ```
 
-It autoplays on mobile with `preload="auto"` (`hero-video-bg.tsx:69`), and a production build issues **two full-range `206` responses** for it on a single page load — ~37 MB. At a typical 20 Mbps UAE 4G link that is roughly 15 seconds of saturated downlink competing with the LCP image and the search widget's JS.
+It autoplays on mobile with `preload="auto"`, and a production build issued **two** full-range `206` responses for it on a single page load.
+
+> **Correction and resolution (2026-08-23).** Two things in the original finding were wrong, and the underlying bug is now fixed.
+>
+> **The cost was overstated ~2×.** "Two full-range responses" was read as two full downloads. It is not: CDP byte accounting (`Network.dataReceived` per requestId) shows the second request is **cancelled after ~20 KB** — Chromium shares one buffer between the two elements. Measured across three runs including a 5 Mbps throttled arm, the real transfer was **18.5 MB, not ~37 MB**. `content-range` on a response describes what the server *would* send, not what crossed the wire. Every "~37 MB" elsewhere in this document is withdrawn.
+>
+> **The mechanism, finally.** On a hard load React builds this subtree **twice** — two `<video>` elements constructed ~1 ms apart inside one macrotask, with only the second ever inserted. Patching `Document.prototype.createElement` shows it directly. The catch is that **a media element does not need to be in the document to hit the network**: setting `src`, on the `<video>` or on a `<source>` child, invokes the resource selection algorithm immediately. That is why `querySelectorAll("video")` stayed at 1, why a MutationObserver saw zero insertions, and why the obvious fix — moving the URL onto `src` — measured no better: the discarded instance gets that attribute too.
+>
+> **The fix.** Attach the source in a passive effect. Effects run only for renders React *commits*, so the aborted pass builds a `<video>` with no source and asks the network for nothing. Verified independently of the investigation, three consecutive runs on a clean production build: **2 requests → 1**, video still reaching `readyState 4` and playing.
+>
+> **Caveat that matters.** All byte accounting is Chromium. WebKit was not measured, and iOS Safari is the engine most of this site's mobile traffic actually uses. The fix is engine-independent (it removes the second request outright), but the "how much did the duplicate really cost" figure is Chromium-only.
+
+At a typical 20 Mbps UAE 4G link, 18.5 MB is still roughly 7.5 seconds of saturated downlink competing with the LCP image and the search widget's JS. The duplicate is gone; the size decision remains open — see §10 Q2.
 
 Three things compound it:
 
@@ -268,7 +280,7 @@ The blowout gotcha (`min-width:auto` on grid items) is well understood and well 
 - `e2e/a11y.spec.ts:21` — axe never runs at a phone viewport, and the phone renders different markup than what is scanned.
 - `eslint.config.mjs:59` — the rule banning UA-sniffing in the landing-page renderer is **dead**; its glob still points at the pre-i18n path.
 
-A `performance ≥ 0.65` floor on an unthrottled desktop passes comfortably while a 4G phone downloads 37 MB of hero video plus ~1.8 MB of MapLibre it will never render.
+A `performance ≥ 0.65` floor on an unthrottled desktop passes comfortably while a 4G phone downloads 18.5 MB of hero video plus ~1.8 MB of MapLibre it will never render.
 
 ---
 
@@ -374,7 +386,7 @@ const scrolled = Math.round(window.scrollX);   // > 0 means real overflow
 - *Phase 6* — `page.on("request")` on a property detail route; assert no `/maplibre|mapbox-gl/` request before the Location section scrolls into view. Pick the slug off `/buy/search` so there is no CMS coupling.
 - *Phase 7* — open the lightbox, wheel 500px, assert `window.scrollY` unchanged; assert `document.activeElement` stays inside the dialog.
 
-**Lighthouse** — `lighthouserc.mobile.cjs`, same URLs, own floor. Note there is **no `preset: "mobile"`** — Lighthouse accepts only `perf`/`experimental`/`desktop`, and mobile emulation is the *default*; passing one fails the run before it scores anything. `lighthouserc.cjs` opts out of that default via `preset: "desktop"`. Land non-blocking, measure three runs, set the floor 5 points under the observed minimum. Add two **resource-budget** assertions that are content-independent and would each have caught a finding alone: `resource-summary:media:size` (the hero video) and `resource-summary:script:size` (static MapLibre). Byte budgets are the right instrument — a category score absorbs a 37 MB video behind runner noise; a budget cannot.
+**Lighthouse** — `lighthouserc.mobile.cjs`, same URLs, own floor. Note there is **no `preset: "mobile"`** — Lighthouse accepts only `perf`/`experimental`/`desktop`, and mobile emulation is the *default*; passing one fails the run before it scores anything. `lighthouserc.cjs` opts out of that default via `preset: "desktop"`. Land non-blocking, measure three runs, set the floor 5 points under the observed minimum. Add two **resource-budget** assertions that are content-independent and would each have caught a finding alone: `resource-summary:media:size` (the hero video) and `resource-summary:script:size` (static MapLibre). Byte budgets are the right instrument — a category score absorbs an 18.5 MB video behind runner noise; a budget cannot.
 
 **vitest** — cheap, CMS-free, every commit:
 
@@ -401,6 +413,8 @@ Recorded because a finding list without its refutations invites re-work.
 | `no-cache` causes the video double-fetch | **Wrong** — disproved by A/B (§5.1). |
 | Zero horizontal overflow across 72 route loads | **Wrong** — the instrument could not detect overflow (§4.1). Re-measured: 32 of 33 clean, `/` intermittent. |
 | `/agents` overflows 1448px | **Wrong** — stale server on another port; clean on the current build. |
+| Hero video costs ~37 MB per visit | **Wrong by ~2x** — the duplicate request is cancelled after ~20 KB. Real transfer 18.5 MB (§5.1). Chromium-measured; WebKit unverified. |
+| The video double-fetch has no known fix | **Superseded** — root-caused to React building the subtree twice and a detached media element fetching on `src` assignment. Fixed (§5.1). |
 
 **Agent findings that failed to reproduce at runtime** (Tier C — do not action without re-confirming):
 

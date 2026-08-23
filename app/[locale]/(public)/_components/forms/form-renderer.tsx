@@ -482,7 +482,12 @@ function FieldControl({
                   "transition-colors",
                   stacked
                     ? "h-11 rounded-md px-4 text-[13.5px] sm:h-9"
-                    : "h-9 px-3 rounded text-[13px] border",
+                    : // 36px on a phone. The stacked twin above is already
+                      // h-11; the compact branch was left behind, and it is
+                      // what renders the mortgage-intent and valuation-timeline
+                      // chips. Coarse-pointer only, so the desktop pill row
+                      // keeps its density.
+                      "h-9 pointer-coarse:h-11 px-3 rounded text-[13px] border",
                   active
                     ? stacked
                       ? "border border-bz-navy bg-bz-navy text-bz-bg"

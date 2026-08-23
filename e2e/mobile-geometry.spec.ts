@@ -39,39 +39,36 @@ const MIN_CONTROL_FONT_SIZE = 16;
 const MIN_TOUCH_TARGET = 44;
 
 /**
- * Staging. A check moves to "blocking" in the PR that clears its backlog, and
- * only once measured green — never on the assumption that a phase finished.
+ * All four checks BLOCK. Each earned it by measuring green first — none was
+ * flipped on the assumption that a phase had finished.
  *
  *   overflow      blocking from the start
  *   narrowTracks  blocking from the start
- *   inputZoom     BLOCKING as of Phase 8. Phase 2 swept 18 focusable controls
- *                 to `text-[16px] md:<original>`; trialled as blocking across
- *                 all 33 routes and reported zero violations, so it is now
- *                 load-bearing. Nothing may reintroduce a sub-16px control.
- *   touchTargets  still "report". Phases 1 and 8 took the sample from 87
- *                 sub-44px targets across 8 routes to 25 — real progress, not
- *                 done. Flipping it now would red-line main, which is how a
- *                 gate becomes noise.
+ *   inputZoom     flipped after Phase 2's sweep of 18 focusable controls to
+ *                 `text-[16px] md:<original>`; trialled across all 33 routes,
+ *                 zero violations.
+ *   touchTargets  flipped last, and it took three passes: 87 sub-44px targets
+ *                 across a sample of 8 routes -> 63 (Phase 1's coarse-pointer
+ *                 floor) -> 25 (Phase 8) -> 0. The tail was concentrated in
+ *                 four places, none of which was in any Phase 8 stream's file
+ *                 list: the compact pill row in form-renderer.tsx, the legal
+ *                 doc-switcher chips, the property-type chips on /rent and
+ *                 /commercial, and one Radix DialogTrigger.
  *
- * What the remaining 25 are, measured after Phase 8, so the next pass does not
- * have to rediscover them:
- *   - hero-search.tsx mode tabs (Buy/Rent/Off-Plan/Commercial), 32px tall
- *   - hero-search.tsx type + beds selects, 40px
- *   - search-list.tsx tool row: "Draw area", "Commute time", 32px
- *   - sort-dropdown.tsx select, 32px
- *   - valuation-wizard.tsx intent + timeline chips, 36px
- *   - agent-card.tsx WhatsApp anchor, 36x36
- * None were in any Phase 8 stream's file list — that was a gap in how the work
- * was split, not a stream failing its brief.
+ * That last one is worth knowing about, because it will happen again. Radix's
+ * `asChild` triggers OVERWRITE `data-slot` rather than merging it, so a
+ * <Button> used as a DialogTrigger renders `data-slot="dialog-trigger"` and
+ * the globals.css floor keyed on `[data-slot="button"]` never saw it. The
+ * floor now lists every trigger slot in components/ui/*.
  *
- * A "report" check still runs and still attaches its violations to the
- * Playwright report; it just does not fail the run.
+ * A check moved back to "report" is a decision to stop enforcing something
+ * that currently holds — take it deliberately, and say why here.
  */
 const GATE = {
   overflow: "blocking",
   narrowTracks: "blocking",
   inputZoom: "blocking",
-  touchTargets: "report",
+  touchTargets: "blocking",
 } as const;
 
 /**

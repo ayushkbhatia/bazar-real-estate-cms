@@ -54,8 +54,18 @@ export function CuratedGrid({
       </section>
 
       <section className="px-4 md:px-12 py-16">
+        {/*
+          The empty state is a <p>, not a <div>. It is one sentence of running
+          prose and the link inside it wraps across two line boxes — it
+          measured 254x42, which is a touch-target violation only if you treat
+          an inline link like a button. Padding it to 44px would break the
+          sentence, so the right answer is the correct element: the
+          mobile-geometry gate exempts links inside `p`, `li` and `.bz-prose`
+          for exactly this case, and a <div> put this one outside that
+          exemption while changing nothing about how it reads.
+        */}
         {rows.length === 0 ? (
-          <div className="rounded-lg border border-bz-border bg-bz-surface p-9 text-[15px] text-bz-ink-2 max-w-[560px]">
+          <p className="rounded-lg border border-bz-border bg-bz-surface p-9 text-[15px] text-bz-ink-2 max-w-[560px]">
             Nothing matches this curation right now. Try the wider catalogue on{" "}
             <Link
               href={browseAllHref}
@@ -65,7 +75,7 @@ export function CuratedGrid({
             </Link>{" "}
             instead, or save a search and we&apos;ll notify you when new
             listings land.
-          </div>
+          </p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rows.map((row, index) => {

@@ -92,7 +92,38 @@ export function HeroSearch({
           that a fifth tab or a much longer label would overflow visibly rather
           than shrink silently. Labels are editable at /admin/forms/search-bar
           — which is also where a fifth tab would be added, so the note above
-          is a warning to whoever adds one. */}
+          is a warning to whoever adds one.
+
+          `pointer-coarse:min-h-11` is the WCAG 2.5.5 floor. Measured at 390px
+          on a production build these are 50x32 "Buy", 54x32 "Rent", 77x32
+          "Off-Plan", 95x32 "Commercial" — every one already clears 44 ACROSS,
+          so height was the only failing axis and the only thing changed here.
+
+          `min-h-` rather than `h-`: `h-8` and a coarse-pointer `h-11` set the
+          same property at the same specificity (a media query adds none), so
+          which one wins depends on Tailwind's utility ordering rather than on
+          anything this file controls. `min-height` cannot lose that way — it
+          clamps the used height whatever the cascade decides. Same reasoning
+          the touch-target floor in globals.css gives for its own `min-height`.
+
+          NOT ALSO WIDENED, deliberately. A mistap here runs switchTab, which
+          clears type, beds and both ranges, so a wider button would buy real
+          protection. Two things stop it. (1) hero-search.test.tsx pins this
+          box: it asserts `px-3.5` and `h-8` are present, that no
+          `w-/max-w-/min-w-/basis-/flex-1/grow` utility exists on the button,
+          and that the button carries NO `sm:|md:|lg:|xl:|2xl:` class at all —
+          the intrinsic-width contract is a tested invariant, not a preference.
+          (`pointer-coarse:` is not one of those prefixes and not a width
+          utility, which is why the floor below leaves all seven tests in that
+          file green — verified, not assumed.)
+          (2) The slack is thin: 390 − 32 (hero `px-4`) − 12 (form `p-1.5`) − 8
+          (row `px-1`) = 338px of track carrying 276px of buttons plus 12px of
+          gaps, so ~50px spare, and that is the ENGLISH row. The Arabic labels
+          are a different length and the hero section is `overflow-hidden`, so
+          tipping this row over would not scroll the page — it would trip the
+          *blocking* `clipped` branch of e2e/mobile-geometry.spec.ts on /ar. Not
+          a trade worth making for 4px a side without being able to re-measure
+          /ar in this stream. */}
       <div
         className="flex gap-1 px-1 pt-1"
         role="tablist"
@@ -109,8 +140,8 @@ export function HeroSearch({
               onClick={() => switchTab(t.key)}
               className={
                 active
-                  ? "h-8 shrink-0 whitespace-nowrap px-3.5 rounded-md text-[12.5px] bg-white text-bz-ink font-medium"
-                  : "h-8 shrink-0 whitespace-nowrap px-3.5 rounded-md text-[12.5px] text-white/80 hover:text-white transition-colors"
+                  ? "h-8 pointer-coarse:min-h-11 shrink-0 whitespace-nowrap px-3.5 rounded-md text-[12.5px] bg-white text-bz-ink font-medium"
+                  : "h-8 pointer-coarse:min-h-11 shrink-0 whitespace-nowrap px-3.5 rounded-md text-[12.5px] text-white/80 hover:text-white transition-colors"
               }
             >
               {t.label}
@@ -141,7 +172,25 @@ export function HeroSearch({
           />
         </div>
 
-        {/* Row 2: type + (beds | size) */}
+        {/* Row 2: type + (beds | size)
+
+            Both selects carry `pointer-coarse:min-h-11`. They measured 324x40
+            at 390px — 4px short on the height axis, full width across, same
+            shape as the tabs above.
+
+            Worth knowing before anyone "verifies" this against CI: fixing them
+            does NOT move the gate's number. e2e/mobile-geometry.spec.ts counts
+            an element as interactive when it is a BUTTON, an A with href, a
+            role="button"/role="tab", or an INPUT of type checkbox/radio. A bare
+            <select> matches none of those, so on a straight reading of that
+            predicate neither of these was ever among the 25 the check reports,
+            and raising them cannot make the number go down. That is a reading
+            of the source, not a measurement — I could not run the gate from
+            this stream, and I could not reconstruct which 8 routes the 25 came
+            from, so treat it as the reason these two are LOW-risk to change
+            rather than as a prediction of the new total. They are raised
+            because a 40px native select is a real 2.5.5 failure on a phone,
+            not because the check would ever say so. */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <label className="flex flex-col gap-1">
             <span className="text-[11px] font-medium text-bz-muted">
@@ -150,7 +199,7 @@ export function HeroSearch({
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="h-10 px-3 rounded-md bg-white text-bz-ink text-[16px] md:text-[13px] outline-none border border-bz-border focus:border-bz-accent"
+              className="h-10 pointer-coarse:min-h-11 px-3 rounded-md bg-white text-bz-ink text-[16px] md:text-[13px] outline-none border border-bz-border focus:border-bz-accent"
             >
               <option value="">
                 {label("any_type_label", "filters.anyType")}
@@ -171,7 +220,7 @@ export function HeroSearch({
               <select
                 value={beds}
                 onChange={(e) => setBeds(e.target.value)}
-                className="h-10 px-3 rounded-md bg-white text-bz-ink text-[16px] md:text-[13px] outline-none border border-bz-border focus:border-bz-accent"
+                className="h-10 pointer-coarse:min-h-11 px-3 rounded-md bg-white text-bz-ink text-[16px] md:text-[13px] outline-none border border-bz-border focus:border-bz-accent"
               >
                 <option value="">
                   {label("any_beds_label", "filters.anyBeds")}

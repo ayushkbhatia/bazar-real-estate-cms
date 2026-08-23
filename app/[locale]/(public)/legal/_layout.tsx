@@ -93,7 +93,7 @@ export function LegalDocFrame({
                 key={item.slug}
                 href={`/legal/${item.slug}`}
                 className={cn(
-                  "h-8 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors",
+                  "h-8 pointer-coarse:h-11 px-3 inline-flex items-center rounded text-[12.5px] border transition-colors",
                   isActive
                     ? "bg-bz-navy text-bz-bg border-bz-navy"
                     : "bg-bz-surface text-bz-ink-2 border-bz-border hover:border-bz-border-strong",
@@ -120,7 +120,7 @@ export function LegalDocFrame({
             href={translation.href}
             lang={translation.locale}
             dir={translation.locale === "ar" ? "rtl" : "ltr"}
-            className="h-8 px-3 inline-flex items-center rounded text-[12.5px] border border-bz-border bg-bz-surface text-bz-ink-2 transition-colors hover:border-bz-border-strong"
+            className="h-8 pointer-coarse:h-11 px-3 inline-flex items-center rounded text-[12.5px] border border-bz-border bg-bz-surface text-bz-ink-2 transition-colors hover:border-bz-border-strong"
           >
             {translation.label}
           </a>

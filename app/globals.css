@@ -888,12 +888,28 @@
    thirds of the problem is that the design system was bypassed, and no
    stylesheet rule can fix that.
 
-   The gate's `touchTargets` check stays "report" until Phase 8 lands. */
+   EVERY TRIGGER SLOT IS LISTED, and that is not belt-and-braces. Radix's
+   `asChild` triggers do not merge `data-slot` — they OVERWRITE it. So a
+   `<Button>` used as a DialogTrigger renders `data-slot="dialog-trigger"`,
+   NOT `"button"`, and a floor keyed only on `[data-slot="button"]` misses it
+   entirely. That is exactly how `/tools/valuation`'s "Skip to advisor-prepared
+   report" stayed at 36px through Phases 1 and 8 while looking, in source, like
+   an ordinary <Button>. Anything wrapped in a Radix trigger has the same
+   exposure, so the list is the full set from components/ui/*, not the three
+   that happened to be noticed.
+
+   If a new Radix primitive is added, its trigger slot belongs here too. */
 @media (pointer: coarse) {
   [data-slot="button"],
   [data-slot="sheet-trigger"],
   [data-slot="select-trigger"],
-  [data-slot="popover-trigger"] {
+  [data-slot="popover-trigger"],
+  [data-slot="dialog-trigger"],
+  [data-slot="dropdown-menu-trigger"],
+  [data-slot="dropdown-menu-sub-trigger"],
+  [data-slot="navigation-menu-trigger"],
+  [data-slot="tabs-trigger"],
+  [data-slot="tooltip-trigger"] {
     min-height: 44px;
   }
   /* Icon buttons are square (`size-8` sets both axes). Height alone would

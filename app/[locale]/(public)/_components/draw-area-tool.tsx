@@ -31,12 +31,29 @@ export function DrawAreaTool({
 
   return (
     <div className="inline-flex flex-col gap-2">
+      {/* `pointer-coarse:min-h-11` is the WCAG 2.5.5 floor. Measured 102x32 at
+          390px on a production build: wide enough, 12px short. Height is the
+          only axis touched — the label sets the width, and "Cancel draw" (the
+          active state) is the longer of the two strings, so the box never
+          shrinks below what was measured.
+
+          `pointer-coarse:` rather than `md:`, because the question is whether a
+          thumb is doing the tapping and not whether the window is narrow — a
+          touchscreen laptop wants the bigger target, a narrow desktop window
+          does not. A mouse-driven desktop renders byte-identically.
+
+          `min-h-` rather than `h-`: `h-8` and a coarse-pointer `h-11` are the
+          same property at equal specificity (a media query adds none), so which
+          one applies would come down to Tailwind's internal utility ordering.
+          `min-height` clamps the used height either way — the same reasoning
+          globals.css gives for the `[data-slot="button"]` floor, which does not
+          reach this button because it is hand-rolled rather than the primitive. */}
       <button
         type="button"
         onClick={toggle}
         aria-pressed={active}
         className={cn(
-          "inline-flex items-center gap-1.5 h-8 px-3 rounded-md border text-[12.5px] transition-colors",
+          "inline-flex items-center gap-1.5 h-8 pointer-coarse:min-h-11 px-3 rounded-md border text-[12.5px] transition-colors",
           active
             ? "bg-bz-navy text-bz-bg border-bz-navy"
             : "border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong",
