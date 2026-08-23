@@ -421,11 +421,34 @@ const HOME: MasterPageDef = {
       // were a hardcoded seed. They are now a library section, edited once and
       // read by this page and by any landing page that places the block.
       dataNote:
-        "The reviews themselves are edited in Pages → Sub-pages → Sections → Testimonials, because the home page is not their only reader. The eyebrow and heading below belong to this page.",
-      fields: [eyebrow(), heading()],
+        "The reviews themselves are edited in Pages → Sub-pages → Sections → Testimonials, because the home page is not their only reader. The eyebrow, heading and how many to show below belong to this page.",
+      fields: [
+        eyebrow(),
+        heading(),
+        {
+          key: "limit",
+          label: "How many to show",
+          kind: "select",
+          options: [
+            { value: "all", label: "All of them" },
+            { value: "3", label: "3" },
+            { value: "4", label: "4" },
+            { value: "6", label: "6" },
+            { value: "8", label: "8" },
+            { value: "12", label: "12" },
+          ],
+          // The section used to be a three-up grid and this field did not
+          // exist, because three was all that fit. The cards ride a carousel
+          // now, so the count is an editorial decision rather than a layout
+          // one — and "all of them" is the default, since an editor adding a
+          // fourth review expects to see it.
+          help: "Taken from the top of the shared list, skipping any review switched off. The cards scroll, so there is no layout reason to keep this small.",
+        },
+      ],
       defaults: {
         eyebrow: "Testimonials",
         heading: "Reviews and comments",
+        limit: "all",
       },
     },
   ],

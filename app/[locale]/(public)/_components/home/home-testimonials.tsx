@@ -1,15 +1,24 @@
-import { Star } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { CarouselGrid } from "@/components/brand/mobile";
 import { SEED_TESTIMONIALS, type Testimonial } from "@/lib/seeds/awards";
+import { TESTIMONIALS_MAX } from "@/lib/master-pages/library";
+import { TestimonialCarousel } from "./testimonial-carousel";
 import type { SectionCopy } from "./section-copy";
 
-/** How many cards the section leads with. Three is the design's soft cap. */
-export const HOME_TESTIMONIAL_COUNT = 3;
+/**
+ * How many reviews a caller should fetch when it has not decided yet.
+ *
+ * This used to be 3 and was the *display* cap as well — the section sliced the
+ * list itself, so a fourth review could be typed into the CMS and would never
+ * appear anywhere. It is now the ceiling of the list rather than an opinion
+ * about the layout: the carousel shows however many it is handed, and the page
+ * placing it decides the count (`/admin/pages/master/home` → Testimonials, or
+ * the block's "How many to show" on a landing page).
+ */
+export const HOME_TESTIMONIAL_COUNT = TESTIMONIALS_MAX;
 
 /**
- * Home "Testimonials" (handoff §8). Three review cards. Desktop 3-up grid,
- * mobile snap carousel.
+ * Home "Testimonials" (handoff §8). The section header plus the review
+ * carousel — see `TestimonialCarousel` for why the three-up grid went.
  *
  * `items` comes from the section library (`/admin/pages/sub/section/testimonials`),
  * already folded to the request's locale by `resolveSections`, so this component
@@ -17,19 +26,20 @@ export const HOME_TESTIMONIAL_COUNT = 3;
  * caller that passes nothing — the same relationship every other section here
  * has with the literals it ships with.
  */
-function initialsOf(name: string): string {
-  const words = name.split(/\s+/).filter(Boolean);
-  const first = words[0]?.[0] ?? "";
-  const last = words.length > 1 ? words[words.length - 1][0] : "";
-  return (first + last).toUpperCase();
-}
-
 export function HomeTestimonials({
   eyebrow = "Testimonials",
   heading = "Reviews and comments",
   items,
-}: SectionCopy & { items?: Testimonial[] } = {}) {
-  const reviews = (items ?? SEED_TESTIMONIALS).slice(0, HOME_TESTIMONIAL_COUNT);
+  limit,
+}: SectionCopy & { items?: Testimonial[]; limit?: number } = {}) {
+  const all = items ?? SEED_TESTIMONIALS;
+  // `limit` is what the placing page asked for; undefined means "all of them",
+  // which is the point of the carousel. Clamped to the list's own ceiling so a
+  // stale stored value can never ask for more than can exist.
+  const reviews =
+    typeof limit === "number" && limit > 0
+      ? all.slice(0, Math.min(limit, TESTIMONIALS_MAX))
+      : all;
   if (reviews.length === 0) return null;
 
   return (
@@ -41,43 +51,7 @@ export function HomeTestimonials({
         </h2>
       </div>
 
-      <CarouselGrid cols={3} itemWidth="85%">
-        {reviews.map((r) => (
-          <div
-            key={r.id}
-            className="flex h-full flex-col rounded-lg border border-bz-border bg-bz-surface p-7"
-          >
-            <div
-              className="flex gap-1 text-bz-accent"
-              role="img"
-              aria-label="Rated 5 out of 5 stars"
-            >
-              {[0, 1, 2, 3, 4].map((s) => (
-                <Star key={s} size={16} fill="currentColor" strokeWidth={0} />
-              ))}
-            </div>
-            <p
-              className="serif mt-5 flex-1 text-[18px] md:text-[20px] leading-[1.4] tracking-tight"
-              style={{ letterSpacing: "-0.01em" }}
-            >
-              &ldquo;{r.quote}&rdquo;
-            </p>
-            <div className="mt-7 flex items-center gap-3 border-t border-bz-border pt-5">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-bz-surface-3 text-[13px] font-medium text-bz-ink">
-                {initialsOf(r.attribution)}
-              </span>
-              <div className="min-w-0">
-                <div className="text-[13px] font-medium text-bz-ink-2">
-                  {r.attribution}
-                </div>
-                {r.context ? (
-                  <div className="text-[11.5px] text-bz-muted">{r.context}</div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        ))}
-      </CarouselGrid>
+      <TestimonialCarousel items={reviews} />
     </section>
   );
 }

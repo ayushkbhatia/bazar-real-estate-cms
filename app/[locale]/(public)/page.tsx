@@ -35,6 +35,7 @@ import { getForm } from "@/lib/queries/forms";
 import { listPropertiesByReference } from "@/lib/queries/featured-properties";
 import { HOME_FEATURED_LISTING_COUNT } from "./_components/home/section-copy";
 import { faqPairs, img, list, statPairs, str } from "@/lib/master-pages";
+import { testimonialLimitOf } from "@/lib/master-pages/library";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
 
@@ -95,6 +96,11 @@ export default async function HomePage({
       // /admin/pages/sub/section/testimonials. Fetched here rather than inside
       // the component so the section stays a pure render and the page keeps one
       // round of parallel reads.
+      //
+      // The whole list, not a slice: how many to SHOW is a master-page field
+      // (`testimonials.limit`), and `content` is being fetched in this same
+      // Promise.all, so its value is not readable yet. Reading the ceiling and
+      // slicing at render costs nothing — the reviews are one jsonb document.
       getTestimonials(HOME_TESTIMONIAL_COUNT),
     ]);
 
@@ -359,6 +365,7 @@ export default async function HomePage({
         eyebrow={str(testimonialsV, "eyebrow")}
         heading={str(testimonialsV, "heading")}
         items={testimonials}
+        limit={testimonialLimitOf(str(testimonialsV, "limit"))}
       />
     ),
   };

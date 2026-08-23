@@ -28,6 +28,7 @@ import { listPropertiesByReference } from "@/lib/queries/featured-properties";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { getForms } from "@/lib/queries/forms";
 import { getTestimonials } from "@/lib/queries/content-sections";
+import { testimonialLimitOf } from "@/lib/master-pages/library";
 import type { ListingRow } from "@/lib/queries/properties";
 import type { ResolvedForm } from "@/lib/forms";
 import type { Testimonial } from "@/lib/seeds/awards";
@@ -102,7 +103,7 @@ export function collectDataRequest(
     if (needs.includes("developments")) developments = true;
 
     if (needs.includes("testimonials")) {
-      const want = Number.parseInt(str(values, "limit") ?? "3", 10) || 3;
+      const want = testimonialLimitOf(str(values, "limit"));
       testimonials = Math.max(testimonials ?? 0, want);
     }
 

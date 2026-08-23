@@ -76,7 +76,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/dual-range-slider.tsx": 2,
   "app/[locale]/(public)/_components/filter-bar.tsx": 4,
   "app/[locale]/(public)/_components/footer-trust.tsx": 1,
-  "app/[locale]/(public)/_components/home/home-testimonials.tsx": 1,
   "app/[locale]/(public)/_components/market-context-link.tsx": 3,
   "app/[locale]/(public)/_components/mode-segmented.tsx": 1,
   "app/[locale]/(public)/_components/more-filters-drawer.tsx": 1,

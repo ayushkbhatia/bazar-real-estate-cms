@@ -102,6 +102,10 @@
     "whatsappIntro": "{count, plural, one {Hi — I'd like to talk about this listing on bazar.ae:} other {Hi — I'd like to talk about these # on bazar.ae:}}"
   },
   "tagline": "Abu Dhabi",
+  "testimonials": {
+    "carousel": "Client reviews",
+    "rating": "Rated 5 out of 5 stars"
+  },
   "viewAll": "View all",
   "whoWeAre": {
     "establishedIn": "Established in Abu Dhabi",

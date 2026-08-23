@@ -78,11 +78,43 @@ export type LibrarySectionDef = {
 };
 
 /**
+ * The ceiling on the reviews list, and the number "show all" resolves to.
+ *
+ * Every reader of the list takes a `limit` and slices, and "all" has to be
+ * expressible as a number because the page-builder loader collapses several
+ * blocks into one request for the largest slice (`collectDataRequest`). Making
+ * it the same constant the list is capped at means "all" and "the most that can
+ * exist" are the same number by construction rather than by two people
+ * remembering to change both.
+ */
+export const TESTIMONIALS_MAX = 24;
+
+/**
+ * A stored "How many to show" value, as a number of reviews to slice to.
+ *
+ * Three surfaces choose a count — the home page's master-page section, the
+ * page-builder block, and `collectDataRequest`, which collapses several blocks
+ * into one request for the largest slice — and all three used to parse the
+ * string themselves with a hardcoded `|| 3` fallback. That fallback is what
+ * made "all" unrepresentable: `Number.parseInt("all")` is NaN, so the option
+ * would have silently meant three.
+ *
+ * Absent or unparseable resolves to the whole list rather than to three. An
+ * editor who has never opened this field has not asked for a cap.
+ */
+export function testimonialLimitOf(raw: string | null | undefined): number {
+  if (!raw || raw === "all") return TESTIMONIALS_MAX;
+  const n = Number.parseInt(raw, 10);
+  return Number.isFinite(n) && n > 0 ? Math.min(n, TESTIMONIALS_MAX) : TESTIMONIALS_MAX;
+}
+
+/**
  * The reviews list.
  *
- * `max` is 12 rather than 3: the components take a `limit` and slice, so an
- * editor can keep a bench of approved quotes and rotate which three lead
- * without retyping the ones they are resting.
+ * `max` is `TESTIMONIALS_MAX` rather than 3: the cards render as a carousel, so
+ * the count is no longer bounded by what fits in a row. An editor can put the
+ * whole approved bench on the page, or keep a longer bench than they show and
+ * rotate which ones lead by switching the rest off.
  */
 function reviewList(): ListFieldDef {
   return {
@@ -90,8 +122,8 @@ function reviewList(): ListFieldDef {
     label: "Reviews",
     kind: "list",
     itemLabel: "review",
-    max: 12,
-    help: "The home page shows the first three that are switched on. Drag is not available here — order is the order you add them in, and switching one off keeps it for later without showing it.",
+    max: TESTIMONIALS_MAX,
+    help: "Every review switched on rides the carousel, in the order you add them — the home page is not capped at three any more. Drag is not available here; switching one off keeps it for later without showing it.",
     fields: [
       { key: "enabled", label: "Show this review", kind: "toggle" },
       {

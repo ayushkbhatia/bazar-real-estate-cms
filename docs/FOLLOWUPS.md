@@ -1112,7 +1112,7 @@ shows the trail.)
 
 - [i18n] The testimonial card's avatar monogram is built from the first and
   last word of the attribution (`initialsOf` in
-  `app/[locale]/(public)/_components/home/home-testimonials.tsx`), which was
+  `app/[locale]/(public)/_components/home/testimonial-carousel.tsx`), which was
   written when the attribution could only be English. Now that the reviews are
   translated, `/ar` draws two-letter Arabic monograms — "زوجان … ريزيرف" gives
   **زر**, which is a word ("button"), not initials. Arabic has no monogram

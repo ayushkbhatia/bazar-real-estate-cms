@@ -108,18 +108,25 @@ export const testimonials: BlockDef = {
       label: "How many to show",
       kind: "select",
       options: [
+        { value: "all", label: "All of them" },
         { value: "2", label: "2" },
         { value: "3", label: "3" },
         { value: "4", label: "4" },
         { value: "6", label: "6" },
+        { value: "8", label: "8" },
+        { value: "12", label: "12" },
       ],
-      help: "Taken from the top of the shared list, skipping any review switched off.",
+      // The options stopped at 6 while the section was a three-up grid and a
+      // fourth card wrapped onto a second row. It is a carousel now, so the
+      // ceiling is the shared list's own (`TESTIMONIALS_MAX`) and "all of
+      // them" is both an option and the default.
+      help: "Taken from the top of the shared list, skipping any review switched off. The cards scroll, so a long list costs no extra height.",
     },
   ],
   defaults: {
     eyebrow: "Testimonials",
     heading: "Reviews and comments",
-    limit: "3",
+    limit: "all",
   },
 };
 
