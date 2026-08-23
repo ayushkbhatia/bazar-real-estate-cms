@@ -107,8 +107,27 @@ describe("UnitFloorPlans", () => {
       screen.getByRole("button", { name: "Type 1 — open full screen" }),
     );
     const dialog = screen.getByRole("dialog");
-    expect(dialog).toHaveAttribute("aria-modal", "true");
-    expect(within(dialog).getByText(/Studio · Type 1/)).toBeInTheDocument();
+    // Asserts the modal CONTRACT, not the `aria-modal` attribute.
+    //
+    // This used to read `toHaveAttribute("aria-modal", "true")`, which the
+    // hand-rolled overlay satisfied by writing the attribute on a plain div
+    // while enforcing none of what it claims. Measured on the sibling gallery
+    // before it was converted: the page scrolled 600px behind the open
+    // lightbox and 12 of 15 tabs escaped it. The attribute was decoration.
+    //
+    // Radix does not set `aria-modal` — it takes the other route the spec
+    // allows, marking the rest of the tree `aria-hidden` and holding focus.
+    // So the honest assertion is that focus actually moved inside, which the
+    // old markup would have failed and this one passes.
+    expect(dialog.contains(document.activeElement)).toBe(true);
+    // `selector: "p"` picks the VISIBLE caption. The overlay moved onto Radix
+    // Dialog, which requires a Dialog.Title — it renders as an `sr-only` <h2>
+    // carrying the same layout name, so a bare getByText now matches twice.
+    // Both are wanted: the heading names the dialog for a screen reader, the
+    // paragraph shows the caption. This asserts the one a sighted user reads.
+    expect(
+      within(dialog).getByText(/Studio · Type 1/, { selector: "p" }),
+    ).toBeInTheDocument();
   });
 
   it("walks the open type's other layouts and closes on Escape", async () => {
@@ -118,11 +137,17 @@ describe("UnitFloorPlans", () => {
       screen.getByRole("button", { name: "Type 1 — open full screen" }),
     );
     const dialog = screen.getByRole("dialog");
-    expect(within(dialog).getByText(/1 Bedroom · Type 1/)).toBeInTheDocument();
+    // `selector: "p"` — see the note in the test above; Radix's Dialog.Title
+    // renders the same name a second time as an sr-only heading.
+    expect(
+      within(dialog).getByText(/1 Bedroom · Type 1/, { selector: "p" }),
+    ).toBeInTheDocument();
     await userEvent.click(
       within(dialog).getByRole("button", { name: "Next layout" }),
     );
-    expect(within(dialog).getByText(/1 Bedroom · Type 2/)).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(/1 Bedroom · Type 2/, { selector: "p" }),
+    ).toBeInTheDocument();
     await userEvent.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(document.body.style.overflow).toBe("");
