@@ -60,6 +60,14 @@ const GATE = {
  * This is a countdown, not a config surface. Each entry names the phase that
  * deletes it. Adding one to land unrelated work is how a gate rots — fix the
  * route or move the check back to "report" for everyone.
+ *
+ * IT IS CURRENTLY EMPTY, and that is the point. It opened with one entry —
+ * `/developments`, whose `px-12` gutters plus an ungated `grid-cols-2` plus a
+ * card-internal `grid-cols-3` compounded into 18px stat columns holding
+ * content that needed 34-51px. Phase 4 gave it `px-4 md:px-12` and
+ * `grid-cols-1 md:grid-cols-2`; each stat now gets ~92px and the route passes
+ * `narrowTracks` on its own merits. The waiver was deleted in the same change
+ * that earned its deletion.
  */
 const KNOWN_FAILURES: Record<string, { checks: string[]; owner: string }> = {
   // Phase 4. `px-12` + an ungated `grid-cols-2` + a card-internal
@@ -67,10 +75,6 @@ const KNOWN_FAILURES: Record<string, { checks: string[]; owner: string }> = {
   // clipped into 85px boxes. Note this route reports NO horizontal overflow —
   // it clips rather than pushes — which is exactly why `narrowTracks` exists
   // alongside `overflow`.
-  "/developments": {
-    checks: ["narrowTracks"],
-    owner: "Phase 4 — layout collapses",
-  },
 
 };
 
@@ -431,11 +435,11 @@ test("known-failure waivers stay bounded", async () => {
   const count = Object.keys(KNOWN_FAILURES).length;
   expect(
     count,
-    `KNOWN_FAILURES has ${count} entries. It is meant to shrink, never grow: it ` +
-      `shipped with 1 (/developments, Phase 4) and has stayed there. If you ` +
-      `added one, fix the route instead — or move the check to "report" for ` +
-      `everyone rather than waiving it for yourself.`,
-  ).toBeLessThanOrEqual(1);
+    `KNOWN_FAILURES has ${count} entries. It shipped with 1 (/developments) and ` +
+      `Phase 4 earned its way to 0 — the cap came down with it. It is meant to ` +
+      `shrink, never grow. If you added one, fix the route instead, or move the ` +
+      `check to "report" for everyone rather than waiving it for yourself.`,
+  ).toBeLessThanOrEqual(0);
 });
 
 /**
