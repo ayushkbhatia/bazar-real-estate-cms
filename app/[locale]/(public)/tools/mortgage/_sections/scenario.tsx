@@ -163,7 +163,10 @@ export function ScenarioSection(props: Props) {
             <Input
               id="down"
               readOnly
-              className="mt-1.5 mono text-[15px]"
+              /* `readOnly` is not `disabled` — the field still takes focus on
+                 tap, so at 15px iOS Safari zooms the viewport for a number the
+                 visitor cannot even edit. 16px on the phone, 15 from `md`. */
+              className="mt-1.5 mono text-[16px] md:text-[15px]"
               value={money(Math.round(price * downPct), prefs)}
               aria-label={t("mortgage.downPaymentAria", { currency: "AED" })}
             />

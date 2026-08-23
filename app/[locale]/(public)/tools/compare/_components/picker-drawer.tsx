@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { COMPARE_CAP, loadCompareIds } from "@/lib/compare-store";
 import { formatPrice, usePreferences } from "@/lib/preferences";
+import { useIsRtl } from "@/lib/dom/use-is-rtl";
 
 /**
  * Sprint 5b (backfilled): picker drawer for empty compare slots.
@@ -58,6 +59,7 @@ export function PickerDrawer({
   children?: React.ReactNode;
 }) {
   const t = useTranslations("tools");
+  const rtl = useIsRtl();
   const { prefs } = usePreferences();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<"saved" | "recent" | "search">("saved");
@@ -115,15 +117,38 @@ export function PickerDrawer({
           </button>
         )}
       </SheetTrigger>
+      {/* `side` is a PROP, which is exactly why a hardcoded "right" survived
+          the physical→logical conversion: the guard in
+          `lib/rtl/no-physical-utilities.test.ts` reads className strings, and
+          there is no physical utility here to find. The primitive compiles the
+          prop to `right-0` + `border-l` + `slide-in-from-right`, so under /ar
+          the panel flew in from the physical right while the slot that opened
+          it sat on the left. `sheet.tsx` is a shared file, so the flip happens
+          at the call site.
+
+          Both `data-[side=…]:w-full` modifiers rather than a bare `w-full`:
+          the primitive sets width through `data-[side=right]:w-3/4`, and an
+          attribute-qualified selector outranks a plain class, so `w-full`
+          loses and the panel renders three-quarter width with the page showing
+          through beside it. That same specificity is why `sm:w-[400px]` has
+          never bound — the primitive's `data-[side=…]:sm:max-w-sm` is what
+          actually sets the desktop width, at 384px, and it is declared for
+          both sides. So nothing moves above `sm` in either direction. */}
       <SheetContent
-        side="right"
-        className="data-[side=right]:w-full sm:w-[400px] overflow-y-auto"
+        side={rtl ? "left" : "right"}
+        className="data-[side=right]:w-full data-[side=left]:w-full sm:w-[400px] overflow-y-auto"
       >
-        <SheetHeader>
+        {/* The panel is `inset-y-0` and full-width on a phone, and the page
+            sets viewport-fit=cover — so the primitive's `p-4` puts the title
+            under the status bar and the last saved row under the home
+            indicator. `calc(env + …)` rather than `pt-safe`/`pb-bar-safe`,
+            because this sheet is not mobile-only: the tokens are 0px wherever
+            there is no inset, so the desktop panel is bit-identical. */}
+        <SheetHeader className="pt-[calc(var(--bz-safe-top)+1rem)]">
           <SheetTitle>{t("picker.addToCompare")}</SheetTitle>
         </SheetHeader>
 
-        <div className="px-6 pt-2">
+        <div className="px-6 pt-2 pb-[var(--bz-safe-bottom)]">
           <div
             role="tablist"
             aria-label={t("picker.source")}

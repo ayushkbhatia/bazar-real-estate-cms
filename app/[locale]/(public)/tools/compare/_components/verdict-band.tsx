@@ -27,7 +27,17 @@ export async function VerdictBand({
 
   return (
     <section className="bg-bz-ink text-white rounded-lg overflow-hidden">
-      <div className="grid grid-cols-[180px_1fr] gap-8 items-center px-8 py-8">
+      {/*
+        The portrait track was 180px at every width, and `1fr` is
+        `minmax(auto, 1fr)` — its floor is the quote's min-content, not zero.
+        At 390px the row wanted 180 + 32 + ~105px of longest-word inside a
+        294px content box, so the text column sat at ~105px and the surplus
+        ran off the right edge, where the section's own `overflow-hidden`
+        sliced the pull-quote through the middle of a word. Stacking below
+        `md` gives the quote the full column; `[&>*]:min-w-0` drops the track
+        floor so the same squeeze can't reappear at the narrow end of `md`.
+      */}
+      <div className="grid grid-cols-1 md:grid-cols-[180px_1fr] gap-8 items-center px-8 py-8 [&>*]:min-w-0">
         <PlaceholderImage
           label={advisor.slug}
           dark

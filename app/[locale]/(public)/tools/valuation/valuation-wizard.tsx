@@ -527,7 +527,14 @@ function Step2({
           </SelectContent>
         </Select>
       </fieldset>
-      <div className="grid grid-cols-3 gap-3">
+      {/*
+        Two across below `sm` — the only grid in this wizard that was still
+        mobile-blind. At 390px the card's 310px interior split three ways
+        leaves 95px tracks, and "Floor (optional)" measures ~112px at the
+        Label's 14px: it wrapped, and its input then sat a line lower than the
+        beds and baths inputs beside it.
+      */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <fieldset>
           <Label htmlFor="beds">{t("valuation.bedrooms")}</Label>
           <Input
@@ -836,7 +843,21 @@ function Step4({
 function ProgressStrip({ current }: { current: number }) {
   const t = useTranslations("tools");
   return (
-    <div className="flex gap-1 mb-7" data-testid="progress-strip">
+    // Two rows of two below `md`. Four `flex-1` steps across 358px gives each
+    // label ~82px, and "Condition & upgrades" then breaks over three lines
+    // while "Specifications" claims its min-content and starves the rest —
+    // the strip reads as a paragraph, not as progress. It never overflowed
+    // (the four min-contents sum to ~324px), so `e2e/mobile-geometry` was
+    // right not to flag it; it is simply unreadable at phone width.
+    //
+    // `basis` rather than `flex-1` because the two would fight: Tailwind
+    // emits the `flex` shorthand after `flex-basis`, so `flex-1` would reset
+    // the basis back to 0 and nothing would wrap. `md:flex-nowrap` pins the
+    // desktop line to exactly today's behaviour.
+    <div
+      className="flex flex-wrap md:flex-nowrap gap-1 mb-7"
+      data-testid="progress-strip"
+    >
       {STEP_KEYS.map((key, i) => {
         const label = t(`valuation.step.${key}`);
         const state =
@@ -845,7 +866,7 @@ function ProgressStrip({ current }: { current: number }) {
           <div
             key={key}
             className={cn(
-              "flex-1 pb-3 border-b-2",
+              "grow basis-[calc(50%-2px)] md:basis-0 pb-3 border-b-2",
               state === "pending" ? "border-bz-border" : "border-bz-navy",
             )}
           >

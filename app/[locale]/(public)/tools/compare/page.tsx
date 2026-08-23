@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "@/components/i18n/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { asLocale, DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
@@ -74,6 +75,21 @@ type T = Awaited<ReturnType<typeof getTranslations>>;
 
 const SLOT_COUNT = 4;
 const TABLE_COLS = `220px repeat(${SLOT_COUNT}, minmax(0, 1fr))`;
+
+/**
+ * Slot width of one card hero. The mobile rail and the desktop matrix are
+ * both in the DOM at once — the `showTestId` prop below exists because of
+ * that — so four compared properties meant eight raw `<img>` elements
+ * pointed at eight untouched Supabase originals, only four of which were
+ * ever displayed.
+ *
+ * Mobile is the snap rail: each card is `w-[78%] max-w-[300px]` of a
+ * gutter-width rail. From md up it is the desktop matrix — a 220px label
+ * column plus four equal tracks with 16px gaps inside a `px-12` section that
+ * never caps its width, so one track is (100vw − 96 − 220 − 80) / 4.
+ */
+const CARD_HERO_SIZES =
+  "(min-width: 768px) calc((100vw - 396px) / 4), min(78vw, 300px)";
 
 function parseIds(raw?: string): string[] {
   if (!raw) return [];
@@ -476,13 +492,14 @@ function PropertyCard({
           </span>
         </div>
       ) : null}
-      <div className="aspect-[4/3] bg-bz-surface-2">
+      <div className="relative aspect-[4/3] bg-bz-surface-2">
         {property.hero ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={mediaPublicUrl(property.hero.storage_key)}
             alt={property.hero.alt_text ?? property.title}
-            className="w-full h-full object-cover"
+            fill
+            sizes={CARD_HERO_SIZES}
+            className="object-cover"
           />
         ) : (
           <PlaceholderImage label={property.reference} />

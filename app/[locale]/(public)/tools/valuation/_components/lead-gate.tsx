@@ -205,7 +205,11 @@ export function ValuationLeadGate({
                 <Label htmlFor="vlg-intent">{t("gate.intent")}</Label>
                 <select
                   id="vlg-intent"
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
+                  /* `text-base md:text-sm` is the pairing `components/ui/input`
+                     uses on the three fields above: under 16px iOS Safari zooms
+                     the viewport on focus, and the zoom lands mid-dialog with
+                     the submit button pushed off-screen. */
+                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-base md:text-sm"
                   value={intent}
                   onChange={(e) =>
                     setIntent(e.target.value as typeof intent)

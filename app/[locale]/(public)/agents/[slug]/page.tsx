@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { getTranslations } from "next-intl/server";
+import Image from "next/image";
 import Link from "@/components/i18n/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -144,13 +145,23 @@ export default async function AgentProfilePage({
       {/* Hero */}
       <section className="px-4 md:px-12 pt-8 pb-14 max-w-[1280px]">
         <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-8 md:gap-16 items-start">
+          {/* The one image on this page that must not be lazy: `grid-cols-1`
+              below md puts the portrait first and full-bleed, which makes it
+              the LCP element on a phone. The slot is the fixed 360px track
+              from md up, and the section's content width (viewport minus the
+              two 16px gutters) below it — not 100vw, which would still hand
+              a 390px phone the same crop as a 1440px laptop. */}
           {agent.photo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={agent.photo_url}
-              alt={agent.display_name}
-              className="w-full aspect-[4/5] rounded-md object-cover"
-            />
+            <div className="relative w-full aspect-[4/5] rounded-md overflow-hidden">
+              <Image
+                src={agent.photo_url}
+                alt={agent.display_name}
+                fill
+                priority
+                sizes="(min-width: 768px) 360px, calc(100vw - 32px)"
+                className="object-cover"
+              />
+            </div>
           ) : (
             <PlaceholderImage
               label={agent.slug}

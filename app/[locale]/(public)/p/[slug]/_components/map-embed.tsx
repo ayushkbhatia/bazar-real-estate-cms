@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import maplibregl from "maplibre-gl";
+import { useEffect, useRef, useState } from "react";
+import type { Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   ensureRtlTextPlugin,
@@ -22,6 +22,23 @@ type POI = {
  *
  * Uses the shared Bazar pastel basemap (../../../_components/map-style) — the
  * same recoloured CARTO Positron style as the home + search maps.
+ *
+ * The engine is fetched at run time, and only once the frame nears the
+ * viewport. `maplibre-gl` 5.24 is 1.03 MB minified (276 KB gzipped) and this
+ * section sits under the gallery, the facts table and the description — two
+ * or three phone screens down, and most sessions never scroll that far. A
+ * static import put every byte of it in the first-load JS of `/p/[slug]` and
+ * both developments templates, three of the heaviest pages we ship.
+ *
+ * Same deferral `area-map-lazy.tsx` gets from `next/dynamic`, written inline
+ * because this component *is* the map container and the callers style it:
+ * every call site passes a `className` carrying the aspect ratio and border,
+ * so the box is already its final size and nothing shifts when the engine
+ * lands. That is also why there is no shimmer here — an empty bordered frame
+ * is exactly what the page shows today while the style resolves.
+ *
+ * The stylesheet stays a static import: 10 KB gzipped against the engine's
+ * 276, and splitting it too would mean moving the body into a second module.
  */
 export function MapEmbed({
   lat,
@@ -38,18 +55,48 @@ export function MapEmbed({
 }) {
   const rtl = useIsRtl();
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [near, setNear] = useState(false);
+
+  // `-80px`, matching area-map-home.tsx rather than a positive preload
+  // margin: shrinking the root keeps the engine out of Lighthouse's static,
+  // no-scroll page-load window, which is what that file's comment records
+  // failing CI's 0.65 performance floor when the map mounted eagerly. A
+  // visit that never scrolls to the location section pays nothing at all.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setNear(true); // no IO support → don't block the feature
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "-80px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!near || !containerRef.current) return;
     let dead = false;
-    let map: maplibregl.Map | null = null;
+    let map: MapLibreMap | null = null;
 
-    // Register the shaping plugin before the style resolves. Without it
-    // maplibre draws Arabic as isolated, unjoined, left-to-right
-    // letterforms — worse than leaving the labels in English.
-    if (rtl) void ensureRtlTextPlugin(maplibregl);
-    pastelMapStyle(rtl ? "ar" : "en").then((style) => {
+    void (async () => {
+      const maplibregl = (await import("maplibre-gl")).default;
       if (dead || !containerRef.current) return;
+
+      // Register the shaping plugin before the style resolves. Without it
+      // maplibre draws Arabic as isolated, unjoined, left-to-right
+      // letterforms — worse than leaving the labels in English.
+      if (rtl) void ensureRtlTextPlugin(maplibregl);
+      const style = await pastelMapStyle(rtl ? "ar" : "en");
+      if (dead || !containerRef.current) return;
+
       map = new maplibregl.Map({
         container: containerRef.current,
         style,
@@ -83,13 +130,13 @@ export function MapEmbed({
           )
           .addTo(map);
       }
-    });
+    })();
 
     return () => {
       dead = true;
       map?.remove();
     };
-  }, [lat, lng, title, pois, rtl]);
+  }, [near, lat, lng, title, pois, rtl]);
 
   return <div ref={containerRef} className={className} dir="ltr" />;
 }

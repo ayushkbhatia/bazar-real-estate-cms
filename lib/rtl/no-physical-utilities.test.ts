@@ -89,9 +89,79 @@ function violations(): string[] {
   return out;
 }
 
+/**
+ * Physical direction expressed as a PROP rather than a class.
+ *
+ * G-5 above reads className strings, and it is holding — a grep across six
+ * route trees returns nothing. But `<SheetContent side="right">` is a prop,
+ * and `components/ui/sheet.tsx` compiles it to `right-0` + `border-l` +
+ * `slide-in-from-right-10`. So the site's primary mobile navigation flies in
+ * from the physical right while its `ms-auto` hamburger sits at the physical
+ * left under `/ar` — and G-5 passes, because there is no physical utility in
+ * any source file to find.
+ *
+ * The fix at a call site does not need the shared primitive: pass
+ * `side={isRtl ? "left" : "right"}` from `useIsRtl()`. A logical `side="end"`
+ * variant in `sheet.tsx` would be cleaner, but that file is under the
+ * shared-files rule.
+ */
+const PHYSICAL_SIDE = /\bside=["'](left|right)["']/;
+
+/**
+ * Known offenders, each owned by the phase that removes it. Same contract as
+ * `KNOWN_FAILURES` in `e2e/mobile-geometry.spec.ts`: a countdown, not a config
+ * surface. The assertion below fails if it grows.
+ */
+const SIDE_ALLOWLIST: Record<string, string> = {
+  "components/brand/public-mega-nav-mobile.tsx":
+    "Phase 3 — primary mobile nav; opposite edge from its hamburger under /ar",
+  "app/[locale]/(public)/_components/more-filters-drawer.tsx":
+    "Phase 3 — search filter sheet",
+};
+
+function physicalSideProps(): string[] {
+  const out: string[] = [];
+  for (const file of sourceFiles()) {
+    if (file in SIDE_ALLOWLIST) continue;
+    const src = stripComments(readFileSync(path.join(REPO_ROOT, file), "utf8"));
+    src.split("\n").forEach((line, i) => {
+      const m = PHYSICAL_SIDE.exec(line);
+      // Radix's own `data-side` is physical placement and already correct
+      // both ways; only the Sheet/Drawer `side` prop drives layout.
+      if (m && !/data-\[side=/.test(line)) out.push(`${file}:${i + 1}  side="${m[1]}"`);
+    });
+  }
+  return out;
+}
+
 describe("logical direction utilities", () => {
   it("finds source files to check, so the guard is not vacuous", () => {
     expect(sourceFiles().length).toBeGreaterThan(400);
+  });
+
+  it("has no NEW physical `side` prop on a Sheet or Drawer", () => {
+    const found = physicalSideProps();
+    expect(
+      found,
+      `A physical \`side\` prop compiles to right-0 / border-l / ` +
+        `slide-in-from-right — invisible to the className guard above, and it ` +
+        `puts the panel on the opposite edge from its trigger in Arabic. Drive ` +
+        `it from \`useIsRtl()\` instead: side={isRtl ? "left" : "right"}.\n` +
+        `${found.join("\n")}`,
+    ).toEqual([]);
+  });
+
+  it("keeps the physical-side allowlist shrinking", () => {
+    const count = Object.keys(SIDE_ALLOWLIST).length;
+    expect(
+      count,
+      `SIDE_ALLOWLIST has ${count} entries. It opened at 4 and Phase 7 cleared ` +
+        `two of them (picker-drawer, shortlist-drawer) by driving the prop from ` +
+        `useIsRtl(); the cap was tightened to 2 in the same change. Both ` +
+        `survivors are Phase 3's. It is a countdown — the cap comes down with ` +
+        `the list, never up. If you added one, drive the prop from useIsRtl() ` +
+        `instead of waiving it.`,
+    ).toBeLessThanOrEqual(2);
   });
 
   it("has no physical direction utility left anywhere", () => {

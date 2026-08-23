@@ -138,6 +138,21 @@
   --bz-bar-safe: max(env(safe-area-inset-bottom, 0px), 18px);
   --bz-tabbar-h: calc(56px + var(--bz-safe-bottom));
 
+  /* Height of the sticky public header (`public-mega-nav.tsx`), which is
+     `sticky top-0 z-40 h-[72px]` at EVERY breakpoint.
+
+     It exists as a token because three other sticky elements need to sit
+     below it and each hard-coded its own guess instead: the search filter bar
+     (`sticky top-0 z-20`) and the development sub-nav (`sticky top-0 z-[5]`)
+     both claim `top-0`, lose on z-index, and become permanently invisible on
+     a phone — the filter bar taking the only route to the mobile filter sheet
+     with it. Anchor offsets (`scroll-mt-16` = 64px) were tuned against a
+     header height that no longer matches either.
+
+     Phases 3-4 move those consumers onto this token. Declared here first so
+     they have something to move onto. */
+  --bz-header-h: 72px;
+
   /* shadcn semantic tokens — mapped to Bazar palette */
   --background: var(--bz-bg);
   --foreground: var(--bz-ink);
@@ -268,6 +283,12 @@
      `.bz-prose p { margin: 0 }` outranks `> * + *` and flattens every gap. */
   .bz-prose :is(p, h2, h3, ul, ol, blockquote, table, figure, pre, figcaption) {
     margin: 0;
+  }
+  /* A code block is the one prose child that cannot reflow — a long line has
+     no break opportunity, so without this it pushes the article, and the
+     page, into horizontal scroll on a phone. Scroll the block instead. */
+  .bz-prose pre {
+    overflow-x: auto;
   }
   .bz-prose > :is(p, h2, h3, ul, ol, blockquote, table, figure, pre, hr) + * {
     margin-top: 1.25em;
@@ -824,6 +845,63 @@
     .bzmap-legend {
       display: none;
     }
+    /* 34px is a mouse target. These are the only way to zoom on a phone
+       (the map sets cooperativeGestures, so a one-finger drag pans the page
+       rather than the map), so they have to be thumb-sized. The container
+       is `flex-direction: column`, so widening cannot collide with anything
+       beside it. */
+    .bzmap__ctrls button {
+      width: 44px;
+      height: 44px;
+    }
+  }
+}
+
+/* ─── Touch-target floor (coarse pointers only) ─────────────────────
+   Unlayered on purpose, same reason as the two blocks below: Tailwind v4
+   emits size utilities inside `@layer utilities`, and an unlayered normal
+   declaration out-cascades any layered one regardless of specificity. That
+   is what lets this beat `h-7` / `h-8` / `size-8` without editing
+   `components/ui/button.tsx`, which the repo's shared-files rule puts
+   off-limits.
+
+   `min-height` rather than `height`: min-height always wins over a
+   conflicting height, so a 28px `size="sm"` button becomes 44px while its
+   padding, font-size and border-radius are untouched. Nothing above the
+   media query changes — desktop keeps the compact scale the design intends.
+
+   `(pointer: coarse)` and not a width breakpoint, because the question is
+   "is this being tapped with a thumb", not "is the window narrow". A
+   touchscreen laptop correctly gets the larger targets; a 380px-wide desktop
+   window correctly does not.
+
+   SCOPE, measured rather than assumed. Across 8 routes at 390px, 88 distinct
+   sub-44px targets:
+
+       39%  data-slot="button"          ← this rule
+        1%  data-slot="sheet-trigger"   ← this rule
+       60%  no data-slot                ← hand-rolled <button>/<a>, out of reach
+
+   So this closes roughly 40%, not the "~40 of 64 findings" the audit first
+   projected. The remaining 60% are hand-rolled elements that never went
+   through the primitive; each needs its own edit, tracked as Phase 8. Two
+   thirds of the problem is that the design system was bypassed, and no
+   stylesheet rule can fix that.
+
+   The gate's `touchTargets` check stays "report" until Phase 8 lands. */
+@media (pointer: coarse) {
+  [data-slot="button"],
+  [data-slot="sheet-trigger"],
+  [data-slot="select-trigger"],
+  [data-slot="popover-trigger"] {
+    min-height: 44px;
+  }
+  /* Icon buttons are square (`size-8` sets both axes). Height alone would
+     leave a 32x44 lozenge, which fails the same check it was meant to pass
+     and looks wrong next to its text siblings. Scoped to the icon sizes so a
+     text button's width still follows its label. */
+  [data-slot="button"][data-size^="icon"] {
+    min-width: 44px;
   }
 }
 

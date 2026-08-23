@@ -60,6 +60,14 @@ const GATE = {
  * This is a countdown, not a config surface. Each entry names the phase that
  * deletes it. Adding one to land unrelated work is how a gate rots — fix the
  * route or move the check back to "report" for everyone.
+ *
+ * IT IS CURRENTLY EMPTY, and that is the point. It opened with one entry —
+ * `/developments`, whose `px-12` gutters plus an ungated `grid-cols-2` plus a
+ * card-internal `grid-cols-3` compounded into 18px stat columns holding
+ * content that needed 34-51px. Phase 4 gave it `px-4 md:px-12` and
+ * `grid-cols-1 md:grid-cols-2`; each stat now gets ~92px and the route passes
+ * `narrowTracks` on its own merits. The waiver was deleted in the same change
+ * that earned its deletion.
  */
 const KNOWN_FAILURES: Record<string, { checks: string[]; owner: string }> = {
   // Phase 4. `px-12` + an ungated `grid-cols-2` + a card-internal
@@ -67,11 +75,30 @@ const KNOWN_FAILURES: Record<string, { checks: string[]; owner: string }> = {
   // clipped into 85px boxes. Note this route reports NO horizontal overflow —
   // it clips rather than pushes — which is exactly why `narrowTracks` exists
   // alongside `overflow`.
-  "/developments": {
-    checks: ["narrowTracks"],
-    owner: "Phase 4 — layout collapses",
-  },
+
 };
+
+/*
+ * Deliberately NOT waived: `/`.
+ *
+ * While repairing the overflow check (see scrollsHorizontally) the home page
+ * measured 368px of real horizontal scroll — clientWidth 390, scrollWidth
+ * 1928 — in three separate observations, including one inside this gate. It
+ * then measured 0 across twelve consecutive runs against the same server,
+ * with and without animations disabled.
+ *
+ * So the overflow is real when it happens and is not an artifact of the old
+ * broken comparison, but it is not reliably reproducible. Two plausible
+ * sources, neither confirmed: `developer-marquee.tsx`, an infinite horizontal
+ * scroller whose rendered width depends on animation phase; or live CMS
+ * content, since this suite reads production data and the marquee's item
+ * count is editor-owned.
+ *
+ * It is left unwaived on purpose. Waiving it would silence the one check now
+ * capable of catching it, on the strength of evidence too thin to name a
+ * cause. If it is persistent, CI will say so — and that failure will be the
+ * diagnosis this comment cannot provide.
+ */
 
 /**
  * Static route list — every one of these renders without a CMS subject.
@@ -132,6 +159,42 @@ type Violations = {
 };
 
 /**
+ * Does the document actually scroll sideways?
+ *
+ * This is a GROUND-TRUTH test — scroll the page and see whether it moved —
+ * and it has to be, because the obvious implementation is silently broken.
+ *
+ * The first version of this gate compared `documentElement.scrollWidth`
+ * against `window.innerWidth`. Under Chromium's mobile emulation those two
+ * numbers MOVE TOGETHER: when content overflows, the layout viewport widens to
+ * fit it, so `innerWidth` inflates right alongside `scrollWidth` and the
+ * difference stays ~0 whether or not the page overflows. Measured on `/`:
+ *
+ *     innerWidth 1560   clientWidth 390   scrollWidth 1928   → really scrolls 368px
+ *     innerWidth  489   clientWidth 390   scrollWidth  489   → does not scroll   (/buy)
+ *
+ * So the check could never fail, and it passed 34/34 on CI by measuring
+ * nothing.
+ *
+ * `clientWidth` (a stable 390) is the right *reference*, but comparing
+ * `scrollWidth > clientWidth` false-positives on `/buy`, where the two differ
+ * by 99px with no scrollability at all. Only actually scrolling distinguishes
+ * them.
+ *
+ * Runs AFTER collect() — it moves the scroll position, which would change
+ * which elements count as on-screen for the touch-target check. Resets to 0.
+ */
+async function scrollsHorizontally(page: Page): Promise<number> {
+  return page.evaluate(() => {
+    const before = window.scrollX;
+    window.scrollTo(9999, window.scrollY);
+    const reached = Math.round(window.scrollX);
+    window.scrollTo(before, window.scrollY);
+    return reached;
+  });
+}
+
+/**
  * One pass over the rendered document, in the page context.
  *
  * Collected in a single `evaluate` rather than four: each walk of the DOM on a
@@ -141,7 +204,6 @@ type Violations = {
 async function collect(page: Page): Promise<Violations> {
   return page.evaluate(
     ({ MIN_GRID_TRACK, MIN_CONTROL_FONT_SIZE, MIN_TOUCH_TARGET }) => {
-      const vw = window.innerWidth;
       const out: Violations = {
         overflow: [],
         narrowTracks: [],
@@ -152,10 +214,7 @@ async function collect(page: Page): Promise<Violations> {
       const describe = (el: Element) =>
         `<${el.tagName.toLowerCase()}> ${(el.className || "").toString().slice(0, 70)}`;
 
-      const scrollWidth = document.documentElement.scrollWidth;
-      if (scrollWidth > vw + 1) {
-        out.overflow.push(`document scrollWidth ${scrollWidth} > ${vw}`);
-      }
+      // Horizontal overflow is NOT measured here — see scrollsHorizontally().
 
       const seenTrack = new Set<string>();
       const seenClip = new Set<string>();
@@ -304,6 +363,15 @@ test.describe("mobile geometry", () => {
       await page.waitForTimeout(1500);
 
       const v = await collect(page);
+      // Ground-truth overflow, measured after collect() so the scroll it
+      // performs cannot affect which elements counted as on-screen.
+      const scrolledBy = await scrollsHorizontally(page);
+      if (scrolledBy > 0) {
+        v.overflow.push(
+          `document really scrolls ${scrolledBy}px sideways ` +
+            `(clientWidth ${VIEWPORT_WIDTH}px)`,
+        );
+      }
       const known = KNOWN_FAILURES[route];
       const waived = (check: string) =>
         known?.checks.includes(check)
@@ -367,8 +435,51 @@ test("known-failure waivers stay bounded", async () => {
   const count = Object.keys(KNOWN_FAILURES).length;
   expect(
     count,
-    `KNOWN_FAILURES has ${count} entries. It shipped with 1 (/developments, Phase 4). ` +
-      `If you added one, fix the route instead — or move the check to "report" for ` +
-      `everyone rather than waiving it for yourself.`,
-  ).toBeLessThanOrEqual(1);
+    `KNOWN_FAILURES has ${count} entries. It shipped with 1 (/developments) and ` +
+      `Phase 4 earned its way to 0 — the cap came down with it. It is meant to ` +
+      `shrink, never grow. If you added one, fix the route instead, or move the ` +
+      `check to "report" for everyone rather than waiving it for yourself.`,
+  ).toBeLessThanOrEqual(0);
+});
+
+/**
+ * The gate's own regression test — and the reason this file has one.
+ *
+ * The original overflow check compared `scrollWidth` to `innerWidth`, which
+ * under mobile emulation can never differ (see scrollsHorizontally). It
+ * shipped, passed 34/34 on CI, and was measuring nothing. A negative control
+ * ran at the time and caught real failures in the OTHER three checks, which
+ * made the suite look verified end-to-end when one quarter of it was inert.
+ *
+ * So the detector is now tested against a page built to overflow, and against
+ * one built not to. If someone "simplifies" this back to a width comparison,
+ * the first case goes green and this test fails.
+ *
+ * Uses setContent on a same-origin page rather than a fixture route: the app
+ * must not grow a deliberately-broken page just to satisfy its own gate.
+ */
+test.describe("the overflow detector itself", () => {
+  test("fires on a page that really scrolls, and stays quiet on one that does not", async ({
+    page,
+    baseURL,
+  }) => {
+    await page.goto(baseURL ?? "/");
+
+    await page.setContent(
+      `<body style="margin:0"><div style="width:3000px;height:50px">wide</div></body>`,
+    );
+    expect(
+      await scrollsHorizontally(page),
+      "a 3000px-wide child must be reported as horizontal overflow — if this " +
+        "reads 0, the detector is inert and every route below it is unguarded",
+    ).toBeGreaterThan(0);
+
+    await page.setContent(
+      `<body style="margin:0"><div style="width:100%;height:50px">fits</div></body>`,
+    );
+    expect(
+      await scrollsHorizontally(page),
+      "a full-width child must NOT be reported as overflow",
+    ).toBe(0);
+  });
 });

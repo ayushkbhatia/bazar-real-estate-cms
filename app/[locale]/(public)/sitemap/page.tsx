@@ -121,10 +121,10 @@ const SECTIONS: { title: string; links: { label: string; href: string }[] }[] =
 export default function SitemapPage() {
   return (
     <article className="bg-bz-bg">
-      <section className="px-12 pt-24 pb-12 border-b border-bz-border">
+      <section className="px-4 md:px-12 pt-24 pb-12 border-b border-bz-border">
         <Eyebrow>Sitemap</Eyebrow>
         <h1
-          className="serif text-[64px] mt-3 leading-[1.0] max-w-[24ch]"
+          className="serif text-[36px] md:text-[64px] mt-3 leading-[1.0] max-w-[24ch]"
           style={{ letterSpacing: "-0.028em" }}
         >
           Everything on bazar.ae.
@@ -142,7 +142,7 @@ export default function SitemapPage() {
         </p>
       </section>
 
-      <section className="px-12 py-16">
+      <section className="px-4 md:px-12 py-16">
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-[1200px]">
           {SECTIONS.map((s) => (
             <li key={s.title}>

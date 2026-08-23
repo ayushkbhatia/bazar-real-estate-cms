@@ -60,6 +60,14 @@ export function MapView({ pins, className }: Props) {
         center,
         zoom: pins.length ? 10 : 9,
         attributionControl: false,
+        // Without this the canvas claims every one-finger drag that starts on
+        // it, and the map view is `h-[70vh]` on a phone — a thumb that lands
+        // anywhere in the top two-thirds of the screen pans the map instead of
+        // scrolling, so the pagination below it is unreachable. With it the
+        // canvas takes `touch-action: pan-x pan-y`, the page scrolls, and two
+        // fingers (or ctrl+wheel) still pan and zoom. The area map and the
+        // contact HQ map have set it since they shipped; this one was missed.
+        cooperativeGestures: true,
       });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }));
       map.addControl(
@@ -129,7 +137,20 @@ export function MapView({ pins, className }: Props) {
     // old currency until the pin set itself changes.
   }, [pins, ready, prefs]);
 
-  return <div ref={containerRef} className={className} dir="ltr" />;
+  // `bzmap` is what scopes the brand restyle of MapLibre's gesture overlay
+  // (`globals.css`, `.bzmap .maplibregl-cooperative-gesture-screen`) — without
+  // it the "use two fingers" scrim renders in the library's own 1.4em
+  // black-40% default. The class contributes nothing else here: its
+  // `position: relative` and `overflow: hidden` are what MapLibre's own
+  // unlayered `.maplibregl-map` rule already sets, and its background sits
+  // under the canvas.
+  return (
+    <div
+      ref={containerRef}
+      className={`bzmap ${className ?? ""}`.trim()}
+      dir="ltr"
+    />
+  );
 }
 
 function escapeHtml(s: string): string {

@@ -533,7 +533,14 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                     setValue("area_sqft", parseAreaSqft(next));
                   }}
                   placeholder="0"
-                  className="mono w-full h-11 rounded border border-bz-border bg-bz-surface px-3 pe-11 text-[14px] transition-colors focus:border-bz-teal outline-none"
+                  /* Every focusable control in this wizard reads 16px until
+                     `md` and 14px above it. iOS Safari zooms the viewport when
+                     it focuses anything under 16px, and on a two-step form that
+                     means the jolt repeats at each field — the visitor spends
+                     the whole flow pinching back out. Only the text controls
+                     carry the pairing; the pills and the consent checkbox can
+                     take focus but accept no caret, so the rule skips them. */
+                  className="mono w-full h-11 rounded border border-bz-border bg-bz-surface px-3 pe-11 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
                 />
                 <span className="absolute end-3.5 top-1/2 -translate-y-1/2 text-[12px] text-bz-muted pointer-events-none">
                   ft²
@@ -550,7 +557,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                     (e.target.value || null) as ListPropertyInput["furnishing"],
                   )
                 }
-                className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
+                className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
               >
                 <option value="">{t("sell.selectPlaceholder")}</option>
                 {LP_FURNISHINGS.map((f) => (
@@ -634,7 +641,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
               {...register("name")}
               autoComplete="name"
               placeholder={t("sell.namePlaceholder")}
-              className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
+              className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
             />
           </FieldShell>
 
@@ -655,7 +662,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                   inputMode="tel"
                   autoComplete="tel-national"
                   placeholder={t("sell.mobilePlaceholder")}
-                  className="mono w-full h-11 rounded-e border border-bz-border bg-bz-surface px-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
+                  className="mono w-full h-11 rounded-e border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
                 />
               </div>
             </FieldShell>
@@ -671,7 +678,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                 type="email"
                 autoComplete="email"
                 placeholder={t("sell.emailPlaceholder")}
-                className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
+                className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
               />
             </FieldShell>
           </div>
@@ -1044,7 +1051,11 @@ function LocationField({
             }
           }}
           placeholder={t("sell.locationPlaceholder")}
-          className="w-full h-11 rounded border border-bz-border bg-bz-surface ps-9 pe-3 text-[14px] transition-colors focus:border-bz-teal outline-none"
+          /* 16px until `md`, as with every other control in this wizard —
+             worse here than elsewhere, since an iOS zoom fires while the
+             suggestion list is open and shifts the options out from under
+             the finger that was reaching for one. */
+          className="w-full h-11 rounded border border-bz-border bg-bz-surface ps-9 pe-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
         />
         {showList ? (
           <ul

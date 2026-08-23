@@ -29,7 +29,11 @@ export function SortDropdown() {
               : (e.target.value as (typeof SORT_OPTIONS)[number]),
           )
         }
-        className="h-8 px-2.5 rounded border border-bz-border bg-bz-bg text-[13px] text-bz-ink outline-none focus:border-bz-accent"
+        /* 16px until `md`: a native select under 16px makes iOS Safari zoom the
+           viewport as the picker opens, so choosing a sort order leaves the
+           results list magnified behind the sheet. The `md:` half keeps the
+           13px the filter row is drawn at. */
+        className="h-8 px-2.5 rounded border border-bz-border bg-bz-bg text-[16px] md:text-[13px] text-bz-ink outline-none focus:border-bz-accent"
       >
         {SORT_OPTIONS.map((s) => (
           <option key={s} value={s}>
