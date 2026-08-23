@@ -22,6 +22,7 @@ import type { Database } from "@/db/types";
 import { FilterBar, type AreaOption } from "./filter-bar";
 import type { MapPin } from "./map-view";
 import { MapViewClient } from "./map-view-client";
+import { LgOnly } from "./lg-only";
 import { SortDropdown } from "./sort-dropdown";
 import { ViewToggle } from "./view-toggle";
 import { resolveSearchView } from "./search-view";
@@ -371,27 +372,96 @@ export async function SearchList({
                 );
               })}
             </div>
-            <aside className="hidden lg:block sticky top-[64px] self-start h-[calc(100vh-64px-48px)] rounded-lg overflow-hidden border border-bz-border">
-              <MapViewClient
-                pins={rows
-                  .filter(
-                    (
-                      r,
-                    ): r is typeof r & { geo: { lat: number; lng: number } } =>
-                      r.geo !== null &&
-                      typeof r.geo.lat === "number" &&
-                      typeof r.geo.lng === "number",
-                  )
-                  .map((r): MapPin => ({
-                    id: r.id,
-                    reference: r.reference,
-                    slug: r.slug,
-                    title: r.title,
-                    price_aed: r.price_aed,
-                    geo: r.geo,
-                  }))}
-                className="w-full h-full"
-              />
+            {/*
+              Sticky offset moved off a literal 64px onto `--bz-header-h`.
+
+              `public-mega-nav.tsx:125` is `sticky top-0 z-40 h-[72px]` at
+              EVERY breakpoint, so `top-[64px]` parked the top 8px of this map
+              underneath the header once the column stuck — and the height
+              subtracted the same wrong 64. That is the exact failure
+              `globals.css:145` documents for the two other sticky consumers
+              ("each hard-coded its own guess"); Phase 3 moved the filter bar
+              and the development sub-nav onto the token and this was the one
+              left behind. Nothing between here and the viewport absorbs the
+              offset — the public layout is `<body flex flex-col>` →
+              `<main flex-1>` → plain blocks — so `top` is measured from the
+              viewport and the token is the right number at every width.
+
+              KNOWN RESIDUAL, not fixed here: `filter-bar.tsx:283` is also
+              sticky at `top-[var(--bz-header-h)]` and carries `z-20`, so once
+              scrolled it paints over this map's top edge (this aside has no
+              z-index). Clearing it too needs the filter bar's own height,
+              which is content-dependent and has no token — inventing a second
+              literal here is what the comment above says not to do. Moving to
+              72px makes the overlap 8px smaller than it was, not larger.
+            */}
+            <aside className="hidden lg:block sticky top-[var(--bz-header-h)] self-start h-[calc(100vh_-_var(--bz-header-h)_-_48px)] rounded-lg overflow-hidden border border-bz-border">
+              {/*
+                A REAL mount gate, not a CSS one.
+
+                `hidden lg:block` on the aside stops the map being painted; it
+                does not stop React rendering the subtree, so `MapViewClient`'s
+                `next/dynamic` loader fired on every phone that reached grid
+                view and pulled the whole MapLibre engine (~1.8MB raw, ~276KB
+                transferred) down for a map the viewport can never show —
+                MOBILE_AUDIT §5.7, which cites this aside at its pre-fix line
+                number (search-list.tsx:374).
+
+                Scope of the waste, measured against the code rather than
+                assumed: a phone's DEFAULT here is list view, not grid
+                (`search-view.ts` picks from the UA), and list view renders no
+                aside at all. So the download hit the paths that reach grid on
+                a narrow viewport — a shared `?view=grid` link, the ViewToggle's
+                own Grid button, any tablet UA (`lib/device.ts` counts only
+                `device.type === "mobile"` as a phone, so tablets default to
+                grid), and any desktop window narrower than `lg` (64rem —
+                1024px at a 16px root). Narrower than "every search route on
+                every phone", still pure waste.
+
+                The `fallback` is byte-identical to `map-view-client.tsx`'s own
+                `loading:` placeholder on purpose: the aside's box is fixed
+                height and comes from the server at every width, so the only
+                thing that could shift is what fills it. Same fill before
+                hydration, during the import and below `lg` = no shift and
+                nothing to mismatch.
+
+                Deliberately NOT also gated on IntersectionObserver the way
+                `area-map-home.tsx` is. That component's gate exists because
+                its map sits below the fold and Lighthouse's no-scroll audit
+                was paying for it; this aside is top-aligned in the results
+                grid and I did not measure whether it falls inside the desktop
+                audit viewport, so adding a second gate would be a guess with
+                its own failure modes. If LHCI desktop regresses, measure that
+                separately.
+              */}
+              <LgOnly
+                fallback={
+                  <div className="w-full h-full bg-bz-surface-2 animate-pulse" />
+                }
+              >
+                <MapViewClient
+                  pins={rows
+                    .filter(
+                      (
+                        r,
+                      ): r is typeof r & {
+                        geo: { lat: number; lng: number };
+                      } =>
+                        r.geo !== null &&
+                        typeof r.geo.lat === "number" &&
+                        typeof r.geo.lng === "number",
+                    )
+                    .map((r): MapPin => ({
+                      id: r.id,
+                      reference: r.reference,
+                      slug: r.slug,
+                      title: r.title,
+                      price_aed: r.price_aed,
+                      geo: r.geo,
+                    }))}
+                  className="w-full h-full"
+                />
+              </LgOnly>
             </aside>
           </div>
         )}

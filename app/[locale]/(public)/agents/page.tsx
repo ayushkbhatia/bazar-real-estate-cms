@@ -143,14 +143,36 @@ export default async function AgentsIndexPage({ params }: { params: Promise<{ lo
                   {/* T1.5 quick win: per-card WhatsApp deep-link.
                       Lives outside the link wrapper so the icon is its own
                       target — clicking the card still navigates to the
-                      profile. */}
+                      profile.
+
+                      That independence is exactly why the size matters. The
+                      badge sits on top of a full-card <Link>, so a thumb that
+                      misses it does not miss nothing: it opens the advisor's
+                      profile instead of the WhatsApp thread. Measured 36x36 at
+                      390px, short on BOTH axes, hence min-w as well as min-h.
+
+                      `pointer-coarse:` and not `md:` — the badge is drawn at
+                      36px on desktop too, and a mouse hits 36px fine; the
+                      question is whether a thumb is doing the tapping, which is
+                      also why globals.css scopes its own touch floor this way.
+                      `min-w-`/`min-h-` and not `size-11`: `w-9`/`h-9` and a
+                      coarse-pointer `size-11` are different Tailwind utilities
+                      writing the same two properties at equal specificity, so
+                      the winner would be Tailwind's internal ordering of `size`
+                      versus `w`/`h` rather than anything written here. The
+                      min-* pair cannot lose that way — it clamps the used box
+                      whichever declaration applies — and `rounded-full` keeps
+                      it a circle at 44 exactly as it was at 36. Position is
+                      untouched: the badge is inset 12px into a portrait that is
+                      the full column width, so 8 more pixels of box cannot
+                      reach the card's edge. */}
                   {wa ? (
                     <a
                       href={wa}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`Message ${a.display_name} on WhatsApp`}
-                      className="absolute top-3 end-3 w-9 h-9 rounded-full bg-bz-ink/85 text-bz-bg backdrop-blur-sm inline-flex items-center justify-center hover:bg-bz-ink shadow-md"
+                      className="absolute top-3 end-3 w-9 h-9 pointer-coarse:min-w-11 pointer-coarse:min-h-11 rounded-full bg-bz-ink/85 text-bz-bg backdrop-blur-sm inline-flex items-center justify-center hover:bg-bz-ink shadow-md"
                     >
                       <MessageCircle size={14} strokeWidth={1.8} />
                     </a>

@@ -25,10 +25,26 @@ export function CommuteTimeTool() {
 
   return (
     <div className="relative">
+      {/* `pointer-coarse:min-h-11` is the WCAG 2.5.5 floor. This trigger
+          measured 129x32 at 390px on a production build, so it is wide enough
+          and 12px short — height is the only axis touched, and the label keeps
+          the width it earns.
+
+          `pointer-coarse:` rather than `md:`, because the question is whether a
+          thumb is doing the tapping, not whether the window is narrow: a
+          touchscreen laptop should get the taller control, a 380px-wide desktop
+          window should not. Desktop-with-a-mouse renders byte-identically.
+
+          `min-h-` rather than `h-`: `h-8` and a coarse-pointer `h-11` set the
+          same property at the same specificity — a media query contributes none
+          — so which wins is decided by Tailwind's internal utility ordering
+          rather than by anything written here. `min-height` clamps the used
+          height whichever way that ordering falls, which is the same argument
+          globals.css makes for its own `min-height` touch floor. */}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[12.5px] hover:border-bz-border-strong transition-colors"
+        className="inline-flex items-center gap-1.5 h-8 pointer-coarse:min-h-11 px-3 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[12.5px] hover:border-bz-border-strong transition-colors"
       >
         <Clock size={13} strokeWidth={1.7} />
         Commute time
@@ -45,8 +61,14 @@ export function CommuteTimeTool() {
                zoom the viewport as the picker opens, and this one hangs off an
                `absolute end-0` popover — the zoom carried the popover past the
                right edge, so the destination list opened over nothing. The
-               `md:` half keeps the 13px the popover is drawn at. */
-            className="mt-1 w-full h-9 px-2 rounded-md border border-bz-border bg-bz-bg text-[16px] md:text-[13px]"
+               `md:` half keeps the 13px the popover is drawn at.
+
+               `pointer-coarse:min-h-11` for the same reason as the minute
+               presets below — 36px drawn, `w-full` so only height was short,
+               and invisible to the gate twice over (a <select> is not in its
+               `interactive` predicate, and this popover is closed when it
+               measures). */
+            className="mt-1 w-full h-9 pointer-coarse:min-h-11 px-2 rounded-md border border-bz-border bg-bz-bg text-[16px] md:text-[13px]"
           >
             {PRESETS.map((p) => (
               <option key={p.label} value={p.label}>
@@ -58,6 +80,19 @@ export function CommuteTimeTool() {
           <label className="mt-3 block text-[11.5px] uppercase tracking-wider text-bz-muted">
             Within
           </label>
+          {/* The minute presets are 28px tall — the smallest targets in this
+              component. They are NOT part of the 25 the gate reports and never
+              were: e2e/mobile-geometry.spec.ts measures a route at scroll 0
+              without interacting with it, so this popover is closed and these
+              buttons are `display: none`, which collect() skips outright.
+              Raised anyway because they are the same defect as the trigger and
+              the popover is the only place this filter can be set on a phone.
+              Height only, so the row's width is byte-identical to what already
+              fits inside the 280px popover — I have no measurement of these
+              four boxes (the gate never opens the popover, so none was taken),
+              and widening on a guess is how a 280px panel starts clipping. If
+              someone does measure them and a label lands under 44px across,
+              `pointer-coarse:min-w-11` is the matching one-liner. */}
           <div className="mt-1 inline-flex rounded-md border border-bz-border bg-bz-bg p-0.5">
             {[10, 20, 30, 45].map((m) => (
               <button
@@ -66,8 +101,8 @@ export function CommuteTimeTool() {
                 onClick={() => setMinutes(m)}
                 className={
                   minutes === m
-                    ? "h-7 px-2.5 rounded text-[12px] bg-bz-navy text-bz-bg font-medium"
-                    : "h-7 px-2.5 rounded text-[12px] text-bz-ink-2 hover:text-bz-ink"
+                    ? "h-7 pointer-coarse:min-h-11 px-2.5 rounded text-[12px] bg-bz-navy text-bz-bg font-medium"
+                    : "h-7 pointer-coarse:min-h-11 px-2.5 rounded text-[12px] text-bz-ink-2 hover:text-bz-ink"
                 }
               >
                 {m} min
