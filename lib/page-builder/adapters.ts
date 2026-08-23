@@ -20,6 +20,7 @@ import {
   type ImageValue,
   type SectionValues,
 } from "@/lib/master-pages";
+import { testimonialLimitOf } from "@/lib/master-pages/library";
 import { listingRowToCard } from "@/app/[locale]/(public)/_components/marketing/map-listing";
 import type { FeaturedCardProps } from "@/app/[locale]/(public)/_components/marketing/map-listing";
 import type { CategoryTile } from "@/app/[locale]/(public)/_components/marketing/category-tiles";
@@ -324,7 +325,7 @@ export function whyBandProps(values: SectionValues) {
  * two would otherwise render the first block's four.
  */
 export function testimonialsProps(values: SectionValues, data: LandingData) {
-  const limit = Number.parseInt(str(values, "limit") ?? "3", 10) || 3;
+  const limit = testimonialLimitOf(str(values, "limit"));
   return {
     eyebrow: str(values, "eyebrow"),
     heading: str(values, "heading"),

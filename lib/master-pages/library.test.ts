@@ -5,6 +5,8 @@ import {
   isLibrarySectionKey,
   librarySectionPageDef,
   testimonialsFrom,
+  testimonialLimitOf,
+  TESTIMONIALS_MAX,
 } from "./library";
 import { resolveSections, validateSections, mergeValues } from "./index";
 import { arabicTwins } from "./twins";
@@ -185,5 +187,40 @@ describe("validation", () => {
       items: [{ enabled: true, quote: "Q", attribution: "A" }],
     } as never);
     expect(testimonialsFrom(merged)).toHaveLength(1);
+  });
+});
+
+/**
+ * The list stopped being a bench and became the section: the cards ride a
+ * carousel, so "how many to show" is an editorial choice with an "all" option
+ * rather than the three the grid could fit. Three surfaces read that value —
+ * the home page, the page-builder block, and `collectDataRequest` — which is
+ * why parsing it lives here rather than three times over.
+ */
+describe("how many to show", () => {
+  it("holds more reviews than a row ever could", () => {
+    expect(reviewField().max).toBe(TESTIMONIALS_MAX);
+    expect(TESTIMONIALS_MAX).toBeGreaterThan(SEED_TESTIMONIALS.length);
+  });
+
+  it("reads “all” as the whole list rather than as NaN", () => {
+    // The old parser was `Number.parseInt(raw) || 3`, which would have made
+    // the option silently mean three.
+    expect(testimonialLimitOf("all")).toBe(TESTIMONIALS_MAX);
+  });
+
+  it("keeps a stored number, so an existing page shows what it always did", () => {
+    expect(testimonialLimitOf("3")).toBe(3);
+    expect(testimonialLimitOf("12")).toBe(12);
+  });
+
+  it("treats an absent or unreadable value as no cap, not as three", () => {
+    for (const raw of [null, undefined, "", "  ", "seven", "0", "-4"]) {
+      expect(testimonialLimitOf(raw)).toBe(TESTIMONIALS_MAX);
+    }
+  });
+
+  it("clamps above the ceiling, so a stale document cannot over-ask", () => {
+    expect(testimonialLimitOf("999")).toBe(TESTIMONIALS_MAX);
   });
 });

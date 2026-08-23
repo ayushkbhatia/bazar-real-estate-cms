@@ -33,9 +33,9 @@ a campaign page needs both halves: designed sections, arranged freely.
 
 Every other block owns its copy, which is right for a campaign page — it exists
 nowhere else, which is why `document.ts` goes to such lengths never to lose it.
-Client testimonials are the opposite: the same three quotes are already on the
-home page, so a per-block copy would mean the site quoting one client two ways
-the first time somebody fixed a typo on one page.
+Client testimonials are the opposite: the same reviews are already on the home
+page, so a per-block copy would mean the site quoting one client two ways the
+first time somebody fixed a typo on one page.
 
 So `testimonials` declares `needs: ["testimonials"]` and reads the section
 library (`lib/master-pages/library.ts`, edited at
@@ -43,6 +43,12 @@ library (`lib/master-pages/library.ts`, edited at
 *this* page: the eyebrow, the heading, and how many cards to show. Two blocks on
 one page still make one fetch — `collectDataRequest` asks for the largest slice
 anyone wanted and each adapter re-slices.
+
+"How many" defaults to **all of them**, and the list holds up to
+`TESTIMONIALS_MAX` (24). The cards render as a carousel rather than a three-up
+grid, so the count is an editorial choice with no layout ceiling. Parse the
+stored value with `testimonialLimitOf` and not by hand — "all" is a legal value
+and `Number.parseInt("all") || 3` silently meant three.
 
 If you add a second shared section, it goes in the library and follows this
 shape. Do not copy shared copy into `defaults`.

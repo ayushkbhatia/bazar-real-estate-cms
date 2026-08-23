@@ -102,6 +102,10 @@
     "whatsappIntro": "{count, plural, zero {مرحبًا — أودّ التحدث عن هذه العقارات على bazar.ae:} one {مرحبًا — أودّ التحدث عن هذا العقار على bazar.ae:} two {مرحبًا — أودّ التحدث عن هذين العقارين على bazar.ae:} few {مرحبًا — أودّ التحدث عن هذه # عقارات على bazar.ae:} many {مرحبًا — أودّ التحدث عن هذه # عقارًا على bazar.ae:} other {مرحبًا — أودّ التحدث عن هذه # عقار على bazar.ae:}}"
   },
   "tagline": "أبوظبي",
+  "testimonials": {
+    "carousel": "آراء العملاء",
+    "rating": "التقييم ٥ من ٥ نجوم"
+  },
   "viewAll": "عرض الكل",
   "whoWeAre": {
     "establishedIn": "تأسست في أبوظبي",
