@@ -10,7 +10,8 @@
   "bathsShort": "حمام",
   "badge": {
     "exclusive": "حصري",
-    "vacantOnTransfer": "شاغر عند نقل الملكية"
+    "vacantOnTransfer": "شاغر عند نقل الملكية",
+    "mortgageEligible": "قابل للتمويل العقاري"
   },
   "priceOnRequest": "السعر عند الطلب"
 }

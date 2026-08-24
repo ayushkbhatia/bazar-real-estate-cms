@@ -1,4 +1,5 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { listingBadge } from "@/lib/listing-badge";
 import type { Metadata } from "next";
 import * as React from "react";
 import Link from "@/components/i18n/link";
@@ -6,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   listPublishedProperties,
   propertyUrl,
-  type ListingRow,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { getPublicSiteSettings } from "@/lib/queries/site-settings";
@@ -63,15 +63,6 @@ const VALID_VARIANTS: HeroVariant[] = [
   "concierge",
 ];
 
-function badgeFor(row: ListingRow):
-  | { label: string; kind: "ink" | "accent" }
-  | undefined {
-  if (row.flags?.exclusive) return { label: "Exclusive", kind: "ink" };
-  if (row.flags?.vacant_on_transfer)
-    return { label: "Vacant on transfer", kind: "accent" };
-  return undefined;
-}
-
 export default async function HomePage({
   params,
 }: {
@@ -82,6 +73,15 @@ export default async function HomePage({
   // page renders English content under `lang="ar"` in an RTL layout, which is
   // the failure `lib/i18n/current.ts` describes: it looks finished.
   setRequestLocale(asLocale((await params).locale));
+
+  // Ambient rather than locale-pinned, and only safe because of the line
+  // above: `setRequestLocale` has already run, so `getLocale()` has something
+  // to resolve.
+  const tl = await getTranslations("listing");
+  const badgeLabels = {
+    exclusive: tl("badge.exclusive"),
+    vacantOnTransfer: tl("badge.vacantOnTransfer"),
+  };
 
   const [{ rows: latest }, settings, content, listForm, testimonials] =
     await Promise.all([
@@ -259,7 +259,7 @@ export default async function HomePage({
         {featured.length > 0 ? (
             <CarouselGrid cols={3}>
               {featured.map((row, index) => {
-                const badge = badgeFor(row);
+                const badge = listingBadge(row.flags, badgeLabels);
                 return (
                   <Link
                     key={row.reference}

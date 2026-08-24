@@ -10,7 +10,8 @@
   "bathsShort": "ba",
   "badge": {
     "exclusive": "Exclusive",
-    "vacantOnTransfer": "Vacant on transfer"
+    "vacantOnTransfer": "Vacant on transfer",
+    "mortgageEligible": "Mortgage eligible"
   },
   "priceOnRequest": "Price on request"
 }

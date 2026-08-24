@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { getTranslations } from "next-intl/server";
+import { listingBadge } from "@/lib/listing-badge";
 import Link from "@/components/i18n/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -79,6 +80,10 @@ export default async function DeveloperProfilePage({
   // The two card badges are shared listing vocabulary rather than page copy,
   // so they come from `messages/` — not from the editable document below.
   const tListing = await getTranslations({ locale, namespace: "listing" });
+  const badgeLabels = {
+    exclusive: tListing("badge.exclusive"),
+    vacantOnTransfer: tListing("badge.vacantOnTransfer"),
+  };
   const { slug } = await params;
   // Identity resolves from either side. The directory carries the logo and
   // descriptor for the 30 curated partners, so a developer listed there
@@ -267,14 +272,8 @@ export default async function DeveloperProfilePage({
                   beds={row.beds}
                   baths={row.baths}
                   area={row.built_up_ft2 ?? 0}
-                  badge={
-                    row.flags?.exclusive
-                      ? tListing("badge.exclusive")
-                      : row.flags?.vacant_on_transfer
-                        ? tListing("badge.vacantOnTransfer")
-                        : undefined
-                  }
-                  badgeKind={row.flags?.exclusive ? "ink" : "accent"}
+                  badge={listingBadge(row.flags, badgeLabels)?.label}
+                  badgeKind={listingBadge(row.flags, badgeLabels)?.kind}
                   imgLabel={row.reference}
                   heroSrc={
                     row.hero ? mediaPublicUrl(row.hero.storage_key) : null

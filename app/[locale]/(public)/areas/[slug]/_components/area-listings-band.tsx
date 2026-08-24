@@ -5,18 +5,10 @@ import { Button } from "@/components/ui/button";
 import { CarouselGrid } from "@/components/brand/mobile";
 import { mediaPublicUrl } from "@/lib/media";
 import { propertyUrl, type ListingRow } from "@/lib/queries/properties";
+import { listingBadge } from "@/lib/listing-badge";
 import { ListingCardPriced } from "../../../_components/listing-card-priced";
 import { CARD_TRACK } from "./area-bands";
 import { fluid } from "../../../_components/marketing/fluid";
-
-function badgeFor(
-  row: ListingRow,
-): { label: string; kind: "ink" | "accent" } | undefined {
-  if (row.flags?.exclusive) return { label: "Exclusive", kind: "ink" };
-  if (row.flags?.vacant_on_transfer)
-    return { label: "Vacant on transfer", kind: "accent" };
-  return undefined;
-}
 
 /**
  * One inventory rail — the sale band and the rental band are the same
@@ -64,6 +56,11 @@ export async function AreaListingsBand({
   testId?: string;
 }) {
   const t = await getTranslations("area");
+  const tl = await getTranslations("listing");
+  const badgeLabels = {
+    exclusive: tl("badge.exclusive"),
+    vacantOnTransfer: tl("badge.vacantOnTransfer"),
+  };
   return (
     <section
       data-testid={testId}
@@ -100,7 +97,7 @@ export async function AreaListingsBand({
           <div className="mt-9">
             <CarouselGrid cols={3} className={CARD_TRACK}>
               {rows.map((row, index) => {
-                const badge = badgeFor(row);
+                const badge = listingBadge(row.flags, badgeLabels);
                 return (
                   <Link
                     key={row.reference}
