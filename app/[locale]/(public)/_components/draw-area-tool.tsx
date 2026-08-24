@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Pencil, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ export function DrawAreaTool({
   /** Sprint 12: called with the GeoJSON ring after a draw completes. */
   onPolygon?: (ring: [number, number][]) => void;
 }) {
+  const t = useTranslations("search");
   const [active, setActive] = useState(false);
 
   function toggle() {
@@ -62,19 +64,18 @@ export function DrawAreaTool({
         {active ? (
           <>
             <X size={13} strokeWidth={1.8} />
-            Cancel draw
+            {t("draw.cancel")}
           </>
         ) : (
           <>
             <Pencil size={13} strokeWidth={1.7} />
-            Draw area
+            {t("draw.start")}
           </>
         )}
       </button>
       {active ? (
         <div className="text-[11.5px] text-bz-muted max-w-[200px] leading-relaxed">
-          Polygon drawing lands with Mapbox in Sprint 12. The tool fires a draw
-          event for downstream listeners today.
+          {t("draw.hint")}
         </div>
       ) : null}
     </div>

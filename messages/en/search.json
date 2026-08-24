@@ -1,49 +1,155 @@
 {
+  "commute": {
+    "destination": "Destination",
+    "label": "Commute time",
+    "minutes": "{count, plural, one {# min} other {# min}}",
+    "note": "Geo-filtering by isochrone activates with Mapbox in Sprint 12. Your selection ({target}, {minutes} min) persists in URL state today.",
+    "within": "Within"
+  },
+  "draw": {
+    "cancel": "Cancel draw",
+    "hint": "Polygon drawing lands with Mapbox in Sprint 12. The tool fires a draw event for downstream listeners today.",
+    "start": "Draw area"
+  },
+  "empty": {
+    "allForSale": "All properties for sale",
+    "browseOffPlan": "Browse off-plan",
+    "browseOffPlanProjects": "Browse off-plan projects",
+    "filtered": "No properties match those filters. Try widening the price range or clearing a filter.",
+    "form": {
+      "off_plan": {
+        "filtered": "No off-plan homes match those filters",
+        "none": "No off-plan homes are listed right now"
+      },
+      "ready_new": {
+        "filtered": "No ready, never-lived-in homes match those filters",
+        "none": "No ready, never-lived-in homes are listed right now"
+      },
+      "resale": {
+        "filtered": "No resale homes match those filters",
+        "none": "No resale homes are listed right now"
+      }
+    },
+    "none": "No properties to show yet — seed the database to see real listings.",
+    "widenFiltered": "Try widening the price range or clearing a filter — or step up to the full sale catalogue, where our advisors can flag matching stock before it publishes.",
+    "widenNone": "Our sale catalogue moves quickly. Browse everything currently for sale, or look at what is still under construction."
+  },
   "filters": {
     "amenities": "Amenities",
+    "any": "Any",
     "anyArea": "Any area",
     "anyBeds": "Any beds",
     "anyType": "Any type",
+    "apply": "Apply filters",
+    "applying": "Applying…",
     "area": "Area",
+    "areaWithUnit": "Area ({unit})",
+    "baths": "Baths",
     "bathsFilter": "{count, plural, one {# bath} other {# baths}}",
     "bedrooms": "Bedrooms",
     "bedroomsMax": "6+ Bedrooms",
     "bedroomsOption": "{count, plural, one {# Bedroom} other {# Bedrooms}}",
+    "beds": "Beds",
     "bedsFilter": "{count, plural, =0 {Studio} one {# bed} other {# beds}}",
+    "clearCount": "Clear {count}",
     "completion": "Completion",
     "completionHelp": "Off-plan is still under construction. Ready (new) is the developer's first sale; resale has had an owner before.",
+    "filters": "Filters",
+    "filtersWithCount": "Filters · {count}",
     "from": "From",
     "furnishing": "Furnishing",
+    "max": "Max",
+    "min": "Min",
     "moreFilters": "More filters",
+    "price": "Price",
+    "priceMaxAria": "Maximum price in {currency}",
+    "priceMaxPlaceholder": "Max {symbol}",
+    "priceMinAria": "Minimum price in {currency}",
+    "priceMinPlaceholder": "Min {symbol}",
     "priceRange": "Price range",
     "propertyType": "Property type",
     "reset": "Reset",
     "search": "Search",
-    "searching": "Searching…",
     "searchPlaceholder": "Search Mamsha, Saadiyat, sea view…",
     "searchProperties": "Search properties",
     "searchType": "Search type",
+    "searching": "Searching…",
+    "showResults": "Show results",
     "size": "Size",
     "studio": "Studio",
     "tenure": "Tenure",
+    "to": "To",
     "verifiedHelp": "Listings inspected by a Bazar advisor in the last 90 days.",
     "yearBuilt": "Year built"
   },
+  "formOption": {
+    "off_plan": "Off-plan",
+    "ready_new": "Ready (new)",
+    "resale": "Resale"
+  },
+  "furnishingOption": {
+    "fully": "Fully furnished",
+    "semi": "Semi-furnished",
+    "unfurnished": "Unfurnished"
+  },
+  "mode": {
+    "buy": "Buy",
+    "commercial": "Commercial",
+    "label": "Search mode",
+    "off_plan": "Off-plan",
+    "rent": "Rent"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "next": "Next page",
+    "previous": "Previous page"
+  },
   "results": {
-    "range": "{first}–{last} of {total} properties",
-    "none": "0 properties"
+    "none": "0 properties",
+    "range": "{first}–{last} of {total} properties"
+  },
+  "sort": {
+    "area_desc": "Largest first",
+    "label": "Sort",
+    "price_asc": "Price: low to high",
+    "price_desc": "Price: high to low",
+    "recent": "Most recent"
+  },
+  "summary": {
+    "baths": "{count, plural, one {#+ bath} other {#+ baths}}",
+    "beds": "{count, plural, one {#+ bed} other {#+ beds}}",
+    "inArea": "in {area}"
+  },
+  "tenureOption": {
+    "freehold": "Freehold",
+    "leasehold": "Leasehold"
   },
   "type": {
     "apartment": "Apartment",
-    "villa": "Villa",
-    "penthouse": "Penthouse",
-    "townhouse": "Townhouse",
-    "commercial": "Commercial",
-    "land": "Land",
-    "hotel_apartment": "Hotel apartment",
-    "office": "Office",
     "building": "Building",
+    "commercial": "Commercial",
+    "commercial_villa": "Commercial villa",
+    "hotel_apartment": "Hotel apartment",
+    "land": "Land",
+    "office": "Office",
+    "penthouse": "Penthouse",
     "retail": "Retail",
-    "commercial_villa": "Commercial villa"
+    "townhouse": "Townhouse",
+    "villa": "Villa"
+  },
+  "typePlural": {
+    "apartment": "Apartments",
+    "commercial": "Commercial",
+    "hotel_apartment": "Hotel apartments",
+    "land": "Land",
+    "penthouse": "Penthouses",
+    "townhouse": "Townhouses",
+    "villa": "Villas"
+  },
+  "view": {
+    "grid": "Grid",
+    "label": "Results view",
+    "list": "List",
+    "map": "Map"
   }
 }

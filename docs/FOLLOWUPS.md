@@ -1256,3 +1256,34 @@ shows the trail.)
   training people to ignore a red local run applies here. Options: an
   `E2E_PORT` override, or a readiness check that the reused server is this
   worktree's build (a `/api/health` carrying the git SHA would do it).
+
+- [i18n] `amenities_taxonomy.label_ar` is NULL on all 87 production rows, so
+  every amenity an admin has added since the seed renders English under /ar.
+  The search facet is fine — `more-filters-drawer.tsx` reads the 21-entry code
+  seed in `lib/schemas/amenity-taxonomy.ts`, which now carries `label_ar` — but
+  the property page's "Features & amenities" grid reads the table, and a value
+  typed straight onto a listing ("Picnic Areas") is stored and printed
+  verbatim either way. Two halves to "done": fill `label_ar` for the 87 rows
+  (CMS at /admin/settings/fields, or a data migration), and decide whether the
+  facet should read the table rather than the seed — it currently offers 21
+  chips against a 87-row vocabulary, which is a separate pre-existing gap.
+
+- [i18n] `components/brand/public-mega-nav.tsx:256` renders `<Link
+  href="/services/sell">List</Link>` as an English literal on every /ar page,
+  including the search results. Left alone because `components/brand/*` is
+  under the shared-files rule. It is one string and one `nav` key.
+
+- [i18n] `/ar/p/[slug]` is still substantially English — "Home", "For sale",
+  "Share", "Send to advisor", "Freehold", "Advisor's note", "Specification",
+  "Listing permit", "Lead advisor" and the whole FAQ block all render Latin
+  under `lang="ar"`. Noticed while finishing the search-results chrome; it is
+  the largest single un-extracted public surface left and wants its own wave
+  rather than a corner of someone else's PR. `lib/i18n/no-unextracted-literals.test.ts`
+  already carries the file counts.
+
+- [i18n] The cookie consent banner's body copy renders English under /ar
+  ("We use cookies to understand what works", "Essential cookies keep you
+  signed in…") while its three buttons are Arabic. The buttons come from the
+  `consent` namespace and the body does not — worth finding out which source
+  it does come from before extracting, since a CMS-backed string wants a twin
+  rather than a message key.

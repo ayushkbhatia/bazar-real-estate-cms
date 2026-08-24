@@ -1,13 +1,19 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
+/*
+ * `value` doubles as the catalogue key (`search.mode.<value>`) — the labels
+ * used to sit here as literals, where G-13 could not see them, so /ar showed
+ * four English pills directly under an Arabic h1.
+ */
 const MODES = [
-  { value: "buy", label: "Buy", path: "/buy/search" },
-  { value: "rent", label: "Rent", path: "/rent/search" },
-  { value: "off_plan", label: "Off-plan", path: "/off-plan/search" },
-  { value: "commercial", label: "Commercial", path: "/commercial/search" },
+  { value: "buy", path: "/buy/search" },
+  { value: "rent", path: "/rent/search" },
+  { value: "off_plan", path: "/off-plan/search" },
+  { value: "commercial", path: "/commercial/search" },
 ] as const;
 
 /**
@@ -38,6 +44,7 @@ function isActivePath(pathname: string, path: string): boolean {
  * mark Commercial selected once you were on it.
  */
 export function ModeSegmented() {
+  const t = useTranslations("search");
   const router = useRouter();
   const pathname = usePathname() ?? "/buy/search";
 
@@ -50,10 +57,10 @@ export function ModeSegmented() {
   return (
     <div
       role="radiogroup"
-      aria-label="Search mode"
+      aria-label={t("mode.label")}
       className="inline-flex rounded-md border border-bz-border bg-bz-bg p-0.5"
     >
-      {MODES.map(({ value, label, path }) => {
+      {MODES.map(({ value, path }) => {
         const active = isActivePath(pathname, path);
         return (
           <button
@@ -75,7 +82,7 @@ export function ModeSegmented() {
                 : "text-bz-ink-2 hover:text-bz-ink",
             )}
           >
-            {label}
+            {t(`mode.${value}`)}
           </button>
         );
       })}

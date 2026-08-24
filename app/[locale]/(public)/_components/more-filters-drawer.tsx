@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toOptions } from "@/lib/amenities";
 import { SlidersHorizontal, X } from "lucide-react";
@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { TENURES, FURNISHINGS } from "@/lib/filters/property";
-import { PROPERTY_FORMS, PROPERTY_FORM_LABELS } from "@/lib/schemas/property";
+import { PROPERTY_FORMS } from "@/lib/schemas/property";
 import {
   areaUnitLabel,
   convertArea,
@@ -34,8 +34,14 @@ import {
  * can't read the table directly. Entries an admin adds under Settings → Fields
  * reach the editor and the property page immediately, and this facet on the
  * next deploy.
+ *
+ * The whole option is kept rather than just the label, because the two halves
+ * do different jobs: `label` is the VALUE — it is what `properties.amenities`
+ * stores and what `?amenities=` carries, so it must stay English on every
+ * locale or the facet matches nothing — while `label_ar` is only what the chip
+ * says. Folding them together is the bug this shape exists to prevent.
  */
-const AMENITIES = toOptions().map((o) => o.label);
+const AMENITIES = toOptions();
 
 /**
  * The `ft2_min` / `ft2_max` query params are always ft² — a shared search URL
@@ -67,10 +73,8 @@ function inputToFt2Param(raw: string, unit: AreaUnit): string {
 export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) {
   const router = useRouter();
   const sp = useSearchParams();
-  // Only the completion facet reads next-intl: the rest of this drawer is
-  // still un-extracted English, and G-13's ratchet is shrink-only, so a new
-  // literal would have to be paid for by removing an old one.
   const t = useTranslations("search");
+  const locale = useLocale();
   // The badge already has one rendering in `listing`; adding a second here
   // would give the same English two Arabics, which `messages.test.ts` refuses.
   const tl = useTranslations("listing");
@@ -162,7 +166,7 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
       <SheetTrigger asChild>
         <Button variant="outline" size="sm">
           <SlidersHorizontal size={13} strokeWidth={1.7} />
-          More filters
+          {t("filters.moreFilters")}
           {activeCount > 0 ? (
             <span className="ms-1 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full bg-bz-navy text-bz-bg text-[10px] font-medium">
               {activeCount}
@@ -199,11 +203,13 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
         <div className="flex-1 min-h-0 overflow-y-auto px-6 py-4 flex flex-col gap-6">
           {/* Area — labelled in the visitor's unit, stored as ft² */}
           <div>
-            <Label>Area ({areaUnitLabel(unit)})</Label>
+            <Label>
+              {t("filters.areaWithUnit", { unit: areaUnitLabel(unit) })}
+            </Label>
             <div className="grid grid-cols-2 gap-3 mt-1.5">
               <Input
                 type="number"
-                placeholder="Min"
+                placeholder={t("filters.min")}
                 value={state.ft2_min}
                 onChange={(e) =>
                   setState((s) => ({ ...s, ft2_min: e.target.value }))
@@ -211,7 +217,7 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
               />
               <Input
                 type="number"
-                placeholder="Max"
+                placeholder={t("filters.max")}
                 value={state.ft2_max}
                 onChange={(e) =>
                   setState((s) => ({ ...s, ft2_max: e.target.value }))
@@ -226,7 +232,7 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
             <div className="grid grid-cols-2 gap-3 mt-1.5">
               <Input
                 type="number"
-                placeholder="From"
+                placeholder={t("filters.from")}
                 value={state.year_min}
                 onChange={(e) =>
                   setState((s) => ({ ...s, year_min: e.target.value }))
@@ -234,7 +240,7 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
               />
               <Input
                 type="number"
-                placeholder="To"
+                placeholder={t("filters.to")}
                 value={state.year_max}
                 onChange={(e) =>
                   setState((s) => ({ ...s, year_max: e.target.value }))
@@ -261,10 +267,12 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
                  keeps the 14px the drawer is drawn at. */
               className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[16px] md:text-[14px] focus:outline-none focus:border-bz-accent"
             >
-              <option value="">Any</option>
-              {TENURES.map((t) => (
-                <option key={t} value={t} className="capitalize">
-                  {t}
+              <option value="">{t("filters.any")}</option>
+              {/* `t` is the translator in this scope, so the option variable
+                  is named `tenure` rather than shadowing it. */}
+              {TENURES.map((tenure) => (
+                <option key={tenure} value={tenure}>
+                  {t(`tenureOption.${tenure}`)}
                 </option>
               ))}
             </select>
@@ -282,10 +290,10 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
                 }
                 className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[16px] md:text-[14px] focus:outline-none focus:border-bz-accent"
               >
-                <option value="">Any</option>
+                <option value="">{t("filters.any")}</option>
                 {PROPERTY_FORMS.map((f) => (
                   <option key={f} value={f}>
-                    {PROPERTY_FORM_LABELS[f]}
+                    {t(`formOption.${f}`)}
                   </option>
                 ))}
               </select>
@@ -306,10 +314,10 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
               }
               className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[16px] md:text-[14px] focus:outline-none focus:border-bz-accent"
             >
-              <option value="">Any</option>
+              <option value="">{t("filters.any")}</option>
               {FURNISHINGS.map((f) => (
-                <option key={f} value={f} className="capitalize">
-                  {f}
+                <option key={f} value={f}>
+                  {t(`furnishingOption.${f}`)}
                 </option>
               ))}
             </select>
@@ -338,19 +346,23 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
             <Label>{t("filters.amenities")}</Label>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {AMENITIES.map((a) => {
-                const active = state.amenities.has(a);
+                const active = state.amenities.has(a.label);
+                // Falls back to the English rather than dropping the chip: an
+                // amenity with no Arabic yet is a filter you can still use.
+                const shown =
+                  locale === "ar" ? (a.label_ar ?? a.label) : a.label;
                 return (
                   <button
-                    key={a}
+                    key={a.code}
                     type="button"
-                    onClick={() => toggleAmenity(a)}
+                    onClick={() => toggleAmenity(a.label)}
                     className={
                       active
                         ? "inline-flex items-center h-7 px-2.5 rounded-full bg-bz-navy text-bz-bg text-[11.5px]"
                         : "inline-flex items-center h-7 px-2.5 rounded-full border border-bz-border bg-bz-bg text-bz-ink-2 text-[11.5px] hover:border-bz-border-strong"
                     }
                   >
-                    {a}
+                    {shown}
                     {active ? (
                       <X size={10} strokeWidth={2} className="ms-1" />
                     ) : null}
@@ -375,10 +387,10 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
             onClick={reset}
             className="text-[13px] text-bz-muted hover:text-bz-ink"
           >
-            Reset
+            {t("filters.reset")}
           </button>
           <Button onClick={apply} disabled={pending}>
-            {pending ? "Applying…" : "Apply filters"}
+            {pending ? t("filters.applying") : t("filters.apply")}
           </Button>
         </div>
       </SheetContent>

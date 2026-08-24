@@ -208,16 +208,50 @@ export function countActiveFilters(f: PropertyFilters): number {
   return n;
 }
 
+/**
+ * The words this summary is made of, so the caller can supply them in the
+ * reader's language.
+ *
+ * A translator is not passed in directly because this module is imported by
+ * `lib/queries/*` and by tests that have no next-intl request scope; a plain
+ * bag of functions keeps it a pure function with no framework dependency. The
+ * default is the English this shipped with, which is what keeps
+ * `lib/filters/property.test.ts` asserting the same strings it always did.
+ *
+ * The price bound is deliberately NOT in here. `AED 1.0–5.0M` is a currency
+ * code and two numbers — non-prose, and the site renders it the same way on
+ * `/ar`, exactly as the listing cards do.
+ */
+export type FilterSummaryLabels = {
+  beds: (count: number) => string;
+  baths: (count: number) => string;
+  type: (t: NonNullable<PropertyFilters["type"]>) => string;
+  form: (f: NonNullable<PropertyFilters["form"]>) => string;
+  inArea: (area: string) => string;
+};
+
+export const ENGLISH_SUMMARY_LABELS: FilterSummaryLabels = {
+  beds: (n) => `${n}+ ${n === 1 ? "bed" : "beds"}`,
+  baths: (n) => `${n}+ ${n === 1 ? "bath" : "baths"}`,
+  type: humanType,
+  form: humanForm,
+  inArea: (area) => `in ${area}`,
+};
+
 /** A pretty single-line summary used in result-count strings. */
-export function describeFilters(f: PropertyFilters, areaName?: string): string {
+export function describeFilters(
+  f: PropertyFilters,
+  areaName?: string,
+  labels: FilterSummaryLabels = ENGLISH_SUMMARY_LABELS,
+): string {
   const parts: string[] = [];
   if (f.q) parts.push(`"${f.q}"`);
-  if (f.beds != null) parts.push(`${f.beds}+ beds`);
-  if (f.baths != null) parts.push(`${f.baths}+ baths`);
-  if (f.type) parts.push(humanType(f.type));
-  if (f.form) parts.push(humanForm(f.form));
-  if (areaName) parts.push(`in ${areaName}`);
-  else if (f.area) parts.push(`in ${f.area}`);
+  if (f.beds != null) parts.push(labels.beds(f.beds));
+  if (f.baths != null) parts.push(labels.baths(f.baths));
+  if (f.type) parts.push(labels.type(f.type));
+  if (f.form) parts.push(labels.form(f.form));
+  if (areaName) parts.push(labels.inArea(areaName));
+  else if (f.area) parts.push(labels.inArea(f.area));
   if (f.price_min != null || f.price_max != null) {
     const min = f.price_min != null ? `${(f.price_min / 1_000_000).toFixed(1)}M` : "0";
     const max = f.price_max != null ? `${(f.price_max / 1_000_000).toFixed(1)}M` : "∞";

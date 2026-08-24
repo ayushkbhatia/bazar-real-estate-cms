@@ -52,6 +52,7 @@ describe("duplicate labels in the taxonomy", () => {
     const raw = DUPES.map((t) => ({
       code: t.code,
       label: t.label,
+      label_ar: t.label_ar ?? null,
       category: t.category,
     }));
     expect(orderAmenities(["Pool", "Gym"], raw)).toEqual(["Pool", "Gym"]);

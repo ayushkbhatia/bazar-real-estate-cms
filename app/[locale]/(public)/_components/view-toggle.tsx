@@ -1,17 +1,22 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useQueryState } from "nuqs";
 import { parseAsStringEnum } from "nuqs";
 import { Grid3X3, List, Map } from "lucide-react";
 
 export type SearchView = "grid" | "list" | "map";
 
-const OPTIONS: { value: SearchView; label: string; Icon: React.ElementType }[] =
-  [
-    { value: "grid", label: "Grid", Icon: Grid3X3 },
-    { value: "list", label: "List", Icon: List },
-    { value: "map", label: "Map", Icon: Map },
-  ];
+/*
+ * Value and icon only. The labels moved to `search.view.*` — they lived in a
+ * module-level const, which is a place G-13 cannot see, so three visible
+ * English words rode along under /ar unreported.
+ */
+const OPTIONS: { value: SearchView; Icon: React.ElementType }[] = [
+  { value: "grid", Icon: Grid3X3 },
+  { value: "list", Icon: List },
+  { value: "map", Icon: Map },
+];
 
 /**
  * `defaultView` is what the server rendered when the URL carried no `view`
@@ -26,6 +31,7 @@ export function ViewToggle({
 }: {
   defaultView?: SearchView;
 }) {
+  const t = useTranslations("search");
   const [view, setView] = useQueryState(
     "view",
     parseAsStringEnum<SearchView>(["grid", "list", "map"])
@@ -39,10 +45,10 @@ export function ViewToggle({
   return (
     <div
       role="radiogroup"
-      aria-label="View"
+      aria-label={t("view.label")}
       className="inline-flex rounded-md border border-bz-border bg-bz-bg p-0.5"
     >
-      {OPTIONS.map(({ value, label, Icon }) => (
+      {OPTIONS.map(({ value, Icon }) => (
         <button
           key={value}
           type="button"
@@ -62,7 +68,7 @@ export function ViewToggle({
           }
         >
           <Icon size={12} strokeWidth={1.8} />
-          {label}
+          {t(`view.${value}`)}
         </button>
       ))}
     </div>

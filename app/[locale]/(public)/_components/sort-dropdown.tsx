@@ -1,17 +1,18 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useQueryState } from "nuqs";
 import { parseAsStringEnum } from "nuqs";
 import { SORT_OPTIONS } from "@/lib/filters/property";
 
-const LABELS: Record<(typeof SORT_OPTIONS)[number], string> = {
-  recent: "Most recent",
-  price_asc: "Price: low to high",
-  price_desc: "Price: high to low",
-  area_desc: "Largest first",
-};
-
 export function SortDropdown() {
+  /*
+   * The option labels used to be a module-level const map. A const object is
+   * invisible to G-13 — it scans JSX text and word-props — so four visible
+   * English strings sat under /ar with nothing reporting them. Reading them
+   * through the catalogue is what makes them countable as well as translated.
+   */
+  const t = useTranslations("search");
   const [sort, setSort] = useQueryState(
     "sort",
     parseAsStringEnum([...SORT_OPTIONS]).withOptions({ shallow: false }),
@@ -19,7 +20,7 @@ export function SortDropdown() {
 
   return (
     <label className="inline-flex items-center gap-2 text-[12.5px] text-bz-muted">
-      Sort
+      {t("sort.label")}
       <select
         value={sort ?? "recent"}
         onChange={(e) =>
@@ -55,7 +56,7 @@ export function SortDropdown() {
       >
         {SORT_OPTIONS.map((s) => (
           <option key={s} value={s}>
-            {LABELS[s]}
+            {t(`sort.${s}`)}
           </option>
         ))}
       </select>

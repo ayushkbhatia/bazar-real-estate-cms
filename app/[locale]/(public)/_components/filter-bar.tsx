@@ -34,8 +34,12 @@ import { cn } from "@/lib/utils";
 const BED_OPTIONS = [0, 1, 2, 3, 4, 5] as const;
 const BATH_OPTIONS = [1, 2, 3, 4] as const;
 
+/*
+ * Numerals only. "Studio" used to live here; it is copy, so it moved to
+ * `search.filters.studio` and is resolved at the call site where a translator
+ * is in scope. What is left — "5+", "4+" — is a bound, not a sentence.
+ */
 function bedLabel(n: number): string {
-  if (n === 0) return "Studio";
   if (n === 5) return "5+";
   return String(n);
 }
@@ -121,11 +125,11 @@ export function FilterBar({ areas }: Props) {
       {/* Beds */}
       <div className={cn("flex items-center gap-1", stacked && "flex-wrap")}>
         <span className="text-[11.5px] uppercase tracking-wider text-bz-muted me-1">
-          Beds
+          {tr("filters.beds")}
         </span>
         {BED_OPTIONS.map((n) => {
           const active = beds === n;
-          const label = bedLabel(n);
+          const label = n === 0 ? tr("filters.studio") : bedLabel(n);
           return (
             <button
               key={n}
@@ -150,7 +154,7 @@ export function FilterBar({ areas }: Props) {
       {/* Baths */}
       <div className={cn("flex items-center gap-1", stacked && "flex-wrap")}>
         <span className="text-[11.5px] uppercase tracking-wider text-bz-muted me-1">
-          Baths
+          {tr("filters.baths")}
         </span>
         {BATH_OPTIONS.map((n) => {
           const active = baths === n;
@@ -247,7 +251,7 @@ export function FilterBar({ areas }: Props) {
           className="text-[12.5px] text-bz-muted hover:text-bz-ink"
         >
           <X size={12} strokeWidth={1.8} />
-          Clear {activeCount}
+          {tr("filters.clearCount", { count: activeCount })}
         </Button>
       </>
     ) : null;
@@ -317,7 +321,9 @@ export function FilterBar({ areas }: Props) {
           className="md:hidden shrink-0 text-[12.5px]"
         >
           <SlidersHorizontal size={13} strokeWidth={1.8} />
-          Filters{activeCount > 0 ? ` · ${activeCount}` : ""}
+          {activeCount > 0
+            ? tr("filters.filtersWithCount", { count: activeCount })
+            : tr("filters.filters")}
         </Button>
 
         {/* Desktop inline controls */}
@@ -331,7 +337,7 @@ export function FilterBar({ areas }: Props) {
       <BottomSheet
         open={sheetOpen}
         onOpenChange={setSheetOpen}
-        title="Filters"
+        title={tr("filters.filters")}
         footer={
           <>
             {activeCount > 0 ? (
@@ -341,7 +347,7 @@ export function FilterBar({ areas }: Props) {
                 onClick={clearAll}
                 className="flex-1"
               >
-                Clear {activeCount}
+                {tr("filters.clearCount", { count: activeCount })}
               </Button>
             ) : null}
             <Button
@@ -349,7 +355,7 @@ export function FilterBar({ areas }: Props) {
               onClick={() => setSheetOpen(false)}
               className="flex-1"
             >
-              Show results
+              {tr("filters.showResults")}
             </Button>
           </>
         }
@@ -394,6 +400,9 @@ function PriceRangeInputs({
     price_max?: number | null;
   }) => void;
 }) {
+  // Its own translator rather than a prop: this is a Client Component in the
+  // same tree, so `useTranslations` reads the provider the parent already has.
+  const tr = useTranslations("search");
   const seed = (n: number | null) =>
     n == null ? "" : priceParamToInput(String(n), currency);
   const [minInput, setMinInput] = useState(() => seed(priceMin));
@@ -415,15 +424,15 @@ function PriceRangeInputs({
   return (
     <div className={cn("flex items-center gap-1", stacked && "w-full")}>
       <span className="text-[11.5px] uppercase tracking-wider text-bz-muted me-1">
-        Price
+        {tr("filters.price")}
       </span>
       {/* Both bounds take the same 16px-until-`md` treatment as the search
           box above: a `type="number"` box opens the numeric keypad, and the
           zoom that comes with it lands on a sticky bar. */}
       <Input
         type="number"
-        placeholder={`Min ${symbol}`}
-        aria-label={`Minimum price in ${currency}`}
+        placeholder={tr("filters.priceMinPlaceholder", { symbol })}
+        aria-label={tr("filters.priceMinAria", { currency })}
         value={minInput}
         min={0}
         step={10000}
@@ -436,8 +445,8 @@ function PriceRangeInputs({
       <span className="text-bz-muted">–</span>
       <Input
         type="number"
-        placeholder={`Max ${symbol}`}
-        aria-label={`Maximum price in ${currency}`}
+        placeholder={tr("filters.priceMaxPlaceholder", { symbol })}
+        aria-label={tr("filters.priceMaxAria", { currency })}
         value={maxInput}
         min={0}
         step={10000}
