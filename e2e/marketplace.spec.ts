@@ -10,15 +10,31 @@ test("home → /buy → property detail", async ({ page }) => {
   await expect(heroHeading).toBeVisible();
   await expect(heroHeading).not.toBeEmpty();
 
-  // Featured listings come from Supabase. If they're not present, the page
-  // shows a placeholder — we tolerate that locally and only assert on the
-  // CTA, then navigate to /buy/search via the featured "All properties" link
-  // (search moved to /buy/search; /buy is now the marketing landing).
-  await page.getByRole("link", { name: /^all properties$/i }).click();
+  /*
+   * Follow the home page's own route into the catalogue, selected by
+   * DESTINATION rather than by label.
+   *
+   * "All properties" is `cta_label` on the featured band
+   * (`lib/master-pages/pages.ts`), a CMS field, and this line clicks it — so a
+   * copy edit would not have failed an assertion, it would have failed to find
+   * the link and taken the rest of the test with it.
+   */
+  const intoSearch = page.locator('a[href$="/buy/search"]:visible').first();
+  await expect(intoSearch).toBeVisible();
+  await intoSearch.click();
   await expect(page).toHaveURL(/\/buy\/search/);
-  await expect(
-    page.getByRole("heading", { name: /properties for sale/i }),
-  ).toBeVisible();
+
+  /*
+   * The h1 is the search-results header for the `buy` facet
+   * (`lib/master-pages/search-headers.ts`, edited at
+   * /admin/pages/sub/search). It has already been reworded once — the default
+   * is "Properties for sale" and production publishes "Properties for Sale" —
+   * and survived only because the match was case-insensitive. Assert it
+   * renders, not what it reads.
+   */
+  const searchHeading = page.getByRole("heading", { level: 1 }).first();
+  await expect(searchHeading).toBeVisible();
+  await expect(searchHeading).not.toBeEmpty();
 
   // Click into the first listing card.
   const firstCard = page.locator("a[href^='/p/']").first();

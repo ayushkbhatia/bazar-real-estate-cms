@@ -35,9 +35,19 @@ test("an area guide renders its bands", async ({ page }) => {
   await expect(
     page.getByText(/median apt \/ ft²|sale price index/i).first(),
   ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: /properties for sale/i }).first(),
-  ).toBeVisible();
+  /*
+   * The for-sale band, by test id.
+   *
+   * Its heading was matched as /properties for sale/i, which is
+   * `sv("listings", "heading")` — a PER-AREA CMS field whose code fallback is
+   * the only reason the match held. An editor giving one guide a heading of
+   * its own reddens main, and the same override on the rentals band is
+   * already normal practice. The band and the rail inside it are the invariant;
+   * the words above them are not.
+   */
+  const forSale = page.getByTestId("area-band-listings");
+  await expect(forSale).toBeVisible();
+  await expect(forSale.getByRole("heading", { level: 2 })).not.toBeEmpty();
   // Deliberately nothing on the map band. Its heading is CMS-owned — this area
   // currently overrides it to "Location" — and the band hides itself for an
   // area with no coordinates, so any assertion on it is a copy edit away from
