@@ -1,49 +1,155 @@
 {
+  "commute": {
+    "destination": "الوجهة",
+    "label": "زمن التنقل",
+    "minutes": "{count, plural, zero {# دقيقة} one {دقيقة واحدة} two {دقيقتان} few {# دقائق} many {# دقيقة} other {# دقيقة}}",
+    "note": "التصفية الجغرافية حسب نطاق زمن التنقل تعمل مع Mapbox في المرحلة 12. يبقى اختيارك ({target}، {minutes} دقيقة) محفوظاً في رابط الصفحة اليوم.",
+    "within": "خلال"
+  },
+  "draw": {
+    "cancel": "إلغاء الرسم",
+    "hint": "رسم المضلّعات على الخريطة يصل مع Mapbox في المرحلة 12. تُطلق الأداة اليوم حدث رسم للمكوّنات المرتبطة بها.",
+    "start": "رسم منطقة"
+  },
+  "empty": {
+    "allForSale": "جميع العقارات المعروضة للبيع",
+    "browseOffPlan": "تصفّح العقارات على الخارطة",
+    "browseOffPlanProjects": "تصفّح مشاريع على الخارطة",
+    "filtered": "لا توجد عقارات مطابقة لعوامل التصفية هذه. جرّب توسيع نطاق السعر أو إزالة أحد عوامل التصفية.",
+    "form": {
+      "off_plan": {
+        "filtered": "لا توجد منازل على الخارطة مطابقة لعوامل التصفية هذه",
+        "none": "لا توجد منازل على الخارطة معروضة حالياً"
+      },
+      "ready_new": {
+        "filtered": "لا توجد منازل جاهزة لم تُسكن من قبل مطابقة لعوامل التصفية هذه",
+        "none": "لا توجد منازل جاهزة لم تُسكن من قبل معروضة حالياً"
+      },
+      "resale": {
+        "filtered": "لا توجد منازل إعادة بيع مطابقة لعوامل التصفية هذه",
+        "none": "لا توجد منازل إعادة بيع معروضة حالياً"
+      }
+    },
+    "none": "لا توجد عقارات لعرضها بعد — أضف بيانات إلى قاعدة البيانات لرؤية قوائم فعلية.",
+    "widenFiltered": "جرّب توسيع نطاق السعر أو إزالة أحد عوامل التصفية — أو انتقل إلى كامل قوائم البيع، حيث يمكن لمستشارينا الإشارة إلى العقارات المطابقة قبل نشرها.",
+    "widenNone": "قوائم البيع لدينا تتغير بسرعة. تصفّح كل المعروض للبيع حالياً، أو اطّلع على ما لا يزال قيد الإنشاء."
+  },
   "filters": {
     "amenities": "المرافق",
+    "any": "الكل",
     "anyArea": "جميع المناطق",
     "anyBeds": "أي عدد غرف",
     "anyType": "جميع الأنواع",
+    "apply": "تطبيق عوامل التصفية",
+    "applying": "جارٍ التطبيق…",
     "area": "المنطقة",
+    "areaWithUnit": "المساحة ({unit})",
+    "baths": "حمامات",
     "bathsFilter": "{count, plural, zero {# حمام} one {حمام} two {حمامان} few {# حمامات} many {# حمامًا} other {# حمام}}",
     "bedrooms": "غرف النوم",
     "bedroomsMax": "6+ غرف نوم",
     "bedroomsOption": "{count, plural, zero {# غرفة نوم} one {غرفة نوم} two {غرفتا نوم} few {# غرف نوم} many {# غرفة نوم} other {# غرفة نوم}}",
+    "beds": "غرف",
     "bedsFilter": "{count, plural, =0 {استوديو} zero {# غرفة نوم} one {غرفة نوم واحدة} two {غرفتا نوم} few {# غرف نوم} many {# غرفة نوم} other {# غرفة نوم}}",
+    "clearCount": "مسح {count}",
     "completion": "مرحلة الإنجاز",
     "completionHelp": "على الخارطة يعني قيد الإنشاء. جاهز (جديد) هو أول بيع من المطوّر؛ وإعادة البيع سبق أن كان له مالك.",
+    "filters": "عوامل التصفية",
+    "filtersWithCount": "عوامل التصفية · {count}",
     "from": "من",
     "furnishing": "التأثيث",
+    "max": "الأقصى",
+    "min": "الأدنى",
     "moreFilters": "مزيد من عوامل التصفية",
+    "price": "السعر",
+    "priceMaxAria": "أعلى سعر بعملة {currency}",
+    "priceMaxPlaceholder": "الحد الأقصى {symbol}",
+    "priceMinAria": "أدنى سعر بعملة {currency}",
+    "priceMinPlaceholder": "الحد الأدنى {symbol}",
     "priceRange": "نطاق السعر",
     "propertyType": "نوع العقار",
     "reset": "إعادة تعيين",
     "search": "بحث",
-    "searching": "جارٍ البحث…",
     "searchPlaceholder": "إطلالة على البحر… ،ابحث في الممشى، السعديات",
     "searchProperties": "ابحث عن العقارات",
     "searchType": "نوع البحث",
+    "searching": "جارٍ البحث…",
+    "showResults": "عرض النتائج",
     "size": "المساحة",
     "studio": "استوديو",
     "tenure": "نوع الملكية",
+    "to": "إلى",
     "verifiedHelp": "قوائم عقارية عاينها مستشار من بازار خلال آخر 90 يومًا.",
     "yearBuilt": "سنة البناء"
   },
+  "formOption": {
+    "off_plan": "على الخارطة",
+    "ready_new": "جاهز (جديد)",
+    "resale": "إعادة بيع"
+  },
+  "furnishingOption": {
+    "fully": "مفروش بالكامل",
+    "semi": "شبه مفروش",
+    "unfurnished": "غير مفروش"
+  },
+  "mode": {
+    "buy": "شراء",
+    "commercial": "تجاري",
+    "label": "وضع البحث",
+    "off_plan": "على الخارطة",
+    "rent": "الإيجار"
+  },
+  "pagination": {
+    "label": "ترقيم الصفحات",
+    "next": "الصفحة التالية",
+    "previous": "الصفحة السابقة"
+  },
   "results": {
-    "range": "{first}–{last} من {total} عقار",
-    "none": "0 عقار"
+    "none": "0 عقار",
+    "range": "{first}–{last} من {total} عقار"
+  },
+  "sort": {
+    "area_desc": "الأكبر مساحة أولاً",
+    "label": "الترتيب",
+    "price_asc": "السعر: من الأقل إلى الأعلى",
+    "price_desc": "السعر: من الأعلى إلى الأقل",
+    "recent": "الأحدث"
+  },
+  "summary": {
+    "baths": "{count, plural, zero {#+ حمام} one {حمام فأكثر} two {حمامان فأكثر} few {#+ حمامات} many {#+ حمامًا} other {#+ حمام}}",
+    "beds": "{count, plural, zero {#+ غرفة نوم} one {غرفة نوم فأكثر} two {غرفتا نوم فأكثر} few {#+ غرف نوم} many {#+ غرفة نوم} other {#+ غرفة نوم}}",
+    "inArea": "في {area}"
+  },
+  "tenureOption": {
+    "freehold": "تملك حر",
+    "leasehold": "حق انتفاع"
   },
   "type": {
     "apartment": "شقة",
-    "villa": "فيلا",
+    "building": "مبنى",
+    "commercial": "تجاري",
+    "commercial_villa": "فيلا تجارية",
+    "hotel_apartment": "شقة فندقية",
+    "land": "أرض",
+    "office": "مكتب",
+    "penthouse": "بنتهاوس",
+    "retail": "تجزئة",
+    "townhouse": "تاون هاوس",
+    "villa": "فيلا"
+  },
+  "typePlural": {
+    "apartment": "شقق",
+    "commercial": "تجاري",
+    "hotel_apartment": "شقق فندقية",
+    "land": "أرض",
     "penthouse": "بنتهاوس",
     "townhouse": "تاون هاوس",
-    "commercial": "تجاري",
-    "land": "أرض",
-    "hotel_apartment": "شقة فندقية",
-    "office": "مكتب",
-    "building": "مبنى",
-    "retail": "تجزئة",
-    "commercial_villa": "فيلا تجارية"
+    "villa": "فلل"
+  },
+  "view": {
+    "grid": "شبكة",
+    "label": "طريقة عرض النتائج",
+    "list": "قائمة",
+    "map": "الخريطة"
   }
 }

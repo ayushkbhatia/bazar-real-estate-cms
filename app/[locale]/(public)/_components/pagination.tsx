@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import Link from "@/components/i18n/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -5,7 +6,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
  * Numbered pagination — server-side, query-string driven. Renders
  * `[prev] 1 … 5 6 [7] 8 9 … 27 [next]` style.
  */
-export function Pagination({
+export async function Pagination({
   page,
   total,
   pageSize,
@@ -19,6 +20,10 @@ export function Pagination({
 }) {
   const lastPage = Math.max(1, Math.ceil(total / pageSize));
   if (lastPage <= 1) return null;
+
+  // Server Component, so `getTranslations` rather than the hook — the three
+  // strings here are accessible names and never cross into a client payload.
+  const t = await getTranslations("search");
 
   function hrefFor(p: number): string {
     const base = new URLSearchParams();
@@ -55,14 +60,14 @@ export function Pagination({
   return (
     <nav
       role="navigation"
-      aria-label="Pagination"
+      aria-label={t("pagination.label")}
       className="flex flex-wrap md:flex-nowrap items-center justify-center gap-1 py-12"
     >
       {page > 1 ? (
         <Link
           href={hrefFor(page - 1)}
           className="inline-flex items-center justify-center h-11 w-11 md:h-9 md:w-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong"
-          aria-label="Previous page"
+          aria-label={t("pagination.previous")}
         >
           <ChevronLeft size={14} strokeWidth={1.7} />
         </Link>
@@ -100,7 +105,7 @@ export function Pagination({
         <Link
           href={hrefFor(page + 1)}
           className="inline-flex items-center justify-center h-11 w-11 md:h-9 md:w-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong"
-          aria-label="Next page"
+          aria-label={t("pagination.next")}
         >
           <ChevronRight size={14} strokeWidth={1.7} />
         </Link>

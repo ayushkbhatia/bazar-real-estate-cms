@@ -16,6 +16,7 @@ import {
   countActiveFilters,
   describeFilters,
   PAGE_SIZE,
+  type FilterSummaryLabels,
   type PropertyFilters,
 } from "@/lib/filters/property";
 import type { Database } from "@/db/types";
@@ -41,37 +42,37 @@ type Form = Database["public"]["Enums"]["property_form"];
  * a route this narrow, so we always offer the two widening moves: all sale
  * stock, and off-plan.
  */
-function FormEmptyState({
+async function FormEmptyState({
   form,
   activeCount,
 }: {
   form: Form;
   activeCount: number;
 }) {
-  const label =
-    form === "resale"
-      ? "resale"
-      : form === "off_plan"
-        ? "off-plan"
-        : "ready, never-lived-in";
+  const t = await getTranslations("search");
+  /*
+   * One key per form rather than a label interpolated into a sentence. The
+   * English read `No ${label} homes match those filters`, which needs the
+   * noun phrase to inflect with the sentence around it — "ready,
+   * never-lived-in homes" is three words of adjective in front of a plural in
+   * English and a different construction entirely in Arabic. Splitting into
+   * whole sentences is what makes each one translatable.
+   */
+  const headline = t(
+    `empty.form.${form}.${activeCount > 0 ? "filtered" : "none"}`,
+  );
   return (
     <div className="py-16 md:py-20 max-w-[52ch] mx-auto text-center">
-      <p className="serif text-[22px] md:text-[26px] text-bz-ink">
-        {activeCount > 0
-          ? `No ${label} homes match those filters`
-          : `No ${label} homes are listed right now`}
-      </p>
+      <p className="serif text-[22px] md:text-[26px] text-bz-ink">{headline}</p>
       <p className="mt-3 text-[14px] text-bz-muted">
-        {activeCount > 0
-          ? "Try widening the price range or clearing a filter — or step up to the full sale catalogue, where our advisors can flag matching stock before it publishes."
-          : "Our sale catalogue moves quickly. Browse everything currently for sale, or look at what is still under construction."}
+        {activeCount > 0 ? t("empty.widenFiltered") : t("empty.widenNone")}
       </p>
       <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
         <Link
           href="/buy/search"
           className="inline-flex items-center h-9 px-4 rounded-md bg-bz-navy text-bz-bg text-[13px] font-medium"
         >
-          All properties for sale
+          {t("empty.allForSale")}
         </Link>
         {/* The second move widens the axis this route narrowed. On the
             off-plan facet that would point back at itself, so it offers the
@@ -80,19 +81,34 @@ function FormEmptyState({
           href={form === "off_plan" ? "/off-plan" : "/buy/search?form=off_plan"}
           className="inline-flex items-center h-9 px-4 rounded-md border border-bz-border text-bz-ink-2 text-[13px] hover:border-bz-border-strong"
         >
-          {form === "off_plan" ? "Browse off-plan projects" : "Browse off-plan"}
+          {form === "off_plan"
+            ? t("empty.browseOffPlanProjects")
+            : t("empty.browseOffPlan")}
         </Link>
       </div>
     </div>
   );
 }
 
+/**
+ * The two words, resolved by the caller and handed in.
+ *
+ * Both live in the `listing` namespace, where the cards already read them —
+ * a second copy under `search` would give one English string two Arabics,
+ * which `messages.test.ts` refuses. Passed as resolved strings rather than as
+ * a translator because this helper is module-scope: G-19 resolves a bare
+ * `t("…")` against the namespace the enclosing FILE names, so a `t` parameter
+ * here would be read as `search.badge.*` and reported as missing.
+ */
+type BadgeLabels = { exclusive: string; vacantOnTransfer: string };
+
 function badgeFor(
   row: ListingRow,
+  labels: BadgeLabels,
 ): { label: string; kind: "ink" | "accent" } | undefined {
-  if (row.flags?.exclusive) return { label: "Exclusive", kind: "ink" };
+  if (row.flags?.exclusive) return { label: labels.exclusive, kind: "ink" };
   if (row.flags?.vacant_on_transfer)
-    return { label: "Vacant on transfer", kind: "accent" };
+    return { label: labels.vacantOnTransfer, kind: "accent" };
   return undefined;
 }
 
@@ -208,13 +224,31 @@ export async function SearchList({
     getSearchHeaderCopy(mode, effectiveForm ?? null),
   ]);
   const t = await getTranslations("search");
+  const tl = await getTranslations("listing");
+  const badgeLabels = {
+    exclusive: tl("badge.exclusive"),
+    vacantOnTransfer: tl("badge.vacantOnTransfer"),
+  };
+
+  /*
+   * The filter chips under the result count. `describeFilters` is shared with
+   * `lib/queries/*` and with tests that have no request scope, so it takes the
+   * words rather than a translator — see `FilterSummaryLabels`.
+   */
+  const summaryLabels: FilterSummaryLabels = {
+    beds: (count) => t("summary.beds", { count }),
+    baths: (count) => t("summary.baths", { count }),
+    type: (type) => t(`typePlural.${type}`),
+    form: (form) => t(`formOption.${form}`),
+    inArea: (area) => t("summary.inArea", { area }),
+  };
 
   const selectedArea =
     filters.area && areas.length
       ? (areas.find((a) => a.slug === filters.area)?.name ?? filters.area)
       : undefined;
   const activeCount = countActiveFilters(filters);
-  const filterSummary = describeFilters(filters, selectedArea);
+  const filterSummary = describeFilters(filters, selectedArea, summaryLabels);
 
   const firstShown = total === 0 ? 0 : offset + 1;
   const lastShown = Math.min(offset + rows.length, total);
@@ -274,9 +308,7 @@ export async function SearchList({
             <FormEmptyState form={effectiveForm} activeCount={activeCount} />
           ) : (
             <div className="py-20 text-center text-bz-muted">
-              {activeCount > 0
-                ? "No properties match those filters. Try widening the price range or clearing a filter."
-                : "No properties to show yet — seed the database to see real listings."}
+              {activeCount > 0 ? t("empty.filtered") : t("empty.none")}
             </div>
           )
         ) : view === "map" ? (
@@ -303,7 +335,7 @@ export async function SearchList({
         ) : view === "list" ? (
           <div className="flex flex-col gap-4">
             {rows.map((row, index) => {
-              const badge = badgeFor(row);
+              const badge = badgeFor(row, badgeLabels);
               return (
                 <Link
                   key={row.reference}
@@ -340,7 +372,7 @@ export async function SearchList({
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_500px] gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-w-0">
               {rows.map((row, index) => {
-                const badge = badgeFor(row);
+                const badge = badgeFor(row, badgeLabels);
                 const priority = index < 2;
                 return (
                   <Link

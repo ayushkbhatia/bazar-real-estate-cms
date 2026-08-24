@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Clock } from "lucide-react";
 
 const PRESETS = [
@@ -19,6 +20,13 @@ const PRESETS = [
  * with a clear note that the geo filter activates in Sprint 12.
  */
 export function CommuteTimeTool() {
+  /*
+   * The four preset DESTINATIONS stay English: "Yas Mall" and "Cranleigh Abu
+   * Dhabi" are proper nouns, and `lib/i18n/mt/proper-nouns.ts` is the standing
+   * ruling that those are not translated. Everything the tool says in its own
+   * voice is read from the catalogue.
+   */
+  const t = useTranslations("search");
   const [open, setOpen] = useState(false);
   const [target, setTarget] = useState<string>(PRESETS[0].label);
   const [minutes, setMinutes] = useState<number>(20);
@@ -47,12 +55,12 @@ export function CommuteTimeTool() {
         className="inline-flex items-center gap-1.5 h-8 pointer-coarse:min-h-11 px-3 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[12.5px] hover:border-bz-border-strong transition-colors"
       >
         <Clock size={13} strokeWidth={1.7} />
-        Commute time
+        {t("commute.label")}
       </button>
       {open ? (
         <div className="absolute end-0 mt-1.5 w-[280px] rounded-md border border-bz-border bg-bz-bg shadow-md p-4 z-10">
           <label className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-            Destination
+            {t("commute.destination")}
           </label>
           <select
             value={target}
@@ -78,7 +86,7 @@ export function CommuteTimeTool() {
           </select>
 
           <label className="mt-3 block text-[11.5px] uppercase tracking-wider text-bz-muted">
-            Within
+            {t("commute.within")}
           </label>
           {/* The minute presets are 28px tall — the smallest targets in this
               component. They are NOT part of the 25 the gate reports and never
@@ -105,14 +113,13 @@ export function CommuteTimeTool() {
                     : "h-7 pointer-coarse:min-h-11 px-2.5 rounded text-[12px] text-bz-ink-2 hover:text-bz-ink"
                 }
               >
-                {m} min
+                {t("commute.minutes", { count: m })}
               </button>
             ))}
           </div>
 
           <p className="mt-3 text-[11.5px] text-bz-muted leading-relaxed">
-            Geo-filtering by isochrone activates with Mapbox in Sprint 12. Your
-            selection ({target}, {minutes} min) persists in URL state today.
+            {t("commute.note", { target, minutes })}
           </p>
         </div>
       ) : null}

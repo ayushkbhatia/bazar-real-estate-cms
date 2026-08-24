@@ -28,7 +28,14 @@ import {
 
 export type AmenityOption = {
   code: string;
+  /**
+   * The English label, and — because `valueOf` returns it — the value stored
+   * on `properties.amenities` and carried in the `?amenities=` param. It is an
+   * identity as much as a word, so it never folds to the request locale.
+   */
   label: string;
+  /** The words to SHOW on /ar. Null where the taxonomy has no Arabic yet. */
+  label_ar: string | null;
   category: AmenityTaxonomyEntry["category"];
 };
 
@@ -51,7 +58,12 @@ export function toOptions(
     .filter((t) => t.active !== false)
     .slice()
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-    .map((t) => ({ code: t.code, label: t.label, category: t.category }))
+    .map((t) => ({
+      code: t.code,
+      label: t.label,
+      label_ar: t.label_ar ?? null,
+      category: t.category,
+    }))
     // The taxonomy is admin-editable and holds distinct *codes*, so the same
     // label can exist twice ("playground" / "playgroundd"). We store labels,
     // so a duplicate label is one amenity wearing two hats: it renders as two
