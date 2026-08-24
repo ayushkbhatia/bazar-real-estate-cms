@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { getTranslations } from "next-intl/server";
+import { listingBadge } from "@/lib/listing-badge";
 import Image from "next/image";
 import Link from "@/components/i18n/link";
 import { notFound } from "next/navigation";
@@ -67,6 +68,7 @@ export default async function AgentProfilePage({
   const t = await getTranslations({ locale, namespace: "editorial" });
   // `t` is this page's editorial namespace; `ta` is the shared `pages` bag.
   const ta = await getTranslations({ locale, namespace: "pages.agent" });
+  const tl = await getTranslations({ locale, namespace: "listing" });
   const { slug } = await params;
   const agent = await getAgentBySlug(slug);
   if (!agent) notFound();
@@ -379,11 +381,13 @@ export default async function AgentProfilePage({
           ) : (
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {activeListings.map((row, index) => {
-                const badge = row.flags?.exclusive
-                  ? { label: "Exclusive", kind: "ink" as const }
-                  : row.flags?.vacant_on_transfer
-                    ? { label: "Vacant on transfer", kind: "accent" as const }
-                    : undefined;
+                // Written out as a ternary here rather than as the
+                // `badgeFor` the other four surfaces had, which is why a grep
+                // for the helper name would have missed this copy.
+                const badge = listingBadge(row.flags, {
+                  exclusive: tl("badge.exclusive"),
+                  vacantOnTransfer: tl("badge.vacantOnTransfer"),
+                });
                 return (
                   <Link
                     key={row.reference}

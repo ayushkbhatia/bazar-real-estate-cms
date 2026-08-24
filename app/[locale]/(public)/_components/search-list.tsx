@@ -4,7 +4,6 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import {
   listPublishedProperties,
   propertyUrl,
-  type ListingRow,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
@@ -12,6 +11,7 @@ import { getSearchHeaderCopy } from "@/lib/queries/search-headers";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
 import { isSupabaseConfigured } from "@/lib/env";
+import { listingBadge } from "@/lib/listing-badge";
 import {
   countActiveFilters,
   describeFilters,
@@ -88,28 +88,6 @@ async function FormEmptyState({
       </div>
     </div>
   );
-}
-
-/**
- * The two words, resolved by the caller and handed in.
- *
- * Both live in the `listing` namespace, where the cards already read them —
- * a second copy under `search` would give one English string two Arabics,
- * which `messages.test.ts` refuses. Passed as resolved strings rather than as
- * a translator because this helper is module-scope: G-19 resolves a bare
- * `t("…")` against the namespace the enclosing FILE names, so a `t` parameter
- * here would be read as `search.badge.*` and reported as missing.
- */
-type BadgeLabels = { exclusive: string; vacantOnTransfer: string };
-
-function badgeFor(
-  row: ListingRow,
-  labels: BadgeLabels,
-): { label: string; kind: "ink" | "accent" } | undefined {
-  if (row.flags?.exclusive) return { label: labels.exclusive, kind: "ink" };
-  if (row.flags?.vacant_on_transfer)
-    return { label: labels.vacantOnTransfer, kind: "accent" };
-  return undefined;
 }
 
 async function fetchAreas(): Promise<AreaOption[]> {
@@ -335,7 +313,7 @@ export async function SearchList({
         ) : view === "list" ? (
           <div className="flex flex-col gap-4">
             {rows.map((row, index) => {
-              const badge = badgeFor(row, badgeLabels);
+              const badge = listingBadge(row.flags, badgeLabels);
               return (
                 <Link
                   key={row.reference}
@@ -372,7 +350,7 @@ export async function SearchList({
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_500px] gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-w-0">
               {rows.map((row, index) => {
-                const badge = badgeFor(row, badgeLabels);
+                const badge = listingBadge(row.flags, badgeLabels);
                 const priority = index < 2;
                 return (
                   <Link

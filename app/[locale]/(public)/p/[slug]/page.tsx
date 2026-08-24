@@ -249,6 +249,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   // `t` is already this page's own namespace; `tp` is the shared
   // `pages` bag for the strings W6 extracted out of the JSX.
   const tp = await getTranslations({ locale, namespace: "pages.property" });
+  const tl = await getTranslations({ locale, namespace: "listing" });
   const ref = extractReferenceFromSlug(slug);
   if (!ref) notFound();
 
@@ -477,17 +478,17 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         <div className="flex gap-2 mb-4 flex-wrap">
           {property.flags?.exclusive ? (
             <span className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium bg-bz-navy text-bz-bg">
-              Exclusive
+              {tl("badge.exclusive")}
             </span>
           ) : null}
           {property.flags?.vacant_on_transfer ? (
             <span className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium bg-bz-accent-soft text-bz-accent">
-              Vacant on transfer
+              {tl("badge.vacantOnTransfer")}
             </span>
           ) : null}
           {property.flags?.mortgage_eligible ? (
             <span className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium bg-bz-surface-2 text-bz-ink-2">
-              Mortgage eligible
+              {tl("badge.mortgageEligible")}
             </span>
           ) : null}
         </div>

@@ -1168,14 +1168,6 @@ shows the trail.)
   own pass together with the rest of that directory's literals.
   `components/brand/listing-card.tsx`.
 
-- [i18n] The `Exclusive` / `Vacant on transfer` card badges are English string
-  literals in six `badgeFor()` copies, one per surface. The developer profile
-  now reads them from `listing.badge.*` in `messages/`, which the other five
-  can adopt as-is: the home page, the search list, the curated grid, the area
-  listings band and the agent profile. It is a mechanical change and was left
-  out of the developer-page fix only to keep that diff to one route.
-  `app/[locale]/(public)/_components/search-list.tsx:89`.
-
 - [i18n] `slugify()` returns `""` for any all-Arabic string, so anything using
   it as an identity key collapses on `/ar`. The developer directory hit this —
   every folded row shared one key, three developers vanished from the grid and
@@ -1287,13 +1279,3 @@ shows the trail.)
   `consent` namespace and the body does not — worth finding out which source
   it does come from before extracting, since a CMS-backed string wants a twin
   rather than a message key.
-
-- [i18n] `app/[locale]/(public)/areas/[slug]/_components/area-listings-band.tsx`
-  has its own `badgeFor` returning the literals "Exclusive" and "Vacant on
-  transfer", the same pair `search-list.tsx` used to carry before #471 pointed
-  it at `listing.badge.*`. It renders on every area guide, so /ar shows two
-  English pills on the cards. Invisible to G-13 — the strings are in a returned
-  object literal, not JSX text or a word-prop — which is the blind spot #471
-  documents. One-line fix, but the helper is not in a component with a
-  translator in scope, so it wants the same "pass the resolved labels in"
-  shape `search-list.tsx` now uses.

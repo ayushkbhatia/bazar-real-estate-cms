@@ -1,9 +1,11 @@
+import { getTranslations } from "next-intl/server";
 import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { mediaPublicUrl } from "@/lib/media";
 import { propertyUrl, type ListingRow } from "@/lib/queries/properties";
+import { listingBadge } from "@/lib/listing-badge";
 import { ListingCardPriced } from "./listing-card-priced";
 
 type Props = {
@@ -17,20 +19,11 @@ type Props = {
   browseAllLabel: string;
 };
 
-function badgeFor(
-  row: ListingRow,
-): { label: string; kind: "ink" | "accent" } | undefined {
-  if (row.flags?.exclusive) return { label: "Exclusive", kind: "ink" };
-  if (row.flags?.vacant_on_transfer)
-    return { label: "Vacant on transfer", kind: "accent" };
-  return undefined;
-}
-
 /**
  * Shared layout for T2-E curated routes (/exclusive, /new-this-week,
  * /price-drops). Hero band → card grid → CTA back into /buy.
  */
-export function CuratedGrid({
+export async function CuratedGrid({
   eyebrow,
   title,
   intro,
@@ -38,6 +31,11 @@ export function CuratedGrid({
   browseAllHref,
   browseAllLabel,
 }: Props) {
+  const tl = await getTranslations("listing");
+  const badgeLabels = {
+    exclusive: tl("badge.exclusive"),
+    vacantOnTransfer: tl("badge.vacantOnTransfer"),
+  };
   return (
     <article className="bg-bz-bg">
       <section className="px-4 md:px-12 pt-14 md:pt-24 pb-12 border-b border-bz-border">
@@ -79,7 +77,7 @@ export function CuratedGrid({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rows.map((row, index) => {
-              const badge = badgeFor(row);
+              const badge = listingBadge(row.flags, badgeLabels);
               return (
                 <Link
                   key={row.reference}
