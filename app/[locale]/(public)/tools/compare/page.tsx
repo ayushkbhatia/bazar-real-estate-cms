@@ -575,9 +575,22 @@ function EmptySlot({
   );
 }
 
+/**
+ * The `data-testid`s carry no styling and exist for `e2e/tools-compare.spec.ts`.
+ *
+ * Every word on this screen is a CMS field, so a spec that recognises the
+ * empty state by its heading is asserting on something an editor may rewrite
+ * at any time with no commit behind it — which is exactly how main went red
+ * here. The rest of the compare page is already addressed by test id
+ * (`group-*`, `compare-card-*`, `empty-slot-*`); this is the one branch that
+ * was not.
+ */
 function EmptyState({ copy }: { copy: SectionCopy }) {
   return (
-    <div className="bg-bz-bg px-4 md:px-12 py-12 md:py-20">
+    <div
+      data-testid="compare-empty"
+      className="bg-bz-bg px-4 md:px-12 py-12 md:py-20"
+    >
       <Eyebrow>{copy.empty_eyebrow}</Eyebrow>
       <h1
         className="serif text-[30px] md:text-[48px] mt-2 max-w-[18ch]"
@@ -590,7 +603,9 @@ function EmptyState({ copy }: { copy: SectionCopy }) {
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Button asChild>
-          <Link href="/buy">{copy.empty_cta}</Link>
+          <Link data-testid="compare-empty-cta" href="/buy">
+            {copy.empty_cta}
+          </Link>
         </Button>
       </div>
     </div>
