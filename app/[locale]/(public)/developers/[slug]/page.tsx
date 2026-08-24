@@ -180,7 +180,15 @@ export default async function DeveloperProfilePage({
       </section>
 
       {/* Developments */}
-      <section className="px-4 md:px-12 py-14 md:py-20">
+      {/* `data-testid` carries no styling. Both headings below are CMS fields
+          (`lib/master-pages/developer-page.ts`, edited at
+          /admin/pages/sub/developer/copy), so e2e cannot recognise either
+          section by what it says without gating the build on the client's
+          wording. */}
+      <section
+        data-testid="developer-projects"
+        className="px-4 md:px-12 py-14 md:py-20"
+      >
         <div className="flex items-end justify-between gap-8 flex-wrap">
           <div>
             <Eyebrow>{t("eyebrow.developments")}</Eyebrow>
@@ -224,7 +232,10 @@ export default async function DeveloperProfilePage({
 
       {/* Listings filed under this developer */}
       {listings.length > 0 ? (
-        <section className="px-4 md:px-12 pb-14 md:pb-20">
+        <section
+          data-testid="developer-listings"
+          className="px-4 md:px-12 pb-14 md:pb-20"
+        >
           <div className="flex items-end justify-between gap-8 flex-wrap">
             <div>
               <Eyebrow>{t("eyebrow.associatedListings")}</Eyebrow>

@@ -4,6 +4,13 @@ import { test, expect } from "@playwright/test";
 // changed to "Our Developer Partners Shaping the UAE" on 4 Aug. #225 made the
 // other master-page specs copy-agnostic but missed this one. Assert an h1
 // renders, not what it says.
+//
+// The profile route below is the same problem one layer down, and was missed
+// again: its two section headings live in the developer-page copy document
+// (`lib/master-pages/developer-page.ts`, edited once at
+// /admin/pages/sub/developer/copy and rendered on all 32 profiles), so one
+// edit there would have reddened two tests here. They are addressed by test
+// id now — `developer-projects` and `developer-listings`.
 test("public /developers renders the directory", async ({ page }) => {
   await page.goto("/developers");
   const heading = page.getByRole("heading", { level: 1 }).first();
@@ -16,17 +23,25 @@ test("public /developers renders the directory", async ({ page }) => {
 test("/developers/aldar renders the developer profile", async ({ page }) => {
   const response = await page.goto("/developers/aldar");
   test.skip(response?.status() === 404, "Aldar is unpublished in the CMS.");
-  // Pin to the h1; the current developments grid may render h3s that mention
-  // Aldar by name (e.g. "Aldar Mamsha Phase 2") which would otherwise trip
-  // Playwright's strict-mode multi-match check.
-  await expect(
-    page.getByRole("heading", { level: 1, name: /aldar properties/i }),
-  ).toBeVisible();
-  // The simplified profile leads with a "Developments" section; pin to its
-  // "<developer>'s projects." heading rather than the removed stats block.
-  await expect(
-    page.getByRole("heading", { level: 2, name: /projects/i }),
-  ).toBeVisible();
+
+  /*
+   * The h1 is `developer.name` — catalogue data an editor renames from the
+   * CMS — and the h2 below it is `projects_heading` from the shared
+   * developer-page copy document. Both were asserted by value; both are the
+   * client's to change, and neither is what this test is for. What it is for
+   * is that the profile ROUTE renders a profile, which is a level-1 heading
+   * with words in it and the projects section under it.
+   *
+   * `.first()` on the h1 because the developments grid renders h3s naming the
+   * developer, and strict mode counts every match.
+   */
+  const heading = page.getByRole("heading", { level: 1 }).first();
+  await expect(heading).toBeVisible();
+  await expect(heading).not.toBeEmpty();
+
+  const projects = page.getByTestId("developer-projects");
+  await expect(projects).toBeVisible();
+  await expect(projects.getByRole("heading", { level: 2 })).not.toBeEmpty();
 });
 
 test("the profile renders project cards and the developer's listings", async ({
@@ -41,11 +56,13 @@ test("the profile renders project cards and the developer's listings", async ({
   await expect(projects.first()).toBeVisible();
   await expect(page.getByText("Handover").first()).toBeVisible();
 
-  // Associated listings — property cards linking into /p/<slug>.
-  await expect(
-    page.getByRole("heading", { level: 2, name: /properties from this developer/i }),
-  ).toBeVisible();
-  await expect(page.locator("a[href^='/p/']").first()).toBeVisible();
+  // Associated listings — property cards linking into /p/<slug>. Addressed by
+  // test id: the heading is `listings_heading` from the developer-page copy
+  // document, so matching its wording gates this on a CMS field.
+  const listingsBand = page.getByTestId("developer-listings");
+  await expect(listingsBand).toBeVisible();
+  await expect(listingsBand.getByRole("heading", { level: 2 })).not.toBeEmpty();
+  await expect(listingsBand.locator("a[href^='/p/']").first()).toBeVisible();
 });
 
 // These specs run against the live CMS database, so anything that names one

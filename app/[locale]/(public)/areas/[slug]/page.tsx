@@ -456,6 +456,7 @@ export default async function CommunityProfilePage({
     ),
     listings: (
       <AreaListingsBand
+        testId="area-band-listings"
         eyebrow={t("cta.forSale")}
         heading={
           sv("listings", "heading") ?? `Properties for sale in ${profile.name}`
@@ -471,6 +472,7 @@ export default async function CommunityProfilePage({
     ),
     rentals: (
       <AreaListingsBand
+        testId="area-band-rentals"
         eyebrow={t("cta.toRent")}
         heading={
           sv("rentals", "heading") ?? `Properties for rent in ${profile.name}`

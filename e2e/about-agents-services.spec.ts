@@ -21,13 +21,28 @@ test("/about renders with title set", async ({ page }) => {
 test("/agents renders with title set and lists advisors", async ({ page }) => {
   const response = await page.goto("/agents");
   expect(response?.status()).toBe(200);
+  // `title` is a literal in the route's own `metadata` export, not a CMS
+  // field, so it stays asserted by value — see the note at the top.
   await expect(page).toHaveTitle(/our team/i);
-  await expect(
-    page.getByRole("heading", {
-      name: /twelve advisors\.\s*by design\./i,
-      level: 1,
-    }),
-  ).toBeVisible();
+
+  const heading = page.getByRole("heading", { level: 1 }).first();
+  await expect(heading).toBeVisible();
+  await expect(heading).not.toBeEmpty();
+
+  /*
+   * The half this test is named for and never checked.
+   *
+   * It asserted the h1 read "Twelve advisors. By design." — the /agents
+   * master page's CMS headline, and a number that goes stale the moment the
+   * thirteenth advisor is hired. That the directory lists advisors at all was
+   * never established; a page with the right headline and an empty grid
+   * passed.
+   */
+  const advisors = page.locator("a[href^='/agents/']:not([href='/agents'])");
+  expect(
+    await advisors.count(),
+    "/agents should link to at least one advisor",
+  ).toBeGreaterThan(0);
 });
 
 test("/agents/[slug] resolves an advisor (seed-fallback safe)", async ({

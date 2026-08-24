@@ -38,6 +38,7 @@ export async function AreaListingsBand({
   emptyHref,
   emptyLabel,
   tone = "bg",
+  testId,
 }: {
   eyebrow: string;
   heading: string;
@@ -50,10 +51,22 @@ export async function AreaListingsBand({
   emptyHref?: string;
   emptyLabel?: string;
   tone?: "bg" | "surface";
+  /**
+   * Which band this is, for e2e. Carries no styling.
+   *
+   * Both bands are this one component and every word in them — heading,
+   * intro, CTA — is a per-area CMS field, so "the sale band rendered" is not
+   * something a test can establish from the text on screen. The eyebrow is a
+   * message key and would nearly do, except that it is also the only thing
+   * separating two otherwise identical sections, which makes it exactly the
+   * string someone reaches for when they want them to read differently.
+   */
+  testId?: string;
 }) {
   const t = await getTranslations("area");
   return (
     <section
+      data-testid={testId}
       className={
         tone === "surface"
           ? "border-t border-bz-border bg-bz-surface"
