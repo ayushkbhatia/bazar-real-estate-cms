@@ -1287,3 +1287,20 @@ shows the trail.)
   `consent` namespace and the body does not — worth finding out which source
   it does come from before extracting, since a CMS-backed string wants a twin
   rather than a message key.
+
+- [e2e] Third time main has gone red because a spec asserted CMS copy, so the
+  class is worth a sweep rather than another one-off. #466 fixed the legal
+  contact and the landing contrast; #472 fixed both `tools-compare` specs after
+  the client rewrote the `compare` library section. Still coupled to editable
+  copy, each one green today and each one an editor away from red:
+  `about-agents-services.spec.ts:27` (`/twelve advisors\. by design\./i` — a
+  master-page heading), `developers.spec.ts:28,46` (`/projects/i` and
+  `/properties from this developer/i` — the developer-page copy document at
+  /admin/pages/sub/developer/copy), `marketplace.spec.ts:20` and
+  `areas.spec.ts:39` (`/properties for sale/i` — the search-results header at
+  /admin/pages/sub/search, already reworded once to "Properties for Sale").
+  "Done" is each of those asserting the branch rather than the wording, the way
+  `tools-compare.spec.ts` now does — a test id for the section, a heading that
+  exists, an href for a destination. A guard is probably not worth it: there is
+  no reliable way to tell a CMS string from a message key at the regex level,
+  and the file-by-file fix is small.

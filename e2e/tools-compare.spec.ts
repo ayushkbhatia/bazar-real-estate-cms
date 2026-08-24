@@ -15,6 +15,23 @@ import { propertyPaths } from "./_helpers";
  * comparing were one action capped at 4, and are now a 25-item shortlist
  * feeding a 4-column table. Two saves still put two ids in the store, which
  * is all this helper needs.
+ *
+ * ## And a second time, for the same reason one layer up
+ *
+ * Every word on /tools/compare is a CMS field — the `compare` library
+ * section, edited at /admin/pages/sub/section/compare — and CI runs against
+ * the live production database. So a spec that recognises a screen by its
+ * heading is a gate on the client's copy, and it goes off when they use the
+ * CMS as designed. It did: on 23 Aug the empty heading became "Compare Side
+ * by Side" from "Stack properties side by side.", the CTA became "Browse Our
+ * Listings" from "Browse the marketplace", and the results heading became
+ * "Compare Properties" from "Side by side". Three correct edits, two red
+ * tests, no commit behind them, main red across three merges.
+ *
+ * What these tests are for is which BRANCH rendered and what is in it, so
+ * they now assert that: a test id for the branch, a heading that exists
+ * rather than a heading that reads a particular way, and an href for where
+ * the button goes. Copy is the client's; structure is ours.
  */
 async function compareUrlForTwo(page: Page): Promise<string | null> {
   const paths = await propertyPaths(page, 2);
@@ -45,12 +62,26 @@ async function compareUrlForTwo(page: Page): Promise<string | null> {
 
 test("empty state when no ids in the URL", async ({ page }) => {
   await page.goto("/tools/compare");
-  await expect(
-    page.getByRole("heading", { name: /Stack properties side by side/i }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: /Browse the marketplace/i }),
-  ).toBeVisible();
+
+  const empty = page.getByTestId("compare-empty");
+  await expect(empty).toBeVisible();
+
+  // A heading, with words in it. Which words is the client's business; that
+  // the branch renders a non-empty h1 is not.
+  const heading = empty.getByRole("heading", { level: 1 });
+  await expect(heading).toBeVisible();
+  await expect(heading).not.toBeEmpty();
+
+  // The way out. Asserted by destination rather than by label, because the
+  // label is a CMS field and the destination is a route.
+  const cta = page.getByTestId("compare-empty-cta");
+  await expect(cta).toBeVisible();
+  await expect(cta).toHaveAttribute("href", /\/buy$/);
+
+  // The discriminating half: this is the empty branch, so the comparison
+  // table is not on the page at all. Without this the test passes on any
+  // page that happens to have an h1 and a link to /buy.
+  await expect(page.getByTestId("group-specifications")).toHaveCount(0);
 });
 
 test("comparing two properties renders all 5 groups + diff rows", async ({
@@ -60,8 +91,11 @@ test("comparing two properties renders all 5 groups + diff rows", async ({
   test.skip(!url, "Fewer than two published properties to compare.");
   await page.goto(url!);
 
-  // Heading reflects the count.
-  await expect(page.getByRole("heading", { name: /Side by side/i })).toBeVisible();
+  // The page rendered its header. The h1 itself is `copy.heading` from the
+  // CMS, so it is checked for existence rather than for wording; the count
+  // beside it is `tools.compare.comparingCount` — a message key, ours, and
+  // the half of the header that actually reflects the URL.
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.locator("text=/Comparing 2 properties/i")).toBeVisible();
 
   // The 5 expected groups are all in the DOM.
