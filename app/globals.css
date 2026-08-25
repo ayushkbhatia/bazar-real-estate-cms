@@ -153,6 +153,26 @@
      they have something to move onto. */
   --bz-header-h: 72px;
 
+  /* Inline-end space the floating `LocaleToggle` needs kept clear.
+
+     The pill is `fixed top-[84px] end-4 z-[25]` in the public layout, so it
+     hangs over whatever sits in the 84-117 band at the inline end — and the
+     two sticky bars that dock at `--bz-header-h` both do. Stacking the pill
+     above them (z-25 over z-20) makes the pill reachable; this makes the bar
+     reachable too, which is the other half. Without it the pill lands squarely
+     on the mobile "Filters" button, the only route into the filter sheet.
+
+     A padding token rather than a vertical offset because the bars' heights
+     are content-dependent and not close to each other: the filter bar measures
+     69px at 375, 161px at 1024 and 117px at 1440. Any `top` that cleared them
+     would be three magic numbers tracking a fourth. Padding does not care how
+     tall the bar is.
+
+     Value is the painted pill (two `min-w-11` options + 2px of padding and
+     border) plus the `end-4` inset, rounded up to a whole rem. From `md` the
+     options shrink to 30px, so the pill does. */
+  --bz-locale-pill-gutter: 7rem;
+
   /* shadcn semantic tokens — mapped to Bazar palette */
   --background: var(--bz-bg);
   --foreground: var(--bz-ink);
@@ -1080,4 +1100,22 @@
   font-family: var(--bz-font-mono);
   direction: ltr;
   unicode-bidi: isolate;
+}
+
+/* The pill's options drop from `min-w-11` to 30px at `md`, so the space it
+   needs drops with them. Same breakpoint as `locale-toggle.tsx`; if that file
+   changes its `md:min-w-[30px]`, change this with it. */
+@media (min-width: 768px) {
+  :root {
+    --bz-locale-pill-gutter: 5rem;
+  }
+}
+
+/* From `xl` the `PreferencesPopover` renders in the same fixed cluster, to the
+   pill's inline end, so the reserved band has to cover both plus the `gap-2`
+   between them. */
+@media (min-width: 1280px) {
+  :root {
+    --bz-locale-pill-gutter: 12rem;
+  }
 }
