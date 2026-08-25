@@ -89,39 +89,61 @@ export default async function PublicLayout({
         exists between md and xl. So there is no horizontal slot inside the bar
         that is safe at all widths, and this sits just under it instead.
 
-        z-20, deliberately below the megamenu panel's z-30: the panel docks at
-        top-[72px] and would otherwise be overlapped by a control floating at
-        84. The preferences pill has had that bug quietly since it shipped —
-        it was hard to notice while the pill was the only thing there.
+        z-25, in the gap deliberately left between the megamenu panel's z-30
+        and the sticky search chrome's z-20.
+
+        Below the panel: it docks at top-[72px] and would otherwise be
+        overlapped by a control floating at 84. The preferences pill has had
+        that bug quietly since it shipped — it was hard to notice while the
+        pill was the only thing there.
+
+        Above the search chrome, which is the half that used to be wrong. This
+        was z-20 too, and the filter bar and the development sub-nav both moved
+        onto `top-[var(--bz-header-h)]` (72px) in Phase 3 — so they occupy the
+        exact band this floats in. Equal z-index is settled by tree order and
+        this div is a sibling BEFORE `<main>`, so the opaque bar won every
+        time: measured on /buy/search at 1440 after a 900px scroll,
+        `elementFromPoint` at the pill's own centre returned the filter bar's
+        row, not the pill. The control was painted, inert, and had been on all
+        six search routes and every development page — on DESKTOP, where it was
+        never gated. Hiding it below xl never addressed that; it only removed
+        the evidence from phones.
+
+        Stacking above the bar is only half the fix, because whatever the pill
+        covers becomes unreachable in turn — and on mobile that is the Filters
+        button, the only route into the filter sheet. The bars reserve
+        `--bz-locale-pill-gutter` at their inline end so nothing lands under
+        it. Both halves are required; either alone just moves the dead control.
       */}
-      <div className="fixed top-[84px] end-4 z-20 flex items-center gap-2">
+      <div className="fixed top-[84px] end-4 z-[25] flex items-center gap-2">
         {/*
-          Now gated on xl, like the preferences pill beside it.
+          Ungated, unlike the preferences pill beside it.
 
-          It used to render at every width, on the argument that language is
-          how someone reads the site at all and hiding it at 1280 hides it from
-          every phone. That was right when it was written — the drawer's
-          language row was still the "AR locale & RTL coming soon" placeholder.
-          `mobile-preferences.tsx` now renders a real `LanguageSwitch`, so
-          below xl this was the SECOND locale control, not the only one.
+          It carried `hidden xl:flex` for one release. The reasoning was that
+          `mobile-preferences.tsx` renders a real `LanguageSwitch` in the
+          drawer, so below xl this was the second locale control rather than
+          the only one, and the second one was the one colliding with the
+          search chrome.
 
-          Being the second one is what made it a defect. It is `fixed` at
-          top-84 with z-20, and Phase 3 moved the sticky search filter bar and
-          the development sub-nav off `top-0` onto `--bz-header-h` (72px) so
-          they stop hiding behind the header. Both now occupy the band this
-          pill floats in, at the same z-20 — so on six search routes and every
-          development page the opaque bar either paints over the pill or the
-          pill covers the inline end of a horizontally scrollable row of links.
-          Raising the pill's z-index only swaps which control is unreachable.
+          Both halves of that were wrong. The collision was never a mobile
+          problem — see the z-index note above; it was measured on desktop at
+          1440, where this pill has never been gated. And the drawer control is
+          not an equivalent: it is three taps deep, behind a hamburger and then
+          a row labelled "Currency & units", which is a label that says nothing
+          about language to the one visitor who cannot read the rest of the
+          page. `locale-toggle.tsx` opens by explaining that this is exactly
+          what it exists to prevent.
 
-          So: one control below xl, in the drawer where settings live, and the
-          search chrome gets its band back. The cost is that language is two
-          taps on a phone rather than one, which is worth revisiting if the
-          Arabic traffic share says so.
+          So language is one tap again at every width, and the collision is
+          fixed where it lives — in the stacking order and in the bars' own
+          inline-end gutter — rather than by removing the control from the
+          viewports that were not causing it.
+
+          Preferences stays at xl: currency and area unit are refinements of
+          something already legible, and the drawer's "Currency & units" row is
+          an honest label for them.
         */}
-        <div className="hidden xl:flex">
-          <LocaleToggle current={active} />
-        </div>
+        <LocaleToggle current={active} />
         {/* Gate matches PublicMegaNav's xl breakpoint — below it the drawer
             carries the preferences entry via footerSlot, so an md gate here
             would render both controls at once between 768 and 1279. */}

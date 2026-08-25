@@ -884,7 +884,14 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         the anchors land wrong.
       */}
       <div
-        className="sticky top-[var(--bz-header-h)] z-[5] bg-bz-bg border-b border-bz-border px-4 md:px-12 flex items-center gap-7 h-14 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        /* `pe-[var(--bz-locale-pill-gutter)]` keeps the inline end clear of
+           the layout's floating `LocaleToggle`, which is `fixed top-[84px]
+           end-4 z-[25]` and so hangs over this row's 72-128 band. z-[5] means
+           the pill wins the overlap; without the gutter it would sit on the
+           end of a horizontally scrollable list of anchors, which is the one
+           part of a scroll row a thumb reaches for. Padding-end is inside the
+           scrollable overflow, so the last link still scrolls clear of it. */
+        className="sticky top-[var(--bz-header-h)] z-[5] bg-bz-bg border-b border-bz-border px-4 md:px-12 pe-[var(--bz-locale-pill-gutter)] flex items-center gap-7 h-14 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{ borderBottom: "1px solid var(--bz-border)" }}
       >
         {navItems.map((item, i) => (

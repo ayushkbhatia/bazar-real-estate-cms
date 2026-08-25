@@ -275,13 +275,25 @@ export function FilterBar({ areas }: Props) {
        * blocks, so the sticky containing block is the document scroller and
        * `top` is measured from the viewport at every width.
        *
-       * z-20 stays. The layout's floating `LocaleToggle` is `fixed
-       * top-[84px] end-4 z-20`, so it now falls inside this bar's band; with
-       * equal z-index the later element in tree order paints on top, and that
-       * is this bar (the toggle is a sibling of `<main>`, not a descendant).
-       * Right way round for the reason above — the Filters button sits at the
-       * same inline end — but it does mean the toggle needs re-siting, and
-       * that belongs to the layout rather than here.
+       * z-20 stays, and the layout's floating `LocaleToggle` now sits at
+       * z-[25] rather than matching it. That inverts what used to happen
+       * here: the toggle is `fixed top-[84px] end-4` and falls inside this
+       * bar's band, and with equal z-index the later element in tree order
+       * won — this bar, since the toggle is a sibling of `<main>` rather than
+       * a descendant. The toggle was painted over on every search route at
+       * every width, which is what its own gate was mistaken for.
+       *
+       * The bar losing that contest is not an improvement on its own, because
+       * whatever the pill covers is unreachable either way and below `md` that
+       * is the Filters button — the only route into the mobile filter sheet,
+       * per the note above. So the row reserves `--bz-locale-pill-gutter` at
+       * its inline end and both controls stay live. The token is declared in
+       * `globals.css` and steps down at `md` and up at `xl`, tracking the
+       * pill's own width and the preferences pill that joins it.
+       *
+       * On the ROW, not on this element's padding: the padding is what draws
+       * the bar's full-bleed background, and pulling it in would leave a
+       * visible notch in the border.
        */
       className={cn(
         "sticky top-[var(--bz-header-h)] z-20 bg-bz-bg border-b border-bz-border",
@@ -289,7 +301,7 @@ export function FilterBar({ areas }: Props) {
         pending && "opacity-90",
       )}
     >
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3 pe-[var(--bz-locale-pill-gutter)]">
         {/* Free-text search — full width on mobile, fixed on desktop */}
         <label className="relative flex-1 md:flex-none min-w-0">
           <span className="sr-only">{tr("filters.search")}</span>
