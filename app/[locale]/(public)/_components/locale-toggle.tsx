@@ -103,30 +103,50 @@ export function LocaleToggle({ current }: { current: Locale }) {
             // language's own full name.
             aria-label={full[locale]}
             className={cn(
-              // 30x24 and 21x18 measured — the two smallest targets in the
-              // public chrome, and this is the only language control a phone
-              // gets. Width is taken in the painted box (`min-w-11`), height
-              // is not: the pill is `fixed top-[84px]`, floating over content
-              // on all 37 routes at every scroll position, and 44px of ink
-              // there costs more than it buys. So the extra 20px of height is
-              // a transparent `::after` — a click on a pseudo-element hits its
-              // originating element, so the anchor is 44px to a thumb and 24px
-              // to the eye. It expands on the block axis only: the two options
-              // are adjacent, and inline halos would overlap and hand a tap to
-              // whichever painted last. That is precisely the failure this
-              // file's "Order is pinned LTR" note exists to prevent.
-              "relative min-w-11 rounded-full px-2 py-1 text-center text-[12px] leading-none transition-colors md:min-w-[30px]",
-              "after:absolute after:inset-x-0 after:-inset-y-2.5 md:after:hidden",
-              // The Arabic glyph sits lower than Latin caps at the same size,
-              // so the two options look vertically misaligned in a shared row
-              // unless the line box is normalised.
-              "inline-flex h-6 items-center justify-center",
-              active
-                ? "bg-bz-navy text-white font-medium"
-                : "text-bz-ink-2 hover:bg-bz-surface-2 hover:text-bz-ink",
+              // The ANCHOR is the hit box; the span inside it is the ink.
+              //
+              // 44x44 below `md`, in the anchor's own border box. Width was
+              // always real (`min-w-11`); height used to be a transparent
+              // `::after` spanning `-inset-y-2.5`, on the argument that a
+              // click on a pseudo-element hits its originating element, so the
+              // control was 44px to a thumb and 24px to the eye. True for a
+              // human and false for a measurement: `e2e/mobile-geometry.spec`
+              // reads `getBoundingClientRect()`, which knows nothing about
+              // pseudo-elements, and its `touchTargets` check is blocking with
+              // a deliberately empty waiver list. It reported `44x24 "English"`
+              // on all 26 mobile routes the moment this pill stopped being
+              // gated at `xl` — the gate had been hiding the finding, not
+              // preventing it.
+              //
+              // So the height is real now and the ink is unchanged: `h-11`
+              // with `-my-2.5` cancels the extra 20px out of the flex line, so
+              // the painted pill stays 28px and the anchor still reports 44.
+              // The pill is `fixed top-[84px]`, floating over content on all
+              // 37 routes at every scroll position, and 44px of ink there
+              // would cost more than it buys.
+              //
+              // Block axis only, as before: the two options are adjacent, and
+              // an inline expansion would overlap and hand a tap to whichever
+              // painted last — precisely the failure this file's "Order is
+              // pinned LTR" note exists to prevent.
+              "group/opt inline-flex min-w-11 items-center justify-center md:min-w-[30px]",
+              "h-11 -my-2.5 md:h-6 md:my-0",
             )}
           >
-            <span aria-hidden="true">{SHORT[locale]}</span>
+            <span
+              aria-hidden="true"
+              className={cn(
+                // The Arabic glyph sits lower than Latin caps at the same
+                // size, so the two options look vertically misaligned in a
+                // shared row unless the line box is normalised.
+                "flex h-6 w-full items-center justify-center rounded-full px-2 text-center text-[12px] leading-none transition-colors",
+                active
+                  ? "bg-bz-navy text-white font-medium"
+                  : "text-bz-ink-2 group-hover/opt:bg-bz-surface-2 group-hover/opt:text-bz-ink",
+              )}
+            >
+              {SHORT[locale]}
+            </span>
           </a>
         );
       })}
