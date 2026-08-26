@@ -1041,16 +1041,39 @@
 :root {
   --bz-font-ar: var(--font-arabic), "Noto Naskh Arabic", "Geeza Pro",
     "Al Bayan", sans-serif;
+
+  /* Four ROLE variables, one per typographic job an Arabic page has, each
+     defaulting to the shipped face above. Nothing about the rendering changes
+     by declaring them — every one resolves to `--bz-font-ar` exactly as before.
+
+     They exist so the CMS has something to override. `/admin/settings/typography`
+     lets the client upload their licensed Arabic faces and assign one per role;
+     `app/[locale]/layout.tsx` then emits an `@font-face` block plus a
+     `html:root { … }` rule redeclaring these four, and every Arabic glyph on
+     the site changes with it. `html:root` rather than `:root` because these
+     two rules would otherwise have identical specificity and the winner would
+     be decided by whether Next put the inline <style> before or after its own
+     stylesheet link. See lib/schemas/arabic-fonts.ts.
+
+     Splitting the variable is what avoids the alternative: a per-component
+     font prop, or a stylesheet that has to name every heading twice. */
+  --bz-font-ar-display: var(--bz-font-ar);
+  --bz-font-ar-body: var(--bz-font-ar);
+  /* Follows body unless set apart — an eyebrow is a UI label, and a client who
+     chose a body face means it to cover labels too. */
+  --bz-font-ar-eyebrow: var(--bz-font-ar-body);
+  /* Latin by default: `.mono` only ever carries reference codes, prices and
+     dates, all of which are Latin-typeset. Pointing it at an Arabic family is
+     an opt-in for a face that draws Arabic-Indic numerals. */
+  --bz-font-ar-mono: var(--bz-font-mono);
 }
 
 :lang(ar) {
-  --bz-font-sans: var(--bz-font-ar);
+  --bz-font-sans: var(--bz-font-ar-body);
   /* Instrument Serif has zero Arabic glyphs — left alone, every display
      heading silently falls back to whatever the device happens to have, which
      is how an Arabic page ends up looking different on every machine. */
-  --bz-font-serif: var(--bz-font-ar);
-  /* --bz-font-mono deliberately stays Latin: `.mono` only ever carries
-     reference codes, prices and dates, all of which are Latin-typeset. */
+  --bz-font-serif: var(--bz-font-ar-display);
   line-height: 1.75;
 }
 
@@ -1072,7 +1095,7 @@
 }
 
 :lang(ar) .serif {
-  font-family: var(--bz-font-ar);
+  font-family: var(--bz-font-ar-display);
   font-weight: 500;
   /* Instrument Serif is used italic in places. Arabic has no italic tradition
      and synthetic obliquing shears the joins. */
@@ -1083,6 +1106,7 @@
    its legibility from capital letters. Arabic is unicameral, so uppercasing is
    a no-op and 11px is simply small. */
 :lang(ar) .eyebrow {
+  font-family: var(--bz-font-ar-eyebrow);
   text-transform: none;
   font-size: 12.5px;
 }
@@ -1097,7 +1121,7 @@
    numbers. Isolation stops the bidi algorithm reordering a trailing "+" or a
    hyphen to the wrong end of the run. */
 :lang(ar) .mono {
-  font-family: var(--bz-font-mono);
+  font-family: var(--bz-font-ar-mono);
   direction: ltr;
   unicode-bidi: isolate;
 }

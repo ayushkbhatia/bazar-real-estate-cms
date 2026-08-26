@@ -3212,6 +3212,7 @@ export type Database = {
       site_settings: {
         Row: {
           accent_token: string
+          arabic_fonts: Json
           brand_name: string
           brand_name_ar: string | null
           brand_tagline: string | null
@@ -3235,6 +3236,7 @@ export type Database = {
         }
         Insert: {
           accent_token?: string
+          arabic_fonts?: Json
           brand_name?: string
           brand_name_ar?: string | null
           brand_tagline?: string | null
@@ -3258,6 +3260,7 @@ export type Database = {
         }
         Update: {
           accent_token?: string
+          arabic_fonts?: Json
           brand_name?: string
           brand_name_ar?: string | null
           brand_tagline?: string | null
@@ -3796,7 +3799,13 @@ export type Database = {
       license_holder_kind: "firm" | "staff" | "development"
       license_kind: "orn" | "brn" | "trakheesi" | "rera" | "dmt"
       license_status: "active" | "expiring_soon" | "expired" | "revoked"
-      media_folder: "listings" | "brand" | "blog" | "team" | "documents"
+      media_folder:
+        | "listings"
+        | "brand"
+        | "blog"
+        | "team"
+        | "documents"
+        | "fonts"
       megamenu_badge_variant:
         | "default"
         | "hot"
@@ -4125,7 +4134,7 @@ export const Constants = {
       license_holder_kind: ["firm", "staff", "development"],
       license_kind: ["orn", "brn", "trakheesi", "rera", "dmt"],
       license_status: ["active", "expiring_soon", "expired", "revoked"],
-      media_folder: ["listings", "brand", "blog", "team", "documents"],
+      media_folder: ["listings", "brand", "blog", "team", "documents", "fonts"],
       megamenu_badge_variant: [
         "default",
         "hot",

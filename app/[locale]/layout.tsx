@@ -16,9 +16,11 @@ import { CookieBanner } from "@/app/_consent/cookie-banner";
 import { VercelAnalyticsGate } from "@/app/_consent/analytics-gate";
 import { organizationJsonLd } from "@/lib/jsonld";
 import {
+  getPublicArabicFonts,
   getPublicBranding,
   resolveSearchIcon,
 } from "@/lib/queries/site-settings";
+import { arabicFontCss } from "@/lib/schemas/arabic-fonts";
 import { env } from "@/lib/env";
 import { cn } from "@/lib/utils";
 import {
@@ -204,12 +206,35 @@ export default async function RootLayout({
   const branding = await getPublicBranding(locale);
   const searchLogo = resolveSearchIcon(branding, SITE_URL);
 
+  const isRtl = LOCALE_DIR[locale] === "rtl";
+
   // Dynamically imported so the Arabic woff2 and its preload tag never reach
   // an English page. See app/[locale]/_fonts-ar.ts.
-  const arabic =
-    LOCALE_DIR[locale] === "rtl"
-      ? (await import("./_fonts-ar")).plexArabic
-      : null;
+  const arabic = isRtl ? (await import("./_fonts-ar")).plexArabic : null;
+
+  /*
+   * The client's own Arabic faces, if they have set any.
+   *
+   * `plexArabic` above is the face this repo shipped with; this is the one an
+   * operator uploaded at /admin/settings/typography. It cannot go through
+   * `next/font` — that resolves files at build time out of the repo, and these
+   * arrive at runtime from Storage — so it is an `@font-face` block written by
+   * `arabicFontCss` and dropped in the head, redeclaring the four
+   * `--bz-font-ar-*` role variables globals.css defines.
+   *
+   * The shipped face stays loaded either way, deliberately: it is the tail of
+   * every role's fallback stack, so a face that 404s, or one whose licence
+   * covers only Arabic and not the Latin runs beside it, degrades to Plex
+   * rather than to the browser's last-resort serif.
+   *
+   * RTL only, so English pages pay neither the query nor the bytes — the same
+   * decision `_fonts-ar.ts` documents for the shipped face.
+   *
+   * Cookie-free anon read, like `getPublicBranding` above, so this does not
+   * take the route off prerendering. Busted by the `revalidateLocalised("/",
+   * "layout")` in the typography settings action.
+   */
+  const fontCss = isRtl ? arabicFontCss(await getPublicArabicFonts()) : null;
 
   return (
     <html
@@ -230,6 +255,31 @@ export default async function RootLayout({
             __html: JSON.stringify(organizationJsonLd(searchLogo)),
           }}
         />
+        {/*
+          Preloaded before the stylesheet that references them, so the two
+          faces the page is mostly set in are already in flight when the
+          `@font-face` below is parsed. `crossOrigin` is not optional: a font
+          is always fetched in CORS mode, so a preload without it is a second,
+          uncredited request rather than a warm cache entry. Storage answers
+          `access-control-allow-origin: *`, which is what makes this work at
+          all. Only ever the body and display 400s — see `arabicFontCss`.
+        */}
+        {fontCss?.preload.map((href) => (
+          <link
+            key={href}
+            rel="preload"
+            as="font"
+            type="font/woff2"
+            href={href}
+            crossOrigin="anonymous"
+          />
+        ))}
+        {fontCss?.css ? (
+          <style
+            data-bz-arabic-fonts=""
+            dangerouslySetInnerHTML={{ __html: fontCss.css }}
+          />
+        ) : null}
       </head>
       <body className="min-h-dvh-safe flex flex-col bg-background text-foreground">
         {/*

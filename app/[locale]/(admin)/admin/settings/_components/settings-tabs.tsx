@@ -12,6 +12,14 @@ const TABS: { group: string; items: Tab[] }[] = [
     items: [
       { label: "Brand", href: "/admin/settings/brand", status: "live" },
       { label: "Hero", href: "/admin/settings/hero", status: "live" },
+      {
+        // The Arabic face, uploaded and assigned per typographic role. Under
+        // Identity rather than Platform because it is a brand decision — the
+        // Arabic half of the same choice `Brand` makes for the wordmark.
+        label: "Arabic type",
+        href: "/admin/settings/typography",
+        status: "live",
+      },
     ],
   },
   {
