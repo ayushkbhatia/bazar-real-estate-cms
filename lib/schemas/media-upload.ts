@@ -2,13 +2,14 @@ import { z } from "zod";
 import {
   UPLOAD_FOLDERS,
   UPLOAD_POLICIES,
+  fileExtension,
   megabytes,
   type UploadKind,
 } from "@/lib/media";
 
 export const VIDEO_MIME_VALUES = ["video/mp4", "video/webm"] as const;
 
-const UPLOAD_KINDS = ["standard", "hero_video"] as const;
+const UPLOAD_KINDS = ["standard", "hero_video", "font"] as const;
 
 const uploadBase = {
   kind: z.enum(UPLOAD_KINDS),
@@ -23,6 +24,11 @@ const uploadBase = {
  * before a signed URL exists, and again by the bucket's own `file_size_limit` —
  * which is the ceiling that actually binds, since a determined client can put
  * whatever it likes in this payload. The finalise step re-measures what landed.
+ *
+ * A kind carrying `extensions` is checked on BOTH, and the extension is the
+ * one that matters: fonts have to admit `application/octet-stream` (see
+ * lib/media.ts FONT_MIME), so on that kind the MIME set alone would wave
+ * through any file at all.
  */
 function checkPolicy(
   value: { kind: UploadKind; filename: string; mime: string; size_bytes: number },
@@ -34,6 +40,12 @@ function checkPolicy(
       code: "custom",
       path: ["mime"],
       message: `Unsupported file type "${value.mime}". Use ${policy.accepts}.`,
+    });
+  if (policy.extensions && !policy.extensions.has(fileExtension(value.filename)))
+    ctx.addIssue({
+      code: "custom",
+      path: ["filename"],
+      message: `"${value.filename}" isn't a font file. Use ${policy.accepts}.`,
     });
   if (value.size_bytes > policy.maxBytes)
     ctx.addIssue({

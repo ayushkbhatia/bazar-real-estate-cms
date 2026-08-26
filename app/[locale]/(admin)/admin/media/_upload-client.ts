@@ -4,6 +4,8 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 import {
   MEDIA_BUCKET,
   UPLOAD_POLICIES,
+  fileExtension,
+  fontContentType,
   megabytes,
   type UploadFolder,
   type UploadKind,
@@ -53,17 +55,39 @@ export async function uploadToLibrary(
       status: "error",
       message: `Unsupported file type "${file.type || "unknown"}". Use ${policy.accepts}.`,
     };
+  if (policy.extensions && !policy.extensions.has(fileExtension(file.name)))
+    return {
+      status: "error",
+      message: `"${file.name}" isn't a font file. Use ${policy.accepts}.`,
+    };
   if (file.size > policy.maxBytes)
     return {
       status: "error",
       message: `"${file.name}" is ${megabytes(file.size)} MB — keep it under ${megabytes(policy.maxBytes)} MB.`,
     };
 
+  /*
+   * What the object is stored AS, which is not always what the browser said it
+   * is. Half of all font uploads arrive as `application/octet-stream` or with
+   * an empty `type` (lib/media.ts FONT_MIME), and Storage serves an object
+   * back under whatever type it was written with — so a face fetched directly,
+   * or listed in the media library, would read as a binary blob for ever.
+   * Images and video keep `file.type` verbatim: it is already right for them,
+   * and their extension is the less trustworthy half of the pair.
+   *
+   * Resolved before the ticket, not after, because `uploadTicketSchema` wants
+   * a non-empty `mime` and a font dragged off an SMB share has none.
+   */
+  const contentType =
+    (kind === "font" ? fontContentType(file.name) : null) ||
+    file.type ||
+    "application/octet-stream";
+
   const ticket = await createUploadTicket({
     kind,
     folder: opts.folder,
     filename: file.name,
-    mime: file.type,
+    mime: contentType,
     size_bytes: file.size,
   });
   if (ticket.status === "error") return ticket;
@@ -72,8 +96,13 @@ export async function uploadToLibrary(
   const { error } = await supabase.storage
     .from(MEDIA_BUCKET)
     .uploadToSignedUrl(ticket.storage_key, ticket.token, file, {
-      contentType: file.type,
-      cacheControl: "3600",
+      contentType,
+      // A font is immutable — the storage key carries a uuid, so a new file is
+      // a new URL and this one never changes again. An hour is what every
+      // other asset gets; a year is what a face keyed like this can safely
+      // take, and it is the difference between a repaint on every navigation
+      // and one download per visitor.
+      cacheControl: kind === "font" ? "31536000" : "3600",
     });
   if (error)
     return { status: "error", message: `Upload failed: ${error.message}` };
@@ -83,7 +112,7 @@ export async function uploadToLibrary(
     folder: opts.folder,
     storage_key: ticket.storage_key,
     filename: file.name,
-    mime: file.type,
+    mime: contentType,
     size_bytes: file.size,
     alt_text: opts.alt_text ?? null,
   });

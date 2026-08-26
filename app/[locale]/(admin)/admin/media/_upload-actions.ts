@@ -43,10 +43,16 @@ import { logAudit } from "@/lib/audit";
  * as one uploaded through the library itself.
  */
 
-/** Video is site chrome, not listing content — advisors don't place it. */
+/**
+ * Video is site chrome, not listing content — advisors don't place it. A font
+ * is narrower still: it restyles every Arabic page at once, and /admin/settings
+ * is already admin-only, so the upload behind it matches that gate rather than
+ * being the one door into the screen that anyone can push.
+ */
 const ROLES: Record<UploadKind, ReadonlyArray<StaffRole>> = {
   standard: ["admin", "editor", "marketing", "agent"],
   hero_video: ["admin", "editor", "marketing"],
+  font: ["admin"],
 };
 
 export type UploadTicketResult =

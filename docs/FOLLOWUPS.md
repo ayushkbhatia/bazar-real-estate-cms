@@ -31,6 +31,35 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [infra] Supabase Storage serves every public object with
+  `cache-control: no-cache`, so nothing in the media bucket is cached by the
+  browser.
+  Surfaced by the CMS Arabic-font PR, which passes `cacheControl: "31536000"`
+  for a font (immutable — the storage key carries a uuid, so a new file is a
+  new URL). Verified: an object uploaded with that header, and an image the app
+  uploaded months ago with `cacheControl: 3600`, both come back `no-cache`. So
+  the per-object value is being ignored project-wide and every logo, listing
+  photo and webfont is revalidated on each navigation. This is a Storage/CDN
+  setting on the Supabase project, not app code. "Done" is public objects
+  serving their stated `max-age`; the font is the asset that benefits most,
+  since a miss there is a visible reflow rather than a slower image.
+
+- [i18n] `/admin/settings/typography` has no "subset this font" step.
+  An unsubsetted Arabic OTF straight off a foundry download can be 1-2 MB
+  against ~50 KB for the same face as a subsetted WOFF2, and the screen can
+  only warn about it (it does — it counts the non-WOFF2 files and says so).
+  Converting in the browser would need a wasm build of `fonttools`/`woff2`;
+  the cheaper half is refusing an upload over some threshold with an
+  explanation, which is a one-constant change to `MAX_FONT_UPLOAD_BYTES`.
+
+- [i18n] The Arabic face is still English-page-invisible.
+  `<span lang="ar">` inside an English page renders in the system Naskh
+  fallback, not the client's uploaded face, because the layout emits the
+  `@font-face` block on RTL locales only — deliberate, to keep the query and
+  the bytes off all 78 English routes. If mixed-script English pages become
+  common, the fix is to emit the `@font-face` (but NOT the preload) on every
+  locale: a declared-but-unmatched face costs bytes of CSS and no download.
+
 - [i18n] Thirteen form strings are still English on `/ar` because the
   back-translation gate refused every draft of them.
   Left over from the `--forms` run in the /rent translation PR, which wrote 22

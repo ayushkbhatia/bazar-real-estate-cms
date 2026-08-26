@@ -16,6 +16,11 @@ import {
   type SiteSettings,
 } from "@/lib/schemas/site-settings";
 import { type MortgageAssumptions } from "@/lib/mortgage";
+import {
+  ARABIC_FONT_DEFAULTS,
+  parseArabicFonts,
+  type ArabicFontSettings,
+} from "@/lib/schemas/arabic-fonts";
 
 const DEFAULTS: SiteSettings = {
   brand: {
@@ -303,5 +308,58 @@ export async function getMortgageSettings(): Promise<MortgageSettings> {
     );
   } catch {
     return MORTGAGE_SETTINGS_DEFAULTS;
+  }
+}
+
+/**
+ * The Arabic type stack, for the root layout.
+ *
+ * Its own function, not a field on `getPublicBranding`, for the column-grant
+ * trap 0096 documents from both sides: a select naming a column the anon role
+ * may not read fails the WHOLE select, so folding `arabic_fonts` into the
+ * branding read would mean an unapplied 0120 blanked the navbar logo, the
+ * favicon and the wordmark too — on every page, in both locales. Scoped like
+ * this, the blast radius of a missing migration is Arabic typography, which
+ * then renders in the face it shipped with.
+ *
+ * The layout calls this only on RTL locales. English pages neither read it nor
+ * emit its CSS: a `<span lang="ar">` inside an English page keeps the system
+ * Naskh fallback it has always had, and adding a database round-trip plus an
+ * `@font-face` block to all 78 English routes to change that is not a trade
+ * this codebase makes — the same reasoning that put the Arabic face behind a
+ * dynamic import in `_fonts-ar.ts`.
+ */
+export async function getPublicArabicFonts(): Promise<ArabicFontSettings> {
+  if (!isSupabaseConfigured) return ARABIC_FONT_DEFAULTS;
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("site_settings")
+      .select("arabic_fonts")
+      .eq("id", 1)
+      .maybeSingle();
+    return parseArabicFonts(
+      (data as { arabic_fonts?: unknown } | null)?.arabic_fonts,
+    );
+  } catch {
+    return ARABIC_FONT_DEFAULTS;
+  }
+}
+
+/** The same read for /admin/settings/typography, through the caller's session. */
+export async function getArabicFontSettings(): Promise<ArabicFontSettings> {
+  if (!isSupabaseConfigured) return ARABIC_FONT_DEFAULTS;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase
+      .from("site_settings")
+      .select("arabic_fonts")
+      .eq("id", 1)
+      .maybeSingle();
+    return parseArabicFonts(
+      (data as { arabic_fonts?: unknown } | null)?.arabic_fonts,
+    );
+  } catch {
+    return ARABIC_FONT_DEFAULTS;
   }
 }
