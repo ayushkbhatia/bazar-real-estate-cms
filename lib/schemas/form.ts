@@ -265,7 +265,14 @@ export function blankField(type: FormFieldType, index: number): FormFieldSaveInp
     enabled: true,
     width: "full",
     options: hasOptions(type)
-      ? [{ label: "First option", value: "first_option", intent: null }]
+      ? [
+          {
+            label: "First option",
+            label_ar: null,
+            value: "first_option",
+            intent: null,
+          },
+        ]
       : [],
     optionSource: null,
     rows: type === "textarea" ? 4 : null,

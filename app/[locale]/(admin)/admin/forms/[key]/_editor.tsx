@@ -74,6 +74,13 @@ function toSaveField(field: ResolvedForm["fields"][number]): FormFieldSaveInput 
     width: field.width,
     options: (field.options ?? []).map((o) => ({
       label: o.label,
+      // Carried, not dropped. This mapping used to list three keys, so every
+      // save rewrote the options column without `label_ar` — the editor's
+      // Arabic for an option had storage, a column and a renderer, and was
+      // destroyed by the next save. It went unnoticed because the generated
+      // store refills a blank twin from the English on read, which stops
+      // working the moment an option is renamed.
+      label_ar: o.label_ar ?? null,
       value: o.value,
       intent: o.intent ?? null,
     })),
@@ -185,7 +192,14 @@ export function FormEditor({
       // control, so seed one option the editor can rename.
       options:
         hasOptions(type) && (field.options?.length ?? 0) === 0
-          ? [{ label: "First option", value: "first_option", intent: null }]
+          ? [
+              {
+                label: "First option",
+                label_ar: null,
+                value: "first_option",
+                intent: null,
+              },
+            ]
           : field.options,
       rows: type === "textarea" ? (field.rows ?? 4) : null,
       // A slider needs a scale to be saveable at all, so retyping into one
@@ -1086,50 +1100,74 @@ function OptionsEditor({
     <div className="flex flex-col gap-2">
       <Label className="text-[12px]">Options</Label>
       {options.map((option, index) => (
-        <div key={index} className="flex items-center gap-2">
-          <input
-            className={fieldCls}
-            value={option.label}
-            placeholder="What the visitor reads"
-            disabled={disabled}
-            onChange={(e) => set(index, { label: e.target.value })}
-          />
-          <input
-            className={cn(fieldCls, "max-w-[180px]")}
-            value={option.value}
-            placeholder="stored value (optional)"
-            disabled={disabled}
-            onChange={(e) => set(index, { value: e.target.value })}
-          />
-          {showIntent ? (
-            <select
-              className={cn(fieldCls, "max-w-[130px]")}
-              value={option.intent ?? ""}
+        <div
+          key={index}
+          className="flex flex-col gap-1 rounded border border-bz-border bg-bz-surface p-2"
+        >
+          <div className="flex items-center gap-2">
+            <input
+              className={fieldCls}
+              value={option.label}
+              placeholder="What the visitor reads"
               disabled={disabled}
-              onChange={(e) => set(index, { intent: e.target.value || null })}
+              onChange={(e) => set(index, { label: e.target.value })}
+            />
+            <input
+              className={cn(fieldCls, "max-w-[180px]")}
+              value={option.value}
+              placeholder="stored value (optional)"
+              disabled={disabled}
+              onChange={(e) => set(index, { value: e.target.value })}
+            />
+            {showIntent ? (
+              <select
+                className={cn(fieldCls, "max-w-[130px]")}
+                value={option.intent ?? ""}
+                disabled={disabled}
+                onChange={(e) => set(index, { intent: e.target.value || null })}
+              >
+                <option value="">No tag</option>
+                {["buy", "sell", "rent", "invest", "manage"].map((i) => (
+                  <option key={i} value={i}>
+                    Tag as {i}
+                  </option>
+                ))}
+              </select>
+            ) : null}
+            <IconButton
+              label={`Remove the ${option.label.trim() || `option in position ${index + 1}`} option`}
+              disabled={disabled || options.length <= 1}
+              onClick={() => onChange(options.filter((_, i) => i !== index))}
             >
-              <option value="">No tag</option>
-              {["buy", "sell", "rent", "invest", "manage"].map((i) => (
-                <option key={i} value={i}>
-                  Tag as {i}
-                </option>
-              ))}
-            </select>
-          ) : null}
-          <IconButton
-            label="Remove this option"
-            disabled={disabled || options.length <= 1}
-            onClick={() => onChange(options.filter((_, i) => i !== index))}
-          >
-            <Trash2 size={13} strokeWidth={1.7} />
-          </IconButton>
+              <Trash2 size={13} strokeWidth={1.7} />
+            </IconButton>
+          </div>
+          {/* The option label is the chip the visitor actually reads, and it
+              was the one string in this editor with no Arabic control — every
+              other one on the panel above has had a twin since the epic. The
+              stored value and the intent tag get none: neither is ever
+              rendered, and translating a filing key would break the filing. */}
+          <ArabicTwin
+            field={{
+              key: `option_${index}_label_ar`,
+              label: "Option",
+              kind: "text",
+              max: 80,
+            }}
+            value={option.label_ar ?? ""}
+            disabled={disabled}
+            onChange={(v) => set(index, { label_ar: v || null })}
+          />
         </div>
       ))}
       {!disabled ? (
         <button
           type="button"
           onClick={() =>
-            onChange([...options, { label: "", value: "", intent: null }])
+            onChange([
+              ...options,
+              { label: "", label_ar: null, value: "", intent: null },
+            ])
           }
           className="self-start inline-flex items-center gap-1 h-7 px-2 rounded border border-bz-border bg-bz-surface text-[11.5px] text-bz-ink-2 hover:border-bz-accent transition-colors"
         >
