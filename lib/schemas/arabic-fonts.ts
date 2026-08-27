@@ -54,6 +54,49 @@ export const ARABIC_ROLE_VAR: Record<ArabicFontRole, string> = {
 };
 
 /**
+ * The roles whose WEIGHT is also settable, and the variable each one writes.
+ *
+ * Only two, for the same reason there are only four roles: a control has to
+ * correspond to a hook the stylesheet already owns. `.serif` and `.eyebrow`
+ * are the two rules that pin a weight of their own (500 and 500), so they are
+ * the two a CMS value can redirect. Body and mono are not here because their
+ * weight is decided per component — a `font-semibold` on a card title, a
+ * `font-medium` on a button — and a single site-wide number would flatten all
+ * of it into one tone.
+ *
+ * WHY THIS CONTROL EXISTS AT ALL. A family uploaded with a 400 and a 700 file
+ * still renders Arabic headings in the 400: `:lang(ar) .serif` asks for 500,
+ * and CSS font matching resolves an unavailable 500 DOWNWARDS first. So a
+ * client who bought a Regular and a Bold, assigned the family to headings, and
+ * expected bold headings, correctly got neither what they asked for nor an
+ * error. This is the control that asks for the 700 by name.
+ */
+export const ARABIC_WEIGHTED_ROLES = ["display", "eyebrow"] as const;
+export type ArabicWeightedRole = (typeof ARABIC_WEIGHTED_ROLES)[number];
+
+export const ARABIC_ROLE_WEIGHT_VAR: Record<ArabicWeightedRole, string> = {
+  display: "--bz-font-ar-display-weight",
+  eyebrow: "--bz-font-ar-eyebrow-weight",
+};
+
+/**
+ * What the rule in globals.css falls back to when the operator has not chosen
+ * a weight — i.e. the weight that rule has always hard-coded. Kept here only
+ * so the admin specimen can draw the same thing the site will; globals.css
+ * spells the number out itself rather than importing it.
+ */
+export const ARABIC_ROLE_WEIGHT_DEFAULT: Record<ArabicWeightedRole, string> = {
+  display: "500",
+  eyebrow: "500",
+};
+
+export const ARABIC_ROLE_WEIGHT_HELP: Record<ArabicWeightedRole, string> = {
+  display:
+    "Which weight of that family headings are drawn in. Leave on “Match the site” unless you uploaded a Bold and want headings to use it.",
+  eyebrow: "Which weight the small labels are drawn in.",
+};
+
+/**
  * What the role variable falls back to when the operator has not assigned a
  * family — and, equally, what the custom family is layered in FRONT of, so a
  * face that 404s or covers only part of the alphabet degrades to the shipped
@@ -123,6 +166,16 @@ export const ARABIC_WEIGHT_LABEL: Record<ArabicFontWeight, string> = {
   "900": "900 · Black",
   variable: "Variable (100–900)",
 };
+
+/**
+ * The weights a ROLE can be pinned to — every real CSS weight, minus
+ * `variable`, which is a `@font-face` range and not a number an element can be
+ * set to.
+ */
+export const ARABIC_ROLE_WEIGHTS = ARABIC_FONT_WEIGHTS.filter(
+  (w): w is Exclude<ArabicFontWeight, "variable"> => w !== "variable",
+);
+export type ArabicRoleWeight = (typeof ARABIC_ROLE_WEIGHTS)[number];
 
 /** What the weight becomes inside `@font-face`. */
 export function cssWeight(weight: ArabicFontWeight): string {
@@ -250,6 +303,19 @@ export const arabicFontSettingsSchema = z
         mono: z.string().nullable().default(null),
       })
       .default({ display: null, body: null, eyebrow: null, mono: null }),
+    /**
+     * Per-role weight, `null` meaning "leave the stylesheet's own number
+     * alone". Separate from `roles` rather than folded into it because it is
+     * independent of it in both directions: a client can bold the built-in
+     * face without uploading anything, and a family can be assigned without
+     * anyone caring which of its weights headings pick.
+     */
+    weights: z
+      .object({
+        display: z.enum(ARABIC_ROLE_WEIGHTS).nullable().default(null),
+        eyebrow: z.enum(ARABIC_ROLE_WEIGHTS).nullable().default(null),
+      })
+      .default({ display: null, eyebrow: null }),
   })
   .superRefine((value, ctx) => {
     const ids = new Set(value.families.map((f) => f.id));
@@ -283,6 +349,7 @@ export const ARABIC_FONT_DEFAULTS: ArabicFontSettings = {
   enabled: false,
   families: [],
   roles: { display: null, body: null, eyebrow: null, mono: null },
+  weights: { display: null, eyebrow: null },
 };
 
 /**
@@ -387,7 +454,25 @@ export function arabicFontCss(settings: ArabicFontSettings): ArabicFontCss {
     );
   }
 
-  if (declarations.length === 0) return EMPTY_CSS;
+  /*
+   * Weight declarations are gathered separately and are NOT gated on a family
+   * being assigned. Pinning the built-in face to 700 is a legitimate thing to
+   * want on its own, and a bag with a weight but no upload should not silently
+   * emit nothing.
+   */
+  const weightDeclarations: string[] = [];
+  // `?? {}` for the same reason `parseArabicFonts` exists: a row written before
+  // this key was added, or by a caller that skipped the parser, must degrade to
+  // "no weight pinned" rather than throw inside a layout.
+  const weightBag = settings.weights ?? {};
+  for (const role of ARABIC_WEIGHTED_ROLES) {
+    const weight = weightBag[role];
+    if (weight)
+      weightDeclarations.push(`${ARABIC_ROLE_WEIGHT_VAR[role]}:${weight}`);
+  }
+
+  if (declarations.length === 0 && weightDeclarations.length === 0)
+    return EMPTY_CSS;
 
   const faces: string[] = [];
   const preload: string[] = [];
@@ -408,17 +493,29 @@ export function arabicFontCss(settings: ArabicFontSettings): ArabicFontCss {
     }
   }
 
-  if (faces.length === 0) return EMPTY_CSS;
+  // A family that resolved but produced no `@font-face` would leave the role
+  // variable naming a family nothing declares, so its declaration is dropped
+  // with the faces. The weights survive — they say nothing about which file.
+  const roleDeclarations = faces.length > 0 ? declarations : [];
+  if (roleDeclarations.length === 0 && weightDeclarations.length === 0)
+    return EMPTY_CSS;
 
   for (const role of ["body", "display"] as const) {
     const id = settings.roles[role];
     const family = id ? byId.get(id) : undefined;
-    const face = family?.files.find(
-      (f) =>
-        f.format === "woff2" &&
-        f.style === "normal" &&
-        (f.weight === "400" || f.weight === "variable"),
-    );
+    // The weight the role will actually ASK for, when it has been pinned —
+    // preloading the 400 of a family whose headings are set in the 700 warms
+    // a file the page never draws and leaves the one it does to a cold fetch.
+    const pinned = role === "display" ? (weightBag.display ?? null) : null;
+    const wanted = (f: ArabicFontFile) =>
+      f.format === "woff2" && f.style === "normal";
+    const face =
+      (pinned
+        ? family?.files.find((f) => wanted(f) && f.weight === pinned)
+        : undefined) ??
+      family?.files.find(
+        (f) => wanted(f) && (f.weight === "400" || f.weight === "variable"),
+      );
     if (face && !preload.includes(face.url)) preload.push(face.url);
   }
 
@@ -431,7 +528,7 @@ export function arabicFontCss(settings: ArabicFontSettings): ArabicFontCss {
    * not something a layout controls. `html:root` is (0,1,1) against (0,1,0)
    * and therefore wins whichever way the head is assembled.
    */
-  const css = `${faces.join("")}html:root{${declarations.join(";")}}`;
+  const css = `${faces.join("")}html:root{${[...roleDeclarations, ...weightDeclarations].join(";")}}`;
 
   // The one character that could end the <style> element early. Nothing that
   // passed the schema can produce it; if something did, the page renders in

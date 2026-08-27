@@ -20,6 +20,10 @@ import {
   ARABIC_FONT_WEIGHTS,
   ARABIC_ROLE_DESCRIPTION,
   ARABIC_ROLE_LABEL,
+  ARABIC_ROLE_WEIGHTS,
+  ARABIC_ROLE_WEIGHT_DEFAULT,
+  ARABIC_ROLE_WEIGHT_HELP,
+  ARABIC_WEIGHTED_ROLES,
   ARABIC_WEIGHT_LABEL,
   arabicFontCss,
   arabicFontSettingsSchema,
@@ -31,6 +35,8 @@ import {
   type ArabicFontRole,
   type ArabicFontSettings,
   type ArabicFontWeight,
+  type ArabicRoleWeight,
+  type ArabicWeightedRole,
 } from "@/lib/schemas/arabic-fonts";
 import { uploadToLibrary } from "../../media/_upload-client";
 import { updateArabicFontSettings } from "./_actions";
@@ -102,6 +108,7 @@ export function ArabicTypographyForm({
     })),
   );
   const [roles, setRoles] = useState(initial.roles);
+  const [weights, setWeights] = useState(initial.weights);
   const [busy, setBusy] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const enabledId = useId();
@@ -114,8 +121,9 @@ export function ArabicTypographyForm({
         files: files.map(({ uid: _uid, ...file }) => file),
       })),
       roles,
+      weights,
     }),
-    [enabled, families, roles],
+    [enabled, families, roles, weights],
   );
 
   /*
@@ -366,13 +374,28 @@ export function ArabicTypographyForm({
               <p className="text-[11.5px] text-bz-muted-2 leading-[1.5] max-w-[75ch]">
                 {ARABIC_ROLE_DESCRIPTION[role]}
               </p>
+              {isWeighted(role) ? (
+                <RoleWeight
+                  role={role}
+                  value={weights[role]}
+                  family={families.find((f) => f.id === roles[role])}
+                  onChange={(w) =>
+                    setWeights((cur) => ({ ...cur, [role]: w }))
+                  }
+                />
+              ) : null}
             </div>
           ))}
         </div>
       </section>
 
       {/* ── Specimen ──────────────────────────────────────────── */}
-      <Specimen css={preview.css} roles={roles} families={families} />
+      <Specimen
+        css={preview.css}
+        roles={roles}
+        weights={weights}
+        families={families}
+      />
 
       <div className="flex items-center gap-2 pb-2">
         <Button onClick={save} disabled={pending || busy !== null}>
@@ -382,6 +405,87 @@ export function ArabicTypographyForm({
           Publishes to every Arabic page.
         </span>
       </div>
+    </div>
+  );
+}
+
+// ───────────────────────────────────────────────────────────────
+// Role weight
+// ───────────────────────────────────────────────────────────────
+
+const WEIGHTED = new Set<string>(ARABIC_WEIGHTED_ROLES);
+function isWeighted(role: ArabicFontRole): role is ArabicWeightedRole {
+  return WEIGHTED.has(role);
+}
+
+/**
+ * Which weight a role is drawn in.
+ *
+ * The list is narrowed to the weights the assigned family actually ships,
+ * because offering an 800 of a family that has a Regular and a Bold is
+ * offering a synthesised smear — the browser will not refuse it, it will fake
+ * it. With no family assigned (the built-in face) or with a variable file in
+ * the family, every weight is real and all of them are offered.
+ */
+function RoleWeight({
+  role,
+  value,
+  family,
+  onChange,
+}: {
+  role: ArabicWeightedRole;
+  value: ArabicRoleWeight | null;
+  family: LocalFamily | undefined;
+  onChange: (weight: ArabicRoleWeight | null) => void;
+}) {
+  const options = useMemo<readonly ArabicRoleWeight[]>(() => {
+    if (!family || family.files.some((f) => f.weight === "variable"))
+      return ARABIC_ROLE_WEIGHTS;
+    const have = new Set(family.files.map((f) => f.weight));
+    const shipped = ARABIC_ROLE_WEIGHTS.filter((w) => have.has(w));
+    return shipped.length > 0 ? shipped : ARABIC_ROLE_WEIGHTS;
+  }, [family]);
+
+  // A weight chosen before the family changed can fall outside the new list.
+  // Shown anyway rather than silently reset — the value is saved, and a select
+  // whose trigger is blank reads as a bug.
+  const listed =
+    value && !options.includes(value) ? [value, ...options] : options;
+
+  return (
+    <div className="flex items-center gap-2 pt-1">
+      <Label className="text-[11.5px] text-bz-muted font-normal shrink-0">
+        Weight
+      </Label>
+      <Select
+        value={value ?? "__auto__"}
+        onValueChange={(v) =>
+          onChange(v === "__auto__" ? null : (v as ArabicRoleWeight))
+        }
+      >
+        <SelectTrigger
+          className="w-[220px] h-8 text-[12.5px]"
+          // The visible "Weight" sits beside two of these and beside four
+          // family selects, so the accessible name has to say which role it
+          // belongs to.
+          aria-label={`Weight for ${ARABIC_ROLE_LABEL[role].toLowerCase()}`}
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="__auto__">
+            Match the site ({ARABIC_ROLE_WEIGHT_DEFAULT[role]})
+          </SelectItem>
+          {listed.map((w) => (
+            <SelectItem key={w} value={w}>
+              {ARABIC_WEIGHT_LABEL[w]}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <p className="text-[11px] text-bz-muted-2 leading-[1.45]">
+        {ARABIC_ROLE_WEIGHT_HELP[role]}
+      </p>
     </div>
   );
 }
@@ -610,10 +714,12 @@ function AddFamilyButton({
 function Specimen({
   css,
   roles,
+  weights,
   families,
 }: {
   css: string;
   roles: ArabicFontSettings["roles"];
+  weights: ArabicFontSettings["weights"];
   families: LocalFamily[];
 }) {
   const bySlug = (id: string | null) =>
@@ -626,6 +732,13 @@ function Specimen({
 
   const face = (slug: string | undefined, fallback: string) =>
     slug ? `"${slug}", ${fallback}` : fallback;
+
+  // The specimen lines carry the role CLASSES for everything else, but the
+  // display line is a bare div — the CMS shell is not `lang="ar"` at the root,
+  // so `.serif` would pull in Instrument Serif's tracking. Its weight is
+  // therefore set here, from the same numbers the emitted rule uses.
+  const roleWeight = (role: "display" | "eyebrow") =>
+    Number(weights[role] ?? ARABIC_ROLE_WEIGHT_DEFAULT[role]);
 
   return (
     <section className="bg-bz-surface border border-bz-border rounded-lg p-6">
@@ -647,13 +760,19 @@ function Specimen({
       >
         <div
           className="eyebrow"
-          style={{ fontFamily: face(eyebrow, "var(--bz-font-ar)") }}
+          style={{
+            fontFamily: face(eyebrow, "var(--bz-font-ar)"),
+            fontWeight: roleWeight("eyebrow"),
+          }}
         >
           {SPECIMEN.eyebrow}
         </div>
         <div
           className="text-[34px] leading-[1.35]"
-          style={{ fontFamily: face(display, "var(--bz-font-ar)") }}
+          style={{
+            fontFamily: face(display, "var(--bz-font-ar)"),
+            fontWeight: roleWeight("display"),
+          }}
         >
           {SPECIMEN.display}
         </div>

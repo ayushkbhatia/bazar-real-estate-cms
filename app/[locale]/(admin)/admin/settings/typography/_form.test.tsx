@@ -39,6 +39,7 @@ const settings = (over: Partial<ArabicFontSettings> = {}): ArabicFontSettings =>
     },
   ],
   roles: { display: "fam-1", body: "fam-1", eyebrow: null, mono: null },
+  weights: { display: null, eyebrow: null },
   ...over,
 });
 
@@ -100,6 +101,35 @@ describe("ArabicTypographyForm", () => {
     expect(
       screen.getByText(/no fonts uploaded/i),
     ).toBeInTheDocument();
+  });
+
+  it("offers a weight only for the roles whose weight the stylesheet pins", () => {
+    render(<ArabicTypographyForm initial={settings()} />);
+    expect(
+      screen.getByRole("combobox", { name: /weight for headings & display/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("combobox", { name: /weight for eyebrow labels/i }),
+    ).toBeInTheDocument();
+    // Body and mono have no single weight to set — every component picks its
+    // own — so offering one would be a control that does nothing.
+    expect(
+      screen.queryByRole("combobox", { name: /weight for body/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("combobox", { name: /weight for numbers/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("puts a pinned heading weight into the specimen stylesheet", () => {
+    const { container } = render(
+      <ArabicTypographyForm
+        initial={settings({ weights: { display: "700", eyebrow: null } })}
+      />,
+    );
+    expect(specimenCss(container)).toContain(
+      "--bz-font-ar-display-weight:700",
+    );
   });
 
   it("warns when a role is assigned to nothing while switched on", () => {

@@ -1096,10 +1096,29 @@
 
 :lang(ar) .serif {
   font-family: var(--bz-font-ar-display);
-  font-weight: 500;
+  /* 500 unless the CMS pinned a weight. The variable is deliberately NOT
+     declared in `:root` — an undeclared custom property makes `var()` use its
+     fallback, so every one of these rules keeps the exact number it has always
+     had until `/admin/settings/typography` writes one. Declaring a default
+     would force the prose rules below to share this rule's 500, silently
+     restyling Arabic article headings.
+
+     It exists because a family with a 400 and a 700 file draws headings in the
+     400: CSS font matching resolves an unavailable 500 downwards first. See
+     ARABIC_WEIGHTED_ROLES in lib/schemas/arabic-fonts.ts. */
+  font-weight: var(--bz-font-ar-display-weight, 500);
   /* Instrument Serif is used italic in places. Arabic has no italic tradition
      and synthetic obliquing shears the joins. */
   font-style: normal;
+}
+
+/* Article and editor headings are the display role too — they are what
+   `ARABIC_ROLE_DESCRIPTION.display` means by "article headings" — but they are
+   set at 400 rather than `.serif`'s 500, so they carry their own fallback and
+   follow the client's choice only once there is one. Unlayered, so this beats
+   the `@layer components` rules that set the 400. */
+:lang(ar) :is(.bz-prose, .tiptap) :is(h2, h3, h4) {
+  font-weight: var(--bz-font-ar-display-weight, 400);
 }
 
 /* The eyebrow is 11px uppercase with wide tracking — a treatment that borrows
@@ -1109,6 +1128,9 @@
   font-family: var(--bz-font-ar-eyebrow);
   text-transform: none;
   font-size: 12.5px;
+  /* `.eyebrow` applies `font-medium`; same undeclared-variable trick as the
+     display weight above. */
+  font-weight: var(--bz-font-ar-eyebrow-weight, 500);
 }
 
 /* ss01/cv11 are Geist-specific feature tags; leaving them on asks the Arabic
