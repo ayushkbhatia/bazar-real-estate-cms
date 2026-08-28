@@ -209,7 +209,7 @@ const loadAll = cache(
  * un-overridden field falls back to its English exactly as the site-wide rule
  * requires.
  */
-function localiseFields(
+export function localiseFields(
   rows: StoredField[] | null,
   locale: Locale,
 ): StoredField[] | null {
@@ -234,7 +234,10 @@ function localiseFields(
  * needs both languages, or it renders blank Arabic inputs over stored content
  * and saves the blanks back — which is exactly how #390 destroyed data.
  */
-function localiseResolved(form: ResolvedForm, locale: Locale): ResolvedForm {
+export function localiseResolved(
+  form: ResolvedForm,
+  locale: Locale,
+): ResolvedForm {
   return {
     ...form,
     copy: localiseRow(form.copy as Record<string, unknown>, locale) as typeof form.copy,

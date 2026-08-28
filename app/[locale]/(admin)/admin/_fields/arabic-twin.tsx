@@ -26,10 +26,13 @@ import { fieldCls } from "./types";
 export function ArabicTwin({
   field,
   value,
+  disabled,
   onChange,
 }: {
   field: SimpleFieldDef;
   value: string;
+  /** Read-only, for a surface whose English is read-only too. */
+  disabled?: boolean;
   onChange: (v: string) => void;
 }) {
   const filled = value.trim().length > 0;
@@ -78,6 +81,7 @@ export function ArabicTwin({
               dir="rtl"
               lang="ar"
               value={value}
+              disabled={disabled}
               onChange={(e) => onChange(e.target.value)}
             />
           ) : (
@@ -86,6 +90,7 @@ export function ArabicTwin({
               dir="rtl"
               lang="ar"
               value={value}
+              disabled={disabled}
               onChange={(e) => onChange(e.target.value)}
             />
           )}
