@@ -378,8 +378,10 @@ export function DevelopmentContentCard({
           </span>
         </div>
         <p className="text-[11.5px] text-bz-muted">
-          Up to three projects, in this order. Leave empty and the page shows
-          other projects in the same area automatically.
+          Up to three projects, in this order. Only projects that are live can
+          be picked — the page drops anything unpublished rather than linking to
+          a page nobody can open. Leave empty and it shows other projects in the
+          same area automatically.
         </p>
         {[0, 1, 2].map((slot) => (
           <select

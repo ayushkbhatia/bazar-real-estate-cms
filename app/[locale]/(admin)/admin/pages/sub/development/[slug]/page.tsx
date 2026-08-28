@@ -83,16 +83,63 @@ async function fetchLinkCounts(developmentId: string) {
   };
 }
 
-async function fetchContentOptions(excludeId: string) {
+/**
+ * The projects the Nearby Developments slots may point at.
+ *
+ * Published only. The public page resolves these ids through
+ * `listDevelopmentsByIds`, which filters on `published_at` — so an unpublished
+ * pick renders nothing at all. Offering one here was offering a choice the
+ * site would silently discard: the editor picks three neighbours, saves, and
+ * the live page shows two, with nothing anywhere to say why.
+ *
+ * `keepIds` is the exception. A project that was live when it was picked and
+ * has since been unpublished — or deleted outright — still sits in this
+ * record's `nearby_ids`, and dropping it from the list would leave its slot
+ * rendering blank while the id stayed in the bag: the next save would quietly
+ * rewrite the field the editor never touched. So a stale pick is listed,
+ * labelled for what it is, and the editor clears it deliberately.
+ */
+async function fetchNeighbourOptions(
+  excludeId: string,
+  keepIds: string[],
+): Promise<NeighbourOption[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("developments")
+    .select("id, name")
+    .neq("id", excludeId)
+    .not("published_at", "is", null)
+    .order("name", { ascending: true });
+  const live = (data ?? []) as NeighbourOption[];
+
+  const missing = keepIds.filter(
+    (id) => id !== excludeId && !live.some((o) => o.id === id),
+  );
+  if (missing.length === 0) return live;
+
+  const { data: stale } = await supabase
+    .from("developments")
+    .select("id, name")
+    .in("id", missing);
+  const found = (stale ?? []) as NeighbourOption[];
+
+  return [
+    ...live,
+    ...found.map((r) => ({ ...r, name: `${r.name} — not live` })),
+    // An id with no row behind it at all: the project was deleted after it was
+    // picked. Named rather than omitted, for the same reason.
+    ...missing
+      .filter((id) => !found.some((r) => r.id === id))
+      .map((id) => ({ id, name: "Deleted project" })),
+  ];
+}
+
+async function fetchContentOptions(excludeId: string, keepIds: string[]) {
   if (!isSupabaseConfigured)
     return { neighbours: [] as NeighbourOption[], advisors: [] as AdvisorOption[] };
   const supabase = await createSupabaseServerClient();
-  const [projects, staff] = await Promise.all([
-    supabase
-      .from("developments")
-      .select("id, name")
-      .neq("id", excludeId)
-      .order("name", { ascending: true }),
+  const [neighbours, staff] = await Promise.all([
+    fetchNeighbourOptions(excludeId, keepIds),
     supabase
       .from("staff")
       .select("user_id, display_name")
@@ -100,7 +147,7 @@ async function fetchContentOptions(excludeId: string) {
       .order("display_name", { ascending: true }),
   ]);
   return {
-    neighbours: (projects.data ?? []) as NeighbourOption[],
+    neighbours,
     advisors: (staff.data ?? []) as AdvisorOption[],
   };
 }
@@ -129,6 +176,13 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
   const development = await fetchDevelopment(slug);
   if (!development) notFound();
 
+  // Read before the fan-out: the neighbour options depend on what this record
+  // already points at, so a pick that has since been unpublished stays listed.
+  const savedMeta = (development.meta as Record<string, unknown> | null) ?? {};
+  const savedNearbyIds = Array.isArray(savedMeta.nearby_ids)
+    ? (savedMeta.nearby_ids as string[]).slice(0, 3)
+    : [];
+
   const [content, media, options, role, links, unitTypes, units, chrome] =
     await Promise.all([
       // "bilingual" keeps the `_ar` twins in `values`. Without it the fold
@@ -139,7 +193,7 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
         "bilingual",
       ),
       fetchMedia(),
-      fetchContentOptions(development.id),
+      fetchContentOptions(development.id, savedNearbyIds),
       getStaffRole(),
       fetchLinkCounts(development.id),
       listUnitTypesForAdmin(development.id),
@@ -183,7 +237,7 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
     handover_date: development.handover_date,
   });
 
-  const meta = (development.meta as Record<string, unknown> | null) ?? {};
+  const meta = savedMeta;
   const contentInitial = {
     payment_plan: (development.payment_plan as never) ?? null,
     feature_blocks: Array.isArray(meta.feature_blocks)
@@ -191,9 +245,7 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
       : [],
     faq: Array.isArray(meta.faq) ? (meta.faq as never[]) : [],
     coords: (meta.coords as { lat: number; lng: number } | null) ?? null,
-    nearby_ids: Array.isArray(meta.nearby_ids)
-      ? (meta.nearby_ids as string[]).slice(0, 3)
-      : [],
+    nearby_ids: savedNearbyIds,
     lead_advisor_id: development.lead_advisor_id ?? null,
   };
 
