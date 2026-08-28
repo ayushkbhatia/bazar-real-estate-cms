@@ -233,6 +233,62 @@ describe("arabicFontCss", () => {
     expect(preload).toEqual([]);
   });
 
+  it("pins a role weight the stylesheet can read", () => {
+    const { css } = arabicFontCss(
+      settings({ weights: { display: "700", eyebrow: null } }),
+    );
+    expect(css).toContain("--bz-font-ar-display-weight:700");
+    expect(css).not.toContain("--bz-font-ar-eyebrow-weight");
+  });
+
+  it("pins a weight with no family uploaded at all", () => {
+    // The built-in face, drawn bolder. Nothing to declare a face for, so the
+    // family branch produces nothing and the rule must survive on its own.
+    const { css } = arabicFontCss(
+      settings({
+        families: [],
+        roles: { display: null, body: null, eyebrow: null, mono: null },
+        weights: { display: "700", eyebrow: null },
+      }),
+    );
+    expect(css).toBe("html:root{--bz-font-ar-display-weight:700}");
+  });
+
+  it("says nothing about weight when neither role is pinned", () => {
+    expect(arabicFontCss(settings()).css).not.toContain("--bz-font-ar-display-weight");
+  });
+
+  it("preloads the pinned weight rather than the 400", () => {
+    const family = {
+      id: "fam-1",
+      name: "Bukra",
+      slug: "bzar-bukra",
+      files: [file(), file({ filename: "bukra-bold.woff2", weight: "700",
+        url: "https://cdn.example.com/fonts/bukra-bold.woff2" })],
+    };
+    const { preload } = arabicFontCss(
+      settings({
+        families: [family],
+        // Body stays unpinned, so its 400 is still the one worth warming.
+        roles: { display: "fam-1", body: "fam-1", eyebrow: null, mono: null },
+        weights: { display: "700", eyebrow: null },
+      }),
+    );
+    expect(preload).toEqual([
+      "https://cdn.example.com/fonts/bukra-regular.woff2",
+      "https://cdn.example.com/fonts/bukra-bold.woff2",
+    ]);
+  });
+
+  it("falls back to the 400 when the pinned weight has no file", () => {
+    const { preload } = arabicFontCss(
+      settings({ weights: { display: "700", eyebrow: null } }),
+    );
+    expect(preload).toEqual([
+      "https://cdn.example.com/fonts/bukra-regular.woff2",
+    ]);
+  });
+
   it("emits nothing at all rather than markup, if a `<` ever survives", () => {
     // Unreachable through the schema — the slug regex and the url check both
     // refuse it — so this asserts the last guard by bypassing them.
