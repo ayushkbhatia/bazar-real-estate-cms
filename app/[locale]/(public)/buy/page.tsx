@@ -66,7 +66,7 @@ export default async function BuyPage({
     listFeaturedByType({ mode: "buy", type: "apartment", limit: 4 }),
     listFeaturedByType({ mode: "buy", type: "villa", limit: 4 }),
     listFeaturedByType({ mode: "buy", type: "penthouse", limit: 4 }),
-    listFeaturedByType({ mode: "commercial", limit: 4 }),
+    listFeaturedByType({ segment: "commercial", limit: 4 }),
     listAreaPins("abu-dhabi"),
     listAreaPins("dubai"),
     listAreaListingDots(),

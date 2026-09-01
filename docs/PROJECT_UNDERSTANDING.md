@@ -30,7 +30,7 @@ Business model: ~1.5% advisory on transactions, newsletter as primary marketing 
 ## Information architecture
 
 Public:
-- `/` (4 hero variants — fullbleed default), `/buy`, `/rent`, `/off-plan`, `/commercial` (search)
+- `/` (4 hero variants — fullbleed default), `/buy`, `/rent`, `/off-plan`, `/commercial` (marketing landings; the search lives at `…/search`, and `/commercial/search` was retired onto `/buy/search?segment=commercial` in 0121 — commercial is a segment, not a transaction mode)
 - `/p/:slug-:ref` (property detail, e.g. `/p/mamsha-3-bed-baz-ad-04891`)
 - `/developments`, `/developments/:slug`, `/developers`, `/developers/:slug`
 - `/areas`, `/areas/:slug`

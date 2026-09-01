@@ -19,6 +19,7 @@ import {
   listAreaPins,
   listAreaListingDots,
   type ListingMode,
+  type ListingSegment,
 } from "@/lib/queries/area-map";
 import { AreaMapHome } from "../area-map/area-map-home";
 
@@ -27,6 +28,7 @@ export async function RentAreaMap({
   heading = "Rent by area. Start with the map.",
   body = null,
   mode = "rent",
+  segment,
   allHref = "/rent/search",
 }: {
   /** Section eyebrow — editable from the master page. */
@@ -35,8 +37,21 @@ export async function RentAreaMap({
   heading?: string;
   /** Optional paragraph under the heading; nothing renders when blank. */
   body?: string | null;
-  /** Listing mode the dots *and* the area counts are scoped to. */
-  mode?: ListingMode;
+  /**
+   * Listing mode the dots *and* the area counts are scoped to. `null` means
+   * every mode — which is what a section scoped by `segment` wants, since a
+   * commercial unit is for sale or to let and both belong on /commercial.
+   */
+  mode?: ListingMode | null;
+  /**
+   * Segment the dots and counts are scoped to, composing with `mode`.
+   *
+   * /commercial passes `segment` and NOT `mode`: commercial stopped being a
+   * transaction in 0121, so scoping this section to `mode = 'commercial'`
+   * would count only the listings still carrying the retired value and show
+   * zero beside a rail that had just rendered the segment's inventory.
+   */
+  segment?: ListingSegment;
   /**
    * "All …" link target, pointing at this mode's search.
    *
@@ -51,9 +66,9 @@ export async function RentAreaMap({
 } = {}) {
   const t = await getTranslations("common");
   const [abuDhabi, dubai, dots] = await Promise.all([
-    listAreaPins("abu-dhabi", { mode }),
-    listAreaPins("dubai", { mode }),
-    listAreaListingDots({ mode }),
+    listAreaPins("abu-dhabi", { mode: mode ?? undefined, segment }),
+    listAreaPins("dubai", { mode: mode ?? undefined, segment }),
+    listAreaListingDots({ mode: mode ?? undefined, segment }),
   ]);
 
   const areas = [...abuDhabi, ...dubai];

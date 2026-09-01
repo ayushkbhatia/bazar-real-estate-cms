@@ -30,6 +30,7 @@ import type { Database } from "@/db/types";
 
 type PropertyMode = Database["public"]["Enums"]["property_mode"];
 type PropertyTypeEnum = Database["public"]["Enums"]["property_type"];
+type PropertySegment = Database["public"]["Enums"]["property_segment"];
 
 type RawMediaJoin = {
   role: string;
@@ -128,6 +129,8 @@ export async function listNewThisWeek(
 export async function listFeaturedByType(
   opts: {
     mode?: PropertyMode;
+    /** Residential / commercial — the building axis added in 0121. */
+    segment?: PropertySegment;
     type?: PropertyTypeEnum;
     /** Match any of several types (e.g. all commercial formats). */
     types?: PropertyTypeEnum[];
@@ -141,6 +144,7 @@ export async function listFeaturedByType(
     .select(LISTING_FIELDS)
     .eq("status", "published" as never);
   if (opts.mode) query = query.eq("mode", opts.mode as never);
+  if (opts.segment) query = query.eq("segment", opts.segment as never);
   if (opts.type) query = query.eq("type", opts.type as never);
   if (opts.types && opts.types.length)
     query = query.in("type", opts.types as never);

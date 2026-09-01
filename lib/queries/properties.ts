@@ -248,6 +248,12 @@ export async function listPublishedProperties(opts: {
       });
     }
     if (filters.type) query = query.eq("type", filters.type);
+    // The segmented control above the results. Absent means both, which is
+    // what "no filter" has to mean — a search route defaulting to residential
+    // would hide the commercial stock from anyone who never touched the
+    // control, on a site whose catalogue is almost entirely residential and
+    // where nobody would think to look.
+    if (filters.segment) query = query.eq("segment", filters.segment);
     if (filters.beds != null) {
       // 5+ buckets — treat the value as a minimum once it hits the cap.
       if (filters.beds >= 5) query = query.gte("beds", 5);

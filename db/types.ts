@@ -2746,6 +2746,7 @@ export type Database = {
           reference: string
           search_text: unknown
           search_text_ar: unknown
+          segment: Database["public"]["Enums"]["property_segment"]
           seo: Json | null
           service_charge_per_ft2: number | null
           short_description: string | null
@@ -2808,6 +2809,7 @@ export type Database = {
           reference: string
           search_text?: unknown
           search_text_ar?: unknown
+          segment?: Database["public"]["Enums"]["property_segment"]
           seo?: Json | null
           service_charge_per_ft2?: number | null
           short_description?: string | null
@@ -2870,6 +2872,7 @@ export type Database = {
           reference?: string
           search_text?: unknown
           search_text_ar?: unknown
+          segment?: Database["public"]["Enums"]["property_segment"]
           seo?: Json | null
           service_charge_per_ft2?: number | null
           short_description?: string | null
@@ -3855,6 +3858,7 @@ export type Database = {
         | "video"
         | "virtual_tour"
       property_mode: "buy" | "rent" | "off_plan" | "commercial"
+      property_segment: "residential" | "commercial"
       property_status:
         | "draft"
         | "in_review"
@@ -4189,6 +4193,7 @@ export const Constants = {
         "virtual_tour",
       ],
       property_mode: ["buy", "rent", "off_plan", "commercial"],
+      property_segment: ["residential", "commercial"],
       property_status: [
         "draft",
         "in_review",

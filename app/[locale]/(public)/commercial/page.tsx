@@ -29,7 +29,7 @@ export async function generateMetadata({
   });
 }
 
-// Old deep-links (/commercial?type=office) are redirected to /commercial/search
+// Old deep-links (/commercial?type=office) are redirected to /buy/search
 // by proxy.ts. Deliberately no `searchParams` here: reading it — even just to
 // await it — makes the route fully dynamic and discards the `revalidate` above.
 // This page was landing-and-search in one file, which is why it was the last
@@ -47,7 +47,7 @@ export default async function CommercialPage({
 
   const [content, rows] = await Promise.all([
     getMasterPageContent("commercial"),
-    listFeaturedByType({ mode: "commercial", limit: 4 }),
+    listFeaturedByType({ segment: "commercial", limit: 4 }),
   ]);
   const featured = rows.slice(0, 4).map(listingRowToCard);
 
@@ -102,8 +102,12 @@ export default async function CommercialPage({
           // inventory. The section defaults to rent (its first caller), and
           // taking those defaults here is what put rental dots and an
           // emirate-wide published count on this page.
-          mode="commercial"
-          allHref="/commercial/search"
+          // `segment`, not `mode`: commercial stopped being a transaction in
+          // 0121, and scoping this to the retired mode value would print zero
+          // beside a rail that had just rendered the segment's inventory.
+          mode={null}
+          segment="commercial"
+          allHref="/buy/search?segment=commercial"
         />
       }
       mapAbove

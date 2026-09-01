@@ -50,8 +50,48 @@ export function searchRedirectTarget(
   }
   if (!matched) return null;
 
+  // `/commercial?type=office` would otherwise land on `/commercial/search`,
+  // which redirects again — two hops for a deep-link that can go straight
+  // there. `commercialSearchRedirect` owns the destination; this only has to
+  // agree with it.
+  if (base === "/commercial") {
+    const next = new URLSearchParams(params);
+    next.set("segment", "commercial");
+    return `/buy/search?${next.toString()}`;
+  }
+
   const qs = params.toString();
   return `${base}/search${qs ? `?${qs}` : ""}`;
+}
+
+/**
+ * `/commercial/search` → `/buy/search?segment=commercial`.
+ *
+ * Commercial stopped being a transaction mode in 0121. It is a kind of
+ * building, and a commercial unit is for sale or to let like any other — so a
+ * route that offered it as a fourth alternative to Buy, Rent and Off-plan was
+ * asking the visitor to answer one question with the other question's answers.
+ * The segment is now a filter that works on every search route.
+ *
+ * The route is retired rather than deleted: `mode = 'commercial'` still exists
+ * in the database and in `PROPERTY_MODES`, and the `/commercial` marketing
+ * landing above it is untouched. This is the one URL that has to move, and
+ * every existing filter on it survives the move.
+ *
+ * 307, not 308: it is the same posture as the other redirects in this module —
+ * a statement about where the search lives today, not a promise about URL
+ * shape forever.
+ */
+export function commercialSearchRedirect(
+  pathname: string,
+  params: URLSearchParams,
+): string | null {
+  if (pathname !== "/commercial/search") return null;
+  const next = new URLSearchParams(params);
+  // Set, not append: a hand-written `?segment=residential` on this path is a
+  // contradiction, and the path is the half that meant something.
+  next.set("segment", "commercial");
+  return `/buy/search?${next.toString()}`;
 }
 
 /**
@@ -85,6 +125,8 @@ export function legacyQueryRedirect(
   pathname: string,
   params: URLSearchParams,
 ): string | null {
+  const commercial = commercialSearchRedirect(pathname, params);
+  if (commercial) return commercial;
   const base = SEARCH_LANDING_BASES.find((b) => b === pathname);
   if (base) return searchRedirectTarget(base, params);
   return insightsCategoryRedirect(pathname, params);
