@@ -1,6 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import * as React from "react";
-import { getForm } from "@/lib/queries/forms";
+import { getFormWithOverrides } from "@/lib/queries/forms";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { CalendarDays, Check } from "lucide-react";
@@ -50,16 +50,20 @@ export default async function ListYourPropertyPage({
   const locale = asLocale((await params).locale);
   setRequestLocale(locale);
 
-  const [areas, liveStats, spark, settings, content, listForm, t] =
+  const [areas, liveStats, spark, settings, content, listing, t] =
     await Promise.all([
       listLeadAreaOptions(locale),
       getSellHeroStats(),
       getTransactionSpark(),
       getPublicSiteSettings(),
       getMasterPageContent("sell"),
-      getForm("services_sell_list_property"),
+      // The wizard draws its own inputs, so it takes the wording an editor
+      // changed rather than the whole field list — see lib/forms/overrides.ts.
+      getFormWithOverrides("services_sell_list_property"),
       getTranslations("pages"),
     ]);
+
+  const { form: listForm, overrides: listQuestions } = listing;
 
   const v = (key: string) => content.section(key)?.values ?? {};
   const heroV = v("hero");
@@ -269,6 +273,7 @@ export default async function ListYourPropertyPage({
             <ListPropertyForm
               areas={areas}
               deskPhone={deskPhone}
+              questions={listQuestions}
               copy={{
                 step1Label: str(formV, "step_1_label"),
                 step2Label: str(formV, "step_2_label"),

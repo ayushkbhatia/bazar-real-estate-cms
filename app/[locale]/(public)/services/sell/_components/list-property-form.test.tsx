@@ -6,6 +6,7 @@ import { screen, waitFor } from "@testing-library/react";
 import { renderWithIntl as render } from "@/lib/i18n/test-utils";
 import userEvent from "@testing-library/user-event";
 import { ListPropertyForm, type SellFormCopy } from "./list-property-form";
+import type { FormOverrides } from "@/lib/forms/overrides";
 
 const submitListingLead = vi.fn(async (_input: unknown) => ({
   status: "ok" as const,
@@ -41,12 +42,13 @@ const AREAS = [
   },
 ];
 
-function renderForm(copy?: SellFormCopy) {
+function renderForm(copy?: SellFormCopy, questions?: FormOverrides) {
   return render(
     <ListPropertyForm
       areas={AREAS}
       deskPhone="+971 2 632 2223"
       copy={copy}
+      questions={questions}
     />,
   );
 }
@@ -223,5 +225,75 @@ describe("ListPropertyForm", () => {
         screen.queryByAltText("Bazar Real Estate"),
       ).not.toBeInTheDocument();
     });
+  });
+});
+
+/**
+ * The wizard draws its own inputs, so the Forms Manager reaches it as a diff:
+ * only what an editor actually changed, with the translated catalogue standing
+ * for everything else. Both halves matter — an override that doesn't land is
+ * the bug this was built to fix, and a catalogue string that gets replaced
+ * anyway is how an untouched form would start reading in generated Arabic.
+ */
+describe("wording from the Forms Manager", () => {
+  it("asks the catalogue's question when nobody has edited it", () => {
+    renderForm();
+
+    expect(
+      screen.getByText("I am looking to", { selector: "label, span, div" }),
+    ).toBeInTheDocument();
+  });
+
+  it("asks the editor's question when they have", () => {
+    renderForm(undefined, {
+      intent: { label: "What would you like to do?" },
+    });
+
+    expect(
+      screen.getByText("What would you like to do?", {
+        selector: "label, span, div",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText("I am looking to")).not.toBeInTheDocument();
+  });
+
+  it("renames an answer without changing what it submits", async () => {
+    const user = userEvent.setup();
+    renderForm(undefined, {
+      property_type: { options: { Apartment: "Flat" } },
+    });
+
+    // The pill reads "Flat"; "Apartment" is still the value behind it, which
+    // is what `listPropertySchema` validates and what reaches the desk.
+    await user.click(screen.getByRole("button", { name: /^flat$/i }));
+    expect(
+      screen.getByRole("button", { name: /^flat$/i }),
+    ).toHaveAttribute("aria-pressed", "true");
+    expect(
+      screen.queryByRole("button", { name: /^apartment$/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("leaves the questions it wasn't given alone", () => {
+    renderForm(undefined, { intent: { label: "What would you like to do?" } });
+
+    // One override must not blank the neighbours: every other question keeps
+    // its catalogue string.
+    expect(screen.getByLabelText(/^location/i)).toBeInTheDocument();
+    expect(screen.getByText("Category & type")).toBeInTheDocument();
+  });
+
+  it("words the urgency question for the branch the owner is on", async () => {
+    const user = userEvent.setup();
+    renderForm(undefined, {
+      urgency: { label: "Selling by when?" },
+      urgency_rent_out: { label: "Letting from when?" },
+    });
+
+    expect(screen.getByText("Selling by when?")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /^rent out$/i }));
+    expect(screen.getByText("Letting from when?")).toBeInTheDocument();
+    expect(screen.queryByText("Selling by when?")).not.toBeInTheDocument();
   });
 });

@@ -250,11 +250,86 @@ searchRedirect: {
 No migration is needed — the manager lists, resolves and records it as soon as
 the registry entry exists.
 
-## `control: "full"` vs `"copy"`
+## Three tiers of control
 
-`full` means the public component is `FormRenderer`, so fields, types and order
-are live. `copy` means the component draws its own inputs — a two-step wizard,
-an OTP gate, a single locked box — so the manager manages visibility, wording
-and responses, and shows the field list read-only rather than offering controls
-that would do nothing. Today: the sell wizard, the valuation gate, the
-newsletter box and the floor-plan gate. See `docs/FOLLOWUPS.md`.
+`FormDef.control` answers "how much of this form is the manager's?", and it has
+three answers because there are three, not two.
+
+| tier | the public component | what an editor gets |
+|---|---|---|
+| `full` | `FormRenderer` | everything: fields, types, order, wording, options |
+| `labels` | its own, but it asks | the wording of every question it draws |
+| `copy` | its own, hard-wired | visibility, CTA, confirmation, responses |
+
+`labels` exists because collapsing it into `copy` cost the client every label on
+`/services/sell`. "You may not reorder this wizard" and "you may not rename its
+questions" are separate facts: a two-step form with a summary bar between the
+steps genuinely can't be expressed by the shared renderer yet, but nothing about
+that stops it asking the manager what the questions are called.
+
+Today: `labels` is the sell wizard; `copy` is the valuation gate, the newsletter
+box and the floor-plan gate. Moving those three across is a component change
+each — see `docs/FOLLOWUPS.md`.
+
+### How a `labels` form reaches its component
+
+Not by handing over the resolved field list. That component already has wording
+— translated wording, in `messages/{en,ar}/forms.json`, written and reviewed in
+both languages — and replacing it wholesale would mean an untouched form starts
+rendering registry English, or generated Arabic, on a page nobody edited.
+
+So it reaches the component as a **diff**. `formOverrides` (`lib/forms/
+overrides.ts`) compares the resolved form against the registry defaults and
+returns only what an editor actually typed; the component keeps its catalogue
+for everything else:
+
+```tsx
+const { form, overrides } = await getFormWithOverrides("services_sell_list_property")
+// …
+label={q.label("intent", "sell.fieldIntent")}   // editor's, else the catalogue's
+```
+
+Both sides are folded to the same locale before comparing, and that ordering is
+load-bearing. `getForm` folds `label_ar` into `label` on `/ar`, so on that page
+the resolved label is Arabic while the bare registry label is English — diffing
+against the unfolded registry would mark all fourteen fields overridden and swap
+the page onto generated Arabic.
+
+### Two rules the tier is worth nothing without
+
+**The registry must be what the page renders, string for string.** It wasn't,
+for six of the sell wizard's labels: the manager offered "I want to", "Where is
+the property?" and "How soon?" against a page reading "I am looking to",
+"Location" and "How soon do you want to sell?". An editor renaming those was
+editing a string that renders nowhere — worse than a disabled control, because
+it looks like it worked. `registry.test.ts` now holds the sell wizard's fourteen
+labels and its option *values* as literals.
+
+**A save is pinned back to the registry's shape.** `pinToRegistry` walks the
+registry's field list and takes only the strings off whatever the payload sent
+for the same key. Order, types, mappings, conditions and option values come from
+the code, so a stale tab or a hand-rolled POST can't restructure a form whose
+component would ignore the change and whose server would reject the answers.
+Options are matched by value, because the value is the wire format and the label
+is the part that moves.
+
+### One question, two sentences
+
+The sell wizard asks how soon, and the sentence has to agree with the intent
+chosen at the top — "sell" and "let" are not interchangeable to an owner. That
+is two registry fields on a `showWhen`, not one field with a clever label:
+either sentence has to be editable, and a single label would leave whichever
+branch the editor wasn't looking at silently stale.
+
+### A field whose wording lives elsewhere
+
+`FormFieldDef.copyFromPage` is the form-level flag of the same name, applied to
+one question. The sell wizard's consent line is the case: a paragraph of legal
+copy Pages & blocks has always owned. The manager renders that field's label
+read-only with a link out, and `pinToRegistry` refuses to write it — a second
+writable copy of one string is how a change goes missing.
+
+Which means the label in the registry for that field is the row's **name** in
+the manager, not the sentence on the page. Copying the paragraph in as the label
+would put a second version of it a click away from the first, which is the one
+thing the flag exists to stop.

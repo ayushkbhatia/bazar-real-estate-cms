@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { LeadAreaOption } from "@/lib/queries/lead-routing";
+import type { FormOverrides } from "@/lib/forms/overrides";
 import {
   LP_BEDROOMS,
   LP_CALL_WINDOWS,
@@ -196,7 +197,54 @@ type Props = {
   deskPhone: string | null;
   /** Editable copy from the master page. Omitted, the form uses its own. */
   copy?: SellFormCopy;
+  /**
+   * The wording an editor changed at /admin/forms, by field key.
+   *
+   * Only the differences — an untouched question isn't in here at all and
+   * keeps the translated string from `messages/{en,ar}/forms.json`. That is
+   * the point: the catalogue is hand-written and reviewed in both languages,
+   * and taking the CMS wholesale would swap it for generated Arabic on a form
+   * nobody has edited. See `lib/forms/overrides.ts`.
+   */
+  questions?: FormOverrides;
 };
+
+/**
+ * Reads a question's wording: the editor's if they typed one, the catalogue's
+ * otherwise.
+ *
+ * Built once per render and passed down, rather than each sub-component
+ * reaching for `questions` itself — the fallback and the override have to be
+ * chosen in one place or the two drift the first time somebody adds a field.
+ */
+function useQuestionCopy(questions: FormOverrides | undefined) {
+  const t = useTranslations("forms");
+  return useMemo(
+    () => ({
+      /** A field's label. `fallbackKey` is a key under `forms.sell`. */
+      label: (field: string, fallbackKey: string) =>
+        questions?.[field]?.label ?? t(fallbackKey),
+      /** A field's placeholder. */
+      placeholder: (field: string, fallbackKey: string) =>
+        questions?.[field]?.placeholder ?? t(fallbackKey),
+      /** One option's label, keyed by the value the server validates. */
+      option: (field: string, value: string, fallbackKey: string) =>
+        questions?.[field]?.options?.[value] ?? t(fallbackKey),
+      /**
+       * The same, for options whose default is the value itself rather than a
+       * catalogue entry — the bedroom counts, which read "3" in every language.
+       */
+      optionLiteral: (field: string, value: string, fallback: string) =>
+        questions?.[field]?.options?.[value] ?? fallback,
+      /** The suffix inside an input — "ft²". */
+      unit: (field: string, fallback: string) =>
+        questions?.[field]?.unit ?? fallback,
+    }),
+    [questions, t],
+  );
+}
+
+type QuestionCopy = ReturnType<typeof useQuestionCopy>;
 
 type Confirmation = {
   reference: string;
@@ -216,8 +264,14 @@ const STEP1_FIELDS = [
   "urgency",
 ] as const;
 
-export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
+export function ListPropertyForm({
+  areas,
+  deskPhone,
+  copy,
+  questions,
+}: Props) {
   const t = useTranslations("forms");
+  const q = useQuestionCopy(questions);
   const c = useMemo(() => resolveCopy(copy), [copy]);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
@@ -416,7 +470,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
         {/* `hidden` rather than a display class: the inactive step must leave
             the tab order and the accessibility tree, not just the viewport. */}
         <div hidden={step !== 1}>
-          <FieldShell label={t("sell.fieldIntent")} required>
+          <FieldShell label={q.label("intent", "sell.fieldIntent")} required>
             <div className="grid grid-cols-2 gap-1.5">
               {LP_INTENTS.map((v) => (
                 <button
@@ -431,7 +485,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                       : "bg-bz-surface-2 text-bz-ink-2 hover:bg-bz-surface-3",
                   )}
                 >
-                  {t(`sell.intent.${v}`)}
+                  {q.option("intent", v, `sell.intent.${v}`)}
                 </button>
               ))}
             </div>
@@ -439,6 +493,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
 
           <LocationField
             areas={areas}
+            q={q}
             value={values.location}
             error={errors.location?.message}
             onChange={(text, slug) => {
@@ -448,7 +503,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
           />
 
           <FieldShell
-            label={t("sell.fieldCategory")}
+            label={q.label("category", "sell.fieldCategory")}
             required
             error={errors.property_type?.message}
             className="mt-6"
@@ -471,11 +526,19 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                       : "text-bz-muted hover:text-bz-ink",
                   )}
                 >
-                  {t(`sell.category.${c}`)}
+                  {q.option("category", c, `sell.category.${c}`)}
                 </button>
               ))}
             </div>
-            <div className="flex flex-wrap gap-1.5 mt-2.5">
+            {/* The pill row shares the "Category & type" heading above, so it
+                carries its own accessible name — the `property_type` label,
+                which is what the manager edits. Without it a screen reader
+                announces twelve unlabelled buttons under one heading. */}
+            <div
+              role="group"
+              aria-label={q.label("property_type", "sell.typeGroup")}
+              className="flex flex-wrap gap-1.5 mt-2.5"
+            >
               {/*
                 `pt` is the submitted value and the message key both — the
                 English member of LP_TYPES is what the server validates
@@ -491,7 +554,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                       setValue("bedrooms", null);
                   }}
                 >
-                  {t(`sell.type.${pt}`)}
+                  {q.option("property_type", pt, `sell.type.${pt}`)}
                 </Pill>
               ))}
             </div>
@@ -499,7 +562,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
 
           {showBedrooms ? (
             <FieldShell
-              label={t("sell.fieldBedrooms")}
+              label={q.label("bedrooms", "sell.fieldBedrooms")}
               required
               error={errors.bedrooms?.message}
               className="mt-6"
@@ -507,12 +570,16 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
               <div className="flex flex-wrap gap-1.5">
                 {LP_BEDROOMS.map((b) => (
                   <Pill
-                    key={b === "Studio" ? t("sell.bedroomsStudio") : b}
+                    key={b}
                     active={values.bedrooms === b}
                     onClick={() => setValue("bedrooms", b)}
                     className={b === "Studio" ? undefined : "min-w-[48px]"}
                   >
-                    {b === "Studio" ? t("sell.bedroomsStudio") : b}
+                    {/* Only "Studio" is a word. The counts read the same in
+                        both languages, so their default is the value. */}
+                    {b === "Studio"
+                      ? q.option("bedrooms", b, "sell.bedroomsStudio")
+                      : q.optionLiteral("bedrooms", b, b)}
                   </Pill>
                 ))}
               </div>
@@ -520,7 +587,10 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
           ) : null}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-6">
-            <FieldShell label={t("sell.fieldArea")} error={errors.area_sqft?.message}>
+            <FieldShell
+              label={q.label("area_sqft", "sell.fieldArea")}
+              error={errors.area_sqft?.message}
+            >
               <div className="relative">
                 <input
                   id="lp-area"
@@ -532,7 +602,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                     setAreaText(next);
                     setValue("area_sqft", parseAreaSqft(next));
                   }}
-                  placeholder="0"
+                  placeholder={q.placeholder("area_sqft", "sell.areaPlaceholder")}
                   /* Every focusable control in this wizard reads 16px until
                      `md` and 14px above it. iOS Safari zooms the viewport when
                      it focuses anything under 16px, and on a two-step form that
@@ -543,11 +613,14 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                   className="mono w-full h-11 rounded border border-bz-border bg-bz-surface px-3 pe-11 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
                 />
                 <span className="absolute end-3.5 top-1/2 -translate-y-1/2 text-[12px] text-bz-muted pointer-events-none">
-                  ft²
+                  {q.unit("area_sqft", "ft²")}
                 </span>
               </div>
             </FieldShell>
-            <FieldShell label={t("sell.fieldFurnishing")} htmlFor="lp-furnishing">
+            <FieldShell
+              label={q.label("furnishing", "sell.fieldFurnishing")}
+              htmlFor="lp-furnishing"
+            >
               <select
                 id="lp-furnishing"
                 value={values.furnishing ?? ""}
@@ -559,10 +632,12 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                 }
                 className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
               >
-                <option value="">{t("sell.selectPlaceholder")}</option>
+                <option value="">
+                  {q.placeholder("furnishing", "sell.selectPlaceholder")}
+                </option>
                 {LP_FURNISHINGS.map((f) => (
                   <option key={f} value={f}>
-                    {t(`sell.furnishing.${f}`)}
+                    {q.option("furnishing", f, `sell.furnishing.${f}`)}
                   </option>
                 ))}
               </select>
@@ -570,10 +645,14 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
           </div>
 
           <FieldShell
+            /* Two fields in the manager, one question here: the sentence has
+               to agree with the intent chosen at the top, and "sell" and "let"
+               are not interchangeable to an owner. Both are editable; only one
+               is ever on screen. */
             label={
               values.intent === "sell"
-                ? t("sell.urgencySell")
-                : t("sell.urgencyRent")
+                ? q.label("urgency", "sell.urgencySell")
+                : q.label("urgency_rent_out", "sell.urgencyRent")
             }
             className="mt-6"
           >
@@ -587,7 +666,11 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                   }
                   className="h-11 justify-center"
                 >
-                  {t(`sell.urgency.${u}`)}
+                  {/* The options are the same either way, so they follow
+                      whichever of the two rows is being asked. */}
+                  {values.intent === "sell"
+                    ? q.option("urgency", u, `sell.urgency.${u}`)
+                    : q.option("urgency_rent_out", u, `sell.urgency.${u}`)}
                 </Pill>
               ))}
             </div>
@@ -630,7 +713,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
           </p>
 
           <FieldShell
-            label={t("sell.fieldName")}
+            label={q.label("name", "sell.fieldName")}
             required
             htmlFor="lp-name"
             error={errors.name?.message}
@@ -640,14 +723,14 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
               id="lp-name"
               {...register("name")}
               autoComplete="name"
-              placeholder={t("sell.namePlaceholder")}
+              placeholder={q.placeholder("name", "sell.namePlaceholder")}
               className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
             />
           </FieldShell>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-4.5">
             <FieldShell
-              label={t("sell.fieldMobile")}
+              label={q.label("mobile", "sell.fieldMobile")}
               required
               htmlFor="lp-mobile"
               error={errors.mobile?.message}
@@ -661,13 +744,13 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                   {...register("mobile")}
                   inputMode="tel"
                   autoComplete="tel-national"
-                  placeholder={t("sell.mobilePlaceholder")}
+                  placeholder={q.placeholder("mobile", "sell.mobilePlaceholder")}
                   className="mono w-full h-11 rounded-e border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
                 />
               </div>
             </FieldShell>
             <FieldShell
-              label={t("sell.fieldEmail")}
+              label={q.label("email", "sell.fieldEmail")}
               required
               htmlFor="lp-email"
               error={errors.email?.message}
@@ -677,13 +760,16 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                 {...register("email")}
                 type="email"
                 autoComplete="email"
-                placeholder={t("sell.emailPlaceholder")}
+                placeholder={q.placeholder("email", "sell.emailPlaceholder")}
                 className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
               />
             </FieldShell>
           </div>
 
-          <FieldShell label={t("sell.fieldCallWindow")} className="mt-4.5">
+          <FieldShell
+            label={q.label("call_window", "sell.fieldCallWindow")}
+            className="mt-4.5"
+          >
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
               {LP_CALL_WINDOWS.map((c) => (
                 <Pill
@@ -692,7 +778,7 @@ export function ListPropertyForm({ areas, deskPhone, copy }: Props) {
                   onClick={() => setValue("call_window", c)}
                   className="h-11 justify-center"
                 >
-                  {t(`sell.callWindow.${c}`)}
+                  {q.option("call_window", c, `sell.callWindow.${c}`)}
                 </Pill>
               ))}
             </div>
@@ -957,11 +1043,13 @@ function formatLicence(brn: string | null | undefined): string | null {
 
 function LocationField({
   areas,
+  q,
   value,
   error,
   onChange,
 }: {
   areas: LeadAreaOption[];
+  q: QuestionCopy;
   value: string;
   error?: string;
   onChange: (text: string, slug: string | null) => void;
@@ -1003,7 +1091,7 @@ function LocationField({
 
   return (
     <FieldShell
-      label={t("sell.fieldLocation")}
+      label={q.label("location", "sell.fieldLocation")}
       required
       htmlFor="lp-location"
       error={error}
@@ -1050,7 +1138,7 @@ function LocationField({
               setOpen(false);
             }
           }}
-          placeholder={t("sell.locationPlaceholder")}
+          placeholder={q.placeholder("location", "sell.locationPlaceholder")}
           /* 16px until `md`, as with every other control in this wizard —
              worse here than elsewhere, since an iOS zoom fires while the
              suggestion list is open and shifts the options out from under

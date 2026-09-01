@@ -98,6 +98,8 @@
     "locationPlaceholder": "Building, community or area",
     "matchingAreas": "Matching areas",
     "categoryGroup": "Property category",
+    "typeGroup": "Property type",
+    "areaPlaceholder": "0",
     "advisorFallback": "Your advisor",
     "sent": "Enquiry sent. You are matched with an advisor.",
     "fixErrors": "Please fix the errors below.",

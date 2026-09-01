@@ -253,6 +253,19 @@ export type FormFieldDef = {
    * into a state its handler can't submit.
    */
   locked?: boolean;
+  /**
+   * This field's wording lives in Pages & blocks, not here.
+   *
+   * The form-level `copyFromPage` says that about the button and the
+   * confirmation; this says it about one question. The sell wizard's consent
+   * line is the case: it is a paragraph of legal copy the page has always
+   * owned, and offering a second writable copy of it in the manager would mean
+   * whichever screen you opened second appeared to have lost your change.
+   *
+   * The manager renders the label read-only and links out via the form's
+   * `headingSource`, exactly as it does for a `copyFromPage` form's CTA.
+   */
+  copyFromPage?: boolean;
 };
 
 // ── range values ─────────────────────────────────────────────────────────
@@ -355,13 +368,38 @@ export type FormHandler = (typeof FORM_HANDLERS)[number];
 /**
  * How much of the form the manager drives.
  *
- *   full  — the public component is the shared renderer, so fields, their
- *           types and their order are live. Most forms.
- *   copy  — the public component is bespoke (a two-step wizard, an OTP gate).
- *           Visibility, copy, CTA and responses are managed; the field list is
- *           shown read-only, because changing it here would lie.
+ *   full   — the public component is the shared renderer, so fields, their
+ *            types and their order are live. Most forms.
+ *   labels — the public component is bespoke, but it asks the manager for the
+ *            wording of every question it draws. Structure (which fields, in
+ *            what order, of what type) is the code's; the words are the
+ *            editor's.
+ *   copy   — the public component is bespoke and hard-wired. Visibility, copy,
+ *            CTA and responses are managed; the field list is shown read-only,
+ *            because changing it here would lie.
+ *
+ * `labels` exists because "you may not reorder this wizard" and "you may not
+ * rename its questions" are separate facts, and collapsing them cost the
+ * client every label on /services/sell. A bespoke component can hand its
+ * wording over without handing over its layout.
  */
-export type FormControl = "full" | "copy";
+export type FormControl = "full" | "labels" | "copy";
+
+/** Whether the manager offers the structural field editor — add, delete, reorder, retype. */
+export function editsFieldList(control: FormControl): boolean {
+  return control === "full";
+}
+
+/**
+ * Whether the manager offers per-field wording — label, placeholder, helper,
+ * option labels, and each one's Arabic twin.
+ *
+ * True for `labels` as well as `full`: what separates them is structure, and a
+ * `labels` save is pinned back to the registry's shape before it is written.
+ */
+export function editsFieldCopy(control: FormControl): boolean {
+  return control !== "copy";
+}
 
 /** How the fields are laid out — matches the two visual idioms on the site. */
 export type FormVariant = "stacked" | "compact";

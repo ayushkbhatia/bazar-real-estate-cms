@@ -98,6 +98,8 @@
     "locationPlaceholder": "المبنى أو المجمع أو المنطقة",
     "matchingAreas": "المناطق المطابقة",
     "categoryGroup": "فئة العقار",
+    "typeGroup": "نوع العقار",
+    "areaPlaceholder": "0",
     "advisorFallback": "المستشار الخاص بك",
     "sent": "تم إرسال الاستفسار. تم ربطك بمستشار.",
     "fixErrors": "الرجاء تصحيح الأخطاء أدناه.",

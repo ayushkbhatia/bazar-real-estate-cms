@@ -63,14 +63,23 @@ function mergeFields(
 
   // `note` is editor-facing guidance written in code, not content an editor
   // owns, so it is always taken from the registry rather than from storage —
-  // otherwise the first save would silently drop it.
-  const notes = new Map(def.fields.map((f) => [f.key, f.note ?? null]));
+  // otherwise the first save would silently drop it. `copyFromPage` is the
+  // same kind of fact: which screen owns a field's wording is a property of
+  // the code, and a stored `false` must never unlock a label that lives in
+  // Pages & blocks.
+  const fromRegistry = new Map(
+    def.fields.map((f) => [
+      f.key,
+      { note: f.note ?? null, copyFromPage: f.copyFromPage ?? false },
+    ]),
+  );
 
   const ordered = [...stored]
     .sort((a, b) => a.position - b.position)
     .map(({ position: _position, ...field }) => ({
       ...field,
-      note: notes.get(field.key) ?? null,
+      note: fromRegistry.get(field.key)?.note ?? null,
+      copyFromPage: fromRegistry.get(field.key)?.copyFromPage ?? false,
     }));
 
   const byKey = new Map(ordered.map((f) => [f.key, f]));
