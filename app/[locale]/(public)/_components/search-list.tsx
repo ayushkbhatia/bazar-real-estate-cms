@@ -29,7 +29,7 @@ import { ViewToggle } from "./view-toggle";
 import { resolveSearchView } from "./search-view";
 import { MoreFiltersDrawer } from "./more-filters-drawer";
 import { Pagination } from "./pagination";
-import { SegmentSegmented } from "./segment-segmented";
+import { SearchToggles } from "./search-toggles";
 import { DrawAreaTool } from "./draw-area-tool";
 import { CommuteTimeTool } from "./commute-time-tool";
 import { ListingCardPriced } from "./listing-card-priced";
@@ -252,7 +252,10 @@ export async function SearchList({
       <FilterBar mode={mode} areas={areas} />
 
       <section className="px-4 md:px-12 pt-4 md:pt-6 pb-3 flex items-center gap-3 flex-wrap border-b border-bz-border">
-        <SegmentSegmented />
+        {/* The completion form is offered only where it is free to vary —
+            see the note on SearchToggles. `!form` excludes /buy/ready and
+            /buy/resale, which have already fixed it from the route. */}
+        <SearchToggles showForm={mode === "buy" && !form} />
         <span className="text-bz-muted text-[11px] hidden md:inline">·</span>
         <DrawAreaTool />
         <CommuteTimeTool />
@@ -276,7 +279,7 @@ export async function SearchList({
             ) : null}
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            <MoreFiltersDrawer showForm={mode === "buy" && !form} />
+            <MoreFiltersDrawer />
             <SortDropdown />
             <ViewToggle defaultView={defaultView} />
           </div>

@@ -76,6 +76,61 @@ test("/commercial/search is retired onto the segment filter", async ({
   ).toHaveAttribute("aria-pressed", "true");
 });
 
+test("the completion strip sits beside the segment one, on /buy/search", async ({
+  page,
+}) => {
+  await page.goto("/buy/search");
+  await expect(
+    page.getByRole("group", { name: "Property segment" }),
+  ).toBeVisible();
+  await expect(page.getByRole("group", { name: "Completion" })).toBeVisible();
+  for (const name of ["Off-plan", "Ready (new)", "Resale"]) {
+    await expect(
+      page.getByRole("button", { name, exact: true }),
+    ).toHaveAttribute("aria-pressed", "false");
+  }
+});
+
+test("the two strips narrow independently and compose", async ({ page }) => {
+  await page.goto("/buy/search");
+  await page.getByRole("button", { name: "Residential", exact: true }).click();
+  await page.getByRole("button", { name: "Off-plan", exact: true }).click();
+
+  await expect(page).toHaveURL(/segment=residential/);
+  await expect(page).toHaveURL(/form=off_plan/);
+  // Both stay pressed: they are different axes, not alternatives.
+  await expect(
+    page.getByRole("button", { name: "Residential", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByRole("button", { name: "Off-plan", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+});
+
+test("the completion strip is hidden where the axis is not free", async ({
+  page,
+}) => {
+  // A tenancy has no completion form (the DB keeps the column NULL), and
+  // /off-plan, /buy/ready and /buy/resale have each fixed it from the route.
+  // The segment strip stays on all of them — that axis is still free.
+  for (const path of [
+    "/rent/search",
+    "/off-plan/search",
+    "/buy/ready",
+    "/buy/resale",
+  ]) {
+    await page.goto(path);
+    await expect(
+      page.getByRole("group", { name: "Completion" }),
+      `Completion strip should not render on ${path}`,
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("group", { name: "Property segment" }),
+      `segment strip missing on ${path}`,
+    ).toBeVisible();
+  }
+});
+
 test("the four mode pills are gone", async ({ page }) => {
   // The regression this guards: re-adding the strip would put the transaction
   // axis in two places again, and put Commercial back on the wrong one.

@@ -72,6 +72,17 @@ describe("the segment filter", () => {
     expect(describeFilters(f)).toBe("2+ beds · Apartments · Commercial");
   });
 
+  it("composes with the completion form rather than replacing it", () => {
+    // The two strips above the results are different axes: what kind of
+    // building, and how a sale is coming to market. "Commercial resale" is a
+    // real thing to look for, and both halves have to survive together.
+    const f = parseFilters({ segment: "commercial", form: "resale" });
+    expect(f.segment).toBe("commercial");
+    expect(f.form).toBe("resale");
+    expect(countActiveFilters(f)).toBe(2);
+    expect(describeFilters(f)).toBe("Commercial · Resale");
+  });
+
   it("is a key the proxy recognises as a search", () => {
     // `FILTER_PARAM_KEYS` is hand-maintained so the middleware bundle does not
     // pull in nuqs; a key missing from it means `/buy?segment=commercial`
