@@ -166,15 +166,21 @@ quick grep can show "what's outstanding in my area."
   both-sources developer from the grid the way `_helpers.ts` discovers
   properties, areas and categories, so the assertion always runs.
 
-- [forms] Wire the two bespoke lead forms to the shared renderer.
-  `/services/sell` (two-step owner wizard) and the valuation report gate (OTP)
-  are registered in the Forms Manager as `control: "copy"`: their visibility,
-  their wording and their responses are managed, but their field lists are
-  read-only because the components draw their own inputs. Expressing them
-  through `FormRenderer` needs two things it doesn't have — a `step` on
-  `FormFieldDef`, and a way for a handler to interrupt between validation and
-  submit. "Done" is flipping both to `control: "full"` with no visible change
-  to either page.
+- [forms] Wire the three remaining bespoke lead forms to the shared renderer.
+  The valuation report gate (OTP), the floor-plan gate and the newsletter box
+  are registered as `control: "copy"`: visibility, wording and responses are
+  managed, but their field lists are read-only because the components draw
+  their own inputs. Expressing them through `FormRenderer` needs two things it
+  doesn't have — a `step` on `FormFieldDef`, and a way for a handler to
+  interrupt between validation and submit. "Done" is flipping them to
+  `control: "full"` with no visible change to any page.
+
+  The sell wizard is off this list as of PR #481, by a different route: it is
+  `control: "labels"` now, so every question, placeholder and answer it draws
+  is editable in the manager while its two-step layout stays the component's.
+  The cheap next step for the other three is the same tier, not the renderer —
+  each is one component reading `getFormWithOverrides` instead of its own
+  literals. See `docs/FORMS.md`.
 
 - [forms] Newsletter signups on the home teaser and article sidebar don't read
   their CMS copy.

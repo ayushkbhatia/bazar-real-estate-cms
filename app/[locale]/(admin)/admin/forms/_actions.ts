@@ -8,8 +8,13 @@ import { logAudit } from "@/lib/audit";
 import { isMissingTableError } from "@/lib/queries/forms";
 import { getFormDef } from "@/lib/forms/registry";
 import { defaultForm } from "@/lib/forms/resolve";
+import { pinToRegistry } from "@/lib/forms/overrides";
 import { formSaveSchema, type FormSaveInput } from "@/lib/schemas/form";
-import type { FormFieldDef } from "@/lib/forms/types";
+import {
+  editsFieldCopy,
+  editsFieldList,
+  type FormFieldDef,
+} from "@/lib/forms/types";
 import { FORM_COPY_KEYS, copyArKey } from "@/lib/forms/copy-keys";
 
 const FORM_ROLES = ["admin", "editor", "marketing"] as const;
@@ -70,8 +75,17 @@ export async function saveForm(raw: FormSaveInput): Promise<SaveFormResult> {
   if (!def)
     return { status: "error", message: `Unknown form "${input.key}".` };
 
-  const editsFields = def.control === "full";
+  const editsFields = editsFieldList(def.control);
+  const editsWording = editsFieldCopy(def.control);
   const editsCopy = !def.copyFromPage;
+
+  // A `labels` form writes rows too — the registry's shape carrying the
+  // editor's words. Only `full` writes the list the browser sent.
+  const fieldsToWrite = editsFields
+    ? input.fields
+    : editsWording
+      ? pinToRegistry(def, input.fields)
+      : null;
 
   // Locked fields must survive intact.
   if (editsFields) {
@@ -161,7 +175,7 @@ export async function saveForm(raw: FormSaveInput): Promise<SaveFormResult> {
     };
   }
 
-  if (editsFields) {
+  if (fieldsToWrite) {
     // Replace rather than reconcile: the field list is small, the editor sent
     // all of it, and a delete-then-insert can't leave a stale row behind or
     // trip the (form_id, key) unique index when two fields swapped keys.
@@ -172,7 +186,7 @@ export async function saveForm(raw: FormSaveInput): Promise<SaveFormResult> {
     if (clearError)
       return { status: "error", message: clearError.message };
 
-    const rows = input.fields.map((field, index) => ({
+    const rows = fieldsToWrite.map((field, index) => ({
       form_id: saved.id,
       key: field.key,
       label: field.label.trim(),
@@ -202,8 +216,15 @@ export async function saveForm(raw: FormSaveInput): Promise<SaveFormResult> {
           ? (field.max ?? null)
           : null,
       step: field.type === "range" ? (field.step ?? null) : null,
-      unit: field.type === "range" ? orNull(field.unit) : null,
-      unit_ar: field.type === "range" ? field.unit_ar : null,
+      // A suffix inside the box — "ft²" on a number, "AED" on a slider.
+      unit:
+        field.type === "range" || field.type === "number"
+          ? orNull(field.unit)
+          : null,
+      unit_ar:
+        field.type === "range" || field.type === "number"
+          ? field.unit_ar
+          : null,
       show_when: (field.showWhen ?? null) as never,
       locked: def.fields.some((f) => f.key === field.key && f.locked),
       position: (index + 1) * 10,

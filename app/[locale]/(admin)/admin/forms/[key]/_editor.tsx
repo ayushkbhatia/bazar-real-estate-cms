@@ -26,6 +26,8 @@ import {
   FORM_FIELD_MAPPINGS,
   FORM_FIELD_MAPPING_LABELS,
   FORM_OPTION_SOURCE_LABELS,
+  editsFieldCopy,
+  editsFieldList,
   hasOptions,
   type FormFieldCondition,
   type FormFieldType,
@@ -92,6 +94,9 @@ function toSaveField(field: ResolvedForm["fields"][number]): FormFieldSaveInput 
     unit: field.unit ?? null,
     showWhen: field.showWhen ?? null,
     locked: field.locked ?? false,
+    // Registry-owned, like `note`: which screen owns this string is a fact
+    // about the code, not something a save may change.
+    copyFromPage: field.copyFromPage ?? false,
   };
 }
 
@@ -119,7 +124,11 @@ export function FormEditor({
   const [issues, setIssues] = useState<string[]>([]);
   const [pending, startTransition] = useTransition();
 
-  const editsFields = def.control === "full";
+  // Two separate permissions, deliberately. A bespoke component owns its
+  // layout without owning its words: `labels` gives the editor the wording of
+  // every question and none of the structure around it.
+  const editsStructure = editsFieldList(def.control);
+  const editsWording = editsFieldCopy(def.control);
   const editsCopy = !def.copyFromPage;
   const headingHref = def.headingSource
     ? `/admin/pages/master/${def.headingSource.pageKey}`
@@ -365,7 +374,9 @@ export function FormEditor({
       {tab === "fields" ? (
         <FieldsTab
           fields={fields}
-          editable={editsFields}
+          editsStructure={editsStructure}
+          editsWording={editsWording}
+          headingHref={headingHref}
           open={open}
           setOpen={setOpen}
           onAdd={add}
@@ -590,7 +601,9 @@ function copyField(key: FormCopyKey, label: string): SimpleFieldDef {
 
 function FieldsTab({
   fields,
-  editable,
+  editsStructure,
+  editsWording,
+  headingHref,
   open,
   setOpen,
   onAdd,
@@ -600,7 +613,11 @@ function FieldsTab({
   onChangeType,
 }: {
   fields: FormFieldSaveInput[];
-  editable: boolean;
+  /** Add, delete, reorder, retype — `control: "full"` only. */
+  editsStructure: boolean;
+  /** Label, placeholder, helper, option labels — everything but `control: "copy"`. */
+  editsWording: boolean;
+  headingHref: string | null;
   open: number | null;
   setOpen: (index: number | null) => void;
   onAdd: (type: FormFieldType) => void;
@@ -611,12 +628,24 @@ function FieldsTab({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      {!editable ? (
+      {/* Three states, because there are three answers to "what can I change
+          here?" and one notice covering two of them is how the sell wizard's
+          labels sat unreachable behind a message about layout. */}
+      {!editsWording ? (
         <p className="text-[12.5px] text-bz-muted rounded border border-bz-border bg-bz-surface p-3 max-w-[76ch] leading-relaxed">
-          This form draws its own inputs — a two-step wizard, a verification
-          step, or a single locked box. The fields below are what it asks, shown
-          so the record is complete; changing them here would have no effect on
-          the page, so the controls are off rather than misleading.
+          This form draws its own inputs — a verification step, or a single
+          locked box. The fields below are what it asks, shown so the record is
+          complete; changing them here would have no effect on the page, so the
+          controls are off rather than misleading.
+        </p>
+      ) : !editsStructure ? (
+        <p className="text-[12.5px] text-bz-muted rounded border border-bz-border bg-bz-surface p-3 max-w-[76ch] leading-relaxed">
+          This form is drawn by its own component, so which questions it asks
+          and in what order are fixed. The <strong>wording</strong> is yours:
+          open a field to rewrite its label, its placeholder, its helper line
+          and the answers it offers, in either language. Those take effect on
+          the next page load. The controls that would move or retype a field are
+          off, because the page would ignore them.
         </p>
       ) : (
         <p className="text-[12.5px] text-bz-muted max-w-[76ch] leading-relaxed">
@@ -668,7 +697,7 @@ function FieldsTab({
               {field.locked ? (
                 <Lock size={12} className="text-bz-muted-2 shrink-0" />
               ) : null}
-              {editable ? (
+              {editsStructure ? (
                 <div className="flex items-center gap-0.5 shrink-0">
                   <IconButton
                     label="Move up"
@@ -717,7 +746,9 @@ function FieldsTab({
                 candidates={fields
                   .slice(0, index)
                   .filter((f) => hasOptions(f.type) && !f.optionSource)}
-                editable={editable}
+                editsStructure={editsStructure}
+                editsWording={editsWording}
+                headingHref={headingHref}
                 onChange={(patch) => onChange(index, patch)}
                 onChangeType={(type) => onChangeType(index, type)}
               />
@@ -726,7 +757,7 @@ function FieldsTab({
         ))}
       </ul>
 
-      {editable ? (
+      {editsStructure ? (
         <div className="flex flex-wrap items-center gap-2 pt-1">
           <span className="text-[12px] text-bz-muted-2">Add a field:</span>
           {FORM_FIELD_TYPES.map((type) => (
@@ -749,25 +780,52 @@ function FieldsTab({
 function FieldDetail({
   field,
   candidates,
-  editable,
+  editsStructure,
+  editsWording,
+  headingHref,
   onChange,
   onChangeType,
 }: {
   field: FormFieldSaveInput;
   candidates: FormFieldSaveInput[];
-  editable: boolean;
+  editsStructure: boolean;
+  editsWording: boolean;
+  headingHref: string | null;
   onChange: (patch: Partial<FormFieldSaveInput>) => void;
   onChangeType: (type: FormFieldType) => void;
 }) {
-  const disabled = !editable;
+  // Everything that isn't wording — type, mapping, required, width, the
+  // numeric bounds, the condition. Fixed unless the shared renderer draws
+  // this form.
+  const disabled = !editsStructure;
+  // The wording itself. Open on a `labels` form too — except where the string
+  // belongs to Pages & blocks, which is a per-field fact, not a per-form one.
+  const wordingLocked = !editsWording || field.copyFromPage === true;
   return (
     <div className="border-t border-bz-border p-3 flex flex-col gap-3 bg-bz-bg/40">
+      {field.copyFromPage ? (
+        <p className="text-[12px] text-bz-muted-2 rounded border border-bz-border bg-bz-surface p-2.5">
+          This wording lives in{" "}
+          {headingHref ? (
+            <Link
+              href={headingHref}
+              className="underline underline-offset-2 hover:text-bz-ink"
+            >
+              Pages &amp; blocks
+            </Link>
+          ) : (
+            "Pages & blocks"
+          )}
+          , not here — a second writable copy of one string is how a change
+          goes missing. Shown so the record is complete.
+        </p>
+      ) : null}
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="flex flex-col gap-1">
           <Text
             label="Label"
             value={field.label}
-            disabled={disabled}
+            disabled={wordingLocked}
             onChange={(v) => onChange({ label: v })}
           />
           <ArabicTwin
@@ -798,7 +856,7 @@ function FieldDetail({
           <Text
             label="Placeholder"
             value={field.placeholder ?? ""}
-            disabled={disabled}
+            disabled={wordingLocked}
             onChange={(v) => onChange({ placeholder: v || null })}
           />
           <ArabicTwin
@@ -840,7 +898,7 @@ function FieldDetail({
           label="Helper text"
           help="Shown to the visitor under the input. Leave blank for none."
           value={field.help ?? ""}
-          disabled={disabled}
+          disabled={wordingLocked}
           onChange={(v) => onChange({ help: v || null })}
         />
         {/* `help` is public copy the visitor reads; `note` below it is
@@ -940,7 +998,7 @@ function FieldDetail({
                 className={cn(fieldCls, "w-20")}
                 placeholder="AED"
                 value={field.unit ?? ""}
-                disabled={disabled}
+                disabled={wordingLocked}
                 onChange={(e) => onChange({ unit: e.target.value || null })}
               />
               <ArabicTwin
@@ -979,7 +1037,10 @@ function FieldDetail({
       ) : hasOptions(field.type) ? (
         <OptionsEditor
           options={field.options ?? []}
-          disabled={disabled}
+          // Renaming an answer is wording; adding or deleting one changes
+          // what the server will accept, which is structure.
+          disabled={wordingLocked}
+          editsList={editsStructure}
           showIntent={field.mapping === "intent"}
           onChange={(options) => onChange({ options })}
         />
@@ -1084,11 +1145,21 @@ function ConditionEditor({
 function OptionsEditor({
   options,
   disabled,
+  editsList,
   showIntent,
   onChange,
 }: {
   options: NonNullable<FormFieldSaveInput["options"]>;
+  /** Wording — the label and its Arabic twin. */
   disabled: boolean;
+  /**
+   * Structure — adding, deleting, and the stored value.
+   *
+   * Separate from `disabled` because a bespoke component validates against a
+   * fixed set of values: renaming "Villa" is copy, but inventing a thirteenth
+   * property type draws a pill the server rejects.
+   */
+  editsList: boolean;
   showIntent: boolean;
   onChange: (options: NonNullable<FormFieldSaveInput["options"]>) => void;
 }) {
@@ -1116,14 +1187,14 @@ function OptionsEditor({
               className={cn(fieldCls, "max-w-[180px]")}
               value={option.value}
               placeholder="stored value (optional)"
-              disabled={disabled}
+              disabled={!editsList}
               onChange={(e) => set(index, { value: e.target.value })}
             />
             {showIntent ? (
               <select
                 className={cn(fieldCls, "max-w-[130px]")}
                 value={option.intent ?? ""}
-                disabled={disabled}
+                disabled={!editsList}
                 onChange={(e) => set(index, { intent: e.target.value || null })}
               >
                 <option value="">No tag</option>
@@ -1136,7 +1207,7 @@ function OptionsEditor({
             ) : null}
             <IconButton
               label={`Remove the ${option.label.trim() || `option in position ${index + 1}`} option`}
-              disabled={disabled || options.length <= 1}
+              disabled={!editsList || options.length <= 1}
               onClick={() => onChange(options.filter((_, i) => i !== index))}
             >
               <Trash2 size={13} strokeWidth={1.7} />
@@ -1160,7 +1231,7 @@ function OptionsEditor({
           />
         </div>
       ))}
-      {!disabled ? (
+      {editsList ? (
         <button
           type="button"
           onClick={() =>

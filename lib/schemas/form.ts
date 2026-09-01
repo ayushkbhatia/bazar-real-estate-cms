@@ -87,6 +87,8 @@ export const formFieldSchema = z.object({
   unit_ar: z.string().trim().max(18).nullable(),
   showWhen: conditionSchema.nullable().optional(),
   locked: z.boolean().optional(),
+  /** Registry-authored, re-attached on read — accepted here and not stored. */
+  copyFromPage: z.boolean().optional(),
 });
 
 export type FormFieldSaveInput = z.infer<typeof formFieldSchema>;
@@ -284,6 +286,7 @@ export function blankField(type: FormFieldType, index: number): FormFieldSaveInp
     unit: null,
     showWhen: null,
     locked: false,
+    copyFromPage: false,
   };
 }
 

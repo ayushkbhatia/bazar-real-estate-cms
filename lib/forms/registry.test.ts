@@ -5,6 +5,13 @@ import { formSaveSchema } from "@/lib/schemas/form";
 import { hasOptions } from "./types";
 import { ENQUIRY_SOURCES } from "@/lib/schemas/enquiry";
 import { getMasterPage } from "@/lib/master-pages";
+import {
+  LP_BEDROOMS,
+  LP_CALL_WINDOWS,
+  LP_FURNISHINGS,
+  LP_TYPES,
+  LP_URGENCIES,
+} from "@/lib/schemas/list-property";
 
 /**
  * The registry is a promise: it is what the site renders today. These are the
@@ -373,8 +380,8 @@ describe("the forms as they render today", () => {
   });
 
   it("leaves the bespoke forms marked as such", () => {
-    // These four draw their own inputs, so the manager must not offer a field
-    // editor that would silently do nothing.
+    // These three draw their own inputs and are hard-wired, so the manager must
+    // not offer a field editor that would silently do nothing.
     const bespoke = FORM_DEFS.filter((f) => f.control === "copy").map(
       (f) => f.key,
     );
@@ -382,9 +389,94 @@ describe("the forms as they render today", () => {
       [
         "development_floorplan",
         "insights_newsletter",
-        "services_sell_list_property",
         "valuation_report_gate",
       ].sort(),
     );
+  });
+
+  it("lists the forms that own their wording but not their layout", () => {
+    // `labels` is a promise the component has to keep: it reads the resolved
+    // wording for every question it draws. Adding a key here without wiring the
+    // component gives an editor a box that changes nothing, which is the exact
+    // failure the tier was built to end.
+    const wordingOnly = FORM_DEFS.filter((f) => f.control === "labels").map(
+      (f) => f.key,
+    );
+    expect(wordingOnly.sort()).toEqual(["services_sell_list_property"]);
+  });
+
+  /**
+   * The sell wizard, question for question.
+   *
+   * `/services/sell` draws its own inputs from `messages/{en,ar}/forms.json`,
+   * and the manager offers these strings as the thing an editor changes. If the
+   * two disagree, the editor is renaming a label that renders nowhere — which
+   * is what shipped for six of them: "I want to" against a page reading "I am
+   * looking to", "Where is the property?" against "Location", "How soon?"
+   * against "How soon do you want to sell?".
+   *
+   * Held as literals rather than read from the catalogue on purpose: a test
+   * that reads both sides from the same file would pass while both were wrong.
+   */
+  it("asks the sell wizard's questions in the page's own words", () => {
+    const def = getFormDef("services_sell_list_property")!;
+    const label = (key: string) => def.fields.find((f) => f.key === key)?.label;
+
+    expect(label("intent")).toBe("I am looking to");
+    expect(label("location")).toBe("Location");
+    expect(label("category")).toBe("Category & type");
+    expect(label("property_type")).toBe("Property type");
+    expect(label("bedrooms")).toBe("Bedrooms");
+    expect(label("area_sqft")).toBe("Built-up area");
+    expect(label("furnishing")).toBe("Furnishing");
+    expect(label("urgency")).toBe("How soon do you want to sell?");
+    expect(label("urgency_rent_out")).toBe("How soon do you want it let?");
+    expect(label("name")).toBe("Full name");
+    expect(label("mobile")).toBe("Mobile");
+    expect(label("email")).toBe("Email");
+    expect(label("call_window")).toBe("Best time to call");
+
+    // The consent row is the exception, and says so: the sentence beside the
+    // checkbox is legal copy Pages & blocks owns, so this label is the row's
+    // name in the manager rather than anything the visitor reads.
+    const consent = def.fields.find((f) => f.key === "consent")!;
+    expect(consent.copyFromPage).toBe(true);
+  });
+
+  /**
+   * Option VALUES are the wire format: `listPropertySchema` validates against
+   * them and `LP_TYPES_WITHOUT_BEDROOMS` matches "Land" and "Other" by value.
+   * A renamed label is copy; a renamed value is a rejected submission.
+   */
+  it("offers the sell wizard's answers under the values the server accepts", () => {
+    const def = getFormDef("services_sell_list_property")!;
+    const values = (key: string) =>
+      (def.fields.find((f) => f.key === key)?.options ?? []).map((o) => o.value);
+
+    expect(values("intent")).toEqual(["sell", "rent_out"]);
+    expect(values("category")).toEqual(["residential", "commercial"]);
+    expect(values("property_type")).toEqual([
+      ...LP_TYPES.residential,
+      ...LP_TYPES.commercial,
+    ]);
+    expect(values("bedrooms")).toEqual([...LP_BEDROOMS]);
+    expect(values("furnishing")).toEqual([...LP_FURNISHINGS]);
+    expect(values("urgency")).toEqual([...LP_URGENCIES]);
+    expect(values("urgency_rent_out")).toEqual([...LP_URGENCIES]);
+    expect(values("call_window")).toEqual([...LP_CALL_WINDOWS]);
+  });
+
+  /**
+   * The two urgency rows ask the same question of two different owners, so
+   * exactly one is ever on screen. A missing or overlapping condition would put
+   * both sentences on the page at once.
+   */
+  it("shows one urgency question per intent", () => {
+    const def = getFormDef("services_sell_list_property")!;
+    const sell = def.fields.find((f) => f.key === "urgency")!;
+    const rent = def.fields.find((f) => f.key === "urgency_rent_out")!;
+
+    expect(sell.showWhen).toEqual({ field: "intent", values: ["sell"] });
+    expect(rent.showWhen).toEqual({ field: "intent", values: ["rent_out"] });
   });
 });

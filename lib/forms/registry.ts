@@ -728,13 +728,28 @@ export const FORM_DEFS: FormDef[] = [
       "The two-step owner qualification form: the property first, the callback second. Issues a BZ-SL / BZ-RL reference the owner can quote.",
     group: "sub",
     handler: "list_property",
-    control: "copy",
+    /*
+     * `labels`, not `copy`.
+     *
+     * The wizard draws its own inputs — two steps, a summary bar between them,
+     * pills whose options depend on the answer above — so its structure is not
+     * the manager's to move. Its *wording* is: every label, placeholder and
+     * option below is what /services/sell renders, and an edit here reaches the
+     * page on the next load. See `lib/forms/overrides.ts` for how.
+     *
+     * The strings are held to the page string-for-string by `registry.test.ts`.
+     * They were not, before: the manager offered "I want to", "Where is the
+     * property?" and "How soon?" against a page reading "I am looking to",
+     * "Location" and "How soon do you want to sell?" — six labels an editor
+     * could change and never find.
+     */
+    control: "labels",
     variant: "stacked",
     enquirySource: "list_property",
     headingSource: {
       pageKey: "sell",
       sectionKey: "form",
-      note: "Step headings, helper copy and the confirmation panel.",
+      note: "Step headings, helper copy, the consent line and the confirmation panel.",
     },
     copyFromPage: true,
     copy: copy({
@@ -747,54 +762,115 @@ export const FORM_DEFS: FormDef[] = [
         "Consented to contact by phone, WhatsApp and email.",
     }),
     fields: [
-      field("intent", "I want to", "chips", "intent", {
+      field("intent", "I am looking to", "chips", "intent", {
         required: true,
         options: options(["Sell", "sell"], ["Rent out", "rent_out"]),
       }),
-      field("location", "Where is the property?", "text", "custom", {
-        placeholder: "Community or building",
+      field("location", "Location", "text", "custom", {
+        placeholder: "Building, community or area",
         required: true,
         optionSource: "areas",
+        note: "The suggestions are a datalist — an owner whose building isn't on file still types it.",
       }),
-      field("category", "Category", "chips", "custom", {
+      field("category", "Category & type", "chips", "custom", {
         required: true,
         options: options(["Residential", "residential"], ["Commercial", "commercial"]),
+        note: "One heading covers this control and the property-type pills beneath it.",
       }),
-      field("property_type", "Property type", "select", "custom", {
+      /*
+       * One field, twelve options, six shown at a time.
+       *
+       * The Buy hero models its residential/commercial split as two fields
+       * sharing a label, because there an editor adding "Duplex" has to know
+       * which list they are in. Here the wizard swaps the pill row itself and
+       * the values are unique across both halves, so a second field would buy
+       * nothing and cost the editor a duplicate to keep in step.
+       */
+      field("property_type", "Property type", "chips", "custom", {
         required: true,
-        optionSource: "property_types",
+        options: options(
+          "Apartment",
+          "Villa",
+          "Townhouse",
+          "Penthouse",
+          "Land",
+          "Other",
+          "Office",
+          "Retail",
+          "Warehouse",
+          "Showroom",
+          "Full building",
+          "Plot",
+        ),
+        note: "The first six show under Residential, the last six under Commercial. The label is the pill row's screen-reader name — the visible heading is Category & type above. Option values are what the server validates, so only the wording moves.",
       }),
-      field("bedrooms", "Bedrooms", "select", "custom", {
+      field("bedrooms", "Bedrooms", "chips", "custom", {
+        required: true,
         options: options("Studio", "1", "2", "3", "4", "5", "6", "7", "8+"),
-        note: "Hidden for land and commercial plots.",
+        note: "Hidden for land, for \"Other\", and for every commercial type.",
       }),
       field("area_sqft", "Built-up area", "number", "custom", {
-        placeholder: "1,450",
+        placeholder: "0",
+        unit: "ft²",
         min: 100,
         max: 2_000_000,
+        width: "half",
       }),
       field("furnishing", "Furnishing", "select", "custom", {
+        placeholder: "Select",
+        width: "half",
         options: options(
           ["Unfurnished", "unfurnished"],
           ["Semi-furnished", "semi_furnished"],
           ["Fully furnished", "fully_furnished"],
         ),
       }),
-      field("urgency", "How soon?", "chips", "timeline", {
+      /*
+       * Two fields, one answer.
+       *
+       * The wizard asks the same question either way and files the same
+       * `timeline`, but the sentence has to agree with the intent chosen at the
+       * top — "sell" and "let" are not interchangeable to an owner. Splitting
+       * them on `showWhen` is the only way both sentences are editable; a
+       * single label would leave whichever branch the editor wasn't looking at
+       * silently stale.
+       */
+      field("urgency", "How soon do you want to sell?", "chips", "timeline", {
+        showWhen: { field: "intent", values: ["sell"] },
         options: options(
           ["This month", "this_month"],
           ["Within 2 months", "two_months"],
           ["Flexible", "flexible"],
         ),
       }),
-      fullName({ label: "Your name", placeholder: null, locked: true }),
+      field("urgency_rent_out", "How soon do you want it let?", "chips", "custom", {
+        showWhen: { field: "intent", values: ["rent_out"] },
+        options: options(
+          ["This month", "this_month"],
+          ["Within 2 months", "two_months"],
+          ["Flexible", "flexible"],
+        ),
+        note: "The same question as the one above, worded for a landlord. It files the same timeline — this row exists so both sentences can be edited.",
+      }),
+      fullName({
+        label: "Full name",
+        placeholder: "As it appears on the title deed",
+        locked: true,
+      }),
       field("mobile", "Mobile", "tel", "phone", {
-        placeholder: "50 123 4567",
+        placeholder: "50 000 0000",
         required: true,
         locked: true,
-        note: "UAE numbers only — validated against the national format.",
+        width: "half",
+        note: "UAE numbers only — validated against the national format. The +971 prefix is drawn by the component and is not copy.",
       }),
-      email({ required: true, locked: true }),
+      email({
+        label: "Email",
+        placeholder: "you@email.com",
+        required: true,
+        locked: true,
+        width: "half",
+      }),
       field("call_window", "Best time to call", "chips", "custom", {
         required: true,
         options: options(
@@ -803,9 +879,19 @@ export const FORM_DEFS: FormDef[] = [
           ["Evening", "evening"],
         ),
       }),
+      /*
+       * The label here is the row's NAME, not the sentence on the page.
+       *
+       * The visitor reads a paragraph of legal copy that Pages & blocks has
+       * always owned, and `copyFromPage` says so. Copying that paragraph in
+       * here as the label would put a second writable version of it a click
+       * away from the first, which is the one thing this flag exists to stop.
+       */
       field("consent", "Consent to be contacted", "checkbox", "consent", {
         required: true,
         locked: true,
+        copyFromPage: true,
+        note: "The sentence beside the checkbox is legal copy the page owns. Edit it in Pages & blocks; this row is here so the record is complete.",
       }),
     ],
   },

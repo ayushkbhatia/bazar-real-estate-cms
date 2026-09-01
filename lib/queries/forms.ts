@@ -23,9 +23,11 @@ import type { Database, Json } from "@/db/types";
 import {
   FORM_DEFS,
   defaultForm,
+  formOverrides,
   getFormDef,
   resolveForm,
   type FormCopy,
+  type FormOverrides,
   type FormDef,
   type FormFieldCondition,
   type FormFieldType,
@@ -257,6 +259,30 @@ export async function getForm(key: string): Promise<ResolvedForm> {
       localiseFields(fields.get(key) ?? null, locale),
     ) ?? fallback;
   return localiseResolved(resolved, locale);
+}
+
+/**
+ * A resolved form plus the wording an editor changed on it.
+ *
+ * For the bespoke components — `control: "labels"` — which keep their own
+ * translated catalogue and want the CMS only where it has something to say.
+ * See `lib/forms/overrides.ts` for why that is a diff rather than a handover.
+ *
+ * Both sides are folded to the same locale before comparing, which is the
+ * whole reason this lives next to `getForm` instead of at the call site: the
+ * fold is what makes an untouched Arabic label compare equal to itself.
+ */
+export async function getFormWithOverrides(
+  key: string,
+): Promise<{ form: ResolvedForm; overrides: FormOverrides }> {
+  const form = await getForm(key);
+  const base = defaultForm(key);
+  if (!base) return { form, overrides: {} };
+  const locale = await currentLocale();
+  return {
+    form,
+    overrides: formOverrides(form, localiseResolved(base, locale)),
+  };
 }
 
 /** Several at once, keyed by form key. */
