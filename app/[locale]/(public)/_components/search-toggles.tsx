@@ -55,7 +55,12 @@ export function SearchToggles({ showForm }: { showForm: boolean }) {
           {/* `shrink-0` as well as `basis-full`: flex-basis is a starting
               size, so on its own the line still shrank to sit beside the
               strips and shoved the map tools onto a row of their own. */}
-          <p className="basis-full shrink-0 text-[11.5px] text-bz-muted-2 leading-[1.5]">
+          {/* `bz-muted`, not `bz-muted-2`. At 11.5px the AA threshold is
+              4.5:1 and muted-2 is 2.71:1 on this background — it passed
+              unnoticed inside the drawer only because axe never scanned a
+              panel that opens on a click. Out here it is always on screen.
+              muted is 4.58:1. */}
+          <p className="basis-full shrink-0 text-[11.5px] text-bz-muted leading-[1.5]">
             {t("filters.completionHelp")}
           </p>
         </>
