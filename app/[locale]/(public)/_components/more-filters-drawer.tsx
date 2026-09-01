@@ -16,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { TENURES, FURNISHINGS } from "@/lib/filters/property";
-import { PROPERTY_FORMS } from "@/lib/schemas/property";
 import {
   areaUnitLabel,
   convertArea,
@@ -64,13 +63,16 @@ function inputToFt2Param(raw: string, unit: AreaUnit): string {
 }
 
 /**
- * `showForm` is the completion-form facet — off-plan / ready (new) / resale.
- * It renders on /buy/search only: buy is the umbrella that spans all three
- * forms, so it is the one surface where narrowing on that axis means anything.
- * /buy/ready and /buy/resale have already narrowed it from the route, and a
- * tenancy has no completion form at all (the DB keeps the column NULL there).
+ * The completion-form facet used to live in here behind a `showForm` prop. It
+ * is a visible toggle strip above the results now (`SearchToggles`), beside
+ * the segment — the two axes a search route leaves free, offered together
+ * rather than one in the open and one two clicks deep.
+ *
+ * Removed rather than left in place: two controls writing one `?form=` param
+ * can disagree on screen, and the drawer's own "N filters" badge counted a
+ * value the visitor could no longer see it holding.
  */
-export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) {
+export function MoreFiltersDrawer() {
   const router = useRouter();
   const sp = useSearchParams();
   const t = useTranslations("search");
@@ -85,7 +87,6 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
   const unit = prefs.area_unit;
 
   const initial = {
-    form: sp.get("form") ?? "",
     ft2_min: ft2ParamToInput(sp.get("ft2_min") ?? "", unit),
     ft2_max: ft2ParamToInput(sp.get("ft2_max") ?? "", unit),
     year_min: sp.get("year_min") ?? "",
@@ -118,7 +119,6 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
       if (v) params.set(k, v);
       else params.delete(k);
     }
-    setOrDelete("form", showForm ? state.form : "");
     setOrDelete("ft2_min", inputToFt2Param(state.ft2_min, unit));
     setOrDelete("ft2_max", inputToFt2Param(state.ft2_max, unit));
     setOrDelete("year_min", state.year_min);
@@ -138,7 +138,6 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
 
   function reset() {
     setState({
-      form: "",
       ft2_min: "",
       ft2_max: "",
       year_min: "",
@@ -151,7 +150,6 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
   }
 
   const activeCount =
-    (showForm && state.form ? 1 : 0) +
     (state.ft2_min ? 1 : 0) +
     (state.ft2_max ? 1 : 0) +
     (state.year_min ? 1 : 0) +
@@ -277,31 +275,6 @@ export function MoreFiltersDrawer({ showForm = false }: { showForm?: boolean }) 
               ))}
             </select>
           </div>
-
-          {/* Completion form — buy only, see the note on showForm */}
-          {showForm ? (
-            <div>
-              <Label htmlFor="form-pick">{t("filters.completion")}</Label>
-              <select
-                id="form-pick"
-                value={state.form}
-                onChange={(e) =>
-                  setState((s) => ({ ...s, form: e.target.value }))
-                }
-                className="mt-1.5 w-full h-9 px-3 rounded-md border border-bz-border bg-bz-bg text-[16px] md:text-[14px] focus:outline-none focus:border-bz-accent"
-              >
-                <option value="">{t("filters.any")}</option>
-                {PROPERTY_FORMS.map((f) => (
-                  <option key={f} value={f}>
-                    {t(`formOption.${f}`)}
-                  </option>
-                ))}
-              </select>
-              <p className="mt-1.5 text-[12px] text-bz-muted leading-relaxed">
-                {t("filters.completionHelp")}
-              </p>
-            </div>
-          ) : null}
 
           {/* Furnishing */}
           <div>
