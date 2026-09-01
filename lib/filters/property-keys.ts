@@ -11,6 +11,7 @@ export const FILTER_PARAM_KEYS = [
   "beds",
   "baths",
   "type",
+  "segment",
   "form",
   "price_min",
   "price_max",

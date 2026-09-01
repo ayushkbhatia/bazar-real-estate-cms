@@ -53,21 +53,21 @@ test("ready and resale render different h1s at distinct URLs", async ({
   expect(resaleH1).not.toBe(searchH1);
 });
 
-test("the Buy pill stays selected on the completion-form routes", async ({
+test("the completion-form routes carry the segment toggle, unset", async ({
   page,
 }) => {
+  // This used to assert the Buy pill of a four-mode strip. That strip is gone:
+  // the transaction is already fixed by the route the visitor arrived on, so
+  // the control above the results now filters the axis the route does NOT fix
+  // — residential or commercial. Neither is pressed until someone presses one,
+  // because "no filter" has to mean both.
   for (const { path } of ROUTES) {
     await page.goto(path);
-    const buy = page.getByRole("radio", { name: "Buy", exact: true });
-    // Exact-match pathname comparison left the whole strip unselected here.
-    await expect(buy, `Buy pill not checked on ${path}`).toHaveAttribute(
-      "aria-checked",
-      "true",
-    );
-    for (const other of ["Rent", "Off-plan", "Commercial"]) {
+    for (const name of ["Residential", "Commercial"]) {
       await expect(
-        page.getByRole("radio", { name: other, exact: true }),
-      ).toHaveAttribute("aria-checked", "false");
+        page.getByRole("button", { name, exact: true }),
+        `${name} toggle missing on ${path}`,
+      ).toHaveAttribute("aria-pressed", "false");
     }
   }
 });

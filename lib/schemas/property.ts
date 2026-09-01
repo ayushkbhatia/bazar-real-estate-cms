@@ -90,6 +90,36 @@ export const PROPERTY_TYPES = [
   "retail",
   "commercial_villa",
 ] as const;
+/**
+ * Residential or commercial — the BUILDING axis, and the second one a listing
+ * has.
+ *
+ * `mode` is the transaction: for sale, to let, off-plan. `segment` is what kind
+ * of building it is. They were conflated because `mode` carried a `commercial`
+ * value, which forced a commercial unit for rent to record one fact and drop
+ * the other, and which put "Commercial" on the search surfaces as a fourth
+ * alternative to Buy and Rent rather than as a filter across all of them.
+ *
+ * Not derived from `type`: that enum mixes the two axes — apartment, villa and
+ * townhouse beside office, retail and building — and `land` belongs to
+ * neither, so a derivation would be a guess with no way for an editor to
+ * correct it. See migration 0121.
+ */
+export const PROPERTY_SEGMENTS = ["residential", "commercial"] as const;
+export type PropertySegment = (typeof PROPERTY_SEGMENTS)[number];
+
+export const PROPERTY_SEGMENT_LABELS: Record<PropertySegment, string> = {
+  residential: "Residential",
+  commercial: "Commercial",
+};
+
+/** Operator-facing one-liners for the CMS picker. */
+export const PROPERTY_SEGMENT_HINTS: Record<PropertySegment, string> = {
+  residential: "Somewhere to live — apartments, villas, townhouses, penthouses.",
+  commercial:
+    "Somewhere to trade from — offices, retail units, whole buildings, warehouses.",
+};
+
 export const PROPERTY_STATUSES = [
   "draft",
   "in_review",
@@ -176,6 +206,10 @@ const propertyOverviewFields = z.object({
     .optional(),
   type: z.enum(PROPERTY_TYPES),
   mode: z.enum(PROPERTY_MODES),
+  /** Defaulted rather than required: the column is NOT NULL DEFAULT
+   *  'residential' (0121), so a payload that omits it is a row Postgres fills
+   *  in, not a row it rejects. */
+  segment: z.enum(PROPERTY_SEGMENTS).optional(),
   // Developer is a required section of the listing wizard. The column is
   // nullable at the DB layer (a fresh "create draft" has none), so we enforce
   // requiredness here — mirroring developmentEditSchema's developer_id.
@@ -343,6 +377,7 @@ export const propertyCreateSchema = z
     title: z.string().min(3, "Title is too short").max(160, "Title is too long"),
     type: z.enum(PROPERTY_TYPES),
     mode: z.enum(PROPERTY_MODES),
+    segment: z.enum(PROPERTY_SEGMENTS).optional(),
     price_aed: z
       .number({ message: "Price is required" })
       .positive("Price must be positive")

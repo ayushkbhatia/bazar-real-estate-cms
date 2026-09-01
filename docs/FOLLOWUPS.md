@@ -1308,3 +1308,17 @@ shows the trail.)
   `consent` namespace and the body does not — worth finding out which source
   it does come from before extracting, since a CMS-backed string wants a twin
   rather than a message key.
+
+- [catalogue] `lib/queries/area-inventory.ts` still splits the area guide's
+  bands with `neq("mode", "rent")` for sale and `eq("mode", "rent")` for
+  lettings. Since 0121 that sweeps commercial stock into the sale band on the
+  strength of the retired `mode = 'commercial'` value rather than the segment,
+  and a commercial unit *to let* now lands in the lettings band with no way to
+  tell it apart. Nothing renders wrong today — there are no published
+  commercial listings — but it wants the same `segment` parameter
+  `listAreaPins` and `listFeaturedByType` grew.
+
+- [catalogue] `lib/master-pages/search-headers.ts` still carries a
+  `match: { mode: "commercial" }` header for the retired `/commercial/search`
+  route. Harmless — nothing reads it now — but it is a CMS row an editor can
+  still open and edit to no effect.

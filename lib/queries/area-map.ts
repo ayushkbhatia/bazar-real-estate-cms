@@ -33,6 +33,7 @@ export type LngLat = { lng: number; lat: number };
 
 /** `properties.mode` — the listing bucket a surface is scoped to. */
 export type ListingMode = "buy" | "rent" | "off_plan" | "commercial";
+export type ListingSegment = "residential" | "commercial";
 
 export type AreaPin = {
   id: string;
@@ -231,15 +232,22 @@ export type AreaTally = {
  * the two are identical.
  */
 export function tallyAreaListings(
-  rows: { area_id: unknown; geo: unknown; mode?: unknown }[],
+  rows: { area_id: unknown; geo: unknown; mode?: unknown; segment?: unknown }[],
   mode?: ListingMode,
+  /**
+   * Residential / commercial (0121). Narrows the count the same way `mode`
+   * does, and composes with it: /commercial asks for the commercial segment
+   * across every transaction mode, because a commercial unit is for sale or to
+   * let like any other.
+   */
+  segment?: ListingSegment,
 ): AreaTally {
   const tally: AreaTally = { any: new Map(), inMode: new Map(), points: new Map() };
   for (const r of rows) {
     const aid = typeof r.area_id === "string" ? r.area_id : null;
     if (!aid) continue;
     tally.any.set(aid, (tally.any.get(aid) ?? 0) + 1);
-    if (!mode || r.mode === mode) {
+    if ((!mode || r.mode === mode) && (!segment || r.segment === segment)) {
       tally.inMode.set(aid, (tally.inMode.get(aid) ?? 0) + 1);
     }
     const pt = parseGeo(r.geo);
@@ -275,9 +283,9 @@ function seedStatsForSlug(slug: string): {
  */
 export async function listAreaPins(
   emirate: string = DEFAULT_EMIRATE,
-  opts: { mode?: ListingMode } = {},
+  opts: { mode?: ListingMode; segment?: ListingSegment } = {},
 ): Promise<AreaPin[]> {
-  const { mode } = opts;
+  const { mode, segment } = opts;
   if (!isSupabaseConfigured) return seedAreaPins(emirate, mode);
   try {
     const sb = createSupabasePublicClient();
@@ -307,7 +315,7 @@ export async function listAreaPins(
     const ids = areas.map((a) => a.id);
     const { data: props } = await sb
       .from("properties")
-      .select("area_id, geo, mode")
+      .select("area_id, geo, mode, segment")
       .eq("status", "published")
       .in("area_id", ids);
 
@@ -315,7 +323,7 @@ export async function listAreaPins(
     // AREA_CENTROIDS, areaTag() and seedStatsForSlug(), and folding it would
     // silently drop every pin's centroid and stats on /ar.
     const pinLocale = await currentLocale();
-    const tally = tallyAreaListings(props ?? [], mode);
+    const tally = tallyAreaListings(props ?? [], mode, segment);
 
     const pins: AreaPin[] = [];
     for (const a of areas) {
@@ -360,9 +368,11 @@ export async function listAreaListingDots(
     areaSlug?: string;
     /** Scope dots to one listing mode (e.g. "rent" for the /rent map). */
     mode?: ListingMode;
+    /** Scope dots to one segment (e.g. "commercial" for /commercial). */
+    segment?: ListingSegment;
   } = {},
 ): Promise<AreaDot[]> {
-  const { emirate = DEFAULT_EMIRATE, areaSlug, mode } = opts;
+  const { emirate = DEFAULT_EMIRATE, areaSlug, mode, segment } = opts;
   if (!isSupabaseConfigured) return [];
   try {
     const sb = createSupabasePublicClient();
@@ -401,6 +411,7 @@ export async function listAreaListingDots(
       .in("area_id", areaIds)
       .not("geo", "is", null);
     if (mode) query = query.eq("mode", mode);
+    if (segment) query = query.eq("segment", segment);
     const { data: props } = await query;
 
     const dots: AreaDot[] = [];

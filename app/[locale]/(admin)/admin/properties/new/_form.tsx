@@ -16,6 +16,8 @@ import {
   PROPERTY_FORM_LABELS,
   PROPERTY_MODE_LABELS,
   PROPERTY_MODES,
+  PROPERTY_SEGMENT_LABELS,
+  PROPERTY_SEGMENTS,
   PROPERTY_TYPES,
 } from "@/lib/schemas/property";
 import { Button } from "@/components/ui/button";
@@ -57,6 +59,9 @@ const DEFAULTS: PropertyCreateInput = {
   title: "",
   type: "apartment",
   mode: "buy",
+  // The catalogue is almost entirely residential, so this is the answer that
+  // is right without being touched — and the DB default behind it agrees.
+  segment: "residential",
   price_aed: 0,
   beds: 1,
   baths: 1,
@@ -82,6 +87,7 @@ export function NewPropertyForm() {
 
   const type = watch("type");
   const mode = watch("mode");
+  const segment = watch("segment") ?? "residential";
   const propertyForm = watch("property_form") ?? null;
   const showForm = isSaleMode(mode);
 
@@ -168,6 +174,29 @@ export function NewPropertyForm() {
             </Select>
             <FieldError
               message={errors.mode?.message ?? serverFieldErrors.mode}
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="segment">Segment</Label>
+            <Select
+              value={segment}
+              onValueChange={(v) =>
+                setValue("segment", v as PropertyCreateInput["segment"])
+              }
+            >
+              <SelectTrigger id="segment">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PROPERTY_SEGMENTS.map((seg) => (
+                  <SelectItem key={seg} value={seg}>
+                    {PROPERTY_SEGMENT_LABELS[seg]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FieldError
+              message={errors.segment?.message ?? serverFieldErrors.segment}
             />
           </div>
         </div>

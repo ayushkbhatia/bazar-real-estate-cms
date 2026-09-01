@@ -18,6 +18,9 @@ import {
   PROPERTY_FORM_LABELS,
   PROPERTY_MODE_LABELS,
   PROPERTY_MODES,
+  PROPERTY_SEGMENT_HINTS,
+  PROPERTY_SEGMENT_LABELS,
+  PROPERTY_SEGMENTS,
   PROPERTY_TYPES,
   TENURES,
   FURNISHINGS,
@@ -220,6 +223,10 @@ export function PropertyEditForm({
 
   const type = watch("type");
   const mode = watch("mode");
+  // Defaulted rather than required, so a row written before 0121 — or by any
+  // path that omits it — reads as residential here instead of as a blank
+  // trigger that saves back as one.
+  const segment = watch("segment") ?? "residential";
   const propertyForm = watch("property_form") ?? null;
   const showPropertyForm = isSaleMode(mode);
   const developerId = watch("developer_id") ?? "";
@@ -462,6 +469,38 @@ export function PropertyEditForm({
               </Select>
               <FieldError
                 message={errors.mode?.message ?? serverFieldErrors.mode}
+              />
+            </div>
+
+            {/* The building axis, which `mode` is not. A commercial unit is
+                for sale or to let like any other, so this sits beside Mode
+                rather than inside it — see migration 0121. */}
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="segment">Segment</Label>
+              <Select
+                value={segment}
+                onValueChange={(v) =>
+                  setValue("segment", v as PropertyEditInput["segment"], {
+                    shouldDirty: true,
+                  })
+                }
+              >
+                <SelectTrigger id="segment">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PROPERTY_SEGMENTS.map((seg) => (
+                    <SelectItem key={seg} value={seg}>
+                      {PROPERTY_SEGMENT_LABELS[seg]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[11.5px] text-bz-muted-2 leading-[1.5]">
+                {PROPERTY_SEGMENT_HINTS[segment]}
+              </p>
+              <FieldError
+                message={errors.segment?.message ?? serverFieldErrors.segment}
               />
             </div>
           </div>

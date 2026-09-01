@@ -29,7 +29,7 @@ import { ViewToggle } from "./view-toggle";
 import { resolveSearchView } from "./search-view";
 import { MoreFiltersDrawer } from "./more-filters-drawer";
 import { Pagination } from "./pagination";
-import { ModeSegmented } from "./mode-segmented";
+import { SegmentSegmented } from "./segment-segmented";
 import { DrawAreaTool } from "./draw-area-tool";
 import { CommuteTimeTool } from "./commute-time-tool";
 import { ListingCardPriced } from "./listing-card-priced";
@@ -217,6 +217,7 @@ export async function SearchList({
     beds: (count) => t("summary.beds", { count }),
     baths: (count) => t("summary.baths", { count }),
     type: (type) => t(`typePlural.${type}`),
+    segment: (segment) => t(`segment.${segment}`),
     form: (form) => t(`formOption.${form}`),
     inArea: (area) => t("summary.inArea", { area }),
   };
@@ -251,7 +252,7 @@ export async function SearchList({
       <FilterBar mode={mode} areas={areas} />
 
       <section className="px-4 md:px-12 pt-4 md:pt-6 pb-3 flex items-center gap-3 flex-wrap border-b border-bz-border">
-        <ModeSegmented />
+        <SegmentSegmented />
         <span className="text-bz-muted text-[11px] hidden md:inline">·</span>
         <DrawAreaTool />
         <CommuteTimeTool />

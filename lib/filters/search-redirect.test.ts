@@ -81,17 +81,42 @@ describe("legacyQueryRedirect", () => {
     expect(legacyQueryRedirect("/off-plan", qs("beds=2"))).toBe(
       "/off-plan/search?beds=2",
     );
-    // /commercial joined the landings when its search moved to a sub-route;
-    // the home hero's Commercial tab still emits /commercial?type=office.
+    // /commercial is the exception since 0121: commercial stopped being a
+    // transaction mode, so its deep-links land on the segment filter rather
+    // than on a search route of their own. One hop, not two — the home hero's
+    // Commercial tab still emits /commercial?type=office.
     expect(legacyQueryRedirect("/commercial", qs("type=office"))).toBe(
-      "/commercial/search?type=office",
+      "/buy/search?type=office&segment=commercial",
     );
   });
 
   it("does not touch the search routes themselves", () => {
     // Otherwise /buy/search?beds=2 would redirect to itself forever.
     expect(legacyQueryRedirect("/buy/search", qs("beds=2"))).toBeNull();
-    expect(legacyQueryRedirect("/commercial/search", qs("beds=2"))).toBeNull();
+    expect(legacyQueryRedirect("/rent/search", qs("beds=2"))).toBeNull();
+    expect(legacyQueryRedirect("/off-plan/search", qs("beds=2"))).toBeNull();
+  });
+
+  it("retires /commercial/search onto the segment filter", () => {
+    // The one search route that DOES move, and the reason it moves: a
+    // commercial unit is for sale or to let like any other, so the segment is
+    // a filter across every mode rather than a fourth mode of its own.
+    expect(legacyQueryRedirect("/commercial/search", qs("beds=2"))).toBe(
+      "/buy/search?beds=2&segment=commercial",
+    );
+    // Bare, with nothing to carry over.
+    expect(legacyQueryRedirect("/commercial/search", qs(""))).toBe(
+      "/buy/search?segment=commercial",
+    );
+    // A contradictory hand-written segment loses to the path, which is the
+    // half that meant something.
+    expect(
+      legacyQueryRedirect("/commercial/search", qs("segment=residential")),
+    ).toBe("/buy/search?segment=commercial");
+    // And it lands somewhere that does not redirect again.
+    expect(
+      legacyQueryRedirect("/buy/search", qs("segment=commercial")),
+    ).toBeNull();
   });
 
   it("leaves a bare landing on the landing", () => {

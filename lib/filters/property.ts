@@ -5,7 +5,11 @@ import {
   parseAsStringEnum,
   parseAsBoolean,
 } from "nuqs/server";
-import { PROPERTY_FORMS, PROPERTY_TYPES } from "@/lib/schemas/property";
+import {
+  PROPERTY_FORMS,
+  PROPERTY_SEGMENTS,
+  PROPERTY_TYPES,
+} from "@/lib/schemas/property";
 
 export const TENURES = ["freehold", "leasehold"] as const;
 export const FURNISHINGS = ["unfurnished", "semi", "fully"] as const;
@@ -29,6 +33,9 @@ export const filterParsers = {
   beds: parseAsInteger,
   baths: parseAsInteger,
   type: parseAsStringEnum([...PROPERTY_TYPES]),
+  /** Residential / commercial — the segmented control above the results.
+   *  Absent means both, which is what an unfiltered search should show. */
+  segment: parseAsStringEnum([...PROPERTY_SEGMENTS]),
   /** Completion form — off-plan / ready (new) / resale. Only meaningful on the
    *  sale surfaces; /buy/ready and /buy/resale set it from the route instead,
    *  and SearchList ignores it outside mode = buy. */
@@ -60,6 +67,7 @@ export type PropertyFilters = {
   beds: number | null;
   baths: number | null;
   type: (typeof PROPERTY_TYPES)[number] | null;
+  segment: (typeof PROPERTY_SEGMENTS)[number] | null;
   form: (typeof PROPERTY_FORMS)[number] | null;
   price_min: number | null;
   price_max: number | null;
@@ -82,6 +90,7 @@ const EMPTY: PropertyFilters = {
   beds: null,
   baths: null,
   type: null,
+  segment: null,
   form: null,
   price_min: null,
   price_max: null,
@@ -118,6 +127,13 @@ export function parseFilters(input: Record<string, unknown>): PropertyFilters {
 
   if (typeof input.type === "string" && (PROPERTY_TYPES as readonly string[]).includes(input.type)) {
     out.type = input.type as PropertyFilters["type"];
+  }
+
+  if (
+    typeof input.segment === "string" &&
+    (PROPERTY_SEGMENTS as readonly string[]).includes(input.segment)
+  ) {
+    out.segment = input.segment as PropertyFilters["segment"];
   }
 
   if (
@@ -226,6 +242,7 @@ export type FilterSummaryLabels = {
   beds: (count: number) => string;
   baths: (count: number) => string;
   type: (t: NonNullable<PropertyFilters["type"]>) => string;
+  segment: (s: NonNullable<PropertyFilters["segment"]>) => string;
   form: (f: NonNullable<PropertyFilters["form"]>) => string;
   inArea: (area: string) => string;
 };
@@ -234,6 +251,7 @@ export const ENGLISH_SUMMARY_LABELS: FilterSummaryLabels = {
   beds: (n) => `${n}+ ${n === 1 ? "bed" : "beds"}`,
   baths: (n) => `${n}+ ${n === 1 ? "bath" : "baths"}`,
   type: humanType,
+  segment: humanSegment,
   form: humanForm,
   inArea: (area) => `in ${area}`,
 };
@@ -249,6 +267,7 @@ export function describeFilters(
   if (f.beds != null) parts.push(labels.beds(f.beds));
   if (f.baths != null) parts.push(labels.baths(f.baths));
   if (f.type) parts.push(labels.type(f.type));
+  if (f.segment) parts.push(labels.segment(f.segment));
   if (f.form) parts.push(labels.form(f.form));
   if (areaName) parts.push(labels.inArea(areaName));
   else if (f.area) parts.push(labels.inArea(f.area));
@@ -258,6 +277,10 @@ export function describeFilters(
     parts.push(`AED ${min}–${max}`);
   }
   return parts.join(" · ");
+}
+
+function humanSegment(s: NonNullable<PropertyFilters["segment"]>): string {
+  return s === "commercial" ? "Commercial" : "Residential";
 }
 
 function humanForm(f: NonNullable<PropertyFilters["form"]>): string {

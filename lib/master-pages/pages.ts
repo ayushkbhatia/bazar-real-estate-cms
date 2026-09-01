@@ -705,7 +705,10 @@ const COMMERCIAL_PROP_TYPE_ITEMS = COMMERCIAL_PROP_TYPE_COPY.map(
     name,
     desc,
     cta: `Browse ${name.toLowerCase()}`,
-    href: `/commercial/search?type=${type}`,
+    // `/commercial/search` is retired — the segment is a filter now, and this
+    // is the URL it redirects to. Pointed straight at it so the tiles don't
+    // spend a hop. See lib/filters/search-redirect.ts.
+    href: `/buy/search?segment=commercial&type=${type}`,
     ...propTypeImageDefaults(name),
   }),
 );

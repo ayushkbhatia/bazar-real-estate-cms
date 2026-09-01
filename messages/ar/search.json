@@ -92,13 +92,6 @@
     "semi": "شبه مفروش",
     "unfurnished": "غير مفروش"
   },
-  "mode": {
-    "buy": "شراء",
-    "commercial": "تجاري",
-    "label": "وضع البحث",
-    "off_plan": "على الخارطة",
-    "rent": "الإيجار"
-  },
   "pagination": {
     "label": "ترقيم الصفحات",
     "next": "الصفحة التالية",
@@ -107,6 +100,11 @@
   "results": {
     "none": "0 عقار",
     "range": "{first}–{last} من {total} عقار"
+  },
+  "segment": {
+    "commercial": "تجاري",
+    "label": "نوع العقار",
+    "residential": "سكني"
   },
   "sort": {
     "area_desc": "الأكبر مساحة أولاً",

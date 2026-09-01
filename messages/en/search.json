@@ -92,13 +92,6 @@
     "semi": "Semi-furnished",
     "unfurnished": "Unfurnished"
   },
-  "mode": {
-    "buy": "Buy",
-    "commercial": "Commercial",
-    "label": "Search mode",
-    "off_plan": "Off-plan",
-    "rent": "Rent"
-  },
   "pagination": {
     "label": "Pagination",
     "next": "Next page",
@@ -107,6 +100,11 @@
   "results": {
     "none": "0 properties",
     "range": "{first}–{last} of {total} properties"
+  },
+  "segment": {
+    "commercial": "Commercial",
+    "label": "Property segment",
+    "residential": "Residential"
   },
   "sort": {
     "area_desc": "Largest first",
