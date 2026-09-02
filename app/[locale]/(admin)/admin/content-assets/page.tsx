@@ -74,6 +74,8 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
   const view: View =
     raw === "trash" ? "trash" : raw === "system" ? "system" : "outreach";
 
+  const systemView = view === "system";
+
   const [rows, system, trash] = await Promise.all([
     view === "trash"
       ? listContentAssets({ trashed: true })
@@ -90,7 +92,7 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
       title="Content assets"
       breadcrumbs="Content · Assets"
       primary={
-        view === "system" ? undefined : (
+        systemView ? undefined : (
           <Button asChild>
             <Link href="/admin/content-assets/new">
               <Plus size={14} strokeWidth={1.8} />
@@ -102,7 +104,7 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
     >
       <div className="flex flex-col gap-6">
         <p className="text-[13px] text-bz-muted max-w-[70ch]">
-          {view === "system" ? (
+          {systemView ? (
             <>
               The four emails Bazar sends on its own, with no advisor
               involved. Each has a built-in version that sends today; a
@@ -169,7 +171,7 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
             })}
           </div>
           <div className="text-[13px] text-bz-muted">
-            {view === "system" ? (
+            {systemView ? (
               publishedSystem === 0 ? (
                 "All four sending Bazar's built-in wording"
               ) : (
@@ -185,33 +187,37 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
         </div>
 
         <div className="bg-bz-surface border border-bz-border rounded-lg overflow-x-auto">
-          <Table>
+          <Table className={cn(systemView && "table-fixed min-w-[860px]")}>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[42%]">
-                  {view === "system" ? "Email" : "Asset"}
+                <TableHead className={systemView ? "w-[28%]" : "w-[42%]"}>
+                  {systemView ? "Email" : "Asset"}
+                </TableHead>
+                <TableHead className={cn(systemView && "w-[34%]")}>
+                  {systemView ? "Sends when" : "Channel"}
+                </TableHead>
+                {systemView ? null : <TableHead>Category</TableHead>}
+                <TableHead className={cn(systemView && "w-[92px]")}>
+                  Status
                 </TableHead>
                 <TableHead>
-                  {view === "system" ? "Sends when" : "Channel"}
+                  {systemView ? "Currently sending" : "Follows with"}
                 </TableHead>
-                {view === "system" ? null : <TableHead>Category</TableHead>}
-                <TableHead>Status</TableHead>
-                <TableHead>
-                  {view === "system" ? "Currently sending" : "Follows with"}
+                <TableHead className={cn("text-end", systemView && "w-[88px]")}>
+                  Actions
                 </TableHead>
-                <TableHead className="text-end">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {rows.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={view === "system" ? 5 : 6}
+                    colSpan={systemView ? 5 : 6}
                     className="text-center py-16 text-bz-muted"
                   >
                     {view === "trash" ? (
                       "Trash is empty. Assets you delete land here first."
-                    ) : view === "system" ? (
+                    ) : systemView ? (
                       "No system emails found — migration 0117 seeds them."
                     ) : (
                       <>
@@ -237,7 +243,7 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
                     : null;
                   return (
                     <TableRow key={row.id}>
-                      <TableCell>
+                      <TableCell className={cn(systemView && "align-top")}>
                         <Link
                           href={`/admin/content-assets/${row.id}`}
                           className="block hover:text-bz-accent transition-colors"
@@ -250,24 +256,33 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
                           </div>
                         </Link>
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                        className={cn(
+                          systemView && "align-top whitespace-normal",
+                        )}
+                      >
                         {def ? (
-                          <span className="text-[12px] text-bz-ink-2 block max-w-[40ch]">
+                          <span className="text-[12px] text-bz-ink-2 block leading-snug">
                             {def.trigger}
                           </span>
                         ) : (
                           <KindPill kind={row.kind} />
                         )}
                       </TableCell>
-                      {view === "system" ? null : (
+                      {systemView ? null : (
                         <TableCell className="text-bz-ink-2 text-[12.5px] capitalize">
                           {row.category}
                         </TableCell>
                       )}
-                      <TableCell>
+                      <TableCell className={cn(systemView && "align-top")}>
                         <StatusPill status={row.status} />
                       </TableCell>
-                      <TableCell className="text-[12px] text-bz-muted">
+                      <TableCell
+                        className={cn(
+                          "text-[12px] text-bz-muted",
+                          systemView && "align-top whitespace-normal",
+                        )}
+                      >
                         {def ? (
                           row.status === "published" ? (
                             <span className="text-bz-ink-2">Your wording</span>
@@ -288,7 +303,9 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
                           "—"
                         )}
                       </TableCell>
-                      <TableCell className="text-end">
+                      <TableCell
+                        className={cn("text-end", systemView && "align-top")}
+                      >
                         <AssetRowActions
                           id={row.id}
                           name={row.name}
