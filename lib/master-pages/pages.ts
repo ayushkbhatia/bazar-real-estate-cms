@@ -1129,13 +1129,43 @@ const OFF_PLAN: MasterPageDef = {
       key: "map",
       label: "Map explorer",
       description:
-        "Map of off-plan projects by community, and the per-area project rails beneath it.",
+        "Map of off-plan projects by community, and the single project rail beneath it.",
       dataNote:
-        "Pins and project cards come from published developments — an area's rail fills itself as projects are published to it. The copy and the two rail settings below are what's editable here.",
+        "Pins and project cards come from published developments — the rail fills itself as projects are published, and an area chip filters it. The copy, the area order and the rail settings below are what's editable here.",
       fields: [
         eyebrow(),
         heading(),
         body({ max: 400 }),
+        text("all_label", "Rail heading", {
+          max: 60,
+          help: 'Heading over the rail before an area is picked, e.g. "Across Abu Dhabi".',
+        }),
+        // Required, unlike the per-area label below: blanked, the rail would
+        // fall back to "View all in <heading>" and read "View all in Across
+        // Abu Dhabi". There is always a sensible label for this one.
+        text("all_cta_label", "Rail link label", {
+          max: 60,
+          help: "Link beside that heading, pointing at every off-plan result.",
+        }),
+        {
+          key: "areas",
+          label: "Area order",
+          kind: "list",
+          itemLabel: "area",
+          max: 20,
+          seedKey: "areas",
+          help: "Pin the communities that should lead, in order. Anything you don't list still appears, behind them — switch a row off to hide that community from the map and the rail entirely.",
+          fields: [
+            toggle("enabled", "Show this area"),
+            {
+              key: "slug",
+              label: "Area",
+              kind: "select",
+              optionsKey: "areas",
+              placeholder: "Choose an area",
+            },
+          ],
+        },
         text("group_limit", "Projects per area", {
           max: 3,
           // A number the renderer parses. `numeral-drift` is script-blind, so
@@ -1155,6 +1185,12 @@ const OFF_PLAN: MasterPageDef = {
         heading: "Explore new projects across Abu Dhabi.",
         body:
           "Zoom into a community and tap a project to open its details — or pick an area below to filter the launches.",
+        all_label: "Across Abu Dhabi",
+        all_cta_label: "View every launch",
+        // Empty on purpose: areas order themselves busiest-first until someone
+        // says otherwise, and an area published tomorrow appears without
+        // anyone having to add it here.
+        areas: [],
         // Blank on purpose: every project an area has published keeps showing,
         // exactly as before the rail existed. The cap is there for whoever
         // wants one, not imposed on a page that never had one.

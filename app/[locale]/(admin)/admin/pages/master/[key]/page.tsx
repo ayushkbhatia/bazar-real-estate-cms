@@ -9,6 +9,7 @@ import { getMasterPage, isMasterPageKey } from "@/lib/master-pages";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
+import { buildOffplanMap } from "@/lib/queries/offplan-map";
 import { listPropertyOptions } from "@/lib/queries/featured-properties";
 import {
   HOME_AREA_TILE_COUNT,
@@ -114,14 +115,25 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
     ...areaSeed.filter((a) => !MARQUEE_SLUGS.includes(a.slug)),
   ].slice(0, AREAS_CARD_COUNT);
 
+  // New Projects' "Area order" list is the map section's chip row, so its
+  // seed is the areas that actually have published off-plan projects, in the
+  // order the page puts them in today — not the areas index. Coords are
+  // irrelevant to the grouping, so the pure transform runs without them.
+  const offplanAreaSeed = buildOffplanMap(developments).groups.flatMap((g) => {
+    const area = bySlug.get(g.slug);
+    return area ? [area] : [];
+  });
+
   const seeds: Seeds = {
     areas: {
       options: areaSeed,
       current:
         key === "areas"
           ? marqueeSeed
-          : // LocationBrowsing renders the first 8 areas.
-            areaSeed.slice(0, HOME_AREA_TILE_COUNT),
+          : key === "off-plan"
+            ? offplanAreaSeed
+            : // LocationBrowsing renders the first 8 areas.
+              areaSeed.slice(0, HOME_AREA_TILE_COUNT),
     },
     developments: {
       // Sorted by name for the picker; only published projects are offered,

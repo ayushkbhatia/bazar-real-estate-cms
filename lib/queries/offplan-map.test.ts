@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { buildOffplanMap, parseGroupLimit } from "./offplan-map";
+import {
+  applyOffplanAreaOrder,
+  buildOffplanMap,
+  offplanRailItems,
+  parseGroupLimit,
+} from "./offplan-map";
 import type { DevelopmentIndexRow } from "./developments";
 
 /** Minimal published-development row for the pure transform. */
@@ -218,5 +223,129 @@ describe("parseGroupLimit", () => {
         `${JSON.stringify(bad)} should mean no cap`,
       ).toBeNull();
     }
+  });
+});
+
+
+describe("applyOffplanAreaOrder", () => {
+  const REEM = { name: "Al Reem Island", slug: "al-reem-island" };
+  const rows = [
+    dev({ id: "1", slug: "bulgari", name: "Bulgari", area: SAADIYAT }),
+    dev({ id: "2", slug: "mandarin", name: "Mandarin", area: SAADIYAT }),
+    dev({ id: "3", slug: "solaya", name: "Solaya", area: YAS }),
+    dev({ id: "4", slug: "renad", name: "Renad", area: REEM }),
+  ];
+  const built = buildOffplanMap(rows);
+
+  it("leaves the automatic order alone when nothing is curated", () => {
+    // Busiest first, then alphabetical — publishing into a quiet area is the
+    // only thing that re-shuffles it, which is exactly what curation fixes.
+    expect(applyOffplanAreaOrder(built, []).groups.map((g) => g.slug)).toEqual([
+      "saadiyat-island",
+      "al-reem-island",
+      "yas-island",
+    ]);
+  });
+
+  it("puts the chips in the rail's order even with nothing curated", () => {
+    // `buildOffplanMap` emits pins in the order areas were first seen, which
+    // is published-at order — so the chip row and the rail disagreed. With one
+    // rail the chips ARE the visible area order, so they have to match.
+    expect(built.pins.map((p) => p.slug)).toEqual([
+      "saadiyat-island",
+      "yas-island",
+      "al-reem-island",
+    ]);
+    expect(applyOffplanAreaOrder(built, []).pins.map((p) => p.slug)).toEqual([
+      "saadiyat-island",
+      "al-reem-island",
+      "yas-island",
+    ]);
+  });
+
+  it("leads with the curated areas, in the order they were picked", () => {
+    const out = applyOffplanAreaOrder(built, [
+      { slug: "yas-island", enabled: true },
+    ]);
+    expect(out.groups.map((g) => g.slug)).toEqual([
+      "yas-island",
+      // Un-curated areas keep the automatic order behind the picks, so a
+      // community published tomorrow shows up without anyone editing the list.
+      "saadiyat-island",
+      "al-reem-island",
+    ]);
+  });
+
+  it("drops an area only when it is explicitly switched off", () => {
+    const out = applyOffplanAreaOrder(built, [
+      { slug: "saadiyat-island", enabled: false },
+    ]);
+    expect(out.groups.map((g) => g.slug)).toEqual([
+      "al-reem-island",
+      "yas-island",
+    ]);
+    // Hiding an area has to hide it on the map too — a chip that flies the
+    // camera to a community with no cards behind it is worse than no chip.
+    expect(out.pins.map((p) => p.slug)).not.toContain("saadiyat-island");
+    expect(out.dots.map((d) => d.slug)).toEqual(["solaya", "renad"]);
+  });
+
+  it("lets a switched-off row beat a stale position above it", () => {
+    const out = applyOffplanAreaOrder(built, [
+      { slug: "yas-island", enabled: true },
+      { slug: "yas-island", enabled: false },
+    ]);
+    expect(out.groups.map((g) => g.slug)).not.toContain("yas-island");
+  });
+
+  it("orders the chips the way it orders the rail", () => {
+    const out = applyOffplanAreaOrder(built, [
+      { slug: "al-reem-island", enabled: true },
+    ]);
+    expect(out.pins.map((p) => p.slug)).toEqual(
+      out.groups.map((g) => g.slug),
+    );
+  });
+
+  it("ignores a pick that no longer resolves", () => {
+    const out = applyOffplanAreaOrder(built, [{ slug: "atlantis", enabled: true }]);
+    expect(out.groups.map((g) => g.slug)).toEqual([
+      "saadiyat-island",
+      "al-reem-island",
+      "yas-island",
+    ]);
+  });
+
+  it("keeps the interest form's project picker whole", () => {
+    // Curating the map is a display choice; a lead must still be able to name
+    // a project whose area was hidden.
+    const out = applyOffplanAreaOrder(built, [
+      { slug: "saadiyat-island", enabled: false },
+    ]);
+    expect(out.options).toHaveLength(4);
+  });
+});
+
+describe("offplanRailItems", () => {
+  const rows = [
+    dev({ id: "1", slug: "bulgari", name: "Bulgari", area: SAADIYAT }),
+    dev({ id: "2", slug: "mandarin", name: "Mandarin", area: SAADIYAT }),
+    dev({ id: "3", slug: "solaya", name: "Solaya", area: YAS }),
+  ];
+  const { groups } = buildOffplanMap(rows);
+
+  it("flattens every project once, in area order", () => {
+    // One rail, not one per area — a project rendered under its area AND in an
+    // all-areas rail would double the section's server-rendered HTML.
+    expect(offplanRailItems(groups, null)).toEqual([
+      { development: rows[0], areaSlug: "saadiyat-island" },
+      { development: rows[1], areaSlug: "saadiyat-island" },
+      { development: rows[2], areaSlug: "yas-island" },
+    ]);
+  });
+
+  it("applies the per-area cap, not a cap on the rail", () => {
+    const items = offplanRailItems(groups, 1);
+    expect(items.map((i) => i.development.slug)).toEqual(["bulgari", "solaya"]);
   });
 });
