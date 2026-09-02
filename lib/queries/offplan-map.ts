@@ -234,3 +234,101 @@ export function parseGroupLimit(
   const n = Number(trimmed);
   return Number.isSafeInteger(n) && n > 0 ? n : null;
 }
+
+/**
+ * One curated entry from the "Area order" list on the New Projects master
+ * page. Values arrive from the CMS as loose JSON, hence the `unknown`s.
+ */
+export type OffplanAreaPick = { slug?: unknown; enabled?: unknown };
+
+/**
+ * Apply the editor's curated area order to a built map.
+ *
+ * Left alone, areas are ordered busiest-first — which means publishing one
+ * project into a quiet community re-shuffles the whole section. The list on
+ * the master page pins the order instead: picked areas lead, in the order
+ * they were picked, and everything else keeps the automatic order behind
+ * them. An area is only ever *dropped* by being picked and switched off, so
+ * a project published into a community nobody has curated still appears.
+ *
+ * Pins and dots are filtered to match the surviving groups — hiding an area
+ * has to hide it on the map too, or its chip would fly the camera to a
+ * community with no cards behind it.
+ */
+export function applyOffplanAreaOrder(
+  data: OffplanMapData,
+  picks: OffplanAreaPick[],
+): OffplanMapData {
+  const hidden = new Set<string>();
+  const order: string[] = [];
+  for (const pick of picks) {
+    const slug = typeof pick.slug === "string" ? pick.slug : "";
+    if (!slug) continue;
+    if (pick.enabled === false) hidden.add(slug);
+    else if (!order.includes(slug)) order.push(slug);
+  }
+  // A slug listed twice, once off, stays off: the explicit hide wins over the
+  // position, so an editor who toggles a row can't be undone by a stale
+  // duplicate above it.
+  const bySlug = new Map(data.groups.map((g) => [g.slug, g]));
+  const picked = order
+    .filter((slug) => !hidden.has(slug))
+    .flatMap((slug) => {
+      const group = bySlug.get(slug);
+      return group ? [group] : [];
+    });
+  const pickedSlugs = new Set(picked.map((g) => g.slug));
+  const rest = data.groups.filter(
+    (g) => !pickedSlugs.has(g.slug) && !hidden.has(g.slug),
+  );
+  const groups = [...picked, ...rest];
+
+  const visibleAreas = new Set(groups.map((g) => g.slug));
+  const visibleProjects = new Set(
+    groups.flatMap((g) => g.projects.map((d) => d.slug)),
+  );
+  // Pins follow the group order, curated or not. `buildOffplanMap` pushes them
+  // in the order areas were first seen (published-at desc), which is neither
+  // the rail's order nor any order a reader can name — and now that the rail
+  // is one row the chips ARE the visible area order, so the two have to agree.
+  const rank = new Map(groups.map((g, i) => [g.slug, i]));
+  const pins = data.pins
+    .filter((p) => visibleAreas.has(p.slug))
+    .sort((a, b) => (rank.get(a.slug) ?? 0) - (rank.get(b.slug) ?? 0));
+
+  return {
+    ...data,
+    groups,
+    pins,
+    dots: data.dots.filter((d) => visibleProjects.has(d.slug)),
+    // `options` is the interest form's project picker, not a map surface —
+    // curating the map must not shrink the list of projects a lead can name.
+    options: data.options,
+  };
+}
+
+/** One card on the rail, tagged with the area it belongs to. */
+export type OffplanRailItem = {
+  development: DevelopmentIndexRow;
+  areaSlug: string;
+};
+
+/**
+ * Every project that belongs on the rail, in area order, capped per area.
+ *
+ * The section renders ONE rail rather than one per area: an area is a filter
+ * over it, not a section of its own. So each project is flattened out exactly
+ * once — rendering a card per area *and* a card in an "all areas" rail would
+ * double the server-rendered HTML for no gain.
+ */
+export function offplanRailItems(
+  groups: OffplanAreaGroup[],
+  limit: number | null,
+): OffplanRailItem[] {
+  return groups.flatMap((g) =>
+    (limit ? g.projects.slice(0, limit) : g.projects).map((d) => ({
+      development: d,
+      areaSlug: g.slug,
+    })),
+  );
+}

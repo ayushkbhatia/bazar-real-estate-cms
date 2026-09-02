@@ -15167,6 +15167,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T10:26:22.472Z"
   },
+  "View every launch": {
+    "ar": "عرض جميع الإطلاقات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-02T00:00:00.000Z"
+  },
   "View off-plan apartments": {
     "ar": "عرض الشقق على الخارطة",
     "by": "machine",

@@ -1,15 +1,20 @@
 "use client";
 
 /**
- * One area's projects, as a horizontal rail.
+ * The New Projects rail — one horizontal row of project cards, whatever the
+ * catalogue does.
  *
- * The area groups under the New Projects map used to be open-ended grids: an
- * area with thirty published projects rendered thirty cards stacked three to a
- * row, and four such areas buried the rest of the page. A rail keeps every
- * area to a single row whatever its count — three cards on desktop, two on
- * tablet, one on a phone — and moves through them a viewport at a time.
+ * The area groups under the map used to be open-ended grids, then one rail per
+ * area. Both grew with the catalogue: eleven areas meant eleven rails and
+ * ~8,700px of page, six of them holding a single card in a three-column-wide
+ * empty row. There is now exactly ONE rail, and an area is a filter over it —
+ * so the section's height is fixed no matter how many communities publish.
  *
- * The cards themselves are rendered on the server and handed in as nodes:
+ * Filtering hides cards rather than dropping them: every project link stays in
+ * the DOM and stays crawlable, and switching areas costs no re-render of the
+ * server-rendered card bodies.
+ *
+ * Those bodies are rendered on the server and handed in as nodes:
  * `DevelopmentCard` reaches into server-only query code, so this island owns
  * the interaction and nothing else. See the note in offplan-map-explorer.tsx.
  */
@@ -25,16 +30,40 @@ import {
 } from "@/lib/dom/inline-scroll";
 import { useIsRtl } from "@/lib/dom/use-is-rtl";
 
+/** One card on the rail. */
+export type ProjectCarouselItem = {
+  /**
+   * Stable identity — the project's id. Keyed on it, a card's DOM survives a
+   * change of filter instead of being torn down and rebuilt.
+   */
+  key: string;
+  /** The server-rendered `DevelopmentCard`. */
+  node: React.ReactNode;
+  /**
+   * Filtered out of the current view. The card stays in the DOM (display:none)
+   * so its link is still crawlable and still there when the filter clears.
+   */
+  hidden?: boolean;
+};
+
 export type ProjectCarouselProps = {
-  /** Area name, used as the group heading and the rail's accessible name. */
+  /**
+   * Rail heading — the selected area's name, or the all-areas label when
+   * nothing is selected. Also the rail's accessible name.
+   */
   name: string;
-  /** Total published projects in this area — not the number of cards shown. */
+  /** Published projects behind the heading — not the number of cards shown. */
   count: number;
-  /** Server-rendered `DevelopmentCard`s, one node per project. */
-  items: React.ReactNode[];
-  /** Where "view all" points; omitted when the area has no search route. */
+  items: ProjectCarouselItem[];
+  /** Where "view all" points; omitted when there is no search route for it. */
   viewAllHref?: string | null;
   viewAllLabel?: string | null;
+  /**
+   * Changes whenever the rail's contents change (i.e. the selected area).
+   * The rail rewinds to its first card, because leaving it parked three cards
+   * into the previous area shows a filter that looks empty.
+   */
+  resetKey?: string | null;
 };
 
 export function ProjectCarousel({
@@ -43,6 +72,7 @@ export function ProjectCarousel({
   items,
   viewAllHref,
   viewAllLabel,
+  resetKey = null,
 }: ProjectCarouselProps) {
   const trackRef = React.useRef<HTMLDivElement | null>(null);
   // All three start false and are corrected on mount: before layout we don't
@@ -86,6 +116,21 @@ export function ProjectCarousel({
       observer?.disconnect();
     };
   }, [items.length, measure]);
+
+  // Rewind on a filter change. Hiding cards shortens the track, so a rail left
+  // mid-scroll can land past the end of the new selection and read as empty.
+  // Not on first mount: `resetKey` starts null and the rail starts at 0 anyway.
+  const mounted = React.useRef(false);
+  React.useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    const el = trackRef.current;
+    if (!el) return;
+    el.scrollLeft = 0;
+    measure();
+  }, [resetKey, measure]);
 
   /** One viewport of the rail — exactly three cards on desktop, one on a phone. */
   const page = (direction: 1 | -1) => {
@@ -209,8 +254,14 @@ export function ProjectCarousel({
           "[&>*]:w-full sm:[&>*]:w-[calc((100%-1.5rem)/2)] lg:[&>*]:w-[calc((100%-3rem)/3)]",
         ].join(" ")}
       >
-        {items.map((card, i) => (
-          <div key={i}>{card}</div>
+        {items.map((item) => (
+          // `hidden` is both attribute and class: the attribute takes it out of
+          // the accessibility tree, the utility guarantees the display:none a
+          // flex child needs (a bare [hidden] is easy for a later flex rule to
+          // out-specify, and a half-hidden card would still widen the track).
+          <div key={item.key} hidden={item.hidden} className={item.hidden ? "hidden" : undefined}>
+            {item.node}
+          </div>
         ))}
       </div>
     </div>

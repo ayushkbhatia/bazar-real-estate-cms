@@ -4,39 +4,57 @@
  * New Projects "Explore on the map" section. Same shape as the home
  * "Where to live" map, but the dots are off-plan projects (not listings):
  * click a dot → the project's off-plan detail page. Clicking an area chip
- * flies the map to that area AND filters the project cards listed below to
- * it, so the two controls stay in sync.
+ * flies the map to that area AND filters the projects listed below to it, so
+ * the two controls stay in sync.
  *
- * The project cards are rendered on the server (DevelopmentCard pulls in
- * server-only query code) and handed in as `cards` nodes per group — this
- * island only owns the interaction (map camera + chip filter), so nothing
- * server-only leaks into the client bundle. The MapLibre engine is lazy and
- * only mounts once the frame nears the viewport (it sits well below the
- * fold), keeping it off the page's first-paint / Lighthouse budget.
+ * The section renders ONE rail, not one per area. It used to stack a rail per
+ * area, which made the section grow with the catalogue rather than with the
+ * viewport — eleven communities came to ~8,700px, 28% of the page, and six of
+ * those rails held a single card. The map and its chips were already an area
+ * selector, so an area is now a filter over a single rail: the section's
+ * height no longer moves when a project is published.
+ *
+ * Every card is in the DOM at all times — filtering hides the ones that don't
+ * match rather than dropping them, so all the project links stay crawlable
+ * and each card is server-rendered exactly once.
+ *
+ * The cards are rendered on the server (DevelopmentCard pulls in server-only
+ * query code) and handed in as nodes — this island only owns the interaction
+ * (map camera + chip filter), so nothing server-only leaks into the client
+ * bundle. The MapLibre engine is lazy and only mounts once the frame nears the
+ * viewport (it sits well below the fold), keeping it off the page's
+ * first-paint / Lighthouse budget.
  */
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AreaMapLazy } from "../area-map/area-map-lazy";
 import { AreaChips } from "../area-map/area-chips";
-import { ProjectCarousel } from "./project-carousel";
+import { ProjectCarousel, type ProjectCarouselItem } from "./project-carousel";
 import { fluid } from "../marketing/fluid";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { AreaPin, AreaDot } from "@/lib/queries/area-map";
 
+/**
+ * An area, as the rail's heading and "view all" link when it is the selection.
+ * No cards here any more — they live in one flat `items` list, tagged by area.
+ */
 export type OffplanGroupView = {
   slug: string;
   name: string;
   /** Published projects in the area — may exceed the number of cards shown. */
   count: number;
-  /**
-   * Server-rendered DevelopmentCards, one node per project. An array rather
-   * than a single grid node because the rail has to lay the cards out itself:
-   * it sizes each one to the column count and snaps between them.
-   */
-  cards: React.ReactNode[];
   /** "View all" target for the area, when one resolves. */
   viewAllHref?: string | null;
   viewAllLabel?: string | null;
+};
+
+/** One project card, tagged with the area whose chip reveals it. */
+export type OffplanRailCard = {
+  /** The project's id — stable across filter changes. */
+  key: string;
+  areaSlug: string;
+  /** The server-rendered `DevelopmentCard`. */
+  node: React.ReactNode;
 };
 
 const dotHref = (d: AreaDot) => `/off-plan/${d.slug}`;
@@ -72,13 +90,28 @@ export function OffplanMapExplorer({
   areas,
   dots,
   groups,
+  cards,
+  allLabel,
+  allCount,
+  allViewAllHref = null,
+  allViewAllLabel = null,
   eyebrow = "On the map",
   heading = "Explore new projects across Abu Dhabi.",
   body = "Zoom into a community and tap a project to open its details — or pick an area below to filter the launches.",
 }: {
   areas: AreaPin[];
   dots: AreaDot[];
+  /** Area metadata, in the order the editor curated (or busiest-first). */
   groups: OffplanGroupView[];
+  /** Every card on the rail, in area order, each tagged with its area. */
+  cards: OffplanRailCard[];
+  /** Rail heading while no area is selected, e.g. "Across Abu Dhabi". */
+  allLabel: string;
+  /** Published projects across every area on the map. */
+  allCount: number;
+  /** Where the unfiltered rail's "view all" points. */
+  allViewAllHref?: string | null;
+  allViewAllLabel?: string | null;
   /** Section eyebrow — editable from the /off-plan master page. */
   eyebrow?: string;
   /** Section heading. */
@@ -89,9 +122,21 @@ export function OffplanMapExplorer({
   const [focusSlug, setFocusSlug] = useState<string | null>(null);
   const [frameRef, mapReady] = useNearViewport<HTMLDivElement>();
 
-  const visibleGroups = useMemo(
-    () => (focusSlug ? groups.filter((g) => g.slug === focusSlug) : groups),
+  // The rail's heading, count and link follow the selection; with nothing
+  // selected it speaks for the whole map.
+  const selected = useMemo(
+    () => (focusSlug ? groups.find((g) => g.slug === focusSlug) ?? null : null),
     [groups, focusSlug],
+  );
+
+  const items: ProjectCarouselItem[] = useMemo(
+    () =>
+      cards.map((c) => ({
+        key: c.key,
+        node: c.node,
+        hidden: focusSlug !== null && c.areaSlug !== focusSlug,
+      })),
+    [cards, focusSlug],
   );
 
   // Chips toggle: clicking the active area again clears the filter.
@@ -159,19 +204,19 @@ export function OffplanMapExplorer({
         ) : null}
       </div>
 
-      {/* Projects, grouped by area — one rail each, however many there are */}
-      <div className="mt-12 md:mt-14 flex flex-col gap-12 md:gap-14">
-        {visibleGroups.map((g) => (
+      {/* One rail for the whole section — the chips above choose what it shows */}
+      {cards.length > 0 ? (
+        <div className="mt-12 md:mt-14">
           <ProjectCarousel
-            key={g.slug}
-            name={g.name}
-            count={g.count}
-            items={g.cards}
-            viewAllHref={g.viewAllHref}
-            viewAllLabel={g.viewAllLabel}
+            name={selected?.name ?? allLabel}
+            count={selected?.count ?? allCount}
+            items={items}
+            viewAllHref={selected ? selected.viewAllHref : allViewAllHref}
+            viewAllLabel={selected ? selected.viewAllLabel : allViewAllLabel}
+            resetKey={focusSlug}
           />
-        ))}
-      </div>
+        </div>
+      ) : null}
     </section>
   );
 }

@@ -6,7 +6,12 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { listAreasWithCounts } from "@/lib/queries/areas-guide";
-import { buildOffplanMap, parseGroupLimit } from "@/lib/queries/offplan-map";
+import {
+  applyOffplanAreaOrder,
+  buildOffplanMap,
+  offplanRailItems,
+  parseGroupLimit,
+} from "@/lib/queries/offplan-map";
 import { getDevelopmentCoordsBulk } from "@/lib/queries/development-extras";
 import { MHero } from "../_components/marketing/m-hero";
 import { SectionHead } from "../_components/marketing/section-head";
@@ -92,10 +97,7 @@ export default async function NewProjectsPage({
   const projectCoords = await getDevelopmentCoordsBulk(
     developments.map((d) => d.id),
   );
-  const { pins, dots, groups, options } = buildOffplanMap(
-    developments,
-    projectCoords,
-  );
+  const rawMap = buildOffplanMap(developments, projectCoords);
   const countBySlug = new Map(
     areaCounts.map((a) => [a.name, { slug: a.slug, count: a.listing_count }]),
   );
@@ -122,6 +124,16 @@ export default async function NewProjectsPage({
   // the rail existed.
   const groupLimit = parseGroupLimit(str(mapCopy, "group_limit"));
   const groupCtaLabel = str(mapCopy, "group_cta_label");
+  // Curated area order. Left empty, areas stay busiest-first — which means
+  // publishing one project into a quiet community re-shuffles the chips and
+  // the rail. The list pins the ones the client cares about; the rest follow.
+  const { pins, dots, groups, options } = applyOffplanAreaOrder(
+    rawMap,
+    list<Record<string, unknown>>(mapCopy, "areas"),
+  );
+  // One flat list: an area is a filter over the rail, not a rail of its own,
+  // so each project is server-rendered exactly once.
+  const railItems = offplanRailItems(groups, groupLimit);
   const locations = content.section("locations")?.values ?? {};
   const why = content.section("why")?.values ?? {};
   const faq = content.section("faq")?.values ?? {};
@@ -188,17 +200,23 @@ export default async function NewProjectsPage({
           eyebrow={str(mapCopy, "eyebrow") ?? undefined}
           heading={str(mapCopy, "heading") ?? undefined}
           body={str(mapCopy, "body")}
+          allLabel={str(mapCopy, "all_label") ?? ""}
+          allCount={groups.reduce((n, g) => n + g.count, 0)}
+          allViewAllHref="/off-plan/search"
+          allViewAllLabel={str(mapCopy, "all_cta_label")}
           groups={groups.map((g) => ({
             slug: g.slug,
             name: g.name,
             // The true published total, not the number of cards on the rail —
             // it is what makes the "view all" link mean something.
             count: g.count,
-            cards: (groupLimit ? g.projects.slice(0, groupLimit) : g.projects).map(
-              (d) => <DevelopmentCard key={d.id} d={d} />,
-            ),
             viewAllHref: `/off-plan/search?area=${encodeURIComponent(g.slug)}`,
             viewAllLabel: groupCtaLabel,
+          }))}
+          cards={railItems.map(({ development, areaSlug }) => ({
+            key: development.id,
+            areaSlug,
+            node: <DevelopmentCard key={development.id} d={development} />,
           }))}
         />
       ) : null,

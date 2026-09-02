@@ -8,24 +8,33 @@ import { ProjectCarousel } from "./project-carousel";
  * only input the arrows react to, and stubbing it is what lets the disabled
  * edges be asserted at all.
  */
-const items = Array.from({ length: 9 }, (_, i) => <div key={i}>Project {i}</div>);
+const build = (n: number, hiddenFrom = Infinity) =>
+  Array.from({ length: n }, (_, i) => ({
+    key: `p${i}`,
+    node: <div>Project {i}</div>,
+    hidden: i >= hiddenFrom,
+  }));
 
-function setup(overrides: { count?: number; itemCount?: number } = {}) {
-  const nodes =
-    overrides.itemCount === undefined
-      ? items
-      : Array.from({ length: overrides.itemCount }, (_, i) => (
-          <div key={i}>Project {i}</div>
-        ));
-  render(
+function setup(
+  overrides: {
+    count?: number;
+    itemCount?: number;
+    hiddenFrom?: number;
+    resetKey?: string | null;
+  } = {},
+) {
+  const view = render(
     <ProjectCarousel
       name="Yas Island"
       count={overrides.count ?? 9}
-      items={nodes}
+      items={build(overrides.itemCount ?? 9, overrides.hiddenFrom)}
       viewAllHref="/off-plan/search?area=yas-island"
+      resetKey={overrides.resetKey ?? null}
     />,
   );
-  return screen.getByTestId("carousel-track-Yas Island");
+  return Object.assign(screen.getByTestId("carousel-track-Yas Island"), {
+    rerenderWith: view.rerender,
+  });
 }
 
 /** Pretend the rail is three cards wide with nine cards in it. */
@@ -54,6 +63,38 @@ describe("ProjectCarousel", () => {
   it("renders every project it is given on a single rail", () => {
     setup();
     expect(screen.getAllByText(/^Project \d$/)).toHaveLength(9);
+  });
+
+  it("keeps filtered-out cards in the DOM, hidden", () => {
+    // Filtering to an area must not drop the other areas' cards: they carry
+    // the only links to those projects in this section, and re-rendering them
+    // on every chip click would throw away server-rendered HTML for nothing.
+    setup({ itemCount: 9, hiddenFrom: 3 });
+    const cards = screen.getAllByText(/^Project \d$/);
+    expect(cards).toHaveLength(9);
+    const hidden = cards.filter((c) => c.parentElement?.hasAttribute("hidden"));
+    expect(hidden).toHaveLength(6);
+  });
+
+  it("rewinds to the first card when the selection changes", () => {
+    // A rail parked three cards along, then filtered to an area with two,
+    // would sit past the end of its own contents and read as empty.
+    const track = setup({ resetKey: null });
+    Object.defineProperty(track, "scrollLeft", {
+      value: 900,
+      configurable: true,
+      writable: true,
+    });
+    track.rerenderWith(
+      <ProjectCarousel
+        name="Yas Island"
+        count={9}
+        items={build(9, 3)}
+        viewAllHref="/off-plan/search?area=yas-island"
+        resetKey="yas-island"
+      />,
+    );
+    expect(track.scrollLeft).toBe(0);
   });
 
   it("shows the true published count, not the number of cards", () => {
