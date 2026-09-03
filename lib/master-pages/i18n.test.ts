@@ -4,6 +4,7 @@ import { AREA_SECTIONS, DEVELOPMENT_SECTIONS } from "./subpages";
 import { LIBRARY_SECTIONS } from "./library";
 import { SEARCH_HEADERS } from "./search-headers";
 import { DEVELOPER_PAGE_SECTION } from "./developer-page";
+import { HEADER_CTA_SECTION } from "./header-cta";
 import { BLOCK_DEFS } from "@/lib/page-builder/catalogue";
 import { mergeValues, validateFieldValues } from "./index";
 import { applyLocale, arabicCoverage } from "./i18n";
@@ -53,6 +54,10 @@ function allSectionDefs(): { origin: string; def: SectionDef }[] {
   // The shared copy behind every /developers/<slug> page. One document for all
   // 32 profiles, hand-declared Arabic in `defaults` like the search headers.
   out.push({ origin: "developer-page:copy", def: DEVELOPER_PAGE_SECTION });
+  // The header's call-to-action button — site chrome rather than a page, but
+  // the same document shape and the same hand-declared Arabic, so the same
+  // five assertions are what keep an editor able to save it.
+  out.push({ origin: "header-cta:cta", def: HEADER_CTA_SECTION });
   return out;
 }
 

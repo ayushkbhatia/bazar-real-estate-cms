@@ -7,6 +7,7 @@ import {
   getPublicUnitLabels,
 } from "@/lib/queries/site-settings";
 import { getPublicFooter } from "@/lib/queries/footer";
+import { getHeaderCta } from "@/lib/queries/header-cta";
 import { getShortlistCopy } from "@/lib/queries/content-sections";
 import { asLocale } from "@/lib/i18n/locales";
 import { getAdvisorWhatsAppNumber } from "@/lib/whatsapp";
@@ -33,26 +34,39 @@ export default async function PublicLayout({
   // /legal, a page whose entire body is a redirect.
   const { locale } = await params;
   const active = asLocale(locale);
-  const [megamenu, floatingCtas, branding, footer, shortlistCopy, unitLabels] =
-    await Promise.all([
-      getPublishedMegamenuHydrated(active),
-      listFloatingCtas(),
-      getPublicBranding(active),
-      // Same contract as the megamenu above: the locale is threaded in rather
-      // than read ambiently, so the layout does not force its subtree dynamic.
-      getPublicFooter(active),
-      // The shortlist card is a client component and cannot read its own
-      // document, so its copy is resolved here and handed down. Same
-      // cookie-free public client as the four above, so it costs a round trip
-      // and not the subtree's render mode.
-      getShortlistCopy(active),
-      // The words every price and every area on the site is written with —
-      // "AED", "ft²", and their Arabic equivalents. Same cookie-free public
-      // client as the five above, and the same reason it is resolved here: the
-      // components that render them are client components scattered across the
-      // marketplace, and none of them can read a settings row of its own.
-      getPublicUnitLabels(active),
-    ]);
+  const [
+    megamenu,
+    floatingCtas,
+    branding,
+    footer,
+    shortlistCopy,
+    unitLabels,
+    headerCta,
+  ] = await Promise.all([
+    getPublishedMegamenuHydrated(active),
+    listFloatingCtas(),
+    getPublicBranding(active),
+    // Same contract as the megamenu above: the locale is threaded in rather
+    // than read ambiently, so the layout does not force its subtree dynamic.
+    getPublicFooter(active),
+    // The shortlist card is a client component and cannot read its own
+    // document, so its copy is resolved here and handed down. Same
+    // cookie-free public client as the four above, so it costs a round trip
+    // and not the subtree's render mode.
+    getShortlistCopy(active),
+    // The words every price and every area on the site is written with —
+    // "AED", "ft²", and their Arabic equivalents. Same cookie-free public
+    // client as the five above, and the same reason it is resolved here: the
+    // components that render them are client components scattered across the
+    // marketplace, and none of them can read a settings row of its own.
+    getPublicUnitLabels(active),
+    // The header's CTA button. Same contract as the six above: the locale
+    // is threaded in rather than read ambiently, so the layout does not
+    // force its subtree dynamic. The nav is a client component and cannot
+    // read its own document, so the two labels and the href are resolved
+    // here and handed down — the same reason `getShortlistCopy` is here.
+    getHeaderCta(active),
+  ]);
   // Resolved here rather than inside the nav so the brand component stays a
   // presentational client component with no data dependency of its own.
   const logo = branding.logo_url
@@ -84,13 +98,16 @@ export default async function PublicLayout({
           data={megamenu}
           logo={logo}
           footerSlot={<MobilePreferences />}
+          cta={headerCta}
         />
         {/*
         The header chrome that could not go in the header.
 
-        `PublicMegaNav` takes exactly one slot — `footerSlot`, and only the
-        mobile drawer renders it — so anything else has to compose alongside
-        the bar rather than inside it. That is the same reason `FooterTrust`
+        `PublicMegaNav` takes exactly one render slot — `footerSlot`, and only
+        the mobile drawer renders it — so anything else has to compose
+        alongside the bar rather than inside it. (`cta` above is not a
+        counter-example: it is resolved copy the nav draws itself, not a
+        subtree handed in.) That is the same reason `FooterTrust`
         wraps `PublicFooter` instead of editing it.
 
         Position is measured, not guessed. The bar is 72px and the inline-end

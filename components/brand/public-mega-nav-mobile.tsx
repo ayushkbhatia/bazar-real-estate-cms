@@ -14,6 +14,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Wordmark, type BrandLogo } from "./wordmark";
+import type { HeaderCta } from "./public-mega-nav";
 import { MegamenuTile } from "./megamenu-tile";
 import { cn } from "@/lib/utils";
 import type {
@@ -43,6 +44,13 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   /** Rendered in the L1 footer above the Saved / List / Sign-in CTAs. */
   footerSlot?: React.ReactNode;
+  /**
+   * The header's CMS-editable call-to-action, threaded down from
+   * `PublicMegaNav`. Null falls back to `nav.listProperty` — which is what the
+   * pinned button SHOULD have read all along. It was the English literal
+   * `List Your Property`, so on /ar it sat under an otherwise Arabic drawer.
+   */
+  cta?: HeaderCta | null;
 };
 
 /**
@@ -111,13 +119,14 @@ function TabPanel({
   onClose: () => void;
   onBack: () => void;
 }) {
+  const t = useTranslations("nav");
   return (
     <div className="flex flex-col h-full">
       <div className="h-[60px] px-4 flex items-center gap-2 border-b border-bz-border bg-bz-bg shrink-0">
         <button
           type="button"
           onClick={onBack}
-          aria-label="Back"
+          aria-label={t("back")}
           className="size-9 pointer-coarse:size-11 shrink-0 inline-flex items-center justify-center rounded-md text-bz-ink hover:bg-bz-surface-2"
         >
           <ArrowLeft size={18} strokeWidth={1.7} />
@@ -168,7 +177,11 @@ function TabPanel({
               href={tab.panel_title_href}
               className="mt-2 inline-flex items-center justify-center py-3 rounded-md bg-bz-accent text-bz-accent-fg hover:bg-bz-accent-hover text-[14px]"
             >
-              View all {tab.label.toLowerCase()}
+              {/* The tab label arrives already folded to the locale, so the
+                  only English left here was the frame around it. `toLowerCase`
+                  is a no-op on Arabic script, which has no case — harmless,
+                  and kept so the English reads as it always has. */}
+              {t("viewAll", { label: tab.label.toLowerCase() })}
             </Link>
           ) : null}
         </div>
@@ -183,13 +196,16 @@ function TabsList({
   onPick,
   onClose,
   footerSlot,
+  cta,
 }: {
   data: Megamenu;
   logo?: BrandLogo | null;
   onPick: (tab: MegamenuTab) => void;
   onClose: () => void;
   footerSlot?: React.ReactNode;
+  cta?: HeaderCta | null;
 }) {
+  const t = useTranslations("nav");
   return (
     <div className="flex flex-col h-full">
       {/* pe-3 rather than px-5: the close button's 44px box wants to sit
@@ -255,8 +271,8 @@ function TabsList({
       <div className="border-t border-bz-border bg-bz-surface px-4 pt-3 pb-bar-safe flex flex-col gap-2 shrink-0">
         {footerSlot}
         <Button asChild size="sm">
-          <Link href="/services/sell" onClick={onClose}>
-            List Your Property
+          <Link href={cta?.href ?? "/services/sell"} onClick={onClose}>
+            {cta?.label || t("listProperty")}
           </Link>
         </Button>
       </div>
@@ -270,7 +286,9 @@ export function PublicMegaNavMobile({
   open,
   onOpenChange,
   footerSlot,
+  cta = null,
 }: Props) {
+  const t = useTranslations("nav");
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
 
   // Reset to L1 whenever the drawer closes so the next open is a fresh start.
@@ -307,9 +325,12 @@ export function PublicMegaNavMobile({
           "data-[side=end]:w-full data-[side=end]:sm:max-w-none data-[side=end]:md:max-w-sm",
         )}
       >
+        {/* `sr-only`, and English until now — which is the kind of string
+            that stays broken longest, because the only people it reaches are
+            the ones least able to report it. */}
         <SheetHeader className="sr-only">
-          <SheetTitle>Navigation</SheetTitle>
-          <SheetDescription>Bazar site navigation menu</SheetDescription>
+          <SheetTitle>{t("primary")}</SheetTitle>
+          <SheetDescription>{t("drawerDescription")}</SheetDescription>
         </SheetHeader>
         {/* `handleOpenChange`, not `onOpenChange`: Radix only fires its own
             handler for interactions it owns (ESC, scrim), never for the parent
@@ -330,6 +351,7 @@ export function PublicMegaNavMobile({
             onPick={(tab) => setActiveTabId(tab.id)}
             onClose={() => handleOpenChange(false)}
             footerSlot={footerSlot}
+            cta={cta}
           />
         )}
       </SheetContent>

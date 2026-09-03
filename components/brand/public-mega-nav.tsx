@@ -46,6 +46,25 @@ type Props = {
    * layout so this brand component stays free of app-level imports.
    */
   footerSlot?: React.ReactNode;
+  /**
+   * The header's call-to-action, resolved by the (public) layout from
+   * `/admin/megamenu/header-cta`. Both labels arrive already folded to the
+   * request's locale.
+   *
+   * Optional, and every read below falls back to `nav.*` — this component is
+   * mounted in tests and stories with no data layer behind it, and the
+   * fallback is also what renders if the document read ever fails. `shortLabel`
+   * is the one that used to be an English literal (`List`) at every locale.
+   */
+  cta?: HeaderCta | null;
+};
+
+/** Mirrors `HeaderCta` in `lib/queries/header-cta.ts`, without importing it —
+ * `components/brand/*` stays free of app-level data modules. */
+export type HeaderCta = {
+  label: string;
+  shortLabel: string;
+  href: string;
 };
 
 function isActive(pathname: string | null, tab: MegamenuTab): boolean {
@@ -101,7 +120,12 @@ function useScrolled(offset: number): boolean {
   return scrolled;
 }
 
-export function PublicMegaNav({ data, logo = null, footerSlot }: Props) {
+export function PublicMegaNav({
+  data,
+  logo = null,
+  footerSlot,
+  cta = null,
+}: Props) {
   const pathname = usePathname();
   const t = useTranslations("nav");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -231,7 +255,9 @@ export function PublicMegaNav({ data, logo = null, footerSlot }: Props) {
         {/* Right cluster */}
         <div className="hidden xl:flex gap-2 items-center">
           <Button asChild size="sm">
-            <Link href="/services/sell">{t("listProperty")}</Link>
+            <Link href={cta?.href ?? "/services/sell"}>
+              {cta?.label || t("listProperty")}
+            </Link>
           </Button>
         </div>
 
@@ -253,7 +279,13 @@ export function PublicMegaNav({ data, logo = null, footerSlot }: Props) {
               narrow. `pointer-coarse:min-w-11` closes it without touching the
               desktop pill. */}
           <Button asChild size="sm" className="pointer-coarse:min-w-11">
-            <Link href="/services/sell">List</Link>
+            <Link href={cta?.href ?? "/services/sell"}>
+              {/* `nav.listShort`, not `nav.listProperty`: the full label is
+                  three words and this button has room for one. It was the
+                  literal `List` until the header CTA became CMS copy — English
+                  on /ar, in the one place a phone user could not miss it. */}
+              {cta?.shortLabel || t("listShort")}
+            </Link>
           </Button>
           {/*
             40px at rest, 44px on a touchscreen. None of app/globals.css's
@@ -288,6 +320,7 @@ export function PublicMegaNav({ data, logo = null, footerSlot }: Props) {
         open={mobileOpen}
         onOpenChange={setMobileOpen}
         footerSlot={footerSlot}
+        cta={cta}
       />
     </>
   );
