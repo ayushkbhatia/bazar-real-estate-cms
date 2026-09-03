@@ -966,3 +966,63 @@ export async function unpublishProperty(
   await revalidatePropertyPaths(propertyId);
   return { status: "ok", message: "Moved off-market." };
 }
+
+/**
+ * Save the labels this listing wears.
+ *
+ * A merge into `flags` rather than a replace: that bag also holds
+ * `feature_on_homepage`, `mortgage_eligible` and the two legacy booleans, and
+ * a card that owns one key must not be able to clear the others. The read is
+ * `maybeSingle` and a missing row is treated as an empty bag, so a property
+ * created before `flags` existed still saves.
+ */
+export async function setPropertyCardLabels(
+  propertyId: string,
+  labels: string[],
+): Promise<{ status: "ok" } | { status: "error"; message: string }> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PROPERTY_ROLES);
+
+  const clean = [
+    ...new Set(
+      (Array.isArray(labels) ? labels : []).filter(
+        (v): v is string => typeof v === "string" && /^[a-z0-9_]{1,60}$/.test(v),
+      ),
+    ),
+  ].slice(0, 40);
+
+  const supabase = await createSupabaseServerClient();
+  const { data: row } = await supabase
+    .from("properties")
+    .select("flags, slug")
+    .eq("id", propertyId)
+    .maybeSingle();
+
+  const flags =
+    row?.flags && typeof row.flags === "object" && !Array.isArray(row.flags)
+      ? (row.flags as Record<string, unknown>)
+      : {};
+
+  const { error } = await supabase
+    .from("properties")
+    .update({ flags: { ...flags, labels: clean } })
+    .eq("id", propertyId);
+  if (error) return { status: "error", message: error.message };
+
+  await logAudit({
+    action: "property.card_labels_update",
+    target_kind: "property",
+    target_id: propertyId,
+    before: { labels: flags.labels ?? [] },
+    after: { labels: clean },
+  });
+
+  revalidatePath(`/admin/properties/${propertyId}`);
+  // The card is drawn on the home page, the six search routes, and every area,
+  // agent and developer profile that lists this property — so "layout", not
+  // the listing's own page.
+  revalidateLocalised("/", "layout");
+  if (row?.slug) revalidateLocalised(`/p/${row.slug}`);
+  return { status: "ok" };
+}

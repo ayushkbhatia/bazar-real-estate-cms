@@ -14,6 +14,19 @@ import {
 import { handoverQuarter, quarterArgs } from "@/lib/developments/handover";
 import { PriceText } from "../_components/area-text";
 import { mediaPublicUrl } from "@/lib/media";
+import { getCardLabelResolver } from "@/lib/queries/card-labels";
+import type { ResolvedCardLabel } from "@/lib/card-labels";
+import { cn } from "@/lib/utils";
+
+/** Mirrors the five chip styles the listing card draws — see the note beside
+ *  the copy of this map in _components/marketing/development-card.tsx. */
+const DEV_LABEL_STYLES: Record<ResolvedCardLabel["kind"], string> = {
+  ink: "bg-bz-navy text-bz-bg",
+  accent: "bg-bz-accent-soft text-bz-accent",
+  success: "bg-[oklch(0.94_0.04_145)] text-[oklch(0.35_0.08_145)]",
+  warn: "bg-[oklch(0.96_0.05_80)] text-[oklch(0.45_0.1_60)]",
+  danger: "bg-[oklch(0.96_0.04_28)] text-[oklch(0.45_0.13_28)]",
+};
 
 export const metadata: Metadata = {
   title: "Developments · Off-plan in Abu Dhabi",
@@ -50,8 +63,8 @@ export default async function DevelopmentsIndexPage({
         </h1>
         <p className="mt-5 text-[16px] text-bz-muted max-w-[60ch] leading-[1.6]">
           Developments we&apos;ve closely diligenced — payment plans, escrow
-          terms, and unit pricing. Many include Bazar-only pre-launch
-          inventory weeks before public release.
+          terms, and unit pricing. Many include Bazar-only pre-launch inventory
+          weeks before public release.
         </p>
       </section>
 
@@ -96,6 +109,8 @@ async function DevelopmentCard({
 }) {
   const t = await getTranslations({ locale, namespace: "pages.developments" });
   const tc = await getTranslations({ locale, namespace: "development.card" });
+  const resolve = await getCardLabelResolver(locale);
+  const cardLabels = resolve({ labels: d.card_labels });
   return (
     <Link
       href={developmentUrl(d)}
@@ -113,10 +128,27 @@ async function DevelopmentCard({
         ) : (
           <PlaceholderImage label={d.slug} dark className="absolute inset-0" />
         )}
-        {d.tagline ? (
-          <span className="absolute top-4 start-4 inline-flex items-center h-[24px] px-2.5 rounded-full text-[11px] font-medium bg-bz-accent text-white">
-            {d.tagline}
-          </span>
+        {/* Card labels, then the tagline — see the note on the sibling card in
+            _components/marketing/development-card.tsx. */}
+        {cardLabels.length || d.tagline ? (
+          <div className="absolute top-4 start-4 z-10 flex max-w-[calc(100%-4rem)] flex-wrap items-start gap-1.5">
+            {cardLabels.map((l) => (
+              <span
+                key={l.id}
+                className={cn(
+                  "inline-flex items-center h-[24px] px-2.5 rounded-full text-[11px] font-medium",
+                  DEV_LABEL_STYLES[l.kind],
+                )}
+              >
+                {l.label}
+              </span>
+            ))}
+            {d.tagline ? (
+              <span className="inline-flex items-center h-[24px] px-2.5 rounded-full text-[11px] font-medium bg-bz-accent text-white">
+                {d.tagline}
+              </span>
+            ) : null}
+          </div>
         ) : null}
       </div>
       <div className="px-6 pt-5 pb-6">
@@ -145,10 +177,7 @@ async function DevelopmentCard({
             value={<PriceText aed={d.starting_price} />}
             label={t("from")}
           />
-          <Stat
-            value={d.bedrooms_text ?? "—"}
-            label={t("bedrooms")}
-          />
+          <Stat value={d.bedrooms_text ?? "—"} label={t("bedrooms")} />
           <Stat
             value={
               handoverQuarter(d.handover_date)
@@ -163,13 +192,7 @@ async function DevelopmentCard({
   );
 }
 
-function Stat({
-  value,
-  label,
-}: {
-  value: React.ReactNode;
-  label: string;
-}) {
+function Stat({ value, label }: { value: React.ReactNode; label: string }) {
   return (
     <div>
       <div

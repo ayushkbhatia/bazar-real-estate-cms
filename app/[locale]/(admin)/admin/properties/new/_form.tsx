@@ -30,6 +30,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CardLabelPicker } from "@/components/brand/card-label-picker";
+import type { CardLabel } from "@/lib/card-labels";
 import { createProperty } from "./_actions";
 
 function FieldError({ message }: { message?: string }) {
@@ -68,7 +70,13 @@ const DEFAULTS: PropertyCreateInput = {
   property_form: null,
 };
 
-export function NewPropertyForm() {
+export function NewPropertyForm({
+  cardLabels,
+}: {
+  /** The saved vocabulary, resolved on the server — see lib/card-labels.ts. */
+  cardLabels: CardLabel[];
+}) {
+  const [labels, setLabels] = useState<string[]>([]);
   const [pending, startTransition] = useTransition();
   const [serverFieldErrors, setServerFieldErrors] = useState<
     Record<string, string>
@@ -102,7 +110,10 @@ export function NewPropertyForm() {
   const onSubmit = (values: PropertyCreateInput) => {
     setServerFieldErrors({});
     startTransition(async () => {
-      const result = await createProperty(values);
+      // Labels ride alongside rather than inside `values`: they are a key in
+      // the `flags` jsonb, not a column, and `propertyCreateSchema` is shared
+      // with the edit form, the importer and the public query.
+      const result = await createProperty(values, labels);
       if (result.status === "error") {
         toast.error(result.message);
         if (result.fieldErrors) setServerFieldErrors(result.fieldErrors);
@@ -281,6 +292,31 @@ export function NewPropertyForm() {
             />
           </div>
         </div>
+      </div>
+
+      {/*
+        Card labels, in the wizard rather than only on the edit screen.
+
+        The two that shipped before this — Exclusive, Vacant on transfer —
+        had no control anywhere in the CMS: the wizard wrote `flags: {}` and
+        nothing else ever set them, so the badges could only come from data
+        seeded outside the product. Whether a listing is exclusive is known at
+        the moment it is created, which is here.
+      */}
+      <div className="bg-bz-surface border border-bz-border rounded-lg p-6 flex flex-col gap-3">
+        <div>
+          <Label>Card labels</Label>
+          <p className="mt-1 text-[12px] text-bz-muted">
+            Drawn over the listing’s photograph. Edit the vocabulary under
+            Settings → Card labels.
+          </p>
+        </div>
+        <CardLabelPicker
+          vocabulary={cardLabels}
+          value={labels}
+          onChange={setLabels}
+          disabled={pending}
+        />
       </div>
 
       <div className="flex items-center justify-end gap-3">

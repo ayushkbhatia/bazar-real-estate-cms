@@ -65,3 +65,74 @@ describe("ListingCard shortlist button", () => {
     expect(shortlistButton()).toBeNull();
   });
 });
+
+/**
+ * The card draws a LIST of labels now — see `site_settings.card_labels` and
+ * `lib/card-labels.ts`. The two-prop shorthand stays for the surfaces that
+ * have exactly one word to say, so the precedence between the two shapes is
+ * the thing worth pinning: a caller migrating from `badge` to `badges` should
+ * not have to remember to delete the old prop.
+ *
+ * No `localStorage` here, deliberately — these assert markup rather than the
+ * shortlist button, so they run in environments where that global is missing.
+ */
+describe("ListingCard labels", () => {
+  it("draws every label it is given, in the order given", () => {
+    render(
+      <ListingCard
+        {...props({
+          badges: [
+            { label: "Exclusive", kind: "ink" },
+            { label: "Vacant on transfer", kind: "accent" },
+          ],
+        })}
+      />,
+    );
+    expect(screen.getByText("Exclusive")).toBeTruthy();
+    expect(screen.getByText("Vacant on transfer")).toBeTruthy();
+  });
+
+  it("still accepts the single-badge shorthand", () => {
+    render(
+      <ListingCard {...props({ badge: "Exclusive", badgeKind: "ink" })} />,
+    );
+    expect(screen.getByText("Exclusive")).toBeTruthy();
+  });
+
+  it("lets the list win when a caller passes both", () => {
+    render(
+      <ListingCard
+        {...props({
+          badge: "Old",
+          badgeKind: "ink",
+          badges: [{ label: "New", kind: "success" }],
+        })}
+      />,
+    );
+    expect(screen.getByText("New")).toBeTruthy();
+    expect(screen.queryByText("Old")).toBeNull();
+  });
+
+  it("draws nothing when a listing carries no labels", () => {
+    const { container } = render(<ListingCard {...props({ badges: [] })} />);
+    expect(container.querySelectorAll(".rounded-full").length).toBe(0);
+  });
+
+  /** The row variant draws its chips in the body, not over the media, and
+   *  folds the two prop shapes through the same helper. */
+  it("draws them in the row variant too", () => {
+    render(
+      <ListingCard
+        {...props({
+          variant: "row",
+          badges: [
+            { label: "Exclusive", kind: "ink" },
+            { label: "New launch", kind: "success" },
+          ],
+        })}
+      />,
+    );
+    expect(screen.getByText("Exclusive")).toBeTruthy();
+    expect(screen.getByText("New launch")).toBeTruthy();
+  });
+});

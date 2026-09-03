@@ -3216,6 +3216,7 @@ export type Database = {
         Row: {
           accent_token: string
           arabic_fonts: Json
+          card_labels: Json
           brand_name: string
           brand_name_ar: string | null
           brand_tagline: string | null
@@ -3245,6 +3246,7 @@ export type Database = {
           brand_name_ar?: string | null
           brand_tagline?: string | null
           brand_tagline_ar?: string | null
+          card_labels?: Json
           contact_email?: string | null
           contact_phone?: string | null
           email_templates?: Json
@@ -3270,6 +3272,7 @@ export type Database = {
           brand_name_ar?: string | null
           brand_tagline?: string | null
           brand_tagline_ar?: string | null
+          card_labels?: Json
           contact_email?: string | null
           contact_phone?: string | null
           email_templates?: Json

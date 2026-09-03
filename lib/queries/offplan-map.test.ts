@@ -18,6 +18,7 @@ function dev(
     total_units: null,
     starting_price: null,
     tagline: null,
+    card_labels: [],
     bedrooms_text: null,
     description: null,
     developer: null,

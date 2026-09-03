@@ -40,8 +40,40 @@ function normaliseCreateInput(raw: Record<string, unknown>): unknown {
   return out;
 }
 
+/**
+ * Keep only what could be a label id, deduplicated and capped.
+ *
+ * Not checked against the saved vocabulary on purpose: an id that no longer
+ * resolves is already handled — `labelsFor` filters the assignment through the
+ * vocabulary at render time, so a stale id draws nothing rather than a blank
+ * chip. Rejecting it here would instead lose the tag if a label were disabled
+ * and later switched back on.
+ */
+function cleanLabels(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return [
+    ...new Set(
+      raw.filter(
+        (v): v is string => typeof v === "string" && /^[a-z0-9_]{1,60}$/.test(v),
+      ),
+    ),
+  ].slice(0, 40);
+}
+
 export async function createProperty(
   raw: Record<string, unknown>,
+  /**
+   * Card labels, as a second argument rather than a field on the schema.
+   *
+   * `propertyCreateSchema` lives in `lib/schemas/property.ts`, which the
+   * wizard, the edit form, the importer and the public query all validate
+   * against — and labels are not a column, they are a key inside the `flags`
+   * jsonb this insert already writes. Threading them alongside keeps a
+   * presentation choice out of the shape four other things agree on.
+   *
+   * Validated here rather than trusted: it arrives from a browser.
+   */
+  labels: string[] = [],
 ): Promise<CreateResult> {
   if (!isSupabaseConfigured)
     return {
@@ -81,7 +113,7 @@ export async function createProperty(
         slug,
         status: "draft",
         amenities: [],
-        flags: {},
+        flags: { labels: cleanLabels(labels) },
         compliance: {},
         seo: { slug },
       })

@@ -34,7 +34,7 @@ export type DevelopmentUnit = DevelopmentUnitFromUtils;
 export type UnitFilter = UnitFilterFromUtils;
 
 const INDEX_FIELDS =
-  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, published_at, developers:developer_id(name, name_ar, slug), areas:area_id(name, name_ar, slug), hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar)";
+  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, meta, bedrooms_text, bedrooms_text_ar, description, description_ar, published_at, developers:developer_id(name, name_ar, slug), areas:area_id(name, name_ar, slug), hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar)";
 
 // `masterplan_id` is joined the same way as `hero_image_id`, because it is
 // stored the same way: the CMS's Page images card writes both to columns on
@@ -43,7 +43,7 @@ const INDEX_FIELDS =
 // a masterplan row to — so an uploaded site plan silently never appeared.
 /** Exported so a test can pin the media joins — see developments.test.ts. */
 export const DETAIL_FIELDS =
-  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, vision, vision_ar, facts, payment_plan, master_plan, amenities, amenities_ar, escrow_account, seo, published_at, developer_id, area_id, lead_advisor_id, hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar), masterplan:masterplan_id(storage_key, filename, alt_text, alt_text_ar), developers:developer_id(id, name, name_ar, slug, founded_year, description, description_ar, stats), areas:area_id(name, name_ar, slug)";
+  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, meta, vision, vision_ar, facts, payment_plan, master_plan, amenities, amenities_ar, escrow_account, seo, published_at, developer_id, area_id, lead_advisor_id, hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar), masterplan:masterplan_id(storage_key, filename, alt_text, alt_text_ar), developers:developer_id(id, name, name_ar, slug, founded_year, description, description_ar, stats), areas:area_id(name, name_ar, slug)";
 
 type HeroMedia = {
   storage_key: string;
@@ -60,6 +60,15 @@ export type DevelopmentIndexRow = {
   total_units: number | null;
   starting_price: number | null;
   tagline: string | null;
+  /**
+   * The ids this development carries from the card-label vocabulary
+   * (`site_settings.card_labels`), read out of the `meta` jsonb bag.
+   *
+   * Lifted to a named field here rather than left inside `meta` because the
+   * two card components consume it and neither should learn the bag's shape —
+   * the same reason `hero` is picked apart above.
+   */
+  card_labels: string[];
   bedrooms_text: string | null;
   description: string | null;
   developer: { name: string; slug: string } | null;
@@ -161,6 +170,13 @@ function shapeIndexRow(
     starting_price:
       raw.starting_price != null ? Number(raw.starting_price) : null,
     tagline: (raw.tagline as string | null) ?? null,
+    card_labels: Array.isArray(
+      (raw.meta as Record<string, unknown> | null)?.labels,
+    )
+      ? ((raw.meta as Record<string, unknown>).labels as unknown[]).filter(
+          (v): v is string => typeof v === "string",
+        )
+      : [],
     bedrooms_text: (raw.bedrooms_text as string | null) ?? null,
     description: (raw.description as string | null) ?? null,
     developer:

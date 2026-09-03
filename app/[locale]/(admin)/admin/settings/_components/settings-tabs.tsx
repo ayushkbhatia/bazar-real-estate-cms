@@ -35,6 +35,15 @@ const TABS: { group: string; items: Tab[] }[] = [
   {
     group: "Catalogue",
     items: [
+      {
+        // The chips a card wears over its photograph. Under Catalogue rather
+        // than Identity because it is vocabulary ABOUT the inventory — the
+        // words are picked here and then ticked per listing, the same shape as
+        // `Property fields` beside it.
+        label: "Card labels",
+        href: "/admin/settings/card-labels",
+        status: "live",
+      },
       { label: "Property fields", href: "/admin/settings/fields", status: "stub" },
       { label: "Routing", href: "/admin/settings/routing", status: "live" },
       { label: "Mortgage", href: "/admin/settings/mortgage", status: "live" },

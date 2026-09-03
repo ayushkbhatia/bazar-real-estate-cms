@@ -11,7 +11,7 @@ import { getSearchHeaderCopy } from "@/lib/queries/search-headers";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
 import { isSupabaseConfigured } from "@/lib/env";
-import { listingBadge } from "@/lib/listing-badge";
+import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import {
   countActiveFilters,
   describeFilters,
@@ -202,11 +202,7 @@ export async function SearchList({
     getSearchHeaderCopy(mode, effectiveForm ?? null),
   ]);
   const t = await getTranslations("search");
-  const tl = await getTranslations("listing");
-  const badgeLabels = {
-    exclusive: tl("badge.exclusive"),
-    vacantOnTransfer: tl("badge.vacantOnTransfer"),
-  };
+  const cardLabels = await getCardLabelResolver();
 
   /*
    * The filter chips under the result count. `describeFilters` is shared with
@@ -317,7 +313,7 @@ export async function SearchList({
         ) : view === "list" ? (
           <div className="flex flex-col gap-4">
             {rows.map((row, index) => {
-              const badge = listingBadge(row.flags, badgeLabels);
+              const badges = cardLabels(row.flags);
               return (
                 <Link
                   key={row.reference}
@@ -333,8 +329,7 @@ export async function SearchList({
                     beds={row.beds}
                     baths={row.baths}
                     area={row.built_up_ft2 ?? 0}
-                    badge={badge?.label}
-                    badgeKind={badge?.kind}
+                    badges={badges}
                     imgLabel={row.reference}
                     heroSrc={
                       row.hero ? mediaPublicUrl(row.hero.storage_key) : null
@@ -354,7 +349,7 @@ export async function SearchList({
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_500px] gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-w-0">
               {rows.map((row, index) => {
-                const badge = listingBadge(row.flags, badgeLabels);
+                const badges = cardLabels(row.flags);
                 const priority = index < 2;
                 return (
                   <Link
@@ -369,8 +364,7 @@ export async function SearchList({
                       beds={row.beds}
                       baths={row.baths}
                       area={row.built_up_ft2 ?? 0}
-                      badge={badge?.label}
-                      badgeKind={badge?.kind}
+                      badges={badges}
                       imgLabel={row.reference}
                       heroSrc={
                         row.hero ? mediaPublicUrl(row.hero.storage_key) : null
