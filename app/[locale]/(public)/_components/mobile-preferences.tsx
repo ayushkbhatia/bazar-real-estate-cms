@@ -38,8 +38,10 @@ export function MobilePreferences() {
             <Coins size={14} strokeWidth={1.6} />
             {t("currencyAndUnits")}
           </span>
+          {/* Same dictionary as the desktop pill — see the note there. */}
           <span className="mono text-[12px] text-bz-muted">
-            {prefs.currency} · {prefs.area_unit === "m2" ? "m²" : "ft²"}
+            {prefs.labels.currency[prefs.currency]} ·{" "}
+            {prefs.labels.area[prefs.area_unit]}
           </span>
         </button>
       }

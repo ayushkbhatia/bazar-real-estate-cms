@@ -20,13 +20,7 @@
  * lighter and free of the glyphs dependency clustering's count labels need.
  */
 
-import {
-  useCallback,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import Link from "@/components/i18n/link";
 import maplibregl, { type Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -44,7 +38,8 @@ import { ensureRtlTextPlugin, pastelMapStyle } from "../map-style";
 import {
   areaUnitLabel,
   formatPrice,
-  formatPricePerArea,
+  formatPricePerAreaValue,
+  withCurrency,
   usePreferences,
 } from "@/lib/preferences";
 import { useTranslations } from "next-intl";
@@ -215,7 +210,12 @@ export function AreaMap({
       const zoom = deep ? AREA_DEEP_ZOOM : AREA_ZOOM;
       if (reduced) m.jumpTo({ center: [a.lng, a.lat], zoom });
       else
-        m.flyTo({ center: [a.lng, a.lat], zoom, duration: 1600, essential: true });
+        m.flyTo({
+          center: [a.lng, a.lat],
+          zoom,
+          duration: 1600,
+          essential: true,
+        });
     },
     [reduced],
   );
@@ -233,7 +233,9 @@ export function AreaMap({
       ? areas.find((a) => a.slug === framingSlug)
       : null;
     const city = CITIES[emirate] ?? CITIES["abu-dhabi"];
-    const center: [number, number] = focus ? [focus.lng, focus.lat] : city.center;
+    const center: [number, number] = focus
+      ? [focus.lng, focus.lat]
+      : city.center;
     const zoom = focus ? DETAIL_ZOOM : city.zoom;
 
     // Register the shaping plugin before the style resolves. Without it
@@ -373,7 +375,8 @@ export function AreaMap({
   useEffect(() => {
     const m = mapRef.current;
     if (!m || !map) return;
-    const src = m.getSource("bz-listings") as maplibregl.GeoJSONSource | undefined;
+    const src = m.getSource("bz-listings") as
+      maplibregl.GeoJSONSource | undefined;
     src?.setData(dotsToFeatureCollection(dots));
   }, [dots, map]);
 
@@ -443,7 +446,10 @@ export function AreaMap({
 
       {map && emirateEmpty && (
         <div className="bzmap-empty">
-          <div className="serif" style={{ fontSize: 22, color: "var(--bz-ink)" }}>
+          <div
+            className="serif"
+            style={{ fontSize: 22, color: "var(--bz-ink)" }}
+          >
             {t("map.comingSoon", { emirate: t(emirateMessageKey(emirate)) })}
           </div>
           <div style={{ fontSize: 13, color: "var(--bz-ink-2)" }}>
@@ -485,13 +491,16 @@ function Overlay({
   const el = map.getContainer();
   const w = el.clientWidth;
   const h = el.clientHeight;
-  const selected = focusSlug ? areas.find((a) => a.slug === focusSlug) ?? null : null;
+  const selected = focusSlug
+    ? (areas.find((a) => a.slug === focusSlug) ?? null)
+    : null;
 
   return (
     <>
       {areas.map((a) => {
         const p = map.project([a.lng, a.lat]);
-        if (p.x < -180 || p.x > w + 180 || p.y < -80 || p.y > h + 120) return null;
+        if (p.x < -180 || p.x > w + 180 || p.y < -80 || p.y > h + 120)
+          return null;
         const cls = [
           "bzmap-pin",
           focusSlug === a.slug ? "is-active" : "",
@@ -562,10 +571,18 @@ function Flyout({
   const t = useTranslations("common");
   const { prefs } = usePreferences();
   const emirateLabel = t(emirateMessageKey(area.emirate));
-  // Stored AED/ft²; shown in the visitor's currency per their area unit.
+  // Stored AED/ft²; shown in the visitor's currency per their area unit. The
+  // unit itself is the stat's LABEL below, so the figure carries the currency
+  // and nothing else.
+  //
+  // This used to format the full rate and strip the unit back off with
+  // `.replace(/\/(ft²|m²)$/, "")`. That regex was the last hard-coded pair of
+  // glyphs on the public site, and it would have failed twice over in Arabic:
+  // it does not match "قدم²", and Arabic writes the currency AFTER the figure,
+  // so the unit is not even at the end of the string to strip.
   const median =
     area.medianPerFt2 != null
-      ? formatPricePerArea(area.medianPerFt2, prefs).replace(/\/(ft²|m²)$/, "")
+      ? withCurrency(formatPricePerAreaValue(area.medianPerFt2, prefs), prefs)
       : "—";
   const yoy =
     area.yoyChange != null
@@ -575,7 +592,7 @@ function Flyout({
     // Em dash at 0, same as a missing median — the map may be scoped to a
     // mode this area has no inventory in.
     [area.count > 0 ? String(area.count) : "—", t(`map.count.${countKind}`)],
-    [median, t("map.median", { unit: areaUnitLabel(prefs.area_unit) })],
+    [median, t("map.median", { unit: areaUnitLabel(prefs) })],
     [yoy, "YoY"],
   ];
 
@@ -604,7 +621,13 @@ function Flyout({
       </div>
 
       {area.tag && (
-        <div style={{ padding: "10px 14px", fontSize: 12, color: "var(--bz-muted)" }}>
+        <div
+          style={{
+            padding: "10px 14px",
+            fontSize: 12,
+            color: "var(--bz-muted)",
+          }}
+        >
           {area.tag}
         </div>
       )}
@@ -612,17 +635,29 @@ function Flyout({
       <div className="bzmap-flyout__stats">
         {stats.map(([v, l]) => (
           <div key={l}>
-            <div className="serif" style={{ fontSize: 17, letterSpacing: "-0.01em" }}>
+            <div
+              className="serif"
+              style={{ fontSize: 17, letterSpacing: "-0.01em" }}
+            >
               {v}
             </div>
-            <div style={{ fontSize: 10, color: "var(--bz-muted)", marginTop: 2 }}>
+            <div
+              style={{ fontSize: 10, color: "var(--bz-muted)", marginTop: 2 }}
+            >
               {l}
             </div>
           </div>
         ))}
       </div>
 
-      <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+      <div
+        style={{
+          padding: 12,
+          display: "flex",
+          flexDirection: "column",
+          gap: 8,
+        }}
+      >
         <Link
           href={`/areas/${area.slug}`}
           className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-bz-ink px-4 text-sm font-medium text-bz-bg transition-colors hover:bg-bz-ink/90"
@@ -678,7 +713,10 @@ function DotPopupCard({
         >
           <X size={14} />
         </button>
-        <div className="serif" style={{ fontSize: 19, letterSpacing: "-0.015em" }}>
+        <div
+          className="serif"
+          style={{ fontSize: 19, letterSpacing: "-0.015em" }}
+        >
           {dot.priceAed > 0
             ? formatPrice(dot.priceAed, prefs)
             : tl("priceOnRequest")}
@@ -687,7 +725,7 @@ function DotPopupCard({
           {dot.title}
         </div>
         <div style={{ fontSize: 11, color: "var(--bz-muted)", marginTop: 2 }}>
-          {dot.metaText ?? dotMeta(dot.beds, dot.builtUpFt2, prefs.area_unit)}
+          {dot.metaText ?? dotMeta(dot.beds, dot.builtUpFt2, prefs)}
         </div>
         <Link
           href={href}

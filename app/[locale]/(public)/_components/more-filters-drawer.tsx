@@ -202,7 +202,7 @@ export function MoreFiltersDrawer() {
           {/* Area — labelled in the visitor's unit, stored as ft² */}
           <div>
             <Label>
-              {t("filters.areaWithUnit", { unit: areaUnitLabel(unit) })}
+              {t("filters.areaWithUnit", { unit: areaUnitLabel(prefs) })}
             </Label>
             <div className="grid grid-cols-2 gap-3 mt-1.5">
               <Input

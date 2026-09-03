@@ -578,7 +578,7 @@ function ResultCard({
                   price: formatPrice(property.price_aed, prefs),
                   beds: property.beds,
                   size: property.built_up_ft2
-                    ? formatArea(property.built_up_ft2, prefs.area_unit)
+                    ? formatArea(property.built_up_ft2, prefs)
                     : property.type,
                 })}
               </div>

@@ -21,6 +21,14 @@ import {
   parseArabicFonts,
   type ArabicFontSettings,
 } from "@/lib/schemas/arabic-fonts";
+import { parseUnitLabels } from "@/lib/schemas/unit-labels";
+import {
+  UNIT_LABEL_SETTINGS_DEFAULTS,
+  resolveUnitLabels,
+  unitLabelsFor,
+  type UnitLabels,
+  type UnitLabelSettings,
+} from "@/lib/preferences/unit-labels";
 
 const DEFAULTS: SiteSettings = {
   brand: {
@@ -361,5 +369,58 @@ export async function getArabicFontSettings(): Promise<ArabicFontSettings> {
     );
   } catch {
     return ARABIC_FONT_DEFAULTS;
+  }
+}
+
+/**
+ * The currency / area-unit dictionary for a locale, for the public layout.
+ *
+ * Its own function and its own single-column select, for the trap 0096
+ * documents and 0120 restates: `site_settings` has COLUMN-level grants, and a
+ * select naming a column the anon role cannot read fails WHOLE. Folding
+ * `unit_labels` into `getPublicBranding` would mean an unapplied 0122 blanked
+ * the navbar logo, the favicon and the wordmark on every page in both locales.
+ * Scoped like this, the blast radius of a missing migration is that prices
+ * render in the words the site shipped with — which is exactly what they did
+ * yesterday.
+ *
+ * The locale is threaded in rather than read ambiently for the same reason the
+ * other public reads take it: a layout renders before the pages under it, so an
+ * ambient read here would run before any page could call `setRequestLocale`
+ * and would drop the whole subtree to on-demand rendering.
+ */
+export async function getPublicUnitLabels(locale: Locale): Promise<UnitLabels> {
+  if (!isSupabaseConfigured) return unitLabelsFor(locale);
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data } = await supabase
+      .from("site_settings")
+      .select("unit_labels")
+      .eq("id", 1)
+      .maybeSingle();
+    return resolveUnitLabels(
+      locale,
+      parseUnitLabels((data as { unit_labels?: unknown } | null)?.unit_labels),
+    );
+  } catch {
+    return unitLabelsFor(locale);
+  }
+}
+
+/** The same bag for /admin/settings/units, through the caller's session. */
+export async function getUnitLabelSettings(): Promise<UnitLabelSettings> {
+  if (!isSupabaseConfigured) return UNIT_LABEL_SETTINGS_DEFAULTS;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase
+      .from("site_settings")
+      .select("unit_labels")
+      .eq("id", 1)
+      .maybeSingle();
+    return parseUnitLabels(
+      (data as { unit_labels?: unknown } | null)?.unit_labels,
+    );
+  } catch {
+    return UNIT_LABEL_SETTINGS_DEFAULTS;
   }
 }

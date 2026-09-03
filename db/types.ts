@@ -3234,6 +3234,7 @@ export type Database = {
           mortgage: Json
           orn: string | null
           search_logo_url: string | null
+          unit_labels: Json
           updated_at: string
           updated_by: string | null
         }
@@ -3258,6 +3259,7 @@ export type Database = {
           mortgage?: Json
           orn?: string | null
           search_logo_url?: string | null
+          unit_labels?: Json
           updated_at?: string
           updated_by?: string | null
         }
@@ -3282,6 +3284,7 @@ export type Database = {
           mortgage?: Json
           orn?: string | null
           search_logo_url?: string | null
+          unit_labels?: Json
           updated_at?: string
           updated_by?: string | null
         }

@@ -17,20 +17,14 @@ export type AreaUnit = "ft2" | "m2";
 export const CURRENCIES: readonly Currency[] = ["AED", "USD"] as const;
 export const AREA_UNITS: readonly AreaUnit[] = ["ft2", "m2"] as const;
 
-export const CURRENCY_LABEL: Record<Currency, string> = {
-  AED: "AED · UAE Dirham",
-  USD: "USD · US Dollar",
-};
-
-export const CURRENCY_SYMBOL: Record<Currency, string> = {
-  AED: "AED",
-  USD: "$",
-};
-
-export const AREA_UNIT_LABEL: Record<AreaUnit, string> = {
-  ft2: "Square feet (ft²)",
-  m2: "Square metres (m²)",
-};
+/*
+ * The three label maps that used to live here — `CURRENCY_LABEL`,
+ * `CURRENCY_SYMBOL`, `AREA_UNIT_LABEL` — moved to `./unit-labels.ts`, keyed by
+ * locale and overridable from `/admin/settings/units`. They are gone rather
+ * than deprecated on purpose: a constant that still resolved would have gone on
+ * rendering "AED" on Arabic pages, silently, which is the bug the dictionary
+ * exists to end. Removing them makes every consumer a compile error instead.
+ */
 
 export type Preferences = {
   currency: Currency;

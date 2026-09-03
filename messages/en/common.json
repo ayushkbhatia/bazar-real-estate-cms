@@ -80,6 +80,8 @@
   "notFoundTitle": "This page isn't here.",
   "preferences": "Display preferences",
   "preferencesHelp": "Choose how prices and areas display across the site. Saved to this browser.",
+  "prefsAreaUnit": "Area unit",
+  "prefsCurrency": "Currency",
   "propertyType": "Property type",
   "propertyTypes": "Property types",
   "readMore": "Read more",

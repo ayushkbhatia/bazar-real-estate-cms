@@ -20,6 +20,16 @@ const TABS: { group: string; items: Tab[] }[] = [
         href: "/admin/settings/typography",
         status: "live",
       },
+      {
+        // The words prices and areas are written with — "AED", "ft²" and
+        // their Arabic equivalents. Beside `Arabic type` rather than under
+        // Catalogue for the same reason: it is a decision about how the site
+        // READS, not about what it holds. `Mortgage` next door sets numbers;
+        // this one sets none.
+        label: "Units & currency",
+        href: "/admin/settings/units",
+        status: "live",
+      },
     ],
   },
   {

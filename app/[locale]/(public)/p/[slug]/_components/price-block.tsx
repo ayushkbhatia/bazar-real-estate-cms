@@ -38,7 +38,14 @@ export function PriceBlock({
   // show the USD equivalent; with USD selected we show AED, the canonical
   // schema number.
   const otherCurrency = prefs.currency === "AED" ? "USD" : "AED";
-  const otherLabel = formatPrice(priceAed, { currency: otherCurrency });
+  // `labels` threaded through with the currency. Without it this one figure —
+  // the sanity-check line directly under a headline price that DOES follow the
+  // dictionary — would have been the only price on the listing page still
+  // quoting the English word.
+  const otherLabel = formatPrice(priceAed, {
+    currency: otherCurrency,
+    labels: prefs.labels,
+  });
 
   const subline = aedPerFt2 ? formatPricePerArea(aedPerFt2, prefs) : null;
 

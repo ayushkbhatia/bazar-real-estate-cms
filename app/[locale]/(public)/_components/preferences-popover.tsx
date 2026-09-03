@@ -45,10 +45,24 @@ export function PreferencesPopover() {
           className="h-9 gap-1.5 rounded-full border border-bz-border bg-bz-surface/95 px-3 text-[13px] text-bz-ink-2 shadow-sm backdrop-blur-sm hover:bg-bz-surface hover:text-bz-ink"
         >
           <Coins size={13} strokeWidth={1.6} />
-          <span className="mono tracking-tight">{prefs.currency}</span>
+          {/*
+            Both halves come off the dictionary rather than off the raw
+            preference. The currency used to render `prefs.currency` — the
+            enum member, "AED" — and the unit a ternary on `m2`, which is the
+            single place the two words the site is full of were still typed by
+            hand. On /ar the pill was the label on a control offering Arabic
+            for everything except itself.
+
+            `.mono` stays on both: globals.css isolates it as an LTR run on
+            Arabic pages, which is what stops the "·" between them being
+            reordered to the far end of the pill.
+          */}
+          <span className="mono tracking-tight">
+            {prefs.labels.currency[prefs.currency]}
+          </span>
           <span className="text-bz-muted">·</span>
           <span className="mono tracking-tight">
-            {prefs.area_unit === "m2" ? "m²" : "ft²"}
+            {prefs.labels.area[prefs.area_unit]}
           </span>
         </Button>
       </PopoverTrigger>

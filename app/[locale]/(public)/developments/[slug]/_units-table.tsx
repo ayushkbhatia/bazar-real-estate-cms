@@ -140,7 +140,7 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
                   <div className="mono text-[14px] font-medium whitespace-nowrap">
                     {u.price_aed == null
                       ? "—"
-                      : `${currencySymbol(prefs.currency)} ${price(u)}`}
+                      : `${currencySymbol(prefs)} ${price(u)}`}
                   </div>
                 </div>
                 <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 text-[12.5px]">
@@ -179,7 +179,7 @@ export function UnitsTable({ units }: { units: DevelopmentUnit[] }) {
               <th className="px-2 py-3">{t("units.lagoonAccess")}</th>
               <th className="px-2 py-3">{t("units.orientation")}</th>
               <th className="px-2 py-3">
-                {t("units.price")} · {currencySymbol(prefs.currency)}
+                {t("units.price")} · {currencySymbol(prefs)}
               </th>
               <th className="px-2 py-3">{t("units.plotNumber")}</th>
               <th className="px-4 py-3 text-end">{t("units.action")}</th>

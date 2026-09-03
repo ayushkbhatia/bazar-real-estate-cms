@@ -204,7 +204,7 @@ export function FloorplanGate({ developmentName, developmentSlug, plan }: Props)
         <div>
           <div className="text-[14px] font-medium">{plan.label}</div>
           <div className="text-[11.5px] text-bz-ink-2">
-            {formatArea(plan.area_ft2, prefs.area_unit)}
+            {formatArea(plan.area_ft2, prefs)}
           </div>
         </div>
       </div>

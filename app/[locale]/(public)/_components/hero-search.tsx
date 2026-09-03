@@ -257,7 +257,7 @@ export function HeroSearch({
             <div className="flex flex-col gap-1">
               <span className="text-[11px] font-medium text-bz-muted">
                 {label("size_label", "filters.size")} (
-                {areaUnitLabel(prefs.area_unit)})
+                {areaUnitLabel(prefs)})
               </span>
               <div className="px-1 pt-1.5">
                 <DualRangeSlider
@@ -266,7 +266,7 @@ export function HeroSearch({
                   max={tab.size.max}
                   step={tab.size.step}
                   initial={size}
-                  format={(n) => formatArea(n, prefs.area_unit)}
+                  format={(n) => formatArea(n, prefs)}
                   onChange={setSize}
                 />
               </div>

@@ -56,7 +56,7 @@ export function ListingCardPriced({ priceAed, ...props }: Props) {
       {...props}
       price={price}
       area={area}
-      areaUnit={areaUnitLabel(prefs.area_unit)}
+      areaUnit={areaUnitLabel(prefs)}
     />
   );
 }

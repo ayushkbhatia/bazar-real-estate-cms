@@ -31,6 +31,23 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [i18n] The Arabic message catalogue still writes money as `AED 2M` inside
+  prose sentences.
+  Surfaced by the units-dictionary PR, which moved every glyph the CODE emits
+  into `lib/preferences/unit-labels.ts` and left prose alone on purpose. About
+  30 strings in `messages/ar/guides.json` and `messages/ar/tools.json` read
+  e.g. "تملّك عقارات مؤهلة بقيمة AED 2M+". They are Latin because
+  `lib/i18n/mt/mask.ts:78` masks money so a translation cannot mangle the
+  figure — correct as a translation rule, and it leaves the currency in English
+  in copy the client has reviewed.
+  Not folded into that PR because it is translation work on hand-reviewed
+  Arabic, not a code change: the agreement around "2 مليون درهم" differs by
+  count, and the English siblings interpolate the same figures. "Done" looks
+  like a pass over those two files with the client's Arabic reviewer, plus a
+  decision on whether `mask.ts` should emit a localised unit rather than a
+  protected Latin one. `lib/master-pages/arabic/master.json` has the same
+  question.
+
 - [infra] Supabase Storage serves every public object with
   `cache-control: no-cache`, so nothing in the media bucket is cached by the
   browser.
