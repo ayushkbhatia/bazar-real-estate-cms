@@ -139,9 +139,22 @@ export function HeroSearch({
           hero is untouched.
 
           A button, not an input: tapping it must open the console rather than
-          start typing into a field whose filters are still folded away. The
-          placeholder it borrows is the active tab's, so it reads as the input
-          it becomes. */}
+          start typing into a field whose filters are still folded away.
+
+          It says "Search properties" rather than borrowing the active tab's
+          placeholder, and that is a gate constraint, not a preference. The
+          `buy` placeholder is "Area, Building, Community or Emirate" — 313px
+          of text in the 265px this row leaves at 390px. `truncate` renders
+          that as an ellipsis, which reads fine and fails the BLOCKING
+          `clipped` check in e2e/mobile-geometry.spec.ts, on the reasoning
+          that clipped content is unreadable on a phone and never shows up as
+          horizontal overflow. The catalogue string is ~135px in both locales.
+
+          Deliberately NOT run through `label()` either: every other string in
+          this component prefers an editor's override, and an override here is
+          a free hand to put 313px back and redden the gate with a CMS edit
+          and no commit behind it. `truncate` stays as the net for whatever
+          the longest translation turns out to be. */}
       {!expanded ? (
         <button
           type="button"
@@ -156,7 +169,7 @@ export function HeroSearch({
             className="shrink-0 text-bz-muted"
           />
           <span className="min-w-0 flex-1 truncate text-[15px] text-bz-muted">
-            {tab.placeholder}
+            {tr("filters.searchProperties")}
           </span>
           <SlidersHorizontal
             size={15}
