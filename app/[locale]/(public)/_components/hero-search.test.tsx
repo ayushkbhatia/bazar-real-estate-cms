@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { renderWithIntl as render } from "@/lib/i18n/test-utils";
 
 vi.mock("next/navigation", () => ({
@@ -107,5 +107,80 @@ describe("<HeroSearch> mode buttons", () => {
       expect(classes(btn)).toContain("px-3.5");
       expect(classes(btn)).toContain("h-8");
     }
+  });
+});
+
+/**
+ * The phone's collapsed state. At 375px the console measured 441px of an
+ * 861px hero — it covered the video the hero exists to show — so below `md`
+ * it now rests as a single search-bar-shaped button and unfolds on tap.
+ *
+ * These specs pin the one invariant that change is allowed to have: every
+ * part of it is `md:`-scoped, so from `md` up the browser draws exactly what
+ * it drew before. jsdom applies no CSS, which is precisely why the assertions
+ * are on the classes — the breakpoint IS the contract here, and a class-name
+ * assertion is the only thing that can hold it.
+ */
+describe("<HeroSearch> collapsed on phones", () => {
+  function parts() {
+    const form = renderCard();
+    const trigger = form.querySelector("button[aria-expanded]");
+    const panelId = trigger?.getAttribute("aria-controls") ?? "";
+    const panel = panelId
+      ? form.querySelector(`#${CSS.escape(panelId)}`)
+      : null;
+    return { form, trigger, panel };
+  }
+
+  it("rests as a single trigger, with the console folded away", () => {
+    const { trigger, panel } = parts();
+    expect(trigger).not.toBeNull();
+    expect(classes(trigger!)).toContain("md:hidden");
+    // Folded by a class, not unmounted: the tab list and the ranges keep
+    // their state across a collapse, and the query field stays focusable.
+    expect(classes(panel!)).toContain("hidden");
+  });
+
+  it("unfolds the console when the trigger is tapped", () => {
+    const { trigger, form } = parts();
+    fireEvent.click(trigger!);
+    expect(form.querySelector("button[aria-expanded]")).toBeNull();
+    const panel = form.querySelector(
+      `#${CSS.escape(trigger!.getAttribute("aria-controls")!)}`,
+    );
+    expect(classes(panel!)).not.toContain("hidden");
+  });
+
+  it("folds it back from the close control", () => {
+    const { trigger, form } = parts();
+    fireEvent.click(trigger!);
+    const close = form.querySelector("button[aria-label]");
+    fireEvent.click(close!);
+    expect(form.querySelector("button[aria-expanded]")).not.toBeNull();
+  });
+
+  it("leaves the desktop console exactly where it was", () => {
+    const { trigger, panel, form } = parts();
+    // The trigger is drawn only below `md`; the console only from `md` up
+    // when it is folded. Together those two classes are the whole of the
+    // "mobile only" claim — neither state can reach a desktop viewport.
+    expect(classes(trigger!)).toContain("md:hidden");
+    expect(classes(panel!)).toContain("md:block");
+    // The close control lives in a `md:hidden` row, so the desktop console
+    // gains no chrome it did not have.
+    fireEvent.click(trigger!);
+    const close = form.querySelector("button[aria-label]");
+    expect(classes(close!.parentElement!)).toContain("md:hidden");
+  });
+
+  it("keeps both phone-only controls above the 44px touch floor", () => {
+    const { trigger, form } = parts();
+    // WCAG 2.5.5, and the blocking `touchTargets` check in
+    // e2e/mobile-geometry.spec.ts. h-12 = 48px, h-11/w-11 = 44px.
+    expect(classes(trigger!)).toContain("h-12");
+    fireEvent.click(trigger!);
+    const close = form.querySelector("button[aria-label]");
+    expect(classes(close!)).toContain("h-11");
+    expect(classes(close!)).toContain("w-11");
   });
 });

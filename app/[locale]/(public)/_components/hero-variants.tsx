@@ -79,8 +79,17 @@ export async function HeroFullBleed({ copy }: { copy?: HeroCopy } = {}) {
           the headline ~10px under the sticky 72px navbar. A min-height on the
           inner column keeps the bottom-anchored layout for short copy while
           letting a tall stack push the section (and the video behind it)
-          taller instead of cropping it. */}
-      <div className="relative min-h-[560px] md:min-h-[720px] px-4 md:px-12 flex flex-col justify-end pb-10 md:pb-16 pt-24 md:pt-16 text-white">
+          taller instead of cropping it.
+
+          The phone floor came down from 560px with the search console: the
+          hero measured 861px at 375px wide — taller than the 812px viewport
+          minus the 72px navbar, so nothing below it was ever visible and the
+          page looked like it ended at the fold. The console now rests
+          collapsed (48px, not 441px), which leaves the stack ~476px tall, and
+          460px is a floor under that rather than over it — the height is the
+          content's, and the section ends about 260px above the fold with the
+          next one showing. Desktop keeps its 720px. */}
+      <div className="relative min-h-[460px] md:min-h-[720px] px-4 md:px-12 flex flex-col justify-end pb-10 md:pb-16 pt-20 md:pt-16 text-white">
         <Eyebrow className="text-white/60 mb-4">
           {copy?.eyebrow ?? "Bazar · Abu Dhabi"}
         </Eyebrow>
