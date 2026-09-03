@@ -29,26 +29,35 @@ export function ListYourProperty({
   imageLabel?: string | null;
 }) {
   return (
-    <section className="px-4 md:px-12 py-14 md:py-20">
+    <section className="px-4 md:px-12 py-10 md:py-20">
       <div className="grid overflow-hidden rounded-2xl border border-bz-border bg-bz-surface md:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
         {/* Form */}
-        <div className="min-w-0 p-6 md:p-14">
+        <div className="min-w-0 p-5 md:p-14">
           <div
             className="text-[11px] font-medium uppercase text-bz-accent"
             style={{ letterSpacing: "0.12em" }}
           >
             {eyebrow}
           </div>
-          <h2 className="serif mt-2 text-[32px] md:text-[40px] font-normal leading-[1.05] tracking-tight">
+          <h2 className="serif mt-1.5 text-[28px] md:text-[40px] font-normal leading-[1.05] tracking-tight">
             {heading}
           </h2>
-          <p className="mt-3 max-w-[44ch] text-[14.5px] text-bz-ink-2 leading-relaxed">
+          <p className="mt-2 max-w-[44ch] text-[14px] md:text-[14.5px] text-bz-ink-2 leading-relaxed md:mt-3">
             {body}
           </p>
 
-          <FormRenderer form={form} className="mt-8" />
+          <FormRenderer form={form} className="mt-5 md:mt-8" />
         </div>
 
+        {/* Artwork FIRST on a phone, second from `md`.
+
+            The grid stacks in source order below `md`, which put the picture
+            after the form — so a visitor met a 773px column of inputs before
+            seeing what the card was about, and the image only appeared once
+            they had scrolled past the thing it was meant to introduce. `order`
+            moves it without touching the DOM order, so the desktop split (form
+            in the leading track, art in the trailing one) is unchanged and
+            nothing about the RTL mirror changes either. */}
         {/* Artwork.
             `minmax(0,…)` on the tracks above plus `min-w-0` on the form column
             stop the form's min-content width from collapsing this track to a
@@ -70,7 +79,7 @@ export function ListYourProperty({
             is a second copy of the same artboard with the type set in Arabic,
             so it needs exactly the same treatment — and under `dir="rtl"` the
             tracks swap, which is why nothing here pins a side. */}
-        <div className="relative isolate min-w-0 aspect-[4/3] overflow-hidden bg-bz-surface md:aspect-auto md:h-full">
+        <div className="relative isolate order-first min-w-0 aspect-[4/3] overflow-hidden bg-bz-surface md:order-none md:aspect-auto md:h-full">
           {imageUrl ? (
             <Image
               src={imageUrl}

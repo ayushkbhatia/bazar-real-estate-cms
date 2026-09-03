@@ -27,18 +27,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import type {
-  FormFieldDef,
-  FormOption,
-  ResolvedForm,
-} from "@/lib/forms/types";
+import type { FormFieldDef, FormOption, ResolvedForm } from "@/lib/forms/types";
 import {
   formatRangeLabel,
   formatRangeValue,
   parseRangeValue,
   rangeBounds,
 } from "@/lib/forms/types";
-import { activeFields, renderFormCopy, visibleFields } from "@/lib/forms/resolve";
+import {
+  activeFields,
+  renderFormCopy,
+  visibleFields,
+} from "@/lib/forms/resolve";
 import { buildFormSchema, normaliseSubmission } from "@/lib/forms/validate";
 import { optionsFor } from "@/lib/forms/submission";
 import { buildSearchRedirect } from "@/lib/forms/search";
@@ -173,11 +173,9 @@ export function FormRenderer({
     setFormError(null);
 
     const normalised = normaliseSubmission(form, values);
-    const parsed = buildFormSchema(
-      form,
-      dynamicOptions,
+    const parsed = buildFormSchema(form, dynamicOptions, normalised).safeParse(
       normalised,
-    ).safeParse(normalised);
+    );
     if (!parsed.success) {
       const next: Record<string, string> = {};
       for (const issue of parsed.error.issues) {
@@ -242,7 +240,10 @@ export function FormRenderer({
       noValidate
       className={cn(
         "flex flex-col",
-        stacked ? "gap-4" : "gap-3.5",
+        // Tighter between rows on a phone, where the card is a long scroll and
+        // the 44px controls already carry the touch spacing. Restored at `md`,
+        // where the card is a two-column split and has the room.
+        stacked ? "gap-3 md:gap-4" : "gap-3.5",
         className,
       )}
     >
@@ -265,8 +266,16 @@ export function FormRenderer({
           <div
             key={row.map((f) => f.key).join("-")}
             className={cn(
-              "grid grid-cols-1 gap-3 sm:grid-cols-2",
-              stacked && "gap-4",
+              "grid gap-3",
+              stacked
+                ? // Two-up on a PHONE, not just from `sm`. `rows()` above pairs
+                  // only fields the registry marked `width: "half"`, so the
+                  // decision that these two are short enough to share a line
+                  // has already been made — honouring it below `sm` costs
+                  // nothing and saved 84px on the home card, where First and
+                  // Last Name were two full-width 68px blocks stacked.
+                  "grid-cols-2 sm:gap-4"
+                : "grid-cols-1 sm:grid-cols-2",
             )}
           >
             {row.map((f) => (
@@ -309,7 +318,9 @@ export function FormRenderer({
         {pending ? merged.pending_label : merged.submit_label}
       </Button>
       {merged.consent_note ? (
-        <p className="text-[11.5px] text-bz-muted -mt-1">{merged.consent_note}</p>
+        <p className="text-[11.5px] text-bz-muted -mt-1">
+          {merged.consent_note}
+        </p>
       ) : null}
     </form>
   );
@@ -368,7 +379,13 @@ const STACKED_INPUT =
   "h-11 w-full rounded-md border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[13.5px] outline-none focus:border-bz-accent";
 const STACKED_LABEL = "text-[12px] font-medium text-bz-ink-2";
 
-function FieldError({ message, stacked }: { message?: string; stacked: boolean }) {
+function FieldError({
+  message,
+  stacked,
+}: {
+  message?: string;
+  stacked: boolean;
+}) {
   if (!message) return null;
   return (
     <span
@@ -464,7 +481,12 @@ function FieldControl({
         <div
           className={cn(
             "flex flex-wrap",
-            stacked ? "flex-col gap-2 sm:flex-row" : "gap-1.5",
+            // `flex-row` on a phone too. The container already wrapped, so a
+            // column here meant one chip per row whatever the label length —
+            // three 44px chips and two gaps, 148px, for options that fit two
+            // to a line at 375px. Wrapping keeps the long ones on their own
+            // row and pairs the short ones, which is what wrapping is for.
+            stacked ? "gap-2" : "gap-1.5",
           )}
         >
           {options.map((o) => {
@@ -601,7 +623,12 @@ function FieldControl({
                 : field.mapping === "last_name"
                   ? "family-name"
                   : undefined;
-      const inputType = field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text";
+      const inputType =
+        field.type === "email"
+          ? "email"
+          : field.type === "tel"
+            ? "tel"
+            : "text";
       // A text field with options gets a datalist rather than a dropdown: the
       // list covers what we have on file, and someone whose building isn't on
       // it still has to be able to type it. That is how the management form's
@@ -720,9 +747,12 @@ function DialPhone({
   onChange: (value: string) => void;
 }) {
   const t = useTranslations("forms");
-  const codes = options.length > 0 ? options : [{ label: "+971", value: "+971" }];
+  const codes =
+    options.length > 0 ? options : [{ label: "+971", value: "+971" }];
   const match = codes.find((c) => value.startsWith(c.value || c.label));
-  const dial = match ? match.value || match.label : codes[0]!.value || codes[0]!.label;
+  const dial = match
+    ? match.value || match.label
+    : codes[0]!.value || codes[0]!.label;
   const national = match ? value.slice(dial.length).trim() : value;
 
   const join = (nextDial: string, nextNational: string) =>
@@ -789,7 +819,10 @@ function SuccessPanel({
   if (style === "serif") {
     return (
       <div className={cn("flex flex-col", className)}>
-        <div className="serif text-[24px]" style={{ letterSpacing: "-0.015em" }}>
+        <div
+          className="serif text-[24px]"
+          style={{ letterSpacing: "-0.015em" }}
+        >
           {title}
         </div>
         <p className="mt-3 text-[14px] text-bz-ink-2 leading-relaxed">{body}</p>
@@ -808,9 +841,16 @@ function SuccessPanel({
 
   if (style === "soft") {
     return (
-      <div className={cn("bg-bz-accent-soft text-bz-accent rounded-lg p-5", className)}>
+      <div
+        className={cn(
+          "bg-bz-accent-soft text-bz-accent rounded-lg p-5",
+          className,
+        )}
+      >
         <div className="font-medium text-[14px]">{title}</div>
-        <p className="text-[13px] mt-1.5 leading-relaxed text-bz-ink-2">{body}</p>
+        <p className="text-[13px] mt-1.5 leading-relaxed text-bz-ink-2">
+          {body}
+        </p>
         {onAnother ? (
           <button
             type="button"
