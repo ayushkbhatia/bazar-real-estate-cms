@@ -31,6 +31,39 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [mobile] The shared snap-rail primitives lose their first card's gutter.
+  `.bz-rail` (app/globals.css) and `CarouselGrid`
+  (components/brand/mobile/carousel-grid.tsx) both set `padding-inline: 16px`
+  and `scroll-snap-type: x mandatory` with no `scroll-padding-inline`.
+  Mandatory snapping aligns a child to the container's *scrollport* edge,
+  which ignores padding, so on load the browser scrolls the rail 16px and the
+  first card sits flush against the screen while every heading above it stays
+  inset — measured on the home page's location rail before #485 fixed
+  that one rail locally with `scroll-px-4 md:scroll-px-0`. Every other
+  consumer of the two primitives still has it. "Done" is
+  `scroll-padding-inline: var(--bz-4)` on `.bz-rail` (and `0` on
+  `.bz-rail--flush`) plus `scroll-px-4 md:scroll-px-0` in `CarouselGrid`,
+  after which the local override in
+  `app/[locale]/(public)/_components/home/location-browsing.tsx` could go.
+  Both files are under the shared-files rule, hence not done here.
+
+- [i18n] The Arabic message catalogue still writes money as `AED 2M` inside
+  prose sentences.
+  Surfaced by the units-dictionary PR, which moved every glyph the CODE emits
+  into `lib/preferences/unit-labels.ts` and left prose alone on purpose. About
+  30 strings in `messages/ar/guides.json` and `messages/ar/tools.json` read
+  e.g. "تملّك عقارات مؤهلة بقيمة AED 2M+". They are Latin because
+  `lib/i18n/mt/mask.ts:78` masks money so a translation cannot mangle the
+  figure — correct as a translation rule, and it leaves the currency in English
+  in copy the client has reviewed.
+  Not folded into that PR because it is translation work on hand-reviewed
+  Arabic, not a code change: the agreement around "2 مليون درهم" differs by
+  count, and the English siblings interpolate the same figures. "Done" looks
+  like a pass over those two files with the client's Arabic reviewer, plus a
+  decision on whether `mask.ts` should emit a localised unit rather than a
+  protected Latin one. `lib/master-pages/arabic/master.json` has the same
+  question.
+
 - [infra] Supabase Storage serves every public object with
   `cache-control: no-cache`, so nothing in the media bucket is cached by the
   browser.
@@ -1328,3 +1361,19 @@ shows the trail.)
   `match: { mode: "commercial" }` header for the retired `/commercial/search`
   route. Harmless — nothing reads it now — but it is a CMS row an editor can
   still open and edit to no effect.
+
+- [i18n] Arabic text inside an ENGLISH page is still drawn by the Latin stack.
+  `globals.css` says a `<span lang="ar">` on an English page "should get the
+  Arabic one", and `:lang(ar)` only redefines `--bz-font-sans` — but
+  `font-family` is inherited as an already-resolved value from `body`, so
+  redefining the variable on a descendant changes nothing. Every Arabic twin
+  rendered beside English copy therefore falls through Geist and its
+  metric-matched fallback to whatever Arabic face the DEVICE picks, which is
+  why the same string can look different on a laptop and the phone next to it.
+  `locale-toggle.tsx` now pins its own `ع` with
+  `font-[family-name:var(--bz-font-ar-body)]`; `LanguageSwitch`'s "العربية" and
+  the Arabic twins elsewhere still do not. The general fix is one declaration
+  (`font-family: var(--bz-font-ar-body)` inside the existing `:lang(ar)` rule)
+  and it restyles Arabic fragments across every English page at once, so it
+  wants its own PR and a look at the visual gates rather than a corner of
+  someone else's.

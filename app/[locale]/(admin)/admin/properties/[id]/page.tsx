@@ -9,6 +9,9 @@ import { currentStaffRow } from "@/lib/queries/staff";
 import { listActiveAgents, type ActiveAgent } from "@/lib/queries/staff-agents";
 import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
 import { toOptions } from "@/lib/amenities";
+import { getCardLabelSettings } from "@/lib/queries/card-labels";
+import { BUILT_IN_FLAG } from "@/lib/card-labels";
+import { CardLabelsCard } from "./_components/card-labels-card";
 import { PresenceBanner } from "@/lib/realtime/presence-banner";
 import { PresencePile } from "@/lib/realtime/presence-pile";
 import {
@@ -44,7 +47,7 @@ async function fetchPropertyForEdit(id: string) {
       // loaded them writes null over them on the next save of any other field
       // — the editor sees a success toast and the Arabic is gone. Pinned by
       // _form.arabic.test.ts.
-      "id, reference, slug, title, title_ar, short_description, short_description_ar, description, description_ar, type, mode, segment, property_form, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, view_ar, orientation, orientation_ar, parking_bays, floor, address_line, address_line_ar, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, assigned_agent_id, geo",
+      "id, reference, slug, title, title_ar, short_description, short_description_ar, description, description_ar, type, mode, segment, property_form, status, price_aed, service_charge_per_ft2, beds, baths, built_up_ft2, plot_ft2, year_built, tenure, furnishing, view, view_ar, orientation, orientation_ar, parking_bays, floor, address_line, address_line_ar, listing_permit_no, listing_permit_expires_at, dld_plot_number, area_id, developer_id, amenities, seo, assigned_agent_id, geo, flags",
     )
     .eq("id", id)
     .maybeSingle();
@@ -162,6 +165,25 @@ export default async function PropertyEditPage({ params }: PageProps) {
   // The floor plan is media too, but it isn't a gallery photo: it has its own
   // card in the Details tab, and leaving it in the grid would let it be dragged
   // into the gallery order or starred into the hero slot.
+  // The vocabulary, plus what this listing already carries. The legacy
+  // booleans are folded in so a property that has only ever had
+  // `flags.exclusive` shows that chip ticked rather than looking untagged.
+  const cardLabelVocabulary = await getCardLabelSettings();
+  const rawFlags =
+    property.flags && typeof property.flags === "object" && !Array.isArray(property.flags)
+      ? (property.flags as Record<string, unknown>)
+      : {};
+  const assignedCardLabels = [
+    ...new Set([
+      ...(Array.isArray(rawFlags.labels)
+        ? rawFlags.labels.filter((v): v is string => typeof v === "string")
+        : []),
+      ...Object.entries(BUILT_IN_FLAG)
+        .filter(([, flag]) => rawFlags[flag] === true)
+        .map(([id]) => id),
+    ]),
+  ];
+
   const floorPlanRow = media.find((m) => m.role === "floor_plan") ?? null;
   const galleryMedia = media.filter((m) => m.role !== "floor_plan");
   const floorPlan = floorPlanRow
@@ -328,6 +350,15 @@ export default async function PropertyEditPage({ params }: PageProps) {
             propertyId={property.id}
             agents={agentOptions}
             value={assignedAgentId}
+          />
+          {/* In the rail rather than inside the form, because it saves on its
+              own — see the note on the component. The rail is also where an
+              editor looks for "what does this listing look like to a visitor",
+              next to the agent on it and the publish state. */}
+          <CardLabelsCard
+            propertyId={property.id}
+            vocabulary={cardLabelVocabulary}
+            initial={assignedCardLabels}
           />
           <PublishCard
             propertyId={property.id}

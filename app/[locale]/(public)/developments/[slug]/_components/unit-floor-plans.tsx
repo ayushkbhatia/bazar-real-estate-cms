@@ -18,7 +18,7 @@ import {
   formatMoneyValue,
   usePreferences,
 } from "@/lib/preferences";
-import type { AreaUnit, Preferences } from "@/lib/preferences";
+import type { AreaLabels, Preferences } from "@/lib/preferences";
 
 /**
  * Units and their layouts — the row of unit-type buttons above the map.
@@ -114,7 +114,7 @@ export function UnitFloorPlans({
   const active = types.find((t) => t.id === activeId) ?? types[0]!;
   const summary = summaryLine(active, prefs);
   const openType = lightbox ? types.find((t) => t.id === lightbox.typeId) : null;
-  const openPlans = openType ? lightboxPlans(openType, prefs.area_unit) : [];
+  const openPlans = openType ? lightboxPlans(openType, prefs) : [];
 
   return (
     <div ref={sectionRef} className="px-4 md:px-12 py-16">
@@ -257,7 +257,7 @@ export function UnitFloorPlans({
                     <div className="mt-3">
                       <div className="text-[14px] font-medium">{plan.label}</div>
                       <div className="text-[11.5px] text-bz-ink-2 mono mt-0.5">
-                        {planStats(plan, prefs.area_unit)}
+                        {planStats(plan, prefs)}
                       </div>
                     </div>
                     {plan.description ? (
@@ -355,11 +355,11 @@ function openableIndex(type: UnitTypeCard, planId: string): number {
   return type.plans.filter((p) => p.image_url).findIndex((p) => p.id === planId);
 }
 
-function lightboxPlans(type: UnitTypeCard, unit: AreaUnit): LightboxPlan[] {
+function lightboxPlans(type: UnitTypeCard, prefs: AreaLabels): LightboxPlan[] {
   const out: LightboxPlan[] = [];
   for (const p of type.plans) {
     if (!p.image_url) continue;
-    const meta = planStats(p, unit);
+    const meta = planStats(p, prefs);
     out.push({
       id: p.id,
       src: p.image_url,
@@ -381,11 +381,7 @@ function lightboxPlans(type: UnitTypeCard, unit: AreaUnit): LightboxPlan[] {
  */
 function summaryLine(type: UnitTypeCard, prefs: Preferences): string | null {
   const parts: string[] = [];
-  const size = formatAreaRange(
-    type.size_from_ft2,
-    type.size_to_ft2,
-    prefs.area_unit,
-  );
+  const size = formatAreaRange(type.size_from_ft2, type.size_to_ft2, prefs);
   if (size) parts.push(size);
   if (type.price_from_aed != null) {
     parts.push(`from ${formatMoneyValue(type.price_from_aed, prefs)}`);
@@ -395,12 +391,12 @@ function summaryLine(type: UnitTypeCard, prefs: Preferences): string | null {
 
 function planStats(
   plan: Pick<PlanCard, "beds" | "baths" | "area_ft2">,
-  unit: AreaUnit,
+  prefs: AreaLabels,
 ): string {
   const parts: string[] = [];
   if (plan.beds != null) parts.push(plan.beds === 0 ? "Studio" : `${plan.beds} bed`);
   if (plan.baths != null) parts.push(`${plan.baths} bath`);
-  if (plan.area_ft2 != null) parts.push(formatArea(plan.area_ft2, unit));
+  if (plan.area_ft2 != null) parts.push(formatArea(plan.area_ft2, prefs));
   return parts.length ? parts.join(" · ") : "—";
 }
 

@@ -20,6 +20,9 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { CarouselGrid } from "@/components/brand/mobile";
 import { SimilarCard } from "./_components/similar-card";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
+import { cn } from "@/lib/utils";
+import { getCardLabelResolver } from "@/lib/queries/card-labels";
+import type { ResolvedCardLabel } from "@/lib/card-labels";
 import {
   extractReferenceFromSlug,
   formatPriceAED,
@@ -229,6 +232,15 @@ export async function generateMetadata({
   };
 }
 
+/** The five chip styles the listing card draws, mirrored for the header band. */
+const DETAIL_LABEL_STYLES: Record<ResolvedCardLabel["kind"], string> = {
+  ink: "bg-bz-navy text-bz-bg",
+  accent: "bg-bz-accent-soft text-bz-accent",
+  success: "bg-[oklch(0.94_0.04_145)] text-[oklch(0.35_0.08_145)]",
+  warn: "bg-[oklch(0.96_0.05_80)] text-[oklch(0.45_0.1_60)]",
+  danger: "bg-[oklch(0.96_0.04_28)] text-[oklch(0.45_0.13_28)]",
+};
+
 export default async function PropertyDetailPage({ params }: PageProps) {
   const { slug, locale } = await params;
   /*
@@ -250,6 +262,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   // `pages` bag for the strings W6 extracted out of the JSX.
   const tp = await getTranslations({ locale, namespace: "pages.property" });
   const tl = await getTranslations({ locale, namespace: "listing" });
+  const cardLabels = await getCardLabelResolver(locale);
   const ref = extractReferenceFromSlug(slug);
   if (!ref) notFound();
 
@@ -475,17 +488,32 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
       {/* Header band */}
       <section className="px-4 md:px-12 pt-8 md:pt-10 pb-8">
+        {/*
+          The same labels the card wears, from the same vocabulary — otherwise
+          a client who renamed "Exclusive" to "Sole agency" would get the new
+          word on every card and the old one here, on the page a buyer reads
+          most carefully.
+
+          No `limit`: this is a header band with a whole row to itself, not a
+          22px strip over a thumbnail, so a listing carrying four says four.
+
+          `mortgage_eligible` stays on the catalogue below. It is a fact about
+          financing rather than a marketing label — it has never appeared on a
+          card, and putting it in the editable vocabulary would offer to let
+          someone rename a regulatory statement.
+        */}
         <div className="flex gap-2 mb-4 flex-wrap">
-          {property.flags?.exclusive ? (
-            <span className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium bg-bz-navy text-bz-bg">
-              {tl("badge.exclusive")}
+          {cardLabels(property.flags, Number.MAX_SAFE_INTEGER).map((l) => (
+            <span
+              key={l.id}
+              className={cn(
+                "inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium",
+                DETAIL_LABEL_STYLES[l.kind],
+              )}
+            >
+              {l.label}
             </span>
-          ) : null}
-          {property.flags?.vacant_on_transfer ? (
-            <span className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium bg-bz-accent-soft text-bz-accent">
-              {tl("badge.vacantOnTransfer")}
-            </span>
-          ) : null}
+          ))}
           {property.flags?.mortgage_eligible ? (
             <span className="inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium bg-bz-surface-2 text-bz-ink-2">
               {tl("badge.mortgageEligible")}

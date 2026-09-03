@@ -40,7 +40,7 @@ export function AreaText({
 }) {
   const { prefs } = usePreferences();
   if (ft2 == null || !Number.isFinite(ft2)) return <>{fallback}</>;
-  return <>{formatArea(ft2, prefs.area_unit)}</>;
+  return <>{formatArea(ft2, prefs)}</>;
 }
 
 /** "1,240 – 1,480 ft²". Renders nothing when both bounds are missing. */
@@ -54,19 +54,19 @@ export function AreaRangeText({
   fallback?: string;
 }) {
   const { prefs } = usePreferences();
-  return <>{formatAreaRange(fromFt2, toFt2, prefs.area_unit) ?? fallback}</>;
+  return <>{formatAreaRange(fromFt2, toFt2, prefs) ?? fallback}</>;
 }
 
 /** Just the unit glyph, for headers like "Median AED/ft²". */
 export function AreaUnitText() {
   const { prefs } = usePreferences();
-  return <>{areaUnitLabel(prefs.area_unit)}</>;
+  return <>{areaUnitLabel(prefs)}</>;
 }
 
 /** Just the currency glyph — "AED" / "$". For table headers and unit suffixes. */
 export function CurrencySymbolText() {
   const { prefs } = usePreferences();
-  return <>{currencySymbol(prefs.currency)}</>;
+  return <>{currencySymbol(prefs)}</>;
 }
 
 /**
@@ -126,8 +126,7 @@ export function PricePerAreaValueText({
   if (aedPerFt2 == null || !Number.isFinite(aedPerFt2)) return <>{fallback}</>;
   return (
     <>
-      {currencySymbol(prefs.currency)}{" "}
-      {formatPricePerAreaValue(aedPerFt2, prefs)}
+      {currencySymbol(prefs)} {formatPricePerAreaValue(aedPerFt2, prefs)}
     </>
   );
 }
@@ -151,9 +150,8 @@ export function PricePerAreaText({
   if (aedPerFt2 == null || !Number.isFinite(aedPerFt2)) return <>{fallback}</>;
   return (
     <>
-      {currencySymbol(prefs.currency)}{" "}
-      {formatPricePerAreaValue(aedPerFt2, prefs)} /{" "}
-      {areaUnitLabel(prefs.area_unit)}
+      {currencySymbol(prefs)} {formatPricePerAreaValue(aedPerFt2, prefs)} /{" "}
+      {areaUnitLabel(prefs)}
       {suffix}
     </>
   );

@@ -1039,8 +1039,21 @@
    spans this epic emits (`<span lang="en" dir="ltr">` around an untranslated
    field) depend on that distinction being honoured. */
 :root {
-  --bz-font-ar: var(--font-arabic), "Noto Naskh Arabic", "Geeza Pro",
-    "Al Bayan", sans-serif;
+  /* The inner fallback is load-bearing on the ENGLISH side. `--font-arabic` is
+     declared only when the root layout loads the Arabic face, which it does
+     for RTL pages alone (see `_fonts-ar.ts`), so on an English page this
+     property is undeclared — and a bare `var()` on an undeclared property is
+     invalid at computed-value time, which throws away the WHOLE `font-family`
+     that used it and silently inherits the Latin one. Naming a family inside
+     the `var()` keeps the stack valid, so a `lang="ar"` fragment on an English
+     page can be pointed at real Arabic faces instead of at whatever the
+     platform reaches for after Geist and its metric-matched fallback miss —
+     which is a per-device answer the stylesheet never made.
+     "Noto Sans Arabic" leads the system faces because it is the Android
+     default and a sans, so the fallback matches the site's tone rather than
+     switching script and style at once. */
+  --bz-font-ar: var(--font-arabic, "IBM Plex Sans Arabic"), "Noto Sans Arabic",
+    "Noto Naskh Arabic", "Geeza Pro", "Al Bayan", sans-serif;
 
   /* Four ROLE variables, one per typographic job an Arabic page has, each
      defaulting to the shipped face above. Nothing about the rendering changes

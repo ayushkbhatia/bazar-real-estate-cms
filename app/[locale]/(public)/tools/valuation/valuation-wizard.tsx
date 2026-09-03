@@ -303,7 +303,7 @@ export function ValuationWizard({ areas }: { areas: AreaOption[] }) {
               types(`type.${state.property_type}`),
               t("valuation.bedsShort", { count: state.beds }),
               t("valuation.bathsLong", { count: state.baths }),
-              formatArea(state.built_up_ft2, prefs.area_unit),
+              formatArea(state.built_up_ft2, prefs),
               state.floor != null
                 ? t("valuation.floor", { n: state.floor })
                 : null,
@@ -575,7 +575,7 @@ function Step2({
       </div>
       <fieldset>
         <Label htmlFor="built_up">
-          {t("valuation.builtUp", { unit: areaUnitLabel(prefs.area_unit) })}
+          {t("valuation.builtUp", { unit: areaUnitLabel(prefs) })}
         </Label>
         <Input
           id="built_up"
@@ -1011,7 +1011,7 @@ function LivePreview({
           {[
             t("valuation.bedsShort", { count: state.beds }),
             t("valuation.bathsShort", { count: state.baths }),
-            formatArea(state.built_up_ft2, prefs.area_unit),
+            formatArea(state.built_up_ft2, prefs),
             state.floor != null
               ? t("valuation.floor", { n: state.floor })
               : null,
@@ -1023,7 +1023,7 @@ function LivePreview({
         <div className="mt-6">
           <Eyebrow>
             {t("valuation.estimatedValue", {
-              symbol: currencySymbol(prefs.currency),
+              symbol: currencySymbol(prefs),
             })}
           </Eyebrow>
           {estimate ? (
@@ -1038,7 +1038,7 @@ function LivePreview({
               <div className="text-[12px] text-bz-muted mt-1">
                 {t("valuation.midpoint")}{" "}
                 <span className="text-bz-navy font-medium">
-                  {currencySymbol(prefs.currency)} {rangeValue(estimate.midAed)}
+                  {currencySymbol(prefs)} {rangeValue(estimate.midAed)}
                 </span>{" "}
                 · {formatPricePerArea(estimate.pricePerFt2Used, prefs)}
               </div>
@@ -1058,8 +1058,8 @@ function LivePreview({
             <li className="flex justify-between">
               <span>
                 {t("valuation.basisBaseline", {
-                  symbol: currencySymbol(prefs.currency),
-                  unit: areaUnitLabel(prefs.area_unit),
+                  symbol: currencySymbol(prefs),
+                  unit: areaUnitLabel(prefs),
                 })}
               </span>
               <span className="mono">
@@ -1181,7 +1181,7 @@ function SubmittedConfirmation({
             </div>
             <div className="text-[12.5px] text-bz-muted mt-1">
               {t("valuation.confirmationMidpoint", {
-                symbol: currencySymbol(prefs.currency),
+                symbol: currencySymbol(prefs),
                 value: rangeValue(estimate.midAed),
               })}
             </div>

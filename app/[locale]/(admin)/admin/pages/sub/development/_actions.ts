@@ -632,3 +632,70 @@ export async function saveDevelopmentSeo(
   revalidatePath(`/admin/pages/sub/development/${record.slug}`);
   return { status: "ok", message: "Search appearance saved." };
 }
+
+/**
+ * Save the card labels this development wears.
+ *
+ * A merge into `meta` rather than a replace, for the reason the content action
+ * above gives from the other side: that bag also carries `feature_blocks`,
+ * `faq`, `coords`, `nearby_ids`, `floorplan_gated` and `is_signature`, and a
+ * card that owns one key must not be able to drop the rest.
+ *
+ * Ids are filtered rather than checked against the vocabulary: `labelsFor`
+ * resolves an assignment through the saved labels at render time, so an id
+ * that no longer exists draws nothing. Rejecting it here would lose the tag if
+ * a label were switched off and later switched back on.
+ */
+export async function setDevelopmentCardLabels(
+  slug: string,
+  labels: string[],
+): Promise<{ status: "ok" } | { status: "error"; message: string }> {
+  if (!isSupabaseConfigured)
+    return { status: "error", message: "Supabase env vars are not set." };
+  await requireRole(PAGE_ROLES);
+
+  const { record, message } = await loadRecord(slug);
+  if (!record)
+    return { status: "error", message: message ?? "Development not found." };
+
+  const clean = [
+    ...new Set(
+      (Array.isArray(labels) ? labels : []).filter(
+        (v): v is string => typeof v === "string" && /^[a-z0-9_]{1,60}$/.test(v),
+      ),
+    ),
+  ].slice(0, 40);
+
+  const supabase = await createSupabaseServerClient();
+  const { data: existing } = await supabase
+    .from("developments")
+    .select("meta")
+    .eq("id", record.id)
+    .maybeSingle();
+
+  const meta = {
+    ...((existing?.meta as Record<string, unknown> | null) ?? {}),
+    labels: clean,
+  };
+
+  const { error } = await supabase
+    .from("developments")
+    .update({ meta: meta as unknown as never })
+    .eq("id", record.id);
+  if (error) return { status: "error", message: error.message };
+
+  await logAudit({
+    action: "development.card_labels_update",
+    target_kind: "development",
+    target_id: record.id,
+    before: null,
+    after: { labels: clean },
+  });
+
+  revalidatePath(`/admin/pages/sub/development/${slug}`);
+  // The card is drawn on /developments, /off-plan, every area page and the
+  // developer profile — so "layout", not this development's own page.
+  revalidateLocalised("/", "layout");
+  revalidateLocalised(`/developments/${slug}`);
+  return { status: "ok" };
+}

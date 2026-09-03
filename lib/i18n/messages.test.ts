@@ -263,6 +263,20 @@ describe("message catalogues", () => {
        * surface in a way no other check would see.
        */
       "View",
+      /*
+       * "List" is likewise two words, and this site uses both.
+       *
+       *   search.view.list  the NOUN — one of three result layouts, beside
+       *                     "Grid" and "Map". قائمة, the thing you look at.
+       *   nav.listShort     the VERB, on the header CTA a phone shows in place
+       *                     of "List Your Property". أدرج, the thing you do —
+       *                     the reviewed short form already bound in
+       *                     `lib/master-pages/arabic/master.json`.
+       *
+       * قائمة on that button would read "menu", which is what the control
+       * beside it already is.
+       */
+      "List",
     ]);
 
     const byEnglish = new Map<string, Map<string, string>>();

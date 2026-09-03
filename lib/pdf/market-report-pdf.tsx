@@ -158,7 +158,7 @@ export function MarketReportPDF({ snapshot, trend, comparables, prefs }: Props) 
               {r.bedrooms != null ? r.bedrooms : "—"}
             </Text>
             <Text style={{ flex: 1.2, fontFamily: "Courier", fontSize: 9, color: palette.ink2 }}>
-              {formatArea(r.built_up_ft2, prefs.area_unit)}
+              {formatArea(r.built_up_ft2, prefs)}
             </Text>
             <Text style={{ flex: 1.4, fontFamily: "Courier", fontSize: 9, color: palette.ink, textAlign: "right" }}>
               {formatPrice(r.price_aed, prefs)}

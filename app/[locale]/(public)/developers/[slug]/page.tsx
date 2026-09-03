@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/i18n/locales";
 import { getTranslations } from "next-intl/server";
-import { listingBadge } from "@/lib/listing-badge";
+import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import Link from "@/components/i18n/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -77,13 +77,10 @@ export default async function DeveloperProfilePage({
    */
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "editorial" });
-  // The two card badges are shared listing vocabulary rather than page copy,
-  // so they come from `messages/` — not from the editable document below.
-  const tListing = await getTranslations({ locale, namespace: "listing" });
-  const badgeLabels = {
-    exclusive: tListing("badge.exclusive"),
-    vacantOnTransfer: tListing("badge.vacantOnTransfer"),
-  };
+  // The card labels are shared listing vocabulary rather than page copy — and
+  // as of the card-label epic they are the CLIENT's vocabulary, edited at
+  // /admin/settings/card-labels rather than fixed in `messages/`.
+  const cardLabels = await getCardLabelResolver(locale);
   const { slug } = await params;
   // Identity resolves from either side. The directory carries the logo and
   // descriptor for the 30 curated partners, so a developer listed there
@@ -272,8 +269,7 @@ export default async function DeveloperProfilePage({
                   beds={row.beds}
                   baths={row.baths}
                   area={row.built_up_ft2 ?? 0}
-                  badge={listingBadge(row.flags, badgeLabels)?.label}
-                  badgeKind={listingBadge(row.flags, badgeLabels)?.kind}
+                  badges={cardLabels(row.flags)}
                   imgLabel={row.reference}
                   heroSrc={
                     row.hero ? mediaPublicUrl(row.hero.storage_key) : null

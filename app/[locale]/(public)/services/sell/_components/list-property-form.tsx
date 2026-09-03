@@ -23,6 +23,7 @@ import {
   Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUnitLabels } from "@/lib/preferences";
 import type { LeadAreaOption } from "@/lib/queries/lead-routing";
 import type { FormOverrides } from "@/lib/forms/overrides";
 import {
@@ -110,7 +111,8 @@ const FALLBACK_COPY: ResolvedCopy = {
   headingMatched: "{advisor} will call you {when}.",
   headingDesk: "An advisor will call you {when}.",
   summaryMatched: "— assigned to the advisor who covers your community.",
-  summaryDesk: "— with the Abu Dhabi desk, who will put the right advisor on it.",
+  summaryDesk:
+    "— with the Abu Dhabi desk, who will put the right advisor on it.",
   deskName: "Bazar advisory desk",
   deskRole: "Abu Dhabi · Sell, rent and management",
   deskInitials: "BZ",
@@ -119,7 +121,10 @@ const FALLBACK_COPY: ResolvedCopy = {
   callLabel: "Call now",
   stepsLabel: "What happens next",
   steps: [
-    ["Today", "{advisor} calls to confirm the details and answer anything outstanding."],
+    [
+      "Today",
+      "{advisor} calls to confirm the details and answer anything outstanding.",
+    ],
     [
       "Within 48 hours",
       "Free valuation visit, photography brief and a pricing recommendation.",
@@ -136,13 +141,15 @@ function resolveCopy(copy: SellFormCopy | undefined): ResolvedCopy {
   const pick = <K extends keyof ResolvedCopy>(key: K) => {
     const value = copy?.[key];
     if (key === "steps") {
-      return (Array.isArray(value) && value.length > 0
-        ? value
-        : FALLBACK_COPY.steps) as ResolvedCopy[K];
+      return (
+        Array.isArray(value) && value.length > 0 ? value : FALLBACK_COPY.steps
+      ) as ResolvedCopy[K];
     }
-    return (typeof value === "string" && value.trim() !== ""
-      ? value
-      : FALLBACK_COPY[key]) as ResolvedCopy[K];
+    return (
+      typeof value === "string" && value.trim() !== ""
+        ? value
+        : FALLBACK_COPY[key]
+    ) as ResolvedCopy[K];
   };
   return {
     step1Label: pick("step1Label"),
@@ -264,14 +271,10 @@ const STEP1_FIELDS = [
   "urgency",
 ] as const;
 
-export function ListPropertyForm({
-  areas,
-  deskPhone,
-  copy,
-  questions,
-}: Props) {
+export function ListPropertyForm({ areas, deskPhone, copy, questions }: Props) {
   const t = useTranslations("forms");
   const q = useQuestionCopy(questions);
+  const unitLabels = useUnitLabels();
   const c = useMemo(() => resolveCopy(copy), [copy]);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
@@ -602,7 +605,10 @@ export function ListPropertyForm({
                     setAreaText(next);
                     setValue("area_sqft", parseAreaSqft(next));
                   }}
-                  placeholder={q.placeholder("area_sqft", "sell.areaPlaceholder")}
+                  placeholder={q.placeholder(
+                    "area_sqft",
+                    "sell.areaPlaceholder",
+                  )}
                   /* Every focusable control in this wizard reads 16px until
                      `md` and 14px above it. iOS Safari zooms the viewport when
                      it focuses anything under 16px, and on a two-step form that
@@ -613,7 +619,14 @@ export function ListPropertyForm({
                   className="mono w-full h-11 rounded border border-bz-border bg-bz-surface px-3 pe-11 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
                 />
                 <span className="absolute end-3.5 top-1/2 -translate-y-1/2 text-[12px] text-bz-muted pointer-events-none">
-                  {q.unit("area_sqft", "ft²")}
+                  {/* The CMS can override this per locale (`unit_ar` on the
+                      form field); the code default now comes from the
+                      site-wide dictionary rather than being typed here, so an
+                      Arabic visitor sees an Arabic suffix even on a form
+                      nobody has edited. Deliberately the ft² entry and not the
+                      visitor's preferred unit: this box stores ft², whatever
+                      the rest of the site is displaying in. */}
+                  {q.unit("area_sqft", unitLabels.area.ft2)}
                 </span>
               </div>
             </FieldShell>
@@ -691,7 +704,11 @@ export function ListPropertyForm({
 
         <div hidden={step !== 2}>
           <div className="flex items-center gap-3 p-3.5 rounded bg-bz-surface-2">
-            <Home size={16} strokeWidth={1.6} className="text-bz-muted shrink-0" />
+            <Home
+              size={16}
+              strokeWidth={1.6}
+              className="text-bz-muted shrink-0"
+            />
             <span className="text-[13px] flex-1 leading-snug">{summary}</span>
             <button
               type="button"
@@ -744,7 +761,10 @@ export function ListPropertyForm({
                   {...register("mobile")}
                   inputMode="tel"
                   autoComplete="tel-national"
-                  placeholder={q.placeholder("mobile", "sell.mobilePlaceholder")}
+                  placeholder={q.placeholder(
+                    "mobile",
+                    "sell.mobilePlaceholder",
+                  )}
                   className="mono w-full h-11 rounded-e border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
                 />
               </div>
@@ -995,7 +1015,10 @@ function Confirmed({
         {nextSteps.map(([when, what], i) => (
           <li
             key={when}
-            className={cn("flex gap-3.5", i === nextSteps.length - 1 ? "" : "pb-4")}
+            className={cn(
+              "flex gap-3.5",
+              i === nextSteps.length - 1 ? "" : "pb-4",
+            )}
           >
             <div className="flex flex-col items-center shrink-0">
               <span
@@ -1170,7 +1193,11 @@ function LocationField({
                   i === active ? "bg-bz-surface-2" : "",
                 )}
               >
-                <MapPin size={14} strokeWidth={1.6} className="text-bz-muted-2" />
+                <MapPin
+                  size={14}
+                  strokeWidth={1.6}
+                  className="text-bz-muted-2"
+                />
                 {option.name}
                 <span className="ms-auto text-[11px] text-bz-muted">
                   {option.context}

@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
+import { getCardLabelSettings } from "@/lib/queries/card-labels";
 import { NewPropertyForm } from "./_form";
 
 export const dynamic = "force-dynamic";
 
-export default function NewPropertyPage() {
+export default async function NewPropertyPage() {
+  const cardLabels = await getCardLabelSettings();
   return (
     <CmsShell
       title="New property"
@@ -24,7 +26,7 @@ export default function NewPropertyPage() {
           Create a draft listing now and finish filling in details, location,
           amenities, and SEO on the edit screen.
         </p>
-        <NewPropertyForm />
+        <NewPropertyForm cardLabels={cardLabels} />
       </div>
     </CmsShell>
   );

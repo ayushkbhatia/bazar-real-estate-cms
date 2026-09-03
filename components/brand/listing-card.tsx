@@ -28,8 +28,24 @@ export type ListingCardProps = {
    * `area` when the visitor has picked metric.
    */
   areaUnit?: string;
+  /**
+   * The chips drawn over the top-start corner of the media.
+   *
+   * A LIST since the card-label vocabulary moved into the CMS: a listing can
+   * be both exclusive and vacant on transfer, and before this it showed only
+   * whichever the resolver happened to check first. The container was already
+   * `flex gap-1.5` — it was drawn for this and had never been given more than
+   * one thing to hold.
+   *
+   * `badge` / `badgeKind` remain as the single-chip shorthand. They are not
+   * deprecated: plenty of surfaces have exactly one word to say and a two-prop
+   * call is clearer there than a one-element array. When both are given,
+   * `badges` wins and the shorthand is ignored, which `listing-card.test.tsx`
+   * pins.
+   */
+  badges?: ListingCardBadge[];
   badge?: string;
-  badgeKind?: "ink" | "accent" | "success" | "warn" | "danger";
+  badgeKind?: ListingCardBadgeKind;
   imgLabel?: string;
   mediaDark?: boolean;
   /** Public URL of the hero image. If set, replaces the striped placeholder. */
@@ -86,16 +102,34 @@ export type ListingCardProps = {
  * which is nothing this file can measure. `100vw` on a phone over-asks by the
  * container gutter (~32px of 390) and no more.
  */
+export type ListingCardBadgeKind =
+  "ink" | "accent" | "success" | "warn" | "danger";
+
+export type ListingCardBadge = { label: string; kind: ListingCardBadgeKind };
+
+/**
+ * Fold the two prop shapes into the one the renderer draws.
+ *
+ * One place, so the media overlay and the row variant's own chip row cannot
+ * disagree about precedence — which is the bug this card would otherwise grow
+ * the moment someone passed both.
+ */
+function resolveBadges(
+  badges: ListingCardBadge[] | undefined,
+  badge: string | undefined,
+  badgeKind: ListingCardBadgeKind,
+): ListingCardBadge[] {
+  if (badges?.length) return badges;
+  return badge ? [{ label: badge, kind: badgeKind }] : [];
+}
+
 const MEDIA_SIZES: Record<ListingCardVariant, string> = {
   default: "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw",
   editorial: "(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw",
   row: "(min-width: 768px) 280px, (min-width: 640px) 200px, 116px",
 };
 
-const badgeStyles: Record<
-  NonNullable<ListingCardProps["badgeKind"]>,
-  string
-> = {
+const badgeStyles: Record<ListingCardBadgeKind, string> = {
   ink: "bg-bz-navy text-bz-bg",
   accent: "bg-bz-accent-soft text-bz-accent",
   success: "bg-[oklch(0.94_0.04_145)] text-[oklch(0.35_0.08_145)]",
@@ -106,6 +140,7 @@ const badgeStyles: Record<
 function Media({
   imgLabel,
   mediaDark,
+  badges,
   badge,
   badgeKind = "ink",
   aspect,
@@ -120,8 +155,9 @@ function Media({
 }: {
   imgLabel?: string;
   mediaDark?: boolean;
+  badges?: ListingCardBadge[];
   badge?: string;
-  badgeKind?: NonNullable<ListingCardProps["badgeKind"]>;
+  badgeKind?: ListingCardBadgeKind;
   aspect: "4/3" | "5/4" | "auto";
   /** From `MEDIA_SIZES` — the variant's real slot width, see the note there. */
   sizes: string;
@@ -141,19 +177,29 @@ function Media({
     aspect === "auto" && "aspect-auto h-full",
   );
 
+  const mediaBadges = resolveBadges(badges, badge, badgeKind);
+
   const overlays = (
     <>
-      {/* Top-left: status badge (Exclusive, Vacant on transfer, etc.) */}
-      {badge ? (
-        <div className="absolute top-3 start-3 z-10 flex gap-1.5">
-          <span
-            className={cn(
-              "inline-flex items-center gap-1 h-[22px] px-2 rounded-full text-[11px] font-medium",
-              badgeStyles[badgeKind],
-            )}
-          >
-            {badge}
-          </span>
+      {/* Top-start: the card's labels, from `site_settings.card_labels`.
+          `flex-wrap` and `max-w` because the words are the client's now: two
+          long ones would otherwise run under the save button opposite, and the
+          row thumbnail is 116px wide. Wrapping is the honest failure — the
+          chips stack, nothing is hidden, and whoever typed the label sees why
+          it was too long. */}
+      {mediaBadges.length ? (
+        <div className="absolute top-3 start-3 z-10 flex max-w-[calc(100%-4rem)] flex-wrap gap-1.5">
+          {mediaBadges.map((b) => (
+            <span
+              key={`${b.kind}:${b.label}`}
+              className={cn(
+                "inline-flex items-center gap-1 h-[22px] px-2 rounded-full text-[11px] font-medium",
+                badgeStyles[b.kind],
+              )}
+            >
+              {b.label}
+            </span>
+          ))}
         </div>
       ) : null}
 
@@ -246,6 +292,7 @@ export function ListingCard({
   baths,
   area,
   areaUnit = "ft²",
+  badges,
   badge,
   badgeKind = "ink",
   imgLabel,
@@ -264,6 +311,10 @@ export function ListingCard({
   // this (area-text, listing-card-priced, similar-card), so it cannot be
   // async. The hook form works in both trees.
   const t = useTranslations("listing");
+  // The row variant draws its chips in the body rather than over the media, so
+  // it folds the two prop shapes for itself. Same helper, so the two rows can
+  // never disagree about which shape wins.
+  const rowBadges = resolveBadges(badges, badge, badgeKind);
 
   if (variant === "editorial") {
     return (
@@ -272,6 +323,7 @@ export function ListingCard({
           <Media
             imgLabel={imgLabel}
             mediaDark={mediaDark}
+            badges={badges}
             badge={badge}
             badgeKind={badgeKind}
             aspect="5/4"
@@ -320,11 +372,18 @@ export function ListingCard({
         )}
       >
         <div className="w-[280px] flex-shrink-0">
+          {/*
+            No labels on the media here, and this is a fix rather than an
+            omission: the row variant has always passed `badge` into `Media`
+            AND rendered its own chip beside the price, so every row card drew
+            the same word twice — once over a thumbnail that is 116px wide on a
+            phone. Invisible while there was one badge and one word; with a
+            list it would have been four chips. The body chip is the row's
+            presentation and it is the one that survives.
+          */}
           <Media
             imgLabel={imgLabel}
             mediaDark={mediaDark}
-            badge={badge}
-            badgeKind={badgeKind}
             aspect="auto"
             sizes={MEDIA_SIZES.row}
             heroSrc={heroSrc}
@@ -337,16 +396,19 @@ export function ListingCard({
           />
         </div>
         <div className="flex flex-col gap-2 px-[22px] py-[18px] flex-1">
-          {badge ? (
-            <div className="flex gap-1.5">
-              <span
-                className={cn(
-                  "inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium",
-                  badgeStyles[badgeKind],
-                )}
-              >
-                {badge}
-              </span>
+          {rowBadges.length ? (
+            <div className="flex flex-wrap gap-1.5">
+              {rowBadges.map((b) => (
+                <span
+                  key={`${b.kind}:${b.label}`}
+                  className={cn(
+                    "inline-flex items-center h-[22px] px-2 rounded-full text-[11px] font-medium",
+                    badgeStyles[b.kind],
+                  )}
+                >
+                  {b.label}
+                </span>
+              ))}
             </div>
           ) : null}
           <div className="text-[19px] font-medium tracking-tight text-bz-navy">
@@ -386,6 +448,7 @@ export function ListingCard({
       <Media
         imgLabel={imgLabel}
         mediaDark={mediaDark}
+        badges={badges}
         badge={badge}
         badgeKind={badgeKind}
         aspect="4/3"

@@ -30,7 +30,25 @@ import {
   type Currency,
   type Preferences,
 } from "./types";
-import { PREFS_COOKIE, PREFS_COOKIE_MAX_AGE, encodePrefs, decodePrefs } from "./cookie";
+import { DEFAULT_UNIT_LABELS, type UnitLabels } from "./unit-labels";
+import {
+  PREFS_COOKIE,
+  PREFS_COOKIE_MAX_AGE,
+  encodePrefs,
+  decodePrefs,
+} from "./cookie";
+
+/**
+ * The preferences a component reads, with the currency / area-unit dictionary
+ * for the current locale already attached.
+ *
+ * `labels` rides ON the prefs object rather than beside it so that
+ * `formatPrice(aed, prefs)` — which is how roughly twenty components already
+ * call it — picks the visitor's language up for free. It never reaches the
+ * cookie: `encodePrefs` writes three named keys and ignores everything else,
+ * and `setPrefs` rebuilds from `readClientPrefs()`, which has no labels on it.
+ */
+export type LabelledPreferences = Preferences & { labels: UnitLabels };
 
 type Ctx = {
   prefs: Preferences;
@@ -40,6 +58,48 @@ type Ctx = {
 };
 
 const PreferencesContext = createContext<Ctx | null>(null);
+
+/**
+ * The dictionary, resolved on the server and handed down.
+ *
+ * A SEPARATE provider from `PreferencesProvider`, and mounted lower — in
+ * `(public)/layout.tsx` rather than the root layout. Two reasons, both load
+ * bearing:
+ *
+ * - The root layout deliberately does no data reads and no `cookies()` call,
+ *   because either would take all ~78 public routes dynamic and discard their
+ *   `revalidate`. The public layout already makes five cookie-free reads
+ *   through the public Supabase client, so a sixth costs a round trip and not
+ *   the subtree's render mode.
+ * - `/admin` sits outside it. The CMS is English-only, so its components read
+ *   `DEFAULT_UNIT_LABELS` through the fallback below and keep rendering "AED"
+ *   and "ft²" exactly as they always have — without a single admin file
+ *   learning that a dictionary exists.
+ *
+ * The preferences provider therefore sits ABOVE this one, which is why the
+ * dictionary is merged onto `prefs` inside `usePreferences()` and not inside
+ * `PreferencesProvider` — see the note on that hook.
+ */
+const UnitLabelsContext = createContext<UnitLabels | null>(null);
+
+export function UnitLabelsProvider({
+  labels,
+  children,
+}: {
+  labels: UnitLabels;
+  children: React.ReactNode;
+}) {
+  return (
+    <UnitLabelsContext.Provider value={labels}>
+      {children}
+    </UnitLabelsContext.Provider>
+  );
+}
+
+/** The active dictionary, or the shipped English one outside the provider. */
+export function useUnitLabels(): UnitLabels {
+  return useContext(UnitLabelsContext) ?? DEFAULT_UNIT_LABELS;
+}
 
 const LS_KEY = "bz:prefs:v1";
 
@@ -78,8 +138,7 @@ function readClientPrefs(): Preferences {
       : null;
   const raw = cookieMatch
     ? decodeURIComponent(cookieMatch[1]!)
-    : (typeof window !== "undefined" &&
-        window.localStorage.getItem(LS_KEY)) ||
+    : (typeof window !== "undefined" && window.localStorage.getItem(LS_KEY)) ||
       "";
   if (raw === lastSnapshotKey && cachedSnapshot) return cachedSnapshot;
   lastSnapshotKey = raw;
@@ -142,8 +201,14 @@ export function PreferencesProvider({
     notifySubscribers();
   }, []);
 
-  const setCurrency = useCallback((c: Currency) => setPrefs({ currency: c }), [setPrefs]);
-  const setAreaUnit = useCallback((u: AreaUnit) => setPrefs({ area_unit: u }), [setPrefs]);
+  const setCurrency = useCallback(
+    (c: Currency) => setPrefs({ currency: c }),
+    [setPrefs],
+  );
+  const setAreaUnit = useCallback(
+    (u: AreaUnit) => setPrefs({ area_unit: u }),
+    [setPrefs],
+  );
 
   const value = useMemo<Ctx>(
     () => ({ prefs, setCurrency, setAreaUnit, setPrefs }),
@@ -157,26 +222,48 @@ export function PreferencesProvider({
   );
 }
 
+type LabelledCtx = Omit<Ctx, "prefs"> & { prefs: LabelledPreferences };
+
+const NOOP_CTX: Ctx = {
+  prefs: DEFAULT_PREFERENCES,
+  setCurrency: () => {},
+  setAreaUnit: () => {},
+  setPrefs: () => {},
+};
+
 /**
  * Hook for client components. Safe to call from anywhere inside the public
  * route group; throws (in dev) when used outside the provider so we catch
  * the misuse quickly.
+ *
+ * The dictionary is attached HERE rather than inside `PreferencesProvider`,
+ * and the distinction is the whole reason the first attempt at this rendered
+ * English on every Arabic page while the flight payload plainly carried the
+ * Arabic words.
+ *
+ * `PreferencesProvider` sits in the ROOT layout, deliberately — it must not
+ * read cookies or data, or all ~78 public routes go dynamic. `UnitLabelsProvider`
+ * sits in the PUBLIC layout, one level down, because that is the layout allowed
+ * to make a database read. So the preferences provider is ABOVE the dictionary
+ * provider, and a `useUnitLabels()` called inside it resolves at its own
+ * position in the tree — above the value — and gets the English fallback,
+ * for ever, with no error anywhere.
+ *
+ * A hook body runs at the CONSUMER's position, which is below both. So the
+ * merge belongs here, and only here.
  */
-export function usePreferences(): Ctx {
+export function usePreferences(): LabelledCtx {
   const ctx = useContext(PreferencesContext);
-  if (!ctx) {
-    if (process.env.NODE_ENV !== "production") {
-      throw new Error(
-        "usePreferences must be used inside <PreferencesProvider>",
-      );
-    }
-    // In prod, return a no-op fallback so we don't crash the page.
-    return {
-      prefs: DEFAULT_PREFERENCES,
-      setCurrency: () => {},
-      setAreaUnit: () => {},
-      setPrefs: () => {},
-    };
+  // Unconditional: hooks cannot sit behind the null check below.
+  const labels = useUnitLabels();
+  const missing = !ctx;
+  const base = ctx ?? NOOP_CTX;
+  const value = useMemo<LabelledCtx>(
+    () => ({ ...base, prefs: { ...base.prefs, labels } }),
+    [base, labels],
+  );
+  if (missing && process.env.NODE_ENV !== "production") {
+    throw new Error("usePreferences must be used inside <PreferencesProvider>");
   }
-  return ctx;
+  return value;
 }

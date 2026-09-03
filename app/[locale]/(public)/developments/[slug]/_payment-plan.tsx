@@ -47,7 +47,7 @@ function unitLabel(u: CalculatorUnit, prefs: Preferences): string {
   return [
     u.unitType,
     u.beds ? `${u.beds}-bed` : null,
-    u.builtUpFt2 ? formatArea(u.builtUpFt2, prefs.area_unit) : null,
+    u.builtUpFt2 ? formatArea(u.builtUpFt2, prefs) : null,
   ]
     .filter(Boolean)
     .join(" · ");

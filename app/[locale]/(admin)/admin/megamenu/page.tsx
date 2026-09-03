@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ExternalLink, LayoutList } from "lucide-react";
+import { ExternalLink, LayoutList, MousePointerClick } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import {
   Table,
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { listMegamenuTabsForAdmin } from "@/lib/queries/megamenu";
+import { HEADER_CTA_ADMIN_PATH } from "@/lib/master-pages/header-cta";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,32 @@ export default async function MegamenuIndex() {
           columns, links, and the featured tiles beside them — copy, targets
           and imagery.
         </p>
+
+        {/*
+          The one piece of the header that is not a tab. It used to be three
+          English literals in the nav component — so the phone header and the
+          drawer both said "List" and "List Your Property" on /ar, under an
+          otherwise Arabic menu. It lives here rather than under Pages because
+          an editor looking for "the words in the navigation" looks at the
+          navigation screen.
+        */}
+        <Link
+          href={HEADER_CTA_ADMIN_PATH}
+          className="flex items-start gap-3 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
+        >
+          <MousePointerClick
+            size={15}
+            className="mt-0.5 shrink-0 text-bz-muted"
+          />
+          <span className="flex flex-col gap-0.5">
+            <span className="text-[13.5px] font-medium">Header button</span>
+            <span className="text-[12px] text-bz-muted leading-relaxed">
+              The call-to-action beside the tabs — its label, the short version
+              a phone shows next to the menu button, where it links, and the
+              Arabic for both.
+            </span>
+          </span>
+        </Link>
 
         <div className="text-[12.5px] text-bz-muted">
           {tabs.length} {tabs.length === 1 ? "tab" : "tabs"} · {live} live ·{" "}

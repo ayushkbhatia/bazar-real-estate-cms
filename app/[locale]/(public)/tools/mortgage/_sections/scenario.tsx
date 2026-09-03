@@ -123,7 +123,7 @@ export function ScenarioSection(props: Props) {
           <fieldset>
             <Label htmlFor="price">
               {t("mortgage.propertyPrice", {
-                symbol: currencySymbol(prefs.currency),
+                symbol: currencySymbol(prefs),
               })}
             </Label>
             <Input
@@ -168,7 +168,13 @@ export function ScenarioSection(props: Props) {
                  visitor cannot even edit. 16px on the phone, 15 from `md`. */
               className="mt-1.5 mono text-[16px] md:text-[15px]"
               value={money(Math.round(price * downPct), prefs)}
-              aria-label={t("mortgage.downPaymentAria", { currency: "AED" })}
+              /* The figure beside it follows the visitor's currency, so the
+                 label naming that currency has to as well — it said "AED" for
+                 a box reading dollars. A screen-reader user is the one visitor
+                 who cannot see the symbol in the field and check. */
+              aria-label={t("mortgage.downPaymentAria", {
+                currency: currencySymbol(prefs),
+              })}
             />
             <input
               type="range"

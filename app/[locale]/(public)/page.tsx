@@ -1,5 +1,5 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
-import { listingBadge } from "@/lib/listing-badge";
+import { setRequestLocale } from "next-intl/server";
+import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import type { Metadata } from "next";
 import * as React from "react";
 import Link from "@/components/i18n/link";
@@ -77,11 +77,10 @@ export default async function HomePage({
   // Ambient rather than locale-pinned, and only safe because of the line
   // above: `setRequestLocale` has already run, so `getLocale()` has something
   // to resolve.
-  const tl = await getTranslations("listing");
-  const badgeLabels = {
-    exclusive: tl("badge.exclusive"),
-    vacantOnTransfer: tl("badge.vacantOnTransfer"),
-  };
+  // The card labels are the client's vocabulary now, not two catalogue
+  // strings — see lib/card-labels.ts. Resolved once per request and bound to
+  // the locale, so the render loop below just asks per row.
+  const cardLabels = await getCardLabelResolver();
 
   const [{ rows: latest }, settings, content, listForm, testimonials] =
     await Promise.all([
@@ -259,7 +258,7 @@ export default async function HomePage({
         {featured.length > 0 ? (
             <CarouselGrid cols={3}>
               {featured.map((row, index) => {
-                const badge = listingBadge(row.flags, badgeLabels);
+                const badges = cardLabels(row.flags);
                 return (
                   <Link
                     key={row.reference}
@@ -273,8 +272,7 @@ export default async function HomePage({
                       beds={row.beds}
                       baths={row.baths}
                       area={row.built_up_ft2 ?? 0}
-                      badge={badge?.label}
-                      badgeKind={badge?.kind}
+                      badges={badges}
                       imgLabel={row.reference}
                       heroSrc={
                         row.hero ? mediaPublicUrl(row.hero.storage_key) : null

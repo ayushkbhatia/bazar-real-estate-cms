@@ -79,8 +79,17 @@ export async function HeroFullBleed({ copy }: { copy?: HeroCopy } = {}) {
           the headline ~10px under the sticky 72px navbar. A min-height on the
           inner column keeps the bottom-anchored layout for short copy while
           letting a tall stack push the section (and the video behind it)
-          taller instead of cropping it. */}
-      <div className="relative min-h-[560px] md:min-h-[720px] px-4 md:px-12 flex flex-col justify-end pb-10 md:pb-16 pt-24 md:pt-16 text-white">
+          taller instead of cropping it.
+
+          The phone floor came down from 560px with the search console: the
+          hero measured 861px at 375px wide — taller than the 812px viewport
+          minus the 72px navbar, so nothing below it was ever visible and the
+          page looked like it ended at the fold. The console now rests
+          collapsed (48px, not 441px), which leaves the stack ~476px tall, and
+          460px is a floor under that rather than over it — the height is the
+          content's, and the section ends about 260px above the fold with the
+          next one showing. Desktop keeps its 720px. */}
+      <div className="relative min-h-[460px] md:min-h-[720px] px-4 md:px-12 flex flex-col justify-end pb-10 md:pb-16 pt-20 md:pt-16 text-white">
         <Eyebrow className="text-white/60 mb-4">
           {copy?.eyebrow ?? "Bazar · Abu Dhabi"}
         </Eyebrow>
@@ -95,17 +104,32 @@ export async function HeroFullBleed({ copy }: { copy?: HeroCopy } = {}) {
             "Curated marketplace and bespoke advisory for buyers, sellers, and investors across the United Arab Emirates."}
         </p>
         <HeroSearch tabs={activeTabs(bar)} copy={bar.copy} />
-        <div className="mt-5 flex gap-3 text-[13.5px]">
+        {/* `pointer-coarse:min-h-11` is the WCAG 2.5.5 floor, and these two
+            needed it the moment the hero got shorter: the gate measures only
+            what is INSIDE the viewport, so at 861px these sat below the fold
+            of a 390x844 phone and were never counted. They are 113x20 and
+            111x20 — wide enough, 24px short on height — and neither is inside
+            `p`/`li`/`.bz-prose`, so the running-prose exemption does not
+            reach them.
+
+            `inline-flex` comes with it because a min-height on an inline box
+            is ignored; `items-center` keeps the underline where it was drawn.
+            Both are unprefixed, so the desktop hero draws two flex items whose
+            content is laid out exactly as it was. `items-center` on the row
+            is for the "·" between them: it used to stretch to the same 20px
+            the links were, and a 44px link would leave it hanging at the top
+            of its own box. */}
+        <div className="mt-5 flex items-center gap-3 text-[13.5px]">
           <Link
             href={copy?.link1?.href ?? "/off-plan"}
-            className="text-white/85 hover:text-white underline underline-offset-4 transition-colors"
+            className="inline-flex items-center pointer-coarse:min-h-11 text-white/85 hover:text-white underline underline-offset-4 transition-colors"
           >
             {copy?.link1?.label ?? "Browse Properties"}
           </Link>
           <span className="text-white/30">·</span>
           <Link
             href={copy?.link2?.href ?? "/concierge"}
-            className="text-white/85 hover:text-white underline underline-offset-4 transition-colors"
+            className="inline-flex items-center pointer-coarse:min-h-11 text-white/85 hover:text-white underline underline-offset-4 transition-colors"
           >
             {copy?.link2?.label ?? "Talk to an Advisor"}
           </Link>

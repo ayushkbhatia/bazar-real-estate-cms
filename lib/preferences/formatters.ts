@@ -11,8 +11,13 @@
  * `preferences.test.ts` pins that equivalence.
  */
 
-import type { AreaUnit, Currency, Preferences } from "./types";
-import { CURRENCY_SYMBOL } from "./types";
+import type { AreaUnit, Currency } from "./types";
+import {
+  labelsOf,
+  type AreaLabels,
+  type PriceLabels,
+  type UnitLabelsCtx,
+} from "./unit-labels";
 import { convertFromAed, getRate } from "./rates";
 
 export const FT2_PER_M2 = 10.7639;
@@ -28,9 +33,36 @@ export const FT2_PER_M2 = 10.7639;
  */
 const LOCALE = "en-US";
 
-/** The glyph for an area unit — "ft²" / "m²". */
-export function areaUnitLabel(unit: AreaUnit = "ft2"): string {
-  return unit === "m2" ? "m²" : "ft²";
+/**
+ * Join an already-formatted figure to its currency token, on the side the
+ * language puts it.
+ *
+ * English leads — "AED 4.2M". Arabic trails — "4.2M درهم". The site renders
+ * these inside `.mono`, which `globals.css` isolates as an LTR run on Arabic
+ * pages so a trailing "+" or "/" cannot be reordered away from its number; that
+ * isolation is what makes the order here a decision the string has to make
+ * rather than one the bidi algorithm will make later.
+ */
+export function withCurrency(figure: string, prefs: PriceLabels): string {
+  const symbol = labelsOf(prefs).currency[prefs.currency];
+  return labelsOf(prefs).currencyLeads
+    ? `${symbol} ${figure}`
+    : `${figure} ${symbol}`;
+}
+
+/**
+ * The glyph for an area unit — "ft²" / "m²", or whatever the dictionary says
+ * in the visitor's language.
+ *
+ * Takes the preferences object rather than the bare unit it used to take. That
+ * is the point: `areaUnitLabel(prefs.area_unit)` no longer compiles, so the
+ * typechecker names every surface that draws this word instead of leaving them
+ * to be found by grep. See `unit-labels.ts`.
+ */
+export function areaUnitLabel(
+  prefs: AreaLabels = { area_unit: "ft2" },
+): string {
+  return labelsOf(prefs).area[prefs.area_unit];
 }
 
 /**
@@ -38,10 +70,7 @@ export function areaUnitLabel(unit: AreaUnit = "ft2"): string {
  * unformatted. Use when the caller needs the number — e.g. to feed a range
  * slider, or to build a "1,240 – 1,480" span.
  */
-export function convertArea(
-  ft2: number,
-  unit: AreaUnit = "ft2",
-): number {
+export function convertArea(ft2: number, unit: AreaUnit = "ft2"): number {
   if (!Number.isFinite(ft2)) return 0;
   return unit === "m2" ? ft2 / FT2_PER_M2 : ft2;
 }
@@ -87,17 +116,20 @@ export function formatAreaValue(
  */
 export function formatPrice(
   aed: number | null | undefined,
-  prefs: Pick<Preferences, "currency"> = { currency: "AED" },
+  prefs: PriceLabels = { currency: "AED" },
 ): string {
   if (aed == null || !Number.isFinite(aed)) return "—";
   const target = convertFromAed(aed, prefs.currency);
-  const symbol = CURRENCY_SYMBOL[prefs.currency];
   if (target >= 1_000_000) {
     const dp = prefs.currency === "AED" ? 1 : 2;
-    return `${symbol} ${(target / 1_000_000).toFixed(dp)}M`;
+    return withCurrency(`${(target / 1_000_000).toFixed(dp)}M`, prefs);
   }
-  if (target >= 1_000) return `${symbol} ${(target / 1_000).toFixed(0)}K`;
-  return `${symbol} ${target.toLocaleString(LOCALE, { maximumFractionDigits: 0 })}`;
+  if (target >= 1_000)
+    return withCurrency(`${(target / 1_000).toFixed(0)}K`, prefs);
+  return withCurrency(
+    target.toLocaleString(LOCALE, { maximumFractionDigits: 0 }),
+    prefs,
+  );
 }
 
 /**
@@ -107,11 +139,11 @@ export function formatPrice(
  */
 export function formatMoneyValue(
   aed: number | null | undefined,
-  prefs: Pick<Preferences, "currency"> = { currency: "AED" },
+  prefs: PriceLabels = { currency: "AED" },
 ): string {
   if (aed == null || !Number.isFinite(aed)) return "—";
   const target = convertFromAed(aed, prefs.currency);
-  return `${CURRENCY_SYMBOL[prefs.currency]} ${Math.round(target).toLocaleString(LOCALE)}`;
+  return withCurrency(Math.round(target).toLocaleString(LOCALE), prefs);
 }
 
 /**
@@ -121,7 +153,7 @@ export function formatMoneyValue(
  */
 export function formatPricePerAreaValue(
   aedPerFt2: number | null | undefined,
-  prefs: Preferences,
+  prefs: UnitLabelsCtx,
 ): string {
   if (aedPerFt2 == null || !Number.isFinite(aedPerFt2)) return "—";
   const inCurrency = convertFromAed(aedPerFt2, prefs.currency);
@@ -132,27 +164,31 @@ export function formatPricePerAreaValue(
 }
 
 /**
- * The same rate with its symbol and unit — "AED 1,850/ft²", "$ 5,424/m²".
+ * The same rate with its symbol and unit — "AED 1,850/ft²", "$ 5,424/m²",
+ * "1,850 درهم/قدم²".
  */
 export function formatPricePerArea(
   aedPerFt2: number | null | undefined,
-  prefs: Preferences,
+  prefs: UnitLabelsCtx,
 ): string {
   if (aedPerFt2 == null || !Number.isFinite(aedPerFt2)) return "—";
-  const symbol = CURRENCY_SYMBOL[prefs.currency];
-  const unit = areaUnitLabel(prefs.area_unit);
-  return `${symbol} ${formatPricePerAreaValue(aedPerFt2, prefs)}/${unit}`;
+  const rate = `${formatPricePerAreaValue(aedPerFt2, prefs)}/${areaUnitLabel(prefs)}`;
+  return withCurrency(rate, prefs);
 }
 
 /**
  * Format an area stored in ft² for display in the user's chosen unit.
+ *
+ * The unit always trails the number, in both languages — "1,240 ft²",
+ * "1,240 قدم²". Unlike money, which leads in English and trails in Arabic,
+ * a measurement reads the same way round in both.
  */
 export function formatArea(
   ft2: number | null | undefined,
-  unit: AreaUnit = "ft2",
+  prefs: AreaLabels = { area_unit: "ft2" },
 ): string {
   if (ft2 == null || !Number.isFinite(ft2)) return "—";
-  return `${formatAreaValue(ft2, unit)} ${areaUnitLabel(unit)}`;
+  return `${formatAreaValue(ft2, prefs.area_unit)} ${areaUnitLabel(prefs)}`;
 }
 
 /**
@@ -163,20 +199,29 @@ export function formatArea(
 export function formatAreaRange(
   fromFt2: number | null | undefined,
   toFt2Value: number | null | undefined,
-  unit: AreaUnit = "ft2",
+  prefs: AreaLabels = { area_unit: "ft2" },
 ): string | null {
+  const unit = prefs.area_unit;
   const from = fromFt2 != null && Number.isFinite(fromFt2) ? fromFt2 : null;
-  const to = toFt2Value != null && Number.isFinite(toFt2Value) ? toFt2Value : null;
+  const to =
+    toFt2Value != null && Number.isFinite(toFt2Value) ? toFt2Value : null;
   if (from == null && to == null) return null;
   if (from != null && to != null && from !== to) {
-    return `${formatAreaValue(from, unit)} – ${formatAreaValue(to, unit)} ${areaUnitLabel(unit)}`;
+    return `${formatAreaValue(from, unit)} – ${formatAreaValue(to, unit)} ${areaUnitLabel(prefs)}`;
   }
-  return formatArea((from ?? to)!, unit);
+  return formatArea((from ?? to)!, prefs);
 }
 
-/** Convenience: just the currency symbol for the active currency. */
-export function currencySymbol(currency: Currency): string {
-  return CURRENCY_SYMBOL[currency];
+/**
+ * Just the currency token for the active currency — "AED", "$", "درهم".
+ *
+ * For markup that positions the token itself (a table header, an input
+ * adornment). Where the markup does NOT already decide the order, prefer
+ * `formatPrice` / `formatMoneyValue`, which know that Arabic puts the currency
+ * after the figure and English puts it before.
+ */
+export function currencySymbol(prefs: PriceLabels): string {
+  return labelsOf(prefs).currency[prefs.currency];
 }
 
 /**

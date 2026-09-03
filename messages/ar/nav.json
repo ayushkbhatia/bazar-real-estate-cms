@@ -2,6 +2,10 @@
   "home": "بازار — الرئيسية",
   "openMenu": "فتح القائمة",
   "closeMenu": "إغلاق القائمة",
+  "back": "رجوع",
+  "drawerDescription": "قائمة التنقل في موقع بازار",
   "listProperty": "أدرج عقارك",
+  "listShort": "أدرج",
+  "viewAll": "عرض كل {label}",
   "primary": "التنقل الرئيسي"
 }

@@ -13,6 +13,8 @@ import {
 import type { MediaOption } from "../../../../_fields/types";
 import { DevelopmentImagesCard } from "./_images-card";
 import { DevelopmentFactsCard } from "./_facts-card";
+import { DevelopmentCardLabelsCard } from "./_card-labels-card";
+import { getCardLabelSettings } from "@/lib/queries/card-labels";
 import {
   DevelopmentContentCard,
   type AdvisorOption,
@@ -238,6 +240,10 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
   });
 
   const meta = savedMeta;
+  const cardLabelVocabulary = await getCardLabelSettings();
+  const assignedCardLabels = Array.isArray(meta.labels)
+    ? (meta.labels as unknown[]).filter((v): v is string => typeof v === "string")
+    : [];
   const contentInitial = {
     payment_plan: (development.payment_plan as never) ?? null,
     feature_blocks: Array.isArray(meta.feature_blocks)
@@ -321,6 +327,13 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
           published={development.published_at != null}
         />
 
+        {/* Above the images, because the label sits ON the image and an
+            operator picking one wants to see the render it lands over. */}
+        <DevelopmentCardLabelsCard
+          slug={development.slug}
+          vocabulary={cardLabelVocabulary}
+          initial={assignedCardLabels}
+        />
         <DevelopmentImagesCard
           slug={development.slug}
           media={media}

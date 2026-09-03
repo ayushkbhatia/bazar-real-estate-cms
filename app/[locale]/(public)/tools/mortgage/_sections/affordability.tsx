@@ -60,7 +60,7 @@ export function AffordabilitySection({
           <fieldset>
             <Label htmlFor="income">
               {t("mortgage.annualIncome", {
-                symbol: currencySymbol(prefs.currency),
+                symbol: currencySymbol(prefs),
               })}
             </Label>
             <Input

@@ -80,6 +80,8 @@
   "notFoundTitle": "هذه الصفحة غير موجودة.",
   "preferences": "تفضيلات العرض",
   "preferencesHelp": "اختر طريقة عرض الأسعار والمساحات في الموقع. يُحفظ في هذا المتصفح.",
+  "prefsAreaUnit": "وحدة المساحة",
+  "prefsCurrency": "العملة",
   "propertyType": "نوع العقار",
   "propertyTypes": "أنواع العقارات",
   "readMore": "اقرأ المزيد",

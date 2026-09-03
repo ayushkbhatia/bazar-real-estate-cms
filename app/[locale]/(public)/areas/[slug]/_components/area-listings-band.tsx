@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CarouselGrid } from "@/components/brand/mobile";
 import { mediaPublicUrl } from "@/lib/media";
 import { propertyUrl, type ListingRow } from "@/lib/queries/properties";
-import { listingBadge } from "@/lib/listing-badge";
+import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import { ListingCardPriced } from "../../../_components/listing-card-priced";
 import { CARD_TRACK } from "./area-bands";
 import { fluid } from "../../../_components/marketing/fluid";
@@ -56,11 +56,7 @@ export async function AreaListingsBand({
   testId?: string;
 }) {
   const t = await getTranslations("area");
-  const tl = await getTranslations("listing");
-  const badgeLabels = {
-    exclusive: tl("badge.exclusive"),
-    vacantOnTransfer: tl("badge.vacantOnTransfer"),
-  };
+  const cardLabels = await getCardLabelResolver();
   return (
     <section
       data-testid={testId}
@@ -97,7 +93,7 @@ export async function AreaListingsBand({
           <div className="mt-9">
             <CarouselGrid cols={3} className={CARD_TRACK}>
               {rows.map((row, index) => {
-                const badge = listingBadge(row.flags, badgeLabels);
+                const badges = cardLabels(row.flags);
                 return (
                   <Link
                     key={row.reference}
@@ -111,8 +107,7 @@ export async function AreaListingsBand({
                       beds={row.beds}
                       baths={row.baths}
                       area={row.built_up_ft2 ?? 0}
-                      badge={badge?.label}
-                      badgeKind={badge?.kind}
+                      badges={badges}
                       imgLabel={row.reference}
                       heroSrc={
                         row.hero ? mediaPublicUrl(row.hero.storage_key) : null

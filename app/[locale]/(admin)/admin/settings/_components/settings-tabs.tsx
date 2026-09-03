@@ -20,11 +20,30 @@ const TABS: { group: string; items: Tab[] }[] = [
         href: "/admin/settings/typography",
         status: "live",
       },
+      {
+        // The words prices and areas are written with — "AED", "ft²" and
+        // their Arabic equivalents. Beside `Arabic type` rather than under
+        // Catalogue for the same reason: it is a decision about how the site
+        // READS, not about what it holds. `Mortgage` next door sets numbers;
+        // this one sets none.
+        label: "Units & currency",
+        href: "/admin/settings/units",
+        status: "live",
+      },
     ],
   },
   {
     group: "Catalogue",
     items: [
+      {
+        // The chips a card wears over its photograph. Under Catalogue rather
+        // than Identity because it is vocabulary ABOUT the inventory — the
+        // words are picked here and then ticked per listing, the same shape as
+        // `Property fields` beside it.
+        label: "Card labels",
+        href: "/admin/settings/card-labels",
+        status: "live",
+      },
       { label: "Property fields", href: "/admin/settings/fields", status: "stub" },
       { label: "Routing", href: "/admin/settings/routing", status: "live" },
       { label: "Mortgage", href: "/admin/settings/mortgage", status: "live" },

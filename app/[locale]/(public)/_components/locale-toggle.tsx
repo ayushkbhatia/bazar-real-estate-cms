@@ -139,7 +139,32 @@ export function LocaleToggle({ current }: { current: Locale }) {
                 // The Arabic glyph sits lower than Latin caps at the same
                 // size, so the two options look vertically misaligned in a
                 // shared row unless the line box is normalised.
-                "flex h-6 w-full items-center justify-center rounded-full px-2 text-center text-[12px] leading-none transition-colors",
+                //
+                // `min-w-[30px]` rather than `w-full`, which is the whole of
+                // the mobile fix. The anchor above is 44px wide below `md`
+                // because the geometry gate demands a real hit box; the INK
+                // was told to fill that box, so an option painted 30px on
+                // desktop painted 44px on a phone — around a glyph 6.8px
+                // wide. The Arabic half is where that reads as a fault rather
+                // than as a wide button: `ع` alone in a 44px lozenge is a mark
+                // adrift, and on the Arabic side that lozenge is the filled,
+                // active one. Sizing the ink the way desktop sizes it — a
+                // 30px floor, content plus `px-2` above it — paints both
+                // options at their desktop dimensions at every width, and the
+                // 44px hit box keeps its size by centring the ink inside
+                // itself.
+                "flex h-6 min-w-[30px] items-center justify-center rounded-full px-2 text-center text-[12px] leading-none transition-colors",
+                // Arabic is drawn by the Arabic stack, not by whatever the
+                // Latin one falls through to. `--font-arabic` is loaded on
+                // RTL pages only — `_fonts-ar.ts` declines to push 50KB of
+                // woff2 onto every English page for one glyph — so here this
+                // resolves to the named faces in `--bz-font-ar`, in a fixed
+                // order, rather than to whichever Arabic face the platform
+                // reaches for once Geist and its metric-matched fallback both
+                // miss. That last step is the one the stylesheet does not
+                // decide and the device does, which is how a desktop can show
+                // one `ع` and the phone beside it another.
+                locale === "ar" && "font-[family-name:var(--bz-font-ar-body)]",
                 active
                   ? "bg-bz-navy text-white font-medium"
                   : "text-bz-ink-2 group-hover/opt:bg-bz-surface-2 group-hover/opt:text-bz-ink",

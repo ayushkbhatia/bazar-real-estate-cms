@@ -22,7 +22,7 @@ import {
   inputToPriceParam,
   priceParamToInput,
   usePreferences,
-  type Currency,
+  type LabelledPreferences,
 } from "@/lib/preferences";
 import { cn } from "@/lib/utils";
 
@@ -231,7 +231,7 @@ export function FilterBar({ areas }: Props) {
         // Clear all. Both change what the input should read, and neither is a
         // keystroke, so a fresh mount beats reconciling state mid-edit.
         key={`${prefs.currency}:${clearToken}`}
-        currency={prefs.currency}
+        prefs={prefs}
         priceMin={price_min}
         priceMax={price_max}
         stacked={stacked}
@@ -397,13 +397,17 @@ export function FilterBar({ areas }: Props) {
  * someone else's shared search.
  */
 function PriceRangeInputs({
-  currency,
+  prefs,
   priceMin,
   priceMax,
   stacked,
   onCommit,
 }: {
-  currency: Currency;
+  // The whole preferences object rather than the bare currency code it used to
+  // take: the adornment beside these boxes is a WORD ("AED", "درهم"), and the
+  // dictionary that decides which word rides on `prefs`. The conversion below
+  // still only needs the code, which is read off it.
+  prefs: LabelledPreferences;
   priceMin: number | null;
   priceMax: number | null;
   stacked: boolean;
@@ -415,6 +419,7 @@ function PriceRangeInputs({
   // Its own translator rather than a prop: this is a Client Component in the
   // same tree, so `useTranslations` reads the provider the parent already has.
   const tr = useTranslations("search");
+  const currency = prefs.currency;
   const seed = (n: number | null) =>
     n == null ? "" : priceParamToInput(String(n), currency);
   const [minInput, setMinInput] = useState(() => seed(priceMin));
@@ -431,7 +436,7 @@ function PriceRangeInputs({
     }, 300);
   }
 
-  const symbol = currencySymbol(currency);
+  const symbol = currencySymbol(prefs);
 
   return (
     <div className={cn("flex items-center gap-1", stacked && "w-full")}>

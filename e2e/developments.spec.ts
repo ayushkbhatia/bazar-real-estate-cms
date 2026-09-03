@@ -69,12 +69,18 @@ test("a project page with a payment plan renders the cash-flow timeline", async 
   await page.goto(`/developments/${slug}`);
   const section = page.locator("#payment-plan");
 
-  // Header — the heading is editor-overridable, so assert the eyebrow's
-  // fixed prefix rather than the H2's wording.
-  await expect(section.getByText(/^Payment plan · /)).toBeVisible();
-  await expect(
-    section.getByRole("heading", { level: 2 }),
-  ).toBeVisible();
+  // Header — an eyebrow and an H2 render; neither's WORDING is asserted.
+  //
+  // This used to match the eyebrow's /^Payment plan · / prefix, on the
+  // reasoning that the H2 was editor-overridable and the eyebrow was not.
+  // Only half of that was true: `_payment-plan.tsx` renders
+  // `eyebrow ?? \`Payment plan · ${plan.name}\``, so a sub-page override
+  // replaces the whole string, prefix included. One did — the section reads
+  // "Plan Your Purchase" in production today — and the assertion failed on a
+  // commit that had not touched the file, which is the exact content-dependent
+  // red that ADR-0007 warns about and that this suite otherwise avoids.
+  await expect(section.locator("span.eyebrow").first()).not.toBeEmpty();
+  await expect(section.getByRole("heading", { level: 2 })).toBeVisible();
 
   // The schedule renders one row per milestone, in one of the two layouts.
   // Whichever is hidden at this viewport contributes no visible rows.

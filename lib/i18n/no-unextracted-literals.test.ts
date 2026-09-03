@@ -76,7 +76,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/market-context-link.tsx": 3,
   "app/[locale]/(public)/_components/off-plan/offplan-map-explorer.tsx": 1,
   "app/[locale]/(public)/_components/off-plan/project-interest-form.tsx": 2,
-  "app/[locale]/(public)/_components/preferences-controls.tsx": 2,
   "app/[locale]/(public)/_components/trust-strip.tsx": 2,
   "app/[locale]/(public)/about/page.tsx": 1,
   "app/[locale]/(public)/agents/page.tsx": 2,
@@ -124,7 +123,7 @@ const REMAINING: Readonly<Record<string, number>> = {
 };
 
 /** What the ratchet held when it landed. Lowering it is the point. */
-const TOTAL_CEILING = 130;
+const TOTAL_CEILING = 128;
 
 /**
  * Three shapes, matching the three ways a literal reaches a reader.
@@ -170,9 +169,7 @@ const PATTERNS: readonly RegExp[] = [
 
 /** Strip comments so a docblock quoting copy is not a violation. */
 function stripComments(source: string): string {
-  return source
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/^\s*\/\/.*$/gm, "");
+  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
 }
 
 /** The modules `lib/dead-code.test.ts` records as imported by nothing. */
@@ -184,28 +181,30 @@ function unreferenced(): Set<string> {
 
 function scannedFiles(): string[] {
   const skip = unreferenced();
-  return execFileSync(
-    "git",
-    [
-      "ls-files",
-      // Escaped, and load-bearing: in a git pathspec `[locale]` is a character
-      // class matching one of l/o/c/a/e, so the unescaped form matches the
-      // directory zero times and the whole guard passes vacuously. G-14 shipped
-      // with exactly that bug and scanned nothing under app/ for a wave.
-      "app/\\[locale\\]/(public)/**/*.tsx",
-      "components/brand/**/*.tsx",
-    ],
-    { cwd: REPO_ROOT, encoding: "utf8" },
-  )
-    .split("\n")
-    .filter(Boolean)
-    .filter((f) => !/\.test\.tsx?$/.test(f))
-    // `git ls-files` reads the index, so a file deleted but not yet staged is
-    // still listed. Without this the guard throws ENOENT mid-refactor.
-    .filter((f) => existsSync(join(REPO_ROOT, f)))
-    .filter((f) => !skip.has(f))
-    // The client's own Arabic, and two documents that need them the same way.
-    .filter((f) => !f.includes("/legal/"));
+  return (
+    execFileSync(
+      "git",
+      [
+        "ls-files",
+        // Escaped, and load-bearing: in a git pathspec `[locale]` is a character
+        // class matching one of l/o/c/a/e, so the unescaped form matches the
+        // directory zero times and the whole guard passes vacuously. G-14 shipped
+        // with exactly that bug and scanned nothing under app/ for a wave.
+        "app/\\[locale\\]/(public)/**/*.tsx",
+        "components/brand/**/*.tsx",
+      ],
+      { cwd: REPO_ROOT, encoding: "utf8" },
+    )
+      .split("\n")
+      .filter(Boolean)
+      .filter((f) => !/\.test\.tsx?$/.test(f))
+      // `git ls-files` reads the index, so a file deleted but not yet staged is
+      // still listed. Without this the guard throws ENOENT mid-refactor.
+      .filter((f) => existsSync(join(REPO_ROOT, f)))
+      .filter((f) => !skip.has(f))
+      // The client's own Arabic, and two documents that need them the same way.
+      .filter((f) => !f.includes("/legal/"))
+  );
 }
 
 /** Distinct user-facing literals in one file. */

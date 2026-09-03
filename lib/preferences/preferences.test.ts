@@ -16,7 +16,12 @@ import {
 } from "./formatters";
 import { formatPriceAED } from "@/lib/queries/property-utils";
 import { AED_PER_USD, convertFromAed, getRate } from "./rates";
-import { CURRENCIES, DEFAULT_PREFERENCES, isAreaUnit, isCurrency } from "./types";
+import {
+  CURRENCIES,
+  DEFAULT_PREFERENCES,
+  isAreaUnit,
+  isCurrency,
+} from "./types";
 
 describe("preferences/types", () => {
   it("type guards accept valid values", () => {
@@ -153,7 +158,9 @@ describe("preferences/formatters", () => {
     expect(formatPrice(500, { currency: "AED" })).toBe("AED 500");
     // USD keeps two decimals: a dollar is worth 3.6725 dirhams, so one
     // decimal there would be 3.7× coarser than the AED figure beside it.
-    expect(formatPrice(4_200_000, { currency: "USD" })).toMatch(/^\$ \d+\.\d{2}M$/);
+    expect(formatPrice(4_200_000, { currency: "USD" })).toMatch(
+      /^\$ \d+\.\d{2}M$/,
+    );
   });
 
   /**
@@ -177,25 +184,27 @@ describe("preferences/formatters", () => {
   });
 
   it("formatMoneyValue keeps every digit", () => {
-    expect(formatMoneyValue(1_050_000, { currency: "AED" })).toBe("AED 1,050,000");
+    expect(formatMoneyValue(1_050_000, { currency: "AED" })).toBe(
+      "AED 1,050,000",
+    );
     expect(formatMoneyValue(1_050_000, { currency: "USD" })).toBe("$ 285,909");
     expect(formatMoneyValue(null)).toBe("—");
     expect(formatMoneyValue(undefined)).toBe("—");
   });
 
   it("formatArea converts ft² to m² when requested", () => {
-    expect(formatArea(1000, "ft2")).toBe("1,000 ft²");
-    expect(formatArea(1000, "m2")).toMatch(/^9[2-3] m²$/); // 1000 ft² ≈ 92.9 m²
+    expect(formatArea(1000, { area_unit: "ft2" })).toBe("1,000 ft²");
+    expect(formatArea(1000, { area_unit: "m2" })).toMatch(/^9[2-3] m²$/); // 1000 ft² ≈ 92.9 m²
   });
 
   it("formatArea handles nullish input", () => {
     expect(formatArea(null)).toBe("—");
-    expect(formatArea(undefined, "m2")).toBe("—");
+    expect(formatArea(undefined, { area_unit: "m2" })).toBe("—");
   });
 
   it("areaUnitLabel returns the glyph for each unit", () => {
-    expect(areaUnitLabel("ft2")).toBe("ft²");
-    expect(areaUnitLabel("m2")).toBe("m²");
+    expect(areaUnitLabel({ area_unit: "ft2" })).toBe("ft²");
+    expect(areaUnitLabel({ area_unit: "m2" })).toBe("m²");
     expect(areaUnitLabel()).toBe("ft²");
   });
 
@@ -215,11 +224,13 @@ describe("preferences/formatters", () => {
   });
 
   it("formatAreaRange collapses, converts, and drops empties", () => {
-    expect(formatAreaRange(1240, 1480, "ft2")).toBe("1,240 – 1,480 ft²");
-    expect(formatAreaRange(1240, 1240, "ft2")).toBe("1,240 ft²");
-    expect(formatAreaRange(1240, null, "ft2")).toBe("1,240 ft²");
-    expect(formatAreaRange(null, null, "ft2")).toBeNull();
-    expect(formatAreaRange(1076.39, null, "m2")).toBe("100 m²");
+    expect(formatAreaRange(1240, 1480, { area_unit: "ft2" })).toBe(
+      "1,240 – 1,480 ft²",
+    );
+    expect(formatAreaRange(1240, 1240, { area_unit: "ft2" })).toBe("1,240 ft²");
+    expect(formatAreaRange(1240, null, { area_unit: "ft2" })).toBe("1,240 ft²");
+    expect(formatAreaRange(null, null, { area_unit: "ft2" })).toBeNull();
+    expect(formatAreaRange(1076.39, null, { area_unit: "m2" })).toBe("100 m²");
   });
 
   it("formatPricePerArea reflects both currency and unit", () => {
@@ -227,14 +238,12 @@ describe("preferences/formatters", () => {
     const aedFt2 = formatPricePerArea(aedPerFt2, {
       currency: "AED",
       area_unit: "ft2",
-      locale: "en",
     });
     expect(aedFt2).toMatch(/^AED [\d,]+\/ft²$/);
 
     const aedM2 = formatPricePerArea(aedPerFt2, {
       currency: "AED",
       area_unit: "m2",
-      locale: "en",
     });
     expect(aedM2).toMatch(/^AED [\d,]+\/m²$/);
     // m² value should be ~10.76× larger
@@ -247,7 +256,10 @@ describe("preferences/formatters", () => {
   it("toAed inverts convertFromAed", () => {
     expect(toAed(1, "USD")).toBeCloseTo(3.6725, 12);
     expect(toAed(1_000_000, "AED")).toBe(1_000_000);
-    expect(toAed(convertFromAed(4_200_000, "USD"), "USD")).toBeCloseTo(4_200_000, 6);
+    expect(toAed(convertFromAed(4_200_000, "USD"), "USD")).toBeCloseTo(
+      4_200_000,
+      6,
+    );
     expect(toAed(NaN, "USD")).toBe(0);
   });
 });
@@ -285,7 +297,9 @@ describe("preferences/price param boundary", () => {
     expect(inputToPriceParam(priceParamToInput("1", "USD"), "USD")).toBe("0");
     let maxDrift = 0;
     for (let aed = 1; aed <= 2_000_000; aed += 11) {
-      const back = Number(inputToPriceParam(priceParamToInput(String(aed), "USD"), "USD"));
+      const back = Number(
+        inputToPriceParam(priceParamToInput(String(aed), "USD"), "USD"),
+      );
       maxDrift = Math.max(maxDrift, Math.abs(back - aed));
     }
     expect(maxDrift).toBeLessThanOrEqual(2);

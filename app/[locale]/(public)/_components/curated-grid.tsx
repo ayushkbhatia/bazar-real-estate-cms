@@ -1,11 +1,10 @@
-import { getTranslations } from "next-intl/server";
 import Link from "@/components/i18n/link";
 import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { mediaPublicUrl } from "@/lib/media";
 import { propertyUrl, type ListingRow } from "@/lib/queries/properties";
-import { listingBadge } from "@/lib/listing-badge";
+import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import { ListingCardPriced } from "./listing-card-priced";
 
 type Props = {
@@ -31,11 +30,7 @@ export async function CuratedGrid({
   browseAllHref,
   browseAllLabel,
 }: Props) {
-  const tl = await getTranslations("listing");
-  const badgeLabels = {
-    exclusive: tl("badge.exclusive"),
-    vacantOnTransfer: tl("badge.vacantOnTransfer"),
-  };
+  const cardLabels = await getCardLabelResolver();
   return (
     <article className="bg-bz-bg">
       <section className="px-4 md:px-12 pt-14 md:pt-24 pb-12 border-b border-bz-border">
@@ -77,7 +72,7 @@ export async function CuratedGrid({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rows.map((row, index) => {
-              const badge = listingBadge(row.flags, badgeLabels);
+              const badges = cardLabels(row.flags);
               return (
                 <Link
                   key={row.reference}
@@ -91,8 +86,7 @@ export async function CuratedGrid({
                     beds={row.beds}
                     baths={row.baths}
                     area={row.built_up_ft2 ?? 0}
-                    badge={badge?.label}
-                    badgeKind={badge?.kind}
+                    badges={badges}
                     imgLabel={row.reference}
                     heroSrc={
                       row.hero ? mediaPublicUrl(row.hero.storage_key) : null

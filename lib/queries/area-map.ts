@@ -26,7 +26,7 @@ import { localiseRow } from "@/lib/i18n/localise";
 // a server-side query module is how you accidentally bundle React state into
 // a data layer.
 import { formatArea } from "@/lib/preferences/formatters";
-import type { AreaUnit } from "@/lib/preferences/types";
+import type { AreaLabels } from "@/lib/preferences/unit-labels";
 import { SEED_AREA_GUIDES } from "@/lib/seeds/areas";
 
 export type LngLat = { lng: number; lat: number };
@@ -172,18 +172,19 @@ export function pickMedianPerFt2(stats: {
 /**
  * Dot subtitle: "Studio · 640 ft²" / "2 bd · 1,180 ft²".
  *
- * Called from the client popup with the visitor's unit. The default keeps it
- * pure ft² for callers that have no preference to hand — and keeps the
- * existing specs honest.
+ * Called from the client popup with the visitor's preferences, which carry the
+ * area-unit dictionary for their locale. The default keeps it pure English ft²
+ * for callers that have no preference to hand — the map's own server-side
+ * prefetch, and the existing specs.
  */
 export function dotMeta(
   beds: number | null,
   builtUpFt2: number | null,
-  unit: AreaUnit = "ft2",
+  prefs: AreaLabels = { area_unit: "ft2" },
 ): string {
   const bedsLabel = beds === 0 ? "Studio" : beds != null ? `${beds} bd` : null;
   const sizeLabel =
-    builtUpFt2 && builtUpFt2 > 0 ? formatArea(builtUpFt2, unit) : null;
+    builtUpFt2 && builtUpFt2 > 0 ? formatArea(builtUpFt2, prefs) : null;
   return [bedsLabel, sizeLabel].filter(Boolean).join(" · ");
 }
 
@@ -242,7 +243,11 @@ export function tallyAreaListings(
    */
   segment?: ListingSegment,
 ): AreaTally {
-  const tally: AreaTally = { any: new Map(), inMode: new Map(), points: new Map() };
+  const tally: AreaTally = {
+    any: new Map(),
+    inMode: new Map(),
+    points: new Map(),
+  };
   for (const r of rows) {
     const aid = typeof r.area_id === "string" ? r.area_id : null;
     if (!aid) continue;
@@ -298,7 +303,8 @@ export async function listAreaPins(
       .eq("kind", "emirate")
       .eq("slug", emirate)
       .maybeSingle();
-    if (!em) return emirate === DEFAULT_EMIRATE ? seedAreaPins(emirate, mode) : [];
+    if (!em)
+      return emirate === DEFAULT_EMIRATE ? seedAreaPins(emirate, mode) : [];
 
     const { data: areas } = await sb
       .from("areas")
