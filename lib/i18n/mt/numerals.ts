@@ -22,6 +22,8 @@
  * translation model, and here it never reaches one.
  */
 
+import { UNIT_LABELS_AR } from "@/lib/preferences/unit-labels";
+
 /** Gulf month names. The Levantine set (كانون الثاني…) is wrong for the UAE. */
 const MONTHS: Record<string, string> = {
   january: "يناير",
@@ -51,6 +53,12 @@ const HALVES: Record<string, string> = {
   "2": "النصف الثاني من",
 };
 
+/**
+ * The Arabic for the dirham, taken from the site-wide dictionary so the
+ * translated prose and the rendered price agree on the word.
+ */
+const AED_AR = UNIT_LABELS_AR.currency.AED;
+
 const MAGNITUDES: Record<string, string> = {
   b: "مليار",
   bn: "مليار",
@@ -70,15 +78,38 @@ const MAGNITUDES: Record<string, string> = {
 export function arabicNumeral(token: string): string | null {
   const t = token.trim();
 
-  // AED 66 billion · AED 4.2M · AED 100 Billion — keep "AED" Latin, which is
-  // how it is written on Arabic UAE property sites, and translate only the
-  // magnitude word.
+  /*
+   * AED 66 billion · AED 4.2M · AED 100 Billion.
+   *
+   * This used to keep "AED" Latin and translate only the magnitude word, on
+   * the grounds that Arabic UAE property sites write the code. That answer
+   * stopped being tenable when the currency became a CMS-editable dictionary:
+   * `lib/preferences/unit-labels.ts` renders every price the CODE emits as
+   * "4.2M درهم", so a sentence beside it reading "AED 4.2 مليون" is the same
+   * page disagreeing with itself in the same language.
+   *
+   * The word comes from that dictionary rather than a literal here, so there
+   * is one Arabic spelling of "dirham" in the repo. It is the SHIPPED default
+   * and not the client's override: this runs in a script, at translation time,
+   * with no request and no database — and a client who later renames the
+   * currency should not silently invalidate prose already reviewed under the
+   * old word.
+   *
+   * Order follows the dictionary too: Arabic puts the currency after the
+   * figure. Same rule `withCurrency` applies at runtime.
+   */
   const priced = /^AED\s?([\d,.]+)\s?([A-Za-z]+)$/u.exec(t);
   if (priced) {
     const word = MAGNITUDES[priced[2]!.toLowerCase()];
-    if (word) return `AED ${priced[1]} ${word}`;
+    if (word) return `${priced[1]} ${word} ${AED_AR}`;
     return null;
   }
+
+  // A money token with no magnitude word — "AED 1,927". Localised for the same
+  // reason as the branch above; leaving this one Latin would have produced
+  // "1,927 AED" beside "4.2 مليون درهم" in the same paragraph.
+  const plainMoney = /^AED\s?([\d,.]+)$/u.exec(t);
+  if (plainMoney) return `${plainMoney[1]} ${AED_AR}`;
 
   // A bare magnitude with no currency beside it: 80K, 1M, "6.4 million".
   const bare = /^([\d,.]+)\s?([A-Za-z]+)$/u.exec(t);

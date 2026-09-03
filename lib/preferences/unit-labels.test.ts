@@ -129,7 +129,7 @@ describe("formatters read the dictionary", () => {
   it("puts the currency after the figure in Arabic and before it in English", () => {
     expect(formatPrice(4_250_000, { currency: "AED" })).toBe("AED 4.3M");
     expect(formatPrice(4_250_000, { currency: "AED", ...ar })).toBe(
-      "4.3M درهم",
+      "4.3 مليون درهم",
     );
     expect(formatMoneyValue(1_050_000, { currency: "AED", ...ar })).toBe(
       "1,050,000 درهم",
@@ -150,6 +150,26 @@ describe("formatters read the dictionary", () => {
       formatPricePerArea(2000, { currency: "AED", area_unit: "ft2", ...ar }),
     ).toBe("2,000/قدم² درهم");
     expect(currencySymbol({ currency: "USD", ...ar })).toBe("دولار");
+  });
+
+  /**
+   * The compact suffix is a word in Arabic, not a letter. Left as "M" it put a
+   * lone Latin character between the figure and "درهم" — the bug the first cut
+   * of this dictionary shipped, found by reading a rendered card rather than by
+   * any test, which is why there is one here now.
+   */
+  it("writes the magnitude suffix as a word in Arabic", () => {
+    expect(formatPrice(4_250_000, { currency: "AED", ...ar })).toBe(
+      "4.3 مليون درهم",
+    );
+    expect(formatPrice(750_000, { currency: "AED", ...ar })).toBe(
+      "750 ألف درهم",
+    );
+    expect(formatPrice(750_000, { currency: "AED" })).toBe("AED 750K");
+    // No stray Latin left anywhere in the Arabic form.
+    expect(formatPrice(4_250_000, { currency: "AED", ...ar })).not.toMatch(
+      /[A-Za-z]/,
+    );
   });
 
   it("falls back to English when no dictionary reached it", () => {

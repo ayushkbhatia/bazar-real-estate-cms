@@ -269,6 +269,14 @@
     scrollbar-width: none;
     padding-inline: var(--bz-4);
     margin-inline: calc(var(--bz-4) * -1);
+    /* Not the same thing as the padding above, and the rail is broken without
+       it. `scroll-snap-type: x mandatory` aligns a child's snap edge to the
+       container's SCROLLPORT edge, which ignores `padding-inline` — so on load
+       the browser scrolled the rail by exactly the gutter, sat the first card
+       flush against the screen while every heading above it stayed inset, and
+       gave the gutter back only once you dragged. Scroll padding is what tells
+       snapping where the gutter is. */
+    scroll-padding-inline: var(--bz-4);
   }
   .bz-rail::-webkit-scrollbar {
     display: none;
@@ -280,6 +288,9 @@
   .bz-rail--flush {
     padding-inline: 0;
     margin-inline: 0;
+    /* Follows the padding it opts out of — a scroll padding left at 16px here
+       would inset the snap position of a rail that has no gutter to snap to. */
+    scroll-padding-inline: 0;
   }
   /* Striped placeholder image (used until real photography lands) */
   .bz-img {

@@ -37,11 +37,19 @@ export function CarouselGrid({
       className={cn(
         // Mobile: snap rail bleeding to the page edge (assumes a 16px
         // padded parent), children fixed-width + snap-aligned.
-        "flex snap-x snap-mandatory gap-4 overflow-x-auto -mx-4 px-4",
+        //
+        // `scroll-px-4` is not a duplicate of `px-4`. Mandatory snapping aligns
+        // a child's snap edge to the container's SCROLLPORT edge, which ignores
+        // padding — so on load the browser scrolled the rail by exactly the
+        // gutter and sat the first card flush against the screen while every
+        // heading above it stayed inset. Scroll padding is what tells snapping
+        // where the gutter is; reset at md, where this is a grid and there is
+        // no snapping left to inform.
+        "flex snap-x snap-mandatory gap-4 overflow-x-auto -mx-4 px-4 scroll-px-4",
         "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         "[&>*]:shrink-0 [&>*]:snap-start [&>*]:w-[var(--rail-w)]",
         // Desktop: reset to a grid.
-        "md:mx-0 md:grid md:gap-6 md:overflow-visible md:px-0 md:snap-none",
+        "md:mx-0 md:grid md:gap-6 md:overflow-visible md:px-0 md:scroll-px-0 md:snap-none",
         "md:[&>*]:w-auto",
         MD_COLS[cols],
         className,
