@@ -47,6 +47,15 @@ import type { AreaUnit, Currency } from "./types";
  */
 export type UnitLabels = {
   currency: Record<Currency, string>;
+  /**
+   * The compact magnitude suffixes — "M" and "K" — as the language writes them.
+   *
+   * Easy to miss, and it was: the first cut of this dictionary translated the
+   * currency and left the suffix, so an Arabic card read "3.1M درهم" with one
+   * Latin letter wedged between the figure and the word. The `.mono` LTR
+   * isolation makes that read as a typo rather than as English.
+   */
+  magnitude: { million: string; thousand: string };
   currencyLong: Record<Currency, string>;
   area: Record<AreaUnit, string>;
   areaLong: Record<AreaUnit, string>;
@@ -60,6 +69,7 @@ export type UnitLabels = {
  */
 export const UNIT_LABELS_EN: UnitLabels = {
   currency: { AED: "AED", USD: "$" },
+  magnitude: { million: "M", thousand: "K" },
   currencyLong: { AED: "AED · UAE Dirham", USD: "USD · US Dollar" },
   area: { ft2: "ft²", m2: "m²" },
   areaLong: { ft2: "Square feet (ft²)", m2: "Square metres (m²)" },
@@ -80,6 +90,10 @@ export const UNIT_LABELS_EN: UnitLabels = {
  */
 export const UNIT_LABELS_AR: UnitLabels = {
   currency: { AED: "درهم", USD: "دولار" },
+  // The same words `lib/i18n/mt/numerals.ts` substitutes into translated prose,
+  // so a compacted price on a card and a written-out one in a paragraph beside
+  // it use the same vocabulary.
+  magnitude: { million: "مليون", thousand: "ألف" },
   currencyLong: { AED: "درهم إماراتي", USD: "دولار أمريكي" },
   area: { ft2: "قدم²", m2: "م²" },
   areaLong: { ft2: "قدم مربع", m2: "متر مربع" },
@@ -158,6 +172,10 @@ export function resolveUnitLabels(
     area: merge(base.area, override.area),
     areaLong: merge(base.areaLong, override.areaLong),
     currencyLeads: base.currencyLeads,
+    // Not overridable: these are the language's words for a quantity, not the
+    // client's branding, and a currency renamed on the settings screen has no
+    // bearing on how Arabic writes "million".
+    magnitude: base.magnitude,
   };
 }
 

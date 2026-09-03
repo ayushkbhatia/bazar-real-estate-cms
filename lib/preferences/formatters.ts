@@ -122,10 +122,18 @@ export function formatPrice(
   const target = convertFromAed(aed, prefs.currency);
   if (target >= 1_000_000) {
     const dp = prefs.currency === "AED" ? 1 : 2;
-    return withCurrency(`${(target / 1_000_000).toFixed(dp)}M`, prefs);
+    // The suffix comes from the dictionary too. English writes "4.2M"; Arabic
+    // writes "4.2 مليون", as a word with a space, which is why it is a lookup
+    // rather than a letter concatenated to the digits.
+    const m = labelsOf(prefs).magnitude.million;
+    const sep = m === "M" ? "" : " ";
+    return withCurrency(`${(target / 1_000_000).toFixed(dp)}${sep}${m}`, prefs);
   }
-  if (target >= 1_000)
-    return withCurrency(`${(target / 1_000).toFixed(0)}K`, prefs);
+  if (target >= 1_000) {
+    const k = labelsOf(prefs).magnitude.thousand;
+    const sep = k === "K" ? "" : " ";
+    return withCurrency(`${(target / 1_000).toFixed(0)}${sep}${k}`, prefs);
+  }
   return withCurrency(
     target.toLocaleString(LOCALE, { maximumFractionDigits: 0 }),
     prefs,

@@ -1236,175 +1236,175 @@
     "at": "2026-08-16T12:26:41.479Z"
   },
   "AED": {
-    "ar": "AED",
+    "ar": "درهم",
     "by": "machine"
   },
   "AED 1,128 / sq. ft.": {
-    "ar": "AED 1,128 / قدم مربع",
+    "ar": "1,128 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
   },
   "AED 1,217 / sq. ft.": {
-    "ar": "AED 1,217 / قدم مربع",
+    "ar": "1,217 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
   },
   "AED 1,687 / sq. ft.": {
-    "ar": "AED 1,687 / قدم مربعة",
+    "ar": "1,687 درهم / قدم مربعة",
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:35:03.278Z"
   },
   "AED 1,713 / sq. ft.": {
-    "ar": "AED 1,713 / قدم مربع",
+    "ar": "1,713 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:39:13.993Z"
   },
   "AED 1,742 / sq. ft.": {
-    "ar": "AED 1,742 / قدم مربع",
+    "ar": "1,742 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:39:13.993Z"
   },
   "AED 1,775 / sq. ft.": {
-    "ar": "AED 1,775 / قدم مربع",
+    "ar": "1,775 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:21:17.942Z"
   },
   "AED 1,974 / sq. ft.": {
-    "ar": "AED 1,974 / قدم مربع",
+    "ar": "1,974 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
   },
   "AED 105 / sq. ft.": {
-    "ar": "AED 105 / قدم مربع",
+    "ar": "105 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
   },
   "AED 110 / sq. ft.": {
-    "ar": "AED 110 / القدم المربعة",
+    "ar": "110 درهم / القدم المربعة",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:21:17.942Z"
   },
   "AED 123 / sq. ft.": {
-    "ar": "AED 123 / قدم مربعة",
+    "ar": "123 درهم / قدم مربعة",
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:36:47.834Z"
   },
   "AED 124 / sq. ft.": {
-    "ar": "AED 124 / قدم مربعة",
+    "ar": "124 درهم / قدم مربعة",
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:38:58.509Z"
   },
   "AED 129 / sq. ft.": {
-    "ar": "AED 129 / قدم مربعة",
+    "ar": "129 درهم / قدم مربعة",
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:35:03.278Z"
   },
   "AED 15 Billion": {
-    "ar": "AED 15 Billion",
+    "ar": "15 مليار درهم",
     "by": "machine"
   },
   "AED 151 / sq. ft.": {
-    "ar": "AED 151 / قدم مربع",
+    "ar": "151 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
   },
   "AED 15M+": {
-    "ar": "AED 15M+",
+    "ar": "15 مليون درهم فأكثر",
     "by": "machine"
   },
   "AED 1M – 2M": {
-    "ar": "AED 1M – 2M",
+    "ar": "1 – 2 مليون درهم",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
   },
   "AED 2,189 / sq. ft.": {
-    "ar": "AED 2,189 / قدم مربع",
+    "ar": "2,189 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:48:17.018Z"
   },
   "AED 2,208 / sq. ft.": {
-    "ar": "AED 2,208 / قدم مربع",
+    "ar": "2,208 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:39:13.993Z"
   },
   "AED 2,230 / sq. ft.": {
-    "ar": "AED 2,230 / قدم مربعة",
+    "ar": "2,230 درهم / قدم مربعة",
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:38:58.509Z"
   },
   "AED 2,691 / sq. ft.": {
-    "ar": "AED 2,691 / قدم مربعة",
+    "ar": "2,691 درهم / قدم مربعة",
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:36:47.834Z"
   },
   "AED 2M – 4M": {
-    "ar": "AED 2M – 4M",
+    "ar": "2 – 4 مليون درهم",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
   },
   "AED 3,845 / sq. ft.": {
-    "ar": "AED 3,845 / قدم مربع",
+    "ar": "3,845 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:29:04.054Z"
   },
   "AED 3,876 / sq. ft.": {
-    "ar": "AED 3,876 / قدم مربع",
+    "ar": "3,876 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:29:04.054Z"
   },
   "AED 4,251 / sq. ft.": {
-    "ar": "AED 4,251 / قدم مربع",
+    "ar": "4,251 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:31:14.076Z"
   },
   "AED 4M – 8M": {
-    "ar": "AED 4M – 8M",
+    "ar": "4 – 8 مليون درهم",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
   },
   "AED 53 / sq. ft.": {
-    "ar": "AED 53 / قدم مربع",
+    "ar": "53 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:49:10.239Z"
   },
   "AED 89 / sq. ft.": {
-    "ar": "AED 89 / قدم مربع",
+    "ar": "89 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
   },
   "AED 8M – 15M": {
-    "ar": "AED 8M – 15M",
+    "ar": "8 – 15 مليون درهم",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"
   },
   "AED 952 / sq. ft.": {
-    "ar": "AED 952 / قدم مربع",
+    "ar": "952 درهم / قدم مربع",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:49:10.239Z"
@@ -2794,7 +2794,7 @@
     "at": "2026-08-16T10:01:23.670Z"
   },
   "Bazar's aggregate liability arising from your use of the Service\nis capped at the lesser of AED 10,000 or fees paid to Bazar in the\ntwelve months preceding the claim. This cap does not apply to\nliability that cannot be limited under UAE law (including liability\nfor fraud or wilful misconduct).": {
-    "ar": "مسؤولية بازار الناجمة عن استخدامك للخدمة محددة بحد أقصى قدره الأقل من AED 10,000 أو الرسوم المدفوعة لبازار خلال الاثني عشر شهراً السابقة للادعاء. لا ينطبق هذا الحد على المسؤولية التي لا يمكن تقييدها وفقاً لقانون دولة الإمارات العربية المتحدة (بما في ذلك المسؤولية عن الاحتيال أو الإهمال الجسيم).",
+    "ar": "مسؤولية بازار الناجمة عن استخدامك للخدمة محددة بحد أقصى قدره الأقل من 10,000 درهم أو الرسوم المدفوعة لبازار خلال الاثني عشر شهراً السابقة للادعاء. لا ينطبق هذا الحد على المسؤولية التي لا يمكن تقييدها وفقاً لقانون دولة الإمارات العربية المتحدة (بما في ذلك المسؤولية عن الاحتيال أو الإهمال الجسيم).",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:48:08.045Z"
@@ -12128,7 +12128,7 @@
     "by": "machine"
   },
   "Rashid founded Bazar in 2018 after twelve years on the institutional side. He still personally handles the firm's family-office mandates and sits on every offer above AED 30M.": {
-    "ar": "راشد أسس بازار في 2018 بعد اثني عشر عامًا في الجانب المؤسسي. لا يزال يتعامل شخصيًا مع تفويضات مكاتب العائلات ويشارك في كل عرض يتجاوز AED 30 مليون.",
+    "ar": "راشد أسس بازار في 2018 بعد اثني عشر عامًا في الجانب المؤسسي. لا يزال يتعامل شخصيًا مع تفويضات مكاتب العائلات ويشارك في كل عرض يتجاوز 30 درهم مليون.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
@@ -13116,7 +13116,7 @@
     "at": "2026-08-16T16:16:01.429Z"
   },
   "Selling: a 2% transfer fee to the municipality, agency commission of 2% plus VAT, and a developer NOC fee — typically AED 500 to 5,000. Renting out: Tawtheeq registration, ADDC connection charges, and agency commission where applicable.": {
-    "ar": "البيع: رسوم نقل ملكية بنسبة 2% للبلدية، وعمولة الوساطة 2% إضافة إلى ضريبة القيمة المضافة، ورسوم شهادة عدم ممانعة من المطور العقاري — عادة من AED 500 إلى 5,000. التأجير: تسجيل توثيق، ورسوم توصيل شركة أبوظبي للتوزيع، وعمولة الوساطة عند الاقتضاء.",
+    "ar": "البيع: رسوم نقل ملكية بنسبة 2% للبلدية، وعمولة الوساطة 2% إضافة إلى ضريبة القيمة المضافة، ورسوم شهادة عدم ممانعة من المطور العقاري — عادة من 500 درهم إلى 5,000. التأجير: تسجيل توثيق، ورسوم توصيل شركة أبوظبي للتوزيع، وعمولة الوساطة عند الاقتضاء.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
@@ -14544,7 +14544,7 @@
     "at": "2026-08-16T14:46:09.616Z"
   },
   "The wider masterplan has a development value exceeding AED 40 billion and approximately 11 km of coastline.": {
-    "ar": "تبلغ القيمة التطويرية للمخطط الرئيسي الأوسع أكثر من AED 40 billion مع نحو 11 كم من الواجهة الساحلية.",
+    "ar": "تبلغ القيمة التطويرية للمخطط الرئيسي الأوسع أكثر من 40 مليار درهم مع نحو 11 كم من الواجهة الساحلية.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:31:14.076Z"
@@ -15010,7 +15010,7 @@
     "at": "2026-08-21"
   },
   "Under AED 1M": {
-    "ar": "أقل من AED 1M",
+    "ar": "أقل من مليون درهم",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:14:58.870Z"

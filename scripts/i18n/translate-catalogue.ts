@@ -27,6 +27,8 @@ import { fileURLToPath } from "node:url";
 // SDK is imported, and whether a message has any words in it decides whether
 // it belongs on that list at all.
 import { isStructural } from "../../lib/i18n/catalogue-mt";
+import { mask } from "../../lib/i18n/mt/mask";
+import { numeralOverrides } from "../../lib/i18n/mt/numerals";
 
 const ROOT = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -222,8 +224,12 @@ async function main() {
   // type-stripping will not resolve.
   const { translateField } = await import("../../lib/i18n/mt/translate");
   const MT_MODEL_PROSE = proseModel;
-  const { translatePluralMessage, catalogueIssues, refuse, stripMarkdownHeading } =
-    await import("../../lib/i18n/catalogue-mt");
+  const {
+    translatePluralMessage,
+    catalogueIssues,
+    refuse,
+    stripMarkdownHeading,
+  } = await import("../../lib/i18n/catalogue-mt");
   const { parseMessage } = await import("../../lib/i18n/icu");
 
   const failures: { id: string; issues: { code: string; detail: string }[] }[] =
@@ -289,6 +295,21 @@ async function main() {
          * Latin, no sentinel drift.
          */
         kind: "ui",
+        /*
+         * The half the catalogue was missing.
+         *
+         * `translate-columns.ts` and `repair-blocks.ts` have always passed
+         * this; the catalogue never did. So a money token in a CMS block came
+         * back as "4.2 مليون درهم" while the same token in a catalogue string
+         * was restored byte-for-byte as "AED 4.2M" — masking working exactly
+         * as designed, and nothing reporting the difference because a
+         * protected token is *supposed* to survive intact.
+         *
+         * That is where the 28 `AED 2M`s in messages/ar/{guides,tools}.json
+         * came from. They are rewritten in this commit; this line is what
+         * stops the next translated key adding a 29th.
+         */
+        overrides: numeralOverrides(mask(item.english)),
       });
       if (res.ok) {
         usedModel = res.model;

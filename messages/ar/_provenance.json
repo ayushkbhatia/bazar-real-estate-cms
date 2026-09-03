@@ -1115,13 +1115,17 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "abddbae2ce8e",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "tools.mortgage.belowGuidanceHighTierConverted": {
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "0e9fee959eb6",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "tools.mortgage.interestRate": {
     "by": "machine",
@@ -1343,7 +1347,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "2832daeca3f3",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "tools.mortgage.cashLine.down_payment": {
     "by": "machine",
@@ -3311,19 +3317,25 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "ec56dda565ab",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "tools.concierge.suggestion2": {
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "72937e824506",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "tools.concierge.suggestion3": {
     "by": "human",
     "model": null,
     "sourceHash": "62176cd89f47",
-    "reviewed": true
+    "reviewed": true,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "tools.concierge.suggestion4": {
     "by": "machine",
@@ -3533,7 +3545,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "8ce1379529b3",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.index.card.property-linked-residency.eyebrow": {
     "by": "human",
@@ -3551,7 +3565,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "8b45120e44b0",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.index.card.tax-residency.eyebrow": {
     "by": "machine",
@@ -3773,7 +3789,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "8ad1aff98e77",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.goldenVisa.block.qualifyingProperty.heading": {
     "by": "machine",
@@ -3785,7 +3803,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "1230158adf91",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.goldenVisa.block.dependants.heading": {
     "by": "machine",
@@ -3911,7 +3931,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "2c9f2ef4e4cc",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.howToRentOut.step.understandMunicipalityFees.title": {
     "by": "machine",
@@ -4121,7 +4143,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "9c0f6f163c8b",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.kycNonResidents.block.banking.heading": {
     "by": "human",
@@ -4163,7 +4187,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "e2d441a57bdf",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.propertyLinkedResidency.block.when2YearVisa.heading": {
     "by": "machine",
@@ -4175,7 +4201,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "a18ccdd326e6",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.propertyLinkedResidency.block.doesntCover.heading": {
     "by": "machine",
@@ -5297,7 +5325,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "839f2678d343",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.goldenVisa.step.value.choice.above_2m.hint": {
     "by": "machine",
@@ -5309,7 +5339,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "665b116cc810",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.goldenVisa.step.value.choice.750k_to_1m.hint": {
     "by": "human",
@@ -5321,7 +5353,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "dd82fd929789",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.goldenVisa.step.ownership.question": {
     "by": "machine",
@@ -5387,7 +5421,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "d335d4444db0",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.goldenVisa.outcome.belowThreshold.cta": {
     "by": "machine",
@@ -5405,7 +5441,9 @@
     "by": "human",
     "model": null,
     "sourceHash": "eb7f8612f0de",
-    "reviewed": true
+    "reviewed": true,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.goldenVisa.outcome.twoYearBand.title": {
     "by": "human",
@@ -5417,7 +5455,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "f3f233712962",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.goldenVisa.outcome.twoYearBand.next.1": {
     "by": "human",
@@ -5429,7 +5469,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "ecaec580be89",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.goldenVisa.outcome.companyHeld.title": {
     "by": "machine",
@@ -5489,7 +5531,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "ac7eee5d38fd",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.goldenVisa.outcome.eligible.cta": {
     "by": "machine",
@@ -5735,13 +5779,17 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "66f1137eb0de",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.propertyResidency.step.value.choice.below_750k.label": {
     "by": "human",
     "model": null,
     "sourceHash": "dd82fd929789",
-    "reviewed": true
+    "reviewed": true,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.propertyResidency.step.mortgage.question": {
     "by": "machine",
@@ -5783,7 +5831,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "177ab6190dba",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.propertyResidency.outcome.belowThreshold.next.1": {
     "by": "machine",
@@ -5843,7 +5893,9 @@
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "73027d4687d2",
-    "reviewed": false
+    "reviewed": false,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.propertyResidency.outcome.eligible.cta": {
     "by": "machine",
@@ -5903,13 +5955,17 @@
     "by": "structural",
     "model": null,
     "sourceHash": "8a7c469d57b0",
-    "reviewed": true
+    "reviewed": true,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "guides.checker.propertyResidency.outcome.belowThreshold.copy": {
     "by": "human",
     "model": null,
     "sourceHash": "71ee99aeaf2e",
-    "reviewed": true
+    "reviewed": true,
+    "editedBy": "human",
+    "editNote": "money localised: AED 2M -> 2 مليون درهم"
   },
   "common.hours.open": {
     "by": "human",

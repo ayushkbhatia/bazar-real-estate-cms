@@ -11,14 +11,25 @@ import { mask } from "./mask";
  */
 describe("arabicNumeral", () => {
   it("translates the magnitude word and leaves the figure alone", () => {
-    expect(arabicNumeral("AED 84.49 billion")).toBe("AED 84.49 مليار");
-    expect(arabicNumeral("AED 4.2M")).toBe("AED 4.2 مليون");
+    expect(arabicNumeral("AED 84.49 billion")).toBe("84.49 مليار درهم");
+    expect(arabicNumeral("AED 4.2M")).toBe("4.2 مليون درهم");
     expect(arabicNumeral("80K")).toBe("80 ألف");
+  });
+
+  /**
+   * The currency is Arabic and it TRAILS the figure — both from
+   * `lib/preferences/unit-labels.ts`, so a translated sentence and the price
+   * rendered beside it use the same word in the same order. This used to keep
+   * "AED" Latin; the dictionary is what changed the answer.
+   */
+  it("writes the currency in Arabic, after the figure", () => {
+    expect(arabicNumeral("AED 4.2M")).toBe("4.2 مليون درهم");
+    expect(arabicNumeral("AED 4.2M")).not.toContain("AED");
   });
 
   it("is case-insensitive about the magnitude word", () => {
     // "AED 100 Billion" appears capitalised in a headline.
-    expect(arabicNumeral("AED 100 Billion")).toBe("AED 100 مليار");
+    expect(arabicNumeral("AED 100 Billion")).toBe("100 مليار درهم");
   });
 
   it("translates quarters, halves and month names", () => {
@@ -27,9 +38,15 @@ describe("arabicNumeral", () => {
     expect(arabicNumeral("September 2026")).toBe("سبتمبر 2026");
   });
 
-  it("leaves a bare currency figure alone — there is no English word in it", () => {
-    expect(arabicNumeral("AED 1,927")).toBeNull();
-    expect(arabicNumeral("AED 30")).toBeNull();
+  /**
+   * A money token with no magnitude word used to be left alone, because there
+   * was no English WORD in it to strand. There is now: "AED" itself. Leaving
+   * this branch out would have produced "1,927 AED" beside "4.2 مليون درهم" in
+   * the same paragraph.
+   */
+  it("localises a bare currency figure too", () => {
+    expect(arabicNumeral("AED 1,927")).toBe("1,927 درهم");
+    expect(arabicNumeral("AED 30")).toBe("30 درهم");
   });
 
   it("leaves percentages, areas and regulators alone", () => {
@@ -49,7 +66,7 @@ describe("numeralOverrides", () => {
     const overrides = numeralOverrides(m);
     // The percentage carries no English word, so it is absent by design.
     expect(Object.values(overrides)).toEqual([
-      "AED 84.49 مليار",
+      "84.49 مليار درهم",
       "النصف الأول من 2026",
     ]);
   });
