@@ -6,6 +6,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { DualRangeSlider } from "./dual-range-slider";
 import {
   areaUnitLabel,
@@ -21,6 +22,20 @@ import type {
 } from "@/lib/search-bar";
 
 const EMPTY_RANGE: Range = { min: null, max: null };
+
+/**
+ * The two selects in row 2 read as placeholders until a visitor picks
+ * something: "Any type" / "Any beds" sit in the same muted grey as the field
+ * labels above them and as the search input's own placeholder, and only a
+ * real choice is drawn in ink. A native <select> has no ::placeholder, so the
+ * colour has to hang off the value.
+ */
+function selectClass(chosen: boolean) {
+  return cn(
+    "h-10 pointer-coarse:min-h-11 px-3 rounded-md bg-white text-[16px] md:text-[13px] outline-none border border-bz-border focus:border-bz-accent",
+    chosen ? "text-bz-ink" : "text-bz-muted",
+  );
+}
 
 /**
  * The tabbed search bar over the home hero.
@@ -199,13 +214,17 @@ export function HeroSearch({
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="h-10 pointer-coarse:min-h-11 px-3 rounded-md bg-white text-bz-ink text-[16px] md:text-[13px] outline-none border border-bz-border focus:border-bz-accent"
+              className={selectClass(Boolean(type))}
             >
               <option value="">
                 {label("any_type_label", "filters.anyType")}
               </option>
               {tab.types.map((type) => (
-                <option key={type.value} value={type.value}>
+                <option
+                  key={type.value}
+                  value={type.value}
+                  className="text-bz-ink"
+                >
                   {type.label}
                 </option>
               ))}
@@ -220,13 +239,13 @@ export function HeroSearch({
               <select
                 value={beds}
                 onChange={(e) => setBeds(e.target.value)}
-                className="h-10 pointer-coarse:min-h-11 px-3 rounded-md bg-white text-bz-ink text-[16px] md:text-[13px] outline-none border border-bz-border focus:border-bz-accent"
+                className={selectClass(Boolean(beds))}
               >
                 <option value="">
                   {label("any_beds_label", "filters.anyBeds")}
                 </option>
                 {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <option key={n} value={n}>
+                  <option key={n} value={n} className="text-bz-ink">
                     {n === 6
                       ? tr("filters.bedroomsMax")
                       : tr("filters.bedroomsOption", { count: n })}
