@@ -1328,3 +1328,19 @@ shows the trail.)
   `match: { mode: "commercial" }` header for the retired `/commercial/search`
   route. Harmless — nothing reads it now — but it is a CMS row an editor can
   still open and edit to no effect.
+
+- [i18n] Arabic text inside an ENGLISH page is still drawn by the Latin stack.
+  `globals.css` says a `<span lang="ar">` on an English page "should get the
+  Arabic one", and `:lang(ar)` only redefines `--bz-font-sans` — but
+  `font-family` is inherited as an already-resolved value from `body`, so
+  redefining the variable on a descendant changes nothing. Every Arabic twin
+  rendered beside English copy therefore falls through Geist and its
+  metric-matched fallback to whatever Arabic face the DEVICE picks, which is
+  why the same string can look different on a laptop and the phone next to it.
+  `locale-toggle.tsx` now pins its own `ع` with
+  `font-[family-name:var(--bz-font-ar-body)]`; `LanguageSwitch`'s "العربية" and
+  the Arabic twins elsewhere still do not. The general fix is one declaration
+  (`font-family: var(--bz-font-ar-body)` inside the existing `:lang(ar)` rule)
+  and it restyles Arabic fragments across every English page at once, so it
+  wants its own PR and a look at the visual gates rather than a corner of
+  someone else's.
