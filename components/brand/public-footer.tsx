@@ -144,8 +144,30 @@ export function PublicFooter({
           </div>
         ))}
 
-        {/* Contact */}
-        <div className="col-span-2 md:col-span-1">
+        {/*
+          Contact — one grid cell at every width, which is the whole of what
+          this block declares.
+
+          It used to be `col-span-2` below `md`: the brand block spans both
+          mobile columns, so the contact block was written the same way, and
+          the two link columns in between paired up on their own. With three
+          seeded columns that left Popular areas alone on row three with a dead
+          cell beside it, and pushed a 313px-tall contact block onto a fourth
+          row — ~350px of extra scroll at the very bottom of every page, next
+          to an empty half-screen. Dropping the span drops contact into that
+          cell: Popular areas | Contact, one row, nothing else moved.
+
+          An even number of link columns puts the dead cell after contact
+          instead of before it. That is the same cosmetic gap the odd case had,
+          not a break, and the fixed `col-span-2` was never a fix for it —
+          with two columns the old code stacked contact on its own row just the
+          same.
+
+          Desktop is untouched: from `md` the grid is
+          `1.5fr | tracks | 1.15fr` and contact has always taken exactly the
+          last track.
+        */}
+        <div>
           {settings.contact_heading ? (
             <h4 className="mb-4 text-[12px] font-medium uppercase tracking-wider text-bz-taupe">
               {settings.contact_heading}
