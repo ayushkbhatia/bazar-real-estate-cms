@@ -31,6 +31,22 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [mobile] The shared snap-rail primitives lose their first card's gutter.
+  `.bz-rail` (app/globals.css) and `CarouselGrid`
+  (components/brand/mobile/carousel-grid.tsx) both set `padding-inline: 16px`
+  and `scroll-snap-type: x mandatory` with no `scroll-padding-inline`.
+  Mandatory snapping aligns a child to the container's *scrollport* edge,
+  which ignores padding, so on load the browser scrolls the rail 16px and the
+  first card sits flush against the screen while every heading above it stays
+  inset — measured on the home page's location rail before #485 fixed
+  that one rail locally with `scroll-px-4 md:scroll-px-0`. Every other
+  consumer of the two primitives still has it. "Done" is
+  `scroll-padding-inline: var(--bz-4)` on `.bz-rail` (and `0` on
+  `.bz-rail--flush`) plus `scroll-px-4 md:scroll-px-0` in `CarouselGrid`,
+  after which the local override in
+  `app/[locale]/(public)/_components/home/location-browsing.tsx` could go.
+  Both files are under the shared-files rule, hence not done here.
+
 - [i18n] The Arabic message catalogue still writes money as `AED 2M` inside
   prose sentences.
   Surfaced by the units-dictionary PR, which moved every glyph the CODE emits

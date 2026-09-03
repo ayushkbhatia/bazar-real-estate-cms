@@ -13,8 +13,9 @@ import {
 /**
  * Home "Location-based browsing" (handoff §1). A large Abu Dhabi overview
  * tile + up to 8 community tiles, wired to live community counts.
- * Desktop: overview left, 4×2 grid right. Mobile: overview full-width, the
- * 8 communities become a horizontal snap rail (single DOM tree).
+ * Desktop: overview left, 4×2 grid right. Mobile: the overview tile is
+ * dropped and the 8 communities become a horizontal snap rail (single DOM
+ * tree) — see the two notes on the markup below.
  */
 export type LocationCard = {
   enabled?: boolean;
@@ -112,7 +113,13 @@ export async function LocationBrowsing({
       </div>
 
       <div className="md:grid md:grid-cols-[1.15fr_2fr] md:gap-4 md:h-[520px]">
-        {/* Overview tile */}
+        {/*
+          Overview tile — desktop only. On a phone it is a 240px-tall
+          "Abu Dhabi" megacard sitting above eight community tiles that are
+          all in Abu Dhabi, so it reads as a card that belongs to the rail
+          rather than as the section's frame. The header's "All locations"
+          link already goes where this tile goes.
+        */}
         <Tile
           href={overviewHref ?? "/areas"}
           name={overviewName ?? "Abu Dhabi"}
@@ -121,16 +128,33 @@ export async function LocationBrowsing({
           imgUrl={overviewImageUrl}
           imgAlt={overviewImageAlt}
           big
-          className="h-[240px] md:h-full"
+          className="hidden md:block md:h-full"
+          /*
+            `display: none` does not stop the fetch — without this a phone
+            downloaded the 640px candidate of a tile it never shows. A 1px
+            slot below the breakpoint picks the smallest generated width
+            instead; the md+ slot is the one that has to be right.
+          */
+          sizes="(max-width: 768px) 1px, 33vw"
         />
 
         {/* Community tiles — mobile rail, desktop 4×2 grid */}
         <div
           className={[
-            "mt-4 flex gap-4 overflow-x-auto -mx-4 px-4 snap-x snap-mandatory",
+            "flex gap-4 overflow-x-auto -mx-4 px-4 snap-x snap-mandatory",
+            /*
+              `scroll-px-4` and not just `px-4`. Mandatory snapping aligns a
+              child's snap edge to the container's SCROLL-port edge, which
+              ignores padding — so on load the browser scrolled the rail 16px
+              to sit the first card flush against the screen while the heading
+              above it stayed inset, and the gutter reappeared only once you
+              scrolled back. Scroll padding is what tells snapping where the
+              gutter is. Reset at md, where the rail is a grid.
+            */
+            "scroll-px-4 md:scroll-px-0",
             "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
             "[&>*]:shrink-0 [&>*]:snap-start [&>*]:w-[68%]",
-            "md:mt-0 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:grid-rows-2 md:overflow-visible md:snap-none",
+            "md:mx-0 md:px-0 md:grid md:grid-cols-4 md:grid-rows-2 md:overflow-visible md:snap-none",
             "md:[&>*]:w-auto",
           ].join(" ")}
         >
@@ -161,6 +185,7 @@ function Tile({
   imgAlt,
   big = false,
   className,
+  sizes = "(max-width: 768px) 68vw, 25vw",
 }: {
   href: string;
   name: string;
@@ -170,6 +195,8 @@ function Tile({
   imgAlt?: string | null;
   big?: boolean;
   className?: string;
+  /** Defaults to a rail card: 68% of a phone, a quarter of the desktop grid. */
+  sizes?: string;
 }) {
   return (
     <Link
@@ -181,7 +208,7 @@ function Tile({
           src={imgUrl}
           alt={imgAlt ?? name}
           fill
-          sizes="(max-width: 768px) 68vw, 25vw"
+          sizes={sizes}
           className="absolute inset-0 h-full w-full object-cover"
         />
       ) : (
