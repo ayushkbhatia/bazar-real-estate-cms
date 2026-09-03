@@ -16,6 +16,24 @@ const supabaseHost = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  /*
+   * The outer bound on prerendering one route. Next's default is 60s, and two
+   * deploys on 2026-09-03 died against it — a Cloudflare 522 in front of
+   * Supabase, then a cascade of `took more than 60 seconds` across 17 `/ar`
+   * routes. Neither was a code failure and a redeploy cleared both.
+   *
+   * The actual fix is `lib/supabase/resilient-fetch.ts`, which bounds each
+   * request so a hung connection fails fast enough to be retried instead of
+   * silently eating the whole budget. This number is the room that fix needs:
+   * a page making several sequential reads, each of which may spend up to
+   * ~32s on three attempts, has to be able to finish inside it. Raising the
+   * budget alone would have fixed nothing — it would only have moved the same
+   * failure 60 seconds later.
+   *
+   * It costs nothing on a healthy build: 837 pages prerendered in 90s means
+   * the routes that matter finish in well under a second each.
+   */
+  staticPageGenerationTimeout: 180,
   images: {
     remotePatterns: supabaseHost
       ? [
