@@ -20,7 +20,14 @@
  * lighter and free of the glyphs dependency clustering's count labels need.
  */
 
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import Link from "@/components/i18n/link";
 import maplibregl, { type Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -52,17 +59,168 @@ import { emirateMessageKey } from "@/lib/areas/emirates";
  * Camera only. The name a visitor reads comes from the message catalogue via
  * `emirateMessageKey`: this object used to carry a `label` too, and that label
  * printed "Abu Dhabi" into the area card on the Arabic site.
+ *
+ * Two centres per city, and a zoom that is COMPUTED rather than stored,
+ * because a zoom level is not a framing: it is degrees per PIXEL, so the same
+ * number frames a different amount of map in every box it is drawn in. The
+ * frame runs ~1250×560 from `lg` up, ~672×560 on a tablet and ~341×438 on a
+ * phone, and the handoff's `zoom` was measured against the widest of those:
+ * at 10.6 a phone canvas spans 0.15° of longitude, so a visitor met the city
+ * centre and had to pan east to learn Yas, Al Raha and Masdar exist at all.
+ *
+ * `zoom` is therefore the WIDEST framing a box ever gets — what a desktop
+ * shows, kept exactly as the handoff drew it — and `overviewCamera` zooms out
+ * from it in any box too narrow to hold the emirate. `narrowCentre` is where
+ * that wider view sits: east of the desktop centre, because the areas are.
+ * Abu Dhabi's run 54.35→54.68 lng (Corniche to Kizad) and 24.35→24.72 lat
+ * (Mussafah to Kizad), and only the Corniche is west of the desktop midpoint.
+ *
+ * Both numbers describe the emirate OVERVIEW only. Flying to a single area
+ * (AREA_ZOOM / DETAIL_ZOOM below) frames one place, and one place is the same
+ * size on every screen.
  */
-const CITIES: Record<string, { center: [number, number]; zoom: number }> = {
-  "abu-dhabi": { center: [54.46, 24.48], zoom: 10.6 },
-  dubai: { center: [55.22, 25.14], zoom: 10.4 },
+type CityCamera = { center: [number, number]; zoom: number };
+const CITIES: Record<
+  string,
+  CityCamera & { narrowCentre: [number, number] }
+> = {
+  "abu-dhabi": {
+    center: [54.46, 24.48],
+    zoom: 10.6,
+    narrowCentre: [54.5, 24.48],
+  },
+  dubai: {
+    center: [55.22, 25.14],
+    zoom: 10.4,
+    narrowCentre: [55.22, 25.14],
+  },
 };
+
+/**
+ * Degrees of longitude the emirate overview keeps in frame.
+ *
+ * Abu Dhabi's seeded centroids span 0.334° (Corniche 54.349 → Kizad 54.683).
+ * 0.40 adds the room a pin needs for the label that hangs off it — ~55px
+ * either side of the centroid, which is ~0.13° of the two together in the
+ * narrowest box this map is drawn in. Measured on a 375px phone: every pin,
+ * label included, sits inside the frame at the zoom this produces.
+ */
+const OVERVIEW_SPAN_DEG = 0.4;
+
+/**
+ * MapLibre's vector tiles are 512px, so the whole world is 512·2^zoom pixels
+ * wide. Halving this (to the 256 a raster basemap uses) would double every
+ * span computed from it.
+ */
+const WORLD_TILE_PX = 512;
+
+/**
+ * The emirate overview framed for the box it is actually drawn in.
+ *
+ * Zooms out from the city's stored (desktop) zoom until OVERVIEW_SPAN_DEG fits
+ * across `frameWidth`, and never zooms IN past it: a wide screen keeps the
+ * handoff's framing untouched, and only boxes too narrow to hold the emirate —
+ * every phone, and a tablet up to ~880px of map — get a wider camera. That
+ * makes the breakpoint fall out of the geometry instead of being a second
+ * threshold to keep in sync with the CSS that sizes the frame.
+ *
+ * `frameWidth` of 0 (the map's box has no layout yet) falls back to the stored
+ * camera rather than dividing by zero.
+ */
+function overviewCamera(emirate: string, frameWidth: number): CityCamera {
+  const city = CITIES[emirate] ?? CITIES["abu-dhabi"];
+  const desktop = { center: city.center, zoom: city.zoom };
+  if (frameWidth <= 0) return desktop;
+  const fitted =
+    Math.round(
+      Math.log2((360 * frameWidth) / (WORLD_TILE_PX * OVERVIEW_SPAN_DEG)) * 100,
+    ) / 100;
+  if (fitted >= city.zoom) return desktop;
+  return { center: city.narrowCentre, zoom: Math.max(fitted, MIN_ZOOM) };
+}
 
 const DOT_REVEAL_ZOOM = 12.5;
 const PIN_QUIET_ZOOM = 12.4;
 const AREA_ZOOM = 12.9;
 const AREA_DEEP_ZOOM = 13.8;
 const DETAIL_ZOOM = 13.5;
+/** The map constructor's floor, shared so a fitted camera can't dip under it. */
+const MIN_ZOOM = 8.5;
+
+/**
+ * Which listing dots belong to an area — the nearest centroid wins.
+ *
+ * The dots carry no area, only a coordinate: `listAreaListingDots` returns one
+ * row per published listing for the whole emirate. Assigning each to its
+ * closest pin is a Voronoi split of the map, which is exactly how a reader
+ * interprets the pins anyway ("these dots are Yas, those are Al Raha").
+ *
+ * Distance is squared degrees, unprojected. A degree of longitude is ~0.91 of
+ * a degree of latitude at Abu Dhabi's 24.5°N, so the comparison is slightly
+ * stretched east-west — nowhere near enough to move a dot between two
+ * centroids that are ~0.1° apart, and this never leaves the client.
+ */
+function dotsNearest(area: AreaPin, areas: AreaPin[], dots: AreaDot[]): AreaDot[] {
+  if (areas.length < 2) return dots;
+  return dots.filter((d) => {
+    let winner = "";
+    let best = Infinity;
+    for (const a of areas) {
+      const dist = (a.lng - d.lng) ** 2 + (a.lat - d.lat) ** 2;
+      if (dist < best) {
+        best = dist;
+        winner = a.slug;
+      }
+    }
+    return winner === area.slug;
+  });
+}
+
+/**
+ * Below Tailwind's `md` — where globals.css turns the area flyout into a
+ * bottom sheet that spans the map (`@media (max-width: 767px)`), and the only
+ * width at which tapping a pin costs the visitor the map.
+ *
+ * `rem` rather than a literal 768px for the reason `lg-only.tsx` spells out at
+ * length: a browser resolves `rem` inside a media query the same way for this
+ * string and for the stylesheet, so the two gates cannot disagree about where
+ * the phone layout begins. Module-level, with its `subscribe`/`getSnapshot`
+ * pair, because `useSyncExternalStore` re-subscribes whenever `subscribe`'s
+ * identity changes.
+ */
+const PHONE = "(max-width: 47.999rem)";
+
+function subscribePhone(onStoreChange: () => void): () => void {
+  if (typeof window === "undefined" || !window.matchMedia) return () => {};
+  const mq = window.matchMedia(PHONE);
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}
+
+function getPhoneSnapshot(): boolean {
+  if (typeof window === "undefined" || !window.matchMedia) return false;
+  return window.matchMedia(PHONE).matches;
+}
+
+/** No viewport on the server; `false` keeps the pointer-sized behaviour. */
+function getPhoneServerSnapshot(): boolean {
+  return false;
+}
+
+/**
+ * True on a phone-width viewport.
+ *
+ * Safe to read the real viewport on the first client render — this component
+ * only ever mounts client-side (`next/dynamic`, `ssr: false`), so there is no
+ * server HTML for the answer to mismatch.
+ */
+function useIsPhone(): boolean {
+  return useSyncExternalStore(
+    subscribePhone,
+    getPhoneSnapshot,
+    getPhoneServerSnapshot,
+  );
+}
 
 // WebGL paint can't parse oklch() tokens — resolve the teal accent to hex.
 const ACCENT_HEX = "#005777";
@@ -190,6 +348,7 @@ export function AreaMap({
   const [map, setMap] = useState<MapLibreMap | null>(null);
   const [dot, setDot] = useState<AreaDot | null>(null);
   const reduced = usePrefersReducedMotion();
+  const phone = useIsPhone();
   // Skip the emirate/focus fly effects on first mount — the constructor
   // already framed the initial camera.
   const mounted = useRef(false);
@@ -220,6 +379,62 @@ export function AreaMap({
     [reduced],
   );
 
+  /**
+   * Frame an area's LISTINGS, not its centroid.
+   *
+   * Behind both ways of asking for them: the flyout's "Zoom to N listings"
+   * button at every width, and a pin tap on a phone.
+   *
+   * `flyToArea` centres the pin, and a pin is a hand-seeded place centroid —
+   * for Yas that is the middle of the island, while its 14 listings sit along
+   * the marina. AREA_DEEP_ZOOM spans 0.019° on a 341px phone canvas and 0.066°
+   * on a 1182px desktop one, so centring the centroid put the visitor on empty
+   * ground with every Yas dot off-screen — a button that promised 14 listings
+   * and delivered a view of none. Fitting the dots is what it was always
+   * asking for.
+   *
+   * The centroid still seeds the bounds, so the area a visitor asked about
+   * stays in frame beside its listings. Zoom is clamped at both ends: never past
+   * AREA_DEEP_ZOOM (a single listing would otherwise fill the screen with
+   * rooftop), and never below DOT_REVEAL_ZOOM, where the dots layer fades to
+   * transparent — a perfect fit that renders nothing is worse than a tight one
+   * a pinch can widen. An area with no listings falls back to the centroid.
+   */
+  const zoomToAreaListings = useCallback(
+    (a: AreaPin) => {
+      const m = mapRef.current;
+      if (!m) return;
+      const mine = dotsNearest(a, areas, dots);
+      if (mine.length === 0) return flyToArea(a, true);
+      const bounds = new maplibregl.LngLatBounds([a.lng, a.lat], [a.lng, a.lat]);
+      for (const d of mine) bounds.extend([d.lng, d.lat]);
+      const cam = m.cameraForBounds(bounds, { padding: 48 });
+      if (!cam?.center || cam.zoom == null) return flyToArea(a, true);
+      const center = cam.center;
+      const zoom = Math.min(
+        Math.max(cam.zoom, DOT_REVEAL_ZOOM),
+        AREA_DEEP_ZOOM,
+      );
+      if (reduced) m.jumpTo({ center, zoom });
+      else m.flyTo({ center, zoom, duration: 1600, essential: true });
+    },
+    [areas, dots, flyToArea, reduced],
+  );
+
+  /**
+   * The emirate overview, measured against the box this map is drawn in.
+   *
+   * A callback rather than a value because the width it needs only exists
+   * once the container has layout, and because every caller wants the answer
+   * at the moment it moves the camera: the constructor, the emirate toggle,
+   * and the reset button a visitor can press at any width.
+   */
+  const cameraFor = useCallback(
+    (em: string) =>
+      overviewCamera(em, containerRef.current?.clientWidth ?? 0),
+    [],
+  );
+
   // Init once.
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
@@ -232,11 +447,11 @@ export function AreaMap({
     const focus = framingSlug
       ? areas.find((a) => a.slug === framingSlug)
       : null;
-    const city = CITIES[emirate] ?? CITIES["abu-dhabi"];
+    const overview = cameraFor(emirate);
     const center: [number, number] = focus
       ? [focus.lng, focus.lat]
-      : city.center;
-    const zoom = focus ? DETAIL_ZOOM : city.zoom;
+      : overview.center;
+    const zoom = focus ? DETAIL_ZOOM : overview.zoom;
 
     // Register the shaping plugin before the style resolves. Without it
     // maplibre draws Arabic as isolated, unjoined, left-to-right
@@ -249,7 +464,7 @@ export function AreaMap({
         style,
         center,
         zoom,
-        minZoom: 8.5,
+        minZoom: MIN_ZOOM,
         maxZoom: 16.5,
         attributionControl: false,
         cooperativeGestures: true,
@@ -389,13 +604,13 @@ export function AreaMap({
     if (!m || !map) return;
     if (prevEmirate.current === emirate) return;
     prevEmirate.current = emirate;
-    const city = CITIES[emirate];
-    if (!city) return;
-    if (reduced) m.jumpTo({ center: city.center, zoom: city.zoom });
+    if (!CITIES[emirate]) return;
+    const overview = cameraFor(emirate);
+    if (reduced) m.jumpTo({ center: overview.center, zoom: overview.zoom });
     else
       m.flyTo({
-        center: city.center,
-        zoom: city.zoom,
+        center: overview.center,
+        zoom: overview.zoom,
         duration: 2400,
         essential: true,
       });
@@ -412,7 +627,6 @@ export function AreaMap({
   }, [focusSlug, map]);
 
   const visibleAreas = areas.filter((a) => a.emirate === emirate);
-  const city = CITIES[emirate] ?? CITIES["abu-dhabi"];
   const emirateEmpty = visibleAreas.length === 0;
   const t = useTranslations("common");
 
@@ -426,8 +640,29 @@ export function AreaMap({
           map={map}
           areas={visibleAreas}
           focusSlug={focusSlug ?? null}
+          /*
+           * What a pin does on a phone is not what it does with a mouse.
+           *
+           * Selecting an area opens the flyout, and under `md` globals.css
+           * lays that card out as a bottom sheet spanning the map — so the
+           * tap that expressed interest in an area is also the tap that hides
+           * it, and the card's own "Zoom to N listings" becomes the only way
+           * back to the map it is covering. On a phone the pin therefore does
+           * that zoom directly — `zoomToAreaListings`, which frames the area's
+           * dots rather than its centroid, so what the tap buys is the
+           * listings themselves. Areas with nothing published still zoom, to
+           * their centroid: the map is worth reading whether or not we have
+           * inventory there.
+           *
+           * The chips below the map still open the flyout at every width;
+           * they are the surface where reading the area's figures is the
+           * point, and they don't cover the map to do it. `onSelectArea`
+           * therefore stays wired as it always was — the flyout a chip opens
+           * still closes, and the pin is the only thing that changes.
+           */
           onSelectArea={select}
-          onZoomToListings={(a) => flyToArea(a, true)}
+          onPinActivate={phone ? zoomToAreaListings : undefined}
+          onZoomToListings={zoomToAreaListings}
           dot={dot}
           onCloseDot={() => setDot(null)}
           dotHref={dotHref}
@@ -439,7 +674,7 @@ export function AreaMap({
         <ZoomControls
           map={map}
           reduced={reduced}
-          reset={{ center: city.center, zoom: city.zoom }}
+          reset={() => cameraFor(emirate)}
           showReset={mode === "detail"}
         />
       )}
@@ -469,6 +704,7 @@ function Overlay({
   areas,
   focusSlug,
   onSelectArea,
+  onPinActivate,
   onZoomToListings,
   dot,
   onCloseDot,
@@ -479,6 +715,12 @@ function Overlay({
   areas: AreaPin[];
   focusSlug: string | null;
   onSelectArea: (slug: string | null) => void;
+  /**
+   * What tapping a PIN does, when that is not "select the area". Omitted
+   * everywhere but the phone layout, where selecting would bury the map under
+   * the flyout's bottom sheet.
+   */
+  onPinActivate?: (a: AreaPin) => void;
   onZoomToListings: (a: AreaPin) => void;
   dot: AreaDot | null;
   onCloseDot: () => void;
@@ -514,7 +756,9 @@ function Overlay({
             type="button"
             className={cls}
             style={{ left: p.x, top: p.y - 6 }}
-            onClick={() => onSelectArea(a.slug)}
+            onClick={() =>
+              onPinActivate ? onPinActivate(a) : onSelectArea(a.slug)
+            }
           >
             <span className="bzmap-pin__name">{a.name}</span>
             {/* No badge at 0 — on a mode-scoped map the area is still worth
@@ -757,7 +1001,12 @@ function ZoomControls({
 }: {
   map: MapLibreMap;
   reduced: boolean;
-  reset: { center: [number, number]; zoom: number };
+  /**
+   * Read at click time, not at render time: the overview it returns is
+   * measured against the map's box, and the box a visitor presses this in is
+   * the one that counts.
+   */
+  reset: () => { center: [number, number]; zoom: number };
   showReset: boolean;
 }) {
   const t = useTranslations("common");
@@ -782,11 +1031,11 @@ function ZoomControls({
         <button
           type="button"
           aria-label={t("map.backToCity")}
-          onClick={() =>
-            reduced
-              ? map.jumpTo({ center: reset.center, zoom: reset.zoom })
-              : map.flyTo({ ...reset, essential: true })
-          }
+          onClick={() => {
+            const to = reset();
+            if (reduced) map.jumpTo({ center: to.center, zoom: to.zoom });
+            else map.flyTo({ ...to, essential: true });
+          }}
         >
           <Locate size={15} />
         </button>

@@ -32,7 +32,12 @@ export function AreaChips({
               "inline-flex h-[38px] items-center gap-2 rounded-full border px-4 text-sm transition-colors",
               active
                 ? "border-bz-navy bg-bz-navy text-bz-bg"
-                : "border-bz-border-strong bg-bz-surface text-bz-ink-2 hover:bg-bz-surface-2",
+                : // Brand navy outline rather than the neutral grey these
+                  // shipped with: the chips are the keyboard path to every
+                  // area, and at rest they now read as the brand's own
+                  // control. The fill still carries the selected state — navy
+                  // ground and light text — so the two remain distinct.
+                  "border-bz-navy bg-bz-surface text-bz-ink-2 hover:bg-bz-surface-2",
             ].join(" ")}
           >
             {a.name}
