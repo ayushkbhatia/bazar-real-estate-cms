@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured } from "@/lib/env";
+import { resilientFetch } from "./resilient-fetch";
 import type { Database } from "@/db/types";
 
 /**
@@ -20,7 +21,13 @@ export function createSupabasePublicClient() {
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       auth: { persistSession: false, autoRefreshToken: false },
-      global: { fetch },
+      // Not the bare platform `fetch`. This client is what `npm run build`
+      // reads Supabase through on all 837 prerendered pages, and `fetch` has
+      // no timeout — so a connection that hangs holds the route open until
+      // Next's 60s budget expires and the whole deploy fails. Two builds died
+      // that way on 2026-09-03. See `resilient-fetch.ts`; the per-attempt
+      // deadline is the part that matters, the retry is the easy half.
+      global: { fetch: resilientFetch },
     },
   );
 }
