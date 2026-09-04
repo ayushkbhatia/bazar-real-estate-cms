@@ -6484,5 +6484,26 @@
     "sourceHash": "1bce04081174",
     "reviewed": false,
     "note": "MT rendered 'on the desk' literally as على الطاولة — a physical table — and hung ADREC off the end. مسجّلون لدى ADREC is the phrasing the sell page's own FAQ already uses."
+  },
+  "common.mortgageTeaser.loanAmount": {
+    "by": "human",
+    "model": null,
+    "sourceHash": "db5e6f26bafb",
+    "reviewed": true,
+    "note": "Same term as tools.mortgage.lineLoanAmount, reused verbatim so the teaser and the full calculator do not disagree."
+  },
+  "common.mortgageTeaser.totalInterest": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "4bdb2a9cff3c",
+    "reviewed": false,
+    "note": "Same value as tools.mortgage.totalInterest, reused verbatim; inherits that entry's unreviewed status."
+  },
+  "common.mortgageTeaser.loanTermYears": {
+    "by": "machine",
+    "model": "claude-opus-5",
+    "sourceHash": "6689c1096149",
+    "reviewed": false,
+    "note": "Six-category plural. The slider spans 5-30, so only `few` (سنوات, 5-10) and `many` (سنة, 11-30) render; the rest are filled in rather than left to fall through to `other`."
   }
 }

@@ -74,7 +74,10 @@
     "propertyPrice": "سعر العقار",
     "downPayment": "الدفعة الأولى",
     "interestRate": "معدل الفائدة",
-    "loanTerm": "مدة القرض"
+    "loanTerm": "مدة القرض",
+    "loanAmount": "مبلغ القرض",
+    "totalInterest": "إجمالي الفائدة",
+    "loanTermYears": "{count, plural, zero {# سنة} one {سنة واحدة} two {سنتان} few {# سنوات} many {# سنة} other {# سنة}}"
   },
   "notFoundBody": "قد يكون الرابط قديمًا أو تم نقل الصفحة. الصفحة الرئيسية هي أسرع طريق للعودة إلى المعروضات.",
   "notFoundTitle": "هذه الصفحة غير موجودة.",
