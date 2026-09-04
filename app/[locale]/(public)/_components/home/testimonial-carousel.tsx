@@ -134,7 +134,7 @@ export function TestimonialCarousel({ items }: { items: Testimonial[] }) {
                 ))}
               </div>
               <blockquote
-                className="serif mt-5 flex-1 text-[18px] md:text-[20px] leading-[1.4] tracking-tight"
+                className="serif serif-body mt-5 flex-1 text-[18px] md:text-[20px] leading-[1.4] tracking-tight"
                 style={{ letterSpacing: "-0.01em" }}
               >
                 &ldquo;{unwrapQuote(r.quote)}&rdquo;

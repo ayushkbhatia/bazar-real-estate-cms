@@ -43,7 +43,7 @@ export function FaqAccordion({ items }: Props) {
                 className="w-full flex items-center gap-5 py-5 md:py-[22px] text-start focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
               >
                 <span
-                  className="flex-1 text-[15.5px] md:text-[17px] font-medium text-bz-ink"
+                  className="flex-1 text-[15.5px] md:text-[17px] text-bz-ink"
                   style={{ letterSpacing: "-0.01em" }}
                 >
                   {question}

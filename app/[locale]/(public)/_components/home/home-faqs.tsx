@@ -54,7 +54,7 @@ export function HomeFaqs({
                   className="flex w-full items-center justify-between gap-6 py-5 md:py-6 text-start"
                 >
                   <span
-                    className="serif text-[18px] md:text-[22px] leading-tight tracking-tight"
+                    className="serif serif-body text-[18px] md:text-[22px] leading-tight tracking-tight"
                     style={{ letterSpacing: "-0.01em" }}
                   >
                     {q}
