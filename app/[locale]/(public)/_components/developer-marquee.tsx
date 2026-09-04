@@ -20,11 +20,10 @@ import { trimmedLogo, type TrimmedLogo } from "@/lib/developers/logos";
  *    matching on height alone would render a 9:1 wordmark hundreds of pixels
  *    wide next to a tall lockup barely a third of that. See `developer-logos`.
  * 2. Tiles are links. Every developer has a `/developers/[slug]` profile (the
- *    banking partners have no equivalent sub-page), and pausing the scroll on
- *    hover and focus keeps those targets steady enough to actually click.
- *    That pause is hover-only, which is no pause at all on a phone — see the
- *    `@media (hover: none)` branch at the bottom of the stylesheet, where the
- *    marquee turns into a rail the visitor scrolls.
+ *    banking partners have no equivalent sub-page), so the scroll pauses on
+ *    hover, on focus and on press — the last of those being the one a phone
+ *    can give, and the reason this no longer needs the `@media (hover: none)`
+ *    branch that used to freeze it there. See the note above that media query.
  */
 
 type Tile = { slug: string; name: string; logo: TrimmedLogo };
@@ -54,11 +53,7 @@ export function DeveloperMarquee() {
             <Link
               key={`${t.slug}-${i}`}
               href={`/developers/${t.slug}`}
-              // The `--dup` marker is what lets the hover-less branch of the
-              // stylesheet drop the second copy: it exists only to make the
-              // -50% loop seamless, and a hand-scrolled rail has no loop to
-              // make seamless — it would just be 30 more tiles to swipe past.
-              className={`bz-devmarquee__tile${duplicate ? " bz-devmarquee__tile--dup" : ""}`}
+              className="bz-devmarquee__tile"
               aria-hidden={duplicate || undefined}
               tabIndex={duplicate ? -1 : undefined}
             >
@@ -103,7 +98,8 @@ export function DeveloperMarquee() {
           animation: bz-devmarquee-scroll 197s linear infinite;
         }
         .bz-devmarquee:hover .bz-devmarquee__track,
-        .bz-devmarquee:focus-within .bz-devmarquee__track {
+        .bz-devmarquee:focus-within .bz-devmarquee__track,
+        .bz-devmarquee:active .bz-devmarquee__track {
           animation-play-state: paused;
         }
         .bz-devmarquee__tile {
@@ -169,46 +165,33 @@ export function DeveloperMarquee() {
           .bz-devmarquee__track { animation: none; }
         }
         /*
-         * No hover, no pause — and so no way to tap a tile. On a touch device
-         * the two pause rules above never fire, and 30 developer profile links
-         * glide past at the same px/s the partner marquee uses; the tile under
-         * a thumb is not the tile that gets opened. The home page offers no
-         * other route to these profiles.
+         * This is where the marquee used to STOP on a phone.
          *
-         * So on a hover-less pointer the marquee stops being an animation and
-         * becomes a rail the visitor drives: the track stops and the container
-         * scrolls instead of clipping. overscroll-behavior keeps a swipe that
-         * runs off the end of the rail from turning into the browser's back
-         * gesture.
+         * An @media (hover: none) branch turned it into a hand-scrolled rail
+         * — animation none, overflow-x auto, duplicate tiles hidden — on the
+         * reasoning that a hover-less pointer never fires the pause rules
+         * above, so "the tile under a thumb is not the tile that gets opened".
          *
-         * Free scroll, not scroll-snap, and that is the mask's doing. The
-         * container fades its first and last 7% to transparent, so a tile
-         * snapped with scroll-snap-align:start comes to rest inside the fade
-         * and reads as half-drawn. scroll-padding could push it clear, except
-         * the mask is a 90deg gradient (physical) while scroll-padding-inline
-         * is logical, so the two would disagree under /ar. A plain scroller
-         * needs neither, and the fade then reads as "there is more here",
-         * which is what it was drawn for.
+         * That reasoning was never measured, and the numbers do not support
+         * it. At 375px the track is 6406px over a 197s cycle: 16.3 px/s. A
+         * 150ms tap drifts 2.4px. A tile is 200px wide. The tap lands on the
+         * tile you aimed at with 98.8% of its width to spare — and the partner
+         * marquee, which never had this branch, has been animating on phones
+         * at twice that speed the whole time.
          *
-         * overflow-x on its own rather than the shorthand, so the block axis
-         * keeps the hidden it already has: nothing about it needs to change,
-         * and this rule stays about the one axis it is about.
+         * What the branch cost was the thing the section is for: a phone
+         * visitor saw a static row of three logos and no sign the other
+         * twenty-seven existed. The :active rule above covers the residual
+         * risk far more cheaply, since a press pauses the strip before the
+         * tap completes.
          *
-         * The RTL selector is repeated on purpose. The rule above it is
-         * (0,2,0) and out-specifies a bare class, so under /ar it would put
-         * animation-name back and the strip would keep moving.
+         * Note this branch was also the only thing overriding the RTL
+         * animation-name, so removing it is what makes the strip run
+         * left-to-right on an Arabic phone, matching Arabic desktop.
+         *
+         * Reduced motion still stops it dead (the rule above), which is the
+         * one case where a still strip is correct.
          */
-        @media (hover: none) {
-          .bz-devmarquee {
-            overflow-x: auto;
-            overscroll-behavior-x: contain;
-            scrollbar-width: none;
-          }
-          .bz-devmarquee::-webkit-scrollbar { display: none; }
-          .bz-devmarquee__track,
-          [dir="rtl"] .bz-devmarquee__track { animation: none; }
-          .bz-devmarquee__tile--dup { display: none; }
-        }
       `}</style>
     </div>
   );

@@ -36,7 +36,7 @@ export function DevelopersSection({
           }
           size={40}
         />
-        <Button asChild variant="outline">
+        <Button asChild>
           <Link href="/developers">
             {ctaLabel ?? "All developers"}
             <ArrowRight size={15} strokeWidth={1.7} />
