@@ -86,7 +86,7 @@ export function PropertyActionRow({
         >
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-bz-ink text-bz-bg text-[12.5px] hover:bg-bz-ink-2 transition-colors"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md bg-bz-accent text-bz-accent-fg text-[12.5px] hover:bg-bz-accent-hover transition-colors"
           >
             <Send size={13} strokeWidth={1.7} />
             Send to advisor

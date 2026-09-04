@@ -229,7 +229,7 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
         <div className="mt-6">
           <Link
             href={`/contact?intent=market-report&area=${encodeURIComponent(snapshot.area_slug)}`}
-            className="inline-flex items-center gap-2 h-10 px-5 rounded-md bg-bz-ink text-bz-bg text-[13.5px] hover:bg-bz-ink/90"
+            className="inline-flex items-center gap-2 h-10 px-5 rounded-md bg-bz-accent text-bz-accent-fg text-[13.5px] hover:bg-bz-accent-hover"
           >
             Book a call
           </Link>

@@ -202,7 +202,7 @@ export default async function ServicesPage({
             {p.cta ? (
               <Button
                 asChild
-                className="mt-7 bg-bz-ink text-bz-bg hover:bg-bz-ink/90"
+                className="mt-7 bg-bz-accent text-bz-accent-fg hover:bg-bz-accent-hover"
               >
                 <Link href={p.ctaHref}>
                   {p.cta}

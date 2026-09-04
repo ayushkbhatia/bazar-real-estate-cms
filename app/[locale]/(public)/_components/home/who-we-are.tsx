@@ -102,7 +102,7 @@ export function WhoWeAre({
           </div>
           <Link
             href="/about"
-            className="mt-5 inline-flex h-11 items-center gap-2 rounded-md bg-bz-ink px-5 text-[13.5px] font-medium text-bz-bg transition-colors hover:bg-bz-ink/90"
+            className="mt-5 inline-flex h-11 items-center gap-2 rounded-md bg-bz-accent px-5 text-[13.5px] font-medium text-bz-accent-fg transition-colors hover:bg-bz-accent-hover"
           >
             {th("knowMore")} <ArrowRight size={15} />
           </Link>

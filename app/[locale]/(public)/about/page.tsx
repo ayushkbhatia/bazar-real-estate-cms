@@ -317,7 +317,7 @@ export default async function AboutPage({
             {profileUrl ? (
               <Button
                 asChild
-                className="mt-7 bg-bz-ink text-bz-bg hover:bg-bz-ink/90"
+                className="mt-7 bg-bz-accent text-bz-accent-fg hover:bg-bz-accent-hover"
               >
                 <a href={profileUrl} target="_blank" rel="noopener noreferrer">
                   <Download size={15} strokeWidth={1.7} />
@@ -532,7 +532,7 @@ export default async function AboutPage({
             {str(expertiseV, "cta_label") ? (
               <Button
                 asChild
-                className="mt-7 bg-bz-ink text-bz-bg hover:bg-bz-ink/90"
+                className="mt-7 bg-bz-accent text-bz-accent-fg hover:bg-bz-accent-hover"
               >
                 <Link href={str(expertiseV, "cta_href") ?? "/services"}>
                   {str(expertiseV, "cta_label")}
