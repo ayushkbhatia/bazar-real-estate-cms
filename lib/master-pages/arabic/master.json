@@ -18394,5 +18394,89 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
+  },
+  "The institutions": {
+    "ar": "المؤسسات التي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "behind": {
+    "ar": "تقف خلف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "every deal.": {
+    "ar": "كل صفقة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "Beyond our developer relationships, Bazar works alongside the region's leading banks and regulatory authorities — so financing, compliance, and registration are handled end to end.": {
+    "ar": "إلى جانب علاقاتنا مع المطوّرين، تعمل بازار مع أبرز البنوك والجهات التنظيمية في المنطقة — ليكون التمويل والامتثال والتسجيل مُدارًا من البداية إلى النهاية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "Finance": {
+    "ar": "التمويل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "Regulation": {
+    "ar": "التنظيم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "Banking & finance": {
+    "ar": "الخدمات المصرفية والتمويل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "Regulatory & government": {
+    "ar": "الجهات التنظيمية والحكومية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "Direct mortgage and home-finance relationships that get our clients competitive rates and faster approvals.": {
+    "ar": "علاقات مباشرة في التمويل العقاري تمنح عملاءنا أسعارًا تنافسية وموافقات أسرع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "The authorities that license, regulate, and register real estate across Abu Dhabi and the wider UAE.": {
+    "ar": "الجهات التي ترخّص القطاع العقاري وتنظّمه وتسجّله في أبوظبي وسائر الإمارات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "Work with us": {
+    "ar": "اعمل معنا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "Backed by the right people at every step.": {
+    "ar": "بدعم من الأشخاص المناسبين في كل خطوة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "Our developers": {
+    "ar": "مطوّرونا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "The banking and regulatory institutions Bazar Real Estate works alongside — mortgage and home-finance partners and the authorities that regulate UAE real estate.": {
+    "ar": "المؤسسات المصرفية والجهات التنظيمية التي تعمل بازار العقارية إلى جانبها — شركاء التمويل العقاري والجهات التي تنظّم القطاع العقاري في الإمارات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:33:53.166133Z"
   }
 }

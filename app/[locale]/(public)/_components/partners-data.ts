@@ -90,17 +90,14 @@ export const ECOSYSTEM_PARTNERS: EcosystemPartner[] = [
   },
 ];
 
-export const PARTNER_GROUPS: { title: string; category: PartnerCategory; blurb: string }[] = [
-  {
-    title: "Banking & finance",
-    category: "banking",
-    blurb:
-      "Direct mortgage and home-finance relationships that get our clients competitive rates and faster approvals.",
-  },
-  {
-    title: "Regulatory & government",
-    category: "regulatory",
-    blurb:
-      "The authorities that license, regulate, and register real estate across Abu Dhabi and the wider UAE.",
-  },
-];
+/*
+ * `PARTNER_GROUPS` lived here and carried each group's title and blurb
+ * alongside its category. The words moved to the `partners` master page when
+ * /partners became editable (lib/master-pages/sections/partners.ts) — the
+ * category, which is the filter key that selects the cards, stayed with the
+ * data it filters and now sits in the page's own `GROUPS` constant.
+ *
+ * Removed rather than left in place: it had exactly one consumer, and a copy
+ * of the headings that no longer renders is the kind of thing an editor
+ * changes in the CMS and then finds unchanged somewhere in the source.
+ */
