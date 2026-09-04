@@ -249,6 +249,9 @@ export type MasterPageKey =
   | "off-plan"
   | "areas"
   | "developers"
+  // Its sibling index, and the last public marketing page that was still
+  // entirely literals — see lib/master-pages/sections/partners.ts.
+  | "partners"
   | "services"
   | "insights"
   | "about"

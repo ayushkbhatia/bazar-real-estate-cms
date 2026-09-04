@@ -75,6 +75,11 @@ export const MASTER_PAGE_SEO_DEFAULTS: Record<
     description:
       "Direct relationships with the UAE's leading developers give Bazar clients early access to landmark communities, new launches, and off-plan opportunities.",
   },
+  partners: {
+    title: "Our Partners",
+    description:
+      "The banking and regulatory institutions Bazar Real Estate works alongside — mortgage and home-finance partners and the authorities that regulate UAE real estate.",
+  },
   services: {
     title: "Services · Bazar Real Estate",
     description:

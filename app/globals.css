@@ -1136,6 +1136,34 @@
   font-style: normal;
 }
 
+/* Display face, BODY weight.
+ *
+ * `.serif` means two things at once, and in Arabic that conflation shows.
+ * Under `:lang(ar)` it carries `--bz-font-ar-display-weight` — the weight the
+ * client picked for HEADINGS at /admin/settings/typography. That is right for
+ * an h1 and wrong for display-scale prose: a review quote and a FAQ question
+ * are sentences somebody reads, not titles. With the client's display weight
+ * currently pinned to 700, every one of them rendered as a wall of bold, while
+ * the same elements in English sat at Instrument Serif's 400.
+ *
+ * There is no body-weight variable to reach for — ARABIC_WEIGHTED_ROLES in
+ * lib/schemas/arabic-fonts.ts is display and eyebrow only, because "body
+ * weight is decided per component". This is that decision, for the components
+ * that want the display FACE without the heading WEIGHT.
+ *
+ * 400 rather than the rule above's 500 fallback: 500 exists there because a
+ * family shipping only 400 and 700 resolves an unavailable 500 downwards, so
+ * headings would land on 400 by accident. Here 400 is the intent, and asking
+ * for it directly says so.
+ *
+ * Same specificity as the rule above (0,2,0) and later in the file, so it
+ * wins — and unlayered for the same reason that one is: `@layer components`
+ * loses to unlayered rules regardless of specificity.
+ */
+:lang(ar) .serif-body {
+  font-weight: 400;
+}
+
 /* Article and editor headings are the display role too — they are what
    `ARABIC_ROLE_DESCRIPTION.display` means by "article headings" — but they are
    set at 400 rather than `.serif`'s 500, so they carry their own fallback and

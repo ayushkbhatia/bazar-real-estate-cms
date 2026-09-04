@@ -61,11 +61,20 @@ Four choices in the stack diverge from the original brief. Don't try to "fix" th
 | Regenerate Supabase types | `npm run db:types` |
 | Seed local DB | `npm run db:seed` |
 
-CI gate (run all four before requesting review):
+CI gate (run all six before requesting review — this is the full
+`lint-test-build` job, in its order):
 
 ```
-npm run lint && npm run typecheck && npm run test:run && npm run build
+bash scripts/check-migrations.sh && npm run lint && npm run typecheck && npm run test:run && npm run build && npm run check:routes
 ```
+
+`check:routes` compares the build's prerendered routes and revalidate
+intervals against `scripts/ci/route-render-baseline.json`. It is the one that
+catches a page silently changing rendering mode — e.g. a static page that
+starts reading the CMS and so needs an interval. When a change is intentional,
+edit the baseline for **only** the routes it names: a full `--write-baseline`
+also renames three `opengraph-image` routes on some machines, and that churn
+is local rather than something CI sees.
 
 ## Where things live
 

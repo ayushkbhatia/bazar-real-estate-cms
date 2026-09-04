@@ -232,7 +232,7 @@ export default async function NewProjectsPage({
               size={40}
             />
             {str(launches, "cta_label") ? (
-              <Button asChild className="bg-bz-ink text-bz-bg hover:bg-bz-ink/90">
+              <Button asChild className="bg-bz-accent text-bz-accent-fg hover:bg-bz-accent-hover">
                 <Link href={str(launches, "cta_href") ?? "/developments"}>
                   {str(launches, "cta_label")}
                   <ArrowRight size={15} strokeWidth={1.7} />

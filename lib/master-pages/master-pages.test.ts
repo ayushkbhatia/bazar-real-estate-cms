@@ -28,6 +28,7 @@ describe("registry", () => {
       "off-plan",
       "areas",
       "developers",
+      "partners",
       "services",
       "insights",
       "about",

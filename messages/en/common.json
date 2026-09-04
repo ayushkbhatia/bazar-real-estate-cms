@@ -74,7 +74,10 @@
     "propertyPrice": "Property price",
     "downPayment": "Down payment",
     "interestRate": "Interest rate",
-    "loanTerm": "Loan term"
+    "loanTerm": "Loan term",
+    "loanAmount": "Loan amount",
+    "totalInterest": "Total interest",
+    "loanTermYears": "{count, plural, one {# year} other {# years}}"
   },
   "notFoundBody": "The link may be out of date, or the page has been moved. The home page is the quickest way back to the catalogue.",
   "notFoundTitle": "This page isn't here.",

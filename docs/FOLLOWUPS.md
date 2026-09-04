@@ -1344,3 +1344,53 @@ shows the trail.)
   and it restyles Arabic fragments across every English page at once, so it
   wants its own PR and a look at the visual gates rather than a corner of
   someone else's.
+
+- [ui] The public site has no shared primary-button primitive, and recolouring
+  the black CTAs to accent had to touch 19 call sites in 16 files to say one
+  thing. The colour triple is now identical everywhere
+  (`bg-bz-accent text-bz-accent-fg hover:bg-bz-accent-hover`) but the geometry
+  is not — five different heights, four paddings, three radii, three font
+  sizes — which is why `<Button>` was not simply used. A `.bz-btn-primary`
+  utility carrying only the three colours would make the next recolour one
+  edit; the alternative is a `components/brand` primitive, which is a bigger
+  decision than a recolour PR should take on its own.
+
+- [ui] `--bz-accent-hover` is still moss GREEN in dark mode
+  (`oklch(0.7 0.08 155)` at globals.css:212, alongside `--bz-accent` and
+  `--bz-accent-soft` at the same hue). The brand recolour to navy/teal/taupe
+  never reached the `.dark` block. Nothing renders it today — no `.dark` class
+  is ever applied on the public site — but the 19 CTAs recoloured in this
+  batch now hover through that token, so whoever turns dark mode on inherits
+  green hovers on every primary button rather than on the handful that used it
+  before.
+
+- [i18n] The seven partner names and tags on `/partners` are still English on
+  `/ar`. `ECOSYSTEM_PARTNERS` in `_components/partners-data.ts` is a code array
+  with no `_ar` fields, and unlike its sibling there is no table behind it —
+  developer card names read Arabic because they come from the `developers`
+  table, whose `name` and `description` are registered in `lib/i18n/domains.ts`
+  with hand twins. Making the page's own copy editable (this batch) does not
+  reach the cards, and the honest options are a `partners` table with twins, or
+  `name_ar`/`tag_ar` beside each entry in the code array. The section's
+  `dataNote` tells an editor the cards are code-owned, so nobody is left
+  hunting for a field, but "بازار" beside "First Abu Dhabi Bank" is still what
+  an Arabic reader gets.
+
+- [seo] Seven `MASTER_PAGE_SEO_DEFAULTS` titles carry "· Bazar Real Estate"
+  while the root layout's `title.template` is `"%s · Bazar"`, and only `home`
+  is marked absolute — so `/developers` publishes "Developers · Bazar Real
+  Estate · Bazar" and the other six do the same. The remaining six defaults
+  (`buy`, `rent`, `commercial`, `off-plan`, `areas`, `about`) carry no suffix
+  and read correctly. Found while adding the `partners` entry, which is why
+  that one deliberately reads just "Our Partners" — the literal the page
+  already had. Fixing the seven is a one-line-each edit but changes seven live
+  `<title>` tags, so it wants its own PR and a look at whether anything
+  measures them.
+
+- [ci] `lib/dead-code.test.ts` runs at ~3.5s against vitest's 5s default
+  per-test timeout — it walks the whole module graph — and tips over
+  intermittently when the full 239-file suite competes for CPU. Measured at
+  3.33-3.71s on clean `origin/main` and 3.14-3.23s on a branch, so it is the
+  guard's own margin rather than any one change. A guard that fails for
+  reasons unrelated to what it guards is one people learn to ignore; it wants
+  an explicit generous timeout.

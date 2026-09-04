@@ -22,7 +22,7 @@ export function Faq({ items }: Props) {
               {String(i + 1).padStart(2, "0")}
             </span>
             <span
-              className="serif flex-1 text-bz-ink"
+              className="serif serif-body flex-1 text-bz-ink"
               style={{
                 fontSize: "clamp(18px, 2.2vw, 22px)",
                 letterSpacing: "-0.01em",
