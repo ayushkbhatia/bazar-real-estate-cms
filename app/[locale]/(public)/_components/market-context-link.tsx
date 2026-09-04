@@ -134,7 +134,7 @@ export function MarketContextBlock({
           </div>
           <Link
             href={href}
-            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md bg-bz-ink text-bz-bg text-[12.5px] hover:bg-bz-ink/90 transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md bg-bz-accent text-bz-accent-fg text-[12.5px] hover:bg-bz-accent-hover transition-colors whitespace-nowrap"
           >
             Read the report
             <ArrowUpRight size={13} strokeWidth={1.7} />

@@ -904,7 +904,7 @@ function Flyout({
       >
         <Link
           href={`/areas/${area.slug}`}
-          className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-bz-ink px-4 text-sm font-medium text-bz-bg transition-colors hover:bg-bz-ink/90"
+          className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-bz-accent px-4 text-sm font-medium text-bz-accent-fg transition-colors hover:bg-bz-accent-hover"
         >
           {t("map.areaGuide")} <ArrowRight size={15} />
         </Link>

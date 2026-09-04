@@ -1344,3 +1344,22 @@ shows the trail.)
   and it restyles Arabic fragments across every English page at once, so it
   wants its own PR and a look at the visual gates rather than a corner of
   someone else's.
+
+- [ui] The public site has no shared primary-button primitive, and recolouring
+  the black CTAs to accent had to touch 19 call sites in 16 files to say one
+  thing. The colour triple is now identical everywhere
+  (`bg-bz-accent text-bz-accent-fg hover:bg-bz-accent-hover`) but the geometry
+  is not — five different heights, four paddings, three radii, three font
+  sizes — which is why `<Button>` was not simply used. A `.bz-btn-primary`
+  utility carrying only the three colours would make the next recolour one
+  edit; the alternative is a `components/brand` primitive, which is a bigger
+  decision than a recolour PR should take on its own.
+
+- [ui] `--bz-accent-hover` is still moss GREEN in dark mode
+  (`oklch(0.7 0.08 155)` at globals.css:212, alongside `--bz-accent` and
+  `--bz-accent-soft` at the same hue). The brand recolour to navy/teal/taupe
+  never reached the `.dark` block. Nothing renders it today — no `.dark` class
+  is ever applied on the public site — but the 19 CTAs recoloured in this
+  batch now hover through that token, so whoever turns dark mode on inherits
+  green hovers on every primary button rather than on the handful that used it
+  before.

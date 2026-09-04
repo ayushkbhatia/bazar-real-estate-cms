@@ -201,7 +201,7 @@ export function CommunityTypes({
               ) : null}
               <Button
                 asChild
-                className="mt-6 bg-bz-ink text-bz-bg hover:bg-bz-ink/90"
+                className="mt-6 bg-bz-accent text-bz-accent-fg hover:bg-bz-accent-hover"
               >
                 <Link href={t.ctaHref ?? "/areas"}>
                   {t.ctaLabel ?? `Explore ${firstWord(name)} communities`}

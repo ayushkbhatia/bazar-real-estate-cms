@@ -44,8 +44,8 @@ const BODY: Record<CtaVariant, string> = {
 
 const PRIMARY: Record<CtaVariant, string> = {
   ink: "bg-white text-bz-navy hover:bg-white/90",
-  accent: "bg-bz-ink text-bz-bg hover:bg-bz-ink/90",
-  soft: "bg-bz-ink text-bz-bg hover:bg-bz-ink/90",
+  accent: "bg-bz-accent text-bz-accent-fg hover:bg-bz-accent-hover",
+  soft: "bg-bz-accent text-bz-accent-fg hover:bg-bz-accent-hover",
 };
 
 const SECONDARY: Record<CtaVariant, string> = {

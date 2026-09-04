@@ -81,7 +81,7 @@ export async function AdvisorOfMonth() {
           <div className="mt-8">
             <Link
               href={`/agents/${featured.slug}`}
-              className="inline-flex items-center gap-2 h-10 px-5 rounded-md bg-bz-ink text-bz-bg text-[13.5px] hover:bg-bz-ink/90 transition-colors"
+              className="inline-flex items-center gap-2 h-10 px-5 rounded-md bg-bz-accent text-bz-accent-fg text-[13.5px] hover:bg-bz-accent-hover transition-colors"
             >
               Read the full profile
               <ArrowUpRight size={14} strokeWidth={1.7} />

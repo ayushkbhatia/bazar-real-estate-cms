@@ -101,7 +101,7 @@ export function AgentCard({
           {telUrl ? (
             <a
               href={telUrl}
-              className="inline-flex items-center justify-center gap-1.5 h-9 rounded-md bg-bz-ink text-bz-bg text-[12.5px] font-medium hover:bg-bz-ink-2 transition-colors"
+              className="inline-flex items-center justify-center gap-1.5 h-9 rounded-md bg-bz-accent text-bz-accent-fg text-[12.5px] font-medium hover:bg-bz-accent-hover transition-colors"
             >
               <Phone size={13} strokeWidth={1.8} />
               Call
@@ -142,7 +142,7 @@ export function AgentCard({
           className={`w-full inline-flex items-center justify-center gap-1.5 h-9 rounded-md text-[12.5px] transition-colors ${
             directActions > 0
               ? "mt-2 border border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong"
-              : "mt-5 bg-bz-ink text-bz-bg font-medium hover:bg-bz-ink-2"
+              : "mt-5 bg-bz-accent text-bz-accent-fg font-medium hover:bg-bz-accent-hover"
           }`}
         >
           <Send size={13} strokeWidth={1.7} />
