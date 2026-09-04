@@ -37,7 +37,7 @@ export function PartnerEcosystemSection({
           }
           size={40}
         />
-        <Button asChild variant="outline">
+        <Button asChild>
           <Link href="/partners">
             {ctaLabel ?? "All partners"}
             <ArrowRight size={15} strokeWidth={1.7} />
