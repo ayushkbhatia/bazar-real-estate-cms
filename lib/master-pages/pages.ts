@@ -28,6 +28,7 @@ import {
   propTypeList,
 } from "./fields";
 import { DEVELOPERS_PAGE } from "./sections/developers";
+import { PARTNERS_PAGE } from "./sections/partners";
 import { LEGAL_TERMS_PAGE, LEGAL_COOKIES_PAGE } from "./sections/legal";
 import { LEGAL_PRIVACY_PAGE } from "./sections/legal-privacy";
 import { SERVICES_PAGE } from "./sections/services";
@@ -1673,6 +1674,7 @@ export const MASTER_PAGES: MasterPageDef[] = [
   OFF_PLAN,
   AREAS,
   DEVELOPERS_PAGE,
+  PARTNERS_PAGE,
   SERVICES_PAGE,
   INSIGHTS_PAGE,
   ABOUT_PAGE,
