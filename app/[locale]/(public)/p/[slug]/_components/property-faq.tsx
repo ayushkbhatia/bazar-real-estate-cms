@@ -114,7 +114,7 @@ export function PropertyFaq({
             className="group rounded-lg border border-bz-border bg-bz-surface p-5 open:bg-bz-bg transition-colors"
           >
             <summary className="flex justify-between items-center cursor-pointer list-none gap-6">
-              <span className="text-[15.5px] font-medium text-bz-ink">
+              <span className="text-[15.5px] text-bz-ink">
                 {e.q}
               </span>
               <ChevronDown
