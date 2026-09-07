@@ -1,11 +1,22 @@
 /**
  * The header's call-to-action button — the "List Your Property" pill in the
- * top bar, the short "List" button beside the hamburger on a phone, and the
- * full-width button pinned to the bottom of the mobile drawer.
+ * top bar, the same button beside the hamburger on a phone, and the full-width
+ * button pinned to the bottom of the mobile drawer.
+ *
+ * ## One label, at every width
+ *
+ * There used to be a second field here, `short_label`, holding "List" — the
+ * four-character version the phone header rendered in place of the full
+ * wording. It is gone: the button now says the same thing at 390px that it
+ * says at 1440px, which is what it was asked to do, and there is no width at
+ * which the full label does not fit (`public-mega-nav.tsx` measures it, and
+ * lets the brand mark give up width first). "List", read cold beside a menu
+ * icon, was also the weaker of the two words — the noun sense sits three
+ * pixels away on the search results as one of the layout toggles.
  *
  * ## Why a registry rather than a message key
  *
- * Two of those three renderings were English literals inside
+ * Two of the three renderings were English literals inside
  * `components/brand/public-mega-nav.tsx` and
  * `public-mega-nav-mobile.tsx` — so `/ar` on a phone showed an Arabic menu
  * with `List` sitting in the header and `List Your Property` pinned across the
@@ -14,11 +25,11 @@
  *
  * Moving all three onto one message key would have fixed the Arabic and left
  * the other half of the problem in place: this is the single most prominent
- * conversion control on the site, and its wording, its short form and its
- * destination were all things the client had to open a pull request to change.
- * A registry fixes both at once — the strings become Arabic AND editable, and
- * `link` fields are never translatable, so the destination stays one value for
- * both languages.
+ * conversion control on the site, and both its wording and its destination
+ * were things the client had to open a pull request to change. A registry
+ * fixes both at once — the strings become Arabic AND editable, and `link`
+ * fields are never translatable, so the destination stays one value for both
+ * languages.
  *
  * ## Why its own document rather than a master-page section
  *
@@ -35,12 +46,10 @@
  *
  * ## The Arabic
  *
- * Hand-declared in `defaults` beside each English sibling, for the reason
+ * Hand-declared in `defaults` beside its English sibling, for the reason
  * `search-headers.ts` sets out: `أدرج عقارك` is the curated string lifted
- * verbatim from `nav.listProperty` in `messages/ar/nav.json`, and `أدرج` is
- * the reviewed short form already carried in
- * `lib/master-pages/arabic/master.json` under "List Your". Storing one here
- * and one there would make "where does this string's Arabic live" a question
+ * verbatim from `nav.listProperty` in `messages/ar/nav.json`. Storing it here
+ * and there both would make "where does this string's Arabic live" a question
  * with two answers.
  *
  * An editor's Arabic wins structurally — `mergeValues` never overwrites a twin
@@ -76,16 +85,14 @@ export const HEADER_CTA_FALLBACK_HREF = "/services/sell";
 function ctaFields(): FieldDef[] {
   return [
     text("label", "Button label", {
-      max: 40,
-      help: "The pill in the top bar on a desktop, and the button across the bottom of the menu drawer on a phone.",
-    }),
-    text("short_label", "Short label", {
-      // 16, not 40: this one sits beside the hamburger in a 72px bar and has
-      // roughly four characters of room before it starts pushing the wordmark.
-      // The cap is the only warning an editor gets, because the admin cannot
+      // 40 is what the desktop pill can carry. The phone header is the tighter
+      // of the two and takes the same string, so the cap is really the phone's:
+      // measured at 390px, the bar holds the button, the menu icon and a brand
+      // mark that shrinks to fit — 40 characters is comfortably inside that,
+      // and it is the only warning an editor gets, because the admin cannot
       // show them a 390px viewport.
-      max: 16,
-      help: "The compact version shown beside the menu button on a phone, where the full label will not fit. Keep it to a word or two.",
+      max: 40,
+      help: "Shown in the top bar, beside the menu button on a phone, and across the bottom of the menu drawer. Same wording at every size.",
     }),
     link("href", "Button link", {
       optional: false,
@@ -109,16 +116,14 @@ export const HEADER_CTA_SECTION: SectionDef = {
     "Only the button. The tabs beside it, and the panels they open, are edited per tab on the Megamenu screen.",
   fields: ctaFields(),
   /*
-   * Defaults are what the header has published since it shipped, lifted
-   * verbatim from the JSX and from `nav.listProperty`. An un-edited document
-   * therefore renders byte-identically to before this file existed — on /en.
-   * On /ar it is the first time the two mobile renderings are Arabic at all.
+   * Lifted verbatim from `nav.listProperty`, which is what the desktop pill
+   * has published since it shipped — so an un-edited document renders the
+   * header identically to before this file existed. What changed with
+   * `short_label`'s removal is the phone, which used to abbreviate it.
    */
   defaults: {
     label: "List Your Property",
     label_ar: "أدرج عقارك",
-    short_label: "List",
-    short_label_ar: "أدرج",
     href: HEADER_CTA_FALLBACK_HREF,
   },
 };

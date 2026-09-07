@@ -48,20 +48,27 @@ describe("header CTA copy", () => {
     }
   });
 
-  it("gives the short label its own Arabic, not a truncation of the long one", () => {
-    // The two render in different places and one is not a prefix of the other
-    // in either language — the whole reason `short_label` is a field rather
-    // than a `slice()` in the nav.
-    const long = String(HEADER_CTA_SECTION.defaults.label_ar);
-    const short = String(HEADER_CTA_SECTION.defaults.short_label_ar);
-    expect(short).not.toBe(long);
-    expect(short.length).toBeLessThan(long.length);
+  it("carries one label, not one per width", () => {
+    /*
+     * There were two: `label` and a 16-character `short_label` holding
+     * "List", which the phone header rendered in place of the full wording.
+     * The button now says the same thing at 390px that it says at 1440px, so
+     * a second label would be a field an editor could fill and never see —
+     * `validateFieldValues` strips values with no field behind them, which
+     * makes that failure silent. One text field, one link, no width variants.
+     */
+    const text = HEADER_CTA_SECTION.fields.filter((f) => f.kind === "text");
+    expect(text.map((f) => f.key)).toEqual(["label"]);
   });
 
-  it("keeps the short label short enough for a 390px header", () => {
-    const field = HEADER_CTA_SECTION.fields.find((f) => f.key === "short_label");
+  it("keeps the label short enough for a 390px header", () => {
+    // The phone bar is the tighter of the two renderings and takes the same
+    // string as the desktop pill, so this cap is really the phone's. Measured
+    // at 375px: the button draws 127px of a 327px content box, the menu icon
+    // takes 44 more, and the brand mark shrinks into what is left.
+    const field = HEADER_CTA_SECTION.fields.find((f) => f.key === "label");
     expect(field && "max" in field ? field.max : undefined).toBeLessThanOrEqual(
-      16,
+      40,
     );
   });
 
@@ -86,7 +93,6 @@ describe("header CTA copy", () => {
   it("renders the English byte-identically to what the header shipped with", () => {
     const [section] = resolveSections(headerCtaDef(), null, "en");
     expect(str(section!.values, "label")).toBe("List Your Property");
-    expect(str(section!.values, "short_label")).toBe("List");
     expect(str(section!.values, "href")).toBe("/services/sell");
   });
 
@@ -101,8 +107,6 @@ describe("header CTA copy", () => {
       values: {
         label: "Sell with Bazar",
         label_ar: "بِع مع بازار",
-        short_label: "Sell",
-        short_label_ar: "بِع",
         href: "/services/sell",
       },
     };
@@ -114,7 +118,6 @@ describe("header CTA copy", () => {
 
     const [section] = resolveSections(headerCtaDef(), result.sections, "ar");
     expect(str(section!.values, "label")).toBe("بِع مع بازار");
-    expect(str(section!.values, "short_label")).toBe("بِع");
     // The link is not folded, so one address serves both languages.
     expect(str(section!.values, "href")).toBe("/services/sell");
 
@@ -122,13 +125,40 @@ describe("header CTA copy", () => {
     expect(str(english!.values, "label")).toBe("Sell with Bazar");
   });
 
-  it("refuses a short label too wide for the bar it renders in", () => {
+  it("drops a saved short_label rather than storing it", () => {
+    /*
+     * The document is live, so rows in production still carry `short_label`
+     * from before the field was removed. `validateFieldValues` keeps only
+     * what a field asks for — this pins that, because the alternative is a
+     * stale abbreviation riding along in `pages.blocks` forever, looking to
+     * the next reader like something the nav might still render.
+     */
+    const legacy = {
+      key: "cta",
+      enabled: true,
+      values: {
+        ...HEADER_CTA_SECTION.defaults,
+        short_label: "List",
+        short_label_ar: "أدرج",
+      },
+    };
+    const result = validateSections(headerCtaDef(), [legacy]);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(Object.keys(result.sections[0]!.values).sort()).toEqual([
+      "href",
+      "label",
+      "label_ar",
+    ]);
+  });
+
+  it("refuses a label too wide for the bar it renders in", () => {
     const tooLong = {
       key: "cta",
       enabled: true,
       values: {
         ...HEADER_CTA_SECTION.defaults,
-        short_label: "List Your Property Today",
+        label: "List Your Property With Abu Dhabi's Boutique Advisory",
       },
     };
     const result = validateSections(headerCtaDef(), [tooLong]);
