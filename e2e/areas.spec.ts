@@ -54,16 +54,38 @@ test("an area guide renders its bands", async ({ page }) => {
   // reddening main.
 });
 
-test("public /areas indexes every area, not just the card grid", async ({
+test("every area in the catalogue stays reachable, not only the curated grid", async ({
   page,
+  request,
 }) => {
+  /*
+   * This used to count links on /areas and require more than fifteen, because
+   * the A–Z directory band below the grid listed the whole catalogue.
+   *
+   * #502 removed that band deliberately. The guarantee it was standing in for
+   * — an area added in the CMS is reachable, not stranded behind a curated
+   * eight — did not go with it: `app/sitemap.ts` advertises every row of
+   * `kind = "area"`, which is the surface that actually decides whether a new
+   * guide gets crawled. So the assertion moves there rather than being
+   * loosened to fit the smaller grid, which would have deleted the guarantee
+   * instead of relocating it.
+   *
+   * The grid keeps a floor of its own. It is CMS-curated, so the exact cards
+   * are an editor's business, but a page that links into no guide at all is
+   * broken however few areas are featured.
+   */
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.status()).toBe(200);
+  const advertised = new Set(
+    [...(await sitemap.text()).matchAll(/<loc>[^<]*\/areas\/([^<]+)<\/loc>/g)].map(
+      (m) => m[1]!,
+    ),
+  );
+  expect(advertised.size).toBeGreaterThan(15);
+
   await page.goto("/areas");
-  // The curated grid is eight cards plus two spotlights. The A–Z directory
-  // below them lists the whole catalogue, which is what makes an area added
-  // in the CMS reachable — assert on the count rather than the CMS-owned
-  // heading copy.
-  const links = page.locator("a[href^='/areas/']");
-  expect(await links.count()).toBeGreaterThan(15);
+  const grid = await page.locator("a[href^='/areas/']").count();
+  expect(grid).toBeGreaterThan(3);
 });
 
 test("/areas/<unknown> 404s", async ({ page }) => {

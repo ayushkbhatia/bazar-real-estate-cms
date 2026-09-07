@@ -22,7 +22,9 @@
     "saved": "Saved",
     "sendToAdvisor": "Send to advisor",
     "onThisPage": "On this page",
-    "breadcrumb": "Breadcrumb"
+    "breadcrumb": "Breadcrumb",
+    "readMinutes": "{count, plural, one {{minutes} min read} other {{minutes} min read}}",
+    "readMinutesShort": "{count, plural, one {{minutes} min} other {{minutes} min}}"
   },
   "agent": {
     "advisor": "Advisor",

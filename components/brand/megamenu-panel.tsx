@@ -8,6 +8,10 @@ import {
   MegamenuServiceCard,
   panelUsesCards,
 } from "./megamenu-service-card";
+import {
+  MegamenuGroupCard,
+  panelUsesGroupCards,
+} from "./megamenu-group-card";
 import type {
   MegamenuColumn,
   MegamenuItem,
@@ -119,6 +123,11 @@ export function MegamenuPanel({ tab }: Props) {
   // mobile drawer so both trees answer it the same way.
   const leftIsCards = panelUsesCards(tab);
   const leftGridClass = leftCount <= 1 ? "grid-cols-1" : "grid-cols-2";
+  // A right zone of three-or-more titled groups (Areas' four lifestyles) is a
+  // taxonomy, not a link list, so each group gets drawn as its own card. Same
+  // shared-predicate arrangement as `panelUsesCards` above: the mobile drawer
+  // switches on this one line too.
+  const rightIsGroupCards = panelUsesGroupCards(tab);
 
   // Grid layout. Each present zone gets a track.
   const gridCols = [
@@ -128,7 +137,12 @@ export function MegamenuPanel({ tab }: Props) {
         : "minmax(0, 1fr)"
       : null,
     hasFeatured ? "minmax(0, 1.1fr)" : null,
-    hasRight ? "minmax(0, 0.85fr)" : null,
+    // Group cards spend width on their own padding and borders that a bare
+    // link list does not, so the zone claims an even share instead of the
+    // 0.85 a list of two-word links is comfortable in. At 0.85 every card in
+    // Areas' 2x2 came out 174px wide and three of the four group names
+    // wrapped; an even track fits all but the longest on one line.
+    hasRight ? (rightIsGroupCards ? "minmax(0, 1fr)" : "minmax(0, 0.85fr)") : null,
   ]
     .filter(Boolean)
     .join(" ");
@@ -219,15 +233,23 @@ export function MegamenuPanel({ tab }: Props) {
                 {tab.right_column_title}
               </h4>
             ) : null}
-            <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-              {tab.columns.right.map((column) => (
-                <ColumnBlock
-                  key={column.id}
-                  column={column}
-                  headingAs={tab.right_column_title ? "eyebrow" : "title"}
-                />
-              ))}
-            </div>
+            {rightIsGroupCards ? (
+              <div className="grid grid-cols-2 gap-3">
+                {tab.columns.right.map((column) => (
+                  <MegamenuGroupCard key={column.id} column={column} />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+                {tab.columns.right.map((column) => (
+                  <ColumnBlock
+                    key={column.id}
+                    column={column}
+                    headingAs={tab.right_column_title ? "eyebrow" : "title"}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         ) : null}
       </div>

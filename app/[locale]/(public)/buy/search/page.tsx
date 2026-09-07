@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { asLocale } from "@/lib/i18n/locales";
-import { getSearchHeaderMeta } from "@/lib/queries/search-headers";
+import { searchHeaderMetadata } from "@/lib/queries/search-headers";
 import { SearchList } from "../../_components/search-list";
 import { parseFilters } from "@/lib/filters/property";
 
@@ -27,12 +27,15 @@ export async function generateMetadata({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }): Promise<Metadata> {
   const [{ locale }, raw] = await Promise.all([params, searchParams]);
-  const meta = await getSearchHeaderMeta(
+  const filters = parseFilters(raw);
+  // `segment` resolves the Commercial facet: /commercial/search 307s here, so
+  // without it a commercial search publishes the Buy facet's snippet.
+  return searchHeaderMetadata(
     "buy",
-    parseFilters(raw).form ?? null,
+    filters.form ?? null,
     asLocale(locale),
+    filters.segment,
   );
-  return { title: meta.title, description: meta.description };
 }
 
 type PageProps = {

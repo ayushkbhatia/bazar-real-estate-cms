@@ -1,7 +1,13 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import Link from "@/components/i18n/link";
 import Image from "next/image";
 import type { Metadata } from "next";
+import type { Locale } from "@/lib/i18n/locales";
+import {
+  localiseSearchAppearance,
+  readSearchAppearance,
+} from "@/lib/schemas/seo";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { Button } from "@/components/ui/button";
@@ -17,6 +23,8 @@ import { articleJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { ChevronRight } from "lucide-react";
+import { formatPublishedDate } from "@/lib/i18n/dates";
+import { readTime } from "@/lib/i18n/read-time";
 
 export const revalidate = 300;
 
@@ -44,20 +52,44 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
   }
 }
 
-type PageProps = { params: Promise<{ slug: string }> };
+type PageProps = { params: Promise<{ slug: string; locale: Locale }> };
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const article = await getPublishedArticleBySlug(slug);
   if (!article) return { title: "Not found · The Bazar Brief" };
-  const seo = (article.seo as Record<string, unknown> | null) ?? {};
-  const metaTitle = (seo.meta_title as string | null) ?? article.title;
-  const metaDescription =
-    (seo.meta_description as string | null) ?? article.excerpt ?? undefined;
+  /*
+   * The article's Search appearance, folded to the route's locale.
+   *
+   * Read through the shared parser rather than by hand: it is the same bag
+   * the blog editor writes and the same fold every other surface uses, so an
+   * Arabic twin — or the generated draft behind it — reaches `/ar` here too.
+   */
+  const seo = localiseSearchAppearance(
+    readSearchAppearance(article.seo),
+    locale,
+  );
+  const metaTitle = seo.meta_title ?? article.title;
+  const metaDescription = seo.meta_description ?? article.excerpt ?? undefined;
   return {
-    title: `${metaTitle} · The Bazar Brief`,
+    /*
+     * Absolute either way, and the reason is the same reason twice.
+     *
+     * An authored title ships exactly as typed: appending the section suffix
+     * to an editor's string and then letting the root layout append " · Bazar"
+     * on top published "<their title> · The Bazar Brief · Bazar" — branded
+     * twice, and long enough that Google cut the words they chose.
+     *
+     * The derived fallback keeps its section suffix, because a headline still
+     * has to say which publication it belongs to, but it is absolute too: it
+     * already carries a brand, and " · The Bazar Brief · Bazar" is what every
+     * published article without a Search appearance has been shipping.
+     */
+    title: {
+      absolute: seo.meta_title ?? `${metaTitle} · The Bazar Brief`,
+    },
     description: metaDescription,
     openGraph: {
       title: metaTitle,
@@ -69,17 +101,14 @@ export async function generateMetadata({
   };
 }
 
-function formatDate(iso: string | null): string {
-  if (!iso) return "";
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
 export default async function ArticleDetailPage({ params }: PageProps) {
-  const { slug } = await params;
+  /*
+   * Locale from `params`, never ambient. An ambient `getTranslations` reads
+   * `getLocale()`, which falls through to `headers()` and takes the route off
+   * prerendering — check:routes caught all five of these at once.
+   */
+  const { slug, locale } = await params;
+  const t = await getTranslations({ locale, namespace: "editorial" });
   const article = await getPublishedArticleBySlug(slug);
   if (!article) notFound();
 
@@ -157,7 +186,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
       <header className="px-4 md:px-12 pt-8 pb-12 max-w-[760px] mx-auto">
         <Eyebrow>
           {categoryLabel}
-          {article.read_minutes ? ` · ${article.read_minutes} min read` : ""}
+          {article.read_minutes ? ` · ${readTime(t, article.read_minutes)}` : ""}
         </Eyebrow>
         <h1
           className="serif text-[32px] md:text-[60px] mt-4 font-normal"
@@ -187,14 +216,14 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                 <div className="text-[11.5px] text-bz-muted">
                   {article.author.title ?? "Bazar"}
                   {article.published_at
-                    ? ` · ${formatDate(article.published_at)}`
+                    ? ` · ${formatPublishedDate(article.published_at, locale)}`
                     : ""}
                 </div>
               </div>
             </>
           ) : article.published_at ? (
             <div className="text-[12px] text-bz-muted">
-              {formatDate(article.published_at)}
+              {formatPublishedDate(article.published_at, locale)}
             </div>
           ) : null}
         </div>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { asLocale } from "@/lib/i18n/locales";
-import { getSearchHeaderMeta } from "@/lib/queries/search-headers";
+import { searchHeaderMetadata } from "@/lib/queries/search-headers";
 import { SearchList } from "../../_components/search-list";
 import { parseFilters } from "@/lib/filters/property";
 
@@ -23,10 +23,8 @@ export async function generateMetadata({
   const locale = asLocale((await params).locale);
   // The snippet is CMS content — see the note on /rent/search. `alternates`
   // is not: a canonical is routing, not copy, and stays with the route.
-  const meta = await getSearchHeaderMeta("buy", "ready_new", locale);
   return {
-    title: meta.title,
-    description: meta.description,
+    ...(await searchHeaderMetadata("buy", "ready_new", locale)),
     alternates: { canonical: "/buy/ready" },
   };
 }

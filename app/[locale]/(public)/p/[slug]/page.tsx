@@ -32,6 +32,11 @@ import {
   propertyUrl,
 } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
+import {
+  authoredTitle,
+  getPropertySearchAppearance,
+} from "@/lib/queries/search-appearance";
+import { localiseSearchAppearance } from "@/lib/schemas/seo";
 import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
 import { getAdvisorByUserId } from "@/lib/queries/property-advisor";
 import { amenityLabel, orderAmenities, toOptions } from "@/lib/amenities";
@@ -194,13 +199,29 @@ type PageProps = { params: Promise<{ slug: string; locale: Locale }> };
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const ref = extractReferenceFromSlug(slug);
   if (!ref) return { title: "Property not found" };
   const property = await getPublishedPropertyByReference(ref);
   if (!property) return { title: "Property not found" };
 
+  /*
+   * The listing's own Search appearance — the SEO tab in the property editor.
+   *
+   * It has been writing `properties.seo` since the editor shipped and this
+   * route read neither half of it, so an advisor who wrote
+   * "3BR + Maid at Yas Park Place | Yas Island" published "Yas Park Place"
+   * and never found out. Read separately rather than through
+   * `getPublishedPropertyByReference`, whose `DETAIL_FIELDS` does not select
+   * `seo` — see `getPropertySearchAppearance`.
+   */
+  const seo = localiseSearchAppearance(
+    await getPropertySearchAppearance(ref),
+    locale,
+  );
+
   const description =
+    seo.meta_description ??
     property.short_description ??
     `${formatPriceAED(property.price_aed)} · ${property.beds}-bed ${property.type} in ${property.areas?.name ?? "the UAE"}`;
 
@@ -210,7 +231,7 @@ export async function generateMetadata({
     : undefined;
 
   return {
-    title: property.title,
+    title: authoredTitle(seo.meta_title, property.title),
     description,
     alternates: { canonical },
     openGraph: {

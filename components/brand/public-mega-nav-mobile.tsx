@@ -20,6 +20,10 @@ import {
   MegamenuServiceCardMobile,
   panelUsesCards,
 } from "./megamenu-service-card";
+import {
+  MegamenuGroupCardMobile,
+  panelUsesGroupCards,
+} from "./megamenu-group-card";
 import { cn } from "@/lib/utils";
 import type {
   Megamenu,
@@ -114,6 +118,64 @@ function MobileColumn({ column }: { column: MegamenuColumn }) {
   );
 }
 
+/**
+ * Whether a zone's columns are one list that a desktop layout split, rather
+ * than several lists that mean different things.
+ *
+ * A column earns its own block by having a heading. Two or more columns with
+ * no heading between them (Areas' twelve communities, Developers' ten
+ * partners, Buy's and New Projects' eight locations) are a single list cut in
+ * half so the desktop panel can set it in two tracks — and the drawer,
+ * stacking those tracks, was dropping the gap meant to separate two *blocks*
+ * into the middle of one list. The result is a hard visual break between
+ * "Fahid Island" and "Al Ghadeer" that means nothing, and a dozen identical
+ * rows either side of it.
+ *
+ * Asked of a zone rather than of "the left zone": the shape is what makes it
+ * one list, and it turns up on both sides of the panel.
+ */
+function zoneIsOneSplitList(columns: MegamenuColumn[]): boolean {
+  return columns.length >= 2 && columns.every((c) => !c.heading);
+}
+
+/**
+ * Those columns rejoined and set two-up.
+ *
+ * Two-up rather than one long list because these are short proper nouns: at
+ * full width each row spends ~250px on whitespace, and twelve of them push the
+ * featured tiles and everything under them off the first two screens. Six rows
+ * of two puts the whole zone above the fold on a 390px phone.
+ *
+ * The names wrap rather than truncate — an Arabic community name is longer
+ * than its English twin often enough that clipping would be the normal case,
+ * not the edge one — so `items-start` keeps a wrapped cell aligned with its
+ * single-line neighbour instead of centring it against it.
+ */
+function MobileSplitListGrid({ columns }: { columns: MegamenuColumn[] }) {
+  const items = columns.flatMap((c) => c.items);
+  return (
+    <ul className="grid grid-cols-2 gap-x-4">
+      {items.map((item) => (
+        <li key={item.id}>
+          <Link
+            href={item.href}
+            className="flex min-h-11 items-start py-2.5 text-[15px] leading-snug text-bz-ink"
+          >
+            <span>
+              {item.label}
+              {item.badge_label ? (
+                <span className="ms-2 text-[10.5px] uppercase tracking-wider text-bz-muted">
+                  {item.badge_label}
+                </span>
+              ) : null}
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function TabPanel({
   tab,
   onClose,
@@ -162,6 +224,8 @@ function TabPanel({
                 <MegamenuServiceCardMobile key={column.id} column={column} />
               ))}
             </div>
+          ) : zoneIsOneSplitList(tab.columns.left) ? (
+            <MobileSplitListGrid columns={tab.columns.left} />
           ) : (
             tab.columns.left.map((column) => (
               <MobileColumn key={column.id} column={column} />
@@ -186,9 +250,31 @@ function TabPanel({
                   {tab.right_column_title}
                 </h3>
               ) : null}
-              {tab.columns.right.map((column) => (
-                <MobileColumn key={column.id} column={column} />
-              ))}
+              {/* Three-or-more titled groups is a taxonomy — Areas' four
+                  "Communities by Lifestyle". Through the generic renderer each
+                  group is an 11px muted eyebrow over its links, stacked with
+                  the same gap that separates a link from its own neighbour, so
+                  the four collections arrive as one twelve-line list with no
+                  edge anywhere between them. `panelUsesGroupCards` is the same
+                  predicate the desktop panel switches its card grid on, so
+                  neither tree can answer it alone. */}
+              {panelUsesGroupCards(tab) ? (
+                <div className="flex flex-col gap-2.5">
+                  {tab.columns.right.map((column) => (
+                    <MegamenuGroupCardMobile key={column.id} column={column} />
+                  ))}
+                </div>
+              ) : zoneIsOneSplitList(tab.columns.right) ? (
+                // Buy's and New Projects' "Abu Dhabi Locations": eight place
+                // names split across two untitled columns for the desktop
+                // grid, which the drawer was stacking with a phantom break at
+                // the halfway mark.
+                <MobileSplitListGrid columns={tab.columns.right} />
+              ) : (
+                tab.columns.right.map((column) => (
+                  <MobileColumn key={column.id} column={column} />
+                ))
+              )}
             </div>
           ) : null}
 

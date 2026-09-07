@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -148,3 +149,61 @@ export async function getSearchPreviewChrome(): Promise<SearchPreviewChrome> {
     brandName: branding.brand_name,
   };
 }
+
+/**
+ * A CMS-authored title as `Metadata["title"]`, absolute when somebody wrote one.
+ *
+ * The root layout declares `template: "%s · Bazar"`, so a plain string title
+ * ships eight characters the editor never typed and the CMS preview never
+ * shows. On a fallback that is right — the suffix is what those pages have
+ * always published. On an authored string it is not: the Search appearance
+ * card previews the title untemplated, measures it against Google's ~60
+ * character cut untemplated, and then the page publishes something longer.
+ * Nine characters is enough to move a carefully-measured title past the cut,
+ * so the tail an editor wrote is the part that disappears from the result.
+ *
+ * `masterPageMetadata` and `/developments/[slug]` have done this since the
+ * feature shipped. This is the same rule for the surfaces that were left
+ * templated — see the note in `masterPageMetadata` for the longer argument.
+ */
+export function authoredTitle(
+  authored: string | null | undefined,
+  fallback: Metadata["title"],
+): Metadata["title"] {
+  return authored ? { absolute: authored } : fallback;
+}
+
+/**
+ * A published listing's search appearance, read on its own.
+ *
+ * `/p/[slug]` already loads the listing, but `lib/queries/properties.ts` does
+ * not select `seo` and is a shared file this change does not own — so this is
+ * a second, narrow read rather than a wider `DETAIL_FIELDS`. It costs one
+ * select inside `generateMetadata`, which on a route carrying
+ * `revalidate = 60` runs at prerender and revalidation, never per request.
+ * `cache()` so a second caller in the same render is free.
+ *
+ * Matching mirrors `getPublishedPropertyByReference` exactly — `ilike` on the
+ * reference, published only, not soft-deleted — so a listing that 404s in the
+ * page cannot have its meta read here.
+ */
+export const getPropertySearchAppearance = cache(
+  async (reference: string): Promise<SearchAppearance> => {
+    if (!isSupabaseConfigured) return { ...EMPTY_SEARCH_APPEARANCE };
+    try {
+      const supabase = createSupabasePublicClient();
+      const { data, error } = await supabase
+        .from("properties")
+        .select("seo")
+        .ilike("reference", reference)
+        .eq("status", "published")
+        .is("deleted_at", null)
+        .maybeSingle();
+      if (error || !data) return { ...EMPTY_SEARCH_APPEARANCE };
+      return readSearchAppearance(data.seo);
+    } catch (error) {
+      console.error(`[search-appearance] failed to load "${reference}"`, error);
+      return { ...EMPTY_SEARCH_APPEARANCE };
+    }
+  },
+);

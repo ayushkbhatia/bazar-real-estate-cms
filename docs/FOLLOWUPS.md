@@ -1387,13 +1387,30 @@ shows the trail.)
   `<title>` tags, so it wants its own PR and a look at whether anything
   measures them.
 
-- [ci] `lib/dead-code.test.ts` runs at ~3.5s against vitest's 5s default
-  per-test timeout — it walks the whole module graph — and tips over
-  intermittently when the full 239-file suite competes for CPU. Measured at
-  3.33-3.71s on clean `origin/main` and 3.14-3.23s on a branch, so it is the
-  guard's own margin rather than any one change. A guard that fails for
-  reasons unrelated to what it guards is one people learn to ignore; it wants
-  an explicit generous timeout.
+- [ci] G-15's symbol-name fallback reports a module as referenced when any
+  other file merely declares a local symbol of the same name, so a genuinely
+  dead module can hide for months behind an unrelated namesake.
+  `isReferenced` in `lib/dead-code.test.ts` matches either an import specifier
+  or `\b<exportedName>\b` anywhere in another file. The docblock names the
+  trade — a specifier match alone misses a re-export — but not this direction
+  of it. `app/[locale]/(public)/services/_components/service-card.tsx` exported
+  `ServiceCard` and was matched against a *private* `function ServiceCard` in
+  `components/brand/megamenu-panel.tsx`; #502 extracted that component as
+  `MegamenuServiceCard`, the collision went, and the gate reported an orphan
+  that had been dead far longer. Tightening it — say, only counting a symbol
+  match in a file that also imports from the module's directory — risks the
+  opposite error across the whole repo and would surface a batch of new
+  orphans at once, so it wants its own PR with time to triage what falls out.
+
+- [areas] A human can reach eight of the eighteen area guides from `/areas`.
+  #502 removed the A–Z directory band deliberately and the crawler side is
+  covered — `app/sitemap.ts` advertises every `kind = "area"` row, which
+  `e2e/areas.spec.ts` now asserts — but there is no longer any route through
+  the site to the other ten, and one added in the CMS tomorrow is reachable
+  only by typing its URL. Either the curated grid is the whole intent and the
+  ten are deliberately unfeatured, or the catalogue wants a compact index
+  somewhere (the footer and the megamenu are both candidates and both already
+  DB-driven). A product call, not a bug.
 
 - [i18n] The cookie banner's own words are English on `/ar`. Its three
   controls and the Customize panel go through `t(...)`, but the eyebrow
@@ -1406,3 +1423,16 @@ shows the trail.)
   is not being made in the reader's language rather than a cosmetic miss. The
   fix is three message keys plus the `cookie policy` link text, which is
   inside the sentence and so has to move with it.
+
+- [i18n] Two parked editorial components still format dates and read time in
+  English. `app/[locale]/(public)/_components/insights-teaser.tsx` and
+  `insights/_components/editors-pick.tsx` each carry their own
+  `toLocaleDateString("en-GB", …)` and a `${n} min read` template. Both are on
+  the `lib/dead-code.test.ts` UNREFERENCED list — they render nowhere today,
+  which is why the Arabic pass over the live insights surfaces deliberately
+  left them alone. The trap is that wiring either one up (both are named as
+  page-builder candidates) silently reintroduces English metadata on an Arabic
+  card, and neither guard would say so: G-13 skips unreferenced modules and
+  G-14 only matches ternary plural morphology. Whoever mounts them should swap
+  in `formatPublishedDate` (`lib/i18n/dates.ts`) and `readTime`
+  (`lib/i18n/read-time.ts`) in the same PR.
