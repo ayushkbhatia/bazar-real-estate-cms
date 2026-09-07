@@ -211,8 +211,21 @@ function unreferencedNow(): string[] {
   return out.sort();
 }
 
+/*
+ * Every test here walks the whole source tree and reads every file, which is
+ * ~9s on a warm laptop and comfortably over vitest's 5s default.
+ *
+ * That default is not a slow-machine annoyance, it is a hole: a timeout is
+ * reported as a failed test with no assertion output, so a real orphan reads
+ * locally as "dead-code timed out again" and gets filed with the known
+ * environmental failures. #502 shipped with `service-card.tsx` orphaned and
+ * this gate green in its author's local run for exactly that reason, and CI —
+ * skipped on all four of its commits — did not get the chance to disagree.
+ */
+const GRAPH_WALK_TIMEOUT = 120_000;
+
 describe("G-15 · no new unreferenced modules", () => {
-  it("finds none outside the inventory", () => {
+  it("finds none outside the inventory", { timeout: GRAPH_WALK_TIMEOUT }, () => {
     const surprises = unreferencedNow().filter((f) => !(f in UNREFERENCED));
 
     expect(
@@ -228,7 +241,7 @@ describe("G-15 · no new unreferenced modules", () => {
     ).toEqual([]);
   });
 
-  it("keeps the inventory honest", () => {
+  it("keeps the inventory honest", { timeout: GRAPH_WALK_TIMEOUT }, () => {
     // An entry that IS referenced now is a component someone wired up and
     // forgot to delist. Harmless, but it hides progress and makes the ceiling
     // mean less than it says.
