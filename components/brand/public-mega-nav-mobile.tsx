@@ -16,6 +16,10 @@ import { Button } from "@/components/ui/button";
 import { Wordmark, type BrandLogo } from "./wordmark";
 import type { HeaderCta } from "./public-mega-nav";
 import { MegamenuTile } from "./megamenu-tile";
+import {
+  MegamenuServiceCardMobile,
+  panelUsesCards,
+} from "./megamenu-service-card";
 import { cn } from "@/lib/utils";
 import type {
   Megamenu,
@@ -144,9 +148,25 @@ function TabPanel({
 
       <ScrollArea className="flex-1 min-h-0">
         <div className="px-5 py-5 flex flex-col gap-7" onClick={onClose}>
-          {tab.columns.left.map((column) => (
-            <MobileColumn key={column.id} column={column} />
-          ))}
+          {/* A dense left zone is a set of single-item "lead magnet" columns
+              (Services' six), and the generic column renderer turns each of
+              them into an uppercase eyebrow over one loose sentence — six of
+              those in a row, with the icon the data already carries thrown
+              away. `panelUsesCards` is the same predicate the desktop panel
+              switches its 3-up card grid on, so the two trees cannot answer
+              it differently; the phone stacks the cards rather than gridding
+              them. */}
+          {panelUsesCards(tab) ? (
+            <div className="flex flex-col gap-2.5">
+              {tab.columns.left.map((column) => (
+                <MegamenuServiceCardMobile key={column.id} column={column} />
+              ))}
+            </div>
+          ) : (
+            tab.columns.left.map((column) => (
+              <MobileColumn key={column.id} column={column} />
+            ))
+          )}
 
           {tab.featured.length > 0 ? (
             <div className="flex flex-col gap-3 pt-2">

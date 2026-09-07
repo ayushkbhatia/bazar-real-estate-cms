@@ -37,12 +37,12 @@ export default async function MegamenuIndex() {
         </p>
 
         {/*
-          The one piece of the header that is not a tab. It used to be three
-          English literals in the nav component — so the phone header and the
-          drawer both said "List" and "List Your Property" on /ar, under an
-          otherwise Arabic menu. It lives here rather than under Pages because
-          an editor looking for "the words in the navigation" looks at the
-          navigation screen.
+          The one piece of the header that is not a tab. It used to be English
+          literals in the nav component — so the phone header and the drawer
+          both said "List" and "List Your Property" on /ar, under an otherwise
+          Arabic menu. It lives here rather than under Pages because an editor
+          looking for "the words in the navigation" looks at the navigation
+          screen.
         */}
         <Link
           href={HEADER_CTA_ADMIN_PATH}
@@ -55,8 +55,8 @@ export default async function MegamenuIndex() {
           <span className="flex flex-col gap-0.5">
             <span className="text-[13.5px] font-medium">Header button</span>
             <span className="text-[12px] text-bz-muted leading-relaxed">
-              The call-to-action beside the tabs — its label, the short version
-              a phone shows next to the menu button, where it links, and the
+              The call-to-action beside the tabs — its label, which reads the
+              same on a phone as it does on a desktop, where it links, and the
               Arabic for both.
             </span>
           </span>

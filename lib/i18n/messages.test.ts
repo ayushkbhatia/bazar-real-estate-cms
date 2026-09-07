@@ -263,21 +263,16 @@ describe("message catalogues", () => {
        * surface in a way no other check would see.
        */
       "View",
-      /*
-       * "List" is likewise two words, and this site uses both.
-       *
-       *   search.view.list  the NOUN — one of three result layouts, beside
-       *                     "Grid" and "Map". قائمة, the thing you look at.
-       *   nav.listShort     the VERB, on the header CTA a phone shows in place
-       *                     of "List Your Property". أدرج, the thing you do —
-       *                     the reviewed short form already bound in
-       *                     `lib/master-pages/arabic/master.json`.
-       *
-       * قائمة on that button would read "menu", which is what the control
-       * beside it already is.
-       */
-      "List",
     ]);
+    /*
+     * "List" used to sit here too, for the same reason: `search.view.list` is
+     * the NOUN (one of three result layouts, قائمة) and `nav.listShort` was
+     * the VERB (أدرج, on the abbreviated header CTA a phone used to show in
+     * place of "List Your Property"). The phone now renders the full label, so
+     * `nav.listShort` is gone and only the noun is left — one English, one
+     * Arabic, nothing to allow. If a second "List" is ever added, decide which
+     * sense it is before adding it back.
+     */
 
     const byEnglish = new Map<string, Map<string, string>>();
     for (const ns of namespaces(DEFAULT_LOCALE)) {

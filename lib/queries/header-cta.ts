@@ -79,19 +79,21 @@ export async function getHeaderCtaContent(
 }
 
 /**
- * The three values the nav renders.
+ * The two values the nav renders.
  *
- * None of them is nullable. An editor who clears the label gets the shipped
+ * Neither is nullable. An editor who clears the label gets the shipped
  * wording back rather than an empty pill: a button with no text is not a
  * legible editorial choice the way a blank optional crumb is, it is a 44px
  * blank rectangle in the header of every page on the site. Switching the
  * button off is not what this screen is for — the section is `locked`.
  */
 export type HeaderCta = {
-  /** Desktop pill, and the button at the foot of the mobile drawer. */
+  /**
+   * Every rendering of the button: the desktop pill, the one beside the
+   * hamburger below `xl`, and the one at the foot of the mobile drawer. There
+   * was a `shortLabel` beside this until the phone stopped abbreviating.
+   */
   label: string;
-  /** The compact button beside the hamburger below `xl`. */
-  shortLabel: string;
   href: string;
 };
 
@@ -115,7 +117,6 @@ export const getHeaderCta = cache(
 
     return {
       label: withFallback("label"),
-      shortLabel: withFallback("short_label"),
       // Not folded — `link` fields carry no twin, so one value serves both
       // languages and `@/components/i18n/link` prefixes the locale itself.
       href: str(values, "href") ?? HEADER_CTA_FALLBACK_HREF,

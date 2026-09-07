@@ -1394,3 +1394,15 @@ shows the trail.)
   guard's own margin rather than any one change. A guard that fails for
   reasons unrelated to what it guards is one people learn to ignore; it wants
   an explicit generous timeout.
+
+- [i18n] The cookie banner's own words are English on `/ar`. Its three
+  controls and the Customize panel go through `t(...)`, but the eyebrow
+  ("Cookies"), the `<h2>` and the whole disclosure paragraph are literals in
+  `app/_consent/cookie-banner.tsx` (lines ~78, ~85, ~106) — so an Arabic
+  visitor gets "We use cookies to understand what works." over three Arabic
+  buttons. Noticed while auditing `/ar/developers` for untranslated text: the
+  banner is the ONLY English left on that page. It is also the one surface
+  where the wording is the consent, so under PDPL this is a disclosure that
+  is not being made in the reader's language rather than a cosmetic miss. The
+  fix is three message keys plus the `cookie policy` link text, which is
+  inside the sentence and so has to move with it.

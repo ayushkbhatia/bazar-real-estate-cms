@@ -48,13 +48,12 @@ type Props = {
   footerSlot?: React.ReactNode;
   /**
    * The header's call-to-action, resolved by the (public) layout from
-   * `/admin/megamenu/header-cta`. Both labels arrive already folded to the
-   * request's locale.
+   * `/admin/megamenu/header-cta`. The label arrives already folded to the
+   * request's locale, and is the same string at every width.
    *
    * Optional, and every read below falls back to `nav.*` — this component is
    * mounted in tests and stories with no data layer behind it, and the
-   * fallback is also what renders if the document read ever fails. `shortLabel`
-   * is the one that used to be an English literal (`List`) at every locale.
+   * fallback is also what renders if the document read ever fails.
    */
   cta?: HeaderCta | null;
 };
@@ -63,7 +62,6 @@ type Props = {
  * `components/brand/*` stays free of app-level data modules. */
 export type HeaderCta = {
   label: string;
-  shortLabel: string;
   href: string;
 };
 
@@ -178,14 +176,34 @@ export function PublicMegaNav({
           )}
         />
 
-        {/* shrink-0 so the logo keeps its box when the trigger row is wide —
-            without it the flex row steals width from the brand first. */}
+        {/* `xl:shrink-0` so the logo keeps its box when the trigger row is
+            wide — without it the flex row steals width from the brand first,
+            and at xl the row it competes with is the centred megamenu.
+
+            Below xl it deliberately does shrink, and that is new. The phone
+            bar now carries the full "List Your Property" label rather than
+            "List", so the cluster on the right went from 96px to 179px at
+            375px. With the shipped 44px square mark there is still ~120px to
+            spare, but `logoOnlyHeightMap` lets an uploaded lockup draw up to
+            190px, and 190 + 179 + gutters overflows a 390px viewport — a
+            horizontal scrollbar on every page, and a blocking failure of
+            e2e/mobile-geometry.spec.ts's `overflow` check.
+
+            `min-w-0` down the chain plus `[&_img]:shrink` is what makes the
+            mark yield instead: the lockup is a flex item that Wordmark pins
+            with `shrink-0`, and a descendant selector out-specifies it. The
+            image keeps its own `min-w-11` floor, so it can never shrink past
+            the 44px square the site ships today — the width the bar has
+            always had room for — and `object-contain` scales the art rather
+            than cropping it. The text wordmark carries no <img> and is
+            narrower than the cluster leaves free, so neither class reaches
+            it. */}
         <Link
           href="/"
           aria-label={t("home")}
-          className="flex items-center shrink-0"
+          className="flex items-center min-w-0 xl:shrink-0 [&_img]:shrink"
         >
-          <Wordmark logo={logo} />
+          <Wordmark logo={logo} className="min-w-0" />
         </Link>
 
         {/* Desktop nav — hidden below xl, replaced by hamburger.
@@ -261,8 +279,15 @@ export function PublicMegaNav({
           </Button>
         </div>
 
-        {/* Mobile right cluster — just the hamburger + CTA */}
-        <div className="xl:hidden ms-auto flex items-center gap-2">
+        {/* Mobile right cluster — just the hamburger + CTA.
+
+            `shrink-0`: this cluster carries the full CTA label now, so it is
+            the widest it has ever been, and it is the half of the bar that
+            must not be squeezed — the brand link above gives up width first
+            (see the `min-w-0` there). Without it flex would take the
+            difference out of whichever item happened to be more compressible,
+            which on a wide uploaded lockup is the button. */}
+        <div className="xl:hidden ms-auto flex shrink-0 items-center gap-2">
           {/* Deliberately no height override. `size="sm"` is 28px, but Slot
               forwards `data-slot="button"` onto the rendered <a>, so the
               `(pointer: coarse)` block in app/globals.css already clamps this
@@ -273,18 +298,25 @@ export function PublicMegaNav({
               do on purpose.
 
               What that block does NOT give it is width, and a touch target is
-              judged on both axes. Measured on a phone after the floor landed:
-              43x44 — tall enough, one pixel short, on all eight routes sampled.
-              The four-character label inside `size="sm"`'s px-2.5 is simply
-              narrow. `pointer-coarse:min-w-11` closes it without touching the
-              desktop pill. */}
-          <Button asChild size="sm" className="pointer-coarse:min-w-11">
+              judged on both axes. `pointer-coarse:min-w-11` is what closed
+              that axis back when the label here was the four-character "List"
+              and measured 43x44. The full label clears 44px on its own —
+              127px at 375px — but the floor stays: an editor is free to save
+              a one-word label, and this is the only thing standing between
+              that and a 30px-wide target. */}
+          <Button
+            asChild
+            size="sm"
+            className="pointer-coarse:min-w-11 whitespace-nowrap"
+          >
             <Link href={cta?.href ?? "/services/sell"}>
-              {/* `nav.listShort`, not `nav.listProperty`: the full label is
-                  three words and this button has room for one. It was the
-                  literal `List` until the header CTA became CMS copy — English
-                  on /ar, in the one place a phone user could not miss it. */}
-              {cta?.shortLabel || t("listShort")}
+              {/* The same label the desktop pill renders. It was `List` — a
+                  literal, so English on /ar — and then `cta.shortLabel`, an
+                  abbreviation nobody asked for: read cold beside a menu icon
+                  "List" is as easily the noun (one of the search layouts) as
+                  the verb. The bar has room for the whole phrase, so it says
+                  the whole phrase. */}
+              {cta?.label || t("listProperty")}
             </Link>
           </Button>
           {/*
