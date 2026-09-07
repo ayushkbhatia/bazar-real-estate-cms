@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
+import { LEGACY_WORDPRESS_REDIRECTS } from "./lib/legacy-redirects";
 
 // Messages only — routing stays in proxy.ts, which was measured to serve the
 // prerendered artifact rather than bypass ISR. See lib/i18n/request.ts.
@@ -162,6 +163,14 @@ const nextConfig: NextConfig = {
         destination: "/areas/:slug*",
         permanent: true,
       },
+      /*
+       * The WordPress site this one replaced. Last, so nothing above can be
+       * shadowed by a catch-all in there, and in its own module because it is
+       * a map of a dead URL space rather than a decision about this one —
+       * see lib/legacy-redirects.ts for what is evidence and what is
+       * inference.
+       */
+      ...LEGACY_WORDPRESS_REDIRECTS,
     ];
   },
 };

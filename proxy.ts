@@ -10,6 +10,7 @@ import {
   withLocalePrefix,
 } from "@/lib/i18n/routing";
 import { DEFAULT_LOCALE, isEnabledLocale } from "@/lib/i18n/locales";
+import { LEGACY_LANG_PARAM } from "@/lib/legacy-redirects";
 import {
   PREFS_COOKIE,
   PREFS_COOKIE_MAX_AGE,
@@ -40,6 +41,37 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(
       new URL(pathname.replace(/^\/ar/, ""), request.url),
     );
+  }
+
+  // 2a. The WordPress site's `?lang=` parameter.
+  //
+  //     Polylang appended it to every URL on the old site, so it arrives on
+  //     paths this one still serves (`/?lang=ar`, archived) and on paths that
+  //     `next.config.ts` has already mapped somewhere else — a legacy redirect
+  //     merges unmatched query parameters into its destination, so `/listings
+  //     ?lang=ar` lands here as `/buy?lang=ar`. Either way the parameter is
+  //     meaningless to this site and must not survive into a canonical, an
+  //     analytics URL or a share.
+  //
+  //     308: this is a permanent statement about a dead URL shape, unlike the
+  //     `?setlang=` hop below, which depends on a cookie the visitor can
+  //     change. Terminating, because the parameter is deleted before the
+  //     redirect — the second request cannot match this branch.
+  //
+  //     `/admin` is left unprefixed whatever the parameter says: the CMS is
+  //     English-only (ADR-0007), and prefixing it here would only hand the
+  //     request to branch 2 to bounce straight back.
+  const legacyLang = request.nextUrl.searchParams.get(LEGACY_LANG_PARAM);
+  if (legacyLang !== null) {
+    const url = request.nextUrl.clone();
+    url.searchParams.delete(LEGACY_LANG_PARAM);
+    const bare = stripLocalePrefix(pathname);
+    const isAdmin = bare === "/admin" || bare.startsWith("/admin/");
+    url.pathname =
+      isEnabledLocale(legacyLang) && legacyLang !== DEFAULT_LOCALE && !isAdmin
+        ? withLocalePrefix(bare, legacyLang)
+        : bare;
+    return NextResponse.redirect(url, 308);
   }
 
   // 2b. An explicit language choice, carried in the URL as `?setlang=`.
