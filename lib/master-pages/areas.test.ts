@@ -37,7 +37,6 @@ describe("the areas master page is registered", () => {
     expect(areas.sections.map((s) => s.key)).toEqual([
       "hero",
       "area_cards",
-      "all_areas",
       "area_map",
       "area_spotlights",
       "list_your_property",

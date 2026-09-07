@@ -469,9 +469,9 @@ export type AreaDirectoryEntry = AreaDirectoryChild & {
  * Every area and sub-community in the catalogue, alphabetical, with live
  * published-listing counts.
  *
- * The `/areas` card grid is a curated eight; without a complete index a newly
- * created area is reachable only by typing its URL. This is that index —
- * two Supabase roundtrips regardless of how many areas exist (the counts are
+ * The `/areas` A-Z index this was written for is gone; the remaining caller is
+ * the area guide, which uses it to put a name to each `similarSlugs` entry.
+ * Two Supabase roundtrips regardless of how many areas exist (the counts are
  * tallied in memory, not one `count()` per row).
  */
 export async function listAreaDirectory(): Promise<AreaDirectoryEntry[]> {
