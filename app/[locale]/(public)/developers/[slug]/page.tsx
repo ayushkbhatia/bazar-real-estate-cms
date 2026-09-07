@@ -56,7 +56,10 @@ export async function generateMetadata({
   const name = entry?.name ?? detail?.name;
   if (!name) return { title: "Developer not found" };
   return {
-    title: `${name} · Bazar Real Estate`,
+    // Absolute: the string already brands itself, and the layout template was
+    // appending a second suffix — "ALDAR Properties · Bazar Real Estate ·
+    // Bazar" is what all 32 profiles published to a search result.
+    title: { absolute: `${name} · Bazar Real Estate` },
     description: detail?.description ?? entry?.blurb ?? undefined,
     // A developer the catalogue also carries is reachable at two slugs — the
     // shipped `modon` and the row's `modon-properties`. The grid links to the

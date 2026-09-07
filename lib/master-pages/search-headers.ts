@@ -73,7 +73,11 @@
  * Pages list.
  */
 
-import type { PropertyForm, PropertyMode } from "@/lib/schemas/property";
+import type {
+  PropertyForm,
+  PropertyMode,
+  PropertySegment,
+} from "@/lib/schemas/property";
 import { area, text } from "./fields";
 import type { FieldDef, MasterPageDef, MasterPageKey, SectionDef } from "./types";
 
@@ -437,7 +441,28 @@ export function isSearchHeaderKey(key: string): key is SearchHeaderKey {
 export function searchHeaderFor(
   mode: PropertyMode,
   form?: PropertyForm | null,
+  /**
+   * The segmented control above the results, when one is applied.
+   *
+   * `/commercial/search` is not a route: proxy.ts 307s it to
+   * `/buy/search?segment=commercial`, so every commercial search arrives here
+   * as `mode: "buy"` and the Commercial document — the only facet addressed by
+   * a mode nothing ever passes — was unreachable. An editor could write its
+   * headline and its search title, save, follow the "View page" link, and read
+   * the Buy facet's copy on the page they had just edited.
+   *
+   * Checked before `form` because the segment is the coarser cut: a commercial
+   * search narrowed to resale is still commercial, and there is no
+   * commercial-resale document to prefer.
+   */
+  segment?: PropertySegment | null,
 ): SearchHeaderDef {
+  if (segment === "commercial") {
+    const bySegment = SEARCH_HEADERS.find(
+      (h) => h.match.mode === "commercial",
+    );
+    if (bySegment) return bySegment;
+  }
   if (form) {
     const byForm = SEARCH_HEADERS.find(
       (h) => h.match.mode === mode && h.match.form === form,

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { asLocale } from "@/lib/i18n/locales";
-import { getSearchHeaderMeta } from "@/lib/queries/search-headers";
+import { searchHeaderMetadata } from "@/lib/queries/search-headers";
 import { SearchList } from "../../_components/search-list";
 import { parseFilters } from "@/lib/filters/property";
 
@@ -13,8 +13,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const locale = asLocale((await params).locale);
-  const meta = await getSearchHeaderMeta("off_plan", null, locale);
-  return { title: meta.title, description: meta.description };
+  return searchHeaderMetadata("off_plan", null, locale);
 }
 
 type PageProps = {

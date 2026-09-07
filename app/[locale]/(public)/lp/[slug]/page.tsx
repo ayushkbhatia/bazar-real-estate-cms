@@ -13,6 +13,11 @@ import {
 } from "@/lib/i18n/locales";
 import { loadLandingData } from "@/lib/page-builder/data";
 import { LandingRenderer } from "./_render";
+import { authoredTitle } from "@/lib/queries/search-appearance";
+import {
+  localiseSearchAppearance,
+  readSearchAppearance,
+} from "@/lib/schemas/seo";
 
 /**
  * Campaign landing pages, assembled in /admin/page-builder.
@@ -48,18 +53,19 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale: rawLocale } = await params;
   const page = await getPublishedLandingBySlug(slug);
   if (!page) return {};
-  const seo = page.seo ?? {};
-  const title =
-    typeof seo.meta_title === "string" && seo.meta_title.trim() !== ""
-      ? seo.meta_title
-      : page.title;
-  const description =
-    typeof seo.meta_description === "string" ? seo.meta_description : undefined;
+  // Shared parser and fold, so a campaign page publishes its Search appearance
+  // card exactly as previewed — and reaches `/ar` with the twin behind it.
+  const seo = localiseSearchAppearance(
+    readSearchAppearance(page.seo),
+    isEnabledLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE,
+  );
+  const title = seo.meta_title ?? page.title;
+  const description = seo.meta_description ?? undefined;
   return {
-    title,
+    title: authoredTitle(seo.meta_title, title),
     description,
     alternates: { canonical: `/lp/${page.slug}` },
     robots: page.noindex ? { index: false, follow: false } : undefined,

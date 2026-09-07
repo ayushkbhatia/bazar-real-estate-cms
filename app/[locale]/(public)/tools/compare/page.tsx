@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { authoredTitle } from "@/lib/queries/search-appearance";
 import Image from "next/image";
 import Link from "@/components/i18n/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -49,7 +50,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const locale = asLocale((await params).locale);
   const copy = await getCompareCopy(locale);
-  return { title: copy.meta_title, description: copy.meta_description };
+  // CMS copy, so absolute — the section-library editor previews this string
+  // untemplated and the page has to publish what it previewed.
+  return {
+    title: authoredTitle(copy.meta_title, undefined),
+    description: copy.meta_description,
+  };
 }
 
 export const dynamic = "force-dynamic";
