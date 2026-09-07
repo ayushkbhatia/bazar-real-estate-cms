@@ -189,6 +189,11 @@ export async function SearchList({
    * Blank eyebrow and sub-title are honoured — an editor who clears one means
    * to drop the line — while a blank title falls back to the shipped headline
    * rather than rendering an empty h1.
+   *
+   * `filters.segment` goes too: /commercial/search is a 307 to
+   * /buy/search?segment=commercial, so a commercial search reaches this with
+   * `mode: "buy"` and, without the segment, wore the Buy facet's headline —
+   * which is why /commercial/search read "Properties for Sale".
    */
   const [{ rows, total }, areas, copy] = await Promise.all([
     listPublishedProperties({
@@ -199,7 +204,7 @@ export async function SearchList({
       offset,
     }),
     fetchAreas(),
-    getSearchHeaderCopy(mode, effectiveForm ?? null),
+    getSearchHeaderCopy(mode, effectiveForm ?? null, undefined, filters.segment),
   ]);
   const t = await getTranslations("search");
   const cardLabels = await getCardLabelResolver();

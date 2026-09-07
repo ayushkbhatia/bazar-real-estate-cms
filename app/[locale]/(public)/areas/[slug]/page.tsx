@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "@/components/i18n/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { authoredTitle } from "@/lib/queries/search-appearance";
 import { ArrowLeft } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
@@ -133,7 +134,13 @@ export async function generateMetadata({
   const profile = await getAreaProfile(slug);
   if (!profile) return { title: "Area not found" };
   return {
-    title: profile.metaTitle ?? `${profile.name} — Bazar community guide`,
+    // Absolute when authored — the Search appearance card on
+    // /admin/pages/sub/area/<slug> previews this string untemplated, so the
+    // root layout must not append " · Bazar" behind the editor's back.
+    title: authoredTitle(
+      profile.metaTitle,
+      `${profile.name} — Bazar community guide`,
+    ),
     description: profile.metaDescription ?? profile.intro ?? undefined,
     alternates: { canonical: `/areas/${profile.slug}` },
   };

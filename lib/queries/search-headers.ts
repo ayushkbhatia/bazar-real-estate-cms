@@ -30,7 +30,13 @@ import {
   type SearchHeaderKey,
 } from "@/lib/master-pages/search-headers";
 import { subPageSlug } from "@/lib/master-pages/subpages";
-import type { PropertyForm, PropertyMode } from "@/lib/schemas/property";
+import type {
+  PropertyForm,
+  PropertyMode,
+  PropertySegment,
+} from "@/lib/schemas/property";
+import type { Metadata } from "next";
+import { authoredTitle } from "@/lib/queries/search-appearance";
 
 export type SearchHeaderContent = {
   /** The one section this document holds, resolved over the code defaults. */
@@ -104,8 +110,9 @@ export const getSearchHeaderCopy = cache(
     mode: PropertyMode,
     form?: PropertyForm | null,
     locale?: Locale,
+    segment?: PropertySegment | null,
   ): Promise<SearchHeaderCopy> => {
-    const entry = searchHeaderFor(mode, form);
+    const entry = searchHeaderFor(mode, form, segment);
     /*
      * Resolved here rather than left to `getSearchHeaderContent`, because the
      * title fallback below needs the SAME fold. Reading
@@ -149,8 +156,9 @@ export const getSearchHeaderMeta = cache(
     mode: PropertyMode,
     form?: PropertyForm | null,
     locale?: Locale,
+    segment?: PropertySegment | null,
   ): Promise<SearchHeaderMeta> => {
-    const entry = searchHeaderFor(mode, form);
+    const entry = searchHeaderFor(mode, form, segment);
     const fold = locale ?? (await currentLocale());
     const content = await getSearchHeaderContent(entry.key, fold);
     const values = content.section.values;
@@ -165,3 +173,28 @@ export const getSearchHeaderMeta = cache(
     };
   },
 );
+
+/**
+ * A search facet's `Metadata`, ready to return from `generateMetadata`.
+ *
+ * The title is `absolute` because on these six routes it is CMS copy either
+ * way: an edited document, or the registry default, which is itself editable
+ * at /admin/pages/sub/search/<key>. The root layout's `%s · Bazar` template
+ * would append a suffix the Search appearance card never previews and never
+ * measures, which is the same lie `masterPageMetadata` refuses to tell.
+ *
+ * A facet with no title at all falls through to the layout default rather than
+ * publishing an empty `<title>`.
+ */
+export async function searchHeaderMetadata(
+  mode: PropertyMode,
+  form: PropertyForm | null,
+  locale: Locale,
+  segment?: PropertySegment | null,
+): Promise<Metadata> {
+  const meta = await getSearchHeaderMeta(mode, form, locale, segment);
+  return {
+    title: authoredTitle(meta.title, undefined),
+    description: meta.description || undefined,
+  };
+}

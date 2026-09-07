@@ -79,6 +79,26 @@ describe("addressing", () => {
     expect(ready).not.toBe(resale);
   });
 
+  it("reaches the Commercial facet through the segment", () => {
+    /*
+     * /commercial/search is not a route — proxy.ts 307s it to
+     * /buy/search?segment=commercial — so every commercial search arrived as
+     * `mode: "buy"` and the Commercial document was addressed by nothing. Its
+     * editor could write a headline and a search title, save, and read the Buy
+     * facet's copy on the page they had just edited.
+     */
+    expect(searchHeaderFor("buy", null, "commercial").key).toBe("commercial");
+    expect(searchHeaderFor("buy", "resale", "commercial").key).toBe(
+      "commercial",
+    );
+  });
+
+  it("leaves a residential search on its own facet", () => {
+    expect(searchHeaderFor("buy", null, "residential").key).toBe("buy");
+    expect(searchHeaderFor("buy", null, null).key).toBe("buy");
+    expect(searchHeaderFor("buy").key).toBe("buy");
+  });
+
   it("keeps the buy off-plan slice off the /off-plan heading", () => {
     expect(searchHeaderFor("buy", "off_plan").key).toBe("off-plan-sale");
     expect(searchHeaderFor("off_plan").key).toBe("off-plan");
