@@ -1,19 +1,13 @@
 "use client";
 
 import Link from "@/components/i18n/link";
-import {
-  ArrowRight,
-  Building2,
-  ClipboardList,
-  Compass,
-  KeyRound,
-  Landmark,
-  Search,
-  Tag,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MegamenuTile } from "./megamenu-tile";
+import {
+  MegamenuServiceCard,
+  panelUsesCards,
+} from "./megamenu-service-card";
 import type {
   MegamenuColumn,
   MegamenuItem,
@@ -108,56 +102,6 @@ function ColumnBlock({
   );
 }
 
-// Icons for the card ("lead magnet") layout, keyed on the item's `icon`
-// string so the mapping stays data-driven rather than hardcoded per tab.
-const CARD_ICONS: Record<string, LucideIcon> = {
-  search: Search,
-  tag: Tag,
-  "key-round": KeyRound,
-  "clipboard-list": ClipboardList,
-  "building-2": Building2,
-  landmark: Landmark,
-};
-
-/**
- * Card treatment for a dense left zone — one column becomes one card:
- * icon chip + heading (as the title) + its single item (as the blurb),
- * linking to that item's href. Used for the Services "lead magnet" grid so
- * the panel reads as a structured block instead of a sparse text list.
- */
-function ServiceCard({ column }: { column: MegamenuColumn }) {
-  const item = column.items[0];
-  const Icon = (item?.icon && CARD_ICONS[item.icon]) || Compass;
-  return (
-    <Link
-      href={item?.href ?? "#"}
-      className="group flex h-full flex-col gap-3 rounded-xl border border-bz-border bg-bz-surface p-5 transition-all hover:border-bz-ink/20 hover:bg-bz-surface-2 hover:shadow-[0_10px_28px_-18px_rgba(0,0,0,0.3)]"
-    >
-      <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-bz-accent-soft text-bz-accent">
-        <Icon size={18} strokeWidth={1.6} />
-      </span>
-      <div className="mt-auto flex flex-col gap-1.5">
-        <div className="flex items-center gap-1.5 text-[15px] font-medium text-bz-ink">
-          {column.heading}
-          <ArrowRight
-            size={14}
-            strokeWidth={1.8}
-            // translate-x has no logical form, so the nudge needs an explicit pair:
-            // the chevron slides toward the reading direction, which is
-            // rightward in English and leftward in Arabic.
-            className="text-bz-accent opacity-0 ltr:-translate-x-1 rtl:translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0"
-          />
-        </div>
-        {item ? (
-          <p className="text-[13px] leading-relaxed text-bz-ink-2">
-            {item.label}
-          </p>
-        ) : null}
-      </div>
-    </Link>
-  );
-}
-
 export function MegamenuPanel({ tab }: Props) {
   const hasLeft = tab.columns.left.length > 0;
   const hasRight = tab.columns.right.length > 0;
@@ -171,8 +115,9 @@ export function MegamenuPanel({ tab }: Props) {
   const leftIsNarrow = leftCount <= 1;
   // A dense left zone (e.g. Services' six single-item "lead magnet" columns)
   // renders as a 3-up card grid so it reads as a structured block that fills
-  // the panel rather than a sparse text list.
-  const leftIsCards = leftCount >= 5;
+  // the panel rather than a sparse text list. The predicate is shared with the
+  // mobile drawer so both trees answer it the same way.
+  const leftIsCards = panelUsesCards(tab);
   const leftGridClass = leftCount <= 1 ? "grid-cols-1" : "grid-cols-2";
 
   // Grid layout. Each present zone gets a track.
@@ -223,7 +168,7 @@ export function MegamenuPanel({ tab }: Props) {
             {leftIsCards ? (
               <div className="grid flex-1 grid-cols-3 gap-4">
                 {tab.columns.left.map((column) => (
-                  <ServiceCard key={column.id} column={column} />
+                  <MegamenuServiceCard key={column.id} column={column} />
                 ))}
               </div>
             ) : (
