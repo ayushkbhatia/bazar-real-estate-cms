@@ -23,7 +23,6 @@ import { articleJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { ChevronRight } from "lucide-react";
-import type { Locale } from "@/lib/i18n/locales";
 import { formatPublishedDate } from "@/lib/i18n/dates";
 import { readTime } from "@/lib/i18n/read-time";
 
