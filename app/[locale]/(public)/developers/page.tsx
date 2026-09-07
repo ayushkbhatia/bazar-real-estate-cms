@@ -171,24 +171,49 @@ export default async function DevelopersPage({
                 </div>
                 <div className="flex flex-col flex-1 p-5 border-t border-bz-border">
                   <div
-                    className="serif text-[19px] leading-tight"
+                    // Centred on a phone. `start` hangs the name off the left
+                    // edge in English and the right edge in Arabic, and with
+                    // the blurb gone below (see next comment) the name is the
+                    // only line of type in the box — so the two languages read
+                    // as two different cards under a logo that is centred in
+                    // both. Reading order returns at `md`, where the blurb is
+                    // back and gives the column an edge worth aligning to.
+                    className="serif text-[19px] leading-tight text-center md:text-start"
                     style={{ letterSpacing: "-0.01em" }}
                   >
                     {d.name}
                   </div>
+                  {/* Desktop-only. The grid is two columns wide on a phone, so
+                      each card is ~171px across and the description set as six
+                      to eight lines of 12px prose — the tallest thing on the
+                      card, for a sentence nobody reads while scanning logos.
+                      The name and the CTA are what picks a developer there. */}
                   {d.blurb ? (
-                    <p className="text-[12px] text-bz-ink-2 leading-snug mt-1.5 flex-1">
+                    <p className="hidden md:block text-[12px] text-bz-ink-2 leading-snug mt-1.5 md:flex-1">
                       {d.blurb}
                     </p>
-                  ) : (
-                    <p className="flex-1" />
-                  )}
-                  <div className="flex items-center gap-1.5 mt-4 text-[12.5px] font-medium text-bz-accent">
+                  ) : null}
+                  {/* The flexible gap that pins the CTA to the card's floor.
+                      On desktop the blurb is that gap, so this stands in only
+                      where the blurb isn't: on every phone, and at every width
+                      for a developer with no description at all. */}
+                  {/* A div, and no `aria-hidden` on it: the initials mark
+                      above is `span[aria-hidden]`, and e2e/developers.spec.ts
+                      counts exactly one of those per art-less card. */}
+                  <div className={`flex-1 ${d.blurb ? "md:hidden" : ""}`} />
+                  {/* Centred on a phone for the same reason the name is, and
+                      the arrow is dropped with it: it is the other piece of
+                      this card that points, and at ~131px of content width
+                      "View developments" plus a 13px glyph is 3px too wide —
+                      the label broke over two lines and left the arrow
+                      hanging beside them. The card is the link, and the hover
+                      nudge the arrow exists for has no touch equivalent. */}
+                  <div className="flex items-center justify-center md:justify-start gap-1.5 mt-4 text-[12.5px] font-medium text-bz-accent text-center md:text-start">
                     {cardCta}
                     <ArrowRight
                       size={13}
                       strokeWidth={1.8}
-                      className="transition-transform group-hover:translate-x-0.5"
+                      className="hidden md:block transition-transform group-hover:translate-x-0.5"
                     />
                   </div>
                 </div>
