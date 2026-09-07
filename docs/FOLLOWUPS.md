@@ -1406,3 +1406,16 @@ shows the trail.)
   is not being made in the reader's language rather than a cosmetic miss. The
   fix is three message keys plus the `cookie policy` link text, which is
   inside the sentence and so has to move with it.
+
+- [i18n] Two parked editorial components still format dates and read time in
+  English. `app/[locale]/(public)/_components/insights-teaser.tsx` and
+  `insights/_components/editors-pick.tsx` each carry their own
+  `toLocaleDateString("en-GB", …)` and a `${n} min read` template. Both are on
+  the `lib/dead-code.test.ts` UNREFERENCED list — they render nowhere today,
+  which is why the Arabic pass over the live insights surfaces deliberately
+  left them alone. The trap is that wiring either one up (both are named as
+  page-builder candidates) silently reintroduces English metadata on an Arabic
+  card, and neither guard would say so: G-13 skips unreferenced modules and
+  G-14 only matches ternary plural morphology. Whoever mounts them should swap
+  in `formatPublishedDate` (`lib/i18n/dates.ts`) and `readTime`
+  (`lib/i18n/read-time.ts`) in the same PR.

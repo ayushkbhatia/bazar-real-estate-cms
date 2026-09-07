@@ -6505,5 +6505,19 @@
     "sourceHash": "6689c1096149",
     "reviewed": false,
     "note": "Six-category plural. The slider spans 5-30, so only `few` (سنوات, 5-10) and `many` (سنة, 11-30) render; the rest are filled in rather than left to fall through to `other`."
+  },
+  "editorial.article.readMinutes": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "05ca43d8ac9a",
+    "reviewed": false,
+    "note": "Numeral agreement, so written by hand: one takes the bare singular (دقيقة قراءة), two the dual construct (دقيقتا, nun dropped in idafa), 3-10 the plural دقائق, 11+ back to the singular. The digit is a {minutes} placeholder rather than ICU #, so it stays Western on every ICU build."
+  },
+  "editorial.article.readMinutesShort": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "32f435adeb20",
+    "reviewed": false,
+    "note": "Card-eyebrow short form of readMinutes — same numeral agreement, without the قراءة."
   }
 }

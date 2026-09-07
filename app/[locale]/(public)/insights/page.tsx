@@ -1,4 +1,4 @@
-import { setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import * as React from "react";
 import { getForm } from "@/lib/queries/forms";
 import Link from "@/components/i18n/link";
@@ -22,6 +22,8 @@ import { cn } from "@/lib/utils";
 import { NewsletterSignup } from "../_components/newsletter-signup";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
+import { formatPublishedDate } from "@/lib/i18n/dates";
+import { readTime } from "@/lib/i18n/read-time";
 
 export const revalidate = 300;
 
@@ -70,15 +72,6 @@ function ArticleHero({ row, sizes }: { row: ArticleListRow; sizes: string }) {
   );
 }
 
-function formatDate(iso: string | null): string {
-  if (!iso) return "";
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
 /**
  * The empty-state sentence carries the filtered category inline, so it is
  * stored as a template with a `{category}` token. With no filter the token and
@@ -102,11 +95,17 @@ export default async function InsightsIndexPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
+  const locale = asLocale((await params).locale);
   // Before any other await. `getMasterPageContent` resolves its locale from
   // the request, and without this `getLocale()` has nothing to resolve — the
   // page renders English content under `lang="ar"` in an RTL layout, which is
   // the failure `lib/i18n/current.ts` describes: it looks finished.
-  setRequestLocale(asLocale((await params).locale));
+  setRequestLocale(locale);
+
+  // Locale passed explicitly, never ambient: an ambient `getTranslations`
+  // reads `getLocale()`, which falls through to `headers()` and takes the
+  // route off prerendering. The sibling insights routes carry the same note.
+  const t = await getTranslations({ locale, namespace: "editorial" });
 
   const [categories, content, newsletterForm] = await Promise.all([
     listArticleCategories(),
@@ -139,8 +138,13 @@ export default async function InsightsIndexPage({
     hero: (
       <section key="hero" className="px-4 md:px-12 pt-12 md:pt-20 pb-14">
         <Eyebrow>{str(heroV, "eyebrow") ?? "Insights"}</Eyebrow>
+        {/* Two steps down the display ladder from the 42/80 this shipped at,
+            which was the largest heading on the site and read as shouting
+            above a page of small-type cards. 34/60 puts it between the
+            category archive (34/64) and the article page (32/60) — the two
+            surfaces a reader moves to from here. */}
         <h1
-          className="serif text-[42px] md:text-[80px] mt-3 font-normal"
+          className="serif text-[34px] md:text-[60px] mt-3 font-normal"
           style={{ letterSpacing: "-0.03em", lineHeight: 0.98 }}
         >
           {str(heroV, "heading") ?? "The Bazar Brief."}
@@ -198,11 +202,11 @@ export default async function InsightsIndexPage({
                     <span>·</span>
                   </>
                 ) : null}
-                <span>{formatDate(featured.published_at)}</span>
+                <span>{formatPublishedDate(featured.published_at, locale)}</span>
                 {featured.read_minutes ? (
                   <>
                     <span>·</span>
-                    <span>{featured.read_minutes} min read</span>
+                    <span>{readTime(t, featured.read_minutes)}</span>
                   </>
                 ) : null}
               </div>
@@ -316,7 +320,9 @@ export default async function InsightsIndexPage({
                   </div>
                   <div className="eyebrow mt-3.5">
                     {row.category_label}
-                    {row.read_minutes ? ` · ${row.read_minutes} min` : ""}
+                    {row.read_minutes
+                      ? ` · ${readTime(t, row.read_minutes, { short: true })}`
+                      : ""}
                   </div>
                   <h3
                     className="serif text-[22px] mt-2 leading-[1.2] group-hover:text-bz-accent transition-colors"
@@ -332,7 +338,7 @@ export default async function InsightsIndexPage({
                   <div className="mt-3 text-[11.5px] text-bz-muted">
                     {row.author?.display_name ?? "Bazar"}
                     {row.published_at
-                      ? ` · ${formatDate(row.published_at)}`
+                      ? ` · ${formatPublishedDate(row.published_at, locale)}`
                       : ""}
                   </div>
                 </Link>

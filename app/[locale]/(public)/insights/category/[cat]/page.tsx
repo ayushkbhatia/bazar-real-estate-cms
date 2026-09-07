@@ -19,6 +19,8 @@ import {
 } from "@/lib/queries/article-categories";
 import { categoryToUrlSlug } from "@/lib/schemas/article";
 import { mediaPublicUrl } from "@/lib/media";
+import { formatPublishedDate } from "@/lib/i18n/dates";
+import { readTime } from "@/lib/i18n/read-time";
 
 export const revalidate = 300;
 
@@ -46,15 +48,6 @@ export async function generateMetadata({
       category.description ??
       `Bazar's ${category.label.toLowerCase()} pieces on Abu Dhabi real estate.`,
   };
-}
-
-function formatDate(iso: string | null): string {
-  if (!iso) return "";
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 }
 
 function ArticleHero({ row }: { row: ArticleListRow }) {
@@ -147,7 +140,9 @@ export default async function InsightsCategoryPage({
                   </div>
                   <div className="eyebrow mt-3.5">
                     {row.category_label}
-                    {row.read_minutes ? ` · ${row.read_minutes} min` : ""}
+                    {row.read_minutes
+                      ? ` · ${readTime(t, row.read_minutes, { short: true })}`
+                      : ""}
                   </div>
                   <h2
                     className="serif text-[22px] mt-2 leading-[1.2] group-hover:text-bz-accent transition-colors"
@@ -163,7 +158,7 @@ export default async function InsightsCategoryPage({
                   <div className="mt-3 text-[11.5px] text-bz-muted">
                     {row.author?.display_name ?? "Bazar"}
                     {row.published_at
-                      ? ` · ${formatDate(row.published_at)}`
+                      ? ` · ${formatPublishedDate(row.published_at, locale)}`
                       : ""}
                   </div>
                 </Link>
