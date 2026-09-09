@@ -239,6 +239,16 @@ export type SectionDef = {
    * named so the editor can say what is *not* editable here.
    */
   dataNote?: string;
+  /**
+   * The screen that content is edited on, when there is one.
+   *
+   * `dataNote` alone can only *describe* where to go — "edited in Pages →
+   * Sub-pages → Sections → Partner ecosystem" — and a path spelled out in prose
+   * is a path an editor has to retrace by hand. This turns it into a link. Left
+   * off for the sections whose data has no editor at all (published listings,
+   * generated anchors), where a link would be a promise with nothing behind it.
+   */
+  dataLink?: { label: string; href: string };
 };
 
 export type MasterPageKey =

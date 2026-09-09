@@ -35,9 +35,21 @@ export type LibrarySectionResult =
  * because any of them may hold the Testimonials block and the document does not
  * record which — checking would be a read per page to save a revalidation per
  * page, and revalidation is the cheaper of the two.
+ *
+ * Plus the routes the entry itself declares. That list is already maintained —
+ * the editor prints it as the blast radius — and it was the one place the two
+ * disagreed: /partners and /about read the partner ecosystem, /tools/compare
+ * reads the compare copy, and a save invalidated none of them. Admin links in
+ * `usedOn` (the page-builder pointer under Testimonials) are skipped: they are
+ * a place to go, not a page that renders the content.
  */
-async function revalidateReaders(): Promise<void> {
+async function revalidateReaders(usedOn: { href: string }[]): Promise<void> {
   revalidateLocalised("/");
+  for (const { href } of usedOn) {
+    if (!href.startsWith("/") || href.startsWith("/admin") || href === "/")
+      continue;
+    revalidateLocalised(href);
+  }
   const slugs = await listPublishedLandingSlugs(100);
   for (const slug of slugs) revalidateLocalised(`/lp/${slug}`);
 }
@@ -91,7 +103,7 @@ async function persist(
     after: { library_section: entry.key, sections: sections.length },
   });
 
-  await revalidateReaders();
+  await revalidateReaders(entry.usedOn);
   revalidatePath(`/admin/pages/sub/section/${entry.key}`);
   revalidatePath("/admin/pages/sub/section");
   return { status: "ok", message: "Saved." };

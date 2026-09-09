@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/env";
+import { mediaPublicUrl } from "@/lib/media";
 import {
   getLibrarySection,
   isLibrarySectionKey,
@@ -12,6 +15,7 @@ import {
   type SectionActions,
 } from "../../../master/[key]/_editor";
 import { saveLibrarySection, resetLibrarySection } from "../_actions";
+import type { MediaOption } from "../../../../_fields/types";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +29,32 @@ const ACTIONS: SectionActions = {
   reset: resetLibrarySection,
 };
 
+/**
+ * Images offered by the picker — the library's published image assets.
+ *
+ * This route passed an empty list until a library section owned an image
+ * field. The partner ecosystem's logo picker is that field, and an empty list
+ * would have rendered a picker with nothing in it and no way to tell why.
+ * Images only: no library section takes a PDF or a video.
+ */
+async function fetchMedia(): Promise<MediaOption[]> {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("media_assets")
+    .select("id, filename, storage_key, mime_type")
+    .is("deleted_at", null)
+    .like("mime_type", "image/%")
+    .order("created_at", { ascending: false })
+    .limit(300);
+  return (data ?? []).map((m) => ({
+    id: m.id,
+    filename: m.filename,
+    url: mediaPublicUrl(m.storage_key),
+    mime: m.mime_type,
+  }));
+}
+
 export default async function LibrarySectionEditorPage({ params }: PageProps) {
   const { key } = await params;
   if (!isLibrarySectionKey(key)) notFound();
@@ -34,7 +64,10 @@ export default async function LibrarySectionEditorPage({ params }: PageProps) {
   // "bilingual" keeps the `_ar` twins in `values`. Without it the fold strips
   // them, the Arabic inputs render blank over stored content, and the next
   // save writes that blank back.
-  const content = await getLibrarySectionContent(entry.key, "bilingual");
+  const [content, media] = await Promise.all([
+    getLibrarySectionContent(entry.key, "bilingual"),
+    fetchMedia(),
+  ]);
 
   return (
     <CmsShell
@@ -101,7 +134,7 @@ export default async function LibrarySectionEditorPage({ params }: PageProps) {
           pageLabel={entry.label}
           path={entry.usedOn[0]?.href ?? "/"}
           usingDefaults={content.usingDefaults}
-          media={[]}
+          media={media}
           seeds={{}}
           actions={ACTIONS}
           // One section, so there is nothing to reorder.

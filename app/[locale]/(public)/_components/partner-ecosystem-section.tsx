@@ -3,12 +3,14 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHead } from "./marketing/section-head";
 import { PartnerMarquee } from "./partner-marquee";
+import type { ResolvedPartner } from "@/lib/partners/directory-data";
 
 /**
  * "Our Partner Ecosystem" — the banking + regulatory logo marquee with its
  * section header and "All partners" CTA. Rendered by both /about and the home
- * page, each passing its own master-page copy: the logos are shared, the words
- * are the page's own.
+ * page, each passing its own master-page copy and the one shared partner list:
+ * the logos are shared — edited at /admin/pages/sub/section/partners — and the
+ * words are the page's own.
  *
  * The literals below are the designed English fallback (ADR-0007 §5), not a
  * second writable copy — they are what renders when a field is blank, and they
@@ -19,11 +21,14 @@ export function PartnerEcosystemSection({
   heading,
   body,
   ctaLabel,
+  partners,
 }: {
   eyebrow?: string | null;
   heading?: string | null;
   body?: string | null;
   ctaLabel?: string | null;
+  /** Omitted, the marquee falls back to the catalogue that ships in code. */
+  partners?: ResolvedPartner[];
 } = {}) {
   return (
     <section className="px-4 md:px-12 py-14 md:py-18 border-t border-bz-border bg-bz-surface-2">
@@ -44,7 +49,7 @@ export function PartnerEcosystemSection({
           </Link>
         </Button>
       </div>
-      <PartnerMarquee />
+      <PartnerMarquee partners={partners} />
     </section>
   );
 }
