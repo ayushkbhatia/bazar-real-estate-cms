@@ -197,11 +197,30 @@ export function PublicMegaNav({
             always had room for — and `object-contain` scales the art rather
             than cropping it. The text wordmark carries no <img> and is
             narrower than the cluster leaves free, so neither class reaches
-            it. */}
+            it.
+
+            `min-h-11` is the other half of that last sentence. The text
+            wordmark draws a 33px line box (39px in Arabic, whose ascenders
+            and descenders are taller), and this <Link> is hand-rolled — it
+            never goes through the Button primitive, so the
+            `@media (pointer: coarse)` floor in globals.css, which keys on
+            `[data-slot="button"]`, has never reached it. That is the same
+            attribution the mobile audit found for 60% of the sub-44px
+            targets, and it is why `e2e/mobile-geometry.spec.ts` reports
+            `116x33 "Bazar — home"` on every route it visits: site chrome, so
+            one element fails the whole suite.
+
+            It has to be a min-height on the element's own box, not a padded
+            `::after` halo — the gate measures `getBoundingClientRect()` on
+            the anchor itself, so a pseudo-element would still read as 33px.
+            Nothing moves: the header is a fixed `h-[72px]` flex row with
+            `items-center`, so a 44px box centres the same 33px of wordmark
+            in the same place. Reverted at `xl`, where the pointer is a mouse
+            and the desktop bar keeps the geometry it shipped with. */}
         <Link
           href="/"
           aria-label={t("home")}
-          className="flex items-center min-w-0 xl:shrink-0 [&_img]:shrink"
+          className="flex items-center min-h-11 xl:min-h-0 min-w-0 xl:shrink-0 [&_img]:shrink"
         >
           <Wordmark logo={logo} className="min-w-0" />
         </Link>
