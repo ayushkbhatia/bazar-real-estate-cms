@@ -13,6 +13,7 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { readFailed } from "@/lib/queries/read-failure";
 
 export type PropertyTypeSlug =
   "villa" | "apartment" | "townhouse" | "penthouse";
@@ -185,11 +186,15 @@ function aggregate(rows: DldRow[]): {
 async function lookupAreaName(slug: string): Promise<string | null> {
   if (!isSupabaseConfigured) return null;
   const supabase = createSupabasePublicClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("areas")
     .select("name")
     .eq("slug", slug)
     .maybeSingle();
+  // This read gates the whole report: `getSnapshot` returns null without it and
+  // the route 404s. It was discarding `error` entirely, so a blip published a
+  // cached "no such area". See lib/queries/read-failure.ts.
+  if (error) readFailed("lookupAreaName", error);
   return data?.name ?? null;
 }
 

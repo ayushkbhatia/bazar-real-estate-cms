@@ -7,6 +7,7 @@ import { localiseDeep } from "@/lib/i18n/localise";
 import { formatCategoryLabel } from "@/lib/schemas/article";
 import { getArticleCategoryLabels } from "@/lib/queries/article-categories";
 import type { Database } from "@/db/types";
+import { readFailed } from "@/lib/queries/read-failure";
 
 /**
  * A category slug. Categories are a runtime-editable taxonomy (migration 0055c),
@@ -147,10 +148,10 @@ export async function getStaffByPublicSlug(slug: string): Promise<{
     .eq("slug", slug)
     .eq("status", "active")
     .maybeSingle();
-  if (error || !data) {
-    if (error) console.error("[getStaffByPublicSlug]", error);
-    return null;
-  }
+  // `/insights/author/[slug]` falls back to a seed author, so a failure here
+  // only 404s an author who has no seed — still a lie, so still a throw.
+  if (error) readFailed("getStaffByPublicSlug", error);
+  if (!data) return null;
   return {
     id: data.user_id,
     display_name: data.display_name,
@@ -201,10 +202,10 @@ export async function getPublishedArticleBySlug(
     .eq("status", "published")
     .is("deleted_at", null)
     .maybeSingle();
-  if (error) {
-    console.error("[getPublishedArticleBySlug]", error);
-    return null;
-  }
+  // Throw, never `return null`: the caller turns null into `notFound()`, and
+  // an ISR-cached 404 is the wrong answer to "the database did not reply".
+  // See lib/queries/read-failure.ts.
+  if (error) readFailed("getPublishedArticleBySlug", error);
   if (!data) return null;
   const [row] = await attachLabels(
     [
