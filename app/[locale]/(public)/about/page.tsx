@@ -10,18 +10,18 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
 import { HqMapCanvas } from "../contact/_components/hq-map-canvas";
+import {
+  HQ_DIRECTIONS_URL,
+  HQ_LAT,
+  HQ_LNG,
+} from "../contact/_components/hq-location";
+import { DeveloperMarquee } from "../_components/developer-marquee";
 import { PartnerEcosystemSection } from "../_components/partner-ecosystem-section";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { getPartners } from "@/lib/queries/content-sections";
 import { img, list, str, type ImageValue } from "@/lib/master-pages";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
-
-// Bazar HQ — Al Bateen, Abu Dhabi. Same coordinate as the /contact HQ map so
-// the two location surfaces stay 1:1.
-const HQ_LAT = 24.4619;
-const HQ_LNG = 54.3487;
-const HQ_DIRECTIONS = `https://www.google.com/maps/dir/?api=1&destination=${HQ_LAT},${HQ_LNG}`;
 
 export async function generateMetadata({
   params,
@@ -65,18 +65,6 @@ const EXPERTISE = [
   "Luxury Properties",
   "Commercial Real Estate",
   "Mortgage & Banking Guidance",
-];
-
-const PARTNERS = [
-  "Aldar Properties",
-  "Modon Properties",
-  "Bloom Holding",
-  "IMKAN Properties",
-  "Reportage Properties",
-  "Eagle Hills",
-  "Radiant Real Estate",
-  "Ohana Development",
-  "Taraf",
 ];
 
 const HIGHLIGHTS = [
@@ -274,12 +262,6 @@ export default async function AboutPage({
     trackItems.length > 0
       ? trackItems.map((i) => s(i, "label") ?? "")
       : HIGHLIGHTS;
-
-  const partnerItems = list<Item>(partnersV, "items");
-  const partners =
-    partnerItems.length > 0
-      ? partnerItems.map((p) => ({ label: s(p, "label") ?? "", href: s(p, "href") }))
-      : PARTNERS.map((label) => ({ label, href: null }));
 
   const nodes: Record<string, React.ReactNode> = {
     /* Hero — text left, office image right, at the same level */
@@ -590,30 +572,12 @@ export default async function AboutPage({
               </Button>
             ) : null}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-bz-border border border-bz-border rounded-xl overflow-hidden">
-            {partners.map((p) => {
-              const className =
-                "bg-bz-surface px-7 py-9 flex items-center justify-center serif text-[26px] min-h-[110px]";
-              return p.href ? (
-                <Link
-                  key={p.label}
-                  href={p.href}
-                  className={className}
-                  style={{ letterSpacing: "-0.01em" }}
-                >
-                  {p.label}
-                </Link>
-              ) : (
-                <div
-                  key={p.label}
-                  className={className}
-                  style={{ letterSpacing: "-0.01em" }}
-                >
-                  {p.label}
-                </div>
-              );
-            })}
-          </div>
+          {/* The same logo marquee the home page runs, not a second hand-typed
+              list of names. The grid this replaced held nine developers typed
+              into the CMS while the catalogue behind /developers carries the
+              full set with their logos — so the page under-sold the roster and
+              drifted from it on every catalogue change. */}
+          <DeveloperMarquee />
         </div>
       </section>
     ),
@@ -663,16 +627,24 @@ export default async function AboutPage({
               />
             </div>
             <div className="mt-6 flex flex-wrap gap-3">
+              {/* The two icons are swapped relative to how they first
+                  shipped: the pin marks the place you are being sent TO, and
+                  the arrow is the send/go mark, so "Get directions" wears
+                  MapPin and "Contact us" wears Navigation. */}
               <Button asChild>
-                <a href={HQ_DIRECTIONS} target="_blank" rel="noopener noreferrer">
-                  <Navigation size={15} strokeWidth={1.8} />
+                <a
+                  href={HQ_DIRECTIONS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MapPin size={15} strokeWidth={1.8} />
                   {str(locationV, "directions_label") ?? "Get directions"}
                 </a>
               </Button>
               {str(locationV, "cta_label") ? (
                 <Button asChild variant="outline">
                   <Link href={str(locationV, "cta_href") ?? "/contact"}>
-                    <MapPin size={15} strokeWidth={1.8} />
+                    <Navigation size={15} strokeWidth={1.8} />
                     {str(locationV, "cta_label")}
                   </Link>
                 </Button>

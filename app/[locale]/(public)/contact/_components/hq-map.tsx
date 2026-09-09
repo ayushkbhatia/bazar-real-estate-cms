@@ -1,6 +1,7 @@
 import { Navigation } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { HqMapCanvas } from "./hq-map-canvas";
+import { HQ_DIRECTIONS_URL, HQ_LAT, HQ_LNG } from "./hq-location";
 
 /**
  * Sprint 5e: full-width HQ map under the contact hero.
@@ -14,15 +15,6 @@ import { HqMapCanvas } from "./hq-map-canvas";
  * literals until then, which is why this was the last band on `/ar/contact`
  * still reading English: a literal has no Arabic twin to fold.
  */
-
-// Verified office location — Bazar Real Estate, Al Bateen, Abu Dhabi.
-const HQ_LAT = 24.468113844266917;
-const HQ_LNG = 54.339882834551275;
-
-// "Get directions" → Google Maps directions to the office. The api=1 URL
-// scheme opens the native Maps app on mobile (in directions mode) and the web
-// app on desktop, so it works wherever it's opened or shared.
-const DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${HQ_LAT},${HQ_LNG}`;
 
 export function HqMap({
   eyebrow = "HQ",
@@ -51,7 +43,7 @@ export function HqMap({
             </h2>
           </div>
           <a
-            href={DIRECTIONS_URL}
+            href={HQ_DIRECTIONS_URL}
             target="_blank"
             rel="noopener noreferrer"
             data-testid="hq-get-directions"
