@@ -2,20 +2,32 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { ECOSYSTEM_PARTNERS } from "./partners-data";
+import {
+  shippedPartners,
+  type ResolvedPartner,
+} from "@/lib/partners/directory-data";
 
 /**
  * "Our Partner Ecosystem" — a continuous, seamless logo marquee of Bazar's
- * banking and regulatory partners. The track is rendered twice and translated
- * -50%, so the loop is seamless; it pauses on hover and honours
+ * banking and regulatory partners, edited at
+ * /admin/pages/sub/section/partners and passed in by whichever page places the
+ * strip. The shipped catalogue is the fallback, so a render that was given
+ * nothing looks exactly as it always did.
+ *
+ * The track is rendered twice and translated -50%, so the loop is seamless; it pauses on hover and honours
  * prefers-reduced-motion. Logos are height-normalised on white tiles so the
  * set reads evenly on both mobile and desktop.
  */
-export function PartnerMarquee() {
+export function PartnerMarquee({
+  partners,
+}: {
+  partners?: ResolvedPartner[];
+} = {}) {
   const t = useTranslations("common");
+  const set = partners?.length ? partners : shippedPartners();
   // Two copies of the set → the second copy scrolls into the gap the first
   // leaves, giving a seamless -50% loop.
-  const loop = [...ECOSYSTEM_PARTNERS, ...ECOSYSTEM_PARTNERS];
+  const loop = [...set, ...set];
 
   return (
     <div className="bz-marquee" aria-label={t("marquee.partners")}>
@@ -24,17 +36,25 @@ export function PartnerMarquee() {
           <div
             key={`${p.slug}-${i}`}
             className="bz-marquee__tile"
-            aria-hidden={i >= ECOSYSTEM_PARTNERS.length}
+            aria-hidden={i >= set.length}
           >
-            <Image
-              src={p.logo}
-              alt={p.name}
-              width={p.w}
-              height={p.h}
-              className="h-9 w-auto object-contain md:h-11"
-              style={{ width: "auto" }}
-              sizes="220px"
-            />
+            {p.logo ? (
+              <Image
+                src={p.logo.src}
+                alt={p.name}
+                width={p.logo.w}
+                height={p.logo.h}
+                className="h-9 w-auto object-contain md:h-11"
+                style={{ width: "auto" }}
+                sizes="220px"
+              />
+            ) : (
+              /* A partner an editor added without a logo still belongs in the
+                 strip — set in type rather than left as an empty tile. */
+              <span className="serif text-center text-[15px] leading-tight text-bz-ink md:text-[17px]">
+                {p.name}
+              </span>
+            )}
           </div>
         ))}
       </div>

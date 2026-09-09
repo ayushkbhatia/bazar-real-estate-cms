@@ -35,7 +35,16 @@
  */
 
 import { SEED_TESTIMONIALS, type Testimonial } from "@/lib/seeds/awards";
-import { area, text as textField } from "./fields";
+import {
+  ECOSYSTEM_PARTNERS,
+  isPartnerCategory,
+  shippedPartners,
+  type ResolvedPartner,
+} from "@/lib/partners/directory-data";
+import { resolvePartnerLogo } from "@/lib/partners/shipped-logo";
+import { slugify } from "@/lib/slug";
+import { area, image as imageField, text as textField, toggle } from "./fields";
+import { emptyImage } from "./types";
 import type {
   FieldDef,
   ItemValue,
@@ -47,7 +56,11 @@ import type {
 } from "./types";
 
 /** Keys are storage. Renaming one orphans its document — add, never rename. */
-export type LibrarySectionKey = "testimonials" | "shortlist" | "compare";
+export type LibrarySectionKey =
+  | "testimonials"
+  | "shortlist"
+  | "compare"
+  | "partners";
 
 export type LibrarySectionDef = {
   key: LibrarySectionKey;
@@ -194,6 +207,129 @@ const TESTIMONIALS: LibrarySectionDef = {
   section: TESTIMONIALS_SECTION,
 };
 
+
+/**
+ * The partner ecosystem — the banking and regulatory logos.
+ *
+ * ## Why the cards are here rather than on the Partners master page
+ *
+ * The same seven institutions render in three places: the two grouped grids on
+ * /partners, the logo strip on /about, and the same strip on the home page. The
+ * copy AROUND them belongs to each page and is edited there; the institutions
+ * themselves belong to the site. Filing them under `partners` would make one
+ * marketing page the owner of a list two other pages read, which is the exact
+ * failure this registry's docblock opens with.
+ *
+ * ## What this replaced
+ *
+ * `ECOSYSTEM_PARTNERS` in code, and nothing else. Before this, adding a bank
+ * meant a pull request, and `/ar/partners` printed every institution name and
+ * every relationship line in English under `lang="ar"` — the cards had no
+ * Arabic because they had no registry, and a registry is where Arabic twins
+ * come from. Both names and tags now get their twins derived like every other
+ * text field here.
+ *
+ * ## Logos
+ *
+ * A card draws, in order: the asset an editor picked, then the PNG that ships
+ * in `/public/partners` matched on `slug` or name, then nothing — in which case
+ * the card falls back to setting the institution's name in type. So the seven
+ * launch partners need no upload to keep the art they have, and a new partner
+ * an editor adds gets a picker. See `lib/partners/shipped-logo.ts`.
+ */
+export const PARTNERS_MAX = 24;
+
+function partnerList(): ListFieldDef {
+  return {
+    key: "items",
+    label: "Partners",
+    kind: "list",
+    itemLabel: "partner",
+    max: PARTNERS_MAX,
+    help: "Every partner switched on appears in the logo strip on the home page and /about, and in its group on /partners — in the order they sit here. Switching one off keeps the card for later without showing it anywhere.",
+    fields: [
+      toggle("enabled", "Show this partner"),
+      textField("name", "Institution", {
+        max: 80,
+        help: "The full name, as it should read on the card and in the logo's alt text.",
+      }),
+      textField("tag", "Relationship", {
+        max: 120,
+        optional: true,
+        help: "The line under the name on /partners — “Mortgage & home-finance partner”. The logo strip doesn't show it.",
+      }),
+      {
+        key: "category",
+        label: "Group",
+        kind: "select",
+        options: [
+          { value: "banking", label: "Banking & finance" },
+          { value: "regulatory", label: "Regulatory & government" },
+        ],
+        placeholder: "No group",
+        help: "Which heading on /partners this card sits under. Left blank, it still rides the logo strip but appears under neither heading.",
+      },
+      imageField(
+        "logo",
+        "Logo",
+        "Overrides the logo that ships with the site. A trimmed PNG on a transparent background reads best — the card puts it on white.",
+      ),
+      textField("slug", "Shipped logo key", {
+        max: 40,
+        optional: true,
+        i18n: false,
+        help: "How a card finds the logo Bazar already ships — leave it alone unless you know it. Ignored once you pick a logo above.",
+      }),
+    ],
+  };
+}
+
+/**
+ * Defaults are the seven partners the site has rendered since it shipped, read
+ * straight from the catalogue the components used to import — one copy, so an
+ * un-edited document renders byte-identically to before this existed.
+ *
+ * `logo` ships blank on purpose: blank means "the art in /public/partners",
+ * which is what these seven have. Picking an asset overrides it.
+ */
+const PARTNER_DEFAULTS = ECOSYSTEM_PARTNERS.map((p) => ({
+  enabled: true,
+  name: p.name,
+  tag: p.tag,
+  category: p.category,
+  logo: emptyImage(),
+  slug: p.slug,
+}));
+
+export const PARTNERS_SECTION: SectionDef = {
+  key: "partners",
+  label: "Partner ecosystem",
+  description:
+    "The banking and regulatory institutions shown on /partners and in the logo strip on the home page and /about.",
+  // Nothing to hide it from: the section *is* the document. Whether the logos
+  // render is decided by each page that places them.
+  locked: true,
+  dataNote:
+    "The headings and intros around these logos belong to the pages that place them — /partners in Pages → Master pages → Partners, and the strip's heading on Home and About.",
+  fields: [partnerList()],
+  defaults: { items: PARTNER_DEFAULTS },
+};
+
+const PARTNERS: LibrarySectionDef = {
+  key: "partners",
+  label: "Partner ecosystem",
+  description:
+    "Banking and regulatory partners — their names, relationships and logos, edited once for every surface that shows them.",
+  itemLabel: "partner",
+  shape: "list",
+  resetLabel: "Reset to the shipped partners",
+  usedOn: [
+    { label: "Partners", href: "/partners" },
+    { label: "About", href: "/about" },
+    { label: "Home", href: "/" },
+  ],
+  section: PARTNERS_SECTION,
+};
 
 /**
  * The shortlist card — the drawer that opens from the floating pill.
@@ -367,6 +503,7 @@ const COMPARE: LibrarySectionDef = {
 
 export const LIBRARY_SECTIONS: LibrarySectionDef[] = [
   TESTIMONIALS,
+  PARTNERS,
   SHORTLIST,
   COMPARE,
 ];
@@ -432,6 +569,44 @@ export function testimonialsFrom(
 
   const out: Testimonial[] = items.length > 0 ? items : SEED_TESTIMONIALS;
   return typeof limit === "number" ? out.slice(0, limit) : out;
+}
+
+/**
+ * Section values → the partner cards the public surfaces take.
+ *
+ * Nameless cards drop out: the name is the alt text and the label, so a row
+ * with neither is an editor's half-finished thought rather than a partner.
+ *
+ * An empty result falls back to the shipped catalogue, matching every other
+ * list field here — "never touched" and "deliberately emptied" are
+ * indistinguishable in storage, and an empty logo strip is a hole in three
+ * pages. The way to show no partners is to switch the SECTION off on the page
+ * that places it, which every one of the three supports.
+ */
+export function partnersFrom(values: SectionValues): ResolvedPartner[] {
+  const raw = Array.isArray(values.items) ? (values.items as Item[]) : [];
+  const items = raw
+    .filter((item) => item && typeof item === "object" && item.enabled !== false)
+    .map((item) => {
+      const name = text(item, "name");
+      const slug = text(item, "slug") || slugify(name);
+      const logoValue = item.logo;
+      const uploadedUrl =
+        logoValue && typeof logoValue === "object" && !Array.isArray(logoValue)
+          ? ((logoValue as { url?: string | null }).url ?? null)
+          : null;
+      const category = text(item, "category");
+      return {
+        slug,
+        name,
+        tag: text(item, "tag") || null,
+        category: isPartnerCategory(category) ? category : null,
+        logo: resolvePartnerLogo({ uploadedUrl, slug, name }),
+      };
+    })
+    .filter((p) => p.name !== "");
+
+  return items.length > 0 ? items : shippedPartners();
 }
 
 /** Exported for the guards that enumerate every registry's field lists. */

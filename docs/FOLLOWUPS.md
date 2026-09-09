@@ -31,6 +31,19 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [i18n] The seven partner institutions' Arabic names are machine-authored and
+  have never been confirmed by the client.
+  Added to `lib/master-pages/arabic/master.json` with the partner-ecosystem
+  section (Pages → Sections → Partner ecosystem), so `/ar/partners` and the
+  Arabic logo strip stopped printing them in English. Six are the institutions'
+  own Arabic (بنك أبوظبي الأول, مصرف أبوظبي الإسلامي, دائرة الأراضي والأملاك …)
+  and ADGM's already matched `PROPER_NOUNS`, but nobody at Bazar has signed them
+  off, and an editor who retypes an English name loses the pairing silently —
+  the store is keyed by the English. Done looks like: the client confirms the
+  seven, they move to `by: "reviewed"`, and the institutions join
+  `lib/i18n/mt/proper-nouns.ts` (`kind: "brand"`) so future MT runs mask rather
+  than re-translate them.
+
 - [infra] Supabase Storage serves every public object with
   `cache-control: no-cache`, so nothing in the media bucket is cached by the
   browser.

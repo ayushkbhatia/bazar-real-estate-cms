@@ -72,7 +72,11 @@ describe.each(MARQUEES)("$file", ({ file, track, ltr, rtl }) => {
   });
 
   it("keeps the doubled track that makes either direction seamless", () => {
-    // A single copy wraps with a visible jump whichever way it moves.
-    expect(css).toMatch(/\[\.\.\.[A-Z_]+, ?\.\.\.[A-Z_]+\]/);
+    // A single copy wraps with a visible jump whichever way it moves. The
+    // back-reference is the assertion: both halves must spread the SAME set,
+    // whatever it is called. It used to require a SCREAMING_CASE name, which
+    // held only while both marquees read a module constant — the partner strip
+    // now takes its logos from the CMS as a prop.
+    expect(css).toMatch(/\[\.\.\.(\w+), ?\.\.\.\1\]/);
   });
 });

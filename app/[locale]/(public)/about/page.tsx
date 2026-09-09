@@ -12,6 +12,7 @@ import { SectionHead } from "../_components/marketing/section-head";
 import { HqMapCanvas } from "../contact/_components/hq-map-canvas";
 import { PartnerEcosystemSection } from "../_components/partner-ecosystem-section";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { getPartners } from "@/lib/queries/content-sections";
 import { img, list, str, type ImageValue } from "@/lib/master-pages";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
@@ -199,7 +200,13 @@ export default async function AboutPage({
   // the failure `lib/i18n/current.ts` describes: it looks finished.
   setRequestLocale(asLocale((await params).locale));
 
-  const content = await getMasterPageContent("about");
+  // The partner logos are site-owned content, not this page's —
+  // /admin/pages/sub/section/partners. Read alongside the page document so the
+  // strip and the copy around it arrive in one round of reads.
+  const [content, ecosystemPartners] = await Promise.all([
+    getMasterPageContent("about"),
+    getPartners(),
+  ]);
 
   // Section copy, images and order come from /admin/pages/master/about.
   // Anything untouched falls back to the literals above.
@@ -619,6 +626,7 @@ export default async function AboutPage({
         heading={str(v("partner_ecosystem"), "heading")}
         body={str(v("partner_ecosystem"), "body")}
         ctaLabel={str(v("partner_ecosystem"), "cta_label")}
+        partners={ecosystemPartners}
       />
     ),
 

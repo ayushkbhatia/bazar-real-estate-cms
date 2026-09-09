@@ -18478,5 +18478,65 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-09-04T10:33:53.166133Z"
+  },
+  "First Abu Dhabi Bank": {
+    "ar": "بنك أبوظبي الأول",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Abu Dhabi Commercial Bank": {
+    "ar": "بنك أبوظبي التجاري",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Abu Dhabi Islamic Bank": {
+    "ar": "مصرف أبوظبي الإسلامي",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Dubai Islamic Bank": {
+    "ar": "بنك دبي الإسلامي",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Dubai Land Department": {
+    "ar": "دائرة الأراضي والأملاك",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Abu Dhabi Real Estate Centre": {
+    "ar": "مركز أبوظبي العقاري",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Abu Dhabi Global Market": {
+    "ar": "سوق أبوظبي العالمي",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Mortgage & home-finance partner": {
+    "ar": "شريك التمويل العقاري والسكني",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Islamic home-finance partner": {
+    "ar": "شريك التمويل السكني الإسلامي",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Property registration authority": {
+    "ar": "الجهة المسؤولة عن تسجيل العقارات",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Abu Dhabi real-estate regulator": {
+    "ar": "الجهة المنظمة للقطاع العقاري في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "International financial centre & regulator": {
+    "ar": "مركز مالي عالمي وجهة تنظيمية",
+    "by": "machine",
+    "model": "claude-opus-5"
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   DndContext,
@@ -357,9 +358,20 @@ function SectionRow({
 
       {expanded ? (
         <div className="border-t border-bz-border px-3 py-3 flex flex-col gap-3">
-          {section.def.dataNote ? (
+          {section.def.dataNote || section.def.dataLink ? (
             <p className="text-[11.5px] text-bz-muted bg-bz-surface-2 rounded px-2.5 py-2">
               {section.def.dataNote}
+              {section.def.dataLink ? (
+                <>
+                  {section.def.dataNote ? " " : null}
+                  <Link
+                    href={section.def.dataLink.href}
+                    className="text-bz-ink underline underline-offset-2 hover:text-bz-accent"
+                  >
+                    {section.def.dataLink.label}
+                  </Link>
+                </>
+              ) : null}
             </p>
           ) : null}
           {section.def.fields.length === 0 ? (

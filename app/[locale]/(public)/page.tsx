@@ -30,7 +30,7 @@ import {
   HOME_TESTIMONIAL_COUNT,
 } from "./_components/home/home-testimonials";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
-import { getTestimonials } from "@/lib/queries/content-sections";
+import { getPartners, getTestimonials } from "@/lib/queries/content-sections";
 import { getForm } from "@/lib/queries/forms";
 import { listPropertiesByReference } from "@/lib/queries/featured-properties";
 import { HOME_FEATURED_LISTING_COUNT } from "./_components/home/section-copy";
@@ -82,26 +82,35 @@ export default async function HomePage({
   // the locale, so the render loop below just asks per row.
   const cardLabels = await getCardLabelResolver();
 
-  const [{ rows: latest }, settings, content, listForm, testimonials] =
-    await Promise.all([
-      listPublishedProperties({
-        mode: "buy",
-        limit: HOME_FEATURED_LISTING_COUNT,
-      }),
-      getPublicSiteSettings(),
-      getMasterPageContent("home"),
-      getForm("home_list_property"),
-      // The reviews themselves live in the section library, not on this page —
-      // /admin/pages/sub/section/testimonials. Fetched here rather than inside
-      // the component so the section stays a pure render and the page keeps one
-      // round of parallel reads.
-      //
-      // The whole list, not a slice: how many to SHOW is a master-page field
-      // (`testimonials.limit`), and `content` is being fetched in this same
-      // Promise.all, so its value is not readable yet. Reading the ceiling and
-      // slicing at render costs nothing — the reviews are one jsonb document.
-      getTestimonials(HOME_TESTIMONIAL_COUNT),
-    ]);
+  const [
+    { rows: latest },
+    settings,
+    content,
+    listForm,
+    testimonials,
+    partners,
+  ] = await Promise.all([
+    listPublishedProperties({
+      mode: "buy",
+      limit: HOME_FEATURED_LISTING_COUNT,
+    }),
+    getPublicSiteSettings(),
+    getMasterPageContent("home"),
+    getForm("home_list_property"),
+    // The reviews themselves live in the section library, not on this page —
+    // /admin/pages/sub/section/testimonials. Fetched here rather than inside
+    // the component so the section stays a pure render and the page keeps one
+    // round of parallel reads.
+    //
+    // The whole list, not a slice: how many to SHOW is a master-page field
+    // (`testimonials.limit`), and `content` is being fetched in this same
+    // Promise.all, so its value is not readable yet. Reading the ceiling and
+    // slicing at render costs nothing — the reviews are one jsonb document.
+    getTestimonials(HOME_TESTIMONIAL_COUNT),
+    // The logo strip's institutions, from the same library — one document
+    // read by this page, /about and /partners, so an edit lands on all three.
+    getPartners(),
+  ]);
 
   // Hero variant is driven entirely by site_settings now — the page used to
   // also accept a `?hero=` querystring override, but reading `searchParams`
@@ -344,6 +353,7 @@ export default async function HomePage({
         heading={str(partnersV, "heading")}
         body={str(partnersV, "body")}
         ctaLabel={str(partnersV, "cta_label")}
+        partners={partners}
       />
     ),
 

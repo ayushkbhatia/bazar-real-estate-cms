@@ -17,20 +17,25 @@
  *
  * WHAT IS AND IS NOT EDITABLE
  *
- * The page's own copy is editable. The partner CARDS are not: each
- * institution's name, one-line tag and logo come from `ECOSYSTEM_PARTNERS` in
- * `_components/partners-data.ts`, for the same two reasons the developer
- * directory gives — a list field takes over the whole set as soon as one item
- * is added, so a single hand-typed card would blank the others, and there is
- * no logo-upload path for a card typed in the editor. `dataNote` says so on
- * the section itself rather than leaving an editor to discover it.
+ * The page's own copy is editable here. The partner CARDS are editable too,
+ * but not here: they are site-owned content — the same institutions render in
+ * the logo strip on the home page and on /about — so they live in the section
+ * library and are edited once at /admin/pages/sub/section/partners. Filing
+ * them under this page would make one marketing route the owner of a list two
+ * other routes read. `dataNote` points at the right screen rather than leaving
+ * an editor to find it.
+ *
+ * (They were not editable at all until Sprint 15: every name, tag and logo was
+ * a literal in `ECOSYSTEM_PARTNERS`, which also meant `/ar/partners` printed
+ * all seven institutions in English — a card with no registry has no Arabic
+ * twin. See `lib/master-pages/library.ts`.)
  *
  * The two group sections are bound to a `category` in code (`banking`,
  * `regulatory`), which is what selects the cards under each heading. The
- * section supplies the words; the category stays where the filter is. Both are
- * `locked` for the same reason `/developers`'s hero is: the page renders them
- * in fixed JSX order, so offering a hide switch the page ignores would be a
- * lie in the admin UI.
+ * section supplies the words; the category stays where the filter is. They are
+ * NOT locked: the page renders its sections in document order now, so hiding a
+ * group or swapping the two does what the switch says it does. A group whose
+ * category has no cards drops out on its own.
  *
  * Every `defaults` value below is the literal the page rendered before this
  * change, verbatim, so an un-edited page renders byte-identically to before.
@@ -43,7 +48,7 @@ export const PARTNERS_PAGE: MasterPageDef = {
   label: "Partners",
   path: "/partners",
   description:
-    "The banking and regulatory partner index. Card content comes from the partner list in code.",
+    "The banking and regulatory partner index. The cards themselves are the shared partner list, edited under Sections.",
   sections: [
     {
       key: "hero",
@@ -92,9 +97,12 @@ export const PARTNERS_PAGE: MasterPageDef = {
       key: "banking",
       label: "Banking group",
       description: "Heading and intro above the finance partners.",
-      locked: true,
       dataNote:
-        "The cards under this heading — every bank's name, one-line tag and logo — come from the partner list maintained in code. This section is the words around them.",
+        "The cards under this heading — every bank's name, one-line tag and logo — are edited once for the whole site, because the same institutions ride the logo strip on the home page and /about. This section is the words around them.",
+      dataLink: {
+        label: "Edit the partner list",
+        href: "/admin/pages/sub/section/partners",
+      },
       fields: [eyebrow(), heading(), body()],
       defaults: {
         eyebrow: "Finance",
@@ -106,9 +114,12 @@ export const PARTNERS_PAGE: MasterPageDef = {
       key: "regulatory",
       label: "Regulatory group",
       description: "Heading and intro above the regulatory partners.",
-      locked: true,
       dataNote:
-        "The cards under this heading come from the same code-maintained partner list, filtered to the regulatory authorities.",
+        "The cards under this heading come from the same shared partner list, filtered to the ones marked Regulatory & government.",
+      dataLink: {
+        label: "Edit the partner list",
+        href: "/admin/pages/sub/section/partners",
+      },
       fields: [eyebrow(), heading(), body()],
       defaults: {
         eyebrow: "Regulation",

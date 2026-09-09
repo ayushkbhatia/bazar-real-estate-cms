@@ -27,9 +27,11 @@ import {
 import {
   getLibrarySection,
   librarySectionPageDef,
+  partnersFrom,
   testimonialsFrom,
   type LibrarySectionKey,
 } from "@/lib/master-pages/library";
+import type { ResolvedPartner } from "@/lib/partners/directory-data";
 import { subPageSlug } from "@/lib/master-pages/subpages";
 import type { Testimonial } from "@/lib/seeds/awards";
 
@@ -97,6 +99,24 @@ export const getTestimonials = cache(
   },
 );
 
+
+/**
+ * The partner ecosystem, in the request's language.
+ *
+ * Read by three surfaces — /partners, /about and the home page — and by both
+ * halves of /partners in one render, so `cache()` is doing real work here
+ * rather than decorating: without it the two grids would be two round-trips for
+ * one document.
+ *
+ * Logos come back already resolved to art, so no caller re-implements the
+ * uploaded-then-shipped precedence.
+ */
+export const getPartners = cache(
+  async (locale?: Locale): Promise<ResolvedPartner[]> => {
+    const content = await getLibrarySectionContent("partners", locale);
+    return partnersFrom(content.section.values);
+  },
+);
 
 /* ── flat copy sections ───────────────────────────────────────────────── */
 

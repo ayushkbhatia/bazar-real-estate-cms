@@ -7,15 +7,16 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { getPartners } from "@/lib/queries/content-sections";
 import { str } from "@/lib/master-pages";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
+import type {
+  PartnerCategory,
+  ResolvedPartner,
+} from "@/lib/partners/directory-data";
 import { fluid } from "../_components/marketing/fluid";
 import { SectionHead } from "../_components/marketing/section-head";
-import {
-  ECOSYSTEM_PARTNERS,
-  type PartnerCategory,
-} from "../_components/partners-data";
 
 export async function generateMetadata({
   params,
@@ -58,14 +59,50 @@ function heroTitle(
 }
 
 /**
- * `PARTNER_GROUPS` used to carry both the category and its copy. The copy now
- * comes from the master page, so all that is left in code is which category
- * each section shows — which is the filter key, and belongs with the data.
+ * Which category each group section shows.
+ *
+ * The words above the cards are the section's and come from the CMS; the
+ * category is the filter key and stays in code beside the data it filters. An
+ * editor can hide either group or swap their order — that is the section
+ * document's business — but not point one at a set that does not exist.
  */
-const GROUPS: { section: string; category: PartnerCategory }[] = [
-  { section: "banking", category: "banking" },
-  { section: "regulatory", category: "regulatory" },
-];
+const GROUP_CATEGORY: Record<string, PartnerCategory> = {
+  banking: "banking",
+  regulatory: "regulatory",
+};
+
+function PartnerCard({ partner }: { partner: ResolvedPartner }) {
+  return (
+    <article className="rounded-xl border border-bz-border bg-bz-surface overflow-hidden flex flex-col">
+      <div className="h-[150px] flex items-center justify-center bg-white px-8 border-b border-bz-border">
+        {partner.logo ? (
+          <Image
+            src={partner.logo.src}
+            alt={partner.name}
+            width={partner.logo.w}
+            height={partner.logo.h}
+            className="max-h-[64px] w-auto object-contain"
+            style={{ width: "auto" }}
+            sizes="360px"
+          />
+        ) : (
+          /* A partner added in the CMS with no logo picked and no shipped art
+             to match. The tile keeps its shape and sets the name in type
+             rather than leaving a white hole in the grid. */
+          <span className="serif text-center text-[22px] leading-tight text-bz-ink">
+            {partner.name}
+          </span>
+        )}
+      </div>
+      <div className="p-6">
+        <div className="serif text-[19px] leading-tight">{partner.name}</div>
+        {partner.tag ? (
+          <p className="text-[13.5px] text-bz-muted mt-2">{partner.tag}</p>
+        ) : null}
+      </div>
+    </article>
+  );
+}
 
 export default async function PartnersPage({
   params,
@@ -78,18 +115,33 @@ export default async function PartnersPage({
   // the failure `lib/i18n/current.ts` describes: it looks finished.
   setRequestLocale(asLocale((await params).locale));
 
-  // Section copy comes from /admin/pages/master/partners. Anything untouched
-  // falls back to the literals this page shipped with. The cards themselves
-  // are the code-owned partner list — see the section's `dataNote`.
-  const content = await getMasterPageContent("partners");
+  // Two documents, one round: the page's own copy comes from
+  // /admin/pages/master/partners, and the institutions themselves from
+  // /admin/pages/sub/section/partners — the same list the home page and
+  // /about draw their logo strip from.
+  const [content, partners] = await Promise.all([
+    getMasterPageContent("partners"),
+    getPartners(),
+  ]);
   const v = (key: string) => content.section(key)?.values ?? {};
   const heroV = v("hero");
   const ctaV = v("cta");
 
-  return (
-    <div className="bg-bz-bg">
-      {/* Hero */}
-      <section className="px-4 md:px-12 pt-12 md:pt-16 pb-10 md:pb-12">
+  // Which group bands actually render, in document order — so the stripe
+  // alternates over what an editor left switched on rather than over the two
+  // this page used to hardcode.
+  const groupKeys = content.order.filter(
+    (key) =>
+      key in GROUP_CATEGORY &&
+      partners.some((p) => p.category === GROUP_CATEGORY[key]),
+  );
+
+  const nodes: Record<string, React.ReactNode> = {
+    hero: (
+      <section
+        key="hero"
+        className="px-4 md:px-12 pt-12 md:pt-16 pb-10 md:pb-12"
+      >
         {str(heroV, "eyebrow") ? (
           <Eyebrow>{str(heroV, "eyebrow")}</Eyebrow>
         ) : null}
@@ -113,59 +165,13 @@ export default async function PartnersPage({
           </p>
         ) : null}
       </section>
+    ),
 
-      {/* Partner groups */}
-      {GROUPS.map((group, gi) => {
-        const groupV = v(group.section);
-        const partners = ECOSYSTEM_PARTNERS.filter(
-          (p) => p.category === group.category,
-        );
-        return (
-          <section
-            key={group.category}
-            className={`px-4 md:px-12 py-14 md:py-18 border-t border-bz-border${
-              gi % 2 === 1 ? " bg-bz-surface-2" : ""
-            }`}
-          >
-            <SectionHead
-              eyebrow={str(groupV, "eyebrow") ?? undefined}
-              title={str(groupV, "heading")}
-              sub={str(groupV, "body")}
-              size={40}
-              className="mb-9"
-            />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {partners.map((p) => (
-                <article
-                  key={p.slug}
-                  className="rounded-xl border border-bz-border bg-bz-surface overflow-hidden flex flex-col"
-                >
-                  <div className="h-[150px] flex items-center justify-center bg-white px-8 border-b border-bz-border">
-                    <Image
-                      src={p.logo}
-                      alt={p.name}
-                      width={p.w}
-                      height={p.h}
-                      className="max-h-[64px] w-auto object-contain"
-                      style={{ width: "auto" }}
-                      sizes="360px"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <div className="serif text-[19px] leading-tight">
-                      {p.name}
-                    </div>
-                    <p className="text-[13.5px] text-bz-muted mt-2">{p.tag}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        );
-      })}
-
-      {/* CTA */}
-      <section className="px-4 md:px-12 py-16 md:py-20 border-t border-bz-border">
+    cta: (
+      <section
+        key="cta"
+        className="px-4 md:px-12 py-16 md:py-20 border-t border-bz-border"
+      >
         <div className="rounded-2xl bg-bz-ink text-white px-8 md:px-14 py-14 md:py-16 flex flex-col md:flex-row md:items-end md:justify-between gap-8">
           <div>
             {str(ctaV, "eyebrow") ? (
@@ -203,6 +209,43 @@ export default async function PartnersPage({
           </div>
         </div>
       </section>
+    ),
+  };
+
+  // A group band is only worth drawing when it has cards under it: a heading
+  // over an empty grid is what an editor sees after moving every institution
+  // into the other group, and it reads as a bug rather than as a choice.
+  for (const [i, key] of groupKeys.entries()) {
+    const groupV = v(key);
+    const cards = partners.filter((p) => p.category === GROUP_CATEGORY[key]);
+    nodes[key] = (
+      <section
+        key={key}
+        className={`px-4 md:px-12 py-14 md:py-18 border-t border-bz-border${
+          i % 2 === 1 ? " bg-bz-surface-2" : ""
+        }`}
+      >
+        <SectionHead
+          eyebrow={str(groupV, "eyebrow") ?? undefined}
+          title={str(groupV, "heading")}
+          sub={str(groupV, "body")}
+          size={40}
+          className="mb-9"
+        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {cards.map((p) => (
+            <PartnerCard key={p.slug} partner={p} />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <div className="bg-bz-bg">
+      {content.order.map((key) => (
+        <React.Fragment key={key}>{nodes[key] ?? null}</React.Fragment>
+      ))}
     </div>
   );
 }
