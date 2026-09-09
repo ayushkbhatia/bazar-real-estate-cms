@@ -83,9 +83,9 @@ jobs:
       - name: Install Playwright Chromium
         # `--with-deps` runs `apt-get update` before installing Chromium's
         # SYSTEM libraries, all of which come from Ubuntu's own archives. It
-        # does not need Google's repo — but the runner image ships
-        # google-chrome.list in sources.list.d, so `apt-get update` fetches
-        # that index too and fails the whole step when it is unhealthy.
+        # does not need Google's repo — but the runner image ships a Google
+        # apt source in sources.list.d, so `apt-get update` fetches that index
+        # too and fails the whole step when it is unhealthy.
         #
         # Which it was, on 2026-09-09: Google's `Release` advertised
         # 233e56de… for main/binary-amd64/Packages.gz and served a file
@@ -95,11 +95,19 @@ jobs:
         # upstream rather than anything about the branch — and it would have
         # taken `main` red on its next push just the same.
         #
-        # Removing the list removes a dependency this job never had. If Chrome
-        # itself is ever needed here (a `channel: "chrome"` project, say), this
-        # line has to go and the flakiness comes back with it.
+        # Removing the source removes a dependency this job never had. If
+        # Chrome itself is ever needed here (a `channel: "chrome"` project,
+        # say), this has to go and the exposure comes back with it.
         run: |
-          sudo rm -f /etc/apt/sources.list.d/google-chrome.list
+          # Matched on CONTENT, not on filename. The first attempt removed
+          # `google-chrome.list` — the name Chrome's own installer uses — and
+          # the job failed identically, because the runner image ships this
+          # repo under a different name and a different path
+          # (dl.google.com/linux/chrome-stable/deb, not .../chrome/deb).
+          # Grepping for the host catches every spelling, including deb822
+          # `.sources` files.
+          sudo grep -rlZ 'dl\.google\.com' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null \
+            | sudo xargs -0 -r rm -v -f || true
           npx playwright install --with-deps chromium
 
       - name: Run Playwright
