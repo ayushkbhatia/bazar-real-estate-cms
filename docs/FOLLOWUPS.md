@@ -1424,15 +1424,24 @@ shows the trail.)
   fix is three message keys plus the `cookie policy` link text, which is
   inside the sentence and so has to move with it.
 
-- [i18n] Two parked editorial components still format dates and read time in
-  English. `app/[locale]/(public)/_components/insights-teaser.tsx` and
-  `insights/_components/editors-pick.tsx` each carry their own
-  `toLocaleDateString("en-GB", …)` and a `${n} min read` template. Both are on
-  the `lib/dead-code.test.ts` UNREFERENCED list — they render nowhere today,
-  which is why the Arabic pass over the live insights surfaces deliberately
-  left them alone. The trap is that wiring either one up (both are named as
-  page-builder candidates) silently reintroduces English metadata on an Arabic
-  card, and neither guard would say so: G-13 skips unreferenced modules and
-  G-14 only matches ternary plural morphology. Whoever mounts them should swap
-  in `formatPublishedDate` (`lib/i18n/dates.ts`) and `readTime`
-  (`lib/i18n/read-time.ts`) in the same PR.
+- [i18n] Two parked editorial components still write read time in English.
+  `app/[locale]/(public)/_components/insights-teaser.tsx` and
+  `insights/_components/editors-pick.tsx` each carry a `${n} min read`
+  template. Both are on the `lib/dead-code.test.ts` UNREFERENCED list — they
+  render nowhere today, which is why the Arabic pass over the live insights
+  surfaces left them alone.
+
+  **Narrowed.** The date half is done: G-19
+  (`lib/i18n/no-hardcoded-locale-tags.test.ts`) scans the whole public tree
+  including unreferenced modules, so the teaser's `toLocaleDateString("en-GB")`
+  had to go and it now takes a `locale` prop (defaulted, since it has no
+  caller). `editors-pick` never formatted a date.
+
+  What is left is the read time, which no guard can see: G-13 skips
+  unreferenced modules AND would not match a template literal inside JSX
+  braces even if it scanned them; G-14 matches only ternary plural morphology,
+  and `${n} min read` makes no plural decision because English does not
+  inflect there. Whoever mounts either component should swap in `readTime`
+  (`lib/i18n/read-time.ts`) in the same PR — and `editors-pick` needs its
+  "Editor's pick" heading and empty-state copy extracted too, which is the
+  larger half of that job.

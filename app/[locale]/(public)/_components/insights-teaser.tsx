@@ -1,4 +1,6 @@
 import Link from "@/components/i18n/link";
+import { localeDateTag } from "@/lib/i18n/dates";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -31,9 +33,14 @@ function ArticleImage({ row }: { row: ArticleListRow }) {
   );
 }
 
-function formatDate(iso: string | null): string {
+/**
+ * Day and short month, no year — this sits at 11px on a stacked card and the
+ * home page only ever shows recent articles, so the year is noise here in a
+ * way it is not in `formatPublishedDate`. The tag still comes from the locale.
+ */
+function formatDate(iso: string | null, locale: Locale): string {
   if (!iso) return "";
-  return new Date(iso).toLocaleDateString("en-GB", {
+  return new Date(iso).toLocaleDateString(localeDateTag(locale), {
     day: "numeric",
     month: "short",
   });
@@ -41,8 +48,17 @@ function formatDate(iso: string | null): string {
 
 /**
  * Sprint 4a: home-page insights teaser. Large lead + 4 stacked + newsletter.
+ *
+ * Nothing imports this today (it is on the dead-code UNREFERENCED list), so
+ * `locale` has a default rather than a required prop — there is no caller to
+ * update, and a required prop would be a compile error nobody can act on.
+ * Whoever mounts it should pass the route's own `locale` from `params`.
+ *
+ * Its read-time string is still an English template; see docs/FOLLOWUPS.md.
  */
-export async function InsightsTeaser() {
+export async function InsightsTeaser({
+  locale = DEFAULT_LOCALE,
+}: { locale?: Locale } = {}) {
   const { rows } = await listPublishedArticles({ limit: 5 });
   const lead = rows[0];
   const rest = rows.slice(1, 5);
@@ -92,7 +108,7 @@ export async function InsightsTeaser() {
                 <div className="mt-4 text-[11.5px] text-bz-muted">
                   {lead.author?.display_name ?? "Bazar"}
                   {lead.published_at
-                    ? ` · ${formatDate(lead.published_at)}`
+                    ? ` · ${formatDate(lead.published_at, locale)}`
                     : ""}
                 </div>
               </div>
@@ -121,7 +137,9 @@ export async function InsightsTeaser() {
                       {row.title}
                     </h4>
                     <div className="mt-2 text-[11px] text-bz-muted">
-                      {row.published_at ? formatDate(row.published_at) : ""}
+                      {row.published_at
+                        ? formatDate(row.published_at, locale)
+                        : ""}
                       {row.read_minutes ? ` · ${row.read_minutes} min` : ""}
                     </div>
                   </Link>

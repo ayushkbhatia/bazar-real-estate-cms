@@ -1,4 +1,6 @@
 import { useTranslations } from "next-intl";
+import { localeDateTag } from "@/lib/i18n/dates";
+import type { Locale } from "@/lib/i18n/locales";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { Comparable } from "@/lib/queries/market-reports";
 import {
@@ -10,12 +12,19 @@ import {
 
 type Props = {
   rows: Comparable[];
+  /**
+   * Passed down rather than read from `useLocale()`, for the same reason the
+   * note below gives about `bz_prefs`: this route is prerendered, and every
+   * ambient read is a chance to take it off that path. The parent already has
+   * it from `params`.
+   */
+  locale: Locale;
 };
 
-function fmtDate(s: string): string {
-  // YYYY-MM-DD → "12 Mar 2026"
+function fmtDate(s: string, locale: Locale): string {
+  // YYYY-MM-DD → "12 Mar 2026" / "12 مارس 2026"
   const d = new Date(s + "T00:00:00Z");
-  return d.toLocaleDateString("en-GB", {
+  return d.toLocaleDateString(localeDateTag(locale), {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -28,7 +37,7 @@ function fmtDate(s: string): string {
  * `_components/area-text`, not from a server-read cookie — reading `bz_prefs`
  * server-side would make this route dynamic and discard its `revalidate`.
  */
-export function ComparablesTable({ rows }: Props) {
+export function ComparablesTable({ rows, locale }: Props) {
   const t = useTranslations("editorial");
   return (
     <section className="px-4 md:px-12 py-12 border-b border-bz-border">
@@ -73,7 +82,7 @@ export function ComparablesTable({ rows }: Props) {
                   return (
                     <tr key={i} className="border-t border-bz-border">
                       <td className="px-4 py-3 mono text-[12px] text-bz-ink-2">
-                        {fmtDate(r.transaction_date)}
+                        {fmtDate(r.transaction_date, locale)}
                       </td>
                       <td className="px-4 py-3">{r.property_type}</td>
                       <td className="px-4 py-3">

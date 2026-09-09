@@ -31,6 +31,30 @@ const DATE_TAG: Record<Locale, string> = {
 };
 
 /**
+ * The tag itself, for the surfaces that need their own `Intl` options.
+ *
+ * `formatPublishedDate` below is opinionated — day, short month, year — and
+ * that is right for an editorial byline. It is not right for every date on the
+ * site: /press writes the month out in full, /agents omits the day, the
+ * market-report comparables and the listing "listed on" line pin `timeZone:
+ * "UTC"` so a server and a client agree, and /status wants a time and a zone
+ * name beside the date. Six surfaces, five different option sets — bolting
+ * five flags onto one function would leave a wrapper over `Intl` with none of
+ * the opinion that made it worth having.
+ *
+ * So those keep their own options and take only the tag from here. That is the
+ * part that must not be written by hand: the choice of `en-GB` over `en`, of
+ * `ar-AE` over `ar`, and above all the `-u-nu-latn` pin, whose absence is
+ * invisible until the day an ICU build flips `ar` to Arabic-Indic digits.
+ *
+ * `lib/i18n/no-hardcoded-locale-tags.test.ts` is what keeps the literal from
+ * coming back.
+ */
+export function localeDateTag(locale: Locale = DEFAULT_LOCALE): string {
+  return DATE_TAG[locale] ?? DATE_TAG[DEFAULT_LOCALE];
+}
+
+/**
  * A publication date — "14 Mar 2026" / "14 مارس 2026".
  *
  * Returns "" for a null date, because every call site renders it inline in a

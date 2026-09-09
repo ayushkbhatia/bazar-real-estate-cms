@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { formatPublishedDate } from "@/lib/i18n/dates";
+import { asLocale } from "@/lib/i18n/locales";
 import { MapPin } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
@@ -11,14 +13,6 @@ export const metadata: Metadata = {
     "Open advisor and operations roles at Bazar Real Estate. We hire slowly and by exception.",
 };
 
-function formatPosted(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
 export default async function CareersPage({
   params,
 }: {
@@ -27,10 +21,8 @@ export default async function CareersPage({
   // The locale is passed explicitly. Without it `getTranslations` falls
   // through to `headers()`, which makes the route dynamic and silently
   // discards its revalidate — the failure `check:routes` exists to catch.
-  const t = await getTranslations({
-    locale: (await params).locale,
-    namespace: "pages.careers",
-  });
+  const locale = asLocale((await params).locale);
+  const t = await getTranslations({ locale, namespace: "pages.careers" });
   return (
     <div className="bg-bz-bg">
       {/* Hero */}
@@ -120,7 +112,9 @@ export default async function CareersPage({
                     <span>{role.type}</span>
                     <span>·</span>
                     <span className="mono">
-                      {t("posted", { date: formatPosted(role.posted) })}
+                      {t("posted", {
+                        date: formatPublishedDate(role.posted, locale),
+                      })}
                     </span>
                   </div>
                   <h3

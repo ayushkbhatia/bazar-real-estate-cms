@@ -186,7 +186,9 @@ export default async function ArticleDetailPage({ params }: PageProps) {
       <header className="px-4 md:px-12 pt-8 pb-12 max-w-[760px] mx-auto">
         <Eyebrow>
           {categoryLabel}
-          {article.read_minutes ? ` · ${readTime(t, article.read_minutes)}` : ""}
+          {article.read_minutes
+            ? ` · ${readTime(t, article.read_minutes)}`
+            : ""}
         </Eyebrow>
         <h1
           className="serif text-[32px] md:text-[60px] mt-4 font-normal"
@@ -292,7 +294,9 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                 </div>
                 <div className="eyebrow mt-3.5">
                   {row.category_label}
-                  {row.read_minutes ? ` · ${row.read_minutes} min` : ""}
+                  {row.read_minutes
+                    ? ` · ${readTime(t, row.read_minutes, { short: true })}`
+                    : ""}
                 </div>
                 <h4 className="serif text-[19px] mt-2 leading-[1.25] group-hover:text-bz-accent transition-colors">
                   {row.title}

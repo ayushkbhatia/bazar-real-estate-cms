@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 
 import { arabicFor } from "@/lib/i18n/arabic-store";
+import { localeDateTag } from "@/lib/i18n/dates";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
 import type { Locale } from "@/lib/i18n/locales";
 import type { Metadata } from "next";
@@ -423,7 +424,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       property.published_at
         ? {
             label: t("spec.listed"),
-            value: formatListedDate(property.published_at),
+            value: formatListedDate(property.published_at, locale),
           }
         : null,
     ] as (SpecRow | null)[]
@@ -674,7 +675,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             permitNo={property.listing_permit_no}
             permitExpiry={
               extras.permitExpiresAt
-                ? formatListedDate(extras.permitExpiresAt)
+                ? formatListedDate(extras.permitExpiresAt, locale)
                 : null
             }
             plotNumber={property.dld_plot_number}
@@ -869,12 +870,19 @@ function titleCase(s: string): string {
     .join(" ");
 }
 
-/** `2026-08-07` / ISO timestamp → `7 Aug 2026`. Fixed en-GB locale so the
- *  server-rendered string matches on the client. */
-function formatListedDate(iso: string): string {
+/**
+ * `2026-08-07` / ISO timestamp → `7 Aug 2026` / `7 أغسطس 2026`.
+ *
+ * The tag comes from the locale rather than being written here: this line sat
+ * under "Listed" and beside a permit expiry on an otherwise fully translated
+ * Arabic listing. `timeZone: "UTC"` stays — it is the reason a server and a
+ * client render the same string, which is a different concern from language
+ * and the one the old comment was actually about.
+ */
+function formatListedDate(iso: string, locale: Locale): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString("en-GB", {
+  return d.toLocaleDateString(localeDateTag(locale), {
     day: "numeric",
     month: "short",
     year: "numeric",

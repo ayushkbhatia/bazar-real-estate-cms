@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { localeDateTag } from "@/lib/i18n/dates";
+import { asLocale, type Locale } from "@/lib/i18n/locales";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { fmtMs, type HealthReport } from "@/lib/health";
 import { buildHealthReport } from "@/lib/health-probes";
@@ -55,8 +57,8 @@ async function loadHealth(): Promise<HealthReport | null> {
   }
 }
 
-function fmtDate(iso: string): string {
-  return new Date(iso).toLocaleString("en-GB", {
+function fmtDate(iso: string, locale: Locale): string {
+  return new Date(iso).toLocaleString(localeDateTag(locale), {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -66,7 +68,12 @@ function fmtDate(iso: string): string {
   });
 }
 
-export default async function StatusPage() {
+export default async function StatusPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const locale = asLocale((await params).locale);
   const report = await loadHealth();
 
   if (!report) {
@@ -125,7 +132,7 @@ export default async function StatusPage() {
       </div>
 
       <p className="mt-3 text-[11.5px] text-bz-muted-2 mono">
-        Last probe: {fmtDate(report.checked_at)}
+        Last probe: {fmtDate(report.checked_at, locale)}
       </p>
 
       <h2
