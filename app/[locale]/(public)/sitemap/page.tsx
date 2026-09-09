@@ -27,7 +27,15 @@ const SECTIONS: { title: string; links: { label: string; href: string }[] }[] =
         { label: "Exclusive listings", href: "/exclusive" },
         { label: "New this week", href: "/new-this-week" },
         { label: "Price drops", href: "/price-drops" },
-        { label: "Sold archive", href: "/sold" },
+        /*
+         * No "Sold archive" row. `/sold` was listed here as though it were an
+         * index and has never been one: the only route under it is
+         * `/sold/[ref]`, the permalink a shared listing keeps after it comes
+         * off the market, and it answers 410 Gone by design. So the link was a
+         * 404 in both languages from the day it was written — found by
+         * crawling production 2026-09-09. A human sitemap that lists a page
+         * that does not exist is worse than one that omits it.
+         */
       ],
     },
     {

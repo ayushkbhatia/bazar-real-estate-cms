@@ -1,3 +1,4 @@
+import { readFailed } from "@/lib/queries/read-failure";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -370,10 +371,8 @@ export async function getPublishedPropertyByReference(
     .eq("status", "published")
     .is("deleted_at", null)
     .maybeSingle();
-  if (error) {
-    console.error("[getPublishedPropertyByReference]", error);
-    return null;
-  }
+  // `/p/[slug]` 404s on null, and that 404 is cached. See read-failure.ts.
+  if (error) readFailed("getPublishedPropertyByReference", error);
   if (!data) return null;
   return attachHero(
     data as unknown as { property_media: RawMediaJoin[] },

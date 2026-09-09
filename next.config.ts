@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 import { LEGACY_WORDPRESS_REDIRECTS } from "./lib/legacy-redirects";
+import { withLocaleRedirects } from "./lib/i18n/locale-redirects";
 
 // Messages only — routing stays in proxy.ts, which was measured to serve the
 // prerendered artifact rather than bypass ISR. See lib/i18n/request.ts.
@@ -101,8 +102,14 @@ const nextConfig: NextConfig = {
   // Client nav restructure: the areas index is back to "Areas" + /areas.
   // Permanent redirects keep the interim /communities links (brand footer,
   // bookmarks, backlinks, search results) resolving to the new path.
+  //
+  // Every rule below is written once, unprefixed, and `withLocaleRedirects`
+  // gives it an `/ar` twin. Without that wrapper a rule only ever covered
+  // English: `/communities/yas-island` redirected and `/ar/communities/yas-island`
+  // 404'd, which is exactly what the Arabic footer was walking into. Write new
+  // rules unprefixed and the locale halves take care of themselves.
   async redirects() {
-    return [
+    return withLocaleRedirects([
       // Customer accounts were removed. These paths were the customer auth
       // surface; anything still pointing at them — bookmarks, old emails,
       // lib/auth's anonymous fallback — lands on the staff door rather than
@@ -171,7 +178,7 @@ const nextConfig: NextConfig = {
        * inference.
        */
       ...LEGACY_WORDPRESS_REDIRECTS,
-    ];
+    ]);
   },
 };
 

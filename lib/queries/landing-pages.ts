@@ -4,6 +4,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
 import { parseLandingDocument, type BlockInstance } from "@/lib/page-builder";
+import { readFailed } from "@/lib/queries/read-failure";
 
 export type LandingStatus = "draft" | "published";
 
@@ -71,10 +72,8 @@ export async function getPublishedLandingBySlug(
     .eq("status", "published")
     .is("deleted_at", null)
     .maybeSingle();
-  if (error) {
-    console.error("[getPublishedLandingBySlug]", error);
-    return null;
-  }
+  // `/lp/[slug]` 404s on null, and that 404 is cached. See read-failure.ts.
+  if (error) readFailed("getPublishedLandingBySlug", error);
   if (!data) return null;
   // Folded before the shape below picks fields off the row. The block document
   // is localised separately by the page-builder resolver, which already handles

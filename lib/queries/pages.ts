@@ -4,6 +4,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { parseBlocks, type Block, type PageStatus } from "@/lib/schemas/page";
 import { MASTER_SLUG_PREFIX } from "@/lib/master-pages";
 import { SUBPAGE_SLUG_PREFIX } from "@/lib/master-pages/subpages";
+import { readFailed } from "@/lib/queries/read-failure";
 
 export type PageListRow = {
   id: string;
@@ -43,10 +44,8 @@ export async function getPublishedPageBySlug(
     .not("slug", "like", `${MASTER_SLUG_PREFIX}%`)
     .not("slug", "like", `${SUBPAGE_SLUG_PREFIX}%`)
     .maybeSingle();
-  if (error) {
-    console.error("[getPublishedPageBySlug]", error);
-    return null;
-  }
+  // `/pages/[slug]` 404s on null, and that 404 is cached. See read-failure.ts.
+  if (error) readFailed("getPublishedPageBySlug", error);
   if (!data) return null;
   return {
     ...data,

@@ -1,3 +1,4 @@
+import { readFailed } from "@/lib/queries/read-failure";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -235,10 +236,9 @@ export async function getPublishedDevelopmentBySlug(
     .eq("slug", slug)
     .not("published_at", "is", null)
     .maybeSingle();
-  if (error) {
-    console.error("[getPublishedDevelopmentBySlug]", error);
-    return null;
-  }
+  // Throws rather than reporting a missing project — `/developments/[slug]`
+  // calls `notFound()` on null and Next caches that. See read-failure.ts.
+  if (error) readFailed("getPublishedDevelopmentBySlug", error);
   if (!data) return null;
   // Folded before shapeDetail, which builds explicit literals and would drop
   // the twins. Fourth shaper in this codebase with that property, after

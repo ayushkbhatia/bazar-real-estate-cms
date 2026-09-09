@@ -242,3 +242,34 @@ export function initials(name: string): string {
     .map((w) => w[0]?.toUpperCase() ?? "")
     .join("");
 }
+
+/**
+ * Every directory slug whose profile page will 404, under both spellings.
+ *
+ * `/developers/[slug]` calls `notFound()` on a draft entry — deliberately, so
+ * "unpublish" actually removes the URL rather than leaving it reachable to
+ * anyone with the link. The surfaces that link INTO those pages have to agree,
+ * and one of them did not: the home and /about developer marquee builds its
+ * tiles from `DEVELOPERS`, the code-owned set, which has no idea what the
+ * catalogue has published. Three tiles on the front page led to a 404 in both
+ * languages (`miral`, `nic-developers`, `q-properties`), found by crawling
+ * production 2026-09-09.
+ *
+ * Both spellings, because a merged entry lands under the CATALOGUE slug while
+ * the shipped one keeps working via `findDirectoryEntry`'s name match — so
+ * hiding only the slug the merge produced would leave the marquee linking the
+ * directory slug of the same draft developer.
+ */
+export async function draftDirectorySlugs(
+  locale?: Locale,
+): Promise<string[]> {
+  const drafts = (await listAllDirectory(locale)).filter((d) => !d.published);
+  if (drafts.length === 0) return [];
+  const draftKeys = new Set(
+    drafts.map((d) => developerNameKey(d.name_en)).filter((k) => k !== ""),
+  );
+  const superseded = DEVELOPERS.filter((d) =>
+    draftKeys.has(developerNameKey(d.name)),
+  ).map((d) => d.slug);
+  return [...new Set([...drafts.map((d) => d.slug), ...superseded])];
+}

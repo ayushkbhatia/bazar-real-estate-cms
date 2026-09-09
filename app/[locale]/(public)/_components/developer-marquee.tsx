@@ -35,20 +35,47 @@ const TILES: Tile[] = DEVELOPERS_SORTED.flatMap((d) => {
   return logo ? [{ slug: d.slug, name: d.name, logo }] : [];
 });
 
-export function DeveloperMarquee() {
+/**
+ * Seconds of travel per tile, derived from the tuned full-set duration rather
+ * than left as a constant, so hiding a draft developer changes the LENGTH of
+ * the loop and not its speed. The two marquees on the home page have to read
+ * as one system, and they only do that at equal px/s.
+ */
+const SECONDS_PER_TILE = 197 / TILES.length;
+
+export function DeveloperMarquee({
+  /**
+   * Slugs whose `/developers/[slug]` page would 404 — draft catalogue rows,
+   * from `draftDirectorySlugs()`. This set is not knowable here: the tiles
+   * come from the code-owned directory and publication lives in Postgres, so
+   * the server parent reads it and passes it down. Omitted means "show
+   * everything", which is what the component did before and what a test or a
+   * Supabase-less preview still wants.
+   */
+  hiddenSlugs,
+}: {
+  hiddenSlugs?: readonly string[];
+} = {}) {
   const t = useTranslations("common");
+  const hidden = hiddenSlugs?.length ? new Set(hiddenSlugs) : null;
+  const tiles = hidden ? TILES.filter((tile) => !hidden.has(tile.slug)) : TILES;
   // Two copies of the set → the second copy scrolls into the gap the first
   // leaves, giving a seamless -50% loop.
-  const loop = [...TILES, ...TILES];
+  const loop = [...tiles, ...tiles];
 
   return (
     <div className="bz-devmarquee" aria-label={t("marquee.developers")}>
-      <div className="bz-devmarquee__track">
+      <div
+        className="bz-devmarquee__track"
+        style={{
+          animationDuration: `${(tiles.length * SECONDS_PER_TILE).toFixed(0)}s`,
+        }}
+      >
         {loop.map((t, i) => {
           // The second copy is decorative: hidden from the accessibility tree,
           // and pulled out of the tab order so keyboard users don't land on a
           // focusable link inside an aria-hidden subtree.
-          const duplicate = i >= TILES.length;
+          const duplicate = i >= tiles.length;
           return (
             <Link
               key={`${t.slug}-${i}`}
@@ -94,7 +121,9 @@ export function DeveloperMarquee() {
           width: max-content;
           gap: 14px;
           /* 30 developers over ~197s scrolls at the same px/s as the 7-logo
-             partner marquee does over 46s, so the two read as one system. */
+             partner marquee does over 46s, so the two read as one system.
+             The duration is overridden inline from the tile count, so a
+             hidden developer shortens the loop instead of speeding it up. */
           animation: bz-devmarquee-scroll 197s linear infinite;
         }
         .bz-devmarquee:hover .bz-devmarquee__track,
