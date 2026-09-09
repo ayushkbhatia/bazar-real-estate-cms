@@ -296,32 +296,24 @@ export const ABOUT_PAGE: MasterPageDef = {
     {
       key: "partners",
       label: "Developer partners",
-      description: "The grid of developer names Bazar works with.",
+      description: "Marquee of developer logos, and the words around it.",
+      // The nine hand-typed names this band used to render are gone: it now
+      // runs the same logo marquee the home page does, off the developer
+      // catalogue. `items` went with them rather than being left as a list an
+      // editor can change and then find unchanged on the page.
       dataNote:
-        "These names are typed here, not pulled from the developer records. The button links to the live developer directory.",
+        "The logos themselves come from the developers catalogue. The button links to the live developer directory.",
       fields: [
         eyebrow(),
         heading({ key: "title", label: "Heading" }),
         text("cta_label", "Button label", { max: 60, optional: true }),
         link("cta_href", "Button link"),
-        chipList("items", "Developer names", 18),
       ],
       defaults: {
         eyebrow: "Our developer partners",
         title: "Trusted by the region's builders.",
         cta_label: "All developers",
         cta_href: "/developers",
-        items: [
-          { label: "Aldar Properties", href: null },
-          { label: "Modon Properties", href: null },
-          { label: "Bloom Holding", href: null },
-          { label: "IMKAN Properties", href: null },
-          { label: "Reportage Properties", href: null },
-          { label: "Eagle Hills", href: null },
-          { label: "Radiant Real Estate", href: null },
-          { label: "Ohana Development", href: null },
-          { label: "Taraf", href: null },
-        ],
       },
     },
     {
