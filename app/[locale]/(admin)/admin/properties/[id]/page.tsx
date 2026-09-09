@@ -8,6 +8,7 @@ import { propertyUrl } from "@/lib/queries/properties";
 import { currentStaffRow } from "@/lib/queries/staff";
 import { listActiveAgents, type ActiveAgent } from "@/lib/queries/staff-agents";
 import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
+import { addAmenityToTaxonomy } from "../../_fields/amenity-actions";
 import { toOptions } from "@/lib/amenities";
 import { getCardLabelSettings } from "@/lib/queries/card-labels";
 import { BUILT_IN_FLAG } from "@/lib/card-labels";
@@ -341,6 +342,7 @@ export default async function PropertyEditPage({ params }: PageProps) {
             geo={geo}
             mapboxAvailable={isMapboxConfigured}
             amenityOptions={toOptions(taxonomy)}
+            onAddAmenityToTaxonomy={addAmenityToTaxonomy}
             canCreateArea={canCreateArea}
             canCreateDeveloper={canCreateDeveloper}
           />

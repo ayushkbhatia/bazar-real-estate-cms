@@ -5,7 +5,7 @@ import {
   AMENITY_CATEGORIES,
   AMENITY_CATEGORY_LABELS,
 } from "@/lib/schemas/amenity-taxonomy";
-import { toggleAmenityActive, createAmenity } from "./_actions";
+import { toggleAmenityActive, createAmenity, setAmenityArabic } from "./_actions";
 
 type ToggleProps = {
   code: string;
@@ -39,6 +39,101 @@ export function AmenityActiveToggle({ code, active }: ToggleProps) {
     >
       {pending ? "…" : active ? "Active" : "Inactive"}
     </button>
+  );
+}
+
+/**
+ * The Arabic twin for one existing row, editable in place.
+ *
+ * Saves on blur (and on Enter) rather than behind a button, because this
+ * screen is a hundred-and-four-row list and the job it now exists for is a
+ * translation pass down the whole thing — a Save click per row would triple
+ * the work. The row reports its own state instead: idle, saving, saved, or the
+ * server's message.
+ *
+ * `suggestion` is what the Arabic store already holds for this English. It
+ * shows as a placeholder, not as a value: the public page falls back to it
+ * anyway, so pre-filling the input would make an editor think they had checked
+ * a word they never saw. Clicking "use" adopts it, which is the same word plus
+ * a person's assent — which is exactly what ADR-0008 asks for.
+ */
+export function AmenityArabicField({
+  code,
+  initial,
+  suggestion,
+}: {
+  code: string;
+  initial: string | null;
+  suggestion: string | null;
+}) {
+  const [value, setValue] = useState(initial ?? "");
+  const [saved, setSaved] = useState<string>(initial ?? "");
+  const [pending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  function save(next: string) {
+    const trimmed = next.replace(/\s+/g, " ").trim();
+    if (trimmed === saved.replace(/\s+/g, " ").trim()) return;
+    setError(null);
+    startTransition(async () => {
+      const res = await setAmenityArabic(code, trimmed);
+      if (res.status === "error") {
+        setError(res.message);
+        return;
+      }
+      setSaved(trimmed);
+    });
+  }
+
+  const dirty = value.replace(/\s+/g, " ").trim() !== saved;
+
+  return (
+    <div className="mt-1.5 flex items-center gap-1.5">
+      <input
+        dir="rtl"
+        lang="ar"
+        value={value}
+        maxLength={90}
+        disabled={pending}
+        aria-label={`Arabic for ${code}`}
+        placeholder={suggestion ?? "العربية"}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={(e) => save(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            save((e.target as HTMLInputElement).value);
+          }
+          if (e.key === "Escape") setValue(saved);
+        }}
+        className={
+          error
+            ? "h-7 flex-1 min-w-0 rounded border border-red-500 bg-white px-2 text-[12.5px]"
+            : saved === ""
+              ? "h-7 flex-1 min-w-0 rounded border border-amber-400/70 bg-white px-2 text-[12.5px] focus:outline-none focus:ring-1 focus:ring-bz-accent"
+              : "h-7 flex-1 min-w-0 rounded border border-bz-border bg-white px-2 text-[12.5px] focus:outline-none focus:ring-1 focus:ring-bz-accent"
+        }
+      />
+      {pending ? (
+        <span className="text-[10.5px] text-bz-muted">…</span>
+      ) : error ? (
+        <span className="text-[10.5px] text-red-600" title={error}>
+          !
+        </span>
+      ) : dirty ? null : suggestion && saved === "" ? (
+        <button
+          type="button"
+          onClick={() => {
+            setValue(suggestion);
+            save(suggestion);
+          }}
+          className="text-[10.5px] mono uppercase tracking-wider text-bz-accent hover:underline shrink-0"
+          title={`Use “${suggestion}”`}
+        >
+          use
+        </button>
+      ) : null}
+    </div>
   );
 }
 

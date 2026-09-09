@@ -35,7 +35,6 @@ import { WIRED_READ } from "./domains";
  * Snapshot taken on the commit that introduced the harness.
  */
 const GRANDFATHERED: readonly string[] = [
-  "amenities_taxonomy.label",
   "article_categories.description",
   "article_categories.label",
   "articles.body_html",
@@ -83,7 +82,7 @@ const GRANDFATHERED: readonly string[] = [
 ];
 
 /** How many entries the snapshot had. Lowering this is the point. */
-const GRANDFATHERED_CEILING = 45;
+const GRANDFATHERED_CEILING = 44;
 
 /**
  * `table.column` → the spec that proves the fold, repo-relative.
@@ -94,6 +93,7 @@ const GRANDFATHERED_CEILING = 45;
  * `localise.test.ts` fall into.
  */
 const FOLD_PROOFS: Record<string, string> = {
+  "amenities_taxonomy.label": "lib/queries/amenities-taxonomy.fold.test.ts",
   "areas.name": "lib/queries/areas.fold.test.ts",
   "areas.description": "lib/queries/areas.fold.test.ts",
   "media_assets.alt_text": "lib/queries/developments.fold.test.ts",

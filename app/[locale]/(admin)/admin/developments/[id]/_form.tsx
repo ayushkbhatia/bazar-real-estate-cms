@@ -15,6 +15,7 @@ import {
 import { ArabicTwin } from "../../_fields/arabic-twin";
 import { AmenitiesPicker } from "../../_fields/amenities-picker";
 import type { AmenityOption } from "@/lib/amenities";
+import type { AddAmenityToTaxonomyResult } from "../../_fields/amenity-actions";
 import { updateDevelopment } from "./_actions";
 
 type DeveloperOption = { id: string; name: string };
@@ -26,6 +27,7 @@ export function DevelopmentEditForm({
   developers,
   areas,
   amenityOptions,
+  onAddAmenityToTaxonomy,
 }: {
   developmentId: string;
   initial: DevelopmentEditInput;
@@ -33,6 +35,12 @@ export function DevelopmentEditForm({
   areas: AreaOption[];
   /** Amenity taxonomy, resolved server-side — same list the property editor uses. */
   amenityOptions: AmenityOption[];
+  /** Same writer the property editor passes down. See `amenity-actions.ts`. */
+  onAddAmenityToTaxonomy?: (input: {
+    label: string;
+    label_ar?: string | null;
+    category?: string;
+  }) => Promise<AddAmenityToTaxonomyResult>;
 }) {
   const form = useForm<DevelopmentEditInput>({
     resolver: zodResolver(developmentEditSchema),
@@ -257,6 +265,7 @@ export function DevelopmentEditForm({
         <AmenitiesPicker
           value={form.watch("amenities") ?? []}
           options={amenityOptions}
+          onAddToTaxonomy={onAddAmenityToTaxonomy}
           onChange={(next) =>
             form.setValue("amenities", next, { shouldDirty: true })
           }

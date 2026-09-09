@@ -4,7 +4,6 @@ import { isSupabaseConfigured } from "@/lib/env";
 import type { PropertyFilters } from "@/lib/filters/property";
 import type { Database } from "@/db/types";
 import { currentLocale } from "@/lib/i18n/current";
-import { arabicFor } from "@/lib/i18n/arabic-store";
 import { localiseRow } from "@/lib/i18n/localise";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 
@@ -146,21 +145,29 @@ function attachHero<T extends { property_media?: RawMediaJoin[] | null }>(
   }
 
   /*
-   * Amenities are a bare `text[]` with no twin column, which `localiseDeep`'s
-   * docblock calls out as passing "untouched — there is no twin to pair them
-   * with at that depth". True, and it left every amenity chip in English on
-   * /ar even though the store holds Arabic for all 99 of them.
+   * Amenities are deliberately NOT translated here, and that is a reversal.
    *
-   * There is no per-row twin to add here: the values are a shared vocabulary
-   * from `amenities_taxonomy`, not this listing's prose. So the store IS the
-   * translation, and this asks it directly. An unknown value keeps its
-   * English, exactly as `arabicFor` does everywhere else.
+   * This used to map the array through `arabicFor` — the reasoning being that
+   * a bare `text[]` has no twin column, so the store is the only translation
+   * available. The reasoning was right about the store and wrong about where
+   * to apply it. `properties.amenities` holds the shared vocabulary's ENGLISH
+   * LABELS, and that is its join key: `lib/amenities.ts` resolves a stored
+   * value back to `amenities_taxonomy` by that label, which is how the value
+   * reaches its category, its search facet, its taxonomy ordering — and now
+   * its CMS-editable `label_ar`. Translating the array in place destroyed the
+   * key before any of that ran. The visible cost on `/ar` was the whole
+   * "Features & amenities" grid falling out of taxonomy order, and the client's
+   * own Arabic for an amenity being unreachable: whatever an editor typed at
+   * /admin/settings/fields, the store's word had already replaced the label
+   * this far upstream.
+   *
+   * So the fold moves to the renderer, which is the only place that knows it
+   * is printing rather than matching: `/p/[slug]` calls
+   * `amenityLabel(value, options, { locale, fallback: arabicFor })`, taking
+   * the taxonomy twin first and the store only for a value no taxonomy row
+   * claims. Same store, same fallback, one step later — and the English
+   * survives long enough to be looked up.
    */
-  if (locale !== DEFAULT_LOCALE && Array.isArray(folded.amenities)) {
-    folded.amenities = (folded.amenities as unknown[]).map((value) =>
-      typeof value === "string" ? (arabicFor(value) ?? value) : value,
-    );
-  }
 
   return {
     ...(folded as unknown as Omit<T, "property_media">),

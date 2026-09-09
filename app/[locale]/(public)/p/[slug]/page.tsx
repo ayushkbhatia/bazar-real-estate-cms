@@ -633,7 +633,16 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                 {orderAmenities(property.amenities, amenityOptions).map((a) => (
                   <li key={a} className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-bz-accent" />
-                    {amenityLabel(a, amenityOptions)}
+                    {/* `locale` picks the taxonomy's Arabic twin; `arabicFor`
+                        catches the free-text values that predate the picker
+                        writing to the taxonomy at all — 55 of them are in the
+                        catalogue, and they have no row to carry a twin. Same
+                        fallback the compare table uses, so the two surfaces
+                        now agree on the same page's worth of words. */}
+                    {amenityLabel(a, amenityOptions, {
+                      locale,
+                      fallback: arabicFor,
+                    })}
                   </li>
                 ))}
               </ul>

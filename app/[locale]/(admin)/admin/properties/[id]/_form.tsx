@@ -81,6 +81,7 @@ import { AmenitiesPicker } from "../../_fields/amenities-picker";
 import { NewAreaDialog } from "./_components/new-area-dialog";
 import { NewDeveloperDialog } from "./_components/new-developer-dialog";
 import type { AmenityOption } from "@/lib/amenities";
+import type { AddAmenityToTaxonomyResult } from "../../_fields/amenity-actions";
 
 export type AreaOption = { id: string; name: string; kind: string };
 export type DeveloperOption = { id: string; name: string };
@@ -100,6 +101,16 @@ type Props = {
   floorPlan?: FloorPlanItem | null;
   /** Amenity taxonomy, resolved server-side. */
   amenityOptions: AmenityOption[];
+  /**
+   * Writes a picker-typed amenity into the taxonomy, so it gains a code, a
+   * category and an Arabic twin instead of living as free text on this one
+   * listing. Optional: the form specs mount without it.
+   */
+  onAddAmenityToTaxonomy?: (input: {
+    label: string;
+    label_ar?: string | null;
+    category?: string;
+  }) => Promise<AddAmenityToTaxonomyResult>;
   /**
    * Whether this staff member's role may add areas. False hides the "New
    * area" control — the server action would answer with a 404, which reads
@@ -189,6 +200,7 @@ export function PropertyEditForm({
   mapboxAvailable,
   floorPlan = null,
   amenityOptions,
+  onAddAmenityToTaxonomy,
   canCreateArea = false,
   canCreateDeveloper = false,
 }: Props) {
@@ -997,6 +1009,7 @@ export function PropertyEditForm({
           <AmenitiesPicker
             value={amenities}
             options={amenityOptions}
+            onAddToTaxonomy={onAddAmenityToTaxonomy}
             onChange={(next) =>
               setValue("amenities", next, { shouldDirty: true })
             }

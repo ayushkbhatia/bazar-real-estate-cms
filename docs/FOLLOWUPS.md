@@ -545,6 +545,17 @@ shows the trail.)
   decide between blocking on references and reparenting them — worth designing
   before adding the button.
 
+- [amenities] Fifty-five stored amenity values have no taxonomy row.
+  `Maid's room` (29 uses), `Smart home` (27), `Beach access` (25) and 52 others
+  were typed free-hand before the picker wrote to the taxonomy, mostly onto
+  `developments.amenities`. They render, and on `/ar` they resolve through the
+  Arabic store — but they are not search filters and they cannot be corrected
+  in the CMS, because only a taxonomy row carries `label_ar`. The picker now
+  promotes anything newly typed, so the list stops growing; folding the
+  existing 55 in means deciding the ambiguous ones (`Private beach` vs the
+  existing `Beach access`, `Park access` vs `Park view`, three spellings of
+  "terrace") the way migration 0059's tail note describes.
+
 - [amenities] Storage is labels, not codes — the handoff asks for codes.
   `properties.amenities` holds labels ("Beach access"), which is what the
   search facet matches via `contains` and what the public page prints. The
@@ -1199,15 +1210,14 @@ shows the trail.)
   edit to a shadcn primitive and therefore a decision (re-adding the component
   would drop it) rather than a patch. `components/ui/sheet.tsx:79`.
 
-- [i18n] `amenityLabel()` matches a stored amenity against the taxonomy by
+- ~~[i18n] `amenityLabel()` matches a stored amenity against the taxonomy by
   normalised English label, but `listAmenitiesTaxonomy()` folds that taxonomy
-  to Arabic before the comparison — so on `/ar` nothing matches, the helper
-  returns its input, and the property page's "Features & amenities" grid prints
-  the English. The compare table's amenity rows now go through `arabicFor()`
-  instead and are correct, which makes the two surfaces disagree on the same
-  page's worth of words. Fix in `lib/amenities.ts`: match on an unfolded label
-  (or on `code`) and render the folded one.
-  `app/[locale]/(public)/p/[slug]/page.tsx:585`.
+  to Arabic before the comparison.~~ **Fixed.** The reader no longer folds
+  `label` — it carries the twin alongside in `label_ar` and `amenityLabel`
+  picks, which is the shape `MoreFiltersDrawer` had used all along. The grid
+  also passes `arabicFor` as a last resort, so it and the compare table now
+  agree. Proven by `lib/queries/amenities-taxonomy.fold.test.ts`, which took
+  the column out of `GRANDFATHERED` in `fold-proofs.test.ts` (45 → 44).
 
 - [i18n] `ListingCard`'s save control is labelled `Save to shortlist` /
   `Remove from shortlist` in English on every locale — the aria-label on the

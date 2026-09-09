@@ -1,3 +1,4 @@
+import type { Locale } from "@/lib/i18n/locales";
 import {
   AMENITY_CATEGORIES,
   AMENITY_CATEGORY_LABELS,
@@ -231,15 +232,63 @@ export function addCustomAmenity(
   };
 }
 
-/** Display label for a stored value — falls back to the value itself. */
+export type AmenityDisplay = {
+  /** The locale the words are being READ in. Defaults to English. */
+  locale?: Locale;
+  /**
+   * Last resort for a value the taxonomy has never heard of — the Arabic
+   * store, in practice. Kept as a callback rather than an import because this
+   * module is bundled into client components (the search facet) and the store
+   * is a 700 KB JSON.
+   */
+  fallback?: (english: string) => string | null;
+};
+
+/**
+ * Display label for a stored value — falls back to the value itself.
+ *
+ * The match is always on the ENGLISH label, because that is what
+ * `properties.amenities` holds; only the returned word changes with the
+ * locale. Doing it the other way round — folding the taxonomy to Arabic and
+ * then comparing — is what made this grid print English on `/ar` for the
+ * whole of the epic: nothing matched, so every value fell through to itself.
+ */
 export function amenityLabel(
   value: string,
   options: AmenityOption[],
+  display: AmenityDisplay = {},
 ): string {
   const hit =
     options.find((o) => normalise(o.label) === normalise(value)) ??
     options.find((o) => o.code === value);
-  return hit ? hit.label : value;
+  const english = hit ? hit.label : value;
+  if (display.locale !== "ar") return english;
+  const twin = hit?.label_ar?.trim();
+  if (twin) return twin;
+  return display.fallback?.(english)?.trim() || english;
+}
+
+/**
+ * A taxonomy code for a label typed into the picker.
+ *
+ * The code is an identity, not a word: `codeRegex` in
+ * `lib/schemas/amenity-taxonomy.ts` wants `^[a-z][a-z0-9_]*$`, so anything
+ * that isn't a Latin letter or digit becomes an underscore and a leading run
+ * of digits is dropped rather than prefixed ("24/7 Security" → `security`).
+ * A label with no Latin in it at all — an amenity typed in Arabic — has no
+ * derivable code, so this returns `null` and the caller supplies a base;
+ * collisions are the caller's job too, since only it can see the table.
+ */
+export function amenityCodeFromLabel(label: string): string | null {
+  const base = label
+    .toLowerCase()
+    .replace(/['’`]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^[^a-z]+/, "")
+    .replace(/_+$/g, "")
+    .slice(0, 40)
+    .replace(/_+$/g, "");
+  return base.length >= 2 ? base : null;
 }
 
 function normalise(value: string): string {
