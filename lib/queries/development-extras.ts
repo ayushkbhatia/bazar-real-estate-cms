@@ -10,6 +10,8 @@ import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseDeep } from "@/lib/i18n/localise";
+import { arabicFor } from "@/lib/i18n/arabic-store";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import type { DevelopmentIndexRow } from "./developments";
 
 const SIBLING_FIELDS =
@@ -112,6 +114,9 @@ export type NamedFeatureBlock = {
   key: string;
   title: string;
   copy: string;
+  /** Arabic twins, beside their siblings — see `lib/schemas/development-content.ts`. */
+  title_ar?: string | null;
+  copy_ar?: string | null;
   /** Media asset chosen in the page editor. */
   media_id?: string | null;
   alt?: string | null;
@@ -119,6 +124,50 @@ export type NamedFeatureBlock = {
   image_url?: string | null;
   image_role?: string;
 };
+
+/**
+ * Fold the amenity cards into the reader's language.
+ *
+ * ## Why this is hand-written rather than `localiseDeep`
+ *
+ * `localiseRow` only consults the Arabic store for a key whose `_ar` twin is
+ * PRESENT on the object — a deliberate guard, so a bare `arabicFor(value)`
+ * can't swap an `id` or a price for a coincidental store hit. That guard is
+ * exactly wrong here: the 93 blocks already in production were written before
+ * the twins existed, so not one of them carries the key that would let the
+ * store be consulted, and every amenity card on every `/ar/developments/<slug>`
+ * rendered its English. Naming the two fields is what makes the lookup safe
+ * without a migration over a free-form jsonb column.
+ *
+ * ## Precedence
+ *
+ * 1. `title_ar` / `copy_ar` — what an editor typed in the project editor. It
+ *    wins from the moment it is saved, which is the whole point of ADR-0008:
+ *    the machine draft is a starting position, not the answer.
+ * 2. The Arabic store, keyed by the English — the generated first draft
+ *    (`scripts/i18n/translate-content.ts --features`).
+ * 3. The English, unchanged. Better a legible English card than a blank one.
+ *
+ * `alt` is not folded and does not need to be: `FeatureRow` renders
+ * `alt ?? title`, and the 93 stored blocks all carry a null `alt`, so the
+ * folded title is already what reaches a screen reader.
+ */
+export function localiseFeatureBlocks<T extends NamedFeatureBlock>(
+  blocks: readonly T[] | null | undefined,
+  locale: Locale,
+): T[] {
+  if (!blocks?.length) return [];
+  if (locale === DEFAULT_LOCALE) return [...blocks];
+  const pick = (typed: string | null | undefined, english: string) => {
+    if (typed && typed.trim()) return typed;
+    return arabicFor(english) ?? english;
+  };
+  return blocks.map((b) => ({
+    ...b,
+    title: pick(b.title_ar, b.title),
+    copy: pick(b.copy_ar, b.copy),
+  }));
+}
 
 export type FaqEntry = { q: string; a: string };
 

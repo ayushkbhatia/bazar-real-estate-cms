@@ -20,6 +20,7 @@ import type { MediaOption } from "../../../../_fields/types";
 import { ImagePicker } from "../../../../_fields/image-picker";
 import { LocationPicker } from "../../../../properties/[id]/_components/location-picker";
 import { saveDevelopmentContent } from "../_actions";
+import { ArabicTwin } from "../../../../_fields/arabic-twin";
 
 export type NeighbourOption = { id: string; name: string };
 export type AdvisorOption = { user_id: string; display_name: string };
@@ -317,11 +318,31 @@ export function DevelopmentContentCard({
                   <Trash2 size={12} strokeWidth={1.7} />
                 </button>
               </div>
+              <ArabicTwin
+                field={{
+                  key: "title_ar",
+                  label: "Feature title",
+                  kind: "text",
+                  max: 80,
+                }}
+                value={b.title_ar ?? ""}
+                onChange={(v) => setFeature(i, { title_ar: v || null })}
+              />
               <textarea
                 className={cn(fieldCls, "resize-y min-h-[60px]")}
                 value={b.copy}
                 placeholder="A sentence or two on what it is and who it's for."
                 onChange={(e) => setFeature(i, { copy: e.target.value })}
+              />
+              <ArabicTwin
+                field={{
+                  key: "copy_ar",
+                  label: "Feature copy",
+                  kind: "textarea",
+                  max: 600,
+                }}
+                value={b.copy_ar ?? ""}
+                onChange={(v) => setFeature(i, { copy_ar: v || null })}
               />
               <ImagePicker
                 label="Image"

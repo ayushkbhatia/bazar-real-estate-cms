@@ -48,6 +48,7 @@ import { FloatingCtaTarget } from "../../_components/floating-cta-context";
 import { AreaText, PriceText } from "../../_components/area-text";
 import {
   getDevelopmentMeta,
+  localiseFeatureBlocks,
   listOtherDevelopmentsByDeveloper,
   listOtherDevelopmentsInArea,
 } from "@/lib/queries/development-extras";
@@ -262,11 +263,18 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   ))!;
 
   // Curated feature blocks carry a media id; resolve them once for the page.
+  //
+  // Folded here rather than in `getDevelopmentMeta`, which the project editor
+  // also reads: the editor must see the English it is editing, and /admin is
+  // English-only anyway, so folding in the shared getter would be a no-op that
+  // still had to be reasoned about. See `localiseFeatureBlocks`.
   const featureImages = await withFeatureImages(meta?.feature_blocks);
-  const featureBlocks = meta?.feature_blocks?.map((b) => ({
-    ...b,
-    image_url: b.media_id ? (featureImages[b.media_id] ?? null) : null,
-  }));
+  const featureBlocks = localiseFeatureBlocks(meta?.feature_blocks, locale).map(
+    (b) => ({
+      ...b,
+      image_url: b.media_id ? (featureImages[b.media_id] ?? null) : null,
+    }),
+  );
 
   // Section copy overrides from /admin/pages/sub/development/<slug>. Blank
   // fields fall through to the template's own wording.
@@ -638,6 +646,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     features: (
       <section id="features" className={ANCHOR_SCROLL_MT}>
         <FeatureBlocks
+          locale={locale}
           developmentName={development.name}
           developmentSlug={development.slug}
           blocks={featureBlocks}

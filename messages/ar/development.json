@@ -44,5 +44,8 @@
     "filterVillas": "فلل · {count}",
     "filterTownhouses": "تاون هاوس · {count}",
     "filterLagoon": "إطلالة على البحيرة · {count}"
+  },
+  "features": {
+    "synthCopy": "{feature} في {name}. ستظهر هنا تفاصيل المواصفات والتشطيب وإمكانية الوصول فور إصدار المطوّر لمواد البيع."
   }
 }
