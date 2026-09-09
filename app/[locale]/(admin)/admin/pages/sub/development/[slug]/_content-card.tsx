@@ -172,6 +172,11 @@ export function DevelopmentContentCard({
                   placeholder="60/40 post-handover"
                   onChange={(e) => setPlan({ name: e.target.value })}
                 />
+                <ArabicTwin
+                  field={{ key: "name_ar", label: "Plan name", kind: "text", max: 60 }}
+                  value={plan.name_ar ?? ""}
+                  onChange={(v) => setPlan({ name_ar: v || null })}
+                />
               </div>
               <div className="flex flex-col gap-1">
                 <Label htmlFor="post_months">Post-handover months</Label>
@@ -203,6 +208,11 @@ export function DevelopmentContentCard({
                       placeholder="Booking"
                       onChange={(e) => setMilestone(i, { label: e.target.value })}
                     />
+                    <ArabicTwin
+                      field={{ key: "label_ar", label: "Stage", kind: "text", max: 60 }}
+                      value={m.label_ar ?? ""}
+                      onChange={(v) => setMilestone(i, { label_ar: v || null })}
+                    />
                   </div>
                   <div className="w-[140px] flex flex-col gap-1">
                     <Label htmlFor={`ms_timing_${i}`} className="text-[11px]">
@@ -216,6 +226,11 @@ export function DevelopmentContentCard({
                       onChange={(e) =>
                         setMilestone(i, { timing: e.target.value || null })
                       }
+                    />
+                    <ArabicTwin
+                      field={{ key: "timing_ar", label: "When", kind: "text", max: 60 }}
+                      value={m.timing_ar ?? ""}
+                      onChange={(v) => setMilestone(i, { timing_ar: v || null })}
                     />
                   </div>
                   <div className="w-[90px] flex flex-col gap-1">
@@ -472,6 +487,15 @@ export function DevelopmentContentCard({
                   <Trash2 size={12} strokeWidth={1.7} />
                 </button>
               </div>
+              <ArabicTwin
+                field={{ key: "q_ar", label: "Question", kind: "text", max: 200 }}
+                value={entry.q_ar ?? ""}
+                onChange={(v) => {
+                  const faq = form.faq.slice();
+                  faq[i] = { ...faq[i], q_ar: v || null };
+                  set("faq", faq);
+                }}
+              />
               <textarea
                 className={cn(fieldCls, "resize-y min-h-[60px]")}
                 value={entry.a}
@@ -479,6 +503,15 @@ export function DevelopmentContentCard({
                 onChange={(e) => {
                   const faq = form.faq.slice();
                   faq[i] = { ...faq[i], a: e.target.value };
+                  set("faq", faq);
+                }}
+              />
+              <ArabicTwin
+                field={{ key: "a_ar", label: "Answer", kind: "textarea", max: 1200 }}
+                value={entry.a_ar ?? ""}
+                onChange={(v) => {
+                  const faq = form.faq.slice();
+                  faq[i] = { ...faq[i], a_ar: v || null };
                   set("faq", faq);
                 }}
               />
@@ -491,7 +524,12 @@ export function DevelopmentContentCard({
             variant="outline"
             size="sm"
             className="self-start"
-            onClick={() => set("faq", [...form.faq, { q: "", a: "" }])}
+            onClick={() =>
+              set("faq", [
+                ...form.faq,
+                { q: "", a: "", q_ar: null, a_ar: null },
+              ])
+            }
           >
             <Plus size={12} strokeWidth={1.8} /> Add question
           </Button>

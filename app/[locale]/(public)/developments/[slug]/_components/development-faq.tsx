@@ -1,10 +1,14 @@
+import { getTranslations } from "next-intl/server";
 import { ChevronDown } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { DevelopmentDetail } from "@/lib/queries/developments";
 import type { FaqEntry } from "@/lib/queries/development-extras";
 import { quarterLabel as devQuarterLabel } from "@/lib/schemas/development";
+import { arabicFor } from "@/lib/i18n/arabic-store";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 
 type Props = {
+  locale: Locale;
   development: DevelopmentDetail;
   /** Custom-curated FAQ from `development.meta.faq` overrides the synth set. */
   curated?: FaqEntry[];
@@ -20,14 +24,20 @@ type Props = {
  * present (CMS-curated), it wins; otherwise we synthesise a default set from
  * the development's own facts so every page surfaces something useful.
  */
-export function DevelopmentFaq({
+export async function DevelopmentFaq({
+  locale,
   development,
   curated,
   eyebrow,
   heading,
   intro,
 }: Props) {
-  const entries: FaqEntry[] = curated?.length ? curated : synthFaq(development);
+  // Explicit locale, never ambient — an ambient read resolves through
+  // `headers()` and would take this route off prerendering.
+  const t = await getTranslations({ locale, namespace: "development.faq" });
+  const entries: FaqEntry[] = curated?.length
+    ? localiseFaq(curated, locale)
+    : synthFaq(development, t);
   if (!entries.length) return null;
 
   const ld = {
@@ -46,12 +56,12 @@ export function DevelopmentFaq({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
       />
-      <Eyebrow>{eyebrow ?? "FAQ"}</Eyebrow>
+      <Eyebrow>{eyebrow ?? t("eyebrow")}</Eyebrow>
       <h2
         className="serif text-[36px] mt-2 leading-tight max-w-[28ch]"
         style={{ letterSpacing: "-0.02em" }}
       >
-        {heading ?? "Frequently asked, plainly answered."}
+        {heading ?? t("heading")}
       </h2>
       {intro ? (
         <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
@@ -85,55 +95,89 @@ export function DevelopmentFaq({
   );
 }
 
-function synthFaq(d: DevelopmentDetail): FaqEntry[] {
+/**
+ * The default FAQ, from the project's own facts.
+ *
+ * Every entry used to be a template literal, so on `/ar` the tokens folded and
+ * the sentence around them did not: "ذا كانوبيز آت ياس بوينت sits within جزيرة
+ * ياس, Abu Dhabi." — half-translated, and mixed-direction in a way that reads
+ * worse than plain English would. Seven questions and seven answers, on every
+ * project page, and the FAQPage JSON-LD carried the same mixture into search
+ * results.
+ *
+ * The templates live in the catalogue now, so the sentence is written once per
+ * language and the tokens are arguments rather than concatenation — which is
+ * also what lets Arabic put them where Arabic wants them.
+ */
+function synthFaq(
+  d: DevelopmentDetail,
+  t: (key: string, values?: Record<string, string>) => string,
+): FaqEntry[] {
   const entries: FaqEntry[] = [];
+  const name = d.name;
 
   if (d.developer?.name) {
     entries.push({
-      q: `Who is the developer of ${d.name}?`,
-      a: `${d.name} is developed by ${d.developer.name}. You can review their portfolio, delivery track record, and past Abu Dhabi projects on the Bazar developer profile linked above.`,
+      q: t("developerQ", { name }),
+      a: t("developerA", { name, developer: d.developer.name }),
     });
   }
 
   if (d.area?.name) {
     entries.push({
-      q: `Where is ${d.name} located?`,
-      a: `${d.name} sits within ${d.area.name}, Abu Dhabi. The interactive map on this page anchors the master plan to the wider community and shows commute times to key destinations.`,
+      q: t("locationQ", { name }),
+      a: t("locationA", { name, area: d.area.name }),
     });
   }
 
   if (d.handover_date) {
     entries.push({
-      q: `When does ${d.name} hand over?`,
-      a: `Currently scheduled for ${devQuarterLabel(d.handover_date)}. Developers occasionally adjust handover quarters — your Bazar advisor will flag any movement and let you know what it means for resale, mortgage timing, and rental projections.`,
+      q: t("handoverQ", { name }),
+      a: t("handoverA", { quarter: devQuarterLabel(d.handover_date) }),
     });
   }
 
   if (d.payment_plan?.name) {
     entries.push({
-      q: `What payment plan is offered at ${d.name}?`,
-      a: `${d.payment_plan.name}. Use the Payment plan calculator above to see milestone amounts for the unit type you're considering, or ask Bazar for a custom cash-flow projection across the construction window.`,
+      q: t("planQ", { name }),
+      a: t("planA", { plan: d.payment_plan.name }),
     });
   }
 
   if (d.bedrooms_text) {
     entries.push({
-      q: `What unit types are available at ${d.name}?`,
-      a: `${d.bedrooms_text}. The Units table above shows live availability across the current release.`,
+      q: t("unitsQ", { name }),
+      a: t("unitsA", { beds: d.bedrooms_text }),
     });
   }
 
   entries.push({
-    q: `Can foreigners buy at ${d.name}?`,
-    a: `Yes — ${d.name} is in a designated freehold area of Abu Dhabi, which means non-resident buyers can take title in their own name and apply for the property-linked residency visa. Bazar handles the entire process end-to-end.`,
+    q: t("foreignQ", { name }),
+    a: t("foreignA", { name }),
   });
 
   if (d.escrow_account) {
     entries.push({
-      q: "Is the payment plan escrow-backed?",
-      a: `Yes. ${d.name} payments are held in a RERA-registered escrow account (${d.escrow_account}). Funds release to the developer only against verified construction milestones — your capital is protected until handover.`,
+      q: t("escrowQ"),
+      a: t("escrowA", { name, escrow: d.escrow_account }),
     });
   }
 
   return entries;
+}
+
+/**
+ * Fold a CMS-curated FAQ. Same ladder as `localiseFeatureBlocks`, same reason:
+ * `meta.faq` is a jsonb bag whose rows predate its `_ar` twins, so the
+ * presence guard in `localiseRow` would never let the store be consulted.
+ */
+function localiseFaq(entries: FaqEntry[], locale: Locale): FaqEntry[] {
+  if (locale === DEFAULT_LOCALE) return entries;
+  const pick = (typed: string | null | undefined, english: string) =>
+    typed?.trim() ? typed : (arabicFor(english) ?? english);
+  return entries.map((e) => ({
+    ...e,
+    q: pick(e.q_ar, e.q),
+    a: pick(e.a_ar, e.a),
+  }));
 }

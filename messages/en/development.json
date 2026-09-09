@@ -6,7 +6,9 @@
     "from": "From",
     "bedrooms": "Bedrooms",
     "offPlan": "Off-plan",
-    "priceOnRequest": "Price on request"
+    "priceOnRequest": "Price on request",
+    "developerFallback": "Developer",
+    "areaFallback": "Abu Dhabi"
   },
   "facts": {
     "architecture": "Architecture",
@@ -23,7 +25,14 @@
     "onHandover": "{pct}% on key-handover",
     "overMonths": "{pct}% over {months} months",
     "overInstalments": "{pct}% over {instalments}",
-    "afterHandover": "{pct}% after handover"
+    "afterHandover": "{pct}% after handover",
+    "duringConstruction": "During construction",
+    "atHandover": "At handover",
+    "postHandover": "Post-handover",
+    "pricingFor": "Pricing for",
+    "customPdf": "Custom plan as PDF",
+    "preparing": "Preparing…",
+    "eyebrow": "Payment plan · {plan}"
   },
   "units": {
     "type": "Type",
@@ -47,5 +56,39 @@
   },
   "features": {
     "synthCopy": "{feature} at {name}. Specification, finish, and access details will surface here as the developer releases sales collateral."
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "heading": "Frequently asked, plainly answered.",
+    "developerQ": "Who is the developer of {name}?",
+    "developerA": "{name} is developed by {developer}. You can review their portfolio, delivery track record, and past Abu Dhabi projects on the Bazar developer profile linked above.",
+    "locationQ": "Where is {name} located?",
+    "locationA": "{name} sits within {area}, Abu Dhabi. The interactive map on this page anchors the master plan to the wider community and shows commute times to key destinations.",
+    "handoverQ": "When does {name} hand over?",
+    "handoverA": "Currently scheduled for {quarter}. Developers occasionally adjust handover quarters — your Bazar advisor will flag any movement and let you know what it means for resale, mortgage timing, and rental projections.",
+    "planQ": "What payment plan is offered at {name}?",
+    "planA": "{plan}. Use the Payment plan calculator above to see milestone amounts for the unit type you're considering, or ask Bazar for a custom cash-flow projection across the construction window.",
+    "unitsQ": "What unit types are available at {name}?",
+    "unitsA": "{beds}. The Units table above shows live availability across the current release.",
+    "foreignQ": "Can foreigners buy at {name}?",
+    "foreignA": "Yes — {name} is in a designated freehold area of Abu Dhabi, which means non-resident buyers can take title in their own name and apply for the property-linked residency visa. Bazar handles the entire process end-to-end.",
+    "escrowQ": "Is the payment plan escrow-backed?",
+    "escrowA": "Yes. {name} payments are held in a RERA-registered escrow account ({escrow}). Funds release to the developer only against verified construction milestones — your capital is protected until handover."
+  },
+  "nav": {
+    "overview": "Overview",
+    "master-plan": "Master plan",
+    "payment-plan": "Payment plan",
+    "units": "Units",
+    "floor-plans": "Floor plans",
+    "renders": "Renders",
+    "features": "Features",
+    "unit-plans": "Units & floor plans",
+    "location": "Location",
+    "developer": "Developer",
+    "faq": "FAQs"
+  },
+  "developer": {
+    "founded": "Founded {year}"
   }
 }

@@ -5,6 +5,7 @@ import { localiseDeep } from "@/lib/i18n/localise";
 import { mediaPublicUrl } from "@/lib/media";
 import { SEED_AGENTS, type SeedAgent } from "@/lib/seeds/agents";
 import type { DevelopmentIndexRow } from "@/lib/queries/developments";
+import { localiseRow } from "@/lib/i18n/localise";
 
 /**
  * Reads for the parts of a project page an editor curates on the record:
@@ -64,13 +65,24 @@ export async function getAdvisorForBanner(
   if (!isSupabaseConfigured) return null;
   try {
     const supabase = createSupabasePublicClient();
-    const { data } = await supabase
+    const { data: raw } = await supabase
       .from("staff")
-      .select("user_id, display_name, slug, title, brn, bio, status")
+      .select(
+        // The `_ar` twins were absent from this select, so there was nothing
+        // for a fold to fold and the advisor band on every /ar project page
+        // published an English name, title and pull quote. Selecting them is
+        // half the fix; `localiseRow` below is the other half — the same pair
+        // of mistakes `getDeveloperBySlug` documents from the other side.
+        "user_id, display_name, display_name_ar, slug, title, title_ar, brn, bio, bio_ar, status",
+      )
       .eq("user_id", userId)
       .eq("status", "active")
       .maybeSingle();
-    if (!data) return null;
+    if (!raw) return null;
+    const data = localiseRow(
+      raw as unknown as Record<string, unknown>,
+      await currentLocale(),
+    ) as unknown as typeof raw;
 
     // Contact details still come from the seeded profile when there's a match
     // on slug — `staff` doesn't carry phone/WhatsApp yet.

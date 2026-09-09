@@ -68,29 +68,39 @@ describe("the code-side defaults", () => {
     expect(withArabic.length).toBeGreaterThanOrEqual(12);
   });
 
-  it("serves a half-translated snippet in English, not in both", async () => {
+  it("never mixes the two languages inside one snippet", async () => {
     /*
-     * The invariant that matters, asserted on BEHAVIOUR rather than on data.
+     * The invariant, asserted over EVERY page rather than over whichever ones
+     * happen to be half-translated today.
      *
-     * Three pages have an Arabic title and an English description, because
-     * their descriptions were blocked by the round trip. An earlier version of
-     * this test asserted that could not happen, which made it a test somebody
-     * would have to keep green by hand. `masterPageMetadata` now refuses the
-     * pairing outright: unless both halves have Arabic, the whole snippet
-     * stays English.
+     * The first version of this test asserted the pairing could not arise —
+     * something a person had to keep green by hand. The second asserted the
+     * behaviour, but only on pages that were actually half-translated, and so
+     * it began failing the moment the last two descriptions were translated:
+     * `expect(half.length).toBeGreaterThan(0)` made finishing the work a test
+     * failure. Both shapes tied the test to the state of the corpus.
+     *
+     * This shape does not. `masterPageMetadata` must serve a snippet wholly in
+     * one language, and that is true whether zero pages or all of them are
+     * half-translated — so completing a translation can never break it, and
+     * regressing the rule always will.
      */
     const { masterPageMetadata } = await import("@/lib/queries/search-appearance");
 
-    const half = Object.entries(MASTER_PAGE_SEO_DEFAULTS).filter(
-      ([, d]) => Boolean(arabicFor(d.title)) !== Boolean(arabicFor(d.description)),
-    );
-    expect(half.length, "no half-translated page left to check").toBeGreaterThan(0);
-
-    for (const [key, d] of half) {
+    for (const [key, d] of Object.entries(MASTER_PAGE_SEO_DEFAULTS)) {
       const meta = await masterPageMetadata(key as never, "ar");
-      const title = typeof meta.title === "string" ? meta.title : (meta.title as { absolute?: string })?.absolute;
-      expect(title ?? d.title, `${key} title`).toBe(d.title);
-      expect(meta.description, `${key} description`).toBe(d.description);
+      const raw =
+        typeof meta.title === "string"
+          ? meta.title
+          : (meta.title as { absolute?: string })?.absolute;
+      const titleTranslated = (raw ?? d.title) !== d.title;
+      const descriptionTranslated =
+        (meta.description ?? d.description) !== d.description;
+      expect(
+        titleTranslated,
+        `${key}: the title and the description disagree about which language ` +
+          `this snippet is in`,
+      ).toBe(descriptionTranslated);
     }
   });
 

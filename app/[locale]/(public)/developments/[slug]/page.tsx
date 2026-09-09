@@ -189,6 +189,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   // `t` is already this page's own namespace; `tp` is the shared
   // `pages` bag for the strings W6 extracted out of the JSX.
   const tp = await getTranslations({ locale, namespace: "pages.development" });
+  // The public anchor strip's own labels — see `navItems` below.
+  const tnav = await getTranslations({ locale, namespace: "development.nav" });
   const tc = await getTranslations({ locale, namespace: "development.card" });
   const { slug } = await params;
   const development = await getPublishedDevelopmentBySlug(slug);
@@ -744,7 +746,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </div>
             {development.developer_profile.founded_year ? (
               <div className="text-[12.5px] text-bz-muted mt-1">
-                Founded {development.developer_profile.founded_year}
+                {t("developer.founded", {
+                  year: String(development.developer_profile.founded_year),
+                })}
               </div>
             ) : null}
           </div>
@@ -774,6 +778,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     // DevelopmentFaq carries its own `id="faq"` anchor.
     faq: (
       <DevelopmentFaq
+        locale={locale}
         development={development}
         curated={meta?.faq}
         eyebrow={sv("faq", "eyebrow") ?? shared("faq", "eyebrow")}
@@ -798,7 +803,19 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     .filter(
       (s) => s.enabled && ANCHORED_SECTIONS.has(s.key) && nodes[s.key] != null,
     )
-    .map((s) => ({ key: s.key, label: s.def.label }));
+    /*
+     * `s.def.label` is the label the CMS shows an EDITOR — "Units & floor
+     * plans", "Master plan" — and it was being printed straight into the
+     * public anchor strip, which is why the sub-nav stayed English on /ar
+     * however much of the page around it folded. An admin label has no
+     * translation by design; the anchors need their own words, so they take
+     * them from the catalogue, keyed by section, and fall back to the editor
+     * label only for a section the catalogue has not been taught yet.
+     */
+    .map((s) => ({
+      key: s.key,
+      label: tnav.has(s.key) ? tnav(s.key) : s.def.label,
+    }));
 
   return (
     <article className="bg-bz-bg pb-24 md:pb-0">
@@ -845,8 +862,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           </div>
           <div className="mt-auto">
             <div className="eyebrow" style={{ color: "rgba(255,255,255,.72)" }}>
-              {development.developer?.name ?? "Developer"} ·{" "}
-              {development.area?.name ?? "Abu Dhabi"}
+              {development.developer?.name ?? tc("developerFallback")} ·{" "}
+              {development.area?.name ?? tc("areaFallback")}
             </div>
             <h1
               className="serif text-[48px] md:text-[96px] font-normal mt-3"

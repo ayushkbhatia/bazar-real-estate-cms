@@ -263,6 +263,39 @@ describe("message catalogues", () => {
        * surface in a way no other check would see.
        */
       "View",
+      /*
+       * "Payment plan" is the same words about the same thing, rendered two
+       * ways on purpose — and the choice is the client's, not ours.
+       *
+       *   pages.development.paymentPlan  خطة السداد, which is what
+       *                                  `lib/i18n/mt/glossary.ts` binds the
+       *                                  term to and what a machine draft
+       *                                  produces.
+       *   development.nav.payment-plan   خطة الدفع, the wording the client
+       *                                  published on all 22 project pages
+       *                                  (see the note in
+       *                                  `lib/master-pages/development-page.ts`).
+       *
+       * The nav anchor has to match the heading it scrolls the reader to, so
+       * it follows the published wording rather than the glossary. Changing
+       * either without the other is what this entry exists to make deliberate.
+       */
+      "Payment plan",
+      /*
+       * "Developer" is a role in one place and a thing in another.
+       *
+       *   editorial.eyebrow.developer  مطور عقاري — "a real-estate developer",
+       *                                an eyebrow classifying an article.
+       *   development.nav.developer    المطوّر — "the developer", a definite
+       *                                noun naming the section of THIS project
+       *                                page, and the fallback on a card whose
+       *                                developer is unknown.
+       *
+       * The indefinite form reads as a job title above a section heading; the
+       * definite form reads as a category above an article. Neither survives
+       * being used for the other.
+       */
+      "Developer",
     ]);
     /*
      * "List" used to sit here too, for the same reason: `search.view.list` is
