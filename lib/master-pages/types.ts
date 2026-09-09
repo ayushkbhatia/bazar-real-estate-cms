@@ -44,6 +44,24 @@ export type SimpleFieldDef = {
    * the English cap silently truncates real copy.
    */
   maxAr?: number;
+  /**
+   * Greyed text shown in the empty input — what this field falls through to
+   * when it is left blank.
+   *
+   * Exists because `help` cannot carry it. `FieldLabel` draws help on the
+   * label's baseline row and suppresses it whenever `max` is set
+   * (`help && !count`), so on every capped text field — which is all of them
+   * on a sub-page — the help string is dead UI. A blank field's fallback is
+   * exactly the thing an editor needs to see before deciding whether to type,
+   * and a placeholder is where a reader already looks for it.
+   *
+   * Set it only where the fallback is a REAL string the reader will get. A
+   * placeholder that describes the field ("Enter a heading") teaches nothing
+   * the label did not already say.
+   */
+  placeholder?: string;
+  /** The same, for the Arabic twin. */
+  placeholderAr?: string;
 };
 
 /**

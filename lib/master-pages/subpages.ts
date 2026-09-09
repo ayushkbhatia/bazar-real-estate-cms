@@ -1,3 +1,7 @@
+import {
+  DEVELOPMENT_PAGE_ADMIN_PATH,
+  developmentPageCopyDefault,
+} from "./development-page";
 import type {
   FieldDef,
   MasterPageDef,
@@ -118,22 +122,34 @@ export function isSubPageSlug(slug: string): boolean {
   return slug.startsWith(SUBPAGE_SLUG_PREFIX);
 }
 
-const optionalText = (key: string, label: string, help: string) => ({
+const optionalText = (
+  key: string,
+  label: string,
+  help: string,
+  extra: Partial<SimpleFieldDef> = {},
+): SimpleFieldDef => ({
   key,
   label,
   kind: "text" as const,
   max: 160,
   optional: true,
   help,
+  ...extra,
 });
 
-const optionalBody = (key: string, label: string, help: string) => ({
+const optionalBody = (
+  key: string,
+  label: string,
+  help: string,
+  extra: Partial<SimpleFieldDef> = {},
+): SimpleFieldDef => ({
   key,
   label,
   kind: "textarea" as const,
   max: 900,
   optional: true,
   help,
+  ...extra,
 });
 
 /**
@@ -181,29 +197,89 @@ function section(
 }
 
 /**
+ * What a blank field on THIS project falls through to.
+ *
+ * The wording is `lib/master-pages/development-page.ts`'s, quoted back so an
+ * editor can see what they are replacing, and named as shared so they can see
+ * that clearing this field is not the same as clearing that one. It used to be
+ * a string typed here beside the identical string typed in the page and the
+ * identical string typed in the registry — three copies of "Overview", two of
+ * them free to drift, and one of them (`renders`) already had.
+ *
+ * A field the shared document does not carry — the intros that render only
+ * when someone writes one — keeps the old wording, because for those there is
+ * genuinely nothing to fall through to.
+ */
+export function sharedCopyHelp(sectionKey: string, field: string): string {
+  const shipped = developmentPageCopyDefault(sectionKey, field);
+  if (shipped === null)
+    return field === "eyebrow"
+      ? "Blank keeps the built-in label."
+      : field === "heading"
+        ? "Blank keeps the built-in heading."
+        : "Blank keeps the built-in copy.";
+  return (
+    `Blank keeps the wording every project shares — “${shipped}”. ` +
+    `Change it for all of them at ${DEVELOPMENT_PAGE_ADMIN_PATH}.`
+  );
+}
+
+/**
+ * `help` plus the greyed text the empty input shows.
+ *
+ * The placeholder is the shared wording VERBATIM, tokens and all — an editor
+ * sees `Within {name}` rather than `Within Saadiyat Lagoons`. Substituting
+ * would need the area, developer, plan name and two unit counts on a screen
+ * that loads none of them, and a placeholder that filled three tokens and left
+ * three would read as a bug. Whole-or-nothing, with the banner above the form
+ * saying what a token is.
+ *
+ * This is the half of "pre-filled" that is actually visible. `help` is drawn
+ * on the label's baseline row and suppressed whenever `max` is set
+ * (`FieldLabel`, `admin/_fields/field-editor.tsx`), which is every field here.
+ */
+function sharedCopyField(
+  sectionKey: string,
+  field: string,
+): { help: string; placeholder?: string; placeholderAr?: string } {
+  const shipped = developmentPageCopyDefault(sectionKey, field);
+  const arabic = developmentPageCopyDefault(sectionKey, `${field}_ar`);
+  return {
+    help: sharedCopyHelp(sectionKey, field),
+    ...(shipped === null ? {} : { placeholder: shipped }),
+    ...(arabic === null ? {} : { placeholderAr: arabic }),
+  };
+}
+
+const sharedText = (field: string, label: string, sectionKey: string) => {
+  const { help, ...rest } = sharedCopyField(sectionKey, field);
+  return optionalText(field, label, help, rest);
+};
+
+const sharedBody = (field: string, label: string, sectionKey: string) => {
+  const { help, ...rest } = sharedCopyField(sectionKey, field);
+  return optionalBody(field, label, help, rest);
+};
+
+/**
  * A section whose eyebrow, heading and intro are all overridable — the shape
  * every block on a project page has. It sits alongside `section()` rather than
  * replacing it because the area template's page reads only heading and intro;
  * declaring an eyebrow there would put a third dead field in front of an
  * editor, which is the problem this whole run has been unpicking.
- *
- * `eyebrowDefault` is quoted back in the field's help text, so an editor can
- * see what they are replacing — including the ones the page assembles from the
- * record, written here with the moving part in angle brackets.
  */
 function copySection(
   key: string,
   label: string,
   description: string,
-  eyebrowDefault: string,
   opts: Partial<SectionDef> & { extraFields?: FieldDef[] } = {},
 ): SectionDef {
   const { extraFields = [], defaults = {}, ...rest } = opts;
   return section(key, label, description, {
     fields: [
-      optionalText("eyebrow", "Eyebrow", `Blank keeps “${eyebrowDefault}”.`),
-      optionalText("heading", "Heading", "Blank keeps the built-in heading."),
-      optionalBody("intro", "Intro", "Blank keeps the built-in copy."),
+      sharedText("eyebrow", "Eyebrow", key),
+      sharedText("heading", "Heading", key),
+      sharedBody("intro", "Intro", key),
       ...extraFields,
     ],
     defaults: { eyebrow: null, heading: null, intro: null, ...defaults },
@@ -235,16 +311,8 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
         kind: "file",
         help: "Opens in a new tab once someone completes the form. Leave empty and the button still captures the lead, telling them an advisor will send it.",
       },
-      optionalText(
-        "brochure_label",
-        "Brochure button label",
-        "Blank keeps “Download brochure”.",
-      ),
-      optionalText(
-        "interest_label",
-        "Interest button label",
-        "Blank keeps “Register your interest”. Opens the enquiry form for this project.",
-      ),
+      sharedText("brochure_label", "Brochure button label", "hero"),
+      sharedText("interest_label", "Interest button label", "hero"),
     ],
     defaults: {
       image: { media_id: null, alt: null, label: null },
@@ -261,63 +329,38 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
     fields: [],
     defaults: {},
   }),
-  copySection(
-    "overview",
-    "Overview",
-    "Project summary and key facts.",
-    "Overview",
-  ),
-  copySection(
-    "master-plan",
-    "Master plan",
-    "Site plan image and description.",
-    "Master plan",
-  ),
+  copySection("overview", "Overview", "Project summary and key facts."),
+  copySection("master-plan", "Master plan", "Site plan image and description."),
   copySection(
     "payment-plan",
     "Payment plan",
     "Instalment schedule and calculator.",
-    "Payment plan · <plan name>",
     { dataNote: "The schedule comes from the development record." },
   ),
-  copySection(
-    "units",
-    "Units",
-    "Availability table.",
-    "Available units · <n> of <total> remaining",
-    { dataNote: "Rows come from the development's units." },
-  ),
+  copySection("units", "Units", "Availability table.", {
+    dataNote: "Rows come from the development's units.",
+  }),
   copySection(
     "floor-plans",
     "Floor plans",
     "Layouts, gated behind a lead form.",
-    "Floor plans",
     { dataNote: "Plans come from the development's floor-plan records." },
   ),
   copySection(
     "renders",
     "Renders",
     "Interior and exterior imagery, side by side in one section.",
-    "The vision",
     {
       dataNote:
         "Leave the exterior gallery empty to show the images attached to the development record (roles render/gallery). A gallery with nothing in it drops its half of the split, and the other one spans the width.",
       extraFields: [
-        optionalText(
-          "interior_heading",
-          "Interior column heading",
-          "Blank keeps “Interior”.",
-        ),
+        sharedText("interior_heading", "Interior column heading", "renders"),
         gallery(
           "interior_images",
           "Interior renders",
           "Shown in the left half. Order here is order on the page.",
         ),
-        optionalText(
-          "exterior_heading",
-          "Exterior column heading",
-          "Blank keeps “Exterior”.",
-        ),
+        sharedText("exterior_heading", "Exterior column heading", "renders"),
         gallery(
           "exterior_images",
           "Exterior renders",
@@ -332,61 +375,41 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
       },
     },
   ),
-  copySection(
-    "features",
-    "Features",
-    "Amenity and finish highlights.",
-    "Within <project name>",
-  ),
+  copySection("features", "Features", "Amenity and finish highlights."),
   copySection(
     "unit-plans",
     "Units & floor plans",
     "Unit-type buttons and the layouts under each.",
-    "Units",
     {
       dataNote:
         "Types and layouts come from the project's unit types — edit them in “Units & floor plans” above. Up to four layouts show per type.",
     },
   ),
-  copySection("location", "Location", "Map and surroundings.", "Location"),
+  copySection("location", "Location", "Map and surroundings."),
   copySection(
     "nearby",
     "Nearby Developments",
     "Other projects going up around this one.",
-    "Future developments around · <area>",
     {
       dataNote:
         "Projects come from the neighbours picked in Page content — or, left empty, the same area's published developments.",
     },
   ),
-  copySection(
-    "developer",
-    "Developer",
-    "Profile of the developer behind it.",
-    "Developer",
-    {
-      dataNote:
-        "The card itself — name, founding year, profile copy — comes from the developer record.",
-    },
-  ),
+  copySection("developer", "Developer", "Profile of the developer behind it.", {
+    dataNote:
+      "The card itself — name, founding year, profile copy — comes from the developer record.",
+  }),
   copySection(
     "other-projects",
     "Other projects",
     "Siblings by the same developer.",
-    "Other projects by <developer>",
     { dataNote: "Cards come from the developer's other published projects." },
   ),
-  copySection(
-    "faq",
-    "FAQs",
-    "Questions, with FAQPage schema for search.",
-    "FAQ",
-  ),
+  copySection("faq", "FAQs", "Questions, with FAQPage schema for search."),
   copySection(
     "advisor",
     "Advisor banner",
     "Lead advisor contact prompt.",
-    "Lead advisor",
     {
       dataNote:
         "The banner — advisor, photo, pull quote — comes from the advisor's team record.",

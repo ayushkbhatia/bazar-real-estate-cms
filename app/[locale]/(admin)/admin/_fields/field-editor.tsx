@@ -499,13 +499,19 @@ export function ScalarField({
         <textarea
           className={cn(fieldCls, "resize-y min-h-[64px]")}
           value={text}
+          placeholder={simple.placeholder}
           onChange={(e) => onChange(e.target.value)}
         />
       ) : (
         <input
           className={fieldCls}
           value={text}
-          placeholder={field.kind === "link" ? "/buy/search" : undefined}
+          // A field's own placeholder wins over the link hint, which is a
+          // format example rather than a fallback and is worth less.
+          placeholder={
+            simple.placeholder ??
+            (field.kind === "link" ? "/buy/search" : undefined)
+          }
           onChange={(e) => onChange(e.target.value)}
         />
       )}

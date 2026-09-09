@@ -9,6 +9,7 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { mediaPublicUrl } from "@/lib/media";
 import { getDevelopmentPageContent } from "@/lib/queries/subpages";
+import { getDevelopmentPageCopy } from "@/lib/queries/development-page";
 import { withAgentPhoto } from "@/lib/queries/agent-photos";
 import {
   getAdvisorForBanner,
@@ -382,6 +383,31 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
 
   const overviewBody = sv("overview", "intro") ?? development.vision;
 
+  /*
+   * The wording every project page shares, from the one document at
+   * /admin/pages/sub/development/copy, with this project's name, area,
+   * developer, plan name and unit counts already substituted.
+   *
+   * Read here rather than in the sections themselves because two of the tokens
+   * are counts computed above, and a band that fetched its own copy would be a
+   * round-trip per band. Resolution order at every call site below is the same
+   * three steps: this project's own override, then this document, then the
+   * literal the page shipped with — which `getDevelopmentPageCopy` already
+   * folds in, so the third step only runs if a field is dropped from the
+   * registry without its reader.
+   */
+  const shared = await getDevelopmentPageCopy(
+    {
+      name: development.name,
+      area: development.area?.name ?? "",
+      developer: development.developer?.name ?? "",
+      plan: development.payment_plan?.name ?? "",
+      available: availableUnits.length,
+      total: development.total_units ?? units.length,
+    },
+    locale,
+  );
+
   const nodes: Record<string, React.ReactNode> = {
     overview: (
       <section
@@ -389,15 +415,19 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         className={`px-4 md:px-12 py-16 grid grid-cols-1 md:grid-cols-2 gap-16 ${ANCHOR_SCROLL_MT}`}
       >
         <div>
-          <Eyebrow>{sv("overview", "eyebrow") ?? "Overview"}</Eyebrow>
+          <Eyebrow>
+            {sv("overview", "eyebrow") ?? shared("overview", "eyebrow")}
+          </Eyebrow>
           <h2
             className="serif text-[30px] md:text-[44px] mt-3 leading-[1.1]"
             style={{ letterSpacing: "-0.025em" }}
           >
+            {/* Two headings rather than one with an empty token: "A community
+                within ." is worse than a sentence written for the case. */}
             {sv("overview", "heading") ??
               (development.area?.name
-                ? `A community within ${development.area.name}.`
-                : "About this development")}
+                ? shared("overview", "heading")
+                : shared("overview", "heading_no_area"))}
           </h2>
           {/* The built-in copy here is the project's own vision statement, so
               an override stands in for it rather than stacking on top. */}
@@ -428,12 +458,14 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     ),
     "master-plan": (
       <section id="master-plan" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
-        <Eyebrow>{sv("master-plan", "eyebrow") ?? "Master plan"}</Eyebrow>
+        <Eyebrow>
+          {sv("master-plan", "eyebrow") ?? shared("master-plan", "eyebrow")}
+        </Eyebrow>
         <h2
           className="serif text-[36px] mt-2"
           style={{ letterSpacing: "-0.02em" }}
         >
-          {sv("master-plan", "heading") ?? "The site"}
+          {sv("master-plan", "heading") ?? shared("master-plan", "heading")}
         </h2>
         {sv("master-plan", "intro") ? (
           <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
@@ -480,8 +512,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       <PaymentPlanSection
         id="payment-plan"
         plan={development.payment_plan}
-        eyebrow={sv("payment-plan", "eyebrow")}
-        heading={sv("payment-plan", "heading") ?? "Cash flow timeline"}
+        eyebrow={sv("payment-plan", "eyebrow") ?? shared("payment-plan", "eyebrow")}
+        heading={
+          sv("payment-plan", "heading") ??
+          shared("payment-plan", "heading") ??
+          "Cash flow timeline"
+        }
         intro={sv("payment-plan", "intro")}
         developmentName={development.name}
         units={calculatorUnits}
@@ -493,14 +529,13 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           <div className="flex justify-between items-end flex-wrap gap-4 mb-6">
             <div>
               <Eyebrow>
-                {sv("units", "eyebrow") ??
-                  `Available units · ${availableUnits.length} of ${development.total_units ?? units.length} remaining`}
+                {sv("units", "eyebrow") ?? shared("units", "eyebrow")}
               </Eyebrow>
               <h2
                 className="serif text-[28px] md:text-[40px] mt-2"
                 style={{ letterSpacing: "-0.02em" }}
               >
-                {sv("units", "heading") ?? "What's left"}
+                {sv("units", "heading") ?? shared("units", "heading")}
               </h2>
               {sv("units", "intro") ? (
                 <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
@@ -518,12 +553,14 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     "floor-plans":
       legacyFloorPlans.length > 0 ? (
         <section id="floor-plans" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
-          <Eyebrow>{sv("floor-plans", "eyebrow") ?? "Floor plans"}</Eyebrow>
+          <Eyebrow>
+            {sv("floor-plans", "eyebrow") ?? shared("floor-plans", "eyebrow")}
+          </Eyebrow>
           <h2
             className="serif text-[36px] mt-2"
             style={{ letterSpacing: "-0.02em" }}
           >
-            {sv("floor-plans", "heading") ?? "How the units lay out"}
+            {sv("floor-plans", "heading") ?? shared("floor-plans", "heading")}
           </h2>
           {sv("floor-plans", "intro") ? (
             <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
@@ -582,11 +619,17 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       interiorTiles.length + exteriorTiles.length > 0 ? (
         <section id="renders" className={ANCHOR_SCROLL_MT}>
           <RendersGallery
-            eyebrow={sv("renders", "eyebrow")}
-            heading={sv("renders", "heading")}
+            eyebrow={sv("renders", "eyebrow") ?? shared("renders", "eyebrow")}
+            heading={sv("renders", "heading") ?? shared("renders", "heading")}
             intro={sv("renders", "intro")}
-            interiorHeading={sv("renders", "interior_heading")}
-            exteriorHeading={sv("renders", "exterior_heading")}
+            interiorHeading={
+              sv("renders", "interior_heading") ??
+              shared("renders", "interior_heading")
+            }
+            exteriorHeading={
+              sv("renders", "exterior_heading") ??
+              shared("renders", "exterior_heading")
+            }
             interior={interiorTiles}
             exterior={exteriorTiles}
           />
@@ -599,8 +642,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           developmentSlug={development.slug}
           blocks={featureBlocks}
           amenitiesFallback={development.amenities}
-          eyebrow={sv("features", "eyebrow")}
-          heading={sv("features", "heading")}
+          eyebrow={sv("features", "eyebrow") ?? shared("features", "eyebrow")}
+          heading={sv("features", "heading") ?? shared("features", "heading")}
           intro={sv("features", "intro")}
         />
       </section>
@@ -617,24 +660,25 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           developmentName={development.name}
           developmentSlug={development.slug}
           gated={meta?.floorplan_gated === true}
-          eyebrow={sv("unit-plans", "eyebrow")}
-          heading={sv("unit-plans", "heading")}
-          intro={sv("unit-plans", "intro")}
+          eyebrow={sv("unit-plans", "eyebrow") ?? shared("unit-plans", "eyebrow")}
+          heading={sv("unit-plans", "heading") ?? shared("unit-plans", "heading")}
+          intro={sv("unit-plans", "intro") ?? shared("unit-plans", "intro")}
         />
       </section>
     ),
     location: (
       <section id="location" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
-        <Eyebrow>{sv("location", "eyebrow") ?? "Location"}</Eyebrow>
+        <Eyebrow>
+          {sv("location", "eyebrow") ?? shared("location", "eyebrow")}
+        </Eyebrow>
         <h2
           className="serif text-[32px] mt-2 leading-tight"
           style={{ letterSpacing: "-0.018em" }}
         >
-          {sv("location", "heading") ?? `Where ${development.name} sits.`}
+          {sv("location", "heading") ?? shared("location", "heading")}
         </h2>
         <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-          {sv("location", "intro") ??
-            "Master-plan position + commute times to key Abu Dhabi destinations."}
+          {sv("location", "intro") ?? shared("location", "intro")}
         </p>
         {meta?.coords ? (
           <MapEmbed
@@ -656,25 +700,26 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       <NearbyDevelopments
         areaName={development.area?.name ?? "this area"}
         nearby={neighbours}
-        eyebrow={sv("nearby", "eyebrow")}
-        heading={sv("nearby", "heading")}
-        intro={sv("nearby", "intro")}
+        eyebrow={sv("nearby", "eyebrow") ?? shared("nearby", "eyebrow")}
+        heading={sv("nearby", "heading") ?? shared("nearby", "heading")}
+        intro={sv("nearby", "intro") ?? shared("nearby", "intro")}
       />
     ),
     developer: development.developer_profile ? (
       <section id="developer" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
-        <Eyebrow>{sv("developer", "eyebrow") ?? "Developer"}</Eyebrow>
-        {/* The card below is built from the developer's own record, so an
-              override introduces a section heading above it rather than
-              overwriting the partner's name and profile copy. */}
-        {sv("developer", "heading") ? (
-          <h2
-            className="serif text-[32px] mt-2 leading-tight"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            {sv("developer", "heading")}
-          </h2>
-        ) : null}
+        <Eyebrow>
+          {sv("developer", "eyebrow") ?? shared("developer", "eyebrow")}
+        </Eyebrow>
+        {/* The card below is built from the developer's own record, so this
+              heading sits above it rather than overwriting the partner's name
+              and profile copy. It used to render only when a project typed
+              one; every project in the catalogue had typed the same word. */}
+        <h2
+          className="serif text-[32px] mt-2 leading-tight"
+          style={{ letterSpacing: "-0.02em" }}
+        >
+          {sv("developer", "heading") ?? shared("developer", "heading")}
+        </h2>
         {sv("developer", "intro") ? (
           <p className="mt-3 text-[14.5px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
             {sv("developer", "intro")}
@@ -708,8 +753,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       <DeveloperProjectsStrip
         developerName={development.developer.name}
         siblings={siblingsByDeveloper}
-        eyebrow={sv("other-projects", "eyebrow")}
-        heading={sv("other-projects", "heading")}
+        eyebrow={
+          sv("other-projects", "eyebrow") ?? shared("other-projects", "eyebrow")
+        }
+        heading={
+          sv("other-projects", "heading") ?? shared("other-projects", "heading")
+        }
         intro={sv("other-projects", "intro")}
       />
     ) : null,
@@ -718,8 +767,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       <DevelopmentFaq
         development={development}
         curated={meta?.faq}
-        eyebrow={sv("faq", "eyebrow")}
-        heading={sv("faq", "heading")}
+        eyebrow={sv("faq", "eyebrow") ?? shared("faq", "eyebrow")}
+        heading={sv("faq", "heading") ?? shared("faq", "heading")}
         intro={sv("faq", "intro")}
       />
     ),
@@ -727,8 +776,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       <LeadAdvisorBanner
         agent={leadAdvisor}
         developmentName={development.name}
-        eyebrow={sv("advisor", "eyebrow")}
-        heading={sv("advisor", "heading")}
+        eyebrow={sv("advisor", "eyebrow") ?? shared("advisor", "eyebrow")}
+        heading={sv("advisor", "heading") ?? shared("advisor", "heading")}
         intro={sv("advisor", "intro")}
       />
     ),
@@ -849,7 +898,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                     developmentName={development.name}
                     developmentId={development.id}
                     brochureUrl={brochure?.url ?? null}
-                    buttonLabel={sv("hero", "brochure_label")}
+                    buttonLabel={
+                      sv("hero", "brochure_label") ??
+                      shared("hero", "brochure_label")
+                    }
                   />
                 ) : null}
                 {leadForms.development_interest!.enabled ? (
@@ -857,7 +909,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                     form={leadForms.development_interest!}
                     developmentName={development.name}
                     developmentId={development.id}
-                    buttonLabel={sv("hero", "interest_label")}
+                    buttonLabel={
+                      sv("hero", "interest_label") ??
+                      shared("hero", "interest_label")
+                    }
                   />
                 ) : null}
               </div>
