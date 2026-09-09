@@ -13,6 +13,7 @@ import {
   type DevelopmentEditInput,
 } from "@/lib/schemas/development";
 import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
+import { addAmenityToTaxonomy } from "../../_fields/amenity-actions";
 import { toOptions } from "@/lib/amenities";
 import { DevelopmentEditForm } from "./_form";
 import { PublishCard } from "../_publish-card";
@@ -143,6 +144,7 @@ export default async function AdminDevelopmentEditPage({ params }: PageProps) {
             developers={developers}
             areas={areas}
             amenityOptions={amenityOptions}
+            onAddAmenityToTaxonomy={addAmenityToTaxonomy}
           />
         </div>
         <aside className="sticky top-6">

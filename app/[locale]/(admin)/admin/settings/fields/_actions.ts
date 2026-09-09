@@ -5,6 +5,7 @@ import { requireRole } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import {
   listAmenitiesTaxonomyForAdmin,
+  setAmenityLabelAr,
   upsertAmenityTaxonomyEntry,
 } from "@/lib/queries/amenities-taxonomy";
 import {
@@ -167,5 +168,63 @@ export async function createAmenity(
   });
 
   revalidatePath("/admin/settings/fields");
+  return { status: "ok" };
+}
+
+/**
+ * Type the Arabic for one existing amenity.
+ *
+ * This is the half the taxonomy has been missing since 0104 added the column.
+ * The *add* form has had an Arabic input for as long as it has existed, so the
+ * twenty-one entries seeded in code carry Arabic — but the eighty-seven the
+ * client actually uses arrived by migration with `label_ar` null, and there
+ * was no screen anywhere that could fill one in. The column existed, the read
+ * path existed, and the words could not be entered.
+ *
+ * Blank clears the row rather than storing `""`: `localiseRow` and
+ * `amenityLabel` both treat an empty string as "no Arabic", and a NULL says
+ * the same thing without three helpers having to agree about whitespace.
+ */
+export async function setAmenityArabic(
+  code: string,
+  labelAr: string,
+): Promise<AmenityActionResult> {
+  await requireRole(FIELDS_ROLES);
+
+  const next = labelAr.replace(/\s+/g, " ").trim();
+  const parsed = amenityTaxonomyEntrySchema.shape.label_ar.safeParse(
+    next === "" ? null : next,
+  );
+  if (!parsed.success) {
+    return {
+      status: "error",
+      message: parsed.error.issues[0]?.message ?? "That value is too long.",
+      fieldErrors: { label_ar: "Too long" },
+    };
+  }
+
+  const all = await listAmenitiesTaxonomyForAdmin();
+  const existing = all.find((a) => a.code === code);
+  if (!existing) {
+    return { status: "error", message: "Amenity code not found." };
+  }
+
+  const ok = await setAmenityLabelAr(code, parsed.data ?? null);
+  if (!ok) return { status: "error", message: "Update failed." };
+
+  await logAudit({
+    action: "amenity_taxonomy.set_label_ar",
+    target_kind: "amenity",
+    target_id: code,
+    before: { code, label_ar: existing.label_ar ?? null },
+    after: { code, label_ar: parsed.data ?? null },
+  });
+
+  revalidatePath("/admin/settings/fields");
+  // No public revalidation, matching the two actions above it. `/p/[slug]` is
+  // ISR at 60s and there is no locale-safe way to name "every property page"
+  // from here — `revalidateLocalised` prefixes a concrete locale, which a
+  // dynamic route pattern will not match, so the call would look like
+  // publishing and quietly do nothing.
   return { status: "ok" };
 }

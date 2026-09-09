@@ -98,6 +98,8 @@ export type AmenityCategory =
 export type AmenityTaxonomyRow = {
   code: string;
   label: string;
+  /** Arabic twin (0104). Null on a row nobody has translated yet. */
+  label_ar: string | null;
   category: AmenityCategory;
   icon: string | null;
   sort_order: number;

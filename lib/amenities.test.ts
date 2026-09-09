@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   addCustomAmenity,
+  amenityCodeFromLabel,
   amenityLabel,
   groupAmenities,
   normaliseAmenityList,
@@ -142,6 +143,72 @@ describe("amenityLabel", () => {
       "Rooftop cinema",
     ]);
     expect(amenityLabel("Rooftop cinema", OPTIONS)).toBe("Rooftop cinema");
+  });
+
+  it("prints the twin on /ar and matches on the English either way", () => {
+    // The bug this replaces: the taxonomy used to arrive already folded, so
+    // the stored English matched nothing and every amenity printed English on
+    // an Arabic page. The match is on `label`; only the output changes.
+    const ar = toOptions([
+      {
+        code: "pool",
+        label: "Pool",
+        label_ar: "مسبح",
+        category: "outdoor",
+        icon: null,
+        sort_order: 10,
+        active: true,
+      },
+    ]);
+    expect(amenityLabel("Pool", ar, { locale: "ar" })).toBe("مسبح");
+    expect(amenityLabel("pool", ar, { locale: "ar" })).toBe("مسبح");
+    expect(amenityLabel("Pool", ar, { locale: "en" })).toBe("Pool");
+    expect(amenityLabel("Pool", ar)).toBe("Pool");
+  });
+
+  it("keeps the English on /ar when the row has no twin", () => {
+    // ADR-0007: missing Arabic falls back per field, in place. Never blank.
+    expect(amenityLabel("Pool", OPTIONS, { locale: "ar" })).toBe("Pool");
+  });
+
+  it("asks the fallback only for what the taxonomy could not translate", () => {
+    const seen: string[] = [];
+    const fallback = (english: string) => {
+      seen.push(english);
+      return english === "Private garden" ? "حديقة خاصة" : null;
+    };
+    // Free text with no taxonomy row — the 55 legacy values on the live
+    // catalogue. The store is their only route to Arabic.
+    expect(
+      amenityLabel("Private garden", OPTIONS, { locale: "ar", fallback }),
+    ).toBe("حديقة خاصة");
+    // Nothing anywhere: still the English, not a blank cell.
+    expect(amenityLabel("Bay access", OPTIONS, { locale: "ar", fallback })).toBe(
+      "Bay access",
+    );
+    expect(seen).toEqual(["Private garden", "Bay access"]);
+  });
+});
+
+describe("amenityCodeFromLabel", () => {
+  it("derives a code the taxonomy schema accepts", () => {
+    expect(amenityCodeFromLabel("Rooftop cinema")).toBe("rooftop_cinema");
+    expect(amenityCodeFromLabel("Chef’s Kitchen")).toBe("chefs_kitchen");
+    expect(amenityCodeFromLabel("Yoga & Wellness Studio")).toBe(
+      "yoga_wellness_studio",
+    );
+  });
+
+  it("drops a leading run of digits rather than producing an illegal code", () => {
+    // `codeRegex` wants `^[a-z]`, and "24/7 Security" is a real label.
+    expect(amenityCodeFromLabel("24/7 Security")).toBe("security");
+  });
+
+  it("returns null when there is no Latin to build a code out of", () => {
+    // An amenity typed in Arabic. The caller supplies a base and de-dupes it;
+    // guessing a transliteration here would put a wrong identity in the table.
+    expect(amenityCodeFromLabel("مسبح خاص")).toBeNull();
+    expect(amenityCodeFromLabel("  ")).toBeNull();
   });
 });
 
