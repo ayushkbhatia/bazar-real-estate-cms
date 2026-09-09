@@ -37,6 +37,18 @@ export const featureBlockSchema = z.object({
   key: z.string().min(1).max(40),
   title: z.string().min(1, "Give the feature a title").max(80),
   copy: z.string().min(1, "Write a line or two").max(600),
+  /*
+   * The Arabic twins, beside their siblings inside the bag — the rule
+   * docs/I18N.md states for every jsonb value, and the same shape the unit
+   * types and floor plans on this record already use (`label_ar`, `blurb_ar`).
+   *
+   * Optional and nullable because 93 blocks were written before these existed.
+   * A blank twin is not a blank page: `localiseFeatureBlocks` falls through to
+   * the Arabic store, so the machine first draft (ADR-0008) renders until
+   * somebody types over it here — and what they type wins from that moment.
+   */
+  title_ar: z.string().max(80).nullable().optional(),
+  copy_ar: z.string().max(600).nullable().optional(),
   /** Media asset id, resolved to a URL when the page renders. */
   media_id: z.string().nullable().optional(),
   alt: z.string().max(160).nullable().optional(),
@@ -78,6 +90,8 @@ export function blankFeature(index: number): FeatureBlock {
     key: `feature_${index + 1}`,
     title: "",
     copy: "",
+    title_ar: null,
+    copy_ar: null,
     media_id: null,
     alt: null,
   };

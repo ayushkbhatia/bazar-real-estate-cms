@@ -1,4 +1,62 @@
 {
+  "0": {
+    "ar": "0",
+    "by": "human",
+    "at": "2026-09-01T00:00:00.000Z"
+  },
+  "1": {
+    "ar": "1",
+    "by": "machine"
+  },
+  "2": {
+    "ar": "2",
+    "by": "machine"
+  },
+  "3": {
+    "ar": "3",
+    "by": "machine"
+  },
+  "4": {
+    "ar": "4",
+    "by": "machine"
+  },
+  "5": {
+    "ar": "5",
+    "by": "machine"
+  },
+  "6": {
+    "ar": "6",
+    "by": "machine"
+  },
+  "7": {
+    "ar": "7",
+    "by": "machine"
+  },
+  "8": {
+    "ar": "8",
+    "by": "machine"
+  },
+  "11": {
+    "ar": "11",
+    "by": "machine"
+  },
+  "12": {
+    "ar": "12",
+    "by": "machine"
+  },
+  "464": {
+    "ar": "464",
+    "by": "machine"
+  },
+  "1313": {
+    "ar": "١٣١٣",
+    "by": "machine",
+    "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "2023": {
+    "ar": "2023",
+    "by": "machine"
+  },
   "& commercial": {
     "ar": "& تجاري",
     "by": "machine",
@@ -135,15 +193,6 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
-  "0": {
-    "ar": "0",
-    "by": "human",
-    "at": "2026-09-01T00:00:00.000Z"
-  },
-  "1": {
-    "ar": "1",
-    "by": "machine"
-  },
   "1 - 3": {
     "ar": "١ - ٣",
     "by": "machine",
@@ -233,10 +282,6 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:55:03.094Z"
   },
-  "11": {
-    "ar": "11",
-    "by": "machine"
-  },
   "11 km from Corniche, 20 minutes to airport": {
     "ar": "11 كم من الكورنيش، و20 دقيقة إلى المطار",
     "by": "machine",
@@ -248,10 +293,6 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
-  },
-  "12": {
-    "ar": "12",
-    "by": "machine"
   },
   "12-Month Apartment Index Change": {
     "ar": "التغير في مؤشر الشقة خلال 12 شهراً",
@@ -307,11 +348,6 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:48:08.045Z"
   },
-  "1313": {
-    "ar": "١٣١٣",
-    "by": "machine",
-    "model": "Qwen/Qwen2.5-72B-Instruct"
-  },
   "15. Termination": {
     "ar": "15. الإنهاء",
     "by": "machine",
@@ -340,6 +376,12 @@
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:38:01.546Z"
   },
+  "18-Hole Golf Course": {
+    "ar": "ملعب غولف من 18 حفرة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "18. Contact Us": {
     "ar": "18. تواصل معنا",
     "by": "machine",
@@ -355,10 +397,6 @@
     "ar": "1–4 غرفة نوم",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
-  },
-  "2": {
-    "ar": "2",
-    "by": "machine"
   },
   "2 Bedroom": {
     "ar": "2 غرفة نوم",
@@ -422,10 +460,6 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.086Z"
   },
-  "2023": {
-    "ar": "2023",
-    "by": "machine"
-  },
   "22 May 2026": {
     "ar": "22 May 2026",
     "by": "machine",
@@ -470,10 +504,6 @@
   },
   "2–6": {
     "ar": "2–6",
-    "by": "machine"
-  },
-  "3": {
-    "ar": "3",
     "by": "machine"
   },
   "3 - 6": {
@@ -554,10 +584,6 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
-  "4": {
-    "ar": "4",
-    "by": "machine"
-  },
   "4 - 6": {
     "ar": "٤ - ٦",
     "by": "machine",
@@ -625,20 +651,12 @@
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:34:12.173Z"
   },
-  "464": {
-    "ar": "464",
-    "by": "machine"
-  },
   "4–6": {
     "ar": "4–6",
     "by": "machine"
   },
   "4–7": {
     "ar": "4–7",
-    "by": "machine"
-  },
-  "5": {
-    "ar": "5",
     "by": "machine"
   },
   "5 Bedroom": {
@@ -690,10 +708,6 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:53:12.099Z"
   },
-  "6": {
-    "ar": "6",
-    "by": "machine"
-  },
   "6 Bedroom": {
     "ar": "6 غرفة نوم",
     "by": "machine",
@@ -717,10 +731,6 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:15:04.118Z"
   },
-  "7": {
-    "ar": "7",
-    "by": "machine"
-  },
   "7. Changes to This Policy": {
     "ar": "7. تغييرات على هذه السياسة",
     "by": "machine",
@@ -735,10 +745,6 @@
   },
   "78%": {
     "ar": "78%",
-    "by": "machine"
-  },
-  "8": {
-    "ar": "8",
     "by": "machine"
   },
   "8+": {
@@ -793,6 +799,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:26:57.193Z"
   },
+  "A beautifully designed swimming pool offering a refreshing setting for relaxation and leisure.": {
+    "ar": "حوض سباحة بتصميم أنيق يوفّر أجواءً منعشة للاسترخاء والاستجمام.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A beautifully designed swimming pool offering a refreshing space to relax, unwind, and enjoy leisurely moments.": {
+    "ar": "حوض سباحة بتصميم أنيق يمنحك مساحة منعشة للاسترخاء وتصفية الذهن والاستمتاع بأوقات هادئة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "A central island location with direct connections to Downtown Abu Dhabi, Al Maryah Island and the E12 highway network.": {
     "ar": "موقع مركزي في الجزيرة مع اتصال مباشر بـوسط مدينة أبوظبي وجزيرة الماريه وشبكة طريق E12.",
     "by": "machine",
@@ -839,11 +857,53 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "A curated collection of amenities designed to support comfort, wellness, and everyday living.": {
+    "ar": "مجموعة منتقاة من المرافق صُمّمت لتعزيز الراحة والعافية وجودة الحياة اليومية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A dedicated pet garden offering a safe and welcoming space for pets to play, explore and socialise.": {
+    "ar": "حديقة مخصّصة للحيوانات الأليفة توفّر مساحة آمنة ومرحّبة للعب والاستكشاف والاختلاط.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "A dedicated property consultant will review your enquiry and guide you through the next steps.": {
     "ar": "سيقوم مستشار عقاري مختص بمراجعة استفسارك وإرشادك إلى الخطوات التالية.",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "A dedicated social and lifestyle space designed for residents to gather, relax, and unwind.": {
+    "ar": "مساحة اجتماعية وحياتية مخصّصة صُمّمت ليلتقي فيها السكان ويسترخوا ويستمتعوا بأوقاتهم.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A dedicated swimming pool offering a refreshing space for leisure and recreation.": {
+    "ar": "حوض سباحة مخصّص يوفّر مساحة منعشة للاستجمام والترفيه.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A dedicated tennis court designed for recreation, fitness, and friendly matches.": {
+    "ar": "ملعب تنس مخصّص صُمّم للترفيه واللياقة والمباريات الودّية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A dedicated tennis court offering the perfect setting for recreation, fitness, and friendly matches.": {
+    "ar": "ملعب تنس مخصّص يوفّر الأجواء المثالية للترفيه واللياقة والمباريات الودّية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A dedicated wellness space designed for relaxation, treatments, and restorative experiences.": {
+    "ar": "مساحة عافية مخصّصة صُمّمت للاسترخاء والعلاجات والتجارب المجدّدة للنشاط.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "A deep resale and rental market rather than a construction site.": {
     "ar": "سوق إعادة بيع وتأجير عميق، وليس موقع بناء.",
@@ -886,6 +946,30 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:55:36.746Z"
   },
+  "A fully equipped fitness space designed to support an active and balanced lifestyle.": {
+    "ar": "مساحة لياقة مجهّزة بالكامل صُمّمت لدعم أسلوب حياة نشط ومتوازن.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A fully equipped fitness space designed to support an active and healthy lifestyle.": {
+    "ar": "مساحة لياقة مجهّزة بالكامل صُمّمت لدعم أسلوب حياة نشط وصحي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A fully equipped modern gym designed to support an active and healthy lifestyle.": {
+    "ar": "صالة رياضية عصرية مجهّزة بالكامل صُمّمت لدعم أسلوب حياة نشط وصحي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A fun and welcoming kids’ room designed for safe play, creativity and memorable moments.": {
+    "ar": "غرفة أطفال مرحة ومرحّبة صُمّمت للعب الآمن والإبداع وصنع ذكريات لا تُنسى.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "A generous three-bedroom residence designed for family living, with spacious interiors, refined finishes, outdoor areas, and a premium waterfront setting.": {
     "ar": "مسكن سخي بثلاث غرف نوم مصمم للحياة العائلية، مع مساحات داخلية واسعة، وأعمال إنشائية راقية، ومساحات خارجية، ومكان متميز على الواجهة المائية.",
     "by": "machine",
@@ -918,6 +1002,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.269Z"
+  },
+  "A landscaped elevated garden offering green spaces for relaxation and outdoor living.": {
+    "ar": "حديقة مرتفعة منسّقة توفّر مساحات خضراء للاسترخاء والحياة في الهواء الطلق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A landscaped promenade designed for walking, relaxing, and enjoying the surrounding views.": {
+    "ar": "ممشى منسّق صُمّم للتنزّه والاسترخاء والاستمتاع بالإطلالات المحيطة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "A larger 4-bedroom residence offering up to approximately 4,524 sq. ft., designed for enhanced privacy and more expansive family living. The layout includes a majlis, maid’s room, spacious family areas, private garden, balconies and a rooftop terrace, with a larger plot providing additional outdoor space.": {
     "ar": "مسكن أكبر بـ 4 غرف نوم يوفر ما يصل إلى حوالي 4,524 sq. ft.، مصمم لزيادة الخصوصية والحياة العائلية الموسعة. يتضمن التخطيط مجلسًا، وغرفة خادمة، ومساحات عائلية واسعة، وحديقة خاصة، وشرفات وتراسًا سطحيًا، مع أرض أكبر توفر مساحة خارجية إضافية.",
@@ -959,6 +1055,18 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:13:45.709Z"
+  },
+  "A modern fitness space designed for everyday workouts and an active lifestyle.": {
+    "ar": "مساحة لياقة عصرية صُمّمت للتمارين اليومية وأسلوب حياة نشط.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A modern fitness space equipped to support everyday workouts, strength training, and an active lifestyle.": {
+    "ar": "مساحة لياقة عصرية مجهّزة لدعم التمارين اليومية وتمارين القوة وأسلوب حياة نشط.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "A modern waterfront community combining high-rise residential living with parks, promenades, retail, dining and convenient access to Abu Dhabi’s financial and business districts. It offers a strong balance between city convenience and island living.": {
     "ar": "مجتمع عصري على الواجهة المائية يجمع بين السكن في الأبراج العالية والحدائق والممشى والمتاجر والمطاعم مع سهولة الوصول إلى المناطق المالية والتجارية في أبوظبي. ويوفّر توازناً قوياً بين سهولة الحياة في المدينة وأجواء السكن في الجزيرة.",
@@ -1025,6 +1133,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:34:49.618Z"
   },
+  "A private cinema space where residents can enjoy films and entertainment in comfort.": {
+    "ar": "صالة سينما خاصة يستمتع فيها السكان بالأفلام والترفيه في أجواء مريحة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "A private island off Saadiyat Island, reached by a short boat transfer.": {
     "ar": "جزيرة خاصة قبالة جزيرة السعديات، تُصل إليها بنقل بالقارب قصير.",
     "by": "machine",
@@ -1067,6 +1181,66 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:19:33.085Z"
   },
+  "A relaxed social space for coffee, light bites, and casual gatherings.": {
+    "ar": "مساحة اجتماعية هادئة للقهوة والوجبات الخفيفة واللقاءات العفوية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A relaxing pool area designed for leisure, wellness, and everyday enjoyment.": {
+    "ar": "منطقة حوض سباحة هادئة صُمّمت للاستجمام والعافية والمتعة اليومية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A relaxing poolside setting designed for leisure, sunbathing, and socialising.": {
+    "ar": "أجواء هادئة بجوار حوض السباحة صُمّمت للاستجمام والتشمّس واللقاءات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A safe and engaging indoor space created for children to play, learn, and enjoy.": {
+    "ar": "مساحة داخلية آمنة وممتعة أُنشئت ليلعب فيها الأطفال ويتعلّموا ويستمتعوا.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A safe and engaging play area designed for children to enjoy, explore, and socialize.": {
+    "ar": "منطقة لعب آمنة وممتعة صُمّمت ليستمتع فيها الأطفال ويستكشفوا ويتفاعلوا.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A safe and engaging play area designed for fun, creativity and active play.": {
+    "ar": "منطقة لعب آمنة وممتعة صُمّمت للمرح والإبداع واللعب النشط.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A safe and engaging play space designed for younger residents to enjoy and explore.": {
+    "ar": "مساحة لعب آمنة وممتعة صُمّمت ليستمتع بها صغار السكان ويستكشفوها.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A safe and engaging playground designed for fun, creativity and active play.": {
+    "ar": "ملعب آمن وممتع صُمّم للمرح والإبداع واللعب النشط.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A safe and engaging space designed for children to play, explore, and enjoy.": {
+    "ar": "مساحة آمنة وممتعة صُمّمت ليلعب فيها الأطفال ويستكشفوا ويستمتعوا.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A safe and engaging space where children can play, explore, and enjoy time outdoors.": {
+    "ar": "مساحة آمنة وممتعة يلعب فيها الأطفال ويستكشفون ويستمتعون بأوقاتهم في الهواء الطلق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "A scannable code that opens Bazar Real Estate's contact page — for office screens, printed cards, and window displays.": {
     "ar": "رمز قابل للمسح يفتح صفحة التواصل الخاصة بشركة بازار للعقارات — لشاشات المكاتب والبطاقات المطبوعة وواجهات العرض.",
     "by": "machine",
@@ -1079,6 +1253,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:00:53.574Z"
   },
+  "A serene outdoor pool designed for relaxation, leisure, and everyday enjoyment.": {
+    "ar": "حوض سباحة خارجي هادئ صُمّم للاسترخاء والاستجمام والمتعة اليومية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "A short briefing on the week's Abu Dhabi deals, advisor commentary, and one chart worth sitting with.": {
     "ar": "موجز قصير عن صفقات أبوظبي لهذا الأسبوع، وتعليقات المستشارين، ورسم بياني واحد يستحق التأمل.",
     "by": "machine",
@@ -1090,6 +1270,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:21:17.942Z"
+  },
+  "A sophisticated and welcoming lobby designed to create an impressive first impression.": {
+    "ar": "لوبي أنيق ومرحّب صُمّم ليترك انطباعاً أولاً مبهراً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A sophisticated lobby designed to provide a welcoming and luxurious first impression.": {
+    "ar": "لوبي أنيق صُمّم ليمنح انطباعاً أولاً مرحّباً وفاخراً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "A sophisticated skyline image showing ADGM, The Galleria, waterfront towers and the promenade.": {
     "ar": "صورة راقية لأفق المدينة تُظهر ADGM وذا غاليريا والأبراج المطلة على الواجهة المائية والممشى.",
@@ -1136,6 +1328,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:51:11.583Z"
   },
+  "A stunning infinity pool designed for relaxation with uninterrupted views of the surroundings.": {
+    "ar": "حوض سباحة لا نهائي مذهل صُمّم للاسترخاء مع إطلالات مفتوحة على ما حوله.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "A thoughtfully designed residence with open-plan living, contemporary interiors, generous natural light, and a private outdoor space overlooking Hudayriyat Island.": {
     "ar": "مسكن مصمم بعناية مع مساحات مفتوحة للحياة، وديكورات عصرية، وإضاءة طبيعية وافرة، ومساحة خارجية خاصة تطل على جزيرة الحديريات.",
     "by": "machine",
@@ -1146,6 +1344,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T17:00:34.989Z"
+  },
+  "A versatile multi-purpose room designed for gatherings, activities, events and everyday community use.": {
+    "ar": "غرفة متعددة الاستخدامات صُمّمت للتجمّعات والأنشطة والفعاليات والاستخدام المجتمعي اليومي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A versatile sports court created for a variety of recreational and fitness activities.": {
+    "ar": "ملعب رياضي متعدد الاستخدامات أُنشئ لمجموعة متنوعة من الأنشطة الترفيهية والرياضية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "A vibrant waterfront community with strong rental demand.": {
     "ar": "مجتمع نابض بالحياة على الواجهة المائية مع طلب قوي على الإيجار.",
@@ -1170,6 +1380,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:12:50.795Z"
+  },
+  "A welcoming and refined entrance designed to create a polished first impression for residents and guests.": {
+    "ar": "مدخل مرحّب وأنيق صُمّم ليترك انطباعاً أولاً راقياً لدى السكان والضيوف.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A welcoming outdoor space where families can relax, play, and spend quality time together.": {
+    "ar": "مساحة خارجية مرحّبة تسترخي فيها العائلات وتلعب وتقضي أوقاتاً مميزة معاً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "A well-connected suburban location positioned close to Zayed International Airport, Masdar City and the main routes towards Yas Island and central Abu Dhabi.": {
     "ar": "موقع سكني ضاحيةٌ جيد الاتصال يقع بالقرب من مطار زايد الدولي ومدينة مصدر والطرق الرئيسية المؤدية إلى جزيرة ياس ووسط أبوظبي.",
@@ -1464,6 +1686,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
   },
+  "Abu Dhabi Commercial Bank": {
+    "ar": "بنك أبوظبي التجاري",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Abu Dhabi Communities | Bazar Real Estate": {
     "ar": "مجتمعات أبوظبي | بازار العقارية",
     "by": "machine",
@@ -1475,6 +1702,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.613Z"
+  },
+  "Abu Dhabi Global Market": {
+    "ar": "سوق أبوظبي العالمي",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Abu Dhabi Global Market (ADGM)": {
     "ar": "سوق أبوظبي العالمي (ADGM)",
@@ -1509,6 +1741,11 @@
     "ar": "نادي أبوظبي للغولف",
     "by": "machine"
   },
+  "Abu Dhabi Islamic Bank": {
+    "ar": "مصرف أبوظبي الإسلامي",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Abu Dhabi Landlord Guide: How to Rent Out Your Property": {
     "ar": "دليل أبوظبي للمُلاك: كيف تؤجر عقارك",
     "by": "machine",
@@ -1538,6 +1775,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:15:37.903Z"
+  },
+  "Abu Dhabi Real Estate Centre": {
+    "ar": "مركز أبوظبي العقاري",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Abu Dhabi Real Estate News | Bazar Real Estate": {
     "ar": "أبوظبي أخبار العقارات | بازار العقارية",
@@ -1585,6 +1827,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:41:34.610Z"
+  },
+  "Abu Dhabi real-estate regulator": {
+    "ar": "الجهة المنظمة للقطاع العقاري في أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Abu Dhabi transactions": {
     "ar": "معاملات أبوظبي",
@@ -2277,6 +2524,36 @@
     "by": "machine",
     "model": "claude-opus-5"
   },
+  "An elegant and welcoming arrival space designed to create a refined first impression.": {
+    "ar": "مساحة استقبال أنيقة ومرحّبة صُمّمت لتترك انطباعاً أولاً راقياً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "An elegant arrival experience with a refined lobby that reflects the project’s luxury hospitality standards.": {
+    "ar": "تجربة وصول أنيقة مع لوبي راقٍ يعكس معايير الضيافة الفاخرة للمشروع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "An elegant dining destination offering a refined culinary experience.": {
+    "ar": "وجهة طعام أنيقة تقدّم تجربة طهي راقية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "An elegant lounge offering a comfortable space to relax, socialize, and unwind.": {
+    "ar": "صالة استراحة أنيقة توفّر مساحة مريحة للاسترخاء واللقاء وتصفية الذهن.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "An elegant lounge providing a comfortable space to relax, socialize, and unwind.": {
+    "ar": "صالة استراحة أنيقة تمنحك مساحة مريحة للاسترخاء واللقاء وتصفية الذهن.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "An established mainland district on Abu Dhabi’s eastern waterfront, bringing together the waterfront apartments of Al Raha Beach, the gated villa precincts of Al Raha Gardens and a mature spread of schools, retail and workplaces along the Sheikh Zayed Bin Sultan Street corridor.": {
     "ar": "منطقة راسخة على البر الرئيسي في الواجهة المائية الشرقية لـأبوظبي، تجمع بين الشقق المطلة على الواجهة المائية في شاطئ الراحة، ومجمعات الفيلات المسوّرة في حدائق الراحة، وانتشار ناضج للمدارس والمتاجر وأماكن العمل على امتداد شارع الشيخ زايد بن سلطان.",
     "by": "machine",
@@ -2311,6 +2588,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
+  },
+  "An open-air cinema offering a relaxed setting for entertainment under the sky.": {
+    "ar": "سينما في الهواء الطلق توفّر أجواءً هادئة للترفيه تحت السماء.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "An upscale, walkable stretch of cafés and residential towers.": {
     "ar": "امتداد راقٍ من المقاهي والأبراج السكنية يسهل التنقل فيه سيراً.",
@@ -2548,6 +2831,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T10:24:07.915Z"
   },
+  "Arrive in a stylish, welcoming lobby designed to create a refined first impression.": {
+    "ar": "استقبلك لوبي أنيق ومرحّب صُمّم ليترك انطباعاً أولاً راقياً.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "As it appears on the title deed": {
     "ar": "كما هو مذكور في سند الملكية",
     "by": "human",
@@ -2638,6 +2927,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:18:09.430Z"
   },
+  "Backed by the right people at every step.": {
+    "ar": "بدعم من الأشخاص المناسبين في كل خطوة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
   "Bada Al Jubail": {
     "ar": "بادا الجبيل",
     "by": "machine",
@@ -2648,6 +2943,12 @@
     "ar": "شرفة",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Banking & finance": {
+    "ar": "الخدمات المصرفية والتمويل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
   },
   "Banking coordination": {
     "ar": "​التنسيق المصرفي",
@@ -2798,6 +3099,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:48:08.045Z"
+  },
+  "Beach Access": {
+    "ar": "وصول إلى الشاطئ",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Beach Club": {
     "ar": "نادي الشاطئ",
@@ -2963,6 +3270,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-21T14:33:36.322Z"
   },
+  "Best Bluewater Views": {
+    "ar": "أفضل الإطلالات على المياه الزرقاء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Best fit · advisor pick": {
     "ar": "الأنسب · اختيار المستشار",
     "by": "human"
@@ -3020,6 +3333,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-21"
+  },
+  "Beyond our developer relationships, Bazar works alongside the region's leading banks and regulatory authorities — so financing, compliance, and registration are handled end to end.": {
+    "ar": "إلى جانب علاقاتنا مع المطوّرين، تعمل بازار مع أبرز البنوك والجهات التنظيمية في المنطقة — ليكون التمويل والامتثال والتسجيل مُدارًا من البداية إلى النهاية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
   },
   "Beyond property": {
     "ar": "ما وراء العقارات",
@@ -3768,11 +4087,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
   },
+  "Cinema": {
+    "ar": "سينما",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Circuit X sports hub": {
     "ar": "مجمّع سيركيت إكس الرياضي",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-21"
+  },
+  "City Cafe": {
+    "ar": "مقهى المدينة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "City Views": {
     "ar": "وجهات المدينة",
@@ -3859,6 +4190,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:23:18.817Z"
   },
+  "Club House": {
+    "ar": "نادي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Clubhouse": {
     "ar": "نادي",
     "by": "machine",
@@ -3869,6 +4206,12 @@
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:36:47.834Z"
+  },
+  "Co-Working Space": {
+    "ar": "مساحة عمل مشتركة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Co-Working Spaces": {
     "ar": "مساحات العمل المشتركة",
@@ -4149,10 +4492,22 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Conceirge": {
+    "ar": "كونسيرج",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Concierge": {
     "ar": "كونسيرج",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Connect, unwind and spend time with others in a welcoming social space designed for everyday gatherings.": {
+    "ar": "التقِ واسترخِ واقضِ وقتاً مع الآخرين في مساحة اجتماعية مرحّبة صُمّمت للتجمّعات اليومية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Connected to Abu Dhabi": {
     "ar": "استمتع بسهولة الوصول إلى أبوظبي",
@@ -4353,6 +4708,12 @@
     "ar": "لا يمكن تحميل هذا العقار",
     "by": "human"
   },
+  "Country Club": {
+    "ar": "النادي الريفي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Couple buying on Saadiyat Reserve": {
     "ar": "زوجان يشتريان في سعديات ريزيرف",
     "by": "machine",
@@ -4459,6 +4820,30 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:41:48.294Z"
   },
+  "Dedicated concierge service providing everyday assistance and added convenience for residents.": {
+    "ar": "خدمة كونسيرج مخصّصة توفّر المساعدة اليومية ومزيداً من الراحة للسكان.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Dedicated concierge services designed to make everyday living more seamless and convenient.": {
+    "ar": "خدمات كونسيرج مخصّصة صُمّمت لجعل الحياة اليومية أكثر سلاسة وراحة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Dedicated concierge services offering everyday assistance and added convenience for residents.": {
+    "ar": "خدمات كونسيرج مخصّصة تقدّم المساعدة اليومية ومزيداً من الراحة للسكان.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Dedicated outdoor dining spaces for relaxed meals and social gatherings.": {
+    "ar": "مساحات طعام خارجية مخصّصة لوجبات هادئة ولقاءات اجتماعية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Dedicated property management to help landlords protect their property, manage tenants and handle ongoing tenancy requirements efficiently.": {
     "ar": "إدارة عقارية متخصصة تساعد الملاك على حماية عقاراتهم وإدارة المستأجرين والتعامل مع متطلبات الإيجار المستمرة بكفاءة.",
     "by": "machine",
@@ -4553,6 +4938,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-21T13:49:22.637Z"
   },
+  "Direct Golf Course Access": {
+    "ar": "وصول مباشر إلى ملعب الغولف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Direct Water Frontage": {
     "ar": "واجهة مائية مباشرة",
     "by": "machine",
@@ -4565,6 +4956,24 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:57:09.582Z"
   },
+  "Direct access to the beach for a relaxed waterfront lifestyle just steps from home.": {
+    "ar": "وصول مباشر إلى الشاطئ لأسلوب حياة هادئ على الواجهة المائية على بُعد خطوات من المنزل.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Direct access to the beach for relaxed waterfront living and everyday coastal enjoyment.": {
+    "ar": "وصول مباشر إلى الشاطئ لحياة هادئة على الواجهة المائية ومتعة ساحلية يومية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Direct access to the beach for relaxed waterfront living and leisure.": {
+    "ar": "وصول مباشر إلى الشاطئ لحياة هادئة على الواجهة المائية وللاستجمام.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Direct beach access from a closed collection of homes.": {
     "ar": "شاطئ خاص يمكن الوصول إليه مباشرة من مجموعة سكنية مغلقة.",
     "by": "machine",
@@ -4576,6 +4985,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:31:21.561Z"
+  },
+  "Direct mortgage and home-finance relationships that get our clients competitive rates and faster approvals.": {
+    "ar": "علاقات مباشرة في التمويل العقاري تمنح عملاءنا أسعارًا تنافسية وموافقات أسرع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
   },
   "Direct relationships with the UAE's leading developers give Bazar clients early access to landmark communities, new launches, and off-plan opportunities.": {
     "ar": "علاقاتنا المباشرة مع كبرى شركات التطوير في الإمارات تمنح عملاء بازار وصولاً مبكراً إلى المجتمعات المميزة والإطلاقات الجديدة والفرص على الخارطة.",
@@ -4890,6 +5305,16 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T10:25:58.859Z"
   },
+  "Dubai Islamic Bank": {
+    "ar": "بنك دبي الإسلامي",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Dubai Land Department": {
+    "ar": "دائرة الأراضي والأملاك",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Dubai Parks and Resorts": {
     "ar": "دبي باركس آند ريزورتس",
     "by": "machine",
@@ -5049,6 +5474,84 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:17:50.899Z"
+  },
+  "Enjoy a beautifully designed swimming pool ideal for refreshing swims and everyday relaxation.": {
+    "ar": "استمتع بحوض سباحة بتصميم أنيق مثالي للسباحة المنعشة والاسترخاء اليومي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy a beautifully designed swimming pool ideal for refreshing swims, relaxation, and everyday leisure.": {
+    "ar": "استمتع بحوض سباحة بتصميم أنيق مثالي للسباحة المنعشة والاسترخاء والاستجمام اليومي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy al fresco dining in a beautifully designed outdoor setting made for memorable gatherings.": {
+    "ar": "استمتع بتناول الطعام في الهواء الطلق ضمن أجواء خارجية بتصميم أنيق صُنعت للقاءات لا تُنسى.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy an exceptional golfing experience across a beautifully designed 18-hole golf course.": {
+    "ar": "استمتع بتجربة غولف استثنائية على ملعب من 18 حفرة بتصميم بديع.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy an exclusive cinematic experience in a private screening room designed for comfort and entertainment.": {
+    "ar": "استمتع بتجربة سينمائية حصرية في صالة عرض خاصة صُمّمت للراحة والترفيه.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy convenient access to shops, cafés and restaurants designed for everyday living and social moments.": {
+    "ar": "استمتع بوصول سهل إلى المتاجر والمقاهي والمطاعم المصمّمة للحياة اليومية واللقاءات الاجتماعية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy immersive entertainment and friendly competition in a modern gaming room designed for all ages.": {
+    "ar": "استمتع بترفيه غامر ومنافسة ودّية في غرفة ألعاب عصرية صُمّمت لجميع الأعمار.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy landscaped green areas designed for relaxation, walking, and outdoor living.": {
+    "ar": "استمتع بمساحات خضراء منسّقة صُمّمت للاسترخاء والتنزّه والحياة في الهواء الطلق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy leisurely walks and waterfront views along a beautifully designed promenade.": {
+    "ar": "استمتع بنزهات هادئة وإطلالات على الواجهة المائية على امتداد ممشى بتصميم أنيق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy movies under the stars in a relaxed outdoor cinema setting.": {
+    "ar": "استمتع بالأفلام تحت النجوم في أجواء سينما خارجية هادئة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy private movie screenings in a comfortable, immersive cinema setting.": {
+    "ar": "استمتع بعروض أفلام خاصة في أجواء سينمائية مريحة وغامرة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy scenic fairways and an exceptional golfing experience within a beautifully landscaped setting.": {
+    "ar": "استمتع بمسارات خلابة وتجربة غولف استثنائية ضمن أجواء منسّقة ببديع التصميم.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Enjoy seamless access to the golf course, bringing every round closer to home.": {
+    "ar": "استمتع بوصول سلس إلى ملعب الغولف يجعل كل جولة أقرب إلى المنزل.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Enquire About Availability": {
     "ar": "استفسر عن التوفر",
@@ -5301,6 +5804,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:49:03.943Z"
   },
+  "Exclusive access to a private beach for a relaxed and luxurious waterfront lifestyle.": {
+    "ar": "وصول حصري إلى شاطئ خاص لأسلوب حياة هادئ وفاخر على الواجهة المائية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Exclusive communities designed for privacy and comfort.": {
     "ar": "مجتمعات حصرية مصمّمة للخصوصية والراحة.",
     "by": "machine",
@@ -5551,6 +6060,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.270Z"
+  },
+  "Explore and play in a nature-inspired playground designed for creativity, discovery and outdoor adventure.": {
+    "ar": "استكشف والعب في ملعب مستوحى من الطبيعة صُمّم للإبداع والاكتشاف والمغامرة في الهواء الطلق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Explore apartments and branded residences within Abu Dhabi’s international financial district.": {
     "ar": "اكتشف الشقق والمساكن ذات العلامات التجارية داخل الحي المالي الدولي في أبوظبي.",
@@ -6095,6 +6610,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Family Park": {
+    "ar": "حديقة عائلية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Family Pool": {
     "ar": "حوض سباحة عائلي",
     "by": "machine",
@@ -6221,6 +6742,12 @@
     "ar": "الإطلاق النهائي",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Finance": {
+    "ar": "التمويل",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
   },
   "Financial Centre": {
     "ar": "المركز المالي",
@@ -6586,6 +7113,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:07:43.953Z"
   },
+  "Find balance and reconnect in a peaceful yoga deck designed for movement, mindfulness and relaxation.": {
+    "ar": "استعد توازنك وصفاءك في مصطبة يوغا هادئة صُمّمت للحركة والتأمّل والاسترخاء.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Find commercial space": {
     "ar": "اعثر على مساحة تجارية",
     "by": "machine",
@@ -6723,6 +7256,17 @@
   },
   "Finding…": {
     "ar": "جارٍ البحث عن العقارات…",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
+  "Fine Dining Restaurant": {
+    "ar": "مطعم فاخر",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "First Abu Dhabi Bank": {
+    "ar": "بنك أبوظبي الأول",
     "by": "machine",
     "model": "claude-opus-5"
   },
@@ -7529,6 +8073,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Golf Simulator": {
+    "ar": "محاكي الغولف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Golf view": {
     "ar": "منظر للغولف",
     "by": "machine",
@@ -7611,6 +8161,12 @@
     "ar": "صالة رياضية",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Gym & Wellness Studio": {
+    "ar": "صالة رياضية واستوديو للعافية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "H1 2026 residential sales value": {
     "ar": "قيمة المبيعات السكنية في النصف 1 من 2026",
@@ -8132,6 +8688,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-21"
   },
+  "International financial centre & regulator": {
+    "ar": "مركز مالي عالمي وجهة تنظيمية",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "International schools and Al Raha Mall within a short drive.": {
     "ar": "المدارس الدولية والراحة مول على بعد مسافة قصيرة بالسيارة.",
     "by": "machine",
@@ -8215,6 +8776,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:59:23.131Z"
+  },
+  "Islamic home-finance partner": {
+    "ar": "شريك التمويل السكني الإسلامي",
+    "by": "machine",
+    "model": "claude-opus-5"
   },
   "Island Area": {
     "ar": "منطقة الجزيرة",
@@ -8511,6 +9077,30 @@
     "by": "machine",
     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
     "at": "2026-08-20T13:32:05.909Z"
+  },
+  "Kid's Play Area": {
+    "ar": "منطقة لعب للأطفال",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Kid's Room": {
+    "ar": "غرفة الأطفال",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Kid's Splash Pad": {
+    "ar": "منطقة ألعاب مائية للأطفال",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Kids Room": {
+    "ar": "غرفة الأطفال",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Kids' club": {
     "ar": "نادي الأطفال",
@@ -9248,6 +9838,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-21"
   },
+  "Lounge": {
+    "ar": "صالة استراحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Louvre Abu Dhabi": {
     "ar": "أبوظبي اللوفر",
     "by": "machine",
@@ -9928,6 +10524,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:12:56.314Z"
   },
+  "Mortgage & home-finance partner": {
+    "ar": "شريك التمويل العقاري والسكني",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Mortgage Support": {
     "ar": "دعم تمويل عقاري",
     "by": "machine",
@@ -9982,6 +10583,18 @@
   "Muheira": {
     "ar": "Muheira",
     "by": "machine"
+  },
+  "Multi-Purpose Court": {
+    "ar": "ملعب متعدد الاستخدامات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Multi-Purpose Room": {
+    "ar": "غرفة متعددة الاستخدامات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Multi-Purpose Sports Courts": {
     "ar": "ملاعب متعددة الأغراض",
@@ -10093,6 +10706,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:39:23.853Z"
+  },
+  "Nature Playground": {
+    "ar": "ملعب طبيعي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Nature-First Living": {
     "ar": "مُتعة العيش وفق الطبيعة",
@@ -10647,6 +11266,18 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:17:50.899Z"
   },
+  "Open Green Spaces": {
+    "ar": "مساحات خضراء مفتوحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Open Pool baby!": {
+    "ar": "حوض سباحة مفتوح!",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Open the camera on your phone, hold it over the code, and tap the link that appears. No app needed.": {
     "ar": "افتح الكاميرا في هاتفك، ووجّهها نحو الرمز، ثم اضغط على الرابط الذي يظهر. لا حاجة إلى أي تطبيق.",
     "by": "machine",
@@ -10762,6 +11393,12 @@
     "by": "machine",
     "model": "claude-opus-5"
   },
+  "Our developers": {
+    "ar": "مطوّرونا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
   "Our footprint": {
     "ar": "حضورنا",
     "by": "machine",
@@ -10849,6 +11486,12 @@
     "ar": "سينما خارجية",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Outdoor Dining": {
+    "ar": "مناطق طعام خارجية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Outdoor Living": {
     "ar": "المعيشة الخارجية",
@@ -10981,6 +11624,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Pet Garden": {
+    "ar": "حديقة للحيوانات الأليفة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Pet friendly": {
     "ar": "متوافق مع الحيوانات الأليفة",
     "by": "machine",
@@ -11088,6 +11737,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:29:57.232Z"
   },
+  "Play Area": {
+    "ar": "منطقة لعب",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Playground": {
     "ar": "ملعب",
     "by": "machine",
@@ -11122,6 +11777,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:58:50.310Z"
   },
+  "Podium Garden": {
+    "ar": "حديقة البوديوم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Point your camera here.": {
     "ar": "نوجّه الكاميرا إلى هنا.",
     "by": "machine",
@@ -11137,6 +11798,12 @@
     "ar": "حوض سباحة",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Pool Deck": {
+    "ar": "مصطبة حوض السباحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Pool view": {
     "ar": "منظر حوض السباحة",
@@ -11207,6 +11874,12 @@
     "ar": "حمام صغير",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Practice your swing and enjoy an immersive golfing experience with a state-of-the-art golf simulator.": {
+    "ar": "تدرّب على ضرباتك واستمتع بتجربة غولف غامرة مع محاكي غولف بأحدث التقنيات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Pre-Built Warehousing": {
     "ar": "مستودعات جاهزة البناء",
@@ -11318,6 +11991,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
+  },
+  "Private Cinema": {
+    "ar": "سينما خاصة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Private Elevator": {
     "ar": "مصعد خاص",
@@ -11985,6 +12664,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:05:14.877Z"
   },
+  "Property registration authority": {
+    "ar": "الجهة المسؤولة عن تسجيل العقارات",
+    "by": "machine",
+    "model": "claude-opus-5"
+  },
   "Property type": {
     "ar": "نوع العقار",
     "by": "machine",
@@ -12209,11 +12893,23 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T17:02:41.676Z"
   },
+  "Recharge in dedicated spa and wellness facilities created to support relaxation, balance, and wellbeing.": {
+    "ar": "جدّد نشاطك في مرافق سبا وعافية مخصّصة أُنشئت لدعم الاسترخاء والتوازن والعافية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Recognised by Leading UAE Developers": {
     "ar": "معتمدون لدى كبرى المطوّرين العقاريين في الإمارات",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
+  },
+  "Reconnect with nature in a calming sensory garden designed to inspire relaxation and discovery.": {
+    "ar": "تواصل مع الطبيعة في حديقة حسية هادئة صُمّمت لتلهم الاسترخاء والاكتشاف.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Redwood Montessori": {
     "ar": "ريدوود مونتيسوري",
@@ -12289,6 +12985,48 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:03:22.147Z"
+  },
+  "Regulation": {
+    "ar": "التنظيم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "Regulatory & government": {
+    "ar": "الجهات التنظيمية والحكومية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "Relax and recharge in a tranquil spa designed for complete wellness and rejuvenation.": {
+    "ar": "استرخِ وجدّد نشاطك في سبا هادئ صُمّم لعافية متكاملة وتجديد شامل.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Relax and refresh in a beautifully designed swimming pool created for leisure and everyday enjoyment.": {
+    "ar": "استرخِ وانتعش في حوض سباحة بتصميم أنيق أُنشئ للاستجمام والمتعة اليومية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Relax and refresh in a beautifully designed swimming pool made for leisure and everyday enjoyment.": {
+    "ar": "استرخِ وانتعش في حوض سباحة بتصميم أنيق صُنع للاستجمام والمتعة اليومية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Relax in a stunning infinity pool designed to offer a seamless sense of luxury and tranquility.": {
+    "ar": "استرخِ في حوض سباحة لا نهائي مذهل صُمّم ليمنح إحساساً متكاملاً بالفخامة والهدوء.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Relax, dine and socialise in an elegant country club designed for leisure and community.": {
+    "ar": "استرخِ وتناول الطعام والتقِ الآخرين في نادٍ ريفي أنيق صُمّم للاستجمام والحياة المجتمعية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Released homes run from roughly 4,994 to 6,361 sq. ft.": {
     "ar": "الشقق المطروحة تتراوح من حوالي 4,994 إلى 6,361 sq. ft.",
@@ -12580,6 +13318,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Residential Amenities": {
+    "ar": "مرافق سكنية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Residential Living on Al Maryah Island": {
     "ar": "السكن في جزيرة الماريه",
     "by": "machine",
@@ -12680,6 +13424,12 @@
     "ar": "تجزئة",
     "by": "human",
     "at": "2026-09-01T00:00:00.000Z"
+  },
+  "Retail & Dining": {
+    "ar": "متاجر ومطاعم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Retail Hubs": {
     "ar": "مراكز التجزئة",
@@ -13023,6 +13773,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "See it for yourself": {
+    "ar": "شاهدها بنفسك",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "See this floor plan": {
     "ar": "اطّلع على هذا المخطط",
     "by": "machine",
@@ -13195,6 +13951,12 @@
     "ar": "المستشار الرئيسي · المستأجر والإيجار",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Sensory Garden": {
+    "ar": "حديقة حسية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Service charges are fees paid for building or community maintenance, facilities, and shared areas.": {
     "ar": "رسوم الخدمات هي مبالغ تُدفع مقابل صيانة المبنى أو المجتمع والمرافق والمساحات المشتركة.",
@@ -13451,6 +14213,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Social Space": {
+    "ar": "مساحة اجتماعية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Solaya by Aldar two-bedroom Yas Island launch unit.": {
     "ar": "Solaya by Aldar وحدة إطلاق بغرفتين نوم جزيرة ياس.",
     "by": "machine",
@@ -13496,6 +14264,12 @@
     "ar": "سبا",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Spa & Wellness": {
+    "ar": "سبا ومرافق العافية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Space & Privacy": {
     "ar": "مساحة وخصوصية",
@@ -13557,10 +14331,22 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Splash, play and cool off in a fun-filled water area designed especially for children.": {
+    "ar": "العب وانتعش في منطقة ألعاب مائية مليئة بالمرح صُمّمت خصيصاً للأطفال.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Sports Courts": {
     "ar": "ملاعب رياضية",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Sports Facilities": {
+    "ar": "مرافق رياضية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Stack properties side by side.": {
     "ar": "ضع العقارات جنبًا إلى جنب.",
@@ -13625,6 +14411,42 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:30:05.269Z"
   },
+  "Stay active and recharge in a modern gym and wellness studio designed for fitness, balance and well-being.": {
+    "ar": "حافظ على نشاطك وجدّد طاقتك في صالة رياضية واستوديو عافية عصريين صُمّما للياقة والتوازن والعافية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Stay active in a fully equipped gym designed for strength, fitness and overall well-being.": {
+    "ar": "حافظ على نشاطك في صالة رياضية مجهّزة بالكامل صُمّمت للقوة واللياقة والعافية الشاملة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Stay active in a fully equipped modern gym designed for effective workouts, strength training, and everyday fitness.": {
+    "ar": "حافظ على نشاطك في صالة رياضية عصرية مجهّزة بالكامل صُمّمت لتمارين فعّالة وتمارين القوة واللياقة اليومية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Stay active in a fully equipped modern gym designed for strength, fitness, and wellbeing.": {
+    "ar": "حافظ على نشاطك في صالة رياضية عصرية مجهّزة بالكامل صُمّمت للقوة واللياقة والعافية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Stay active in a modern, fully equipped gym designed for strength, fitness and well-being.": {
+    "ar": "حافظ على نشاطك في صالة رياضية عصرية مجهّزة بالكامل صُمّمت للقوة واللياقة والعافية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Stay active with dedicated spaces designed for sports, fitness, and recreation.": {
+    "ar": "حافظ على نشاطك مع مساحات مخصّصة صُمّمت للرياضة واللياقة والترفيه.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Stay updated with Abu Dhabi real estate news, market trends, investment insights, new launches, and property updates from Bazar Real Estate.": {
     "ar": "ابقَ على اطلاع بأخبار العقارات في أبوظبي، واتجاهات السوق، ورؤى الاستثمار، والإطلاقات الجديدة، ومستجدات العقارات من بازار العقارية.",
     "by": "machine",
@@ -13682,6 +14504,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:15:04.117Z"
+  },
+  "Stroll, dine and unwind along a vibrant promenade designed for leisure and waterfront living.": {
+    "ar": "تنزّه وتناول الطعام واسترخِ على امتداد ممشى نابض بالحياة صُمّم للاستجمام والحياة على الواجهة المائية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Stroll, relax and enjoy waterfront views along a beautifully designed boardwalk.": {
+    "ar": "تنزّه واسترخِ واستمتع بإطلالات الواجهة المائية على امتداد رصيف بتصميم أنيق.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Strong Abu Dhabi presence": {
     "ar": "حضور قوي في أبوظبي",
@@ -14112,6 +14946,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-21"
   },
+  "Tennis Court": {
+    "ar": "ملعب تنس",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Tenure for Eligible Buyers": {
     "ar": "التملك للمشترين المؤهلين",
     "by": "machine",
@@ -14184,6 +15024,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T17:00:34.989Z"
+  },
+  "The Beach Club": {
+    "ar": "نادي الشاطئ",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "The Beach House": {
     "ar": "بيت الشاطئ",
@@ -14275,6 +15121,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:16:35.301Z"
   },
+  "The Gym and Pool": {
+    "ar": "الصالة الرياضية وحوض السباحة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "The Louvre and Manarat Al Saadiyat within walking distance.": {
     "ar": "المتحف اللوفر ومانارات السعديات ضمن مسافة مشي.",
     "by": "machine",
@@ -14342,6 +15194,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:58:51.025Z"
+  },
+  "The authorities that license, regulate, and register real estate across Abu Dhabi and the wider UAE.": {
+    "ar": "الجهات التي ترخّص القطاع العقاري وتنظّمه وتسجّله في أبوظبي وسائر الإمارات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
+  "The banking and regulatory institutions Bazar Real Estate works alongside — mortgage and home-finance partners and the authorities that regulate UAE real estate.": {
+    "ar": "المؤسسات المصرفية والجهات التنظيمية التي تعمل بازار العقارية إلى جانبها — شركاء التمويل العقاري والجهات التي تنظّم القطاع العقاري في الإمارات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:33:53.166133Z"
   },
   "The banks and regulators behind every deal.": {
     "ar": "البنوك والجهات التنظيمية التي تقف خلف كل صفقة.",
@@ -14434,6 +15298,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-21"
+  },
+  "The institutions": {
+    "ar": "المؤسسات التي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
   },
   "The island covers approximately 27 sq. km.": {
     "ar": "الجزيرة تغطي حوالي 27 كم مربع.",
@@ -15096,6 +15966,30 @@
     "by": "machine",
     "model": "claude-opus-5"
   },
+  "Unwind beside a beautifully designed swimming pool created for relaxation, leisure and refreshing moments.": {
+    "ar": "استرخِ بجوار حوض سباحة بتصميم أنيق أُنشئ للاسترخاء والاستجمام واللحظات المنعشة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Unwind in an elegant infinity pool designed to create a seamless sense of space, relaxation, and luxury.": {
+    "ar": "استرخِ في حوض سباحة لا نهائي أنيق صُمّم ليمنح إحساساً متكاملاً بالرحابة والاسترخاء والفخامة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Unwind in an elegant lounge offering a comfortable setting for relaxation and socializing.": {
+    "ar": "استرخِ في صالة استراحة أنيقة توفّر أجواءً مريحة للاسترخاء واللقاء.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Unwind in an infinity pool with uninterrupted views and a seamless sense of relaxation.": {
+    "ar": "استرخِ في حوض سباحة لا نهائي بإطلالات مفتوحة وإحساس متكامل بالاسترخاء.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "Urban, high-rise, mid-income to executive": {
     "ar": "حضري، أبراج شاهقة، من الدخل المتوسط إلى التنفيذي",
     "by": "machine",
@@ -15609,6 +16503,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:39:55.777Z"
+  },
+  "Wellness Room": {
+    "ar": "غرفة العافية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "Wellness-Led Masterplan": {
     "ar": "مخطط رئيسي تقوده العافية",
@@ -16379,6 +17279,24 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:14:21.433Z"
   },
+  "Work comfortably and efficiently in flexible co-working spaces designed for focus, collaboration and productivity.": {
+    "ar": "اعمل براحة وكفاءة في مساحات عمل مشتركة مرنة صُمّمت للتركيز والتعاون والإنتاجية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Work comfortably and productively in a modern co-working space designed for focus, collaboration and flexibility.": {
+    "ar": "اعمل براحة وإنتاجية في مساحة عمل مشتركة عصرية صُمّمت للتركيز والتعاون والمرونة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "Work with us": {
+    "ar": "اعمل معنا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
   "Workforce Housing": {
     "ar": "إسكان القوى العاملة",
     "by": "machine",
@@ -16680,11 +17598,23 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Yoga Deck": {
+    "ar": "مصطبة اليوغا",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
+  },
   "You agree to indemnify Bazar against claims arising from your breach\nof these terms or your misuse of the Service, to the extent permitted\nby UAE law.": {
     "ar": "توافق على تعويض بازار عن المطالبات الناشئة عن مخالفتك لهذه الشروط أو استغلالك الخاطئ للخدمة، بحسبما يسمح به القانون الإماراتي.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:48:08.045Z"
+  },
+  "You know what it is...": {
+    "ar": "أنت تعرف ما هذا...",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T16:56:53.658980Z"
   },
   "You must be at least 18 to create an account. You're responsible\nfor keeping your login credentials confidential and for all activity\nunder your account. Tell us immediately at \ndpo@bazarrealestate.ae if\nyou suspect unauthorised access.": {
     "ar": "يجب أن تكون على الأقل 18 عامًا لإنشاء حساب. أنت مسؤول عن الحفاظ على سرية بيانات تسجيل الدخول الخاصة بك وعن جميع الأنشطة تحت حسابك. أبلغنا فورًا على dpo@bazarrealestate.ae إذا كنت تشك في وصول غير مصرح به.",
@@ -17237,6 +18167,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:39:23.852Z"
   },
+  "behind": {
+    "ar": "تقف خلف",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
+  },
   "bloom living": {
     "ar": "بلوم ليفينغ",
     "by": "machine",
@@ -17372,6 +18308,12 @@
   "etihad towers": {
     "ar": "أبراج الاتحاد",
     "by": "machine"
+  },
+  "every deal.": {
+    "ar": "كل صفقة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-04T10:31:29.289407Z"
   },
   "fahid beach residences": {
     "ar": "فهد بيتش ريزيدنسز",
@@ -18394,149 +19336,5 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
-  },
-  "The institutions": {
-    "ar": "المؤسسات التي",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "behind": {
-    "ar": "تقف خلف",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "every deal.": {
-    "ar": "كل صفقة.",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "Beyond our developer relationships, Bazar works alongside the region's leading banks and regulatory authorities — so financing, compliance, and registration are handled end to end.": {
-    "ar": "إلى جانب علاقاتنا مع المطوّرين، تعمل بازار مع أبرز البنوك والجهات التنظيمية في المنطقة — ليكون التمويل والامتثال والتسجيل مُدارًا من البداية إلى النهاية.",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "Finance": {
-    "ar": "التمويل",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "Regulation": {
-    "ar": "التنظيم",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "Banking & finance": {
-    "ar": "الخدمات المصرفية والتمويل",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "Regulatory & government": {
-    "ar": "الجهات التنظيمية والحكومية",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "Direct mortgage and home-finance relationships that get our clients competitive rates and faster approvals.": {
-    "ar": "علاقات مباشرة في التمويل العقاري تمنح عملاءنا أسعارًا تنافسية وموافقات أسرع.",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "The authorities that license, regulate, and register real estate across Abu Dhabi and the wider UAE.": {
-    "ar": "الجهات التي ترخّص القطاع العقاري وتنظّمه وتسجّله في أبوظبي وسائر الإمارات.",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "Work with us": {
-    "ar": "اعمل معنا",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "Backed by the right people at every step.": {
-    "ar": "بدعم من الأشخاص المناسبين في كل خطوة.",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "Our developers": {
-    "ar": "مطوّرونا",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:31:29.289407Z"
-  },
-  "The banking and regulatory institutions Bazar Real Estate works alongside — mortgage and home-finance partners and the authorities that regulate UAE real estate.": {
-    "ar": "المؤسسات المصرفية والجهات التنظيمية التي تعمل بازار العقارية إلى جانبها — شركاء التمويل العقاري والجهات التي تنظّم القطاع العقاري في الإمارات.",
-    "by": "machine",
-    "model": "claude-opus-5",
-    "at": "2026-09-04T10:33:53.166133Z"
-  },
-  "First Abu Dhabi Bank": {
-    "ar": "بنك أبوظبي الأول",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Abu Dhabi Commercial Bank": {
-    "ar": "بنك أبوظبي التجاري",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Abu Dhabi Islamic Bank": {
-    "ar": "مصرف أبوظبي الإسلامي",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Dubai Islamic Bank": {
-    "ar": "بنك دبي الإسلامي",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Dubai Land Department": {
-    "ar": "دائرة الأراضي والأملاك",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Abu Dhabi Real Estate Centre": {
-    "ar": "مركز أبوظبي العقاري",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Abu Dhabi Global Market": {
-    "ar": "سوق أبوظبي العالمي",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Mortgage & home-finance partner": {
-    "ar": "شريك التمويل العقاري والسكني",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Islamic home-finance partner": {
-    "ar": "شريك التمويل السكني الإسلامي",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Property registration authority": {
-    "ar": "الجهة المسؤولة عن تسجيل العقارات",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "Abu Dhabi real-estate regulator": {
-    "ar": "الجهة المنظمة للقطاع العقاري في أبوظبي",
-    "by": "machine",
-    "model": "claude-opus-5"
-  },
-  "International financial centre & regulator": {
-    "ar": "مركز مالي عالمي وجهة تنظيمية",
-    "by": "machine",
-    "model": "claude-opus-5"
   }
 }

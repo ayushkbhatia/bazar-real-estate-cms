@@ -1,8 +1,12 @@
+import { getTranslations } from "next-intl/server";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { NamedFeatureBlock } from "@/lib/queries/development-extras";
+import { arabicFor } from "@/lib/i18n/arabic-store";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { FeatureRow } from "./feature-row";
 
 type Props = {
+  locale: Locale;
   developmentName: string;
   developmentSlug: string;
   blocks: NamedFeatureBlock[] | null | undefined;
@@ -24,7 +28,8 @@ type Props = {
  * then we synthesise gentle defaults from `development.amenities[]` so every
  * detail page has the section.
  */
-export function FeatureBlocks({
+export async function FeatureBlocks({
+  locale,
   developmentName,
   developmentSlug,
   blocks,
@@ -33,9 +38,17 @@ export function FeatureBlocks({
   heading,
   intro,
 }: Props) {
+  // Explicit locale, never ambient: an ambient `getTranslations` resolves
+  // through `headers()` and would take this route off prerendering.
+  const t = await getTranslations({ locale, namespace: "development" });
   const items = blocks?.length
     ? blocks
-    : synthFromAmenities(developmentName, amenitiesFallback);
+    : synthFromAmenities(
+        developmentName,
+        amenitiesFallback,
+        locale,
+        (feature, name) => t("features.synthCopy", { feature, name }),
+      );
   if (!items.length) return null;
 
   return (
@@ -82,13 +95,28 @@ export function FeatureBlocks({
 function synthFromAmenities(
   developmentName: string,
   amenities: string[] | undefined,
+  locale: Locale,
+  copyFor: (feature: string, name: string) => string,
 ): NamedFeatureBlock[] {
   if (!amenities?.length) return [];
-  return amenities.slice(0, 3).map((a) => ({
-    key: a.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-    title: capitalise(a),
-    copy: `${capitalise(a)} at ${developmentName}. Specification, finish, and access details will surface here as the developer releases sales collateral.`,
-  }));
+  return amenities.slice(0, 3).map((a) => {
+    /*
+     * `amenities[]` stores the English word — that is the contract, and the
+     * amenity taxonomy is the only place its Arabic lives (see
+     * `/admin/settings/property-fields`). So the title folds through the
+     * store, which is where the taxonomy's Arabic and the generated draft
+     * both land, and the sentence around it comes from the catalogue rather
+     * than from a template literal that only existed in English.
+     */
+    const english = capitalise(a);
+    const title =
+      locale === DEFAULT_LOCALE ? english : (arabicFor(english) ?? english);
+    return {
+      key: a.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      title,
+      copy: copyFor(title, developmentName),
+    };
+  });
 }
 
 function capitalise(s: string): string {

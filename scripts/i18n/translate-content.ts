@@ -38,6 +38,17 @@ const SUBPAGES = args.includes("--subpages");
 const FORMS = args.includes("--forms");
 /** Search appearance: the `<title>` and description a result page shows. */
 const SEO = args.includes("--seo");
+/**
+ * The named-feature blocks on a project page — the amenity cards' titles and
+ * their line or two of copy.
+ *
+ * Its own mode because the corpus is neither a section document nor a form: it
+ * lives in `developments.meta.feature_blocks`, a free-form jsonb array the
+ * project editor writes, so none of the three walks above can see it. 93
+ * blocks across 21 projects, and every word of it was rendering in English on
+ * `/ar/developments/<slug>`.
+ */
+const FEATURES = args.includes("--features");
 const PAGE = args[args.indexOf("--page") + 1];
 const LIMIT = args.includes("--limit")
   ? Number(args[args.indexOf("--limit") + 1])
@@ -68,8 +79,10 @@ function writeStore(store: Store) {
 }
 
 async function main() {
-  if (!ALL && !PAGE && !SUBPAGES && !FORMS && !SEO) {
-    console.error("Pass --page <key>, --all, --subpages, --forms, or --seo.");
+  if (!ALL && !PAGE && !SUBPAGES && !FORMS && !SEO && !FEATURES) {
+    console.error(
+      "Pass --page <key>, --all, --subpages, --forms, --seo, or --features.",
+    );
     process.exit(2);
   }
 
@@ -112,8 +125,11 @@ async function main() {
       );
     }
     console.log(`Read live content for ${storedFor.size} page(s).`);
-  } else if (SUBPAGES) {
-    console.error("--subpages needs Supabase credentials: all of its copy is in the database.");
+  } else if (SUBPAGES || FEATURES) {
+    console.error(
+      `--${SUBPAGES ? "subpages" : "features"} needs Supabase credentials: ` +
+        "all of its copy is in the database.",
+    );
     process.exit(2);
   } else {
     console.log("No Supabase credentials — walking registry defaults only.");
@@ -183,6 +199,50 @@ async function main() {
       }
     }
     console.log(`${work.length} search-appearance string(s).`);
+  }
+
+  if (FEATURES) {
+    /*
+     * `developments.meta.feature_blocks[]` — `{ key, title, copy, media_id }`.
+     *
+     * Read straight off the column rather than through `getDevelopmentMeta`,
+     * which folds: this wants the English to translate, not whatever the
+     * current locale resolves to.
+     *
+     * `key` is deliberately not collected. It is `feature_1`…`feature_7`, an
+     * array index with an underscore in it, and translating it would put
+     * Arabic in the store under a string no reader ever sees.
+     */
+    const { data } = await sb!
+      .from("developments")
+      .select("slug, meta")
+      .not("meta", "is", null);
+
+    for (const row of (data ?? []) as { slug: string; meta: unknown }[]) {
+      const meta = (row.meta ?? {}) as { feature_blocks?: unknown };
+      const blocks = Array.isArray(meta.feature_blocks)
+        ? (meta.feature_blocks as Record<string, unknown>[])
+        : [];
+      blocks.forEach((b, i) => {
+        const add = (what: string, english: unknown, kind: string, max: number) => {
+          if (typeof english !== "string" || !english.trim()) return;
+          work.push({
+            page: `development:${row.slug}`,
+            section: "features",
+            pathKey: `${i}.${what}`,
+            english,
+            kind,
+            maxLength: Math.ceil(max * 1.5),
+            identity: false,
+          });
+        };
+        // A feature name is a label on a card, so it takes the `title`
+        // register; the sentence beneath it is prose and takes `summary`.
+        add("title", b.title, "title", 80);
+        add("copy", b.copy, "summary", 600);
+      });
+    }
+    console.log(`${work.length} named-feature string(s).`);
   }
 
   if (FORMS) {
@@ -280,7 +340,10 @@ async function main() {
   }
 
   let pages: { key: string; sections: MasterPageDef["sections"] }[];
-  if (SUBPAGES) {
+  if (FEATURES) {
+    // The walk above is the whole corpus; there is no section document here.
+    pages = [];
+  } else if (SUBPAGES) {
     const { areaPageDef, developmentPageDef, subPageSlug } =
       await import("../../lib/master-pages/subpages");
     pages = [];

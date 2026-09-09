@@ -44,5 +44,8 @@
     "filterVillas": "Villas · {count}",
     "filterTownhouses": "Townhouses · {count}",
     "filterLagoon": "Lagoon access · {count}"
+  },
+  "features": {
+    "synthCopy": "{feature} at {name}. Specification, finish, and access details will surface here as the developer releases sales collateral."
   }
 }

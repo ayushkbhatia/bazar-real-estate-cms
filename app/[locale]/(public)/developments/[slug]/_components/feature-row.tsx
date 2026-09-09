@@ -6,6 +6,9 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { cn } from "@/lib/utils";
 import type { NamedFeatureBlock } from "@/lib/queries/development-extras";
 
+/** `feature_3`, `feature-3`, `feature3` — the editor's positional key. */
+const SYNTHETIC_KEY = /^feature[_-]?\d+$/i;
+
 type Props = {
   block: NamedFeatureBlock;
   reverse: boolean;
@@ -120,7 +123,15 @@ export function FeatureRow({ block, reverse, slug }: Props) {
       </div>
       <div>
         <div className={motionCls(0)} style={{ transitionDelay: step(0) }}>
-          <div className="eyebrow">{block.key.replace(/[-_]/g, " ")}</div>
+          {/* The key is an identity, not copy. Every block in production is
+              keyed `feature_1`…`feature_7` — an array index the project editor
+              assigns — and printing it put "feature 1" above "Swimming Pool"
+              in English and left raw English on the Arabic page. A key that
+              carries a real name (an older or hand-written block) still reads
+              as an eyebrow, which is what this line was for. */}
+          {SYNTHETIC_KEY.test(block.key) ? null : (
+            <div className="eyebrow">{block.key.replace(/[-_]/g, " ")}</div>
+          )}
         </div>
         <h3
           className={cn(
