@@ -63,10 +63,19 @@ export const paymentPlanMilestoneSchema = z.object({
     .nullable()
     .transform((v) => v ?? "")
     .optional(),
+  /*
+   * Arabic twins. Read ONLY at the point of display — `splitPaymentPlan`
+   * below tests `label` against an English regex to find the handover row,
+   * so folding upstream would mis-split the totals. See `useMilestoneText`.
+   */
+  label_ar: z.string().max(80).nullable().optional(),
+  timing_ar: z.string().max(60).nullable().optional(),
 });
 
 export const paymentPlanSchema = z.object({
   name: z.string().min(1).max(80),
+  /** The plan's name in Arabic — "40/60 Payment Plan" is copy, not a figure. */
+  name_ar: z.string().max(80).nullable().optional(),
   milestones: z.array(paymentPlanMilestoneSchema).min(1).max(12),
   construction_pct: optionalPercent,
   handover_pct: optionalPercent,

@@ -15,7 +15,12 @@ import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import type { DevelopmentIndexRow } from "./developments";
 
 const SIBLING_FIELDS =
-  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, published_at, developers:developer_id(name, slug), areas:area_id(name, slug), hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar)";
+  // The two joins carried no `_ar`, so `localiseDeep` below had nothing to
+  // fold in them and the sibling cards printed "Saadiyat Island" and the
+  // developer's English name on every /ar project page. Selecting the twins
+  // is half the fix, the fold is the other half — the same pair
+  // `getDeveloperBySlug` documents.
+  "id, name, name_ar, slug, status, handover_date, total_units, starting_price, tagline, tagline_ar, bedrooms_text, bedrooms_text_ar, description, description_ar, published_at, developers:developer_id(name, name_ar, slug), areas:area_id(name, name_ar, slug), hero:hero_image_id(storage_key, filename, alt_text, alt_text_ar)";
 
 /** Other developments in the same area, excluding the current one. */
 export async function listOtherDevelopmentsInArea(opts: {
@@ -169,7 +174,13 @@ export function localiseFeatureBlocks<T extends NamedFeatureBlock>(
   }));
 }
 
-export type FaqEntry = { q: string; a: string };
+export type FaqEntry = {
+  q: string;
+  a: string;
+  /** Arabic twins, beside their siblings — see `lib/schemas/development-content.ts`. */
+  q_ar?: string | null;
+  a_ar?: string | null;
+};
 
 export async function getDevelopmentMeta(
   developmentId: string,

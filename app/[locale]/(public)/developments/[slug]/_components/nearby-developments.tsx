@@ -75,7 +75,7 @@ export async function NearbyDevelopments({
               </div>
               <div className="p-5">
                 <div className="eyebrow">
-                  {d.developer?.name ?? "Developer"}
+                  {d.developer?.name ?? tc("developerFallback")}
                 </div>
                 <div
                   className="serif text-[22px] mt-1.5"

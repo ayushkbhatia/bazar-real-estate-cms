@@ -1,6 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import { arabicFor } from "@/lib/i18n/arabic-store";
 
 import { useMemo, useState } from "react";
 import { Download } from "lucide-react";
@@ -30,6 +31,28 @@ import {
  * preferences are readable — a server component can't reach them without
  * calling `cookies()` and losing the route's ISR.
  */
+/**
+ * The words a milestone shows, as opposed to the words it is matched on.
+ *
+ * `splitPaymentPlan` decides which row is the handover by testing `label`
+ * against an English regex (/handover/i, /post|month|year/i). So the fold has
+ * to happen HERE, at the point of display, and never on the data: folding the
+ * label upstream would turn "On Handover" into "عند التسليم", the regex would
+ * stop matching, and every Arabic project page would silently mis-split its
+ * construction and handover totals. A wrong number is worse than an English
+ * word.
+ *
+ * Same ladder as everywhere else — typed twin, store, English.
+ */
+function useMilestoneText(locale: string) {
+  return (typed: string | null | undefined, english: string | null) => {
+    if (!english) return english;
+    if (locale === "en") return english;
+    if (typed?.trim()) return typed;
+    return arabicFor(english) ?? english;
+  };
+}
+
 export type CalculatorUnit = {
   id: string;
   price_aed: number;
@@ -83,6 +106,8 @@ export function PaymentPlanSection({
   units: CalculatorUnit[];
 }) {
   const t = useTranslations("development");
+  const locale = useLocale();
+  const milestoneText = useMilestoneText(locale);
   const { prefs } = usePreferences();
   const [selectedId, setSelectedId] = useState(units[0]?.id ?? "");
   const [downloading, setDownloading] = useState(false);
@@ -180,13 +205,13 @@ export function PaymentPlanSection({
     pct: number;
   }[] = [
     {
-      eyebrow: "During construction",
+      eyebrow: t("payment.duringConstruction"),
       amount: breakdown ? formatPrice(breakdown.construction, prefs) : "—",
       note: constructionNote,
       pct: split.constructionPct,
     },
     {
-      eyebrow: "At handover",
+      eyebrow: t("payment.atHandover"),
       amount: breakdown ? formatPrice(breakdown.handover, prefs) : "—",
       note: handoverNote,
       pct: split.handoverPct,
@@ -196,7 +221,7 @@ export function PaymentPlanSection({
   // 50/50 plan would otherwise show a confident "AED 0".
   if (split.postHandoverPct > 0) {
     slices.push({
-      eyebrow: "Post-handover",
+      eyebrow: t("payment.postHandover"),
       amount: breakdown ? formatPrice(breakdown.postHandover, prefs) : "—",
       note: postNote,
       pct: split.postHandoverPct,
@@ -210,7 +235,12 @@ export function PaymentPlanSection({
     >
       <div className="flex justify-between items-end flex-wrap gap-4 mb-6 md:mb-8">
         <div>
-          <Eyebrow>{eyebrow ?? `Payment plan · ${plan.name}`}</Eyebrow>
+          <Eyebrow>
+            {eyebrow ??
+              t("payment.eyebrow", {
+                plan: milestoneText(plan.name_ar, plan.name) ?? plan.name,
+              })}
+          </Eyebrow>
           <h2
             className="serif text-[28px] md:text-[40px] mt-2"
             style={{ letterSpacing: "-0.02em" }}
@@ -230,7 +260,7 @@ export function PaymentPlanSection({
           disabled={downloading}
         >
           <Download size={14} strokeWidth={1.6} />
-          {downloading ? "Preparing…" : "Custom plan as PDF"}
+          {downloading ? t("payment.preparing") : t("payment.customPdf")}
         </Button>
       </div>
 
@@ -266,11 +296,11 @@ export function PaymentPlanSection({
                     {m.percent}%
                   </span>
                   <span className="text-[12.5px] text-bz-ink-2 mt-1 leading-tight">
-                    {m.label}
+                    {milestoneText(m.label_ar, m.label)}
                   </span>
                   {m.timing ? (
                     <span className="text-[11px] text-bz-muted mt-0.5">
-                      {m.timing}
+                      {milestoneText(m.timing_ar, m.timing)}
                     </span>
                   ) : null}
                   {amount ? (
@@ -308,11 +338,11 @@ export function PaymentPlanSection({
               </span>
               <span className="flex-1 min-w-0">
                 <span className="block text-[13.5px] text-bz-ink">
-                  {m.label}
+                  {milestoneText(m.label_ar, m.label)}
                 </span>
                 {m.timing ? (
                   <span className="block text-[11.5px] text-bz-muted mt-0.5">
-                    {m.timing}
+                    {milestoneText(m.timing_ar, m.timing)}
                   </span>
                 ) : null}
               </span>
@@ -335,7 +365,7 @@ export function PaymentPlanSection({
           )}
         >
           <div>
-            <Eyebrow>Pricing for</Eyebrow>
+            <Eyebrow>{t("payment.pricingFor")}</Eyebrow>
             <select
               className="mt-2 w-full h-12 lg:h-9 border border-bz-border rounded text-[13px] px-2 bg-bz-bg"
               value={selectedId}

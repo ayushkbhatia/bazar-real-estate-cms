@@ -49,6 +49,15 @@ const SEO = args.includes("--seo");
  * `/ar/developments/<slug>`.
  */
 const FEATURES = args.includes("--features");
+/**
+ * The payment plan on a project record: the plan's name, and every milestone's
+ * label and timing.
+ *
+ * Sibling column to `--features` and the same reason for existing —
+ * `developments.payment_plan` is jsonb no section walk can see. Small corpus
+ * (13 labels, 24 timings, 9 plan names) and highly repeated across 30 records.
+ */
+const PLANS = args.includes("--plans");
 const PAGE = args[args.indexOf("--page") + 1];
 const LIMIT = args.includes("--limit")
   ? Number(args[args.indexOf("--limit") + 1])
@@ -79,9 +88,9 @@ function writeStore(store: Store) {
 }
 
 async function main() {
-  if (!ALL && !PAGE && !SUBPAGES && !FORMS && !SEO && !FEATURES) {
+  if (!ALL && !PAGE && !SUBPAGES && !FORMS && !SEO && !FEATURES && !PLANS) {
     console.error(
-      "Pass --page <key>, --all, --subpages, --forms, --seo, or --features.",
+      "Pass --page <key>, --all, --subpages, --forms, --seo, --features, or --plans.",
     );
     process.exit(2);
   }
@@ -125,10 +134,10 @@ async function main() {
       );
     }
     console.log(`Read live content for ${storedFor.size} page(s).`);
-  } else if (SUBPAGES || FEATURES) {
+  } else if (SUBPAGES || FEATURES || PLANS) {
+    const mode = SUBPAGES ? "subpages" : FEATURES ? "features" : "plans";
     console.error(
-      `--${SUBPAGES ? "subpages" : "features"} needs Supabase credentials: ` +
-        "all of its copy is in the database.",
+      `--${mode} needs Supabase credentials: all of its copy is in the database.`,
     );
     process.exit(2);
   } else {
@@ -197,6 +206,28 @@ async function main() {
         addSeo(row.slug, "meta_title", seo.meta_title, 70);
         addSeo(row.slug, "meta_description", seo.meta_description, 200);
       }
+
+      /*
+       * Projects publish a search appearance too, and this walk never looked
+       * at them — so every `/ar/developments/<slug>` carried an English
+       * `<title>` and description into the result page. `localiseSearchAppearance`
+       * already reads the store for all three surfaces, so the strings are the
+       * only thing that was missing.
+       */
+      const { data: devs } = await sb
+        .from("developments")
+        .select("slug, seo")
+        .not("seo", "is", null);
+      for (const row of (devs ?? []) as { slug: string; seo: unknown }[]) {
+        const seo = readSearchAppearance(row.seo as never);
+        addSeo(`development:${row.slug}`, "meta_title", seo.meta_title, 70);
+        addSeo(
+          `development:${row.slug}`,
+          "meta_description",
+          seo.meta_description,
+          200,
+        );
+      }
     }
     console.log(`${work.length} search-appearance string(s).`);
   }
@@ -243,6 +274,52 @@ async function main() {
       });
     }
     console.log(`${work.length} named-feature string(s).`);
+  }
+
+  if (PLANS) {
+    /*
+     * `developments.payment_plan` — `{ name, milestones: [{ label, timing }] }`.
+     *
+     * A milestone's `label` is also what `splitPaymentPlan` matches on to find
+     * the handover row, so the Arabic is display-only and the English stays
+     * the identity. That is a rendering decision, not a translation one; from
+     * here it is just a string worth having Arabic for.
+     *
+     * `percent` is a number and never collected.
+     */
+    const { data } = await sb!
+      .from("developments")
+      .select("slug, payment_plan")
+      .not("payment_plan", "is", null);
+
+    for (const row of (data ?? []) as { slug: string; payment_plan: unknown }[]) {
+      const plan = (row.payment_plan ?? {}) as {
+        name?: unknown;
+        milestones?: unknown;
+      };
+      const add = (what: string, english: unknown, max: number) => {
+        if (typeof english !== "string" || !english.trim()) return;
+        // A bare numeral is data someone typed into the wrong box, not copy.
+        if (/^[\d\s%.,+-]+$/.test(english)) return;
+        work.push({
+          page: `development:${row.slug}`,
+          section: "payment-plan",
+          pathKey: what,
+          english,
+          kind: "ui",
+          maxLength: Math.ceil(max * 1.5),
+          identity: false,
+        });
+      };
+      add("name", plan.name, 80);
+      const milestones = Array.isArray(plan.milestones) ? plan.milestones : [];
+      milestones.forEach((m, i) => {
+        const ms = m as Record<string, unknown>;
+        add(`milestones.${i}.label`, ms.label, 60);
+        add(`milestones.${i}.timing`, ms.timing, 60);
+      });
+    }
+    console.log(`${work.length} payment-plan string(s).`);
   }
 
   if (FORMS) {
@@ -340,8 +417,8 @@ async function main() {
   }
 
   let pages: { key: string; sections: MasterPageDef["sections"] }[];
-  if (FEATURES) {
-    // The walk above is the whole corpus; there is no section document here.
+  if (FEATURES || PLANS) {
+    // The walks above are the whole corpus; there is no section document here.
     pages = [];
   } else if (SUBPAGES) {
     const { areaPageDef, developmentPageDef, subPageSlug } =

@@ -13,7 +13,9 @@ import { uuidLike } from "@/lib/uuid";
 
 export const milestoneSchema = z.object({
   label: z.string().min(1, "Give the stage a name").max(60),
+  label_ar: z.string().max(60).nullable().optional(),
   timing: z.string().max(60).nullable().optional(),
+  timing_ar: z.string().max(60).nullable().optional(),
   percent: z
     .number({ message: "Percent is required" })
     .min(0, "Can't be negative")
@@ -24,6 +26,7 @@ export type PaymentMilestone = z.infer<typeof milestoneSchema>;
 
 export const paymentPlanSchema = z.object({
   name: z.string().min(2, "Name the plan").max(60),
+  name_ar: z.string().max(60).nullable().optional(),
   milestones: z.array(milestoneSchema).min(1, "Add at least one stage").max(12),
   construction_pct: z.number().min(0).max(100).nullable().optional(),
   handover_pct: z.number().min(0).max(100).nullable().optional(),
@@ -59,6 +62,9 @@ export type FeatureBlock = z.infer<typeof featureBlockSchema>;
 export const faqEntrySchema = z.object({
   q: z.string().min(1, "Ask the question").max(200),
   a: z.string().min(1, "Answer it").max(1200),
+  /** Same contract as the feature blocks above: typed twin, store, English. */
+  q_ar: z.string().max(200).nullable().optional(),
+  a_ar: z.string().max(1200).nullable().optional(),
 });
 
 export const developmentContentSchema = z.object({
@@ -82,7 +88,7 @@ export function milestoneTotal(milestones: { percent?: number }[]): number {
 }
 
 export function blankMilestone(): PaymentMilestone {
-  return { label: "", timing: null, percent: 0 };
+  return { label: "", label_ar: null, timing: null, timing_ar: null, percent: 0 };
 }
 
 export function blankFeature(index: number): FeatureBlock {
