@@ -141,6 +141,12 @@
     "ar": "+24.81%",
     "by": "machine"
   },
+  "+30 days": {
+    "ar": "+30 يوماً",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "+30.64%": {
     "ar": "+30.64%",
     "by": "machine"
@@ -260,6 +266,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:31:14.076Z"
   },
+  "10% Completion": {
+    "ar": "إنجاز 10%",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "10,000+": {
     "ar": "10,000+",
     "by": "machine"
@@ -341,6 +353,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:02:01.875Z"
+  },
+  "12mo post": {
+    "ar": "بعد 12 شهراً",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "13. Limitation of Liability": {
     "ar": "13. حدود المسؤولية",
@@ -438,6 +456,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-21"
   },
+  "20% Completion": {
+    "ar": "إنجاز 20%",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "20+": {
     "ar": "20+",
     "by": "machine"
@@ -475,6 +499,12 @@
     "ar": "الأمن على مدار 24 ساعة",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "24mo post": {
+    "ar": "بعد 24 شهراً",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "25 km from Corniche, 15 minutes to airport": {
     "ar": "25 كم من الكورنيش، و15 دقيقة إلى المطار",
@@ -545,6 +575,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:49:38.249Z"
   },
+  "30% construction": {
+    "ar": "إنجاز 30% من الإنشاء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "30% of the masterplan is dedicated to natural spaces.": {
     "ar": "30% من المخطط الرئيسي مخصص للمساحات الطبيعية.",
     "by": "machine",
@@ -556,6 +592,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:13:20.229Z"
+  },
+  "30/70 Payment Plan": {
+    "ar": "خطة دفع 30/70",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "300,000+ sq. m.": {
     "ar": "أكثر من 300,000 متر مربع",
@@ -640,6 +682,12 @@
     "ar": "40/60",
     "by": "machine"
   },
+  "40/60 Payment Plan": {
+    "ar": "خطة دفع 40/60",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "42,000 ft² fitted warehouse in KIZAD with yard area.": {
     "ar": "42,000 ft² مستودع مجهز في KIZAD مع مساحة ساحة.",
     "by": "machine",
@@ -702,6 +750,24 @@
     "ar": "50 123 4567",
     "by": "machine"
   },
+  "50% Completion": {
+    "ar": "إنجاز 50%",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "50/50 Payment Plan": {
+    "ar": "خطة دفع 50/50",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "55/45 Payment Plan": {
+    "ar": "خطة دفع 55/45",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "550 sq. km": {
     "ar": "موقع بمساحة 550 كم مربع",
     "by": "machine",
@@ -725,6 +791,30 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
   },
+  "60/40 Payment Plan": {
+    "ar": "خطة دفع 60/40",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "60/40 post handover": {
+    "ar": "60/40 بعد التسليم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "60/40 post-handover": {
+    "ar": "60/40 بعد التسليم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "65/35 Payment Plan": {
+    "ar": "خطة دفع 65/35",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "665,000+ sq. m.": {
     "ar": "أكثر من 665,000 متر مربع",
     "by": "machine",
@@ -742,6 +832,18 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T09:47:12.629Z"
+  },
+  "70/30 post handover": {
+    "ar": "70/30 بعد التسليم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "75% Completion": {
+    "ar": "إنجاز 75%",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "78%": {
     "ar": "78%",
@@ -2120,6 +2222,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:42:11.183Z"
   },
+  "Al Hamra Bloom Living, Abu Dhabi | New Apartments by Bloom Holding": {
+    "ar": "الحمرا بلوم ليفينغ، أبوظبي | شقق جديدة من بلووم القابضة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Al Khaleej Village": {
     "ar": "قرية الخليج",
     "by": "machine",
@@ -2223,6 +2331,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:41:24.841Z"
+  },
+  "Al Naseem by MODON Properties | Hudayriyat Island, Abu Dhabi": {
+    "ar": "النسيم من مُدن العقارية | جزيرة الحديريات، أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "Al Raha": {
     "ar": "الراحة",
@@ -2467,6 +2581,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T10:03:22.147Z"
+  },
+  "All-in mortgage maths for Abu Dhabi: monthly payment, true cash to close (DLD, trustee, valuation, advisory), affordability check against Central Bank UAE DBR rules, and side-by-side scenario compare.": {
+    "ar": "حسابات التمويل العقاري كاملةً لأبوظبي: القسط الشهري، والمبلغ النقدي الفعلي المطلوب عند الإتمام (دائرة الأراضي، وأمين التسجيل، والتقييم، والاستشارة)، والتحقّق من القدرة على السداد وفق قواعد نسبة عبء الدين لدى مصرف الإمارات المركزي، ومقارنة السيناريوهات جنباً إلى جنب.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:30.598440Z"
   },
   "Almost entirely apartments, from studios to four-bedroom units, in established residential towers. Villas are rare on this stretch.": {
     "ar": "شقق بشكل شبه كامل، من الاستوديوهات إلى وحدات بأربع غرف نوم، في أبراج سكنية قائمة. أما الفلل فنادرة في هذا النطاق.",
@@ -2876,6 +2996,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:40:00.744Z"
   },
+  "Aug 2027": {
+    "ar": "أغسطس 2027",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Available commercial space": {
     "ar": "أملاك تجارية متاحة",
     "by": "machine",
@@ -2987,6 +3113,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Bashayer Residences by MODON Properties | Hudayriyat Island, Abu Dhabi": {
+    "ar": "بشاير ريسيدنسز من مُدن العقارية | جزيرة الحديريات، أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Bay view": {
     "ar": "منظر الخليج",
     "by": "machine",
@@ -3036,6 +3168,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T17:02:41.676Z"
+  },
+  "Bazar Real Estate | Leading UAE Property Experts": {
+    "ar": "بازار العقارية | خبراء العقار الرائدون في الإمارات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
   },
   "Bazar Real Estate — Abu Dhabi, properly understood": {
     "ar": "بازار للعقارات — أبوظبي، بفهم صحيح",
@@ -3388,6 +3526,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:11:12.348Z"
+  },
+  "Booking": {
+    "ar": "الحجز",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "Both. The industrial sectors are the district’s core, with two established residential clusters — Shabiya and Mussafah Gardens — built alongside them.": {
     "ar": "كلاهما. تشكل القطاعات الصناعية نواة المنطقة، مع وجود تجمعين سكنيين مُستقرَّين — الشعبية وحدائق مصفح — مُقامَين بجانبهما.",
@@ -4635,6 +4779,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:19:16.443Z"
   },
+  "Cookie Policy | Bazar Real Estate": {
+    "ar": "سياسة ملفات تعريف الارتباط | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
+  },
   "Cookie policy": {
     "ar": "سياسة الكوكيز",
     "by": "machine",
@@ -5026,11 +5176,53 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:34:49.618Z"
   },
+  "Discover Al Hamra Bloom Living Abu Dhabi, a new apartment launch by Bloom Holding offering modern residences, lifestyle amenities, and a well-connected location. Explore available apartments, prices, floor plans, payment": {
+    "ar": "اكتشف الحمرا بلوم ليفينغ في أبوظبي، إطلاق سكني جديد من بلووم القابضة يقدّم مساكن عصرية ومرافق ترفيهية وموقعاً جيّد الاتصال. استعرض الشقق المتاحة والأسعار والمخططات الطابقية وخطط الدفع",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Discover Al Naseem by MODON Properties on Hudayriyat Island, Abu Dhabi, featuring luxury freehold villas, premium amenities, spacious layouts, and refined island living.": {
+    "ar": "اكتشف النسيم من مُدن العقارية في جزيرة الحديريات، أبوظبي، حيث فلل فاخرة بتملّك حر ومرافق راقية وتصاميم واسعة وحياة مميزة على الجزيرة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Discover Bazar Real Estate’s trusted banking partners and the key real estate authorities governing Abu Dhabi and Dubai.": {
+    "ar": "تعرّف على شركاء بازار العقارية المصرفيين الموثوقين وأبرز الجهات العقارية المنظِّمة في أبوظبي ودبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
+  },
+  "Discover Hudayriyat Golf Estates by Modon on Hudayriyat Island, Abu Dhabi, featuring premium homes, golf-focused living, landscaped spaces, and lifestyle amenities.": {
+    "ar": "اكتشف حديريات غولف إستيتس من مُدن العقارية في جزيرة الحديريات، أبوظبي، حيث منازل راقية وحياة تتمحور حول الغولف ومساحات منسّقة ومرافق ترفيهية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Discover Naseem AlJurf by IMKAN in Al Jurf, Abu Dhabi, featuring coastal residences, natural surroundings, landscaped spaces, premium amenities, and relaxed community living.": {
+    "ar": "اكتشف نسيم الجرف من إمكان العقارية في الجرف، أبوظبي، حيث مساكن ساحلية وطبيعة محيطة ومساحات منسّقة ومرافق راقية وحياة مجتمعية هادئة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Discover Our Company": {
     "ar": "اكتشف شركتنا",
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:23:54.616Z"
+  },
+  "Discover Sobha City Abu Dhabi by Sobha Realty on Yas Island Canal, featuring a waterfront master community, premium residences, green spaces, lifestyle amenities, and connected living.": {
+    "ar": "اكتشف شوبا سيتي أبوظبي من شوبا العقارية على قناة جزيرة ياس، حيث مجتمع متكامل على الواجهة المائية ومساكن راقية ومساحات خضراء ومرافق ترفيهية وحياة متّصلة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Discover The Canopies at Yas Point by Aldar on Yas Island, Abu Dhabi, offering nature-inspired residences, landscaped surroundings, modern amenities, and relaxed community living.": {
+    "ar": "اكتشف ذا كانوبيز في ياس بوينت من الدار العقارية في جزيرة ياس، أبوظبي، حيث مساكن مستوحاة من الطبيعة ومساحات منسّقة ومرافق عصرية وحياة مجتمعية هادئة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "Discover a destination centred around sport, recreation and waterfront experiences.": {
     "ar": "اكتشف وجهة تتمحور حول الرياضة والترفيه وتجارب الواجهة المائية.",
@@ -5079,6 +5271,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T17:03:51.667Z"
+  },
+  "Discover leading real estate developers in the UAE and explore their latest projects, communities, and residential developments across Abu Dhabi, Dubai, and beyond.": {
+    "ar": "اكتشف أبرز المطوّرين العقاريين في الإمارات واستعرض أحدث مشاريعهم ومجتمعاتهم ومشاريعهم السكنية في أبوظبي ودبي وغيرها.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
   },
   "Discover modern off-plan apartments in Abu Dhabi's most connected communities.": {
     "ar": "اكتشف شققاً عصرية على الخارطة في أكثر مجتمعات أبوظبي اتصالاً.",
@@ -5325,6 +5523,12 @@
     "ar": "دبي للعقارات هو مطور عقاري رئيسي وجزء من دبي هولدينج، معروف بخلق مجتمعات ووجهات متميزة عبر دبي.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "During Construction": {
+    "ar": "أثناء الإنشاء",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "Eagle Hills": {
     "ar": "إيجل هيلز",
@@ -5941,6 +6145,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:21:17.942Z"
   },
+  "Explore Bashayer Residences by Modon on Hudayriyat Island, offering waterfront apartments, townhomes and penthouses with premium amenities and Abu Dhabi skyline views.": {
+    "ar": "استكشف بشاير ريسيدنسز من مُدن العقارية في جزيرة الحديريات، حيث شقق على الواجهة المائية وتاون هاوس وبنتهاوس مع مرافق راقية وإطلالات على أفق أبوظبي.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Explore Bazar Real Estate services, including property sales, leasing, investment advice, property management, and mortgage support.": {
     "ar": "اكتشف خدمات بازار العقارية، بما في ذلك بيع العقارات والتأجير والاستشارات الاستثمارية وإدارة الأملاك ودعم تمويل عقاري.",
     "by": "machine",
@@ -5970,6 +6180,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:13:20.229Z"
+  },
+  "Explore Manchester City Yas Residences by Ohana on Yas Island, Abu Dhabi, a branded residential development offering waterfront living, modern homes, and lifestyle amenities.": {
+    "ar": "استكشف مانشستر سيتي ياس ريسيدنسز من أوهانا للتطوير العقاري في جزيرة ياس، أبوظبي، وهو مشروع سكني بعلامة تجارية يقدّم حياة على الواجهة المائية ومنازل عصرية ومرافق ترفيهية.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "Explore Masdar City": {
     "ar": "استكشف مدينة مصدر",
@@ -6013,6 +6229,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "Explore Radiant Terrace by Radiant Real Estate on Al Reem Island, Abu Dhabi, offering contemporary residences, modern amenities, waterfront surroundings, and connected city living.": {
+    "ar": "استكشف راديانت تيراس من راديانت العقارية في جزيرة الريم، أبوظبي، حيث مساكن عصرية ومرافق حديثة ومحيط على الواجهة المائية وحياة مدينة متّصلة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Explore Saadiyat Island": {
     "ar": "استكشف جزيرة السعديات",
     "by": "machine",
@@ -6037,6 +6259,18 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:55:36.746Z"
   },
+  "Explore The Artery Residences by IMKAN on Al Reem Island, Abu Dhabi, featuring contemporary waterfront residences, panoramic views, premium amenities, and modern urban living.": {
+    "ar": "استكشف ذا أرتري رزيدنسز من إمكان العقارية في جزيرة الريم، أبوظبي، حيث مساكن عصرية على الواجهة المائية وإطلالات بانورامية ومرافق راقية وحياة حضرية حديثة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Explore UAE properties with Bazar Real Estate. Discover properties for sale and rent, new developments, investment opportunities, off-plan projects, and expert property advice.": {
+    "ar": "استكشف عقارات الإمارات مع بازار العقارية. اطّلع على العقارات المعروضة للبيع والإيجار والمشاريع الجديدة والفرص الاستثمارية ومشاريع البيع على الخارطة، مع استشارات عقارية متخصّصة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
+  },
   "Explore Yas Island": {
     "ar": "استكشف جزيرة ياس",
     "by": "machine",
@@ -6048,6 +6282,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T09:05:44.923Z"
+  },
+  "Explore Yas Park Place by Aldar on Yas Island, Abu Dhabi, featuring contemporary homes, landscaped green spaces, family-friendly amenities, and a connected island lifestyle.": {
+    "ar": "استكشف ياس بارك بليس من الدار العقارية في جزيرة ياس، أبوظبي، حيث منازل عصرية ومساحات خضراء منسّقة ومرافق مناسبة للعائلات وأسلوب حياة متّصل على الجزيرة.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "Explore Zayed City": {
     "ar": "استكشف مدينة زايد",
@@ -7390,6 +7630,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Foundations": {
+    "ar": "الأساسات",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Founded in Abu Dhabi in 2005 by Azmi Mohamdin, Bazar Real Estate was built on deep, hands-on knowledge of the local property market.\n\nOver the years, the company has grown into a trusted real estate partner, known for clear guidance, market insight, professionalism, transparency, and long-term value. Our journey reflects the growth of the UAE property sector itself — from established communities to landmark developments and emerging investment destinations.": {
     "ar": "تأسست شركة بازار العقارية في أبوظبي عام 2005 على يد عزمي محمد الدين، مستندة إلى معرفة عميقة وعملية بسوق العقارات المحلي.\n\nوعلى مدى السنوات، نمت الشركة لتصبح شريكاً عقارياً موثوقاً، معروفاً بالإرشاد الواضح، والرؤية السوقية، والاحترافية، والشفافية، والقيمة طويلة الأمد. وتعكس مسيرتنا نمو قطاع العقارات في الإمارات ذاته — من المجتمعات الراسخة إلى المشاريع البارزة والوجهات الاستثمارية الناشئة.",
     "by": "machine",
@@ -8191,6 +8437,12 @@
     "by": "human",
     "at": "2026-08-20T00:00:00.000Z"
   },
+  "Handover": {
+    "ar": "التسليم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Have a look around.": {
     "ar": "ألق نظرة على المكان.",
     "by": "machine",
@@ -8466,6 +8718,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:20:13.722Z"
+  },
+  "Hudayriyat Golf Estates by MODON | Hudayriyat Island, Abu Dhabi": {
+    "ar": "حديريات غولف إستيتس من مُدن | جزيرة الحديريات، أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "Hudayriyat Island": {
     "ar": "جزيرة الحديريات",
@@ -8911,6 +9169,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Jan 2027": {
+    "ar": "يناير 2027",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Japanese, Saadiyat Rotana": {
     "ar": "ياباني، روتانا السعديات",
     "by": "machine",
@@ -9293,6 +9557,12 @@
   "Lea": {
     "ar": "Lea",
     "by": "machine"
+  },
+  "Learn how Bazar Real Estate uses cookies and similar technologies to improve website functionality, performance, and your browsing experience.": {
+    "ar": "تعرّف على كيفية استخدام بازار العقارية لملفات تعريف الارتباط والتقنيات المشابهة لتحسين أداء الموقع ووظائفه وتجربة تصفّحك.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
   },
   "Learn more": {
     "ar": "معرفة المزيد",
@@ -10118,6 +10388,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:59:23.131Z"
   },
+  "Manchester City Yas Residences by Ohana | Yas Island, Abu Dhabi": {
+    "ar": "مانشستر سيتي ياس ريسيدنسز من أوهانا | جزيرة ياس، أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Mandarin Oriental Residences": {
     "ar": "ماندارين أورينتال ريزيدنسز",
     "by": "machine"
@@ -10524,6 +10800,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:12:56.314Z"
   },
+  "Mortgage": {
+    "ar": "التمويل العقاري",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Mortgage & home-finance partner": {
     "ar": "شريك التمويل العقاري والسكني",
     "by": "machine",
@@ -10688,6 +10970,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T16:16:01.429Z"
+  },
+  "Naseem AlJurf by IMKAN | Al Jurf, Abu Dhabi": {
+    "ar": "نسيم الجرف من إمكان العقارية | الجرف، أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "Natural Environment": {
     "ar": "البيئة الطبيعية",
@@ -11078,6 +11366,12 @@
     "ar": "عمر",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "On Handover": {
+    "ar": "عند التسليم",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "On Saadiyat Island": {
     "ar": "في جزيرة السعديات",
@@ -11595,6 +11889,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-20T10:26:22.472Z"
   },
+  "Partners, Banks & Real Estate Authorities | Bazar Real Estate": {
+    "ar": "الشركاء والبنوك والجهات العقارية | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
+  },
   "Payment & Mortgage Considerations": {
     "ar": "اعتبارات الدفع والحصول على تمويل عقاري",
     "by": "machine",
@@ -11975,6 +12275,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T15:47:18.127Z"
+  },
+  "Privacy Policy | Bazar Real Estate": {
+    "ar": "سياسة الخصوصية | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
   },
   "Privacy policy": {
     "ar": "سياسة الخصوصية",
@@ -12748,6 +13054,78 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T15:57:09.582Z"
   },
+  "Q1 2026": {
+    "ar": "الربع الأول 2026",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Q1 2027": {
+    "ar": "الربع الأول 2027",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Q1 2028": {
+    "ar": "الربع الأول 2028",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Q1 2029": {
+    "ar": "الربع الأول 2029",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Q1 2030": {
+    "ar": "الربع الأول 2030",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Q2 2027": {
+    "ar": "الربع الثاني 2027",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Q3 2026": {
+    "ar": "الربع الثالث 2026",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Q3 2030": {
+    "ar": "الربع الثالث 2030",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Q4 2026": {
+    "ar": "الربع الرابع 2026",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Q4 2027": {
+    "ar": "الربع الرابع 2027",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Q4 2028": {
+    "ar": "الربع الرابع 2028",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
+  "Q4 2029": {
+    "ar": "الربع الرابع 2029",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Qaryat Al Hidd": {
     "ar": "قريّة الحد",
     "by": "machine",
@@ -12802,6 +13180,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Radiant Terrace by Radiant Real Estate | Al Reem Island, Abu Dhabi": {
+    "ar": "راديانت تيراس من راديانت العقارية | جزيرة الريم، أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Radiant Terraces": {
     "ar": "التراسات المشرقة",
     "by": "reviewed",
@@ -12821,6 +13205,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Read Bazar Real Estate’s Privacy Policy to understand how we collect, use, protect, and manage your personal information when using our website and services.": {
+    "ar": "اطّلع على سياسة الخصوصية لدى بازار العقارية لتفهم كيف نجمع معلوماتك الشخصية ونستخدمها ونحميها وندير استخدامها عند تصفّح موقعنا واستخدام خدماتنا.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
   },
   "Read the Guides": {
     "ar": "اقرأ الأدلة",
@@ -12880,6 +13270,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T17:02:41.676Z"
+  },
+  "Real Estate Developers in the UAE | Bazar Real Estate": {
+    "ar": "المطوّرون العقاريون في الإمارات | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
   },
   "Real Estate Partner": {
     "ar": "شريك عقاري",
@@ -13453,6 +13849,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-20T00:00:00.000Z"
+  },
+  "Review the Terms of Service governing your use of the Bazar Real Estate website, property listings, tools, forms, content, and services.": {
+    "ar": "اطّلع على شروط الخدمة التي تحكم استخدامك لموقع بازار العقارية وقوائم العقارات والأدوات والنماذج والمحتوى والخدمات.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
   },
   "Reviews and comments": {
     "ar": "التقييمات والتعليقات",
@@ -14202,6 +14604,12 @@
     "ar": "شوبا سيتي أبوظبي",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Sobha City Abu Dhabi by Sobha Realty | Yas Island, Abu Dhabi": {
+    "ar": "شوبا سيتي أبوظبي من شوبا العقارية | جزيرة ياس، أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "Sobha Realty": {
     "ar": "شوبا العقارية",
@@ -14958,6 +15366,12 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:10:31.711Z"
   },
+  "Terms of Service | Bazar Real Estate": {
+    "ar": "شروط الخدمة | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
+  },
   "Terms of service": {
     "ar": "شروط الخدمة",
     "by": "machine",
@@ -15015,6 +15429,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "The Artery Residences by IMKAN | Al Reem Island, Abu Dhabi": {
+    "ar": "ذا أرتري رزيدنسز من إمكان العقارية | جزيرة الريم، أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "The Aspens": {
     "ar": "The Aspens",
     "by": "machine"
@@ -15052,6 +15472,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:20:13.722Z"
+  },
+  "The Canopies at Yas Point by ALDAR Properties | Yas Island, Abu Dhabi": {
+    "ar": "ذا كانوبيز في ياس بوينت من الدار العقارية | جزيرة ياس، أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "The Cedars": {
     "ar": "The Cedars",
@@ -15861,6 +16287,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-21"
   },
+  "UAE Mortgage Calculator | Bazar Real Estate": {
+    "ar": "حاسبة التمويل العقاري في الإمارات | بازار العقارية",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:15.273089Z"
+  },
   "UAE Space Agency": {
     "ar": "وكالة الفضاء الإماراتية",
     "by": "machine",
@@ -16532,6 +16964,12 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-21"
+  },
+  "What Bazar Real Estate stores on your device, why, and how to change it.": {
+    "ar": "ما الذي تحفظه بازار العقارية على جهازك، ولماذا، وكيف تغيّره.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:29:30.598440Z"
   },
   "What Stage Are You At?": {
     "ar": "في أي مرحلة أنت؟",
@@ -17267,6 +17705,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
   },
+  "Within 30 days": {
+    "ar": "خلال 30 يوماً",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
+  },
   "Within Al Raha, approximately 20 minutes from Downtown Abu Dhabi.": {
     "ar": "داخل الراحة، على بُعد 20 دقيقة تقريبًا من وسط مدينة أبوظبي.",
     "by": "machine",
@@ -17432,6 +17876,12 @@
   "Yas Park Place": {
     "ar": "ياس بارك بليس",
     "by": "machine"
+  },
+  "Yas Park Place by ALDAR Properties | Yas Island, Abu Dhabi": {
+    "ar": "ياس بارك بليس من الدار العقارية | جزيرة ياس، أبوظبي",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-09T17:27:53.367829Z"
   },
   "Yas Point": {
     "ar": "ياس بوينت",
