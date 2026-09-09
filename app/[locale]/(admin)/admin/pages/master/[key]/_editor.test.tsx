@@ -20,6 +20,11 @@ import {
   SEARCH_HEADERS,
   searchHeaderPageDef,
 } from "@/lib/master-pages/search-headers";
+import {
+  DEVELOPMENT_PAGE_COPY_SECTIONS,
+  developmentPageCopyDef,
+  developmentPageCopyDefault,
+} from "@/lib/master-pages/development-page";
 import { arKey, isTranslatable } from "@/lib/master-pages/twins";
 import { MasterPageEditor } from "./_editor";
 
@@ -249,6 +254,61 @@ describe("sub-pages", () => {
     );
     expect(screen.queryAllByLabelText(/^Reorder /)).toHaveLength(0);
   });
+
+  it("shows a project's empty copy boxes pre-filled with the shared wording", () => {
+    /*
+     * The visible half of "the editor should already be filled in". An empty
+     * box reads as work outstanding, which is how 22 projects ended up with
+     * ~440 hand-typed strings of which 418 were byte-identical.
+     *
+     * A placeholder rather than a value: typing nothing still stores nothing,
+     * so the shared document stays the one place the wording lives. And it is
+     * asserted on the DOM rather than on the FieldDef, because `help` was
+     * already carrying this information and never rendered — `FieldLabel`
+     * drops it whenever a character counter is present, which is every field
+     * here.
+     */
+    const def = developmentPageDef({
+      name: "Yas Point",
+      slug: "yas",
+    }) as MasterPageDef;
+    const sections = resolveSections(def, null);
+    render(
+      <MasterPageEditor
+        pageKey="yas"
+        pageLabel="Yas Point"
+        path="/developments/yas"
+        usingDefaults
+        media={MEDIA}
+        seeds={SEEDS}
+        actions={{ save: vi.fn(), reset: vi.fn() }}
+        allowReorder={false}
+        initial={sections.map((s) => ({
+          key: s.key,
+          def: s.def,
+          enabled: s.enabled,
+          values: s.values,
+        }))}
+      />,
+    );
+    const found = rows();
+    const overview = sections.findIndex((s) => s.key === "overview");
+    const panel = openPanel(found[overview]);
+
+    const eyebrow = developmentPageCopyDefault("overview", "eyebrow")!;
+    const box = within(panel).getByPlaceholderText(eyebrow);
+    // Placeholder, not value: an untouched field must still save as empty.
+    expect((box as HTMLInputElement).value).toBe("");
+
+    // The token survives into the placeholder rather than being substituted —
+    // the editor has no area to substitute, and a half-filled sentence would
+    // read as a bug. See `sharedCopyField` in lib/master-pages/subpages.ts.
+    expect(
+      within(panel).getByPlaceholderText(
+        developmentPageCopyDefault("overview", "heading")!,
+      ),
+    ).toBeInTheDocument();
+  });
 });
 
 /**
@@ -427,6 +487,69 @@ describe("library sections", () => {
         }))}
       />,
     );
+    expect(screen.queryAllByLabelText(/^Reorder /)).toHaveLength(0);
+  });
+});
+
+/**
+ * The shared project-page copy — one document behind every
+ * `/developments/<slug>` page, reached through Pages → Sub-pages →
+ * Developments → Page copy.
+ *
+ * It goes through `MasterPageEditor` with injected actions like the library
+ * and the search headers, but it is the first of them with FIFTEEN sections
+ * rather than one, so the "every section draws its fields" walk is doing real
+ * work here rather than restating the single-section case.
+ */
+describe("project page copy", () => {
+  const def = developmentPageCopyDef() as MasterPageDef;
+
+  it("draws every declared field, in every band", () => {
+    const sections = mount(def);
+    expect(sections).toHaveLength(DEVELOPMENT_PAGE_COPY_SECTIONS.length);
+    const found = rows();
+    expect(found).toHaveLength(sections.length);
+    sections.forEach((section, i) => {
+      const panel = openPanel(found[i]);
+      for (const field of section.def.fields) expectField(panel, field);
+      closePanel(found[i]);
+    });
+  });
+
+  it("arrives with its Arabic already filled in, not blank", () => {
+    // "bilingual", because that is what the route passes. The English fold
+    // strips every `_ar` key on the way out, so an editor given folded values
+    // would see empty boxes and write those blanks back on save — which on
+    // this document would blank the Arabic of every project page at once.
+    const sections = resolveSections(def, null, "bilingual");
+    render(
+      <MasterPageEditor
+        pageKey="copy"
+        pageLabel={def.label}
+        path={def.path}
+        usingDefaults
+        media={[]}
+        seeds={{}}
+        actions={{ save: vi.fn(), reset: vi.fn() }}
+        allowReorder={false}
+        initial={sections.map((s) => ({
+          key: s.key,
+          def: s.def,
+          enabled: s.enabled,
+          values: s.values,
+        }))}
+      />,
+    );
+    const panel = openPanel(rows()[0]!);
+    expect(within(panel).queryAllByText("— not set")).toHaveLength(0);
+    expect(within(panel).queryAllByText("● set").length).toBeGreaterThan(0);
+  });
+
+  it("offers no switch to turn a band off", () => {
+    // Every section is `locked`. Whether a band shows on a given project is
+    // that project's decision and lives in its own document; a switch here
+    // would read as a site-wide kill switch and behave as neither.
+    mount(def);
     expect(screen.queryAllByLabelText(/^Reorder /)).toHaveLength(0);
   });
 });

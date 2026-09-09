@@ -10,6 +10,7 @@ import {
 import { BLOCK_DEFS } from "@/lib/page-builder/catalogue";
 import { LIBRARY_SECTIONS } from "@/lib/master-pages/library";
 import { SEARCH_HEADERS } from "@/lib/master-pages/search-headers";
+import { DEVELOPMENT_PAGE_COPY_SECTIONS } from "@/lib/master-pages/development-page";
 import { DEVELOPER_PAGE_SECTION } from "@/lib/master-pages/developer-page";
 import { isTranslatable } from "@/lib/master-pages/twins";
 import type { FieldDef, ListFieldDef, SectionDef } from "@/lib/master-pages/types";
@@ -91,6 +92,9 @@ function everySlot(): Slot[] {
     const s = DEVELOPER_PAGE_SECTION;
     out.push(...collect(`developer-page·${s.key}`, s.fields, s.defaults));
   }
+  for (const s of DEVELOPMENT_PAGE_COPY_SECTIONS) {
+    out.push(...collect(`development-page·${s.key}`, s.fields, s.defaults));
+  }
   return out;
 }
 
@@ -140,6 +144,7 @@ const ALLOWED: Readonly<Record<string, string>> = {
   // hq-map.tsx until it became a field, and it rendered "HQ" on /ar/contact
   // for exactly that reason.
   'master/contact·hq_map.eyebrow': "an abbreviation that does have an Arabic form",
+
 };
 
 const ALLOWED_CEILING = 12;

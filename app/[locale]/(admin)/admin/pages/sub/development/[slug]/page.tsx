@@ -375,9 +375,26 @@ export default async function DevelopmentSubPage({ params }: PageProps) {
             <p className="text-[12.5px] text-bz-muted mt-1 leading-relaxed">
               Drag to reorder, switch sections off to hide them on this
               project&apos;s page, and override a heading or intro where the
-              built-in copy doesn&apos;t fit. Blank fields keep the
-              template&apos;s wording. The sticky sub-nav follows this order and
-              drops anything hidden.
+              built-in copy doesn&apos;t fit. The sticky sub-nav follows this
+              order and drops anything hidden.
+            </p>
+            {/* Said here because the boxes below are empty and an empty box
+                reads as work outstanding. The greyed wording in each one is
+                what the page actually publishes. */}
+            <p className="text-[12.5px] text-bz-muted mt-1 leading-relaxed">
+              Every eyebrow and heading is already filled in — the greyed text
+              in a blank field is what this page publishes, and it is shared
+              with every other project. Type here only to change{" "}
+              <span className="text-bz-ink">this</span> project. To change the
+              wording for all of them, edit{" "}
+              <Link
+                href="/admin/pages/sub/development/copy"
+                className="text-bz-ink underline"
+              >
+                Page copy
+              </Link>
+              . Clearing a field here is safe: it falls back to the shared
+              wording rather than leaving a gap.
             </p>
           </div>
           <MasterPageEditor

@@ -1468,3 +1468,34 @@ shows the trail.)
   (`lib/i18n/read-time.ts`) in the same PR — and `editors-pick` needs its
   "Editor's pick" heading and empty-state copy extracted too, which is the
   larger half of that job.
+
+- [cms/i18n] The project page's remaining English, after the shared-copy
+  document took the fifteen band eyebrows and headings
+  (`lib/master-pages/development-page.ts`). Found by mapping every literal on
+  `app/[locale]/(public)/developments/[slug]/**` while wiring that document,
+  and deliberately left out of it because none of them is a band heading:
+
+  - **The hero standfirst is not CMS-overridable at all.** `page.tsx` renders
+    `{development.description}` under the `h1` with no `sv()` call — the
+    largest block of prose in the hero, and the only one on the page an editor
+    cannot reach. It is a record column, so the fix is `description_ar` on
+    `developments` plus an entry in `lib/i18n/domains.ts`, not a registry
+    field.
+  - **The hero kicker's two fallbacks.** `{developer?.name ?? "Developer"} ·
+    {area?.name ?? "Abu Dhabi"}` — both raw, both English on `/ar`, and both
+    reached only when the record is missing a join.
+  - **The sticky sub-nav labels are `SectionDef.label`.** `page.tsx` renders
+    the registry's ADMIN label as public navigation, so "Units & floor plans"
+    and "FAQs" ship English on `/ar` and no editor can change them. Giving
+    them their own field is the clean fix; reusing the shared copy document's
+    band headings would couple two things that are deliberately worded
+    differently (a nav label is shorter than a heading).
+  - **The payment-plan calculator's three column headings** ("During
+    construction", "At handover", "Post-handover") and its "Custom plan as
+    PDF" button, all literals in `_payment-plan.tsx` with no field behind
+    them.
+  - **Three dead components under `_components/`** — `location-section.tsx`,
+    `advisor-section.tsx` and `sticky-subnav.tsx`'s actions — are on the
+    `lib/dead-code.test.ts` UNREFERENCED list. `location-section.tsx` shadows
+    the live Location band and carries five commute pills the page never
+    renders, so it reads as the current implementation and is not.

@@ -81,6 +81,7 @@ export function ArabicTwin({
               dir="rtl"
               lang="ar"
               value={value}
+              placeholder={field.placeholderAr}
               disabled={disabled}
               onChange={(e) => onChange(e.target.value)}
             />
@@ -90,13 +91,16 @@ export function ArabicTwin({
               dir="rtl"
               lang="ar"
               value={value}
+              placeholder={field.placeholderAr}
               disabled={disabled}
               onChange={(e) => onChange(e.target.value)}
             />
           )}
           <div className="flex items-baseline justify-between gap-2">
             <span className="text-[10.5px] text-bz-muted-2">
-              Blank shows the English.
+              {field.placeholderAr
+                ? "Blank keeps the greyed wording."
+                : "Blank shows the English."}
             </span>
             {max ? (
               <span className="mono text-[10.5px] text-bz-muted-2">

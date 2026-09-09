@@ -5,6 +5,7 @@ import {
   ExternalLink,
   LayoutList,
   Plus,
+  Type,
 } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Button } from "@/components/ui/button";
@@ -88,12 +89,22 @@ export default async function DevelopmentSubPagesIndex() {
         </span>
       }
       primary={
-        <Button asChild>
-          <Link href="/admin/pages/sub/development/new">
-            <Plus size={14} strokeWidth={1.8} />
-            Add development
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* The shared wording sits beside the records rather than inside one,
+              because it belongs to all of these pages and to none of them. */}
+          <Button asChild variant="outline">
+            <Link href="/admin/pages/sub/development/copy">
+              <Type size={14} strokeWidth={1.8} />
+              Page copy
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="/admin/pages/sub/development/new">
+              <Plus size={14} strokeWidth={1.8} />
+              Add development
+            </Link>
+          </Button>
+        </div>
       }
     >
       <div className="flex flex-col gap-5">
@@ -103,7 +114,16 @@ export default async function DevelopmentSubPagesIndex() {
           section order, copy and imagery for{" "}
           <span className="mono">/developments/&lt;slug&gt;</span>.{" "}
           <span className="text-bz-ink">Record</span> opens the project&apos;s
-          facts — units, payment plan, handover and publishing.
+          facts — units, payment plan, handover and publishing.{" "}
+          <Link
+            href="/admin/pages/sub/development/copy"
+            className="text-bz-ink underline"
+          >
+            Page copy
+          </Link>{" "}
+          holds the eyebrows and headings every one of those pages shares, in
+          English and Arabic — a new project already reads correctly without
+          them being filled in per project.
         </p>
 
         <div className="text-[12.5px] text-bz-muted">
