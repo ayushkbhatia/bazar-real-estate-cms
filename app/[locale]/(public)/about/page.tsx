@@ -16,6 +16,7 @@ import {
   HQ_LNG,
 } from "../contact/_components/hq-location";
 import { DeveloperMarquee } from "../_components/developer-marquee";
+import { draftDirectorySlugs } from "../developers/_directory";
 import { PartnerEcosystemSection } from "../_components/partner-ecosystem-section";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { getPartners } from "@/lib/queries/content-sections";
@@ -191,9 +192,12 @@ export default async function AboutPage({
   // The partner logos are site-owned content, not this page's —
   // /admin/pages/sub/section/partners. Read alongside the page document so the
   // strip and the copy around it arrive in one round of reads.
-  const [content, ecosystemPartners] = await Promise.all([
+  const [content, ecosystemPartners, draftDevelopers] = await Promise.all([
     getMasterPageContent("about"),
     getPartners(),
+    // Which developer profiles are draft, so the marquee below does not tile a
+    // logo that leads to a 404. See `draftDirectorySlugs`.
+    draftDirectorySlugs(),
   ]);
 
   // Section copy, images and order come from /admin/pages/master/about.
@@ -577,7 +581,7 @@ export default async function AboutPage({
               into the CMS while the catalogue behind /developers carries the
               full set with their logos — so the page under-sold the roster and
               drifted from it on every catalogue change. */}
-          <DeveloperMarquee />
+          <DeveloperMarquee hiddenSlugs={draftDevelopers} />
         </div>
       </section>
     ),
