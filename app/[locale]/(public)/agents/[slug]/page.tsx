@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/i18n/locales";
+import { localeDateTag } from "@/lib/i18n/dates";
 import { getTranslations } from "next-intl/server";
 import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import Image from "next/image";
@@ -353,10 +354,10 @@ export default async function AgentProfilePage({
                   <figcaption className="mt-auto pt-2 text-[12.5px] text-bz-muted">
                     {r.author_name ?? "Bazar client"} ·{" "}
                     <span className="mono">
-                      {new Date(r.created_at).toLocaleDateString("en-GB", {
-                        year: "numeric",
-                        month: "short",
-                      })}
+                      {new Date(r.created_at).toLocaleDateString(
+                        localeDateTag(locale),
+                        { year: "numeric", month: "short" },
+                      )}
                     </span>
                   </figcaption>
                 </figure>
@@ -419,7 +420,9 @@ export default async function AgentProfilePage({
       <section className="px-4 md:px-12 py-16 max-w-[1280px]">
         <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-6 md:p-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
           <div>
-            <Eyebrow className="text-bz-accent-fg/70">{ta("getInTouch")}</Eyebrow>
+            <Eyebrow className="text-bz-accent-fg/70">
+              {ta("getInTouch")}
+            </Eyebrow>
             <h3
               className="serif text-[28px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.012em" }}

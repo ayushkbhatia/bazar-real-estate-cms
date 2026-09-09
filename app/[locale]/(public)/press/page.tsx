@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { localeDateTag } from "@/lib/i18n/dates";
+import { asLocale, type Locale } from "@/lib/i18n/locales";
 import { ExternalLink } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { SEED_PRESS } from "@/lib/seeds/press";
@@ -8,15 +10,23 @@ export const metadata: Metadata = {
   description: "Bazar Real Estate in the press — coverage, interviews, awards.",
 };
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-GB", {
+/** Month written out in full, unlike the editorial byline's short form. */
+function formatDate(iso: string, locale: Locale): string {
+  return new Date(iso).toLocaleDateString(localeDateTag(locale), {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 }
 
-export default function PressPage() {
+export default async function PressPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  // Read from `params`, not from an ambient `getLocale()` — that one reaches
+  // for `headers()` and drops the route out of prerendering.
+  const locale = asLocale((await params).locale);
   return (
     <div className="bg-bz-bg">
       <section className="px-4 md:px-12 pt-20 pb-14 max-w-[1200px]">
@@ -52,7 +62,7 @@ export default function PressPage() {
               <div className="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-2 md:gap-10">
                 <div>
                   <div className="mono text-[12px] text-bz-muted">
-                    {formatDate(item.date)}
+                    {formatDate(item.date, locale)}
                   </div>
                   <div className="text-[12.5px] uppercase tracking-wider text-bz-accent mt-1">
                     {item.outlet}

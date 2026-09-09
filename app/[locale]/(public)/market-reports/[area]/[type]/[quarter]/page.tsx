@@ -201,7 +201,7 @@ export default async function MarketReportDetailPage({ params }: PageProps) {
       {/* T1-A cleanup: market velocity strip (transaction count proxy
           for DOM — DLD doesn't publish listing-to-close intervals). */}
       <VelocityStrip trend={trend} />
-      <ComparablesTable rows={comparables} />
+      <ComparablesTable rows={comparables} locale={locale} />
       {/* T1-A cleanup: live comparables rail bridges report → marketplace. */}
       <LiveListingsRail
         area_slug={snapshot.area_slug}
