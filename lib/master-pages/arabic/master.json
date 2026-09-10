@@ -1036,6 +1036,11 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "A family-focused residential area offering spacious homes, convenience, and strong community appeal.": {
+    "ar": "منطقة سكنية موجّهة للعائلات توفّر منازل واسعة وسهولة في الحياة اليومية وطابعًا مجتمعيًا قويًا.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
+  },
   "A few lines is plenty — area, budget, timeline. An advisor will come back to you shortly.": {
     "ar": "بضعة أسطر تكفي — المنطقة، الميزانية، الإطار الزمني. سيعاود أحد المستشارين التواصل معك قريبًا.",
     "by": "machine",
@@ -1128,6 +1133,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T13:09:24.791Z"
   },
+  "A lifestyle destination built around entertainment, family living, and long-term investment appeal.": {
+    "ar": "وجهة لأسلوب حياة قائم على الترفيه والحياة العائلية وجاذبية استثمارية على المدى الطويل.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
+  },
   "A low-density residential district on Saadiyat Island given over to plots and large villas, positioned away from the beachfront and cultural crowds for buyers who want space, privacy and the option to build.": {
     "ar": "منطقة سكنية منخفضة الكثافة في جزيرة السعديات مخصصة للقطع الأرضية والفيلات الكبيرة، بعيدة عن شاطئ البحر والمناطق الثقافية، للمشترين الذين يرغبون في المساحة والخصوصية وفرصة البناء.",
     "by": "machine",
@@ -1169,6 +1179,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A modern mixed-use destination known for its business district, waterfront setting, and proximity to ADGM. Ideal for professionals and investors.": {
+    "ar": "وجهة عصرية متعددة الاستخدامات تشتهر بحي الأعمال وموقعها على الواجهة المائية وقربها من سوق أبوظبي العالمي. مثالية للمهنيين والمستثمرين.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
   },
   "A modern waterfront community combining high-rise residential living with parks, promenades, retail, dining and convenient access to Abu Dhabi’s financial and business districts. It offers a strong balance between city convenience and island living.": {
     "ar": "مجتمع عصري على الواجهة المائية يجمع بين السكن في الأبراج العالية والحدائق والممشى والمتاجر والمطاعم مع سهولة الوصول إلى المناطق المالية والتجارية في أبوظبي. ويوفّر توازناً قوياً بين سهولة الحياة في المدينة وأجواء السكن في الجزيرة.",
@@ -1436,6 +1451,11 @@
     "model": "claude-opus-5",
     "at": "2026-09-09T16:56:53.658980Z"
   },
+  "A sustainable urban community offering modern homes, smart design, and investment potential.": {
+    "ar": "مجتمع حضري مستدام يوفّر منازل عصرية وتصميمًا ذكيًا وإمكانات استثمارية.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
+  },
   "A thoughtfully designed residence with open-plan living, contemporary interiors, generous natural light, and a private outdoor space overlooking Hudayriyat Island.": {
     "ar": "مسكن مصمم بعناية مع مساحات مفتوحة للحياة، وديكورات عصرية، وإضاءة طبيعية وافرة، ومساحة خارجية خاصة تطل على جزيرة الحديريات.",
     "by": "machine",
@@ -1458,6 +1478,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-09-09T16:56:53.658980Z"
+  },
+  "A vibrant waterfront community offering modern apartments, strong rental demand, and city connectivity.": {
+    "ar": "مجتمع نابض بالحياة على الواجهة المائية يوفّر شققًا عصرية وطلبًا إيجاريًا قويًا واتصالًا سهلًا بالمدينة.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
   },
   "A vibrant waterfront community with strong rental demand.": {
     "ar": "مجتمع نابض بالحياة على الواجهة المائية مع طلب قوي على الإيجار.",
@@ -1975,6 +2000,11 @@
     "ar": "مطور عقاري للترفيه والوجهات في أبوظبي — جزيرة ياس.",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Abu Dhabi's premium business and lifestyle district — luxury residences, dining, retail, and financial hubs.": {
+    "ar": "حي الأعمال وأسلوب الحياة الراقي في أبوظبي — مساكن فاخرة ومطاعم ومتاجر ومراكز مالية.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
   },
   "Abu Dhabi-based diversified developer with retail, hospitality, and residential projects across the emirate.": {
     "ar": "مطور عقاري متنوع مقره أبو ظبي مع مشاريع تجارية وضيافة وسكنية عبر الإمارة.",
@@ -2674,6 +2704,11 @@
     "model": "claude-opus-5",
     "at": "2026-09-09T16:56:53.658980Z"
   },
+  "An emerging destination with major residential, leisure and lifestyle developments — one of Abu Dhabi's most exciting areas for future growth.": {
+    "ar": "وجهة ناشئة تضم مشاريع سكنية وترفيهية وحياتية كبرى — من أكثر مناطق أبوظبي تشويقًا من حيث النمو المستقبلي.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
+  },
   "An established mainland district on Abu Dhabi’s eastern waterfront, bringing together the waterfront apartments of Al Raha Beach, the gated villa precincts of Al Raha Gardens and a mature spread of schools, retail and workplaces along the Sheikh Zayed Bin Sultan Street corridor.": {
     "ar": "منطقة راسخة على البر الرئيسي في الواجهة المائية الشرقية لـأبوظبي، تجمع بين الشقق المطلة على الواجهة المائية في شاطئ الراحة، ومجمعات الفيلات المسوّرة في حدائق الراحة، وانتشار ناضج للمدارس والمتاجر وأماكن العمل على امتداد شارع الشيخ زايد بن سلطان.",
     "by": "machine",
@@ -2869,6 +2904,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:56:48.169Z"
+  },
+  "Apartments, villas, retail and dining between the city and Yas Island — attractive for relaxed, connected waterfront living.": {
+    "ar": "شقق وفلل ومتاجر ومطاعم بين المدينة وجزيرة ياس — خيار جذاب لحياة هادئة ومتصلة على الواجهة المائية.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
   },
   "Approximate Island Area": {
     "ar": "مساحة الجزيرة التقريبية",
@@ -4379,6 +4419,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T14:37:59.475Z"
+  },
+  "Combines residential communities with leisure, hospitality, and retail. Apartments, villas, townhouses, and new developments for end-users and investors.": {
+    "ar": "تجمع بين المجتمعات السكنية والترفيه والضيافة والتجزئة. شقق وفلل وتاون هاوس ومشاريع جديدة للمستخدمين النهائيين والمستثمرين.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
   },
   "Combining local expertise, strong developer relationships and in-depth market knowledge, we provide tailored property guidance that delivers lasting value and a seamless client experience.": {
     "ar": "بالجمع بين الخبرة المحلية والعلاقات القوية مع المطورين العقاريين والمعرفة العميقة بالسوق، نقدّم استشارات عقارية مصمّمة خصيصًا تحقق قيمة دائمة وتجربة سلسة للعملاء.",
@@ -8533,6 +8578,11 @@
     "model": "Qwen/Qwen2.5-72B-Instruct",
     "at": "2026-08-17T08:17:50.899Z"
   },
+  "Home to world-class museums, luxury resorts, beachfront residences, and premium villa communities. A refined living experience with strong long-term value.": {
+    "ar": "تحتضن متاحف عالمية المستوى ومنتجعات فاخرة ومساكن على الشاطئ ومجتمعات فلل راقية. تجربة سكنية مميزة بقيمة قوية على المدى الطويل.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
+  },
   "Homebuyers": {
     "ar": "المشتريون",
     "by": "machine",
@@ -9396,6 +9446,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T13:28:31.966Z"
+  },
+  "Known for sustainability-focused planning and modern apartments, attracting buyers looking for innovative, future-focused living.": {
+    "ar": "تشتهر بتخطيط يركّز على الاستدامة وشقق عصرية، وتجذب المشترين الباحثين عن حياة مبتكرة تستشرف المستقبل.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
   },
   "Lagoon view": {
     "ar": "منظر البحيرة الصغيرة",
@@ -11445,6 +11500,16 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T14:20:52.140Z"
   },
+  "One of Abu Dhabi's most prestigious island destinations — luxury living, culture, and beachfront communities.": {
+    "ar": "إحدى أرقى الوجهات الجزرية في أبوظبي — حياة فاخرة وثقافة ومجتمعات على الشاطئ.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
+  },
+  "One of Abu Dhabi's rising lifestyle destinations, shaped around waterfront living and wellness.": {
+    "ar": "إحدى وجهات أسلوب الحياة الصاعدة في أبوظبي، قائمة على الحياة على الواجهة المائية والعافية.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
+  },
   "One of Abu Dhabi's rising lifestyle destinations, shaped around waterfront living, sport, and wellness.": {
     "ar": "واحدة من أبوظبي الوجهات النمطية الصاعدة، التي تشكلت حول الحياة المائية، الرياضة، والرفاهية.",
     "by": "machine",
@@ -12109,6 +12174,11 @@
     "ar": "منظر حوض السباحة",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Popular among professionals, families, and investors. High-rise apartments, waterfront views, retail, schools, and proximity to the city centre.": {
+    "ar": "وجهة مفضّلة لدى المهنيين والعائلات والمستثمرين. شقق في أبراج عالية وإطلالات على الواجهة المائية ومتاجر ومدارس وقرب من وسط المدينة.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
   },
   "Popular family-friendly communities": {
     "ar": "المجمعات السكنية الأنسب للعائلات",
@@ -16788,6 +16858,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T10:54:35.558Z"
   },
+  "Waterfront living with established communities, sea views, and convenient access across Abu Dhabi.": {
+    "ar": "حياة على الواجهة المائية مع مجتمعات راسخة وإطلالات على البحر ووصول سهل إلى أنحاء أبوظبي.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
+  },
   "Waterfront two-bedroom in Yas Bay with marina views.": {
     "ar": "شقة مائية بغرفتين نوم في ياس باي مع إطلالة على المارينا.",
     "by": "machine",
@@ -16929,6 +17004,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "Well-established, known for villas, schools, and easy access to major roads. Popular with families seeking larger homes and a quieter lifestyle.": {
+    "ar": "منطقة راسخة تشتهر بالفلل والمدارس وسهولة الوصول إلى الطرق الرئيسية. مفضّلة لدى العائلات الباحثة عن منازل أكبر وأسلوب حياة أهدأ.",
+    "by": "human",
+    "at": "2026-09-10T00:00:00.000Z"
   },
   "Wellness & Nature": {
     "ar": "العافية والطبيعة",

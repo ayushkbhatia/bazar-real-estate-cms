@@ -87,6 +87,10 @@
   "prefsCurrency": "العملة",
   "propertyType": "نوع العقار",
   "propertyTypes": "أنواع العقارات",
+  "rail": {
+    "previous": "السابق",
+    "next": "التالي"
+  },
   "readMore": "اقرأ المزيد",
   "returnHome": "العودة إلى الرئيسية",
   "search": "بحث",

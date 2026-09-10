@@ -87,6 +87,10 @@
   "prefsCurrency": "Currency",
   "propertyType": "Property type",
   "propertyTypes": "Property types",
+  "rail": {
+    "previous": "Previous",
+    "next": "Next"
+  },
   "readMore": "Read more",
   "returnHome": "Return home",
   "search": "Search",

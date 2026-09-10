@@ -1261,7 +1261,13 @@ const OFF_PLAN: MasterPageDef = {
         image(
           "image",
           "Photo",
-          "Fills the right half of the card. Landscape renders work best. Leave unset for the placeholder art.",
+          "Fills the right half of the card on a desktop and sits above the form on a phone, where it is shown whole rather than cropped. Leave unset for the placeholder art.",
+          // The asset in production is a typeset poster — "READY TO FIND YOUR
+          // NEXT HOME?" is inside the picture — so it stays English under
+          // `lang="ar"` however well the page around it reads. Same case as the
+          // list-your-property band, and now a louder one: the phone layout
+          // shows the whole artboard rather than a 16/10 crop of it.
+          { arabicVariant: true },
         ),
       ],
       defaults: {
