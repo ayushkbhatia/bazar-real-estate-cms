@@ -1514,3 +1514,41 @@ shows the trail.)
     `lib/dead-code.test.ts` UNREFERENCED list. `location-section.tsx` shadows
     the live Location band and carries five commute pills the page never
     renders, so it reads as the current implementation and is not.
+
+## Admin panel latency — what was left on the table
+
+Found while fixing the slow CMS (see the `regions` entry in `vercel.json` and
+the `getClaims()` switch in `lib/supabase/proxy.ts`). Each of these is real but
+was out of scope for that change:
+
+- **`countAdminPropertiesByStatus` counts in JavaScript.**
+  `lib/queries/properties.ts` selects the `status` of *every* non-deleted
+  property and tallies them in a loop, to produce six integers for the status
+  tabs. PostgREST caps a response at 1000 rows, so past that the tab badges
+  will also start silently undercounting. Six `head: true` counts in one
+  `Promise.all` is the shape already used by the dashboard's `fetchKpis`.
+  Not done here because `lib/queries/properties*` is on the shared-files
+  no-edit list.
+
+- **`LiveDot` re-renders the entire page on every database event.**
+  `lib/realtime/use-postgres-changes.ts` calls `router.refresh()`, throttled to
+  one per 250 ms. On a `force-dynamic` admin route that re-runs the whole
+  server render — auth, layout, every query — so any `UPDATE` to `properties`,
+  from any source including a cron, costs a full page render for every editor
+  who happens to have the list open. Fixing it means deciding what the dots are
+  actually for: a badge that says "new data, click to reload" is much cheaper
+  than an automatic refetch, and is a product decision rather than a
+  refactor.
+
+- **No `loading.tsx` anywhere under `/admin`.** Every CMS navigation holds the
+  previous page on screen, with no feedback, until the new server render
+  lands. The reason it isn't there: `CmsShell` is mounted by each of the 58
+  admin pages rather than by the layout, so a `loading.tsx` fallback would
+  blank the sidebar and topbar too. The fix is to lift `CmsShell` into
+  `app/[locale]/(admin)/layout.tsx` — a 58-file change touching
+  `components/brand/cms-shell.tsx`, which is on the no-edit list.
+
+- **`/admin/login` spends two round-trips deciding you are signed out.** It
+  calls `getUser()` and then selects from `staff`, on every visit, so that an
+  already-signed-in visitor skips the form. That is the door every locked-out
+  staff member knocks on.

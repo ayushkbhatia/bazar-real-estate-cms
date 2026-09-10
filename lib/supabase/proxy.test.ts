@@ -31,13 +31,24 @@ vi.mock("@supabase/ssr", () => ({
     setAllRef.current = opts.cookies.setAll;
     return {
       auth: {
-        getUser: async () => {
-          // Simulate the rotation: Supabase writes refreshed cookies during
-          // getUser(), which is exactly when the response gets re-minted.
+        getClaims: async () => {
+          // Simulate the rotation: `getClaims` goes through `getSession`,
+          // which writes refreshed cookies when the access token is stale —
+          // and that is exactly when the response gets re-minted.
           setAllRef.current?.([
             { name: "sb-test-auth-token", value: "rotated", options: {} },
           ]);
-          return { data: { user: { id: "staff-1" } } };
+          return { data: { claims: { sub: "staff-1" } }, error: null };
+        },
+        // The proxy must verify the JWT locally, not ask the Auth server:
+        // that round-trip is to the database's region and sat on the critical
+        // path of every admin request. Throwing here fails the suite if
+        // anyone reaches for `getUser()` in this file again. The real gate,
+        // in the admin layout, still calls it — that is a different file.
+        getUser: async () => {
+          throw new Error(
+            "proxy must not call auth.getUser() — use getClaims() (local JWT verification)",
+          );
         },
       },
     };
