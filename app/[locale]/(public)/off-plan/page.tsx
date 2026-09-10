@@ -17,6 +17,7 @@ import { MHero } from "../_components/marketing/m-hero";
 import { SectionHead } from "../_components/marketing/section-head";
 import { PropTypeGrid } from "../_components/marketing/prop-type-grid";
 import { AreaList, type AreaRow } from "../_components/marketing/area-list";
+import { CardRail } from "../_components/marketing/card-rail";
 import { DevelopmentCard } from "../_components/marketing/development-card";
 import { WhyBand } from "../_components/marketing/why-band";
 import { Faq } from "../_components/marketing/faq";
@@ -35,6 +36,7 @@ import { OffplanMapExplorer } from "../_components/off-plan/offplan-map-explorer
 import { ProjectInterestForm } from "../_components/off-plan/project-interest-form";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
 import { asLocale } from "@/lib/i18n/locales";
+import { localiseRow } from "@/lib/i18n/localise";
 
 export async function generateMetadata({
   params,
@@ -66,7 +68,8 @@ export default async function NewProjectsPage({
   // the request, and without this `getLocale()` has nothing to resolve — the
   // page renders English content under `lang="ar"` in an RTL layout, which is
   // the failure `lib/i18n/current.ts` describes: it looks finished.
-  setRequestLocale(asLocale((await params).locale));
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
 
   const [content, developments, areaCounts, interestForm] = await Promise.all([
     getMasterPageContent("off-plan"),
@@ -98,19 +101,40 @@ export default async function NewProjectsPage({
     developments.map((d) => d.id),
   );
   const rawMap = buildOffplanMap(developments, projectCoords);
+  /*
+   * Matched on `slug`, not on `name` — see the note over `AD_AREAS`.
+   *
+   * `listAreasWithCounts` returns the name already folded to the request's
+   * locale, so under `/ar` every one of the eight English names missed and the
+   * whole section lost its counts and its per-area links. "Al Raha Beach" also
+   * missed in English, because that community is `al-raha` in the catalogue and
+   * is named "Al Raha" there.
+   */
   const countBySlug = new Map(
-    areaCounts.map((a) => [a.name, { slug: a.slug, count: a.listing_count }]),
+    areaCounts.map((a) => [a.slug, a.listing_count]),
   );
-  const areas: AreaRow[] = AD_AREAS.map((a) => {
-    const hit = countBySlug.get(a.name);
-    return {
-      ...a,
-      count: hit?.count,
-      href: hit
-        ? `/off-plan/search?area=${encodeURIComponent(hit.slug)}`
-        : "/off-plan/search",
-    };
-  });
+  /*
+   * The rows' own copy is a code constant, so it folds through ARABIC_STORE
+   * rather than through a column. `localiseRow` is the same fold every
+   * bilingual table gets; the twins are declared null on `AD_AREAS` precisely
+   * so it will run. Under `en` it is a no-op that strips the twin keys.
+   */
+  const areas: AreaRow[] = AD_AREAS.map((a) => localiseRow(a, locale)).map(
+    (a) => {
+      const count = countBySlug.get(a.slug);
+      return {
+        num: a.num,
+        name: a.name,
+        tagline: a.tagline,
+        about: a.about,
+        count,
+        href:
+          count === undefined
+            ? "/off-plan/search"
+            : `/off-plan/search?area=${encodeURIComponent(a.slug)}`,
+      };
+    },
+  );
 
   // Copy, links, images and section order come from
   // /admin/pages/master/off-plan; untouched fields fall back to the defaults
@@ -187,7 +211,7 @@ export default async function NewProjectsPage({
             size={40}
             className="mb-9"
           />
-          <PropTypeGrid cols={5} aspect="3/4" items={typeItems} />
+          <PropTypeGrid cols={5} aspect="3/4" mobileCols={2} items={typeItems} />
         </section>
       ) : null,
 
@@ -240,11 +264,18 @@ export default async function NewProjectsPage({
               </Button>
             ) : null}
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredDevs.map((d) => (
-              <DevelopmentCard key={d.id} d={d} />
-            ))}
-          </div>
+          {/*
+            A grid from `md`, a swipe rail below it. Six cards in one column
+            came to 3,209px on a 390px phone — a third of the page — and the
+            rail is one screen with the next card always half in view. See
+            `card-rail.tsx`. */}
+          <CardRail
+            label={str(launches, "heading") ?? ""}
+            items={featuredDevs.map((d) => ({
+              key: d.id,
+              node: <DevelopmentCard key={d.id} d={d} />,
+            }))}
+          />
         </section>
       ) : null,
 

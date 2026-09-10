@@ -91,6 +91,13 @@
     "expiredBody": "Confirmation links are valid for 14 days. Please subscribe again and watch your inbox.",
     "notFoundBody": "It may already have been used. Try subscribing again from the Insights page."
   },
+  "offPlan": {
+    "viewProperties": "View properties",
+    "listings": "{count, plural, one {# listing} other {# listings}}",
+    "interestEyebrow": "Register your interest",
+    "interestHeading": "Interested in a new project?",
+    "interestBody": "Tell us which launch caught your eye — an advisor will share availability, floor plans, and payment plans."
+  },
   "property": {
     "whyThisOne": "Why this one",
     "featuresAmenities": "Features & amenities",

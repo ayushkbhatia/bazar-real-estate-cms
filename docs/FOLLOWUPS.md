@@ -31,6 +31,21 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [i18n] The /off-plan map explorer and its project rail still render their own
+  chrome in English on `/ar`.
+  Found while fixing the "Abu Dhabi locations" band, which was English top to
+  bottom on `/ar` (PR: off-plan mobile). Three files were left alone because
+  they are a separate, larger extraction rather than part of that band:
+  `_components/off-plan/offplan-map-explorer.tsx` ("Show all areas"),
+  `_components/off-plan/project-carousel.tsx` (the "N projects" count, the
+  hand-rolled singular/plural, `View all in <area>` and both arrow labels) and
+  `_components/area-map/area-chips.tsx`. G-13 sees only one of them — the
+  others build their strings inside `{…}` or in a default parameter, which is
+  the FLOOR that guard documents. Done looks like: those strings in
+  `messages/*/common.json` (the carousel is a Client Component, so it has to be
+  a client namespace), the count through ICU plurals with all six Arabic
+  categories, and the two allowlist entries gone.
+
 - [i18n] The seven partner institutions' Arabic names are machine-authored and
   have never been confirmed by the client.
   Added to `lib/master-pages/arabic/master.json` with the partner-ecosystem
