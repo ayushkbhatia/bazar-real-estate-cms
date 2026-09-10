@@ -57,7 +57,8 @@ function hasSupabaseSession(request: NextRequest): boolean {
  */
 type ResponseFactory = (request: NextRequest) => NextResponse;
 
-const passThrough: ResponseFactory = (request) => NextResponse.next({ request });
+const passThrough: ResponseFactory = (request) =>
+  NextResponse.next({ request });
 
 export async function updateSession(
   request: NextRequest,
@@ -113,9 +114,32 @@ export async function updateSession(
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // `getClaims()`, not `getUser()`. Both answer "is there a valid session?";
+  // only one of them costs a network round-trip.
+  //
+  // This project signs its JWTs with an asymmetric key (ES256 — see
+  // /auth/v1/.well-known/jwks.json), so `getClaims()` verifies the token's
+  // signature locally with WebCrypto against a JWKS it fetches once per
+  // instance and caches. `getUser()` asks the Auth server every single time,
+  // and the Auth server is in the database's region: measured at ~190ms from
+  // a Vercel function. This proxy runs on every admin request — the page
+  // load, every RSC navigation, every server action, every `router.refresh()`
+  // the realtime dots fire — so that was ~190ms added to each of them, spent
+  // re-answering a question the JWT already answers.
+  //
+  // It still refreshes an expired session: `getClaims()` goes through
+  // `getSession()`, which rotates the token and fires the `setAll` callback
+  // above, which is this function's whole reason for existing.
+  //
+  // What is deliberately given up: `getUser()` would notice a session revoked
+  // server-side mid-token, and local verification will not until the access
+  // token expires (one hour). That is acceptable *here* because this branch
+  // is not the authorisation boundary — it only decides whether to bounce a
+  // visitor to the login form. The real gate is the admin layout's role
+  // check, which does call `getUser()`, plus RLS on every table underneath
+  // it. Do not "optimise" that one the same way.
+  const { data: verified } = await supabase.auth.getClaims();
+  const user = verified?.claims ?? null;
 
   if (!user && isAdmin && !isPublicPath(pathname)) {
     const url = request.nextUrl.clone();
