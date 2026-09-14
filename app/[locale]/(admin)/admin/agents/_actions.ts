@@ -12,6 +12,7 @@ import {
   type AgentEditInput,
 } from "@/lib/schemas/agent";
 import { logAudit } from "@/lib/audit";
+import { revalidateLocalised } from "@/lib/i18n/revalidate";
 
 type ActionResult =
   | { status: "ok" }
@@ -20,6 +21,23 @@ type ActionResult =
       message?: string;
       fieldErrors?: Record<string, string>;
     };
+
+/** The subset of `keys` present in `obj`, blanks and empty arrays as null. */
+function pickDefined<T extends Record<string, unknown>, K extends keyof T>(
+  obj: T,
+  keys: readonly K[],
+): Partial<Pick<T, K>> {
+  const out: Partial<Pick<T, K>> = {};
+  for (const k of keys) {
+    const v = obj[k];
+    if (v === undefined) continue;
+    const blank =
+      (typeof v === "string" && v.trim() === "") ||
+      (Array.isArray(v) && v.length === 0);
+    out[k] = (blank ? null : typeof v === "string" ? v.trim() : v) as T[K];
+  }
+  return out;
+}
 
 export async function updateAgentAction(
   userId: string,
@@ -48,7 +66,7 @@ export async function updateAgentAction(
   const { data: before } = await supabase
     .from("staff")
     .select(
-      "display_name, slug, title, brn, bio, photo_url, languages, specialties, credentials, public_email, public_phone, whatsapp",
+      "display_name, display_name_ar, slug, title, title_ar, brn, bio, bio_ar, photo_url, languages, languages_ar, specialties, specialties_ar, credentials, public_email, public_phone, whatsapp",
     )
     .eq("user_id", userId)
     .maybeSingle();
@@ -57,6 +75,15 @@ export async function updateAgentAction(
     .from("staff")
     .update({
       display_name: parsed.data.display_name,
+      // Arabic twins. Written only when the form sent the key: the schema
+      // keeps them optional so a partial caller leaves the stored value alone.
+      ...pickDefined(parsed.data, [
+        "display_name_ar",
+        "title_ar",
+        "bio_ar",
+        "languages_ar",
+        "specialties_ar",
+      ]),
       slug: parsed.data.slug,
       title: parsed.data.title ?? null,
       brn: parsed.data.brn ?? null,
@@ -93,6 +120,13 @@ export async function updateAgentAction(
 
   revalidatePath("/admin/agents");
   revalidatePath(`/admin/agents/${userId}`);
+  // The public profile is prerendered, so without these an edit — English or
+  // Arabic — saved with a success toast and never reached the site.
+  revalidateLocalised("/agents");
+  revalidateLocalised(`/agents/${parsed.data.slug}`);
+  if (before?.slug && before.slug !== parsed.data.slug) {
+    revalidateLocalised(`/agents/${before.slug}`);
+  }
   return { status: "ok" };
 }
 

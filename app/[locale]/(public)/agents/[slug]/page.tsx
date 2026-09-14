@@ -31,10 +31,10 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: Locale }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const agent = await getAgentBySlug(slug);
+  const { slug, locale } = await params;
+  const agent = await getAgentBySlug(slug, locale);
   if (!agent) return { title: "Advisor not found" };
   return {
     title: `${agent.display_name} — ${agent.title ?? "Advisor"}`,
@@ -74,7 +74,7 @@ export default async function AgentProfilePage({
   // gone rather than moved.
   const cardLabels = await getCardLabelResolver(locale);
   const { slug } = await params;
-  const agent = await getAgentBySlug(slug);
+  const agent = await getAgentBySlug(slug, locale);
   if (!agent) notFound();
 
   // Reviews + active listings — both keyed on the agent's user_id. Skip
