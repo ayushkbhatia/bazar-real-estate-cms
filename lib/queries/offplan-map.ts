@@ -119,6 +119,12 @@ export function buildOffplanMap(
    * the map did before projects could be placed individually.
    */
   coordsById: OffplanCoordsById = {},
+  /**
+   * Area centroids from the CMS (Pages → Areas → Latitude / Longitude), keyed
+   * by area slug. They win over the hand-seeded constants below, so an editor
+   * who corrects or adds an area's position moves its ring on this map too.
+   */
+  areaCentroids: Record<string, { lng: number; lat: number }> = {},
 ): OffplanMapData {
   // Group projects by area slug, preserving input order (published_at desc).
   const byArea = new Map<
@@ -138,7 +144,7 @@ export function buildOffplanMap(
   const groups: OffplanAreaGroup[] = [];
 
   for (const [slug, { name, projects }] of byArea) {
-    const centroid = AREA_CENTROIDS[slug];
+    const centroid = validPin(areaCentroids[slug]) ?? AREA_CENTROIDS[slug];
 
     // Projects the CMS has placed sit exactly where they were pinned; the rest
     // fan out on the area's ring. The ring is sized to the un-pinned projects

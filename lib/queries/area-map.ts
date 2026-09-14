@@ -151,6 +151,45 @@ export function computeCentroid(points: LngLat[]): LngLat | null {
   return { lng: sum.lng / points.length, lat: sum.lat / points.length };
 }
 
+/**
+ * PostgREST `or` filter for "the areas of this emirate".
+ *
+ * An area saved with "Sits inside: Nothing — top level" has no emirate, and a
+ * strict `parent_id = emirate` read dropped it from every map even though its
+ * editor had typed a centroid and its listings were live (Hudayriyat Island,
+ * 2026-09). Abu Dhabi is the only emirate with inventory, so a top-level area
+ * is read as belonging to it; another emirate gets only its own children.
+ */
+export function emirateParentFilter(emirateId: string, emirate: string): string {
+  return emirate === DEFAULT_EMIRATE
+    ? `parent_id.eq.${emirateId},parent_id.is.null`
+    : `parent_id.eq.${emirateId}`;
+}
+
+/**
+ * Every area's CMS centroid, keyed by slug — what an editor typed into
+ * Latitude / Longitude on the area's record. Empty when Supabase is absent or
+ * the read fails, so callers fall back to their hand-seeded constants.
+ */
+export async function listAreaCentroids(): Promise<Record<string, LngLat>> {
+  if (!isSupabaseConfigured) return {};
+  try {
+    const sb = createSupabasePublicClient();
+    const { data } = await sb
+      .from("areas")
+      .select("slug, geo")
+      .not("geo", "is", null);
+    const out: Record<string, LngLat> = {};
+    for (const r of data ?? []) {
+      const g = parseGeo(r.geo);
+      if (g) out[r.slug] = g;
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
 /** Editorial tag for the flyout, or null. */
 export function areaTag(slug: string): string | null {
   return AREA_TAGS[slug] ?? null;
@@ -310,7 +349,7 @@ export async function listAreaPins(
       .from("areas")
       .select("id, slug, name, name_ar, geo")
       .eq("kind", "area")
-      .eq("parent_id", em.id)
+      .or(emirateParentFilter(em.id, emirate))
       .order("name", { ascending: true });
     if (!areas || areas.length === 0) {
       return emirate === DEFAULT_EMIRATE ? seedAreaPins(emirate, mode) : [];
@@ -405,7 +444,7 @@ export async function listAreaListingDots(
         .from("areas")
         .select("id")
         .eq("kind", "area")
-        .eq("parent_id", em.id);
+        .or(emirateParentFilter(em.id, emirate));
       areaIds = (areas ?? []).map((a) => a.id);
       if (areaIds.length === 0) return [];
     }

@@ -7,6 +7,7 @@ import {
   dotMeta,
   shapeDot,
   tallyAreaListings,
+  emirateParentFilter,
 } from "./area-map";
 
 describe("parseGeo", () => {
@@ -202,5 +203,17 @@ describe("tallyAreaListings", () => {
   it("ignores rows with no area", () => {
     const t = tallyAreaListings(rows, "commercial");
     expect(t.any.size).toBe(2);
+  });
+});
+
+describe("emirateParentFilter", () => {
+  it("reads a top-level area as Abu Dhabi's, so its pin is not dropped", () => {
+    expect(emirateParentFilter("em-1", "abu-dhabi")).toBe(
+      "parent_id.eq.em-1,parent_id.is.null",
+    );
+  });
+
+  it("gives any other emirate only its own children", () => {
+    expect(emirateParentFilter("em-2", "dubai")).toBe("parent_id.eq.em-2");
   });
 });

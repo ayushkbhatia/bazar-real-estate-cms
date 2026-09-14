@@ -51,6 +51,26 @@ describe("buildOffplanMap", () => {
     }),
   ];
 
+  it("places an area's ring on its CMS centroid over the seeded one", () => {
+    const cms = { lng: 54.34376, lat: 24.42604 };
+    const { pins } = buildOffplanMap(
+      [dev({ id: "9", slug: "al-naseem", name: "Al Naseem", area: YAS })],
+      {},
+      { "yas-island": cms },
+    );
+    expect(pins[0]).toMatchObject(cms);
+  });
+
+  it("places an area the seeds never heard of once the CMS has a centroid", () => {
+    const area = { name: "New Island", slug: "new-island" };
+    const row = dev({ id: "8", slug: "p", name: "P", area });
+    expect(buildOffplanMap([row]).dots).toHaveLength(0);
+    expect(
+      buildOffplanMap([row], {}, { "new-island": { lng: 54.4, lat: 24.4 } })
+        .dots,
+    ).toHaveLength(1);
+  });
+
   it("groups projects by area with counts, busiest first", () => {
     const { groups } = buildOffplanMap(rows);
     expect(groups.map((g) => [g.slug, g.count])).toEqual([
