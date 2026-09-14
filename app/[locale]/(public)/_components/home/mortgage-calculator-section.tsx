@@ -147,7 +147,7 @@ export function MortgageCalculatorSection({
           <div className="mt-auto flex flex-col gap-2.5 pt-6 md:pt-7">
             <Link
               href="/tools/mortgage"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-white/40 px-4 text-[13.5px] font-medium text-white transition-colors hover:bg-white/10"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white px-4 text-[13.5px] font-medium text-bz-ink transition-colors hover:bg-white/90"
             >
               <Check size={16} /> {t("getPreApproval")}
             </Link>
