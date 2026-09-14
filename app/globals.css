@@ -1173,6 +1173,161 @@
   font-weight: var(--bz-font-ar-display-weight, 400);
 }
 
+/* Arabic page and section headings: 2px smaller, one weight step lighter.
+ *
+ * Bukra sets a heading visibly larger and heavier than Instrument Serif does
+ * at the same nominal size, so at the English sizes an Arabic h1 read as
+ * shouting.
+ *
+ * SIZE. Heading sizes are literal `text-[Npx]` utilities rather than tokens,
+ * so there is no variable to lower once. Each size a public h1/h2 can carry
+ * gets its own override, 2px down, base first and `md` after, the order
+ * Tailwind emits them in. `fluid()` headings are inline styles and cannot be
+ * reached from here; they subtract `--bz-ar-heading-trim` themselves.
+ * lib/rtl/arabic-heading-scale.test.ts fails when a public file uses a size
+ * this list does not cover.
+ *
+ * Unlayered at specificity (0,2,1), so each beats the utility it shadows. */
+:lang(ar) :is(h1, h2) {
+  --bz-ar-heading-trim: 2px;
+}
+
+/* WEIGHT. One hundred below the display weight pinned at
+ * /admin/settings/typography (700 today, so 600), or below `.serif`'s own
+ * 500 fallback when nothing is pinned. Which file draws it is still the
+ * browser's call: with only a 400 and an 800 uploaded, a requested 600
+ * matches the 800. It reads lighter once a Medium or SemiBold file for the
+ * display family is uploaded there — no deploy needed. */
+:lang(ar) :is(h1, h2).serif {
+  font-weight: max(100, calc(var(--bz-font-ar-display-weight, 500) - 100));
+}
+
+:lang(ar) :is(h1, h2).text-\[20px\] {
+  font-size: 18px;
+}
+:lang(ar) :is(h1, h2).text-\[21px\] {
+  font-size: 19px;
+}
+:lang(ar) :is(h1, h2).text-\[22px\] {
+  font-size: 20px;
+}
+:lang(ar) :is(h1, h2).text-\[24px\] {
+  font-size: 22px;
+}
+:lang(ar) :is(h1, h2).text-\[26px\] {
+  font-size: 24px;
+}
+:lang(ar) :is(h1, h2).text-\[28px\] {
+  font-size: 26px;
+}
+:lang(ar) :is(h1, h2).text-\[30px\] {
+  font-size: 28px;
+}
+:lang(ar) :is(h1, h2).text-\[32px\] {
+  font-size: 30px;
+}
+:lang(ar) :is(h1, h2).text-\[34px\] {
+  font-size: 32px;
+}
+:lang(ar) :is(h1, h2).text-\[36px\] {
+  font-size: 34px;
+}
+:lang(ar) :is(h1, h2).text-\[38px\] {
+  font-size: 36px;
+}
+:lang(ar) :is(h1, h2).text-\[40px\] {
+  font-size: 38px;
+}
+:lang(ar) :is(h1, h2).text-\[44px\] {
+  font-size: 42px;
+}
+:lang(ar) :is(h1, h2).text-\[48px\] {
+  font-size: 46px;
+}
+:lang(ar) :is(h1, h2).text-\[52px\] {
+  font-size: 50px;
+}
+:lang(ar) :is(h1, h2).text-3xl {
+  font-size: calc(1.875rem - 2px);
+}
+:lang(ar) :is(h1, h2).text-4xl {
+  font-size: calc(2.25rem - 2px);
+}
+@media (min-width: 48rem) {
+  :lang(ar) :is(h1, h2).md\:text-\[20px\] {
+    font-size: 18px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[21px\] {
+    font-size: 19px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[22px\] {
+    font-size: 20px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[24px\] {
+    font-size: 22px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[25px\] {
+    font-size: 23px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[26px\] {
+    font-size: 24px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[30px\] {
+    font-size: 28px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[32px\] {
+    font-size: 30px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[34px\] {
+    font-size: 32px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[36px\] {
+    font-size: 34px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[38px\] {
+    font-size: 36px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[40px\] {
+    font-size: 38px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[44px\] {
+    font-size: 42px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[48px\] {
+    font-size: 46px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[52px\] {
+    font-size: 50px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[56px\] {
+    font-size: 54px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[60px\] {
+    font-size: 58px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[64px\] {
+    font-size: 62px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[68px\] {
+    font-size: 66px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[72px\] {
+    font-size: 70px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[80px\] {
+    font-size: 78px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[88px\] {
+    font-size: 86px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-\[96px\] {
+    font-size: 94px;
+  }
+  :lang(ar) :is(h1, h2).md\:text-4xl {
+    font-size: calc(2.25rem - 2px);
+  }
+}
+
 /* The eyebrow is 11px uppercase with wide tracking — a treatment that borrows
    its legibility from capital letters. Arabic is unicameral, so uppercasing is
    a no-op and 11px is simply small. */
