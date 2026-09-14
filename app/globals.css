@@ -255,6 +255,17 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 16px 48px rgba(0, 0, 0, 0.08);
   }
 
+  /* Image-hero scrim (/buy, /rent, /services/*, /services/sell). Two layered
+     passes: the horizontal one darkens the side the copy sits on, the
+     vertical one carries mobile once copy and form stack. The horizontal
+     pass runs from the inline-START edge, so it mirrors under RTL — see
+     rule 4 in the RTL block. Contrast arithmetic: buy-rent-landing.tsx. */
+  .bz-hero-scrim {
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.52) 0%, rgba(0, 0, 0, 0.26) 55%, rgba(0, 0, 0, 0.1) 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.22) 100%);
+  }
+
   /* Mobile snap carousel (handoff pattern 2). Assumes a 16px-padded
      parent: bleeds the gutter with a negative margin and restores it
      with its own padding so the first/last card align to the page edge
@@ -1040,6 +1051,14 @@
    and mirrors normally through the logical properties above. */
 [dir="rtl"] .bzmap__gl .maplibregl-ctrl-group {
   direction: ltr;
+}
+
+/* 4 · Gradient angles are physical. `.bz-hero-scrim` darkens the side the
+   copy starts on, which in Arabic is the right; 270deg runs right-to-left. */
+[dir="rtl"] .bz-hero-scrim {
+  background:
+    linear-gradient(270deg, rgba(0, 0, 0, 0.52) 0%, rgba(0, 0, 0, 0.26) 55%, rgba(0, 0, 0, 0.1) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.22) 100%);
 }
 
 /* ─── Arabic typography ────────────────────────────────────────────────

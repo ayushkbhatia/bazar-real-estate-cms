@@ -229,11 +229,7 @@ export function BuyRentLanding(p: BuyRentLandingProps) {
                 image, which was true before this change too, with more margin.
                 Anything darker than paper-white clears comfortably. */}
             <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(90deg, rgba(0,0,0,.52) 0%, rgba(0,0,0,.26) 55%, rgba(0,0,0,.10) 100%), linear-gradient(180deg, rgba(0,0,0,.08) 0%, rgba(0,0,0,.22) 100%)",
-              }}
+              className="absolute inset-0 bz-hero-scrim"
             />
           </>
         ) : null}
