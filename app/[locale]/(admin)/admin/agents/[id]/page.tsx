@@ -57,6 +57,13 @@ export default async function AdminAgentEditPage({
 
   const initial = {
     display_name: data.display_name,
+    display_name_ar: data.display_name_ar ?? null,
+    title_ar: data.title_ar ?? null,
+    bio_ar: data.bio_ar ?? null,
+    languages_ar: Array.isArray(data.languages_ar)
+      ? (data.languages_ar as string[])
+      : null,
+    specialties_ar: data.specialties_ar ?? null,
     slug: data.slug,
     title: data.title ?? "",
     brn: data.brn ?? "",

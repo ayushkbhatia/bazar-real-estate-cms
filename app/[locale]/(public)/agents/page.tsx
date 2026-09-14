@@ -57,7 +57,7 @@ export default async function AgentsIndexPage({ params }: { params: Promise<{ lo
    */
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "editorial" });
-  const agents = await listAgents();
+  const agents = await listAgents(locale);
   // T3-A: group by desk so the team page reads as an org chart rather than
   // a flat grid. Order: Leadership → Buy-side → Off-plan → Lettings.
   const grouped = groupByDesk(agents);

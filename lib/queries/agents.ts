@@ -15,6 +15,7 @@ import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
+import type { Locale } from "@/lib/i18n/locales";
 import { localiseRow } from "@/lib/i18n/localise";
 import { SEED_AGENTS } from "@/lib/seeds/agents";
 import type { Database } from "@/db/types";
@@ -68,7 +69,10 @@ function parseLanguages(raw: unknown): string[] {
 
 /** All publishable agents (role=agent, status=active), ordered by name.
  *  Falls back to SEED_AGENTS when Supabase is offline or empty. */
-export async function listAgents(): Promise<AgentProfile[]> {
+export async function listAgents(
+  /** Pass the route's locale; the ambient one is lost on some prerenders. */
+  locale?: Locale,
+): Promise<AgentProfile[]> {
   if (!isSupabaseConfigured) return SEED_AGENTS.map(seedToProfile);
   try {
     const supabase = createSupabasePublicClient();
@@ -81,10 +85,10 @@ export async function listAgents(): Promise<AgentProfile[]> {
     if (error || !data || data.length === 0) {
       return SEED_AGENTS.map(seedToProfile);
     }
-    const locale = await currentLocale();
+    const resolved = locale ?? (await currentLocale());
     return data.map((row) =>
       toAgentProfile(
-        localiseRow(row as unknown as Record<string, unknown>, locale),
+        localiseRow(row as unknown as Record<string, unknown>, resolved),
       ),
     );
   } catch {
@@ -95,6 +99,7 @@ export async function listAgents(): Promise<AgentProfile[]> {
 /** Get agent by public slug. Falls back to seed if not in DB. */
 export async function getAgentBySlug(
   slug: string,
+  locale?: Locale,
 ): Promise<AgentProfile | null> {
   if (!slug) return null;
   if (isSupabaseConfigured) {
@@ -110,7 +115,7 @@ export async function getAgentBySlug(
         return toAgentProfile(
           localiseRow(
             data as unknown as Record<string, unknown>,
-            await currentLocale(),
+            locale ?? (await currentLocale()),
           ),
         );
     } catch {

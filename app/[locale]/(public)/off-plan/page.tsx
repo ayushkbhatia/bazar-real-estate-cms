@@ -13,6 +13,7 @@ import {
   parseGroupLimit,
 } from "@/lib/queries/offplan-map";
 import { getDevelopmentCoordsBulk } from "@/lib/queries/development-extras";
+import { listAreaCentroids } from "@/lib/queries/area-map";
 import { MHero } from "../_components/marketing/m-hero";
 import { SectionHead } from "../_components/marketing/section-head";
 import { PropTypeGrid } from "../_components/marketing/prop-type-grid";
@@ -97,10 +98,11 @@ export default async function NewProjectsPage({
   // what puts it in the right spot on the map; an unplaced project still falls
   // back to its area centroid. Fetched here rather than folded into
   // INDEX_FIELDS so the other consumers of that list don't carry `meta`.
-  const projectCoords = await getDevelopmentCoordsBulk(
-    developments.map((d) => d.id),
-  );
-  const rawMap = buildOffplanMap(developments, projectCoords);
+  const [projectCoords, areaCentroids] = await Promise.all([
+    getDevelopmentCoordsBulk(developments.map((d) => d.id)),
+    listAreaCentroids(),
+  ]);
+  const rawMap = buildOffplanMap(developments, projectCoords, areaCentroids);
   /*
    * Matched on `slug`, not on `name` — see the note over `AD_AREAS`.
    *
