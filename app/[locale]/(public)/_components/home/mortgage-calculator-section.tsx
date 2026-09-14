@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import Link from "@/components/i18n/link";
-import { Home, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { totals } from "@/lib/mortgage";
 import { formatMoneyValue, usePreferences } from "@/lib/preferences";
 import type { SectionCopy } from "./section-copy";
@@ -28,7 +28,7 @@ import type { SectionCopy } from "./section-copy";
  *     single biggest waste of height in the section.
  *   - Padding and gaps step down one notch below `md`, `py-10 md:py-20`
  *     matching list-your-property.tsx.
- *   - Nothing was removed. Every figure, both buttons and all four sliders are
+ *   - Nothing was removed. Every figure and all four sliders are
  *     still here; a teaser that drops a number to fit is not a smaller teaser,
  *     it is a different one.
  *
@@ -83,7 +83,7 @@ export function MortgageCalculatorSection({
             display={money(price)}
             value={price}
             min={500_000}
-            max={30_000_000}
+            max={20_000_000}
             step={50_000}
             onChange={setPrice}
           />
@@ -145,12 +145,6 @@ export function MortgageCalculatorSection({
             ))}
           </div>
           <div className="mt-auto flex flex-col gap-2.5 pt-6 md:pt-7">
-            <Link
-              href="/buy"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white px-4 text-[13.5px] font-medium text-bz-ink transition-colors hover:bg-white/90"
-            >
-              <Home size={16} /> {t("viewProperties")}
-            </Link>
             <Link
               href="/tools/mortgage"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-white/40 px-4 text-[13.5px] font-medium text-white transition-colors hover:bg-white/10"
