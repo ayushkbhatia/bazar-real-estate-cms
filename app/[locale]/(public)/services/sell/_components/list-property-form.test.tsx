@@ -297,3 +297,61 @@ describe("wording from the Forms Manager", () => {
     expect(screen.queryByText("Selling by when?")).not.toBeInTheDocument();
   });
 });
+
+/**
+ * The phone's collapsed state — the home hero's contract, applied to the
+ * wizard. Below `md` the card rests as one bar and unfolds on tap; every part
+ * of that is `md:`-scoped, so from `md` up the browser draws what it drew
+ * before. jsdom applies no CSS, which is why these assert on classes: the
+ * breakpoint IS the contract.
+ */
+describe("ListPropertyForm collapsed on phones", () => {
+  const classes = (el: Element) => el.className.split(/\s+/).filter(Boolean);
+
+  function parts() {
+    const { container } = renderForm();
+    const trigger = container.querySelector("button[aria-expanded]");
+    const id = trigger?.getAttribute("aria-controls") ?? "";
+    const card = id ? container.querySelector(`#${CSS.escape(id)}`) : null;
+    return { container, trigger, card };
+  }
+
+  it("rests as a single trigger, with the card folded away on phones only", () => {
+    const { trigger, card } = parts();
+    expect(trigger).not.toBeNull();
+    expect(classes(trigger!)).toContain("md:hidden");
+    expect(classes(card!)).toContain("hidden");
+    expect(classes(card!)).toContain("md:block");
+  });
+
+  it("unfolds when tapped, focuses the first question, and folds back", async () => {
+    const user = userEvent.setup();
+    const { trigger, card, container } = parts();
+    await user.click(trigger!);
+    expect(container.querySelector("button[aria-expanded]")).toBeNull();
+    expect(classes(card!)).not.toContain("hidden");
+    await waitFor(() =>
+      expect(document.activeElement).toBe(
+        screen.getByRole("combobox", { name: /location/i }),
+      ),
+    );
+
+    const close = screen.getByRole("button", { name: /^close$/i });
+    expect(classes(close.parentElement!)).toContain("md:hidden");
+    expect(classes(close)).toEqual(expect.arrayContaining(["h-11", "w-11"]));
+    await user.click(close);
+    expect(container.querySelector("button[aria-expanded]")).not.toBeNull();
+  });
+
+  it("keeps answers across a collapse", async () => {
+    const user = userEvent.setup();
+    const { trigger, container } = parts();
+    await user.click(trigger!);
+    await user.click(screen.getByRole("button", { name: /^apartment$/i }));
+    await user.click(screen.getByRole("button", { name: /^close$/i }));
+    await user.click(container.querySelector("button[aria-expanded]")!);
+    expect(
+      screen.getByRole("button", { name: /^apartment$/i }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+});

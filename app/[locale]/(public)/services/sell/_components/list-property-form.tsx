@@ -21,6 +21,7 @@ import {
   Home,
   MapPin,
   Phone,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUnitLabels } from "@/lib/preferences";
@@ -273,6 +274,7 @@ const STEP1_FIELDS = [
 
 export function ListPropertyForm({ areas, deskPhone, copy, questions }: Props) {
   const t = useTranslations("forms");
+  const tc = useTranslations("common");
   const q = useQuestionCopy(questions);
   const unitLabels = useUnitLabels();
   const c = useMemo(() => resolveCopy(copy), [copy]);
@@ -281,6 +283,26 @@ export function ListPropertyForm({ areas, deskPhone, copy, questions }: Props) {
   const [formError, setFormError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [areaText, setAreaText] = useState("");
+
+  /**
+   * Collapsed-on-phones state — the same contract as the home hero's search
+   * console (see hero-search.tsx). Below `md` the wizard rests as one
+   * search-bar-shaped button and unfolds when it is tapped; from `md` up the
+   * flag is inert, because everything it gates is decided by a breakpoint
+   * first: the card is `md:block` whatever this says, and the trigger and the
+   * close row are `md:hidden`. No viewport is read in JS, so the server render
+   * and the desktop render are what they were.
+   */
+  const [expanded, setExpanded] = useState(false);
+  const cardId = useId();
+
+  // The card is hidden by a class, never unmounted, so the location field is
+  // already in the DOM — but focusing it from the click handler would target
+  // an element still inside a `display:none` ancestor, which no browser
+  // honours. An effect runs after the class has come off.
+  useEffect(() => {
+    if (expanded) document.getElementById("lp-location")?.focus();
+  }, [expanded]);
 
   const {
     register,
@@ -453,409 +475,466 @@ export function ListPropertyForm({ areas, deskPhone, copy, questions }: Props) {
   const summary = formatSummary(values);
 
   return (
-    <div className="rounded-lg border border-bz-border bg-bz-surface overflow-hidden">
-      <StepHeader step={step} labels={[c.step1Label, c.step2Label]} />
-
-      <p aria-live="polite" className="sr-only">
-        {step === 1
-          ? t("sell.stepAnnounce", { step: 1, total: 2, label: c.step1Label })
-          : step === 2
-            ? t("sell.stepAnnounce", { step: 2, total: 2, label: c.step2Label })
-            : t("sell.sent")}
-      </p>
-
-      <form
-        onSubmit={handleSubmit(onSubmit, onInvalid)}
-        noValidate
-        hidden={step === 3}
-        className="p-6 md:p-7"
-      >
-        {/* `hidden` rather than a display class: the inactive step must leave
-            the tab order and the accessibility tree, not just the viewport. */}
-        <div hidden={step !== 1}>
-          <FieldShell label={q.label("intent", "sell.fieldIntent")} required>
-            <div className="grid grid-cols-2 gap-1.5">
-              {LP_INTENTS.map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => setValue("intent", v)}
-                  aria-pressed={values.intent === v}
-                  className={cn(
-                    "h-12 rounded text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal",
-                    values.intent === v
-                      ? "bg-bz-navy text-bz-bg"
-                      : "bg-bz-surface-2 text-bz-ink-2 hover:bg-bz-surface-3",
-                  )}
-                >
-                  {q.option("intent", v, `sell.intent.${v}`)}
-                </button>
-              ))}
-            </div>
-          </FieldShell>
-
-          <LocationField
-            areas={areas}
-            q={q}
-            value={values.location}
-            error={errors.location?.message}
-            onChange={(text, slug) => {
-              setValue("location", text, { shouldValidate: false });
-              setValue("area_slug", slug);
-            }}
+    <>
+      {/* The phone's resting state: one search-bar-shaped button in place of
+          the whole two-step card, which otherwise buried the hero photograph
+          and pushed the page's pitch below the fold. A button, not an input:
+          tapping it must open the card rather than start typing into a field
+          whose other questions are still folded away. It borrows the location
+          field's placeholder (editable at /admin/forms), so it reads as the
+          first question it becomes. */}
+      {!expanded ? (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          aria-expanded={false}
+          aria-controls={cardId}
+          className="md:hidden flex w-full items-center gap-2.5 h-12 rounded-lg border border-bz-border bg-bz-surface px-3.5 text-start focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
+        >
+          <MapPin
+            size={16}
+            strokeWidth={1.6}
+            className="shrink-0 text-bz-muted"
           />
+          <span className="min-w-0 flex-1 truncate text-[15px] text-bz-muted">
+            {q.placeholder("location", "sell.locationPlaceholder")}
+          </span>
+          <ArrowRight
+            size={16}
+            strokeWidth={1.7}
+            className="shrink-0 text-bz-ink/45 rtl:-scale-x-100"
+          />
+        </button>
+      ) : null}
 
-          <FieldShell
-            label={q.label("category", "sell.fieldCategory")}
-            required
-            error={errors.property_type?.message}
-            className="mt-6"
+      {/* The card proper. Hidden on a phone until the bar above is tapped, always
+          shown from `md` up. Class-gated rather than unmounted so a half-filled
+          step keeps its answers across a collapse. */}
+      <div
+        id={cardId}
+        className={cn(
+          "rounded-lg border border-bz-border bg-bz-surface overflow-hidden",
+          expanded ? "" : "hidden md:block",
+        )}
+      >
+        {/* Phones get a way back out; `md:hidden` keeps it off the desktop card,
+            which has no collapsed state to return to. */}
+        <div className="md:hidden flex items-center justify-between ps-5 pe-1 border-b border-bz-border">
+          <span className="eyebrow">{c.submitLabel}</span>
+          <button
+            type="button"
+            onClick={() => setExpanded(false)}
+            aria-label={tc("close")}
+            aria-controls={cardId}
+            className="grid h-11 w-11 place-items-center rounded-md text-bz-muted hover:text-bz-ink transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
           >
-            <div
-              role="group"
-              aria-label={t("sell.categoryGroup")}
-              className="inline-flex gap-1 p-[3px] rounded bg-bz-surface-2"
-            >
-              {LP_CATEGORIES.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setCategory(c)}
-                  aria-pressed={values.category === c}
-                  className={cn(
-                    "h-9 px-3.5 rounded text-[12.5px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal",
-                    values.category === c
-                      ? "bg-bz-surface text-bz-ink font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
-                      : "text-bz-muted hover:text-bz-ink",
-                  )}
-                >
-                  {q.option("category", c, `sell.category.${c}`)}
-                </button>
-              ))}
-            </div>
-            {/* The pill row shares the "Category & type" heading above, so it
-                carries its own accessible name — the `property_type` label,
-                which is what the manager edits. Without it a screen reader
-                announces twelve unlabelled buttons under one heading. */}
-            <div
-              role="group"
-              aria-label={q.label("property_type", "sell.typeGroup")}
-              className="flex flex-wrap gap-1.5 mt-2.5"
-            >
-              {/*
-                `pt` is the submitted value and the message key both — the
-                English member of LP_TYPES is what the server validates
-                against, so only the label moves.
-              */}
-              {LP_TYPES[values.category].map((pt) => (
-                <Pill
-                  key={pt}
-                  active={values.property_type === pt}
-                  onClick={() => {
-                    setValue("property_type", pt);
-                    if (!bedroomsApply(values.category, pt))
-                      setValue("bedrooms", null);
-                  }}
-                >
-                  {q.option("property_type", pt, `sell.type.${pt}`)}
-                </Pill>
-              ))}
-            </div>
-          </FieldShell>
+            <X size={18} strokeWidth={1.8} />
+          </button>
+        </div>
 
-          {showBedrooms ? (
+        <StepHeader step={step} labels={[c.step1Label, c.step2Label]} />
+
+        <p aria-live="polite" className="sr-only">
+          {step === 1
+            ? t("sell.stepAnnounce", { step: 1, total: 2, label: c.step1Label })
+            : step === 2
+              ? t("sell.stepAnnounce", { step: 2, total: 2, label: c.step2Label })
+              : t("sell.sent")}
+        </p>
+
+        <form
+          onSubmit={handleSubmit(onSubmit, onInvalid)}
+          noValidate
+          hidden={step === 3}
+          className="p-6 md:p-7"
+        >
+          {/* `hidden` rather than a display class: the inactive step must leave
+              the tab order and the accessibility tree, not just the viewport. */}
+          <div hidden={step !== 1}>
+            <FieldShell label={q.label("intent", "sell.fieldIntent")} required>
+              <div className="grid grid-cols-2 gap-1.5">
+                {LP_INTENTS.map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setValue("intent", v)}
+                    aria-pressed={values.intent === v}
+                    className={cn(
+                      "h-12 rounded text-[14px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal",
+                      values.intent === v
+                        ? "bg-bz-navy text-bz-bg"
+                        : "bg-bz-surface-2 text-bz-ink-2 hover:bg-bz-surface-3",
+                    )}
+                  >
+                    {q.option("intent", v, `sell.intent.${v}`)}
+                  </button>
+                ))}
+              </div>
+            </FieldShell>
+
+            <LocationField
+              areas={areas}
+              q={q}
+              value={values.location}
+              error={errors.location?.message}
+              onChange={(text, slug) => {
+                setValue("location", text, { shouldValidate: false });
+                setValue("area_slug", slug);
+              }}
+            />
+
             <FieldShell
-              label={q.label("bedrooms", "sell.fieldBedrooms")}
+              label={q.label("category", "sell.fieldCategory")}
               required
-              error={errors.bedrooms?.message}
+              error={errors.property_type?.message}
               className="mt-6"
             >
-              <div className="flex flex-wrap gap-1.5">
-                {LP_BEDROOMS.map((b) => (
-                  <Pill
-                    key={b}
-                    active={values.bedrooms === b}
-                    onClick={() => setValue("bedrooms", b)}
-                    className={b === "Studio" ? undefined : "min-w-[48px]"}
+              <div
+                role="group"
+                aria-label={t("sell.categoryGroup")}
+                className="inline-flex gap-1 p-[3px] rounded bg-bz-surface-2"
+              >
+                {LP_CATEGORIES.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setCategory(c)}
+                    aria-pressed={values.category === c}
+                    className={cn(
+                      "h-9 px-3.5 rounded text-[12.5px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal",
+                      values.category === c
+                        ? "bg-bz-surface text-bz-ink font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
+                        : "text-bz-muted hover:text-bz-ink",
+                    )}
                   >
-                    {/* Only "Studio" is a word. The counts read the same in
-                        both languages, so their default is the value. */}
-                    {b === "Studio"
-                      ? q.option("bedrooms", b, "sell.bedroomsStudio")
-                      : q.optionLiteral("bedrooms", b, b)}
+                    {q.option("category", c, `sell.category.${c}`)}
+                  </button>
+                ))}
+              </div>
+              {/* The pill row shares the "Category & type" heading above, so it
+                  carries its own accessible name — the `property_type` label,
+                  which is what the manager edits. Without it a screen reader
+                  announces twelve unlabelled buttons under one heading. */}
+              <div
+                role="group"
+                aria-label={q.label("property_type", "sell.typeGroup")}
+                className="flex flex-wrap gap-1.5 mt-2.5"
+              >
+                {/*
+                  `pt` is the submitted value and the message key both — the
+                  English member of LP_TYPES is what the server validates
+                  against, so only the label moves.
+                */}
+                {LP_TYPES[values.category].map((pt) => (
+                  <Pill
+                    key={pt}
+                    active={values.property_type === pt}
+                    onClick={() => {
+                      setValue("property_type", pt);
+                      if (!bedroomsApply(values.category, pt))
+                        setValue("bedrooms", null);
+                    }}
+                  >
+                    {q.option("property_type", pt, `sell.type.${pt}`)}
                   </Pill>
                 ))}
               </div>
             </FieldShell>
-          ) : null}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-6">
+            {showBedrooms ? (
+              <FieldShell
+                label={q.label("bedrooms", "sell.fieldBedrooms")}
+                required
+                error={errors.bedrooms?.message}
+                className="mt-6"
+              >
+                <div className="flex flex-wrap gap-1.5">
+                  {LP_BEDROOMS.map((b) => (
+                    <Pill
+                      key={b}
+                      active={values.bedrooms === b}
+                      onClick={() => setValue("bedrooms", b)}
+                      className={b === "Studio" ? undefined : "min-w-[48px]"}
+                    >
+                      {/* Only "Studio" is a word. The counts read the same in
+                          both languages, so their default is the value. */}
+                      {b === "Studio"
+                        ? q.option("bedrooms", b, "sell.bedroomsStudio")
+                        : q.optionLiteral("bedrooms", b, b)}
+                    </Pill>
+                  ))}
+                </div>
+              </FieldShell>
+            ) : null}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-6">
+              <FieldShell
+                label={q.label("area_sqft", "sell.fieldArea")}
+                error={errors.area_sqft?.message}
+              >
+                <div className="relative">
+                  <input
+                    id="lp-area"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    value={areaText}
+                    onChange={(e) => {
+                      const next = e.target.value.replace(/[^\d,]/g, "");
+                      setAreaText(next);
+                      setValue("area_sqft", parseAreaSqft(next));
+                    }}
+                    placeholder={q.placeholder(
+                      "area_sqft",
+                      "sell.areaPlaceholder",
+                    )}
+                    /* Every focusable control in this wizard reads 16px until
+                       `md` and 14px above it. iOS Safari zooms the viewport when
+                       it focuses anything under 16px, and on a two-step form that
+                       means the jolt repeats at each field — the visitor spends
+                       the whole flow pinching back out. Only the text controls
+                       carry the pairing; the pills and the consent checkbox can
+                       take focus but accept no caret, so the rule skips them. */
+                    className="mono w-full h-11 rounded border border-bz-border bg-bz-surface px-3 pe-11 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
+                  />
+                  <span className="absolute end-3.5 top-1/2 -translate-y-1/2 text-[12px] text-bz-muted pointer-events-none">
+                    {/* The CMS can override this per locale (`unit_ar` on the
+                        form field); the code default now comes from the
+                        site-wide dictionary rather than being typed here, so an
+                        Arabic visitor sees an Arabic suffix even on a form
+                        nobody has edited. Deliberately the ft² entry and not the
+                        visitor's preferred unit: this box stores ft², whatever
+                        the rest of the site is displaying in. */}
+                    {q.unit("area_sqft", unitLabels.area.ft2)}
+                  </span>
+                </div>
+              </FieldShell>
+              <FieldShell
+                label={q.label("furnishing", "sell.fieldFurnishing")}
+                htmlFor="lp-furnishing"
+              >
+                <select
+                  id="lp-furnishing"
+                  value={values.furnishing ?? ""}
+                  onChange={(e) =>
+                    setValue(
+                      "furnishing",
+                      (e.target.value || null) as ListPropertyInput["furnishing"],
+                    )
+                  }
+                  className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
+                >
+                  <option value="">
+                    {q.placeholder("furnishing", "sell.selectPlaceholder")}
+                  </option>
+                  {LP_FURNISHINGS.map((f) => (
+                    <option key={f} value={f}>
+                      {q.option("furnishing", f, `sell.furnishing.${f}`)}
+                    </option>
+                  ))}
+                </select>
+              </FieldShell>
+            </div>
+
             <FieldShell
-              label={q.label("area_sqft", "sell.fieldArea")}
-              error={errors.area_sqft?.message}
+              /* Two fields in the manager, one question here: the sentence has
+                 to agree with the intent chosen at the top, and "sell" and "let"
+                 are not interchangeable to an owner. Both are editable; only one
+                 is ever on screen. */
+              label={
+                values.intent === "sell"
+                  ? q.label("urgency", "sell.urgencySell")
+                  : q.label("urgency_rent_out", "sell.urgencyRent")
+              }
+              className="mt-6"
             >
-              <div className="relative">
-                <input
-                  id="lp-area"
-                  inputMode="numeric"
-                  autoComplete="off"
-                  value={areaText}
-                  onChange={(e) => {
-                    const next = e.target.value.replace(/[^\d,]/g, "");
-                    setAreaText(next);
-                    setValue("area_sqft", parseAreaSqft(next));
-                  }}
-                  placeholder={q.placeholder(
-                    "area_sqft",
-                    "sell.areaPlaceholder",
-                  )}
-                  /* Every focusable control in this wizard reads 16px until
-                     `md` and 14px above it. iOS Safari zooms the viewport when
-                     it focuses anything under 16px, and on a two-step form that
-                     means the jolt repeats at each field — the visitor spends
-                     the whole flow pinching back out. Only the text controls
-                     carry the pairing; the pills and the consent checkbox can
-                     take focus but accept no caret, so the rule skips them. */
-                  className="mono w-full h-11 rounded border border-bz-border bg-bz-surface px-3 pe-11 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
-                />
-                <span className="absolute end-3.5 top-1/2 -translate-y-1/2 text-[12px] text-bz-muted pointer-events-none">
-                  {/* The CMS can override this per locale (`unit_ar` on the
-                      form field); the code default now comes from the
-                      site-wide dictionary rather than being typed here, so an
-                      Arabic visitor sees an Arabic suffix even on a form
-                      nobody has edited. Deliberately the ft² entry and not the
-                      visitor's preferred unit: this box stores ft², whatever
-                      the rest of the site is displaying in. */}
-                  {q.unit("area_sqft", unitLabels.area.ft2)}
-                </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                {LP_URGENCIES.map((u) => (
+                  <Pill
+                    key={u}
+                    active={values.urgency === u}
+                    onClick={() =>
+                      setValue("urgency", values.urgency === u ? null : u)
+                    }
+                    className="h-11 justify-center"
+                  >
+                    {/* The options are the same either way, so they follow
+                        whichever of the two rows is being asked. */}
+                    {values.intent === "sell"
+                      ? q.option("urgency", u, `sell.urgency.${u}`)
+                      : q.option("urgency_rent_out", u, `sell.urgency.${u}`)}
+                  </Pill>
+                ))}
               </div>
             </FieldShell>
-            <FieldShell
-              label={q.label("furnishing", "sell.fieldFurnishing")}
-              htmlFor="lp-furnishing"
-            >
-              <select
-                id="lp-furnishing"
-                value={values.furnishing ?? ""}
-                onChange={(e) =>
-                  setValue(
-                    "furnishing",
-                    (e.target.value || null) as ListPropertyInput["furnishing"],
-                  )
-                }
-                className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
-              >
-                <option value="">
-                  {q.placeholder("furnishing", "sell.selectPlaceholder")}
-                </option>
-                {LP_FURNISHINGS.map((f) => (
-                  <option key={f} value={f}>
-                    {q.option("furnishing", f, `sell.furnishing.${f}`)}
-                  </option>
-                ))}
-              </select>
-            </FieldShell>
-          </div>
 
-          <FieldShell
-            /* Two fields in the manager, one question here: the sentence has
-               to agree with the intent chosen at the top, and "sell" and "let"
-               are not interchangeable to an owner. Both are editable; only one
-               is ever on screen. */
-            label={
-              values.intent === "sell"
-                ? q.label("urgency", "sell.urgencySell")
-                : q.label("urgency_rent_out", "sell.urgencyRent")
-            }
-            className="mt-6"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
-              {LP_URGENCIES.map((u) => (
-                <Pill
-                  key={u}
-                  active={values.urgency === u}
-                  onClick={() =>
-                    setValue("urgency", values.urgency === u ? null : u)
-                  }
-                  className="h-11 justify-center"
-                >
-                  {/* The options are the same either way, so they follow
-                      whichever of the two rows is being asked. */}
-                  {values.intent === "sell"
-                    ? q.option("urgency", u, `sell.urgency.${u}`)
-                    : q.option("urgency_rent_out", u, `sell.urgency.${u}`)}
-                </Pill>
-              ))}
-            </div>
-          </FieldShell>
-
-          <button
-            type="button"
-            onClick={goToStep2}
-            className="mt-7 w-full h-12 rounded bg-bz-accent text-bz-accent-fg text-[14.5px] font-medium inline-flex items-center justify-center gap-2 transition-colors hover:bg-bz-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
-          >
-            {c.continueLabel}
-            <ArrowRight size={16} strokeWidth={1.7} />
-          </button>
-          <p className="text-[11.5px] text-bz-muted mt-3 text-center leading-relaxed">
-            {c.reassurance}
-          </p>
-        </div>
-
-        <div hidden={step !== 2}>
-          <div className="flex items-center gap-3 p-3.5 rounded bg-bz-surface-2">
-            <Home
-              size={16}
-              strokeWidth={1.6}
-              className="text-bz-muted shrink-0"
-            />
-            <span className="text-[13px] flex-1 leading-snug">{summary}</span>
             <button
               type="button"
-              onClick={() => setStep(1)}
-              className="h-9 px-3 rounded text-[13px] text-bz-ink-2 hover:bg-bz-surface-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
+              onClick={goToStep2}
+              className="mt-7 w-full h-12 rounded bg-bz-accent text-bz-accent-fg text-[14.5px] font-medium inline-flex items-center justify-center gap-2 transition-colors hover:bg-bz-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
             >
-              {c.editLabel}
+              {c.continueLabel}
+              <ArrowRight size={16} strokeWidth={1.7} />
             </button>
+            <p className="text-[11.5px] text-bz-muted mt-3 text-center leading-relaxed">
+              {c.reassurance}
+            </p>
           </div>
 
-          <h3
-            className="serif text-[24px] md:text-[26px] mt-6"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            {c.detailsTitle}
-          </h3>
-          <p className="text-[13px] text-bz-ink-2 mt-1.5 leading-relaxed">
-            {c.detailsSub}
-          </p>
+          <div hidden={step !== 2}>
+            <div className="flex items-center gap-3 p-3.5 rounded bg-bz-surface-2">
+              <Home
+                size={16}
+                strokeWidth={1.6}
+                className="text-bz-muted shrink-0"
+              />
+              <span className="text-[13px] flex-1 leading-snug">{summary}</span>
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="h-9 px-3 rounded text-[13px] text-bz-ink-2 hover:bg-bz-surface-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
+              >
+                {c.editLabel}
+              </button>
+            </div>
 
-          <FieldShell
-            label={q.label("name", "sell.fieldName")}
-            required
-            htmlFor="lp-name"
-            error={errors.name?.message}
-            className="mt-6"
-          >
-            <input
-              id="lp-name"
-              {...register("name")}
-              autoComplete="name"
-              placeholder={q.placeholder("name", "sell.namePlaceholder")}
-              className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
-            />
-          </FieldShell>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-4.5">
-            <FieldShell
-              label={q.label("mobile", "sell.fieldMobile")}
-              required
-              htmlFor="lp-mobile"
-              error={errors.mobile?.message}
+            <h3
+              className="serif text-[24px] md:text-[26px] mt-6"
+              style={{ letterSpacing: "-0.02em" }}
             >
-              <div className="flex">
-                <span className="mono inline-flex items-center h-11 px-3 rounded-s border border-e-0 border-bz-border bg-bz-surface-2 text-[12.5px] text-bz-ink-2">
-                  +971
-                </span>
-                <input
-                  id="lp-mobile"
-                  {...register("mobile")}
-                  inputMode="tel"
-                  autoComplete="tel-national"
-                  placeholder={q.placeholder(
-                    "mobile",
-                    "sell.mobilePlaceholder",
-                  )}
-                  className="mono w-full h-11 rounded-e border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
-                />
-              </div>
-            </FieldShell>
+              {c.detailsTitle}
+            </h3>
+            <p className="text-[13px] text-bz-ink-2 mt-1.5 leading-relaxed">
+              {c.detailsSub}
+            </p>
+
             <FieldShell
-              label={q.label("email", "sell.fieldEmail")}
+              label={q.label("name", "sell.fieldName")}
               required
-              htmlFor="lp-email"
-              error={errors.email?.message}
+              htmlFor="lp-name"
+              error={errors.name?.message}
+              className="mt-6"
             >
               <input
-                id="lp-email"
-                {...register("email")}
-                type="email"
-                autoComplete="email"
-                placeholder={q.placeholder("email", "sell.emailPlaceholder")}
+                id="lp-name"
+                {...register("name")}
+                autoComplete="name"
+                placeholder={q.placeholder("name", "sell.namePlaceholder")}
                 className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
               />
             </FieldShell>
-          </div>
 
-          <FieldShell
-            label={q.label("call_window", "sell.fieldCallWindow")}
-            className="mt-4.5"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
-              {LP_CALL_WINDOWS.map((c) => (
-                <Pill
-                  key={c}
-                  active={values.call_window === c}
-                  onClick={() => setValue("call_window", c)}
-                  className="h-11 justify-center"
-                >
-                  {q.option("call_window", c, `sell.callWindow.${c}`)}
-                </Pill>
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-4.5">
+              <FieldShell
+                label={q.label("mobile", "sell.fieldMobile")}
+                required
+                htmlFor="lp-mobile"
+                error={errors.mobile?.message}
+              >
+                <div className="flex">
+                  <span className="mono inline-flex items-center h-11 px-3 rounded-s border border-e-0 border-bz-border bg-bz-surface-2 text-[12.5px] text-bz-ink-2">
+                    +971
+                  </span>
+                  <input
+                    id="lp-mobile"
+                    {...register("mobile")}
+                    inputMode="tel"
+                    autoComplete="tel-national"
+                    placeholder={q.placeholder(
+                      "mobile",
+                      "sell.mobilePlaceholder",
+                    )}
+                    className="mono w-full h-11 rounded-e border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
+                  />
+                </div>
+              </FieldShell>
+              <FieldShell
+                label={q.label("email", "sell.fieldEmail")}
+                required
+                htmlFor="lp-email"
+                error={errors.email?.message}
+              >
+                <input
+                  id="lp-email"
+                  {...register("email")}
+                  type="email"
+                  autoComplete="email"
+                  placeholder={q.placeholder("email", "sell.emailPlaceholder")}
+                  className="w-full h-11 rounded border border-bz-border bg-bz-surface px-3 text-[16px] md:text-[14px] transition-colors focus:border-bz-teal outline-none"
+                />
+              </FieldShell>
             </div>
-          </FieldShell>
 
-          <label className="flex gap-2.5 items-start mt-6 text-[12.5px] text-bz-ink-2 leading-relaxed cursor-pointer">
-            <input
-              type="checkbox"
-              {...register("consent")}
-              className="mt-0.5 size-4 accent-[var(--bz-navy)]"
-            />
-            <span>{c.consentLabel}</span>
-          </label>
-          {errors.consent?.message ? (
-            <p role="alert" className="text-[12px] text-bz-danger mt-1.5">
-              {errors.consent.message}
-            </p>
-          ) : null}
+            <FieldShell
+              label={q.label("call_window", "sell.fieldCallWindow")}
+              className="mt-4.5"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                {LP_CALL_WINDOWS.map((c) => (
+                  <Pill
+                    key={c}
+                    active={values.call_window === c}
+                    onClick={() => setValue("call_window", c)}
+                    className="h-11 justify-center"
+                  >
+                    {q.option("call_window", c, `sell.callWindow.${c}`)}
+                  </Pill>
+                ))}
+              </div>
+            </FieldShell>
 
-          {formError ? (
-            <p
-              role="alert"
-              className="text-[12.5px] text-bz-danger mt-4 leading-relaxed"
-            >
-              {formError}
-            </p>
-          ) : null}
+            <label className="flex gap-2.5 items-start mt-6 text-[12.5px] text-bz-ink-2 leading-relaxed cursor-pointer">
+              <input
+                type="checkbox"
+                {...register("consent")}
+                className="mt-0.5 size-4 accent-[var(--bz-navy)]"
+              />
+              <span>{c.consentLabel}</span>
+            </label>
+            {errors.consent?.message ? (
+              <p role="alert" className="text-[12px] text-bz-danger mt-1.5">
+                {errors.consent.message}
+              </p>
+            ) : null}
 
-          <div className="flex gap-2.5 mt-6">
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="h-12 px-4 rounded text-[14px] text-bz-ink-2 inline-flex items-center gap-2 hover:bg-bz-surface-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
-            >
-              <ArrowLeft size={15} strokeWidth={1.7} />
-              {c.backLabel}
-            </button>
-            <button
-              type="submit"
-              disabled={pending}
-              className="flex-1 h-12 rounded bg-bz-accent text-bz-accent-fg text-[14.5px] font-medium transition-colors hover:bg-bz-accent-hover disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
-            >
-              {pending ? c.submitPendingLabel : c.submitLabel}
-            </button>
+            {formError ? (
+              <p
+                role="alert"
+                className="text-[12.5px] text-bz-danger mt-4 leading-relaxed"
+              >
+                {formError}
+              </p>
+            ) : null}
+
+            <div className="flex gap-2.5 mt-6">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="h-12 px-4 rounded text-[14px] text-bz-ink-2 inline-flex items-center gap-2 hover:bg-bz-surface-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
+              >
+                <ArrowLeft size={15} strokeWidth={1.7} />
+                {c.backLabel}
+              </button>
+              <button
+                type="submit"
+                disabled={pending}
+                className="flex-1 h-12 rounded bg-bz-accent text-bz-accent-fg text-[14.5px] font-medium transition-colors hover:bg-bz-accent-hover disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bz-teal"
+              >
+                {pending ? c.submitPendingLabel : c.submitLabel}
+              </button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
 
-      {step === 3 && confirmation ? (
-        <Confirmed
-          confirmation={confirmation}
-          deskPhone={deskPhone}
-          copy={c}
-          onAnother={startAnother}
-        />
-      ) : null}
-    </div>
+        {step === 3 && confirmation ? (
+          <Confirmed
+            confirmation={confirmation}
+            deskPhone={deskPhone}
+            copy={c}
+            onAnother={startAnother}
+          />
+        ) : null}
+      </div>
+    </>
   );
 }
 

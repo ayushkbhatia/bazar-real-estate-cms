@@ -107,8 +107,9 @@ export default async function ListYourPropertyPage({
   };
 
   const nodes: Record<string, React.ReactNode> = {
-    /* Hero — pitch left, form right. Stacks form-first on mobile: an owner on
-       a phone should land on the first question, not on the pitch. */
+    /* Hero — pitch left, form right. Stacks form-first on tablets. On a phone
+       the form rests as one bar under the headline and unfolds when tapped,
+       so the photograph and the pitch are what an owner lands on. */
     hero: (
       <section
         key="hero"
@@ -148,7 +149,7 @@ export default async function ListYourPropertyPage({
         ) : null}
         <div
           className={cn(
-            "grid grid-cols-1 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-10 lg:gap-[72px] items-start max-w-[1280px]",
+            "grid grid-cols-1 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-7 md:gap-10 lg:gap-[72px] items-start max-w-[1280px]",
             heroImage && "relative",
           )}
         >
@@ -156,113 +157,124 @@ export default async function ListYourPropertyPage({
               section it also cascades into the form card beside it, whose own
               surface stays white — leaving its headings, field labels and the
               owner's typed input white-on-white. */}
+          {/* Below `md` this column is `contents`, so its two halves become
+              grid items of their own and the form's resting bar can sit
+              between them: headline, then the bar, then the trust points and
+              stats. From `md` up it is an ordinary block again and the orders
+              inside it do nothing, so tablet and desktop are unchanged.
+              `text-white` still cascades — inheritance follows the DOM, not
+              the box tree. */}
           <div
             className={cn(
-              "order-2 lg:order-1 lg:pt-2",
+              "contents md:block md:order-2 lg:order-1 lg:pt-2",
               heroImage && "text-white",
             )}
           >
-            {str(heroV, "eyebrow") ? (
-              <Eyebrow className={heroImage ? "text-white/80" : undefined}>
-                {str(heroV, "eyebrow")}
-              </Eyebrow>
-            ) : null}
-            <h1
-              className="serif mt-3.5"
-              style={{
-                fontSize: fluid(64),
-                letterSpacing: "-0.03em",
-                lineHeight: 1.02,
-              }}
-            >
-              {heroLines.map((line, i) => (
-                <React.Fragment key={i}>
-                  {i > 0 ? <br /> : null}
-                  {line}
-                </React.Fragment>
-              ))}
-              {heroEmphasis ? (
-                <>
-                  {heroLines.length > 0 ? " " : null}
-                  <em className="italic">{heroEmphasis}</em>
-                </>
+            <div className="order-1">
+              {str(heroV, "eyebrow") ? (
+                <Eyebrow className={heroImage ? "text-white/80" : undefined}>
+                  {str(heroV, "eyebrow")}
+                </Eyebrow>
               ) : null}
-            </h1>
-            {str(heroV, "sub") ? (
-              <p
-                className={cn(
-                  "text-[16px] md:text-[17px] leading-relaxed mt-5 max-w-[480px]",
-                  heroImage ? "text-white/85" : "text-bz-ink-2",
-                )}
+              <h1
+                className="serif mt-3.5"
+                style={{
+                  fontSize: fluid(64),
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1.02,
+                }}
               >
-                {str(heroV, "sub")}
-              </p>
-            ) : null}
+                {heroLines.map((line, i) => (
+                  <React.Fragment key={i}>
+                    {i > 0 ? <br /> : null}
+                    {line}
+                  </React.Fragment>
+                ))}
+                {heroEmphasis ? (
+                  <>
+                    {heroLines.length > 0 ? " " : null}
+                    <em className="italic">{heroEmphasis}</em>
+                  </>
+                ) : null}
+              </h1>
+              {str(heroV, "sub") ? (
+                <p
+                  className={cn(
+                    "text-[16px] md:text-[17px] leading-relaxed mt-5 max-w-[480px]",
+                    heroImage ? "text-white/85" : "text-bz-ink-2",
+                  )}
+                >
+                  {str(heroV, "sub")}
+                </p>
+              ) : null}
+            </div>
 
-            {trustPoints.length > 0 ? (
-              <ul className="flex flex-col gap-3.5 mt-8">
-                {trustPoints.map((point) => (
-                  <li key={point.title} className="flex gap-3 items-start">
-                    <span
-                      className={cn(
-                        "size-[26px] shrink-0 mt-0.5 rounded-full inline-flex items-center justify-center",
-                        heroImage
-                          ? "bg-white/15 text-white"
-                          : "bg-bz-accent-soft text-bz-accent",
-                      )}
-                    >
-                      <Check size={14} strokeWidth={2} />
-                    </span>
-                    <div>
-                      <div className="text-[14px] font-medium">
-                        {point.title}
-                      </div>
-                      {point.detail ? (
-                        <div
-                          className={cn(
-                            "text-[12.5px] mt-0.5 leading-snug",
-                            heroImage ? "text-white/80" : "text-bz-muted",
-                          )}
-                        >
-                          {point.detail}
+            <div className="order-3 -mt-7 md:mt-0">
+              {trustPoints.length > 0 ? (
+                <ul className="flex flex-col gap-3.5 mt-8">
+                  {trustPoints.map((point) => (
+                    <li key={point.title} className="flex gap-3 items-start">
+                      <span
+                        className={cn(
+                          "size-[26px] shrink-0 mt-0.5 rounded-full inline-flex items-center justify-center",
+                          heroImage
+                            ? "bg-white/15 text-white"
+                            : "bg-bz-accent-soft text-bz-accent",
+                        )}
+                      >
+                        <Check size={14} strokeWidth={2} />
+                      </span>
+                      <div>
+                        <div className="text-[14px] font-medium">
+                          {point.title}
                         </div>
-                      ) : null}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+                        {point.detail ? (
+                          <div
+                            className={cn(
+                              "text-[12.5px] mt-0.5 leading-snug",
+                              heroImage ? "text-white/80" : "text-bz-muted",
+                            )}
+                          >
+                            {point.detail}
+                          </div>
+                        ) : null}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
 
-            {stats.length > 0 ? (
-              <div
-                className={cn(
-                  "flex flex-wrap gap-8 md:gap-9 mt-10 pt-6 border-t",
-                  heroImage ? "border-white/25" : "border-bz-border",
-                )}
-              >
-                {stats.map(([value, label]) => (
-                  <div key={label}>
-                    <div
-                      className="serif text-[26px] md:text-[30px]"
-                      style={{ letterSpacing: "-0.02em" }}
-                    >
-                      {value}
+              {stats.length > 0 ? (
+                <div
+                  className={cn(
+                    "flex flex-wrap gap-8 md:gap-9 mt-10 pt-6 border-t",
+                    heroImage ? "border-white/25" : "border-bz-border",
+                  )}
+                >
+                  {stats.map(([value, label]) => (
+                    <div key={label}>
+                      <div
+                        className="serif text-[26px] md:text-[30px]"
+                        style={{ letterSpacing: "-0.02em" }}
+                      >
+                        {value}
+                      </div>
+                      <div
+                        className={cn(
+                          "text-[11.5px] mt-1 max-w-[130px] leading-snug",
+                          heroImage ? "text-white/80" : "text-bz-muted",
+                        )}
+                      >
+                        {label}
+                      </div>
                     </div>
-                    <div
-                      className={cn(
-                        "text-[11.5px] mt-1 max-w-[130px] leading-snug",
-                        heroImage ? "text-white/80" : "text-bz-muted",
-                      )}
-                    >
-                      {label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : null}
+                  ))}
+                </div>
+              ) : null}
+            </div>
           </div>
 
-          <div className="order-1 lg:order-2">
+          <div className="order-2 md:order-1 lg:order-2">
             {/* Switched off at /admin/forms ⇒ the column collapses rather than
                 showing a heading over nothing. */}
             {listForm.enabled ? (
