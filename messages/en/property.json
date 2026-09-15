@@ -1,14 +1,34 @@
 {
+  "actions": {
+    "reference": "REF",
+    "share": "Share",
+    "copied": "Copied",
+    "sendToAdvisor": "Send to advisor"
+  },
+  "agent": {
+    "call": "Call",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "brn": "BRN",
+    "whatsappMessage": "Hi {name}, I'm interested in {reference} on bazar.ae",
+    "mailSubject": "Bazar enquiry · {reference}"
+  },
+  "breadcrumb": {
+    "home": "Home"
+  },
   "fallbackArea": "United Arab Emirates",
   "fallbackCity": "Abu Dhabi",
+  "fallbackRegion": "the UAE",
+  "thisArea": "this area",
   "faq": {
     "locationQ": "Where is {reference} located?",
     "locationA": "{title} sits within {place}. The interactive map on this page anchors it to the wider community along with commute times to key destinations.",
     "nonResidentQ": "Can a non-resident buy {reference}?",
     "verifyQ": "Where can I verify this listing?",
     "verifyA": "Permit number {permit} is registered with the DLD. You can verify the listing — and confirm Bazar is the assigned broker — directly through the DLD's public Trakheesi portal.",
-    "includesQ": "What does a {beds}-bed {type} in {place} typically include?",
-    "includesA": "A {beds}-bed {type} in {place} typically comes with {baths}, a private balcony or terrace, dedicated parking, and access to the building's pool / gym amenity set. Specifications vary per tower; your Bazar advisor will share the full schedule for {reference} on request.",
+    "includesQ": "What does a {bedrooms} {type} in {place} typically include?",
+    "includesA": "A {bedrooms} {type} in {place} typically comes with {baths}, a private balcony or terrace, dedicated parking, and access to the building's pool / gym amenity set. Specifications vary per tower; your Bazar advisor will share the full schedule for {reference} on request.",
+    "bedroomCount": "{count, plural, =0 {studio} one {#-bed} other {#-bed}}",
     "bathroomCount": "{count, plural, one {# bathroom} other {# bathrooms}}",
     "tenureFreehold": "Yes — this is a freehold title. Non-resident buyers can take ownership in their own name.",
     "tenureLeasehold": "This is a leasehold title. Non-resident ownership rules vary by lease term and area — your Bazar advisor will clarify the exact eligibility.",
@@ -16,12 +36,18 @@
   },
   "floorPlan": {
     "heading": "Floor plan",
-    "unitLayout": "Unit layout",
     "none": "No floor plan attached yet. Enquire about this property and the advisor will email one back — typically within 2 hours.",
     "alt": "Floor plan for {reference}",
     "tabs": "Gallery views",
     "photos": "Photos",
-    "map": "Map"
+    "map": "Map",
+    "openFullScreen": "{alt} — open full screen",
+    "enlarge": "Enlarge",
+    "fitToScreen": "Fit to screen",
+    "fullSize": "View at full size",
+    "close": "Close floor plan",
+    "dragToPan": "Drag to pan",
+    "openOriginal": "Open the original"
   },
   "furnishing": {
     "unfurnished": "Unfurnished",
@@ -31,7 +57,8 @@
   "gallery": {
     "morePhotos": "{count, plural, one {+# photo} other {+# photos}}",
     "close": "Close gallery",
-    "previous": "Previous photo"
+    "previous": "Previous photo",
+    "next": "Next photo"
   },
   "listedAgo": "{days, plural, =0 {today} one {1 day ago} other {# days ago}}",
   "mode": {
@@ -52,7 +79,10 @@
     "perYear": "Per year",
     "listingType": "Listing type",
     "listed": "Listed",
-    "parkingBays": "{count, plural, one {# bay} other {# bays}}"
+    "parkingBays": "{count, plural, one {# bay} other {# bays}}",
+    "permit": "Listing permit",
+    "validTo": "valid to {date}",
+    "dldPlot": "DLD plot"
   },
   "stat": {
     "bedrooms": "Bedrooms",
@@ -61,5 +91,8 @@
     "type": "Type",
     "tenure": "Tenure",
     "yearBuilt": "Year built"
+  },
+  "tenure": {
+    "freehold": "Freehold"
   }
 }

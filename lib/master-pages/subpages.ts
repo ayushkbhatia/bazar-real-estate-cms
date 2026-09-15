@@ -28,6 +28,7 @@ export type SubPageKind =
   | "development"
   | "area"
   | "developer"
+  | "property"
   | "section"
   | "search";
 
@@ -107,6 +108,22 @@ export const SUBPAGE_KINDS: SubPageKindDef[] = [
     description:
       "One profile per developer partner — the catalogue every listing and project files under.",
     itemLabel: "developer",
+  },
+  {
+    /*
+     * One page per published listing, and no per-record document: a listing's
+     * own words live on its `properties` row and are edited in Properties. So
+     * the card opens the one document they all share — the eyebrows, the
+     * enquiry wording and the questions — rather than a list of records.
+     * See `lib/master-pages/property-page.ts`.
+     */
+    kind: "property",
+    label: "Property pages",
+    publicPath: "/p",
+    adminPath: "/admin/pages/sub/property",
+    description:
+      "One page per listing. The headings, enquiry wording and shared questions every listing carries, in both languages.",
+    itemLabel: "listing page",
   },
 ];
 

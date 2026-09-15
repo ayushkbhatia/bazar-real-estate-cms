@@ -13,6 +13,8 @@ import { FloorPlanViewer } from "./floor-plan-viewer";
  * call-out instead of a generic placeholder.
  */
 export async function FloorPlanSection({
+  eyebrow,
+  heading,
   imageUrl,
   beds,
   baths,
@@ -20,6 +22,9 @@ export async function FloorPlanSection({
   reference,
   locale,
 }: {
+  /** Band wording, from the listing-page copy document. */
+  eyebrow: string;
+  heading: string;
   imageUrl: string | null;
   beds: number;
   baths: number;
@@ -37,12 +42,12 @@ export async function FloorPlanSection({
   const t = await getTranslations({ locale, namespace: "property" });
   return (
     <section id="floor-plan" className="scroll-mt-16">
-      <Eyebrow>{t("floorPlan.heading")}</Eyebrow>
+      <Eyebrow>{eyebrow}</Eyebrow>
       <h3
         className="serif text-[24px] mt-2 mb-4 leading-tight"
         style={{ letterSpacing: "-0.012em" }}
       >
-        {t("floorPlan.unitLayout")}
+        {heading}
       </h3>
 
       {imageUrl ? (

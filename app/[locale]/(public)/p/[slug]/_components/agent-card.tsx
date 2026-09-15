@@ -6,7 +6,33 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import type { PropertyAdvisor } from "@/lib/queries/property-advisor";
 import type { ResolvedForm } from "@/lib/forms/types";
-import { PropertyEnquiryDialog } from "./enquiry-dialog";
+import { PropertyEnquiryDialog, type EnquiryDialogCopy } from "./enquiry-dialog";
+
+/**
+ * Every word the card draws that is not the advisor's own.
+ *
+ * The page resolves these — the eyebrow and the enquiry button from the
+ * listing-page copy document, the button labels and the two prefilled messages
+ * from the catalogue — because this card was the last English block on an
+ * Arabic listing: "Lead advisor", "Call", "WhatsApp", "Email" and "Enquire
+ * about BAZ-AD-09790" around an advisor whose name, title and languages were
+ * English too (that half was the query, see `getAdvisorByUserId`).
+ *
+ * `whatsappMessage` and `mailSubject` are finished strings rather than
+ * templates: they leave the page as plain text inside a URL, where there is no
+ * element to isolate a reference with, so the page builds them with
+ * `isolateForLocale` already applied.
+ */
+export type AgentCardCopy = {
+  eyebrow: string;
+  enquire: string;
+  call: string;
+  whatsapp: string;
+  email: string;
+  brn: string;
+  whatsappMessage: string;
+  mailSubject: string;
+};
 
 /**
  * Lead-advisor card on the property page.
@@ -22,30 +48,26 @@ import { PropertyEnquiryDialog } from "./enquiry-dialog";
  */
 export function AgentCard({
   enquiryForm,
+  copy,
+  dialogCopy,
   advisor,
   propertyId,
   propertyReference,
-  propertyTitle,
 }: {
   /** Resolved from /admin/forms by the listing page. */
   enquiryForm: ResolvedForm;
+  copy: AgentCardCopy;
+  dialogCopy: EnquiryDialogCopy;
   advisor: PropertyAdvisor;
   propertyId: string;
   propertyReference: string;
-  propertyTitle: string;
 }) {
-  const firstName = advisor.display_name.split(" ")[0];
-  const waUrl = buildWhatsAppLink(
-    advisor.whatsapp,
-    `Hi ${firstName}, I'm interested in ${propertyReference} on bazar.ae`,
-  );
+  const waUrl = buildWhatsAppLink(advisor.whatsapp, copy.whatsappMessage);
   const telUrl = advisor.phone
     ? `tel:${advisor.phone.replace(/\s/g, "")}`
     : null;
   const mailUrl = advisor.email
-    ? `mailto:${advisor.email}?subject=${encodeURIComponent(
-        `Bazar enquiry · ${propertyReference}`,
-      )}`
+    ? `mailto:${advisor.email}?subject=${encodeURIComponent(copy.mailSubject)}`
     : null;
 
   const directActions = [telUrl, waUrl, mailUrl].filter(Boolean).length;
@@ -70,7 +92,7 @@ export function AgentCard({
           )}
         </Link>
         <div className="min-w-0">
-          <Eyebrow>Lead advisor</Eyebrow>
+          <Eyebrow>{copy.eyebrow}</Eyebrow>
           <Link
             href={`/agents/${advisor.slug}`}
             className="block mt-1 serif text-[18px] leading-tight hover:text-bz-accent transition-colors"
@@ -84,8 +106,12 @@ export function AgentCard({
             </div>
           ) : null}
           {advisor.brn ? (
-            <div className="mt-2 mono text-[11px] text-bz-muted">
-              BRN · <span className="text-bz-ink-2">{advisor.brn}</span>
+            // `font-mono` rather than `.mono` for the same reason as the REF
+            // line in `action-row.tsx`: `.mono` is LTR under `:lang(ar)`, and
+            // the label is Arabic there.
+            <div className="mt-2 font-mono tracking-normal text-[11px] text-bz-muted">
+              {copy.brn} ·{" "}
+              <bdi className="text-bz-ink-2">{advisor.brn}</bdi>
             </div>
           ) : null}
         </div>
@@ -104,7 +130,7 @@ export function AgentCard({
               className="inline-flex items-center justify-center gap-1.5 h-9 rounded-md bg-bz-accent text-bz-accent-fg text-[12.5px] font-medium hover:bg-bz-accent-hover transition-colors"
             >
               <Phone size={13} strokeWidth={1.8} />
-              Call
+              {copy.call}
             </a>
           ) : null}
           {waUrl ? (
@@ -115,7 +141,7 @@ export function AgentCard({
               className="inline-flex items-center justify-center gap-1.5 h-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[12.5px] hover:border-bz-border-strong transition-colors"
             >
               <MessageCircle size={13} strokeWidth={1.7} />
-              WhatsApp
+              {copy.whatsapp}
             </a>
           ) : null}
           {mailUrl ? (
@@ -124,7 +150,7 @@ export function AgentCard({
               className="inline-flex items-center justify-center gap-1.5 h-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[12.5px] hover:border-bz-border-strong transition-colors"
             >
               <Mail size={13} strokeWidth={1.7} />
-              Email
+              {copy.email}
             </a>
           ) : null}
         </div>
@@ -132,9 +158,9 @@ export function AgentCard({
 
       <PropertyEnquiryDialog
         form={enquiryForm}
+        copy={dialogCopy}
         propertyId={propertyId}
         propertyReference={propertyReference}
-        propertyTitle={propertyTitle}
         advisorName={advisor.display_name}
       >
         <button
@@ -146,7 +172,7 @@ export function AgentCard({
           }`}
         >
           <Send size={13} strokeWidth={1.7} />
-          Enquire about {propertyReference}
+          {copy.enquire}
         </button>
       </PropertyEnquiryDialog>
 

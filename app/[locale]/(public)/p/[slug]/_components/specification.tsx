@@ -21,11 +21,27 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 export type SpecRow = { label: string; value: React.ReactNode; note?: string };
 
 export function SpecificationTable({
+  eyebrow,
+  heading,
+  labels,
   rows,
   permitNo,
   permitExpiry,
   plotNumber,
 }: {
+  /** Band wording, from the listing-page copy document. */
+  eyebrow: string;
+  heading: string;
+  /**
+   * The compliance line's labels, from the catalogue. Interface rather than
+   * copy — they name regulatory identifiers — so they are not in the CMS.
+   * `validTo` takes the already-formatted date.
+   */
+  labels: {
+    permit: string;
+    validTo: (date: string) => string;
+    dldPlot: string;
+  };
   rows: SpecRow[];
   permitNo?: string | null;
   permitExpiry?: string | null;
@@ -36,12 +52,12 @@ export function SpecificationTable({
 
   return (
     <div id="specification" className="scroll-mt-16">
-      <Eyebrow>Specification</Eyebrow>
+      <Eyebrow>{eyebrow}</Eyebrow>
       <h3
         className="serif text-[24px] mt-2 mb-4 leading-tight"
         style={{ letterSpacing: "-0.012em" }}
       >
-        The full detail.
+        {heading}
       </h3>
 
       {rows.length > 0 ? (
@@ -83,14 +99,15 @@ export function SpecificationTable({
         <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-[12px] text-bz-muted">
           {permitNo ? (
             <span>
-              Listing permit{" "}
+              {labels.permit}{" "}
               <span className="mono text-bz-ink-2">{permitNo}</span>
-              {permitExpiry ? ` · valid to ${permitExpiry}` : null}
+              {permitExpiry ? ` · ${labels.validTo(permitExpiry)}` : null}
             </span>
           ) : null}
           {plotNumber ? (
             <span>
-              DLD plot <span className="mono text-bz-ink-2">{plotNumber}</span>
+              {labels.dldPlot}{" "}
+              <span className="mono text-bz-ink-2">{plotNumber}</span>
             </span>
           ) : null}
         </div>

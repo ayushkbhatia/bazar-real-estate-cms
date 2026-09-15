@@ -1,16 +1,33 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { ChevronDown } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
+import { isolateForLocale } from "@/lib/i18n/bidi";
+import type { Locale } from "@/lib/i18n/locales";
+import type { PropertyFaqItem } from "@/lib/queries/property-page";
 
 type Props = {
+  locale: Locale;
   reference: string;
   title: string;
   areaName: string | null;
+  /**
+   * The property type as a reader sees it, in the page's language — "villa",
+   * "فيلا". The component used to receive the raw enum and drop it into both
+   * languages, so an Arabic answer read "تضم villa المكوّنة من 4 غرف نوم".
+   */
   propertyType: string;
   beds: number;
   baths: number;
   tenure: string | null;
   listingPermitNo: string | null;
+  /** Band wording, from the listing-page copy document. */
+  eyebrow: string;
+  heading: string;
+  /**
+   * The questions that read the same on every listing, tokens already filled —
+   * editable at Pages → Sub-pages → Property pages → FAQ.
+   */
+  shared: PropertyFaqItem[];
 };
 
 /**
@@ -19,11 +36,22 @@ type Props = {
  * useful answer set for long-tail SEO (handover process, tenure rules,
  * service charges, etc.).
  *
- * The questions intentionally avoid anything that depends on per-area
- * editorial copy — they're synthesised from the schema fields available
- * on every property.
+ * Two sources, and the split is on purpose. The four entries written from the
+ * listing's facts — what it includes, where it is, whether a non-resident can
+ * buy it, how to verify its permit — are catalogue templates: they branch on
+ * the tenure and the permit and carry bedroom and bathroom counts, which only
+ * ICU can agree in Arabic. The rest used to be English template literals here,
+ * which is why three whole answers stayed English on `/ar`; they are the
+ * listing-page copy document's `faq.items` now, so the client can change them
+ * — and their Arabic — without a deploy.
+ *
+ * Every value dropped into a sentence is isolated: a reference or permit is a
+ * Latin code inside Arabic prose, and without it `BAZ-AD-09790` renders as
+ * `09790-BAZ-AD`. Under English `isolateForLocale` is the identity, so the
+ * English FAQ — and its JSON-LD — are unchanged.
  */
-export function PropertyFaq({
+export async function PropertyFaq({
+  locale,
   reference,
   title,
   areaName,
@@ -32,9 +60,20 @@ export function PropertyFaq({
   baths,
   tenure,
   listingPermitNo,
+  eyebrow,
+  heading,
+  shared,
 }: Props) {
-  const t = useTranslations("property");
-  const placeForArea = areaName ?? t("fallbackCity");
+  // Explicit locale, never ambient — an ambient read resolves through
+  // `headers()` and would take this route off prerendering.
+  const t = await getTranslations({ locale, namespace: "property" });
+  const iso = (value: string) => isolateForLocale(value, locale);
+
+  const place = iso(areaName ?? t("fallbackCity"));
+  const ref = iso(reference);
+  const type = iso(propertyType);
+  const bedrooms = t("faq.bedroomCount", { count: beds });
+
   const tenureNote =
     tenure === "freehold"
       ? t("faq.tenureFreehold")
@@ -42,47 +81,34 @@ export function PropertyFaq({
         ? t("faq.tenureLeasehold")
         : t("faq.tenureUnknown");
 
-  const entries: { q: string; a: string }[] = [
+  const entries: PropertyFaqItem[] = [
     {
-      q: t("faq.locationQ", { reference }),
-      a: t("faq.locationA", { title, place: placeForArea }),
+      q: t("faq.includesQ", { bedrooms, type, place }),
+      a: t("faq.includesA", {
+        bedrooms,
+        type,
+        place,
+        baths: t("faq.bathroomCount", { count: baths }),
+        reference: ref,
+      }),
     },
     {
-      q: t("faq.nonResidentQ", { reference }),
+      q: t("faq.locationQ", { reference: ref }),
+      a: t("faq.locationA", { title: iso(title), place }),
+    },
+    {
+      q: t("faq.nonResidentQ", { reference: ref }),
       a: tenureNote,
     },
-    {
-      q: `What does the transfer process look like?`,
-      a: `DLD-registered ${propertyType} transfers follow the standard MoU → 10% deposit → trustee booking → title-deed issuance sequence. Bazar's in-house conveyancing desk handles every step; transfer typically completes 30 – 45 days from accepted offer.`,
-    },
-    {
-      q: `What are the service charges?`,
-      a: `Service charge is set per community and billed by the master developer or the building OA. Exact AED/ft² varies by tower — your Bazar advisor will share the current schedule, the 5-year history, and what's included before you make an offer.`,
-    },
-    {
-      q: `Is ${reference} mortgageable?`,
-      a: `Most Abu Dhabi banks lend on freehold residential property at up to 80% LTV for residents (60% for non-residents). Bazar's mortgage desk can run a pre-approval before viewings so you know your envelope.`,
-    },
+    ...shared,
   ];
 
   if (listingPermitNo) {
     entries.push({
       q: t("faq.verifyQ"),
-      a: t("faq.verifyA", { permit: listingPermitNo }),
+      a: t("faq.verifyA", { permit: iso(listingPermitNo) }),
     });
   }
-
-  // Also include a beds-specific question to broaden the long-tail surface
-  entries.unshift({
-    q: t("faq.includesQ", { beds, type: propertyType, place: placeForArea }),
-    a: t("faq.includesA", {
-      beds,
-      type: propertyType,
-      place: placeForArea,
-      baths: t("faq.bathroomCount", { count: baths }),
-      reference,
-    }),
-  });
 
   const ld = {
     "@context": "https://schema.org",
@@ -100,12 +126,12 @@ export function PropertyFaq({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
       />
-      <Eyebrow>FAQ</Eyebrow>
+      <Eyebrow>{eyebrow}</Eyebrow>
       <h2
         className="serif text-[32px] mt-2 leading-tight max-w-[36ch]"
         style={{ letterSpacing: "-0.018em" }}
       >
-        Common questions, plainly answered.
+        {heading}
       </h2>
       <div className="mt-8 grid grid-cols-1 gap-2 max-w-[820px]">
         {entries.map((e, i) => (

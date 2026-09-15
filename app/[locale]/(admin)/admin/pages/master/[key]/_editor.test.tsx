@@ -25,6 +25,10 @@ import {
   developmentPageCopyDef,
   developmentPageCopyDefault,
 } from "@/lib/master-pages/development-page";
+import {
+  PROPERTY_PAGE_COPY_SECTIONS,
+  propertyPageCopyDef,
+} from "@/lib/master-pages/property-page";
 import { arKey, isTranslatable } from "@/lib/master-pages/twins";
 import { MasterPageEditor } from "./_editor";
 
@@ -549,6 +553,61 @@ describe("project page copy", () => {
     // Every section is `locked`. Whether a band shows on a given project is
     // that project's decision and lives in its own document; a switch here
     // would read as a site-wide kill switch and behave as neither.
+    mount(def);
+    expect(screen.queryAllByLabelText(/^Reorder /)).toHaveLength(0);
+  });
+});
+
+/**
+ * The shared listing-page copy — one document behind every `/p/<slug>` page,
+ * reached through Pages → Sub-pages → Property pages.
+ *
+ * The same shape as the project-page document, plus the one thing that one
+ * does not have: a list field (the questions every listing shares) whose items
+ * carry their own Arabic twins. If the editor dropped them, a save would strip
+ * the Arabic from every listing's FAQ at once.
+ */
+describe("property page copy", () => {
+  const def = propertyPageCopyDef() as MasterPageDef;
+
+  it("draws every declared field, in every band", () => {
+    const sections = mount(def);
+    expect(sections).toHaveLength(PROPERTY_PAGE_COPY_SECTIONS.length);
+    const found = rows();
+    expect(found).toHaveLength(sections.length);
+    sections.forEach((section, i) => {
+      const panel = openPanel(found[i]);
+      for (const field of section.def.fields) expectField(panel, field);
+      closePanel(found[i]);
+    });
+  });
+
+  it("arrives with its Arabic already filled in, not blank", () => {
+    const sections = resolveSections(def, null, "bilingual");
+    render(
+      <MasterPageEditor
+        pageKey="copy"
+        pageLabel={def.label}
+        path={def.path}
+        usingDefaults
+        media={[]}
+        seeds={{}}
+        actions={{ save: vi.fn(), reset: vi.fn() }}
+        allowReorder={false}
+        initial={sections.map((s) => ({
+          key: s.key,
+          def: s.def,
+          enabled: s.enabled,
+          values: s.values,
+        }))}
+      />,
+    );
+    const panel = openPanel(rows()[0]!);
+    expect(within(panel).queryAllByText("— not set")).toHaveLength(0);
+    expect(within(panel).queryAllByText("● set").length).toBeGreaterThan(0);
+  });
+
+  it("offers no switch to turn a band off", () => {
     mount(def);
     expect(screen.queryAllByLabelText(/^Reorder /)).toHaveLength(0);
   });

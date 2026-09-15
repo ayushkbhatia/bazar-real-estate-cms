@@ -19,6 +19,8 @@
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+import { localiseRow } from "@/lib/i18n/localise";
 
 export type PropertyAdvisor = {
   user_id: string;
@@ -35,8 +37,20 @@ export type PropertyAdvisor = {
   whatsapp: string | null;
 };
 
+/*
+ * The `_ar` twins ride along and are folded away by `localiseRow` before the
+ * row is shaped — the same arrangement `lib/queries/agents.ts` has for
+ * /agents/<slug>.
+ *
+ * They were missing here, and nothing else was: `staff` has carried them since
+ * #346, the team editor writes them, and every advisor's Arabic name, title
+ * and languages were filled in. So `/ar/p/<slug>` rendered "Bazar Real
+ * Estate", "Official Property Representative" and "English · Arabic" under an
+ * Arabic eyebrow while `/ar/agents/bazar-advisor`, reading the same row,
+ * rendered بازار للعقارات. The gap was this select list, not the data.
+ */
 const ADVISOR_FIELDS =
-  "user_id, slug, display_name, title, brn, photo_url, languages, public_email, public_phone, whatsapp";
+  "user_id, slug, display_name, display_name_ar, title, title_ar, brn, photo_url, languages, languages_ar, public_email, public_phone, whatsapp";
 
 function parseLanguages(raw: unknown): string[] {
   return Array.isArray(raw) ? raw.map(String) : [];
@@ -47,9 +61,17 @@ function blankToNull(v: unknown): string | null {
   return s === "" ? null : s;
 }
 
-/** Resolve a staff user_id into a publishable advisor profile. */
+/**
+ * Resolve a staff user_id into a publishable advisor profile.
+ *
+ * `locale` is a parameter rather than an ambient read: the listing page is
+ * prerendered, and `currentLocale()` there resolves through `headers()`, which
+ * takes the route off static rendering (see the note in `/p/[slug]/page.tsx`).
+ * Omitted, the row folds to English.
+ */
 export async function getAdvisorByUserId(
   userId: string | null | undefined,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<PropertyAdvisor | null> {
   if (!isSupabaseConfigured || !userId) return null;
   try {
@@ -63,7 +85,7 @@ export async function getAdvisorByUserId(
       if (error) console.error("[getAdvisorByUserId]", error);
       return null;
     }
-    const row = data as unknown as Record<string, unknown>;
+    const row = localiseRow(data as unknown as Record<string, unknown>, locale);
     const phone = blankToNull(row.public_phone);
     return {
       user_id: String(row.user_id),
@@ -90,6 +112,7 @@ export async function getAdvisorByUserId(
  */
 export async function getPropertyAdvisor(
   propertyId: string,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<PropertyAdvisor | null> {
   if (!isSupabaseConfigured || !propertyId) return null;
   try {
@@ -99,7 +122,7 @@ export async function getPropertyAdvisor(
       .select("assigned_agent_id")
       .eq("id", propertyId)
       .maybeSingle();
-    return getAdvisorByUserId(data?.assigned_agent_id ?? null);
+    return getAdvisorByUserId(data?.assigned_agent_id ?? null, locale);
   } catch (e) {
     console.error("[getPropertyAdvisor]", e);
     return null;

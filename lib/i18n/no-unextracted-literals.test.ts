@@ -102,16 +102,7 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/market-reports/_components/velocity-strip.tsx": 1,
   "app/[locale]/(public)/market-reports/page.tsx": 2,
   "app/[locale]/(public)/new-this-week/page.tsx": 2,
-  "app/[locale]/(public)/p/[slug]/_components/action-row.tsx": 3,
-  "app/[locale]/(public)/p/[slug]/_components/advisor-note.tsx": 1,
-  "app/[locale]/(public)/p/[slug]/_components/agent-card.tsx": 3,
-  "app/[locale]/(public)/p/[slug]/_components/enquiry-dialog.tsx": 1,
-  "app/[locale]/(public)/p/[slug]/_components/floor-plan-viewer.tsx": 3,
-  "app/[locale]/(public)/p/[slug]/_components/gallery.tsx": 1,
-  "app/[locale]/(public)/p/[slug]/_components/property-faq.tsx": 1,
-  "app/[locale]/(public)/p/[slug]/_components/specification.tsx": 3,
   "app/[locale]/(public)/p/[slug]/opengraph-image.tsx": 2,
-  "app/[locale]/(public)/p/[slug]/page.tsx": 1,
   "app/[locale]/(public)/press/page.tsx": 2,
   "app/[locale]/(public)/price-drops/page.tsx": 2,
   "app/[locale]/(public)/qr/page.tsx": 1,
@@ -120,7 +111,7 @@ const REMAINING: Readonly<Record<string, number>> = {
 };
 
 /** What the ratchet held when it landed. Lowering it is the point. */
-const TOTAL_CEILING = 118;
+const TOTAL_CEILING = 101;
 
 /**
  * Three shapes, matching the three ways a literal reaches a reader.

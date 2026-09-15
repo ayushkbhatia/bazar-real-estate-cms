@@ -11,6 +11,7 @@
  */
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -20,27 +21,44 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { ResolvedForm } from "@/lib/forms/types";
+import { isolateForLocale } from "@/lib/i18n/bidi";
 import { FormRenderer } from "../../../_components/forms/form-renderer";
+import { TokenText } from "./token-text";
+
+/**
+ * The dialog's own words, from the listing-page copy document
+ * (Pages → Sub-pages → Property pages → Enquiry card and dialog).
+ *
+ * Resolved by the page, because a client component cannot read the document —
+ * the same arrangement the shortlist drawer's copy uses. `title` arrives with
+ * its tokens filled; `note` arrives as a template so the reference can keep
+ * its `.mono` span.
+ */
+export type EnquiryDialogCopy = {
+  title: string;
+  note: string;
+};
 
 export function PropertyEnquiryDialog({
   form,
+  copy,
   propertyId,
   propertyReference,
-  propertyTitle,
   advisorName,
   children,
 }: {
   /** Resolved from /admin/forms by the listing page. */
   form: ResolvedForm;
+  copy: EnquiryDialogCopy;
   propertyId: string;
   propertyReference: string;
-  propertyTitle: string;
-  /** Named in the dialog copy when the listing has an assigned advisor. */
+  /** Filled into `{advisor}` when the listing has an assigned advisor. */
   advisorName?: string | null;
   /** The trigger — rendered via `asChild`, so pass a single element. */
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
+  const locale = useLocale();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -48,18 +66,22 @@ export function PropertyEnquiryDialog({
       <DialogContent className="sm:max-w-[520px] max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="serif text-[24px] leading-tight">
-            Enquire about {propertyTitle}
+            {copy.title}
           </DialogTitle>
           <DialogDescription>
-            Reference <span className="mono">{propertyReference}</span>
-            {advisorName ? (
-              <>
-                {" "}
-                · goes straight to {advisorName}, the advisor on this listing.
-              </>
-            ) : (
-              <> · an advisor replies within 2 hours during office hours.</>
-            )}
+            <TokenText
+              template={copy.note}
+              tokens={{
+                reference: (
+                  <span className="mono whitespace-nowrap">
+                    {propertyReference}
+                  </span>
+                ),
+                // `<bdi>`: a name may arrive in either script, and without an
+                // isolate the comma after it follows whichever side wins.
+                advisor: <bdi>{advisorName ?? ""}</bdi>,
+              }}
+            />
           </DialogDescription>
         </DialogHeader>
         <div className="mt-2">
@@ -68,7 +90,11 @@ export function PropertyEnquiryDialog({
               ...form,
               copy: { ...form.copy, title: null, subtitle: null },
             }}
-            tokens={{ reference: propertyReference }}
+            /* Isolated because this one lands in a textarea, where there is
+               no span to hang `.mono` on: the pre-filled message puts the
+               reference inside an Arabic sentence, and unisolated it reads
+               `09790-BAZ-AD`. Identity under English. */
+            tokens={{ reference: isolateForLocale(propertyReference, locale) }}
             context={{ propertyId, propertyReference }}
             successStyle="soft"
             allowAnother

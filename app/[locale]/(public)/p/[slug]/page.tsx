@@ -40,6 +40,8 @@ import {
 import { localiseSearchAppearance } from "@/lib/schemas/seo";
 import { listAmenitiesTaxonomy } from "@/lib/queries/amenities-taxonomy";
 import { getAdvisorByUserId } from "@/lib/queries/property-advisor";
+import { getPropertyPageCopy } from "@/lib/queries/property-page";
+import { isolateForLocale } from "@/lib/i18n/bidi";
 import { amenityLabel, orderAmenities, toOptions } from "@/lib/amenities";
 import { propertyJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 // Cookie-free client on purpose: everything this route reads is public, and
@@ -156,6 +158,8 @@ import { PriceBlock } from "./_components/price-block";
 import { AdvisorNote } from "./_components/advisor-note";
 import { SpecificationTable, type SpecRow } from "./_components/specification";
 import { AgentCard } from "./_components/agent-card";
+import { TokenText } from "./_components/token-text";
+import type { EnquiryDialogCopy } from "./_components/enquiry-dialog";
 import { FloatingCtaTarget } from "../../_components/floating-cta-context";
 import { ValuationLeadGate } from "../../tools/valuation/_components/lead-gate";
 import { PropertyFaq } from "./_components/property-faq";
@@ -281,7 +285,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
    */
   const t = await getTranslations({ locale, namespace: "property" });
   // `t` is already this page's own namespace; `tp` is the shared
-  // `pages` bag for the strings W6 extracted out of the JSX.
+  // `pages` bag for the strings W6 extracted out of the JSX. The band
+  // eyebrows it used to hold are in the listing-page copy document now —
+  // see `copy` below.
   const tp = await getTranslations({ locale, namespace: "pages.property" });
   const tl = await getTranslations({ locale, namespace: "listing" });
   const cardLabels = await getCardLabelResolver(locale);
@@ -373,7 +379,40 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   // unassigned, or the assignee isn't a publicly-visible active agent — the
   // advisor card and contact rail then drop out rather than falling back to a
   // seeded name, which is what this page used to do.
-  const leadAdvisor = await getAdvisorByUserId(extras.assignedAgentId);
+  //
+  // `locale` so the advisor's Arabic name, title and languages fold in. They
+  // were on the row all along; this read never asked for them.
+  const leadAdvisor = await getAdvisorByUserId(extras.assignedAgentId, locale);
+
+  /*
+   * The page's own words — every band's eyebrow and heading, the enquiry card
+   * and dialog, the lead-advisor card's label and button, the shared FAQ
+   * questions and the similar-listings rail — from the one document every
+   * listing shares (Pages → Sub-pages → Property pages).
+   *
+   * `{area}` falls back to "the UAE" for a listing with no area, which is what
+   * the similar rail said before; the valuation prompt overrides it with "this
+   * area" at its call site, which is what that line said.
+   */
+  const typeLabel = propertyTypeLabel(property.type, locale);
+  const copy = await getPropertyPageCopy(
+    {
+      reference: property.reference,
+      title: property.title,
+      area: property.areas?.name ?? t("fallbackRegion"),
+      advisor: leadAdvisor?.display_name ?? "",
+      type: typeLabel,
+    },
+    locale,
+  );
+
+  const dialogCopy: EnquiryDialogCopy = {
+    title: copy.text("enquiry", "dialog_title"),
+    note: copy.template(
+      "enquiry",
+      leadAdvisor ? "dialog_note" : "dialog_note_no_advisor",
+    ),
+  };
 
   const advisorNoteCopy = property.short_description ?? property.description;
 
@@ -435,10 +474,12 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   ).replace(/\/+$/, "");
 
   const jsonLd = propertyJsonLd(property, heroPublicUrl);
+  const crumbHome = t("breadcrumb.home");
+  const crumbMode = t(property.mode === "rent" ? "mode.rent" : "mode.buy");
   const breadcrumbLd = breadcrumbListJsonLd([
-    { name: "Home", url: `${siteUrl}/` },
+    { name: crumbHome, url: `${siteUrl}/` },
     {
-      name: property.mode === "rent" ? "For rent" : "For sale",
+      name: crumbMode,
       url: `${siteUrl}/${property.mode === "rent" ? "rent" : "buy"}`,
     },
     ...(property.areas
@@ -469,18 +510,18 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       {/* Breadcrumb */}
       <div className="px-4 md:px-12 pt-8 pb-3 text-[12px] text-bz-muted flex items-center gap-1.5 overflow-x-auto whitespace-nowrap">
         <Link href="/" className="text-bz-teal hover:text-bz-navy">
-          Home
+          {crumbHome}
         </Link>
-        <ChevronRight size={12} />
+        <ChevronRight size={12} className="rtl:-scale-x-100" />
         <Link
           href={property.mode === "rent" ? "/rent" : "/buy"}
           className="text-bz-teal hover:text-bz-navy"
         >
-          {property.mode === "rent" ? "For rent" : "For sale"}
+          {crumbMode}
         </Link>
         {property.areas ? (
           <>
-            <ChevronRight size={12} />
+            <ChevronRight size={12} className="rtl:-scale-x-100" />
             <Link
               href={`/areas/${property.areas.slug}`}
               className="text-bz-teal hover:text-bz-navy"
@@ -489,13 +530,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             </Link>
           </>
         ) : null}
-        <ChevronRight size={12} />
+        <ChevronRight size={12} className="rtl:-scale-x-100" />
         <span className="mono text-bz-navy">{property.reference}</span>
       </div>
 
       {/* Action row */}
       <PropertyActionRow
         enquiryForm={enquiryForm}
+        dialogCopy={dialogCopy}
         propertyId={property.id}
         reference={property.reference}
         title={property.title}
@@ -550,7 +592,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         </h1>
         <div className="flex items-baseline justify-between mt-4 flex-wrap gap-x-8 gap-y-4">
           <div className="text-[14px] text-bz-muted">
-            {property.areas?.name ?? "United Arab Emirates"} ·{" "}
+            {property.areas?.name ?? t("fallbackArea")} ·{" "}
             <span className="mono text-bz-ink-2">{property.reference}</span>
           </div>
           <PriceBlock
@@ -587,7 +629,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           <FactTile
             icon={<KeyRound size={16} strokeWidth={1.6} />}
             label={t("stat.tenure")}
-            value={property.tenure ? titleCase(property.tenure) : "—"}
+            value={tenureLabel(property.tenure, t)}
           />
           <FactTile
             icon={<Calendar size={16} strokeWidth={1.6} />}
@@ -602,6 +644,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
         <div className="space-y-12">
           {advisorNoteCopy ? (
             <AdvisorNote
+              eyebrow={copy.text("advisor-note", "eyebrow")}
               note={advisorNoteCopy}
               advisorName={leadAdvisor?.display_name}
             />
@@ -609,7 +652,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           {property.description ? (
             <div>
-              <Eyebrow>{tp("whyThisOne")}</Eyebrow>
+              <Eyebrow>{copy.text("description", "eyebrow")}</Eyebrow>
               <p className="mt-3 text-[16.5px] leading-[1.7] text-bz-ink whitespace-pre-line max-w-[64ch]">
                 {property.description}
               </p>
@@ -618,6 +661,8 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           {/* Floor plan section */}
           <FloorPlanSection
+            eyebrow={copy.text("floor-plan", "eyebrow")}
+            heading={copy.text("floor-plan", "heading")}
             locale={locale}
             imageUrl={floorPlanUrl}
             beds={property.beds}
@@ -628,7 +673,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           {property.amenities.length > 0 ? (
             <div>
-              <Eyebrow>{tp("featuresAmenities")}</Eyebrow>
+              <Eyebrow>{copy.text("amenities", "eyebrow")}</Eyebrow>
               <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2.5 text-[14px]">
                 {orderAmenities(property.amenities, amenityOptions).map((a) => (
                   <li key={a} className="flex items-center gap-2">
@@ -651,12 +696,12 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           {/* Location */}
           <div id="location" className="scroll-mt-16">
-            <Eyebrow>{tp("location")}</Eyebrow>
+            <Eyebrow>{copy.text("location", "eyebrow")}</Eyebrow>
             <h3
               className="serif text-[24px] mt-2 mb-4"
               style={{ letterSpacing: "-0.012em" }}
             >
-              {property.areas?.name ?? "Abu Dhabi"}
+              {property.areas?.name ?? t("fallbackCity")}
             </h3>
             {geo ? (
               <MapEmbed
@@ -680,6 +725,13 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           {/* Specification — replaces the old "True cost of buying" block */}
           <SpecificationTable
+            eyebrow={copy.text("specification", "eyebrow")}
+            heading={copy.text("specification", "heading")}
+            labels={{
+              permit: t("spec.permit"),
+              validTo: (date) => t("spec.validTo", { date }),
+              dldPlot: t("spec.dldPlot"),
+            }}
             rows={specRows}
             permitNo={property.listing_permit_no}
             permitExpiry={
@@ -696,10 +748,31 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           {leadAdvisor ? (
             <AgentCard
               enquiryForm={enquiryForm}
+              dialogCopy={dialogCopy}
+              copy={{
+                eyebrow: copy.text("advisor", "eyebrow"),
+                enquire: copy.text("advisor", "enquire_label"),
+                call: t("agent.call"),
+                whatsapp: t("agent.whatsapp"),
+                email: t("agent.email"),
+                brn: t("agent.brn"),
+                // Plain text inside a URL, so the isolates are the only way to
+                // keep the reference reading `BAZ-AD-09790` in an Arabic
+                // message. Identity under English.
+                whatsappMessage: t("agent.whatsappMessage", {
+                  name: isolateForLocale(
+                    leadAdvisor.display_name.split(" ")[0] ?? "",
+                    locale,
+                  ),
+                  reference: isolateForLocale(property.reference, locale),
+                }),
+                mailSubject: t("agent.mailSubject", {
+                  reference: isolateForLocale(property.reference, locale),
+                }),
+              }}
               advisor={leadAdvisor}
               propertyId={property.id}
               propertyReference={property.reference}
-              propertyTitle={property.title}
             />
           ) : null}
 
@@ -707,17 +780,32 @@ export default async function PropertyDetailPage({ params }: PageProps) {
             id="send-brief"
             className="bg-bz-surface border border-bz-border rounded-lg p-5 scroll-mt-24"
           >
-            <Eyebrow>{tp("enquireAbout")}</Eyebrow>
+            <Eyebrow>{copy.text("enquiry", "eyebrow")}</Eyebrow>
             <h4 className="serif text-[18px] mt-2 leading-tight mb-4">
-              Ask anything about{" "}
-              <span className="mono text-[14px]">{property.reference}</span>.
+              <TokenText
+                template={copy.template("enquiry", "heading")}
+                tokens={{
+                  // `whitespace-nowrap`: the Arabic sentence is longer, and
+                  // the reference otherwise breaks at its hyphen — `BAZ-`
+                  // on one line, `AD-09790` on the next.
+                  reference: (
+                    <span className="mono text-[14px] whitespace-nowrap">
+                      {property.reference}
+                    </span>
+                  ),
+                }}
+              />
             </h4>
             <FormRenderer
               form={{
                 ...enquiryForm,
                 copy: { ...enquiryForm.copy, title: null, subtitle: null },
               }}
-              tokens={{ reference: property.reference }}
+              // Isolated for the pre-filled message, which is a textarea —
+              // see the same line in `enquiry-dialog.tsx`.
+              tokens={{
+                reference: isolateForLocale(property.reference, locale),
+              }}
               context={{
                 propertyId: property.id,
                 propertyReference: property.reference,
@@ -727,18 +815,26 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               toastErrors
             />
             {/* T1-E cleanup: secondary CTA — visitors who own elsewhere
-                in the same area are a high-intent valuation source. */}
-            <div className="mt-4 pt-4 border-t border-bz-border">
-              <div className="text-[11px] uppercase tracking-wider text-bz-ink-2 mb-2">
-                Own elsewhere in {property.areas?.name ?? "this area"}?
-              </div>
-              {valuationGate.enabled ? (
+                in the same area are a high-intent valuation source.
+
+                The whole block follows the gate's switch at /admin/forms. It
+                used to be only the button, so a disabled gate left the
+                question standing over nothing. */}
+            {valuationGate.enabled ? (
+              <div className="mt-4 pt-4 border-t border-bz-border">
+                <div className="text-[11px] uppercase tracking-wider text-bz-ink-2 mb-2">
+                  {copy.text(
+                    "enquiry",
+                    "valuation_prompt",
+                    property.areas ? undefined : { area: t("thisArea") },
+                  )}
+                </div>
                 <ValuationLeadGate
                   form={valuationGate}
-                  triggerLabel="Get a free valuation report"
+                  triggerLabel={copy.text("enquiry", "valuation_cta")}
                 />
-              ) : null}
-            </div>
+              </div>
+            ) : null}
             {/* Permit + DLD plot moved into the Specification block, which
                 now carries the full compliance line. */}
           </div>
@@ -749,10 +845,14 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       {/* T1.5 quick win: property FAQ with JSON-LD FAQPage schema.
           Lifts long-tail SEO on every property page. */}
       <PropertyFaq
+        locale={locale}
+        eyebrow={copy.text("faq", "eyebrow")}
+        heading={copy.text("faq", "heading")}
+        shared={copy.faq}
         reference={property.reference}
         title={property.title}
         areaName={property.areas?.name ?? null}
-        propertyType={property.type}
+        propertyType={typeLabel}
         beds={property.beds}
         baths={property.baths}
         tenure={property.tenure ?? null}
@@ -761,12 +861,12 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
       {similar.length > 0 ? (
         <section className="px-4 md:px-12 py-12 md:py-16 border-t border-bz-border">
-          <Eyebrow>More in {property.areas?.name ?? "the UAE"}</Eyebrow>
+          <Eyebrow>{copy.text("similar", "eyebrow")}</Eyebrow>
           <h2
             className="serif text-[26px] md:text-[32px] font-normal mt-2 mb-8"
             style={{ letterSpacing: "-0.02em" }}
           >
-            Nearby Properties
+            {copy.text("similar", "heading")}
           </h2>
           <CarouselGrid cols={4}>
             {similar.map((row) => (
@@ -778,7 +878,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                 <SimilarCard
                   priceAed={row.price_aed}
                   title={row.title}
-                  location={row.areas?.name ?? "United Arab Emirates"}
+                  location={row.areas?.name ?? t("fallbackArea")}
                   beds={row.beds}
                   baths={row.baths}
                   area={row.built_up_ft2 ?? 0}
@@ -870,6 +970,37 @@ function term(value: string, locale: Locale): string {
   const english = titleCase(value);
   if (locale === DEFAULT_LOCALE) return english;
   return arabicFor(english) ?? english;
+}
+
+/**
+ * The property type as it reads inside a sentence — "villa" in English, فيلا
+ * in Arabic — for the FAQ and the shared questions' `{type}` token.
+ *
+ * Lower case in English because it sits mid-sentence ("a 4-bed villa in Al
+ * Ghadeer"), which is what the FAQ has always printed. Arabic has no case, and
+ * takes the store's rendering of the title-cased term, as the key-facts tile
+ * does; a type the store has never seen stays English rather than guessed.
+ */
+function propertyTypeLabel(value: string, locale: Locale): string {
+  if (locale === DEFAULT_LOCALE) return value.split("_").join(" ");
+  return term(value, locale);
+}
+
+/**
+ * The tenure tile.
+ *
+ * Freehold only, deliberately. It is the settled term (تملك حر, bound in
+ * `lib/i18n/mt/glossary.ts`) and 63 of the 65 live listings carry it. Leasehold
+ * and usufruct keep their English: the glossary renders both as حق انتفاع,
+ * which is the collision the note on `term()` below describes, and splitting
+ * them is the client's compliance contact's decision rather than this file's.
+ */
+function tenureLabel(
+  tenure: string | null,
+  t: (key: "tenure.freehold") => string,
+): string {
+  if (!tenure) return "—";
+  return tenure === "freehold" ? t("tenure.freehold") : titleCase(tenure);
 }
 
 function titleCase(s: string): string {

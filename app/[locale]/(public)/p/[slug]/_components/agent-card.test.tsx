@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { AgentCard } from "./agent-card";
+import { AgentCard, type AgentCardCopy } from "./agent-card";
 import type { PropertyAdvisor } from "@/lib/queries/property-advisor";
 import { defaultForm } from "@/lib/forms";
 
@@ -25,14 +25,30 @@ const BASE: PropertyAdvisor = {
   whatsapp: null,
 };
 
-function renderCard(advisor: Partial<PropertyAdvisor>) {
+/** What the listing page hands the card on /en — see `AgentCardCopy`. */
+const COPY: AgentCardCopy = {
+  eyebrow: "Lead advisor",
+  enquire: "Enquire about BAZ-AD-00001",
+  call: "Call",
+  whatsapp: "WhatsApp",
+  email: "Email",
+  brn: "BRN",
+  whatsappMessage: "Hi Sample, I'm interested in BAZ-AD-00001 on bazar.ae",
+  mailSubject: "Bazar enquiry · BAZ-AD-00001",
+};
+
+function renderCard(
+  advisor: Partial<PropertyAdvisor>,
+  copy: Partial<AgentCardCopy> = {},
+) {
   return render(
     <AgentCard
       enquiryForm={defaultForm("property_enquiry")!}
+      copy={{ ...COPY, ...copy }}
+      dialogCopy={{ title: "Enquire about Sample Listing", note: "Reference {reference}" }}
       advisor={{ ...BASE, ...advisor }}
       propertyId="prop-1"
       propertyReference="BAZ-AD-00001"
-      propertyTitle="Sample Listing"
     />,
   );
 }
@@ -74,6 +90,49 @@ describe("AgentCard contact actions", () => {
     expect(
       hrefs.some((h) => h?.startsWith("mailto:advisor@bazar.ae?subject=")),
     ).toBe(true);
+  });
+
+  it("draws every label it is handed, so nothing on the card is English on /ar", () => {
+    // The card was the last all-English block on an Arabic listing: its
+    // eyebrow, its three buttons and its enquiry button were literals. It now
+    // owns no words of its own — this pins that.
+    renderCard(
+      { phone: "+971 2 555 0001", whatsapp: "+971 50 123 4567", email: "a@b.ae" },
+      {
+        eyebrow: "المستشار المسؤول",
+        enquire: "استفسر عن العقار BAZ-AD-00001",
+        call: "اتصل",
+        whatsapp: "واتساب",
+        email: "البريد الإلكتروني",
+        brn: "رقم تسجيل الوسيط",
+        whatsappMessage: "مرحباً، أنا مهتم بالعقار BAZ-AD-00001 على bazar.ae",
+        mailSubject: "استفسار بازار · BAZ-AD-00001",
+      },
+    );
+    for (const label of [
+      "المستشار المسؤول",
+      "اتصل",
+      "واتساب",
+      "البريد الإلكتروني",
+      "استفسر عن العقار BAZ-AD-00001",
+    ]) {
+      expect(screen.getByText(label)).toBeDefined();
+    }
+    expect(screen.getByText(/رقم تسجيل الوسيط/)).toBeDefined();
+    for (const english of ["Lead advisor", "Call", "WhatsApp", "Email"]) {
+      expect(screen.queryByText(english)).toBeNull();
+    }
+    const hrefs = screen
+      .getAllByRole("link")
+      .map((a) => (a as HTMLAnchorElement).getAttribute("href") ?? "");
+    const wa = hrefs.find((h) => h.startsWith("https://wa.me/"))!;
+    expect(decodeURIComponent(wa.split("text=")[1]!)).toBe(
+      "مرحباً، أنا مهتم بالعقار BAZ-AD-00001 على bazar.ae",
+    );
+    const mail = hrefs.find((h) => h.startsWith("mailto:"))!;
+    expect(decodeURIComponent(mail.split("subject=")[1]!)).toBe(
+      "استفسار بازار · BAZ-AD-00001",
+    );
   });
 
   it("falls back to the phone number when WhatsApp is blank", () => {
