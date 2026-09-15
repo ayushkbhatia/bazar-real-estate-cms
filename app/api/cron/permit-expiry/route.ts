@@ -17,7 +17,7 @@ import { createClient } from "@supabase/supabase-js";
 import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
-import { permitExpiryWarningTemplate } from "@/lib/email-templates";
+import { permitExpiryWarningEmail } from "@/lib/content-assets/system-emails";
 import type { Database } from "@/db/types";
 
 function adminClient() {
@@ -100,7 +100,7 @@ export async function GET(req: NextRequest) {
             86_400_000,
         ),
       );
-      const tpl = permitExpiryWarningTemplate({
+      const tpl = await permitExpiryWarningEmail({
         propertyReference: row.reference,
         permitNumber: row.listing_permit_no,
         expiresAt: row.listing_permit_expires_at,

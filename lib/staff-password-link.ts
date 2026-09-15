@@ -2,7 +2,7 @@ import "server-only";
 import { randomBytes } from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
-import { staffPasswordResetTemplate } from "@/lib/email-templates";
+import { staffPasswordResetEmail } from "@/lib/content-assets/system-emails";
 import { absoluteUrl } from "@/lib/site-url";
 import { INVITE_EXPIRY_DAYS } from "@/lib/staff-invitations";
 
@@ -102,7 +102,7 @@ export async function issueStaffPasswordLink(opts: {
     });
     if (insertError) return { status: "error", message: insertError.message };
 
-    const tpl = staffPasswordResetTemplate({
+    const tpl = await staffPasswordResetEmail({
       staffName: staff.display_name.split(" ")[0] ?? staff.display_name,
       resetUrl: await absoluteUrl(
         `/staff-invite?token=${encodeURIComponent(token)}`,

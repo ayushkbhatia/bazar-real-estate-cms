@@ -122,11 +122,31 @@ describe("isTokenName", () => {
 });
 
 describe("TOKENS", () => {
-  it("gives every token a non-empty fallback", () => {
-    // A blank fallback would silently delete words from a sent message.
+  it("gives every token a sample", () => {
+    for (const t of TOKENS) expect(t.sample.trim(), t.name).not.toBe("");
+  });
+
+  it("gives every word token a fallback unless it is marked optional", () => {
+    // A blank fallback silently deletes words from a sent message. That is
+    // right for exactly two kinds of token — a panel, and a line that exists
+    // only when there is something to say — and both have to say so.
     for (const t of TOKENS) {
+      if (t.fallback.trim() !== "") continue;
+      const optional = t.kind === "block" || /\(only /.test(t.label);
+      expect(optional, `${t.name} has a blank fallback`).toBe(true);
+      expect(t.scope, t.name).toBe("system");
+    }
+  });
+
+  it("gives every shared token a fallback — outreach has no line-dropping", () => {
+    for (const t of TOKENS.filter((x) => x.scope === "shared")) {
       expect(t.fallback.trim(), t.name).not.toBe("");
-      expect(t.sample.trim(), t.name).not.toBe("");
+    }
+  });
+
+  it("makes every url token fall back to a usable address", () => {
+    for (const t of TOKENS.filter((x) => x.kind === "url")) {
+      expect(t.fallback, t.name).toMatch(/^https:\/\//);
     }
   });
 });

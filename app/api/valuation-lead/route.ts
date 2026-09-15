@@ -18,6 +18,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
+import {
+  valuationCodeEmail,
+  valuationReportRequestedEmail,
+} from "@/lib/content-assets/system-emails";
 import { issueOtp, verifyOtp } from "@/lib/otp";
 import { captureFormSubmission, withLabels } from "@/lib/forms/record";
 import { env } from "@/lib/env";
@@ -81,17 +85,12 @@ export async function POST(req: NextRequest) {
       });
 
       // Best-effort email; skipped silently if Resend not configured.
+      const tpl = await valuationCodeEmail({ code });
       await sendEmail({
         to: data.email,
-        subject: `Your Bazar valuation code: ${code}`,
-        text: `Your one-time code is ${code}. It expires in 10 minutes.\n\n— Bazar Real Estate`,
-        html: `
-          <div style="font-family:system-ui;color:#1B1A17">
-            <p style="font-size:14px">Your one-time code:</p>
-            <p style="font-family:'Courier New',monospace;font-size:28px;letter-spacing:6px;color:#1B1A17;margin:12px 0">${code}</p>
-            <p style="font-size:13px;color:#99896e">Expires in 10 minutes. If you didn't request this, you can ignore it.</p>
-          </div>
-        `,
+        subject: tpl.subject,
+        text: tpl.text,
+        html: tpl.html,
       });
 
       // In dev (no RESEND key), surface the code in the response so we can
@@ -192,17 +191,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Send the confirmation email
+    const confirmation = await valuationReportRequestedEmail();
     await sendEmail({
       to: data.email,
-      subject: "Your Bazar valuation report is on the way",
-      text: `Thanks — a Bazar advisor will review the figures and send you the full report within 24 hours.\n\n— Bazar Real Estate`,
-      html: `
-        <div style="font-family:system-ui;color:#1B1A17">
-          <p style="font-size:14px">Thanks for verifying.</p>
-          <p style="font-size:14px;line-height:1.6">A Bazar advisor will review your property details, sense-check the instant estimate against the latest comparables, and send you the full advisor-prepared report within 24 hours.</p>
-          <p style="font-size:13px;color:#99896e">Questions in the meantime? Reply to this email.</p>
-        </div>
-      `,
+      subject: confirmation.subject,
+      text: confirmation.text,
+      html: confirmation.html,
     });
 
     return NextResponse.json({ ok: true });

@@ -8,7 +8,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
 import { requireRole } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
-import { staffInvitationTemplate } from "@/lib/email-templates";
+import { staffInvitationEmail } from "@/lib/content-assets/system-emails";
 import { absoluteUrl } from "@/lib/site-url";
 import { INVITE_EXPIRY_DAYS } from "@/lib/staff-invitations";
 import {
@@ -183,7 +183,7 @@ async function sendInvitationEmail(opts: {
     const acceptUrl = await absoluteUrl(
       `/staff-invite?token=${encodeURIComponent(opts.token)}`,
     );
-    const tpl = staffInvitationTemplate({
+    const tpl = await staffInvitationEmail({
       inviteeName: opts.displayName.split(" ")[0] ?? opts.displayName,
       inviterName: inviter?.display_name ?? "A Bazar administrator",
       acceptUrl,

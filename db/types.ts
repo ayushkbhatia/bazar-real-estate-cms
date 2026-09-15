@@ -631,6 +631,7 @@ export type Database = {
       content_assets: {
         Row: {
           body: string
+          body_format: string
           category: string
           created_at: string
           created_by: string | null
@@ -650,6 +651,7 @@ export type Database = {
         }
         Insert: {
           body?: string
+          body_format?: string
           category?: string
           created_at?: string
           created_by?: string | null
@@ -669,6 +671,7 @@ export type Database = {
         }
         Update: {
           body?: string
+          body_format?: string
           category?: string
           created_at?: string
           created_by?: string | null
@@ -3223,6 +3226,7 @@ export type Database = {
           brand_tagline_ar: string | null
           contact_email: string | null
           contact_phone: string | null
+          email_branding: Json
           email_templates: Json
           favicon_url: string | null
           footer_logo_url: string | null
@@ -3249,6 +3253,7 @@ export type Database = {
           card_labels?: Json
           contact_email?: string | null
           contact_phone?: string | null
+          email_branding?: Json
           email_templates?: Json
           favicon_url?: string | null
           footer_logo_url?: string | null
@@ -3275,6 +3280,7 @@ export type Database = {
           card_labels?: Json
           contact_email?: string | null
           contact_phone?: string | null
+          email_branding?: Json
           email_templates?: Json
           favicon_url?: string | null
           footer_logo_url?: string | null

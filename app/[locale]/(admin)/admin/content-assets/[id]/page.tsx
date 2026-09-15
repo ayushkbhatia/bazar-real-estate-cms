@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import {
@@ -20,6 +20,9 @@ export default async function EditContentAssetPage({ params }: PageProps) {
     listSequenceCandidates(id),
   ]);
   if (!asset) notFound();
+  // System emails have their own editor, with rich text and a live preview.
+  // Old links by id still arrive, so send them on.
+  if (asset.system_key) redirect(`/admin/content-assets/emails/${asset.system_key}`);
 
   const initial: AssetDraft = {
     kind: asset.kind,
@@ -46,7 +49,7 @@ export default async function EditContentAssetPage({ params }: PageProps) {
       title={asset.name}
       breadcrumbs={
         <span className="inline-flex items-center gap-1">
-          <Link href="/admin/content-assets" className="hover:text-bz-ink">
+          <Link href="/admin/content-assets?view=outreach" className="hover:text-bz-ink">
             Content assets
           </Link>
           <ChevronRight size={11} />
@@ -54,23 +57,6 @@ export default async function EditContentAssetPage({ params }: PageProps) {
         </span>
       }
     >
-      {asset.system_key ? (
-        <div className="mb-5 rounded-lg border border-bz-border bg-bz-surface px-4 py-3 text-[13px] text-bz-ink-2">
-          This is one of the four emails Bazar sends on its own.{" "}
-          {asset.status === "published" ? (
-            <>
-              It is <strong>published</strong>, so this wording is what leads
-              receive. Set it back to draft to return to the built-in email.
-            </>
-          ) : (
-            <>
-              It is a <strong>draft</strong>, so Bazar&apos;s built-in wording
-              is what leads receive today. Nothing here sends until you
-              publish it.
-            </>
-          )}
-        </div>
-      ) : null}
       {asset.deleted_at ? (
         <div className="mb-5 rounded-lg border border-bz-border bg-bz-surface-2 px-4 py-3 text-[13px] text-bz-ink-2">
           This asset is in the trash, so it won&apos;t appear in the enquiry
@@ -89,7 +75,6 @@ export default async function EditContentAssetPage({ params }: PageProps) {
         candidates={candidates}
         save={save}
         isNew={false}
-        systemKey={asset.system_key}
       />
     </CmsShell>
   );

@@ -5,7 +5,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { logAudit } from "@/lib/audit";
 import { sendEmail } from "@/lib/email";
-import { staffReplyTemplate } from "@/lib/email-templates";
+import { advisorReplyEmail } from "@/lib/content-assets/system-emails";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 import { requireRole } from "@/lib/auth";
 import type { Database } from "@/db/types";
@@ -298,7 +298,7 @@ export async function sendEnquiryTouch(
     if (!enquiry.email)
       return { status: "error", message: "No email address on this lead." };
 
-    const tpl = staffReplyTemplate({
+    const tpl = await advisorReplyEmail({
       name: enquiry.name,
       body,
       staffDisplayName: staffRow?.display_name ?? null,

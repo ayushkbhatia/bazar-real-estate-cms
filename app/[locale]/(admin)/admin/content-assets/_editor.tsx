@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Eye, Lock } from "lucide-react";
+import { Save, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Eyebrow } from "@/components/brand/eyebrow";
@@ -21,11 +21,7 @@ import {
   renderSample,
   unknownTokens,
 } from "@/lib/content-assets/tokens";
-import {
-  SYSTEM_ASSETS,
-  allowedTokensFor,
-  type SystemAssetKey,
-} from "@/lib/content-assets/system";
+import { allowedTokensFor } from "@/lib/content-assets/system";
 import type { AssetActionResult } from "./_actions";
 
 export type AssetDraft = {
@@ -59,7 +55,6 @@ export function ContentAssetEditor({
   candidates,
   save,
   isNew,
-  systemKey = null,
 }: {
   initial: AssetDraft;
   candidates: { id: string; name: string; kind: ContentAssetKind }[];
@@ -70,13 +65,6 @@ export function ContentAssetEditor({
    */
   save: (raw: Record<string, unknown>) => Promise<AssetActionResult>;
   isNew: boolean;
-  /**
-   * Set on the four rows that override a transactional email. It turns the
-   * editor from "write a message" into "rewrite the one the site already
-   * sends": identity is fixed, sequencing is meaningless, and the publish
-   * switch decides between this wording and the built-in one.
-   */
-  systemKey?: SystemAssetKey | null;
 }) {
   const router = useRouter();
   const [draft, setDraft] = useState<AssetDraft>(initial);
@@ -89,17 +77,16 @@ export function ContentAssetEditor({
   const [slugLocked, setSlugLocked] = useState(!isNew);
 
   const isEmail = draft.kind === "email";
-  const system = systemKey ? SYSTEM_ASSETS[systemKey] : null;
 
   // The insert strip and the save-time check read the same list, so a token
   // you can put in is a token you can keep.
   const tokenDefs = useMemo(() => {
-    const allowed = new Set<string>(allowedTokensFor(systemKey));
+    const allowed = new Set<string>(allowedTokensFor(null));
     return TOKENS.filter((t) => allowed.has(t.name));
-  }, [systemKey]);
+  }, []);
 
   const badTokens = useMemo(() => {
-    const allowed = allowedTokensFor(systemKey);
+    const allowed = allowedTokensFor(null);
     return [
       ...new Set([
         ...unknownTokens(draft.body),
@@ -108,7 +95,7 @@ export function ContentAssetEditor({
         ...outOfScopeTokens(draft.subject, allowed),
       ]),
     ];
-  }, [draft.body, draft.subject, systemKey]);
+  }, [draft.body, draft.subject]);
   const preview = useMemo(() => renderSample(draft.body), [draft.body]);
   const previewSubject = useMemo(
     () => renderSample(draft.subject),
@@ -175,27 +162,6 @@ export function ContentAssetEditor({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
       <div className="flex flex-col gap-5 min-w-0">
-        {system ? (
-          <div className="rounded-lg border border-bz-border bg-bz-surface-2 p-5">
-            <div className="flex items-center gap-2">
-              <Lock size={13} strokeWidth={1.8} className="text-bz-muted" />
-              <Eyebrow>System email</Eyebrow>
-            </div>
-            <p className="mt-2 text-[13px] text-bz-ink-2 max-w-[70ch]">
-              {system.trigger}
-            </p>
-            <p className="mt-2 text-[12.5px] text-bz-muted max-w-[70ch]">
-              Bazar has a built-in version of this email that sends today.
-              While this stays a draft, that is what goes out. Publish, and
-              this wording replaces it — and unpublishing puts the built-in
-              one back. The email cannot be deleted, so there is no way to
-              leave a lead with nothing.
-            </p>
-            <div className="mt-3 mono text-[11px] text-bz-muted">
-              {system.slug}
-            </div>
-          </div>
-        ) : null}
 
         <Card>
           <Eyebrow>Asset</Eyebrow>
@@ -208,18 +174,7 @@ export function ContentAssetEditor({
                 placeholder="First response — new enquiry"
               />
             </Field>
-            {system ? (
-              <Field
-                label="Channel"
-                hint="A system email is always email, and always this one."
-              >
-                <div className="h-[34px] flex items-center gap-2 px-2 rounded border border-dashed border-bz-border bg-bz-surface-2 text-[13px] text-bz-ink-2">
-                  <Lock size={12} strokeWidth={1.8} className="text-bz-muted" />
-                  {CONTENT_ASSET_KIND_LABELS.email}
-                </div>
-              </Field>
-            ) : (
-              <>
+            <>
                 <Field
                   label="Slug"
                   error={errors.slug}
@@ -267,8 +222,7 @@ export function ContentAssetEditor({
                     ))}
                   </datalist>
                 </Field>
-              </>
-            )}
+            </>
           </div>
         </Card>
 
@@ -296,11 +250,9 @@ export function ContentAssetEditor({
               label="Body"
               error={errors.body}
               hint={
-                system
-                  ? "The whole message — greeting, body, sign-off. Only the Bazar header and footer are added when it sends."
-                  : isEmail
-                    ? "The middle of the email. The greeting and advisor signature are added when it sends."
-                    : "Sent as written. Keep it short — long WhatsApp messages get skimmed."
+                isEmail
+                  ? "The middle of the email. The greeting and advisor signature are added when it sends."
+                  : "Sent as written. Keep it short — long WhatsApp messages get skimmed."
               }
             >
               <textarea
@@ -384,9 +336,7 @@ export function ContentAssetEditor({
             ))}
           </div>
           <p className="mt-2 text-[11.5px] text-bz-muted">
-            {system
-              ? "Draft sends Bazar's built-in wording. Published sends this."
-              : "Only published assets appear in the enquiry composer."}
+            Only published assets appear in the enquiry composer.
           </p>
           <Button
             type="button"
@@ -399,7 +349,6 @@ export function ContentAssetEditor({
           </Button>
         </Card>
 
-        {system ? null : (
         <Card>
           <Eyebrow>Sequencing</Eyebrow>
           <p className="mt-1 text-[11.5px] text-bz-muted">
@@ -445,24 +394,6 @@ export function ContentAssetEditor({
             </Field>
           </div>
         </Card>
-        )}
-
-        {system ? (
-          <Card>
-            <Eyebrow>When to use this</Eyebrow>
-            <Field label="" error={errors.notes}>
-              <textarea
-                value={draft.notes}
-                onChange={(e) => set("notes", e.target.value)}
-                rows={6}
-                className={cn(inputCls, "resize-y mt-2")}
-              />
-            </Field>
-            <p className="mt-2 text-[11.5px] text-bz-muted">
-              A note for whoever edits this next. Never sent.
-            </p>
-          </Card>
-        ) : null}
       </aside>
     </div>
   );

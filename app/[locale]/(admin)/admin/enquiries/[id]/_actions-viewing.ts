@@ -168,19 +168,21 @@ export async function createViewing(input: {
       advisorName: null,
     });
 
+    // The email tells the lead the invite is attached, so it has to be. It
+    // used to be built and then discarded, and the sentence was untrue.
     await sendEmail({
       to: enquiry.email,
       subject: tpl.subject,
       text: tpl.text,
       html: tpl.html,
-      // Resend supports attachments inline:
-      // (we cast via the SDK's `attachments` field in lib/email if/when needed)
+      attachments: [
+        {
+          filename: "viewing.ics",
+          content: ics,
+          contentType: "text/calendar; charset=utf-8; method=REQUEST",
+        },
+      ],
     });
-
-    // For now we send the .ics as a separate plain-text attachment by relying
-    // on the email client to recognise the body section. A future commit will
-    // wire it through Resend's `attachments` array.
-    void ics; // referenced for now to keep build silent
   }
 
   revalidatePath("/admin/enquiries");

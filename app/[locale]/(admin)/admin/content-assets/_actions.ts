@@ -56,16 +56,13 @@ function revalidate(id?: string) {
 /**
  * Shared parse step so create and update reject identically.
  *
- * `systemKey` is the row's own key, not something the form sends — the
- * caller reads it from the database. It decides which tokens are in scope:
- * `{{viewing_time}}` is spelled correctly everywhere and only means anything
- * inside the viewing confirmation, so writing it into a hand-written
- * follow-up is a save-time error rather than a fallback discovered in a sent
- * message.
+ * Outreach assets may use only the shared lead tokens. `{{viewing_time}}` is
+ * spelled correctly everywhere and only means anything inside the viewing
+ * confirmation, so writing it into a hand-written follow-up is a save-time
+ * error rather than a fallback discovered in a sent message.
  */
 function parse(
   raw: Record<string, unknown>,
-  systemKey: string | null,
 ):
   | { ok: true; value: ReturnType<typeof contentAssetSchema.parse> }
   | { ok: false; result: AssetActionResult } {
@@ -87,7 +84,7 @@ function parse(
     };
   }
 
-  const allowed = allowedTokensFor(systemKey);
+  const allowed = allowedTokensFor(null);
   const scopeErrors: Record<string, string> = {};
   for (const [field, text] of [
     ["body", parsed.data.body],
@@ -124,7 +121,7 @@ export async function createContentAsset(
   // A new asset is always hand-written outreach. The four system rows exist
   // already, seeded by migration 0117, and the database refuses to let a row
   // acquire a system_key any other way.
-  const p = parse(raw, null);
+  const p = parse(raw);
   if (!p.ok) return p.result;
 
   const { data, error } = await ctx.supabase
@@ -166,9 +163,8 @@ export async function updateContentAsset(
   const ctx = await staffCtx();
   if (isErr(ctx)) return { status: "error", message: ctx.error };
 
-  // Read first: the row's own system_key decides which tokens are in scope
-  // and which fields the editor is allowed to have changed. It is never taken
-  // from the form — the form has no business naming it.
+  // Read first: a system row is refused rather than overwritten, and the
+  // before-state goes in the audit log.
   const { data: before } = await ctx.supabase
     .from("content_assets")
     .select("slug, kind, status, subject, body, system_key")
@@ -176,9 +172,17 @@ export async function updateContentAsset(
     .maybeSingle();
   if (!before) return { status: "error", message: "Not found / not allowed." };
 
-  const systemKey = before.system_key;
+  // System emails have their own editor and action — rich text, required
+  // links, a live preview — in ./emails/_actions.ts. This one writes the
+  // outreach library only, so it cannot save a system body in the wrong format.
+  if (before.system_key) {
+    return {
+      status: "error",
+      message: `"${SYSTEM_ASSETS[before.system_key as keyof typeof SYSTEM_ASSETS]?.label ?? "This"}" is a system email — edit it under Site emails.`,
+    };
+  }
 
-  const p = parse(raw, systemKey);
+  const p = parse(raw);
   if (!p.ok) return p.result;
 
   // Self-reference is a database constraint too; catching it here lets the
@@ -190,30 +194,7 @@ export async function updateContentAsset(
       fieldErrors: { next_asset_id: "Pick a different asset." },
     };
 
-  // A system email's identity is not the editor's to change: the send path
-  // finds it by system_key, and the trigger in 0117 rejects a changed slug or
-  // kind with a constraint message no one should have to read. Sequencing is
-  // dropped for the same reason — nothing an advisor chooses can schedule a
-  // transactional email. The wording is the whole editable surface.
-  const values = systemKey
-    ? {
-        ...p.value,
-        slug: before.slug,
-        kind: before.kind,
-        next_asset_id: null,
-        follow_up_after_days: null,
-      }
-    : p.value;
-
-  if (systemKey && (!values.subject || values.subject.trim() === "")) {
-    return {
-      status: "error",
-      message: "A system email needs a subject.",
-      fieldErrors: {
-        subject: "Required — this email sends whether or not anyone is looking.",
-      },
-    };
-  }
+  const values = p.value;
 
   const { data, error } = await ctx.supabase
     .from("content_assets")
@@ -242,7 +223,6 @@ export async function updateContentAsset(
       slug: values.slug,
       kind: values.kind,
       status: values.status,
-      system_key: systemKey,
     },
   });
 
