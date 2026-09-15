@@ -32,14 +32,44 @@ export type TokenName =
   | "site_url"
   // System-email tokens. Only meaningful inside the system asset that
   // supplies them — see `scope` below and lib/content-assets/system.ts.
+  | "property_line"
   | "enquiry_message"
   | "valuation_property"
   | "valuation_range"
   | "valuation_midpoint"
+  | "valuation_final"
+  | "valuation_initial_range"
+  | "advisor_notes"
+  | "verification_code"
+  | "contact_url"
+  | "insights_url"
   | "viewing_time"
   | "viewing_location"
   | "viewing_duration"
-  | "unsubscribe_url";
+  | "confirm_url"
+  | "unsubscribe_url"
+  | "staff_name"
+  | "sender_name"
+  | "staff_role"
+  | "password_url"
+  | "link_valid_days"
+  | "minutes_waiting"
+  | "enquiry_url"
+  | "permit_number"
+  | "permit_expires_on"
+  | "days_to_expiry"
+  | "properties_url"
+  | "listings_assigned"
+  | "queue_url"
+  | "form_name"
+  | "form_surface"
+  | "source_path"
+  | "responses_url"
+  // Block tokens: a whole pre-built panel, not a word. See `kind`.
+  | "valuation_range_panel"
+  | "valuation_report_panel"
+  | "listing_references"
+  | "form_answers";
 
 /**
  * `shared` tokens describe a lead and are offered in every asset. `system`
@@ -49,14 +79,33 @@ export type TokenName =
  */
 export type TokenScope = "shared" | "system";
 
+/**
+ * What a token stands for once rendered.
+ *
+ *  · `text`  — words, dropped into a sentence.
+ *  · `url`   — an address. Also text, but the only kind the rich-text editor
+ *              offers as the target of a link or a button.
+ *  · `block` — a pre-built panel: the valuation figure, the table of form
+ *              answers. It is drawn by the same code the built-in email uses,
+ *              so an editor who rewrites the words around it keeps the panel.
+ *              Placed on a line of its own; its plain-text part is a few lines.
+ */
+export type TokenKind = "text" | "url" | "block";
+
 export type TokenDef = {
   name: TokenName;
   label: string;
-  /** Shown in the editor's preview so copy can be judged in context. */
+  /** Shown in the editor so copy can be judged in context. */
   sample: string;
-  /** Used when the real value is absent at send time. */
+  /**
+   * Used when the real value is absent at send time. An empty fallback makes
+   * the token vanish — and a paragraph left with nothing in it is dropped from
+   * a system email, which is how "For BAZ-AD-04891 · 3-bed" disappears from an
+   * enquiry that never named a property.
+   */
   fallback: string;
   scope: TokenScope;
+  kind: TokenKind;
 };
 
 export const TOKENS: readonly TokenDef[] = [
@@ -66,6 +115,7 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "Amira",
     fallback: "there",
     scope: "shared",
+    kind: "text",
   },
   {
     name: "lead_name",
@@ -73,6 +123,7 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "Amira Haddad",
     fallback: "there",
     scope: "shared",
+    kind: "text",
   },
   {
     name: "property_reference",
@@ -80,6 +131,7 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "BAZ-AD-04891",
     fallback: "your enquiry",
     scope: "shared",
+    kind: "text",
   },
   {
     name: "property_title",
@@ -87,6 +139,7 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "3-bed on Al Reem Island",
     fallback: "the property you asked about",
     scope: "shared",
+    kind: "text",
   },
   {
     name: "advisor_name",
@@ -94,6 +147,7 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "Khalid Al Zaabi",
     fallback: "your Bazar advisor",
     scope: "shared",
+    kind: "text",
   },
   {
     name: "advisor_phone",
@@ -101,13 +155,23 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "+971 54 737 0776",
     fallback: "the number in my signature",
     scope: "shared",
+    kind: "text",
   },
   {
     name: "site_url",
     label: "Site URL",
-    sample: "bazar.ae",
-    fallback: "bazar.ae",
+    sample: "https://www.bazarrealestate.ae",
+    fallback: "https://www.bazarrealestate.ae",
     scope: "shared",
+    kind: "url",
+  },
+  {
+    name: "property_line",
+    label: "Property line (only when a listing was named)",
+    sample: "For BAZ-AD-04891 · 3-bed on Al Reem Island",
+    fallback: "",
+    scope: "system",
+    kind: "text",
   },
   {
     name: "enquiry_message",
@@ -115,6 +179,7 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "Is the 3-bed still available for a September move?",
     fallback: "your message",
     scope: "system",
+    kind: "text",
   },
   {
     name: "valuation_property",
@@ -122,6 +187,7 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "Marina Heights · Al Reem Island",
     fallback: "your property",
     scope: "system",
+    kind: "text",
   },
   {
     name: "valuation_range",
@@ -129,13 +195,64 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "AED 2.1M – AED 2.6M",
     fallback: "the range in your report",
     scope: "system",
+    kind: "text",
   },
   {
     name: "valuation_midpoint",
-    label: "Instant valuation midpoint",
+    label: "Valuation midpoint",
     sample: "AED 2.3M",
     fallback: "the midpoint in your report",
     scope: "system",
+    kind: "text",
+  },
+  {
+    name: "valuation_final",
+    label: "Refined valuation",
+    sample: "AED 2.45M",
+    fallback: "the figure in your report",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "valuation_initial_range",
+    label: "Initial instant range (only if there was one)",
+    sample: "AED 2.1M–AED 2.6M",
+    fallback: "",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "advisor_notes",
+    label: "Advisor's notes (only if written)",
+    sample:
+      "Two recent sales on the same floor closed at AED 2.4M and AED 2.5M.",
+    fallback: "",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "verification_code",
+    label: "One-time code",
+    sample: "482913",
+    fallback: "the code on screen",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "contact_url",
+    label: "Contact page link",
+    sample: "https://www.bazarrealestate.ae/contact",
+    fallback: "https://www.bazarrealestate.ae/contact",
+    scope: "system",
+    kind: "url",
+  },
+  {
+    name: "insights_url",
+    label: "Insights page link",
+    sample: "https://www.bazarrealestate.ae/insights",
+    fallback: "https://www.bazarrealestate.ae/insights",
+    scope: "system",
+    kind: "url",
   },
   {
     name: "viewing_time",
@@ -143,6 +260,7 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "Thursday 4 September, 4:30 pm",
     fallback: "the time we agreed",
     scope: "system",
+    kind: "text",
   },
   {
     name: "viewing_location",
@@ -150,6 +268,7 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "Marina Heights lobby, Al Reem Island",
     fallback: "the meeting point we sent you",
     scope: "system",
+    kind: "text",
   },
   {
     name: "viewing_duration",
@@ -157,17 +276,201 @@ export const TOKENS: readonly TokenDef[] = [
     sample: "45 minutes",
     fallback: "about 45 minutes",
     scope: "system",
+    kind: "text",
+  },
+  {
+    name: "confirm_url",
+    label: "Confirm subscription link",
+    sample: "https://www.bazarrealestate.ae/newsletter/confirm/9f2c…",
+    fallback: "https://www.bazarrealestate.ae",
+    scope: "system",
+    kind: "url",
   },
   {
     name: "unsubscribe_url",
     label: "Unsubscribe link",
-    sample: "bazar.ae/newsletter/unsubscribe?t=…",
-    fallback: "bazar.ae",
+    sample: "https://www.bazarrealestate.ae/newsletter/unsubscribe/9f2c…",
+    fallback: "https://www.bazarrealestate.ae",
     scope: "system",
+    kind: "url",
+  },
+  {
+    name: "staff_name",
+    label: "Staff member's first name",
+    sample: "Layla",
+    fallback: "there",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "sender_name",
+    label: "Who sent it",
+    sample: "Omar Farouk",
+    fallback: "An administrator",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "staff_role",
+    label: "Role",
+    sample: "editor",
+    fallback: "a team member",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "password_url",
+    label: "Set-password link",
+    sample: "https://www.bazarrealestate.ae/staff-invite?token=…",
+    fallback: "https://www.bazarrealestate.ae/forgot-password",
+    scope: "system",
+    kind: "url",
+  },
+  {
+    name: "link_valid_days",
+    label: "Days the link stays valid",
+    sample: "14",
+    fallback: "a few",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "minutes_waiting",
+    label: "Minutes unassigned",
+    sample: "60",
+    fallback: "over 60",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "enquiry_url",
+    label: "Enquiry link (admin)",
+    sample: "https://www.bazarrealestate.ae/admin/enquiries/5d1e…",
+    fallback: "https://www.bazarrealestate.ae/admin/enquiries",
+    scope: "system",
+    kind: "url",
+  },
+  {
+    name: "permit_number",
+    label: "Permit number",
+    sample: "71220458",
+    fallback: "the permit",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "permit_expires_on",
+    label: "Permit expiry date",
+    sample: "2026-10-14",
+    fallback: "soon",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "days_to_expiry",
+    label: "Days to expiry",
+    sample: "30",
+    fallback: "a few",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "properties_url",
+    label: "Properties list link (admin)",
+    sample: "https://www.bazarrealestate.ae/admin/properties?status=published",
+    fallback: "https://www.bazarrealestate.ae/admin/properties",
+    scope: "system",
+    kind: "url",
+  },
+  {
+    name: "listings_assigned",
+    label: "Listings assigned (\"3 listings\")",
+    sample: "3 listings",
+    fallback: "new listings",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "queue_url",
+    label: "My queue link (admin)",
+    sample: "https://www.bazarrealestate.ae/admin/properties?assigned=me",
+    fallback: "https://www.bazarrealestate.ae/admin/properties",
+    scope: "system",
+    kind: "url",
+  },
+  {
+    name: "form_name",
+    label: "Form name",
+    sample: "Mortgage pre-approval",
+    fallback: "A form",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "form_surface",
+    label: "Where the form sits",
+    sample: "Mortgage calculator",
+    fallback: "Website",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "source_path",
+    label: "Page it was sent from (only when known)",
+    sample: "/tools/mortgage",
+    fallback: "",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "responses_url",
+    label: "All responses link (admin)",
+    sample: "https://www.bazarrealestate.ae/admin/forms/mortgage_preapproval",
+    fallback: "https://www.bazarrealestate.ae/admin/forms",
+    scope: "system",
+    kind: "url",
+  },
+  {
+    name: "valuation_range_panel",
+    label: "Instant range panel",
+    sample: "[Instant range · AED 2.1M – AED 2.6M]",
+    fallback: "",
+    scope: "system",
+    kind: "block",
+  },
+  {
+    name: "valuation_report_panel",
+    label: "Refined valuation panel",
+    sample: "[Refined valuation · AED 2.45M]",
+    fallback: "",
+    scope: "system",
+    kind: "block",
+  },
+  {
+    name: "listing_references",
+    label: "List of listing references",
+    sample: "· BAZ-AD-04891\n· BAZ-AD-04902",
+    fallback: "",
+    scope: "system",
+    kind: "block",
+  },
+  {
+    name: "form_answers",
+    label: "Table of answers",
+    sample: "Name: Amira Haddad\nEmail: amira@example.com",
+    fallback: "",
+    scope: "system",
+    kind: "block",
   },
 ] as const;
 
 const TOKEN_NAMES = new Set<string>(TOKENS.map((t) => t.name));
+const TOKEN_BY_NAME = new Map<string, TokenDef>(TOKENS.map((t) => [t.name, t]));
+
+/** The definition for a known token. */
+export function tokenDef(name: TokenName): TokenDef {
+  return TOKEN_BY_NAME.get(name)!;
+}
 
 /** Tokens every asset may use, system or hand-written. */
 export const SHARED_TOKENS: readonly TokenDef[] = TOKENS.filter(
@@ -181,10 +484,13 @@ export const SHARED_TOKENS: readonly TokenDef[] = TOKENS.filter(
  */
 const TOKEN_RE = /\{\{\s*([a-z_]+)\s*\}\}/i;
 
+/** A fresh global copy of the token pattern, for replace/matchAll. */
+export function tokenPattern(): RegExp {
+  return new RegExp(TOKEN_RE, "gi");
+}
+
 function allTokens(body: string): string[] {
-  return [...body.matchAll(new RegExp(TOKEN_RE, "gi"))].map((m) =>
-    m[1].toLowerCase(),
-  );
+  return [...body.matchAll(tokenPattern())].map((m) => m[1].toLowerCase());
 }
 
 export function isTokenName(value: string): value is TokenName {
@@ -218,15 +524,28 @@ export function usedTokens(body: string): TokenName[] {
 
 export type TokenContext = Partial<Record<TokenName, string | null>>;
 
+function hasValue(v: string | null | undefined): v is string {
+  return v !== undefined && v !== null && v.trim() !== "";
+}
+
 /**
  * Known tokens the body uses that have no value in this context — i.e. the
  * ones that will render as a fallback. The composer surfaces these.
  */
 export function missingTokens(body: string, ctx: TokenContext): TokenName[] {
-  return usedTokens(body).filter((t) => {
-    const v = ctx[t];
-    return v === undefined || v === null || v.trim() === "";
-  });
+  return usedTokens(body).filter((t) => !hasValue(ctx[t]));
+}
+
+/**
+ * The value a token renders as: its context value, or its fallback. Unknown
+ * names render as nothing.
+ */
+export function tokenValue(name: string, ctx: TokenContext): string {
+  const key = name.toLowerCase();
+  if (!isTokenName(key)) return "";
+  const value = ctx[key];
+  if (hasValue(value)) return value;
+  return TOKEN_BY_NAME.get(key)?.fallback ?? "";
 }
 
 /**
@@ -236,14 +555,9 @@ export function missingTokens(body: string, ctx: TokenContext): TokenName[] {
  * sentence embarrasses less than `{{propery_ref}}`.
  */
 export function renderTokens(body: string, ctx: TokenContext): string {
-  return body.replace(new RegExp(TOKEN_RE, "gi"), (_match, rawName: string) => {
-    const name = rawName.toLowerCase();
-    if (!isTokenName(name)) return "";
-    const value = ctx[name];
-    if (value !== undefined && value !== null && value.trim() !== "")
-      return value;
-    return TOKENS.find((t) => t.name === name)?.fallback ?? "";
-  });
+  return body.replace(tokenPattern(), (_match, rawName: string) =>
+    tokenValue(rawName, ctx),
+  );
 }
 
 /** Preview substitution using the sample values, for the editor. */

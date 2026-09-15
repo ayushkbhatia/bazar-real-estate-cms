@@ -221,6 +221,9 @@ export async function createEnquiry(
       message: data.message,
       propertyReference,
       propertyTitle,
+      // A mortgage lead gets the mortgage desk's acknowledgement once one is
+      // published, and the general one until then.
+      source: data.source,
     });
     await sendEmail({
       to: data.email,

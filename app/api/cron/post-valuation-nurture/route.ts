@@ -19,9 +19,9 @@ import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import {
-  valuationNurtureDay7Template,
-  valuationNurtureDay30Template,
-} from "@/lib/email-templates";
+  valuationNurtureDay7Email,
+  valuationNurtureDay30Email,
+} from "@/lib/content-assets/system-emails";
 import type { Database } from "@/db/types";
 
 function adminClient() {
@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
         .is("nurture_day7_at", null);
       for (const r of data ?? []) {
         if (!r.owner_email) continue;
-        const tpl = valuationNurtureDay7Template({
+        const tpl = await valuationNurtureDay7Email({
           name: r.owner_name ?? "there",
           valuationId: r.id,
           estimateMid: r.estimate_mid_aed,
@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
         .is("nurture_day30_at", null);
       for (const r of data ?? []) {
         if (!r.owner_email) continue;
-        const tpl = valuationNurtureDay30Template({
+        const tpl = await valuationNurtureDay30Email({
           name: r.owner_name ?? "there",
           valuationId: r.id,
         });

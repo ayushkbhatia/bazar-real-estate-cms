@@ -14,6 +14,8 @@ export type SendEmailInput = {
   from?: string;
   /** Override the reply-to (defaults to RESEND_REPLY_TO or hello@bazar.ae). */
   replyTo?: string;
+  /** Files sent with the message — the viewing confirmation's .ics invite. */
+  attachments?: { filename: string; content: string; contentType?: string }[];
 };
 
 export type SendEmailResult =
@@ -61,6 +63,18 @@ export function explainResendError(message: string): string {
   return message;
 }
 
+/**
+ * The From and Reply-To an email will carry, for the admin preview's inbox
+ * header. Same fallbacks `sendEmail` applies, so the preview cannot claim a
+ * sender the real message will not have.
+ */
+export function emailSender(): { from: string; replyTo: string } {
+  return {
+    from: env.RESEND_FROM_ADDRESS ?? DEFAULT_FROM,
+    replyTo: env.RESEND_REPLY_TO ?? DEFAULT_REPLY_TO,
+  };
+}
+
 export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
   const resend = getClient();
   if (!resend) {
@@ -81,6 +95,15 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
       subject: input.subject,
       text: input.text,
       html: input.html,
+      ...(input.attachments?.length
+        ? {
+            attachments: input.attachments.map((a) => ({
+              filename: a.filename,
+              content: Buffer.from(a.content, "utf8"),
+              ...(a.contentType ? { contentType: a.contentType } : {}),
+            })),
+          }
+        : {}),
     });
     if (result.error) {
       console.warn("[email] Resend error", result.error.message);

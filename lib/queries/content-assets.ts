@@ -31,6 +31,11 @@ export type ContentAssetRow = {
    * (migration 0117). Null on everything an advisor writes by hand.
    */
   system_key: SystemAssetKey | null;
+  /**
+   * `html` on a system email saved from the rich-text editor; `text` on
+   * everything else (migration 0127).
+   */
+  body_format: "text" | "html";
   status: ContentAssetStatus;
   position: number;
   created_at: string;
@@ -39,7 +44,7 @@ export type ContentAssetRow = {
 };
 
 const FIELDS =
-  "id, kind, slug, name, category, subject, body, notes, follow_up_after_days, next_asset_id, system_key, status, position, created_at, updated_at, deleted_at";
+  "id, kind, slug, name, category, subject, body, body_format, notes, follow_up_after_days, next_asset_id, system_key, status, position, created_at, updated_at, deleted_at";
 
 export async function listContentAssets(opts?: {
   kind?: ContentAssetKind;
@@ -103,6 +108,29 @@ export async function listPublishedAssets(
   } catch (error) {
     console.error("[listPublishedAssets]", error);
     return [];
+  }
+}
+
+/**
+ * The row behind one system email, whatever its status. Null when the row is
+ * missing — the migration that seeds it has not run here — or unreadable.
+ */
+export async function getSystemAssetRow(
+  key: SystemAssetKey,
+): Promise<ContentAssetRow | null> {
+  if (!isSupabaseConfigured) return null;
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("content_assets")
+      .select(FIELDS)
+      .eq("system_key", key)
+      .maybeSingle();
+    if (error) throw error;
+    return (data as ContentAssetRow | null) ?? null;
+  } catch (error) {
+    console.error("[getSystemAssetRow]", error);
+    return null;
   }
 }
 

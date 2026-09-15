@@ -1,9 +1,23 @@
 /**
  * Plain HTML + text email templates. Kept dependency-free for now;
  * if we add @react-email later they become components.
+ *
+ * Every template takes an optional `brand` last. It is the email design an
+ * editor set at /admin/content-assets/design — logo, colours, footer — and it
+ * defaults to the look these emails had before that page existed, so a caller
+ * that passes nothing sends exactly what it always did. The send path passes
+ * the stored design through lib/content-assets/system-emails.ts; nothing
+ * outside that module should need to.
  */
 
 import { env } from "@/lib/env";
+import { mediaPublicUrl } from "@/lib/media";
+import {
+  DEFAULT_EMAIL_BRAND,
+  type EmailBrand,
+} from "@/lib/content-assets/email-brand";
+
+type Rendered = { subject: string; text: string; html: string };
 
 function siteUrl(): string {
   return (
@@ -17,34 +31,84 @@ function escape(s: string): string {
   );
 }
 
-function shell(bodyHtml: string): string {
+/** The logo's address, rebuilt from its storage key when it has one. */
+export function emailLogoUrl(brand: EmailBrand): string | null {
+  if (brand.logoMediaKey) {
+    const url = mediaPublicUrl(brand.logoMediaKey);
+    if (url) return url;
+  }
+  return brand.logoUrl || null;
+}
+
+function header(brand: EmailBrand): string {
+  const align = brand.headerAlign === "center" ? "center" : "left";
+  const logo = brand.headerStyle === "logo" ? emailLogoUrl(brand) : null;
+  if (logo) {
+    const margin = align === "center" ? "0 auto" : "0";
+    return `<div style="margin-bottom:28px;text-align:${align}"><img src="${escape(logo)}" alt="${escape(brand.logoAlt)}" width="${brand.logoWidth}" style="display:block;margin:${margin};width:${brand.logoWidth}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none"></div>`;
+  }
+  return `<div style="font-family:Georgia,serif;font-style:italic;font-size:22px;letter-spacing:-0.01em;margin-bottom:24px;color:${brand.textColor};text-align:${align}">${escape(brand.wordmark)}${
+    brand.tagline
+      ? ` <span style="font-family:'Geist',sans-serif;font-style:normal;font-size:12px;letter-spacing:0.05em;color:${brand.mutedColor}">${escape(brand.tagline)}</span>`
+      : ""
+  }</div>`;
+}
+
+function footer(brand: EmailBrand): string {
+  const lines = brand.footerText
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map(escape);
+  const href = brand.footerLinkUrl || siteUrl();
+  const link = brand.footerLinkLabel
+    ? `<a href="${escape(href)}" style="color:${brand.mutedColor}">${escape(brand.footerLinkLabel)}</a>`
+    : "";
+  const parts = [...lines, link].filter(Boolean).join("<br>");
+  return `<div style="margin-top:32px;padding-top:24px;border-top:1px solid #E5E5DF;font-size:12px;color:${brand.mutedColor};line-height:1.5">
+        ${parts}
+      </div>`;
+}
+
+function shell(bodyHtml: string, brand: EmailBrand = DEFAULT_EMAIL_BRAND): string {
   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
-<body style="margin:0;padding:0;background:#FAFAF6;color:#1B1A17;font-family:'Geist',ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55">
+<body style="margin:0;padding:0;background:${brand.backgroundColor};color:${brand.textColor};font-family:'Geist',ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55">
   <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width:540px;margin:0 auto;padding:24px">
     <tr><td>
-      <div style="font-family:Georgia,serif;font-style:italic;font-size:22px;letter-spacing:-0.01em;margin-bottom:24px;color:#1B1A17">Bazar <span style="font-family:'Geist',sans-serif;font-style:normal;font-size:12px;letter-spacing:0.05em;color:#99896e">· Abu Dhabi</span></div>
+      ${header(brand)}
       ${bodyHtml}
-      <div style="margin-top:32px;padding-top:24px;border-top:1px solid #E5E5DF;font-size:12px;color:#99896e;line-height:1.5">
-        Bazar Real Estate Brokerage LLC · ORN 28041 · Abu Dhabi, UAE<br>
-        <a href="${siteUrl()}" style="color:#99896e">bazar.ae</a>
-      </div>
+      ${footer(brand)}
     </td></tr>
   </table>
 </body></html>`;
 }
 
 /**
- * The branded wrapper and its escaper, exported for the system-asset
- * resolver in lib/content-assets/system.ts. An email the client rewrote in
+ * A primary call to action. `fill` overrides the brand colour for the one
+ * email whose button is a warning rather than an invitation.
+ */
+function button(
+  href: string,
+  label: string,
+  brand: EmailBrand,
+  fill?: string,
+): string {
+  return `<a href="${escape(href)}" style="display:inline-block;padding:10px 16px;background:${fill ?? brand.buttonColor};color:${fill ? "#fff" : brand.buttonTextColor};text-decoration:none;border-radius:6px;font-size:13px">${escape(label)}</a>`;
+}
+
+/**
+ * The branded wrapper and its helpers, exported for the system-asset renderer
+ * in lib/content-assets/system.ts. An email the client rewrote in
  * /admin/content-assets must arrive looking like the built-in one it
  * replaced — same header, footer and typography — not like a plain note.
  */
 export const emailShell = shell;
 export const escapeEmailHtml = escape;
 export const emailSiteUrl = siteUrl;
+export const emailButtonHtml = button;
 
 /**
- * Editor-authored copy → the body half of a branded email. A blank line
+ * Editor-authored plain text → the body half of a branded email. A blank line
  * starts a new paragraph; a single newline stays a line break, so the
  * indented "Listing: … / Where: …" blocks people write survive.
  */
@@ -59,12 +123,113 @@ export function proseEmailHtml(text: string): string {
     .join("");
 }
 
-export function enquiryReceivedTemplate(opts: {
-  name: string;
-  message: string;
-  propertyReference: string | null;
-  propertyTitle: string | null;
-}): { subject: string; text: string; html: string } {
+// ── Panels ────────────────────────────────────────────────────────────
+//
+// The pieces of an email that are more than prose. Each returns both parts,
+// and each is used twice: by the built-in template below, and as a block
+// token (`{{valuation_range_panel}}` …) inside a rewritten system email — so
+// an editor who changes every word around the valuation figure still sends
+// the same figure panel.
+
+export type EmailBlock = { html: string; text: string };
+
+export function valuationRangePanel(opts: {
+  lowAed: number;
+  midAed: number;
+  highAed: number;
+}): EmailBlock {
+  const range = `${formatAedShort(opts.lowAed)} – ${formatAedShort(opts.highAed)}`;
+  return {
+    html: `<div style="margin:24px 0;padding:20px 22px;background:#fff;border:1px solid #E5E5DF;border-radius:8px">
+      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#99896e">Instant range</div>
+      <div style="font-family:Georgia,serif;font-style:italic;font-size:30px;letter-spacing:-0.02em;color:#1B1A17;margin-top:6px">
+        ${escape(formatAedShort(opts.lowAed))} – ${escape(formatAedShort(opts.highAed))}
+      </div>
+      <div style="font-size:12px;color:#5a5a55;margin-top:6px">midpoint ${escape(formatAedShort(opts.midAed))}</div>
+    </div>`,
+    text: `  ${range}\n  (midpoint ${formatAedShort(opts.midAed)})`,
+  };
+}
+
+export function valuationReportPanel(opts: {
+  finalEstimateAed: number;
+  rangeLowAed: number | null;
+  rangeHighAed: number | null;
+}): EmailBlock {
+  const hasRange = opts.rangeLowAed != null && opts.rangeHighAed != null;
+  return {
+    html: `<div style="margin:24px 0;padding:24px;background:#1B1A17;border-radius:10px;color:#fff">
+      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#b0a48b">Refined valuation</div>
+      <div style="font-family:Georgia,serif;font-style:italic;font-size:44px;line-height:1.05;letter-spacing:-0.025em;margin-top:8px">
+        ${escape(formatAedShort(opts.finalEstimateAed))}
+      </div>
+      ${
+        hasRange
+          ? `<div style="font-size:12px;color:#b0a48b;margin-top:8px">Initial instant range ${escape(formatAedShort(opts.rangeLowAed!))}–${escape(formatAedShort(opts.rangeHighAed!))}</div>`
+          : ""
+      }
+    </div>`,
+    text:
+      `${formatAedShort(opts.finalEstimateAed)}` +
+      (hasRange
+        ? `\nInitial instant range was ${formatAedShort(opts.rangeLowAed!)}–${formatAedShort(opts.rangeHighAed!)}.`
+        : ""),
+  };
+}
+
+export function listingReferencesBlock(opts: {
+  count: number;
+  sampleReferences: string[];
+}): EmailBlock {
+  const sample = opts.sampleReferences.slice(0, 8);
+  const remainder = Math.max(0, opts.count - sample.length);
+  if (sample.length === 0) return { html: "", text: "" };
+  return {
+    html: `<ul style="margin:14px 0;padding-left:18px;font-size:13px;color:#32312d">
+          ${sample
+            .map(
+              (r) =>
+                `<li style="margin:2px 0"><span style="font-family:monospace">${escape(r)}</span></li>`,
+            )
+            .join("")}
+          ${remainder > 0 ? `<li style="margin:2px 0;color:#99896e">…and ${remainder} more</li>` : ""}
+        </ul>`,
+    text:
+      `References:\n${sample.map((r) => `  · ${r}`).join("\n")}` +
+      (remainder > 0 ? `\n  · …and ${remainder} more` : ""),
+  };
+}
+
+export function formAnswersBlock(answers: [string, string][]): EmailBlock {
+  const rows = answers.length
+    ? answers
+    : ([["(no answers)", "—"]] as [string, string][]);
+  return {
+    html: `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top:20px;background:#fff;border:1px solid #E5E5DF;border-radius:6px">
+      ${rows
+        .map(
+          ([label, value]) => `<tr>
+        <td style="padding:10px 14px;border-bottom:1px solid #F0F0EA;font-size:12px;color:#99896e;white-space:nowrap;vertical-align:top">${escape(label)}</td>
+        <td style="padding:10px 14px;border-bottom:1px solid #F0F0EA;font-size:14px;color:#32312d">${escape(value).replace(/\n/g, "<br>")}</td>
+      </tr>`,
+        )
+        .join("")}
+    </table>`,
+    text: rows.map(([label, value]) => `${label}: ${value}`).join("\n"),
+  };
+}
+
+// ── Templates ─────────────────────────────────────────────────────────
+
+export function enquiryReceivedTemplate(
+  opts: {
+    name: string;
+    message: string;
+    propertyReference: string | null;
+    propertyTitle: string | null;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const refLine = opts.propertyReference
     ? `For ${opts.propertyReference}${opts.propertyTitle ? ` · ${opts.propertyTitle}` : ""}`
     : "";
@@ -82,13 +247,16 @@ export function enquiryReceivedTemplate(opts: {
     `> ${opts.message.replace(/\n/g, "\n> ")}\n\n` +
     `— Bazar\n${siteUrl()}\n`;
 
-  const html = shell(`
+  const html = shell(
+    `
     <p>Hello ${escape(opts.name)},</p>
     <p>Thank you for getting in touch with Bazar.</p>
     ${refLine ? `<p style="font-size:13px;color:#5a5a55;margin-top:8px">${escape(refLine)}</p>` : ""}
     <p>One of our advisors will reach out within <strong>two hours during business hours</strong>, and by next morning otherwise.</p>
-    <p style="margin-top:20px;padding:12px 16px;background:#fff;border-left:3px solid #005777;font-style:italic;color:#32312d">${escape(opts.message).replace(/\n/g, "<br>")}</p>
-  `);
+    <p style="margin-top:20px;padding:12px 16px;background:#fff;border-left:3px solid ${brand.linkColor};font-style:italic;color:#32312d">${escape(opts.message).replace(/\n/g, "<br>")}</p>
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }
@@ -102,80 +270,66 @@ export function enquiryReceivedTemplate(opts: {
  * both linked below. Answers are included in full because the whole reason a
  * form has extra questions is that someone wants to read the answers.
  */
-export function formSubmissionTemplate(opts: {
-  formName: string;
-  surface: string;
-  formKey: string;
-  /** Ordered [label, value] pairs, already resolved for display. */
-  answers: [string, string][];
-  sourcePath: string | null;
-  enquiryId: string | null;
-}): { subject: string; text: string; html: string } {
+export function formSubmissionTemplate(
+  opts: {
+    formName: string;
+    surface: string;
+    formKey: string;
+    /** Ordered [label, value] pairs, already resolved for display. */
+    answers: [string, string][];
+    sourcePath: string | null;
+    enquiryId: string | null;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const subject = `New ${opts.formName} submission · ${opts.surface}`;
-  const manageUrl = `${siteUrl()}/admin/forms/${opts.formKey}`;
-  const enquiryUrl = opts.enquiryId
-    ? `${siteUrl()}/admin/enquiries/${opts.enquiryId}`
-    : null;
-
-  const rows = opts.answers.length
-    ? opts.answers
-    : ([["(no answers)", "—"]] as [string, string][]);
+  const manageUrl = formResponsesUrl(opts.formKey);
+  const enquiryUrl = opts.enquiryId ? adminEnquiryUrl(opts.enquiryId) : null;
+  const answers = formAnswersBlock(opts.answers);
 
   const text =
-    `${opts.formName} — ${opts.surface}
-` +
-    (opts.sourcePath ? `Sent from ${opts.sourcePath}
-` : "") +
+    `${opts.formName} — ${opts.surface}\n` +
+    (opts.sourcePath ? `Sent from ${opts.sourcePath}\n` : "") +
+    `\n` +
+    answers.text +
+    `\n\n` +
+    (enquiryUrl ? `Open the enquiry: ${enquiryUrl}\n` : "") +
+    `All responses: ${manageUrl}\n\n` +
+    `— Bazar\n`;
+
+  const html = shell(
     `
-` +
-    rows.map(([label, value]) => `${label}: ${value}`).join("\n") +
-    `
-
-` +
-    (enquiryUrl ? `Open the enquiry: ${enquiryUrl}
-` : "") +
-    `All responses: ${manageUrl}
-
-` +
-    `— Bazar
-`;
-
-  const html = shell(`
     <p style="margin:0 0 4px"><strong>${escape(opts.formName)}</strong></p>
-    <p style="margin:0;font-size:13px;color:#99896e">${escape(opts.surface)}${
+    <p style="margin:0;font-size:13px;color:${brand.mutedColor}">${escape(opts.surface)}${
       opts.sourcePath ? ` · ${escape(opts.sourcePath)}` : ""
     }</p>
-    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top:20px;background:#fff;border:1px solid #E5E5DF;border-radius:6px">
-      ${rows
-        .map(
-          ([label, value]) => `<tr>
-        <td style="padding:10px 14px;border-bottom:1px solid #F0F0EA;font-size:12px;color:#99896e;white-space:nowrap;vertical-align:top">${escape(label)}</td>
-        <td style="padding:10px 14px;border-bottom:1px solid #F0F0EA;font-size:14px;color:#32312d">${escape(value).replace(/\n/g, "<br>")}</td>
-      </tr>`,
-        )
-        .join("")}
-    </table>
+    ${answers.html}
     <p style="margin-top:20px;font-size:13px">
-      ${enquiryUrl ? `<a href="${enquiryUrl}" style="color:#005777">Open the enquiry</a> · ` : ""}
-      <a href="${manageUrl}" style="color:#005777">All responses</a>
+      ${enquiryUrl ? `<a href="${enquiryUrl}" style="color:${brand.linkColor}">Open the enquiry</a> · ` : ""}
+      <a href="${manageUrl}" style="color:${brand.linkColor}">All responses</a>
     </p>
-  `);
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }
 
-export function staffReplyTemplate(opts: {
-  name: string;
-  body: string;
-  staffDisplayName: string | null;
-  propertyReference: string | null;
-  /**
-   * Overrides the derived subject. Set when the advisor edited the subject in
-   * the composer, or when it came from a content asset — a blank string falls
-   * back to the derived one rather than sending an empty subject line.
-   */
-  subject?: string | null;
-}): { subject: string; text: string; html: string } {
+export function staffReplyTemplate(
+  opts: {
+    name: string;
+    body: string;
+    staffDisplayName: string | null;
+    propertyReference: string | null;
+    /**
+     * Overrides the derived subject. Set when the advisor edited the subject in
+     * the composer, or when it came from a content asset — a blank string falls
+     * back to the derived one rather than sending an empty subject line.
+     */
+    subject?: string | null;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const derived = opts.propertyReference
     ? `Re: ${opts.propertyReference}`
     : "From your Bazar advisor";
@@ -188,11 +342,14 @@ export function staffReplyTemplate(opts: {
 
   const text = `Hello ${opts.name},\n\n${opts.body}\n\n${sig}\n${siteUrl()}\n`;
 
-  const html = shell(`
+  const html = shell(
+    `
     <p>Hello ${escape(opts.name)},</p>
     <p style="white-space:pre-line">${escape(opts.body)}</p>
     <p style="margin-top:24px;color:#5a5a55">${escape(sig)}</p>
-  `);
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }
@@ -203,47 +360,98 @@ export function formatAedShort(n: number): string {
   return `AED ${n.toLocaleString()}`;
 }
 
+/** Admin deep links. Shared by the templates and their token contexts. */
+export function adminEnquiryUrl(enquiryId: string): string {
+  return `${siteUrl()}/admin/enquiries/${enquiryId}`;
+}
+export function formResponsesUrl(formKey: string): string {
+  return `${siteUrl()}/admin/forms/${formKey}`;
+}
+
 /**
  * Auto-acknowledgement after the owner submits a valuation request.
  * Shows the instant range; the *refined* number lands in a separate email
  * from the advisor (valuationReportTemplate, below) within 24 hours.
  */
-export function valuationReceivedTemplate(opts: {
-  name: string;
-  estimateLowAed: number;
-  estimateMidAed: number;
-  estimateHighAed: number;
-  addressLine: string | null;
-  buildingName: string | null;
-}): { subject: string; text: string; html: string } {
+export function valuationReceivedTemplate(
+  opts: {
+    name: string;
+    estimateLowAed: number;
+    estimateMidAed: number;
+    estimateHighAed: number;
+    addressLine: string | null;
+    buildingName: string | null;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const propertyLine =
     [opts.buildingName, opts.addressLine].filter(Boolean).join(" · ") ||
     "your property";
   const subject = `Your Bazar valuation is in review`;
+  const panel = valuationRangePanel({
+    lowAed: opts.estimateLowAed,
+    midAed: opts.estimateMidAed,
+    highAed: opts.estimateHighAed,
+  });
 
   const text =
     `Hello ${opts.name},\n\n` +
     `Thanks for sharing the details on ${propertyLine}.\n\n` +
     `Instant range based on the inputs you provided:\n` +
-    `  ${formatAedShort(opts.estimateLowAed)} – ${formatAedShort(opts.estimateHighAed)}\n` +
-    `  (midpoint ${formatAedShort(opts.estimateMidAed)})\n\n` +
+    `${panel.text}\n\n` +
     `A senior advisor will refine this and send you a final number ` +
     `within 24 hours. There's no obligation — and no listing pressure.\n\n` +
     `— Bazar\n${siteUrl()}\n`;
 
-  const html = shell(`
+  const html = shell(
+    `
     <p>Hello ${escape(opts.name)},</p>
     <p>Thanks for sharing the details on <strong>${escape(propertyLine)}</strong>.</p>
-    <div style="margin:24px 0;padding:20px 22px;background:#fff;border:1px solid #E5E5DF;border-radius:8px">
-      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#99896e">Instant range</div>
-      <div style="font-family:Georgia,serif;font-style:italic;font-size:30px;letter-spacing:-0.02em;color:#1B1A17;margin-top:6px">
-        ${escape(formatAedShort(opts.estimateLowAed))} – ${escape(formatAedShort(opts.estimateHighAed))}
-      </div>
-      <div style="font-size:12px;color:#5a5a55;margin-top:6px">midpoint ${escape(formatAedShort(opts.estimateMidAed))}</div>
-    </div>
+    ${panel.html}
     <p>A senior advisor will refine this and send you a final number within <strong>24 hours</strong>. There&rsquo;s no obligation &mdash; and no listing pressure.</p>
-  `);
+  `,
+    brand,
+  );
 
+  return { subject, text, html };
+}
+
+/**
+ * The one-time code that unlocks the full valuation report on
+ * /tools/valuation. The code is the whole point of the email, so it is set
+ * large and in a monospace face that does not confuse 0 with O.
+ */
+export function valuationCodeTemplate(
+  opts: { code: string },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const subject = `Your Bazar valuation code: ${opts.code}`;
+  const text = `Your one-time code is ${opts.code}. It expires in 10 minutes.\n\n— Bazar Real Estate`;
+  const html = shell(
+    `
+    <p style="font-size:14px">Your one-time code:</p>
+    <p style="font-family:'Courier New',monospace;font-size:28px;letter-spacing:6px;color:${brand.textColor};margin:12px 0">${escape(opts.code)}</p>
+    <p style="font-size:13px;color:${brand.mutedColor}">Expires in 10 minutes. If you didn't request this, you can ignore it.</p>
+  `,
+    brand,
+  );
+  return { subject, text, html };
+}
+
+/** Sent once the owner has entered the code: the full report is coming. */
+export function valuationReportRequestedTemplate(
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const subject = "Your Bazar valuation report is on the way";
+  const text = `Thanks — a Bazar advisor will review the figures and send you the full report within 24 hours.\n\n— Bazar Real Estate`;
+  const html = shell(
+    `
+    <p style="font-size:14px">Thanks for verifying.</p>
+    <p style="font-size:14px;line-height:1.6">A Bazar advisor will review your property details, sense-check the instant estimate against the latest comparables, and send you the full advisor-prepared report within 24 hours.</p>
+    <p style="font-size:13px;color:${brand.mutedColor}">Questions in the meantime? Reply to this email.</p>
+  `,
+    brand,
+  );
   return { subject, text, html };
 }
 
@@ -252,16 +460,19 @@ export function valuationReceivedTemplate(opts: {
  * the advisor clicks "Send report"; carries the final adjusted number
  * plus an optional advisor note.
  */
-export function valuationReportTemplate(opts: {
-  name: string;
-  finalEstimateAed: number;
-  rangeLowAed: number | null;
-  rangeHighAed: number | null;
-  advisorName: string | null;
-  advisorNotes: string | null;
-  addressLine: string | null;
-  buildingName: string | null;
-}): { subject: string; text: string; html: string } {
+export function valuationReportTemplate(
+  opts: {
+    name: string;
+    finalEstimateAed: number;
+    rangeLowAed: number | null;
+    rangeHighAed: number | null;
+    advisorName: string | null;
+    advisorNotes: string | null;
+    addressLine: string | null;
+    buildingName: string | null;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const propertyLine =
     [opts.buildingName, opts.addressLine].filter(Boolean).join(" · ") ||
     "your property";
@@ -277,6 +488,8 @@ export function valuationReportTemplate(opts: {
     ? `— ${opts.advisorName}, Senior Advisor, Bazar Real Estate`
     : "— The Bazar Real Estate advisory team";
 
+  const panel = valuationReportPanel(opts);
+
   const text =
     `Hello ${opts.name},\n\n` +
     `Here is the refined valuation for ${propertyLine}.\n\n` +
@@ -286,43 +499,39 @@ export function valuationReportTemplate(opts: {
     `If you'd like to discuss the figure or what a listing would look like, reply to this email or book a call at ${siteUrl()}/contact.\n\n` +
     `${sig}\n${siteUrl()}\n`;
 
-  const html = shell(`
+  const html = shell(
+    `
     <p>Hello ${escape(opts.name)},</p>
     <p>Here is the refined valuation for <strong>${escape(propertyLine)}</strong>.</p>
-    <div style="margin:24px 0;padding:24px;background:#1B1A17;border-radius:10px;color:#fff">
-      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#b0a48b">Refined valuation</div>
-      <div style="font-family:Georgia,serif;font-style:italic;font-size:44px;line-height:1.05;letter-spacing:-0.025em;margin-top:8px">
-        ${escape(formatAedShort(opts.finalEstimateAed))}
-      </div>
-      ${
-        opts.rangeLowAed != null && opts.rangeHighAed != null
-          ? `<div style="font-size:12px;color:#b0a48b;margin-top:8px">Initial instant range ${escape(formatAedShort(opts.rangeLowAed))}–${escape(formatAedShort(opts.rangeHighAed))}</div>`
-          : ""
-      }
-    </div>
+    ${panel.html}
     ${
       opts.advisorNotes
-        ? `<div style="margin:20px 0;padding:16px 18px;background:#fff;border-left:3px solid #005777;color:#32312d;font-style:italic;white-space:pre-line">${escape(opts.advisorNotes)}</div>`
+        ? `<div style="margin:20px 0;padding:16px 18px;background:#fff;border-left:3px solid ${brand.linkColor};color:#32312d;font-style:italic;white-space:pre-line">${escape(opts.advisorNotes)}</div>`
         : ""
     }
-    <p>If you&rsquo;d like to discuss the figure or what a listing would look like, just reply to this email or book a call at <a href="${siteUrl()}/contact" style="color:#005777">${siteUrl()}/contact</a>.</p>
+    <p>If you&rsquo;d like to discuss the figure or what a listing would look like, just reply to this email or book a call at <a href="${siteUrl()}/contact" style="color:${brand.linkColor}">${siteUrl()}/contact</a>.</p>
     <p style="margin-top:24px;color:#5a5a55">${escape(sig)}</p>
-  `);
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }
 
 // ── Deal-room stage change emails (Phase 8 · G8) ──────────────────────
 
-export function enquiryEscalationTemplate(opts: {
-  managerName: string | null;
-  leadName: string;
-  propertyReference: string | null;
-  enquiryId: string;
-  minutesElapsed: number;
-}): { subject: string; text: string; html: string } {
+export function enquiryEscalationTemplate(
+  opts: {
+    managerName: string | null;
+    leadName: string;
+    propertyReference: string | null;
+    enquiryId: string;
+    minutesElapsed: number;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const subject = `Escalation · enquiry from ${opts.leadName} unassigned ${opts.minutesElapsed} min`;
-  const url = `${siteUrl()}/admin/enquiries/${opts.enquiryId}`;
+  const url = adminEnquiryUrl(opts.enquiryId);
   const greeting = opts.managerName ? `Hi ${opts.managerName}` : "Hi";
   const refLine = opts.propertyReference
     ? `Property: ${opts.propertyReference}.`
@@ -335,23 +544,29 @@ export function enquiryEscalationTemplate(opts: {
     `Open the conversation: ${url}\n\n` +
     `— Bazar lead engine\n`;
 
-  const html = shell(`
+  const html = shell(
+    `
     <p>${escape(greeting)},</p>
     <p>An enquiry from <strong>${escape(opts.leadName)}</strong> has been waiting <strong>${opts.minutesElapsed} minutes</strong> without an assigned advisor.</p>
     ${opts.propertyReference ? `<p style="font-size:13px;color:#5a5a55">Property: <span style="font-family:monospace">${escape(opts.propertyReference)}</span></p>` : ""}
-    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#B33A2A;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open enquiry</a></p>
-    <p style="margin-top:18px;font-size:12px;color:#99896e">Bazar lead engine</p>
-  `);
+    <p style="margin-top:22px">${button(url, "Open enquiry", brand, "#B33A2A")}</p>
+    <p style="margin-top:18px;font-size:12px;color:${brand.mutedColor}">Bazar lead engine</p>
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }
 
 /** Nurture email at T+7 days post-valuation. */
-export function valuationNurtureDay7Template(opts: {
-  name: string;
-  valuationId: string;
-  estimateMid: number | null;
-}): { subject: string; text: string; html: string } {
+export function valuationNurtureDay7Template(
+  opts: {
+    name: string;
+    valuationId: string;
+    estimateMid: number | null;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const subject = "How's the valuation landing?";
   const url = `${siteUrl()}/contact`;
   const estLine = opts.estimateMid
@@ -366,21 +581,27 @@ export function valuationNurtureDay7Template(opts: {
     `point — reply to this thread.\n\n` +
     `— Bazar\n${url}\n`;
 
-  const html = shell(`
+  const html = shell(
+    `
     <p>Hi ${escape(opts.name)},</p>
     <p>It's been a week since we sent your Bazar valuation. ${escape(estLine)}</p>
     <p>If you'd like to talk through next steps — listing strategy, targeted off-market introductions, or a re-cut at a different price point — reply to this thread.</p>
-    <p style="margin-top:20px;font-size:13px"><a href="${url}" style="color:#005777">Talk to an advisor →</a></p>
-  `);
+    <p style="margin-top:20px;font-size:13px"><a href="${url}" style="color:${brand.linkColor}">Talk to an advisor →</a></p>
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }
 
 /** Nurture email at T+30 days post-valuation. */
-export function valuationNurtureDay30Template(opts: {
-  name: string;
-  valuationId: string;
-}): { subject: string; text: string; html: string } {
+export function valuationNurtureDay30Template(
+  opts: {
+    name: string;
+    valuationId: string;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const subject = "Market update on your Abu Dhabi unit";
   const url = `${siteUrl()}/insights`;
 
@@ -391,52 +612,28 @@ export function valuationNurtureDay30Template(opts: {
     `a fresh valuation cut, reply here.\n\n` +
     `— Bazar\n${url}\n`;
 
-  const html = shell(`
+  const html = shell(
+    `
     <p>Hi ${escape(opts.name)},</p>
-    <p>A month on from your valuation — we publish a monthly Abu Dhabi market read at <a href="${url}" style="color:#005777">/insights</a>.</p>
+    <p>A month on from your valuation — we publish a monthly Abu Dhabi market read at <a href="${url}" style="color:${brand.linkColor}">/insights</a>.</p>
     <p>If your view on selling has shifted, or you'd like a fresh valuation cut, reply here.</p>
-  `);
-
-  return { subject, text, html };
-}
-
-/** BRN expiry warning (< 30 days). To: agent + admin. */
-export function brnExpiryWarningTemplate(opts: {
-  agentName: string;
-  brn: string;
-  expiresAt: string;
-  daysToExpiry: number;
-}): { subject: string; text: string; html: string } {
-  const subject = `BRN ${opts.brn} expires in ${opts.daysToExpiry} days`;
-  const url = `${siteUrl()}/admin/settings/compliance`;
-
-  const text =
-    `Hi ${opts.agentName},\n\n` +
-    `Your broker registration (BRN ${opts.brn}) expires on ${opts.expiresAt} ` +
-    `(in ${opts.daysToExpiry} days).\n\n` +
-    `RERA-listed properties cannot be published past expiry. Please ` +
-    `initiate renewal via your registration portal and let admin know ` +
-    `once the new certificate is uploaded.\n\n` +
-    `Compliance: ${url}\n\n` +
-    `— Bazar compliance\n`;
-
-  const html = shell(`
-    <p>Hi ${escape(opts.agentName)},</p>
-    <p>Your broker registration <strong>BRN ${escape(opts.brn)}</strong> expires on <strong>${escape(opts.expiresAt)}</strong> (in ${opts.daysToExpiry} days).</p>
-    <p>RERA-listed properties cannot be published past expiry. Please initiate renewal via your registration portal and let admin know once the new certificate is uploaded.</p>
-    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open compliance panel</a></p>
-  `);
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }
 
 /** DLD listing permit expiry warning. To: admin. */
-export function permitExpiryWarningTemplate(opts: {
-  propertyReference: string;
-  permitNumber: string;
-  expiresAt: string;
-  daysToExpiry: number;
-}): { subject: string; text: string; html: string } {
+export function permitExpiryWarningTemplate(
+  opts: {
+    propertyReference: string;
+    permitNumber: string;
+    expiresAt: string;
+    daysToExpiry: number;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const subject = `Permit ${opts.permitNumber} (${opts.propertyReference}) expires in ${opts.daysToExpiry} days`;
   const url = `${siteUrl()}/admin/properties?status=published`;
 
@@ -448,23 +645,29 @@ export function permitExpiryWarningTemplate(opts: {
     `Properties: ${url}\n\n` +
     `— Bazar compliance\n`;
 
-  const html = shell(`
+  const html = shell(
+    `
     <p>Hi,</p>
     <p>Listing permit <span style="font-family:monospace">${escape(opts.permitNumber)}</span> for <strong>${escape(opts.propertyReference)}</strong> expires on <strong>${escape(opts.expiresAt)}</strong> (in ${opts.daysToExpiry} days).</p>
     <p>The listing will be archived automatically at expiry unless renewed.</p>
-    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open properties</a></p>
-  `);
+    <p style="margin-top:22px">${button(url, "Open properties", brand)}</p>
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }
 
-export function staffPasswordResetTemplate(opts: {
-  staffName: string;
-  resetUrl: string;
-  /** Who triggered it, so an unexpected email is traceable. */
-  senderName: string;
-  expiryDays?: number;
-}): { subject: string; text: string; html: string } {
+export function staffPasswordResetTemplate(
+  opts: {
+    staffName: string;
+    resetUrl: string;
+    /** Who triggered it, so an unexpected email is traceable. */
+    senderName: string;
+    expiryDays?: number;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const subject = "Set a new password for your Bazar admin account";
   const days = opts.expiryDays ?? 14;
 
@@ -477,12 +680,15 @@ export function staffPasswordResetTemplate(opts: {
     `expect this, tell an administrator — your current password still works ` +
     `until you set a new one.\n\n— Bazar\n`;
 
-  const html = shell(`
+  const html = shell(
+    `
     <p>Hi ${escape(opts.staffName)},</p>
     <p><strong>${escape(opts.senderName)}</strong> has sent you a link to set a new password for the Bazar admin console.</p>
-    <p style="margin-top:22px"><a href="${opts.resetUrl}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Set a new password</a></p>
-    <p style="margin-top:18px;font-size:12px;color:#99896e">Valid for ${days} days, single use. If you didn't expect this, tell an administrator — your current password keeps working until you set a new one.</p>
-  `);
+    <p style="margin-top:22px">${button(opts.resetUrl, "Set a new password", brand)}</p>
+    <p style="margin-top:18px;font-size:12px;color:${brand.mutedColor}">Valid for ${days} days, single use. If you didn't expect this, tell an administrator — your current password keeps working until you set a new one.</p>
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }
@@ -494,13 +700,16 @@ export function staffPasswordResetTemplate(opts: {
  * days while `staff_invitations.expires_at` defaults to 14 — the sender now
  * passes the real window so the two can't drift again.
  */
-export function staffInvitationTemplate(opts: {
-  inviteeName: string;
-  inviterName: string;
-  acceptUrl: string;
-  role: string;
-  expiryDays?: number;
-}): { subject: string; text: string; html: string } {
+export function staffInvitationTemplate(
+  opts: {
+    inviteeName: string;
+    inviterName: string;
+    acceptUrl: string;
+    role: string;
+    expiryDays?: number;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const subject = `You're invited to Bazar as ${opts.role}`;
   const days = opts.expiryDays ?? 14;
 
@@ -511,12 +720,15 @@ export function staffInvitationTemplate(opts: {
     `Set your password and activate the account: ${opts.acceptUrl}\n\n` +
     `The link is valid for ${days} days.\n\n— Bazar\n`;
 
-  const html = shell(`
+  const html = shell(
+    `
     <p>Hi ${escape(opts.inviteeName)},</p>
     <p><strong>${escape(opts.inviterName)}</strong> invited you to Bazar Real Estate's internal console as <strong>${escape(opts.role)}</strong>.</p>
-    <p style="margin-top:22px"><a href="${opts.acceptUrl}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Set your password</a></p>
-    <p style="margin-top:18px;font-size:12px;color:#99896e">The link is valid for ${days} days.</p>
-  `);
+    <p style="margin-top:22px">${button(opts.acceptUrl, "Set your password", brand)}</p>
+    <p style="margin-top:18px;font-size:12px;color:${brand.mutedColor}">The link is valid for ${days} days.</p>
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }
@@ -529,14 +741,17 @@ export function staffInvitationTemplate(opts: {
  * calendar invite, this keeps what the lead reads. "Tentative" is load-bearing
  * — the building has not confirmed access at the point this sends.
  */
-export function viewingConfirmationTemplate(opts: {
-  name: string;
-  localTime: string;
-  durationMinutes: number;
-  location: string | null;
-  propertyReference: string | null;
-  propertyTitle: string | null;
-}): { subject: string; text: string; html: string } {
+export function viewingConfirmationTemplate(
+  opts: {
+    name: string;
+    localTime: string;
+    durationMinutes: number;
+    location: string | null;
+    propertyReference: string | null;
+    propertyTitle: string | null;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const subject = opts.propertyReference
     ? `Tentative viewing · ${opts.propertyReference}`
     : "Tentative viewing booked";
@@ -555,7 +770,8 @@ export function viewingConfirmationTemplate(opts: {
     `If this time doesn't work, simply reply and we'll find another.\n\n` +
     `— Bazar Real Estate\n`;
 
-  const html = shell(`
+  const html = shell(
+    `
     <p>Hello ${escape(opts.name)},</p>
     <p>We&rsquo;ve tentatively scheduled your viewing for <strong>${escape(opts.localTime)}</strong> (Asia/Dubai).</p>
     <ul style="padding-left:18px;line-height:1.7">
@@ -565,112 +781,48 @@ export function viewingConfirmationTemplate(opts: {
     </ul>
     <p>The calendar invite is attached — accept it to add to your calendar.</p>
     <p style="color:#5a5a55">If this time doesn&rsquo;t work, simply reply and we&rsquo;ll find another.</p>
-  `);
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }
 
-/** Email arm of the existing in-app viewing reminder (24h before). */
-export function viewingReminderTemplate(opts: {
-  name: string;
-  propertyReference: string;
-  propertyTitle: string;
-  whenLocalIso: string;
-  agentName: string | null;
-}): { subject: string; text: string; html: string } {
-  const subject = `Viewing tomorrow · ${opts.propertyReference}`;
-  const url = `${siteUrl()}/contact`;
-
-  const text =
-    `Hi ${opts.name},\n\n` +
-    `Reminder — your viewing for ${opts.propertyReference} ` +
-    `(${opts.propertyTitle}) is at ${opts.whenLocalIso}.\n` +
-    (opts.agentName ? `Advisor: ${opts.agentName}.\n` : "") +
-    `\nReschedule or cancel: ${url}\n\n— Bazar\n`;
-
-  const html = shell(`
-    <p>Hi ${escape(opts.name)},</p>
-    <p>Reminder — your viewing for <strong>${escape(opts.propertyReference)}</strong> (${escape(opts.propertyTitle)}) is at <strong>${escape(opts.whenLocalIso)}</strong>.</p>
-    ${opts.agentName ? `<p style="font-size:13px;color:#5a5a55">Advisor: ${escape(opts.agentName)}</p>` : ""}
-    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#1B1A17;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Reschedule or cancel</a></p>
-  `);
-
-  return { subject, text, html };
-}
-
-/** Newsletter double-opt-in confirmation email. */
 /**
  * Sent to an agent after a bulk reassign puts new listings in their queue.
  * One email per reassign action, summarising the count plus a sample of
  * property references for context.
  */
-export function bulkReassignDigestTemplate(opts: {
-  agentName: string;
-  count: number;
-  sampleReferences: string[];
-}): { subject: string; text: string; html: string } {
+export function bulkReassignDigestTemplate(
+  opts: {
+    agentName: string;
+    count: number;
+    sampleReferences: string[];
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
   const subject =
     opts.count === 1
       ? "You were assigned a Bazar listing"
       : `You were assigned ${opts.count} Bazar listings`;
   const url = `${siteUrl()}/admin/properties?assigned=me`;
-
-  const sample = opts.sampleReferences.slice(0, 8);
-  const remainder = Math.max(0, opts.count - sample.length);
+  const refs = listingReferencesBlock(opts);
 
   const text =
     `Hi ${opts.agentName},\n\n` +
     `${opts.count} ${opts.count === 1 ? "listing was" : "listings were"} just assigned to you in the Bazar CMS.\n\n` +
-    (sample.length > 0
-      ? `References:\n${sample.map((r) => `  · ${r}`).join("\n")}\n` +
-        (remainder > 0 ? `  · …and ${remainder} more\n` : "") +
-        "\n"
-      : "") +
+    (refs.text ? `${refs.text}\n\n` : "") +
     `Open your queue: ${url}\n\n— Bazar CMS\n`;
 
-  const refsBlock =
-    sample.length > 0
-      ? `<ul style="margin:14px 0;padding-left:18px;font-size:13px;color:#32312d">
-          ${sample
-            .map(
-              (r) =>
-                `<li style="margin:2px 0"><span style="font-family:monospace">${escape(r)}</span></li>`,
-            )
-            .join("")}
-          ${remainder > 0 ? `<li style="margin:2px 0;color:#99896e">…and ${remainder} more</li>` : ""}
-        </ul>`
-      : "";
-
-  const html = shell(`
+  const html = shell(
+    `
     <p>Hi ${escape(opts.agentName)},</p>
     <p><strong>${opts.count} ${opts.count === 1 ? "listing was" : "listings were"}</strong> just assigned to you in the Bazar CMS.</p>
-    ${refsBlock}
-    <p style="margin-top:22px"><a href="${url}" style="display:inline-block;padding:10px 16px;background:#005777;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Open my queue</a></p>
-  `);
-
-  return { subject, text, html };
-}
-
-export function newsletterConfirmTemplate(opts: {
-  email: string;
-  confirmUrl: string;
-}): { subject: string; text: string; html: string } {
-  const subject = "Confirm your Bazar newsletter subscription";
-
-  const text =
-    `Hi,\n\n` +
-    `Please confirm your subscription to the Bazar quarterly Abu Dhabi ` +
-    `market read.\n\n` +
-    `Confirm: ${opts.confirmUrl}\n\n` +
-    `If you didn't request this, ignore the email — no action is taken ` +
-    `until you click confirm.\n\n— Bazar\n`;
-
-  const html = shell(`
-    <p>Hi,</p>
-    <p>Please confirm your subscription to the Bazar quarterly Abu Dhabi market read.</p>
-    <p style="margin-top:22px"><a href="${opts.confirmUrl}" style="display:inline-block;padding:10px 16px;background:#005777;color:#fff;text-decoration:none;border-radius:6px;font-size:13px">Confirm subscription</a></p>
-    <p style="margin-top:18px;font-size:12px;color:#99896e">If you didn't request this, ignore the email — no action is taken until you click confirm.</p>
-  `);
+    ${refs.html}
+    <p style="margin-top:22px">${button(url, "Open my queue", brand)}</p>
+  `,
+    brand,
+  );
 
   return { subject, text, html };
 }

@@ -15,7 +15,7 @@ export default async function NewContentAssetPage() {
       title="New asset"
       breadcrumbs={
         <span className="inline-flex items-center gap-1">
-          <Link href="/admin/content-assets" className="hover:text-bz-ink">
+          <Link href="/admin/content-assets?view=outreach" className="hover:text-bz-ink">
             Content assets
           </Link>
           <ChevronRight size={11} />

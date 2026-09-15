@@ -13,8 +13,10 @@ import {
 } from "@/lib/queries/newsletter";
 import { isSupabaseConfigured, env } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
-import { newsletterConfirmTemplate } from "@/lib/newsletter-templates";
-import { newsletterWelcomeEmail } from "@/lib/content-assets/system-emails";
+import {
+  newsletterConfirmationEmail,
+  newsletterWelcomeEmail,
+} from "@/lib/content-assets/system-emails";
 import {
   checkRateLimit,
   extractClientIp,
@@ -109,7 +111,7 @@ export async function subscribeToNewsletter(
     };
   }
 
-  const template = newsletterConfirmTemplate({ email, confirmUrl });
+  const template = await newsletterConfirmationEmail({ email, confirmUrl });
   const send = await sendEmail({
     to: email,
     subject: template.subject,

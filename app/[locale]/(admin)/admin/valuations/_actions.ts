@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
-import { valuationReportTemplate } from "@/lib/email-templates";
+import { valuationReportEmail } from "@/lib/content-assets/system-emails";
 import { logAudit } from "@/lib/audit";
 import { requireRole } from "@/lib/auth";
 import { UUID_SHAPE_RE } from "@/lib/uuid";
@@ -182,7 +182,7 @@ export async function sendValuationReport(
     .eq("user_id", user.id)
     .maybeSingle();
 
-  const tpl = valuationReportTemplate({
+  const tpl = await valuationReportEmail({
     name: row.owner_name,
     finalEstimateAed: parsed.data.advisor_estimate_aed,
     rangeLowAed: row.estimate_low_aed ? Number(row.estimate_low_aed) : null,

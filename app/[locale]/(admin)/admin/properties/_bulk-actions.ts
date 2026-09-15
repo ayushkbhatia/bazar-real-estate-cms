@@ -22,7 +22,7 @@ import { isSaleMode } from "@/lib/schemas/property";
 import { propertyUrl } from "@/lib/queries/property-utils";
 import { requireRole } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
-import { bulkReassignDigestTemplate } from "@/lib/email-templates";
+import { bulkReassignDigestEmail } from "@/lib/content-assets/system-emails";
 
 const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
@@ -518,7 +518,7 @@ async function sendBulkReassignDigest(
     .map((r) => r.reference)
     .filter((r): r is string => Boolean(r));
 
-  const tpl = bulkReassignDigestTemplate({
+  const tpl = await bulkReassignDigestEmail({
     agentName,
     count: propertyIds.length,
     sampleReferences,

@@ -18,6 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { MediaOption } from "../_fields/types";
 import { uploadToLibrary } from "../media/_upload-client";
+import type { UploadFolder } from "@/lib/media";
 
 /**
  * A library image plus the storage key the article body persists.
@@ -77,6 +78,10 @@ type DialogProps = {
   media: BlogMediaOption[];
   onUploaded: (m: BlogMediaOption) => void;
   onInsert: (image: InsertedImage) => void;
+  /** Library folder a fresh upload lands in. Articles use `blog`. */
+  folder?: UploadFolder;
+  /** Hide the caption field, for surfaces with nowhere to show one (email). */
+  captionless?: boolean;
 };
 
 export function ImageInsertDialog(props: DialogProps) {
@@ -99,6 +104,8 @@ function ImageInsertForm({
   media,
   onUploaded,
   onInsert,
+  folder = "blog",
+  captionless = false,
 }: DialogProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const [alt, setAlt] = useState("");
@@ -121,9 +128,10 @@ function ImageInsertForm({
   async function upload(file: File | undefined) {
     if (!file) return;
     setUploading(true);
-    // Body images live under `blog/` so the media library stays sortable by
+    // Uploads land in the caller's folder — `blog/` for article bodies,
+    // `brand/` for email images — so the media library stays sortable by
     // where a file is actually used.
-    const result = await uploadToLibrary(file, { folder: "blog" });
+    const result = await uploadToLibrary(file, { folder });
     setUploading(false);
     if (result.status === "error") {
       toast.error(result.message);
@@ -246,7 +254,7 @@ function ImageInsertForm({
             already says everything it shows.
           </span>
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className={cn("flex flex-col gap-1.5", captionless && "hidden")}>
           <Label htmlFor="figure-caption">Caption (optional)</Label>
           <Input
             id="figure-caption"

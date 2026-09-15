@@ -2,7 +2,7 @@ import "server-only";
 import * as Sentry from "@sentry/nextjs";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
-import { formSubmissionTemplate } from "@/lib/email-templates";
+import { formSubmissionEmail } from "@/lib/content-assets/system-emails";
 import type { Database } from "@/db/types";
 import { getFormDef } from "./registry";
 import { optionLabel } from "./submission";
@@ -103,7 +103,7 @@ export async function notifyFormRecipients(
     if (recipients.length === 0) return;
 
     const def = getFormDef(entry.formKey);
-    const template = formSubmissionTemplate({
+    const template = await formSubmissionEmail({
       formName: def?.name ?? entry.formKey,
       surface: def?.surface ?? "Website",
       formKey: entry.formKey,

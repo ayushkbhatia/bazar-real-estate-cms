@@ -16,7 +16,7 @@ import { createClient } from "@supabase/supabase-js";
 import * as Sentry from "@sentry/nextjs";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
-import { enquiryEscalationTemplate } from "@/lib/email-templates";
+import { enquiryEscalationEmail } from "@/lib/content-assets/system-emails";
 import type { Database } from "@/db/types";
 
 function adminClient() {
@@ -144,7 +144,7 @@ export async function GET(req: NextRequest) {
           );
           const email = userRow?.user?.email;
           if (!email) continue;
-          const tpl = enquiryEscalationTemplate({
+          const tpl = await enquiryEscalationEmail({
             managerName: adminRow.display_name,
             leadName: row.name ?? "—",
             propertyReference: prop?.reference ?? null,

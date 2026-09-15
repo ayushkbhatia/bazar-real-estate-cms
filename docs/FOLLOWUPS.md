@@ -678,12 +678,6 @@ shows the trail.)
   behaviour change in a protected file that nobody asked for, but it is an
   oversight from the megamenu build.
 
-- [content-assets] Only the enquiry composer consumes assets so far.
-  `getContentAsset(slug)` exists so deal-stage mail, viewing reminders and
-  valuation nurture can adopt the library, but none of them do yet — they
-  still use the hardcoded templates in `lib/email-templates.ts`. Migrating
-  each is a per-surface decision about what should stay code-driven.
-
 - [enquiries] WhatsApp is still a deep link, not an API send.
   The composer opens wa.me with the message prefilled and logs the handoff on
   the timeline, but it cannot confirm delivery and inbound WhatsApp replies
@@ -780,12 +774,6 @@ shows the trail.)
   04:00 daily digest inherits a 15-minute window. `"instant"` subscribers are
   never processed by anything.
 
-- [email] `enquiries/[id]/_actions-viewing.ts:181` tells the client the calendar
-  invite is attached; `:197` is literally `void ics`. `SendEmailInput`
-  (`lib/email.ts:8`) has no attachments field, so no callsite can attach
-  anything. Either wire attachments through or delete the sentence — the
-  plain-text body at `:164` correctly doesn't promise one.
-
 - [security] `supabase/migrations/0010_admin_polish.sql:90` fires
   `handle_staff_invitation` on ANY `auth.users` INSERT. Under the current invite
   flow (which leaves `accepted_at` null until activation) a public sign-up using
@@ -806,14 +794,6 @@ shows the trail.)
   brochure was requested without one existing, though; the enquiry just says
   "Brochure request". A flag on the enquiry, or hiding the button, are both
   defensible if that turns out to be noisy.
-
-- [email] Two orphaned templates and a dead CTA survived phase 5, found in phase 10.
-  `kycApprovedTemplate` / `kycRejectedTemplate` were supposed to go with the KYC
-  review; the scripted removal matched the first function and silently missed
-  the other two after the offsets shifted. `viewingReminderTemplate` has zero
-  callers — the viewing-reminders cron does not reference it — so a viewing
-  reminder is scheduled but no email is built. Worth deciding whether that cron
-  should send one or be removed.
 
 - [email] lib/email-templates.test.ts now asserts no template links at a removed
   route (/account, /sign-in, /sign-up, /magic-link, /reset-password,
@@ -1321,32 +1301,29 @@ shows the trail.)
   the block defaults reuse that copy verbatim rather than introducing it — so
   one `npm run i18n:content` pass fixes them in both places at once.
 
-- [email] `viewingReminderTemplate` in `lib/email-templates.ts:574` is defined,
-  tested by nobody, and called by nothing — including
-  `app/api/cron/viewing-reminders/`, which sends an in-app notification only.
-  So the "email arm of the viewing reminder" its docstring promises has never
-  sent. Either wire it into that cron and give it a fifth `system_key` row, or
-  delete it; leaving a plausible-looking template no path reaches is how a
-  future reader concludes the reminder email exists.
-  `lib/email-templates.ts:574`.
-
-- [email] `app/api/valuation-lead/route.ts` sends two emails from HTML written
-  inline in the route — the OTP code (line 84) and a "report is on the way"
-  confirmation (line 195). Neither uses the shared Bazar shell, so both look
-  unlike every other email the site sends, and neither is editable in
-  `/admin/content-assets`. The confirmation in particular overlaps in purpose
-  with `valuation_request_ack`. Moving both into `lib/email-templates.ts` is
-  the cheap half; deciding whether the confirmation should be a fifth system
-  email, or should not exist beside the acknowledgement at all, is the real
-  question.
-
 - [email] `supabase/functions/enquiry-auto-reply/index.ts` carries its own copy
-  of the enquiry acknowledgement, so a published `enquiry_auto_reply` override
-  would not apply to it. Harmless today — the function has never been deployed
+  of the enquiry acknowledgement, so neither a published `enquiry_auto_reply`
+  override nor the email design at `/admin/content-assets/design` would apply
+  to it. Harmless today — the function has never been deployed
   (see the crons gap above) — but it becomes a silent divergence the moment it
   is. Whatever deploys it should read `content_assets` the way
   `lib/content-assets/system-resolve.ts` does, or the function should be
   deleted in favour of the Vercel cron that already covers it.
+
+- [email] Every email the site sends is English, including to leads who
+  enquired from `/ar`. `enquiries.locale` is recorded (migration 0100), so the
+  send paths know; what is missing is an Arabic twin of each system email —
+  `subject_ar` / `body_ar` on `content_assets`, the editor showing both, and
+  the binding choosing by locale — plus Arabic built-ins or a machine first
+  draft per ADR-0008. Transactional copy was out of scope for the Arabic epic
+  and for the content-assets catalogue (0127).
+
+- [content-assets] Previews use a fixed sample lead. Rendering an email
+  against a real recent enquiry, valuation or subscriber — "show me what
+  Amira actually got" — would catch data the sample never has (very long
+  names, a brief with no property, a valuation with no range). The bindings in
+  `lib/content-assets/system-emails.ts` already separate `context` from
+  `sample`, so it is a loader and a picker, not a renderer.
 
 - [e2e] `playwright.config.ts` pairs a fixed port (3100) with
   `reuseExistingServer: !process.env.CI`, so a local run silently adopts

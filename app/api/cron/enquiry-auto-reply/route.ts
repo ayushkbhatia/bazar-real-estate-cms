@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
     const { data: rows, error } = await supabase
       .from("enquiries")
       .select(
-        "id, name, email, brief_raw, property_id, created_at, properties(reference, title)",
+        "id, name, email, brief_raw, source, property_id, created_at, properties(reference, title)",
       )
       .gte("created_at", fiveMinAgo)
       .is("ack_sent_at", null)
@@ -79,6 +79,7 @@ export async function GET(req: NextRequest) {
         message: row.brief_raw ?? "",
         propertyReference: prop?.reference ?? null,
         propertyTitle: prop?.title ?? null,
+        source: row.source,
       });
       const ok = await sendEmail({
         to: row.email,
