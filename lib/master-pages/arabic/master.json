@@ -8089,6 +8089,12 @@
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
   },
+  "Garden View": {
+    "ar": "إطلالة على الحديقة",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-15T11:47:59.012Z"
+  },
   "Garden Views": {
     "ar": "مناظر الحديقة",
     "by": "machine",
@@ -8819,6 +8825,18 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-21"
+  },
+  "I'd like to know more about {reference}.": {
+    "ar": "أرغب في معرفة المزيد عن العقار {reference}.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-15T11:47:59.012Z"
+  },
+  "I'd like to register my interest in {project}.": {
+    "ar": "أرغب في تسجيل اهتمامي بمشروع {project}.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-15T11:47:59.012Z"
   },
   "I'm Interested In": {
     "ar": "أنا مهتم بـ",
@@ -11922,6 +11940,12 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:26:41.479Z"
   },
+  "Park View": {
+    "ar": "إطلالة على المنتزه",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-15T11:47:59.012Z"
+  },
   "Park Views": {
     "ar": "وجهات نظر على الحديقة",
     "by": "machine",
@@ -12503,6 +12527,12 @@
     "ar": "الساحة المشاة",
     "by": "machine",
     "model": "Qwen/Qwen2.5-72B-Instruct"
+  },
+  "Promenade View": {
+    "ar": "إطلالة على الممشى",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-15T11:47:59.012Z"
   },
   "Promenade view": {
     "ar": "منظر الممشى",

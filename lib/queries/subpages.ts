@@ -264,15 +264,22 @@ export async function countSubPagesByKind(): Promise<
   const search = SEARCH_HEADERS.length;
   if (!isSupabaseConfigured) return { section: sections, search };
   const supabase = createSupabasePublicClient();
-  const [developments, areas, developers] = await Promise.all([
+  const [developments, areas, developers, listings] = await Promise.all([
     supabase.from("developments").select("id", { count: "exact", head: true }),
     supabase.from("areas").select("id", { count: "exact", head: true }),
     supabase.from("developers").select("id", { count: "exact", head: true }),
+    // Published and live only — the pages that actually exist at /p/<slug>.
+    supabase
+      .from("properties")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "published")
+      .is("deleted_at", null),
   ]);
   return {
     development: developments.count ?? 0,
     area: areas.count ?? 0,
     developer: developers.count ?? 0,
+    property: listings.count ?? 0,
     section: sections,
     search,
   };

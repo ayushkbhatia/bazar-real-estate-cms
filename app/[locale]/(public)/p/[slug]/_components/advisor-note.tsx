@@ -8,9 +8,12 @@ import { Eyebrow } from "@/components/brand/eyebrow";
  * synthesises one from the property short_description if present.
  */
 export function AdvisorNote({
+  eyebrow,
   note,
   advisorName,
 }: {
+  /** From the listing-page copy document — Pages → Property pages. */
+  eyebrow: string;
   note: string;
   /** Omitted when the listing has no publicly-visible assigned advisor —
    *  the note then stands unattributed rather than crediting a seed name. */
@@ -18,7 +21,7 @@ export function AdvisorNote({
 }) {
   return (
     <div className="border-s-2 border-bz-accent ps-6 py-2">
-      <Eyebrow>Advisor&apos;s note</Eyebrow>
+      <Eyebrow>{eyebrow}</Eyebrow>
       <blockquote
         className="serif italic text-[20px] mt-3 leading-relaxed text-bz-ink max-w-[58ch]"
         style={{ letterSpacing: "-0.005em" }}

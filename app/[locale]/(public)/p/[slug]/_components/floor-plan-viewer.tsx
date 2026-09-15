@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { Maximize2, X, ZoomIn, ZoomOut } from "lucide-react";
@@ -66,6 +67,7 @@ export function FloorPlanViewer({
   // The image's own ratio, read off the element once it loads. `naturalWidth`
   // is density-corrected under a `w`-descriptor srcset and so is no use as a
   // pixel count — but the correction scales both axes, so the ratio survives.
+  const t = useTranslations("property");
   const [imageRatio, setImageRatio] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
 
@@ -78,7 +80,7 @@ export function FloorPlanViewer({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label={`${alt} — open full screen`}
+        aria-label={t("floorPlan.openFullScreen", { alt })}
         className="group relative block w-full rounded-lg overflow-hidden border border-bz-border bg-bz-surface cursor-zoom-in"
         style={{ aspectRatio: String(ratio) }}
       >
@@ -99,7 +101,7 @@ export function FloorPlanViewer({
         />
         <span className="absolute bottom-3 end-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-bz-ink/85 text-bz-bg text-[11.5px] font-medium opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
           <Maximize2 size={12} strokeWidth={1.7} />
-          Enlarge
+          {t("floorPlan.enlarge")}
         </span>
       </button>
 
@@ -139,6 +141,7 @@ function FloorPlanOverlay({
   ratio: number;
   onClose: () => void;
 }) {
+  const t = useTranslations("property");
   const [zoomed, setZoomed] = useState(false);
   const panRef = useRef<HTMLDivElement | null>(null);
   const drag = useRef<{
@@ -199,7 +202,9 @@ function FloorPlanOverlay({
             <button
               type="button"
               onClick={() => setZoomed((z) => !z)}
-              aria-label={zoomed ? "Fit to screen" : "View at full size"}
+              aria-label={
+                zoomed ? t("floorPlan.fitToScreen") : t("floorPlan.fullSize")
+              }
               className="w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
             >
               {zoomed ? (
@@ -211,7 +216,7 @@ function FloorPlanOverlay({
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close floor plan"
+              aria-label={t("floorPlan.close")}
               className="w-10 h-10 rounded-full bg-white/10 text-white hover:bg-white/20 flex items-center justify-center"
             >
               <X size={18} strokeWidth={1.8} />
@@ -245,7 +250,7 @@ function FloorPlanOverlay({
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close floor plan"
+              aria-label={t("floorPlan.close")}
               className="relative w-[min(96vw,1600px)] h-[min(88vh,1000px)] cursor-zoom-out"
             >
               <Image
@@ -261,14 +266,14 @@ function FloorPlanOverlay({
           )}
 
           <p className="absolute bottom-[calc(var(--bz-safe-bottom)+1.25rem)] left-1/2 -translate-x-1/2 text-[12px] text-white/70">
-            {zoomed ? "Drag to pan · " : ""}
+            {zoomed ? `${t("floorPlan.dragToPan")} · ` : ""}
             <a
               href={src}
               target="_blank"
               rel="noreferrer"
               className="underline hover:text-white"
             >
-              Open the original
+              {t("floorPlan.openOriginal")}
             </a>
           </p>
         </DialogPrimitive.Content>

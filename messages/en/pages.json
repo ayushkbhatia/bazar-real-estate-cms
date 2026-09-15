@@ -99,11 +99,7 @@
     "interestBody": "Tell us which launch caught your eye — an advisor will share availability, floor plans, and payment plans."
   },
   "property": {
-    "whyThisOne": "Why this one",
-    "featuresAmenities": "Features & amenities",
-    "location": "Location",
-    "noCoordinates": "No coordinates set on this listing",
-    "enquireAbout": "Enquire about this property"
+    "noCoordinates": "No coordinates set on this listing"
   },
   "sell": {
     "statListings": "Live listings marketed by Bazar",

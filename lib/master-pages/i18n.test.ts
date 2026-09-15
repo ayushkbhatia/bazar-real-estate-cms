@@ -5,6 +5,7 @@ import { LIBRARY_SECTIONS } from "./library";
 import { SEARCH_HEADERS } from "./search-headers";
 import { DEVELOPER_PAGE_SECTION } from "./developer-page";
 import { DEVELOPMENT_PAGE_COPY_SECTIONS } from "./development-page";
+import { PROPERTY_PAGE_COPY_SECTIONS } from "./property-page";
 import { HEADER_CTA_SECTION } from "./header-cta";
 import { BLOCK_DEFS } from "@/lib/page-builder/catalogue";
 import { mergeValues, validateFieldValues } from "./index";
@@ -61,6 +62,11 @@ function allSectionDefs(): { origin: string; def: SectionDef }[] {
   // one holds one project's overrides, this one holds what they override.
   for (const section of DEVELOPMENT_PAGE_COPY_SECTIONS) {
     out.push({ origin: "development-page:copy", def: section });
+  }
+  // The same, for every /p/<slug> listing — one document, no per-listing
+  // override, and the FAQ band carries a list whose items hold twins too.
+  for (const section of PROPERTY_PAGE_COPY_SECTIONS) {
+    out.push({ origin: "property-page:copy", def: section });
   }
   // The header's call-to-action button — site chrome rather than a page, but
   // the same document shape and the same hand-declared Arabic, so the same

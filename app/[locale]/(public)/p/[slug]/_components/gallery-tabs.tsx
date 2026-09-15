@@ -77,7 +77,7 @@ export function GalleryTabs({
           className="py-2.5 min-h-11 md:min-h-0 inline-flex items-center gap-1.5 text-[13.5px] border-b-2 -mb-px border-transparent text-bz-muted hover:text-bz-ink-2 transition-colors"
         >
           <Map size={13} strokeWidth={1.7} />
-          Map
+          {t("floorPlan.map")}
         </button>
       </div>
 
@@ -128,12 +128,15 @@ function FloorPlanPanel({
   url: string | null;
   reference: string;
 }) {
+  const t = useTranslations("property");
   if (!url) {
     return (
       <div className="rounded-lg border border-bz-border bg-bz-surface aspect-[16/9] flex items-center justify-center">
+        {/* The same sentence the Floor plan section below says in the same
+            situation — it used to be a second, slightly different English
+            wording of it that nothing could translate. */}
         <p className="text-[13.5px] text-bz-muted text-center max-w-[42ch] px-6">
-          No floor plan attached to this listing yet. Enquire and the advisor
-          will send one back.
+          {t("floorPlan.none")}
         </p>
       </div>
     );
@@ -141,7 +144,7 @@ function FloorPlanPanel({
   return (
     <FloorPlanViewer
       src={url}
-      alt={`Floor plan for ${reference}`}
+      alt={t("floorPlan.alt", { reference })}
       // Full width of the tab strip's own container — `px-4 md:px-12`, no max
       // width on the page. Measured 1344px at a 1440 viewport.
       sizes="(min-width: 768px) calc(100vw - 96px), calc(100vw - 32px)"

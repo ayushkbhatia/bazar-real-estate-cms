@@ -49,6 +49,7 @@ function copy(overrides: Partial<FormCopy>): FormCopy {
     success_title: "Thank you.",
     success_body: "An advisor will be in touch shortly.",
     consent_note: CONSENT,
+    message_prefill: null,
     ...overrides,
   };
 }
@@ -618,9 +619,9 @@ export const FORM_DEFS: FormDef[] = [
     control: "full",
     variant: "compact",
     enquirySource: "development_interest",
-    messagePrefill: "I'd like to register my interest in {project}.",
     copy: copy({
       ...ENQUIRY_SUCCESS,
+      message_prefill: "I'd like to register my interest in {project}.",
       title: "Express your interest in {project}",
       subtitle:
         "Leave your details and the advisor for {project} will come back with pricing, availability and the payment plan.",
@@ -706,9 +707,9 @@ export const FORM_DEFS: FormDef[] = [
     control: "full",
     variant: "compact",
     enquirySource: "property_page",
-    messagePrefill: "I'd like to know more about {reference}.",
     copy: copy({
       ...ENQUIRY_SUCCESS,
+      message_prefill: "I'd like to know more about {reference}.",
       submit_label: "Send enquiry",
     }),
     fields: enquiryFields({

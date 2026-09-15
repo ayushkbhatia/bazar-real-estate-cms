@@ -366,6 +366,43 @@ quick grep can show "what's outstanding in my area."
   and must survive the deletion. Delete once parallel-work pressure is
   gone; grep for `PublicNav` first to confirm it's still unreferenced.
 
+- [i18n] What is still Latin on `/ar/p/<slug>` is site chrome, not the listing.
+  Measured by curling the page after the listing-page Arabic pass (every band,
+  the advisor card, the enquiry card and dialog, the FAQ): the shortlist
+  button's `aria-label`/`title` ("Save to shortlist (0/25)",
+  `components/brand/compare-button.tsx:105` — shared-files rule, so not
+  touched), the floating contact rail's `aria-label`s ("Message {who} on
+  WhatsApp", "Call …", "Email …" — `app/[locale]/(public)/_components/floating-cta-rail.tsx:351`,
+  and the same shape on `agents/page.tsx:174`), and the `<title>` suffix
+  "· Bazar". All three are on every public page, which is why they want their
+  own pass rather than a listing-page one.
+
+- [i18n] The listing price block's sub-line reads out of order on `/ar`.
+  `price-block.tsx` renders `formatPricePerArea` and the other-currency figure
+  inside one `.mono` span, which `:lang(ar)` makes an LTR isolate; the Arabic
+  per-area string itself comes out of the formatter as `1,161/قدم² درهم`. Both
+  halves want looking at together — the formatter's Arabic shape
+  (`lib/preferences`) and the span (each figure in its own `<bdi>`, the row not
+  `.mono`) — which is why the listing-page Arabic pass left it alone.
+
+- [content] Two FAQ answers on every listing name Dubai's regulator for an Abu
+  Dhabi firm.
+  `property.faq.verifyA` (catalogue) says the permit "is registered with the
+  DLD" and points to "the DLD's public Trakheesi portal"; the shared transfer
+  answer (Pages → Sub-pages → Property pages → FAQ) says "DLD-registered".
+  Abu Dhabi listings are ADREC/DARI. Carried over word for word in both
+  languages because it is a statement of fact for the client to correct, not
+  a translation choice. The transfer answer is now editable without a deploy;
+  `verifyA` still needs one, and should move to the same document if the
+  client wants to own it.
+
+- [i18n] The listing page's Tenure tile is Arabic for freehold only.
+  `leasehold` and `usufruct` both render حق انتفاع in `lib/i18n/mt/glossary.ts`,
+  which misstates what a buyer acquires when the two sit side by side, so the
+  tile keeps their English until the client's compliance contact picks two
+  terms. 63 of 65 live listings are freehold. `app/[locale]/(public)/p/[slug]/page.tsx`
+  (`tenureLabel`).
+
 ## Recently done
 
 (Move entries here briefly before deleting, so a `git log -p docs/FOLLOWUPS.md`

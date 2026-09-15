@@ -12,6 +12,7 @@ import { LIBRARY_SECTIONS } from "@/lib/master-pages/library";
 import { SEARCH_HEADERS } from "@/lib/master-pages/search-headers";
 import { DEVELOPMENT_PAGE_COPY_SECTIONS } from "@/lib/master-pages/development-page";
 import { DEVELOPER_PAGE_SECTION } from "@/lib/master-pages/developer-page";
+import { PROPERTY_PAGE_COPY_SECTIONS } from "@/lib/master-pages/property-page";
 import { isTranslatable } from "@/lib/master-pages/twins";
 import type { FieldDef, ListFieldDef, SectionDef } from "@/lib/master-pages/types";
 import { nonProseReason } from "./prose";
@@ -95,6 +96,9 @@ function everySlot(): Slot[] {
   for (const s of DEVELOPMENT_PAGE_COPY_SECTIONS) {
     out.push(...collect(`development-page·${s.key}`, s.fields, s.defaults));
   }
+  for (const s of PROPERTY_PAGE_COPY_SECTIONS) {
+    out.push(...collect(`property-page·${s.key}`, s.fields, s.defaults));
+  }
   return out;
 }
 
@@ -138,6 +142,8 @@ const ALLOWED: Readonly<Record<string, string>> = {
   // settled Arabic form (الأسئلة الشائعة). Contrast "ADREC & DLD", which the
   // heuristic correctly leaves alone and which must stay Latin.
   'master/off-plan·faq.faq_eyebrow': "an acronym that does have an Arabic form",
+  // Same word, same reason, on the listing page's FAQ band.
+  'property-page·faq.eyebrow': "an acronym that does have an Arabic form",
 
   // Same case as FAQ: two capitals read as a code, and "HQ" is an ordinary
   // word with a settled Arabic form (المقر الرئيسي). It was a literal in
@@ -147,7 +153,7 @@ const ALLOWED: Readonly<Record<string, string>> = {
 
 };
 
-const ALLOWED_CEILING = 12;
+const ALLOWED_CEILING = 13;
 
 describe("G-16 · translatable fields hold prose", () => {
   it("finds no data-shaped value outside the allowlist", () => {
