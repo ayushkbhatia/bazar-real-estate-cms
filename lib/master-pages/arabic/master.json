@@ -8826,6 +8826,18 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T16:12:56.314Z"
   },
+  "I'd like to know more about {reference}.": {
+    "ar": "أرغب في معرفة المزيد عن العقار {reference}.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-15T11:47:59.012Z"
+  },
+  "I'd like to register my interest in {project}.": {
+    "ar": "أرغب في تسجيل اهتمامي بمشروع {project}.",
+    "by": "machine",
+    "model": "claude-opus-5",
+    "at": "2026-09-15T11:47:59.012Z"
+  },
   "I'm interested in": {
     "ar": "أنا مهتم بـ",
     "by": "machine",

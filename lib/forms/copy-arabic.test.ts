@@ -112,6 +112,47 @@ describe("mergeCopy carries the Arabic through", () => {
   });
 });
 
+describe("the pre-filled message is copy, with Arabic", () => {
+  /**
+   * It was `FormDef.messagePrefill` — a registry constant the manager could not
+   * show and no twin could replace — so an Arabic visitor on a listing opened
+   * the enquiry form to find their message already started in English: "I'd
+   * like to know more about BAZ-AD-09790."
+   */
+  it("ships on the two forms that had one, and folds to Arabic", () => {
+    for (const [key, token] of [
+      ["property_enquiry", "{reference}"],
+      ["development_interest", "{project}"],
+    ] as const) {
+      const form = defaultForm(key)!;
+      expect(form.copy.message_prefill, key).toContain(token);
+      const ar = localiseRow(form.copy as Record<string, unknown>, "ar")
+        .message_prefill as string;
+      expect(ar, key).toMatch(/[؀-ۿ]/);
+      expect(ar, key).toContain(token);
+    }
+  });
+
+  it("stays empty on a form that never had one", () => {
+    expect(defaultForm("valuation_report_gate")!.copy.message_prefill).toBeNull();
+  });
+
+  it("lets an editor's Arabic win over the generated one", () => {
+    const resolved = resolveForm(
+      "property_enquiry",
+      {
+        enabled: true,
+        copy: { message_prefill_ar: "مرحباً، أود الاستفسار عن {reference}." },
+      } as never,
+      null,
+    );
+    expect(
+      localiseRow(resolved!.copy as Record<string, unknown>, "ar")
+        .message_prefill,
+    ).toBe("مرحباً، أود الاستفسار عن {reference}.");
+  });
+});
+
 describe("the save payload cannot forget a key", () => {
   /**
    * `_actions.ts` REPLACES the stored copy bag rather than merging into it, so

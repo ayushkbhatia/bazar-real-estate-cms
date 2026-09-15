@@ -87,8 +87,10 @@ function initialValues(
   for (const f of visibleFields(form)) {
     if (f.type === "checkbox") {
       out[f.key] = false;
-    } else if (f.mapping === "message" && form.def.messagePrefill) {
-      out[f.key] = renderFormCopy(form.def.messagePrefill, tokens) ?? "";
+    } else if (f.mapping === "message" && form.copy.message_prefill) {
+      // Already folded to the visitor's language by `getForm` — the Arabic
+      // twin, an editor's text or the registry default, in that order.
+      out[f.key] = renderFormCopy(form.copy.message_prefill, tokens) ?? "";
     } else if (f.type === "chips" && f.required) {
       // A required pill row has always shipped with its first option chosen —
       // an empty segmented control reads as a bug rather than a question.

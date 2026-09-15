@@ -1,5 +1,5 @@
 /**
- * The seven copy keys a form owns, in one place.
+ * The eight copy keys a form owns, in one place.
  *
  * ## Why this exists
  *
@@ -32,6 +32,15 @@ export const FORM_COPY_KEYS = [
   { key: "success_title", optional: false, max: 120, blank: "The confirmation needs a heading" },
   { key: "success_body", optional: false, max: 600, blank: "The confirmation needs a body" },
   { key: "consent_note", optional: true, max: 300 },
+  /*
+   * What the message box already says when the visitor opens the form —
+   * "I'd like to know more about {reference}." Visitor-facing, which is why it
+   * is copy and not a registry constant: it used to be `FormDef.messagePrefill`,
+   * a literal no editor could reach and no Arabic could replace, so an Arabic
+   * visitor on a listing opened a form that had already started their message
+   * in English.
+   */
+  { key: "message_prefill", optional: true, max: 300 },
 ] as const;
 
 export type FormCopyKey = (typeof FORM_COPY_KEYS)[number]["key"];

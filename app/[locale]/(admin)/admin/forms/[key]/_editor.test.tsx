@@ -164,3 +164,45 @@ describe("option labels", () => {
     ).toBeInTheDocument();
   });
 });
+
+/**
+ * The message a form's box opens already holding — "I'd like to know more
+ * about {reference}." on a listing. It was a registry constant this screen
+ * could not show, so its English reached every Arabic visitor who opened the
+ * enquiry dialog, and no editor could change or translate it.
+ */
+describe("the pre-filled message", () => {
+  function mountForm(key: string) {
+    const form = resolveForm(key, null, null)!;
+    return render(
+      <FormEditor form={form} submissions={[]} submissionsError={null} />,
+    );
+  }
+
+  it("is offered, pre-filled, on a form that asks a message question", () => {
+    mountForm("property_enquiry");
+    expect(screen.getByText("Pre-filled message")).toBeInTheDocument();
+    expect(
+      screen.getByDisplayValue("I'd like to know more about {reference}."),
+    ).toBeInTheDocument();
+  });
+
+  it("saves the wording an editor types", async () => {
+    saveForm.mockClear();
+    const user = userEvent.setup();
+    mountForm("property_enquiry");
+    const box = screen.getByDisplayValue(
+      "I'd like to know more about {reference}.",
+    );
+    await user.clear(box);
+    await user.type(box, "Is {{reference} still available?");
+    await save(user);
+    const payload = saveForm.mock.calls.at(-1)![0] as FormSaveInput;
+    expect(payload.copy.message_prefill).toBe("Is {reference} still available?");
+  });
+
+  it("is not offered where there is no message box to fill", () => {
+    mountForm("valuation_report_gate");
+    expect(screen.queryByText("Pre-filled message")).toBeNull();
+  });
+});

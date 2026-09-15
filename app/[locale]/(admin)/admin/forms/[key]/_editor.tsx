@@ -361,6 +361,9 @@ export function FormEditor({
         <ContentTab
           copy={copy}
           editable={editsCopy}
+          hasMessageBox={fields.some(
+            (f) => f.mapping === "message" && f.enabled,
+          )}
           ownsTitle={!def.headingSource || def.copy.title !== null}
           headingHref={headingHref}
           headingNote={def.headingSource?.note ?? null}
@@ -426,6 +429,7 @@ export function FormEditor({
 function ContentTab({
   copy,
   editable,
+  hasMessageBox,
   ownsTitle,
   headingHref,
   headingNote,
@@ -433,6 +437,12 @@ function ContentTab({
 }: {
   copy: ResolvedForm["copy"];
   editable: boolean;
+  /**
+   * Whether the form asks a free-text message question. The pre-filled message
+   * has nowhere to go without one, so the input is only offered where it would
+   * do something — the same rule the renderer applies.
+   */
+  hasMessageBox: boolean;
   ownsTitle: boolean;
   headingHref: string | null;
   headingNote: string | null;
@@ -461,6 +471,9 @@ function ContentTab({
             ["Confirmation heading", copy.success_title],
             ["Confirmation copy", copy.success_body],
             ["Small print", copy.consent_note ?? "—"],
+            ...(hasMessageBox
+              ? [["Pre-filled message", copy.message_prefill ?? "—"]]
+              : []),
           ].map(([label, value]) => (
             <div
               key={label}
@@ -572,6 +585,21 @@ function ContentTab({
             value={copy.consent_note_ar ?? ""}
             onChange={(v) => onChange({ consent_note_ar: v || null })}
           />
+      {hasMessageBox ? (
+        <>
+          <Area
+            label="Pre-filled message"
+            help="Already typed into the message box when the form opens, so the visitor only has to add to it. `{reference}` and `{project}` are filled in from the page. Leave blank for an empty box."
+            value={copy.message_prefill ?? ""}
+            onChange={(v) => onChange({ message_prefill: v || null })}
+          />
+          <ArabicTwin
+            field={copyField("message_prefill", "Pre-filled message")}
+            value={copy.message_prefill_ar ?? ""}
+            onChange={(v) => onChange({ message_prefill_ar: v || null })}
+          />
+        </>
+      ) : null}
     </div>
   );
 }

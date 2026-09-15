@@ -339,6 +339,12 @@ export type FormCopyEnglish = {
   success_body: string;
   /** The line under the button. Null hides it. */
   consent_note: string | null;
+  /**
+   * Typed into the message box before the visitor starts, where the page gives
+   * it context. Tokens are the page's: `{reference}` on a listing, `{project}`
+   * on a project page. Null leaves the box empty.
+   */
+  message_prefill: string | null;
 };
 
 /**
@@ -500,8 +506,6 @@ export type FormDef = {
    * visitor-facing — nobody reads it but the desk.
    */
   briefPrefix?: string;
-  /** Pre-filled into the message box, where the page gives it context. */
-  messagePrefill?: string;
   /** Extra surfaces the same form appears on, listed in the manager. */
   alsoOn?: string[];
   copy: FormCopy;
