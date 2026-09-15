@@ -47,6 +47,38 @@ export function usableCopy(
 }
 
 /**
+ * How long a send path waits for the wording or the design before sending the
+ * built-in email in the default design instead.
+ *
+ * These reads sit in front of a visitor's form submission — an enquiry, a
+ * newsletter signup, a one-time code — and the service-role client has no
+ * timeout of its own. Unbounded, a database that stops answering would hold
+ * the visitor's request open with it; bounded, it costs them 2.5 seconds and
+ * the email still goes. Exported for the test.
+ */
+export const READ_DEADLINE_MS = 2500;
+
+/**
+ * Run a query with a deadline: the signal aborts the request, and the race
+ * settles the await even if a client were to ignore the abort.
+ */
+async function withDeadline<T>(run: (signal: AbortSignal) => PromiseLike<T>): Promise<T> {
+  const controller = new AbortController();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      controller.abort();
+      reject(new Error(`no response in ${READ_DEADLINE_MS}ms`));
+    }, READ_DEADLINE_MS);
+  });
+  try {
+    return await Promise.race([run(controller.signal), deadline]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
  * Read the published override for a system email, or nothing.
  *
  * SERVICE ROLE, deliberately. RLS on content_assets grants SELECT to staff
@@ -68,13 +100,16 @@ export async function readPublishedCopy(
   const supabase = createAdminClient();
   if (!supabase) return null;
   try {
-    const { data, error } = await supabase
-      .from("content_assets")
-      .select("subject, body, body_format")
-      .eq("system_key", key)
-      .eq("status", "published")
-      .is("deleted_at", null)
-      .maybeSingle();
+    const { data, error } = await withDeadline((signal) =>
+      supabase
+        .from("content_assets")
+        .select("subject, body, body_format")
+        .eq("system_key", key)
+        .eq("status", "published")
+        .is("deleted_at", null)
+        .abortSignal(signal)
+        .maybeSingle(),
+    );
     if (error) throw error;
     return data ? usableCopy(key, data) : null;
   } catch (error) {
@@ -94,11 +129,14 @@ export async function readEmailBrand(): Promise<EmailBrand> {
   const supabase = createAdminClient();
   if (!supabase) return DEFAULT_EMAIL_BRAND;
   try {
-    const { data, error } = await supabase
-      .from("site_settings")
-      .select("email_branding")
-      .eq("id", 1)
-      .maybeSingle();
+    const { data, error } = await withDeadline((signal) =>
+      supabase
+        .from("site_settings")
+        .select("email_branding")
+        .eq("id", 1)
+        .abortSignal(signal)
+        .maybeSingle(),
+    );
     if (error) throw error;
     return resolveEmailBrand(data?.email_branding ?? null);
   } catch (error) {

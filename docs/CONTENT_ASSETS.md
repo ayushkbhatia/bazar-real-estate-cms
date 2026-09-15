@@ -127,6 +127,12 @@ There is no cache. One indexed single-row read per outbound email (plus one for
 the design) is cheap, and a stale cache would mean publishing a correction and
 watching the old wording keep sending.
 
+Both reads are **bounded at 2.5 s** (`READ_DEADLINE_MS`). They sit in front of
+a visitor's form submission and the service-role client has no timeout of its
+own, so a database that stops answering would otherwise hold the request open.
+Past the deadline the query is aborted and the built-in email sends in the
+default design.
+
 ## Previews are the email
 
 The gallery thumbnails, the editor's preview and the design page all render
