@@ -148,7 +148,7 @@ export function AreaMapHome({
 
       <div
         ref={frameRef}
-        className="relative h-[440px] overflow-hidden rounded-xl border border-bz-border bg-bz-surface md:h-[560px]"
+        className="relative h-[min(70svh,560px)] min-h-[320px] overflow-hidden rounded-xl border border-bz-border bg-bz-surface md:h-[560px]"
       >
         {mapReady ? (
           <AreaMapLazy

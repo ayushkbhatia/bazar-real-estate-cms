@@ -887,6 +887,11 @@
     .bzmap-legend {
       display: none;
     }
+    /* The pin hint is a desktop affordance: on a phone its one line spans
+       the map's width and sits over the pins and attribution it describes. */
+    .bzmap-hint {
+      display: none;
+    }
     /* 34px is a mouse target. These are the only way to zoom on a phone
        (the map sets cooperativeGestures, so a one-finger drag pans the page
        rather than the map), so they have to be thumb-sized. The container
