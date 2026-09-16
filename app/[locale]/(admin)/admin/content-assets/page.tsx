@@ -22,6 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 import {
   listContentAssets,
+  listFormAssignments,
   type ContentAssetRow,
 } from "@/lib/queries/content-assets";
 import { CONTENT_ASSET_KIND_LABELS } from "@/lib/schemas/content-asset";
@@ -41,6 +42,7 @@ import {
 import type { SystemEmailCopy } from "@/lib/content-assets/system-render";
 import { SYSTEM_EMAIL_DEFAULTS } from "@/lib/content-assets/system-defaults";
 import { sanitizeEmailBody } from "@/lib/content-assets/email-html";
+import { emailSurfaces, type EmailSurface } from "@/lib/content-assets/usage";
 import { AssetRowActions } from "./_row-actions";
 
 export const dynamic = "force-dynamic";
@@ -78,12 +80,25 @@ function firstLine(body: string): string {
 
 type View = "emails" | "outreach" | "trash";
 
-const TABS: { view: View | "design"; label: string; href: string }[] = [
+const TABS: { view: View | "design" | "replies"; label: string; href: string }[] = [
   { view: "emails", label: "Site emails", href: "/admin/content-assets" },
+  {
+    view: "replies",
+    label: "Form replies",
+    href: "/admin/content-assets/replies",
+  },
   { view: "outreach", label: "Outreach", href: "/admin/content-assets?view=outreach" },
   { view: "design", label: "Email design", href: "/admin/content-assets/design" },
   { view: "trash", label: "Trash", href: "/admin/content-assets?view=trash" },
 ];
+
+/** "Contact · /contact, Buy · /buy and 16 more" — the card's one line. */
+function surfaceSummary(surfaces: EmailSurface[]): string {
+  if (surfaces.length === 0) return "Nothing sends this yet";
+  const named = surfaces.slice(0, 2).map((s) => s.path ?? s.label);
+  const rest = surfaces.length - named.length;
+  return rest > 0 ? `${named.join(", ")} and ${rest} more` : named.join(", ");
+}
 
 type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -123,12 +138,14 @@ function EmailCard({
   subject,
   html,
   status,
+  usedOn,
 }: {
   href: string;
   label: string;
   trigger: string;
   subject: string;
   html: string;
+  usedOn: string;
   status: { tone: "live" | "draft" | "builtin" | "preview"; text: string };
 }) {
   return (
@@ -158,17 +175,27 @@ function EmailCard({
           <span className="text-bz-muted">Subject · </span>
           {subject}
         </p>
-        <p className="text-[12px] text-bz-muted leading-snug line-clamp-3">{trigger}</p>
+        <p className="text-[12px] text-bz-muted leading-snug line-clamp-2">{trigger}</p>
+        <p className="mt-auto pt-2 text-[11.5px] text-bz-ink-2 truncate" title={usedOn}>
+          <span className="text-bz-muted">Sent from · </span>
+          {usedOn}
+        </p>
       </div>
     </Link>
   );
 }
 
 async function EmailsView() {
-  const [rows, brand] = await Promise.all([
+  const [rows, brand, assignments] = await Promise.all([
     listContentAssets({ scope: "system" }),
     readEmailBrand(),
+    listFormAssignments(),
   ]);
+  // Which forms have been pointed at a reply of their own — those no longer
+  // send the acknowledgement, and the card should not claim they do.
+  const assigned = Object.fromEntries(
+    Object.entries(assignments).map(([key, a]) => [key, a.assetId]),
+  );
   const byKey = new Map(
     rows
       .filter((r): r is ContentAssetRow & { system_key: SystemAssetKey } => r.system_key !== null)
@@ -272,6 +299,7 @@ async function EmailsView() {
                   subject={gallery[key].live.subject}
                   html={gallery[key].live.html}
                   status={statusFor(key)}
+                  usedOn={surfaceSummary(emailSurfaces(key, assigned))}
                 />
               ),
             )}
@@ -284,6 +312,7 @@ async function EmailsView() {
                 subject={advisorReply.subject}
                 html={advisorReply.html}
                 status={{ tone: "preview", text: "Preview only" }}
+                usedOn={surfaceSummary(emailSurfaces(e.key, assigned))}
               />
             ))}
           </div>

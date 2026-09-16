@@ -34,6 +34,13 @@ const optionalText = (max: number) => z.string().max(max).optional();
 export const serviceLeadSchema = z
   .object({
     kind: z.enum(SERVICE_LEAD_KINDS),
+    /** The lib/forms registry key, so the reply and the desk both know it. */
+    form_key: z
+      .string()
+      .regex(/^[a-z][a-z0-9_]*$/, "Not a form key")
+      .max(64)
+      .nullable()
+      .optional(),
     name: z
       .string()
       .min(2, "Enter your full name")

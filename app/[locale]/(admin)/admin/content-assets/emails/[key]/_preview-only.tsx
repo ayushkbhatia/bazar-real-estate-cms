@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Eye } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import type { RenderedEmail } from "@/lib/content-assets/system-render";
+import type { EmailSurface } from "@/lib/content-assets/usage";
+import { WhereUsed } from "../_where-used";
 import {
   EmailFrame,
   InboxHeader,
@@ -15,12 +17,14 @@ import {
 /** An email the site sends whose wording is not the CMS's to change. */
 export function PreviewOnlyEmail({
   def,
+  surfaces,
   email,
   from,
   replyTo,
   to,
 }: {
   def: { label: string; trigger: string; recipient: string; builtIn: string; why: string };
+  surfaces: EmailSurface[];
   email: RenderedEmail;
   from: string;
   replyTo: string;
@@ -55,6 +59,7 @@ export function PreviewOnlyEmail({
             .
           </p>
         </div>
+        <WhereUsed surfaces={surfaces} />
       </div>
       <div className="rounded-lg border border-bz-border bg-bz-surface-2 overflow-hidden xl:sticky xl:top-6">
         <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-bz-border bg-bz-surface">

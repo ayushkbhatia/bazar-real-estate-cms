@@ -120,6 +120,64 @@ export async function readPublishedCopy(
 }
 
 /**
+ * The reply assigned to one form, if it is fit to send.
+ *
+ * One round trip: the assignment lives on `forms` and the copy on
+ * `content_assets`, and PostgREST embeds the second through the foreign key
+ * migration 0128 added. Same service-role reasoning as above — the visitor
+ * who just submitted the form has no session — and the same deadline, because
+ * this read sits in front of their submission.
+ *
+ * `formKey` is the registry key, which is code. A form that has been renamed,
+ * or a submission from a path that predates the registry, simply finds
+ * nothing and falls through to the acknowledgement.
+ */
+export async function readFormReply(
+  formKey: string,
+): Promise<SystemEmailCopy | null> {
+  if (!isSupabaseConfigured || !formKey) return null;
+  const supabase = createAdminClient();
+  if (!supabase) return null;
+  try {
+    const { data, error } = await withDeadline((signal) =>
+      supabase
+        .from("forms")
+        .select(
+          "reply_asset_id, content_assets(subject, body, body_format, status, deleted_at, role)",
+        )
+        .eq("key", formKey)
+        .abortSignal(signal)
+        .maybeSingle(),
+    );
+    if (error) throw error;
+    const asset = Array.isArray(data?.content_assets)
+      ? data?.content_assets[0]
+      : data?.content_assets;
+    if (!asset) return null;
+    // Assigned is not enough: a draft, a trashed row or a row that has since
+    // been re-roled is not what the site should send.
+    if (
+      asset.status !== "published" ||
+      asset.deleted_at !== null ||
+      asset.role !== "form_reply" ||
+      !asset.subject ||
+      !asset.body.trim()
+    ) {
+      return null;
+    }
+    return {
+      subject: asset.subject,
+      body: asset.body,
+      format: asset.body_format === "html" ? "html" : "text",
+    };
+  } catch (error) {
+    // A failed read must not stop the email. Fall through to the built-in.
+    console.error(`[formReply:${formKey}]`, error);
+    return null;
+  }
+}
+
+/**
  * The email design from /admin/content-assets/design. Service role for the
  * same reason as above; any failure is the default design, never a failed
  * send.

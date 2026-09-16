@@ -170,6 +170,7 @@ export async function submitForm(
       const interest = pickInterest(form, values, dynamic);
       const result = await submitServiceLead({
         kind,
+        form_key: formKey,
         name: lead.name,
         phone: lead.phone,
         email: lead.email,
@@ -210,6 +211,9 @@ export async function submitForm(
         budget_min: lead.budgetMin,
         budget_max: lead.budgetMax,
         source: form.def.enquirySource ?? "contact_page",
+        // Which box on which page this came from — it decides the reply and
+        // it is what /admin/content-assets maps.
+        form_key: formKey,
         property_id: lead.propertyId ?? context.propertyId ?? null,
         development_id: lead.developmentId ?? context.developmentId ?? null,
         locale: context.locale ?? undefined,

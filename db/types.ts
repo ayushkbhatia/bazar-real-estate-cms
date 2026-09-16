@@ -643,6 +643,7 @@ export type Database = {
           next_asset_id: string | null
           notes: string | null
           position: number
+          role: string
           slug: string
           status: Database["public"]["Enums"]["content_asset_status"]
           subject: string | null
@@ -663,6 +664,7 @@ export type Database = {
           next_asset_id?: string | null
           notes?: string | null
           position?: number
+          role?: string
           slug: string
           status?: Database["public"]["Enums"]["content_asset_status"]
           subject?: string | null
@@ -683,6 +685,7 @@ export type Database = {
           next_asset_id?: string | null
           notes?: string | null
           position?: number
+          role?: string
           slug?: string
           status?: Database["public"]["Enums"]["content_asset_status"]
           subject?: string | null
@@ -1363,6 +1366,7 @@ export type Database = {
           development_id: string | null
           email: string | null
           escalated_at: string | null
+          form_key: string | null
           first_response_at: string | null
           id: string
           inferred_constraints: Json | null
@@ -1393,6 +1397,7 @@ export type Database = {
           development_id?: string | null
           email?: string | null
           escalated_at?: string | null
+          form_key?: string | null
           first_response_at?: string | null
           id?: string
           inferred_constraints?: Json | null
@@ -1423,6 +1428,7 @@ export type Database = {
           development_id?: string | null
           email?: string | null
           escalated_at?: string | null
+          form_key?: string | null
           first_response_at?: string | null
           id?: string
           inferred_constraints?: Json | null
@@ -1937,6 +1943,7 @@ export type Database = {
           id: string
           key: string
           notify_emails: string[]
+          reply_asset_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1946,6 +1953,7 @@ export type Database = {
           id?: string
           key: string
           notify_emails?: string[]
+          reply_asset_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1955,9 +1963,18 @@ export type Database = {
           id?: string
           key?: string
           notify_emails?: string[]
+          reply_asset_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "forms_reply_asset_id_fkey"
+            columns: ["reply_asset_id"]
+            isOneToOne: false
+            referencedRelation: "content_assets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       integrations: {
         Row: {

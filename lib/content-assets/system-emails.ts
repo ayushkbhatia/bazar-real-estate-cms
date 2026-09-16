@@ -31,8 +31,11 @@ import {
 } from "@/lib/newsletter-templates";
 import type { EmailBrand } from "./email-brand";
 import type { EmailContext } from "./email-html";
+import { getFormDef } from "@/lib/forms/registry";
+import { FORM_REPLY_SAMPLE } from "./form-replies";
 import {
   readEmailBrand,
+  readFormReply,
   resolvePublishedCopy,
   resolveSystemEmail,
 } from "./system-resolve";
@@ -436,17 +439,57 @@ function send<K extends SystemAssetKey>(
 // ── The send functions ────────────────────────────────────────────────
 
 /**
- * `source` is the enquiry's `source` column. A mortgage lead gets the
- * mortgage acknowledgement if one is published, and the general one otherwise.
+ * The email a lead receives for filling in a form.
+ *
+ * Three answers, in order, and the first that exists wins:
+ *
+ *   1. the reply an editor assigned to THIS form, if published (0128);
+ *   2. the acknowledgement for this kind of lead — the mortgage desk's for a
+ *      mortgage lead, the general one otherwise — if published;
+ *   3. the built-in template.
+ *
+ * All three reads go out together: the assignment is the common case only
+ * once someone has made one, and a lead should not wait for a chain of
+ * round trips to find that out.
  */
-export function enquiryAcknowledgementEmail(
-  opts: EnquiryOpts & { source?: string | null },
+export async function enquiryAcknowledgementEmail(
+  opts: EnquiryOpts & {
+    /** `enquiries.source` — picks which acknowledgement is the fallback. */
+    source?: string | null;
+    /** The lib/forms registry key, when the lead came through a form. */
+    formKey?: string | null;
+  },
 ): Promise<RenderedEmail> {
-  const { source, ...rest } = opts;
-  return send(
-    source === "mortgage" ? "mortgage_enquiry_ack" : "enquiry_auto_reply",
-    rest,
-  );
+  const { source, formKey, ...rest } = opts;
+  const key: SystemAssetKey =
+    source === "mortgage" ? "mortgage_enquiry_ack" : "enquiry_auto_reply";
+  const binding = BINDINGS[key] as unknown as Binding<EnquiryOpts>;
+  const def = formKey ? getFormDef(formKey) : null;
+
+  const base = binding.context(rest);
+  const ctx: EmailContext = {
+    ...base,
+    values: {
+      ...base.values,
+      // A reply may serve several forms and still name the one filled in.
+      form_name: def?.name ?? null,
+      form_surface: def?.surface ?? null,
+    },
+  };
+
+  const [reply, published, brand] = await Promise.all([
+    formKey ? readFormReply(formKey) : null,
+    resolvePublishedCopy(key),
+    readEmailBrand(),
+  ]);
+
+  for (const copy of [reply, published?.copy]) {
+    if (!copy) continue;
+    const rendered = renderSystemEmail(copy, ctx, brand);
+    // An override that renders to nothing is worse than the built-in one.
+    if (rendered.subject && rendered.text.trim()) return rendered;
+  }
+  return binding.builtin(rest, brand);
 }
 
 export function valuationAcknowledgementEmail(
@@ -626,6 +669,35 @@ export function renderGallery(
       : { live: b.builtin(b.sample, brand), liveSource: { kind: "builtin" } };
   }
   return out;
+}
+
+/**
+ * A form reply, rendered against a sample lead from the form it answers.
+ *
+ * Same context builder the send path uses, so what the editor sees is the
+ * email — with that form's name and page in it, when a form is named.
+ */
+export async function previewFormReply(
+  copy: SystemEmailCopy,
+  formKey: string | null,
+  brand?: EmailBrand,
+): Promise<RenderedEmail> {
+  const def = formKey ? getFormDef(formKey) : null;
+  const base = enquiryContext({
+    name: FORM_REPLY_SAMPLE.name,
+    message: FORM_REPLY_SAMPLE.message,
+    propertyReference: FORM_REPLY_SAMPLE.propertyReference,
+    propertyTitle: FORM_REPLY_SAMPLE.propertyTitle,
+  });
+  const ctx: EmailContext = {
+    ...base,
+    values: {
+      ...base.values,
+      form_name: def?.name ?? FORM_REPLY_SAMPLE.formName,
+      form_surface: def?.surface ?? FORM_REPLY_SAMPLE.formSurface,
+    },
+  };
+  return renderSystemEmail(copy, ctx, brand ?? (await readEmailBrand()));
 }
 
 /** The advisor reply, with sample wording, for the gallery. */

@@ -2,11 +2,12 @@
 
 Everything Bazar sends to a person, in one place: `/admin/content-assets`.
 
-Four tabs:
+Five tabs:
 
 | Tab | Route | What it is |
 |---|---|---|
 | **Site emails** (default) | `/admin/content-assets` | Every email the site sends on its own — 18 of them — each drawn as it actually arrives, rewritable in a rich-text editor |
+| **Form replies** | `/admin/content-assets/replies` | Every public form, the email its visitor receives, and which reply answers which form |
 | **Outreach** | `?view=outreach` | Email and WhatsApp copy an advisor sends by hand from the enquiry composer |
 | **Email design** | `/admin/content-assets/design` | The logo, colours and footer every email is wrapped in |
 | **Trash** | `?view=trash` | Deleted outreach assets |
@@ -73,15 +74,62 @@ The gallery says so, so an absence reads as a decision:
 - **Viewing reminders to the lead.** The two-hour reminder is an in-app
   notification to the advisor.
 
+## Form replies
+
+Seventeen of the twenty-two public forms file an enquiry, and all of them sent
+the same acknowledgement. A **form reply** is a content asset with
+`role = 'form_reply'` (migration 0128) — a whole-message rich-text email,
+written in the same editor as a system email, that a marketing manager assigns
+to one or more forms. So a brochure gate can answer differently from a
+mortgage enquiry without a deploy.
+
+- **The mapping** — `/admin/content-assets/replies` lists every form on the
+  site, grouped as the Forms manager groups them, with its page, its path and
+  the email its visitor receives. Assign from the dropdown on the row, or tick
+  forms inside a reply's own editor. A form's own page in `/admin/forms` shows
+  the same answer at the top.
+- **What is assignable** — lead forms. The newsletter signup and the valuation
+  report gate are listed but fixed: their emails carry a confirmation link and
+  a one-time code, so they are edited as themselves, and the row says so and
+  links there.
+- **Scope** — a reply may use the lead tokens plus `{{form_name}}` and
+  `{{form_surface}}` (`FORM_REPLY_TOKENS`), so one reply can serve several
+  forms and still name the one that was filled in.
+- **Which form a lead came from** is recorded on `enquiries.form_key`, so the
+  auto-reply cron sends the same reply the inline send would have chosen.
+
+### Adding a form reply
+
+Nothing to write in code: **New reply** in the Form replies tab creates a
+draft carrying the acknowledgement's wording, and ticking a form assigns it.
+A reply sends only while it is published and untrashed — an assigned draft
+sends the acknowledgement, and says so on both screens.
+
+### Where an email is used
+
+`lib/content-assets/usage.ts` answers "who sends this?" for every email in the
+gallery: the form half is **derived from the registry**, so a form added in
+code appears without anyone remembering to, and a form pointed at a reply of
+its own drops off the acknowledgement's list. The rest — a cron, an admin
+button, a tool's second step — is stated per email, because nothing in the
+codebase enumerates those. A test walks every route named there and fails if
+one does not exist.
+
 ## How resolution works
 
 ```
-published row for this system_key?
-  ├─ yes → render its tokens, wrap in the brand shell, send that
-  └─ no  → does the email fall back to another? (mortgage → enquiry)
-             ├─ yes → same question for that email
-             └─ no  → send the built-in template, in the brand shell
+a lead form was submitted?
+  ├─ yes → a PUBLISHED reply assigned to that form?  → send it
+  └─ then, either way:
+     published row for this system_key?
+       ├─ yes → render its tokens, wrap in the brand shell, send that
+       └─ no  → does the email fall back to another? (mortgage → enquiry)
+                  ├─ yes → same question for that email
+                  └─ no  → send the built-in template, in the brand shell
 ```
+
+The three reads — the reply, the override and the design — go out together, so
+an assignment costs a lead no extra round trip.
 
 "No" also covers: the row is a draft, the row is missing, the read failed,
 `SUPABASE_SERVICE_ROLE_KEY` is unset, the row rendered to an empty subject or
@@ -269,6 +317,9 @@ braces left over.
 - **0117** — Settings → Templates, which wrote `{subject, body}` overrides into
   `site_settings.email_templates` that nothing read, was replaced by four
   `system_key` rows. The column is left in place, unread.
+- **0128** — form replies: every public form mapped to the email its visitor
+  receives, assignable from the CMS; `content_assets.role`; `forms.reply_asset_id`;
+  `enquiries.form_key`; and "where is this used" on every email in the gallery.
 - **0127** — all eighteen emails catalogued; thirteen more rewritable; rich
   text; email design; the valuation code and report-requested emails moved out
   of inline HTML in `app/api/valuation-lead/route.ts` into templates (they had

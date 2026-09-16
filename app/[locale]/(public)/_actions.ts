@@ -149,6 +149,7 @@ export async function createEnquiry(
     phone: data.phone ?? null,
     brief_raw: data.message,
     source: data.source,
+    form_key: data.form_key ?? null,
     property_id: data.property_id ?? null,
     development_id: data.development_id ?? null,
     timeline: data.timeline ?? null,
@@ -221,9 +222,11 @@ export async function createEnquiry(
       message: data.message,
       propertyReference,
       propertyTitle,
-      // A mortgage lead gets the mortgage desk's acknowledgement once one is
-      // published, and the general one until then.
+      // The reply an editor assigned to this form wins; a mortgage lead falls
+      // back to the mortgage desk's acknowledgement, everyone else to the
+      // general one.
       source: data.source,
+      formKey: data.form_key ?? null,
     });
     await sendEmail({
       to: data.email,

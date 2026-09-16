@@ -22,8 +22,10 @@ import {
 import { SYSTEM_EMAIL_DEFAULTS } from "@/lib/content-assets/system-defaults";
 import { TOKENS } from "@/lib/content-assets/tokens";
 import type { RenderedEmail } from "@/lib/content-assets/system-render";
+import type { EmailSurface } from "@/lib/content-assets/usage";
 import type { BlogMediaOption } from "../../../blog/_image-insert-dialog";
 import { EmailBodyEditor } from "../_body-editor";
+import { WhereUsed } from "../_where-used";
 import {
   EmailFrame,
   InboxHeader,
@@ -55,6 +57,7 @@ export function SystemEmailEditor({
   builtin,
   initialDraft,
   media: initialMedia,
+  surfaces,
   canWrite,
   from,
   replyTo,
@@ -71,6 +74,8 @@ export function SystemEmailEditor({
   builtin: RenderedEmail;
   initialDraft: RenderedEmail | null;
   media: BlogMediaOption[];
+  /** Forms, pages and routes that send this email. */
+  surfaces: EmailSurface[];
   canWrite: boolean;
   from: string;
   replyTo: string;
@@ -248,6 +253,15 @@ export function SystemEmailEditor({
             </p>
           ) : null}
         </section>
+
+        <WhereUsed
+          surfaces={surfaces}
+          note={
+            def.audience === "team"
+              ? undefined
+              : "Change the wording here and every one of these sends the new version."
+          }
+        />
 
         <section className="rounded-lg border border-bz-border bg-bz-surface p-5 flex flex-col gap-4">
           <div className="flex flex-wrap items-center gap-3">

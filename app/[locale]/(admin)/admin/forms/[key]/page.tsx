@@ -3,7 +3,11 @@ import { notFound } from "next/navigation";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { requireRole } from "@/lib/auth";
 import { getFormForAdmin, listSubmissions } from "@/lib/queries/forms";
+import { listFormAssignments } from "@/lib/queries/content-assets";
+import { SYSTEM_ASSETS } from "@/lib/content-assets/system";
+import { formEmailRouting } from "@/lib/content-assets/usage";
 import { FormEditor } from "./_editor";
+import { FormReplyBanner } from "./_reply-banner";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +22,40 @@ export default async function AdminFormPage({ params }: PageProps) {
   const detail = await getFormForAdmin(supabase, key);
   if (!detail) notFound();
 
-  const submissions = await listSubmissions(supabase, key, { limit: 300 });
+  const [submissions, assignments] = await Promise.all([
+    listSubmissions(supabase, key, { limit: 300 }),
+    listFormAssignments(),
+  ]);
+
+  // What this form emails the visitor. The assignment is edited in Content
+  // assets; this is the answer to "does this form even reply?".
+  const routing = formEmailRouting(detail.form.def);
+  const assigned = assignments[key] ?? null;
+  const live =
+    assigned && assigned.status === "published" && !assigned.trashed
+      ? {
+          label: assigned.assetName,
+          detail: "A form reply you wrote.",
+          href: `/admin/content-assets/replies/${assigned.assetId}`,
+          tone: "default" as const,
+        }
+      : assigned
+        ? {
+            label: SYSTEM_ASSETS[routing.defaultEmail].label,
+            detail: `“${assigned.assetName}” is assigned but ${assigned.trashed ? "in the trash" : "still a draft"}, so this sends instead.`,
+            href: `/admin/content-assets/replies/${assigned.assetId}`,
+            tone: "warn" as const,
+          }
+        : {
+            label: SYSTEM_ASSETS[routing.defaultEmail].label,
+            detail: routing.assignable
+              ? "Bazar's built-in wording."
+              : routing.why,
+            href: routing.assignable
+              ? "/admin/content-assets/replies"
+              : `/admin/content-assets/emails/${routing.defaultEmail}`,
+            tone: "default" as const,
+          };
 
   return (
     <CmsShell
@@ -48,6 +85,13 @@ export default async function AdminFormPage({ params }: PageProps) {
           anything.
         </p>
       ) : null}
+
+      <FormReplyBanner
+        label={live.label}
+        detail={live.detail}
+        href={live.href}
+        tone={live.tone}
+      />
 
       <FormEditor
         form={detail.form}

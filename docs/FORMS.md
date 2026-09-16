@@ -13,6 +13,24 @@ conversation, and there was no single place to see what any of them had
 actually collected — the leads landed in Enquiries, but the *questions* lived
 nowhere.
 
+
+## What the visitor is emailed
+
+Submitting a form files a lead and emails the visitor. Which email is the
+Content assets manager's business, not this one's: each form's page shows what
+it sends today, and the mapping — every form, its page, and the reply that
+answers it — lives at `/admin/content-assets/replies`
+(`docs/CONTENT_ASSETS.md`).
+
+- Lead forms send Bazar's enquiry acknowledgement until an editor assigns a
+  **form reply** (`forms.reply_asset_id`, migration 0128); the mortgage
+  pre-approval falls back to the mortgage desk's acknowledgement instead.
+- The newsletter signup and the valuation report gate are not assignable —
+  their emails carry a confirmation link and a one-time code.
+- The key of the form that produced a lead is written to `enquiries.form_key`,
+  so the auto-reply cron picks the same email the inline send would have.
+- `notify_emails` is unrelated: that is the internal heads-up to the desk.
+
 ## The split with Pages & blocks
 
 A page owns the words **around** a form — the heading, the blurb, the

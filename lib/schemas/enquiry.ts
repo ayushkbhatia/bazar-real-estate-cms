@@ -77,6 +77,20 @@ export const enquirySchema = z
     budget_min: z.number().int().min(0).nullable().optional(),
     budget_max: z.number().int().min(0).nullable().optional(),
     source: z.enum(ENQUIRY_SOURCES),
+    /**
+     * The lib/forms registry key of the form that produced this lead.
+     *
+     * Recorded so the auto-reply cron can send the same reply the inline send
+     * would have chosen (migration 0128), and so the desk can tell a brochure
+     * gate from a hero. Shaped like a registry key rather than trusted: it
+     * crosses from the client, and an unknown one simply matches no form.
+     */
+    form_key: z
+      .string()
+      .regex(/^[a-z][a-z0-9_]*$/, "Not a form key")
+      .max(64)
+      .nullable()
+      .optional(),
     property_id: z
       .string()
       .regex(UUID_SHAPE_RE, "Invalid UUID")

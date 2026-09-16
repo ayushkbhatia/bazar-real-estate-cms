@@ -5,6 +5,7 @@ import type {
   ContentAssetStatus,
 } from "@/lib/schemas/content-asset";
 import type { SystemAssetKey } from "@/lib/content-assets/system";
+import type { ContentAssetRole } from "@/lib/schemas/content-asset";
 
 /**
  * Reads for the Content Assets library.
@@ -36,6 +37,8 @@ export type ContentAssetRow = {
    * everything else (migration 0127).
    */
   body_format: "text" | "html";
+  /** outreach · system · form_reply (migration 0128). */
+  role: ContentAssetRole;
   status: ContentAssetStatus;
   position: number;
   created_at: string;
@@ -44,19 +47,20 @@ export type ContentAssetRow = {
 };
 
 const FIELDS =
-  "id, kind, slug, name, category, subject, body, body_format, notes, follow_up_after_days, next_asset_id, system_key, status, position, created_at, updated_at, deleted_at";
+  "id, kind, slug, name, category, subject, body, body_format, role, notes, follow_up_after_days, next_asset_id, system_key, status, position, created_at, updated_at, deleted_at";
 
 export async function listContentAssets(opts?: {
   kind?: ContentAssetKind;
   /** Trash view. Default false — the list shows live assets. */
   trashed?: boolean;
   /**
-   * "outreach" is what an advisor sends by hand; "system" is the four
-   * transactional emails. They are separate tabs because they answer
-   * different questions — what do I send this lead, versus what does the
-   * site send on its own. Omit for both.
+   * "outreach" is what an advisor sends by hand; "system" is the seventeen
+   * transactional emails; "form_reply" is an editor's answer to a public
+   * form. Separate tabs because they answer different questions — what do I
+   * send this lead, what does the site send on its own, and what does this
+   * form reply with. Omit for all three.
    */
-  scope?: "outreach" | "system";
+  scope?: ContentAssetRole;
 }): Promise<ContentAssetRow[]> {
   if (!isSupabaseConfigured) return [];
   try {
@@ -66,8 +70,7 @@ export async function listContentAssets(opts?: {
       ? q.not("deleted_at", "is", null)
       : q.is("deleted_at", null);
     if (opts?.kind) q = q.eq("kind", opts.kind);
-    if (opts?.scope === "outreach") q = q.is("system_key", null);
-    if (opts?.scope === "system") q = q.not("system_key", "is", null);
+    if (opts?.scope) q = q.eq("role", opts.scope);
     const { data, error } = await q
       .order("kind", { ascending: true })
       .order("position", { ascending: true })
@@ -132,6 +135,71 @@ export async function getSystemAssetRow(
     console.error("[getSystemAssetRow]", error);
     return null;
   }
+}
+
+/**
+ * The replies an editor has written, newest first. Drafts included: the
+ * library lists them, and the assignment picker shows a draft as unavailable
+ * rather than hiding the work.
+ */
+export async function listFormReplies(): Promise<ContentAssetRow[]> {
+  return listContentAssets({ scope: "form_reply" });
+}
+
+export type FormAssignment = {
+  formKey: string;
+  assetId: string;
+  assetName: string;
+  status: ContentAssetStatus;
+  /** True once the row is trashed — assigned, but sending nothing. */
+  trashed: boolean;
+};
+
+/**
+ * Which reply each form is pointed at. One read for the whole mapping table,
+ * keyed by form so the page can answer "and this one?" without a query each.
+ */
+export async function listFormAssignments(): Promise<
+  Record<string, FormAssignment>
+> {
+  if (!isSupabaseConfigured) return {};
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data, error } = await supabase
+      .from("forms")
+      .select("key, reply_asset_id, content_assets(id, name, status, deleted_at)")
+      .not("reply_asset_id", "is", null);
+    if (error) throw error;
+    const out: Record<string, FormAssignment> = {};
+    for (const row of data ?? []) {
+      const asset = Array.isArray(row.content_assets)
+        ? row.content_assets[0]
+        : row.content_assets;
+      if (!asset) continue;
+      out[row.key] = {
+        formKey: row.key,
+        assetId: asset.id,
+        assetName: asset.name,
+        status: asset.status as ContentAssetStatus,
+        trashed: asset.deleted_at !== null,
+      };
+    }
+    return out;
+  } catch (error) {
+    console.error("[listFormAssignments]", error);
+    return {};
+  }
+}
+
+/** How many forms point at each reply. Drives the library's "used by" line. */
+export function assignmentCounts(
+  assignments: Record<string, FormAssignment>,
+): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  for (const a of Object.values(assignments)) {
+    (out[a.assetId] ??= []).push(a.formKey);
+  }
+  return out;
 }
 
 export async function getContentAssetById(
