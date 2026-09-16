@@ -18,6 +18,7 @@ import {
   type RenderedEmail,
   type SystemEmailCopy,
 } from "./system-render";
+import type { EmailLocale } from "./tokens";
 
 /**
  * A published row → copy fit to send, or null. Shared by the send path and
@@ -26,12 +27,20 @@ import {
  */
 export function usableCopy(
   key: SystemAssetKey,
-  row: { subject: string | null; body: string; body_format: string },
+  row: {
+    subject: string | null;
+    body: string;
+    body_format: string;
+    subject_ar?: string | null;
+    body_ar?: string | null;
+  },
 ): SystemEmailCopy | null {
   if (!row.subject || !row.body.trim()) return null;
   const copy: SystemEmailCopy = {
     subject: row.subject,
     body: row.body,
+    subjectAr: row.subject_ar ?? null,
+    bodyAr: row.body_ar ?? null,
     format: row.body_format === "html" ? "html" : "text",
   };
   // The editor refuses to publish without these; a row that has them missing
@@ -103,7 +112,7 @@ export async function readPublishedCopy(
     const { data, error } = await withDeadline((signal) =>
       supabase
         .from("content_assets")
-        .select("subject, body, body_format")
+        .select("subject, body, subject_ar, body_ar, body_format")
         .eq("system_key", key)
         .eq("status", "published")
         .is("deleted_at", null)
@@ -143,7 +152,7 @@ export async function readFormReply(
       supabase
         .from("forms")
         .select(
-          "reply_asset_id, content_assets(subject, body, body_format, status, deleted_at, role)",
+          "reply_asset_id, content_assets(subject, body, subject_ar, body_ar, body_format, status, deleted_at, role)",
         )
         .eq("key", formKey)
         .abortSignal(signal)
@@ -168,6 +177,8 @@ export async function readFormReply(
     return {
       subject: asset.subject,
       body: asset.body,
+      subjectAr: asset.subject_ar,
+      bodyAr: asset.body_ar,
       format: asset.body_format === "html" ? "html" : "text",
     };
   } catch (error) {
@@ -234,13 +245,15 @@ export async function resolveSystemEmail(
   key: SystemAssetKey,
   ctx: EmailContext,
   fallback: (brand: EmailBrand) => RenderedEmail,
+  /** The language the recipient used. Arabic falls back to English wording. */
+  locale: EmailLocale = "en",
 ): Promise<RenderedEmail> {
   const [published, brand] = await Promise.all([
     resolvePublishedCopy(key),
     readEmailBrand(),
   ]);
   if (!published) return fallback(brand);
-  const rendered = renderSystemEmail(published.copy, ctx, brand);
+  const rendered = renderSystemEmail(published.copy, ctx, brand, locale);
   // A published row that renders to an empty subject or body is a worse
   // email than the built-in one. Belt and braces — the editor blocks both.
   if (!rendered.subject || !rendered.text.trim()) {

@@ -66,3 +66,27 @@ export const FORM_REPLY_SAMPLE = {
   formName: "Submit your enquiry",
   formSurface: "Contact",
 };
+
+/** The same sample lead, for previewing the Arabic half of a reply. */
+export const FORM_REPLY_SAMPLE_AR = {
+  name: "أميرة حداد",
+  message: "هل ما زالت الشقة بثلاث غرف متاحة للانتقال في سبتمبر؟",
+  propertyReference: "BAZ-AD-04891",
+  propertyTitle: "شقة بثلاث غرف في جزيرة الريم",
+  formName: "أرسل طلبك",
+  formSurface: "صفحة التواصل",
+};
+
+/** Where a new reply's ARABIC half starts — the acknowledgement, translated. */
+export const FORM_REPLY_DEFAULT_AR = {
+  subject: "وصلنا طلبك",
+  body: [
+    "<p>مرحباً {{lead_first_name}}،</p>",
+    "<p>شكراً لتواصلك مع بازار.</p>",
+    "<p>{{property_line}}</p>",
+    "<p>سيتواصل معك أحد مستشارينا خلال <strong>ساعتين في أوقات العمل</strong>، وفي صباح اليوم التالي خارجها.</p>",
+    "<p>نص رسالتك:</p>",
+    "<blockquote><p>{{enquiry_message}}</p></blockquote>",
+    "<p>— بازار</p>",
+  ].join(""),
+};

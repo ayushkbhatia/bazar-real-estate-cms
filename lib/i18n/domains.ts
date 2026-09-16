@@ -812,9 +812,20 @@ export const DOMAINS: Domain[] = [
   },
   {
     table: "content_assets",
-    columns: [],
-    excluded:
-      "No public read path and no anon select policy (0061). subject/body are outreach copy an agent edits by hand and sends one-to-one; the four `system_key` rows (0117) are read past RLS by the service role at send time, never by a page. Nothing outbound is localised — every template in lib/email-templates.ts is English — so an Arabic message would be a separate asset row, not an _ar twin.",
+    columns: [
+      {
+        column: "subject",
+        strategy: "hand",
+        evidence: "lib/content-assets/system-render.ts:renderSystemEmail",
+        note: "Read by a person in their inbox rather than on a page: the system emails (0117/0127) and the form replies (0128) are sent to leads, and a lead whose enquiries.locale is ar is answered from the _ar twin (0129). Hand, not machine: the copy carries {{tokens}} that a translation pass would mangle, and the Arabic ships as a reviewed first draft in lib/content-assets/system-defaults-ar.ts.",
+      },
+      {
+        column: "body",
+        strategy: "hand",
+        evidence: "lib/content-assets/system-render.ts:renderSystemEmail",
+        note: "Same send path as `subject`. Outreach rows (role = outreach) are the exception inside this table — an advisor writes each message by hand in the composer — and they simply leave the twin empty.",
+      },
+    ],
   },
   {
     table: "cta_clicks",
@@ -999,6 +1010,9 @@ export const AWAITING_TWIN: string[] = [];
 
 /** Columns with an Arabic input in the CMS today. */
 export const WIRED_EDITOR: string[] = [
+  // /admin/content-assets?lang=ar — the same editor, right to left.
+  "content_assets.subject",
+  "content_assets.body",
   "media_assets.alt_text",
   "development_units.unit_type",
   "development_units.lagoon_access",
@@ -1066,6 +1080,9 @@ export const WIRED_EDITOR: string[] = [
 
 /** Columns whose public read path folds the locale today. */
 export const WIRED_READ: string[] = [
+  // Not a page fold: the send path picks the half by the lead's own locale.
+  "content_assets.subject",
+  "content_assets.body",
   "areas.name",
   "areas.description",
   "properties.title",

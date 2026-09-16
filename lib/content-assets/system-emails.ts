@@ -32,7 +32,7 @@ import {
 import type { EmailBrand } from "./email-brand";
 import type { EmailContext } from "./email-html";
 import { getFormDef } from "@/lib/forms/registry";
-import { FORM_REPLY_SAMPLE } from "./form-replies";
+import { FORM_REPLY_SAMPLE, FORM_REPLY_SAMPLE_AR } from "./form-replies";
 import {
   readEmailBrand,
   readFormReply,
@@ -40,6 +40,7 @@ import {
   resolveSystemEmail,
 } from "./system-resolve";
 import { SYSTEM_ASSETS, type SystemAssetKey } from "./system";
+import type { EmailLocale } from "./tokens";
 import {
   renderSystemEmail,
   type RenderedEmail,
@@ -66,7 +67,8 @@ import {
  */
 
 type Binding<O> = {
-  context: (opts: O) => EmailContext;
+  /** `locale` reaches the context only so its PANELS are drawn in it. */
+  context: (opts: O, locale?: EmailLocale) => EmailContext;
   builtin: (opts: O, brand: EmailBrand) => RenderedEmail;
   sample: O;
 };
@@ -153,7 +155,7 @@ const BINDINGS = {
     },
   }),
   valuation_request_ack: bind<ValuationAckOpts>({
-    context: (o) => ({
+    context: (o, locale = "en") => ({
       values: {
         lead_first_name: firstName(o.name),
         lead_name: o.name,
@@ -164,11 +166,14 @@ const BINDINGS = {
         site_url: site(),
       },
       blocks: {
-        valuation_range_panel: valuationRangePanel({
-          lowAed: o.estimateLowAed,
-          midAed: o.estimateMidAed,
-          highAed: o.estimateHighAed,
-        }),
+        valuation_range_panel: valuationRangePanel(
+          {
+            lowAed: o.estimateLowAed,
+            midAed: o.estimateMidAed,
+            highAed: o.estimateHighAed,
+          },
+          locale,
+        ),
       },
     }),
     builtin: (o, brand) => valuationReceivedTemplate(o, brand),
@@ -196,7 +201,7 @@ const BINDINGS = {
     sample: {},
   }),
   valuation_report: bind<ValuationReportOpts>({
-    context: (o) => ({
+    context: (o, locale = "en") => ({
       values: {
         lead_first_name: firstName(o.name),
         lead_name: o.name,
@@ -212,7 +217,7 @@ const BINDINGS = {
         contact_url: `${site()}/contact`,
         site_url: site(),
       },
-      blocks: { valuation_report_panel: valuationReportPanel(o) },
+      blocks: { valuation_report_panel: valuationReportPanel(o, locale) },
     }),
     builtin: (o, brand) => valuationReportTemplate(o, brand),
     sample: {
@@ -376,7 +381,7 @@ const BINDINGS = {
     },
   }),
   bulk_reassign_digest: bind<DigestOpts>({
-    context: (o) => ({
+    context: (o, locale = "en") => ({
       values: {
         staff_name: o.agentName,
         listings_assigned:
@@ -384,7 +389,7 @@ const BINDINGS = {
         queue_url: `${site()}/admin/properties?assigned=me`,
         site_url: site(),
       },
-      blocks: { listing_references: listingReferencesBlock(o) },
+      blocks: { listing_references: listingReferencesBlock(o, locale) },
     }),
     builtin: (o, brand) => bulkReassignDigestTemplate(o, brand),
     sample: {
@@ -394,7 +399,7 @@ const BINDINGS = {
     },
   }),
   form_submission_notification: bind<FormOpts>({
-    context: (o) => ({
+    context: (o, locale = "en") => ({
       values: {
         form_name: o.formName,
         form_surface: o.surface,
@@ -403,7 +408,7 @@ const BINDINGS = {
         responses_url: formResponsesUrl(o.formKey),
         site_url: site(),
       },
-      blocks: { form_answers: formAnswersBlock(o.answers) },
+      blocks: { form_answers: formAnswersBlock(o.answers, locale) },
     }),
     builtin: (o, brand) => formSubmissionTemplate(o, brand),
     sample: {
@@ -426,13 +431,24 @@ const BINDINGS = {
 type OptsOf<K extends SystemAssetKey> =
   (typeof BINDINGS)[K] extends Binding<infer O> ? O : never;
 
+/**
+ * `locale` is the language the RECIPIENT used, not the server's.
+ *
+ * A lead who filled in an Arabic form is answered in Arabic when Arabic
+ * wording is published, and in English otherwise — the built-in templates are
+ * English, and an English email is a better answer than none.
+ */
 function send<K extends SystemAssetKey>(
   key: K,
   opts: OptsOf<K>,
+  locale: EmailLocale = "en",
 ): Promise<RenderedEmail> {
   const b = BINDINGS[key] as unknown as Binding<OptsOf<K>>;
-  return resolveSystemEmail(key, b.context(opts), (brand) =>
-    b.builtin(opts, brand),
+  return resolveSystemEmail(
+    key,
+    b.context(opts, locale),
+    (brand) => b.builtin(opts, brand),
+    locale,
   );
 }
 
@@ -458,15 +474,18 @@ export async function enquiryAcknowledgementEmail(
     source?: string | null;
     /** The lib/forms registry key, when the lead came through a form. */
     formKey?: string | null;
+    /** `enquiries.locale` — the language the lead wrote in. */
+    locale?: EmailLocale | string | null;
   },
 ): Promise<RenderedEmail> {
-  const { source, formKey, ...rest } = opts;
+  const { source, formKey, locale: rawLocale, ...rest } = opts;
+  const locale: EmailLocale = rawLocale === "ar" ? "ar" : "en";
   const key: SystemAssetKey =
     source === "mortgage" ? "mortgage_enquiry_ack" : "enquiry_auto_reply";
   const binding = BINDINGS[key] as unknown as Binding<EnquiryOpts>;
   const def = formKey ? getFormDef(formKey) : null;
 
-  const base = binding.context(rest);
+  const base = binding.context(rest, locale);
   const ctx: EmailContext = {
     ...base,
     values: {
@@ -485,7 +504,7 @@ export async function enquiryAcknowledgementEmail(
 
   for (const copy of [reply, published?.copy]) {
     if (!copy) continue;
-    const rendered = renderSystemEmail(copy, ctx, brand);
+    const rendered = renderSystemEmail(copy, ctx, brand, locale);
     // An override that renders to nothing is worse than the built-in one.
     if (rendered.subject && rendered.text.trim()) return rendered;
   }
@@ -494,53 +513,64 @@ export async function enquiryAcknowledgementEmail(
 
 export function valuationAcknowledgementEmail(
   opts: ValuationAckOpts,
+  locale: EmailLocale = "en",
 ): Promise<RenderedEmail> {
-  return send("valuation_request_ack", opts);
+  return send("valuation_request_ack", opts, locale);
 }
 
-export function valuationCodeEmail(opts: { code: string }): Promise<RenderedEmail> {
-  return send("valuation_code", opts);
+export function valuationCodeEmail(
+  opts: { code: string },
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("valuation_code", opts, locale);
 }
 
-export function valuationReportRequestedEmail(): Promise<RenderedEmail> {
-  return send("valuation_report_requested", {});
+export function valuationReportRequestedEmail(
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("valuation_report_requested", {}, locale);
 }
 
 export function valuationReportEmail(
   opts: ValuationReportOpts,
+  locale: EmailLocale = "en",
 ): Promise<RenderedEmail> {
-  return send("valuation_report", opts);
+  return send("valuation_report", opts, locale);
 }
 
 export function valuationNurtureDay7Email(
   opts: NurtureDay7Opts,
+  locale: EmailLocale = "en",
 ): Promise<RenderedEmail> {
-  return send("valuation_nurture_day7", opts);
+  return send("valuation_nurture_day7", opts, locale);
 }
 
 export function valuationNurtureDay30Email(
   opts: NurtureDay30Opts,
+  locale: EmailLocale = "en",
 ): Promise<RenderedEmail> {
-  return send("valuation_nurture_day30", opts);
+  return send("valuation_nurture_day30", opts, locale);
 }
 
 export function viewingConfirmationEmail(
   opts: ViewingOpts,
+  locale: EmailLocale = "en",
 ): Promise<RenderedEmail> {
-  return send("viewing_confirmation", opts);
+  return send("viewing_confirmation", opts, locale);
 }
 
-export function newsletterConfirmationEmail(opts: {
-  email: string;
-  confirmUrl: string;
-}): Promise<RenderedEmail> {
-  return send("newsletter_confirmation", opts);
+export function newsletterConfirmationEmail(
+  opts: { email: string; confirmUrl: string },
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("newsletter_confirmation", opts, locale);
 }
 
-export function newsletterWelcomeEmail(opts: {
-  unsubscribeUrl: string;
-}): Promise<RenderedEmail> {
-  return send("newsletter_welcome", opts);
+export function newsletterWelcomeEmail(
+  opts: { unsubscribeUrl: string },
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("newsletter_welcome", opts, locale);
 }
 
 export function staffInvitationEmail(
@@ -610,23 +640,33 @@ export type SystemEmailPreview = {
  */
 export async function previewSystemEmail(
   key: SystemAssetKey,
-  opts: { draft?: SystemEmailCopy | null; brand?: EmailBrand } = {},
+  opts: {
+    draft?: SystemEmailCopy | null;
+    brand?: EmailBrand;
+    /** The language being edited or looked at. */
+    locale?: EmailLocale;
+  } = {},
 ): Promise<SystemEmailPreview> {
+  const locale = opts.locale ?? "en";
   const b = BINDINGS[key] as unknown as Binding<unknown>;
   const [published, brand] = await Promise.all([
     resolvePublishedCopy(key),
     opts.brand ?? readEmailBrand(),
   ]);
-  const ctx = b.context(b.sample);
+  const ctx = b.context(b.sample, locale);
+  // The built-in templates are English. An Arabic preview of an email nobody
+  // has written Arabic for shows that English, which is what would send.
   const builtin = b.builtin(b.sample, brand);
-  const override = published ? renderSystemEmail(published.copy, ctx, brand) : null;
+  const override = published
+    ? renderSystemEmail(published.copy, ctx, brand, locale)
+    : null;
   return {
     live: override ?? builtin,
     liveSource: published
       ? { kind: "override", key: published.from }
       : { kind: "builtin" },
     builtin,
-    draft: opts.draft ? renderSystemEmail(opts.draft, ctx, brand) : null,
+    draft: opts.draft ? renderSystemEmail(opts.draft, ctx, brand, locale) : null,
   };
 }
 
@@ -639,6 +679,8 @@ export async function previewSystemEmail(
 export function renderGallery(
   published: Partial<Record<SystemAssetKey, SystemEmailCopy>>,
   brand: EmailBrand,
+  /** Which language of each email to draw. Arabic falls back per email. */
+  locale: EmailLocale = "en",
 ): Record<
   SystemAssetKey,
   { live: RenderedEmail; liveSource: SystemEmailPreview["liveSource"] }
@@ -663,7 +705,12 @@ export function renderGallery(
     }
     out[key] = found
       ? {
-          live: renderSystemEmail(found.copy, b.context(b.sample), brand),
+          live: renderSystemEmail(
+            found.copy,
+            b.context(b.sample, locale),
+            brand,
+            locale,
+          ),
           liveSource: { kind: "override", key: found.from },
         }
       : { live: b.builtin(b.sample, brand), liveSource: { kind: "builtin" } };
@@ -681,23 +728,30 @@ export async function previewFormReply(
   copy: SystemEmailCopy,
   formKey: string | null,
   brand?: EmailBrand,
+  locale: EmailLocale = "en",
 ): Promise<RenderedEmail> {
   const def = formKey ? getFormDef(formKey) : null;
+  const sample = locale === "ar" ? FORM_REPLY_SAMPLE_AR : FORM_REPLY_SAMPLE;
   const base = enquiryContext({
-    name: FORM_REPLY_SAMPLE.name,
-    message: FORM_REPLY_SAMPLE.message,
-    propertyReference: FORM_REPLY_SAMPLE.propertyReference,
-    propertyTitle: FORM_REPLY_SAMPLE.propertyTitle,
+    name: sample.name,
+    message: sample.message,
+    propertyReference: sample.propertyReference,
+    propertyTitle: sample.propertyTitle,
   });
   const ctx: EmailContext = {
     ...base,
     values: {
       ...base.values,
-      form_name: def?.name ?? FORM_REPLY_SAMPLE.formName,
-      form_surface: def?.surface ?? FORM_REPLY_SAMPLE.formSurface,
+      form_name: def?.name ?? sample.formName,
+      form_surface: def?.surface ?? sample.formSurface,
     },
   };
-  return renderSystemEmail(copy, ctx, brand ?? (await readEmailBrand()));
+  return renderSystemEmail(
+    copy,
+    ctx,
+    brand ?? (await readEmailBrand()),
+    locale,
+  );
 }
 
 /** The advisor reply, with sample wording, for the gallery. */

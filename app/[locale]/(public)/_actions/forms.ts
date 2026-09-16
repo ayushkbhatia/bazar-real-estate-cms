@@ -171,6 +171,7 @@ export async function submitForm(
       const result = await submitServiceLead({
         kind,
         form_key: formKey,
+        locale: context.locale === "ar" ? "ar" : "en",
         name: lead.name,
         phone: lead.phone,
         email: lead.email,

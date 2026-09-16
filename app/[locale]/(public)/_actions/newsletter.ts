@@ -111,7 +111,7 @@ export async function subscribeToNewsletter(
     };
   }
 
-  const template = await newsletterConfirmationEmail({ email, confirmUrl });
+  const template = await newsletterConfirmationEmail({ email, confirmUrl }, locale);
   const send = await sendEmail({
     to: email,
     subject: template.subject,
@@ -158,7 +158,7 @@ export async function confirmNewsletterToken(
   const { data: row } = await admin
     .from("newsletter_subscribers")
     .select(
-      "id, email, status, subscribed_at, confirmation_token",
+      "id, email, status, subscribed_at, confirmation_token, locale",
     )
     .eq("confirmation_token", token)
     .maybeSingle();
@@ -183,7 +183,12 @@ export async function confirmNewsletterToken(
     if (error) return { status: "error", message: error.message };
 
     const unsubscribeUrl = `${siteUrl()}/newsletter/unsubscribe/${token}`;
-    const template = await newsletterWelcomeEmail({ unsubscribeUrl });
+    // The subscriber signed up in one language and clicked a link minutes
+    // later; the welcome follows the signup, not the click.
+    const template = await newsletterWelcomeEmail(
+      { unsubscribeUrl },
+      row.locale === "ar" ? "ar" : "en",
+    );
     await sendEmail({
       to: row.email,
       subject: template.subject,

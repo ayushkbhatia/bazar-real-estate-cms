@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
     const { data: rows, error } = await supabase
       .from("enquiries")
       .select(
-        "id, name, email, brief_raw, source, form_key, property_id, created_at, properties(reference, title)",
+        "id, name, email, brief_raw, source, form_key, locale, property_id, created_at, properties(reference, title)",
       )
       .gte("created_at", fiveMinAgo)
       .is("ack_sent_at", null)
@@ -84,6 +84,7 @@ export async function GET(req: NextRequest) {
         // the reply the inline send would have chosen rather than the general
         // acknowledgement.
         formKey: row.form_key,
+        locale: row.locale,
       });
       const ok = await sendEmail({
         to: row.email,

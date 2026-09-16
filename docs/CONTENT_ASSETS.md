@@ -2,7 +2,7 @@
 
 Everything Bazar sends to a person, in one place: `/admin/content-assets`.
 
-Five tabs:
+Five tabs, each with an **EN | العربية** toggle where wording is edited:
 
 | Tab | Route | What it is |
 |---|---|---|
@@ -114,6 +114,68 @@ its own drops off the acknowledgement's list. The rest — a cron, an admin
 button, a tool's second step — is stated per email, because nothing in the
 codebase enumerates those. A test walks every route named there and fails if
 one does not exist.
+
+## Arabic
+
+The site serves Arabic; so do its emails. Every asset carries `subject_ar` and
+`body_ar` beside `subject` and `body` (migration 0129) — the twin-beside-its-
+sibling rule from docs/I18N.md — and the admin has an **EN | العربية** toggle
+on the gallery, each email's editor, Form replies and Email design.
+
+**Which language a lead is answered in is the lead's, not the server's.**
+
+| Path | Where the language comes from |
+|---|---|
+| any enquiry form | `enquiries.locale` (0100), written by `createEnquiry` |
+| the auto-reply cron | the same column on the row it sweeps |
+| service + sell forms | the submitted `locale`, stored on the lead |
+| valuation ack, report, both nurture crons | `valuation_requests.locale` (0129) |
+| the one-time code and its follow-up | the `locale` the tool posts with |
+| newsletter confirmation | the locale of the signup |
+| newsletter welcome | `newsletter_subscribers.locale` — the signup, not the click |
+| viewing confirmation | the lead's locale on the enquiry |
+
+**English is the floor.** `copyForLocale` uses the Arabic only when BOTH the
+Arabic subject and the Arabic body are written; anything else sends the
+English. Half a translation is never sent, and an email with no Arabic reaches
+an Arabic lead in English rather than not at all. The editor says which state
+each email is in — "Arabic is sent", "Arabic ready, not published", "English is
+sent" — and clearing both Arabic boxes is how you deliberately go back to
+English.
+
+**What an Arabic email actually is**, beyond the words:
+
+- `dir="rtl"` on `<html>`, `<body>` AND the wrapping table, because
+  Outlook.com strips the attribute off the document;
+- a font stack of faces the recipient's machine already has (Tahoma is the one
+  every Windows since XP carries) — `@font-face` is ignored by Gmail and
+  Outlook, so the Arabic webfont the site uses cannot be relied on;
+- lists and quote rules indented from the right: inline styles are physical,
+  since `padding-inline-start` is ignored by Outlook and Gmail's Android app;
+- the built-in panels — the valuation figures, the answers table, the listing
+  references — drawn in Arabic and right to left;
+- the brand's own words from their Arabic twins (`wordmarkAr`, `taglineAr`,
+  `footerTextAr`); the logo, colours and widths are one design in both.
+
+**Tokens are never translated.** A lead's name, a reference and a figure are
+the same in both languages, so only the wording the CODE supplies has a
+language: each token's `fallbackAr` (an unnamed lead is "عزيزنا", not "there")
+and the `sampleAr` the preview uses.
+
+**The built-in templates are English.** An Arabic lead whose email has no
+Arabic — and no published row at all — gets the English built-in. Arabic
+built-ins would mean a second copy of seventeen templates in code; the Arabic
+first draft in the rows (below) is the answer instead.
+
+### The Arabic first draft
+
+`lib/content-assets/system-defaults-ar.ts` holds an Arabic draft of all
+seventeen system emails, and migration 0129 writes it into the rows **only
+where nobody had written one**. A machine first draft the client edits, per
+ADR-0008 — the alternative was seventeen empty Arabic tabs. Every row stays a
+draft, so this changed nothing that sends. `arabic.test.ts` checks each draft
+is Arabic, uses exactly the tokens its English uses, and appears in the
+migration verbatim.
 
 ## How resolution works
 
@@ -317,6 +379,9 @@ braces left over.
 - **0117** — Settings → Templates, which wrote `{subject, body}` overrides into
   `site_settings.email_templates` that nothing read, was replaced by four
   `system_key` rows. The column is left in place, unread.
+- **0129** — Arabic: `subject_ar`/`body_ar` on every asset, an Arabic first
+  draft of all seventeen system emails, `valuation_requests.locale`, RTL
+  rendering, and the EN/AR toggle across the four screens.
 - **0128** — form replies: every public form mapped to the email its visitor
   receives, assignable from the CMS; `content_assets.role`; `forms.reply_asset_id`;
   `enquiries.form_key`; and "where is this used" on every email in the gallery.

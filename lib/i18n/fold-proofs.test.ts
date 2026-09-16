@@ -112,6 +112,10 @@ const FOLD_PROOFS: Record<string, string> = {
   "footer_links.label": "lib/queries/footer.fold.test.ts",
   "footer_contact_items.label": "lib/queries/footer.fold.test.ts",
   "footer_contact_items.body": "lib/queries/footer.fold.test.ts",
+  // Not a page reader: the send path folds to the LEAD's locale, so the proof
+  // runs the renderer at both and asserts on the message it produces.
+  "content_assets.subject": "lib/content-assets/system-resolve.fold.test.ts",
+  "content_assets.body": "lib/content-assets/system-resolve.fold.test.ts",
 };
 
 describe("WIRED_READ fold proofs", () => {

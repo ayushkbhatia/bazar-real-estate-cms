@@ -227,6 +227,9 @@ export async function createEnquiry(
       // general one.
       source: data.source,
       formKey: data.form_key ?? null,
+      // Answer in the language the lead wrote in. Arabic wording is used only
+      // where it exists; otherwise this is the English email it always was.
+      locale: data.locale,
     });
     await sendEmail({
       to: data.email,

@@ -13,19 +13,25 @@ import { readEmailBrand } from "@/lib/content-assets/system-resolve";
 import { renderGallery } from "@/lib/content-assets/system-emails";
 import { allForms, formEmailRouting } from "@/lib/content-assets/usage";
 import { FORM_GROUP_LABELS, type FormGroup } from "@/lib/forms/types";
+import { LangToggle, langFrom, withLang } from "../_lang-toggle";
 import { FormReplyMapping } from "./_mapping";
 import { NewReplyButton } from "./_new-reply";
 
 export const dynamic = "force-dynamic";
 
-export default async function FormRepliesPage() {
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function FormRepliesPage({ searchParams }: PageProps) {
+  const lang = langFrom((await searchParams).lang);
   const [replies, assignments, role, brand] = await Promise.all([
     listFormReplies(),
     listFormAssignments(),
     getStaffRole(),
     readEmailBrand(),
   ]);
-  const live = renderGallery({}, brand);
+  const live = renderGallery({}, brand, lang);
   const counts = assignmentCounts(assignments);
   const forms = allForms();
 
@@ -69,6 +75,18 @@ export default async function FormRepliesPage() {
       }
     >
       <div className="flex flex-col gap-8">
+        <div className="flex flex-wrap items-center gap-3">
+          <LangToggle
+            lang={lang}
+            hrefFor={(l) => withLang("/admin/content-assets/replies", l)}
+          />
+          <span className="text-[12px] text-bz-muted">
+            {lang === "ar"
+              ? "Showing the Arabic each form sends. A reply with no Arabic sends its English."
+              : "The assignment is the same in both languages — only the wording differs."}
+          </span>
+        </div>
+
         <p className="text-[13px] text-bz-muted max-w-[75ch]">
           What a visitor is emailed after they fill in each form on the site.
           Every form sends Bazar&apos;s acknowledgement unless you write a reply
@@ -115,7 +133,7 @@ export default async function FormRepliesPage() {
                 return (
                   <Link
                     key={r.id}
-                    href={`/admin/content-assets/replies/${r.id}`}
+                    href={withLang(`/admin/content-assets/replies/${r.id}`, lang)}
                     className="group rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-border-strong transition-colors"
                   >
                     <div className="flex items-start gap-2">
@@ -140,6 +158,11 @@ export default async function FormRepliesPage() {
                       {used.length === 0
                         ? "Not assigned to a form yet"
                         : `Replies for ${used.length} ${used.length === 1 ? "form" : "forms"}`}
+                    </p>
+                    <p className="mt-0.5 text-[11.5px] text-bz-muted">
+                      {r.subject_ar?.trim() && r.body_ar?.trim()
+                        ? "English and Arabic"
+                        : "English only — Arabic leads get it in English"}
                     </p>
                     {r.deleted_at ? (
                       <p className="mt-1 text-[11.5px] text-bz-muted">In the trash</p>

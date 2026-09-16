@@ -11,6 +11,7 @@ import {
   logoWarning,
   type EmailBrand,
 } from "@/lib/content-assets/email-brand";
+import type { EmailLocale } from "@/lib/content-assets/tokens";
 import type { RenderedEmail } from "@/lib/content-assets/system-render";
 import {
   ImageInsertDialog,
@@ -86,6 +87,9 @@ export function EmailDesignForm({
   const [pickerOpen, setPickerOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [emailKey, setEmailKey] = useState(initialKey);
+  // Which language the preview — and the wording fields — are showing. The
+  // logo and the colours have no language, so the toggle moves only the words.
+  const [lang, setLang] = useState<EmailLocale>("en");
   const [preview, setPreview] = useState<RenderedEmail>(initialPreview);
   const [viewport, setViewport] = useState<EmailViewport>("desktop");
   const [rendering, setRendering] = useState(false);
@@ -99,14 +103,14 @@ export function EmailDesignForm({
     const t = window.setTimeout(async () => {
       setRendering(true);
       try {
-        const next = await previewEmailDesign(emailKey, brand);
+        const next = await previewEmailDesign(emailKey, brand, lang);
         if (id === request.current && next) setPreview(next);
       } finally {
         if (id === request.current) setRendering(false);
       }
     }, 350);
     return () => window.clearTimeout(t);
-  }, [brand, emailKey]);
+  }, [brand, emailKey, lang]);
 
   function set<K extends keyof EmailBrand>(key: K, value: EmailBrand[K]) {
     setBrand((b) => ({ ...b, [key]: value }));
@@ -143,6 +147,41 @@ export function EmailDesignForm({
   return (
     <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_minmax(0,660px)] gap-6 items-start">
       <div className="flex flex-col gap-5 min-w-0">
+        <div className="flex flex-wrap items-center gap-3">
+          <div
+            role="group"
+            aria-label="Wording language"
+            className="inline-flex items-center rounded-md border border-bz-border bg-bz-bg p-0.5"
+          >
+            {(
+              [
+                ["en", "English"],
+                ["ar", "العربية"],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                lang={value}
+                onClick={() => setLang(value)}
+                aria-pressed={lang === value}
+                className={cn(
+                  "h-6 px-2.5 rounded text-[12px] transition-colors",
+                  lang === value
+                    ? "bg-bz-navy text-bz-bg font-medium"
+                    : "text-bz-ink-2 hover:text-bz-ink",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <span className="text-[12px] text-bz-muted">
+            The logo and the colours are one design in both languages; only the
+            words have a language.
+          </span>
+        </div>
+
         <p className="text-[13px] text-bz-muted max-w-[70ch]">
           The frame around every email the site sends — all eighteen, whether
           they use Bazar&apos;s built-in wording or yours. Nothing changes until
@@ -260,20 +299,28 @@ export function EmailDesignForm({
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="flex flex-col gap-1.5">
-                <span className="text-[12px] font-medium text-bz-ink-2">Wordmark</span>
+                <span className="text-[12px] font-medium text-bz-ink-2">
+                  Wordmark {lang === "ar" ? "· Arabic" : "· English"}
+                </span>
                 <input
-                  value={brand.wordmark}
-                  onChange={(e) => set("wordmark", e.target.value)}
-                  placeholder={defaults.wordmark}
+                  dir={lang === "ar" ? "rtl" : "ltr"}
+                  value={lang === "ar" ? brand.wordmarkAr : brand.wordmark}
+                  onChange={(e) =>
+                    set(lang === "ar" ? "wordmarkAr" : "wordmark", e.target.value)
+                  }
+                  placeholder={lang === "ar" ? defaults.wordmarkAr : defaults.wordmark}
                   className={inputCls}
                 />
               </label>
               <label className="flex flex-col gap-1.5">
                 <span className="text-[12px] font-medium text-bz-ink-2">Beside it</span>
                 <input
-                  value={brand.tagline}
-                  onChange={(e) => set("tagline", e.target.value)}
-                  placeholder={defaults.tagline}
+                  dir={lang === "ar" ? "rtl" : "ltr"}
+                  value={lang === "ar" ? brand.taglineAr : brand.tagline}
+                  onChange={(e) =>
+                    set(lang === "ar" ? "taglineAr" : "tagline", e.target.value)
+                  }
+                  placeholder={lang === "ar" ? defaults.taglineAr : defaults.tagline}
                   className={inputCls}
                 />
               </label>
@@ -348,10 +395,13 @@ export function EmailDesignForm({
           <label className="flex flex-col gap-1.5">
             <span className="text-[12px] font-medium text-bz-ink-2">Company details</span>
             <textarea
-              value={brand.footerText}
-              onChange={(e) => set("footerText", e.target.value)}
+              dir={lang === "ar" ? "rtl" : "ltr"}
+              value={lang === "ar" ? brand.footerTextAr : brand.footerText}
+              onChange={(e) =>
+                set(lang === "ar" ? "footerTextAr" : "footerText", e.target.value)
+              }
               rows={3}
-              placeholder={defaults.footerText}
+              placeholder={lang === "ar" ? defaults.footerTextAr : defaults.footerText}
               className={cn(inputCls, "resize-y")}
             />
             <span className="text-[11px] text-bz-muted">
@@ -362,9 +412,17 @@ export function EmailDesignForm({
             <label className="flex flex-col gap-1.5">
               <span className="text-[12px] font-medium text-bz-ink-2">Link text</span>
               <input
-                value={brand.footerLinkLabel}
-                onChange={(e) => set("footerLinkLabel", e.target.value)}
-                placeholder={defaults.footerLinkLabel}
+                dir={lang === "ar" ? "rtl" : "ltr"}
+                value={lang === "ar" ? brand.footerLinkLabelAr : brand.footerLinkLabel}
+                onChange={(e) =>
+                  set(
+                    lang === "ar" ? "footerLinkLabelAr" : "footerLinkLabel",
+                    e.target.value,
+                  )
+                }
+                placeholder={
+                  lang === "ar" ? defaults.footerLinkLabelAr : defaults.footerLinkLabel
+                }
                 className={inputCls}
               />
             </label>

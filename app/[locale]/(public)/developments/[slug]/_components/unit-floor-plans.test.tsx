@@ -1,7 +1,9 @@
-import { describe, expect, it } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { UnitFloorPlans } from "./unit-floor-plans";
+import { renderWithIntl } from "@/lib/i18n/test-utils";
+import type { Locale } from "@/lib/i18n/locales";
 import { PreferencesProvider } from "@/lib/preferences";
 import type { PlanCard, UnitTypeCard } from "@/lib/queries/development-unit-plans";
 
@@ -45,8 +47,16 @@ const TYPES: UnitTypeCard[] = [
   }),
 ];
 
-function renderSection(over: Partial<Parameters<typeof UnitFloorPlans>[0]> = {}) {
-  return render(
+/**
+ * `renderWithIntl`, not `render`: the gated card reads the visitor's locale so
+ * the email it triggers answers in the language they were reading, and a bare
+ * `render()` leaves `useLocale()` with no provider to read.
+ */
+function renderSection(
+  over: Partial<Parameters<typeof UnitFloorPlans>[0]> = {},
+  locale: Locale = "en",
+) {
+  return renderWithIntl(
     <PreferencesProvider>
       <UnitFloorPlans
         types={TYPES}
@@ -59,6 +69,7 @@ function renderSection(over: Partial<Parameters<typeof UnitFloorPlans>[0]> = {})
         {...over}
       />
     </PreferencesProvider>,
+    { locale },
   );
 }
 
@@ -160,5 +171,37 @@ describe("UnitFloorPlans", () => {
     expect(
       screen.getAllByRole("button", { name: /request layout/i }).length,
     ).toBeGreaterThan(0);
+  });
+
+  /**
+   * The advisor's reply to a gated request is written in the language the
+   * visitor was reading, and that language is only knowable in the browser —
+   * the email itself is sent later, from a request that no longer exists. So
+   * the locale has to travel with the lead, and this asserts it leaves.
+   */
+  it("sends the visitor's locale with a gated layout request", async () => {
+    const calls: Array<{ url: string; body: Record<string, unknown> }> = [];
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
+        calls.push({ url: String(url), body: JSON.parse(String(init?.body)) });
+        return new Response(JSON.stringify({ ok: true }), { status: 200 });
+      }),
+    );
+    try {
+      renderSection({ gated: true }, "ar");
+      await userEvent.click(
+        screen.getAllByRole("button", { name: /request layout/i })[0],
+      );
+      await userEvent.type(screen.getByLabelText("Email"), "amira@example.com");
+      await userEvent.click(
+        screen.getByRole("button", { name: /email me the floor plan/i }),
+      );
+      expect(calls).toHaveLength(1);
+      expect(calls[0].url).toBe("/api/valuation-lead");
+      expect(calls[0].body.locale).toBe("ar");
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 });

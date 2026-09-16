@@ -45,6 +45,12 @@ const uuidOrEmpty = z
 /** Step 1 — property location. The owner picks the area; everything else
  *  is free-text so we don't trip on Bazar-area edge cases. */
 export const valuationStep1Schema = z.object({
+    /**
+     * The locale the owner used. Optional: the action falls back to the
+     * locale of the request, so an older client that sends nothing still
+     * files the language the page was served in.
+     */
+    locale: z.enum(["en", "ar"]).optional(),
   area_id: uuidOrEmpty,
   address_line: z.string().max(200).optional().default(""),
   building_name: z.string().max(120).optional().default(""),

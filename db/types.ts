@@ -631,6 +631,7 @@ export type Database = {
       content_assets: {
         Row: {
           body: string
+          body_ar: string | null
           body_format: string
           category: string
           created_at: string
@@ -647,11 +648,13 @@ export type Database = {
           slug: string
           status: Database["public"]["Enums"]["content_asset_status"]
           subject: string | null
+          subject_ar: string | null
           system_key: string | null
           updated_at: string
         }
         Insert: {
           body?: string
+          body_ar?: string | null
           body_format?: string
           category?: string
           created_at?: string
@@ -668,11 +671,13 @@ export type Database = {
           slug: string
           status?: Database["public"]["Enums"]["content_asset_status"]
           subject?: string | null
+          subject_ar?: string | null
           system_key?: string | null
           updated_at?: string
         }
         Update: {
           body?: string
+          body_ar?: string | null
           body_format?: string
           category?: string
           created_at?: string
@@ -689,6 +694,7 @@ export type Database = {
           slug?: string
           status?: Database["public"]["Enums"]["content_asset_status"]
           subject?: string | null
+          subject_ar?: string | null
           system_key?: string | null
           updated_at?: string
         }
@@ -3476,6 +3482,7 @@ export type Database = {
           floor: number | null
           furnishing: Database["public"]["Enums"]["property_furnishing"] | null
           id: string
+          locale: string
           marketing_opt_in: boolean
           mortgage_state:
             | Database["public"]["Enums"]["valuation_mortgage_state"]
@@ -3515,6 +3522,7 @@ export type Database = {
           floor?: number | null
           furnishing?: Database["public"]["Enums"]["property_furnishing"] | null
           id?: string
+          locale?: string
           marketing_opt_in?: boolean
           mortgage_state?:
             | Database["public"]["Enums"]["valuation_mortgage_state"]
@@ -3554,6 +3562,7 @@ export type Database = {
           floor?: number | null
           furnishing?: Database["public"]["Enums"]["property_furnishing"] | null
           id?: string
+          locale?: string
           marketing_opt_in?: boolean
           mortgage_state?:
             | Database["public"]["Enums"]["valuation_mortgage_state"]

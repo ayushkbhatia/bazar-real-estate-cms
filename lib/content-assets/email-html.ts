@@ -12,6 +12,7 @@ import {
   tokenDef,
   tokenPattern,
   tokenValue,
+  type EmailLocale,
   type TokenContext,
   type TokenName,
 } from "./tokens";
@@ -175,7 +176,14 @@ export type EmailContext = {
   blocks?: EmailBlocks;
 };
 
-function styledOptions(brand: EmailBrand): sanitizeHtml.IOptions {
+function styledOptions(
+  brand: EmailBrand,
+  locale: EmailLocale = "en",
+): sanitizeHtml.IOptions {
+  // Inline styles are physical, not logical: `padding-inline-start` and
+  // `border-inline-start` are ignored by Outlook and by Gmail's Android app,
+  // so the side has to be chosen here rather than left to the renderer.
+  const start = locale === "ar" ? "right" : "left";
   const base = baseOptions();
   const style =
     (css: string) =>
@@ -202,16 +210,20 @@ function styledOptions(brand: EmailBrand): sanitizeHtml.IOptions {
     transformTags: {
       p: style("margin:0 0 14px"),
       h2: style(
-        `margin:26px 0 10px;font-family:Georgia,serif;font-weight:normal;font-size:24px;line-height:1.2;letter-spacing:-0.015em;color:${brand.textColor}`,
+        locale === "ar"
+          ? // Georgia has no Arabic, and a serif heading over a sans body is a
+            // Latin device; Arabic takes weight instead.
+            `margin:26px 0 10px;font-weight:600;font-size:23px;line-height:1.45;color:${brand.textColor}`
+          : `margin:26px 0 10px;font-family:Georgia,serif;font-weight:normal;font-size:24px;line-height:1.2;letter-spacing:-0.015em;color:${brand.textColor}`,
       ),
       h3: style(
         `margin:22px 0 8px;font-size:16px;font-weight:600;line-height:1.3;color:${brand.textColor}`,
       ),
-      ul: style("margin:0 0 14px;padding-left:22px"),
-      ol: style("margin:0 0 14px;padding-left:22px"),
+      ul: style(`margin:0 0 14px;padding-${start}:22px`),
+      ol: style(`margin:0 0 14px;padding-${start}:22px`),
       li: style("margin:0 0 4px"),
       blockquote: style(
-        `margin:20px 0;padding:12px 16px;background:#fff;border-left:3px solid ${brand.linkColor};font-style:italic;color:#32312d`,
+        `margin:20px 0;padding:12px 16px;background:#fff;border-${start}:3px solid ${brand.linkColor};font-style:${locale === "ar" ? "normal" : "italic"};color:#32312d`,
       ),
       hr: style("border:0;border-top:1px solid #E5E5DF;margin:24px 0"),
       a: (tagName, attribs) => {
@@ -277,8 +289,9 @@ export function renderEmailBodyHtml(
   body: string,
   ctx: EmailContext,
   brand: EmailBrand,
+  locale: EmailLocale = "en",
 ): string {
-  let html = sanitizeHtml(body, styledOptions(brand));
+  let html = sanitizeHtml(body, styledOptions(brand, locale));
 
   // A block token on a line of its own replaces the whole paragraph — a panel
   // is a <div> or <table>, and neither may sit inside a <p>. The panel goes in
@@ -385,7 +398,11 @@ function stripTags(s: string): string {
  * than by a library: the input has already been through the allowlist, so the
  * tag set is small and known.
  */
-export function renderEmailBodyText(body: string, ctx: EmailContext): string {
+export function renderEmailBodyText(
+  body: string,
+  ctx: EmailContext,
+  locale: EmailLocale = "en",
+): string {
   let html = sanitizeEmailBody(body);
 
   html = html.replace(/<br\s*\/?>/g, "\n");
@@ -432,7 +449,7 @@ export function renderEmailBodyText(body: string, ctx: EmailContext): string {
     const name = raw.toLowerCase();
     if (!isTokenName(name)) return "";
     const block = blockFor(name, ctx);
-    return block ? block.text : tokenValue(name, ctx.values);
+    return block ? block.text : tokenValue(name, ctx.values, locale);
   });
 
   return text
