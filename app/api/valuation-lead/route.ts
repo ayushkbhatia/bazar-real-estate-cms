@@ -31,6 +31,13 @@ export const dynamic = "force-dynamic";
 
 const issueSchema = z.object({
   action: z.literal("issue"),
+  /**
+   * The language the visitor is using the tool in. A route handler has no
+   * request locale to fall back on — the page has to say — so an older client
+   * that sends nothing simply gets the English email it always got.
+   */
+  locale: z.enum(["en", "ar"]).optional(),
+
   email: z.string().email(),
   phone: z.string().optional(),
   name: z.string().min(1).max(120).optional(),
@@ -42,6 +49,13 @@ const issueSchema = z.object({
 
 const verifySchema = z.object({
   action: z.literal("verify"),
+  /**
+   * The language the visitor is using the tool in. A route handler has no
+   * request locale to fall back on — the page has to say — so an older client
+   * that sends nothing simply gets the English email it always got.
+   */
+  locale: z.enum(["en", "ar"]).optional(),
+
   email: z.string().email(),
   code: z.string().regex(/^\d{6}$/),
   phone: z.string().optional(),
@@ -85,7 +99,7 @@ export async function POST(req: NextRequest) {
       });
 
       // Best-effort email; skipped silently if Resend not configured.
-      const tpl = await valuationCodeEmail({ code });
+      const tpl = await valuationCodeEmail({ code }, data.locale ?? "en");
       await sendEmail({
         to: data.email,
         subject: tpl.subject,
@@ -154,6 +168,7 @@ export async function POST(req: NextRequest) {
           phone: data.phone ?? null,
           brief_raw: briefRaw,
           source: "valuation" as const,
+          locale: data.locale ?? "en",
         })
         .select("id")
         .maybeSingle();
@@ -191,7 +206,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Send the confirmation email
-    const confirmation = await valuationReportRequestedEmail();
+    const confirmation = await valuationReportRequestedEmail(data.locale ?? "en");
     await sendEmail({
       to: data.email,
       subject: confirmation.subject,

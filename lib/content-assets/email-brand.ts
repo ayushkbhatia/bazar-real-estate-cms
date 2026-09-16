@@ -41,6 +41,14 @@ export type EmailBrand = {
   wordmark: string;
   /** The small line after the wordmark — "· Abu Dhabi". */
   tagline: string;
+  /**
+   * The Arabic half of the brand's WORDS. Blank means the English is used in
+   * both, which is the right default for a wordmark that is already a name.
+   * The logo, the colours and the widths have no Arabic twin: they are one
+   * design in both languages.
+   */
+  wordmarkAr: string;
+  taglineAr: string;
   headerAlign: EmailAlignment;
   /** Page background behind the message. */
   backgroundColor: string;
@@ -57,6 +65,8 @@ export type EmailBrand = {
   /** Lines under the footer's company details, one per line. */
   footerText: string;
   footerLinkLabel: string;
+  footerTextAr: string;
+  footerLinkLabelAr: string;
   /** Blank means the site's own address. */
   footerLinkUrl: string;
 };
@@ -69,6 +79,8 @@ export const DEFAULT_EMAIL_BRAND: EmailBrand = {
   logoWidth: 132,
   wordmark: "Bazar",
   tagline: "· Abu Dhabi",
+  wordmarkAr: "بازار",
+  taglineAr: "· أبوظبي",
   headerAlign: "left",
   backgroundColor: "#FAFAF6",
   textColor: "#1B1A17",
@@ -78,6 +90,8 @@ export const DEFAULT_EMAIL_BRAND: EmailBrand = {
   linkColor: "#005777",
   footerText: "Bazar Real Estate Brokerage LLC · ORN 28041 · Abu Dhabi, UAE",
   footerLinkLabel: "bazar.ae",
+  footerTextAr: "بازار للوساطة العقارية ذ.م.م · رقم التسجيل ٢٨٠٤١ · أبوظبي، الإمارات",
+  footerLinkLabelAr: "bazar.ae",
   footerLinkUrl: "",
 };
 
@@ -119,6 +133,8 @@ export const emailBrandSchema = z
     logoWidth: z.number().int().min(40, "At least 40px").max(320, "At most 320px"),
     wordmark: z.string().trim().max(40),
     tagline: z.string().trim().max(60),
+    wordmarkAr: z.string().trim().max(40),
+    taglineAr: z.string().trim().max(60),
     headerAlign: z.enum(EMAIL_ALIGNMENTS),
     backgroundColor: hex.or(z.literal("")),
     textColor: hex.or(z.literal("")),
@@ -128,6 +144,8 @@ export const emailBrandSchema = z
     linkColor: hex.or(z.literal("")),
     footerText: z.string().max(500),
     footerLinkLabel: z.string().trim().max(60),
+    footerTextAr: z.string().max(500),
+    footerLinkLabelAr: z.string().trim().max(60),
     footerLinkUrl: z
       .string()
       .trim()

@@ -8,6 +8,7 @@
  * report follow-up.
  */
 
+import { useLocale } from "next-intl";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, Loader2, Mail, ShieldCheck } from "lucide-react";
@@ -63,6 +64,8 @@ export function ValuationLeadGate({
    * route-scoped namespace is scoped by the URL, not by the folder.
    */
   const t = useTranslations("forms");
+  // The email this gate triggers answers in the language the visitor is in.
+  const locale = useLocale();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("form");
   const [loading, setLoading] = useState(false);
@@ -84,6 +87,7 @@ export function ValuationLeadGate({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "issue",
+          locale,
           email,
           phone: phone || undefined,
           name: name || undefined,
@@ -118,6 +122,7 @@ export function ValuationLeadGate({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "verify",
+          locale,
           email,
           code,
           phone: phone || undefined,

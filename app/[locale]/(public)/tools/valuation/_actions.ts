@@ -14,6 +14,7 @@ import { estimateValuation } from "@/lib/valuation";
 import { getAreaSlugById } from "@/lib/queries/areas";
 import { sendEmail } from "@/lib/email";
 import { valuationAcknowledgementEmail } from "@/lib/content-assets/system-emails";
+import { currentLocale } from "@/lib/i18n/current";
 import {
   checkRateLimit,
   extractClientIp,
@@ -96,8 +97,16 @@ export async function submitValuation(
     data: { user },
   } = await supabase.auth.getUser();
 
+  // The owner is answered in the language they filled the tool in. Recorded
+  // on the row (0129) because the report and both nurture emails are sent
+  // days later, by an advisor and by a cron, neither of which has a request.
+  const requestLocale = await currentLocale();
+  const locale: "en" | "ar" =
+    (data.locale ?? requestLocale) === "ar" ? "ar" : "en";
+
   const insertPayload: Database["public"]["Tables"]["valuation_requests"]["Insert"] =
     {
+      locale,
       account_id: user?.id ?? null,
       owner_name: data.owner_name,
       owner_email: data.owner_email,
@@ -172,7 +181,7 @@ export async function submitValuation(
       estimateMidAed: estimate.midAed,
       addressLine: data.address_line || null,
       buildingName: data.building_name || null,
-    });
+    }, locale);
     await sendEmail({
       to: data.owner_email,
       subject: tpl.subject,

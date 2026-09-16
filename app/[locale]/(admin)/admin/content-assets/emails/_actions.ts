@@ -48,11 +48,13 @@ export type EmailActionResult =
   | { status: "error"; message: string; fieldErrors?: Record<string, string> };
 
 const copySchema = z.object({
-  subject: z
-    .string()
-    .trim()
-    .min(1, "Write a subject line.")
-    .max(200, "Keep the subject under 200 characters."),
+  /**
+   * Which half of the row this save is for. The English is the one that must
+   * always be there — a blank English subject would leave the email with
+   * nothing to send — so only `en` carries the required-field rules.
+   */
+  lang: z.enum(["en", "ar"]).default("en"),
+  subject: z.string().trim().max(200, "Keep the subject under 200 characters."),
   body: z.string().max(40_000, "The message is too long."),
   notes: z.string().max(2000, "Notes are too long.").nullable().optional(),
   status: z.enum(["draft", "published"]),
@@ -76,8 +78,21 @@ function copyProblems(
   key: SystemAssetKey,
   copy: { subject: string; body: string },
   publishing: boolean,
+  lang: "en" | "ar" = "en",
 ): Record<string, string> {
   const problems: Record<string, string> = {};
+  const written = Boolean(copy.subject.trim() || visibleText(copy.body));
+
+  // Arabic is optional: an email with no Arabic answers an Arabic lead in
+  // English, which is the designed fallback. What is not allowed is HALF an
+  // Arabic email — a subject in one language over a body in the other.
+  if (lang === "ar" && written) {
+    if (!copy.subject.trim()) problems.subject = "Write the Arabic subject too, or clear both.";
+    if (!visibleText(copy.body)) problems.body = "Write the Arabic message too, or clear both.";
+  }
+  if (lang === "en" && !copy.subject.trim()) {
+    problems.subject = "Write a subject line.";
+  }
   const allowed = SYSTEM_ASSETS[key].tokens;
 
   for (const [field, text] of [
@@ -103,11 +118,13 @@ function copyProblems(
       .join(", ")}.`;
   }
 
-  if (!visibleText(copy.body) && !problems.body) {
+  if (lang === "en" && !visibleText(copy.body) && !problems.body) {
     problems.body = "Write the message.";
   }
 
-  if (publishing) {
+  // A required link is required in both languages — an Arabic confirmation
+  // with no confirm link is as broken as an English one.
+  if (publishing && (lang === "en" || written)) {
     const missing = missingRequiredTokens(key, copy);
     if (missing.length > 0 && !problems.body) {
       problems.body = `This email doesn't work without ${missing
@@ -149,7 +166,13 @@ export async function saveSystemEmail(
   // The allowlist is the boundary; the editor is only a convention.
   const body = sanitizeEmailBody(parsed.data.body);
   const copy = { subject: parsed.data.subject, body };
-  const problems = copyProblems(key, copy, parsed.data.status === "published");
+  const lang = parsed.data.lang;
+  const problems = copyProblems(
+    key,
+    copy,
+    parsed.data.status === "published",
+    lang,
+  );
   if (Object.keys(problems).length > 0) {
     return {
       status: "error",
@@ -163,7 +186,7 @@ export async function saveSystemEmail(
 
   const { data: before } = await supabase
     .from("content_assets")
-    .select("id, status, subject, body_format")
+    .select("id, status, subject, subject_ar, body_format")
     .eq("system_key", key)
     .maybeSingle();
   if (!before) {
@@ -173,12 +196,21 @@ export async function saveSystemEmail(
     };
   }
 
+  // Clearing both Arabic boxes is how an editor says "answer these leads in
+  // English", so an empty Arabic save writes nulls rather than empty strings —
+  // `copyForLocale` treats null and "" alike, and null reads as "never written".
+  const values =
+    lang === "ar"
+      ? {
+          subject_ar: copy.subject.trim() || null,
+          body_ar: visibleText(body) ? body : null,
+        }
+      : { subject: copy.subject, body, body_format: "html" as const };
+
   const { error } = await supabase
     .from("content_assets")
     .update({
-      subject: copy.subject,
-      body,
-      body_format: "html",
+      ...values,
       notes: parsed.data.notes?.trim() || null,
       status: parsed.data.status,
     })
@@ -200,6 +232,16 @@ export async function saveSystemEmail(
   revalidate(key);
   const wentLive = parsed.data.status === "published" && before.status !== "published";
   const wentBack = parsed.data.status === "draft" && before.status === "published";
+  if (lang === "ar" && !wentLive && !wentBack) {
+    return {
+      status: "ok",
+      message: copy.subject.trim()
+        ? parsed.data.status === "published"
+          ? "Arabic saved — Arabic leads receive it."
+          : "Arabic saved. It sends once this email is published."
+        : "Arabic cleared — Arabic leads receive the English version.",
+    };
+  }
   return {
     status: "ok",
     message: wentLive
@@ -220,18 +262,25 @@ export type DraftPreview = {
 /** Render unsaved copy as it would send to the sample recipient. */
 export async function previewSystemEmailDraft(
   key: string,
-  draft: { subject: string; body: string },
+  draft: { subject: string; body: string; lang?: "en" | "ar" },
 ): Promise<DraftPreview | null> {
   if (!isSystemAssetKey(key)) return null;
   await requireRole(STAFF_ROLES);
   const body = sanitizeEmailBody(String(draft.body ?? "").slice(0, 40_000));
   const subject = String(draft.subject ?? "").slice(0, 200);
+  const lang = draft.lang === "ar" ? "ar" : "en";
   const preview = await previewSystemEmail(key, {
-    draft: { subject, body, format: "html" },
+    // The draft is handed over as the half being edited: an Arabic draft is
+    // rendered as the Arabic email, right to left, not as a twin of anything.
+    draft:
+      lang === "ar"
+        ? { subject: "", body: "", subjectAr: subject, bodyAr: body, format: "html" }
+        : { subject, body, format: "html" },
+    locale: lang,
   });
   return {
     email: preview.draft!,
-    problems: copyProblems(key, { subject, body }, true),
+    problems: copyProblems(key, { subject, body }, true, lang),
   };
 }
 
@@ -241,21 +290,23 @@ export async function previewSystemEmailDraft(
  */
 export async function sendSystemEmailTest(
   key: string,
-  draft: { subject: string; body: string } | null,
+  draft: { subject: string; body: string; lang?: "en" | "ar" } | null,
 ): Promise<EmailActionResult> {
   if (!isSystemAssetKey(key)) return { status: "error", message: "Unknown email." };
   const { user } = await requireRole(WRITE_ROLES);
   if (!user.email)
     return { status: "error", message: "Your account has no email address." };
 
+  const lang = draft?.lang === "ar" ? "ar" : "en";
+  const subject = String(draft?.subject ?? "").slice(0, 200);
+  const body = sanitizeEmailBody(String(draft?.body ?? "").slice(0, 40_000));
   const preview = await previewSystemEmail(key, {
     draft: draft
-      ? {
-          subject: String(draft.subject ?? "").slice(0, 200),
-          body: sanitizeEmailBody(String(draft.body ?? "").slice(0, 40_000)),
-          format: "html",
-        }
+      ? lang === "ar"
+        ? { subject: "", body: "", subjectAr: subject, bodyAr: body, format: "html" }
+        : { subject, body, format: "html" }
       : null,
+    locale: lang,
   });
   const email = preview.draft ?? preview.live;
   const result = await sendEmail({
@@ -329,11 +380,14 @@ export async function saveEmailDesign(raw: unknown): Promise<EmailActionResult> 
 export async function previewEmailDesign(
   key: string,
   raw: unknown,
+  lang: "en" | "ar" = "en",
 ): Promise<RenderedEmail | null> {
   await requireRole(STAFF_ROLES);
   const brand = resolveEmailBrand(raw);
+  // The advisor's reply has no Arabic wording of its own — an advisor writes
+  // each one — so it previews the design in English either way.
   if (key === "advisor_reply") return previewAdvisorReply(brand);
   if (!isSystemAssetKey(key)) return null;
-  const preview = await previewSystemEmail(key, { brand });
+  const preview = await previewSystemEmail(key, { brand, locale: lang });
   return preview.live;
 }

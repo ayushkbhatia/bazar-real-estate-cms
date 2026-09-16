@@ -119,3 +119,53 @@ describe("the email a form's lead receives", () => {
     expect(readFormReply).not.toHaveBeenCalled();
   });
 });
+
+describe("the language a lead is answered in", () => {
+  it("is Arabic when the lead wrote in Arabic and the reply has Arabic", async () => {
+    reads.reply = {
+      subject: "Thanks",
+      body: "<p>Thanks {{lead_first_name}}</p>",
+      subjectAr: "شكراً لك",
+      bodyAr: "<p>شكراً {{lead_first_name}}</p>",
+      format: "html",
+    };
+    const { enquiryAcknowledgementEmail } = await load();
+    const out = await enquiryAcknowledgementEmail({
+      ...LEAD,
+      formKey: "contact_enquiry",
+      locale: "ar",
+    });
+    expect(out.subject).toBe("شكراً لك");
+    expect(out.html).toContain('dir="rtl"');
+  });
+
+  it("is English when the lead wrote in Arabic and nobody wrote the Arabic", async () => {
+    reads.reply = {
+      subject: "Thanks",
+      body: "<p>Thanks</p>",
+      subjectAr: null,
+      bodyAr: null,
+      format: "html",
+    };
+    const { enquiryAcknowledgementEmail } = await load();
+    const out = await enquiryAcknowledgementEmail({
+      ...LEAD,
+      formKey: "contact_enquiry",
+      locale: "ar",
+    });
+    expect(out.subject).toBe("Thanks");
+    expect(out.html).toContain('dir="ltr"');
+  });
+
+  it("is English for an Arabic lead when only the built-in exists", async () => {
+    const { enquiryAcknowledgementEmail } = await load();
+    const out = await enquiryAcknowledgementEmail({ ...LEAD, locale: "ar" });
+    expect(out.subject).toBe("We received your brief");
+  });
+
+  it("treats an unknown locale as English rather than failing", async () => {
+    const { enquiryAcknowledgementEmail } = await load();
+    const out = await enquiryAcknowledgementEmail({ ...LEAD, locale: "fr" });
+    expect(out.subject).toBe("We received your brief");
+  });
+});

@@ -22,6 +22,14 @@
  *     reading it in a sent message.
  */
 
+/**
+ * The language an email is being written in or sent in.
+ *
+ * Narrower than `Locale` on purpose: this is about one email's copy, and an
+ * import of the routing locale here would tie the send path to next-intl.
+ */
+export type EmailLocale = "en" | "ar";
+
 export type TokenName =
   | "lead_first_name"
   | "lead_name"
@@ -98,6 +106,17 @@ export type TokenDef = {
   /** Shown in the editor so copy can be judged in context. */
   sample: string;
   /**
+   * The sample and the fallback in Arabic.
+   *
+   * A token has ONE value at send time — the lead's own name is not
+   * translated — so these exist for the two strings the code itself supplies:
+   * the neutral wording a missing value falls back to ("there" → "عزيزي
+   * المتواصل"), and the example the editor previews against. Absent means the
+   * English serves both, which is right for a reference, a code or a URL.
+   */
+  sampleAr?: string;
+  fallbackAr?: string;
+  /**
    * Used when the real value is absent at send time. An empty fallback makes
    * the token vanish — and a paragraph left with nothing in it is dropped from
    * a system email, which is how "For BAZ-AD-04891 · 3-bed" disappears from an
@@ -113,6 +132,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "lead_first_name",
     label: "Lead first name",
     sample: "Amira",
+    sampleAr: "أميرة",
+    fallbackAr: "عزيزنا",
     fallback: "there",
     scope: "shared",
     kind: "text",
@@ -121,6 +142,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "lead_name",
     label: "Lead full name",
     sample: "Amira Haddad",
+    sampleAr: "أميرة حداد",
+    fallbackAr: "عزيزنا",
     fallback: "there",
     scope: "shared",
     kind: "text",
@@ -129,6 +152,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "property_reference",
     label: "Property reference",
     sample: "BAZ-AD-04891",
+    fallbackAr: "طلبك",
     fallback: "your enquiry",
     scope: "shared",
     kind: "text",
@@ -137,6 +161,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "property_title",
     label: "Property title",
     sample: "3-bed on Al Reem Island",
+    sampleAr: "شقة بثلاث غرف في جزيرة الريم",
+    fallbackAr: "العقار الذي سألت عنه",
     fallback: "the property you asked about",
     scope: "shared",
     kind: "text",
@@ -145,6 +171,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "advisor_name",
     label: "Advisor name",
     sample: "Khalid Al Zaabi",
+    sampleAr: "خالد الزعابي",
+    fallbackAr: "مستشارك في بازار",
     fallback: "your Bazar advisor",
     scope: "shared",
     kind: "text",
@@ -153,6 +181,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "advisor_phone",
     label: "Advisor phone",
     sample: "+971 54 737 0776",
+    fallbackAr: "الرقم الوارد في التوقيع",
     fallback: "the number in my signature",
     scope: "shared",
     kind: "text",
@@ -169,6 +198,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "property_line",
     label: "Property line (only when a listing was named)",
     sample: "For BAZ-AD-04891 · 3-bed on Al Reem Island",
+    sampleAr: "بخصوص BAZ-AD-04891 · شقة بثلاث غرف في جزيرة الريم",
     fallback: "",
     scope: "system",
     kind: "text",
@@ -177,6 +207,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "enquiry_message",
     label: "What the lead wrote",
     sample: "Is the 3-bed still available for a September move?",
+    sampleAr: "هل ما زالت الشقة متاحة للانتقال في سبتمبر؟",
+    fallbackAr: "رسالتك",
     fallback: "your message",
     scope: "system",
     kind: "text",
@@ -185,6 +217,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "valuation_property",
     label: "Valued property",
     sample: "Marina Heights · Al Reem Island",
+    sampleAr: "مارينا هايتس · جزيرة الريم",
+    fallbackAr: "عقارك",
     fallback: "your property",
     scope: "system",
     kind: "text",
@@ -193,6 +227,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "valuation_range",
     label: "Instant valuation range",
     sample: "AED 2.1M – AED 2.6M",
+    fallbackAr: "النطاق الوارد في تقريرك",
     fallback: "the range in your report",
     scope: "system",
     kind: "text",
@@ -201,6 +236,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "valuation_midpoint",
     label: "Valuation midpoint",
     sample: "AED 2.3M",
+    fallbackAr: "متوسط القيمة في تقريرك",
     fallback: "the midpoint in your report",
     scope: "system",
     kind: "text",
@@ -209,6 +245,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "valuation_final",
     label: "Refined valuation",
     sample: "AED 2.45M",
+    fallbackAr: "الرقم الوارد في تقريرك",
     fallback: "the figure in your report",
     scope: "system",
     kind: "text",
@@ -226,6 +263,7 @@ export const TOKENS: readonly TokenDef[] = [
     label: "Advisor's notes (only if written)",
     sample:
       "Two recent sales on the same floor closed at AED 2.4M and AED 2.5M.",
+    sampleAr: "أُغلقت صفقتان في الطابق نفسه عند ٢٫٤ و٢٫٥ مليون درهم.",
     fallback: "",
     scope: "system",
     kind: "text",
@@ -234,6 +272,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "verification_code",
     label: "One-time code",
     sample: "482913",
+    fallbackAr: "الرمز الظاهر على الشاشة",
     fallback: "the code on screen",
     scope: "system",
     kind: "text",
@@ -258,6 +297,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "viewing_time",
     label: "Viewing time",
     sample: "Thursday 4 September, 4:30 pm",
+    sampleAr: "الخميس ١٨ سبتمبر، ٤:٣٠ مساءً",
+    fallbackAr: "الموعد المتفق عليه",
     fallback: "the time we agreed",
     scope: "system",
     kind: "text",
@@ -266,6 +307,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "viewing_location",
     label: "Viewing location",
     sample: "Marina Heights lobby, Al Reem Island",
+    sampleAr: "بهو مارينا هايتس، جزيرة الريم",
+    fallbackAr: "نقطة اللقاء التي أرسلناها إليك",
     fallback: "the meeting point we sent you",
     scope: "system",
     kind: "text",
@@ -274,6 +317,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "viewing_duration",
     label: "Viewing duration",
     sample: "45 minutes",
+    sampleAr: "٤٥ دقيقة",
+    fallbackAr: "نحو ٤٥ دقيقة",
     fallback: "about 45 minutes",
     scope: "system",
     kind: "text",
@@ -298,6 +343,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "staff_name",
     label: "Staff member's first name",
     sample: "Layla",
+    sampleAr: "ليلى",
+    fallbackAr: "زميلنا",
     fallback: "there",
     scope: "system",
     kind: "text",
@@ -306,6 +353,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "sender_name",
     label: "Who sent it",
     sample: "Omar Farouk",
+    sampleAr: "عمر فاروق",
+    fallbackAr: "أحد المسؤولين",
     fallback: "An administrator",
     scope: "system",
     kind: "text",
@@ -314,6 +363,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "staff_role",
     label: "Role",
     sample: "editor",
+    sampleAr: "محرر",
+    fallbackAr: "عضو في الفريق",
     fallback: "a team member",
     scope: "system",
     kind: "text",
@@ -330,6 +381,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "link_valid_days",
     label: "Days the link stays valid",
     sample: "14",
+    fallbackAr: "عدة",
     fallback: "a few",
     scope: "system",
     kind: "text",
@@ -338,6 +390,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "minutes_waiting",
     label: "Minutes unassigned",
     sample: "60",
+    fallbackAr: "أكثر من ٦٠",
     fallback: "over 60",
     scope: "system",
     kind: "text",
@@ -354,6 +407,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "permit_number",
     label: "Permit number",
     sample: "71220458",
+    fallbackAr: "التصريح",
     fallback: "the permit",
     scope: "system",
     kind: "text",
@@ -362,6 +416,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "permit_expires_on",
     label: "Permit expiry date",
     sample: "2026-10-14",
+    fallbackAr: "قريباً",
     fallback: "soon",
     scope: "system",
     kind: "text",
@@ -370,6 +425,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "days_to_expiry",
     label: "Days to expiry",
     sample: "30",
+    fallbackAr: "عدة",
     fallback: "a few",
     scope: "system",
     kind: "text",
@@ -386,6 +442,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "listings_assigned",
     label: "Listings assigned (\"3 listings\")",
     sample: "3 listings",
+    sampleAr: "٣ عقارات",
+    fallbackAr: "عقارات جديدة",
     fallback: "new listings",
     scope: "system",
     kind: "text",
@@ -402,6 +460,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "form_name",
     label: "Form name",
     sample: "Mortgage pre-approval",
+    sampleAr: "طلب موافقة مبدئية",
+    fallbackAr: "أحد النماذج",
     fallback: "A form",
     scope: "system",
     kind: "text",
@@ -410,6 +470,8 @@ export const TOKENS: readonly TokenDef[] = [
     name: "form_surface",
     label: "Where the form sits",
     sample: "Mortgage calculator",
+    sampleAr: "حاسبة التمويل العقاري",
+    fallbackAr: "الموقع",
     fallback: "Website",
     scope: "system",
     kind: "text",
@@ -450,6 +512,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "listing_references",
     label: "List of listing references",
     sample: "· BAZ-AD-04891\n· BAZ-AD-04902",
+    sampleAr: "· BAZ-AD-04891\n· BAZ-AD-04902",
     fallback: "",
     scope: "system",
     kind: "block",
@@ -458,6 +521,7 @@ export const TOKENS: readonly TokenDef[] = [
     name: "form_answers",
     label: "Table of answers",
     sample: "Name: Amira Haddad\nEmail: amira@example.com",
+    sampleAr: "الاسم: أميرة حداد\nالبريد: amira@example.com",
     fallback: "",
     scope: "system",
     kind: "block",
@@ -540,12 +604,21 @@ export function missingTokens(body: string, ctx: TokenContext): TokenName[] {
  * The value a token renders as: its context value, or its fallback. Unknown
  * names render as nothing.
  */
-export function tokenValue(name: string, ctx: TokenContext): string {
+export function tokenValue(
+  name: string,
+  ctx: TokenContext,
+  locale: EmailLocale = "en",
+): string {
   const key = name.toLowerCase();
   if (!isTokenName(key)) return "";
   const value = ctx[key];
+  // The value itself is never translated: a lead's name, a reference and a
+  // figure are the same in both languages. Only the wording the CODE supplies
+  // when there is no value has a language.
   if (hasValue(value)) return value;
-  return TOKEN_BY_NAME.get(key)?.fallback ?? "";
+  const def = TOKEN_BY_NAME.get(key);
+  if (!def) return "";
+  return locale === "ar" ? (def.fallbackAr ?? def.fallback) : def.fallback;
 }
 
 /**
@@ -554,16 +627,28 @@ export function tokenValue(name: string, ctx: TokenContext): string {
  * blocks them at save, so anything reaching here is a bug, and a gap in a
  * sentence embarrasses less than `{{propery_ref}}`.
  */
-export function renderTokens(body: string, ctx: TokenContext): string {
+export function renderTokens(
+  body: string,
+  ctx: TokenContext,
+  locale: EmailLocale = "en",
+): string {
   return body.replace(tokenPattern(), (_match, rawName: string) =>
-    tokenValue(rawName, ctx),
+    tokenValue(rawName, ctx, locale),
   );
 }
 
 /** Preview substitution using the sample values, for the editor. */
-export function renderSample(body: string): string {
+export function renderSample(body: string, locale: EmailLocale = "en"): string {
   return renderTokens(
     body,
-    Object.fromEntries(TOKENS.map((t) => [t.name, t.sample])) as TokenContext,
+    Object.fromEntries(
+      TOKENS.map((t) => [t.name, locale === "ar" ? (t.sampleAr ?? t.sample) : t.sample]),
+    ) as TokenContext,
+    locale,
   );
+}
+
+/** The sample this token previews with, in the language being edited. */
+export function tokenSample(def: TokenDef, locale: EmailLocale = "en"): string {
+  return locale === "ar" ? (def.sampleAr ?? def.sample) : def.sample;
 }

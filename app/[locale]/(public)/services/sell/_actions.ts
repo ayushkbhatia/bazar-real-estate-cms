@@ -141,6 +141,7 @@ export async function submitListingLead(
     brief_raw: brief,
     source: "list_property",
     form_key: SELL_FORM_KEY,
+    locale: data.locale ?? "en",
     timeline: toEnquiryTimeline(data.urgency),
     assigned_agent_id: advisor?.assignableUserId ?? null,
     inferred_constraints: {
@@ -245,6 +246,7 @@ export async function submitListingLead(
     propertyReference: null,
     propertyTitle: null,
     formKey: SELL_FORM_KEY,
+    locale: data.locale ?? "en",
   });
   await sendEmail({
     to: data.email,

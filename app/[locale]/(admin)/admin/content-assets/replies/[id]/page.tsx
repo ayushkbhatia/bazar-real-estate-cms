@@ -14,12 +14,16 @@ import {
 import { bodyAsHtml } from "@/lib/content-assets/email-html";
 import { previewFormReply } from "@/lib/content-assets/system-emails";
 import { assignableForms } from "@/lib/content-assets/usage";
+import { langFrom } from "../../_lang-toggle";
 import type { BlogMediaOption } from "../../../blog/_image-insert-dialog";
 import { FormReplyEditor } from "./_reply-editor";
 
 export const dynamic = "force-dynamic";
 
-type PageProps = { params: Promise<{ id: string }> };
+type PageProps = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 async function fetchImages(): Promise<BlogMediaOption[]> {
   if (!isSupabaseConfigured) return [];
@@ -40,8 +44,9 @@ async function fetchImages(): Promise<BlogMediaOption[]> {
   }));
 }
 
-export default async function FormReplyPage({ params }: PageProps) {
+export default async function FormReplyPage({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const lang = langFrom((await searchParams).lang);
   const [asset, assignments, role, media] = await Promise.all([
     getContentAssetById(id),
     listFormAssignments(),
@@ -50,14 +55,20 @@ export default async function FormReplyPage({ params }: PageProps) {
   ]);
   if (!asset || asset.role !== "form_reply") notFound();
 
-  const body = bodyAsHtml(asset.body, asset.body_format);
+  const englishBody = bodyAsHtml(asset.body, asset.body_format);
+  const body = lang === "ar" ? (asset.body_ar ?? "") : englishBody;
+  const subject = (lang === "ar" ? asset.subject_ar : asset.subject) ?? "";
   const usedBy = assignableForms()
     .filter((def) => assignments[def.key]?.assetId === asset.id)
     .map((def) => ({ key: def.key, name: def.name, surface: def.surface, path: def.path }));
 
   const preview = await previewFormReply(
-    { subject: asset.subject ?? "", body, format: "html" },
+    lang === "ar"
+      ? { subject: "", body: "", subjectAr: subject, bodyAr: body, format: "html" }
+      : { subject, body, format: "html" },
     usedBy[0]?.key ?? null,
+    undefined,
+    lang,
   );
   const sender = emailSender();
 
@@ -76,9 +87,11 @@ export default async function FormReplyPage({ params }: PageProps) {
     >
       <FormReplyEditor
         id={asset.id}
+        lang={lang}
+        english={{ subject: asset.subject ?? "", body: englishBody }}
         initial={{
           name: asset.name,
-          subject: asset.subject ?? "",
+          subject,
           body,
           notes: asset.notes ?? "",
           status: asset.status,

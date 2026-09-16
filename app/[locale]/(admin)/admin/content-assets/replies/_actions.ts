@@ -11,6 +11,7 @@ import { slugifyAssetName } from "@/lib/schemas/content-asset";
 import { sanitizeEmailBody } from "@/lib/content-assets/email-html";
 import {
   FORM_REPLY_DEFAULT,
+  FORM_REPLY_DEFAULT_AR,
   FORM_REPLY_TOKENS,
 } from "@/lib/content-assets/form-replies";
 import { previewFormReply } from "@/lib/content-assets/system-emails";
@@ -32,12 +33,10 @@ export type ReplyActionResult =
   | { status: "error"; message: string; fieldErrors?: Record<string, string> };
 
 const replySchema = z.object({
+  /** Which half of the reply this save is for. */
+  lang: z.enum(["en", "ar"]).default("en"),
   name: z.string().trim().min(3, "Give it a name.").max(120, "That name is too long."),
-  subject: z
-    .string()
-    .trim()
-    .min(1, "Write a subject line.")
-    .max(200, "Keep the subject under 200 characters."),
+  subject: z.string().trim().max(200, "Keep the subject under 200 characters."),
   body: z.string().max(40_000, "The message is too long."),
   notes: z.string().max(2000, "Notes are too long.").nullable().optional(),
   status: z.enum(["draft", "published"]),
@@ -52,8 +51,19 @@ function visibleText(html: string): string {
 }
 
 /** The same check the editor shows and the save refuses on. */
-function copyProblems(copy: { subject: string; body: string }): Record<string, string> {
+function copyProblems(
+  copy: { subject: string; body: string },
+  lang: "en" | "ar" = "en",
+): Record<string, string> {
   const problems: Record<string, string> = {};
+  const written = Boolean(copy.subject.trim() || visibleText(copy.body));
+  // Arabic is optional — no Arabic means Arabic leads get the English reply —
+  // but half an Arabic email is not a thing anybody should be able to save.
+  if (lang === "ar" && written) {
+    if (!copy.subject.trim()) problems.subject = "Write the Arabic subject too, or clear both.";
+    if (!visibleText(copy.body)) problems.body = "Write the Arabic message too, or clear both.";
+  }
+  if (lang === "en" && !copy.subject.trim()) problems.subject = "Write a subject line.";
   for (const [field, text] of [
     ["subject", copy.subject],
     ["body", copy.body],
@@ -74,7 +84,8 @@ function copyProblems(copy: { subject: string; body: string }): Record<string, s
   if (blocks.length > 0 && !problems.subject) {
     problems.subject = "A panel can't go in a subject line.";
   }
-  if (!visibleText(copy.body) && !problems.body) problems.body = "Write the message.";
+  if (lang === "en" && !visibleText(copy.body) && !problems.body)
+    problems.body = "Write the message.";
   return problems;
 }
 
@@ -128,6 +139,10 @@ export async function createFormReply(name: string): Promise<ReplyActionResult> 
       slug: await freeSlug(supabase, parsed.data),
       subject: FORM_REPLY_DEFAULT.subject,
       body: FORM_REPLY_DEFAULT.body,
+      // Both halves, so the Arabic tab opens on a first draft rather than a
+      // blank page — the same bargain migration 0129 struck for the seventeen.
+      subject_ar: FORM_REPLY_DEFAULT_AR.subject,
+      body_ar: FORM_REPLY_DEFAULT_AR.body,
       body_format: "html",
       status: "draft",
       created_by: user.id,
@@ -171,7 +186,8 @@ export async function saveFormReply(
   }
 
   const body = sanitizeEmailBody(parsed.data.body);
-  const problems = copyProblems({ subject: parsed.data.subject, body });
+  const lang = parsed.data.lang;
+  const problems = copyProblems({ subject: parsed.data.subject, body }, lang);
   if (Object.keys(problems).length > 0) {
     return {
       status: "error",
@@ -188,13 +204,19 @@ export async function saveFormReply(
   if (!before || before.role !== "form_reply")
     return { status: "error", message: "Not a form reply." };
 
+  const values =
+    lang === "ar"
+      ? {
+          subject_ar: parsed.data.subject.trim() || null,
+          body_ar: visibleText(body) ? body : null,
+        }
+      : { subject: parsed.data.subject, body, body_format: "html" as const };
+
   const { error } = await supabase
     .from("content_assets")
     .update({
+      ...values,
       name: parsed.data.name,
-      subject: parsed.data.subject,
-      body,
-      body_format: "html",
       notes: parsed.data.notes?.trim() || null,
       status: parsed.data.status,
     })
@@ -212,6 +234,14 @@ export async function saveFormReply(
   revalidate(id);
   const wentLive = parsed.data.status === "published" && before.status !== "published";
   const wentBack = parsed.data.status === "draft" && before.status === "published";
+  if (lang === "ar" && !wentLive && !wentBack) {
+    return {
+      status: "ok",
+      message: parsed.data.subject.trim()
+        ? "Arabic saved."
+        : "Arabic cleared — Arabic leads receive the English reply.",
+    };
+  }
   return {
     status: "ok",
     message: wentLive
@@ -281,34 +311,42 @@ export type ReplyPreview = {
 
 /** Render unsaved reply copy against a sample lead from one form. */
 export async function previewFormReplyDraft(
-  draft: { subject: string; body: string },
+  draft: { subject: string; body: string; lang?: "en" | "ar" },
   formKey: string | null,
 ): Promise<ReplyPreview> {
   await requireRole(STAFF_ROLES);
   const body = sanitizeEmailBody(String(draft.body ?? "").slice(0, 40_000));
   const subject = String(draft.subject ?? "").slice(0, 200);
+  const lang = draft.lang === "ar" ? "ar" : "en";
+  const copy =
+    lang === "ar"
+      ? { subject: "", body: "", subjectAr: subject, bodyAr: body, format: "html" as const }
+      : { subject, body, format: "html" as const };
   return {
-    email: await previewFormReply({ subject, body, format: "html" }, formKey),
-    problems: copyProblems({ subject, body }),
+    email: await previewFormReply(copy, formKey, undefined, lang),
+    problems: copyProblems({ subject, body }, lang),
   };
 }
 
 /** Send the reply on screen to the signed-in staff member. */
 export async function sendFormReplyTest(
-  draft: { subject: string; body: string },
+  draft: { subject: string; body: string; lang?: "en" | "ar" },
   formKey: string | null,
 ): Promise<ReplyActionResult> {
   const { user } = await requireRole(WRITE_ROLES);
   if (!user.email)
     return { status: "error", message: "Your account has no email address." };
 
+  const lang = draft.lang === "ar" ? "ar" : "en";
+  const subject = String(draft.subject ?? "").slice(0, 200);
+  const body = sanitizeEmailBody(String(draft.body ?? "").slice(0, 40_000));
   const email = await previewFormReply(
-    {
-      subject: String(draft.subject ?? "").slice(0, 200),
-      body: sanitizeEmailBody(String(draft.body ?? "").slice(0, 40_000)),
-      format: "html",
-    },
+    lang === "ar"
+      ? { subject: "", body: "", subjectAr: subject, bodyAr: body, format: "html" }
+      : { subject, body, format: "html" },
     formKey,
+    undefined,
+    lang,
   );
   const result = await sendEmail({
     to: user.email,

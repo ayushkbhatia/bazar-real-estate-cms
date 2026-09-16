@@ -16,6 +16,7 @@ import {
   DEFAULT_EMAIL_BRAND,
   type EmailBrand,
 } from "@/lib/content-assets/email-brand";
+import type { EmailLocale } from "@/lib/content-assets/tokens";
 
 type Rendered = { subject: string; text: string; html: string };
 
@@ -40,29 +41,70 @@ export function emailLogoUrl(brand: EmailBrand): string | null {
   return brand.logoUrl || null;
 }
 
-function header(brand: EmailBrand): string {
-  const align = brand.headerAlign === "center" ? "center" : "left";
+/**
+ * The brand's own words in the language being sent.
+ *
+ * Only the words: the logo, the colours and the widths are the same email in
+ * both languages, and a client who wants a different mark in Arabic has a
+ * bigger question than this field answers.
+ */
+export function brandCopy(
+  brand: EmailBrand,
+  locale: EmailLocale,
+): { wordmark: string; tagline: string; footerText: string; footerLinkLabel: string } {
+  const ar = locale === "ar";
+  return {
+    wordmark: (ar && brand.wordmarkAr) || brand.wordmark,
+    tagline: (ar && brand.taglineAr) || brand.tagline,
+    footerText: (ar && brand.footerTextAr) || brand.footerText,
+    footerLinkLabel: (ar && brand.footerLinkLabelAr) || brand.footerLinkLabel,
+  };
+}
+
+/**
+ * Arabic inboxes are the one place a webfont cannot be relied on: Gmail and
+ * Outlook both ignore @font-face, so the stack has to name faces that are
+ * already on the machine. Tahoma is the one Windows has had since XP.
+ */
+const AR_FONT =
+  "'IBM Plex Sans Arabic','Noto Sans Arabic','Segoe UI',Tahoma,Arial,sans-serif";
+const EN_FONT =
+  "'Geist',ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif";
+
+function header(brand: EmailBrand, locale: EmailLocale = "en"): string {
+  const copy = brandCopy(brand, locale);
+  // "left" means the side the text starts on, which is the right in Arabic.
+  const align =
+    brand.headerAlign === "center" ? "center" : locale === "ar" ? "right" : "left";
   const logo = brand.headerStyle === "logo" ? emailLogoUrl(brand) : null;
   if (logo) {
-    const margin = align === "center" ? "0 auto" : "0";
+    const margin =
+      align === "center" ? "0 auto" : locale === "ar" ? "0 0 0 auto" : "0";
     return `<div style="margin-bottom:28px;text-align:${align}"><img src="${escape(logo)}" alt="${escape(brand.logoAlt)}" width="${brand.logoWidth}" style="display:block;margin:${margin};width:${brand.logoWidth}px;max-width:100%;height:auto;border:0;outline:none;text-decoration:none"></div>`;
   }
-  return `<div style="font-family:Georgia,serif;font-style:italic;font-size:22px;letter-spacing:-0.01em;margin-bottom:24px;color:${brand.textColor};text-align:${align}">${escape(brand.wordmark)}${
-    brand.tagline
-      ? ` <span style="font-family:'Geist',sans-serif;font-style:normal;font-size:12px;letter-spacing:0.05em;color:${brand.mutedColor}">${escape(brand.tagline)}</span>`
+  // The serif italic wordmark is a Latin typographic device; an Arabic
+  // wordmark is set in the body face at a larger size instead.
+  const wordmarkFont =
+    locale === "ar"
+      ? `font-family:${AR_FONT};font-size:24px;font-weight:600`
+      : "font-family:Georgia,serif;font-style:italic;font-size:22px;letter-spacing:-0.01em";
+  return `<div style="${wordmarkFont};margin-bottom:24px;color:${brand.textColor};text-align:${align}">${escape(copy.wordmark)}${
+    copy.tagline
+      ? ` <span style="font-family:${locale === "ar" ? AR_FONT : "'Geist',sans-serif"};font-style:normal;font-size:12px;letter-spacing:0.05em;color:${brand.mutedColor}">${escape(copy.tagline)}</span>`
       : ""
   }</div>`;
 }
 
-function footer(brand: EmailBrand): string {
-  const lines = brand.footerText
+function footer(brand: EmailBrand, locale: EmailLocale = "en"): string {
+  const copy = brandCopy(brand, locale);
+  const lines = copy.footerText
     .split("\n")
     .map((l) => l.trim())
     .filter(Boolean)
     .map(escape);
   const href = brand.footerLinkUrl || siteUrl();
-  const link = brand.footerLinkLabel
-    ? `<a href="${escape(href)}" style="color:${brand.mutedColor}">${escape(brand.footerLinkLabel)}</a>`
+  const link = copy.footerLinkLabel
+    ? `<a href="${escape(href)}" style="color:${brand.mutedColor}">${escape(copy.footerLinkLabel)}</a>`
     : "";
   const parts = [...lines, link].filter(Boolean).join("<br>");
   return `<div style="margin-top:32px;padding-top:24px;border-top:1px solid #E5E5DF;font-size:12px;color:${brand.mutedColor};line-height:1.5">
@@ -70,14 +112,32 @@ function footer(brand: EmailBrand): string {
       </div>`;
 }
 
-function shell(bodyHtml: string, brand: EmailBrand = DEFAULT_EMAIL_BRAND): string {
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
-<body style="margin:0;padding:0;background:${brand.backgroundColor};color:${brand.textColor};font-family:'Geist',ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55">
-  <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width:540px;margin:0 auto;padding:24px">
+/**
+ * The wrapper every email arrives in.
+ *
+ * `locale` decides three things and nothing else: the direction, the font
+ * stack, and which half of the brand's copy is used. Colours, widths and the
+ * logo are one design in both languages.
+ *
+ * `dir` is set on <html> AND on the table: Outlook.com strips the attribute
+ * from the document, and a right-to-left email that renders left-to-right is
+ * not a cosmetic failure — the punctuation lands on the wrong end of every
+ * line.
+ */
+function shell(
+  bodyHtml: string,
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+  locale: EmailLocale = "en",
+): string {
+  const rtl = locale === "ar";
+  const dir = rtl ? "rtl" : "ltr";
+  return `<!doctype html><html dir="${dir}" lang="${locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
+<body dir="${dir}" style="margin:0;padding:0;background:${brand.backgroundColor};color:${brand.textColor};font-family:${rtl ? AR_FONT : EN_FONT};font-size:15px;line-height:${rtl ? "1.75" : "1.55"};direction:${dir};text-align:${rtl ? "right" : "left"}">
+  <table role="presentation" dir="${dir}" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width:540px;margin:0 auto;padding:24px;direction:${dir};text-align:${rtl ? "right" : "left"}">
     <tr><td>
-      ${header(brand)}
+      ${header(brand, locale)}
       ${bodyHtml}
-      ${footer(brand)}
+      ${footer(brand, locale)}
     </td></tr>
   </table>
 </body></html>`;
@@ -133,79 +193,133 @@ export function proseEmailHtml(text: string): string {
 
 export type EmailBlock = { html: string; text: string };
 
-export function valuationRangePanel(opts: {
-  lowAed: number;
-  midAed: number;
-  highAed: number;
-}): EmailBlock {
-  const range = `${formatAedShort(opts.lowAed)} – ${formatAedShort(opts.highAed)}`;
+const dirOf = (locale: EmailLocale) => (locale === "ar" ? "rtl" : "ltr");
+const startOf = (locale: EmailLocale) => (locale === "ar" ? "right" : "left");
+
+/**
+ * The few words the PANELS supply themselves.
+ *
+ * Everything else inside a panel is data — a figure, a reference, a question
+ * the form asked — and data is not translated here. These are the labels the
+ * code writes, and an Arabic email that says "Instant range" over an Arabic
+ * figure reads as a half-finished translation, which is worse than either
+ * language on its own.
+ */
+function panelWords(locale: EmailLocale) {
+  if (locale === "ar") {
+    return {
+      instantRange: "النطاق الفوري",
+      midpoint: "المتوسط",
+      refined: "التقييم النهائي",
+      initialRange: "النطاق الفوري الأولي",
+      initialRangeSentence: (range: string) => `النطاق الفوري الأولي كان ${range}.`,
+      references: "المراجع:",
+      andMore: (n: number) => `…و${n} أخرى`,
+      noAnswers: "(لا إجابات)",
+    };
+  }
   return {
-    html: `<div style="margin:24px 0;padding:20px 22px;background:#fff;border:1px solid #E5E5DF;border-radius:8px">
-      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#99896e">Instant range</div>
-      <div style="font-family:Georgia,serif;font-style:italic;font-size:30px;letter-spacing:-0.02em;color:#1B1A17;margin-top:6px">
-        ${escape(formatAedShort(opts.lowAed))} – ${escape(formatAedShort(opts.highAed))}
-      </div>
-      <div style="font-size:12px;color:#5a5a55;margin-top:6px">midpoint ${escape(formatAedShort(opts.midAed))}</div>
-    </div>`,
-    text: `  ${range}\n  (midpoint ${formatAedShort(opts.midAed)})`,
+    instantRange: "Instant range",
+    midpoint: "midpoint",
+    refined: "Refined valuation",
+    initialRange: "Initial instant range",
+    initialRangeSentence: (range: string) => `Initial instant range was ${range}.`,
+    references: "References:",
+    andMore: (n: number) => `…and ${n} more`,
+    noAnswers: "(no answers)",
   };
 }
 
-export function valuationReportPanel(opts: {
-  finalEstimateAed: number;
-  rangeLowAed: number | null;
-  rangeHighAed: number | null;
-}): EmailBlock {
-  const hasRange = opts.rangeLowAed != null && opts.rangeHighAed != null;
+export function valuationRangePanel(
+  opts: {
+    lowAed: number;
+    midAed: number;
+    highAed: number;
+  },
+  locale: EmailLocale = "en",
+): EmailBlock {
+  const range = `${formatAedShort(opts.lowAed)} – ${formatAedShort(opts.highAed)}`;
+  const t = panelWords(locale);
   return {
-    html: `<div style="margin:24px 0;padding:24px;background:#1B1A17;border-radius:10px;color:#fff">
-      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#b0a48b">Refined valuation</div>
+    html: `<div dir="${dirOf(locale)}" style="margin:24px 0;padding:20px 22px;background:#fff;border:1px solid #E5E5DF;border-radius:8px;text-align:${startOf(locale)}">
+      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#99896e">${t.instantRange}</div>
+      <div style="font-family:Georgia,serif;font-style:italic;font-size:30px;letter-spacing:-0.02em;color:#1B1A17;margin-top:6px">
+        ${escape(formatAedShort(opts.lowAed))} – ${escape(formatAedShort(opts.highAed))}
+      </div>
+      <div style="font-size:12px;color:#5a5a55;margin-top:6px">${t.midpoint} ${escape(formatAedShort(opts.midAed))}</div>
+    </div>`,
+    text: `  ${range}\n  (${t.midpoint} ${formatAedShort(opts.midAed)})`,
+  };
+}
+
+export function valuationReportPanel(
+  opts: {
+    finalEstimateAed: number;
+    rangeLowAed: number | null;
+    rangeHighAed: number | null;
+  },
+  locale: EmailLocale = "en",
+): EmailBlock {
+  const hasRange = opts.rangeLowAed != null && opts.rangeHighAed != null;
+  const t = panelWords(locale);
+  return {
+    html: `<div dir="${dirOf(locale)}" style="margin:24px 0;padding:24px;background:#1B1A17;border-radius:10px;color:#fff;text-align:${startOf(locale)}">
+      <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#b0a48b">${t.refined}</div>
       <div style="font-family:Georgia,serif;font-style:italic;font-size:44px;line-height:1.05;letter-spacing:-0.025em;margin-top:8px">
         ${escape(formatAedShort(opts.finalEstimateAed))}
       </div>
       ${
         hasRange
-          ? `<div style="font-size:12px;color:#b0a48b;margin-top:8px">Initial instant range ${escape(formatAedShort(opts.rangeLowAed!))}–${escape(formatAedShort(opts.rangeHighAed!))}</div>`
+          ? `<div style="font-size:12px;color:#b0a48b;margin-top:8px">${t.initialRange} ${escape(formatAedShort(opts.rangeLowAed!))}–${escape(formatAedShort(opts.rangeHighAed!))}</div>`
           : ""
       }
     </div>`,
     text:
       `${formatAedShort(opts.finalEstimateAed)}` +
       (hasRange
-        ? `\nInitial instant range was ${formatAedShort(opts.rangeLowAed!)}–${formatAedShort(opts.rangeHighAed!)}.`
+        ? `\n${t.initialRangeSentence(
+            `${formatAedShort(opts.rangeLowAed!)}–${formatAedShort(opts.rangeHighAed!)}`,
+          )}`
         : ""),
   };
 }
 
-export function listingReferencesBlock(opts: {
-  count: number;
-  sampleReferences: string[];
-}): EmailBlock {
+export function listingReferencesBlock(
+  opts: {
+    count: number;
+    sampleReferences: string[];
+  },
+  locale: EmailLocale = "en",
+): EmailBlock {
+  const t = panelWords(locale);
   const sample = opts.sampleReferences.slice(0, 8);
   const remainder = Math.max(0, opts.count - sample.length);
   if (sample.length === 0) return { html: "", text: "" };
   return {
-    html: `<ul style="margin:14px 0;padding-left:18px;font-size:13px;color:#32312d">
+    html: `<ul dir="${dirOf(locale)}" style="margin:14px 0;padding-${startOf(locale)}:18px;font-size:13px;color:#32312d">
           ${sample
             .map(
               (r) =>
                 `<li style="margin:2px 0"><span style="font-family:monospace">${escape(r)}</span></li>`,
             )
             .join("")}
-          ${remainder > 0 ? `<li style="margin:2px 0;color:#99896e">…and ${remainder} more</li>` : ""}
+          ${remainder > 0 ? `<li style="margin:2px 0;color:#99896e">${t.andMore(remainder)}</li>` : ""}
         </ul>`,
     text:
-      `References:\n${sample.map((r) => `  · ${r}`).join("\n")}` +
-      (remainder > 0 ? `\n  · …and ${remainder} more` : ""),
+      `${t.references}\n${sample.map((r) => `  · ${r}`).join("\n")}` +
+      (remainder > 0 ? `\n  · ${t.andMore(remainder)}` : ""),
   };
 }
 
-export function formAnswersBlock(answers: [string, string][]): EmailBlock {
+export function formAnswersBlock(
+  answers: [string, string][],
+  locale: EmailLocale = "en",
+): EmailBlock {
   const rows = answers.length
     ? answers
-    : ([["(no answers)", "—"]] as [string, string][]);
+    : ([[panelWords(locale).noAnswers, "—"]] as [string, string][]);
   return {
-    html: `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top:20px;background:#fff;border:1px solid #E5E5DF;border-radius:6px">
+    html: `<table role="presentation" dir="${dirOf(locale)}" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top:20px;background:#fff;border:1px solid #E5E5DF;border-radius:6px;text-align:${startOf(locale)}">
       ${rows
         .map(
           ([label, value]) => `<tr>

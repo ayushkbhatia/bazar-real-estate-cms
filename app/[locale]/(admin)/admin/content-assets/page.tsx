@@ -43,6 +43,8 @@ import type { SystemEmailCopy } from "@/lib/content-assets/system-render";
 import { SYSTEM_EMAIL_DEFAULTS } from "@/lib/content-assets/system-defaults";
 import { sanitizeEmailBody } from "@/lib/content-assets/email-html";
 import { emailSurfaces, type EmailSurface } from "@/lib/content-assets/usage";
+import { LangToggle, langFrom, withLang } from "./_lang-toggle";
+import type { EmailLocale } from "@/lib/content-assets/tokens";
 import { AssetRowActions } from "./_row-actions";
 
 export const dynamic = "force-dynamic";
@@ -185,7 +187,7 @@ function EmailCard({
   );
 }
 
-async function EmailsView() {
+async function EmailsView({ lang }: { lang: EmailLocale }) {
   const [rows, brand, assignments] = await Promise.all([
     listContentAssets({ scope: "system" }),
     readEmailBrand(),
@@ -207,7 +209,7 @@ async function EmailsView() {
     const copy = usableCopy(key, row);
     if (copy) published[key] = copy;
   }
-  const gallery = renderGallery(published, brand);
+  const gallery = renderGallery(published, brand, lang);
   const advisorReply = previewAdvisorReply(brand);
 
   const liveOwn = SYSTEM_ASSET_KEYS.filter(
@@ -217,6 +219,16 @@ async function EmailsView() {
 
   function statusFor(key: SystemAssetKey): Parameters<typeof EmailCard>[0]["status"] {
     const row = byKey.get(key);
+    if (lang === "ar") {
+      // On the Arabic side the question is not "is this published?" but "is
+      // there any Arabic at all?" — a published email with no Arabic answers
+      // an Arabic lead in English, and the card has to say so.
+      const written = Boolean(row?.subject_ar?.trim() && row?.body_ar?.trim());
+      if (!written) return { tone: "builtin", text: "English is sent" };
+      return row?.status === "published"
+        ? { tone: "live", text: "Arabic is sent" }
+        : { tone: "draft", text: "Arabic ready, not published" };
+    }
     if (row?.status === "published") return { tone: "live", text: "Your wording" };
     const source = gallery[key].liveSource;
     if (source.kind === "override")
@@ -293,7 +305,7 @@ async function EmailsView() {
               (key) => (
                 <EmailCard
                   key={key}
-                  href={`/admin/content-assets/emails/${key}`}
+                  href={withLang(`/admin/content-assets/emails/${key}`, lang)}
                   label={SYSTEM_ASSETS[key].label}
                   trigger={SYSTEM_ASSETS[key].trigger}
                   subject={gallery[key].live.subject}
@@ -306,7 +318,7 @@ async function EmailsView() {
             {PREVIEW_ONLY_EMAILS.filter((e) => e.audience === g.audience).map((e) => (
               <EmailCard
                 key={e.key}
-                href={`/admin/content-assets/emails/${e.key}`}
+                href={withLang(`/admin/content-assets/emails/${e.key}`, lang)}
                 label={e.label}
                 trigger={e.trigger}
                 subject={advisorReply.subject}
@@ -436,6 +448,7 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
   const raw = (Array.isArray(sp.view) ? sp.view[0] : sp.view) ?? "";
   // `?view=system` is the old address of the emails tab; it still lands there.
   const view: View = raw === "trash" ? "trash" : raw === "outreach" ? "outreach" : "emails";
+  const lang = langFrom(sp.lang);
 
   const trashCount = (await listContentAssets({ trashed: true })).length;
 
@@ -461,7 +474,19 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
               Every email this site sends, drawn exactly as it arrives — addressed
               to a sample recipient. Open one to rewrite it: your version replaces
               Bazar&apos;s built-in wording only once you publish it, and going back
-              to draft puts the built-in wording back.
+              to draft puts the built-in wording back.{" "}
+              {lang === "ar" ? (
+                <>
+                  You are looking at the <strong>Arabic</strong> half, which is
+                  what a lead who filled in an Arabic form receives. An email
+                  with no Arabic written sends its English to them.
+                </>
+              ) : (
+                <>
+                  Leads who use the Arabic site are answered from the Arabic
+                  half — switch with the toggle.
+                </>
+              )}
             </>
           ) : view === "outreach" ? (
             <>
@@ -478,6 +503,7 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
           )}
         </p>
 
+        <div className="flex flex-wrap items-center gap-3">
         <nav
           aria-label="Content assets sections"
           className="inline-flex w-fit flex-wrap rounded-md border border-bz-border bg-bz-bg p-0.5"
@@ -517,8 +543,12 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
             );
           })}
         </nav>
+        {view === "emails" ? (
+          <LangToggle lang={lang} hrefFor={(l) => withLang("/admin/content-assets", l)} />
+        ) : null}
+        </div>
 
-        {view === "emails" ? <EmailsView /> : <LibraryView view={view} />}
+        {view === "emails" ? <EmailsView lang={lang} /> : <LibraryView view={view} />}
       </div>
     </CmsShell>
   );

@@ -15,6 +15,7 @@
  * conversion telemetry.
  */
 
+import { useLocale } from "next-intl";
 import { useState } from "react";
 import Image from "next/image";
 import { FileText, Loader2, Lock, Mail } from "lucide-react";
@@ -51,6 +52,8 @@ type Props = {
 };
 
 export function FloorplanGate({ developmentName, developmentSlug, plan }: Props) {
+  // The email this gate triggers answers in the language the visitor is in.
+  const locale = useLocale();
   const { prefs } = usePreferences();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -68,6 +71,7 @@ export function FloorplanGate({ developmentName, developmentSlug, plan }: Props)
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "issue",
+          locale,
           email,
           name: name || undefined,
           intent: "other",

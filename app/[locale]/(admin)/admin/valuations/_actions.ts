@@ -141,7 +141,7 @@ export async function sendValuationReport(
   const { data: row, error: readErr } = await supabase
     .from("valuation_requests")
     .select(
-      "id, owner_name, owner_email, building_name, address_line, estimate_low_aed, estimate_high_aed",
+      "id, owner_name, owner_email, building_name, address_line, estimate_low_aed, estimate_high_aed, locale",
     )
     .eq("id", parsed.data.id)
     .maybeSingle();
@@ -191,7 +191,7 @@ export async function sendValuationReport(
     advisorNotes: parsed.data.advisor_notes ?? null,
     addressLine: row.address_line,
     buildingName: row.building_name,
-  });
+  }, row.locale === "ar" ? "ar" : "en");
   const emailResult = await sendEmail({
     to: row.owner_email,
     subject: tpl.subject,

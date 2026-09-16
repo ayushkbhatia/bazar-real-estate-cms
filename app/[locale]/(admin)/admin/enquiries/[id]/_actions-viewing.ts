@@ -67,7 +67,7 @@ export async function createViewing(input: {
   const { data: enquiry } = await supabase
     .from("enquiries")
     .select(
-      "id, name, email, property_id, account_id, archived_at, properties:property_id(reference, title, address_line)",
+      "id, name, email, locale, property_id, account_id, archived_at, properties:property_id(reference, title, address_line)",
     )
     .eq("id", input.enquiryId)
     .maybeSingle();
@@ -166,7 +166,7 @@ export async function createViewing(input: {
       propertyReference: propRow?.reference ?? null,
       propertyTitle: propRow?.title ?? null,
       advisorName: null,
-    });
+    }, enquiry.locale === "ar" ? "ar" : "en");
 
     // The email tells the lead the invite is attached, so it has to be. It
     // used to be built and then discarded, and the sentence was untrue.

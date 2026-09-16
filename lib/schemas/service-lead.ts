@@ -34,6 +34,14 @@ const optionalText = (max: number) => z.string().max(max).optional();
 export const serviceLeadSchema = z
   .object({
     kind: z.enum(SERVICE_LEAD_KINDS),
+    /**
+     * The locale the visitor submitted in — the language they are answered in.
+     *
+     * Optional rather than defaulted: this file keeps INPUT and OUTPUT the
+     * same shape (see the header), and `.default()` would make the key
+     * required on the way out and optional on the way in.
+     */
+    locale: z.enum(["en", "ar"]).optional(),
     /** The lib/forms registry key, so the reply and the desk both know it. */
     form_key: z
       .string()

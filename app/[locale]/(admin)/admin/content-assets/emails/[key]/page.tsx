@@ -21,6 +21,7 @@ import {
 } from "@/lib/content-assets/system-emails";
 import { readEmailBrand } from "@/lib/content-assets/system-resolve";
 import { emailSurfaces } from "@/lib/content-assets/usage";
+import { langFrom } from "../../_lang-toggle";
 import { listFormAssignments } from "@/lib/queries/content-assets";
 import type { BlogMediaOption } from "../../../blog/_image-insert-dialog";
 import { SystemEmailEditor } from "./_system-email-editor";
@@ -28,7 +29,10 @@ import { PreviewOnlyEmail } from "./_preview-only";
 
 export const dynamic = "force-dynamic";
 
-type PageProps = { params: Promise<{ key: string }> };
+type PageProps = {
+  params: Promise<{ key: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
 async function fetchImages(): Promise<BlogMediaOption[]> {
   if (!isSupabaseConfigured) return [];
@@ -67,8 +71,9 @@ function Crumbs({ label }: { label: string }) {
   );
 }
 
-export default async function SystemEmailPage({ params }: PageProps) {
+export default async function SystemEmailPage({ params, searchParams }: PageProps) {
   const { key } = await params;
+  const lang = langFrom((await searchParams).lang);
   const sender = emailSender();
 
   const previewOnly = PREVIEW_ONLY_EMAILS.find((e) => e.key === key);
@@ -102,12 +107,28 @@ export default async function SystemEmailPage({ params }: PageProps) {
     Object.fromEntries(Object.entries(assignments).map(([k, a]) => [k, a.assetId])),
   );
 
-  const initialBody = row ? bodyAsHtml(row.body, row.body_format) : "";
-  const initialSubject = row?.subject ?? "";
+  // The editor edits one language at a time; which columns that means is the
+  // only difference between the two sides of the toggle.
+  const initialBody = row
+    ? lang === "ar"
+      ? (row.body_ar ?? "")
+      : bodyAsHtml(row.body, row.body_format)
+    : "";
+  const initialSubject = (lang === "ar" ? row?.subject_ar : row?.subject) ?? "";
+  const englishBody = row ? bodyAsHtml(row.body, row.body_format) : "";
   const preview = await previewSystemEmail(key, {
     draft: row
-      ? { subject: initialSubject, body: initialBody, format: "html" }
+      ? lang === "ar"
+        ? {
+            subject: "",
+            body: "",
+            subjectAr: initialSubject,
+            bodyAr: initialBody,
+            format: "html",
+          }
+        : { subject: initialSubject, body: initialBody, format: "html" }
       : null,
+    locale: lang,
   });
 
   return (
@@ -115,6 +136,8 @@ export default async function SystemEmailPage({ params }: PageProps) {
       {row ? (
         <SystemEmailEditor
           emailKey={key}
+          lang={lang}
+          english={{ subject: row.subject ?? "", body: englishBody }}
           initial={{
             subject: initialSubject,
             body: initialBody,

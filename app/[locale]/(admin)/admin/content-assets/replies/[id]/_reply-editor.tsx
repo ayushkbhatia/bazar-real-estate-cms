@@ -10,6 +10,8 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { cn } from "@/lib/utils";
 import { TOKENS } from "@/lib/content-assets/tokens";
 import { FORM_REPLY_TOKENS } from "@/lib/content-assets/form-replies";
+import type { EmailLocale } from "@/lib/content-assets/tokens";
+import { LangToggle, withLang } from "../../_lang-toggle";
 import type { RenderedEmail } from "@/lib/content-assets/system-render";
 import type { BlogMediaOption } from "../../../blog/_image-insert-dialog";
 import { EmailBodyEditor } from "../../emails/_body-editor";
@@ -45,6 +47,8 @@ type FormOption = {
 
 export function FormReplyEditor({
   id,
+  lang,
+  english,
   initial,
   updatedAt,
   trashed,
@@ -57,6 +61,10 @@ export function FormReplyEditor({
   replyTo,
 }: {
   id: string;
+  /** The half of the reply being edited. */
+  lang: EmailLocale;
+  /** The English, to translate from. */
+  english: { subject: string; body: string };
   initial: Copy;
   updatedAt: string;
   trashed: boolean;
@@ -104,7 +112,7 @@ export function FormReplyEditor({
       setRendering(true);
       try {
         const result = await previewFormReplyDraft(
-          { subject: copy.subject, body: copy.body },
+          { subject: copy.subject, body: copy.body, lang },
           usedBy[0]?.key ?? null,
         );
         if (id !== request.current) return;
@@ -115,7 +123,7 @@ export function FormReplyEditor({
       }
     }, 450);
     return () => window.clearTimeout(t);
-  }, [copy.subject, copy.body, usedBy]);
+  }, [copy.subject, copy.body, usedBy, lang]);
 
   useEffect(() => {
     if (!dirty) return;
@@ -145,7 +153,7 @@ export function FormReplyEditor({
     setErrors({});
     const next = { ...copy, status };
     startSave(async () => {
-      const result = await saveFormReply(id, next);
+      const result = await saveFormReply(id, { ...next, lang });
       if (result.status === "error") {
         setErrors(result.fieldErrors ?? {});
         toast.error(result.message);
@@ -207,7 +215,19 @@ export function FormReplyEditor({
         ) : null}
 
         <section className="rounded-lg border border-bz-border bg-bz-surface p-5 flex flex-col gap-4">
-          <Eyebrow>Reply</Eyebrow>
+          <div className="flex flex-wrap items-center gap-3">
+            <Eyebrow>Reply</Eyebrow>
+            <LangToggle
+              lang={lang}
+              className="ms-auto"
+              hrefFor={(l) => withLang(`/admin/content-assets/replies/${id}`, l)}
+            />
+          </div>
+          <p className="text-[12px] text-bz-muted -mt-1">
+            {lang === "ar"
+              ? "What a lead who filled in an Arabic form receives. Clear both boxes and they receive the English."
+              : "What a lead from the English site receives."}
+          </p>
           <label className="flex flex-col gap-1.5">
             <span className="text-[12px] font-medium text-bz-ink-2">Name</span>
             <input
@@ -228,6 +248,8 @@ export function FormReplyEditor({
             <div className="flex gap-2">
               <input
                 ref={subjectRef}
+                dir={lang === "ar" ? "rtl" : "ltr"}
+                lang={lang}
                 value={copy.subject}
                 onChange={(e) => set("subject", e.target.value)}
                 className={cn(
@@ -262,11 +284,14 @@ export function FormReplyEditor({
           <div className="flex flex-col gap-1.5">
             <span className="text-[12px] font-medium text-bz-ink-2">Message</span>
             <EmailBodyEditor
+              key={lang}
               defaultValue={initial.body}
               onChange={(html) => set("body", html)}
               tokens={tokens}
               media={media}
               onMediaUploaded={(m) => setMedia((list) => [m, ...list])}
+              dir={lang === "ar" ? "rtl" : "ltr"}
+              lang={lang}
             />
             {errors.body ? (
               <span className="text-[11.5px] text-[oklch(0.45_0.13_28)]">{errors.body}</span>
@@ -282,6 +307,21 @@ export function FormReplyEditor({
               </span>
             )}
           </div>
+
+          {lang === "ar" ? (
+            <details className="rounded border border-bz-border bg-bz-surface-2 px-3 py-2">
+              <summary className="cursor-pointer text-[12px] text-bz-ink-2">
+                The English, to translate from
+              </summary>
+              <p className="mt-2 text-[12px] text-bz-muted">
+                {english.subject || "No subject"}
+              </p>
+              <div
+                className="mt-2 text-[12.5px] text-bz-ink-2 [&_p]:mb-2 [&_a]:underline"
+                dangerouslySetInnerHTML={{ __html: english.body }}
+              />
+            </details>
+          ) : null}
 
           <label className="flex flex-col gap-1.5">
             <span className="text-[12px] font-medium text-bz-ink-2">Notes for the next editor</span>
@@ -360,7 +400,7 @@ export function FormReplyEditor({
               onClick={() =>
                 startTest(async () => {
                   const result = await sendFormReplyTest(
-                    { subject: copy.subject, body: copy.body },
+                    { subject: copy.subject, body: copy.body, lang },
                     usedBy[0]?.key ?? null,
                   );
                   if (result.status === "error") toast.error(result.message);

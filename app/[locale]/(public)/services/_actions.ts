@@ -119,6 +119,7 @@ export async function submitServiceLead(
     brief_raw: buildServiceBrief(data),
     source: SOURCE[data.kind],
     form_key: data.form_key ?? null,
+    locale: data.locale ?? "en",
     assigned_agent_id: advisor?.assignableUserId ?? null,
     inferred_constraints: {
       intent: data.intent ?? (data.kind === "management" ? "manage" : null),
@@ -168,6 +169,7 @@ export async function submitServiceLead(
     propertyReference: null,
     propertyTitle: null,
     formKey: data.form_key ?? null,
+    locale: data.locale ?? "en",
   });
   await sendEmail({
     to: data.email,

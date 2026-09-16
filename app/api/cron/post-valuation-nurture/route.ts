@@ -70,18 +70,21 @@ export async function GET(req: NextRequest) {
       const { data } = await supabase
         .from("valuation_requests")
         .select(
-          "id, owner_name, owner_email, estimate_mid_aed, sent_at, nurture_day7_at",
+          "id, owner_name, owner_email, estimate_mid_aed, sent_at, nurture_day7_at, locale",
         )
         .gte("sent_at", w.start)
         .lt("sent_at", w.end)
         .is("nurture_day7_at", null);
       for (const r of data ?? []) {
         if (!r.owner_email) continue;
-        const tpl = await valuationNurtureDay7Email({
-          name: r.owner_name ?? "there",
-          valuationId: r.id,
-          estimateMid: r.estimate_mid_aed,
-        });
+        const tpl = await valuationNurtureDay7Email(
+          {
+            name: r.owner_name ?? "there",
+            valuationId: r.id,
+            estimateMid: r.estimate_mid_aed,
+          },
+          r.locale === "ar" ? "ar" : "en",
+        );
         const sent = await sendEmail({
           to: r.owner_email,
           subject: tpl.subject,
@@ -103,16 +106,19 @@ export async function GET(req: NextRequest) {
       const w = dayWindow(30);
       const { data } = await supabase
         .from("valuation_requests")
-        .select("id, owner_name, owner_email, sent_at, nurture_day30_at")
+        .select("id, owner_name, owner_email, sent_at, nurture_day30_at, locale")
         .gte("sent_at", w.start)
         .lt("sent_at", w.end)
         .is("nurture_day30_at", null);
       for (const r of data ?? []) {
         if (!r.owner_email) continue;
-        const tpl = await valuationNurtureDay30Email({
-          name: r.owner_name ?? "there",
-          valuationId: r.id,
-        });
+        const tpl = await valuationNurtureDay30Email(
+          {
+            name: r.owner_name ?? "there",
+            valuationId: r.id,
+          },
+          r.locale === "ar" ? "ar" : "en",
+        );
         const sent = await sendEmail({
           to: r.owner_email,
           subject: tpl.subject,

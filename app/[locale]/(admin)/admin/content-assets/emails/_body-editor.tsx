@@ -61,6 +61,14 @@ type Props = {
   tokens: readonly TokenDef[];
   media: BlogMediaOption[];
   onMediaUploaded: (m: BlogMediaOption) => void;
+  /**
+   * Writing direction of the content area. ProseMirror reads the
+   * contenteditable's own `dir`, so setting it on an ancestor is not enough —
+   * the caret would start on the wrong side of an Arabic paragraph.
+   */
+  dir?: "ltr" | "rtl";
+  /** Language of the content area, so the Arabic face applies. */
+  lang?: string;
 };
 
 /** `{{token}}` or an absolute address — what a link or button may point at. */
@@ -117,6 +125,8 @@ export function EmailBodyEditor({
   tokens,
   media,
   onMediaUploaded,
+  dir = "ltr",
+  lang,
 }: Props) {
   const [imageOpen, setImageOpen] = useState(false);
   const [target, setTarget] = useState<TargetDialogState | null>(null);
@@ -146,6 +156,8 @@ export function EmailBodyEditor({
         class:
           "tiptap email-body min-h-[360px] px-5 py-4 text-[15px] leading-[1.6] focus:outline-none",
         "aria-label": "Email body",
+        dir,
+        ...(lang ? { lang } : {}),
       },
     },
     onUpdate({ editor }) {

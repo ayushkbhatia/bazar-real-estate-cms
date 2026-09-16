@@ -39,6 +39,9 @@ export type ContentAssetRow = {
   body_format: "text" | "html";
   /** outreach · system · form_reply (migration 0128). */
   role: ContentAssetRole;
+  /** The Arabic twins (migration 0129). Null until somebody writes them. */
+  subject_ar: string | null;
+  body_ar: string | null;
   status: ContentAssetStatus;
   position: number;
   created_at: string;
@@ -47,7 +50,7 @@ export type ContentAssetRow = {
 };
 
 const FIELDS =
-  "id, kind, slug, name, category, subject, body, body_format, role, notes, follow_up_after_days, next_asset_id, system_key, status, position, created_at, updated_at, deleted_at";
+  "id, kind, slug, name, category, subject, subject_ar, body, body_ar, body_format, role, notes, follow_up_after_days, next_asset_id, system_key, status, position, created_at, updated_at, deleted_at";
 
 export async function listContentAssets(opts?: {
   kind?: ContentAssetKind;

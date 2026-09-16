@@ -190,6 +190,12 @@ export const listPropertyStep1Schema = z
 
 export const listPropertySchema = z
   .object({
+    /**
+     * The locale the owner filled the wizard in — the language the
+     * confirmation answers in. Optional rather than defaulted so INPUT and
+     * OUTPUT keep the same shape for the form's resolver.
+     */
+    locale: z.enum(["en", "ar"]).optional(),
     intent: z.enum(LP_INTENTS),
     location: z
       .string()

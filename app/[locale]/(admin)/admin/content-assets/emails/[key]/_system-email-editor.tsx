@@ -20,9 +20,12 @@ import {
   type SystemAssetKey,
 } from "@/lib/content-assets/system";
 import { SYSTEM_EMAIL_DEFAULTS } from "@/lib/content-assets/system-defaults";
+import { SYSTEM_EMAIL_DEFAULTS_AR } from "@/lib/content-assets/system-defaults-ar";
 import { TOKENS } from "@/lib/content-assets/tokens";
 import type { RenderedEmail } from "@/lib/content-assets/system-render";
 import type { EmailSurface } from "@/lib/content-assets/usage";
+import type { EmailLocale } from "@/lib/content-assets/tokens";
+import { LangToggle, withLang } from "../../_lang-toggle";
 import type { BlogMediaOption } from "../../../blog/_image-insert-dialog";
 import { EmailBodyEditor } from "../_body-editor";
 import { WhereUsed } from "../_where-used";
@@ -49,6 +52,8 @@ type Tab = "draft" | "live" | "builtin" | "text";
 
 export function SystemEmailEditor({
   emailKey,
+  lang,
+  english,
   initial,
   updatedAt,
   live,
@@ -64,6 +69,10 @@ export function SystemEmailEditor({
   to,
 }: {
   emailKey: SystemAssetKey;
+  /** The half of the email being edited. */
+  lang: EmailLocale;
+  /** The English, shown beside the Arabic as the thing being translated. */
+  english: { subject: string; body: string };
   initial: Copy;
   updatedAt: string;
   /** What sends today, rendered for the sample recipient. */
@@ -122,6 +131,7 @@ export function SystemEmailEditor({
         const result = await previewSystemEmailDraft(emailKey, {
           subject: copy.subject,
           body: copy.body,
+          lang,
         });
         if (id !== request.current || !result) return;
         setDraft(result.email);
@@ -131,7 +141,7 @@ export function SystemEmailEditor({
       }
     }, 450);
     return () => window.clearTimeout(t);
-  }, [emailKey, copy.subject, copy.body]);
+  }, [emailKey, copy.subject, copy.body, lang]);
 
   // Leaving with unsaved wording asks first.
   useEffect(() => {
@@ -163,11 +173,14 @@ export function SystemEmailEditor({
   function restoreDefault() {
     if (
       !window.confirm(
-        "Replace the subject and message with Bazar's wording? Your unsaved changes here will be lost. Nothing is saved until you press Save.",
+        lang === "ar"
+          ? "Replace the Arabic subject and message with Bazar's Arabic first draft? Your unsaved changes here will be lost. Nothing is saved until you press Save."
+          : "Replace the subject and message with Bazar's wording? Your unsaved changes here will be lost. Nothing is saved until you press Save.",
       )
     )
       return;
-    const d = SYSTEM_EMAIL_DEFAULTS[emailKey];
+    const d =
+      lang === "ar" ? SYSTEM_EMAIL_DEFAULTS_AR[emailKey] : SYSTEM_EMAIL_DEFAULTS[emailKey];
     setCopy((c) => ({ ...c, subject: d.subject, body: d.body }));
     setEditorKey((k) => k + 1);
     setErrors({});
@@ -177,7 +190,7 @@ export function SystemEmailEditor({
     setErrors({});
     const next = { ...copy, status };
     startSave(async () => {
-      const result = await saveSystemEmail(emailKey, next);
+      const result = await saveSystemEmail(emailKey, { ...next, lang });
       if (result.status === "error") {
         setErrors(result.fieldErrors ?? {});
         toast.error(result.message);
@@ -194,7 +207,9 @@ export function SystemEmailEditor({
     startTest(async () => {
       const result = await sendSystemEmailTest(
         emailKey,
-        tab === "live" || tab === "builtin" ? null : { subject: copy.subject, body: copy.body },
+        tab === "live" || tab === "builtin"
+          ? null
+          : { subject: copy.subject, body: copy.body, lang },
       );
       if (result.status === "error") toast.error(result.message);
       else toast.success(result.message);
@@ -232,6 +247,17 @@ export function SystemEmailEditor({
             </span>
           </div>
           <p className="mt-2 text-[13px] text-bz-ink-2 max-w-[70ch]">{def.trigger}</p>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <LangToggle
+              lang={lang}
+              hrefFor={(l) => withLang(`/admin/content-assets/emails/${emailKey}`, l)}
+            />
+            <span className="text-[12px] text-bz-muted max-w-[60ch]">
+              {lang === "ar"
+                ? "Leads who filled in an Arabic form receive this. Clear both boxes and they receive the English instead."
+                : "Leads from the English site receive this."}
+            </span>
+          </div>
           <dl className="mt-4 grid grid-cols-[110px_1fr] gap-y-1.5 text-[12px]">
             <dt className="text-bz-muted">Goes to</dt>
             <dd className="text-bz-ink-2">{def.recipient}</dd>
@@ -281,6 +307,8 @@ export function SystemEmailEditor({
             <div className="flex gap-2">
               <input
                 ref={subjectRef}
+                dir={lang === "ar" ? "rtl" : "ltr"}
+                lang={lang}
                 value={copy.subject}
                 onChange={(e) => set("subject", e.target.value)}
                 className={cn(
@@ -315,12 +343,14 @@ export function SystemEmailEditor({
           <div className="flex flex-col gap-1.5">
             <span className="text-[12px] font-medium text-bz-ink-2">Message</span>
             <EmailBodyEditor
-              key={editorKey}
+              key={`${lang}-${editorKey}`}
               defaultValue={copy.body}
               onChange={(html) => set("body", html)}
               tokens={tokens}
               media={media}
               onMediaUploaded={(m) => setMedia((list) => [m, ...list])}
+              dir={lang === "ar" ? "rtl" : "ltr"}
+              lang={lang}
             />
             {errors.body ? (
               <span className="text-[11.5px] text-[oklch(0.45_0.13_28)]">{errors.body}</span>
@@ -336,6 +366,21 @@ export function SystemEmailEditor({
               </span>
             )}
           </div>
+
+          {lang === "ar" ? (
+            <details className="rounded border border-bz-border bg-bz-surface-2 px-3 py-2">
+              <summary className="cursor-pointer text-[12px] text-bz-ink-2">
+                The English, to translate from
+              </summary>
+              <p className="mt-2 text-[12px] text-bz-muted">
+                {english.subject || "No subject"}
+              </p>
+              <div
+                className="mt-2 text-[12.5px] text-bz-ink-2 [&_p]:mb-2 [&_a]:underline"
+                dangerouslySetInnerHTML={{ __html: english.body }}
+              />
+            </details>
+          ) : null}
 
           <label className="flex flex-col gap-1.5">
             <span className="text-[12px] font-medium text-bz-ink-2">Notes for the next editor</span>
