@@ -18,6 +18,23 @@ const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const CONTENT_ASSET_KINDS = ["email", "whatsapp"] as const;
 export type ContentAssetKind = (typeof CONTENT_ASSET_KINDS)[number];
 
+/**
+ * What an asset IS, which decides how its body is written and where it is
+ * used (migration 0128):
+ *
+ *   outreach    plain text, the middle of a message an advisor sends by hand
+ *   system      rich text, a whole transactional email, keyed by system_key
+ *   form_reply  rich text, a whole email an editor assigns to public forms
+ */
+export const CONTENT_ASSET_ROLES = ["outreach", "system", "form_reply"] as const;
+export type ContentAssetRole = (typeof CONTENT_ASSET_ROLES)[number];
+
+export const CONTENT_ASSET_ROLE_LABELS: Record<ContentAssetRole, string> = {
+  outreach: "Outreach",
+  system: "Site email",
+  form_reply: "Form reply",
+};
+
 export const CONTENT_ASSET_STATUSES = ["draft", "published"] as const;
 export type ContentAssetStatus = (typeof CONTENT_ASSET_STATUSES)[number];
 

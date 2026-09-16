@@ -118,6 +118,7 @@ export async function submitServiceLead(
     phone,
     brief_raw: buildServiceBrief(data),
     source: SOURCE[data.kind],
+    form_key: data.form_key ?? null,
     assigned_agent_id: advisor?.assignableUserId ?? null,
     inferred_constraints: {
       intent: data.intent ?? (data.kind === "management" ? "manage" : null),
@@ -166,6 +167,7 @@ export async function submitServiceLead(
     message: buildServiceBrief(data),
     propertyReference: null,
     propertyTitle: null,
+    formKey: data.form_key ?? null,
   });
   await sendEmail({
     to: data.email,

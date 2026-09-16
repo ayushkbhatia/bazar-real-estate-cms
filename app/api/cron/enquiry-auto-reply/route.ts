@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
     const { data: rows, error } = await supabase
       .from("enquiries")
       .select(
-        "id, name, email, brief_raw, source, property_id, created_at, properties(reference, title)",
+        "id, name, email, brief_raw, source, form_key, property_id, created_at, properties(reference, title)",
       )
       .gte("created_at", fiveMinAgo)
       .is("ack_sent_at", null)
@@ -80,6 +80,10 @@ export async function GET(req: NextRequest) {
         propertyReference: prop?.reference ?? null,
         propertyTitle: prop?.title ?? null,
         source: row.source,
+        // The lead carries the form it came from (0128), so a swept lead gets
+        // the reply the inline send would have chosen rather than the general
+        // acknowledgement.
+        formKey: row.form_key,
       });
       const ok = await sendEmail({
         to: row.email,

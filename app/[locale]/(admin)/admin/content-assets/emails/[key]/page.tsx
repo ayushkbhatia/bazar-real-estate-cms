@@ -20,6 +20,8 @@ import {
   previewSystemEmail,
 } from "@/lib/content-assets/system-emails";
 import { readEmailBrand } from "@/lib/content-assets/system-resolve";
+import { emailSurfaces } from "@/lib/content-assets/usage";
+import { listFormAssignments } from "@/lib/queries/content-assets";
 import type { BlogMediaOption } from "../../../blog/_image-insert-dialog";
 import { SystemEmailEditor } from "./_system-email-editor";
 import { PreviewOnlyEmail } from "./_preview-only";
@@ -76,6 +78,7 @@ export default async function SystemEmailPage({ params }: PageProps) {
       <CmsShell title={previewOnly.label} breadcrumbs={<Crumbs label={previewOnly.label} />}>
         <PreviewOnlyEmail
           def={previewOnly}
+          surfaces={emailSurfaces(previewOnly.key)}
           email={email}
           from={sender.from}
           replyTo={sender.replyTo}
@@ -88,11 +91,16 @@ export default async function SystemEmailPage({ params }: PageProps) {
   if (!isSystemAssetKey(key)) notFound();
   const def = SYSTEM_ASSETS[key];
 
-  const [row, role, media] = await Promise.all([
+  const [row, role, media, assignments] = await Promise.all([
     getSystemAssetRow(key),
     getStaffRole(),
     fetchImages(),
+    listFormAssignments(),
   ]);
+  const surfaces = emailSurfaces(
+    key,
+    Object.fromEntries(Object.entries(assignments).map(([k, a]) => [k, a.assetId])),
+  );
 
   const initialBody = row ? bodyAsHtml(row.body, row.body_format) : "";
   const initialSubject = row?.subject ?? "";
@@ -122,6 +130,7 @@ export default async function SystemEmailPage({ params }: PageProps) {
           builtin={preview.builtin}
           initialDraft={preview.draft}
           media={media}
+          surfaces={surfaces}
           canWrite={role === "admin" || role === "editor" || role === "marketing"}
           from={sender.from}
           replyTo={sender.replyTo}

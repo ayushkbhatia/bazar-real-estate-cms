@@ -27,6 +27,13 @@ import {
 } from "@/lib/schemas/list-property";
 import type { Database } from "@/db/types";
 
+/**
+ * This wizard is one form in lib/forms/registry.ts, and three things key off
+ * that: the submission log, the lead row (so the auto-reply cron knows which
+ * reply to send) and the reply assignment in /admin/content-assets.
+ */
+const SELL_FORM_KEY = "services_sell_list_property";
+
 export type ListPropertyAdvisor = {
   name: string;
   title: string | null;
@@ -133,6 +140,7 @@ export async function submitListingLead(
     phone,
     brief_raw: brief,
     source: "list_property",
+    form_key: SELL_FORM_KEY,
     timeline: toEnquiryTimeline(data.urgency),
     assigned_agent_id: advisor?.assignableUserId ?? null,
     inferred_constraints: {
@@ -189,7 +197,7 @@ export async function submitListingLead(
   // answers still belong in /admin/forms → Responses alongside every other
   // form's. Best-effort: the lead is already written.
   await captureFormSubmission({
-    formKey: "services_sell_list_property",
+    formKey: SELL_FORM_KEY,
     sourcePath: "/services/sell",
     enquiryId: row.id,
     data: withLabels(
@@ -236,6 +244,7 @@ export async function submitListingLead(
     }`,
     propertyReference: null,
     propertyTitle: null,
+    formKey: SELL_FORM_KEY,
   });
   await sendEmail({
     to: data.email,
