@@ -118,16 +118,17 @@ export function AgentCard({
       </div>
 
       {directActions > 0 ? (
-        <div
-          className="mt-5 grid gap-2"
-          style={{
-            gridTemplateColumns: `repeat(${directActions}, minmax(0, 1fr))`,
-          }}
-        >
+        // The three labels share a row when they fit and wrap when they do
+        // not. Equal grid columns crushed the Arabic email label — "البريد
+        // الإلكتروني" is wider than a third of the rail — into two lines
+        // inside a fixed-height button. `min-w-max` lets each button ask for
+        // its own text's width, so a label too wide for a share of the row
+        // takes a row of its own instead of wrapping inside itself.
+        <div className="mt-5 flex flex-wrap gap-2">
           {telUrl ? (
             <a
               href={telUrl}
-              className="inline-flex items-center justify-center gap-1.5 h-9 rounded-md bg-bz-accent text-bz-accent-fg text-[12.5px] font-medium hover:bg-bz-accent-hover transition-colors"
+              className="flex-1 basis-0 min-w-max whitespace-nowrap px-2 inline-flex items-center justify-center gap-1.5 h-9 rounded-md bg-bz-accent text-bz-accent-fg text-[12.5px] font-medium hover:bg-bz-accent-hover transition-colors"
             >
               <Phone size={13} strokeWidth={1.8} />
               {copy.call}
@@ -138,7 +139,7 @@ export function AgentCard({
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 h-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[12.5px] hover:border-bz-border-strong transition-colors"
+              className="flex-1 basis-0 min-w-max whitespace-nowrap px-2 inline-flex items-center justify-center gap-1.5 h-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[12.5px] hover:border-bz-border-strong transition-colors"
             >
               <MessageCircle size={13} strokeWidth={1.7} />
               {copy.whatsapp}
@@ -147,7 +148,7 @@ export function AgentCard({
           {mailUrl ? (
             <a
               href={mailUrl}
-              className="inline-flex items-center justify-center gap-1.5 h-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[12.5px] hover:border-bz-border-strong transition-colors"
+              className="flex-1 basis-0 min-w-max whitespace-nowrap px-2 inline-flex items-center justify-center gap-1.5 h-9 rounded-md border border-bz-border bg-bz-bg text-bz-ink-2 text-[12.5px] hover:border-bz-border-strong transition-colors"
             >
               <Mail size={13} strokeWidth={1.7} />
               {copy.email}
