@@ -14,7 +14,7 @@ import {
 import { bodyAsHtml } from "@/lib/content-assets/email-html";
 import { previewFormReply } from "@/lib/content-assets/system-emails";
 import { assignableForms } from "@/lib/content-assets/usage";
-import { langFrom } from "../../_lang-toggle";
+import { langFrom, withLang } from "../../_lang-toggle";
 import type { BlogMediaOption } from "../../../blog/_image-insert-dialog";
 import { FormReplyEditor } from "./_reply-editor";
 
@@ -46,7 +46,7 @@ async function fetchImages(): Promise<BlogMediaOption[]> {
 
 export default async function FormReplyPage({ params, searchParams }: PageProps) {
   const { id } = await params;
-  const lang = langFrom((await searchParams).lang);
+  const lang = langFrom(await searchParams);
   const [asset, assignments, role, media] = await Promise.all([
     getContentAssetById(id),
     listFormAssignments(),
@@ -77,7 +77,7 @@ export default async function FormReplyPage({ params, searchParams }: PageProps)
       title={asset.name}
       breadcrumbs={
         <span className="inline-flex items-center gap-1">
-          <Link href="/admin/content-assets/replies" className="hover:text-bz-ink">
+          <Link href={withLang("/admin/content-assets/replies", lang)} className="hover:text-bz-ink">
             Content assets · Form replies
           </Link>
           <ChevronRight size={11} />

@@ -89,16 +89,38 @@ type EnquiryOpts = {
   propertyTitle: string | null;
 };
 
-function enquiryContext(opts: EnquiryOpts): EmailContext {
+/**
+ * The one token whose VALUE is prose rather than data: `{{property_line}}` is
+ * built here as "For <reference> · <title>", so the word in front of the
+ * reference has a language even though the reference does not. Unlocalised, an
+ * Arabic acknowledgement opened with an English "For" above an Arabic
+ * paragraph. The reference and the title themselves are never translated.
+ */
+function propertyLine(
+  reference: string | null,
+  title: string | null,
+  locale: EmailLocale,
+): string | null {
+  if (!reference) return null;
+  const lead = locale === "ar" ? "بخصوص" : "For";
+  return `${lead} ${reference}${title ? ` · ${title}` : ""}`;
+}
+
+function enquiryContext(
+  opts: EnquiryOpts,
+  locale: EmailLocale = "en",
+): EmailContext {
   return {
     values: {
       lead_first_name: firstName(opts.name),
       lead_name: opts.name,
       property_reference: opts.propertyReference,
       property_title: opts.propertyTitle,
-      property_line: opts.propertyReference
-        ? `For ${opts.propertyReference}${opts.propertyTitle ? ` · ${opts.propertyTitle}` : ""}`
-        : null,
+      property_line: propertyLine(
+        opts.propertyReference,
+        opts.propertyTitle,
+        locale,
+      ),
       enquiry_message: opts.message,
       site_url: emailSiteUrl(),
     },
@@ -259,7 +281,7 @@ const BINDINGS = {
     sample: { name: "Amira Haddad", valuationId: "sample" },
   }),
   viewing_confirmation: bind<ViewingOpts>({
-    context: (o) => ({
+    context: (o, locale = "en") => ({
       values: {
         lead_first_name: firstName(o.name),
         lead_name: o.name,
@@ -267,7 +289,9 @@ const BINDINGS = {
         property_title: o.propertyTitle,
         viewing_time: o.localTime,
         viewing_location: o.location,
-        viewing_duration: `${o.durationMinutes} minutes`,
+        // Prose, like the property line: the unit has a language even though
+        // the number does not.
+        viewing_duration: `${o.durationMinutes} ${locale === "ar" ? "دقيقة" : "minutes"}`,
         advisor_name: o.advisorName,
         site_url: site(),
       },
@@ -732,12 +756,15 @@ export async function previewFormReply(
 ): Promise<RenderedEmail> {
   const def = formKey ? getFormDef(formKey) : null;
   const sample = locale === "ar" ? FORM_REPLY_SAMPLE_AR : FORM_REPLY_SAMPLE;
-  const base = enquiryContext({
-    name: sample.name,
-    message: sample.message,
-    propertyReference: sample.propertyReference,
-    propertyTitle: sample.propertyTitle,
-  });
+  const base = enquiryContext(
+    {
+      name: sample.name,
+      message: sample.message,
+      propertyReference: sample.propertyReference,
+      propertyTitle: sample.propertyTitle,
+    },
+    locale,
+  );
   const ctx: EmailContext = {
     ...base,
     values: {

@@ -21,7 +21,8 @@ import {
 } from "@/lib/content-assets/system-emails";
 import { readEmailBrand } from "@/lib/content-assets/system-resolve";
 import { emailSurfaces } from "@/lib/content-assets/usage";
-import { langFrom } from "../../_lang-toggle";
+import type { EmailLocale } from "@/lib/content-assets/tokens";
+import { langFrom, withLang } from "../../_lang-toggle";
 import { listFormAssignments } from "@/lib/queries/content-assets";
 import type { BlogMediaOption } from "../../../blog/_image-insert-dialog";
 import { SystemEmailEditor } from "./_system-email-editor";
@@ -59,10 +60,10 @@ const SAMPLE_TO = {
   team: "Layla Mansour <layla@bazarrealestate.ae>",
 } as const;
 
-function Crumbs({ label }: { label: string }) {
+function Crumbs({ label, lang }: { label: string; lang: EmailLocale }) {
   return (
     <span className="inline-flex items-center gap-1">
-      <Link href="/admin/content-assets" className="hover:text-bz-ink">
+      <Link href={withLang("/admin/content-assets", lang)} className="hover:text-bz-ink">
         Content assets · Site emails
       </Link>
       <ChevronRight size={11} />
@@ -73,14 +74,14 @@ function Crumbs({ label }: { label: string }) {
 
 export default async function SystemEmailPage({ params, searchParams }: PageProps) {
   const { key } = await params;
-  const lang = langFrom((await searchParams).lang);
+  const lang = langFrom(await searchParams);
   const sender = emailSender();
 
   const previewOnly = PREVIEW_ONLY_EMAILS.find((e) => e.key === key);
   if (previewOnly) {
     const email = previewAdvisorReply(await readEmailBrand());
     return (
-      <CmsShell title={previewOnly.label} breadcrumbs={<Crumbs label={previewOnly.label} />}>
+      <CmsShell title={previewOnly.label} breadcrumbs={<Crumbs label={previewOnly.label} lang={lang} />}>
         <PreviewOnlyEmail
           def={previewOnly}
           surfaces={emailSurfaces(previewOnly.key)}
@@ -132,7 +133,7 @@ export default async function SystemEmailPage({ params, searchParams }: PageProp
   });
 
   return (
-    <CmsShell title={def.label} breadcrumbs={<Crumbs label={def.label} />}>
+    <CmsShell title={def.label} breadcrumbs={<Crumbs label={def.label} lang={lang} />}>
       {row ? (
         <SystemEmailEditor
           emailKey={key}

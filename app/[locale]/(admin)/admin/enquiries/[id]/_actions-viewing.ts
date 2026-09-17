@@ -7,6 +7,8 @@ import { logAudit } from "@/lib/audit";
 import { sendEmail } from "@/lib/email";
 import { buildIcs } from "@/lib/ics";
 import { viewingConfirmationEmail } from "@/lib/content-assets/system-emails";
+import type { EmailLocale } from "@/lib/content-assets/tokens";
+import { localeDateTag } from "@/lib/i18n/dates";
 import { env } from "@/lib/env";
 import { requireRole } from "@/lib/auth";
 import type { Database } from "@/db/types";
@@ -23,8 +25,16 @@ const MAX_DURATION = 8 * 60; // 8h
 const MIN_DURATION = 15;
 
 
-function formatLocalTime(d: Date): string {
-  return d.toLocaleString("en-GB", {
+/**
+ * The time as the LEAD reads it, not as the CMS does.
+ *
+ * This runs inside an admin action, but the string it makes is the one line of
+ * the viewing email a recipient acts on. Pinned to `en-GB`, an Arabic
+ * confirmation read "Thursday 18 September, 4:30 pm" under three lines of
+ * Arabic. `localeDateTag` carries the Gulf month names and the Latin-digit pin.
+ */
+function formatLocalTime(d: Date, locale: EmailLocale): string {
+  return d.toLocaleString(localeDateTag(locale), {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -158,15 +168,19 @@ export async function createViewing(input: {
     // The wording lives in lib/email-templates.ts with every other
     // transactional email, and /admin/content-assets → System emails can
     // replace it. This action keeps the booking and the calendar invite.
-    const tpl = await viewingConfirmationEmail({
-      name: enquiry.name,
-      localTime: formatLocalTime(startsAt),
-      durationMinutes: minutes,
-      location,
-      propertyReference: propRow?.reference ?? null,
-      propertyTitle: propRow?.title ?? null,
-      advisorName: null,
-    }, enquiry.locale === "ar" ? "ar" : "en");
+    const leadLocale: EmailLocale = enquiry.locale === "ar" ? "ar" : "en";
+    const tpl = await viewingConfirmationEmail(
+      {
+        name: enquiry.name,
+        localTime: formatLocalTime(startsAt, leadLocale),
+        durationMinutes: minutes,
+        location,
+        propertyReference: propRow?.reference ?? null,
+        propertyTitle: propRow?.title ?? null,
+        advisorName: null,
+      },
+      leadLocale,
+    );
 
     // The email tells the lead the invite is attached, so it has to be. It
     // used to be built and then discarded, and the sentence was untrue.

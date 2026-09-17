@@ -17,6 +17,7 @@ import {
   type EmailBrand,
 } from "@/lib/content-assets/email-brand";
 import type { EmailLocale } from "@/lib/content-assets/tokens";
+import { isolateForLocale } from "@/lib/i18n/bidi";
 
 type Rendered = { subject: string; text: string; html: string };
 
@@ -266,11 +267,11 @@ export function valuationReportPanel(
     html: `<div dir="${dirOf(locale)}" style="margin:24px 0;padding:24px;background:#1B1A17;border-radius:10px;color:#fff;text-align:${startOf(locale)}">
       <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#b0a48b">${t.refined}</div>
       <div style="font-family:Georgia,serif;font-style:italic;font-size:44px;line-height:1.05;letter-spacing:-0.025em;margin-top:8px">
-        ${escape(formatAedShort(opts.finalEstimateAed))}
+        ${iso(escape(formatAedShort(opts.finalEstimateAed)), locale)}
       </div>
       ${
         hasRange
-          ? `<div style="font-size:12px;color:#b0a48b;margin-top:8px">${t.initialRange} ${escape(formatAedShort(opts.rangeLowAed!))}–${escape(formatAedShort(opts.rangeHighAed!))}</div>`
+          ? `<div style="font-size:12px;color:#b0a48b;margin-top:8px">${t.initialRange} ${iso(`${escape(formatAedShort(opts.rangeLowAed!))}–${escape(formatAedShort(opts.rangeHighAed!))}`, locale)}</div>`
           : ""
       }
     </div>`,
@@ -282,6 +283,19 @@ export function valuationReportPanel(
           )}`
         : ""),
   };
+}
+
+/**
+ * A panel's data, isolated when the panel is Arabic.
+ *
+ * A panel is built as HTML here and dropped into the body whole, so it never
+ * passes the token substitution that isolates everything else. Its cells are
+ * exactly the values that need it: a phone number, a price, a reference, a
+ * visitor's own answer — Latin runs inside an RTL table, where "+971 50 123
+ * 4567" arrives as "4567 123 50 971+". English is untouched, by `locale`.
+ */
+function iso(value: string, locale: EmailLocale): string {
+  return isolateForLocale(value, locale);
 }
 
 export function listingReferencesBlock(
@@ -300,13 +314,13 @@ export function listingReferencesBlock(
           ${sample
             .map(
               (r) =>
-                `<li style="margin:2px 0"><span style="font-family:monospace">${escape(r)}</span></li>`,
+                `<li style="margin:2px 0"><span style="font-family:monospace">${iso(escape(r), locale)}</span></li>`,
             )
             .join("")}
           ${remainder > 0 ? `<li style="margin:2px 0;color:#99896e">${t.andMore(remainder)}</li>` : ""}
         </ul>`,
     text:
-      `${t.references}\n${sample.map((r) => `  · ${r}`).join("\n")}` +
+      `${t.references}\n${sample.map((r) => `  · ${iso(r, locale)}`).join("\n")}` +
       (remainder > 0 ? `\n  · ${t.andMore(remainder)}` : ""),
   };
 }
@@ -323,13 +337,15 @@ export function formAnswersBlock(
       ${rows
         .map(
           ([label, value]) => `<tr>
-        <td style="padding:10px 14px;border-bottom:1px solid #F0F0EA;font-size:12px;color:#99896e;white-space:nowrap;vertical-align:top">${escape(label)}</td>
-        <td style="padding:10px 14px;border-bottom:1px solid #F0F0EA;font-size:14px;color:#32312d">${escape(value).replace(/\n/g, "<br>")}</td>
+        <td style="padding:10px 14px;border-bottom:1px solid #F0F0EA;font-size:12px;color:#99896e;white-space:nowrap;vertical-align:top">${iso(escape(label), locale)}</td>
+        <td style="padding:10px 14px;border-bottom:1px solid #F0F0EA;font-size:14px;color:#32312d">${iso(escape(value), locale).replace(/\n/g, "<br>")}</td>
       </tr>`,
         )
         .join("")}
     </table>`,
-    text: rows.map(([label, value]) => `${label}: ${value}`).join("\n"),
+    text: rows
+      .map(([label, value]) => `${iso(label, locale)}: ${iso(value, locale)}`)
+      .join("\n"),
   };
 }
 

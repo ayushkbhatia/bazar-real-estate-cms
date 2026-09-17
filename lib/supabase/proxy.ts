@@ -83,7 +83,11 @@ export async function updateSession(
     if (isAdmin && !isPublicPath(pathname)) {
       const url = request.nextUrl.clone();
       url.pathname = "/admin/login";
-      url.searchParams.set("redirect", pathname);
+      // Path AND query: a deep link into the CMS carries state there —
+      // `?locale=ar` picks the Arabic half of an email, `?view=outreach` picks
+      // a tab — and dropping it silently lands the editor somewhere else after
+      // they sign in.
+      url.searchParams.set("redirect", `${pathname}${request.nextUrl.search}`);
       return NextResponse.redirect(url);
     }
     return supabaseResponse;
@@ -148,7 +152,7 @@ export async function updateSession(
     // Customer accounts are gone, so /account no longer exists and the staff
     // door is the only sign-in surface.
     url.pathname = "/admin/login";
-    url.searchParams.set("redirect", pathname);
+    url.searchParams.set("redirect", `${pathname}${request.nextUrl.search}`);
     return NextResponse.redirect(url);
   }
 

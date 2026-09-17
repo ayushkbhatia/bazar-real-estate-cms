@@ -62,3 +62,31 @@ describe("pickPostSignInPath", () => {
     ).toBe("/");
   });
 });
+
+describe("the query survives the sign-in bounce", () => {
+  /**
+   * The proxy round-trips path AND query, because a CMS deep link carries
+   * state there — `?locale=ar` is which language of an email you were editing.
+   * Landing back on the English one after signing in is a silent wrong answer.
+   */
+  it("keeps a query string on the requested path", () => {
+    expect(
+      pickPostSignInPath({
+        isStaff: true,
+        requested: "/admin/content-assets/emails/enquiry_ack?locale=ar",
+      }),
+    ).toBe("/admin/content-assets/emails/enquiry_ack?locale=ar");
+  });
+
+  it("still recognises an /admin destination that carries one", () => {
+    // Classified on the path, not the whole string: otherwise a non-staff user
+    // is sent to `/admin?view=x` to bounce off the role gate.
+    expect(
+      pickPostSignInPath({ isStaff: false, requested: "/admin?view=outreach" }),
+    ).toBe("/");
+  });
+
+  it("does not let a query smuggle in another origin", () => {
+    expect(safeRelativePath("//evil.com/?next=/admin")).toBeNull();
+  });
+});

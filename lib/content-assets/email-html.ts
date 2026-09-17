@@ -1,6 +1,7 @@
 import sanitizeHtml from "sanitize-html";
 import { MEDIA_BUCKET, mediaPublicUrl } from "@/lib/media";
 import { env } from "@/lib/env";
+import { isolateForLocale } from "@/lib/i18n/bidi";
 import {
   escapeEmailHtml as escape,
   emailSiteUrl,
@@ -306,7 +307,7 @@ export function renderEmailBodyHtml(
       const block = blockFor(name, ctx);
       if (!block) return match;
       panels.push(block.html);
-      return ` ${panels.length - 1} `;
+      return `\u0000${panels.length - 1}\u0000`;
     },
   );
 
@@ -317,7 +318,10 @@ export function renderEmailBodyHtml(
     const name = raw.toLowerCase();
     if (!isTokenName(name)) return "";
     const block = blockFor(name, ctx);
-    return (block ? block.text : tokenValue(name, ctx.values)).replace(/ /g, "");
+    return (block ? block.text : tokenValue(name, ctx.values, locale)).replace(
+      /\u0000/g,
+      "",
+    );
   };
   html = html
     .split(/(<[^>]+>)/)
@@ -327,7 +331,18 @@ export function renderEmailBodyHtml(
           segment.replace(tokenPattern(), (_t, raw: string) => escape(value(raw)))
         : // Text: escaped, line breaks kept. A block token inside a sentence
           // gets its plain-text form rather than a broken panel.
-          segment.replace(tokenPattern(), (_t, raw: string) => htmlValue(value(raw))),
+          //
+          // Isolated in Arabic, and only there. A value is the lead's own
+          // words, a reference, a price — Latin as often as not — and Latin
+          // dropped bare into an RTL paragraph takes its trailing punctuation
+          // to the wrong end: "…this week if possible." arrives as ".…this
+          // week if possible". The marks are invisible, but they are not free
+          // (they travel into anything that reads the string back), so English
+          // stays byte-identical. Attribute values above are deliberately NOT
+          // isolated: an invisible character inside an href breaks the link.
+          segment.replace(tokenPattern(), (_t, raw: string) =>
+            htmlValue(isolateForLocale(value(raw), locale)),
+          ),
     )
     .join("");
 
@@ -361,7 +376,7 @@ export function renderEmailBodyHtml(
     '<p style="margin:22px 0">$1</p>',
   );
 
-  return html.replace(/ (\d+) /g, (_m, i: string) => panels[Number(i)] ?? "");
+  return html.replace(/\u0000(\d+)\u0000/g, (_m, i: string) => panels[Number(i)] ?? "");
 }
 
 const ENTITIES: Record<string, string> = {
@@ -449,7 +464,10 @@ export function renderEmailBodyText(
     const name = raw.toLowerCase();
     if (!isTokenName(name)) return "";
     const block = blockFor(name, ctx);
-    return block ? block.text : tokenValue(name, ctx.values, locale);
+    return isolateForLocale(
+      block ? block.text : tokenValue(name, ctx.values, locale),
+      locale,
+    );
   });
 
   return text

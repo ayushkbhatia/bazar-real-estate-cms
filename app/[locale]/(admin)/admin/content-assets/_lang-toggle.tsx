@@ -62,15 +62,32 @@ export function LangToggle({
   );
 }
 
-/** `?lang=` → the language being edited. Anything else is English. */
-export function langFrom(
-  value: string | string[] | undefined,
-): EmailLocale {
+/**
+ * The parameter the language rides in — deliberately NOT `lang`.
+ *
+ * `?lang=` belongs to the WordPress site this one replaced: Polylang put it on
+ * every URL, so `proxy.ts` deletes it and redirects. That redirect is a **308**,
+ * which a browser caches permanently — the first build of this toggle shipped
+ * `?lang=ar` and every Arabic button bounced straight back to English, in a way
+ * that survives fixing the server. Hence a different name, and a different name
+ * is what makes the poisoned URLs irrelevant rather than merely unvisited.
+ *
+ * `proxy.ts` now also leaves `/admin` out of that strip, so the trap cannot be
+ * re-set by the next person who reaches for the obvious parameter name.
+ */
+export const LANG_PARAM = "locale";
+
+type SearchParams = Record<string, string | string[] | undefined>;
+
+/** `?locale=ar` → the language being edited. Anything else is English. */
+export function langFrom(sp: SearchParams): EmailLocale {
+  const value = sp[LANG_PARAM];
   const raw = Array.isArray(value) ? value[0] : value;
   return raw === "ar" ? "ar" : "en";
 }
 
 /** The same URL with the language swapped — used by every toggle. */
 export function withLang(path: string, lang: EmailLocale): string {
-  return lang === "ar" ? `${path}${path.includes("?") ? "&" : "?"}lang=ar` : path;
+  if (lang !== "ar") return path;
+  return `${path}${path.includes("?") ? "&" : "?"}${LANG_PARAM}=ar`;
 }
