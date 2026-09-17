@@ -24,7 +24,7 @@ type PageProps = {
 };
 
 export default async function FormRepliesPage({ searchParams }: PageProps) {
-  const lang = langFrom((await searchParams).lang);
+  const lang = langFrom(await searchParams);
   const [replies, assignments, role, brand] = await Promise.all([
     listFormReplies(),
     listFormAssignments(),
@@ -61,7 +61,7 @@ export default async function FormRepliesPage({ searchParams }: PageProps) {
       title="Form replies"
       breadcrumbs={
         <span className="inline-flex items-center gap-1">
-          <Link href="/admin/content-assets" className="hover:text-bz-ink">
+          <Link href={withLang("/admin/content-assets", lang)} className="hover:text-bz-ink">
             Content assets
           </Link>
           <ChevronRight size={11} />

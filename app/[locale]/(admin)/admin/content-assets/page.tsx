@@ -82,17 +82,28 @@ function firstLine(body: string): string {
 
 type View = "emails" | "outreach" | "trash";
 
-const TABS: { view: View | "design" | "replies"; label: string; href: string }[] = [
-  { view: "emails", label: "Site emails", href: "/admin/content-assets" },
-  {
-    view: "replies",
-    label: "Form replies",
-    href: "/admin/content-assets/replies",
-  },
-  { view: "outreach", label: "Outreach", href: "/admin/content-assets?view=outreach" },
-  { view: "design", label: "Email design", href: "/admin/content-assets/design" },
-  { view: "trash", label: "Trash", href: "/admin/content-assets?view=trash" },
-];
+/**
+ * The two tabs that have a language keep it when you switch between them — an
+ * editor working through the Arabic should not be dropped back into English by
+ * moving from an email to the form it answers. Outreach, Trash and Email design
+ * are not per-language screens (Email design toggles its own wording in place),
+ * so they take no parameter.
+ */
+function tabsFor(
+  lang: EmailLocale,
+): { view: View | "design" | "replies"; label: string; href: string }[] {
+  return [
+    { view: "emails", label: "Site emails", href: withLang("/admin/content-assets", lang) },
+    {
+      view: "replies",
+      label: "Form replies",
+      href: withLang("/admin/content-assets/replies", lang),
+    },
+    { view: "outreach", label: "Outreach", href: "/admin/content-assets?view=outreach" },
+    { view: "design", label: "Email design", href: "/admin/content-assets/design" },
+    { view: "trash", label: "Trash", href: "/admin/content-assets?view=trash" },
+  ];
+}
 
 /** "Contact · /contact, Buy · /buy and 16 more" — the card's one line. */
 function surfaceSummary(surfaces: EmailSurface[]): string {
@@ -448,7 +459,7 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
   const raw = (Array.isArray(sp.view) ? sp.view[0] : sp.view) ?? "";
   // `?view=system` is the old address of the emails tab; it still lands there.
   const view: View = raw === "trash" ? "trash" : raw === "outreach" ? "outreach" : "emails";
-  const lang = langFrom(sp.lang);
+  const lang = langFrom(sp);
 
   const trashCount = (await listContentAssets({ trashed: true })).length;
 
@@ -508,7 +519,7 @@ export default async function ContentAssetsPage({ searchParams }: PageProps) {
           aria-label="Content assets sections"
           className="inline-flex w-fit flex-wrap rounded-md border border-bz-border bg-bz-bg p-0.5"
         >
-          {TABS.map((tab) => {
+          {tabsFor(lang).map((tab) => {
             const active = view === tab.view;
             const Icon =
               tab.view === "emails"

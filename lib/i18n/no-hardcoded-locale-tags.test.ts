@@ -167,11 +167,42 @@ function scannedFiles(): string[] {
   );
 }
 
+/**
+ * …plus anything that composes an email to a LEAD, wherever it lives.
+ *
+ * The scope above says the CMS is English by decision (ADR-0007 §6), and for
+ * what an admin screen *displays* that is still true. It stopped being true
+ * for what an admin action *sends*: a viewing confirmation is composed in
+ * `app/[locale]/(admin)/…/_actions-viewing.ts` and delivered to a lead in the
+ * language they wrote in. Its `en-GB` pin printed "Thursday 18 September,
+ * 4:30 pm" inside an otherwise Arabic email, and no guard could see it because
+ * of the folder it sits in.
+ *
+ * So the predicate is what the file DOES, not where it is: importing the
+ * system-email registry means the strings you format may leave in Arabic.
+ */
+function leadEmailComposers(): string[] {
+  return execFileSync(
+    "git",
+    // Escaped brackets — see the note on the pathspec above.
+    ["ls-files", "app/\\[locale\\]/**/*.ts", "app/\\[locale\\]/**/*.tsx"],
+    { cwd: REPO_ROOT, encoding: "utf8" },
+  )
+    .split("\n")
+    .filter(Boolean)
+    .filter((f) => !/\.test\.tsx?$/.test(f))
+    .filter((f) =>
+      /from "@\/lib\/content-assets\/system-emails"/.test(
+        readFileSync(join(REPO_ROOT, f), "utf8"),
+      ),
+    );
+}
+
 describe("G-19 · no hardcoded locale tags in date formatting", () => {
   it("finds none outside the allowlist", () => {
     const offenders: string[] = [];
 
-    for (const file of scannedFiles()) {
+    for (const file of new Set([...scannedFiles(), ...leadEmailComposers()])) {
       if (ALLOWED.includes(file)) continue;
       const src = stripComments(readFileSync(join(REPO_ROOT, file), "utf8"));
       for (const m of src.matchAll(HARDCODED_TAG)) {
@@ -221,6 +252,18 @@ describe("G-19 · no hardcoded locale tags in date formatting", () => {
    * a renamed directory or a typo'd glob all present as "no offenders found",
    * which is indistinguishable from success.
    */
+  /**
+   * The lead-email half of the scope, held to the same standard: a pathspec
+   * that matches nothing passes this rule over every file it was added for.
+   */
+  it("actually scans the actions that email a lead", () => {
+    const composers = leadEmailComposers();
+    expect(composers.length).toBeGreaterThan(5);
+    expect(composers).toContain(
+      "app/[locale]/(admin)/admin/enquiries/[id]/_actions-viewing.ts",
+    );
+  });
+
   it("actually scans the tree", () => {
     const files = scannedFiles();
     expect(files.length).toBeGreaterThan(200);

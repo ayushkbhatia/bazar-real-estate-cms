@@ -36,7 +36,11 @@ export function pickPostSignInPath(opts: {
 }): string {
   const safe = safeRelativePath(opts.requested);
   if (safe) {
-    const isAdminDest = safe === "/admin" || safe.startsWith("/admin/");
+    // Classify on the path alone: the proxy round-trips the query too, so an
+    // admin destination can arrive as `/admin?view=x`, which neither an
+    // equality check nor a `/admin/` prefix would recognise.
+    const path = safe.split(/[?#]/)[0]!;
+    const isAdminDest = path === "/admin" || path.startsWith("/admin/");
     if (isAdminDest && !opts.isStaff) return "/";
     return safe;
   }

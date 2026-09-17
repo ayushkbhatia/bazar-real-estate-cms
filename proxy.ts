@@ -58,19 +58,26 @@ export async function proxy(request: NextRequest) {
   //     change. Terminating, because the parameter is deleted before the
   //     redirect — the second request cannot match this branch.
   //
-  //     `/admin` is left unprefixed whatever the parameter says: the CMS is
-  //     English-only (ADR-0007), and prefixing it here would only hand the
-  //     request to branch 2 to bounce straight back.
+  //     **The CMS is exempt entirely.** WordPress never served `/admin` — its
+  //     own back office was `/wp-admin` — so there is no dead URL of this shape
+  //     to clean up here, and stripping the parameter cost us a shipped
+  //     feature: the content-assets Arabic toggle was written as `?lang=ar`,
+  //     and every click 308'd straight back to English. A 308 is cached by the
+  //     browser permanently, so that bug outlives the deploy that caused it.
+  //     The toggle now rides `?locale=` (see `_lang-toggle.tsx`); this branch
+  //     stays out of `/admin` so the next admin screen to reach for the obvious
+  //     parameter name does not fall into the same hole.
   const legacyLang = request.nextUrl.searchParams.get(LEGACY_LANG_PARAM);
-  if (legacyLang !== null) {
+  const bareForLegacy = stripLocalePrefix(pathname);
+  const isAdminPath =
+    bareForLegacy === "/admin" || bareForLegacy.startsWith("/admin/");
+  if (legacyLang !== null && !isAdminPath) {
     const url = request.nextUrl.clone();
     url.searchParams.delete(LEGACY_LANG_PARAM);
-    const bare = stripLocalePrefix(pathname);
-    const isAdmin = bare === "/admin" || bare.startsWith("/admin/");
     url.pathname =
-      isEnabledLocale(legacyLang) && legacyLang !== DEFAULT_LOCALE && !isAdmin
-        ? withLocalePrefix(bare, legacyLang)
-        : bare;
+      isEnabledLocale(legacyLang) && legacyLang !== DEFAULT_LOCALE
+        ? withLocalePrefix(bareForLegacy, legacyLang)
+        : bareForLegacy;
     return NextResponse.redirect(url, 308);
   }
 

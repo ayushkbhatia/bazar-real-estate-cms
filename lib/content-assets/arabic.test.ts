@@ -6,6 +6,10 @@ import { SYSTEM_EMAIL_DEFAULTS } from "./system-defaults";
 import { SYSTEM_EMAIL_DEFAULTS_AR } from "./system-defaults-ar";
 import { FORM_REPLY_DEFAULT_AR, FORM_REPLY_TOKENS } from "./form-replies";
 import { DEFAULT_EMAIL_BRAND } from "./email-brand";
+import { renderEmailBodyHtml, renderEmailBodyText } from "./email-html";
+import { previewSystemEmail } from "./system-emails";
+import { formAnswersBlock } from "@/lib/email-templates";
+import { stripIsolates } from "@/lib/i18n/bidi";
 import { copyForLocale, renderSystemEmail } from "./system-render";
 import {
   TOKENS,
@@ -180,5 +184,112 @@ describe("token fallbacks", () => {
       if (!t.fallback.trim()) continue;
       expect(t.fallbackAr?.trim() || t.fallback, t.name).toBeTruthy();
     }
+  });
+});
+
+describe("an Arabic email is Arabic all the way down", () => {
+  const ctx = { values: {} };
+
+  /**
+   * The HTML half is the one the recipient reads. It was passing no locale to
+   * `tokenValue`, so an Arabic email with an unnamed lead opened "مرحباً
+   * there," — the Arabic fallbacks existed and only the plain-text part used
+   * them.
+   */
+  it("falls back in Arabic in the HTML, not only in the plain text", () => {
+    const body = "<p>مرحباً {{lead_first_name}}،</p>";
+    const html = renderEmailBodyHtml(body, ctx, DEFAULT_EMAIL_BRAND, "ar");
+    expect(html).toContain("عزيزنا");
+    expect(html).not.toContain("there");
+    // The two halves of the same email agree.
+    expect(renderEmailBodyText(body, ctx, "ar")).toContain("عزيزنا");
+  });
+
+  it("still falls back in English for an English email", () => {
+    const html = renderEmailBodyHtml(
+      "<p>Hello {{lead_first_name}},</p>",
+      ctx,
+      DEFAULT_EMAIL_BRAND,
+      "en",
+    );
+    expect(html).toContain("there");
+    expect(html).not.toContain("عزيزنا");
+  });
+});
+
+describe("the property line speaks the lead's language", () => {
+  /**
+   * `{{property_line}}` is the only token whose value is prose: the code builds
+   * "For <reference>", so the word in front had a language and was always
+   * English. The reference itself must NOT be translated.
+   */
+  it("says بخصوص in Arabic and For in English, keeping the reference", async () => {
+    const draft = {
+      subject: "س",
+      body: "<p>{{property_line}}</p>",
+      subjectAr: "س",
+      bodyAr: "<p>{{property_line}}</p>",
+      format: "html" as const,
+    };
+    const ar = await previewSystemEmail("enquiry_auto_reply", {
+      brand: DEFAULT_EMAIL_BRAND,
+      locale: "ar",
+      draft,
+    });
+    expect(ar.draft!.html).toContain("بخصوص");
+    expect(ar.draft!.html).not.toContain(">For ");
+    expect(ar.draft!.html).toContain("BAZ-AD-04891");
+
+    const en = await previewSystemEmail("enquiry_auto_reply", {
+      brand: DEFAULT_EMAIL_BRAND,
+      locale: "en",
+      draft,
+    });
+    expect(en.draft!.html).toContain("For ");
+    expect(en.draft!.html).not.toContain("بخصوص");
+  });
+});
+
+describe("a panel's data survives an RTL table", () => {
+  /**
+   * A panel is built as HTML and dropped in whole, so it never passes the
+   * substitution that isolates every other value. Its cells are exactly the
+   * ones that need it: "+971 50 123 4567" rendered as "4567 123 50 971+".
+   */
+  it("isolates the answers in Arabic and leaves English byte-identical", () => {
+    const answers: [string, string][] = [["Mobile", "+971 50 123 4567"]];
+    const ar = formAnswersBlock(answers, "ar");
+    const en = formAnswersBlock(answers, "en");
+    // FSI — the first strong character decides, which is what a phone number
+    // beginning with "+" needs.
+    expect(ar.html).toContain("\u2068");
+    expect(stripIsolates(ar.html)).toContain("+971 50 123 4567");
+    // English carries no marks at all: they are invisible but not free, and
+    // every PR in this epic is held to leaving English byte-identical.
+    expect(en.html).toBe(stripIsolates(en.html));
+  });
+});
+
+describe("the viewing confirmation", () => {
+  it("counts the minutes in Arabic", async () => {
+    const draft = {
+      subject: "س",
+      body: "<p>{{viewing_duration}}</p>",
+      subjectAr: "س",
+      bodyAr: "<p>{{viewing_duration}}</p>",
+      format: "html" as const,
+    };
+    const ar = await previewSystemEmail("viewing_confirmation", {
+      brand: DEFAULT_EMAIL_BRAND,
+      locale: "ar",
+      draft,
+    });
+    expect(stripIsolates(ar.draft!.html)).toContain("45 دقيقة");
+    const en = await previewSystemEmail("viewing_confirmation", {
+      brand: DEFAULT_EMAIL_BRAND,
+      locale: "en",
+      draft,
+    });
+    expect(en.draft!.html).toContain("45 minutes");
   });
 });
