@@ -429,7 +429,23 @@ export const DEVELOPMENT_SECTIONS: SectionDef[] = [
     "Lead advisor contact prompt.",
     {
       dataNote:
-        "The banner — advisor, photo, pull quote — comes from the advisor's team record.",
+        "The advisor's name, title and photograph come from the team record assigned to this project — edit those at /admin/agents.",
+      // The quote and both buttons are wording, not record data, so they are
+      // overridable here for one project exactly as the eyebrow and heading
+      // above them are. Blank on all four is the normal case: the shared
+      // document at /admin/pages/sub/development/copy is what renders.
+      extraFields: [
+        sharedBody("quote", "Pull quote", "advisor"),
+        sharedText("call_label", "Call button", "advisor"),
+        sharedText("visit_label", "Site-visit button", "advisor"),
+        sharedBody("visit_message", "Site-visit message", "advisor"),
+      ],
+      defaults: {
+        quote: null,
+        call_label: null,
+        visit_label: null,
+        visit_message: null,
+      },
     },
   ),
 ];

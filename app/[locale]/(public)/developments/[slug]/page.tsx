@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import type { Locale } from "@/lib/i18n/locales";
+import { stripIsolates } from "@/lib/i18n/bidi";
 import * as React from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -414,6 +415,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       plan: development.payment_plan?.name ?? "",
       available: availableUnits.length,
       total: development.total_units ?? units.length,
+      advisor: leadAdvisor.display_name,
+      advisor_first: leadAdvisor.display_name.split(" ")[0] ?? "",
     },
     locale,
   );
@@ -793,6 +796,26 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         eyebrow={sv("advisor", "eyebrow") ?? shared("advisor", "eyebrow")}
         heading={sv("advisor", "heading") ?? shared("advisor", "heading")}
         intro={sv("advisor", "intro")}
+        quote={sv("advisor", "quote") ?? shared("advisor", "quote")}
+        callLabel={
+          sv("advisor", "call_label") ?? shared("advisor", "call_label")
+        }
+        visitLabel={
+          sv("advisor", "visit_label") ?? shared("advisor", "visit_label")
+        }
+        /*
+         * The one string here that leaves the page rather than being drawn on
+         * it. `shared` bidi-isolates the advisor token so the button beside
+         * this one reads correctly in Arabic; those marks are invisible on a
+         * page and pointless inside a `wa.me?text=`, where they would be
+         * percent-encoded into the draft the lead sees. Stripped for the
+         * message only — an override typed by an editor carries none anyway.
+         */
+        visitMessage={stripIsolates(
+          sv("advisor", "visit_message") ??
+            shared("advisor", "visit_message") ??
+            "",
+        )}
       />
     ),
   };

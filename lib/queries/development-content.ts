@@ -73,7 +73,14 @@ export async function getAdvisorForBanner(
         // published an English name, title and pull quote. Selecting them is
         // half the fix; `localiseRow` below is the other half — the same pair
         // of mistakes `getDeveloperBySlug` documents from the other side.
-        "user_id, display_name, display_name_ar, slug, title, title_ar, brn, bio, bio_ar, status",
+        // `public_phone` and `whatsapp` are 0077's columns, and leaving them
+        // out is why the two buttons under the photograph dialled
+        // `+97125550001` and messaged `+971501234567` — the placeholder
+        // numbers on `SEED_AGENTS[0]`, which the spread below supplies for
+        // every field this select does not. Same class of omission as the
+        // `_ar` twins above, with a worse failure: an enquiry that reaches
+        // nobody looks, from the outside, exactly like an enquiry nobody sent.
+        "user_id, display_name, display_name_ar, slug, title, title_ar, brn, bio, bio_ar, public_phone, whatsapp, status",
       )
       .eq("user_id", userId)
       .eq("status", "active")
@@ -84,9 +91,24 @@ export async function getAdvisorForBanner(
       await currentLocale(),
     ) as unknown as typeof raw;
 
-    // Contact details still come from the seeded profile when there's a match
-    // on slug — `staff` doesn't carry phone/WhatsApp yet.
+    /*
+     * The spread is what makes a `staff` row fit `SeedAgent`, whose shape
+     * carries fields `staff` genuinely has no column for (specialties, areas,
+     * lifetime volume). Everything the row DOES answer is listed below it, so
+     * the seed supplies only what nothing else can.
+     *
+     * The blank-to-null step matters for the two phone numbers: an empty
+     * string in the column is not an answer, and `data.whatsapp ?? seed` would
+     * take it as one and render a `wa.me/` link to nowhere. WhatsApp falls
+     * back to the phone before it falls back to the seed, which is the rule
+     * `getAdvisorByUserId` already applies on the listing page.
+     */
     const seed = SEED_AGENTS.find((a) => a.slug === data.slug);
+    const blankToNull = (v: unknown): string | null => {
+      const t = typeof v === "string" ? v.trim() : "";
+      return t === "" ? null : t;
+    };
+    const phone = blankToNull(data.public_phone);
     return {
       ...(seed ?? SEED_AGENTS[0]),
       slug: data.slug ?? seed?.slug ?? "",
@@ -94,6 +116,12 @@ export async function getAdvisorForBanner(
       title: data.title ?? seed?.title ?? "Advisor",
       brn: data.brn ?? seed?.brn ?? "",
       bio: data.bio ?? seed?.bio ?? "",
+      phone: phone ?? seed?.phone ?? SEED_AGENTS[0].phone,
+      whatsapp:
+        blankToNull(data.whatsapp) ??
+        phone ??
+        seed?.whatsapp ??
+        SEED_AGENTS[0].whatsapp,
     };
   } catch (error) {
     console.error("[getAdvisorForBanner]", error);

@@ -7,6 +7,7 @@ import {
   getDevelopmentPageCopy,
 } from "./development-page";
 import { SUBPAGE_SLUG_PREFIX, subPageSlug } from "@/lib/master-pages/subpages";
+import { stripIsolates } from "@/lib/i18n/bidi";
 
 /**
  * The resolution path no page on the live site can currently demonstrate.
@@ -30,6 +31,8 @@ const TOKENS = {
   plan: "60/40",
   available: 3,
   total: 12,
+  advisor: "Bazar Real Estate",
+  advisor_first: "Bazar",
 };
 
 describe("one project's shared wording", () => {
@@ -80,9 +83,45 @@ describe("one project's shared wording", () => {
       ["other-projects", "eyebrow"],
       ["faq", "heading"],
       ["advisor", "heading"],
+      ["advisor", "quote"],
+      ["advisor", "call_label"],
+      ["advisor", "visit_label"],
+      ["advisor", "visit_message"],
     ] as const) {
       expect(copy(section, field), `${section}.${field}`).toBeTruthy();
     }
+  });
+
+  /*
+   * The advisor band's three name-bearing strings.
+   *
+   * Worth their own test because the quote is the field that had no home at
+   * all before this: it came from `SEED_AGENTS[0].pull_quote`, spread under
+   * the real staff row by `getAdvisorForBanner`, so every project page
+   * published a placeholder written for a different advisor — in English on
+   * /ar too. A null or an English string here is that bug returning.
+   */
+  it("fills the advisor's name into the banner's buttons", async () => {
+    const en = await getDevelopmentPageCopy(TOKENS, "en");
+    expect(en("advisor", "call_label")).toBe("Call Bazar");
+    expect(en("advisor", "visit_message")).toBe(
+      "Hi Bazar, I'd like to book a site visit at Yas Point.",
+    );
+    // The quote the page shipped with, now editable rather than inherited
+    // from a seed record.
+    expect(en("advisor", "quote")).toMatch(/^We don't show twenty units/);
+  });
+
+  it("writes the advisor band in Arabic, with the name isolated", async () => {
+    const ar = await getDevelopmentPageCopy(TOKENS, "ar");
+    expect(ar("advisor", "visit_label")).toBe("احجز زيارة للموقع");
+    expect(stripIsolates(ar("advisor", "call_label") ?? "")).toBe(
+      "اتصل بـBazar",
+    );
+    // A Latin name dropped into an Arabic sentence must carry its own
+    // direction, or the run reorders around the preposition before it.
+    expect(ar("advisor", "call_label")).not.toBe("اتصل بـBazar");
+    expect(ar("advisor", "quote")).toMatch(/^لا نعرض/);
   });
 
   it("returns null for a field it does not carry", async () => {
