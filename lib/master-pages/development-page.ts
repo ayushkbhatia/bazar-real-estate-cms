@@ -178,6 +178,27 @@ export const DEVELOPMENT_TOKENS = {
   plan: "{plan}",
   available: "{available}",
   total: "{total}",
+  /**
+   * The advisor in the banner at the foot of the page, as the ASSIGNED team
+   * record spells them — `{advisor}` is the whole name, `{advisor_first}` its
+   * first word.
+   *
+   * Two tokens rather than one because the two places the name appears want
+   * different lengths: the button under the photograph says "Call Bazar", and
+   * a WhatsApp message that opened "Hi Bazar Real Estate," would read as a
+   * mail merge. Neither is a choice the page should be making on the editor's
+   * behalf, so both are offered and the defaults pick one each.
+   *
+   * These are the only tokens here whose value is a person's name rather than
+   * a project's, which is why `getDevelopmentPageCopy` bidi-isolates them: an
+   * advisor whose Arabic twin is unwritten arrives as Latin text inside an
+   * Arabic sentence, and unisolated it reorders around the punctuation.
+   */
+  advisor: "{advisor}",
+  // Key spelled to MATCH the token, as every entry above is: the registry
+  // guard fills each token from its own key, so an `advisorFirst` key would
+  // declare a token nothing substitutes.
+  advisor_first: "{advisor_first}",
 } as const;
 
 export type DevelopmentTokens = {
@@ -187,12 +208,16 @@ export type DevelopmentTokens = {
   plan: string;
   available: number | string;
   total: number | string;
+  advisor: string;
+  advisor_first: string;
 };
 
 const NAME = DEVELOPMENT_TOKENS.name;
 const AREA = DEVELOPMENT_TOKENS.area;
 const DEVELOPER = DEVELOPMENT_TOKENS.developer;
 const PLAN = DEVELOPMENT_TOKENS.plan;
+const ADVISOR = DEVELOPMENT_TOKENS.advisor;
+const ADVISOR_FIRST = DEVELOPMENT_TOKENS.advisor_first;
 
 /**
  * An eyebrow is a label, not a sentence — 80 characters rather than the
@@ -237,6 +262,8 @@ const TOKEN_HELP = {
   name: `Use ${NAME} where the project's name belongs.`,
   area: `Use ${AREA} where the area's name belongs.`,
   developer: `Use ${DEVELOPER} where the developer's name belongs.`,
+  advisor: `Use ${ADVISOR} where the advisor's name belongs.`,
+  advisorFirst: `Use ${ADVISOR_FIRST} where the advisor's first name belongs.`,
 } as const;
 
 /**
@@ -482,15 +509,62 @@ export const DEVELOPMENT_PAGE_COPY_SECTIONS: SectionDef[] = [
   copyBand(
     "advisor",
     "Advisor banner",
-    "The label and heading on the lead-advisor prompt.",
-    [sharedEyebrow(""), sharedHeading("")],
+    "The lead-advisor prompt: its label and heading, the line quoted beside the photograph, and both buttons.",
+    [
+      sharedEyebrow(""),
+      sharedHeading(""),
+      /*
+       * The pull quote had no home at all.
+       *
+       * `getAdvisorForBanner` shapes the assigned team member into the seed
+       * agent's shape by spreading `SEED_AGENTS[0]` under them — the contact
+       * details `staff` does not carry. `pull_quote` came along for the ride,
+       * so every project page on the site published Mariam Al-Hashimi's
+       * placeholder sentence under whoever was actually assigned, in English,
+       * on /ar as well as /en, with no screen anywhere that could change it.
+       *
+       * It lives here rather than on `staff` because that would be a column,
+       * a twin, a migration and a fifth box on the team form for a sentence
+       * the client has one of. The default below is the one already live, so
+       * nothing on /en moves; the Arabic twin is new, and so is the ability to
+       * replace either.
+       */
+      area("quote", "Pull quote", {
+        max: 300,
+        optional: false,
+        help: `The line quoted beside the advisor's photograph. ${TOKEN_HELP.advisor}`,
+      }),
+      text("call_label", "Call button", {
+        max: 60,
+        help: TOKEN_HELP.advisorFirst,
+      }),
+      text("visit_label", "Site-visit button", { max: 60 }),
+      area("visit_message", "Site-visit message", {
+        max: 300,
+        optional: false,
+        help: `The message WhatsApp opens already holding. ${TOKEN_HELP.advisorFirst} ${TOKEN_HELP.name}`,
+      }),
+    ],
     {
       eyebrow: "Need Assistance?",
       eyebrow_ar: "هل تحتاج إلى مساعدة؟",
       heading: "Speak With an Advisor",
       heading_ar: "تحدث مع مستشار عقاري",
+      // Verbatim what every project page publishes today — see the note above.
+      quote: "We don't show twenty units. We show two — and we know why.",
+      quote_ar: "لا نعرض عشرين وحدة. نعرض وحدتين — ونعرف لماذا.",
+      call_label: `Call ${ADVISOR_FIRST}`,
+      // The token trails the verb in both languages here, but the Arabic
+      // attaches its preposition to the name without a space — `بـ` is a
+      // prefix, not a word — which is why this is a template an editor owns
+      // rather than `t("call") + " " + name`.
+      call_label_ar: `اتصل بـ${ADVISOR_FIRST}`,
+      visit_label: "Book site visit",
+      visit_label_ar: "احجز زيارة للموقع",
+      visit_message: `Hi ${ADVISOR_FIRST}, I'd like to book a site visit at ${NAME}.`,
+      visit_message_ar: `مرحباً ${ADVISOR_FIRST}، أود حجز زيارة لموقع ${NAME}.`,
     },
-    "The banner — advisor, photo, pull quote — comes from the advisor's team record.",
+    "The advisor's name, title and photograph come from the team record assigned to this project — edit those at /admin/agents.",
   ),
 ];
 

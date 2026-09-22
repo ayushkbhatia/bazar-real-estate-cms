@@ -18,6 +18,7 @@ import { cache } from "react";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
+import { isolateForLocale } from "@/lib/i18n/bidi";
 import { type Locale } from "@/lib/i18n/locales";
 import {
   parseStoredSections,
@@ -137,6 +138,19 @@ export async function getDevelopmentPageCopy(
     ]),
   );
 
+  /*
+   * The advisor tokens are the only ones here that carry a PERSON's name, and
+   * a person's name is the one value on this page that routinely arrives in
+   * the other script: an advisor whose `display_name_ar` is unwritten folds to
+   * Latin, and `اتصل بـBazar` unisolated puts the Latin run on the wrong side
+   * of the preposition it was typed after. Isolated per `lib/i18n/bidi.ts`;
+   * under English the helper is the identity, so /en is byte-identical.
+   *
+   * Deliberately not applied to the other four. They are already-folded
+   * project, area and developer names that have rendered unisolated since this
+   * document shipped, and isolating them now would be a silent change to
+   * twenty-two live pages rather than a fix to a reported one.
+   */
   const filled: Record<string, string> = {
     name: tokens.name,
     area: tokens.area,
@@ -144,6 +158,8 @@ export async function getDevelopmentPageCopy(
     plan: tokens.plan,
     available: String(tokens.available),
     total: String(tokens.total),
+    advisor: isolateForLocale(tokens.advisor, fold),
+    advisor_first: isolateForLocale(tokens.advisor_first, fold),
   };
 
   return (sectionKey, field) => {
