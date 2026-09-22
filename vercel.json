@@ -29,6 +29,10 @@
     {
       "path": "/api/cron/embeddings-backfill",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/salesforce-lead-sync",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

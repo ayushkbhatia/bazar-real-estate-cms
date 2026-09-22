@@ -214,6 +214,7 @@ export type IntegrationKind =
   | "whatsapp_cloud"
   | "dld_open_data"
   | "docusign"
+  | "salesforce"
   | "posthog"
   | "sentry"
   | "resend";

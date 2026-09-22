@@ -1369,6 +1369,12 @@ export type Database = {
           close_reason: string | null
           closed_at: string | null
           created_at: string
+          crm_attempts: number
+          crm_external_id: string | null
+          crm_last_error: string | null
+          crm_next_attempt_at: string
+          crm_sync_state: string
+          crm_synced_at: string | null
           development_id: string | null
           email: string | null
           escalated_at: string | null
@@ -1400,6 +1406,12 @@ export type Database = {
           close_reason?: string | null
           closed_at?: string | null
           created_at?: string
+          crm_attempts?: number
+          crm_external_id?: string | null
+          crm_last_error?: string | null
+          crm_next_attempt_at?: string
+          crm_sync_state?: string
+          crm_synced_at?: string | null
           development_id?: string | null
           email?: string | null
           escalated_at?: string | null
@@ -1431,6 +1443,12 @@ export type Database = {
           close_reason?: string | null
           closed_at?: string | null
           created_at?: string
+          crm_attempts?: number
+          crm_external_id?: string | null
+          crm_last_error?: string | null
+          crm_next_attempt_at?: string
+          crm_sync_state?: string
+          crm_synced_at?: string | null
           development_id?: string | null
           email?: string | null
           escalated_at?: string | null
@@ -3833,6 +3851,7 @@ export type Database = {
         | "whatsapp_cloud"
         | "dld_open_data"
         | "docusign"
+        | "salesforce"
         | "posthog"
         | "sentry"
         | "resend"
@@ -4168,6 +4187,7 @@ export const Constants = {
         "whatsapp_cloud",
         "dld_open_data",
         "docusign",
+        "salesforce",
         "posthog",
         "sentry",
         "resend",
