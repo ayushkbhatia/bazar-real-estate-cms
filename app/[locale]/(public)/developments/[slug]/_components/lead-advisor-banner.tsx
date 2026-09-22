@@ -3,7 +3,7 @@ import { Phone, MessageCircle } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import Image from "next/image";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import type { SeedAgent } from "@/lib/seeds/agents";
+import type { ProjectAdvisor } from "@/lib/queries/development-content";
 
 /**
  * Sprint 5a: dark banner with the lead advisor on a development detail
@@ -15,13 +15,19 @@ import type { SeedAgent } from "@/lib/seeds/agents";
  * What stays on `agent` is what belongs to the person: their name, title and
  * photograph from the assigned team record, and the number the buttons dial.
  *
- * The quote used to be `agent.pull_quote`, which on a real assignment is not
- * the advisor's line at all — `getAdvisorForBanner` spreads `SEED_AGENTS[0]`
+ * The quote used to be `agent.pull_quote`, which on a real assignment was not
+ * the advisor's line at all — `getAdvisorForBanner` spread `SEED_AGENTS[0]`
  * under the staff row for the contact fields `staff` lacks, and the seed's
  * placeholder quote rode in with them. So every project page published the
  * same invented sentence, in English on /ar too, with nothing able to edit it.
  * The fallbacks below are kept for the same reason the page's other `??`
  * literals are: they render when Supabase is unreachable.
+ *
+ * That spread is gone now, so `agent` is a `ProjectAdvisor` — every field its
+ * own row's, and the contact details nullable, because a staff member who has
+ * not been given a phone number does not have one. Each button renders only
+ * when the detail it needs exists, rather than the type promising a string
+ * that had to come from somewhere.
  */
 export function LeadAdvisorBanner({
   agent,
@@ -34,7 +40,7 @@ export function LeadAdvisorBanner({
   visitLabel,
   visitMessage,
 }: {
-  agent: SeedAgent;
+  agent: ProjectAdvisor;
   developmentName: string;
   /**
    * Sub-page overrides. The banner itself is built from the advisor's own
@@ -56,15 +62,14 @@ export function LeadAdvisorBanner({
   const message =
     visitMessage?.trim() ||
     `Hi ${firstName}, I'd like to book a site visit at ${developmentName}.`;
-  const waUrl = `https://wa.me/${agent.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
-    message,
-  )}`;
-  const pullQuote = quote?.trim() || agent.pull_quote;
+  const waUrl = agent.whatsapp
+    ? `https://wa.me/${agent.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
+        message,
+      )}`
+    : null;
+  const pullQuote = quote?.trim() || null;
   return (
-    <section
-      id="advisor"
-      className="px-4 md:px-12 py-16 scroll-mt-24"
-    >
+    <section id="advisor" className="px-4 md:px-12 py-16 scroll-mt-24">
       {heading || intro ? (
         <div className="mb-6">
           {heading ? (
@@ -101,7 +106,9 @@ export function LeadAdvisorBanner({
           />
         )}
         <div>
-          <Eyebrow className="text-white/60">{eyebrow ?? "Lead advisor"}</Eyebrow>
+          <Eyebrow className="text-white/60">
+            {eyebrow ?? "Lead advisor"}
+          </Eyebrow>
           <Link
             href={`/agents/${agent.slug}`}
             className="block mt-2 serif text-[32px] leading-tight hover:text-bz-accent-soft transition-colors"
@@ -109,7 +116,9 @@ export function LeadAdvisorBanner({
           >
             {agent.display_name}
           </Link>
-          <div className="mt-1 text-[13px] text-white/70">{agent.title}</div>
+          {agent.title ? (
+            <div className="mt-1 text-[13px] text-white/70">{agent.title}</div>
+          ) : null}
           {pullQuote ? (
             <blockquote
               className="serif italic text-[20px] mt-5 ps-5 border-s-2 border-bz-accent text-white/90 max-w-[52ch]"
@@ -119,24 +128,30 @@ export function LeadAdvisorBanner({
             </blockquote>
           ) : null}
         </div>
-        <div className="flex flex-col gap-2 w-full md:w-[200px]">
-          <a
-            href={`tel:${agent.phone.replace(/\s/g, "")}`}
-            className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-md bg-white text-bz-ink text-[13px] font-medium hover:bg-white/90 transition-colors"
-          >
-            <Phone size={14} strokeWidth={1.8} />
-            {callLabel?.trim() || `Call ${firstName}`}
-          </a>
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-md border border-white/25 text-white text-[13px] hover:bg-white/10 transition-colors"
-          >
-            <MessageCircle size={14} strokeWidth={1.7} />
-            {visitLabel?.trim() || "Book site visit"}
-          </a>
-        </div>
+        {agent.phone || waUrl ? (
+          <div className="flex flex-col gap-2 w-full md:w-[200px]">
+            {agent.phone ? (
+              <a
+                href={`tel:${agent.phone.replace(/\s/g, "")}`}
+                className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-md bg-white text-bz-ink text-[13px] font-medium hover:bg-white/90 transition-colors"
+              >
+                <Phone size={14} strokeWidth={1.8} />
+                {callLabel?.trim() || `Call ${firstName}`}
+              </a>
+            ) : null}
+            {waUrl ? (
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 h-10 px-4 rounded-md border border-white/25 text-white text-[13px] hover:bg-white/10 transition-colors"
+              >
+                <MessageCircle size={14} strokeWidth={1.7} />
+                {visitLabel?.trim() || "Book site visit"}
+              </a>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </section>
   );
