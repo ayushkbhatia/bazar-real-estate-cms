@@ -218,12 +218,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  // The four catalogue directories. listAreasWithCounts(), listDevelopers()
-  // and listAgents() fall back to seeds when Supabase is offline, so those
-  // always yield a populated list; listPublishedPageSlugs() returns nothing,
-  // which is correct — an editor-built page has no seed to fall back to.
-  // Each is caught individually so one failing directory costs its own
-  // entries rather than the whole sitemap.
+  // The four catalogue directories. listAreasWithCounts() and
+  // listDevelopers() fall back to seeds when Supabase is offline, so those
+  // always yield a populated list; listAgents() and listPublishedPageSlugs()
+  // return nothing, which is the safer failure here — advertising a seeded
+  // advisor or a page that does not exist would be a soft 404. Each is
+  // caught individually so one failing directory costs its own entries
+  // rather than the whole sitemap.
   const [areaEntries, developerEntries, agentEntries, cmsPageEntries] =
     await Promise.all([
       listAreasWithCounts(DEFAULT_LOCALE)
@@ -262,10 +263,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       // Advisor profiles. Every /agents/<slug> page was indexable and reachable
       // from /agents, but none was advertised — so the directory was in the
       // sitemap and nothing it pointed at was. listAgents() filters to
-      // role=agent, status=active, which is exactly the set whose pages render;
-      // it falls back to seeds when Supabase is unreachable.
+      // role=agent, status=active, which is exactly the set whose pages
+      // render, and returns an empty roster rather than a seeded one when the
+      // read fails — so a bad hour costs this section its entries, never a
+      // URL that 404s.
       //
-      // DEFAULT_LOCALE is passed for the same reason as listDevelopers below:
+      // DEFAULT_LOCALE is passed for the same reason as listDevelopers above:
       // an ambient locale read is a dynamic API and would drop /sitemap.xml off
       // prerendering.
       listAgents(DEFAULT_LOCALE)

@@ -1,4 +1,4 @@
-import type { Locale } from "@/lib/i18n/locales";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { localeDateTag } from "@/lib/i18n/dates";
 import { getTranslations } from "next-intl/server";
 import { getCardLabelResolver } from "@/lib/queries/card-labels";
@@ -22,7 +22,15 @@ import { ListingCardPriced } from "../../_components/listing-card-priced";
 export async function generateStaticParams() {
   // Pre-render every agent the DB exposes today; runtime requests for
   // newly-added slugs still server-render on demand.
-  const agents = await listAgents();
+  //
+  // The locale is passed explicitly, as listAgents' own signature asks. Left
+  // off, it resolves the ambient one — a dynamic API with no request behind
+  // it here, which throws into the helper's catch and yields an empty roster.
+  // Empty is indistinguishable from "no agents", so the route prerenders
+  // nothing and every profile silently loses its CDN caching. Slugs do not
+  // differ by locale, so the choice of locale only decides which twin of the
+  // narrative fields is folded — none of which this function reads.
+  const agents = await listAgents(DEFAULT_LOCALE);
   return agents.map((a) => ({ slug: a.slug }));
 }
 
