@@ -135,14 +135,20 @@ describe("buildAdvisorWhatsAppLink + buildMortgageWhatsAppLink", () => {
   });
 });
 
-describe("placeholder fallback when env is unset", () => {
-  it("uses +971501234567 when neither env var is configured", async () => {
+describe("no number when env is unset", () => {
+  it("returns null rather than a placeholder number", async () => {
     vi.stubEnv("NEXT_PUBLIC_WHATSAPP_ADVISOR_NUMBER", "");
     vi.stubEnv("NEXT_PUBLIC_WHATSAPP_MORTGAGE_NUMBER", "");
-    const { buildAdvisorWhatsAppLink, buildMortgageWhatsAppLink } =
-      await importHelper();
-    expect(buildAdvisorWhatsAppLink()).toBe("https://wa.me/971501234567");
-    expect(buildMortgageWhatsAppLink()).toBe("https://wa.me/971501234567");
+    const {
+      buildAdvisorWhatsAppLink,
+      buildMortgageWhatsAppLink,
+      getAdvisorWhatsAppNumber,
+      getMortgageWhatsAppNumber,
+    } = await importHelper();
+    expect(getAdvisorWhatsAppNumber()).toBeNull();
+    expect(getMortgageWhatsAppNumber()).toBeNull();
+    expect(buildAdvisorWhatsAppLink()).toBeNull();
+    expect(buildMortgageWhatsAppLink()).toBeNull();
     // Restore for any tests that run after this in the same file.
     vi.stubEnv("NEXT_PUBLIC_WHATSAPP_ADVISOR_NUMBER", "+971 50 111 1111");
     vi.stubEnv("NEXT_PUBLIC_WHATSAPP_MORTGAGE_NUMBER", "+971 50 222 2222");
