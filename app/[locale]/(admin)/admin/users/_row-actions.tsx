@@ -35,7 +35,7 @@ import { accessLinkItem } from "@/lib/staff-invitations";
 import {
   unpublishWarning,
   type AdvisorAssignmentCounts,
-} from "@/lib/queries/advisor-assignments";
+} from "@/lib/staff-publishing";
 
 export function StaffRowActions({
   userId,

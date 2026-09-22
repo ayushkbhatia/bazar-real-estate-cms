@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { unpublishWarning } from "./advisor-assignments";
+import { unpublishWarning } from "./staff-publishing";
 
 const base = {
   displayName: "Bazar Real Estate",
