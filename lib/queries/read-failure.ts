@@ -47,11 +47,15 @@
  *
  * ## Where this does NOT belong
  *
- * Reads with a fallback. `getAgentBySlug` drops to `SEED_AGENTS`,
- * `getAreaProfile` composes from a seed guide, `findDirectoryEntry` returns
- * the code-owned entry — those already answer without the database and should
- * keep doing so. And list reads that render a section: an empty band on an
- * otherwise-fine page is a better outcome than a 500 for the whole page.
+ * Reads with a fallback. `getAreaProfile` composes from a seed guide,
+ * `findDirectoryEntry` returns the code-owned entry — those already answer
+ * without the database and should keep doing so. And list reads that render a
+ * section: an empty band on an otherwise-fine page is a better outcome than a
+ * 500 for the whole page.
+ *
+ * `getAgentBySlug` was on that list until its `SEED_AGENTS` fallback was
+ * removed — publishing an invented advisor is not "answering without the
+ * database". It now belongs here like any other by-slug read.
  *
  * The rule is narrow on purpose: **only where `null` becomes `notFound()`.**
  */

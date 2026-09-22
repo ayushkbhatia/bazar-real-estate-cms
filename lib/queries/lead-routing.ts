@@ -242,8 +242,8 @@ export function toInitials(name: string): string {
 }
 
 /**
- * The roster the matcher runs against: `staff` for identity, the seed roster
- * for coverage and the direct line, joined on slug.
+ * The roster the matcher runs against: `staff` for identity and the direct
+ * line, the seed roster for area coverage, joined on slug.
  */
 export async function listAdvisorCandidates(): Promise<AdvisorCandidate[]> {
   const agents = await listAgents();
@@ -258,7 +258,9 @@ export async function listAdvisorCandidates(): Promise<AdvisorCandidate[]> {
       userId: UUID_SHAPE_RE.test(a.user_id) ? a.user_id : null,
       specialties: a.specialties,
       areas: seed?.areas ?? [],
-      phone: seed?.phone ?? null,
+      // `staff.public_phone`, not the seed's — a matched advisor's
+      // confirmation used to quote a fictional direct line.
+      phone: a.phone,
     };
   });
 }

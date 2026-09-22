@@ -5,10 +5,13 @@
  * reassign flows). This file is the profile API: full bio, photo,
  * BRN, languages, specialty, area routing.
  *
- * Falls back to `lib/seeds/agents.ts` when Supabase isn't configured or
- * the staff table is empty so the public surface always renders during
- * pre-launch. Sprint 9 stops relying on the seed once admin /agents is
- * populated.
+ * Reads `staff` and nothing else. It used to fall back to
+ * `lib/seeds/agents.ts` — eleven invented advisors with invented BRN numbers
+ * — whenever Supabase was unconfigured, the query errored, the result was
+ * empty, or a slug missed. The last of those was the dangerous one: it meant
+ * suspending an advisor removed them from /agents while /agents/<slug> went
+ * on publishing them from the seed, so there was no way to take an advisor
+ * off the site. A roster this site cannot read is an empty roster.
  */
 
 import { createSupabasePublicClient } from "@/lib/supabase/public";
@@ -17,7 +20,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
 import type { Locale } from "@/lib/i18n/locales";
 import { localiseRow } from "@/lib/i18n/localise";
-import { SEED_AGENTS } from "@/lib/seeds/agents";
+import { readFailed } from "@/lib/queries/read-failure";
 import type { Database } from "@/db/types";
 
 type StaffRole = Database["public"]["Enums"]["staff_role"];
@@ -36,30 +39,29 @@ export type AgentProfile = {
   role: StaffRole;
   status: StaffStatus;
   joined_at: string | null;
+  /**
+   * Publishable contact details (0077). Null until staff fill them in.
+   *
+   * These were missing from the profile shape, so every surface that needed a
+   * number for an advisor reached into `SEED_AGENTS` for one — and where the
+   * slug missed, published a hardcoded placeholder instead. The columns have
+   * been there since 0077.
+   */
+  email: string | null;
+  phone: string | null;
+  /** Falls back to `phone` when the WhatsApp field is blank. */
+  whatsapp: string | null;
 };
 
 /* The `_ar` twins ride along and are folded away by `localiseRow` before
  * `toAgentProfile` shapes the row — that shaper builds explicit literals, so
  * folding after it would silently do nothing, as it did in the megamenu. */
 const PROFILE_FIELDS =
-  "user_id, slug, display_name, display_name_ar, title, title_ar, brn, photo_url, bio, bio_ar, specialties, specialties_ar, languages, languages_ar, role, status, joined_at";
+  "user_id, slug, display_name, display_name_ar, title, title_ar, brn, photo_url, bio, bio_ar, specialties, specialties_ar, languages, languages_ar, role, status, joined_at, public_email, public_phone, whatsapp";
 
-/** Convert seed entry → AgentProfile so the API shape stays consistent. */
-function seedToProfile(s: (typeof SEED_AGENTS)[number]): AgentProfile {
-  return {
-    user_id: `seed:${s.slug}`,
-    slug: s.slug,
-    display_name: s.display_name,
-    title: s.title,
-    brn: s.brn,
-    photo_url: null,
-    bio: s.bio,
-    specialties: s.specialties,
-    languages: s.languages,
-    role: "agent",
-    status: "active",
-    joined_at: null,
-  };
+function blankToNull(v: unknown): string | null {
+  const s = typeof v === "string" ? v.trim() : "";
+  return s === "" ? null : s;
 }
 
 function parseLanguages(raw: unknown): string[] {
@@ -68,12 +70,12 @@ function parseLanguages(raw: unknown): string[] {
 }
 
 /** All publishable agents (role=agent, status=active), ordered by name.
- *  Falls back to SEED_AGENTS when Supabase is offline or empty. */
+ *  Empty when there are none — never a substitute roster. */
 export async function listAgents(
   /** Pass the route's locale; the ambient one is lost on some prerenders. */
   locale?: Locale,
 ): Promise<AgentProfile[]> {
-  if (!isSupabaseConfigured) return SEED_AGENTS.map(seedToProfile);
+  if (!isSupabaseConfigured) return [];
   try {
     const supabase = createSupabasePublicClient();
     const { data, error } = await supabase
@@ -82,48 +84,44 @@ export async function listAgents(
       .eq("role", "agent")
       .eq("status", "active")
       .order("display_name", { ascending: true });
-    if (error || !data || data.length === 0) {
-      return SEED_AGENTS.map(seedToProfile);
-    }
+    if (error || !data) return [];
     const resolved = locale ?? (await currentLocale());
     return data.map((row) =>
       toAgentProfile(
         localiseRow(row as unknown as Record<string, unknown>, resolved),
       ),
     );
-  } catch {
-    return SEED_AGENTS.map(seedToProfile);
+  } catch (error) {
+    console.error("[listAgents]", error);
+    return [];
   }
 }
 
-/** Get agent by public slug. Falls back to seed if not in DB. */
+/** Get agent by public slug. Null when there is no publishable row. */
 export async function getAgentBySlug(
   slug: string,
   locale?: Locale,
 ): Promise<AgentProfile | null> {
-  if (!slug) return null;
-  if (isSupabaseConfigured) {
-    try {
-      const supabase = createSupabasePublicClient();
-      const { data } = await supabase
-        .from("staff")
-        .select(PROFILE_FIELDS)
-        .eq("slug", slug)
-        .eq("status", "active")
-        .maybeSingle();
-      if (data)
-        return toAgentProfile(
-          localiseRow(
-            data as unknown as Record<string, unknown>,
-            locale ?? (await currentLocale()),
-          ),
-        );
-    } catch {
-      // fall through to seed
-    }
-  }
-  const seed = SEED_AGENTS.find((s) => s.slug === slug);
-  return seed ? seedToProfile(seed) : null;
+  if (!slug || !isSupabaseConfigured) return null;
+  const supabase = createSupabasePublicClient();
+  const { data, error } = await supabase
+    .from("staff")
+    .select(PROFILE_FIELDS)
+    .eq("slug", slug)
+    .eq("status", "active")
+    .maybeSingle();
+  // With the seed fallback gone this read is one `null` away from a
+  // `notFound()`, which is exactly the shape `read-failure` exists for: a
+  // blip here would otherwise be cached as a 404 for the whole revalidate
+  // window. An absent row still returns null — that 404 is the true one.
+  if (error) readFailed("getAgentBySlug", error);
+  if (!data) return null;
+  return toAgentProfile(
+    localiseRow(
+      data as unknown as Record<string, unknown>,
+      locale ?? (await currentLocale()),
+    ),
+  );
 }
 
 /** Admin-side: get agent by user_id. Returns null when not found. */
@@ -204,5 +202,8 @@ function toAgentProfile(row: any): AgentProfile {
     role: row.role,
     status: row.status,
     joined_at: row.joined_at,
+    email: blankToNull(row.public_email),
+    phone: blankToNull(row.public_phone),
+    whatsapp: blankToNull(row.whatsapp) ?? blankToNull(row.public_phone),
   };
 }

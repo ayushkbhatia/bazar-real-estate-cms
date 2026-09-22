@@ -1,7 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import { SEED_AGENTS } from "@/lib/seeds/agents";
+import { listAgents } from "@/lib/queries/agents";
+import type { Locale } from "@/lib/i18n/locales";
 
 /**
  * Sprint 5b: "Advisor's verdict" dark band on the compare page. A
@@ -19,7 +20,11 @@ export async function VerdictBand({
   locale: string;
 }) {
   if (references.length < 2) return null;
-  const advisor = SEED_AGENTS[0];
+  // The first publishable advisor, not `SEED_AGENTS[0]` — that attributed the
+  // verdict to a fictional advisor by name, on a public page. No advisors, no
+  // band: an unattributed verdict is worse than none.
+  const advisor = (await listAgents(locale as Locale))[0];
+  if (!advisor) return null;
   // Locale threaded from the page rather than read ambiently: this renders
   // inside a route with `dynamic = "force-dynamic"` today, but an ambient
   // `getTranslations()` here would keep it that way for the wrong reason.

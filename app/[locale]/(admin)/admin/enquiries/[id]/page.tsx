@@ -27,7 +27,7 @@ import { NotesEditor } from "./_notes";
 import { EnquiryComposer, type ComposerAsset } from "./_composer";
 import { ArchiveEnquiryButton } from "../_archive-button";
 import { listPublishedAssets } from "@/lib/queries/content-assets";
-import { SEED_AGENTS } from "@/lib/seeds/agents";
+import { getAdvisorByUserId } from "@/lib/queries/property-advisor";
 import type { TokenContext } from "@/lib/content-assets/tokens";
 import { ScheduleViewingButton } from "./_schedule";
 
@@ -124,8 +124,11 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
   // select one — so an unassigned lead falls back to the token's generic
   // wording rather than quoting the viewer's number.
   const advisor = enquiry.staff ?? me;
-  const advisorPhone = enquiry.staff?.slug
-    ? (SEED_AGENTS.find((a) => a.slug === enquiry.staff!.slug)?.phone ?? null)
+  // `staff.public_phone`, not a seed matched on slug — that put a fictional
+  // advisor's number into `{advisor_phone}` in every outreach message an
+  // advisor composed from this screen.
+  const advisorPhone = enquiry.assigned_agent_id
+    ? ((await getAdvisorByUserId(enquiry.assigned_agent_id))?.phone ?? null)
     : null;
 
   const tokenContext: TokenContext = {
