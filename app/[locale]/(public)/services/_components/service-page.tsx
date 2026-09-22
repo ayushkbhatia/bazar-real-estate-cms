@@ -4,7 +4,6 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { Button } from "@/components/ui/button";
 import { SEED_SERVICES, type SeedService } from "@/lib/seeds/services";
-import { SEED_AGENTS } from "@/lib/seeds/agents";
 import { FloatingCtaTarget } from "../../_components/floating-cta-context";
 
 /**
@@ -160,21 +159,20 @@ export async function ServicePage({ service }: { service: SeedService }) {
         </div>
       </section>
 
-      {/* Publishes an advisor to the floating CTA rail (mounted once in the
-          public layout). Default lead = MD (SEED_AGENTS[0]) since service
-          enquiries don't belong to a specific desk; the firm-wide intake
-          routes them from there. */}
+      {/* Publishes the page's context to the floating CTA rail (mounted once
+          in the public layout).
+
+          No advisor: a service enquiry doesn't belong to a desk, and the
+          firm-wide intake routes it. This used to publish `SEED_AGENTS[0]` as
+          the "default lead", which put a fictional advisor's name, BRN, email
+          and phone number behind every CTA on all six service pages. With the
+          advisor null the rail uses each CTA's own configured destination —
+          the number an editor set at /admin/floating-ctas. */}
       <FloatingCtaTarget
-        advisorName={SEED_AGENTS[0]!.display_name}
-        advisorPhone={
-          SEED_AGENTS[0]!.whatsapp ?? SEED_AGENTS[0]!.phone ?? null
-        }
-        advisorEmail={SEED_AGENTS[0]!.email ?? null}
+        advisorName={null}
+        advisorPhone={null}
+        advisorEmail={null}
         contextRef={service.name}
-        tokens={{
-          advisor_title: SEED_AGENTS[0]!.title,
-          advisor_brn: SEED_AGENTS[0]!.brn,
-        }}
         kind="service"
       />
     </div>

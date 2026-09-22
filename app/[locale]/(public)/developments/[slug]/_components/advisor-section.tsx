@@ -1,4 +1,4 @@
-import type { SeedAgent } from "@/lib/seeds/agents";
+import type { ProjectAdvisor } from "@/lib/queries/development-content";
 import { LeadAdvisorBanner } from "./lead-advisor-banner";
 
 /**
@@ -10,7 +10,7 @@ export function AdvisorSection({
   agent,
   developmentName,
 }: {
-  agent: SeedAgent;
+  agent: ProjectAdvisor;
   developmentName: string;
 }) {
   return (

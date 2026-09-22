@@ -11,13 +11,15 @@
  *   · NEXT_PUBLIC_WHATSAPP_ADVISOR_NUMBER  — general advisor handoff
  *   · NEXT_PUBLIC_WHATSAPP_MORTGAGE_NUMBER — pre-approval queue
  *
- * Both default to a UAE placeholder until real numbers land via Vercel
- * env. Production deploys should override.
+ * Both return null until real numbers land via Vercel env. They used to
+ * fall back to a plausible-looking UAE placeholder, +971501234567, which
+ * production has been dialling on /contact, the concierge hand-off, the
+ * shortlist drawer, the mortgage pre-approval CTA and the site-wide floating
+ * rail for as long as the env vars have been unset — a wrong number is worse
+ * than a missing button, and every caller already branches on null.
  */
 
 import { env } from "@/lib/env";
-
-const PLACEHOLDER_NUMBER = "+971501234567";
 
 /** Strip everything that isn't a digit. wa.me wants no `+`. */
 function normaliseNumber(input: string | null | undefined): string {
@@ -47,14 +49,14 @@ export function buildWhatsAppLink(
   return `${base}?text=${encodeURIComponent(message)}`;
 }
 
-/** The advisor number from env, falling back to the placeholder. */
-export function getAdvisorWhatsAppNumber(): string {
-  return env.NEXT_PUBLIC_WHATSAPP_ADVISOR_NUMBER || PLACEHOLDER_NUMBER;
+/** The advisor number from env. Null when it isn't configured. */
+export function getAdvisorWhatsAppNumber(): string | null {
+  return env.NEXT_PUBLIC_WHATSAPP_ADVISOR_NUMBER || null;
 }
 
-/** The mortgage-team number from env, falling back to the placeholder. */
-export function getMortgageWhatsAppNumber(): string {
-  return env.NEXT_PUBLIC_WHATSAPP_MORTGAGE_NUMBER || PLACEHOLDER_NUMBER;
+/** The mortgage-team number from env. Null when it isn't configured. */
+export function getMortgageWhatsAppNumber(): string | null {
+  return env.NEXT_PUBLIC_WHATSAPP_MORTGAGE_NUMBER || null;
 }
 
 /** Convenience: advisor link + optional message. Null if both env + arg empty. */

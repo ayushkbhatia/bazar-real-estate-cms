@@ -1566,3 +1566,42 @@ was out of scope for that change:
   calls `getUser()` and then selects from `staff`, on every visit, so that an
   already-signed-in visitor skips the form. That is the door every locked-out
   staff member knocks on.
+
+## Seeded advisors — what the clean-up left behind
+
+Found while fixing the advisor blocks (see the five commits under
+`fix(developments,services)` … `feat(admin)`). Eleven fictional advisors from
+`lib/seeds/agents.ts` had been promoted into the production `staff` table and
+were publishing invented BRN numbers; they are suspended now, and no public
+surface reads the seed roster any more. These are the loose ends:
+
+- **The eleven rows are suspended, not deleted.** Reversible on purpose, and
+  nothing points at them — every published listing and project is assigned to
+  `bazar-advisor`. Deleting them is the client's call; `assigned_agent_id` and
+  `lead_advisor_id` are foreign keys, so a delete needs a check for historic
+  enquiries and deals first.
+
+- **`NEXT_PUBLIC_WHATSAPP_ADVISOR_NUMBER` and `..._MORTGAGE_NUMBER` are still
+  unset in Vercel.** The placeholder they fell back to is gone, so /contact's
+  WhatsApp button, the concierge hand-off, the shortlist drawer and the
+  mortgage pre-approval CTA now render nothing rather than a wrong number.
+  They are `NEXT_PUBLIC_`, so setting them needs a deploy to take.
+
+- **`listAdvisorCandidates` still joins `SEED_AGENTS` for area coverage**
+  (`lib/queries/lead-routing.ts`). It is inert: candidates come from `staff`,
+  and no publishable advisor matches a seed slug, so `areas` is always `[]`
+  and tier 2 of `matchAdvisor`'s precedence — "the seed coverage roster, for
+  areas no rule names" — can never fire. Either give `staff` an area-coverage
+  column and make the tier real, or delete the tier and say routing is the
+  CMS rules plus the fallback agent. Left alone here because removing it
+  changes lead routing, which deserves its own change.
+
+- **Four advisor-profile fields have no column to come from.** Years in
+  market, lifetime closed, closed QTD and the pull quote were all seed-only,
+  and `/agents/<slug>` no longer shows them — the stats strip is down to BRN.
+  Either add the columns and the editor fields, or accept the shorter page as
+  the design. Same question for the "Areas" column that went with them.
+
+- **`lib/seeds/agents.ts` itself is nearly dead.** After this change only
+  `lead-routing.ts` imports it, for the inert `areas` above. Deleting the file
+  is the natural end of the previous item.

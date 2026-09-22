@@ -6,6 +6,10 @@ import { Eyebrow } from "@/components/brand/eyebrow";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentUserIsAdmin } from "@/lib/queries/staff";
+import {
+  notPublishedReason,
+  STAFF_ROLE_LABEL,
+} from "@/lib/staff-publishing";
 import { InviteStaffButton } from "../users/_invite-form";
 
 export const dynamic = "force-dynamic";
@@ -38,14 +42,6 @@ async function listAllStaffForAdmin(): Promise<StaffRow[]> {
   return data as unknown as StaffRow[];
 }
 
-const ROLE_LABEL: Record<string, string> = {
-  agent: "Advisor",
-  admin: "Admin",
-  support: "Support",
-  marketing: "Marketing",
-  editor: "Editor",
-};
-
 const STATUS_BADGE: Record<string, string> = {
   active: "bg-bz-accent-soft text-bz-accent",
   invited: "bg-yellow-100 text-yellow-900",
@@ -55,6 +51,7 @@ const STATUS_BADGE: Record<string, string> = {
 export default async function AdminAgentsPage() {
   if (!(await currentUserIsAdmin())) redirect("/admin?error=admins_only");
   const rows = await listAllStaffForAdmin();
+  const publishedCount = rows.filter((r) => !notPublishedReason(r)).length;
 
   return (
     <CmsShell
@@ -64,15 +61,30 @@ export default async function AdminAgentsPage() {
     >
       <div className="max-w-[1200px]">
         <Eyebrow>Team · {rows.length}</Eyebrow>
+        {/* Counted, not asserted. This read "Twelve advisors. By design." as a
+            literal, which was written when twelve seeded advisors were in the
+            table and stayed on the page after eleven of them were taken off
+            the public site. */}
         <h2
           className="serif text-[28px] mt-2 leading-tight"
           style={{ letterSpacing: "-0.012em" }}
         >
-          Twelve advisors. By design.
+          {publishedCount === 1
+            ? "One advisor on the public site."
+            : `${publishedCount} advisors on the public site.`}
         </h2>
         <p className="mt-3 text-[13.5px] text-bz-muted max-w-[60ch]">
-          Edit profile, BRN, languages, specialties. Status &amp; role changes
-          live in <Link href="/admin/users" className="text-bz-ink underline underline-offset-2">Users &amp; roles</Link>.
+          This is where an advisor&rsquo;s public block is written — name,
+          title, BRN, photo, bio, languages, specialties and the phone, email
+          and WhatsApp number every listing and project shows. Whether that
+          block appears at all is decided by role and status, in{" "}
+          <Link
+            href="/admin/users"
+            className="text-bz-ink underline underline-offset-2"
+          >
+            Users &amp; roles
+          </Link>
+          .
         </p>
 
         {rows.length === 0 ? (
@@ -96,6 +108,7 @@ export default async function AdminAgentsPage() {
                   <th className="py-3 px-3 font-medium">Specialties</th>
                   <th className="py-3 px-3 font-medium">Languages</th>
                   <th className="py-3 px-3 font-medium">Status</th>
+                  <th className="py-3 px-3 font-medium">Public site</th>
                   <th className="py-3 px-4 font-medium text-end">Edit</th>
                 </tr>
               </thead>
@@ -106,6 +119,7 @@ export default async function AdminAgentsPage() {
                     : [];
                   const badgeClass =
                     STATUS_BADGE[row.status] ?? "bg-bz-surface-2 text-bz-ink-2";
+                  const hidden = notPublishedReason(row);
                   return (
                     <tr
                       key={row.user_id}
@@ -125,7 +139,7 @@ export default async function AdminAgentsPage() {
                         ) : null}
                       </td>
                       <td className="py-3 px-3 text-bz-ink-2">
-                        {ROLE_LABEL[row.role] ?? row.role}
+                        {STAFF_ROLE_LABEL[row.role] ?? row.role}
                       </td>
                       <td className="py-3 px-3 mono text-[12px] text-bz-ink-2">
                         {row.brn ?? "—"}
@@ -145,6 +159,22 @@ export default async function AdminAgentsPage() {
                         >
                           {row.status}
                         </span>
+                      </td>
+                      <td className="py-3 px-3">
+                        {hidden ? (
+                          <span className="text-[11.5px] text-bz-muted">
+                            Not published · {hidden}
+                          </span>
+                        ) : (
+                          <Link
+                            href={`/agents/${row.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11.5px] text-bz-ink-2 underline underline-offset-2 hover:text-bz-accent transition-colors"
+                          >
+                            /agents/{row.slug}
+                          </Link>
+                        )}
                       </td>
                       <td className="py-3 px-4 text-end">
                         <Link

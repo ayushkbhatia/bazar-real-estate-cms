@@ -27,7 +27,12 @@ import {
 import type { FloatingCtaTokenValues } from "@/lib/schemas/floating-cta";
 
 export type FloatingCtaTargetValue = {
-  advisorName: string;
+  /**
+   * Null when the page has no publishable advisor of its own. The rail then
+   * writes the CTA's own label into `{advisor}` and routes the click at the
+   * CTA's configured destination, rather than at whoever the page last had.
+   */
+  advisorName: string | null;
   advisorPhone: string | null;
   advisorEmail: string | null;
   /** What `{context}` resolves to: the listing title, project or service. */

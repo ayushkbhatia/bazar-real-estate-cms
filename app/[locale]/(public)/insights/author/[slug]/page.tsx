@@ -17,13 +17,15 @@ import {
 import { mediaPublicUrl } from "@/lib/media";
 import { formatPublishedDate } from "@/lib/i18n/dates";
 import { readTime } from "@/lib/i18n/read-time";
-import { getSeedAgentBySlug, SEED_AGENTS } from "@/lib/seeds/agents";
+import { listAgents } from "@/lib/queries/agents";
 
 export const revalidate = 300;
 
 export async function generateStaticParams() {
-  // SEED_AGENTS covers Sprint 1; Sprint 9 will add real staff slugs.
-  return SEED_AGENTS.map((a) => ({ slug: a.slug }));
+  // The publishable advisors, not `SEED_AGENTS` — that prerendered an author
+  // page, name and bio included, for every fictional seed entry, each of them
+  // with no articles under it.
+  return (await listAgents()).map((a) => ({ slug: a.slug }));
 }
 
 export async function generateMetadata({
@@ -32,11 +34,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const seed = getSeedAgentBySlug(slug);
-  if (!seed) return { title: "Author not found" };
+  const staff = await getStaffByPublicSlug(slug);
+  if (!staff) return { title: "Author not found" };
   return {
-    title: `${seed.display_name} on the Bazar Brief`,
-    description: `${seed.display_name}'s articles for the Bazar Brief.`,
+    title: `${staff.display_name} on the Bazar Brief`,
+    description: `${staff.display_name}'s articles for the Bazar Brief.`,
   };
 }
 
@@ -73,20 +75,24 @@ export default async function InsightsAuthorPage({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "editorial" });
   const { slug } = await params;
-  const seed = getSeedAgentBySlug(slug);
-  // Try DB lookup. Anon RLS may block — fall back to seed data.
+  // `staff` only. This used to fall back to a seed author, so
+  // /insights/author/<any seed slug> published an invented person's name,
+  // title and bio above an empty article list.
   const dbStaff = await getStaffByPublicSlug(slug);
-  if (!seed && !dbStaff) notFound();
+  if (!dbStaff) notFound();
 
-  const display_name = dbStaff?.display_name ?? seed?.display_name ?? "Author";
-  const title = dbStaff?.title ?? seed?.title ?? null;
-  const bio = dbStaff?.bio ?? seed?.bio ?? null;
+  // Only advisors have a /agents/<slug> page to link to; an author who is
+  // staff but not an agent gets the header without the button.
+  const isAdvisor = (await listAgents(locale)).some((a) => a.slug === slug);
 
-  // Only fetch articles by author_id when we resolved one via DB.
-  // Sprint 8 will introduce a public staff view so this works for anon.
-  const { rows } = dbStaff
-    ? await listPublishedArticles({ authorId: dbStaff.id, limit: 48 })
-    : { rows: [] as ArticleListRow[] };
+  const display_name = dbStaff.display_name;
+  const title = dbStaff.title;
+  const bio = dbStaff.bio;
+
+  const { rows } = await listPublishedArticles({
+    authorId: dbStaff.id,
+    limit: 48,
+  });
 
   return (
     <div className="bg-bz-bg">
@@ -121,12 +127,10 @@ export default async function InsightsAuthorPage({
                 {bio}
               </p>
             ) : null}
-            {seed ? (
+            {isAdvisor ? (
               <div className="mt-6">
                 <Button asChild variant="outline">
-                  <Link href={`/agents/${seed.slug}`}>
-                    View advisor profile
-                  </Link>
+                  <Link href={`/agents/${slug}`}>View advisor profile</Link>
                 </Button>
               </div>
             ) : null}

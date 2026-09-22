@@ -11,7 +11,6 @@ import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { mediaPublicUrl } from "@/lib/media";
 import { getDevelopmentPageContent } from "@/lib/queries/subpages";
 import { getDevelopmentPageCopy } from "@/lib/queries/development-page";
-import { withAgentPhoto } from "@/lib/queries/agent-photos";
 import {
   getAdvisorForBanner,
   listDevelopmentsByIds,
@@ -53,7 +52,6 @@ import {
   listOtherDevelopmentsByDeveloper,
   listOtherDevelopmentsInArea,
 } from "@/lib/queries/development-extras";
-import { SEED_AGENTS } from "@/lib/seeds/agents";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
 
@@ -251,19 +249,19 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     ? curatedNeighbours
     : siblingsInArea;
 
-  // Sprint 5a: lead advisor lookup — pick seeded advisor whose areas
-  // overlap with the development's area. Sprint 9 wires real assignment.
-  // An advisor picked on the record wins; otherwise fall back to whoever
-  // covers the project's area.
-  const pickedAdvisor = development.lead_advisor_id
+  // The advisor assigned on the record, or nobody.
+  //
+  // This used to fall back to a seeded advisor picked by area overlap, so a
+  // project with no assignment published a fictional person's name and BRN —
+  // and #529's fix reached only the fields the select asked for, leaving that
+  // substitution and the email behind it in place. There is no substitute for
+  // an advisor: when this is null the band and the advisor's contact details
+  // are simply not rendered, and the project's other enquiry routes still
+  // work. `withAgentPhoto` goes with it — a second query for a portrait the
+  // row itself now returns.
+  const leadAdvisor = development.lead_advisor_id
     ? await getAdvisorForBanner(development.lead_advisor_id)
     : null;
-  // SEED_AGENTS[0] is always present, so the overlay can't return null here.
-  const leadAdvisor = (await withAgentPhoto(
-    pickedAdvisor ??
-      SEED_AGENTS.find((a) => a.areas.includes(development.area?.slug ?? "")) ??
-      SEED_AGENTS[0],
-  ))!;
 
   // Curated feature blocks carry a media id; resolve them once for the page.
   //
@@ -415,8 +413,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       plan: development.payment_plan?.name ?? "",
       available: availableUnits.length,
       total: development.total_units ?? units.length,
-      advisor: leadAdvisor.display_name,
-      advisor_first: leadAdvisor.display_name.split(" ")[0] ?? "",
+      advisor: leadAdvisor?.display_name ?? "",
+      advisor_first: leadAdvisor?.display_name.split(" ")[0] ?? "",
     },
     locale,
   );
@@ -470,7 +468,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       </section>
     ),
     "master-plan": (
-      <section id="master-plan" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
+      <section
+        id="master-plan"
+        className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}
+      >
         <Eyebrow>
           {sv("master-plan", "eyebrow") ?? shared("master-plan", "eyebrow")}
         </Eyebrow>
@@ -525,7 +526,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       <PaymentPlanSection
         id="payment-plan"
         plan={development.payment_plan}
-        eyebrow={sv("payment-plan", "eyebrow") ?? shared("payment-plan", "eyebrow")}
+        eyebrow={
+          sv("payment-plan", "eyebrow") ?? shared("payment-plan", "eyebrow")
+        }
         heading={
           sv("payment-plan", "heading") ??
           shared("payment-plan", "heading") ??
@@ -538,7 +541,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     ) : null,
     units:
       units.length > 0 ? (
-        <section id="units" className={`px-4 md:px-12 py-16 ${ANCHOR_SCROLL_MT}`}>
+        <section
+          id="units"
+          className={`px-4 md:px-12 py-16 ${ANCHOR_SCROLL_MT}`}
+        >
           <div className="flex justify-between items-end flex-wrap gap-4 mb-6">
             <div>
               <Eyebrow>
@@ -565,7 +571,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     // twice on the same page reads as a bug rather than as emphasis.
     "floor-plans":
       legacyFloorPlans.length > 0 ? (
-        <section id="floor-plans" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
+        <section
+          id="floor-plans"
+          className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}
+        >
           <Eyebrow>
             {sv("floor-plans", "eyebrow") ?? shared("floor-plans", "eyebrow")}
           </Eyebrow>
@@ -674,14 +683,21 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           developmentName={development.name}
           developmentSlug={development.slug}
           gated={meta?.floorplan_gated === true}
-          eyebrow={sv("unit-plans", "eyebrow") ?? shared("unit-plans", "eyebrow")}
-          heading={sv("unit-plans", "heading") ?? shared("unit-plans", "heading")}
+          eyebrow={
+            sv("unit-plans", "eyebrow") ?? shared("unit-plans", "eyebrow")
+          }
+          heading={
+            sv("unit-plans", "heading") ?? shared("unit-plans", "heading")
+          }
           intro={sv("unit-plans", "intro") ?? shared("unit-plans", "intro")}
         />
       </section>
     ),
     location: (
-      <section id="location" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
+      <section
+        id="location"
+        className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}
+      >
         <Eyebrow>
           {sv("location", "eyebrow") ?? shared("location", "eyebrow")}
         </Eyebrow>
@@ -720,7 +736,10 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       />
     ),
     developer: development.developer_profile ? (
-      <section id="developer" className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}>
+      <section
+        id="developer"
+        className={`px-4 md:px-12 pb-16 ${ANCHOR_SCROLL_MT}`}
+      >
         <Eyebrow>
           {sv("developer", "eyebrow") ?? shared("developer", "eyebrow")}
         </Eyebrow>
@@ -789,35 +808,41 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         intro={sv("faq", "intro")}
       />
     ),
-    advisor: (
-      <LeadAdvisorBanner
-        agent={leadAdvisor}
-        developmentName={development.name}
-        eyebrow={sv("advisor", "eyebrow") ?? shared("advisor", "eyebrow")}
-        heading={sv("advisor", "heading") ?? shared("advisor", "heading")}
-        intro={sv("advisor", "intro")}
-        quote={sv("advisor", "quote") ?? shared("advisor", "quote")}
-        callLabel={
-          sv("advisor", "call_label") ?? shared("advisor", "call_label")
+    // Omitted entirely when nobody publishable is assigned, so the section
+    // nav below (`key in nodes`) drops the "Advisor" link with it.
+    ...(leadAdvisor
+      ? {
+          advisor: (
+            <LeadAdvisorBanner
+              agent={leadAdvisor}
+              developmentName={development.name}
+              eyebrow={sv("advisor", "eyebrow") ?? shared("advisor", "eyebrow")}
+              heading={sv("advisor", "heading") ?? shared("advisor", "heading")}
+              intro={sv("advisor", "intro")}
+              quote={sv("advisor", "quote") ?? shared("advisor", "quote")}
+              callLabel={
+                sv("advisor", "call_label") ?? shared("advisor", "call_label")
+              }
+              visitLabel={
+                sv("advisor", "visit_label") ?? shared("advisor", "visit_label")
+              }
+              /*
+               * The one string here that leaves the page rather than being drawn on
+               * it. `shared` bidi-isolates the advisor token so the button beside
+               * this one reads correctly in Arabic; those marks are invisible on a
+               * page and pointless inside a `wa.me?text=`, where they would be
+               * percent-encoded into the draft the lead sees. Stripped for the
+               * message only — an override typed by an editor carries none anyway.
+               */
+              visitMessage={stripIsolates(
+                sv("advisor", "visit_message") ??
+                  shared("advisor", "visit_message") ??
+                  "",
+              )}
+            />
+          ),
         }
-        visitLabel={
-          sv("advisor", "visit_label") ?? shared("advisor", "visit_label")
-        }
-        /*
-         * The one string here that leaves the page rather than being drawn on
-         * it. `shared` bidi-isolates the advisor token so the button beside
-         * this one reads correctly in Arabic; those marks are invisible on a
-         * page and pointless inside a `wa.me?text=`, where they would be
-         * percent-encoded into the draft the lead sees. Stripped for the
-         * message only — an override typed by an editor carries none anyway.
-         */
-        visitMessage={stripIsolates(
-          sv("advisor", "visit_message") ??
-            shared("advisor", "visit_message") ??
-            "",
-        )}
-      />
-    ),
+      : {}),
   };
 
   // Only link to sections that are switched on *and* actually render — a
@@ -923,9 +948,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                 label={tp("totalUnits")}
               />
               <HeroStat
-                value={
-                  handover ? tc("quarter", quarterArgs(handover)) : "—"
-                }
+                value={handover ? tc("quarter", quarterArgs(handover)) : "—"}
                 label={tp("handover")}
               />
               {development.payment_plan ? (
@@ -1024,18 +1047,15 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           publishes the project's lead advisor to it, so the buttons route to
           that person and the draft message names the project. Renders nothing. */}
       <FloatingCtaTarget
-        advisorName={leadAdvisor.display_name}
-        advisorPhone={leadAdvisor.whatsapp ?? leadAdvisor.phone ?? null}
-        advisorEmail={leadAdvisor.email ?? null}
-        /* The lead advisor here falls back to a seeded agent when no staff
-           member is assigned, and a seed has no `staff` row to point at —
-           so the click is logged against the project with no advisor
-           rather than against an id that would fail the foreign key. */
-        advisorId={
-          "user_id" in leadAdvisor && typeof leadAdvisor.user_id === "string"
-            ? leadAdvisor.user_id
-            : null
-        }
+        advisorName={leadAdvisor?.display_name ?? null}
+        advisorPhone={leadAdvisor?.whatsapp ?? leadAdvisor?.phone ?? null}
+        advisorEmail={leadAdvisor?.email ?? null}
+        /* Null when nobody publishable is assigned: the rail then falls back
+           to the CTA's own configured destination rather than routing a click
+           at an advisor who is not on the page. This used to read
+           `mariam@bazar.ae` — the seed spread answered `email`, which no
+           select ever asked for. */
+        advisorId={leadAdvisor?.user_id ?? null}
         developmentId={development.id}
         contextRef={development.name}
         tokens={{
@@ -1043,8 +1063,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
           developer_name: development.developer?.name ?? null,
           handover: quarterLabel(development.handover_date),
           area_name: development.area?.name ?? null,
-          advisor_title: leadAdvisor.title ?? null,
-          advisor_brn: leadAdvisor.brn ?? null,
+          advisor_title: leadAdvisor?.title ?? null,
+          advisor_brn: leadAdvisor?.brn ?? null,
         }}
         kind="development"
       />

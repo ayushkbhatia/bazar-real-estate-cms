@@ -19,6 +19,10 @@ import {
 } from "@/lib/schemas/staff";
 import { InviteStaffButton } from "./_invite-form";
 import { InvitationActions, StaffRowActions } from "./_row-actions";
+import {
+  countAdvisorAssignments,
+  type AssignmentsByUser,
+} from "@/lib/queries/advisor-assignments";
 import { UserFilters } from "./_filters";
 import { parseUserFilters } from "./_filter-state";
 
@@ -86,11 +90,14 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
   const resolved = await searchParams;
   const filters = parseUserFilters(resolved);
 
-  const [staff, invitations, roleCounts, me] = await Promise.all([
+  const [staff, invitations, roleCounts, me, assignments] = await Promise.all([
     listAllStaff(),
     listPendingInvitations(),
     countStaffByRole(),
     currentStaffRow(),
+    // What each advisor is the published face of, so a role or status change
+    // can say what it takes off the site before it takes it.
+    countAdvisorAssignments(),
   ]);
 
   const filteredStaff = staff.filter((s) => {
@@ -157,6 +164,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
                       key={s.user_id}
                       staff={s}
                       isSelf={me?.user_id === s.user_id}
+                      assignments={assignments}
                     />
                   ))
                 )}
@@ -183,9 +191,11 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
 function StaffTableRow({
   staff,
   isSelf,
+  assignments,
 }: {
   staff: StaffRow;
   isSelf: boolean;
+  assignments: AssignmentsByUser;
 }) {
   return (
     <tr className="border-b border-bz-border last:border-b-0 align-middle">
@@ -230,6 +240,7 @@ function StaffTableRow({
           currentStatus={staff.status}
           hasSignedIn={staff.last_sign_in_at !== null}
           isSelf={isSelf}
+          assignments={assignments[staff.user_id]}
         />
       </td>
     </tr>

@@ -11,6 +11,7 @@ import { currentUserIsAdmin, getStaffAuthMeta } from "@/lib/queries/staff";
 import { AgentEditForm } from "./_form";
 import { AgentAccessCard } from "./_access-card";
 import { sendStaffPasswordLink } from "../_actions";
+import { notPublishedReason } from "@/lib/staff-publishing";
 
 /** Portraits offered by the photo picker — the library's image assets. */
 async function fetchPhotoOptions() {
@@ -49,6 +50,11 @@ export default async function AdminAgentEditPage({
     .maybeSingle();
 
   if (error || !data) notFound();
+
+  // Everything on this form is public copy — but only while the row is
+  // publishable. Say so at the top rather than letting someone fill it all in
+  // and wonder why the site never changed.
+  const hidden = notPublishedReason(data);
 
   const [photoOptions, authMeta] = await Promise.all([
     fetchPhotoOptions(),
@@ -90,16 +96,21 @@ export default async function AdminAgentEditPage({
         </Link>
       }
       primary={
-        <Button asChild variant="outline" size="sm">
-          <Link
-            href={`/agents/${data.slug}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <ExternalLink size={13} strokeWidth={1.7} />
-            View public profile
-          </Link>
-        </Button>
+        // Hidden rather than shown-and-broken: /agents/<slug> 404s for a row
+        // the public cannot read, now that the page no longer substitutes a
+        // seeded profile for one.
+        notPublishedReason(data) ? undefined : (
+          <Button asChild variant="outline" size="sm">
+            <Link
+              href={`/agents/${data.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ExternalLink size={13} strokeWidth={1.7} />
+              View public profile
+            </Link>
+          </Button>
+        )
       }
     >
       <div className="max-w-[820px]">
@@ -120,9 +131,28 @@ export default async function AdminAgentEditPage({
         </h2>
         <p className="mt-3 text-[13.5px] text-bz-muted max-w-[60ch]">
           These fields appear on the public agent profile at{" "}
-          <span className="mono">/agents/{data.slug}</span> and on listings this
-          advisor is assigned to.
+          <span className="mono">/agents/{data.slug}</span>, and on every
+          listing and project this advisor is assigned to — including the
+          phone, email and WhatsApp number their Call and WhatsApp buttons
+          use.
         </p>
+
+        {hidden ? (
+          <div className="mt-6 rounded-md border border-bz-border bg-bz-surface-2 px-4 py-3 text-[13px] text-bz-ink-2 max-w-[60ch]">
+            <span className="font-medium text-bz-ink">
+              Nothing here is on the public site.
+            </span>{" "}
+            {hidden}. Saved edits are kept and will appear the moment that
+            changes in{" "}
+            <Link
+              href="/admin/users"
+              className="text-bz-ink underline underline-offset-2"
+            >
+              Users &amp; roles
+            </Link>
+            .
+          </div>
+        ) : null}
 
         <div className="mt-8">
           <AgentAccessCard

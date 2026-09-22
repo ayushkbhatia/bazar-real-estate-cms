@@ -32,6 +32,10 @@ import {
 // profile — the two surfaces must not drift on what a password link does.
 import { sendStaffPasswordLink } from "../agents/_actions";
 import { accessLinkItem } from "@/lib/staff-invitations";
+import {
+  unpublishWarning,
+  type AdvisorAssignmentCounts,
+} from "@/lib/staff-publishing";
 
 export function StaffRowActions({
   userId,
@@ -41,6 +45,7 @@ export function StaffRowActions({
   currentStatus,
   hasSignedIn,
   isSelf,
+  assignments,
 }: {
   userId: string;
   displayName: string;
@@ -51,6 +56,13 @@ export function StaffRowActions({
   /** Drives the wording: an invite to resend vs a password to reset. */
   hasSignedIn: boolean;
   isSelf: boolean;
+  /**
+   * What this person is currently the published advisor on. Used only to
+   * spell out, before the fact, what a role or status change here takes off
+   * the public site — the two changes on this menu that silently undo work
+   * done in Agents & team.
+   */
+  assignments?: AdvisorAssignmentCounts;
 }) {
   const [pending, startTransition] = useTransition();
   const access = accessLinkItem({
@@ -61,6 +73,14 @@ export function StaffRowActions({
 
   function changeRole(role: StaffRole) {
     if (role === currentRole) return;
+    const warning = unpublishWarning({
+      displayName,
+      currentRole,
+      currentStatus,
+      nextRole: role,
+      counts: assignments,
+    });
+    if (warning && !confirm(warning)) return;
     startTransition(async () => {
       const r = await updateStaffRole({ user_id: userId, role });
       if (r.status === "ok") toast.success(r.message ?? "Role updated.");
@@ -84,6 +104,14 @@ export function StaffRowActions({
 
   function changeStatus(status: StaffStatus) {
     if (status === currentStatus) return;
+    const warning = unpublishWarning({
+      displayName,
+      currentRole,
+      currentStatus,
+      nextStatus: status,
+      counts: assignments,
+    });
+    if (warning && !confirm(warning)) return;
     startTransition(async () => {
       const r = await updateStaffStatus({ user_id: userId, status });
       if (r.status === "ok") toast.success(r.message ?? "Status updated.");

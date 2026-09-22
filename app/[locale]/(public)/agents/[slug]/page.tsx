@@ -15,8 +15,6 @@ import { listApprovedReviewsForAgent } from "@/lib/queries/reviews-by-subject";
 import { listListingsByAgent } from "@/lib/queries/listings-by-agent";
 import { propertyUrl } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
-import { getSeedAgentBySlug } from "@/lib/seeds/agents";
-import { getSeedAreaGuideBySlug } from "@/lib/seeds/areas";
 import { realEstateAgentJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
 import { ListingCardPriced } from "../../_components/listing-card-priced";
@@ -87,27 +85,34 @@ export default async function AgentProfilePage({
         listListingsByAgent(agent.user_id, { limit: 6 }),
       ]);
 
-  // Stats + contact metadata that the DB schema doesn't yet expose
-  // continue to come from the matching seed entry. When the field is
-  // missing (a real DB agent not in seeds) we surface neutral defaults.
-  const supplementary = getSeedAgentBySlug(slug);
-  const phone = supplementary?.phone ?? "+971 2 000 0000";
-  const email = supplementary?.email ?? "team@bazar.ae";
-  const whatsapp = supplementary?.whatsapp ?? "+971500000000";
-  const yearsInMarket = supplementary?.years_in_market ?? null;
-  const closedLifetime = supplementary?.closed_aed_lifetime ?? "—";
-  const closedQtd = supplementary?.closed_qtd ?? 0;
-  const pullQuote =
-    supplementary?.pull_quote ??
-    t("agent.worksFullCycle", { name: firstName(agent.display_name) });
-  const areaSlugs = supplementary?.areas ?? [];
-  const areas = areaSlugs
-    .map((a) => getSeedAreaGuideBySlug(a))
-    .filter((a) => a != null);
+  /*
+   * Contact details from the advisor's own row.
+   *
+   * They used to come from the matching `SEED_AGENTS` entry, with hardcoded
+   * placeholders when the slug missed — and `bazar-advisor`, the only
+   * publishable advisor, misses. So this page published tel:+97120000000,
+   * mailto:team@bazar.ae and wa.me/971500000000 beside the real number that
+   * was sitting unread in the row. Each button now renders only when its
+   * detail exists.
+   *
+   * The stats strip's years-in-market and closed figures have no column to
+   * come from at all, so they stay as the em-dashes an unmatched slug already
+   * produced; closed-QTD joins them rather than claiming a confident zero.
+   * The pull quote likewise has no column — the translated line that was
+   * already the no-seed default is now the only one.
+   */
+  const phone = agent.phone;
+  const email = agent.email;
+  const whatsapp = agent.whatsapp;
+  const pullQuote = t("agent.worksFullCycle", {
+    name: firstName(agent.display_name),
+  });
 
-  const waUrl = `https://wa.me/${whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
-    t("agent.mailGreeting", { name: firstName(agent.display_name) }),
-  )}`;
+  const waUrl = whatsapp
+    ? `https://wa.me/${whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
+        t("agent.mailGreeting", { name: firstName(agent.display_name) }),
+      )}`
+    : null;
 
   const siteBase = (
     env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae"
@@ -196,81 +201,60 @@ export default async function AgentProfilePage({
 
             {/* Contact actions */}
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild>
-                <a href={`tel:${phone.replace(/\s/g, "")}`}>
-                  <Phone size={14} strokeWidth={1.7} />
-                  Call
-                </a>
-              </Button>
-              <Button asChild variant="outline">
-                <a href={waUrl} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle size={14} strokeWidth={1.7} />
-                  {ta("whatsapp")}
-                </a>
-              </Button>
-              <Button asChild variant="ghost">
-                <a href={`mailto:${email}`}>
-                  <Mail size={14} strokeWidth={1.7} />
-                  {ta("email")}
-                </a>
-              </Button>
+              {phone ? (
+                <Button asChild>
+                  <a href={`tel:${phone.replace(/\s/g, "")}`}>
+                    <Phone size={14} strokeWidth={1.7} />
+                    Call
+                  </a>
+                </Button>
+              ) : null}
+              {waUrl ? (
+                <Button asChild variant="outline">
+                  <a href={waUrl} target="_blank" rel="noopener noreferrer">
+                    <MessageCircle size={14} strokeWidth={1.7} />
+                    {ta("whatsapp")}
+                  </a>
+                </Button>
+              ) : null}
+              {email ? (
+                <Button asChild variant="ghost">
+                  <a href={`mailto:${email}`}>
+                    <Mail size={14} strokeWidth={1.7} />
+                    {ta("email")}
+                  </a>
+                </Button>
+              ) : null}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Stats strip */}
-      <section className="border-y border-bz-border bg-bz-surface">
-        <div className="px-4 md:px-12 py-10 max-w-[1280px]">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
-            <div>
-              <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-                {ta("yearsInMarket")}
-              </div>
-              <div
-                className="serif text-[36px] mt-1 leading-none"
-                style={{ letterSpacing: "-0.018em" }}
-              >
-                {yearsInMarket ?? "—"}
-              </div>
-            </div>
-            <div>
-              <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-                BRN
-              </div>
-              <div className="mono text-[20px] mt-2 text-bz-ink">
-                {agent.brn ?? "—"}
-              </div>
-            </div>
-            <div>
-              <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-                {ta("closedLifetime")}
-              </div>
-              <div
-                className="serif text-[36px] mt-1 leading-none"
-                style={{ letterSpacing: "-0.018em" }}
-              >
-                {closedLifetime}
-              </div>
-            </div>
-            <div>
-              <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-                {ta("closedQtd")}
-              </div>
-              <div
-                className="serif text-[36px] mt-1 leading-none"
-                style={{ letterSpacing: "-0.018em" }}
-              >
-                {closedQtd}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Stats strip.
 
-      {/* Specialties + languages + areas */}
+          Years-in-market, lifetime-closed and closed-QTD used to be read from
+          the matching `SEED_AGENTS` entry — invented figures for invented
+          advisors — and `staff` has no column for any of them, so there is
+          nothing to put in those three tiles. Only the BRN, which is a real
+          column, remains; the strip renders at all only when it is set. */}
+      {agent.brn ? (
+        <section className="border-y border-bz-border bg-bz-surface">
+          <div className="px-4 md:px-12 py-10 max-w-[1280px]">
+            <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
+              BRN
+            </div>
+            <div className="mono text-[20px] mt-2 text-bz-ink">{agent.brn}</div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* Specialties + languages.
+
+          The "Areas" column is gone with the seed join that fed it: coverage
+          was `SEED_AGENTS[slug].areas`, which is empty for anyone who isn't a
+          seed, and `staff` has no column for it. */}
       <section className="px-4 md:px-12 py-16 max-w-[1280px]">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
           <div>
             <Eyebrow>{t("eyebrow.specialties")}</Eyebrow>
             <ul className="mt-4 flex flex-col gap-2">
@@ -289,23 +273,6 @@ export default async function AgentProfilePage({
                   · {l}
                 </li>
               ))}
-            </ul>
-          </div>
-          <div>
-            <Eyebrow>{t("eyebrow.areas")}</Eyebrow>
-            <ul className="mt-4 flex flex-col gap-2">
-              {areas.map((a) =>
-                a ? (
-                  <li key={a.slug}>
-                    <Link
-                      href={`/areas/${a.slug}`}
-                      className="text-[14px] text-bz-ink hover:text-bz-accent transition-colors"
-                    >
-                      · {a.name}
-                    </Link>
-                  </li>
-                ) : null,
-              )}
             </ul>
           </div>
         </div>

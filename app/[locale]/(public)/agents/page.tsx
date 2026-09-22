@@ -6,19 +6,19 @@ import type { Metadata } from "next";
 import { MessageCircle } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
-import { listAgents } from "@/lib/queries/agents";
+import { listAgents, type AgentProfile } from "@/lib/queries/agents";
 import { DESK_INTRO, DESK_LABEL, groupByDesk } from "@/lib/agents/desk";
-import { SEED_AGENTS } from "@/lib/seeds/agents";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 
-// T1.5 quick win: WhatsApp deep-link on every advisor card.  The live
-// staff schema doesn't yet expose phone/whatsapp; until then we match
-// the agent slug against the seed roster for the number.
-function whatsappFor(slug: string, name: string): string | null {
-  const seed = SEED_AGENTS.find((a) => a.slug === slug);
-  if (!seed) return null;
-  const number = seed.whatsapp ?? seed.phone ?? null;
-  return buildWhatsAppLink(number, `Hi ${name}, found you on bazar.ae`);
+// T1.5 quick win: WhatsApp deep-link on every advisor card. The number is
+// the advisor's own `staff.whatsapp`; it used to be matched out of the seed
+// roster on slug, so a real advisor got a fictional one's number and an
+// advisor who wasn't a seed got no button at all.
+function whatsappFor(agent: AgentProfile): string | null {
+  return buildWhatsAppLink(
+    agent.whatsapp,
+    `Hi ${agent.display_name}, found you on bazar.ae`,
+  );
 }
 
 /**
@@ -94,7 +94,7 @@ export default async function AgentsIndexPage({ params }: { params: Promise<{ lo
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 gap-y-12">
             {deskAgents.map((a) => {
-              const wa = whatsappFor(a.slug, a.display_name);
+              const wa = whatsappFor(a);
               return (
                 <div key={a.user_id} className="relative group">
                   <Link href={`/agents/${a.slug}`} className="block">
