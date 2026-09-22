@@ -315,9 +315,10 @@ where id = '<uuid>';
 ```
 
 **PDPL.** The privacy policy names Salesforce as a processor, so this push
-is disclosed. It also means an erasure request must reach Salesforce —
-`lib/dsr.ts` currently deletes from Supabase only. That gap is Phase 2 and
-must land before this is enabled in production.
+is disclosed. Erasure reaches it too: `/admin/dsr` pseudonymises the CRM
+record alongside the database row, and anything the CRM did not confirm stays
+queued on `enquiries.crm_erasure_due_at` for the same cron to retry. See
+[SALESFORCE.md](SALESFORCE.md) for the ordering, which is not obvious.
 
 ## Verifying after handover
 

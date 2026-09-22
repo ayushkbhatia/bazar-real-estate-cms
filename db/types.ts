@@ -1370,6 +1370,7 @@ export type Database = {
           closed_at: string | null
           created_at: string
           crm_attempts: number
+          crm_erasure_due_at: string | null
           crm_external_id: string | null
           crm_last_error: string | null
           crm_next_attempt_at: string
@@ -1407,6 +1408,7 @@ export type Database = {
           closed_at?: string | null
           created_at?: string
           crm_attempts?: number
+          crm_erasure_due_at?: string | null
           crm_external_id?: string | null
           crm_last_error?: string | null
           crm_next_attempt_at?: string
@@ -1444,6 +1446,7 @@ export type Database = {
           closed_at?: string | null
           created_at?: string
           crm_attempts?: number
+          crm_erasure_due_at?: string | null
           crm_external_id?: string | null
           crm_last_error?: string | null
           crm_next_attempt_at?: string

@@ -16,6 +16,14 @@
  * ── Ordering ─────────────────────────────────────────────────────────────
  * Oldest first, so a backlog drains in the order the leads actually arrived
  * rather than newest-first, which would leave the oldest lead waiting longest.
+ *
+ * ── Two passes ───────────────────────────────────────────────────────────
+ * Erasures run before pushes. `enquiries.crm_erasure_due_at` (migration 0131)
+ * marks a subject whose PDPL erasure request reached Postgres but not yet the
+ * CRM — normally because Salesforce was unreachable at the moment the admin
+ * action ran. That obligation has a legal deadline and a lead does not, so if
+ * one pass is going to be cut short by an API limit or the function timeout,
+ * it should be the second one.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
@@ -23,6 +31,7 @@ import * as Sentry from "@sentry/nextjs";
 import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured, isSalesforceConfigured } from "@/lib/env";
 import { pushLead, type LeadSourceRow } from "@/lib/salesforce/leads";
+import { drainCrmErasures } from "@/lib/salesforce/erasure-queue";
 import type { Database } from "@/db/types";
 
 /** Per invocation. Keeps the run inside the function timeout and inside any
@@ -68,7 +77,10 @@ type QueueRow = {
   crm_attempts: number;
   properties:
     | { reference: string; mode: Database["public"]["Enums"]["property_mode"] }
-    | { reference: string; mode: Database["public"]["Enums"]["property_mode"] }[]
+    | {
+        reference: string;
+        mode: Database["public"]["Enums"]["property_mode"];
+      }[]
     | null;
 };
 
@@ -126,19 +138,41 @@ export async function GET(req: NextRequest) {
     );
   }
   if (req.headers.get("authorization") !== `Bearer ${env.CRON_SECRET}`) {
-    return NextResponse.json({ ok: false, reason: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { ok: false, reason: "Unauthorized" },
+      { status: 401 },
+    );
   }
   if (!isSupabaseConfigured) {
     return NextResponse.json({ ok: true, pushed: 0, skipped: "no supabase" });
   }
+
+  const admin = adminClient();
+
+  // Erasures first, and above the Salesforce guard rather than below it.
+  //
+  // Two reasons. A subject who asked to be forgotten outranks a lead waiting
+  // to be delivered, so if a run is going to be cut short by an API limit or
+  // the function timeout, the work with a legal deadline should be the part
+  // that got through. And the drain retires markers on rows that never
+  // reached the CRM at all, which needs no credentials — leaving that below
+  // the guard would let those rows accumulate for as long as Salesforce is
+  // unconfigured, which is precisely today, and turn the "outstanding
+  // erasures" triage query into a permanent false alarm.
+  const erasures = await drainCrmErasures(admin);
+
   // The expected state on preview, on a local machine, and in production
   // until the client's credentials are in Vercel. Not an error: the queue
   // simply accumulates and drains on the first configured run.
   if (!isSalesforceConfigured) {
-    return NextResponse.json({ ok: true, pushed: 0, skipped: "no salesforce" });
+    return NextResponse.json({
+      ok: true,
+      pushed: 0,
+      skipped: "no salesforce",
+      erasures,
+    });
   }
 
-  const admin = adminClient();
   let pushed = 0;
   let failed = 0;
   let exhausted = 0;
@@ -215,7 +249,13 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    await recordIntegrationStatus(admin, { ok: !lastError, error: lastError });
+    // An outstanding erasure is the more serious of the two failure modes, so
+    // it wins the single `last_error` slot the integrations card shows.
+    const surfaced = erasures.lastError ?? lastError;
+    await recordIntegrationStatus(admin, {
+      ok: !surfaced,
+      error: surfaced,
+    });
 
     return NextResponse.json({
       ok: true,
@@ -223,6 +263,7 @@ export async function GET(req: NextRequest) {
       pushed,
       retrying: failed,
       exhausted,
+      erasures,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
