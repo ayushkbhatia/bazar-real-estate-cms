@@ -66,6 +66,7 @@ const TABS: { group: string; items: Tab[] }[] = [
         href: "/admin/settings/compliance",
         status: "stub",
       },
+      { label: "Health", href: "/admin/settings/health", status: "live" },
       { label: "Backups", href: "/admin/settings/backups", status: "stub" },
       { label: "API & webhooks", href: "/admin/settings/api", status: "stub" },
     ],

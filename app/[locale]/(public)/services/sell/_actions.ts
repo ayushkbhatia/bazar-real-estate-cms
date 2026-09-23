@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { captureFormSubmission, withLabels } from "@/lib/forms/record";
 import { headers } from "next/headers";
-import * as Sentry from "@sentry/nextjs";
+import { reportError } from "@/lib/observability";
 import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -117,9 +117,7 @@ export async function submitListingLead(
   } catch (err) {
     // A routing failure must never cost us the lead — it just arrives
     // unassigned, which is a state the desk already works.
-    Sentry.captureException(err, {
-      tags: { component: "list-property/match-advisor" },
-    });
+    await reportError(err, { source: "list-property/match-advisor" });
   }
 
   const supabase = await createSupabaseServerClient();
@@ -181,8 +179,8 @@ export async function submitListingLead(
     .maybeSingle();
 
   if (error || !row) {
-    Sentry.captureException(error ?? new Error("list_property insert failed"), {
-      tags: { component: "list-property/insert" },
+    await reportError(error ?? new Error("list_property insert failed"), {
+      source: "list-property/insert",
     });
     return {
       status: "error",
@@ -253,10 +251,8 @@ export async function submitListingLead(
     subject: tpl.subject,
     text: tpl.text,
     html: tpl.html,
-  }).catch((err: unknown) => {
-    Sentry.captureException(err, {
-      tags: { component: "list-property/auto-reply" },
-    });
+  }).catch(async (err: unknown) => {
+    await reportError(err, { source: "list-property/auto-reply" });
   });
 
   return {

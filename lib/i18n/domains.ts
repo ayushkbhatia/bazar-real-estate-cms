@@ -828,6 +828,18 @@ export const DOMAINS: Domain[] = [
     ],
   },
   {
+    table: "cron_heartbeats",
+    columns: [],
+    excluded:
+      "Operational telemetry for /admin/settings/health. `last_detail` is a machine-written summary read by a staff member, never by a visitor, and the CMS is English by decision (ADR-0007 §6).",
+  },
+  {
+    table: "error_events",
+    columns: [],
+    excluded:
+      "Error reports for /admin/settings/health. `message` is whatever the failure said — usually a Postgres or Salesforce error in English — and translating an exception would make it harder to search for, not easier to read. Staff-only, no anon select policy.",
+  },
+  {
     table: "cta_clicks",
     columns: [],
     excluded:

@@ -741,6 +741,30 @@ export type Database = {
           },
         ]
       }
+      cron_heartbeats: {
+        Row: {
+          consecutive_failures: number
+          job: string
+          last_detail: string | null
+          last_ok: boolean
+          last_run_at: string
+        }
+        Insert: {
+          consecutive_failures?: number
+          job: string
+          last_detail?: string | null
+          last_ok?: boolean
+          last_run_at?: string
+        }
+        Update: {
+          consecutive_failures?: number
+          job?: string
+          last_detail?: string | null
+          last_ok?: boolean
+          last_run_at?: string
+        }
+        Relationships: []
+      }
       cta_clicks: {
         Row: {
           advisor_id: string | null
@@ -1355,6 +1379,48 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      error_events: {
+        Row: {
+          context: Json
+          count: number
+          fingerprint: string
+          first_seen_at: string
+          id: string
+          last_seen_at: string
+          level: string
+          message: string
+          resolved_at: string | null
+          resolved_by: string | null
+          source: string
+        }
+        Insert: {
+          context?: Json
+          count?: number
+          fingerprint: string
+          first_seen_at?: string
+          id?: string
+          last_seen_at?: string
+          level?: string
+          message: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          source: string
+        }
+        Update: {
+          context?: Json
+          count?: number
+          fingerprint?: string
+          first_seen_at?: string
+          id?: string
+          last_seen_at?: string
+          level?: string
+          message?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          source?: string
+        }
+        Relationships: []
       }
       enquiries: {
         Row: {
@@ -3686,6 +3752,20 @@ export type Database = {
       functions_base_url: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
+      record_cron_heartbeat: {
+        Args: { p_detail: string | null; p_job: string; p_ok: boolean }
+        Returns: undefined
+      }
+      record_error_event: {
+        Args: {
+          p_context: Json
+          p_fingerprint: string
+          p_level: string
+          p_message: string
+          p_source: string
+        }
+        Returns: undefined
+      }
       match_properties: {
         Args: { match_limit?: number; query_embedding: string }
         Returns: {

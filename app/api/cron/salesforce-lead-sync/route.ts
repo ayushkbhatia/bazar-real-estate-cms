@@ -27,7 +27,7 @@
  */
 
 import { NextResponse, type NextRequest } from "next/server";
-import * as Sentry from "@sentry/nextjs";
+import { recordHeartbeat, reportError, reportIssue } from "@/lib/observability";
 import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured, isSalesforceConfigured } from "@/lib/env";
 import {
@@ -171,6 +171,13 @@ export async function GET(req: NextRequest) {
   // until the client's credentials are in Vercel. Not an error: the queue
   // simply accumulates and drains on the first configured run.
   if (!isSalesforceConfigured) {
+    // Stamped, not skipped. This is the expected state until the client's
+    // credentials reach Vercel, and a job that never stamps is
+    // indistinguishable on the health page from a job that has died.
+    await recordHeartbeat("salesforce-lead-sync", {
+      ok: true,
+      detail: "idle — no Salesforce credentials",
+    });
     return NextResponse.json({
       ok: true,
       pushed: 0,
@@ -252,10 +259,9 @@ export async function GET(req: NextRequest) {
         // A lead that will never reach the CRM is worth an alert on its own —
         // the enquiry is safe in Postgres, but the sales team works out of
         // Salesforce and would never know it existed.
-        Sentry.captureMessage("Salesforce lead push gave up", {
-          level: "error",
-          tags: { cron: "salesforce-lead-sync" },
-          contexts: {
+        await reportIssue("Salesforce lead push gave up", {
+          source: "cron/salesforce-lead-sync",
+          context: {
             enquiry: { id: row.id, attempts, error: message },
           },
         });
@@ -272,6 +278,10 @@ export async function GET(req: NextRequest) {
       error: surfaced,
     });
 
+    await recordHeartbeat("salesforce-lead-sync", {
+      ok: true,
+      detail: `pushed ${pushed}, blocked ${blocked}, erasures ${erasures.scrubbed}`,
+    });
     return NextResponse.json({
       ok: true,
       considered: rows.length,
@@ -283,7 +293,11 @@ export async function GET(req: NextRequest) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    Sentry.captureException(err, { tags: { cron: "salesforce-lead-sync" } });
+    await reportError(err, { source: "cron/salesforce-lead-sync" });
+    await recordHeartbeat("salesforce-lead-sync", {
+      ok: false,
+      detail: message,
+    });
     console.error("[cron/salesforce-lead-sync]", message);
     await recordIntegrationStatus(admin, { ok: false, error: message });
     return NextResponse.json({ ok: false, reason: message }, { status: 500 });

@@ -14,7 +14,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import * as Sentry from "@sentry/nextjs";
+import { recordHeartbeat, reportError } from "@/lib/observability";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { permitExpiryWarningEmail } from "@/lib/content-assets/system-emails";
@@ -95,8 +95,7 @@ export async function GET(req: NextRequest) {
       const days = Math.max(
         0,
         Math.ceil(
-          (new Date(row.listing_permit_expires_at).getTime() -
-            now.getTime()) /
+          (new Date(row.listing_permit_expires_at).getTime() - now.getTime()) /
             86_400_000,
         ),
       );
@@ -148,14 +147,16 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    await recordHeartbeat("permit-expiry", {
+      ok: true,
+      detail: `warned ${warned}, archived ${archived}`,
+    });
     return NextResponse.json({ ok: true, warned, archived });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    Sentry.captureException(err, { tags: { cron: "permit-expiry" } });
+    await reportError(err, { source: "cron/permit-expiry" });
+    await recordHeartbeat("permit-expiry", { ok: false, detail: message });
     console.error("[cron/permit-expiry]", message);
-    return NextResponse.json(
-      { ok: false, reason: message },
-      { status: 500 },
-    );
+    return NextResponse.json({ ok: false, reason: message }, { status: 500 });
   }
 }

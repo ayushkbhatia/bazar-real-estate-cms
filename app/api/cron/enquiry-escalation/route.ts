@@ -13,7 +13,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import * as Sentry from "@sentry/nextjs";
+import { recordHeartbeat, reportError } from "@/lib/observability";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { enquiryEscalationEmail } from "@/lib/content-assets/system-emails";
@@ -96,9 +96,7 @@ export async function GET(req: NextRequest) {
 
     const adminRows = (managers ?? []).filter((m) => m.role === "admin");
     const fallback =
-      adminRows[0] ??
-      (managers ?? []).find((m) => m.role === "agent") ??
-      null;
+      adminRows[0] ?? (managers ?? []).find((m) => m.role === "agent") ?? null;
 
     // Resolve the admins' addresses once, not once per enquiry.
     //
@@ -133,8 +131,8 @@ export async function GET(req: NextRequest) {
           .update({ assigned_agent_id: fallback.user_id })
           .eq("id", row.id);
         if (reassignError) {
-          Sentry.captureException(reassignError, {
-            tags: { cron: "enquiry-escalation", enquiry: row.id },
+          await reportError(reassignError, {
+            source: "cron/enquiry-escalation",
           });
           console.error(
             "[cron/enquiry-escalation] reassign failed",
@@ -151,9 +149,7 @@ export async function GET(req: NextRequest) {
         .update({ escalated_at: new Date().toISOString() })
         .eq("id", row.id);
       if (flagError) {
-        Sentry.captureException(flagError, {
-          tags: { cron: "enquiry-escalation", enquiry: row.id },
-        });
+        await reportError(flagError, { source: "cron/enquiry-escalation" });
         console.error(
           "[cron/enquiry-escalation] escalated_at flag failed",
           row.id,
@@ -190,6 +186,10 @@ export async function GET(req: NextRequest) {
       escalated += 1;
     }
 
+    await recordHeartbeat("enquiry-escalation", {
+      ok: true,
+      detail: `escalated ${escalated} of ${stale.length}`,
+    });
     return NextResponse.json({
       ok: true,
       scanned: stale.length,
@@ -198,11 +198,9 @@ export async function GET(req: NextRequest) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    Sentry.captureException(err, { tags: { cron: "enquiry-escalation" } });
+    await reportError(err, { source: "cron/enquiry-escalation" });
+    await recordHeartbeat("enquiry-escalation", { ok: false, detail: message });
     console.error("[cron/enquiry-escalation]", message);
-    return NextResponse.json(
-      { ok: false, reason: message },
-      { status: 500 },
-    );
+    return NextResponse.json({ ok: false, reason: message }, { status: 500 });
   }
 }

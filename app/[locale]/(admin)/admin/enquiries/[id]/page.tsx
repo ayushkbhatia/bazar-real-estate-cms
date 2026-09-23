@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import * as Sentry from "@sentry/nextjs";
+import { reportError } from "@/lib/observability";
 import {
   Archive,
   ChevronRight,
@@ -91,10 +91,10 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
   // Best-effort mark-read on each staff view. Failures shouldn't block
   // page render — but they shouldn't disappear silently either.
   if (enquiry.unread_count > 0 && !isArchived) {
-    await markConversationRead(id).catch((err: unknown) => {
-      Sentry.captureException(err, {
-        tags: { component: "enquiry/mark-read" },
-        contexts: { enquiry: { id } },
+    await markConversationRead(id).catch(async (err: unknown) => {
+      await reportError(err, {
+        source: "enquiry/mark-read",
+        context: { enquiry: { id } },
       });
     });
   }
@@ -190,8 +190,8 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                 <span className="text-bz-ink-2">
                   Filed {formatDateTime(enquiry.archived_at!)}. It stays out of
                   the inbox, the pipeline and the dashboard counts, and it
-                  can&apos;t be replied to or reassigned until an admin
-                  restores it.
+                  can&apos;t be replied to or reassigned until an admin restores
+                  it.
                 </span>
               </div>
             </div>
@@ -269,7 +269,9 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                   key={m.id}
                   className={cn(
                     "flex",
-                    m.direction === "outbound" ? "justify-end" : "justify-start",
+                    m.direction === "outbound"
+                      ? "justify-end"
+                      : "justify-start",
                   )}
                 >
                   <div
@@ -301,8 +303,8 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
             {isArchived ? (
               <p className="mt-4 rounded-md border border-dashed border-bz-border px-3.5 py-3 text-[12.5px] text-bz-muted">
                 Replying is disabled while this enquiry is archived — the send
-                action refuses it, so the composer is hidden rather than
-                failing after you&apos;ve written the message.
+                action refuses it, so the composer is hidden rather than failing
+                after you&apos;ve written the message.
               </p>
             ) : (
               <EnquiryComposer

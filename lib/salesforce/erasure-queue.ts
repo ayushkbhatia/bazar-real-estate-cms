@@ -1,5 +1,5 @@
 import "server-only";
-import * as Sentry from "@sentry/nextjs";
+import { reportIssue } from "@/lib/observability";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { isSalesforceConfigured } from "@/lib/env";
 import type { Database } from "@/db/types";
@@ -121,10 +121,9 @@ export async function drainCrmErasures(
     // subject who asked to be forgotten is the kind of thing that has to
     // reach a human rather than sit in a column.
     if (!result.retryable) {
-      Sentry.captureMessage("Salesforce erasure cannot complete", {
-        level: "error",
-        tags: { component: "salesforce/erasure" },
-        contexts: {
+      await reportIssue("Salesforce erasure cannot complete", {
+        source: "salesforce/erasure",
+        context: {
           enquiry: { id: row.id, error: result.message },
         },
       });

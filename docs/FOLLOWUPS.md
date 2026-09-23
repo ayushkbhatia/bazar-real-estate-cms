@@ -832,14 +832,25 @@ shows the trail.)
   which anything builds. Either wire it into the dashboard or delete it; it is
   dead either way today.
 
-- [cron] Sentry has no DSN in production, so a cron failure is silent.
-  `CRON_SECRET` is now set (23 Sept) and the jobs run, but `SENTRY_DSN` /
-  `NEXT_PUBLIC_SENTRY_DSN` are unset in Vercel — every `Sentry.captureException`
-  in the cron routes is a no-op, and `instrumentation.ts` returns early. The
-  code is fully wired and needs nothing but the env var. Until it is set, a
-  failed job is visible only in Vercel's function logs and, for Salesforce,
-  the card at /admin/settings/integrations. PostHog is unset for the same
-  reason and is a separate, lower-stakes gap.
+- [observability] Client-side errors are still Sentry-only, and Sentry has no DSN.
+  `app/global-error.tsx`, `app/[locale]/error.tsx` and
+  `lib/realtime/use-presence.ts` are React error boundaries; `reportError` is
+  `server-only` so they cannot use it. Capturing them locally means POSTing to
+  an API route, and without uploaded source maps the stack is minified — which
+  is most of what Sentry's client SDK is actually for. Deliberately out of
+  scope when the server-side reporter was built (0134): the message, the URL
+  and the locale are usually enough to act on, and a browser crash is a rarer
+  problem for this product than a silent cron. Revisit if the public site
+  starts misbehaving in ways nobody can reproduce.
+
+- [observability] No digest email; the health page is pull-only.
+  /admin/settings/health answers "what broke" the moment someone looks, and
+  the per-job heartbeats make a dead scheduler visible without anything having
+  fired — which is the part a digest could not do for itself, since a digest
+  is a cron reporting on crons. What is missing is the push: nobody is told.
+  A daily digest over `error_events where last_seen_at > now() - 1 day` via
+  Resend is maybe forty lines. It was left out to ship the surface that works
+  when the scheduler does not.
 
 - [cron] enquiry-escalation has no test, and its first real run is production.
   The route was bounded to MAX_PER_RUN and its admin-email lookup hoisted out

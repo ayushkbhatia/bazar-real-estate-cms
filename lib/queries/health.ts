@@ -1,0 +1,99 @@
+import "server-only";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+/**
+ * What the health screen reads.
+ *
+ * Service-role throughout. The RLS policies on both tables allow staff to
+ * SELECT, so an ordinary client would work — but the page is admin-only and
+ * reading through the same client the writers use keeps one story about who
+ * touches these tables.
+ */
+
+export type ErrorEvent = {
+  id: string;
+  fingerprint: string;
+  source: string;
+  level: "error" | "warning";
+  message: string;
+  context: Record<string, unknown>;
+  count: number;
+  first_seen_at: string;
+  last_seen_at: string;
+  resolved_at: string | null;
+};
+
+export type Heartbeat = {
+  job: string;
+  last_run_at: string;
+  last_ok: boolean;
+  last_detail: string | null;
+  consecutive_failures: number;
+};
+
+/**
+ * How long a job may go unstamped before the page calls it stale.
+ *
+ * Keyed off each job's own cadence rather than one global number: a job that
+ * runs daily at 03:00 is not late at 09:00, and a five-minute job is very
+ * late indeed after an hour. The multiplier is generous — three missed runs,
+ * or six hours for the daily jobs, so a single slow run never cries wolf.
+ */
+const EXPECTED_INTERVAL_MINUTES: Record<string, number> = {
+  "enquiry-auto-reply": 1,
+  "enquiry-escalation": 5,
+  "salesforce-lead-sync": 5,
+  "permit-expiry": 1440,
+  "meilisearch-sync": 1440,
+  "embeddings-backfill": 1440,
+  "post-valuation-nurture": 1440,
+};
+
+export function staleAfterMinutes(job: string): number {
+  const cadence = EXPECTED_INTERVAL_MINUTES[job] ?? 60;
+  return cadence >= 1440 ? cadence + 360 : cadence * 3;
+}
+
+export function isStale(hb: Heartbeat, now: Date = new Date()): boolean {
+  const age = (now.getTime() - new Date(hb.last_run_at).getTime()) / 60_000;
+  return age > staleAfterMinutes(hb.job);
+}
+
+/** Jobs that vercel.json schedules — so a job that has NEVER run is visible
+ *  as an absence rather than simply missing from the table. */
+export const SCHEDULED_JOBS = Object.keys(EXPECTED_INTERVAL_MINUTES).sort();
+
+export async function listOpenErrors(limit = 100): Promise<ErrorEvent[]> {
+  const admin = createAdminClient();
+  if (!admin) return [];
+  const { data, error } = await admin
+    .from("error_events")
+    .select(
+      "id, fingerprint, source, level, message, context, count, first_seen_at, last_seen_at, resolved_at",
+    )
+    .is("resolved_at", null)
+    .order("last_seen_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    // The page renders an empty state rather than a 500: a health screen that
+    // crashes when the health tables are missing is the least useful possible
+    // behaviour.
+    console.error("[health] listOpenErrors", error.message);
+    return [];
+  }
+  return (data ?? []) as unknown as ErrorEvent[];
+}
+
+export async function listHeartbeats(): Promise<Heartbeat[]> {
+  const admin = createAdminClient();
+  if (!admin) return [];
+  const { data, error } = await admin
+    .from("cron_heartbeats")
+    .select("job, last_run_at, last_ok, last_detail, consecutive_failures")
+    .order("job");
+  if (error) {
+    console.error("[health] listHeartbeats", error.message);
+    return [];
+  }
+  return (data ?? []) as unknown as Heartbeat[];
+}

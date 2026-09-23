@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import * as Sentry from "@sentry/nextjs";
+import { reportError } from "@/lib/observability";
 import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -105,9 +105,7 @@ export async function submitServiceLead(
   } catch (err) {
     // A routing failure must never cost us the lead — it just arrives
     // unassigned, which is a state the desk already works.
-    Sentry.captureException(err, {
-      tags: { component: "service-lead/match-advisor" },
-    });
+    await reportError(err, { source: "service-lead/match-advisor" });
   }
 
   const supabase = await createSupabaseServerClient();
@@ -150,8 +148,8 @@ export async function submitServiceLead(
     .maybeSingle();
 
   if (error || !row) {
-    Sentry.captureException(error ?? new Error("service lead insert failed"), {
-      tags: { component: "service-lead/insert", lead_kind: data.kind },
+    await reportError(error ?? new Error("service lead insert failed"), {
+      source: "service-lead/insert",
     });
     return {
       status: "error",
@@ -176,10 +174,8 @@ export async function submitServiceLead(
     subject: tpl.subject,
     text: tpl.text,
     html: tpl.html,
-  }).catch((err: unknown) => {
-    Sentry.captureException(err, {
-      tags: { component: "service-lead/auto-reply" },
-    });
+  }).catch(async (err: unknown) => {
+    await reportError(err, { source: "service-lead/auto-reply" });
   });
 
   return {
