@@ -301,16 +301,17 @@ describe("createResilientFetch", () => {
   });
 
   /**
-   * The budget has to fit the route's prerender limit with room for a page
-   * that makes several SEQUENTIAL reads, each of which may spend its whole
-   * budget — that is the reason `next.config.ts` raised the limit to 180s.
+   * The budget has to fit the route's prerender limit with room for two
+   * SEQUENTIAL reads that each spend all of it — in an outage the first read
+   * absorbs the wait and later ones come back quickly, so two is the case to
+   * budget for. That is why `next.config.ts` raised the limit to 180s.
    *
    * This spec once asserted against Next's 60s default, months after the
    * config had raised it. So the limit is read from `next.config.ts` itself:
    * change either number and this is where you find out whether the other
    * still agrees.
    */
-  it("fits several sequential reads inside the configured prerender limit", () => {
+  it("fits two budget-spending reads inside the configured prerender limit", () => {
     const config = readFileSync(
       join(__dirname, "..", "..", "next.config.ts"),
       "utf8",
@@ -318,9 +319,9 @@ describe("createResilientFetch", () => {
     const match = config.match(/staticPageGenerationTimeout:\s*(\d+)/);
     expect(match, "staticPageGenerationTimeout in next.config.ts").not.toBeNull();
     const routeLimitMs = Number(match![1]) * 1000;
-    expect(4 * BUDGET_MS).toBeLessThanOrEqual(routeLimitMs);
-    // And one read has to outlast the ~30s outages that motivated the budget.
-    expect(BUDGET_MS).toBeGreaterThan(30_000);
+    expect(2 * BUDGET_MS).toBeLessThanOrEqual(routeLimitMs);
+    // And one read has to outlast the ~60s blackout measured on 2026-09-23.
+    expect(BUDGET_MS).toBeGreaterThan(60_000);
   });
 });
 

@@ -37,19 +37,27 @@
  *
  * So a read now keeps trying until `BUDGET_MS` of wall-clock time is spent,
  * backing off exponentially to a cap, and no single attempt may run past the
- * budget. A hanging outage gets ~4 attempts; a fast-failing one gets as many
- * as fit. Either way the read outlasts a 30s window, and its worst case is the
- * budget itself.
+ * budget. A hanging outage gets ~6 attempts; a fast-failing one gets as many
+ * as fit. Either way the read outlasts the windows measured so far, and its
+ * worst case is the budget itself.
  *
- * WHY 45 SECONDS
+ * WHY 75 SECONDS
  *
- * The outer bound is Next's per-route prerender limit, which `next.config.ts`
- * sets to 180s (`staticPageGenerationTimeout`) precisely so a page can make
- * several SEQUENTIAL reads that each spend their retry budget. 45s leaves room
- * for four of them. An earlier version of this comment, and its spec, still
- * measured against Next's 60s default after the limit had been raised — the
- * spec now reads the configured number from `next.config.ts`, so the two
- * cannot drift apart again.
+ * It has to outlast the outage. The longest blackout measured on 2026-09-23
+ * ran from about 20:34:40 to 20:35:40: every CI runner's requests fell from
+ * hundreds per 20s to near zero at once and came back together. A first cut
+ * of this budget at 45s — sized to the 30s windows seen earlier that day —
+ * spent its four hanging attempts inside that one and gave up.
+ *
+ * And it has to fit the route. Next's per-route prerender limit is 180s
+ * (`staticPageGenerationTimeout` in `next.config.ts`). In an outage the first
+ * read on a page absorbs the wait and the reads after it come back quickly,
+ * so the case to budget for is two reads that each spend everything: 150s,
+ * with 30s left for the render itself. The spec reads the configured limit
+ * out of `next.config.ts` and checks exactly that, so neither number can be
+ * changed without the other being re-examined. An earlier version of this
+ * comment and its spec still measured against Next's 60s default, long after
+ * the limit had been raised.
  *
  * WHAT IS NOT RETRIED
  *
@@ -66,7 +74,7 @@
 const PER_ATTEMPT_MS = 10_000;
 
 /** Wall-clock budget for one read, every attempt and wait included. */
-export const BUDGET_MS = 45_000;
+export const BUDGET_MS = 75_000;
 
 /**
  * A hard cap on attempts, as a backstop to the time budget rather than the
