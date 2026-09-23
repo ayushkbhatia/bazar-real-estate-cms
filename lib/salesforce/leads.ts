@@ -2,7 +2,7 @@ import "server-only";
 import { env } from "@/lib/env";
 import type { Database } from "@/db/types";
 import { salesforceRequest, SalesforceError } from "./client";
-import { splitPhone } from "./phone";
+import { splitPhone, SALESFORCE_COUNTRY_CODES } from "./phone";
 
 type EnquirySource = Database["public"]["Enums"]["enquiry_source"];
 type PropertyMode = Database["public"]["Enums"]["property_mode"];
@@ -56,15 +56,20 @@ export type LeadPayload = {
 };
 
 /**
- * Salesforce text fields are `Text(255)` unless someone chose otherwise, and
- * a create that exceeds the length fails the whole record with
- * STRING_TOO_LONG. The doc does not give us the lengths (ask-list item 11),
- * so these are the platform defaults: 255 for a text field, and the long-text
- * ceiling for the description. Both are conservative — being truncated is a
- * better outcome for a lead than being rejected.
+ * The real field lengths, read from a describe of the object.
+ *
+ * These were guesses until 24 Sept — 255 everywhere, on the assumption of
+ * Salesforce text defaults, because neither vendor doc gave them. Two of
+ * them were wrong and would have failed records with STRING_TOO_LONG:
+ * `Email__c` is 80, not 255, and `Phone__c` is 40. An address over 80
+ * characters is unusual but entirely legal, and it would have lost that lead
+ * permanently rather than truncating it.
  */
-const MAX_TEXT = 255;
-const MAX_DESCRIPTION = 32000;
+const MAX_NAME = 255;
+const MAX_EMAIL = 80;
+const MAX_PHONE = 40;
+const MAX_REFERENCE = 255;
+const MAX_DESCRIPTION = 131072;
 
 function clamp(value: string | null | undefined, max: number): string | undefined {
   if (!value) return undefined;
@@ -264,8 +269,8 @@ export function buildLeadPayload(row: LeadSourceRow): LeadPayload {
     if (value !== undefined) payload[key] = value;
   };
 
-  set("Name__c", clamp(row.name, MAX_TEXT));
-  set("Email__c", clamp(row.email, MAX_TEXT));
+  set("Name__c", clamp(row.name, MAX_NAME));
+  set("Email__c", clamp(row.email, MAX_EMAIL));
   set("Description__c", buildDescription(row));
 
   // Both picklists are Required, and both always resolve to a real value —
@@ -279,13 +284,23 @@ export function buildLeadPayload(row: LeadSourceRow): LeadPayload {
 
   const phone = splitPhone(row.phone);
   if (phone) {
-    payload.Country_Code__c = phone.countryCode;
-    set("Phone__c", clamp(phone.national, MAX_TEXT));
+    // `Country_Code__c` is a restricted picklist of 206 values, which no
+    // vendor doc mentioned. A code outside it fails the whole record, so an
+    // unmatched one is left unset — `missingRequiredFields` then refuses the
+    // lead locally with a reason, instead of spending a round trip to be
+    // told the same thing less clearly.
+    const bare = phone.countryCode.replace(/^\+/, "");
+    if (SALESFORCE_COUNTRY_CODES.has(bare)) {
+      payload.Country_Code__c = phone.countryCode;
+    }
+    // The national part keeps its own field either way: a blocked lead is
+    // still readable in the CMS, and no digits are thrown away.
+    set("Phone__c", clamp(phone.national, MAX_PHONE));
   }
 
   // "pass this value when enquiry about property" — so a general contact-form
   // lead sends no reference at all rather than an empty string.
-  const reference = clamp(row.property_reference, MAX_TEXT);
+  const reference = clamp(row.property_reference, MAX_REFERENCE);
   if (reference) payload.Property_Reference__c = reference;
 
   return payload;

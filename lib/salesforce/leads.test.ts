@@ -19,6 +19,7 @@ const {
   INQUIRY_TYPES,
   LEAD_SOURCES,
 } = await import("./leads");
+const { SALESFORCE_COUNTRY_CODES } = await import("./phone");
 type LeadSourceRow = Parameters<typeof buildLeadPayload>[0];
 
 function row(over: Partial<LeadSourceRow> = {}): LeadSourceRow {
@@ -123,9 +124,47 @@ describe("buildLeadPayload", () => {
     }
   });
 
-  it("truncates rather than letting STRING_TOO_LONG reject the record", () => {
-    const payload = buildLeadPayload(row({ name: "x".repeat(400) }));
-    expect(payload.Name__c).toHaveLength(255);
+  it("truncates to the field's REAL length, not an assumed 255", () => {
+    // Read from a describe of the live object. Email__c is 80 and Phone__c
+    // is 40 — both were 255 here until 24 Sept, on the assumption of
+    // Salesforce text defaults that neither vendor doc confirmed. An address
+    // over 80 characters is unusual but legal, and would have failed the
+    // whole record with STRING_TOO_LONG instead of being trimmed.
+    expect(
+      buildLeadPayload(row({ name: "x".repeat(400) })).Name__c,
+    ).toHaveLength(255);
+    const longEmail = `${"a".repeat(90)}@example.com`;
+    expect(
+      buildLeadPayload(row({ email: longEmail })).Email__c!.length,
+    ).toBeLessThanOrEqual(80);
+  });
+
+  it("only ever sends a country code the picklist accepts", () => {
+    // Country_Code__c is a restricted picklist of 206 values, which no doc
+    // mentioned. Anything outside it fails the whole record.
+    const numbers = [
+      "+971501234567", "0501234567", "+441234567890", "+12125551234",
+      "+79161234567", "+9995551234567", "971501234567",
+    ];
+    for (const phone of numbers) {
+      const code = buildLeadPayload(row({ phone })).Country_Code__c;
+      if (code === undefined) continue; // refused locally, which is the point
+      expect(
+        SALESFORCE_COUNTRY_CODES.has(code.replace("+", "")),
+        `${phone} produced ${code}`,
+      ).toBe(true);
+    }
+  });
+
+  it("refuses a Russian number rather than mislabelling it", () => {
+    // +7 is absent from the org's picklist though every neighbour is there.
+    // Blocking keeps the lead visible and recoverable in the CMS; sending a
+    // wrong code would put bad data in the CRM and look like success.
+    const payload = buildLeadPayload(row({ phone: "+79161234567" }));
+    expect("Country_Code__c" in payload).toBe(false);
+    expect(missingRequiredFields(payload)).toContain("Country_Code__c");
+    // The digits are not thrown away.
+    expect(payload.Phone__c).toBeTruthy();
   });
 
   it("treats a whitespace-only value as absent", () => {
