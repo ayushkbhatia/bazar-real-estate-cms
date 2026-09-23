@@ -51,6 +51,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, embedded: 0, skipped: "no supabase" });
   }
   if (!isVoyageConfigured) {
+    // Same reasoning as the escalation job's quiet path: production has no
+    // Voyage key, so this is where every run ends, and not stamping would
+    // report the job as never run for as long as that stays true.
+    await recordHeartbeat("embeddings-backfill", {
+      ok: true,
+      detail: "idle — no Voyage credentials",
+    });
     return NextResponse.json({ ok: true, embedded: 0, skipped: "no voyage" });
   }
 
