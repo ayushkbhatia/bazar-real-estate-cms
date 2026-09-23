@@ -1,4 +1,7 @@
 import { test, expect } from "@playwright/test";
+import { installLeadCleanup, skipUnlessPurgeable } from "./_cleanup";
+
+const trackLead = installLeadCleanup();
 
 test("/insights surfaces the newsletter signup form", async ({ page }) => {
   await page.goto("/insights");
@@ -26,11 +29,14 @@ test("rejected emails surface a client-side error", async ({ page }) => {
 });
 
 test("a valid signup shows a confirmation message", async ({ page }) => {
+  // Writes a real subscriber to the client's CMS — see e2e/_cleanup.ts.
+  skipUnlessPurgeable();
   await page.goto("/insights");
   const ts = Date.now();
-  await page
-    .getByPlaceholder(/you@email\.com/i)
-    .fill(`playwright+${ts}@bazar.test`);
+  // Tagged before it is typed, so the afterEach hook removes the subscriber
+  // even when the confirmation assertion times out.
+  const email = trackLead(`playwright+${ts}@bazar.test`);
+  await page.getByPlaceholder(/you@email\.com/i).fill(email);
   await page.getByRole("button", { name: /^subscribe$/i }).click();
   await expect(
     page.getByText(/(check your inbox|already subscribed)/i),

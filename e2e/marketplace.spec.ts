@@ -1,5 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { firstPropertyPath } from "./_helpers";
+import { installLeadCleanup, skipUnlessPurgeable } from "./_cleanup";
+
+const trackLead = installLeadCleanup();
 
 test("home → /buy → property detail", async ({ page }) => {
   await page.goto("/");
@@ -142,6 +145,8 @@ test("contact form refuses a submission with no way to reply", async ({ page }) 
 });
 
 test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
+  // Files a real enquiry against the client's CMS — see e2e/_cleanup.ts.
+  skipUnlessPurgeable();
   const path = await firstPropertyPath(page);
   test.skip(!path, "No published properties in the marketplace.");
   await page.goto(path!);
@@ -157,6 +162,9 @@ test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
   // 2026-08-13 and the submission silently stopped going through; hardcoding
   // the new list would only move the breakage to the next edit.
   const ts = Date.now();
+  // Tagged before it is typed, so the afterEach hook can delete the row even
+  // if an assertion below throws after the submit has already landed.
+  const email = trackLead(`pw+${ts}@example.com`);
   const inputs = form.locator("input:not([type='hidden']), textarea");
   for (let i = 0; i < (await inputs.count()); i++) {
     const field = inputs.nth(i);
@@ -165,7 +173,7 @@ test("property-page sidebar accepts a valid enquiry", async ({ page }) => {
     if (type === "checkbox" || type === "radio") continue;
     const name = (await field.getAttribute("name")) ?? "";
     if (name === "email" || type === "email") {
-      await field.fill(`pw+${ts}@example.com`);
+      await field.fill(email);
     } else if (name === "phone" || type === "tel") {
       await field.fill("+971500000000");
     } else if (name === "message") {
