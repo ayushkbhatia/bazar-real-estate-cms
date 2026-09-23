@@ -63,8 +63,7 @@ describe("buildErasurePayload", () => {
     const payload = buildErasurePayload("deleted-a1b2c3d4e5f6");
     expect(payload.Email__c).toBeNull();
     expect(payload.Phone__c).toBeNull();
-    expect(payload.Country_Code__c).toBeNull();
-    for (const key of ["Email__c", "Phone__c", "Country_Code__c"] as const) {
+    for (const key of ["Email__c", "Phone__c"] as const) {
       expect(JSON.stringify(payload)).toContain(`"${key}":null`);
     }
   });
@@ -82,6 +81,20 @@ describe("buildErasurePayload", () => {
       REDACTION_NOTICE,
     );
     expect(REDACTION_NOTICE).toBe("[redacted at the data subject's request]");
+  });
+
+  it("does not touch Country_Code__c, which is a restricted picklist", () => {
+    // It used to be nulled, then substituted with "+0" when the null was
+    // refused — and neither is a value the picklist accepts, so erasure
+    // would have failed in the CRM and then failed again on its fallback.
+    // A dialling code identifies nobody once everything else is gone.
+    const payload = buildErasurePayload("deleted-x") as Record<string, unknown>;
+    expect("Country_Code__c" in payload).toBe(false);
+    const fallback = buildErasureFallbackPayload("deleted-x") as Record<
+      string,
+      unknown
+    >;
+    expect("Country_Code__c" in fallback).toBe(false);
   });
 
   it("leaves the non-identifying commercial facts alone", () => {
@@ -181,6 +194,7 @@ describe("scrubLead", () => {
     expect(body.Email__c).toBe("redacted@bazar.invalid");
     expect(body.Email__c.endsWith(".invalid")).toBe(true);
     expect(body.Phone__c).not.toContain("50");
+    expect("Country_Code__c" in body).toBe(false);
   });
 
   it("does not substitute when the null was accepted", async () => {

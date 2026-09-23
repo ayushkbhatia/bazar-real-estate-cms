@@ -35,7 +35,6 @@ export type LeadErasurePayload = {
   Name__c: string;
   Email__c: string | null;
   Phone__c: string | null;
-  Country_Code__c: string | null;
   Description__c: string;
 };
 
@@ -58,13 +57,22 @@ export type LeadErasurePayload = {
  */
 const REDACTED_EMAIL = "redacted@bazar.invalid";
 const REDACTED_PHONE = "0000000000";
-const REDACTED_COUNTRY_CODE = "+0";
 
 /**
  * The fields carrying personal data, and the values that neutralise them.
  *
+ ── Country_Code__c is deliberately left alone ──────────────────────────
+ * It was being nulled, and then substituted with "+0" when the null was
+ * refused. Both were wrong: the field is a restricted picklist and neither
+ * an empty value nor "+0" is on it, so the scrub AND its fallback would have
+ * failed — erasure would simply never have completed in the CRM.
+ *
+ * Leaving it is also the better answer on the merits. A dialling code shared
+ * by millions of people identifies nobody once the name is a pseudonym, the
+ * address is gone and the number is zeroes.
+ *
  * `Lead_Source__c`, `Inquiry_Type__c` and `Property_Reference__c` are
- * deliberately untouched: "a website lead about BAZ-AD-04891 wanting to buy"
+ * untouched for the same sort of reason: "a website lead about BAZ-AD-04891 wanting to buy"
  * identifies nobody once the name, address and phone are gone, and it is the
  * commercial fact the retention basis exists to preserve.
  *
@@ -76,7 +84,6 @@ export function buildErasurePayload(pseudonym: string): LeadErasurePayload {
     Name__c: pseudonym,
     Email__c: null,
     Phone__c: null,
-    Country_Code__c: null,
     Description__c: REDACTION_NOTICE,
   };
 }
@@ -89,7 +96,6 @@ export function buildErasureFallbackPayload(
     Name__c: pseudonym,
     Email__c: REDACTED_EMAIL,
     Phone__c: REDACTED_PHONE,
-    Country_Code__c: REDACTED_COUNTRY_CODE,
     Description__c: REDACTION_NOTICE,
   };
 }

@@ -207,6 +207,82 @@ recipient. Derived from `crm_external_id` being present rather than asserted
 because the integration exists — naming a processor that received nothing
 would be its own inaccuracy.
 
+## What the object actually looks like
+
+Verified 24 Sept against the sandbox with a `describe` call, after the
+production credentials arrived. **Every number below contradicts something we
+had been assuming from the documents**, which is the argument for doing this
+before wiring anything up.
+
+| Field | Type | Length | Nillable | Notes |
+|---|---|---|---|---|
+| `Name__c` | string | 255 | no | as assumed |
+| `Email__c` | email | **80** | no | we assumed 255 |
+| `Phone__c` | phone | **40** | no | we assumed 255 |
+| `Country_Code__c` | **picklist** | — | no | 206 values, `+7` absent |
+| `Lead_Source__c` | picklist | — | no | the nine documented values |
+| `Inquiry_Type__c` | picklist | — | no | Buy / Sell / Rent |
+| `Property_Reference__c` | string | 255 | yes | |
+| `Description__c` | textarea | 131072 | yes | we truncated at 32000 |
+| `External_ID__c` | string | 254 | yes | External ID, Unique |
+
+No undocumented required field exists, so the documented set is sufficient.
+
+**`Country_Code__c` is a restricted picklist.** Neither document said so. A
+code outside its 206 values fails the whole record. `+7` — Russia and
+Kazakhstan — is missing, although every neighbour (`+994`, `+995`, `+996`,
+`+998`) is present, so it reads as an omission. Until it is added, those
+leads are refused locally with a reason rather than sent with a wrong code:
+the lead stays visible in the CMS and replays with one UPDATE once the value
+exists.
+
+**The integration user cannot delete.** `DELETE` returns
+`INSUFFICIENT_ACCESS_OR_READONLY`, which is correct — an integration should
+not be able to remove leads — and it retrospectively justifies choosing
+pseudonymisation over deletion for erasure, since deletion was never
+available.
+
+### Both round trips, proven
+
+*Upsert is exactly-once.* Two PATCHes to the same `External_ID__c`:
+
+```
+1st PATCH → HTTP 201  created=true   id=a04iy0000000crhAAA
+2nd PATCH → HTTP 200  created=false  id=a04iy0000000crhAAA
+records with this External_ID__c: 1
+```
+
+*Erasure needs its fallback.* The null-first attempt is refused exactly as the
+defensive path anticipated, and the substitute succeeds:
+
+```
+nulling PATCH   → HTTP 400  REQUIRED_FIELD_MISSING: [Email__c, Phone__c]
+fallback PATCH  → HTTP 204
+```
+
+Leaving the record pseudonymised with its commercial facts intact —
+`Name__c: deleted-…`, `Email__c: redacted@bazar.invalid`, `Phone__c:
+0000000000`, `Inquiry_Type__c` and `Property_Reference__c` untouched.
+
+## Production is blocked on one Salesforce setting
+
+The production credentials (24 Sept doc) are real and distinct from sandbox,
+but they cannot mint a token:
+
+```
+PRODUCTION  HTTP 400  invalid_grant  no client credentials user enabled
+SANDBOX     HTTP 200  OK
+```
+
+Identical code against both, so this is not a request-shape problem. The
+production Connected App has no **Run As** user assigned for the client
+credentials flow — Setup → App Manager → the app → Manage → Edit Policies →
+Client Credentials Flow. Sandbox has one; production does not.
+
+Do **not** put the production credentials in Vercel until this is fixed:
+`invalid_grant` is classified non-retryable, so every queued lead would be
+marked `failed` on its first attempt and need replaying.
+
 ## Open questions for Levarus
 
 Sent 22 Sept · the 23 Sept revision answered **9, 10 and most of 11**. The
