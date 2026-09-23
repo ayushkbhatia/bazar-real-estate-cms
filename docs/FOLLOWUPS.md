@@ -801,13 +801,21 @@ shows the trail.)
   future template legitimately needs one of those paths, that test is the thing
   that will stop it.
 
-- [cron] The seven surviving jobs still need CRON_SECRET set in Vercel.
-  Production returns `{"reason":"CRON_SECRET not configured"}` on every cron
-  route, so none has ever run — no enquiry acknowledgement has ever been sent
-  and no enquiry has ever been escalated. `.env.example` has documented it as
-  REQUIRED IN PRODUCTION since the beginning. Setting it in Production and
-  Preview and redeploying is the entire fix; Vercel injects the matching
-  Authorization header automatically.
+- [cron] Sentry has no DSN in production, so a cron failure is silent.
+  `CRON_SECRET` is now set (23 Sept) and the jobs run, but `SENTRY_DSN` /
+  `NEXT_PUBLIC_SENTRY_DSN` are unset in Vercel — every `Sentry.captureException`
+  in the cron routes is a no-op, and `instrumentation.ts` returns early. The
+  code is fully wired and needs nothing but the env var. Until it is set, a
+  failed job is visible only in Vercel's function logs and, for Salesforce,
+  the card at /admin/settings/integrations. PostHog is unset for the same
+  reason and is a separate, lower-stakes gap.
+
+- [cron] enquiry-escalation has no test, and its first real run is production.
+  The route was bounded to MAX_PER_RUN and its admin-email lookup hoisted out
+  of the per-row loop (23 Sept) — both reviewed, neither executed, because
+  running it locally against the production database would reassign real leads
+  and send real mail. None of the seven cron routes has a spec. Worth a
+  harness that fakes the Supabase chain, given they now actually run.
 
 - [cron] The enquiry auto-reply has a second, also-dead path.
   The pg_net trigger (0030) posts to a Supabase Edge Function that has never

@@ -282,7 +282,7 @@ All env vars are loaded via `lib/env.ts` (zod-validated). Don't read `process.en
 - **Compliance** — PDPL DSR export + delete flows, cookie consent banner, all legal pages (`/legal/privacy|terms|cookies`).
 - **Integrations** — Meilisearch sync, Voyage embeddings backfill, Mapbox geocoding + isochrones, Mailchimp two-way sync via webhook, Sentry, PostHog (consent-gated, with sign-in identify), Vercel Analytics, syndication push to portals, DLD weekly import, BRN validation, permit expiry alerts.
 - **Infra** — 132 migrations, 80+ vitest specs, Playwright specs, 7 cron jobs, full CI gate.
-  **Known gap**: the crons have never run in production — no Edge Function deployed, `app_settings` empty, `CRON_SECRET` unset. See docs/FOLLOWUPS.md.
+  **Cron status**: `CRON_SECRET` is set in Production + Preview as of 23 Sept 2026, so the seven Vercel jobs run. Two gaps remain: Sentry has no DSN in production, so a cron failure is silent; and the pg_net → Supabase Edge Function path for the enquiry auto-reply (migration 0030) is still undeployed with `app_settings` empty — deliberately, since Vercel Cron already covers that job and deploying both would acknowledge every enquiry twice. See docs/FOLLOWUPS.md.
 
 See [docs/PROJECT_UNDERSTANDING.md](docs/PROJECT_UNDERSTANDING.md) for the full roadmap and what's next.
 
