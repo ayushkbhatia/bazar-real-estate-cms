@@ -4,7 +4,6 @@ import {
   ANALYTICS_RANGES,
   aggregateBySource,
   aggregateFunnel,
-  aggregateViewingsByStatus,
   bucketByDay,
   FUNNEL_ORDER,
   parseAnalyticsRange,
@@ -12,7 +11,6 @@ import {
   type EnquiriesBySource,
   type FunnelStage,
   type TimeBucket,
-  type ViewingsByStatus,
 } from "./analytics-utils";
 
 export type {
@@ -20,13 +18,11 @@ export type {
   EnquiriesBySource,
   FunnelStage,
   TimeBucket,
-  ViewingsByStatus,
 };
 export {
   ANALYTICS_RANGES,
   aggregateBySource,
   aggregateFunnel,
-  aggregateViewingsByStatus,
   bucketByDay,
   parseAnalyticsRange,
 };
@@ -38,15 +34,12 @@ export type AnalyticsSnapshot = {
     properties_published_delta: number;
     enquiries_total: number;
     enquiries_delta: number;
-    viewings_total: number;
-    viewings_delta: number;
     avg_property_price_aed: number | null;
   };
   properties_published_over_time: TimeBucket[];
   enquiries_over_time: TimeBucket[];
   enquiries_by_source: EnquiriesBySource[];
   enquiry_funnel: FunnelStage[];
-  viewings_by_status: ViewingsByStatus[];
 };
 
 const EMPTY: AnalyticsSnapshot = {
@@ -56,15 +49,12 @@ const EMPTY: AnalyticsSnapshot = {
     properties_published_delta: 0,
     enquiries_total: 0,
     enquiries_delta: 0,
-    viewings_total: 0,
-    viewings_delta: 0,
     avg_property_price_aed: null,
   },
   properties_published_over_time: [],
   enquiries_over_time: [],
   enquiries_by_source: [],
   enquiry_funnel: FUNNEL_ORDER.map((s) => ({ ...s })),
-  viewings_by_status: [],
 };
 
 function pct(delta: number, prior: number): number {
@@ -86,8 +76,6 @@ export async function getAnalyticsSnapshot(
     propertiesPrior,
     enquiriesCurrent,
     enquiriesPrior,
-    viewingsCurrent,
-    viewingsPrior,
     enquiriesAll,
     priceAvg,
   ] = await Promise.all([
@@ -113,15 +101,6 @@ export async function getAnalyticsSnapshot(
       .select("id", { count: "exact", head: true })
       .gte("created_at", sincePrior.toISOString())
       .lt("created_at", since.toISOString()),
-    supabase
-      .from("viewings")
-      .select("scheduled_for, status")
-      .gte("created_at", since.toISOString()),
-    supabase
-      .from("viewings")
-      .select("id", { count: "exact", head: true })
-      .gte("created_at", sincePrior.toISOString())
-      .lt("created_at", since.toISOString()),
     supabase.from("enquiries").select("status"),
     supabase
       .from("properties")
@@ -141,18 +120,10 @@ export async function getAnalyticsSnapshot(
       source: string | null;
       status: string | null;
     }> | null) ?? [];
-  const viewingsRows =
-    (viewingsCurrent.data as unknown as Array<{
-      scheduled_for: string | null;
-      status: string | null;
-    }> | null) ?? [];
-
   const propertyCurrentTotal = propertyRows.length;
   const propertyPriorTotal = propertiesPrior.count ?? 0;
   const enquiriesCurrentTotal = enquiriesRows.length;
   const enquiriesPriorTotal = enquiriesPrior.count ?? 0;
-  const viewingsCurrentTotal = viewingsRows.length;
-  const viewingsPriorTotal = viewingsPrior.count ?? 0;
 
   const priceRows =
     (priceAvg.data as unknown as Array<{
@@ -179,11 +150,6 @@ export async function getAnalyticsSnapshot(
         enquiriesCurrentTotal - enquiriesPriorTotal,
         enquiriesPriorTotal,
       ),
-      viewings_total: viewingsCurrentTotal,
-      viewings_delta: pct(
-        viewingsCurrentTotal - viewingsPriorTotal,
-        viewingsPriorTotal,
-      ),
       avg_property_price_aed: avgPrice,
     },
     properties_published_over_time: bucketByDay(
@@ -203,9 +169,6 @@ export async function getAnalyticsSnapshot(
           status: string | null;
         }> | null) ?? []
       ).map((r) => r.status),
-    ),
-    viewings_by_status: aggregateViewingsByStatus(
-      viewingsRows.map((r) => r.status),
     ),
   };
 }

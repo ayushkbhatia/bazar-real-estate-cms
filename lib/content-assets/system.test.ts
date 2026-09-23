@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { describe, it, expect } from "vitest";
 import {
@@ -90,13 +90,27 @@ describe("the migrations agree with the registry", () => {
   });
 
   it("widens the closed key check to exactly the registry's keys", () => {
-    const block = m0127.slice(
-      m0127.indexOf("add constraint content_assets_system_key_known"),
+    // Read whichever migration defines the constraint LAST, not 0127.
+    // Dropping a system email rewrites the allow-list in a later migration
+    // (0132 removed viewing_confirmation), and pinning the original would
+    // make this assert against superseded history.
+    const latest = readdirSync(MIGRATIONS)
+      .filter((f) => f.endsWith(".sql"))
+      .sort()
+      .reverse()
+      .find((f) =>
+        read(f).includes("add constraint content_assets_system_key_known"),
+      )!;
+    const source = read(latest);
+    const block = source.slice(
+      source.indexOf("add constraint content_assets_system_key_known"),
     );
+    // Cut at the statement terminator rather than a literal "));" — that
+    // depended on one migration's bracket layout, and a differently
+    // formatted rewrite ran past the end and picked up words from the
+    // trailing comments.
     const listed = [
-      ...block
-        .slice(0, block.indexOf("));"))
-        .matchAll(/'([a-z0-9_]+)'/g),
+      ...block.slice(0, block.indexOf(";")).matchAll(/'([a-z0-9_]+)'/g),
     ].map((m) => m[1]);
     expect(listed.sort()).toEqual([...SYSTEM_ASSET_KEYS].sort());
   });

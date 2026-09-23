@@ -809,6 +809,13 @@ shows the trail.)
   they are string arguments, not JSX text. Needs a locale-aware message
   factory, or the messages moving into the i18n store.
 
+- [admin] `YourDayCard` is not mounted anywhere.
+  `app/[locale]/(admin)/admin/_components/your-day-card.tsx` is imported by
+  nothing — found while removing viewing bookings, which was one of the two
+  task kinds it rendered. It now offers follow-ups and escalations, neither of
+  which anything builds. Either wire it into the dashboard or delete it; it is
+  dead either way today.
+
 - [cron] Sentry has no DSN in production, so a cron failure is silent.
   `CRON_SECRET` is now set (23 Sept) and the jobs run, but `SENTRY_DSN` /
   `NEXT_PUBLIC_SENTRY_DSN` are unset in Vercel — every `Sentry.captureException`

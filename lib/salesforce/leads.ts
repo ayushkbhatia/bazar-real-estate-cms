@@ -84,8 +84,8 @@ function clamp(value: string | null | undefined, max: number): string | undefine
  * value, and where the truth is genuinely not one of the options, a stated
  * default is used rather than a guess dressed up as a mapping.
  */
-const INQUIRY_TYPES = ["Buy", "Sell", "Rent"] as const;
-const LEAD_SOURCES = [
+export const INQUIRY_TYPES = ["Buy", "Sell", "Rent"] as const;
+export const LEAD_SOURCES = [
   "Facebook",
   "Advertisement",
   "Webinar",

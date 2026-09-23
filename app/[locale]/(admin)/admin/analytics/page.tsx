@@ -13,7 +13,6 @@ import {
   EnquiriesOverTimeChart,
   FunnelChart,
   PublishedOverTimeChart,
-  ViewingsByStatusChart,
   // Lazy boundary, not `./_charts` directly — see _charts-lazy.tsx. Keeps the
   // recharts bundle off the initial load; the KPI row above still renders
   // server-side.
@@ -62,11 +61,6 @@ export default async function AnalyticsPage({ searchParams }: PageProps) {
             delta={snapshot.kpis.enquiries_delta}
           />
           <Kpi
-            label="Viewings"
-            value={snapshot.kpis.viewings_total.toString()}
-            delta={snapshot.kpis.viewings_delta}
-          />
-          <Kpi
             label="Avg property price"
             value={`AED ${formatAed(snapshot.kpis.avg_property_price_aed)}`}
           />
@@ -83,14 +77,9 @@ export default async function AnalyticsPage({ searchParams }: PageProps) {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-3">
-          <Card title="Enquiries over time">
-            <EnquiriesOverTimeChart data={snapshot.enquiries_over_time} />
-          </Card>
-          <Card title="Viewings by status">
-            <ViewingsByStatusChart data={snapshot.viewings_by_status} />
-          </Card>
-        </div>
+        <Card title="Enquiries over time">
+          <EnquiriesOverTimeChart data={snapshot.enquiries_over_time} />
+        </Card>
 
         <Card title="Lead funnel (all-time)">
           <FunnelChart data={snapshot.enquiry_funnel} />
@@ -104,7 +93,7 @@ export default async function AnalyticsPage({ searchParams }: PageProps) {
         <Eyebrow>About the numbers</Eyebrow>
         <p className="text-[12.5px] text-bz-muted max-w-[80ch] -mt-3">
           Aggregates are computed at request time from the live Postgres
-          tables (properties, enquiries, viewings). The range picker
+          tables (properties and enquiries). The range picker
           recalculates compared against the previous period for the KPI
           deltas. PostHog session metrics will fold in here in Phase 7.
         </p>

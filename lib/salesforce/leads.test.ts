@@ -16,6 +16,8 @@ const {
   leadObjectName,
   leadExternalIdField,
   missingRequiredFields,
+  INQUIRY_TYPES,
+  LEAD_SOURCES,
 } = await import("./leads");
 type LeadSourceRow = Parameters<typeof buildLeadPayload>[0];
 
@@ -98,11 +100,9 @@ describe("buildLeadPayload", () => {
   });
 
   it("only ever emits values the picklists accept", () => {
-    const types = new Set(["Buy", "Sell", "Rent"]);
-    const sources = new Set([
-      "Facebook", "Advertisement", "Webinar", "Website", "Newspaper",
-      "Walk In", "Property Finder", "Bayut", "Others",
-    ]);
+    // The module's own lists, so this cannot drift from what it emits.
+    const types = new Set<string>(INQUIRY_TYPES);
+    const sources = new Set<string>(LEAD_SOURCES);
     const SOURCES = [
       "property_page", "contact_page", "concierge", "valuation", "mortgage",
       "blog_cta", "agent_page", "share_with_advisor", "whatsapp_inbound",

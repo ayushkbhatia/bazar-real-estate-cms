@@ -852,12 +852,6 @@ export const DOMAINS: Domain[] = [
       "No public conversation route exists. Advisor replies reach one visitor as a 1:1 email, authored per message.",
   },
   {
-    table: "viewings",
-    columns: [],
-    excluded:
-      "Internal scheduling. The reminder cron notifies the assigned agent, not the visitor.",
-  },
-  {
     table: "valuation_requests",
     columns: [],
     excluded:

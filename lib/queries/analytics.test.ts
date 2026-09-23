@@ -3,7 +3,6 @@ import {
   ANALYTICS_RANGES,
   aggregateBySource,
   aggregateFunnel,
-  aggregateViewingsByStatus,
   bucketByDay,
   parseAnalyticsRange,
 } from "./analytics-utils";
@@ -119,13 +118,5 @@ describe("aggregateFunnel", () => {
     expect(r.find((s) => s.status === "viewing_scheduled")?.count).toBe(0);
     expect(r.find((s) => s.status === "offer")?.count).toBe(1);
     expect(r.find((s) => s.status === "closed_won")?.count).toBe(3);
-  });
-});
-
-describe("aggregateViewingsByStatus", () => {
-  it("collapses nulls into 'unknown'", () => {
-    const r = aggregateViewingsByStatus([null, "scheduled", "scheduled"]);
-    expect(r.find((s) => s.status === "scheduled")?.count).toBe(2);
-    expect(r.find((s) => s.status === "unknown")?.count).toBe(1);
   });
 });

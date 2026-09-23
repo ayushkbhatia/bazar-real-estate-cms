@@ -23,7 +23,6 @@ import {
   valuationReportPanel,
   valuationReportRequestedTemplate,
   valuationReportTemplate,
-  viewingConfirmationTemplate,
 } from "@/lib/email-templates";
 import {
   newsletterConfirmTemplate,
@@ -137,9 +136,6 @@ type ValuationAckOpts = {
 };
 
 type ValuationReportOpts = Parameters<typeof valuationReportTemplate>[0];
-type ViewingOpts = Parameters<typeof viewingConfirmationTemplate>[0] & {
-  advisorName: string | null;
-};
 type NurtureDay7Opts = Parameters<typeof valuationNurtureDay7Template>[0];
 type NurtureDay30Opts = Parameters<typeof valuationNurtureDay30Template>[0];
 type InvitationOpts = Parameters<typeof staffInvitationTemplate>[0];
@@ -279,33 +275,6 @@ const BINDINGS = {
     }),
     builtin: (o, brand) => valuationNurtureDay30Template(o, brand),
     sample: { name: "Amira Haddad", valuationId: "sample" },
-  }),
-  viewing_confirmation: bind<ViewingOpts>({
-    context: (o, locale = "en") => ({
-      values: {
-        lead_first_name: firstName(o.name),
-        lead_name: o.name,
-        property_reference: o.propertyReference,
-        property_title: o.propertyTitle,
-        viewing_time: o.localTime,
-        viewing_location: o.location,
-        // Prose, like the property line: the unit has a language even though
-        // the number does not.
-        viewing_duration: `${o.durationMinutes} ${locale === "ar" ? "دقيقة" : "minutes"}`,
-        advisor_name: o.advisorName,
-        site_url: site(),
-      },
-    }),
-    builtin: (o, brand) => viewingConfirmationTemplate(o, brand),
-    sample: {
-      name: "Amira Haddad",
-      localTime: "Thursday 18 September, 4:30 pm",
-      durationMinutes: 45,
-      location: "Marina Heights lobby, Al Reem Island",
-      propertyReference: "BAZ-AD-04891",
-      propertyTitle: "3-bed on Al Reem Island",
-      advisorName: "Khalid Al Zaabi",
-    },
   }),
   newsletter_confirmation: bind<{ email: string; confirmUrl: string }>({
     context: (o) => ({
@@ -574,13 +543,6 @@ export function valuationNurtureDay30Email(
   locale: EmailLocale = "en",
 ): Promise<RenderedEmail> {
   return send("valuation_nurture_day30", opts, locale);
-}
-
-export function viewingConfirmationEmail(
-  opts: ViewingOpts,
-  locale: EmailLocale = "en",
-): Promise<RenderedEmail> {
-  return send("viewing_confirmation", opts, locale);
 }
 
 export function newsletterConfirmationEmail(

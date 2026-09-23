@@ -98,17 +98,6 @@ export const SYSTEM_EMAIL_DEFAULTS_AR: Record<SystemAssetKey, SystemEmailDefault
       "<p>— بازار</p>",
     ].join(""),
   },
-  viewing_confirmation: {
-    subject: "موعد معاينة مبدئي · {{property_reference}}",
-    body: [
-      "<p>مرحباً {{lead_first_name}}،</p>",
-      "<p>حجزنا لك موعد معاينة مبدئياً في <strong>{{viewing_time}}</strong> (توقيت أبوظبي).</p>",
-      "<ul><li><p>العقار: {{property_reference}} · {{property_title}}</p></li><li><p>مكان اللقاء: {{viewing_location}}</p></li><li><p>المدة: {{viewing_duration}}</p></li></ul>",
-      "<p>دعوة التقويم مرفقة — اقبلها لإضافة الموعد إلى تقويمك.</p>",
-      "<p>إن لم يناسبك هذا الوقت، يكفي الرد وسنجد موعداً آخر.</p>",
-      "<p>— بازار العقارية</p>",
-    ].join(""),
-  },
   newsletter_confirmation: {
     subject: "أكّد اشتراكك في نشرة بازار",
     body: [

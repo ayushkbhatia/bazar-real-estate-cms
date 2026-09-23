@@ -8,15 +8,11 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
-  BarChart,
-  Bar,
-  Cell,
 } from "recharts";
 import type {
   EnquiriesBySource,
   FunnelStage,
   TimeBucket,
-  ViewingsByStatus,
 } from "@/lib/queries/analytics-utils";
 
 const AXIS_FONT_SIZE = 11;
@@ -202,59 +198,6 @@ export function FunnelChart({ data }: { data: FunnelStage[] }) {
         );
       })}
     </div>
-  );
-}
-
-const VIEWING_STATUS_COLOURS: Record<string, string> = {
-  scheduled: "var(--bz-ink)",
-  confirmed: "var(--bz-accent)",
-  completed: "oklch(0.6 0.12 145)",
-  cancelled: "oklch(0.6 0.14 28)",
-  no_show: "var(--bz-muted-2)",
-};
-
-export function ViewingsByStatusChart({
-  data,
-}: {
-  data: ViewingsByStatus[];
-}) {
-  if (data.length === 0) {
-    return <EmptyChart label="No viewings in this range." />;
-  }
-  return (
-    <ResponsiveContainer width="100%" height={220}>
-      <BarChart
-        data={data}
-        margin={{ top: 10, right: 10, left: -16, bottom: 0 }}
-      >
-        <CartesianGrid stroke="var(--bz-border)" strokeDasharray="2 4" />
-        <XAxis
-          dataKey="status"
-          tickLine={false}
-          axisLine={false}
-          tick={{ fontSize: AXIS_FONT_SIZE, fill: "var(--bz-muted)" }}
-          tickFormatter={(s) => s.replace(/_/g, " ")}
-        />
-        <YAxis
-          allowDecimals={false}
-          tickLine={false}
-          axisLine={false}
-          tick={{ fontSize: AXIS_FONT_SIZE, fill: "var(--bz-muted)" }}
-          width={28}
-        />
-        <Tooltip contentStyle={TOOLTIP_STYLE} />
-        <Bar dataKey="count" radius={[2, 2, 0, 0]}>
-          {data.map((row) => (
-            <Cell
-              key={row.status}
-              fill={
-                VIEWING_STATUS_COLOURS[row.status] ?? "var(--bz-ink-2)"
-              }
-            />
-          ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
   );
 }
 

@@ -6,7 +6,6 @@ import { isSupabaseConfigured } from "@/lib/env";
 
 export type NotificationKind =
   | "new_enquiry"
-  | "viewing_reminder"
   | "lead_reassigned"
   | "system";
 
@@ -24,7 +23,6 @@ export type NotificationRow = {
 
 export const NOTIFICATION_KIND_LABEL: Record<NotificationKind, string> = {
   new_enquiry: "New enquiry",
-  viewing_reminder: "Viewing reminder",
   lead_reassigned: "Lead reassigned",
   system: "System",
 };
@@ -137,7 +135,7 @@ export async function listRecentNotifications(
 }
 
 // ───────────────────────────────────────────────────────────────
-// Convenience emitters used by enquiry intake + the viewing cron.
+// Convenience emitters used by enquiry intake.
 // ───────────────────────────────────────────────────────────────
 
 export type NotifyEnquiryArgs = {
@@ -159,44 +157,6 @@ export async function notifyAssignedAgentOfEnquiry(
     payload: {
       enquiry_id: args.enquiry_id,
       source: args.source ?? null,
-    },
-  });
-}
-
-export type NotifyViewingArgs = {
-  agent_user_id: string;
-  viewing_id: string;
-  enquiry_id: string | null;
-  scheduled_for: string;
-  property_title?: string | null;
-};
-
-export async function notifyAgentOfUpcomingViewing(
-  args: NotifyViewingArgs,
-): Promise<void> {
-  const when = new Date(args.scheduled_for);
-  const human = Number.isNaN(when.getTime())
-    ? "soon"
-    : when.toLocaleString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-        timeZone: "Asia/Dubai",
-      });
-  await emitNotification({
-    user_id: args.agent_user_id,
-    kind: "viewing_reminder",
-    title: `Viewing in 2 hours · ${human}`,
-    body: args.property_title
-      ? `${args.property_title}`
-      : "A viewing is scheduled to start soon.",
-    link: args.enquiry_id
-      ? `/admin/enquiries/${args.enquiry_id}`
-      : "/admin/enquiries",
-    payload: {
-      viewing_id: args.viewing_id,
-      scheduled_for: args.scheduled_for,
     },
   });
 }

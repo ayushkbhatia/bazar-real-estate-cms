@@ -16,11 +16,6 @@ export type FunnelStage = {
   count: number;
 };
 
-export type ViewingsByStatus = {
-  status: string;
-  count: number;
-};
-
 export const ANALYTICS_RANGES = [7, 30, 90] as const;
 export type AnalyticsRange = (typeof ANALYTICS_RANGES)[number];
 
@@ -102,15 +97,3 @@ export function aggregateFunnel(
   }));
 }
 
-export function aggregateViewingsByStatus(
-  statuses: Array<string | null | undefined>,
-): ViewingsByStatus[] {
-  const map = new Map<string, number>();
-  for (const s of statuses) {
-    const key = s ?? "unknown";
-    map.set(key, (map.get(key) ?? 0) + 1);
-  }
-  return Array.from(map.entries())
-    .map(([status, count]) => ({ status, count }))
-    .sort((a, b) => b.count - a.count);
-}

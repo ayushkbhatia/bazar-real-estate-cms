@@ -14,7 +14,7 @@ export type SendEmailInput = {
   from?: string;
   /** Override the reply-to (defaults to RESEND_REPLY_TO or hello@bazar.ae). */
   replyTo?: string;
-  /** Files sent with the message — the viewing confirmation's .ics invite. */
+  /** Files sent with the message, e.g. a generated PDF. */
   attachments?: { filename: string; content: string; contentType?: string }[];
 };
 

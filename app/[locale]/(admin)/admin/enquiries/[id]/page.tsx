@@ -29,7 +29,6 @@ import { ArchiveEnquiryButton } from "../_archive-button";
 import { listPublishedAssets } from "@/lib/queries/content-assets";
 import { getAdvisorByUserId } from "@/lib/queries/property-advisor";
 import type { TokenContext } from "@/lib/content-assets/tokens";
-import { ScheduleViewingButton } from "./_schedule";
 
 export const dynamic = "force-dynamic";
 
@@ -237,7 +236,6 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
               <div className="flex items-center gap-2 flex-wrap">
                 {isArchived ? null : (
                   <>
-                    <ScheduleViewingButton enquiryId={enquiry.id} />
                     {enquiry.assigned_agent_id == null ? (
                       <AssignToMeButton enquiryId={enquiry.id} />
                     ) : (

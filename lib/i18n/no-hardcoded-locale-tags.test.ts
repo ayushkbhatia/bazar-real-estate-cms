@@ -172,11 +172,11 @@ function scannedFiles(): string[] {
  *
  * The scope above says the CMS is English by decision (ADR-0007 §6), and for
  * what an admin screen *displays* that is still true. It stopped being true
- * for what an admin action *sends*: a viewing confirmation is composed in
- * `app/[locale]/(admin)/…/_actions-viewing.ts` and delivered to a lead in the
- * language they wrote in. Its `en-GB` pin printed "Thursday 18 September,
- * 4:30 pm" inside an otherwise Arabic email, and no guard could see it because
- * of the folder it sits in.
+ * for what an admin action *sends*: an advisor's reply is composed under
+ * `app/[locale]/(admin)/…` and delivered to a lead in the language they wrote
+ * in. An `en-GB` pin printed "Thursday 18 September, 4:30 pm" inside an
+ * otherwise Arabic email, and no guard could see it because of the folder it
+ * sits in.
  *
  * So the predicate is what the file DOES, not where it is: importing the
  * system-email registry means the strings you format may leave in Arabic.
@@ -259,8 +259,12 @@ describe("G-19 · no hardcoded locale tags in date formatting", () => {
   it("actually scans the actions that email a lead", () => {
     const composers = leadEmailComposers();
     expect(composers.length).toBeGreaterThan(5);
+    // Anchored on a file that exists. The original anchor was the viewing
+    // confirmation action, deleted with the feature; the point of the
+    // assertion is that the pathspec resolves to real admin actions that
+    // send to a lead, not that one particular file is among them.
     expect(composers).toContain(
-      "app/[locale]/(admin)/admin/enquiries/[id]/_actions-viewing.ts",
+      "app/[locale]/(admin)/admin/enquiries/_actions.ts",
     );
   });
 

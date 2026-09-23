@@ -70,7 +70,7 @@ const RETENTION_RULES: { entity: string; period: string; why: string }[] = [
     why: "AML reconstruction; IP / UA scrubbed on user request",
   },
   {
-    entity: "Enquiries + viewings + messages",
+    entity: "Enquiries + messages",
     period: "Indefinite (PII scrubbed on DSR deletion)",
     why: "AML reconstruction; inline PII redacted on user request",
   },

@@ -46,8 +46,3 @@ export const FunnelChart = dynamic(
   () => import("./_charts").then((m) => m.FunnelChart),
   { ssr: false, loading: ChartSkeleton },
 );
-
-export const ViewingsByStatusChart = dynamic(
-  () => import("./_charts").then((m) => m.ViewingsByStatusChart),
-  { ssr: false, loading: ChartSkeleton },
-);

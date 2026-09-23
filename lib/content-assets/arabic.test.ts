@@ -269,27 +269,3 @@ describe("a panel's data survives an RTL table", () => {
     expect(en.html).toBe(stripIsolates(en.html));
   });
 });
-
-describe("the viewing confirmation", () => {
-  it("counts the minutes in Arabic", async () => {
-    const draft = {
-      subject: "س",
-      body: "<p>{{viewing_duration}}</p>",
-      subjectAr: "س",
-      bodyAr: "<p>{{viewing_duration}}</p>",
-      format: "html" as const,
-    };
-    const ar = await previewSystemEmail("viewing_confirmation", {
-      brand: DEFAULT_EMAIL_BRAND,
-      locale: "ar",
-      draft,
-    });
-    expect(stripIsolates(ar.draft!.html)).toContain("45 دقيقة");
-    const en = await previewSystemEmail("viewing_confirmation", {
-      brand: DEFAULT_EMAIL_BRAND,
-      locale: "en",
-      draft,
-    });
-    expect(en.draft!.html).toContain("45 minutes");
-  });
-});
