@@ -1,12 +1,13 @@
 import { describe, it, expect } from "vitest";
 import {
   ANALYTICS_RANGES,
+  FUNNEL_ORDER,
   aggregateBySource,
   aggregateFunnel,
-  aggregateViewingsByStatus,
   bucketByDay,
   parseAnalyticsRange,
 } from "./analytics-utils";
+import { Constants } from "@/db/types";
 
 describe("parseAnalyticsRange", () => {
   it("returns the input when it's an allowed value", () => {
@@ -92,22 +93,32 @@ describe("aggregateBySource", () => {
 });
 
 describe("aggregateFunnel", () => {
-  it("returns the five canonical stages in order", () => {
+  it("returns the canonical stages in order", () => {
     const r = aggregateFunnel([]);
     expect(r.map((s) => s.status)).toEqual([
       "new",
-      "in_progress",
-      "viewing_scheduled",
+      "qualified",
       "offer",
       "closed_won",
     ]);
+  });
+
+  it("every stage is a real enquiry_status", () => {
+    // The bug this replaces: the Qualifying stage was keyed on "in_progress",
+    // which is not a value of the enum, so the bar counted nothing and read
+    // zero for every lead the site had ever taken. Nothing caught it because
+    // the spec asserted the same wrong string the source did.
+    const valid = new Set<string>(Constants.public.Enums.enquiry_status);
+    for (const stage of FUNNEL_ORDER) {
+      expect(valid.has(stage.status), stage.status).toBe(true);
+    }
   });
 
   it("counts each stage, ignoring unknown statuses", () => {
     const r = aggregateFunnel([
       "new",
       "new",
-      "in_progress",
+      "qualified",
       "offer",
       "junk",
       "closed_won",
@@ -115,17 +126,8 @@ describe("aggregateFunnel", () => {
       "closed_won",
     ]);
     expect(r.find((s) => s.status === "new")?.count).toBe(2);
-    expect(r.find((s) => s.status === "in_progress")?.count).toBe(1);
-    expect(r.find((s) => s.status === "viewing_scheduled")?.count).toBe(0);
+    expect(r.find((s) => s.status === "qualified")?.count).toBe(1);
     expect(r.find((s) => s.status === "offer")?.count).toBe(1);
     expect(r.find((s) => s.status === "closed_won")?.count).toBe(3);
-  });
-});
-
-describe("aggregateViewingsByStatus", () => {
-  it("collapses nulls into 'unknown'", () => {
-    const r = aggregateViewingsByStatus([null, "scheduled", "scheduled"]);
-    expect(r.find((s) => s.status === "scheduled")?.count).toBe(2);
-    expect(r.find((s) => s.status === "unknown")?.count).toBe(1);
   });
 });

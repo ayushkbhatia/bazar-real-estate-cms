@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Calendar, AlertCircle, MapPin } from "lucide-react";
+import { Calendar, AlertCircle } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 
 type Task = {
-  kind: "viewing" | "follow_up" | "escalation";
+  kind: "follow_up" | "escalation";
   label: string;
   detail: string;
   href: string;
@@ -12,12 +12,10 @@ type Task = {
 
 /**
  * Sprint 7a (backfilled): "Your day" card on the admin dashboard.
- * Combines today's viewings and escalated leads into a
- * single scannable agenda.
+ * Escalated leads and follow-ups as a single scannable agenda.
  */
 export function YourDayCard({ tasks }: { tasks: Task[] }) {
   const KIND_ICONS = {
-    viewing: MapPin,
     follow_up: Calendar,
     escalation: AlertCircle,
   } as const;

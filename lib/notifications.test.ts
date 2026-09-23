@@ -8,7 +8,6 @@ describe("NOTIFICATION_KIND_LABEL", () => {
       "lead_reassigned",
       "new_enquiry",
       "system",
-      "viewing_reminder",
     ]);
     for (const k of kinds) {
       const label =

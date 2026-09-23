@@ -77,6 +77,9 @@ export type TokenName =
   | "valuation_range_panel"
   | "valuation_report_panel"
   | "listing_references"
+  | "health_errors"
+  | "health_jobs"
+  | "health_url"
   | "form_answers";
 
 /**
@@ -516,6 +519,36 @@ export const TOKENS: readonly TokenDef[] = [
     fallback: "",
     scope: "system",
     kind: "block",
+  },
+  {
+    name: "health_errors",
+    label: "List of open errors",
+    sample:
+      "· cron/salesforce-lead-sync ×3 — REQUIRED_FIELD_MISSING: Email__c\n· forms/record — connection reset",
+    sampleAr:
+      "· cron/salesforce-lead-sync ×3 — REQUIRED_FIELD_MISSING: Email__c\n· forms/record — connection reset",
+    fallback: "",
+    scope: "system",
+    kind: "block",
+  },
+  {
+    name: "health_jobs",
+    label: "List of late or failing jobs",
+    sample: "· permit-expiry — last run 2d ago\n· meilisearch-sync — failing, 4 in a row",
+    sampleAr: "· permit-expiry — last run 2d ago\n· meilisearch-sync — failing, 4 in a row",
+    fallback: "",
+    scope: "system",
+    kind: "block",
+  },
+  {
+    name: "health_url",
+    label: "Link to the health page",
+    sample: "https://www.bazarrealestate.ae/admin/settings/health",
+    // Always resolvable — the site URL is known at send time — so this gets a
+    // real fallback rather than the blank one a block token may use.
+    fallback: "/admin/settings/health",
+    scope: "system",
+    kind: "text",
   },
   {
     name: "form_answers",

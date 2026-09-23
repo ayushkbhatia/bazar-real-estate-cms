@@ -6,7 +6,6 @@ describe("KANBAN_COLUMNS", () => {
     expect(KANBAN_COLUMNS.map((c) => c.status)).toEqual([
       "new",
       "qualified",
-      "viewing_scheduled",
       "offer",
       "closed_won",
       "closed_lost",

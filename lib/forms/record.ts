@@ -1,5 +1,5 @@
 import "server-only";
-import * as Sentry from "@sentry/nextjs";
+import { reportError } from "@/lib/observability";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notifyFormRecipients } from "./notify";
 
@@ -47,17 +47,17 @@ export async function captureFormSubmission(entry: {
       // Nothing to notify either — the recipient list lives in the same
       // migration — so this returns rather than falling through.
       if (error.code === "42P01" || error.code === "PGRST205") return;
-      Sentry.captureException(error, {
-        tags: { component: "forms/record" },
-        contexts: { form: { key: entry.formKey } },
+      await reportError(error, {
+        source: "forms/record",
+        context: { form: { key: entry.formKey } },
       });
     }
 
     await notifyFormRecipients(admin, entry);
   } catch (err) {
-    Sentry.captureException(err, {
-      tags: { component: "forms/record" },
-      contexts: { form: { key: entry.formKey } },
+    await reportError(err, {
+      source: "forms/record",
+      context: { form: { key: entry.formKey } },
     });
   }
 }

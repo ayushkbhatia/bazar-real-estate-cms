@@ -13,7 +13,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import * as Sentry from "@sentry/nextjs";
+import { recordHeartbeat, reportError } from "@/lib/observability";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { enquiryEscalationEmail } from "@/lib/content-assets/system-emails";
@@ -29,6 +29,11 @@ function adminClient() {
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
 }
+
+/** At the 5-minute cadence this drains 120 leads an hour — far more than a
+ *  healthy queue ever holds, and slow enough that a backlog cannot melt the
+ *  mail provider. */
+const MAX_PER_RUN = 10;
 
 export async function GET(req: NextRequest) {
   if (!env.CRON_SECRET) {
@@ -61,7 +66,18 @@ export async function GET(req: NextRequest) {
       // An archived lead was deliberately taken out of the working set;
       // escalating it to a manager an hour later undoes that decision.
       .is("archived_at", null)
-      .lte("created_at", sixtyMinAgo);
+      .lte("created_at", sixtyMinAgo)
+      // Oldest first, and bounded.
+      //
+      // This select had no limit, and it emails every admin for every row it
+      // finds. In steady state that is a handful of leads and nobody notices.
+      // On the first run after the job is switched on it is the entire
+      // unassigned backlog at once — 97 enquiries against 3 admins is 291
+      // sequential sends inside one invocation, which is past both Resend's
+      // rate limit and the function timeout, and would leave the reassignment
+      // half-applied. A cron that sends mail per row needs a ceiling.
+      .order("created_at", { ascending: true })
+      .limit(MAX_PER_RUN);
     if (error) throw error;
 
     if (!stale || stale.length === 0) {
@@ -80,9 +96,21 @@ export async function GET(req: NextRequest) {
 
     const adminRows = (managers ?? []).filter((m) => m.role === "admin");
     const fallback =
-      adminRows[0] ??
-      (managers ?? []).find((m) => m.role === "agent") ??
-      null;
+      adminRows[0] ?? (managers ?? []).find((m) => m.role === "agent") ?? null;
+
+    // Resolve the admins' addresses once, not once per enquiry.
+    //
+    // `auth.admin.getUserById` sat inside the per-row loop, so a run over the
+    // backlog would have made 3 identical lookups per lead — 291 round trips
+    // to fetch 3 addresses. The set cannot change mid-run.
+    const recipients: { email: string; displayName: string }[] = [];
+    for (const adminRow of adminRows) {
+      const { data: userRow } = await supabase.auth.admin.getUserById(
+        adminRow.user_id,
+      );
+      const email = userRow?.user?.email;
+      if (email) recipients.push({ email, displayName: adminRow.display_name });
+    }
 
     let escalated = 0;
     for (const row of stale) {
@@ -103,8 +131,8 @@ export async function GET(req: NextRequest) {
           .update({ assigned_agent_id: fallback.user_id })
           .eq("id", row.id);
         if (reassignError) {
-          Sentry.captureException(reassignError, {
-            tags: { cron: "enquiry-escalation", enquiry: row.id },
+          await reportError(reassignError, {
+            source: "cron/enquiry-escalation",
           });
           console.error(
             "[cron/enquiry-escalation] reassign failed",
@@ -121,9 +149,7 @@ export async function GET(req: NextRequest) {
         .update({ escalated_at: new Date().toISOString() })
         .eq("id", row.id);
       if (flagError) {
-        Sentry.captureException(flagError, {
-          tags: { cron: "enquiry-escalation", enquiry: row.id },
-        });
+        await reportError(flagError, { source: "cron/enquiry-escalation" });
         console.error(
           "[cron/enquiry-escalation] escalated_at flag failed",
           row.id,
@@ -133,31 +159,20 @@ export async function GET(req: NextRequest) {
       }
 
       // 3) email each admin
-      const recipients = adminRows
-        .map((r) => r.user_id)
-        .filter(Boolean) as string[];
-      if (recipients.length > 0) {
-        // resolve emails via auth admin API
-        for (const adminRow of adminRows) {
-          const { data: userRow } = await supabase.auth.admin.getUserById(
-            adminRow.user_id,
-          );
-          const email = userRow?.user?.email;
-          if (!email) continue;
-          const tpl = await enquiryEscalationEmail({
-            managerName: adminRow.display_name,
-            leadName: row.name ?? "—",
-            propertyReference: prop?.reference ?? null,
-            enquiryId: row.id,
-            minutesElapsed: minutes,
-          });
-          await sendEmail({
-            to: email,
-            subject: tpl.subject,
-            text: tpl.text,
-            html: tpl.html,
-          });
-        }
+      for (const recipient of recipients) {
+        const tpl = await enquiryEscalationEmail({
+          managerName: recipient.displayName,
+          leadName: row.name ?? "—",
+          propertyReference: prop?.reference ?? null,
+          enquiryId: row.id,
+          minutesElapsed: minutes,
+        });
+        await sendEmail({
+          to: recipient.email,
+          subject: tpl.subject,
+          text: tpl.text,
+          html: tpl.html,
+        });
       }
 
       // 4) audit
@@ -171,6 +186,10 @@ export async function GET(req: NextRequest) {
       escalated += 1;
     }
 
+    await recordHeartbeat("enquiry-escalation", {
+      ok: true,
+      detail: `escalated ${escalated} of ${stale.length}`,
+    });
     return NextResponse.json({
       ok: true,
       scanned: stale.length,
@@ -179,11 +198,9 @@ export async function GET(req: NextRequest) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    Sentry.captureException(err, { tags: { cron: "enquiry-escalation" } });
+    await reportError(err, { source: "cron/enquiry-escalation" });
+    await recordHeartbeat("enquiry-escalation", { ok: false, detail: message });
     console.error("[cron/enquiry-escalation]", message);
-    return NextResponse.json(
-      { ok: false, reason: message },
-      { status: 500 },
-    );
+    return NextResponse.json({ ok: false, reason: message }, { status: 500 });
   }
 }

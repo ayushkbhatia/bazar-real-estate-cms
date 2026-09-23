@@ -153,7 +153,7 @@ export default async function AuditLogPage({ searchParams }: PageProps) {
         <p className="text-[12.5px] text-bz-muted max-w-[80ch] -mt-3">
           Audit rows are append-only and admin-readable. They cover every
           permission change, publish, role swap, suspend, and a handful of
-          settings + viewing mutations since Phase 1. RLS guarantees nothing
+          settings mutations since Phase 1. RLS guarantees nothing
           but the admin role can read this view.
         </p>
       </div>

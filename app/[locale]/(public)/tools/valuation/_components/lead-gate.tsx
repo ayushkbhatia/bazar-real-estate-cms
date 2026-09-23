@@ -3,7 +3,7 @@
 /**
  * T1-E: Lead-gate modal that sits on the valuation page. The user sees their
  * instant estimate first (the dopamine hit). Clicking "Get the full advisor
- * report" opens this modal, which collects email + optional phone + intent,
+ * report" opens this modal, which collects email + phone + intent,
  * sends an OTP, and on verify enqueues the lead + emails the prepared
  * report follow-up.
  */
@@ -89,7 +89,7 @@ export function ValuationLeadGate({
           action: "issue",
           locale,
           email,
-          phone: phone || undefined,
+          phone,
           name: name || undefined,
           intent,
           valuation_aed: valuationAed ?? undefined,
@@ -125,7 +125,7 @@ export function ValuationLeadGate({
           locale,
           email,
           code,
-          phone: phone || undefined,
+          phone,
           name: name || undefined,
           intent,
           valuation_aed: valuationAed ?? undefined,

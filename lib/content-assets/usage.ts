@@ -141,13 +141,6 @@ const STATIC_SURFACES: Record<SystemAssetKey | PreviewOnlyEmailKey, EmailSurface
   valuation_nurture_day30: [
     { label: "Nurture cron · day 30", adminPath: "/admin/valuations" },
   ],
-  viewing_confirmation: [
-    {
-      label: "Book a viewing",
-      adminPath: "/admin/enquiries",
-      note: "An advisor books it from the enquiry.",
-    },
-  ],
   newsletter_confirmation: [],
   newsletter_welcome: [
     {
@@ -169,6 +162,9 @@ const STATIC_SURFACES: Record<SystemAssetKey | PreviewOnlyEmailKey, EmailSurface
   ],
   permit_expiry_warning: [
     { label: "Permit-expiry cron", adminPath: "/admin/properties" },
+  ],
+  health_digest: [
+    { label: "Health", adminPath: "/admin/settings/health" },
   ],
   bulk_reassign_digest: [
     { label: "Bulk reassign", adminPath: "/admin/properties" },

@@ -10,7 +10,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import * as Sentry from "@sentry/nextjs";
+import { recordHeartbeat, reportError } from "@/lib/observability";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import {
   ensurePropertiesIndex,
@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
         );
         const heroMedia = heroJoin
           ? Array.isArray(heroJoin.media)
-            ? heroJoin.media[0] ?? null
+            ? (heroJoin.media[0] ?? null)
             : heroJoin.media
           : null;
         return {
@@ -131,6 +131,10 @@ export async function GET(req: NextRequest) {
       removeOffset += PAGE_SIZE;
     }
 
+    await recordHeartbeat("meilisearch-sync", {
+      ok: true,
+      detail: `indexed ${totalIndexed}, removed ${totalRemoved}`,
+    });
     return NextResponse.json({
       ok: true,
       indexed: totalIndexed,
@@ -138,12 +142,10 @@ export async function GET(req: NextRequest) {
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    Sentry.captureException(err, { tags: { cron: "meilisearch-sync" } });
+    await reportError(err, { source: "cron/meilisearch-sync" });
+    await recordHeartbeat("meilisearch-sync", { ok: false, detail: message });
     console.error("[cron/meilisearch-sync]", message);
-    return NextResponse.json(
-      { ok: false, reason: message },
-      { status: 500 },
-    );
+    return NextResponse.json({ ok: false, reason: message }, { status: 500 });
   }
 }
 
@@ -163,16 +165,11 @@ type RawRow = {
   bazar_verified?: boolean;
   published_at: string | null;
   areas:
-    | { slug: string; name: string }
-    | { slug: string; name: string }[]
-    | null;
+    { slug: string; name: string } | { slug: string; name: string }[] | null;
   property_media:
     | {
         role: string;
-        media:
-          | { storage_key: string }
-          | { storage_key: string }[]
-          | null;
+        media: { storage_key: string } | { storage_key: string }[] | null;
       }[]
     | null;
 };

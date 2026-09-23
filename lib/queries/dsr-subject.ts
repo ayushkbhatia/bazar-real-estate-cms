@@ -58,7 +58,9 @@ export async function getSubjectByEmail(
     const [enquiries, valuations, mortgages, newsletter] = await Promise.all([
       admin
         .from("enquiries")
-        .select("id, name, email, phone, brief_raw, source, status, created_at")
+        .select(
+          "id, name, email, phone, brief_raw, source, status, created_at, crm_external_id",
+        )
         .ilike("email", email),
       admin.from("valuation_requests").select("*").ilike("owner_email", email),
       admin
@@ -118,6 +120,7 @@ export async function getSubjectByEmail(
         account: { email },
         enquiries: enquiryRows as Record<string, unknown>[],
         messages: messageRows,
+        shared_with_crm: enquiryRows.some((e) => e.crm_external_id != null),
         newsletter_subscription:
           (newsletter.data as Record<string, unknown> | null) ?? null,
       }),

@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/nextjs";
+import { reportError } from "@/lib/observability";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -45,9 +45,9 @@ export async function logAudit(entry: AuditEntry): Promise<void> {
       after: (entry.after ?? null) as Json,
     });
     if (error) {
-      Sentry.captureException(error, {
-        tags: { component: "audit" },
-        contexts: {
+      await reportError(error, {
+        source: "audit",
+        context: {
           audit: {
             action: entry.action,
             target_kind: entry.target_kind,
@@ -57,9 +57,9 @@ export async function logAudit(entry: AuditEntry): Promise<void> {
       });
     }
   } catch (err) {
-    Sentry.captureException(err, {
-      tags: { component: "audit" },
-      contexts: {
+    await reportError(err, {
+      source: "audit",
+      context: {
         audit: {
           action: entry.action,
           target_kind: entry.target_kind,

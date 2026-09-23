@@ -12,7 +12,6 @@ type Temperature = Database["public"]["Enums"]["enquiry_temperature"];
 const STATUS_FLOW: { value: Status; label: string }[] = [
   { value: "new", label: "New" },
   { value: "qualified", label: "Qualified" },
-  { value: "viewing_scheduled", label: "Viewing" },
   { value: "offer", label: "Offer" },
   { value: "closed_won", label: "Won" },
   { value: "closed_lost", label: "Lost" },

@@ -46,15 +46,23 @@ test("anon visitor cannot reach /admin/deals", async ({ page }) => {
   await expect(page).toHaveURL(/\/admin\/login/);
 });
 
+// Keep this list in step with app/api/cron/ and vercel.json — a route here
+// that no longer exists returns 404, which is not the fail-closed behaviour
+// these tests are meant to prove. That is not hypothetical: #219 removed six
+// jobs and left four specs asserting 401 against routes that were 404 for
+// months, and viewing-reminders did the same thing again when viewing
+// bookings were removed. `lib/cron-routes.test.ts` holds vercel.json and the
+// route folder to each other; this list is the third copy and the one with
+// no guard, so it is checked by hand.
 const CRON_ROUTES = [
   "/api/cron/enquiry-auto-reply",
   "/api/cron/enquiry-escalation",
-  "/api/cron/viewing-reminders",
-  // saved-search-alerts and saved-search-alerts-diff were removed in #219
-  // along with four other unused jobs; what they maintained is derived now.
-  // Keep this list in step with app/api/cron/ and vercel.json — a route here
-  // that no longer exists returns 404, which is not the fail-closed behaviour
-  // these tests are meant to prove.
+  "/api/cron/salesforce-lead-sync",
+  "/api/cron/permit-expiry",
+  "/api/cron/meilisearch-sync",
+  "/api/cron/embeddings-backfill",
+  "/api/cron/post-valuation-nurture",
+  "/api/cron/health-digest",
 ];
 
 for (const route of CRON_ROUTES) {

@@ -15,7 +15,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import * as Sentry from "@sentry/nextjs";
+import { recordHeartbeat, reportError } from "@/lib/observability";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import {
@@ -106,7 +106,9 @@ export async function GET(req: NextRequest) {
       const w = dayWindow(30);
       const { data } = await supabase
         .from("valuation_requests")
-        .select("id, owner_name, owner_email, sent_at, nurture_day30_at, locale")
+        .select(
+          "id, owner_name, owner_email, sent_at, nurture_day30_at, locale",
+        )
         .gte("sent_at", w.start)
         .lt("sent_at", w.end)
         .is("nurture_day30_at", null);
@@ -135,14 +137,19 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    await recordHeartbeat("post-valuation-nurture", {
+      ok: true,
+      detail: `day7 ${day7}, day30 ${day30}`,
+    });
     return NextResponse.json({ ok: true, day7, day30 });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    Sentry.captureException(err, { tags: { cron: "post-valuation-nurture" } });
+    await reportError(err, { source: "cron/post-valuation-nurture" });
+    await recordHeartbeat("post-valuation-nurture", {
+      ok: false,
+      detail: message,
+    });
     console.error("[cron/post-valuation-nurture]", message);
-    return NextResponse.json(
-      { ok: false, reason: message },
-      { status: 500 },
-    );
+    return NextResponse.json({ ok: false, reason: message }, { status: 500 });
   }
 }

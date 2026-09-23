@@ -23,6 +23,9 @@ describe("lead locale", () => {
   const lead = {
     name: "زائر",
     email: "visitor@example.com",
+    // Required since intake was aligned with Salesforce; this spec is about
+    // the locale column, so the number is only here to satisfy the schema.
+    phone: "+971501234567",
     message: "أرغب في معرفة المزيد عن هذا العقار.",
     source: "contact_page",
   };

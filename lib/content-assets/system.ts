@@ -33,7 +33,6 @@ export const SYSTEM_ASSET_KEYS = [
   "valuation_report",
   "valuation_nurture_day7",
   "valuation_nurture_day30",
-  "viewing_confirmation",
   "newsletter_confirmation",
   "newsletter_welcome",
   "staff_invitation",
@@ -41,6 +40,7 @@ export const SYSTEM_ASSET_KEYS = [
   "enquiry_escalation",
   "permit_expiry_warning",
   "bulk_reassign_digest",
+  "health_digest",
   "form_submission_notification",
 ] as const;
 export type SystemAssetKey = (typeof SYSTEM_ASSET_KEYS)[number];
@@ -225,28 +225,6 @@ export const SYSTEM_ASSETS: Record<SystemAssetKey, SystemAssetDef> = {
     ],
     required: [],
   },
-  viewing_confirmation: {
-    key: "viewing_confirmation",
-    slug: "system-viewing-confirmation",
-    label: "Viewing confirmation",
-    audience: "client",
-    trigger:
-      "Sent to the lead when an advisor books a viewing from an enquiry. The booking is tentative until the building confirms access.",
-    recipient: "The lead the viewing is booked for",
-    builtIn: "lib/email-templates.ts · viewingConfirmationTemplate",
-    tokens: [
-      "lead_first_name",
-      "lead_name",
-      "property_reference",
-      "property_title",
-      "viewing_time",
-      "viewing_location",
-      "viewing_duration",
-      "advisor_name",
-      "site_url",
-    ],
-    required: [],
-  },
   newsletter_confirmation: {
     key: "newsletter_confirmation",
     slug: "system-newsletter-confirmation",
@@ -347,6 +325,18 @@ export const SYSTEM_ASSETS: Record<SystemAssetKey, SystemAssetDef> = {
     ],
     required: [],
   },
+  health_digest: {
+    key: "health_digest",
+    slug: "system-health-digest",
+    label: "Daily health digest",
+    audience: "team",
+    trigger:
+      "Sent each morning when something broke in the previous day or a scheduled job has gone late. Silent on a quiet day, so an arrival always means there is something to read.",
+    recipient: "Every active admin",
+    builtIn: "lib/email-templates.ts · healthDigestTemplate",
+    tokens: ["health_errors", "health_jobs", "health_url", "site_url"],
+    required: [],
+  },
   bulk_reassign_digest: {
     key: "bulk_reassign_digest",
     slug: "system-bulk-reassign-digest",
@@ -415,10 +405,6 @@ export const EMAILS_NOT_SENT = [
   {
     label: "Customer sign-up, sign-in and magic-link emails",
     why: "There are no customer accounts (ADR-0005). Visitors enquire without signing in, and nothing in the site asks Supabase Auth to send an email. The team's only sign-in email is Set a new password, above.",
-  },
-  {
-    label: "Viewing reminders",
-    why: "Two hours before a viewing the advisor gets an in-app notification. The lead is not emailed a reminder.",
   },
 ] as const;
 

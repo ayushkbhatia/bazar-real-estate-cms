@@ -1,12 +1,21 @@
 import { Eyebrow } from "@/components/brand/eyebrow";
 import Link from "next/link";
 
+/**
+ * Keyed on `enquiry_status`, because that is what the dashboard counts.
+ *
+ * Three of the five keys here never matched it: "qualifying" for `qualified`,
+ * "negotiation" for a status that has never existed, and "viewing" for the
+ * stage removed in 0133. Those bars read zero for every lead the site has
+ * taken, which looks like a pipeline with no movement rather than a chart
+ * reading the wrong field.
+ */
 const STAGES = [
   { key: "new", label: "New" },
-  { key: "qualifying", label: "Qualifying" },
-  { key: "viewing", label: "Viewing" },
+  { key: "qualified", label: "Qualified" },
   { key: "offer", label: "Offer" },
-  { key: "negotiation", label: "Negotiation" },
+  { key: "closed_won", label: "Won" },
+  { key: "closed_lost", label: "Lost" },
 ] as const;
 
 /**

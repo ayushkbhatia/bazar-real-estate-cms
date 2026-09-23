@@ -56,10 +56,10 @@ function revalidate(id?: string) {
 /**
  * Shared parse step so create and update reject identically.
  *
- * Outreach assets may use only the shared lead tokens. `{{viewing_time}}` is
- * spelled correctly everywhere and only means anything inside the viewing
- * confirmation, so writing it into a hand-written follow-up is a save-time
- * error rather than a fallback discovered in a sent message.
+ * Outreach assets may use only the shared lead tokens. `{{unsubscribe_url}}`
+ * is spelled correctly everywhere and only means anything inside a newsletter
+ * email, so writing it into a hand-written follow-up is a save-time error
+ * rather than a fallback discovered in a sent message.
  */
 function parse(
   raw: Record<string, unknown>,

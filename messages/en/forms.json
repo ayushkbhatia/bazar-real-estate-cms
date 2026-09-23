@@ -12,7 +12,7 @@
     "emailPlaceholder": "you@example.com",
     "name": "Name (optional)",
     "namePlaceholder": "So we know how to address the report",
-    "phone": "Phone (optional)",
+    "phone": "Phone",
     "phonePlaceholder": "+971 50 …",
     "intent": "I'm thinking about…",
     "intentCurious": "Just curious about value",

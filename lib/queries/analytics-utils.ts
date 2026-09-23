@@ -16,11 +16,6 @@ export type FunnelStage = {
   count: number;
 };
 
-export type ViewingsByStatus = {
-  status: string;
-  count: number;
-};
-
 export const ANALYTICS_RANGES = [7, 30, 90] as const;
 export type AnalyticsRange = (typeof ANALYTICS_RANGES)[number];
 
@@ -79,10 +74,19 @@ export function aggregateBySource(
     .sort((a, b) => b.count - a.count);
 }
 
+/**
+ * The funnel, in `enquiry_status` order.
+ *
+ * "Viewing" left with the viewing-booking feature (0133).
+ *
+ * `in_progress` was corrected to `qualified` at the same time: it is the only
+ * stage here that has to match a value of the `enquiry_status` enum, and
+ * `in_progress` is not one — so the Qualifying bar counted nothing and had
+ * read zero for every lead the site has ever taken.
+ */
 export const FUNNEL_ORDER: FunnelStage[] = [
   { status: "new", label: "New", count: 0 },
-  { status: "in_progress", label: "Qualifying", count: 0 },
-  { status: "viewing_scheduled", label: "Viewing", count: 0 },
+  { status: "qualified", label: "Qualifying", count: 0 },
   { status: "offer", label: "Offer", count: 0 },
   { status: "closed_won", label: "Closed", count: 0 },
 ];
@@ -102,15 +106,3 @@ export function aggregateFunnel(
   }));
 }
 
-export function aggregateViewingsByStatus(
-  statuses: Array<string | null | undefined>,
-): ViewingsByStatus[] {
-  const map = new Map<string, number>();
-  for (const s of statuses) {
-    const key = s ?? "unknown";
-    map.set(key, (map.get(key) ?? 0) + 1);
-  }
-  return Array.from(map.entries())
-    .map(([status, count]) => ({ status, count }))
-    .sort((a, b) => b.count - a.count);
-}

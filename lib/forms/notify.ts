@@ -1,5 +1,5 @@
 import "server-only";
-import * as Sentry from "@sentry/nextjs";
+import { reportError } from "@/lib/observability";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/email";
 import { formSubmissionEmail } from "@/lib/content-assets/system-emails";
@@ -46,7 +46,9 @@ export function answersFor(
   data: Record<string, unknown>,
 ): [string, string][] {
   const labels =
-    data._labels && typeof data._labels === "object" && !Array.isArray(data._labels)
+    data._labels &&
+    typeof data._labels === "object" &&
+    !Array.isArray(data._labels)
       ? (data._labels as Record<string, string>)
       : {};
 
@@ -119,18 +121,18 @@ export async function notifyFormRecipients(
           subject: template.subject,
           text: template.text,
           html: template.html,
-        }).catch((err: unknown) => {
-          Sentry.captureException(err, {
-            tags: { component: "forms/notify" },
-            contexts: { form: { key: entry.formKey } },
+        }).catch(async (err: unknown) => {
+          await reportError(err, {
+            source: "forms/notify",
+            context: { form: { key: entry.formKey } },
           });
         }),
       ),
     );
   } catch (err) {
-    Sentry.captureException(err, {
-      tags: { component: "forms/notify" },
-      contexts: { form: { key: entry.formKey } },
+    await reportError(err, {
+      source: "forms/notify",
+      context: { form: { key: entry.formKey } },
     });
   }
 }

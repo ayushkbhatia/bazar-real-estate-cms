@@ -27,6 +27,9 @@ const serverSchema = z.object({
   RESEND_FROM_ADDRESS: senderAddress.optional(),
   RESEND_REPLY_TO: z.string().email().optional(),
   CRON_SECRET: z.string().min(1).optional(),
+  // Blocks real delivery. Unset it and nothing outside production sends —
+  // see `isEmailDryRun` in lib/email.ts for why that is the default.
+  EMAIL_DRY_RUN: z.string().optional(),
   // Upstash Redis credentials for per-IP rate limiting. Both optional —
   // when absent, lib/rate-limit no-ops so dev/test still work.
   UPSTASH_REDIS_REST_URL: z.string().url().optional(),
@@ -53,6 +56,22 @@ const serverSchema = z.object({
   // when either is missing — keeps dev/preview working without a key.
   GOOGLE_PLACES_API_KEY: z.string().min(1).optional(),
   GOOGLE_PLACES_PLACE_ID: z.string().min(1).optional(),
+  // Salesforce CRM — lead push (phase 1). OAuth 2.0 client-credentials flow
+  // against the org's My Domain host. All optional: with none of them set,
+  // `isSalesforceConfigured` is false and the sync cron no-ops, so dev,
+  // preview and CI behave exactly as they did before the integration landed.
+  SALESFORCE_INSTANCE_URL: z.string().url().optional(),
+  SALESFORCE_CLIENT_ID: z.string().min(1).optional(),
+  SALESFORCE_CLIENT_SECRET: z.string().min(1).optional(),
+  // Pinned API version. Defaults to v67.0 (the version the Levarus doc
+  // targets) when unset — see lib/salesforce/client.ts.
+  SALESFORCE_API_VERSION: z.string().regex(/^v\d+\.\d+$/).optional(),
+  // The custom object's API name. Defaults to Lead__c.
+  SALESFORCE_LEAD_OBJECT: z.string().min(1).optional(),
+  // The API name of a field on the lead object marked "External ID" in
+  // Salesforce. Setting it switches the push from POST (create, at-least-once)
+  // to PATCH (upsert, exactly-once). Unset until Levarus adds the field.
+  SALESFORCE_LEAD_EXTERNAL_ID_FIELD: z.string().min(1).optional(),
 });
 
 const clientSchema = z.object({
@@ -104,6 +123,7 @@ const serverEnv =
         RESEND_FROM_ADDRESS: process.env.RESEND_FROM_ADDRESS,
         RESEND_REPLY_TO: process.env.RESEND_REPLY_TO,
         CRON_SECRET: process.env.CRON_SECRET,
+        EMAIL_DRY_RUN: process.env.EMAIL_DRY_RUN,
         UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
         UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
         MEILISEARCH_HOST: process.env.MEILISEARCH_HOST,
@@ -123,6 +143,13 @@ const serverEnv =
         BAYUT_FEED_TOKEN: process.env.BAYUT_FEED_TOKEN,
         GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY,
         GOOGLE_PLACES_PLACE_ID: process.env.GOOGLE_PLACES_PLACE_ID,
+        SALESFORCE_INSTANCE_URL: process.env.SALESFORCE_INSTANCE_URL,
+        SALESFORCE_CLIENT_ID: process.env.SALESFORCE_CLIENT_ID,
+        SALESFORCE_CLIENT_SECRET: process.env.SALESFORCE_CLIENT_SECRET,
+        SALESFORCE_API_VERSION: process.env.SALESFORCE_API_VERSION,
+        SALESFORCE_LEAD_OBJECT: process.env.SALESFORCE_LEAD_OBJECT,
+        SALESFORCE_LEAD_EXTERNAL_ID_FIELD:
+          process.env.SALESFORCE_LEAD_EXTERNAL_ID_FIELD,
       })
     : ({ NODE_ENV: "development" } as z.infer<typeof serverSchema>);
 
@@ -168,6 +195,20 @@ export const isDocuSignConfigured =
       env.DOCUSIGN_USER_ID &&
       env.DOCUSIGN_ACCOUNT_ID &&
       env.DOCUSIGN_PRIVATE_KEY,
+  );
+
+/**
+ * Salesforce lead push. All three are required together — an instance URL
+ * with no credentials is not a half-working integration, it is a misconfigured
+ * one, and the cron would spend every run failing auth against the client's
+ * org. False means the job returns a clean no-op instead.
+ */
+export const isSalesforceConfigured =
+  typeof window === "undefined" &&
+  Boolean(
+    env.SALESFORCE_INSTANCE_URL &&
+      env.SALESFORCE_CLIENT_ID &&
+      env.SALESFORCE_CLIENT_SECRET,
   );
 
 /** USD per 1 AED. Defaults to 0.272 (mid-2026 spot rate) when env unset. */

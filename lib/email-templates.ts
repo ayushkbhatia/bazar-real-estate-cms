@@ -864,53 +864,76 @@ export function staffInvitationTemplate(
 }
 
 /**
- * Sent when an advisor books a viewing from an enquiry.
- *
- * The wording moved here from app/.../enquiries/[id]/_actions-viewing.ts as
- * part of consolidating outbound copy: the action keeps the booking and the
- * calendar invite, this keeps what the lead reads. "Tentative" is load-bearing
- * — the building has not confirmed access at the point this sends.
+ * Sent to an agent after a bulk reassign puts new listings in their queue.
+ * One email per reassign action, summarising the count plus a sample of
+ * property references for context.
  */
-export function viewingConfirmationTemplate(
+/**
+ * A bullet list of one-line strings, for the health digest.
+ *
+ * `listingReferencesBlock` is the nearest neighbour but is shaped around a
+ * count plus a sample of references. These lines are already composed — "job
+ * — last run 2d ago" — and there is no separate total to say "and N more"
+ * from, so this is the plainer version rather than a parameter on that one.
+ */
+export function healthLinesBlock(
+  lines: string[],
+  locale: EmailLocale = "en",
+): EmailBlock {
+  if (lines.length === 0) return { html: "", text: "" };
+  return {
+    html: `<ul dir="${dirOf(locale)}" style="margin:14px 0;padding-${startOf(locale)}:18px;font-size:13px;color:#32312d">
+          ${lines
+            .map((l) => `<li style="margin:3px 0">${iso(escape(l), locale)}</li>`)
+            .join("")}
+        </ul>`,
+    text: lines.map((l) => `\u00b7 ${l}`).join("\n"),
+  };
+}
+
+/**
+ * The daily operations digest.
+ *
+ * Sent only when there is something to say. A digest that arrives every
+ * morning saying "all clear" trains its readers to delete it unread, and the
+ * one morning it matters it is deleted unread too — so the cron does not send
+ * at all on a quiet day. The health page is where "is everything fine?" is
+ * answered on demand.
+ */
+export function healthDigestTemplate(
   opts: {
-    name: string;
-    localTime: string;
-    durationMinutes: number;
-    location: string | null;
-    propertyReference: string | null;
-    propertyTitle: string | null;
+    errorLines: string[];
+    jobLines: string[];
+    errorCount: number;
+    jobCount: number;
   },
   brand: EmailBrand = DEFAULT_EMAIL_BRAND,
 ): Rendered {
-  const subject = opts.propertyReference
-    ? `Tentative viewing · ${opts.propertyReference}`
-    : "Tentative viewing booked";
+  const url = `${siteUrl()}/admin/settings/health`;
+  const parts: string[] = [];
+  if (opts.errorCount > 0)
+    parts.push(`${opts.errorCount} ${opts.errorCount === 1 ? "error" : "errors"}`);
+  if (opts.jobCount > 0)
+    parts.push(`${opts.jobCount} ${opts.jobCount === 1 ? "job" : "jobs"} late or failing`);
+  const summary = parts.join(" · ");
 
-  const listingLine =
-    opts.propertyReference && opts.propertyTitle
-      ? `${opts.propertyReference} · ${opts.propertyTitle}`
-      : opts.propertyReference;
+  const errors = healthLinesBlock(opts.errorLines);
+  const jobs = healthLinesBlock(opts.jobLines);
+
+  const subject = `Bazar health · ${summary}`;
 
   const text =
-    `Hello ${opts.name},\n\n` +
-    `We've tentatively scheduled your viewing for ${opts.localTime} (Asia/Dubai).\n\n` +
-    (listingLine ? `Listing: ${listingLine}\n` : "") +
-    (opts.location ? `Where: ${opts.location}\n` : "") +
-    `Duration: ${opts.durationMinutes} minutes\n\n` +
-    `If this time doesn't work, simply reply and we'll find another.\n\n` +
-    `— Bazar Real Estate\n`;
+    `${summary} in the last 24 hours.\n\n` +
+    (errors.text ? `Errors\n${errors.text}\n\n` : "") +
+    (jobs.text ? `Jobs\n${jobs.text}\n\n` : "") +
+    `Full detail: ${url}\n\n— Bazar CMS\n`;
 
   const html = shell(
     `
-    <p>Hello ${escape(opts.name)},</p>
-    <p>We&rsquo;ve tentatively scheduled your viewing for <strong>${escape(opts.localTime)}</strong> (Asia/Dubai).</p>
-    <ul style="padding-left:18px;line-height:1.7">
-      ${listingLine ? `<li>Listing: ${escape(listingLine)}</li>` : ""}
-      ${opts.location ? `<li>Where: ${escape(opts.location)}</li>` : ""}
-      <li>Duration: ${opts.durationMinutes} minutes</li>
-    </ul>
-    <p>The calendar invite is attached — accept it to add to your calendar.</p>
-    <p style="color:#5a5a55">If this time doesn&rsquo;t work, simply reply and we&rsquo;ll find another.</p>
+    <p><strong>${escape(summary)}</strong> in the last 24 hours.</p>
+    ${errors.html ? `<p style="margin-bottom:0"><strong>Errors</strong></p>${errors.html}` : ""}
+    ${jobs.html ? `<p style="margin-bottom:0"><strong>Jobs</strong></p>${jobs.html}` : ""}
+    <p style="margin-top:22px">${button(url, "Open the health page", brand)}</p>
   `,
     brand,
   );
@@ -918,11 +941,6 @@ export function viewingConfirmationTemplate(
   return { subject, text, html };
 }
 
-/**
- * Sent to an agent after a bulk reassign puts new listings in their queue.
- * One email per reassign action, summarising the count plus a sample of
- * property references for context.
- */
 export function bulkReassignDigestTemplate(
   opts: {
     agentName: string;

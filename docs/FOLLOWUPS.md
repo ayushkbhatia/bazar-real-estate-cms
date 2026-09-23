@@ -801,13 +801,54 @@ shows the trail.)
   future template legitimately needs one of those paths, that test is the thing
   that will stop it.
 
-- [cron] The seven surviving jobs still need CRON_SECRET set in Vercel.
-  Production returns `{"reason":"CRON_SECRET not configured"}` on every cron
-  route, so none has ever run — no enquiry acknowledgement has ever been sent
-  and no enquiry has ever been escalated. `.env.example` has documented it as
-  REQUIRED IN PRODUCTION since the beginning. Setting it in Production and
-  Preview and redeploying is the entire fix; Vercel injects the matching
-  Authorization header automatically.
+- [forms] Validation messages are English-only, on every schema in the repo.
+  `lib/schemas/*.ts` and `lib/forms/validate.ts` pass English literals to zod,
+  so an Arabic visitor who leaves the phone box empty reads "Enter a phone
+  number we can reach you on". Pre-existing, but more visible since phone
+  became required on every enquiry form (23 Sept). G-13 does not catch these —
+  they are string arguments, not JSX text. Needs a locale-aware message
+  factory, or the messages moving into the i18n store.
+
+- [webhooks] The event catalogue still offers `deal.*`, and `deals` was dropped.
+  `lib/schemas/webhook.ts` and `lib/types/sprint-8.ts` both list
+  `deal.created` / `deal.advanced` / `deal.closed` (plus `deal.stage_changed`
+  in the second), but migration 0068 dropped the `deals` table. An admin can
+  subscribe a webhook to an event that can never fire. The two files are also
+  parallel definitions of the same catalogue that have already drifted — they
+  disagree on `viewing.completed` vs `viewing.cancelled` — so fixing this is a
+  good moment to collapse them into one. Found while removing viewings
+  (0132/0133), which had the same problem and was fixed there.
+
+- [legal] The Terms still say saved searches and viewings "require an account".
+  `lib/master-pages/sections/legal.ts` §3. There are no accounts (ADR-0005)
+  and no viewings (0132). It is CMS-editable copy, so this is a wording
+  decision for the client rather than a code change — but it is currently
+  describing two features that do not exist.
+
+- [admin] `YourDayCard` is not mounted anywhere.
+  `app/[locale]/(admin)/admin/_components/your-day-card.tsx` is imported by
+  nothing — found while removing viewing bookings, which was one of the two
+  task kinds it rendered. It now offers follow-ups and escalations, neither of
+  which anything builds. Either wire it into the dashboard or delete it; it is
+  dead either way today.
+
+- [observability] Client-side errors are still Sentry-only, and Sentry has no DSN.
+  `app/global-error.tsx`, `app/[locale]/error.tsx` and
+  `lib/realtime/use-presence.ts` are React error boundaries; `reportError` is
+  `server-only` so they cannot use it. Capturing them locally means POSTing to
+  an API route, and without uploaded source maps the stack is minified — which
+  is most of what Sentry's client SDK is actually for. Deliberately out of
+  scope when the server-side reporter was built (0134): the message, the URL
+  and the locale are usually enough to act on, and a browser crash is a rarer
+  problem for this product than a silent cron. Revisit if the public site
+  starts misbehaving in ways nobody can reproduce.
+
+- [cron] enquiry-escalation has no test, and its first real run is production.
+  The route was bounded to MAX_PER_RUN and its admin-email lookup hoisted out
+  of the per-row loop (23 Sept) — both reviewed, neither executed, because
+  running it locally against the production database would reassign real leads
+  and send real mail. None of the seven cron routes has a spec. Worth a
+  harness that fakes the Supabase chain, given they now actually run.
 
 - [cron] The enquiry auto-reply has a second, also-dead path.
   The pg_net trigger (0030) posts to a Supabase Edge Function that has never

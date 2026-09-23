@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
 import { SYSTEM_ASSETS, SYSTEM_ASSET_KEYS } from "./system";
@@ -70,11 +70,16 @@ describe("the Arabic first draft", () => {
     expect(/[؀-ۿ]/.test(FORM_REPLY_DEFAULT_AR.subject)).toBe(true);
   });
 
-  it("is in migration 0129, verbatim", () => {
-    const sql = readFileSync(
-      path.resolve(__dirname, "../../supabase/migrations/0129_content_assets_arabic.sql"),
-      "utf8",
-    );
+  it("is in a migration, verbatim", () => {
+    // Every migration rather than 0129 by name: an email added later carries
+    // its Arabic in the migration that seeds it, and pinning one file made
+    // adding an email fail here with no honest way to pass.
+    const dir = path.resolve(__dirname, "../../supabase/migrations");
+    const sql = readdirSync(dir)
+      .filter((f) => f.endsWith(".sql"))
+      .sort()
+      .map((f) => readFileSync(path.join(dir, f), "utf8"))
+      .join("\n");
     for (const key of SYSTEM_ASSET_KEYS) {
       const d = SYSTEM_EMAIL_DEFAULTS_AR[key];
       expect(sql, `${key} subject`).toContain(d.subject);
@@ -267,29 +272,5 @@ describe("a panel's data survives an RTL table", () => {
     // English carries no marks at all: they are invisible but not free, and
     // every PR in this epic is held to leaving English byte-identical.
     expect(en.html).toBe(stripIsolates(en.html));
-  });
-});
-
-describe("the viewing confirmation", () => {
-  it("counts the minutes in Arabic", async () => {
-    const draft = {
-      subject: "س",
-      body: "<p>{{viewing_duration}}</p>",
-      subjectAr: "س",
-      bodyAr: "<p>{{viewing_duration}}</p>",
-      format: "html" as const,
-    };
-    const ar = await previewSystemEmail("viewing_confirmation", {
-      brand: DEFAULT_EMAIL_BRAND,
-      locale: "ar",
-      draft,
-    });
-    expect(stripIsolates(ar.draft!.html)).toContain("45 دقيقة");
-    const en = await previewSystemEmail("viewing_confirmation", {
-      brand: DEFAULT_EMAIL_BRAND,
-      locale: "en",
-      draft,
-    });
-    expect(en.draft!.html).toContain("45 minutes");
   });
 });

@@ -24,6 +24,7 @@ light up. Order below matches priority for launch.
 | Mailchimp | `MAILCHIMP_API_KEY`, `MAILCHIMP_LIST_ID`, `MAILCHIMP_DC`, `MAILCHIMP_WEBHOOK_SECRET` | Newsletter signup + webhooks | 13 |
 | DocuSign | `DOCUSIGN_INTEGRATION_KEY`, `DOCUSIGN_USER_ID`, `DOCUSIGN_ACCOUNT_ID`, `DOCUSIGN_PRIVATE_KEY`, `DOCUSIGN_BASE_URL`, `DOCUSIGN_WEBHOOK_SECRET` | Envelope creation + signed-doc callbacks | 13 |
 | DLD open data | (uses `dld_open_data.config.csv_url` on the integrations table) | `/tools/valuation` comparables | 13 |
+| Salesforce | `SALESFORCE_INSTANCE_URL`, `SALESFORCE_CLIENT_ID`, `SALESFORCE_CLIENT_SECRET` | Lead push from every public form into `Lead__c` | 14 |
 | WhatsApp Cloud API | (deferred) | Phase 6+ | post-launch |
 
 The status of each integration in production is visible at
@@ -76,6 +77,24 @@ Supabase Auth's own emails (sign-up confirmation, magic link) are a separate
 delivery system and do **not** go through `lib/email.ts`. They're sent by
 Supabase's SMTP, configured under Auth → SMTP Settings, and are governed by
 `site_url` and `uri_allow_list` rather than anything in this repo.
+
+## Email delivery, and why nothing sends locally
+
+`sendEmail` refuses to deliver outside production unless you say otherwise.
+That is deliberate: `.env.local` carries a live Resend key **and** points at
+the production database, so curling a cron route from a laptop reads real
+recipients and mails them. It has happened — the health digest went to all
+three active admins during development.
+
+| `EMAIL_DRY_RUN` | Effect |
+|---|---|
+| unset | Blocked outside production, delivered in production |
+| `false` / `0` | Delivered everywhere — use for a live test from your machine |
+| `1` / `true` | Blocked everywhere, including production. An incident switch. |
+
+A blocked send returns `{ status: "skipped", reason: "dry run — …" }` and logs
+the subject and recipient, so the call site sees a normal skipped result
+rather than an error, and you can still read what would have gone out.
 
 ## Sentry
 
@@ -242,6 +261,88 @@ Not part of v1. The wa.me deep-link path covers the entire user-facing
 WhatsApp surface today. Cloud API upgrade is a Phase-6 effort that
 needs Meta Business Suite approval + a verified template library
 before it can replace the deep links.
+
+## Salesforce
+
+Phase 1 of the CRM integration: every public enquiry is pushed into the
+client's Salesforce org as a `Lead__c` record. One direction only — nothing
+is read back yet, and no listing is created from Salesforce. See
+`docs/SALESFORCE.md` for the field mapping and the open questions with the
+Salesforce team (Levarus).
+
+**Setup.** Levarus create a Connected App with the OAuth 2.0
+client-credentials flow enabled and a "Run As" user that can create records
+on the lead object. Take the consumer key and secret from that app.
+
+```
+SALESFORCE_INSTANCE_URL=https://<org>--<sandbox>.sandbox.my.salesforce.com
+SALESFORCE_CLIENT_ID=<consumer key>
+SALESFORCE_CLIENT_SECRET=<consumer secret>
+```
+
+Use the sandbox app for Preview and a **separate** Connected App for
+Production. Never the same secret in both — a preview deployment is a much
+softer target than production, and a shared secret means a leak there is a
+leak in the client's live CRM.
+
+Three optional vars, all with working defaults:
+
+| Var | Default | Why you would set it |
+|---|---|---|
+| `SALESFORCE_API_VERSION` | `v67.0` | Pin to a newer release. |
+| `SALESFORCE_LEAD_OBJECT` | `Lead__c` | The custom object gets renamed. |
+| `SALESFORCE_LEAD_EXTERNAL_ID_FIELD` | `External_ID__c` | The org renamed the field. |
+
+**On the external ID.** The 23 Sept 2026 vendor revision added
+`External_ID__c` (Text(254), External ID, Unique), so the push upserts by
+default: `PATCH .../Lead__c/External_ID__c/<enquiry uuid>`. That is
+exactly-once — a retry after a network timeout updates the existing record
+rather than creating a duplicate lead. Only set the env var if the org renames
+the field.
+
+**Roughly a third of leads are currently blocked.** Salesforce marks
+`Phone__c` and `Country_Code__c` Required; this site asks for email *or*
+phone, and 279 of 772 production leads have no phone. Those are refused
+locally — marked `failed` with a `Blocked locally:` reason, no API call made —
+and replay with one UPDATE once the vendor relaxes the requirement. See
+[SALESFORCE.md](SALESFORCE.md).
+
+**How it runs.** `enquiries.crm_sync_state` defaults to `pending`
+(migration 0130), so every insert path enrols itself with no code at the
+call site. `/api/cron/salesforce-lead-sync` drains up to 25 rows every five
+minutes, oldest first, retrying transient failures with exponential backoff
+(1m, 5m, 25m, 2h, 10h) and giving up after five attempts. A permanent error
+— a rejected picklist value, a field over length — stops immediately rather
+than burning four more attempts on the same answer.
+
+Nothing about this blocks a visitor: the enquiry is written to Postgres
+first and Salesforce is told afterwards, out of band.
+
+**Triage.** A lead that never made it carries its own reason:
+
+```sql
+select id, created_at, crm_sync_state, crm_attempts, crm_last_error
+from enquiries
+where crm_sync_state in ('failed', 'pending')
+  and crm_attempts > 0
+order by created_at desc;
+```
+
+`skipped` means the row predates the integration and was deliberately never
+sent. To replay a failed row after fixing the cause, set it back to
+`pending` and clear the backoff:
+
+```sql
+update enquiries
+set crm_sync_state = 'pending', crm_attempts = 0, crm_next_attempt_at = now()
+where id = '<uuid>';
+```
+
+**PDPL.** The privacy policy names Salesforce as a processor, so this push
+is disclosed. Erasure reaches it too: `/admin/dsr` pseudonymises the CRM
+record alongside the database row, and anything the CRM did not confirm stays
+queued on `enquiries.crm_erasure_due_at` for the same cron to retry. See
+[SALESFORCE.md](SALESFORCE.md) for the ordering, which is not obvious.
 
 ## Verifying after handover
 

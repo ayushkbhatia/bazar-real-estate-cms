@@ -177,8 +177,6 @@ export type WebhookEvent =
   | "property.sold"
   | "enquiry.created"
   | "enquiry.assigned"
-  | "viewing.scheduled"
-  | "viewing.cancelled"
   | "deal.stage_changed"
   | "valuation.submitted"
   | "kyc.approved"
@@ -214,6 +212,7 @@ export type IntegrationKind =
   | "whatsapp_cloud"
   | "dld_open_data"
   | "docusign"
+  | "salesforce"
   | "posthog"
   | "sentry"
   | "resend";

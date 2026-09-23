@@ -98,17 +98,6 @@ export const SYSTEM_EMAIL_DEFAULTS_AR: Record<SystemAssetKey, SystemEmailDefault
       "<p>— بازار</p>",
     ].join(""),
   },
-  viewing_confirmation: {
-    subject: "موعد معاينة مبدئي · {{property_reference}}",
-    body: [
-      "<p>مرحباً {{lead_first_name}}،</p>",
-      "<p>حجزنا لك موعد معاينة مبدئياً في <strong>{{viewing_time}}</strong> (توقيت أبوظبي).</p>",
-      "<ul><li><p>العقار: {{property_reference}} · {{property_title}}</p></li><li><p>مكان اللقاء: {{viewing_location}}</p></li><li><p>المدة: {{viewing_duration}}</p></li></ul>",
-      "<p>دعوة التقويم مرفقة — اقبلها لإضافة الموعد إلى تقويمك.</p>",
-      "<p>إن لم يناسبك هذا الوقت، يكفي الرد وسنجد موعداً آخر.</p>",
-      "<p>— بازار العقارية</p>",
-    ].join(""),
-  },
   newsletter_confirmation: {
     subject: "أكّد اشتراكك في نشرة بازار",
     body: [
@@ -164,6 +153,18 @@ export const SYSTEM_EMAIL_DEFAULTS_AR: Record<SystemAssetKey, SystemEmailDefault
       "<p>سيُؤرشف الإدراج تلقائياً عند انتهاء التصريح ما لم يُجدَّد.</p>",
       '<a data-email-button="" href="{{properties_url}}">فتح قائمة العقارات</a>',
       "<p>— الالتزام في بازار</p>",
+    ].join(""),
+  },
+  health_digest: {
+    subject: "حالة بازار · هناك ما يستدعي المراجعة",
+    body: [
+      "<p>أظهرت آخر ٢٤ ساعة ما يلي.</p>",
+      "<p><strong>الأخطاء</strong></p>",
+      "<p>{{health_errors}}</p>",
+      "<p><strong>المهام</strong></p>",
+      "<p>{{health_jobs}}</p>",
+      '<a data-email-button="" href="{{health_url}}">افتح صفحة الحالة</a>',
+      "<p>— نظام بازار</p>",
     ].join(""),
   },
   bulk_reassign_digest: {

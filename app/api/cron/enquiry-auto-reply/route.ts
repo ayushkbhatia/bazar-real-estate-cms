@@ -17,7 +17,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import * as Sentry from "@sentry/nextjs";
+import { recordHeartbeat, reportError } from "@/lib/observability";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { enquiryAcknowledgementEmail } from "@/lib/content-assets/system-emails";
@@ -109,14 +109,16 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    await recordHeartbeat("enquiry-auto-reply", {
+      ok: true,
+      detail: `sent ${sent}`,
+    });
     return NextResponse.json({ ok: true, scanned: rows?.length ?? 0, sent });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    Sentry.captureException(err, { tags: { cron: "enquiry-auto-reply" } });
+    await reportError(err, { source: "cron/enquiry-auto-reply" });
+    await recordHeartbeat("enquiry-auto-reply", { ok: false, detail: message });
     console.error("[cron/enquiry-auto-reply]", message);
-    return NextResponse.json(
-      { ok: false, reason: message },
-      { status: 500 },
-    );
+    return NextResponse.json({ ok: false, reason: message }, { status: 500 });
   }
 }

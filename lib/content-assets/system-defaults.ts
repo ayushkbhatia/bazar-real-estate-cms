@@ -102,17 +102,6 @@ export const SYSTEM_EMAIL_DEFAULTS: Record<SystemAssetKey, SystemEmailDefault> =
       "<p>— Bazar</p>",
     ].join(""),
   },
-  viewing_confirmation: {
-    subject: "Tentative viewing · {{property_reference}}",
-    body: [
-      "<p>Hello {{lead_first_name}},</p>",
-      "<p>We’ve tentatively scheduled your viewing for <strong>{{viewing_time}}</strong> (Asia/Dubai).</p>",
-      "<ul><li><p>Listing: {{property_reference}} · {{property_title}}</p></li><li><p>Where: {{viewing_location}}</p></li><li><p>Duration: {{viewing_duration}}</p></li></ul>",
-      "<p>The calendar invite is attached — accept it to add the viewing to your calendar.</p>",
-      "<p>If this time doesn’t work, simply reply and we’ll find another.</p>",
-      "<p>— Bazar Real Estate</p>",
-    ].join(""),
-  },
   newsletter_confirmation: {
     subject: "Confirm your subscription to the Bazar Brief",
     body: [
@@ -170,6 +159,18 @@ export const SYSTEM_EMAIL_DEFAULTS: Record<SystemAssetKey, SystemEmailDefault> =
       "<p>The listing will be archived automatically at expiry unless renewed.</p>",
       '<a data-email-button="" href="{{properties_url}}">Open properties</a>',
       "<p>— Bazar compliance</p>",
+    ].join(""),
+  },
+  health_digest: {
+    subject: "Bazar health · something needs a look",
+    body: [
+      "<p>The last 24 hours turned up the following.</p>",
+      "<p><strong>Errors</strong></p>",
+      "<p>{{health_errors}}</p>",
+      "<p><strong>Jobs</strong></p>",
+      "<p>{{health_jobs}}</p>",
+      '<a data-email-button="" href="{{health_url}}">Open the health page</a>',
+      "<p>— Bazar CMS</p>",
     ].join(""),
   },
   bulk_reassign_digest: {

@@ -945,10 +945,15 @@ function FieldDetail({
       ) : null}
 
       <div className="flex flex-wrap items-center gap-4">
+        {/* A locked field is one the form cannot be submitted without, so
+            leaving Required editable on it offered a setting that the
+            validator would override anyway — the contact boxes on an enquiry
+            form are forced in `buildFormSchema`. Better to show it fixed than
+            to accept a change that does nothing. */}
         <Check
           label="Required"
           checked={field.required}
-          disabled={disabled}
+          disabled={disabled || field.locked}
           onChange={(v) => onChange({ required: v })}
         />
         <Check

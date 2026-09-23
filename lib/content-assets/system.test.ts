@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { describe, it, expect } from "vitest";
 import {
@@ -77,26 +77,52 @@ describe("SYSTEM_ASSETS registry", () => {
 });
 
 describe("the migrations agree with the registry", () => {
-  const m0117 = read("0117_content_assets_system_keys.sql");
-  const m0127 = read("0127_system_emails_catalogue.sql");
+  /**
+   * Every migration, concatenated — not 0117 and 0127 by name.
+   *
+   * A system email added later is seeded by a later migration and is just as
+   * seeded; pinning the two that happened to exist when this was written made
+   * "add an email" fail here for the wrong reason, and the only way to pass
+   * would have been editing history.
+   */
+  const allMigrations = readdirSync(MIGRATIONS)
+    .filter((f) => f.endsWith(".sql"))
+    .sort()
+    .map((f) => read(f))
+    .join("\n");
 
   it("seeds a row for every key, with the registry's slug", () => {
     for (const key of SYSTEM_ASSET_KEYS) {
       const slug = SYSTEM_ASSETS[key].slug;
       const seeded =
-        m0117.includes(`'${slug}'`) || m0127.includes(`$s$${slug}$s$`);
+        allMigrations.includes(`'${slug}'`) ||
+        allMigrations.includes(`$s$${slug}$s$`);
       expect(seeded, `${key} (${slug})`).toBe(true);
     }
   });
 
   it("widens the closed key check to exactly the registry's keys", () => {
-    const block = m0127.slice(
-      m0127.indexOf("add constraint content_assets_system_key_known"),
+    // Read whichever migration defines the constraint LAST, not 0127.
+    // Dropping a system email rewrites the allow-list in a later migration
+    // (0132 removed viewing_confirmation), and pinning the original would
+    // make this assert against superseded history.
+    const latest = readdirSync(MIGRATIONS)
+      .filter((f) => f.endsWith(".sql"))
+      .sort()
+      .reverse()
+      .find((f) =>
+        read(f).includes("add constraint content_assets_system_key_known"),
+      )!;
+    const source = read(latest);
+    const block = source.slice(
+      source.indexOf("add constraint content_assets_system_key_known"),
     );
+    // Cut at the statement terminator rather than a literal "));" — that
+    // depended on one migration's bracket layout, and a differently
+    // formatted rewrite ran past the end and picked up words from the
+    // trailing comments.
     const listed = [
-      ...block
-        .slice(0, block.indexOf("));"))
-        .matchAll(/'([a-z0-9_]+)'/g),
+      ...block.slice(0, block.indexOf(";")).matchAll(/'([a-z0-9_]+)'/g),
     ].map((m) => m[1]);
     expect(listed.sort()).toEqual([...SYSTEM_ASSET_KEYS].sort());
   });
@@ -104,8 +130,8 @@ describe("the migrations agree with the registry", () => {
   it("seeds the starting wording from system-defaults.ts, verbatim", () => {
     for (const key of SYSTEM_ASSET_KEYS) {
       const d = SYSTEM_EMAIL_DEFAULTS[key];
-      expect(m0127, `${key} subject`).toContain(`$s$${d.subject}$s$`);
-      expect(m0127, `${key} body`).toContain(`$body$${d.body}$body$`);
+      expect(allMigrations, `${key} subject`).toContain(`$s$${d.subject}$s$`);
+      expect(allMigrations, `${key} body`).toContain(`$body$${d.body}$body$`);
     }
   });
 });

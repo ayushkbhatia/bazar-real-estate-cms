@@ -3,10 +3,6 @@
   "regions": ["hnd1"],
   "crons": [
     {
-      "path": "/api/cron/viewing-reminders",
-      "schedule": "0 * * * *"
-    },
-    {
       "path": "/api/cron/enquiry-auto-reply",
       "schedule": "* * * * *"
     },
@@ -29,6 +25,14 @@
     {
       "path": "/api/cron/embeddings-backfill",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/salesforce-lead-sync",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/health-digest",
+      "schedule": "0 7 * * *"
     }
   ]
 }

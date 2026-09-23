@@ -110,9 +110,15 @@ function fieldSchema(
 
     case "tel":
     case "phone_dial": {
+      // An empty box and a two-digit one are different mistakes, and
+      // "that number looks too short" answers only the second. Phone became
+      // required on every enquiry form when intake was aligned with
+      // Salesforce, so the blank case is now the common one — it is the first
+      // thing a visitor who did not want to give a number will read.
       const base = z
         .string()
         .trim()
+        .min(1, "Enter a phone number we can reach you on")
         .min(5, "That number looks too short")
         .max(32, "That number looks too long");
       return field.required ? base : z.union([base, z.literal("")]).optional();
@@ -148,13 +154,33 @@ export function buildFormSchema(
   values: Record<string, unknown> = {},
 ): z.ZodType<Record<string, unknown>> {
   const fields = activeFields(form, values);
+
+  // An enquiry needs both contact fields, whatever the stored flags say.
+  //
+  // The per-field `required` toggles drive the browser, and three forms in
+  // production still carried `required: false` on a contact box when
+  // Salesforce started refusing records without one. Honouring those flags
+  // here would let the page accept a submission `enquirySchema` then
+  // rejects — the visitor sees a generic failure on a form that looked
+  // complete. Forcing them means a stale row cannot put the client and the
+  // server out of step, and the flags are only ever a UI hint.
+  const forced = fields.map((f) =>
+    form.def.handler === "enquiry" &&
+    (f.mapping === "email" || f.mapping === "phone") &&
+    !f.required
+      ? { ...f, required: true }
+      : f,
+  );
+
   const shape: Record<string, z.ZodTypeAny> = {};
-  for (const field of fields) shape[field.key] = fieldSchema(field, dynamic);
+  for (const field of forced) shape[field.key] = fieldSchema(field, dynamic);
 
   const base = z.object(shape).passthrough();
 
-  const emailField = fields.find((f) => f.mapping === "email");
-  const phoneField = fields.find((f) => f.mapping === "phone");
+  // The old either-or rule, kept for the handlers that still want it. It can
+  // no longer fire for an `enquiry` form, since both fields are forced above.
+  const emailField = forced.find((f) => f.mapping === "email");
+  const phoneField = forced.find((f) => f.mapping === "phone");
   const needsEither =
     form.def.handler === "enquiry" &&
     emailField != null &&

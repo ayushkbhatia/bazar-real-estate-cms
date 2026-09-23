@@ -1,6 +1,6 @@
 "use server";
 
-import * as Sentry from "@sentry/nextjs";
+import { reportError } from "@/lib/observability";
 import { getForm } from "@/lib/queries/forms";
 import {
   buildFormBrief,
@@ -123,7 +123,8 @@ export async function submitForm(
 
   const values = parsed.data as Record<string, unknown>;
   const lead = extractLead(form, values, dynamic);
-  const scenario = (context.scenario ?? "").trim().slice(0, MAX_SCENARIO) || null;
+  const scenario =
+    (context.scenario ?? "").trim().slice(0, MAX_SCENARIO) || null;
   const tokens = {
     project: context.developmentName ?? null,
     reference: context.propertyReference ?? null,
@@ -158,7 +159,8 @@ export async function submitForm(
         enquiryId: null,
         // "already confirmed" is a success from the visitor's side, but the
         // wording has to be the newsletter action's, not the form's.
-        note: result.status === "already_confirmed" ? result.message : undefined,
+        note:
+          result.status === "already_confirmed" ? result.message : undefined,
       };
     }
 
@@ -305,9 +307,7 @@ async function loadDynamicOptions(form: ResolvedForm): Promise<DynamicOptions> {
       }));
     return { [field.key]: options };
   } catch (err) {
-    Sentry.captureException(err, {
-      tags: { component: "forms/dynamic-options" },
-    });
+    await reportError(err, { source: "forms/dynamic-options" });
     return {};
   }
 }

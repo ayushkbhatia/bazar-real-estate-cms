@@ -15,7 +15,6 @@ const ENQUIRY_STATUSES: readonly Database["public"]["Enums"]["enquiry_status"][]
   [
     "new",
     "qualified",
-    "viewing_scheduled",
     "offer",
     "closed_won",
     "closed_lost",

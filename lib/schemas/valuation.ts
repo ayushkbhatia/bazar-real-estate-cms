@@ -95,12 +95,13 @@ export const valuationStep4Schema = z
   .object({
     owner_name: z.string().min(2, "Name is too short").max(120),
     owner_email: z.string().email("Enter a valid email"),
+    // Required alongside the email since 23 Sept: a valuation request becomes
+    // an `enquiries` row like any other lead, and Salesforce refuses a record
+    // with no Phone__c. See lib/schemas/enquiry.ts for the full reasoning.
     owner_phone: z
-      .union([
-        z.string().min(5, "Phone is too short").max(32),
-        z.literal(""),
-      ])
-      .optional(),
+      .string()
+      .min(5, "Enter a phone number we can reach you on")
+      .max(32, "Phone is too long"),
     marketing_opt_in: z.boolean().default(false),
   })
   .refine((v) => v.owner_email.length > 0, {

@@ -8,6 +8,7 @@ import {
   isVoyageConfigured,
   isMapboxConfigured,
   isResendConfigured,
+  isSalesforceConfigured,
 } from "@/lib/env";
 import type {
   IntegrationKind,
@@ -84,6 +85,16 @@ const KIND_META: Record<
       "DOCUSIGN_WEBHOOK_SECRET",
     ],
   },
+  salesforce: {
+    label: "Salesforce",
+    blurb:
+      "Pushes every public enquiry into the Lead__c object. Drains on the five-minute cron; the enquiry itself is never blocked on it.",
+    envVars: [
+      "SALESFORCE_INSTANCE_URL",
+      "SALESFORCE_CLIENT_ID",
+      "SALESFORCE_CLIENT_SECRET",
+    ],
+  },
   posthog: {
     label: "PostHog",
     blurb: "Product analytics + session replay (consent-gated).",
@@ -122,6 +133,8 @@ function envConfigured(kind: IntegrationKind): boolean {
       return isDocuSignConfigured;
     case "resend":
       return isResendConfigured;
+    case "salesforce":
+      return isSalesforceConfigured;
     default:
       return false;
   }

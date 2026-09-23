@@ -85,9 +85,30 @@ export function lastName(extras: Extras = {}): FormFieldDef {
   });
 }
 
+/**
+ * ── Why the contact block is required and locked ─────────────────────────
+ *
+ * Both boxes used to be optional, with `enquirySchema` asking only for an
+ * email *or* a phone. Salesforce's `Lead__c` requires `Email__c`, `Phone__c`
+ * and `Country_Code__c` on every record (Levarus, 23 Sept 2026), and a lead
+ * missing either is refused outright — it reaches nobody who can act on it.
+ * So intake now asks for exactly what the CRM will accept.
+ *
+ * `locked` as well as `required`, because the two guarantees are the same
+ * one. A form whose phone box an editor had merely unticked would produce
+ * leads the CRM rejects; a form whose phone box they had deleted would do it
+ * just as thoroughly and less visibly. Locked fields can still be relabelled
+ * and reworded — the editor keeps the wording, not the existence.
+ *
+ * This is a real trade: some visitors will not give a number and will not
+ * submit. That was accepted deliberately, as the alternative is capturing
+ * leads the sales team never sees.
+ */
 export function email(extras: Extras = {}): FormFieldDef {
   return field("email", "Email", "email", "email", {
     placeholder: "you@example.com",
+    required: true,
+    locked: true,
     ...extras,
   });
 }
@@ -95,6 +116,8 @@ export function email(extras: Extras = {}): FormFieldDef {
 export function phone(extras: Extras = {}): FormFieldDef {
   return field("phone", "Phone", "tel", "phone", {
     placeholder: "+971 50 …",
+    required: true,
+    locked: true,
     ...extras,
   });
 }
@@ -103,6 +126,8 @@ export function dialPhone(extras: Extras = {}): FormFieldDef {
   return field("phone", "Phone number", "phone_dial", "phone", {
     placeholder: "50 000 0000",
     options: DEFAULT_DIAL_CODES,
+    required: true,
+    locked: true,
     ...extras,
   });
 }

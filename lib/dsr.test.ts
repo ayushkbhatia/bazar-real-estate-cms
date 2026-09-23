@@ -73,6 +73,25 @@ describe("buildDataExport", () => {
     expect(archive.notes.some((n) => /author_kind/.test(n))).toBe(true);
     expect(archive.notes.some((n) => /'user'/.test(n))).toBe(true);
   });
+
+  it("names Salesforce as a recipient when data actually reached it", () => {
+    // An access request must name who the data was disclosed to, and the
+    // privacy notice already names this processor.
+    const archive = buildDataExport({ account: null, shared_with_crm: true });
+    expect(archive.notes.some((n) => /Salesforce/.test(n))).toBe(true);
+  });
+
+  it("stays silent about Salesforce when nothing was ever sent", () => {
+    // Naming a processor that received nothing would be its own inaccuracy,
+    // and the integration existing is not the same as it having run.
+    for (const input of [
+      { account: null },
+      { account: null, shared_with_crm: false },
+    ]) {
+      const archive = buildDataExport(input);
+      expect(archive.notes.some((n) => /Salesforce/.test(n))).toBe(false);
+    }
+  });
 });
 
 describe("exportFilename", () => {

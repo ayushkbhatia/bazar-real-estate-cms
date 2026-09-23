@@ -3,6 +3,8 @@ import "server-only";
 import {
   adminEnquiryUrl,
   bulkReassignDigestTemplate,
+  healthDigestTemplate,
+  healthLinesBlock,
   emailSiteUrl,
   enquiryEscalationTemplate,
   enquiryReceivedTemplate,
@@ -23,7 +25,6 @@ import {
   valuationReportPanel,
   valuationReportRequestedTemplate,
   valuationReportTemplate,
-  viewingConfirmationTemplate,
 } from "@/lib/email-templates";
 import {
   newsletterConfirmTemplate,
@@ -137,9 +138,6 @@ type ValuationAckOpts = {
 };
 
 type ValuationReportOpts = Parameters<typeof valuationReportTemplate>[0];
-type ViewingOpts = Parameters<typeof viewingConfirmationTemplate>[0] & {
-  advisorName: string | null;
-};
 type NurtureDay7Opts = Parameters<typeof valuationNurtureDay7Template>[0];
 type NurtureDay30Opts = Parameters<typeof valuationNurtureDay30Template>[0];
 type InvitationOpts = Parameters<typeof staffInvitationTemplate>[0];
@@ -147,6 +145,7 @@ type ResetOpts = Parameters<typeof staffPasswordResetTemplate>[0];
 type EscalationOpts = Parameters<typeof enquiryEscalationTemplate>[0];
 type PermitOpts = Parameters<typeof permitExpiryWarningTemplate>[0];
 type DigestOpts = Parameters<typeof bulkReassignDigestTemplate>[0];
+type HealthDigestOpts = Parameters<typeof healthDigestTemplate>[0];
 type FormOpts = Parameters<typeof formSubmissionTemplate>[0];
 
 const site = () => emailSiteUrl();
@@ -280,33 +279,6 @@ const BINDINGS = {
     builtin: (o, brand) => valuationNurtureDay30Template(o, brand),
     sample: { name: "Amira Haddad", valuationId: "sample" },
   }),
-  viewing_confirmation: bind<ViewingOpts>({
-    context: (o, locale = "en") => ({
-      values: {
-        lead_first_name: firstName(o.name),
-        lead_name: o.name,
-        property_reference: o.propertyReference,
-        property_title: o.propertyTitle,
-        viewing_time: o.localTime,
-        viewing_location: o.location,
-        // Prose, like the property line: the unit has a language even though
-        // the number does not.
-        viewing_duration: `${o.durationMinutes} ${locale === "ar" ? "دقيقة" : "minutes"}`,
-        advisor_name: o.advisorName,
-        site_url: site(),
-      },
-    }),
-    builtin: (o, brand) => viewingConfirmationTemplate(o, brand),
-    sample: {
-      name: "Amira Haddad",
-      localTime: "Thursday 18 September, 4:30 pm",
-      durationMinutes: 45,
-      location: "Marina Heights lobby, Al Reem Island",
-      propertyReference: "BAZ-AD-04891",
-      propertyTitle: "3-bed on Al Reem Island",
-      advisorName: "Khalid Al Zaabi",
-    },
-  }),
   newsletter_confirmation: bind<{ email: string; confirmUrl: string }>({
     context: (o) => ({
       values: { confirm_url: o.confirmUrl, site_url: site() },
@@ -402,6 +374,28 @@ const BINDINGS = {
       permitNumber: "71220458",
       expiresAt: "2026-10-14",
       daysToExpiry: 29,
+    },
+  }),
+  health_digest: bind<HealthDigestOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        health_url: `${site()}/admin/settings/health`,
+        site_url: site(),
+      },
+      blocks: {
+        health_errors: healthLinesBlock(o.errorLines, locale),
+        health_jobs: healthLinesBlock(o.jobLines, locale),
+      },
+    }),
+    builtin: (o, brand) => healthDigestTemplate(o, brand),
+    sample: {
+      errorCount: 2,
+      jobCount: 1,
+      errorLines: [
+        "cron/salesforce-lead-sync ×3 — REQUIRED_FIELD_MISSING: Email__c",
+        "forms/record — connection reset",
+      ],
+      jobLines: ["permit-expiry — last run 2d ago"],
     },
   }),
   bulk_reassign_digest: bind<DigestOpts>({
@@ -576,13 +570,6 @@ export function valuationNurtureDay30Email(
   return send("valuation_nurture_day30", opts, locale);
 }
 
-export function viewingConfirmationEmail(
-  opts: ViewingOpts,
-  locale: EmailLocale = "en",
-): Promise<RenderedEmail> {
-  return send("viewing_confirmation", opts, locale);
-}
-
 export function newsletterConfirmationEmail(
   opts: { email: string; confirmUrl: string },
   locale: EmailLocale = "en",
@@ -619,6 +606,13 @@ export function permitExpiryWarningEmail(
   opts: PermitOpts,
 ): Promise<RenderedEmail> {
   return send("permit_expiry_warning", opts);
+}
+
+export function healthDigestEmail(
+  opts: HealthDigestOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("health_digest", opts, locale);
 }
 
 export function bulkReassignDigestEmail(
