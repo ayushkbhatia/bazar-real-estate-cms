@@ -27,8 +27,10 @@ const nextConfig: NextConfig = {
    * The actual fix is `lib/supabase/resilient-fetch.ts`, which bounds each
    * request so a hung connection fails fast enough to be retried instead of
    * silently eating the whole budget. This number is the room that fix needs:
-   * a page making several sequential reads, each of which may spend up to
-   * ~32s on three attempts, has to be able to finish inside it. Raising the
+   * a page making several sequential reads, each of which may spend up to its
+   * 45s retry budget (`BUDGET_MS`), has to be able to finish inside it —
+   * `lib/supabase/resilient-fetch.test.ts` reads this value and checks that
+   * four such reads fit, so change them together. Raising the
    * budget alone would have fixed nothing — it would only have moved the same
    * failure 60 seconds later.
    *
