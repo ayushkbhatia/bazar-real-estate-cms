@@ -47,6 +47,7 @@ const EXPECTED_INTERVAL_MINUTES: Record<string, number> = {
   "meilisearch-sync": 1440,
   "embeddings-backfill": 1440,
   "post-valuation-nurture": 1440,
+  "health-digest": 1440,
 };
 
 export function staleAfterMinutes(job: string): number {

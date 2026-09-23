@@ -161,6 +161,18 @@ export const SYSTEM_EMAIL_DEFAULTS: Record<SystemAssetKey, SystemEmailDefault> =
       "<p>— Bazar compliance</p>",
     ].join(""),
   },
+  health_digest: {
+    subject: "Bazar health · something needs a look",
+    body: [
+      "<p>The last 24 hours turned up the following.</p>",
+      "<p><strong>Errors</strong></p>",
+      "<p>{{health_errors}}</p>",
+      "<p><strong>Jobs</strong></p>",
+      "<p>{{health_jobs}}</p>",
+      '<a data-email-button="" href="{{health_url}}">Open the health page</a>',
+      "<p>— Bazar CMS</p>",
+    ].join(""),
+  },
   bulk_reassign_digest: {
     subject: "You were assigned {{listings_assigned}}",
     body: [

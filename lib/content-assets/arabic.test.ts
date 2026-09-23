@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
 import { SYSTEM_ASSETS, SYSTEM_ASSET_KEYS } from "./system";
@@ -70,11 +70,16 @@ describe("the Arabic first draft", () => {
     expect(/[؀-ۿ]/.test(FORM_REPLY_DEFAULT_AR.subject)).toBe(true);
   });
 
-  it("is in migration 0129, verbatim", () => {
-    const sql = readFileSync(
-      path.resolve(__dirname, "../../supabase/migrations/0129_content_assets_arabic.sql"),
-      "utf8",
-    );
+  it("is in a migration, verbatim", () => {
+    // Every migration rather than 0129 by name: an email added later carries
+    // its Arabic in the migration that seeds it, and pinning one file made
+    // adding an email fail here with no honest way to pass.
+    const dir = path.resolve(__dirname, "../../supabase/migrations");
+    const sql = readdirSync(dir)
+      .filter((f) => f.endsWith(".sql"))
+      .sort()
+      .map((f) => readFileSync(path.join(dir, f), "utf8"))
+      .join("\n");
     for (const key of SYSTEM_ASSET_KEYS) {
       const d = SYSTEM_EMAIL_DEFAULTS_AR[key];
       expect(sql, `${key} subject`).toContain(d.subject);

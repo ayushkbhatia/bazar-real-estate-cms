@@ -163,6 +163,9 @@ const STATIC_SURFACES: Record<SystemAssetKey | PreviewOnlyEmailKey, EmailSurface
   permit_expiry_warning: [
     { label: "Permit-expiry cron", adminPath: "/admin/properties" },
   ],
+  health_digest: [
+    { label: "Health", adminPath: "/admin/settings/health" },
+  ],
   bulk_reassign_digest: [
     { label: "Bulk reassign", adminPath: "/admin/properties" },
   ],

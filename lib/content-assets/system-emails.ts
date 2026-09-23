@@ -3,6 +3,8 @@ import "server-only";
 import {
   adminEnquiryUrl,
   bulkReassignDigestTemplate,
+  healthDigestTemplate,
+  healthLinesBlock,
   emailSiteUrl,
   enquiryEscalationTemplate,
   enquiryReceivedTemplate,
@@ -143,6 +145,7 @@ type ResetOpts = Parameters<typeof staffPasswordResetTemplate>[0];
 type EscalationOpts = Parameters<typeof enquiryEscalationTemplate>[0];
 type PermitOpts = Parameters<typeof permitExpiryWarningTemplate>[0];
 type DigestOpts = Parameters<typeof bulkReassignDigestTemplate>[0];
+type HealthDigestOpts = Parameters<typeof healthDigestTemplate>[0];
 type FormOpts = Parameters<typeof formSubmissionTemplate>[0];
 
 const site = () => emailSiteUrl();
@@ -373,6 +376,28 @@ const BINDINGS = {
       daysToExpiry: 29,
     },
   }),
+  health_digest: bind<HealthDigestOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        health_url: `${site()}/admin/settings/health`,
+        site_url: site(),
+      },
+      blocks: {
+        health_errors: healthLinesBlock(o.errorLines, locale),
+        health_jobs: healthLinesBlock(o.jobLines, locale),
+      },
+    }),
+    builtin: (o, brand) => healthDigestTemplate(o, brand),
+    sample: {
+      errorCount: 2,
+      jobCount: 1,
+      errorLines: [
+        "cron/salesforce-lead-sync ×3 — REQUIRED_FIELD_MISSING: Email__c",
+        "forms/record — connection reset",
+      ],
+      jobLines: ["permit-expiry — last run 2d ago"],
+    },
+  }),
   bulk_reassign_digest: bind<DigestOpts>({
     context: (o, locale = "en") => ({
       values: {
@@ -581,6 +606,13 @@ export function permitExpiryWarningEmail(
   opts: PermitOpts,
 ): Promise<RenderedEmail> {
   return send("permit_expiry_warning", opts);
+}
+
+export function healthDigestEmail(
+  opts: HealthDigestOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("health_digest", opts, locale);
 }
 
 export function bulkReassignDigestEmail(

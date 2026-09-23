@@ -77,14 +77,26 @@ describe("SYSTEM_ASSETS registry", () => {
 });
 
 describe("the migrations agree with the registry", () => {
-  const m0117 = read("0117_content_assets_system_keys.sql");
-  const m0127 = read("0127_system_emails_catalogue.sql");
+  /**
+   * Every migration, concatenated — not 0117 and 0127 by name.
+   *
+   * A system email added later is seeded by a later migration and is just as
+   * seeded; pinning the two that happened to exist when this was written made
+   * "add an email" fail here for the wrong reason, and the only way to pass
+   * would have been editing history.
+   */
+  const allMigrations = readdirSync(MIGRATIONS)
+    .filter((f) => f.endsWith(".sql"))
+    .sort()
+    .map((f) => read(f))
+    .join("\n");
 
   it("seeds a row for every key, with the registry's slug", () => {
     for (const key of SYSTEM_ASSET_KEYS) {
       const slug = SYSTEM_ASSETS[key].slug;
       const seeded =
-        m0117.includes(`'${slug}'`) || m0127.includes(`$s$${slug}$s$`);
+        allMigrations.includes(`'${slug}'`) ||
+        allMigrations.includes(`$s$${slug}$s$`);
       expect(seeded, `${key} (${slug})`).toBe(true);
     }
   });
@@ -118,8 +130,8 @@ describe("the migrations agree with the registry", () => {
   it("seeds the starting wording from system-defaults.ts, verbatim", () => {
     for (const key of SYSTEM_ASSET_KEYS) {
       const d = SYSTEM_EMAIL_DEFAULTS[key];
-      expect(m0127, `${key} subject`).toContain(`$s$${d.subject}$s$`);
-      expect(m0127, `${key} body`).toContain(`$body$${d.body}$body$`);
+      expect(allMigrations, `${key} subject`).toContain(`$s$${d.subject}$s$`);
+      expect(allMigrations, `${key} body`).toContain(`$body$${d.body}$body$`);
     }
   });
 });

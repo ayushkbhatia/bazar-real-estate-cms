@@ -868,6 +868,79 @@ export function staffInvitationTemplate(
  * One email per reassign action, summarising the count plus a sample of
  * property references for context.
  */
+/**
+ * A bullet list of one-line strings, for the health digest.
+ *
+ * `listingReferencesBlock` is the nearest neighbour but is shaped around a
+ * count plus a sample of references. These lines are already composed — "job
+ * — last run 2d ago" — and there is no separate total to say "and N more"
+ * from, so this is the plainer version rather than a parameter on that one.
+ */
+export function healthLinesBlock(
+  lines: string[],
+  locale: EmailLocale = "en",
+): EmailBlock {
+  if (lines.length === 0) return { html: "", text: "" };
+  return {
+    html: `<ul dir="${dirOf(locale)}" style="margin:14px 0;padding-${startOf(locale)}:18px;font-size:13px;color:#32312d">
+          ${lines
+            .map((l) => `<li style="margin:3px 0">${iso(escape(l), locale)}</li>`)
+            .join("")}
+        </ul>`,
+    text: lines.map((l) => `\u00b7 ${l}`).join("\n"),
+  };
+}
+
+/**
+ * The daily operations digest.
+ *
+ * Sent only when there is something to say. A digest that arrives every
+ * morning saying "all clear" trains its readers to delete it unread, and the
+ * one morning it matters it is deleted unread too — so the cron does not send
+ * at all on a quiet day. The health page is where "is everything fine?" is
+ * answered on demand.
+ */
+export function healthDigestTemplate(
+  opts: {
+    errorLines: string[];
+    jobLines: string[];
+    errorCount: number;
+    jobCount: number;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const url = `${siteUrl()}/admin/settings/health`;
+  const parts: string[] = [];
+  if (opts.errorCount > 0)
+    parts.push(`${opts.errorCount} ${opts.errorCount === 1 ? "error" : "errors"}`);
+  if (opts.jobCount > 0)
+    parts.push(`${opts.jobCount} ${opts.jobCount === 1 ? "job" : "jobs"} late or failing`);
+  const summary = parts.join(" · ");
+
+  const errors = healthLinesBlock(opts.errorLines);
+  const jobs = healthLinesBlock(opts.jobLines);
+
+  const subject = `Bazar health · ${summary}`;
+
+  const text =
+    `${summary} in the last 24 hours.\n\n` +
+    (errors.text ? `Errors\n${errors.text}\n\n` : "") +
+    (jobs.text ? `Jobs\n${jobs.text}\n\n` : "") +
+    `Full detail: ${url}\n\n— Bazar CMS\n`;
+
+  const html = shell(
+    `
+    <p><strong>${escape(summary)}</strong> in the last 24 hours.</p>
+    ${errors.html ? `<p style="margin-bottom:0"><strong>Errors</strong></p>${errors.html}` : ""}
+    ${jobs.html ? `<p style="margin-bottom:0"><strong>Jobs</strong></p>${jobs.html}` : ""}
+    <p style="margin-top:22px">${button(url, "Open the health page", brand)}</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
 export function bulkReassignDigestTemplate(
   opts: {
     agentName: string;

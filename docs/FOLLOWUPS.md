@@ -843,14 +843,15 @@ shows the trail.)
   problem for this product than a silent cron. Revisit if the public site
   starts misbehaving in ways nobody can reproduce.
 
-- [observability] No digest email; the health page is pull-only.
-  /admin/settings/health answers "what broke" the moment someone looks, and
-  the per-job heartbeats make a dead scheduler visible without anything having
-  fired — which is the part a digest could not do for itself, since a digest
-  is a cron reporting on crons. What is missing is the push: nobody is told.
-  A daily digest over `error_events where last_seen_at > now() - 1 day` via
-  Resend is maybe forty lines. It was left out to ship the surface that works
-  when the scheduler does not.
+- [cron] A cron run against production from a laptop sends real email.
+  `.env.local` carries a live `RESEND_API_KEY` and points at the production
+  database, so curling a cron route locally is not a dry run — the
+  health-digest was exercised this way on 23 Sept and delivered to all three
+  active admins. The content was accurate, but nobody asked for it. Worth
+  either a `DRY_RUN=1` env check in `lib/email.ts` that logs instead of
+  sending, or a documented rule that cron routes are only ever exercised
+  against a Supabase branch. The former is about ten lines and removes a
+  whole category of accident.
 
 - [cron] enquiry-escalation has no test, and its first real run is production.
   The route was bounded to MAX_PER_RUN and its admin-email lookup hoisted out

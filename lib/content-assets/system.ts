@@ -40,6 +40,7 @@ export const SYSTEM_ASSET_KEYS = [
   "enquiry_escalation",
   "permit_expiry_warning",
   "bulk_reassign_digest",
+  "health_digest",
   "form_submission_notification",
 ] as const;
 export type SystemAssetKey = (typeof SYSTEM_ASSET_KEYS)[number];
@@ -322,6 +323,18 @@ export const SYSTEM_ASSETS: Record<SystemAssetKey, SystemAssetDef> = {
       "properties_url",
       "site_url",
     ],
+    required: [],
+  },
+  health_digest: {
+    key: "health_digest",
+    slug: "system-health-digest",
+    label: "Daily health digest",
+    audience: "team",
+    trigger:
+      "Sent each morning when something broke in the previous day or a scheduled job has gone late. Silent on a quiet day, so an arrival always means there is something to read.",
+    recipient: "Every active admin",
+    builtIn: "lib/email-templates.ts · healthDigestTemplate",
+    tokens: ["health_errors", "health_jobs", "health_url", "site_url"],
     required: [],
   },
   bulk_reassign_digest: {

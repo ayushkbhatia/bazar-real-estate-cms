@@ -155,6 +155,18 @@ export const SYSTEM_EMAIL_DEFAULTS_AR: Record<SystemAssetKey, SystemEmailDefault
       "<p>— الالتزام في بازار</p>",
     ].join(""),
   },
+  health_digest: {
+    subject: "حالة بازار · هناك ما يستدعي المراجعة",
+    body: [
+      "<p>أظهرت آخر ٢٤ ساعة ما يلي.</p>",
+      "<p><strong>الأخطاء</strong></p>",
+      "<p>{{health_errors}}</p>",
+      "<p><strong>المهام</strong></p>",
+      "<p>{{health_jobs}}</p>",
+      '<a data-email-button="" href="{{health_url}}">افتح صفحة الحالة</a>',
+      "<p>— نظام بازار</p>",
+    ].join(""),
+  },
   bulk_reassign_digest: {
     subject: "أُسندت إليك {{listings_assigned}}",
     body: [
