@@ -39,7 +39,13 @@ const issueSchema = z.object({
   locale: z.enum(["en", "ar"]).optional(),
 
   email: z.string().email(),
-  phone: z.string().optional(),
+  /**
+   * Required since intake was aligned with Salesforce. This gate writes an
+   * `enquiries` row like any other lead, so a phone-less one would be
+   * refused by the CRM push and sit in `failed` — better to ask here than to
+   * capture something that can never be delivered.
+   */
+  phone: z.string().min(5).max(32),
   name: z.string().min(1).max(120).optional(),
   intent: z.enum(["sell", "refinance", "curious", "other"]).optional(),
   /** The just-displayed midpoint estimate so the email can echo it back. */
@@ -58,7 +64,7 @@ const verifySchema = z.object({
 
   email: z.string().email(),
   code: z.string().regex(/^\d{6}$/),
-  phone: z.string().optional(),
+  phone: z.string().min(5).max(32),
   name: z.string().min(1).max(120).optional(),
   intent: z.enum(["sell", "refinance", "curious", "other"]).optional(),
   valuation_aed: z.number().int().nonnegative().optional(),

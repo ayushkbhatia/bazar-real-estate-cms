@@ -12,7 +12,7 @@
     "emailPlaceholder": "you@example.com",
     "name": "الاسم (اختياري)",
     "namePlaceholder": "حتى نعرف كيفية توجيه التقرير",
-    "phone": "الهاتف (اختياري)",
+    "phone": "الهاتف",
     "phonePlaceholder": "+971 50 …",
     "intent": "أفكّر في…",
     "intentCurious": "مجرد فضول لمعرفة القيمة",
