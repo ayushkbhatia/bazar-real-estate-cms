@@ -78,6 +78,24 @@ delivery system and do **not** go through `lib/email.ts`. They're sent by
 Supabase's SMTP, configured under Auth → SMTP Settings, and are governed by
 `site_url` and `uri_allow_list` rather than anything in this repo.
 
+## Email delivery, and why nothing sends locally
+
+`sendEmail` refuses to deliver outside production unless you say otherwise.
+That is deliberate: `.env.local` carries a live Resend key **and** points at
+the production database, so curling a cron route from a laptop reads real
+recipients and mails them. It has happened — the health digest went to all
+three active admins during development.
+
+| `EMAIL_DRY_RUN` | Effect |
+|---|---|
+| unset | Blocked outside production, delivered in production |
+| `false` / `0` | Delivered everywhere — use for a live test from your machine |
+| `1` / `true` | Blocked everywhere, including production. An incident switch. |
+
+A blocked send returns `{ status: "skipped", reason: "dry run — …" }` and logs
+the subject and recipient, so the call site sees a normal skipped result
+rather than an error, and you can still read what would have gone out.
+
 ## Sentry
 
 Error tracking. Sign up at https://sentry.io/.

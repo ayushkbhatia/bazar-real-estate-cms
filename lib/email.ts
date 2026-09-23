@@ -75,7 +75,45 @@ export function emailSender(): { from: string; replyTo: string } {
   };
 }
 
+/**
+ * Whether delivery is blocked.
+ *
+ * ── Why this defaults to ON outside production ───────────────────────────
+ * `.env.local` on a developer machine carries a live Resend key AND points at
+ * the production database. That combination means curling a cron route from a
+ * laptop is not a dry run: it reads real recipients and sends them real mail.
+ * The health digest was exercised exactly that way and delivered to all three
+ * active admins, who had not asked for it.
+ *
+ * So the safe thing is the default and the unsafe thing is deliberate. Set
+ * `EMAIL_DRY_RUN=false` to send for real from a non-production environment —
+ * which is what you want when testing the "send me a test" button, and is a
+ * decision rather than an accident.
+ *
+ * Production is unaffected: `NODE_ENV` is "production" there, so delivery is
+ * on unless someone explicitly sets `EMAIL_DRY_RUN=1` to stop it — which is
+ * itself useful during an incident.
+ */
+export function isEmailDryRun(): boolean {
+  const raw = env.EMAIL_DRY_RUN?.trim().toLowerCase();
+  if (raw === "1" || raw === "true" || raw === "yes") return true;
+  if (raw === "0" || raw === "false" || raw === "no") return false;
+  return env.NODE_ENV !== "production";
+}
+
 export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
+  // Before the client check, so the reason is the real one: "dry run" rather
+  // than "no API key" when a developer happens to have both.
+  if (isEmailDryRun()) {
+    console.warn(
+      `[email] DRY RUN — not sending "${input.subject}" to ${input.to}. Set EMAIL_DRY_RUN=false to send.`,
+    );
+    return {
+      status: "skipped",
+      reason: "dry run — set EMAIL_DRY_RUN=false to send",
+    };
+  }
+
   const resend = getClient();
   if (!resend) {
     console.warn(

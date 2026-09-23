@@ -40,6 +40,10 @@ beforeEach(() => {
   // RESEND_API_KEY needs to be set or isResendConfigured stays false and
   // sendEmail returns { status: "skipped" } before reaching the SDK.
   vi.stubEnv("RESEND_API_KEY", "test-key");
+  // Delivery is blocked outside production by default, so these specs — which
+  // exist to exercise the real send path — have to opt in, exactly as a
+  // developer testing a live send from their machine would.
+  vi.stubEnv("EMAIL_DRY_RUN", "false");
 });
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -158,5 +162,69 @@ describe("explainResendError", () => {
     const { explainResendError } = await import("./email");
     const original = "Rate limit exceeded";
     expect(explainResendError(original)).toContain(original);
+  });
+});
+
+describe("sendEmail · the dry-run guard", () => {
+  it("blocks delivery outside production by default", async () => {
+    // The accident this exists for: .env.local holds a live Resend key AND
+    // points at the production database, so a cron curled from a laptop sent
+    // a real digest to all three admins.
+    vi.stubEnv("EMAIL_DRY_RUN", "");
+    vi.stubEnv("NODE_ENV", "development");
+    const { sendEmail } = await importEmail();
+
+    const result = await sendEmail({
+      to: "owner@example.com",
+      subject: "Should not arrive",
+      text: "x",
+      html: "<p>x</p>",
+    });
+
+    expect(result.status).toBe("skipped");
+    expect(sendSpy).not.toHaveBeenCalled();
+  });
+
+  it("says why, so a missing email is not mistaken for a bug", async () => {
+    vi.stubEnv("EMAIL_DRY_RUN", "");
+    vi.stubEnv("NODE_ENV", "development");
+    const { sendEmail } = await importEmail();
+    const result = await sendEmail({
+      to: "a@b.com",
+      subject: "s",
+      text: "t",
+      html: "<p>t</p>",
+    });
+    expect(result.status === "skipped" && result.reason).toContain(
+      "EMAIL_DRY_RUN=false",
+    );
+  });
+
+  it("sends in production without anything being set", async () => {
+    vi.stubEnv("EMAIL_DRY_RUN", "");
+    vi.stubEnv("NODE_ENV", "production");
+    const { sendEmail } = await importEmail();
+    const result = await sendEmail({
+      to: "a@b.com",
+      subject: "s",
+      text: "t",
+      html: "<p>t</p>",
+    });
+    expect(result.status).toBe("ok");
+    expect(sendSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("can be forced on in production, for an incident", async () => {
+    vi.stubEnv("EMAIL_DRY_RUN", "1");
+    vi.stubEnv("NODE_ENV", "production");
+    const { sendEmail } = await importEmail();
+    const result = await sendEmail({
+      to: "a@b.com",
+      subject: "s",
+      text: "t",
+      html: "<p>t</p>",
+    });
+    expect(result.status).toBe("skipped");
+    expect(sendSpy).not.toHaveBeenCalled();
   });
 });

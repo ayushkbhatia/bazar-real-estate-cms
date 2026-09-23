@@ -27,6 +27,9 @@ const serverSchema = z.object({
   RESEND_FROM_ADDRESS: senderAddress.optional(),
   RESEND_REPLY_TO: z.string().email().optional(),
   CRON_SECRET: z.string().min(1).optional(),
+  // Blocks real delivery. Unset it and nothing outside production sends —
+  // see `isEmailDryRun` in lib/email.ts for why that is the default.
+  EMAIL_DRY_RUN: z.string().optional(),
   // Upstash Redis credentials for per-IP rate limiting. Both optional —
   // when absent, lib/rate-limit no-ops so dev/test still work.
   UPSTASH_REDIS_REST_URL: z.string().url().optional(),
@@ -120,6 +123,7 @@ const serverEnv =
         RESEND_FROM_ADDRESS: process.env.RESEND_FROM_ADDRESS,
         RESEND_REPLY_TO: process.env.RESEND_REPLY_TO,
         CRON_SECRET: process.env.CRON_SECRET,
+        EMAIL_DRY_RUN: process.env.EMAIL_DRY_RUN,
         UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
         UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
         MEILISEARCH_HOST: process.env.MEILISEARCH_HOST,
