@@ -1,6 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createResilientFetch } from "./resilient-fetch";
+import { BUDGET_MS, createResilientFetch } from "./resilient-fetch";
 
 /** No real waiting: every spec below drives the backoff through this. */
 const noSleep = () => Promise.resolve();
@@ -35,8 +37,18 @@ function make(
       return next;
     },
   );
-  const f = createResilientFetch({ fetchImpl, sleepImpl: noSleep, ...extra });
-  return { f, fetchImpl, calls };
+  // A fake clock that waiting advances, so the time budget is exercised
+  // without any spec actually waiting for it.
+  let now = 0;
+  const f = createResilientFetch({
+    fetchImpl,
+    nowImpl: () => now,
+    sleepImpl: async (ms) => {
+      now += ms;
+    },
+    ...extra,
+  });
+  return { f, fetchImpl, calls, elapsed: () => now };
 }
 
 const ok = () => new Response("{}", { status: 200 });
@@ -44,6 +56,14 @@ const status = (s: number, headers?: HeadersInit) =>
   new Response("", { status: s, headers });
 
 describe("createResilientFetch", () => {
+  // Jitter pinned mid-range, so attempt counts are the same on every run.
+  beforeEach(() => {
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("returns a healthy response without retrying", async () => {
     const { f, fetchImpl } = make([ok()]);
     const res = await f("https://db.example.com/rest/v1/properties");
@@ -63,14 +83,56 @@ describe("createResilientFetch", () => {
     expect(fetchImpl).toHaveBeenCalledTimes(3);
   });
 
-  it("retries 5xx and 429, and gives up after the last attempt", async () => {
+  it("retries 5xx and 429 until the time budget is spent, then gives up", async () => {
     for (const s of [500, 502, 503, 504, 429, 521, 527]) {
-      const { f, fetchImpl } = make([status(s)]);
+      const { f, fetchImpl, elapsed } = make([status(s)]);
       const res = await f("https://db.example.com/rest/v1/x");
+      // The caller gets the real response to handle.
       expect(res.status, `status ${s}`).toBe(s);
-      // Four attempts, then the caller gets the real response to handle.
-      expect(fetchImpl, `status ${s}`).toHaveBeenCalledTimes(4);
+      // Limited by time, not by a count: a fast-failing status gets far more
+      // than the four attempts a count budget allowed…
+      expect(fetchImpl.mock.calls.length, `status ${s}`).toBeGreaterThan(4);
+      // …and still stops inside the budget.
+      expect(elapsed(), `status ${s}`).toBeLessThanOrEqual(BUDGET_MS);
     }
+  });
+
+  /**
+   * The 2026-09-23 failure. The outage answered FAST — Cloudflare 522s in a
+   * second or two — so four attempts spent a few seconds of backoff and gave
+   * up while it was still going. Retrying on time outlasts it.
+   */
+  it("outlasts a 30-second outage that fails fast", async () => {
+    let now = 0;
+    const fetchImpl = vi.fn(async () =>
+      now < 30_000 ? status(522) : ok(),
+    );
+    const f = createResilientFetch({
+      fetchImpl,
+      nowImpl: () => now,
+      sleepImpl: async (ms) => {
+        now += ms;
+      },
+    });
+    const res = await f("https://db.example.com/rest/v1/x");
+    expect(res.status).toBe(200);
+    expect(now).toBeGreaterThanOrEqual(30_000);
+  });
+
+  /**
+   * No attempt may run past the read's budget, so the budget is the worst
+   * case rather than the budget plus one more full attempt.
+   */
+  it("cuts the last attempt short at the budget instead of overrunning it", async () => {
+    const { f, fetchImpl } = make(["hang"], {
+      perAttemptMs: 10_000,
+      budgetMs: 25,
+    });
+    const started = Date.now();
+    await expect(f("https://db.example.com/rest/v1/slow")).rejects.toThrow();
+    // Aborted at the 25ms budget, not the 10s per-attempt deadline.
+    expect(Date.now() - started).toBeLessThan(2_000);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 
   /** A 401 or a 404 is an answer. Asking again is just slower. */
@@ -95,7 +157,7 @@ describe("createResilientFetch", () => {
     await expect(f("https://db.example.com/rest/v1/x")).rejects.toThrow(
       "ECONNRESET",
     );
-    expect(fetchImpl).toHaveBeenCalledTimes(4);
+    expect(fetchImpl.mock.calls.length).toBeGreaterThan(4);
   });
 
   /**
@@ -239,34 +301,27 @@ describe("createResilientFetch", () => {
   });
 
   /**
-   * Every attempt at 10s plus backoff has to stay inside Next's 60s per-route
-   * prerender budget, or the wrapper reintroduces the failure it exists to
-   * prevent.
+   * The budget has to fit the route's prerender limit with room for two
+   * SEQUENTIAL reads that each spend all of it — in an outage the first read
+   * absorbs the wait and later ones come back quickly, so two is the case to
+   * budget for. That is why `next.config.ts` raised the limit to 180s.
    *
-   * The attempt count is read from the calls actually made, not written here,
-   * so raising the default cannot leave this asserting the old number. And the
-   * jitter is pinned to its maximum: this used to sum whatever `Math.random`
-   * produced on the run, which checked a typical case and called it the worst.
+   * This spec once asserted against Next's 60s default, months after the
+   * config had raised it. So the limit is read from `next.config.ts` itself:
+   * change either number and this is where you find out whether the other
+   * still agrees.
    */
-  it("has a worst case that fits inside the prerender budget", async () => {
-    const random = vi.spyOn(Math, "random").mockReturnValue(0.999_999);
-    try {
-      const waits: number[] = [];
-      const { f, fetchImpl } = make([status(503)], {
-        perAttemptMs: 10_000,
-        sleepImpl: async (ms) => {
-          waits.push(ms);
-        },
-      });
-      await f("https://db.example.com/rest/v1/x");
-      const attempts = fetchImpl.mock.calls.length;
-      const ceiling = attempts * 10_000 + waits.reduce((a, b) => a + b, 0);
-      expect(ceiling).toBeLessThan(60_000);
-      // And it has to outlast the ~30s outage that set the default at four.
-      expect(attempts * 10_000).toBeGreaterThan(30_000);
-    } finally {
-      random.mockRestore();
-    }
+  it("fits two budget-spending reads inside the configured prerender limit", () => {
+    const config = readFileSync(
+      join(__dirname, "..", "..", "next.config.ts"),
+      "utf8",
+    );
+    const match = config.match(/staticPageGenerationTimeout:\s*(\d+)/);
+    expect(match, "staticPageGenerationTimeout in next.config.ts").not.toBeNull();
+    const routeLimitMs = Number(match![1]) * 1000;
+    expect(2 * BUDGET_MS).toBeLessThanOrEqual(routeLimitMs);
+    // And one read has to outlast the ~60s blackout measured on 2026-09-23.
+    expect(BUDGET_MS).toBeGreaterThan(60_000);
   });
 });
 

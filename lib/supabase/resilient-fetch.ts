@@ -14,25 +14,50 @@
  *
  * The naive fix — wrap the call in a retry loop — would not have saved either
  * build. `fetch` has no default timeout: a connection that hangs stays hung,
- * and Next's per-route prerender budget (60s) expires with the first attempt
- * still open. There is never a second attempt. So the load-bearing half of
- * this file is `PER_ATTEMPT_MS`, which turns an unbounded hang into a fast
- * failure that a retry can answer. The retry is the cheap half.
+ * and the route's prerender budget expires with the first attempt still open.
+ * There is never a second attempt. So the load-bearing half of this file is
+ * `PER_ATTEMPT_MS`, which turns an unbounded hang into a fast failure that a
+ * retry can answer. The retry is the cheap half.
  *
- * Four attempts at 10s each, plus backoff, is a worst case of about 46s —
- * inside the 60s route budget, so a route that would have timed out now either
- * succeeds or fails early enough for the caller's own `catch` to render its
- * fallback.
+ * THE BUDGET IS TIME, NOT ATTEMPTS
  *
- * It was three, a ~31s ceiling, and that turned out to be the length of the
- * outage it meets. On 2026-09-23 the CI runners lost Supabase entirely for
- * windows of about 30s — Supabase's edge logs show the requests simply never
- * arriving, 2 per 10s against hundreds either side, with no 429 or 5xx — and
- * whether a build survived came down to when its reads happened to start. A
- * read begun a few seconds into the window outlived it; one begun at its start
- * spent all three attempts inside it and aborted the prerender. Four attempts
- * cover the window with room to spare. Five would reach ~56s worst case, which
- * is too close to the budget to be a margin.
+ * This used to be "three attempts", then "four". Both were the wrong unit.
+ * An attempt count only buys wall-clock time when every attempt hangs for its
+ * full 10s; an outage that answers FAST — a Cloudflare 522 or 525 comes back
+ * in a second or two — burned through all of them in a few seconds of backoff
+ * (0.4s, 0.8s, 1.6s) and gave up long before the outage ended.
+ *
+ * That is exactly what 2026-09-23 looked like. The CI runners lost Supabase in
+ * windows of 30s and more: some reads hung (`no response in 10000ms`), others
+ * got an instant 522/525, and Supabase's own edge logs show most requests in
+ * the window never arriving at all — no 429, no 5xx, Postgres idle. Retries
+ * absorbed the bulk of it (86 first-attempt failures became 33 second, 8
+ * third), but a build dies on its first read that runs out, and with a count
+ * budget the fast-failing reads always ran out first.
+ *
+ * So a read now keeps trying until `BUDGET_MS` of wall-clock time is spent,
+ * backing off exponentially to a cap, and no single attempt may run past the
+ * budget. A hanging outage gets ~6 attempts; a fast-failing one gets as many
+ * as fit. Either way the read outlasts the windows measured so far, and its
+ * worst case is the budget itself.
+ *
+ * WHY 75 SECONDS
+ *
+ * It has to outlast the outage. The longest blackout measured on 2026-09-23
+ * ran from about 20:34:40 to 20:35:40: every CI runner's requests fell from
+ * hundreds per 20s to near zero at once and came back together. A first cut
+ * of this budget at 45s — sized to the 30s windows seen earlier that day —
+ * spent its four hanging attempts inside that one and gave up.
+ *
+ * And it has to fit the route. Next's per-route prerender limit is 180s
+ * (`staticPageGenerationTimeout` in `next.config.ts`). In an outage the first
+ * read on a page absorbs the wait and the reads after it come back quickly,
+ * so the case to budget for is two reads that each spend everything: 150s,
+ * with 30s left for the render itself. The spec reads the configured limit
+ * out of `next.config.ts` and checks exactly that, so neither number can be
+ * changed without the other being re-examined. An earlier version of this
+ * comment and its spec still measured against Next's 60s default, long after
+ * the limit had been raised.
  *
  * WHAT IS NOT RETRIED
  *
@@ -42,17 +67,31 @@
  * resilience is worth that.
  *
  * And only transient statuses: 5xx, the Cloudflare 52x family, and 429. A 401
- * or a 404 is an answer, and asking again three times is just slower.
+ * or a 404 is an answer, and asking again is just slower.
  */
 
 /** Per attempt. The number that makes a retry reachable at all. */
 const PER_ATTEMPT_MS = 10_000;
 
-/** Total attempts, first included. See the header for why four. */
-const ATTEMPTS = 4;
+/** Wall-clock budget for one read, every attempt and wait included. */
+export const BUDGET_MS = 75_000;
 
-/** Base backoff; doubles per attempt and carries jitter. */
-const BACKOFF_MS = 400;
+/**
+ * A hard cap on attempts, as a backstop to the time budget rather than the
+ * thing that decides. Generous enough that a fast-failing outage is limited by
+ * time, not by this.
+ */
+const MAX_ATTEMPTS = 12;
+
+/** Base backoff; doubles per attempt up to the cap, and carries jitter. */
+const BACKOFF_MS = 500;
+const MAX_BACKOFF_MS = 6_000;
+
+/**
+ * Don't start an attempt with less than this left. A retry that can only be
+ * given a sliver of time is a wait with extra steps.
+ */
+const MIN_ATTEMPT_MS = 2_000;
 
 /**
  * Methods safe to repeat.
@@ -102,10 +141,12 @@ function isRetriableError(err: unknown): boolean {
 }
 
 function backoffFor(attempt: number): number {
-  const base = BACKOFF_MS * 2 ** (attempt - 1);
+  // Capped, so a long outage is probed every few seconds rather than once at
+  // the very end of the budget.
+  const base = Math.min(BACKOFF_MS * 2 ** (attempt - 1), MAX_BACKOFF_MS);
   // Jitter, because 29 build workers failing together would otherwise retry
   // together and hand the recovering database a second thundering herd.
-  return base + Math.floor(Math.random() * base);
+  return base + Math.floor((Math.random() * base) / 2);
 }
 
 const sleep = (ms: number) =>
@@ -124,12 +165,17 @@ function retryAfterMs(res: Response, fallback: number): number {
 }
 
 export type ResilientFetchOptions = {
+  /** Hard cap on attempts; the time budget is what normally decides. */
   attempts?: number;
   perAttemptMs?: number;
+  /** Wall-clock budget for one read, every attempt and wait included. */
+  budgetMs?: number;
   /** Injected in tests; defaults to the platform `fetch`. */
   fetchImpl?: typeof fetch;
   /** Injected in tests so they do not actually wait. */
   sleepImpl?: (ms: number) => Promise<void>;
+  /** Injected in tests alongside `sleepImpl`, so waiting advances time. */
+  nowImpl?: () => number;
   /** Called once per swallowed failure. The build log is the only place this
    *  is visible, and a silent retry is how a slow database stays unnoticed. */
   onRetry?: (info: { attempt: number; reason: string; url: string }) => void;
@@ -144,10 +190,12 @@ export function createResilientFetch(
   options: ResilientFetchOptions = {},
 ): typeof fetch {
   const {
-    attempts = ATTEMPTS,
+    attempts = MAX_ATTEMPTS,
     perAttemptMs = PER_ATTEMPT_MS,
+    budgetMs = BUDGET_MS,
     fetchImpl,
     sleepImpl = sleep,
+    nowImpl = Date.now,
     onRetry,
   } = options;
 
@@ -171,11 +219,18 @@ export function createResilientFetch(
 
     const repeatable = IDEMPOTENT.has(method);
     const total = repeatable ? attempts : 1;
+    const started = nowImpl();
+    const spent = () => nowImpl() - started;
+    // Whether, after waiting `ms`, a worthwhile attempt still fits.
+    const roomAfter = (ms: number) => spent() + ms + MIN_ATTEMPT_MS <= budgetMs;
     let lastError: unknown;
 
     for (let attempt = 1; attempt <= total; attempt++) {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), perAttemptMs);
+      // No attempt may run past the read's budget, so the budget is the worst
+      // case — not the budget plus one more full attempt.
+      const deadline = Math.max(1, Math.min(perAttemptMs, budgetMs - spent()));
+      const timer = setTimeout(() => controller.abort(), deadline);
       // The caller's own signal still cancels us — its abort is forwarded, and
       // `isRetriableError` will not treat the result as retriable, so a
       // deliberate cancellation ends the loop rather than restarting it.
@@ -185,10 +240,15 @@ export function createResilientFetch(
       try {
         const res = await call(input, { ...init, signal: controller.signal });
         if (attempt < total && isTransient(res.status)) {
-          onRetry?.({ attempt, reason: `HTTP ${res.status}`, url });
-          await sleepImpl(retryAfterMs(res, backoffFor(attempt)));
-          continue;
+          const wait = retryAfterMs(res, backoffFor(attempt));
+          if (roomAfter(wait)) {
+            onRetry?.({ attempt, reason: `HTTP ${res.status}`, url });
+            await sleepImpl(wait);
+            continue;
+          }
         }
+        // A success, an answer that is not transient, or a transient one with
+        // no budget left to ask again — the caller gets it either way.
         return res;
       } catch (err) {
         lastError = err;
@@ -196,22 +256,24 @@ export function createResilientFetch(
         // OUR deadline, not theirs. Both surface as an `AbortError`, and only
         // the signals tell them apart — see `isRetriableError`.
         const timedOut = controller.signal.aborted && !callerAborted;
-        // The caller cancelled, or this was the last attempt, or the failure
-        // is not one repeating can fix.
+        const wait = backoffFor(attempt);
+        // The caller cancelled, this was the last attempt, the failure is not
+        // one repeating can fix, or the budget has no room for another try.
         if (
           callerAborted ||
           attempt === total ||
-          (!timedOut && !isRetriableError(err))
+          (!timedOut && !isRetriableError(err)) ||
+          !roomAfter(wait)
         )
           throw err;
         onRetry?.({
           attempt,
           reason: timedOut
-            ? `no response in ${perAttemptMs}ms`
+            ? `no response in ${deadline}ms`
             : ((err as Error).message ?? "network error"),
           url,
         });
-        await sleepImpl(backoffFor(attempt));
+        await sleepImpl(wait);
       } finally {
         clearTimeout(timer);
         init?.signal?.removeEventListener("abort", onCallerAbort);
