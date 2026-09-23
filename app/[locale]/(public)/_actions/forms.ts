@@ -15,6 +15,7 @@ import {
   normaliseSubmission,
 } from "@/lib/forms/validate";
 import { visibleFields } from "@/lib/forms/resolve";
+import { classifyRawSubmission, withoutSpamControls } from "@/lib/forms/spam";
 import type { FormOption, ResolvedForm } from "@/lib/forms/types";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { list, type SectionValues } from "@/lib/master-pages";
@@ -107,9 +108,35 @@ export async function submitForm(
     };
   }
 
+  /*
+   * Bot check, before anything is resolved or written.
+   *
+   * It answers `ok` and files nothing. Telling a bot it failed is telling it
+   * what to change — the ones that get a hard error come back having dropped
+   * the field they were caught on, and the honeypot is worth exactly one
+   * round of that. A silent success spends nothing and teaches nothing.
+   *
+   * Logged, not reported. `reportError` is the wrong home for this: it writes
+   * to `error_events`, which feeds /admin/settings/health and the daily admin
+   * digest that goes out "only when there is something to report" — so every
+   * bot the honeypot stopped would read as a fault and could mail every admin
+   * about a defence doing its job. That is how a defence gets muted. A line in
+   * the function logs answers "is it catching anything" without either.
+   */
+  const verdict = classifyRawSubmission(rawValues);
+  if (verdict.spam) {
+    console.info(
+      `[forms.spam] dropped a ${verdict.reason} submission on ${formKey}`,
+    );
+    return { status: "ok", enquiryId: null };
+  }
+  // Stripped before validation so the control fields cannot be mistaken for
+  // answers — by the schema, by the brief, or by Responses.
+  const submitted = withoutSpamControls(rawValues);
+
   const dynamic = await loadDynamicOptions(form);
 
-  const normalised = normaliseSubmission(form, rawValues);
+  const normalised = normaliseSubmission(form, submitted);
   const parsed = buildFormSchema(form, dynamic, normalised).safeParse(
     normalised,
   );
