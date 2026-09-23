@@ -123,11 +123,24 @@ export async function GET(req: NextRequest) {
     );
 
     const byJob = new Map((beats ?? []).map((b) => [b.job, b]));
+
+    // "Never run" is only meaningful once the scheduler has demonstrably
+    // fired at least once.
+    //
+    // On the morning after a deploy the daily jobs have not come round yet —
+    // post-valuation-nurture runs at 08:00, an hour AFTER this — so reporting
+    // them would mail every admin about a job that is simply not due. A
+    // digest that cries wolf on day one teaches its readers to ignore it,
+    // which is the one thing it cannot afford. The health page still shows
+    // them as never run: an admin who goes looking deserves the whole truth,
+    // and there the absence is information rather than an interruption.
+    const schedulerHasRun = (beats ?? []).length > 0;
+
     const jobLines: string[] = [];
     for (const job of SCHEDULED_JOBS) {
       const hb = byJob.get(job);
       if (!hb) {
-        jobLines.push(`${job} — has never run`);
+        if (schedulerHasRun) jobLines.push(`${job} — has never run`);
       } else if (isStale(hb, now)) {
         jobLines.push(
           `${job} — last run ${ago(hb.last_run_at, now)}, expected every ${staleAfterMinutes(job)}m`,
