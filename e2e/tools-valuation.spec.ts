@@ -1,8 +1,14 @@
 import { test, expect } from "@playwright/test";
+import { installLeadCleanup, skipUnlessPurgeable } from "./_cleanup";
+
+const trackLead = installLeadCleanup();
 
 test("valuation wizard walks owner through all four steps and submits", async ({
   page,
 }) => {
+  // Files a real valuation request against the client's CMS — see
+  // e2e/_cleanup.ts.
+  skipUnlessPurgeable();
   await page.goto("/tools/valuation");
   await expect(
     page.getByRole("heading", { name: /What's your property worth/i }),
@@ -46,8 +52,11 @@ test("valuation wizard walks owner through all four steps and submits", async ({
     page.getByRole("heading", { name: /^About you$/i }),
   ).toBeVisible();
   const ts = Date.now();
+  // Tagged before it is typed — the afterEach hook deletes the row whether or
+  // not the confirmation assertions below pass.
+  const email = trackLead(`pw+val-${ts}@example.com`);
   await page.getByLabel(/^Full name$/i).fill(`Playwright Owner ${ts}`);
-  await page.getByLabel(/^Email$/i).fill(`pw+val-${ts}@example.com`);
+  await page.getByLabel(/^Email$/i).fill(email);
   await page.getByRole("button", { name: /Send for review/i }).click();
 
   // Confirmation card + frozen instant range.
