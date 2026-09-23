@@ -15,6 +15,7 @@ import {
   normaliseSubmission,
 } from "@/lib/forms/validate";
 import { visibleFields } from "@/lib/forms/resolve";
+import { classifyRawSubmission, withoutSpamControls } from "@/lib/forms/spam";
 import type { FormOption, ResolvedForm } from "@/lib/forms/types";
 import { getMasterPageContent } from "@/lib/queries/master-pages";
 import { list, type SectionValues } from "@/lib/master-pages";
@@ -107,9 +108,35 @@ export async function submitForm(
     };
   }
 
+  /*
+   * Bot check, before anything is resolved or written.
+   *
+   * It answers `ok` and files nothing. Telling a bot it failed is telling it
+   * what to change — the ones that get a hard error come back having dropped
+   * the field they were caught on, and the honeypot is worth exactly one
+   * round of that. A silent success spends nothing and teaches nothing.
+   *
+   * Recorded at `info`, not as an exception: this working is the normal case,
+   * and a flood of Sentry issues for a defence doing its job is how the
+   * defence gets muted. The breadcrumb is there to answer "is it catching
+   * anything" without a query.
+   */
+  const verdict = classifyRawSubmission(rawValues);
+  if (verdict.spam) {
+    Sentry.addBreadcrumb({
+      category: "forms.spam",
+      level: "info",
+      message: `Dropped a ${verdict.reason} submission on ${formKey}`,
+    });
+    return { status: "ok", enquiryId: null };
+  }
+  // Stripped before validation so the control fields cannot be mistaken for
+  // answers — by the schema, by the brief, or by Responses.
+  const submitted = withoutSpamControls(rawValues);
+
   const dynamic = await loadDynamicOptions(form);
 
-  const normalised = normaliseSubmission(form, rawValues);
+  const normalised = normaliseSubmission(form, submitted);
   const parsed = buildFormSchema(form, dynamic, normalised).safeParse(
     normalised,
   );

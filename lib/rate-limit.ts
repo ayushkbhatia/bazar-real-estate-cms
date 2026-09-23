@@ -20,8 +20,36 @@ type LimiterEntry = { limiter: Ratelimit; requests: number };
 const cache = new Map<string, LimiterEntry>();
 let redisSingleton: Redis | null = null;
 
+/**
+ * Say once, per process, that the limiter is not actually running.
+ *
+ * The no-op below is deliberate and documented, and it still cost us: no
+ * `UPSTASH_*` variable has ever been set in Vercel, in any environment, so
+ * every `checkRateLimit` call on the live site returned `ok` without
+ * consulting anything. Five actions call it and all five read as protected.
+ * Nobody noticed until a form-submission service put ~85 junk leads in the
+ * client's inbox and the limiter turned out to be scenery.
+ *
+ * Warning only in production, and only once: locally and in preview the
+ * degradation is the intended behaviour, and a line per request would be
+ * noise rather than a signal.
+ */
+let warnedUnconfigured = false;
+function warnUnconfigured(): void {
+  if (warnedUnconfigured) return;
+  warnedUnconfigured = true;
+  if (process.env.NODE_ENV !== "production") return;
+  console.warn(
+    "[rate-limit] UPSTASH_REDIS_REST_URL / _TOKEN are unset — every public " +
+      "endpoint is running with NO rate limiting.",
+  );
+}
+
 function getRedis(): Redis | null {
-  if (!env.UPSTASH_REDIS_REST_URL || !env.UPSTASH_REDIS_REST_TOKEN) return null;
+  if (!env.UPSTASH_REDIS_REST_URL || !env.UPSTASH_REDIS_REST_TOKEN) {
+    warnUnconfigured();
+    return null;
+  }
   if (!redisSingleton) {
     redisSingleton = new Redis({
       url: env.UPSTASH_REDIS_REST_URL,

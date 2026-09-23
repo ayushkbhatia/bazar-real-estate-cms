@@ -19,7 +19,7 @@ import { useLocale, useTranslations } from "next-intl";
  * disagree about what "required" means after an editor changes it.
  */
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Send } from "lucide-react";
 import { toast } from "sonner";
@@ -42,6 +42,7 @@ import {
 import { buildFormSchema, normaliseSubmission } from "@/lib/forms/validate";
 import { optionsFor } from "@/lib/forms/submission";
 import { buildSearchRedirect } from "@/lib/forms/search";
+import { HONEYPOT_FIELD, RENDERED_AT_FIELD } from "@/lib/forms/spam";
 import { DualRangeSlider } from "../dual-range-slider";
 import { submitForm, type FormSubmitContext } from "../../_actions/forms";
 
@@ -134,10 +135,27 @@ export function FormRenderer({
   const [formError, setFormError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
+  /**
+   * Bot controls — see `lib/forms/spam.ts`.
+   *
+   * Refs rather than state: neither value is ever read during a render, and
+   * putting the honeypot in `values` would feed it to the validator and into
+   * Responses as if a visitor had answered it.
+   */
+  const honeypotRef = useRef<HTMLInputElement>(null);
+  const renderedAtRef = useRef<number | null>(null);
   // Bumped after "Send another". The slider holds its handle positions in its
   // own state, so clearing `values` alone would leave it showing a range the
   // form no longer has an answer for; remounting the tree is the honest reset.
   const [attempt, setAttempt] = useState(0);
+
+  // Started in an effect rather than at render: `Date.now()` is impure, and a
+  // clock that only starts once the browser has actually painted is the one
+  // the fill-time floor means to measure anyway. Re-armed per attempt so the
+  // second lead through "Send another" is timed from its own blank form.
+  useEffect(() => {
+    renderedAtRef.current = Date.now();
+  }, [attempt]);
 
   // What the form is asking right now. A branching form re-reads this on every
   // keystroke — the Buy hero swaps its property-type dropdown and drops its
@@ -190,14 +208,25 @@ export function FormRenderer({
     setErrors({});
 
     startTransition(async () => {
-      const result = await submitForm(form.key, normalised, {
-        ...context,
-        // The form renders under `[locale]`, so this IS the segment.
-        locale,
-        path:
-          context?.path ??
-          (typeof window === "undefined" ? null : window.location.pathname),
-      });
+      const result = await submitForm(
+        form.key,
+        {
+          ...normalised,
+          [HONEYPOT_FIELD]: honeypotRef.current?.value ?? "",
+          // Null when the effect has not run — treated as "no opinion" by the
+          // classifier rather than as suspicious, so a visitor whose
+          // JavaScript is slow is never the one who pays.
+          [RENDERED_AT_FIELD]: renderedAtRef.current ?? "",
+        },
+        {
+          ...context,
+          // The form renders under `[locale]`, so this IS the segment.
+          locale,
+          path:
+            context?.path ??
+            (typeof window === "undefined" ? null : window.location.pathname),
+        },
+      );
       if (result.status === "ok") {
         setDone(true);
         setValues(initialValues(form, tokens));
@@ -249,6 +278,27 @@ export function FormRenderer({
         className,
       )}
     >
+      {/*
+        Honeypot — see `lib/forms/spam.ts`. A real visitor never sees this and
+        never reaches it; a form-filling bot fills every input it can parse,
+        and filling this one is the admission.
+
+        Moved off-screen rather than `display: none` or `type="hidden"`: the
+        cheap bots skip both, and skipping is exactly what we do not want. The
+        rest of the attributes keep it away from everyone else — `tabIndex`
+        from the keyboard, `aria-hidden` from screen readers, `autoComplete`
+        from the browser's autofill.
+      */}
+      <input
+        ref={honeypotRef}
+        type="text"
+        name={HONEYPOT_FIELD}
+        defaultValue=""
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute -start-[9999px] h-px w-px opacity-0"
+      />
       {copy.title ? (
         <h2
           className="serif text-[26px] md:text-[30px] leading-[1.1]"
