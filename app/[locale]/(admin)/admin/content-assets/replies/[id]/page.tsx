@@ -85,7 +85,11 @@ export default async function FormReplyPage({ params, searchParams }: PageProps)
         </span>
       }
     >
+      {/* Keyed on the language for the same reason as the email editor —
+          see the note there. Without it the Arabic side of a form reply shows,
+          and saves, the English wording. */}
       <FormReplyEditor
+        key={lang}
         id={asset.id}
         lang={lang}
         english={{ subject: asset.subject ?? "", body: englishBody }}

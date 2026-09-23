@@ -93,3 +93,73 @@ describe("no screen hand-writes the poisoned parameter", () => {
     expect(offenders.map((f) => f.slice(ROOT.length + 1))).toEqual([]);
   });
 });
+
+/**
+ * An editor that holds the wording in state must be keyed on the language.
+ *
+ * Switching language is a client-side navigation. The server re-renders the
+ * page with the other language's columns, but an editor sitting in the same
+ * position is the same React instance, so its `useState(initial)` — seeded
+ * once, on first mount — keeps the wording it started with. The toggle moves,
+ * `dir` flips, and the fields still show the language you just left. That is
+ * what reached us as "the Arabic button does nothing".
+ *
+ * It is not only cosmetic: saving from that screen writes the English text
+ * into `subject_ar`/`body_ar`, so the Arabic twin fills up with English and
+ * sends that to Arabic leads.
+ *
+ * The rule is checked at the mount site rather than inside the component,
+ * because `key` is a parent's decision and invisible from within.
+ */
+describe("every stateful editor is keyed on the language", () => {
+  const ROOT = import.meta.dirname;
+
+  function walk(dir: string): string[] {
+    return readdirSync(dir).flatMap((entry) => {
+      const full = join(dir, entry);
+      if (statSync(full).isDirectory()) return walk(full);
+      return /\.tsx$/.test(entry) ? [full] : [];
+    });
+  }
+
+  /** `_thing-editor.tsx` → `<ThingEditor`, the tag its page mounts. */
+  function editorTags(): string[] {
+    return walk(ROOT)
+      .filter((f) => /_[a-z-]*editor\.tsx$/.test(f) && !/\.test\./.test(f))
+      .flatMap((f) => {
+        const src = readFileSync(f, "utf8");
+        // Two conditions, and both are the hazard: it is handed a language,
+        // and it seeds state from its props. The outreach editor has no
+        // Arabic twin and so no toggle to survive — it is not in scope.
+        if (!/lang: EmailLocale/.test(src)) return [];
+        if (!/useState[^\n]*\(\s*initial/.test(src)) return [];
+        const exported = src.match(/export function ([A-Z]\w+)/);
+        return exported ? [exported[1]!] : [];
+      });
+  }
+
+  it("finds the editors it is meant to be checking", () => {
+    // A vacuous pass here would wave through the next editor added.
+    expect(editorTags().sort()).toEqual(["FormReplyEditor", "SystemEmailEditor"]);
+  });
+
+  it("mounts each of them with key={lang}", () => {
+    const offenders: string[] = [];
+    for (const tag of editorTags()) {
+      for (const file of walk(ROOT)) {
+        const src = readFileSync(file, "utf8");
+        const open = src.match(new RegExp(`<${tag}\\b[^>]*`, "s"));
+        if (!open) continue;
+        if (!/key=\{lang\}/.test(open[0])) {
+          offenders.push(`${file.slice(ROOT.length + 1)} mounts <${tag}>`);
+        }
+      }
+    }
+    expect(
+      offenders,
+      `Mounted without key={lang}:\n${offenders.join("\n")}\n\n` +
+        `Without it the editor survives the language switch with the other ` +
+        `language's wording in its fields — and saves it into that column.`,
+    ).toEqual([]);
+  });
+});

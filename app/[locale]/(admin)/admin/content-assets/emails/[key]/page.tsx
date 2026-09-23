@@ -132,10 +132,32 @@ export default async function SystemEmailPage({ params, searchParams }: PageProp
     locale: lang,
   });
 
+  /*
+   * `key={lang}` below is the fix for a bug worth naming, because the page
+   * looks correct without it.
+   *
+   * Switching language is a client-side navigation: the server re-renders this
+   * page with the Arabic columns and React patches the tree. But the editor is
+   * the same component in the same position, so React KEEPS its state — and
+   * every field it shows comes from `useState(initial)`, which only ever ran
+   * once. The toggle moved, `dir` flipped, and the subject and body still read
+   * the English wording. That is what "the Arabic button does nothing" looked
+   * like from the CMS.
+   *
+   * It was not only cosmetic. Saving from that screen posts `copy` with
+   * `lang: "ar"`, which writes the English text into `subject_ar` and
+   * `body_ar` — the Arabic twin, filled with English, and sent from there to
+   * every Arabic lead.
+   *
+   * Keying on the language is React's own answer to "reset state when a prop
+   * changes": a different key is a different component instance, so every
+   * piece of state is seeded from the props for the language being edited.
+   */
   return (
     <CmsShell title={def.label} breadcrumbs={<Crumbs label={def.label} lang={lang} />}>
       {row ? (
         <SystemEmailEditor
+          key={lang}
           emailKey={key}
           lang={lang}
           english={{ subject: row.subject ?? "", body: englishBody }}
