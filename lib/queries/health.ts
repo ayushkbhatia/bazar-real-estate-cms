@@ -60,6 +60,31 @@ export function isStale(hb: Heartbeat, now: Date = new Date()): boolean {
   return age > staleAfterMinutes(hb.job);
 }
 
+/**
+ * How long the scheduler must have been running before a job with no
+ * heartbeat is worth reporting as "never run".
+ *
+ * One full cycle of that job's own cadence. Without this, a deploy at 14:00
+ * makes every daily job look dead until its hour comes round, and the 07:00
+ * digest mails three admins about post-valuation-nurture — which runs at
+ * 08:00 and is simply not due yet.
+ *
+ * The scheduler's age is taken from the OLDEST heartbeat, which is the best
+ * available proxy for "when did any of this start running": there is no
+ * deploy timestamp in the database, and using the newest would reset the
+ * grace period on every run.
+ */
+export function neverRunIsMeaningful(
+  job: string,
+  oldestHeartbeat: string | null,
+  now: Date = new Date(),
+): boolean {
+  if (!oldestHeartbeat) return false; // nothing has ever run; say nothing
+  const ageMinutes =
+    (now.getTime() - new Date(oldestHeartbeat).getTime()) / 60_000;
+  return ageMinutes >= (EXPECTED_INTERVAL_MINUTES[job] ?? 60);
+}
+
 /** Jobs that vercel.json schedules — so a job that has NEVER run is visible
  *  as an absence rather than simply missing from the table. */
 export const SCHEDULED_JOBS = Object.keys(EXPECTED_INTERVAL_MINUTES).sort();

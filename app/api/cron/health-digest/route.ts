@@ -28,7 +28,12 @@ import { env, isSupabaseConfigured } from "@/lib/env";
 import { reportError, recordHeartbeat } from "@/lib/observability";
 import { healthDigestEmail } from "@/lib/content-assets/system-emails";
 import { sendEmail } from "@/lib/email";
-import { isStale, staleAfterMinutes, SCHEDULED_JOBS } from "@/lib/queries/health";
+import {
+  isStale,
+  staleAfterMinutes,
+  neverRunIsMeaningful,
+  SCHEDULED_JOBS,
+} from "@/lib/queries/health";
 import type { Database } from "@/db/types";
 
 const JOB = "health-digest";
@@ -134,13 +139,21 @@ export async function GET(req: NextRequest) {
     // which is the one thing it cannot afford. The health page still shows
     // them as never run: an admin who goes looking deserves the whole truth,
     // and there the absence is information rather than an interruption.
-    const schedulerHasRun = (beats ?? []).length > 0;
+    // The oldest stamp is how long the scheduler has demonstrably been
+    // running. A job with no heartbeat is only worth reporting once that
+    // exceeds its own cadence — otherwise a deploy at 14:00 makes every daily
+    // job look dead until its hour comes round.
+    const oldest = (beats ?? [])
+      .map((b) => b.last_run_at)
+      .sort()[0] ?? null;
 
     const jobLines: string[] = [];
     for (const job of SCHEDULED_JOBS) {
       const hb = byJob.get(job);
       if (!hb) {
-        if (schedulerHasRun) jobLines.push(`${job} — has never run`);
+        if (neverRunIsMeaningful(job, oldest, now)) {
+          jobLines.push(`${job} — has never run`);
+        }
       } else if (isStale(hb, now)) {
         jobLines.push(
           `${job} — last run ${ago(hb.last_run_at, now)}, expected every ${staleAfterMinutes(job)}m`,
