@@ -24,11 +24,16 @@ test("notifications-read endpoint rejects anon callers", async ({
   expect(res.status()).toBe(401);
 });
 
-test("viewing-reminders cron rejects unauthorised requests", async ({
-  page,
-}) => {
-  const res = await page.request.get("/api/cron/viewing-reminders", {
+test("health-digest cron rejects unauthorised requests", async ({ page }) => {
+  // Was viewing-reminders, deleted with viewing bookings. The point is that a
+  // cron route is unreachable without the Bearer secret, so it needs a route
+  // that exists — a 404 from a removed one passes nothing.
+  //
+  // 503 without CRON_SECRET, 401 with it set and no header. CI sets neither,
+  // so pinning 401 asserted the environment rather than the behaviour; the
+  // sibling list in lead-lifecycle.spec.ts has always accepted both.
+  const res = await page.request.get("/api/cron/health-digest", {
     failOnStatusCode: false,
   });
-  expect(res.status()).toBe(401);
+  expect([401, 503]).toContain(res.status());
 });
