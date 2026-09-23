@@ -81,6 +81,13 @@ export async function GET(req: NextRequest) {
     if (error) throw error;
 
     if (!stale || stale.length === 0) {
+      // Stamped, not skipped. With the backlog retired this is the path every
+      // healthy run takes, and a job that only stamps when it has work looks
+      // dead on the health page exactly when it is working properly.
+      await recordHeartbeat("enquiry-escalation", {
+        ok: true,
+        detail: "nothing waiting",
+      });
       return NextResponse.json({ ok: true, scanned: 0, escalated: 0 });
     }
 
