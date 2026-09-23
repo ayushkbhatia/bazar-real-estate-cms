@@ -19,10 +19,20 @@
  * this file is `PER_ATTEMPT_MS`, which turns an unbounded hang into a fast
  * failure that a retry can answer. The retry is the cheap half.
  *
- * Three attempts at 10s each, plus backoff, is a 32s ceiling — comfortably
+ * Four attempts at 10s each, plus backoff, is a worst case of about 46s —
  * inside the 60s route budget, so a route that would have timed out now either
  * succeeds or fails early enough for the caller's own `catch` to render its
  * fallback.
+ *
+ * It was three, a ~31s ceiling, and that turned out to be the length of the
+ * outage it meets. On 2026-09-23 the CI runners lost Supabase entirely for
+ * windows of about 30s — Supabase's edge logs show the requests simply never
+ * arriving, 2 per 10s against hundreds either side, with no 429 or 5xx — and
+ * whether a build survived came down to when its reads happened to start. A
+ * read begun a few seconds into the window outlived it; one begun at its start
+ * spent all three attempts inside it and aborted the prerender. Four attempts
+ * cover the window with room to spare. Five would reach ~56s worst case, which
+ * is too close to the budget to be a margin.
  *
  * WHAT IS NOT RETRIED
  *
@@ -38,8 +48,8 @@
 /** Per attempt. The number that makes a retry reachable at all. */
 const PER_ATTEMPT_MS = 10_000;
 
-/** Total attempts, first included. */
-const ATTEMPTS = 3;
+/** Total attempts, first included. See the header for why four. */
+const ATTEMPTS = 4;
 
 /** Base backoff; doubles per attempt and carries jitter. */
 const BACKOFF_MS = 400;

@@ -68,8 +68,8 @@ describe("createResilientFetch", () => {
       const { f, fetchImpl } = make([status(s)]);
       const res = await f("https://db.example.com/rest/v1/x");
       expect(res.status, `status ${s}`).toBe(s);
-      // Three attempts, then the caller gets the real response to handle.
-      expect(fetchImpl, `status ${s}`).toHaveBeenCalledTimes(3);
+      // Four attempts, then the caller gets the real response to handle.
+      expect(fetchImpl, `status ${s}`).toHaveBeenCalledTimes(4);
     }
   });
 
@@ -95,7 +95,7 @@ describe("createResilientFetch", () => {
     await expect(f("https://db.example.com/rest/v1/x")).rejects.toThrow(
       "ECONNRESET",
     );
-    expect(fetchImpl).toHaveBeenCalledTimes(3);
+    expect(fetchImpl).toHaveBeenCalledTimes(4);
   });
 
   /**
@@ -239,21 +239,34 @@ describe("createResilientFetch", () => {
   });
 
   /**
-   * Three attempts at 10s plus backoff has to stay inside Next's 60s
-   * per-route prerender budget, or the wrapper reintroduces the failure it
-   * exists to prevent.
+   * Every attempt at 10s plus backoff has to stay inside Next's 60s per-route
+   * prerender budget, or the wrapper reintroduces the failure it exists to
+   * prevent.
+   *
+   * The attempt count is read from the calls actually made, not written here,
+   * so raising the default cannot leave this asserting the old number. And the
+   * jitter is pinned to its maximum: this used to sum whatever `Math.random`
+   * produced on the run, which checked a typical case and called it the worst.
    */
   it("has a worst case that fits inside the prerender budget", async () => {
-    const waits: number[] = [];
-    const { f } = make([status(503)], {
-      perAttemptMs: 10_000,
-      sleepImpl: async (ms) => {
-        waits.push(ms);
-      },
-    });
-    await f("https://db.example.com/rest/v1/x");
-    const ceiling = 3 * 10_000 + waits.reduce((a, b) => a + b, 0);
-    expect(ceiling).toBeLessThan(60_000);
+    const random = vi.spyOn(Math, "random").mockReturnValue(0.999_999);
+    try {
+      const waits: number[] = [];
+      const { f, fetchImpl } = make([status(503)], {
+        perAttemptMs: 10_000,
+        sleepImpl: async (ms) => {
+          waits.push(ms);
+        },
+      });
+      await f("https://db.example.com/rest/v1/x");
+      const attempts = fetchImpl.mock.calls.length;
+      const ceiling = attempts * 10_000 + waits.reduce((a, b) => a + b, 0);
+      expect(ceiling).toBeLessThan(60_000);
+      // And it has to outlast the ~30s outage that set the default at four.
+      expect(attempts * 10_000).toBeGreaterThan(30_000);
+    } finally {
+      random.mockRestore();
+    }
   });
 });
 
