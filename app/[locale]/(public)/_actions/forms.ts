@@ -116,18 +116,18 @@ export async function submitForm(
    * the field they were caught on, and the honeypot is worth exactly one
    * round of that. A silent success spends nothing and teaches nothing.
    *
-   * Recorded at `info`, not as an exception: this working is the normal case,
-   * and a flood of Sentry issues for a defence doing its job is how the
-   * defence gets muted. The breadcrumb is there to answer "is it catching
-   * anything" without a query.
+   * Logged, not reported. `reportError` is the wrong home for this: it writes
+   * to `error_events`, which feeds /admin/settings/health and the daily admin
+   * digest that goes out "only when there is something to report" — so every
+   * bot the honeypot stopped would read as a fault and could mail every admin
+   * about a defence doing its job. That is how a defence gets muted. A line in
+   * the function logs answers "is it catching anything" without either.
    */
   const verdict = classifyRawSubmission(rawValues);
   if (verdict.spam) {
-    Sentry.addBreadcrumb({
-      category: "forms.spam",
-      level: "info",
-      message: `Dropped a ${verdict.reason} submission on ${formKey}`,
-    });
+    console.info(
+      `[forms.spam] dropped a ${verdict.reason} submission on ${formKey}`,
+    );
     return { status: "ok", enquiryId: null };
   }
   // Stripped before validation so the control fields cannot be mistaken for
