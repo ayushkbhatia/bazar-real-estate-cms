@@ -38,7 +38,6 @@ export type EnquiryActionResult =
 const VALID_STATUSES: Status[] = [
   "new",
   "qualified",
-  "viewing_scheduled",
   "offer",
   "closed_won",
   "closed_lost",

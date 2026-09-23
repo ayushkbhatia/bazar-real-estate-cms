@@ -30,11 +30,6 @@ export const KANBAN_COLUMNS: Array<{
 }> = [
   { status: "new", label: "New", accent: "oklch(0.55 0.13 240)" },
   { status: "qualified", label: "Qualified", accent: "var(--bz-accent)" },
-  {
-    status: "viewing_scheduled",
-    label: "Viewing",
-    accent: "oklch(0.5 0.1 60)",
-  },
   { status: "offer", label: "Offer", accent: "var(--bz-ink)" },
   { status: "closed_won", label: "Won", accent: "oklch(0.45 0.12 145)" },
   { status: "closed_lost", label: "Lost", accent: "oklch(0.55 0.14 28)" },

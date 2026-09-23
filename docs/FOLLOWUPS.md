@@ -809,6 +809,22 @@ shows the trail.)
   they are string arguments, not JSX text. Needs a locale-aware message
   factory, or the messages moving into the i18n store.
 
+- [webhooks] The event catalogue still offers `deal.*`, and `deals` was dropped.
+  `lib/schemas/webhook.ts` and `lib/types/sprint-8.ts` both list
+  `deal.created` / `deal.advanced` / `deal.closed` (plus `deal.stage_changed`
+  in the second), but migration 0068 dropped the `deals` table. An admin can
+  subscribe a webhook to an event that can never fire. The two files are also
+  parallel definitions of the same catalogue that have already drifted — they
+  disagree on `viewing.completed` vs `viewing.cancelled` — so fixing this is a
+  good moment to collapse them into one. Found while removing viewings
+  (0132/0133), which had the same problem and was fixed there.
+
+- [legal] The Terms still say saved searches and viewings "require an account".
+  `lib/master-pages/sections/legal.ts` §3. There are no accounts (ADR-0005)
+  and no viewings (0132). It is CMS-editable copy, so this is a wording
+  decision for the client rather than a code change — but it is currently
+  describing two features that do not exist.
+
 - [admin] `YourDayCard` is not mounted anywhere.
   `app/[locale]/(admin)/admin/_components/your-day-card.tsx` is imported by
   nothing — found while removing viewing bookings, which was one of the two

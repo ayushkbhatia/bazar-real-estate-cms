@@ -3753,9 +3753,7 @@ export type Database = {
         | "property_consultation"
       enquiry_status:
         | "new"
-        | "qualified"
-        | "viewing_scheduled"
-        | "offer"
+        | "qualified"        | "offer"
         | "closed_won"
         | "closed_lost"
       enquiry_temperature: "cold" | "warm" | "hot"
@@ -4088,7 +4086,6 @@ export const Constants = {
       enquiry_status: [
         "new",
         "qualified",
-        "viewing_scheduled",
         "offer",
         "closed_won",
         "closed_lost",

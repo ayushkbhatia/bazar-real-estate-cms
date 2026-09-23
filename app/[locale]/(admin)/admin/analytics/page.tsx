@@ -84,9 +84,9 @@ export default async function AnalyticsPage({ searchParams }: PageProps) {
         <Card title="Lead funnel (all-time)">
           <FunnelChart data={snapshot.enquiry_funnel} />
           <p className="text-[11.5px] text-bz-muted mt-3 leading-[1.55]">
-            Drop-off is computed stage to stage. New → Qualifying → Viewing
-            → Offer → Closed. We don&apos;t prune historical leads, so this
-            view spans the whole pipeline since launch.
+            Drop-off is computed stage to stage. New → Qualifying → Offer →
+            Closed. We don&apos;t prune historical leads, so this view spans
+            the whole pipeline since launch.
           </p>
         </Card>
 
