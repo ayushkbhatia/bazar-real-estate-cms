@@ -273,15 +273,21 @@ Three optional vars, all with working defaults:
 |---|---|---|
 | `SALESFORCE_API_VERSION` | `v67.0` | Pin to a newer release. |
 | `SALESFORCE_LEAD_OBJECT` | `Lead__c` | The custom object gets renamed. |
-| `SALESFORCE_LEAD_EXTERNAL_ID_FIELD` | *(unset)* | See below — this one matters. |
+| `SALESFORCE_LEAD_EXTERNAL_ID_FIELD` | `External_ID__c` | The org renamed the field. |
 
-**On the external ID.** Without it the client can only POST, which is
-at-least-once: if the network drops between Salesforce committing the record
-and us writing the returned id, the next cron run creates the lead a second
-time. Set it to the API name of a field on the lead object marked **External
-ID** in Salesforce, and the push switches to `PATCH .../<field>/<enquiry
-uuid>` — Salesforce's upsert, which is exactly-once. The code is already
-written for both; the field does not exist in the org yet.
+**On the external ID.** The 23 Sept 2026 vendor revision added
+`External_ID__c` (Text(254), External ID, Unique), so the push upserts by
+default: `PATCH .../Lead__c/External_ID__c/<enquiry uuid>`. That is
+exactly-once — a retry after a network timeout updates the existing record
+rather than creating a duplicate lead. Only set the env var if the org renames
+the field.
+
+**Roughly a third of leads are currently blocked.** Salesforce marks
+`Phone__c` and `Country_Code__c` Required; this site asks for email *or*
+phone, and 279 of 772 production leads have no phone. Those are refused
+locally — marked `failed` with a `Blocked locally:` reason, no API call made —
+and replay with one UPDATE once the vendor relaxes the requirement. See
+[SALESFORCE.md](SALESFORCE.md).
 
 **How it runs.** `enquiries.crm_sync_state` defaults to `pending`
 (migration 0130), so every insert path enrols itself with no code at the

@@ -13,9 +13,12 @@ vi.mock("@/lib/env", () => ({
   isSalesforceConfigured: true,
 }));
 
-const { buildErasurePayload, scrubLead, REDACTION_NOTICE } = await import(
-  "./erasure"
-);
+const {
+  buildErasurePayload,
+  buildErasureFallbackPayload,
+  scrubLead,
+  REDACTION_NOTICE,
+} = await import("./erasure");
 const { __resetSalesforceTokenCache } = await import("./client");
 
 const TOKEN_OK = {
@@ -95,6 +98,18 @@ describe("buildErasurePayload", () => {
   });
 });
 
+describe("buildErasureFallbackPayload", () => {
+  it("carries no personal data and no reachable address", () => {
+    const p = buildErasureFallbackPayload("deleted-abc");
+    expect(p.Name__c).toBe("deleted-abc");
+    expect(p.Description__c).toBe(REDACTION_NOTICE);
+    // RFC 2606 reserves .invalid, so this can never be delivered even if an
+    // advisor clicks it.
+    expect(p.Email__c).toMatch(/\.invalid$/);
+    expect(p.Phone__c).toBe("0000000000");
+  });
+});
+
 describe("scrubLead", () => {
   it("PATCHes the record by its Salesforce id", async () => {
     mockFetch((url) =>
@@ -134,6 +149,49 @@ describe("scrubLead", () => {
       );
       expect(await scrubLead("a04", "deleted-abc")).toEqual({ ok: true });
     }
+  });
+
+  it("erases by substitution when the org refuses a null", async () => {
+    // Email__c, Phone__c and Country_Code__c are Required as of 23 Sept. If
+    // that is Salesforce's field-level Required flag rather than just a
+    // contract note, nulling them is rejected — and PDPL erasure would stop
+    // reaching the CRM. Retrying with non-identifying constants discharges
+    // the obligation either way.
+    let attempt = 0;
+    mockFetch((url) => {
+      if (url.includes("/services/oauth2/token")) return jsonResponse(200, TOKEN_OK);
+      attempt += 1;
+      return attempt === 1
+        ? jsonResponse(400, [
+            {
+              message: "Required fields are missing: [Email__c]",
+              errorCode: "REQUIRED_FIELD_MISSING",
+              fields: ["Email__c"],
+            },
+          ])
+        : new Response(null, { status: 204 });
+    });
+
+    expect(await scrubLead("a04", "deleted-abc")).toEqual({ ok: true });
+
+    const second = calls[calls.length - 1];
+    const body = JSON.parse(String(second.init.body));
+    expect(body.Name__c).toBe("deleted-abc");
+    // No personal data survives, and nothing here is a reachable address.
+    expect(body.Email__c).toBe("redacted@bazar.invalid");
+    expect(body.Email__c.endsWith(".invalid")).toBe(true);
+    expect(body.Phone__c).not.toContain("50");
+  });
+
+  it("does not substitute when the null was accepted", async () => {
+    mockFetch((url) =>
+      url.includes("/services/oauth2/token")
+        ? jsonResponse(200, TOKEN_OK)
+        : new Response(null, { status: 204 }),
+    );
+    await scrubLead("a04", "deleted-abc");
+    const body = JSON.parse(String(calls[1].init.body));
+    expect(body.Email__c).toBeNull();
   });
 
   it("reports a transient failure as retryable", async () => {

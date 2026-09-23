@@ -7,11 +7,14 @@ Two directions, built separately, only one of which exists today.
 | **Leads out** — website → Salesforce | Every public enquiry becomes a `Lead__c` record | **Phase 1, built** |
 | **Listings in** — Salesforce → website | Properties created by the CRM team appear in the catalogue | Not started — blocked on the vendor |
 
-The vendor doc we were given (*Lead Creation API — Levarus Solutions*,
-18 Sept 2026) covers **only** the first direction. The listing sync, which is
-the larger half of the brief, is currently unspecified: there is no documented
-object, no field list, no read endpoint and no answer on where photographs
-live. The open questions below are the whole of what is needed to start it.
+Two vendor docs so far — *Lead Creation API* (18 Sept 2026) and *Web to Lead
+Creation* (23 Sept 2026) — and both cover **only** the first direction. The
+revision answered questions 9, 10 and most of 11; questions 1–8 and 12 are
+untouched, and the title narrowing from "Lead Creation" to "Web to Lead
+Creation" suggests the listing sync is not yet on their side of the plan.
+
+So the larger half of the brief remains unspecified: no documented object, no
+field list, no read endpoint, no answer on where photographs live.
 
 Setup, env vars and triage queries: [INTEGRATIONS.md](INTEGRATIONS.md#salesforce).
 
@@ -38,39 +41,81 @@ custom, all documented in the vendor doc and nothing beyond them.
 | `Email__c` | `enquiries.email` | Omitted when absent. |
 | `Country_Code__c` | split from `enquiries.phone` | `"+971"`. See `lib/salesforce/phone.ts`. |
 | `Phone__c` | split from `enquiries.phone` | National part, trunk zero stripped. |
-| `Lead_Source__c` | constant `"Website"` | The only value the doc evidences. |
-| `Inquiry_Type__c` | property `mode`, else enquiry `source` | **Only `"Buy"` is mapped** — see below. |
+| `Lead_Source__c` | enquiry `source` | `Website`, or `Others` for WhatsApp. Required. |
+| `Inquiry_Type__c` | intent → listing mode → source | `Buy` / `Sell` / `Rent`. Required. |
+| `External_ID__c` | `enquiries.id` | In the upsert URL, not the body. |
 | `Property_Reference__c` | `properties.reference` | `BAZ-AD-04891`. Omitted for non-property leads. |
 | `Description__c` | `enquiries.brief_raw` + metadata | See below. |
 
-**On `Inquiry_Type__c`.** It is a restricted picklist and we have never been
-given its value set. Sending a value Salesforce does not recognise fails the
-create with `INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST` and loses the lead;
-sending nothing leaves the field blank, which an advisor can fix in ten
-seconds. So the map in `lib/salesforce/leads.ts` is deliberately incomplete —
-`rent`, `off_plan` and `commercial` are `null` and emit nothing. Filling them
-in is a one-line change per mode once question 10 is answered.
+**On the two picklists.** Both are Required as of 23 Sept, which inverts the
+rule this mapper was first written under: an unmappable value can no longer be
+omitted and left for an advisor to fix, because omitting it fails the whole
+record with `REQUIRED_FIELD_MISSING`. Every branch now terminates in a real
+value.
 
-**On `Description__c`.** `Lead__c` has no field for the form a lead came
-from, the language it was written in, its budget or its timeline. Rather than
-drop that, it is appended under the visitor's own message as labelled lines,
-including the Bazar enquiry UUID — which is the only correlation back to this
-database until there is a real external ID field.
+`Inquiry_Type__c` resolves in precedence order — the visitor's declared
+intent (`inferred_constraints.intent`), then the listing's mode, then the form
+it came from, then a stated fallback of `Buy`. Intent outranks the listing
+deliberately: someone on a for-sale page who ticked "rent" means it. `off_plan`
+is a purchase. `commercial` is left unmapped because our `property_mode`
+conflates for-sale and for-lease, so intent or source decides instead of a
+coin flip. Valuation and `/services/sell` leads now carry `Sell`, which they
+could not before the value set was published.
 
-### Known defect: at-least-once delivery
+The fallback is a compromise, not a mapping. A property-management enquiry is
+the opposite of all three values — the person already owns the property — and
+a general "tell me about your services" lead is none of them. Worth asking
+Levarus for a fourth value.
 
-There is no field on `Lead__c` marked **External ID**, so the only available
-verb is `POST`. If the connection drops between Salesforce committing the
-record and us writing `crm_external_id`, the next cron run creates the lead
-again. `crm_attempts` caps the blast radius at five; it does not prevent the
-duplicate.
+`Lead_Source__c` has entries for `Facebook`, `Property Finder` and `Bayut`,
+all channels Bazar uses. None is mapped yet, deliberately: no lead in the
+database has ever arrived through those paths, the Meta Lead Ads importer is
+on an unmerged branch with an empty `meta_leads` table in production, and
+writing an untested branch against a schema that may still change is worse
+than leaving it. WhatsApp maps to `Others` because the picklist has no word
+for it, which is more honest than claiming the website.
 
-This is not fixable from our side. It needs one field on the object, after
-which setting `SALESFORCE_LEAD_EXTERNAL_ID_FIELD` switches the client to
-`PATCH sobjects/Lead__c/<field>/<uuid>` — Salesforce's upsert, exactly-once
-by construction. That path is written and tested already. It is question 9,
-and it is the single most valuable thing the Salesforce team can do for this
-integration.
+### The required-field problem
+
+`Email__c`, `Phone__c` and `Country_Code__c` are all Required. This site has
+always asked for email **or** phone — `lib/schemas/enquiry.ts` enforces
+exactly that — and **279 of 772 production leads have no phone number**.
+
+Every one of those is a guaranteed non-retryable 400. So the push checks
+first: `missingRequiredFields` runs before any call, and a lead that cannot
+satisfy the contract is marked `failed` with a `Blocked locally:` reason
+naming the field, without spending five round trips of the org's API
+allocation to learn what was knowable here. The cron counts those separately
+from real Salesforce errors, so a blocked lead does not leave the integrations
+card red while the org is perfectly healthy.
+
+**The ask is to make `Phone__c` and `Country_Code__c` optional.** Until then,
+roughly a third of leads will not reach the CRM. When it changes, the backlog
+replays with one statement:
+
+```sql
+update enquiries
+set crm_sync_state = 'pending', crm_attempts = 0, crm_next_attempt_at = now()
+where crm_sync_state = 'failed'
+  and crm_last_error like 'Blocked locally%';
+```
+
+### Delivery is exactly-once
+
+`External_ID__c` (Text(254), External ID, Unique) exists as of 23 Sept, so the
+push `PATCH`es `sobjects/Lead__c/External_ID__c/<enquiry uuid>`. A retry after
+a network timeout matches the existing record and updates it; there is no
+window in which a duplicate lead can be created.
+
+The field name is **defaulted**, not env-gated. A blank env var would silently
+fall back to `POST` — at-least-once delivery, duplicates on every retry — and
+nothing would say so. Defaulting inverts that: an org genuinely lacking the
+field fails loudly with `INVALID_FIELD` on the first lead, and the reason
+lands in `crm_last_error`. `SALESFORCE_LEAD_EXTERNAL_ID_FIELD` remains for an
+org that renamed it.
+
+Two success shapes, both handled: `201` with `created: true` for a new record,
+`200` with `created: false` for an update.
 
 ## Phase 2 — erasure reaches the CRM
 
@@ -88,6 +133,19 @@ to buy" identifies nobody, and is the commercial fact the 7-year AML
 retention basis exists to preserve. This mirrors migration 0067 deliberately:
 doing something different in the CRM than in the database would mean the
 retention basis either holds for both or for neither.
+
+**Required fields complicate it.** The erasure PATCH nulls `Email__c`,
+`Phone__c` and `Country_Code__c`, which 23 Sept marks Required. The doc calls
+that "the API contract for the website integration", which may or may not mean
+the fields carry Salesforce's field-level Required flag — and that flag
+rejects an update that nulls them, which would stop erasure reaching the CRM
+entirely. We cannot read the org's field metadata to find out. So a
+`REQUIRED_FIELD_MISSING` on the scrub retries once with non-identifying
+constants (`redacted@bazar.invalid`, `0000000000`, `+0`) instead of nulls.
+`.invalid` is reserved by RFC 2606 and can never resolve, so the address
+cannot be mailed even by accident. Erasure requires removing the personal
+data, not specifically writing NULL — and this is the same substitution
+already made for `Name__c` and `Description__c`.
 
 **The pseudonym is read back, not regenerated.** 0067 builds `deleted-<hex>`
 in Postgres; the CRM scrub reuses that exact value, so an auditor can line the
@@ -130,7 +188,8 @@ would be its own inaccuracy.
 
 ## Open questions for Levarus
 
-Sent <!-- date --> · answers land here as they arrive.
+Sent 22 Sept · the 23 Sept revision answered **9, 10 and most of 11**. The
+rest are outstanding, and two new ones have been added by that revision.
 
 ### Listings — Salesforce to website
 
@@ -150,11 +209,25 @@ Sent <!-- date --> · answers land here as they arrive.
 
 ### Leads — website to Salesforce
 
-9. **A field on `Lead__c` marked External ID**, so we can upsert. See above.
-10. Full picklist values for `Inquiry_Type__c` and `Lead_Source__c`.
-11. Which fields are required, what are the text lengths, and what does an
-    error response look like?
+9. ~~A field on `Lead__c` marked External ID.~~ **Answered** — `External_ID__c`,
+   Text(254), Unique. In use.
+10. ~~Full picklist values.~~ **Answered** — `Inquiry_Type__c`: Buy, Sell,
+    Rent. `Lead_Source__c`: Facebook, Advertisement, Webinar, Website,
+    Newspaper, Walk In, Property Finder, Bayut, Others.
+11. Required fields and error shapes: **answered**. Text lengths: still
+    missing for everything except `External_ID__c`. We assume Salesforce's
+    255 default and truncate.
 12. Separate Connected App credentials for production, over a secure channel.
+    **Still outstanding** — the 23 Sept revision carries the same sandbox
+    secret as the first, which has now been circulated twice.
+
+### New, raised by the 23 Sept revision
+
+13. **Make `Phone__c` and `Country_Code__c` optional.** 36% of this site's
+    leads have no phone number; as written, none of them can reach the CRM.
+14. A fourth `Inquiry_Type__c` value ("Other", or "Manage"). Property
+    management and general service enquiries are none of Buy/Sell/Rent, and
+    the field cannot be left empty, so they currently land on `Buy`.
 
 ## Design rules for Phase 3 (listings in)
 
@@ -188,6 +261,7 @@ after the first sync has run.
 |---|---|---|
 | 0 | Ask list to Levarus; rotate the sandbox secret | Sent |
 | 1 | Leads out: client, mapper, queue, cron, admin card | **Built** |
+| 2.5 | Exactly-once upsert, real picklists, required-field guard | **Built** |
 | 2 | PDPL: erasure and access requests reach the CRM | **Built** |
 | 3 | Listings in: ingest core, field mapper, dry-run, admin status | Blocked on Phase 0 |
 | 4 | Media ingest from Salesforce into the `media` bucket | Blocked on Q5 |

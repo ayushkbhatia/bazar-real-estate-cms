@@ -30,7 +30,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured, isSalesforceConfigured } from "@/lib/env";
-import { pushLead, type LeadSourceRow } from "@/lib/salesforce/leads";
+import {
+  pushLead,
+  LOCAL_BLOCK_PREFIX,
+  type LeadSourceRow,
+} from "@/lib/salesforce/leads";
 import { drainCrmErasures } from "@/lib/salesforce/erasure-queue";
 import type { Database } from "@/db/types";
 
@@ -74,6 +78,7 @@ type QueueRow = {
   source: Database["public"]["Enums"]["enquiry_source"];
   form_key: string | null;
   locale: string;
+  inferred_constraints: { intent?: string | null } | null;
   crm_attempts: number;
   properties:
     | { reference: string; mode: Database["public"]["Enums"]["property_mode"] }
@@ -97,6 +102,7 @@ function toLeadRow(row: QueueRow): LeadSourceRow {
     source: row.source,
     form_key: row.form_key,
     locale: row.locale,
+    intent: row.inferred_constraints?.intent ?? null,
     property_reference: property?.reference ?? null,
     property_mode: property?.mode ?? null,
   };
@@ -176,13 +182,14 @@ export async function GET(req: NextRequest) {
   let pushed = 0;
   let failed = 0;
   let exhausted = 0;
+  let blocked = 0;
   let lastError: string | null = null;
 
   try {
     const { data, error } = await admin
       .from("enquiries")
       .select(
-        "id, name, email, phone, brief_raw, source, form_key, locale, crm_attempts, properties:property_id(reference, mode)",
+        "id, name, email, phone, brief_raw, source, form_key, locale, inferred_constraints, crm_attempts, properties:property_id(reference, mode)",
       )
       .eq("crm_sync_state", "pending")
       .lte("crm_next_attempt_at", new Date().toISOString())
@@ -231,7 +238,15 @@ export async function GET(req: NextRequest) {
         })
         .eq("id", row.id);
 
-      lastError = message;
+      // A lead we refused to send says nothing about whether Salesforce is
+      // reachable, and letting it set `last_error` would leave the
+      // integrations card permanently red while the org is perfectly
+      // healthy — a third of this site's leads have no phone number. Counted
+      // on its own instead.
+      const isLocalBlock = message.startsWith(LOCAL_BLOCK_PREFIX);
+      if (isLocalBlock) blocked += 1;
+      else lastError = message;
+
       if (giveUp) {
         exhausted += 1;
         // A lead that will never reach the CRM is worth an alert on its own —
@@ -263,6 +278,7 @@ export async function GET(req: NextRequest) {
       pushed,
       retrying: failed,
       exhausted,
+      blocked,
       erasures,
     });
   } catch (err) {

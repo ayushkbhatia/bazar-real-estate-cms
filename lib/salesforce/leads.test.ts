@@ -8,8 +8,15 @@ vi.mock("@/lib/env", () => ({
   isSalesforceConfigured: true,
 }));
 
-const { buildLeadPayload, buildDescription, inquiryTypeFor, leadObjectName } =
-  await import("./leads");
+const {
+  buildLeadPayload,
+  buildDescription,
+  inquiryTypeFor,
+  leadSourceFor,
+  leadObjectName,
+  leadExternalIdField,
+  missingRequiredFields,
+} = await import("./leads");
 type LeadSourceRow = Parameters<typeof buildLeadPayload>[0];
 
 function row(over: Partial<LeadSourceRow> = {}): LeadSourceRow {
@@ -22,6 +29,7 @@ function row(over: Partial<LeadSourceRow> = {}): LeadSourceRow {
     source: "property_page",
     form_key: "property-enquiry",
     locale: "en",
+    intent: null,
     property_reference: "BAZ-AD-04891",
     property_mode: "buy",
     ...over,
@@ -74,13 +82,44 @@ describe("buildLeadPayload", () => {
     expect("Country_Code__c" in payload).toBe(false);
   });
 
-  it("omits an inquiry type it cannot map rather than guessing", () => {
-    // Only "Buy" is evidenced by the doc. Sending an invented value fails the
-    // create with INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST and loses the lead;
-    // sending nothing leaves the field blank, which an advisor can fix.
-    for (const mode of ["rent", "off_plan", "commercial"] as const) {
-      const payload = buildLeadPayload(row({ property_mode: mode }));
-      expect("Inquiry_Type__c" in payload, mode).toBe(false);
+  it("always sets both required picklists", () => {
+    // Both are Required as of the 23 Sept revision, so an omission is a
+    // REQUIRED_FIELD_MISSING that loses the lead. No input may leave either
+    // blank.
+    for (const mode of ["buy", "rent", "off_plan", "commercial"] as const) {
+      for (const src of ["property_page", "contact_page", "concierge"] as const) {
+        const payload = buildLeadPayload(
+          row({ property_mode: mode, source: src }),
+        );
+        expect(payload.Inquiry_Type__c, `${mode}/${src}`).toBeTruthy();
+        expect(payload.Lead_Source__c, `${mode}/${src}`).toBeTruthy();
+      }
+    }
+  });
+
+  it("only ever emits values the picklists accept", () => {
+    const types = new Set(["Buy", "Sell", "Rent"]);
+    const sources = new Set([
+      "Facebook", "Advertisement", "Webinar", "Website", "Newspaper",
+      "Walk In", "Property Finder", "Bayut", "Others",
+    ]);
+    const SOURCES = [
+      "property_page", "contact_page", "concierge", "valuation", "mortgage",
+      "blog_cta", "agent_page", "share_with_advisor", "whatsapp_inbound",
+      "brochure", "development_interest", "list_property",
+      "property_management", "property_consultation",
+    ] as const;
+    const MODES = [null, "buy", "rent", "off_plan", "commercial"] as const;
+    const INTENTS = [null, "buy", "sell", "rent", "invest", "manage"] as const;
+
+    for (const source of SOURCES) {
+      for (const property_mode of MODES) {
+        for (const intent of INTENTS) {
+          const p = buildLeadPayload(row({ source, property_mode, intent }));
+          expect(types.has(p.Inquiry_Type__c!), `${source}/${property_mode}/${intent}`).toBe(true);
+          expect(sources.has(p.Lead_Source__c!), source).toBe(true);
+        }
+      }
     }
   });
 
@@ -118,13 +157,77 @@ describe("buildDescription", () => {
 });
 
 describe("inquiryTypeFor", () => {
-  it("prefers the listing's mode over the enquiry source", () => {
-    expect(inquiryTypeFor("buy", "contact_page")).toBe("Buy");
+  it("lets the visitor's stated intent outrank the page they were on", () => {
+    // Someone on a for-sale listing who ticked "rent" means it. Reading the
+    // listing's mode over their own answer would file them as a buyer.
+    expect(inquiryTypeFor("rent", "buy", "property_page")).toBe("Rent");
+    expect(inquiryTypeFor("sell", "buy", "property_page")).toBe("Sell");
   });
 
-  it("falls back to the source when there is no listing", () => {
-    expect(inquiryTypeFor(null, "property_page")).toBe("Buy");
-    expect(inquiryTypeFor(null, "mortgage")).toBeUndefined();
+  it("treats an investor as a buyer", () => {
+    expect(inquiryTypeFor("invest", null, "contact_page")).toBe("Buy");
+  });
+
+  it("reads the listing's mode when no intent was given", () => {
+    expect(inquiryTypeFor(null, "buy", "contact_page")).toBe("Buy");
+    expect(inquiryTypeFor(null, "rent", "contact_page")).toBe("Rent");
+    // Off-plan is a purchase — the unit is sold, it just is not built yet.
+    expect(inquiryTypeFor(null, "off_plan", "contact_page")).toBe("Buy");
+  });
+
+  it("does not guess from `commercial`, which conflates sale and lease", () => {
+    // Falls through to source/fallback rather than coin-flipping.
+    expect(inquiryTypeFor(null, "commercial", "valuation")).toBe("Sell");
+  });
+
+  it("recognises the seller-side forms", () => {
+    // The half of the business "Sell" exists for. Before the picklist was
+    // published these went out labelled as buyers.
+    expect(inquiryTypeFor(null, null, "valuation")).toBe("Sell");
+    expect(inquiryTypeFor(null, null, "list_property")).toBe("Sell");
+  });
+
+  it("falls back to Buy where none of the three is true", () => {
+    // Required field, so there is no option to say nothing. Documented
+    // compromise, not a mapping.
+    expect(inquiryTypeFor(null, null, "property_management")).toBe("Buy");
+    expect(inquiryTypeFor("manage", null, "property_consultation")).toBe("Buy");
+  });
+});
+
+describe("leadSourceFor", () => {
+  it("calls a web form Website", () => {
+    expect(leadSourceFor("property_page")).toBe("Website");
+  });
+
+  it("does not claim WhatsApp came from the website", () => {
+    // The picklist has no WhatsApp value; Others is the honest one.
+    expect(leadSourceFor("whatsapp_inbound")).toBe("Others");
+  });
+});
+
+describe("missingRequiredFields", () => {
+  it("names what Salesforce would reject", () => {
+    // 279 of 772 production leads have no phone — this site has always asked
+    // for email OR phone, and the CRM now demands both.
+    expect(missingRequiredFields(buildLeadPayload(row({ phone: null })))).toEqual(
+      ["Phone__c", "Country_Code__c"],
+    );
+    expect(missingRequiredFields(buildLeadPayload(row({ email: null })))).toEqual(
+      ["Email__c"],
+    );
+  });
+
+  it("passes a complete lead", () => {
+    expect(missingRequiredFields(buildLeadPayload(row()))).toEqual([]);
+  });
+});
+
+describe("leadExternalIdField", () => {
+  it("defaults to the field the vendor confirmed", () => {
+    // Defaulted rather than env-gated: a blank env var would silently fall
+    // back to POST and duplicate leads on every retry.
+    expect(leadExternalIdField()).toBe("External_ID__c");
   });
 });
 

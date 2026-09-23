@@ -33,11 +33,32 @@ export const REDACTION_NOTICE = "[redacted at the data subject's request]";
  */
 export type LeadErasurePayload = {
   Name__c: string;
-  Email__c: null;
-  Phone__c: null;
-  Country_Code__c: null;
+  Email__c: string | null;
+  Phone__c: string | null;
+  Country_Code__c: string | null;
   Description__c: string;
 };
+
+/**
+ * Stand-ins for when the CRM will not accept an empty value.
+ *
+ * The 23 Sept revision marks `Email__c`, `Phone__c` and `Country_Code__c` as
+ * Required. It describes that as "the API contract for the website
+ * integration", which may or may not mean the fields carry Salesforce's
+ * field-level Required flag — and that flag rejects an update that nulls
+ * them, which would stop PDPL erasure reaching the CRM entirely. We cannot
+ * see the org's field metadata to know which it is.
+ *
+ * So these exist as a fallback, not a default. `.invalid` is reserved by RFC
+ * 2606 and can never resolve, so the address cannot be mailed even by
+ * accident, and neither value carries any personal data — which is what
+ * erasure actually requires. It is the same substitution already made for
+ * `Name__c` and `Description__c`; nulling was only ever the more complete
+ * option where the schema allowed it.
+ */
+const REDACTED_EMAIL = "redacted@bazar.invalid";
+const REDACTED_PHONE = "0000000000";
+const REDACTED_COUNTRY_CODE = "+0";
 
 /**
  * The fields carrying personal data, and the values that neutralise them.
@@ -60,6 +81,19 @@ export function buildErasurePayload(pseudonym: string): LeadErasurePayload {
   };
 }
 
+/** The same erasure, expressed without nulls. See REDACTED_EMAIL above. */
+export function buildErasureFallbackPayload(
+  pseudonym: string,
+): LeadErasurePayload {
+  return {
+    Name__c: pseudonym,
+    Email__c: REDACTED_EMAIL,
+    Phone__c: REDACTED_PHONE,
+    Country_Code__c: REDACTED_COUNTRY_CODE,
+    Description__c: REDACTION_NOTICE,
+  };
+}
+
 export type ScrubResult =
   | { ok: true }
   | { ok: false; retryable: boolean; message: string };
@@ -77,13 +111,49 @@ export async function scrubLead(
   externalId: string,
   pseudonym: string,
 ): Promise<ScrubResult> {
+  const path = `sobjects/${leadObjectName()}/${encodeURIComponent(externalId)}`;
+
   try {
-    await salesforceRequest(
-      `sobjects/${leadObjectName()}/${encodeURIComponent(externalId)}`,
-      { method: "PATCH", body: buildErasurePayload(pseudonym) },
-    );
+    await salesforceRequest(path, {
+      method: "PATCH",
+      body: buildErasurePayload(pseudonym),
+    });
     return { ok: true };
   } catch (err) {
+    // The org enforces Required on the fields we just tried to empty. Erase
+    // them by substitution instead — the obligation is to remove the personal
+    // data, not specifically to write NULL.
+    if (
+      err instanceof SalesforceError &&
+      err.errorCode === "REQUIRED_FIELD_MISSING"
+    ) {
+      try {
+        await salesforceRequest(path, {
+          method: "PATCH",
+          body: buildErasureFallbackPayload(pseudonym),
+        });
+        return { ok: true };
+      } catch (fallbackErr) {
+        if (fallbackErr instanceof SalesforceError) {
+          return {
+            ok: false,
+            retryable: fallbackErr.retryable,
+            message: fallbackErr.errorCode
+              ? `${fallbackErr.errorCode}: ${fallbackErr.message}`
+              : fallbackErr.message,
+          };
+        }
+        return {
+          ok: false,
+          retryable: true,
+          message:
+            fallbackErr instanceof Error
+              ? fallbackErr.message
+              : String(fallbackErr),
+        };
+      }
+    }
+
     if (err instanceof SalesforceError) {
       if (
         err.status === 404 ||
