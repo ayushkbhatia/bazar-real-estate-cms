@@ -75,30 +75,51 @@ writing an untested branch against a schema that may still change is worse
 than leaving it. WhatsApp maps to `Others` because the picklist has no word
 for it, which is more honest than claiming the website.
 
-### The required-field problem
+### Intake matches the CRM contract
 
-`Email__c`, `Phone__c` and `Country_Code__c` are all Required. This site has
-always asked for email **or** phone — `lib/schemas/enquiry.ts` enforces
-exactly that — and **279 of 772 production leads have no phone number**.
+`Email__c`, `Phone__c` and `Country_Code__c` are all Required. This site asked
+for email **or** phone for as long as it had a contact form, so a share of
+leads arrived with no number and would have been refused outright.
 
-Every one of those is a guaranteed non-retryable 400. So the push checks
-first: `missingRequiredFields` runs before any call, and a lead that cannot
-satisfy the contract is marked `failed` with a `Blocked locally:` reason
-naming the field, without spending five round trips of the org's API
-allocation to learn what was knowable here. The cron counts those separately
-from real Salesforce errors, so a blocked lead does not leave the integrations
-card red while the org is perfectly healthy.
+Intake now asks for both, in three places that have to agree:
 
-**The ask is to make `Phone__c` and `Country_Code__c` optional.** Until then,
-roughly a third of leads will not reach the CRM. When it changes, the backlog
-replays with one statement:
+| Layer | What changed |
+|---|---|
+| `lib/forms/fields.ts` | `email()`, `phone()`, `dialPhone()` default to `required` **and** `locked` |
+| `lib/schemas/enquiry.ts` | both fields required; the either-or `.refine` is gone |
+| `lib/schemas/valuation.ts` | `owner_phone` required, since a valuation is an enquiry too |
 
-```sql
-update enquiries
-set crm_sync_state = 'pending', crm_attempts = 0, crm_next_attempt_at = now()
-where crm_sync_state = 'failed'
-  and crm_last_error like 'Blocked locally%';
-```
+`locked` matters as much as `required`. A form whose phone box an editor had
+merely unticked would produce leads the CRM rejects; one whose box they had
+deleted would do it just as thoroughly and less visibly. Locked fields can
+still be relabelled and reworded — the editor keeps the wording, not the
+existence — and `resolveForm` re-attaches a locked field that storage
+dropped, so a form that lost its phone box gets it back.
+
+`buildFormSchema` forces both fields for any `enquiry` handler rather than
+reading the stored `required` flags. Three forms in production still carried
+`required: false` on a contact box; honouring that would have let the page
+accept a submission `enquirySchema` then rejects, and the visitor would see a
+generic failure on a form that looked complete. Those four rows were flipped
+in the database at the same time, so the UI agrees, but the guarantee does
+not depend on them.
+
+`missingRequiredFields` stays as the last line of defence: a lead that still
+reaches the push without the fields is marked `failed` with a
+`Blocked locally:` reason and costs no API call. It should now be unreachable
+from the public forms, and it remains the right answer for anything that
+writes an enquiry by another route.
+
+**The trade was accepted deliberately.** Some visitors will not give a number
+and will not submit. The alternative is capturing leads the sales team never
+sees.
+
+Two things this does not fix. Validation messages are English-only across
+every schema in the repo, so an Arabic visitor who omits a phone reads an
+English error — a pre-existing gap, now more visible. And asking Levarus to
+make `Phone__c` and `Country_Code__c` optional (question 13) is still worth
+doing: it would let the site choose its own intake rules rather than inherit
+the CRM's.
 
 ### Delivery is exactly-once
 

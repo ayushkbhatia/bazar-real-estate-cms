@@ -184,33 +184,58 @@ describe("optionLabel", () => {
 });
 
 describe("buildFormSchema", () => {
-  it("accepts an enquiry with a phone but no email", () => {
+  it("requires both contact fields on an enquiry", () => {
+    // Was "accepts a phone but no email". Salesforce refuses a Lead__c
+    // missing either, so a lead captured with one would never reach the desk.
     const form = defaultForm("contact_enquiry")!;
-    const values = normaliseSubmission(form, {
+    const complete = {
       name: "Ali",
-      phone: "+971 50 111 2222",
-      email: "",
       intent: "buy",
       message: "Looking on Reem.",
+    };
+    for (const missing of [
+      { phone: "+971 50 111 2222", email: "" },
+      { phone: "", email: "ali@example.com" },
+      { phone: "", email: "" },
+    ]) {
+      const values = normaliseSubmission(form, { ...complete, ...missing });
+      expect(
+        buildFormSchema(form).safeParse(values).success,
+        JSON.stringify(missing),
+      ).toBe(false);
+    }
+
+    const values = normaliseSubmission(form, {
+      ...complete,
+      phone: "+971 50 111 2222",
+      email: "ali@example.com",
     });
     expect(buildFormSchema(form).safeParse(values).success).toBe(true);
   });
 
-  it("rejects an enquiry with neither", () => {
-    const form = defaultForm("contact_enquiry")!;
+  it("forces the contact fields even when a stored row says optional", () => {
+    // Three production forms still carried `required: false` on a contact box
+    // when the CRM started refusing records without one. Honouring that flag
+    // would let the page accept a submission the server then rejects, so the
+    // visitor gets a generic failure on a form that looked complete.
+    const base = defaultForm("contact_enquiry")!;
+    const form = {
+      ...base,
+      fields: base.fields.map((f) =>
+        f.mapping === "phone" ? { ...f, required: false } : f,
+      ),
+    };
     const values = normaliseSubmission(form, {
       name: "Ali",
       phone: "",
-      email: "",
+      email: "ali@example.com",
       intent: "buy",
       message: "Looking on Reem.",
     });
     const parsed = buildFormSchema(form).safeParse(values);
     expect(parsed.success).toBe(false);
     if (!parsed.success) {
-      expect(fieldErrorsFrom(parsed.error).email).toBe(
-        "We need at least an email or a phone number",
-      );
+      expect(fieldErrorsFrom(parsed.error).phone).toBeTruthy();
     }
   });
 
@@ -255,7 +280,7 @@ describe("buildFormSchema", () => {
     const values = normaliseSubmission(form, {
       name: "Ali",
       phone: "+971 50 111 2222",
-      email: "",
+      email: "ali@example.com",
       message: "Looking on Reem.",
     });
     expect(buildFormSchema(form).safeParse(values).success).toBe(true);

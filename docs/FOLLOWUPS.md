@@ -801,6 +801,14 @@ shows the trail.)
   future template legitimately needs one of those paths, that test is the thing
   that will stop it.
 
+- [forms] Validation messages are English-only, on every schema in the repo.
+  `lib/schemas/*.ts` and `lib/forms/validate.ts` pass English literals to zod,
+  so an Arabic visitor who leaves the phone box empty reads "Enter a phone
+  number we can reach you on". Pre-existing, but more visible since phone
+  became required on every enquiry form (23 Sept). G-13 does not catch these —
+  they are string arguments, not JSX text. Needs a locale-aware message
+  factory, or the messages moving into the i18n store.
+
 - [cron] Sentry has no DSN in production, so a cron failure is silent.
   `CRON_SECRET` is now set (23 Sept) and the jobs run, but `SENTRY_DSN` /
   `NEXT_PUBLIC_SENTRY_DSN` are unset in Vercel — every `Sentry.captureException`

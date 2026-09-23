@@ -59,24 +59,55 @@ describe("enquirySchema", () => {
     }
   });
 
-  it("rejects an invalid email but allows empty email when phone is present", () => {
+  it("requires BOTH email and phone, not either", () => {
+    // Salesforce's Lead__c marks Email__c, Phone__c and Country_Code__c
+    // Required and refuses a record missing any of them. A lead captured with
+    // only one would sit in Postgres and never reach the desk that works it,
+    // so intake asks for what the CRM will accept. This used to pass with
+    // either field alone.
+    const base = {
+      name: "Ayush",
+      message: "Hi",
+      source: "contact_page" as const,
+    };
+    expect(
+      enquirySchema.safeParse({ ...base, phone: "+971501234567" }).success,
+    ).toBe(false);
+    expect(
+      enquirySchema.safeParse({ ...base, email: "lead@example.com" }).success,
+    ).toBe(false);
+    expect(
+      enquirySchema.safeParse({
+        ...base,
+        email: "lead@example.com",
+        phone: "+971501234567",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("names the missing field so the form can point at it", () => {
+    const res = enquirySchema.safeParse({
+      name: "Ayush",
+      email: "lead@example.com",
+      message: "Hi",
+      source: "contact_page",
+    });
+    expect(res.success).toBe(false);
+    if (!res.success) {
+      expect(res.error.issues.map((i) => i.path[0])).toContain("phone");
+    }
+  });
+
+  it("still rejects a malformed email", () => {
     expect(
       enquirySchema.safeParse({
         name: "Ayush",
         email: "not-an-email",
-        message: "Hi",
-        source: "contact_page",
-      }).success,
-    ).toBe(false);
-    expect(
-      enquirySchema.safeParse({
-        name: "Ayush",
-        email: "",
         phone: "+971501234567",
         message: "Hi",
         source: "contact_page",
       }).success,
-    ).toBe(true);
+    ).toBe(false);
   });
 
   it("rejects budget_min > budget_max", () => {
@@ -95,6 +126,7 @@ describe("enquirySchema", () => {
     const normalised = normaliseEnquiryInput({
       name: "Ayush",
       email: "  Lead@Example.COM  ",
+      phone: "+971501234567",
       message: "msg",
       source: "contact_page",
     });

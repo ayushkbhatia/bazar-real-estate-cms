@@ -72,7 +72,8 @@ describe("resolveForm", () => {
 
   it("lets storage win completely once any field row exists", () => {
     // The point of the manager: a registry field the editor deleted stays
-    // deleted, rather than reappearing on the next deploy.
+    // deleted, rather than reappearing on the next deploy. The contact boxes
+    // are the exception — they are locked, so they come back (see below).
     const form = resolveForm(
       "home_list_property",
       null,
@@ -81,8 +82,25 @@ describe("resolveForm", () => {
         stored({ key: "floor", label: "Which floor?", position: 20 }),
       ],
     )!;
-    expect(form.fields.map((f) => f.key)).toEqual(["email", "floor"]);
-    expect(form.fields[0]!.label).toBe("Your email");
+    expect(form.fields.map((f) => f.key)).toContain("floor");
+    // The editor's own wording is kept on the field they did store.
+    expect(form.fields.find((f) => f.key === "email")!.label).toBe("Your email");
+    // Nothing else from the registry came back.
+    expect(form.fields.map((f) => f.key)).not.toContain("first_name");
+  });
+
+  it("restores a contact box the editor had deleted", () => {
+    // `phone` is locked as of the Salesforce intake change: a form without it
+    // produces leads the CRM refuses outright, so a stored document that
+    // dropped the box resolves with it back rather than quietly capturing
+    // leads nobody can deliver.
+    const form = resolveForm("home_list_property", null, [
+      stored({ key: "email", label: "Your email", mapping: "email", type: "email", position: 10 }),
+      stored({ key: "floor", label: "Which floor?", position: 20 }),
+    ])!;
+    const phone = form.fields.find((f) => f.mapping === "phone");
+    expect(phone).toBeDefined();
+    expect(phone!.required).toBe(true);
   });
 
   it("orders stored fields by position, not by arrival", () => {
@@ -90,7 +108,10 @@ describe("resolveForm", () => {
       stored({ key: "second", position: 20 }),
       stored({ key: "first", position: 10 }),
     ])!;
-    expect(form.fields.map((f) => f.key)).toEqual(["first", "second"]);
+    const stored_keys = form.fields
+      .map((f) => f.key)
+      .filter((k) => k === "first" || k === "second");
+    expect(stored_keys).toEqual(["first", "second"]);
   });
 
   it("re-attaches a locked field that storage dropped", () => {

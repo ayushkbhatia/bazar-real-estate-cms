@@ -57,18 +57,26 @@ export const enquirySchema = z
      */
     locale: z.enum(["en", "ar"]).default("en"),
     name: z.string().min(2, "Name is too short").max(120, "Name is too long"),
-    email: z
-      .union([z.string().email("Enter a valid email"), z.literal("")])
-      .optional(),
+    /**
+     * Both required, not either-or.
+     *
+     * The rule here was "an email *or* a phone" for as long as this form has
+     * existed. Salesforce's `Lead__c` marks `Email__c`, `Phone__c` and
+     * `Country_Code__c` Required (Levarus, 23 Sept 2026) and refuses a record
+     * missing any of them, so a lead captured under the old rule would land in
+     * Postgres and then never reach the desk that works it. Intake now asks
+     * for what the CRM will actually accept.
+     *
+     * This is the server's copy of the rule, and the one that decides. The
+     * per-field `required` flags in the Forms Manager drive the browser;
+     * `buildFormSchema` forces the same two fields for any `enquiry` handler
+     * so an old row cannot leave the two disagreeing.
+     */
+    email: z.string().min(1, "Enter your email").email("Enter a valid email"),
     phone: z
-      .union([
-        z
-          .string()
-          .min(5, "Phone is too short")
-          .max(32, "Phone is too long"),
-        z.literal(""),
-      ])
-      .optional(),
+      .string()
+      .min(5, "Enter a phone number we can reach you on")
+      .max(32, "Phone is too long"),
     message: z
       .string()
       .min(2, "Tell us a bit more")
@@ -102,10 +110,6 @@ export const enquirySchema = z
       .nullable()
       .optional(),
     intent: z.enum(ENQUIRY_INTENTS).nullable().optional(),
-  })
-  .refine((v) => (v.email && v.email.length > 0) || (v.phone && v.phone.length > 0), {
-    message: "We need at least an email or a phone number",
-    path: ["email"],
   })
   .refine(
     (v) =>
