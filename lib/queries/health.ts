@@ -43,6 +43,7 @@ const EXPECTED_INTERVAL_MINUTES: Record<string, number> = {
   "enquiry-auto-reply": 1,
   "enquiry-escalation": 5,
   "salesforce-lead-sync": 5,
+  "salesforce-listing-sync": 15,
   "permit-expiry": 1440,
   "meilisearch-sync": 1440,
   "embeddings-backfill": 1440,
