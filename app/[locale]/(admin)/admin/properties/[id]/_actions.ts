@@ -256,9 +256,16 @@ export async function updateProperty(
   }
 
   if (keptFromSalesforce.length > 0) {
+    const one = keptFromSalesforce.length === 1;
+    // A location or developer the website could not match is usually a
+    // mapping, not a CRM edit — so say where that is fixed.
+    const mappable = keptFromSalesforce.some((c) => c === "area_id" || c === "developer_id");
     return {
       status: "ok",
-      message: `Saved. ${keptFromSalesforce.map((c) => c.replace(/_/g, " ")).join(", ")} ${keptFromSalesforce.length === 1 ? "comes" : "come"} from Salesforce and ${keptFromSalesforce.length === 1 ? "was" : "were"} left as ${keptFromSalesforce.length === 1 ? "it is" : "they are"} — change ${keptFromSalesforce.length === 1 ? "it" : "them"} in Salesforce.`,
+      message:
+        `Saved. ${keptFromSalesforce.map((c) => c.replace(/_id$/, "").replace(/_/g, " ")).join(", ")} ` +
+        `${one ? "comes" : "come"} from Salesforce and ${one ? "was" : "were"} left as ${one ? "it is" : "they are"} — ` +
+        `change ${one ? "it" : "them"} in Salesforce${mappable ? ", or map the area or developer on the Salesforce listings screen" : ""}.`,
     };
   }
   return { status: "ok", message: "Saved." };

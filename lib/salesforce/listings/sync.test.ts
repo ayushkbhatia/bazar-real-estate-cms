@@ -52,6 +52,7 @@ vi.mock("@/lib/i18n/revalidate", () => ({ revalidateLocalised: () => undefined }
 vi.mock("@/lib/i18n/mt/translate", () => ({ hashSource: (t: string) => `h${t.length}` }));
 
 const { runListingSync } = await import("./sync");
+const { imageKey, toSnapshot } = await import("./snapshot");
 
 const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0x10, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0]);
 const revalidated: { propertyUrls: string[]; lists: boolean }[] = [];
@@ -193,6 +194,27 @@ describe("a production org", () => {
     const s = await run();
     expect(s).toMatchObject({ created: 0, updated: 0, published: 0, unpublished: 0, imagesCopied: 0 });
     expect(download).not.toHaveBeenCalled();
+  });
+
+  it("knows a photo it copied long ago, however many photos came before it", async () => {
+    // Supabase returns at most 1,000 rows to an unpaginated select. Put this
+    // listing's photos past that point and the sync must still find them —
+    // otherwise every photo beyond row 1,000 is downloaded again, every run.
+    const snap = toSnapshot(COMPLETE_SALE);
+    for (let i = 0; i < 1050; i++) {
+      h.db.seed("salesforce_media", { source_key: `url:filler-${i}`, media_id: `00000000-0000-4000-9000-${String(i).padStart(12, "0")}` });
+    }
+    const refs = [snap.cover!, ...snap.gallery, snap.floorPlan!];
+    refs.forEach((r, i) => {
+      const media_id = `00000000-0000-4000-a000-${String(i).padStart(12, "0")}`;
+      h.db.seed("media_assets", { id: media_id, storage_key: `listings/x-${i}.jpg`, filename: "x.jpg", mime_type: "image/jpeg" });
+      h.db.seed("salesforce_media", { source_key: imageKey(r, snap.propertyId), media_id });
+    });
+    const download = vi.fn(h.download);
+    h.download = download;
+    await run();
+    expect(download).not.toHaveBeenCalled();
+    expect(mirror(h.db, COMPLETE_SALE.Id)?.images_ready).toBe(4);
   });
 
   it("puts back a Salesforce-owned field an editor changed in the CMS", async () => {

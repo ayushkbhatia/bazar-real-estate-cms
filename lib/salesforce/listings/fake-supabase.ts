@@ -13,6 +13,9 @@ import { randomUUID } from "node:crypto";
 
 type Row = Record<string, unknown>;
 
+/** Supabase's default `max_rows`. */
+const MAX_ROWS = 1000;
+
 const UNIQUE: Record<string, string[][]> = {
   properties: [["id"], ["reference"], ["salesforce_listing_id"]],
   salesforce_listings: [["sf_listing_id"]],
@@ -129,6 +132,7 @@ class Query {
   private filters: ((r: Row) => boolean)[] = [];
   private single = false;
   private limitN: number | null = null;
+  private rangeFrom = 0;
   private conflict: string[] | null = null;
 
   constructor(
@@ -186,6 +190,11 @@ class Query {
     this.limitN = n;
     return this;
   }
+  range(from: number, to: number): this {
+    this.rangeFrom = from;
+    this.limitN = to - from + 1;
+    return this;
+  }
   maybeSingle(): this {
     this.single = true;
     return this;
@@ -201,7 +210,15 @@ class Query {
   private shape(rows: Row[]): Result {
     const copies = rows.map((r) => structuredClone(r));
     if (this.single) return { data: copies[0] ?? null, error: null };
-    return { data: this.limitN != null ? copies.slice(0, this.limitN) : copies, error: null };
+    // Supabase's `max_rows`: an unpaginated read silently stops at 1,000.
+    if (this.op === "select" && this.limitN == null) {
+      return { data: copies.slice(0, MAX_ROWS), error: null };
+    }
+    const start = this.rangeFrom;
+    return {
+      data: this.limitN != null ? copies.slice(start, start + this.limitN) : copies.slice(start),
+      error: null,
+    };
   }
 
   private exec(): Result {

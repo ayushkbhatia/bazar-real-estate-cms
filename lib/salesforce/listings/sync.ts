@@ -18,6 +18,7 @@ import { evaluatePublishability } from "@/lib/publishability";
 import { hashSource } from "@/lib/i18n/mt/translate";
 import { explainAbsences, fetchPublishedListings } from "./fetch";
 import { downloadImage, storeImage } from "./images";
+import { allRows } from "./paginate";
 import {
   decideState,
   planListing,
@@ -171,9 +172,16 @@ async function loadLookups(admin: Admin): Promise<Lookups> {
     admin.from("developers").select("id, name"),
     admin.from("staff").select("user_id, status, public_email"),
     admin.from("amenities_taxonomy").select("label, active, sort_order").order("sort_order"),
-    admin.from("salesforce_mappings").select("kind, source_key, target_id"),
+    allRows<{ kind: string; source_key: string; target_id: string }>((from, to) =>
+      admin
+        .from("salesforce_mappings")
+        .select("kind, source_key, target_id")
+        .order("kind")
+        .order("source_key")
+        .range(from, to),
+    ),
   ]);
-  for (const r of [areas, developers, staff, amenities, mappings]) {
+  for (const r of [areas, developers, staff, amenities]) {
     if (r.error) throw new Error(`lookup load failed: ${r.error.message}`);
   }
 
@@ -197,7 +205,7 @@ async function loadLookups(admin: Admin): Promise<Lookups> {
 
   const byKind = (kind: string) =>
     new Map(
-      (mappings.data ?? [])
+      mappings
         .filter((m) => m.kind === kind)
         .map((m) => [m.source_key, m.target_id] as const),
     );
@@ -216,34 +224,64 @@ async function loadLookups(admin: Admin): Promise<Lookups> {
 }
 
 async function loadState(admin: Admin, orgHost: string) {
-  const [mirror, properties, media] = await Promise.all([
-    admin.from("salesforce_listings").select("*").eq("org_host", orgHost),
-    admin.from("properties").select(SYNC_COLUMNS).not("salesforce_listing_id", "is", null),
-    admin.from("salesforce_media").select("source_key, media_id"),
+  const [mirror, props, media] = await Promise.all([
+    allRows<MirrorRow>((from, to) =>
+      admin
+        .from("salesforce_listings")
+        .select("*")
+        .eq("org_host", orgHost)
+        .order("sf_listing_id")
+        .range(from, to),
+    ),
+    allRows<PropertyRow>(
+      (from, to) =>
+        admin
+          .from("properties")
+          .select(SYNC_COLUMNS)
+          .not("salesforce_listing_id", "is", null)
+          .order("id")
+          .range(from, to) as unknown as PromiseLike<{
+          data: PropertyRow[] | null;
+          error: { message: string } | null;
+        }>,
+    ),
+    allRows<{ source_key: string; media_id: string }>((from, to) =>
+      admin
+        .from("salesforce_media")
+        .select("source_key, media_id")
+        .order("source_key")
+        .range(from, to),
+    ),
   ]);
-  for (const r of [mirror, properties, media]) {
-    if (r.error) throw new Error(`state load failed: ${r.error.message}`);
-  }
-  const props = (properties.data ?? []) as unknown as PropertyRow[];
-  const ids = props.map((p) => p.id);
+
   const links = new Map<string, LinkRow[]>();
-  if (ids.length) {
-    const { data, error } = await admin
-      .from("property_media")
-      .select("property_id, media_id, role, sort_order")
-      .in("property_id", ids);
-    if (error) throw new Error(`media load failed: ${error.message}`);
-    for (const l of data ?? []) {
+  const ids = props.map((p) => p.id);
+  for (let i = 0; i < ids.length; i += 200) {
+    const chunk = ids.slice(i, i + 200);
+    const rows = await allRows<LinkRow>((from, to) =>
+      admin
+        .from("property_media")
+        .select("property_id, media_id, role, sort_order")
+        .in("property_id", chunk)
+        .order("property_id")
+        .order("media_id")
+        .range(from, to),
+    );
+    for (const l of rows) {
       const list = links.get(l.property_id) ?? [];
       list.push(l);
       links.set(l.property_id, list);
     }
   }
   return {
-    mirror: new Map((mirror.data ?? []).map((m) => [m.sf_listing_id, m])),
-    properties: new Map(props.filter((p) => p.salesforce_listing_id).map((p) => [p.salesforce_listing_id as string, p])),
-    mediaByKey: new Map((media.data ?? []).map((m) => [m.source_key, m.media_id])),
-    sfMediaIds: new Set((media.data ?? []).map((m) => m.media_id)),
+    mirror: new Map(mirror.map((m) => [m.sf_listing_id, m])),
+    properties: new Map(
+      props
+        .filter((p) => p.salesforce_listing_id)
+        .map((p) => [p.salesforce_listing_id as string, p]),
+    ),
+    mediaByKey: new Map(media.map((m) => [m.source_key, m.media_id])),
+    sfMediaIds: new Set(media.map((m) => m.media_id)),
     links,
   };
 }

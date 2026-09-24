@@ -11,6 +11,7 @@ import {
   locationKey,
 } from "@/lib/salesforce/listings/plan";
 import type { Unresolved } from "@/lib/salesforce/listings/plan";
+import { allRows } from "@/lib/salesforce/listings/paginate";
 
 /**
  * Every write on the Salesforce listings screen.
@@ -172,11 +173,15 @@ export async function saveSalesforceMapping(input: {
   });
 
   // Every listing waiting on this answer, re-planned now.
-  const { data: rows } = await admin
-    .from("salesforce_listings")
-    .select("sf_listing_id, unresolved")
-    .neq("state", "withdrawn");
-  const affected = (rows ?? [])
+  const rows = await allRows<{ sf_listing_id: string; unresolved: unknown }>((from, to) =>
+    admin
+      .from("salesforce_listings")
+      .select("sf_listing_id, unresolved")
+      .neq("state", "withdrawn")
+      .order("sf_listing_id")
+      .range(from, to),
+  );
+  const affected = rows
     .filter((r) => {
       const u = (r.unresolved ?? {}) as Unresolved;
       if (kind === "location") return !!u.location && locationKey(u.location) === key;
