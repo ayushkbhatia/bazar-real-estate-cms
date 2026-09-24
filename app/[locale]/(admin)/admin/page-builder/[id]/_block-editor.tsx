@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { arKey } from "@/lib/master-pages";
+import { arKey, isSelectField } from "@/lib/master-pages";
 import type { SectionValues } from "@/lib/master-pages";
 import {
   getBlockDef,
@@ -25,10 +25,12 @@ import {
 } from "@/lib/page-builder/catalogue";
 import { blockContentGap } from "@/lib/page-builder/content-gap";
 import type { BlockDef, BlockInstance } from "@/lib/page-builder/types";
+import type { FormPreview } from "@/lib/page-builder/form-preview";
 import { FieldEditor } from "../../_fields/field-editor";
 import type { MediaOption, Seeds } from "../../_fields/types";
 import { discardLandingDraft, saveLandingBlocks } from "../_actions";
 import { AddBlock } from "./_add-block";
+import { FormMiniPreview } from "./_form-preview";
 
 /**
  * The section list.
@@ -51,6 +53,7 @@ export function BlockEditor({
   seeds,
   hasDraft,
   isPublished,
+  formPreviews = {},
 }: {
   pageId: string;
   initial: BlockInstance[];
@@ -58,6 +61,8 @@ export function BlockEditor({
   seeds: Seeds;
   hasDraft: boolean;
   isPublished: boolean;
+  /** Keyed by form key — drawn under every form picker. */
+  formPreviews?: Record<string, FormPreview>;
 }) {
   const router = useRouter();
   const [media, setMedia] = useState(initialMedia);
@@ -223,6 +228,7 @@ export function BlockEditor({
               expanded={open === block.id}
               media={media}
               seeds={seeds}
+              formPreviews={formPreviews}
               onToggleExpand={() => setOpen(open === block.id ? null : block.id)}
               onToggleEnabled={() => patch(block.id, { enabled: !block.enabled })}
               onValues={(values) => patch(block.id, { values })}
@@ -247,6 +253,7 @@ function BlockRow({
   expanded,
   media,
   seeds,
+  formPreviews,
   onToggleExpand,
   onToggleEnabled,
   onValues,
@@ -261,6 +268,7 @@ function BlockRow({
   expanded: boolean;
   media: MediaOption[];
   seeds: Seeds;
+  formPreviews: Record<string, FormPreview>;
   onToggleExpand: () => void;
   onToggleEnabled: () => void;
   onValues: (v: SectionValues) => void;
@@ -368,27 +376,64 @@ function BlockRow({
             </p>
           ) : null}
           {def.fields.map((field) => (
-            <FieldEditor
+            <FieldWithPreview
               key={field.key}
-              field={field}
-              value={block.values[field.key]}
-              media={media}
-              onMediaAdded={onMediaAdded}
-              seeds={seeds}
-              onChange={(v) => onValues({ ...block.values, [field.key]: v })}
-              arValue={
-                typeof block.values[arKey(field.key)] === "string"
-                  ? (block.values[arKey(field.key)] as string)
-                  : ""
+              formKey={
+                isSelectField(field) && field.optionsKey === "forms"
+                  ? { value: block.values[field.key], previews: formPreviews }
+                  : null
               }
-              onArChange={(v) =>
-                onValues({ ...block.values, [arKey(field.key)]: v })
-              }
-            />
+            >
+              <FieldEditor
+                field={field}
+                value={block.values[field.key]}
+                media={media}
+                onMediaAdded={onMediaAdded}
+                seeds={seeds}
+                onChange={(v) => onValues({ ...block.values, [field.key]: v })}
+                arValue={
+                  typeof block.values[arKey(field.key)] === "string"
+                    ? (block.values[arKey(field.key)] as string)
+                    : ""
+                }
+                onArChange={(v) =>
+                  onValues({ ...block.values, [arKey(field.key)]: v })
+                }
+              />
+            </FieldWithPreview>
           ))}
         </div>
       ) : null}
     </li>
+  );
+}
+
+/**
+ * A field, plus — for a form picker — a sketch of the form it points at, so an
+ * editor choosing between 22 forms can see what each one asks before placing
+ * it. Keyed off `optionsKey: "forms"`, so every block with a form picker gets
+ * it without naming itself here.
+ */
+function FieldWithPreview({
+  formKey,
+  children,
+}: {
+  formKey: { value: unknown; previews: Record<string, FormPreview> } | null;
+  children: React.ReactNode;
+}) {
+  if (!formKey) return <>{children}</>;
+  const key =
+    typeof formKey.value === "string" && formKey.value !== ""
+      ? formKey.value
+      : null;
+  return (
+    <div className="flex flex-col gap-2">
+      {children}
+      <FormMiniPreview
+        formKey={key}
+        preview={key ? formKey.previews[key] : undefined}
+      />
+    </div>
   );
 }
 

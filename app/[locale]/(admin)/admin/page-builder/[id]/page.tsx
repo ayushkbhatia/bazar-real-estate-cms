@@ -16,6 +16,7 @@ import {
   evaluateLandingPublishability,
   resolveDocument,
 } from "@/lib/page-builder";
+import { buildFormPreviews } from "@/lib/page-builder/form-preview";
 import type { MediaOption, Seeds } from "../../_fields/types";
 import { LandingMetaCard } from "./_meta-card";
 import { getSearchPreviewChrome } from "@/lib/queries/search-appearance";
@@ -98,6 +99,10 @@ export default async function LandingEditorPage({ params }: PageProps) {
       current: [],
     },
   };
+
+  // The form picker's sketch, drawn from the same resolved forms the landing
+  // page renders — so it shows the Forms Manager's edits, not the registry.
+  const formPreviews = buildFormPreviews(forms.rows.map((r) => r.form));
 
   const seo = page.seo ?? {};
 
@@ -184,6 +189,7 @@ export default async function LandingEditorPage({ params }: PageProps) {
           seeds={seeds}
           hasDraft={page.hasDraft}
           isPublished={page.status === "published"}
+          formPreviews={formPreviews}
         />
 
         <LandingPublishCard
