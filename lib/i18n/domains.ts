@@ -69,6 +69,7 @@ export const DOMAINS: Domain[] = [
         column: "title",
         strategy: "machine",
         evidence: "p/[slug]/page.tsx:467",
+        note: "A listing published from Salesforce takes its twin from `Title_Arabic__c` when the CRM team wrote one — human Arabic, so the translator skips it. See lib/salesforce/listings/plan.ts.",
       },
       {
         column: "short_description",
@@ -79,6 +80,7 @@ export const DOMAINS: Domain[] = [
         column: "description",
         strategy: "machine",
         evidence: "p/[slug]/page.tsx:532",
+        note: "Same as `title`, from `Description_Arabic__c`.",
       },
       {
         column: "address_line",
@@ -838,6 +840,27 @@ export const DOMAINS: Domain[] = [
     columns: [],
     excluded:
       "Error reports for /admin/settings/health. `message` is whatever the failure said — usually a Postgres or Salesforce error in English — and translating an exception would make it harder to search for, not easier to read. Staff-only, no anon select policy.",
+  },
+  {
+    table: "salesforce_listings",
+    columns: [],
+    excluded:
+      "The listing sync's mirror of Salesforce records, read on the staff-only Salesforce listings screen. The hold reasons are written for the CRM team and name Salesforce fields; a listing's Arabic reaches the public site through `properties.title_ar` / `description_ar`, not from here.",
+  },
+  {
+    table: "salesforce_media",
+    columns: [],
+    excluded: "A map from a Salesforce file to the media asset it was copied into. Keys and ids only.",
+  },
+  {
+    table: "salesforce_mappings",
+    columns: [],
+    excluded: "Admin answers mapping a CRM location, developer or agent to a row id. Keys and ids only.",
+  },
+  {
+    table: "salesforce_listing_sync",
+    columns: [],
+    excluded: "One row of sync settings and run telemetry for the staff-only Salesforce listings screen.",
   },
   {
     table: "cta_clicks",
