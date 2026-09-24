@@ -64,7 +64,7 @@ export function SalesforceSourceCard({
         <ul className="flex flex-col gap-1.5">
           {listing.holds.map((h, i) => (
             <li key={`${h.code}-${i}`} className="text-[12px] text-bz-ink leading-snug">
-              <span className="mono text-[10px] uppercase tracking-wider text-bz-muted mr-1.5">{FIX[h.fix]}</span>
+              <span className="mono text-[10px] uppercase tracking-wider text-bz-muted me-1.5">{FIX[h.fix]}</span>
               {h.message}
             </li>
           ))}

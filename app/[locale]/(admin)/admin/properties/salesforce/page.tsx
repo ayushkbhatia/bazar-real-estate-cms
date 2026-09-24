@@ -304,7 +304,7 @@ export default async function SalesforceListingsPage() {
                         <ul className="mt-2.5 flex flex-col gap-1">
                           {r.holds.map((h, i) => (
                             <li key={`${h.code}-${i}`} className="text-[12.5px] text-bz-ink leading-snug">
-                              <span className="mono text-[10px] uppercase tracking-wider text-bz-muted mr-2">
+                              <span className="mono text-[10px] uppercase tracking-wider text-bz-muted me-2">
                                 {FIX_LABEL[h.fix]}
                               </span>
                               {h.message}
