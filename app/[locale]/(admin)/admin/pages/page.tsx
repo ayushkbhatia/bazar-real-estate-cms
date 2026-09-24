@@ -11,9 +11,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { listAllPagesForAdmin, pageUrl, type PageListRow } from "@/lib/queries/pages";
+import {
+  listAllPagesForAdmin,
+  pageUrl,
+  type PageListRow,
+} from "@/lib/queries/pages";
 import { MASTER_PAGES } from "@/lib/master-pages";
 import { SUBPAGE_KINDS } from "@/lib/master-pages/subpages";
+import {
+  CARDS,
+  CARDS_ADMIN_PATH,
+  cardAdminPath,
+  cardSection,
+} from "@/lib/master-pages/cards";
+
+function cardSectionFieldCount(card: (typeof CARDS)[number]): number {
+  return cardSection(card).fields.length;
+}
 import { countSubPagesByKind } from "@/lib/queries/subpages";
 
 export const dynamic = "force-dynamic";
@@ -51,11 +65,7 @@ function relative(iso: string | null): string {
   return `${Math.floor(days / 365)}y ago`;
 }
 
-function MasterPageCard({
-  page,
-}: {
-  page: (typeof MASTER_PAGES)[number];
-}) {
+function MasterPageCard({ page }: { page: (typeof MASTER_PAGES)[number] }) {
   return (
     <li>
       <Link
@@ -140,6 +150,42 @@ export default async function AdminPagesPage() {
 
         <section className="flex flex-col gap-3 border-t border-bz-border pt-6">
           <div>
+            <h2 className="text-[14px] font-medium">
+              <Link href={CARDS_ADMIN_PATH} className="hover:text-bz-accent">
+                Cards
+              </Link>
+            </h2>
+            <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
+              Cards that appear on many pages at once — the advisor card at the
+              foot of every project page, and the advisor and enquiry cards
+              beside every listing. Edit the words once, in both languages, with
+              a live preview.
+            </p>
+          </div>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {CARDS.map((card) => (
+              <li key={card.key}>
+                <Link
+                  href={cardAdminPath(card)}
+                  className="flex h-full flex-col gap-1 rounded-lg border border-bz-border bg-bz-surface p-4 hover:border-bz-accent transition-colors"
+                >
+                  <span className="text-[13.5px] font-medium">
+                    {card.label}
+                  </span>
+                  <span className="mono text-[11px] text-bz-muted">
+                    {card.usedOn.map((u) => u.label).join(" · ")}
+                  </span>
+                  <span className="mt-1 text-[11.5px] text-bz-muted-2">
+                    {cardSectionFieldCount(card)} fields
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="flex flex-col gap-3 border-t border-bz-border pt-6">
+          <div>
             <h2 className="text-[14px] font-medium">Sub-pages</h2>
             <p className="text-[13px] text-bz-muted max-w-[70ch] mt-1">
               Pages that exist once per record, built from a shared template.
@@ -170,8 +216,9 @@ export default async function AdminPagesPage() {
         </section>
 
         <p className="text-[13px] text-bz-muted max-w-[60ch] border-t border-bz-border pt-6">
-          Block-based content pages. Each lives at <span className="mono">/pages/&lt;slug&gt;</span>.
-          Compose hero, strip, split, grid, and banner blocks; publish when ready.
+          Block-based content pages. Each lives at{" "}
+          <span className="mono">/pages/&lt;slug&gt;</span>. Compose hero,
+          strip, split, grid, and banner blocks; publish when ready.
         </p>
 
         <div className="flex items-baseline justify-between">
@@ -199,7 +246,10 @@ export default async function AdminPagesPage() {
                     className="text-center py-16 text-bz-muted"
                   >
                     No pages yet — start one with{" "}
-                    <Link href="/admin/pages/new" className="text-bz-ink underline">
+                    <Link
+                      href="/admin/pages/new"
+                      className="text-bz-ink underline"
+                    >
                       New page
                     </Link>
                     .
