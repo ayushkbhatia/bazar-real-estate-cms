@@ -223,6 +223,13 @@ export type LeadSourceRow = {
   intent: string | null;
   property_reference: string | null;
   property_mode: PropertyMode | null;
+  /**
+   * The website's own reference, when the listing came FROM Salesforce. Then
+   * `property_reference` carries the CRM's listing name (LST-00003) — the
+   * one thing a CRM user can look up — and this goes in the description so
+   * the advisor can still find the page the visitor was on.
+   */
+  website_reference?: string | null;
 };
 
 /**
@@ -242,6 +249,7 @@ export function buildDescription(row: LeadSourceRow): string | undefined {
   if (message) lines.push(message);
 
   const meta: string[] = [];
+  if (row.website_reference) meta.push(`Website listing: ${row.website_reference}`);
   if (row.form_key) meta.push(`Form: ${row.form_key}`);
   if (row.locale && row.locale !== "en") meta.push(`Language: ${row.locale}`);
   meta.push(`Bazar enquiry: ${row.id}`);

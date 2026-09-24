@@ -344,6 +344,31 @@ record alongside the database row, and anything the CRM did not confirm stays
 queued on `enquiries.crm_erasure_due_at` for the same cron to retry. See
 [SALESFORCE.md](SALESFORCE.md) for the ordering, which is not obvious.
 
+### Salesforce listings (Salesforce → website)
+
+Same credentials; nothing more to set. `/api/cron/salesforce-listing-sync`
+runs every fifteen minutes and turns every listing the CRM marks Published
+for the website into a listing here — held, with reasons, when it is
+incomplete. Everything an operator needs is on **/admin/properties/salesforce**:
+what is live, what is waiting for approval, why each held listing is held and
+whose job the fix is, the locations, developers and agents to map once, and
+the Pause / Sync now / auto-publish controls. The design, the field mapping
+and what may never happen (a sandbox publishing, a permissions change taking
+listings down) are in [SALESFORCE.md](SALESFORCE.md#listings--salesforce-to-website).
+
+**Triage.** Every listing Salesforce has published, and what became of it:
+
+```sql
+select sf_listing_name, state, holds->0->>'message' as first_hold,
+       images_ready || '/' || images_total as photos, last_error, last_synced_at
+from salesforce_listings
+order by state, updated_at desc;
+```
+
+A listing stuck at `awaiting_approval` is waiting for someone to press
+Approve. One with a `last_error` about visibility is a Salesforce sharing
+problem, and was deliberately left as it was.
+
 ## Verifying after handover
 
 Visit `/admin/settings/integrations` once env vars are set. Each card

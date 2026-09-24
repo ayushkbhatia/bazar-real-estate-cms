@@ -39,6 +39,11 @@ export async function loadFeedProperties(): Promise<FeedProperty[]> {
       )
       .eq("status", "published")
       .is("deleted_at", null)
+      // Salesforce publishes its listings to Property Finder and Bayut itself
+      // (`Published_Platform__c`). Listing them again from this feed would
+      // put every one on each portal twice — which the portals penalise as
+      // duplicate stock — under two different reference numbers.
+      .is("salesforce_listing_id", null)
       .range(offset, offset + PAGE_SIZE - 1);
     if (error || !data || data.length === 0) break;
 

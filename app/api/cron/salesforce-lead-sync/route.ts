@@ -80,19 +80,28 @@ type QueueRow = {
   locale: string;
   inferred_constraints: { intent?: string | null } | null;
   crm_attempts: number;
-  properties:
-    | { reference: string; mode: Database["public"]["Enums"]["property_mode"] }
-    | {
-        reference: string;
-        mode: Database["public"]["Enums"]["property_mode"];
-      }[]
+  properties: QueueProperty | QueueProperty[] | null;
+};
+
+type QueueProperty = {
+  reference: string;
+  mode: Database["public"]["Enums"]["property_mode"];
+  salesforce_listings:
+    | { sf_listing_name: string | null }
+    | { sf_listing_name: string | null }[]
     | null;
 };
 
+function one<T>(v: T | T[] | null | undefined): T | null {
+  return Array.isArray(v) ? (v[0] ?? null) : (v ?? null);
+}
+
 function toLeadRow(row: QueueRow): LeadSourceRow {
-  const property = Array.isArray(row.properties)
-    ? (row.properties[0] ?? null)
-    : row.properties;
+  const property = one(row.properties);
+  // A listing published from Salesforce is known there by its own name.
+  // Sending our BAZ- reference would give the CRM team a number that exists
+  // nowhere in their system.
+  const crmName = one(property?.salesforce_listings)?.sf_listing_name ?? null;
   return {
     id: row.id,
     name: row.name,
@@ -103,8 +112,9 @@ function toLeadRow(row: QueueRow): LeadSourceRow {
     form_key: row.form_key,
     locale: row.locale,
     intent: row.inferred_constraints?.intent ?? null,
-    property_reference: property?.reference ?? null,
+    property_reference: crmName ?? property?.reference ?? null,
     property_mode: property?.mode ?? null,
+    website_reference: crmName ? (property?.reference ?? null) : null,
   };
 }
 
@@ -196,7 +206,7 @@ export async function GET(req: NextRequest) {
     const { data, error } = await admin
       .from("enquiries")
       .select(
-        "id, name, email, phone, brief_raw, source, form_key, locale, inferred_constraints, crm_attempts, properties:property_id(reference, mode)",
+        "id, name, email, phone, brief_raw, source, form_key, locale, inferred_constraints, crm_attempts, properties:property_id(reference, mode, salesforce_listings(sf_listing_name))",
       )
       .eq("crm_sync_state", "pending")
       .lte("crm_next_attempt_at", new Date().toISOString())

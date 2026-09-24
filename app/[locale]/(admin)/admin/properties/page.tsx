@@ -58,6 +58,14 @@ export default async function AdminPropertiesPage({
           </Link>
         </Button>
       }
+      secondary={
+        <Link
+          href="/admin/properties/salesforce"
+          className="text-[12.5px] text-bz-muted hover:text-bz-ink"
+        >
+          From Salesforce
+        </Link>
+      }
       live={
         <LiveDot
           channel="public:properties:list"

@@ -1,20 +1,22 @@
 # Salesforce integration
 
-Two directions, built separately, only one of which exists today.
+Two directions, one Connected App, one integration user.
 
 | Direction | What it does | Status |
 |---|---|---|
-| **Leads out** — website → Salesforce | Every public enquiry becomes a `Lead__c` record | **Phase 1, built** |
-| **Listings in** — Salesforce → website | Properties created by the CRM team appear in the catalogue | Not started — blocked on the vendor |
+| **Leads out** — website → Salesforce | Every public enquiry becomes a `Lead__c` record | **Built** (Phases 1, 2, 2.5) |
+| **Listings in** — Salesforce → website | Every listing the CRM marks Published for the website becomes a listing here | **Built** (Phase 3) — see [Listings](#listings--salesforce-to-website) |
 
-Two vendor docs so far — *Lead Creation API* (18 Sept 2026) and *Web to Lead
-Creation* (23 Sept 2026) — and both cover **only** the first direction. The
-revision answered questions 9, 10 and most of 11; questions 1–8 and 12 are
-untouched, and the title narrowing from "Lead Creation" to "Web to Lead
-Creation" suggests the listing sync is not yet on their side of the plan.
+Vendor documents: *Lead Creation API* (18 Sept 2026), *Web to Lead Creation*
+(23 Sept), the production edition of the same (24 Sept) and *Published
+Listings — API Integration Guide* (24 Sept). The listings guide uses the
+**same Connected App and secret** as the lead documents — verified by
+comparing them, not assumed — so both directions share
+`SALESFORCE_INSTANCE_URL` / `SALESFORCE_CLIENT_ID` / `SALESFORCE_CLIENT_SECRET`
+and there is nothing new to configure.
 
-So the larger half of the brief remains unspecified: no documented object, no
-field list, no read endpoint, no answer on where photographs live.
+Both directions are blocked in production on the same Salesforce setting: see
+[Production is blocked on one Salesforce setting](#production-is-blocked-on-one-salesforce-setting).
 
 Setup, env vars and triage queries: [INTEGRATIONS.md](INTEGRATIONS.md#salesforce).
 
@@ -264,6 +266,133 @@ Leaving the record pseudonymised with its commercial facts intact —
 `Name__c: deleted-…`, `Email__c: redacted@bazar.invalid`, `Phone__c:
 0000000000`, `Inquiry_Type__c` and `Property_Reference__c` untouched.
 
+## Listings — Salesforce to website
+
+`/api/cron/salesforce-listing-sync`, every fifteen minutes. The code is in
+`lib/salesforce/listings/`; the admin screen is **/admin/properties/salesforce**
+(linked from the Properties header and the Salesforce integration card).
+
+### The objects, as they really are
+
+The guide's names are inverted and its samples are optimistic, so this is from
+a `describe` of both objects and a read of every sandbox record (24 Sept):
+
+- **`Property_Listing__c`** is the *listing* — the offer: `Sale_Rent__c`,
+  `Price__c`, `Listing_Status__c`, `Expired_Date__c`, the assigned agent, and
+  `Website_Status__c` (`Published` / `Failed`; blank when never published).
+- **`Listing__c`** is the *property* — 104 fields, read through
+  `Property__r`. The guide lists fifteen. Among the ones it leaves out:
+  `Title_Arabic__c` and `Description_Arabic__c` (so listings arrive bilingual),
+  `Listing_Images__c` (the rich-text field CRM users actually upload photos
+  into), `Property_Type_Bayut_Picklist__c` (the only type field with villas
+  and townhouses), `ProjectStatus__c`, `Developer__c`, `RERAPermitNumber__c`,
+  and `OwnerName__c` / `Owner_Contact__c`, which we must never read.
+
+Where the guide is wrong: `Rooms__c` and `Bathrooms__c` are **string**
+picklists (`"Studio"`, `"1"`…), not numbers; `Latitude__c` / `Longitude__c`
+are **strings**; `Listing_Image_URLs__c` arrives **comma**-separated; its
+sample furnishing value `"Furnished"` is not in the picklist
+(`Unfurnished / Partly Furnished / Fully Furnished`).
+
+The sandbox's single published listing, `LST-00000`, has no title, no price on
+the listing, no location, no type, no developer and no permit — and its photos
+are `/sfc/servlet.shepherd/…` links that need a Salesforce session. It is held
+with six reasons, each naming the Salesforce field to fill.
+
+### How a run works
+
+1. **Sweep.** One SOQL query: every `Property_Listing__c` with
+   `Website_Status__c = 'Published'`, joined to `Property__r`, through an
+   explicit field **allowlist** (`fields.ts`). Never the guide's step 4
+   (`GET /sobjects/Listing__c/{id}`), which returns every field — owner's
+   name and phone included. If the org hides one of our fields, the query
+   fails whole with `INVALID_FIELD`; the run then describes both objects,
+   drops what it cannot see, keeps syncing, and reports the gap.
+2. **Withdrawals, on evidence only.** A listing we have seen that is missing
+   from the sweep is asked about by id. Unpublished or deleted (`queryAll`)
+   → taken off the website. **Not visible at all → nothing changes** and an
+   issue is raised: that is what a sharing-rule or permission change looks
+   like, and it must never be able to empty the website.
+3. **Plan** (`plan.ts`, pure): snapshot → the website row, plus *holds* (why
+   it cannot be published, each tagged with who fixes it — Salesforce, the
+   website, or nobody: "photos still copying") and *notes*.
+4. **Content.** Create the property (`draft`, a fresh `BAZ-XX-0NNNN`
+   reference) or correct drift, copy photos, link them.
+5. **Status**, after re-reading the admin flags, so an admin who hides a
+   listing mid-run is not overridden by a decision made a minute earlier.
+
+The whole catalogue is swept each run rather than a `LastModifiedDate`
+delta: a change to the *property* record does not bump the *listing's*
+stamp, and absence from a full sweep is the first half of the withdrawal
+evidence. At this org's size that is one query. Revisit past a few thousand
+published listings.
+
+### Who owns what
+
+| Salesforce owns (overwritten every run) | The website owns (never touched after creation) |
+|---|---|
+| title, description, mode, segment, type, completion form, beds, baths, sizes, furnishing, parking, floor, map pin, price, area / sub-community, developer, amenities, permit number and expiry, photos from Salesforce | slug, reference, SEO, short description, card labels, featured flags, advisor note, view, orientation, photos an editor added |
+| `title_ar` / `description_ar` **when** the CRM wrote Arabic | the Arabic twins when it did not |
+| the advisor **when** the CRM's agent maps to a staff member | the advisor when it does not |
+
+Ownership is enforced by comparing each synced field with the row every run
+(so an editor's change to a Salesforce field is put back) and, before that
+can surprise anyone, by the editor itself: saving a Salesforce listing keeps
+Salesforce's values for those fields and says so; the map-pin, developer and
+advisor controls refuse with a pointer to Salesforce. The editor's publish
+card is replaced by a Salesforce card, because the sync owns the status.
+
+Status changes an editor makes anywhere else — the bulk bar, a CSV import —
+are caught by a trigger (`properties_salesforce_editor_status_tr`, 0136):
+taking a Salesforce listing off the website **hides** it (the sync keeps it
+off), publishing it approves and allows it. Only a person's change counts; the
+sync's own writes, as the service role, do not.
+
+### Mapping
+
+| Salesforce | Website |
+|---|---|
+| `Sale_Rent__c` (else `OfferingType__c`, else `Purpose__c`) | `mode`: `rent`, or `buy` / `off_plan` by completion |
+| `ProjectStatus__c` (else `Project_Type__c`) | `property_form`: Resale → `resale`, Primary ready → `ready_new`, any Off-plan → `off_plan` |
+| `Property_Type_Bayut_Picklist__c` (else `PropertyType__c`) | `type` + `segment`. No honest equivalent (Residential Floor, Villa Compound, Bulk Units, Full/Half Floor) → held |
+| `Category__c` | `segment` |
+| `Price__c` (sale; else `PropertyPrice__c`, noted) | `price_aed` |
+| Rent: `Price__c`/`Yearly__c`, by `Rent_Frequency__c` | yearly rent; a monthly rent with no `Yearly__c` is held, never multiplied |
+| `Location__c` + `Emirate__c` | area / sub-community by exact name or slug, most specific part first; ambiguous or another emirate → held for an admin to map |
+| `Developer__c` | developer, ignoring "Properties", "Realty", "PJSC"…; else held for mapping |
+| `Assigned_Agent__r.Email` (else the property's `Agent_Name__r`) | advisor, by staff email; else noted for mapping |
+| `RERAPermitNumber__c`, `Expired_Date__c` | permit number and **expiry** (see question L3) |
+| `Amenities__c` | the amenity taxonomy, through apostrophes and hyphens plus a small alias table; unmatched values are noted, never added |
+| `Cover_Page_Image__c` / `Main_Image_URL__c`, `Listing_Images__c` + `Listing_Image_URLs__c`, `Floor_Plans__c` | hero, gallery in the CRM's order, floor plan |
+
+### Photos
+
+Copied into the `media` bucket, never hot-linked. Salesforce Files come
+through the REST API with our token (`ContentVersion/{id}/VersionData`,
+proven against the sandbox); pasted rich-text images through the rich-text
+image resource; web URLs over https only, with private addresses refused on
+every redirect hop, a 25 MB cap and the file type read from its bytes.
+Each photo is copied once (`salesforce_media`), a dead link is retried daily
+rather than every run, and a listing's first appearance waits for its whole
+gallery. Placeholder `example.com` URLs in the sandbox 404 and are reported.
+
+### Safety rails
+
+- **A sandbox never publishes.** A `*.sandbox.my.salesforce.com` org is
+  evaluated and shown on the admin screen — holds and all — and nothing
+  reaches `properties` or the bucket. Proven by running the real sync
+  against the sandbox with the production database.
+- **Approval first.** `salesforce_listing_sync.auto_publish` is off: the
+  first appearance of every listing waits for an admin's Approve. Approval is
+  sticky; turning auto-publish on later is one button.
+- **Pause.** One button stops all fetching and writing.
+- **Portal feeds skip Salesforce listings** (`lib/syndication/load.ts`):
+  Salesforce publishes to Property Finder and Bayut itself, and a second copy
+  from us would list each one twice.
+- **Leads close the loop.** An enquiry on a Salesforce listing reaches
+  `Lead__c` with the CRM's own listing name (`LST-00003`) in
+  `Property_Reference__c` and the website reference in the description.
+
 ## Production is blocked on one Salesforce setting
 
 The production credentials (24 Sept doc) are real and distinct from sandbox,
@@ -290,19 +419,35 @@ rest are outstanding, and two new ones have been added by that revision.
 
 ### Listings — Salesforce to website
 
-1. Does a Property/Listing object exist? What is its API name?
-2. Full field dictionary: API names, types, picklist values, required flags.
-3. How do we read it — SOQL over REST, Composite, or a named Apex service?
-4. Is `LastModifiedDate` filterable, so we can pull a delta rather than the
-   whole catalogue every run?
-5. Photographs: stored in Salesforce as `ContentVersion`, or hosted
-   elsewhere? If in Salesforce, how are the binaries fetched?
-6. Which field carries sold / withdrawn / off-market, and what do we observe
-   when a record is deleted?
-7. Any Arabic content in Salesforce, or do all `_ar` twins stay CMS-owned?
-   (Per [ADR-0008](decisions/ADR-0008-machine-generated-arabic-first-draft.md)
-   they should stay ours. Confirm rather than assume.)
-8. Daily API request allocation on the org.
+Questions 1–8 of 22 Sept are answered by the 24 Sept guide and by `describe`:
+the objects are `Property_Listing__c` and `Listing__c`, read with SOQL over
+REST; photos are Salesforce Files the integration user can download;
+withdrawal is `Website_Status__c` leaving `Published`, or deletion; Arabic
+exists in the CRM. Still open:
+
+- **L1. Fill the published listing.** `LST-00000` is the only sandbox listing
+  marked Published and has no title, location, type, developer, permit or
+  listing price. We cannot test a real publish until one listing is complete.
+- **L2. The Run As user** on the production Connected App — the same fix the
+  lead push needs — plus read access for that user on both listing objects,
+  their files, and the fields in `lib/salesforce/listings/fields.ts`.
+- **L3. Permit expiry.** Our publish gate requires one; the CRM has no such
+  field. We read `Expired_Date__c` as the permit's expiry. Confirm, or add a
+  permit-expiry field.
+- **L4. Abu Dhabi permits.** `PermitType__c` offers RERA, DTCM and
+  "None (DIFC/JAFZA)" — all Dubai. Add ADREC, or confirm
+  `RERAPermitNumber__c` holds the Abu Dhabi permit number.
+- **L5. One type field.** `PropertyType__c` has no villa or townhouse; the
+  sandbox files a villa as "Duplex" there and "Villa" in the Bayut field. We
+  read the Bayut field first. Is that the field the team fills?
+- **L6. Clean the amenity picklist.** `Amenities__c` is unrestricted and
+  carries test values ("Priya testing", "TurfDbg…", "vh", "Location URL").
+- **L7. Write-back (optional).** Update access on two new fields —
+  `Website_Status__c` = `Failed` with a `Website_Error__c` reason, and a
+  `Website_URL__c` — would let the CRM team see *in Salesforce* why a listing
+  is not live and where it is. Today that is only on our admin screen.
+- **L8. Currency.** Amounts are read as AED. The org is single-currency
+  (no `CurrencyIsoCode`); confirm AED is its corporate currency.
 
 ### Leads — website to Salesforce
 
@@ -326,31 +471,23 @@ rest are outstanding, and two new ones have been added by that revision.
     management and general service enquiries are none of Buy/Sell/Rent, and
     the field cannot be left empty, so they currently land on `Buy`.
 
-## Design rules for Phase 3 (listings in)
+## Design rules that held
 
-Written down now because they are the decisions that are expensive to reverse
-after the first sync has run.
+Written before the listings guide arrived, as the decisions that are
+expensive to reverse after a first sync. Two changed once the real objects
+were visible, and why:
 
-- **Field-level ownership, not row-level.** Salesforce owns commercial facts
-  — price, beds, baths, area, permit number, status. The CMS owns everything
-  Salesforce has no concept of: every `_ar` twin, `seo`, `flags.labels`,
-  `slug`, `short_description`, media ordering, `assigned_agent_id`. The sync
-  writes only its own columns. Anything less careful erases months of Arabic
-  work on its first run.
-- **Never auto-publish.** Inbound rows land as `draft`.
-  `lib/publishability.ts` requires a developer, a sale form, a valid
-  unexpired permit, a price, a title and a slug; a Salesforce record will not
-  satisfy all six, and a human should be the one who decides a page goes
-  live.
-- **Never hard-delete.** A listing disappearing in Salesforce maps to
-  `off_market`, never to a removed row — see
-  `lib/queries/read-failure.ts` for why a 404 on this site is expensive.
-- **Poll, do not subscribe.** Change Data Capture and Pub/Sub both want a
-  long-lived connection, which Vercel's model cannot hold. A cron reading a
-  `LastModifiedDate` watermark restarts cleanly and matches
-  [ADR-0003](decisions/ADR-0003-vercel-cron-over-inngest.md). A
-  Salesforce-pushed webhook can be added later as a latency enhancement, the
-  same two-layer shape as ADR-0001 and ADR-0002.
+- **Field-level ownership** — kept. The Arabic twins and the advisor became
+  Salesforce's *only when Salesforce supplies them*: the CRM turned out to
+  carry human-written Arabic, which is better than a machine draft, and an
+  assigned agent.
+- **Never auto-publish** — kept as the default, made a setting. A human
+  approves each listing's first appearance until an admin switches
+  auto-publish on; approval is per listing and sticky.
+- **Never hard-delete** — kept. Withdrawn is `off_market`, which the listing
+  page answers with a 410, and which reverses when Salesforce republishes.
+- **Poll, do not subscribe** — kept, as a full sweep rather than a
+  `LastModifiedDate` watermark; see "How a run works".
 
 ## Phases
 
@@ -360,6 +497,7 @@ after the first sync has run.
 | 1 | Leads out: client, mapper, queue, cron, admin card | **Built** |
 | 2.5 | Exactly-once upsert, real picklists, required-field guard | **Built** |
 | 2 | PDPL: erasure and access requests reach the CRM | **Built** |
-| 3 | Listings in: ingest core, field mapper, dry-run, admin status | Blocked on Phase 0 |
-| 4 | Media ingest from Salesforce into the `media` bucket | Blocked on Q5 |
-| 5 | Review queue for Salesforce-sourced drafts | After Phase 3 |
+| 3 | Listings in: sweep, mapper, drift correction, evidence-based withdrawal, sandbox mirror | **Built** |
+| 4 | Photos from Salesforce Files and URLs into the `media` bucket | **Built** |
+| 5 | Review queue: approval, hide/allow, mapping screen, editor guards | **Built** |
+| 6 | Production: Run As user (L2), then credentials in Vercel | Blocked on Levarus |

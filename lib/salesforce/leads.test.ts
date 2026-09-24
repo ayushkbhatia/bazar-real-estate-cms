@@ -193,6 +193,17 @@ describe("buildDescription", () => {
     expect(text).toContain(row().id);
     expect(text.startsWith("\n")).toBe(false);
   });
+
+  it("names the website's page when the listing came from Salesforce", () => {
+    // The reference field then carries the CRM's own listing name, which is
+    // what a CRM user can look up; the BAZ- reference goes here instead.
+    const payload = buildLeadPayload(
+      row({ property_reference: "LST-00003", website_reference: "BAZ-AD-04891" }),
+    );
+    expect(payload.Property_Reference__c).toBe("LST-00003");
+    expect(payload.Description__c).toContain("Website listing: BAZ-AD-04891");
+    expect(buildDescription(row())).not.toContain("Website listing:");
+  });
 });
 
 describe("inquiryTypeFor", () => {

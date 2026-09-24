@@ -2857,6 +2857,7 @@ export type Database = {
           property_form: Database["public"]["Enums"]["property_form"] | null
           published_at: string | null
           reference: string
+          salesforce_listing_id: string | null
           search_text: unknown
           search_text_ar: unknown
           segment: Database["public"]["Enums"]["property_segment"]
@@ -2920,6 +2921,7 @@ export type Database = {
           property_form?: Database["public"]["Enums"]["property_form"] | null
           published_at?: string | null
           reference: string
+          salesforce_listing_id?: string | null
           search_text?: unknown
           search_text_ar?: unknown
           segment?: Database["public"]["Enums"]["property_segment"]
@@ -2983,6 +2985,7 @@ export type Database = {
           property_form?: Database["public"]["Enums"]["property_form"] | null
           published_at?: string | null
           reference?: string
+          salesforce_listing_id?: string | null
           search_text?: unknown
           search_text_ar?: unknown
           segment?: Database["public"]["Enums"]["property_segment"]
@@ -3006,6 +3009,13 @@ export type Database = {
           year_built?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "properties_salesforce_listing_id_fkey"
+            columns: ["salesforce_listing_id"]
+            isOneToOne: true
+            referencedRelation: "salesforce_listings"
+            referencedColumns: ["sf_listing_id"]
+          },
           {
             foreignKeyName: "properties_area_id_fkey"
             columns: ["area_id"]
@@ -3229,6 +3239,185 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      salesforce_listing_sync: {
+        Row: {
+          auto_publish: boolean
+          id: number
+          last_run_at: string | null
+          last_summary: Json
+          lease_holder: string | null
+          lease_until: string | null
+          paused: boolean
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          auto_publish?: boolean
+          id?: number
+          last_run_at?: string | null
+          last_summary?: Json
+          lease_holder?: string | null
+          lease_until?: string | null
+          paused?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          auto_publish?: boolean
+          id?: number
+          last_run_at?: string | null
+          last_summary?: Json
+          lease_holder?: string | null
+          lease_until?: string | null
+          paused?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      salesforce_listings: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          first_seen_at: string
+          hidden_at: string | null
+          hidden_by: string | null
+          holds: Json
+          image_failures: Json
+          images_ready: number
+          images_total: number
+          last_error: string | null
+          last_seen_at: string
+          last_synced_at: string | null
+          notes: Json
+          org_host: string
+          sf_last_modified_at: string | null
+          sf_listing_id: string
+          sf_listing_name: string | null
+          sf_property_id: string | null
+          sf_reference: string | null
+          snapshot: Json
+          snapshot_hash: string
+          state: Database["public"]["Enums"]["salesforce_listing_state"]
+          unresolved: Json
+          updated_at: string
+          withdrawn_at: string | null
+          withdrawn_reason: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          first_seen_at?: string
+          hidden_at?: string | null
+          hidden_by?: string | null
+          holds?: Json
+          image_failures?: Json
+          images_ready?: number
+          images_total?: number
+          last_error?: string | null
+          last_seen_at?: string
+          last_synced_at?: string | null
+          notes?: Json
+          org_host: string
+          sf_last_modified_at?: string | null
+          sf_listing_id: string
+          sf_listing_name?: string | null
+          sf_property_id?: string | null
+          sf_reference?: string | null
+          snapshot: Json
+          snapshot_hash: string
+          state: Database["public"]["Enums"]["salesforce_listing_state"]
+          unresolved?: Json
+          updated_at?: string
+          withdrawn_at?: string | null
+          withdrawn_reason?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          first_seen_at?: string
+          hidden_at?: string | null
+          hidden_by?: string | null
+          holds?: Json
+          image_failures?: Json
+          images_ready?: number
+          images_total?: number
+          last_error?: string | null
+          last_seen_at?: string
+          last_synced_at?: string | null
+          notes?: Json
+          org_host?: string
+          sf_last_modified_at?: string | null
+          sf_listing_id?: string
+          sf_listing_name?: string | null
+          sf_property_id?: string | null
+          sf_reference?: string | null
+          snapshot?: Json
+          snapshot_hash?: string
+          state?: Database["public"]["Enums"]["salesforce_listing_state"]
+          unresolved?: Json
+          updated_at?: string
+          withdrawn_at?: string | null
+          withdrawn_reason?: string | null
+        }
+        Relationships: []
+      }
+      salesforce_mappings: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          kind: Database["public"]["Enums"]["salesforce_mapping_kind"]
+          source_key: string
+          target_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          kind: Database["public"]["Enums"]["salesforce_mapping_kind"]
+          source_key: string
+          target_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          kind?: Database["public"]["Enums"]["salesforce_mapping_kind"]
+          source_key?: string
+          target_id?: string
+        }
+        Relationships: []
+      }
+      salesforce_media: {
+        Row: {
+          created_at: string
+          media_id: string
+          source_key: string
+          source_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          media_id: string
+          source_key: string
+          source_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          media_id?: string
+          source_key?: string
+          source_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "salesforce_media_media_id_fkey"
+            columns: ["media_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       search_bar: {
         Row: {
@@ -3745,6 +3934,10 @@ export type Database = {
     Functions: {
       anonymise_account: { Args: { target: string }; Returns: undefined }
       anonymise_by_email: { Args: { target_email: string }; Returns: Json }
+      claim_salesforce_listing_lease: {
+        Args: { p_holder: string; p_seconds: number }
+        Returns: boolean
+      }
       current_staff_role: {
         Args: never
         Returns: Database["public"]["Enums"]["staff_role"]
@@ -3752,6 +3945,10 @@ export type Database = {
       functions_base_url: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
+      release_salesforce_listing_lease: {
+        Args: { p_holder: string }
+        Returns: undefined
+      }
       record_cron_heartbeat: {
         Args: { p_detail: string | null; p_job: string; p_ok: boolean }
         Returns: undefined
@@ -3941,6 +4138,14 @@ export type Database = {
         | "commercial_villa"
       review_status: "pending" | "approved" | "rejected"
       review_subject_kind: "agent" | "area" | "development"
+      salesforce_listing_state:
+        | "live"
+        | "awaiting_approval"
+        | "held"
+        | "hidden"
+        | "withdrawn"
+        | "mirror_only"
+      salesforce_mapping_kind: "location" | "developer" | "agent"
       staff_role: "admin" | "editor" | "agent" | "marketing" | "support"
       staff_status: "active" | "on_leave" | "onboarding" | "suspended"
       valuation_condition:
@@ -4278,6 +4483,15 @@ export const Constants = {
       ],
       review_status: ["pending", "approved", "rejected"],
       review_subject_kind: ["agent", "area", "development"],
+      salesforce_listing_state: [
+        "live",
+        "awaiting_approval",
+        "held",
+        "hidden",
+        "withdrawn",
+        "mirror_only",
+      ],
+      salesforce_mapping_kind: ["location", "developer", "agent"],
       staff_role: ["admin", "editor", "agent", "marketing", "support"],
       staff_status: ["active", "on_leave", "onboarding", "suspended"],
       valuation_condition: [

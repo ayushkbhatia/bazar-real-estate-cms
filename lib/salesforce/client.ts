@@ -213,19 +213,16 @@ async function getToken(forceRefresh = false): Promise<CachedToken> {
 }
 
 /**
- * One authenticated REST call, with the 401 re-auth built in.
+ * The fetch every call goes through: token, URL, and the one 401 re-auth.
  *
- * `path` is relative to the data API root, e.g.
- * `sobjects/Lead__c` → `<instance>/services/data/v67.0/sobjects/Lead__c`.
- *
- * Returns the parsed JSON body, or `null` for a 204. Throws `SalesforceError`
- * on anything else so the caller has one thing to catch and one flag —
- * `retryable` — to branch on.
+ * Returns the raw Response so the JSON caller and the binary caller can each
+ * read the body their own way. Network failures come back as a retryable
+ * `SalesforceError` with status 0 — the request never reached the org.
  */
-export async function salesforceRequest<T = unknown>(
+async function authedFetch(
   path: string,
   init: { method: "GET" | "POST" | "PATCH"; body?: unknown },
-): Promise<T | null> {
+): Promise<Response> {
   if (!isSalesforceConfigured) {
     throw new SalesforceError("Salesforce is not configured", {
       status: 0,
@@ -247,13 +244,13 @@ export async function salesforceRequest<T = unknown>(
     });
   };
 
-  let res: Response;
   try {
-    res = await attempt(false);
+    const res = await attempt(false);
     // The one signal Salesforce gives that a cached token has died. Retry
     // once with a fresh token; a second 401 is a real authorisation problem
     // (the run-as user lost access to the object) and must surface.
-    if (res.status === 401) res = await attempt(true);
+    if (res.status === 401) return await attempt(true);
+    return res;
   } catch (err) {
     if (err instanceof SalesforceError) throw err;
     throw new SalesforceError(
@@ -261,19 +258,38 @@ export async function salesforceRequest<T = unknown>(
       { status: 0, retryable: true },
     );
   }
+}
+
+async function failure(res: Response): Promise<SalesforceError> {
+  const text = await res.text().catch(() => "");
+  const { message, errorCode } = parseSalesforceError(res.status, text);
+  return new SalesforceError(message, {
+    status: res.status,
+    errorCode,
+    retryable: classify(res.status, errorCode),
+  });
+}
+
+/**
+ * One authenticated REST call, with the 401 re-auth built in.
+ *
+ * `path` is relative to the data API root, e.g.
+ * `sobjects/Lead__c` → `<instance>/services/data/v67.0/sobjects/Lead__c`.
+ *
+ * Returns the parsed JSON body, or `null` for a 204. Throws `SalesforceError`
+ * on anything else so the caller has one thing to catch and one flag —
+ * `retryable` — to branch on.
+ */
+export async function salesforceRequest<T = unknown>(
+  path: string,
+  init: { method: "GET" | "POST" | "PATCH"; body?: unknown },
+): Promise<T | null> {
+  const res = await authedFetch(path, init);
 
   if (res.status === 204) return null;
+  if (!res.ok) throw await failure(res);
 
   const text = await res.text().catch(() => "");
-  if (!res.ok) {
-    const { message, errorCode } = parseSalesforceError(res.status, text);
-    throw new SalesforceError(message, {
-      status: res.status,
-      errorCode,
-      retryable: classify(res.status, errorCode),
-    });
-  }
-
   if (!text) return null;
   try {
     return JSON.parse(text) as T;
@@ -283,4 +299,69 @@ export async function salesforceRequest<T = unknown>(
       retryable: false,
     });
   }
+}
+
+/**
+ * A file's bytes — `sobjects/ContentVersion/<id>/VersionData` and the
+ * rich-text image resource. Listing photos uploaded in Salesforce live there,
+ * behind the same token as everything else; the `/sfc/servlet.shepherd/…`
+ * links in the rich-text fields need a browser session and are useless to us.
+ *
+ * `maxBytes` is enforced on the declared length when there is one and on the
+ * bytes actually read regardless, so a missing Content-Length cannot smuggle a
+ * large file past the cap.
+ */
+export async function salesforceDownload(
+  path: string,
+  maxBytes: number,
+): Promise<{ bytes: Uint8Array; contentType: string | null }> {
+  const res = await authedFetch(path, { method: "GET" });
+  if (!res.ok) throw await failure(res);
+
+  const declared = Number(res.headers.get("content-length") ?? "");
+  if (Number.isFinite(declared) && declared > maxBytes) {
+    throw new SalesforceError(`File is ${declared} bytes, over the ${maxBytes} limit`, {
+      status: res.status,
+      retryable: false,
+    });
+  }
+  const bytes = new Uint8Array(await res.arrayBuffer());
+  if (bytes.byteLength > maxBytes) {
+    throw new SalesforceError(
+      `File is ${bytes.byteLength} bytes, over the ${maxBytes} limit`,
+      { status: res.status, retryable: false },
+    );
+  }
+  return { bytes, contentType: res.headers.get("content-type") };
+}
+
+/**
+ * The org this deployment talks to, as a bare host. The listing sync stamps
+ * it on every row it writes, so rows from a sandbox can never be mistaken for
+ * rows from production.
+ */
+export function salesforceOrgHost(): string | null {
+  const raw = env.SALESFORCE_INSTANCE_URL;
+  if (!raw) return null;
+  try {
+    return new URL(raw).host.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Is this a sandbox org? A sandbox's My Domain is
+ * `<org>--<sandbox>.sandbox.my.salesforce.com`; the legacy login host is
+ * `test.salesforce.com`. Nothing from a sandbox is ever published — its
+ * listings are test data by definition.
+ */
+export function isSandboxOrgHost(host: string | null): boolean {
+  if (!host) return false;
+  const h = host.toLowerCase();
+  return (
+    h.endsWith(".sandbox.my.salesforce.com") ||
+    h.includes("--") ||
+    h === "test.salesforce.com"
+  );
 }

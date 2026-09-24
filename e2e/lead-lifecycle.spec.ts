@@ -58,6 +58,7 @@ const CRON_ROUTES = [
   "/api/cron/enquiry-auto-reply",
   "/api/cron/enquiry-escalation",
   "/api/cron/salesforce-lead-sync",
+  "/api/cron/salesforce-listing-sync",
   "/api/cron/permit-expiry",
   "/api/cron/meilisearch-sync",
   "/api/cron/embeddings-backfill",

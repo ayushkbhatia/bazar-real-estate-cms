@@ -31,6 +31,41 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [salesforce] Relisting keeps a new URL.
+  The sync keys a website listing on the CRM's `Property_Listing__c.Id`. When
+  the CRM team relists a property as a NEW listing record (the usual move
+  after expiry), it arrives as a new website listing with a new BAZ reference
+  and URL, while the old one stays off-market (410). Done looks like: on
+  creation, adopt an off-market website listing linked to the same
+  `sf_property_id` and mode instead of inserting — `lib/salesforce/listings/sync.ts`
+  `createProperty`. Wait until it happens for real; the sandbox has no
+  property with two listings.
+
+- [salesforce] Video and 360° tour URLs are read but not shown.
+  `VideoTourURL__c` and `URLLink360__c` are in the snapshot, but
+  `property_media` roles `video` / `virtual_tour` expect uploaded assets, not
+  URLs, so nothing renders them. Needs a decision on embedding third-party
+  players on the listing page before any wiring.
+
+- [salesforce] Off-plan detail the CRM has and the listing page does not use.
+  `Handover_Date__c`, `Payment_Plan__c`, `Project_Name__c` (→ a
+  `developments` link) are in Salesforce. The sync leaves `development_id` to
+  editors today; matching `Project_Name__c` to a development would need the
+  same mapping screen as locations, with a new `salesforce_mapping_kind`.
+
+- [salesforce] English changes in the CRM do not retire a website-written
+  Arabic twin.
+  When the CRM supplies no Arabic, `title_ar` is the website's (editor or
+  translator). If the CRM's English title later changes, that Arabic is
+  stale. The i18n provenance already records `src_hash`; surfacing
+  "English changed since this was translated" on Salesforce listings would
+  close it.
+
+- [salesforce] Tell the CRM team, in Salesforce, why a listing is not live.
+  Held reasons are only on /admin/properties/salesforce. With update access on
+  `Website_Status__c` and two new fields (question L7 in docs/SALESFORCE.md),
+  the sync can write `Failed` + the reason, and the live URL, back.
+
 - [i18n] The /off-plan map explorer and its project rail still render their own
   chrome in English on `/ar`.
   Found while fixing the "Abu Dhabi locations" band, which was English top to

@@ -56,7 +56,8 @@ const serverSchema = z.object({
   // when either is missing — keeps dev/preview working without a key.
   GOOGLE_PLACES_API_KEY: z.string().min(1).optional(),
   GOOGLE_PLACES_PLACE_ID: z.string().min(1).optional(),
-  // Salesforce CRM — lead push (phase 1). OAuth 2.0 client-credentials flow
+  // Salesforce CRM — the lead push and the listing sync (both directions share
+  // one Connected App). OAuth 2.0 client-credentials flow
   // against the org's My Domain host. All optional: with none of them set,
   // `isSalesforceConfigured` is false and the sync cron no-ops, so dev,
   // preview and CI behave exactly as they did before the integration landed.
