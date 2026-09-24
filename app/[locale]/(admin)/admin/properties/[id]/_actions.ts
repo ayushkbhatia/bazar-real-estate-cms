@@ -14,6 +14,7 @@ import { logAudit } from "@/lib/audit";
 import { sanitizeArticleHtml } from "@/lib/article-html";
 import { friendlyPropertyConstraintError } from "@/lib/property-constraints";
 import { requireRole } from "@/lib/auth";
+import { SALESFORCE_OWNED_COLUMNS } from "@/lib/salesforce/listings/plan";
 
 const PROPERTY_ROLES = ["admin", "editor", "agent"] as const;
 
@@ -39,6 +40,70 @@ async function revalidatePropertyPaths(propertyId: string) {
     revalidateLocalised("/");
   }
 }
+
+/**
+ * Did the editor actually change this value, or only round-trip it?
+ *
+ * The rich-text editor re-serialises HTML its own way, so a description is
+ * compared by its words, not its markup — otherwise every save of a Salesforce
+ * listing would claim the description had been changed.
+ */
+function sameStoredValue(col: string, posted: unknown, stored: unknown): boolean {
+  if (col === "description" || col === "description_ar") {
+    const words = (v: unknown) =>
+      String(v ?? "")
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    return words(posted) === words(stored);
+  }
+  if (typeof stored === "number" || typeof posted === "number") {
+    if (posted == null || posted === "" || stored == null) return posted == null && stored == null;
+    return Number(posted) === Number(stored);
+  }
+  return JSON.stringify(posted ?? null) === JSON.stringify(stored ?? null);
+}
+
+/**
+ * What Salesforce owns on this listing, or null when it is the CMS's own.
+ *
+ * The fixed columns are always the sync's. The Arabic twins and the advisor
+ * are the sync's only when Salesforce supplies them — an Arabic title in
+ * `Title_Arabic__c`, an assigned agent that maps to a staff member — so an
+ * editor's own Arabic or advisor on a listing whose CRM record has none is
+ * never overwritten, and never refused here either.
+ */
+async function salesforceOwnership(propertyId: string): Promise<{
+  columns: string[];
+  agent: boolean;
+} | null> {
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase
+    .from("properties")
+    .select("salesforce_listing_id")
+    .eq("id", propertyId)
+    .maybeSingle();
+  if (!data?.salesforce_listing_id) return null;
+  const { data: m } = await supabase
+    .from("salesforce_listings")
+    .select("snapshot, unresolved")
+    .eq("sf_listing_id", data.salesforce_listing_id)
+    .maybeSingle();
+  const snap = (m?.snapshot ?? {}) as { titleAr?: string | null; descriptionAr?: string | null; agent?: unknown };
+  const unresolved = (m?.unresolved ?? {}) as { agent?: unknown };
+  return {
+    columns: [
+      ...SALESFORCE_OWNED_COLUMNS,
+      ...(snap.titleAr ? ["title_ar"] : []),
+      ...(snap.descriptionAr ? ["description_ar"] : []),
+    ],
+    agent: !!snap.agent && !unresolved.agent,
+  };
+}
+
+const FROM_SALESFORCE =
+  "This listing is published from Salesforce, which sets this. Change it there; the website follows on the next sync.";
 
 export type SaveResult =
   | { status: "ok"; message?: string }
@@ -96,9 +161,29 @@ export async function updateProperty(
 
   const { data: before } = await supabase
     .from("properties")
-    .select("slug, title, price_aed, status")
+    .select("slug, title, price_aed, status, salesforce_listing_id")
     .eq("id", id)
     .maybeSingle();
+
+  // A listing published from Salesforce: the sync owns these columns and
+  // would change them back within fifteen minutes. Keep Salesforce's values
+  // and say so now, rather than let the edit look saved and quietly revert.
+  const keptFromSalesforce: string[] = [];
+  const owned = before?.salesforce_listing_id ? await salesforceOwnership(id) : null;
+  if (owned) {
+    const { data: current } = await supabase
+      .from("properties")
+      .select(owned.columns.join(", "))
+      .eq("id", id)
+      .maybeSingle();
+    const row = (current ?? {}) as unknown as Record<string, unknown>;
+    const data = updateData as Record<string, unknown>;
+    for (const col of owned.columns) {
+      if (!(col in data)) continue;
+      if (!sameStoredValue(col, data[col], row[col])) keptFromSalesforce.push(col);
+      data[col] = row[col];
+    }
+  }
 
   const { data, error } = await supabase
     .from("properties")
@@ -170,6 +255,12 @@ export async function updateProperty(
     revalidateLocalised("/");
   }
 
+  if (keptFromSalesforce.length > 0) {
+    return {
+      status: "ok",
+      message: `Saved. ${keptFromSalesforce.map((c) => c.replace(/_/g, " ")).join(", ")} ${keptFromSalesforce.length === 1 ? "comes" : "come"} from Salesforce and ${keptFromSalesforce.length === 1 ? "was" : "were"} left as ${keptFromSalesforce.length === 1 ? "it is" : "they are"} — change ${keptFromSalesforce.length === 1 ? "it" : "them"} in Salesforce.`,
+    };
+  }
   return { status: "ok", message: "Saved." };
 }
 
@@ -200,6 +291,13 @@ export async function assignAgent(
 
   if (agentId !== null && !UUID_RE.test(agentId)) {
     return { status: "error", message: "Invalid agent id." };
+  }
+  if ((await salesforceOwnership(propertyId))?.agent) {
+    return {
+      status: "error",
+      message:
+        "The advisor comes from the agent assigned in Salesforce. Change it there, or map that Salesforce user to someone else on the Salesforce listings screen.",
+    };
   }
 
   const supabase = await createSupabaseServerClient();
@@ -297,6 +395,9 @@ export async function setPropertyLocation(
       lng: Math.round(lng * 1e6) / 1e6,
     };
   }
+
+  if (await salesforceOwnership(propertyId))
+    return { status: "error", message: FROM_SALESFORCE };
 
   const supabase = await createSupabaseServerClient();
   const { data: before } = await supabase
@@ -801,6 +902,8 @@ export async function setPropertyDeveloper(
 
   if (!UUID_RE.test(developerId))
     return { status: "error", message: "Pick a developer." };
+  if (await salesforceOwnership(propertyId))
+    return { status: "error", message: FROM_SALESFORCE };
 
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase

@@ -88,7 +88,8 @@ const KIND_META: Record<
   salesforce: {
     label: "Salesforce",
     blurb:
-      "Pushes every public enquiry into the Lead__c object. Drains on the five-minute cron; the enquiry itself is never blocked on it.",
+      "Pushes every public enquiry into the Lead__c object (five-minute cron; the enquiry itself is never blocked on it), and publishes every listing the CRM marks Published for the website (fifteen-minute cron).",
+    href: "/admin/properties/salesforce",
     envVars: [
       "SALESFORCE_INSTANCE_URL",
       "SALESFORCE_CLIENT_ID",
@@ -189,6 +190,14 @@ export default async function AdminSettingsIntegrationsPage() {
                   <p className="mt-2 text-[12.5px] text-bz-muted leading-relaxed">
                     {meta.blurb}
                   </p>
+                  {meta.href ? (
+                    <Link
+                      href={meta.href}
+                      className="mt-2 inline-block text-[12px] text-bz-ink-2 hover:text-bz-ink"
+                    >
+                      Manage →
+                    </Link>
+                  ) : null}
                 </div>
               </div>
 

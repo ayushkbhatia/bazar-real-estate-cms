@@ -32,6 +32,8 @@ import {
 } from "./_media-library";
 import { PublishCard, type PublishInput } from "./_publish-card";
 import { AssignedAgentCard } from "./_components/assigned-agent-card";
+import { SalesforceSourceCard } from "./_components/salesforce-source-card";
+import { getSalesforceListingForProperty } from "@/lib/queries/salesforce-listings";
 
 export const dynamic = "force-dynamic";
 
@@ -146,7 +148,7 @@ async function withCurrentAgent(
 
 export default async function PropertyEditPage({ params }: PageProps) {
   const { id } = await params;
-  const [property, areas, developers, media, activeAgents, taxonomy] =
+  const [property, areas, developers, media, activeAgents, taxonomy, salesforce] =
     await Promise.all([
       fetchPropertyForEdit(id),
       fetchAreas(),
@@ -154,6 +156,7 @@ export default async function PropertyEditPage({ params }: PageProps) {
       fetchPropertyMedia(id),
       listActiveAgents(),
       listAmenitiesTaxonomy(),
+      getSalesforceListingForProperty(id),
     ]);
   if (!property) notFound();
 
@@ -362,11 +365,18 @@ export default async function PropertyEditPage({ params }: PageProps) {
             vocabulary={cardLabelVocabulary}
             initial={assignedCardLabels}
           />
-          <PublishCard
-            propertyId={property.id}
-            status={property.status}
-            input={publishInput}
-          />
+          {salesforce ? (
+            <SalesforceSourceCard
+              listing={salesforce}
+              canDecide={!!me && (me.role === "admin" || me.role === "editor")}
+            />
+          ) : (
+            <PublishCard
+              propertyId={property.id}
+              status={property.status}
+              input={publishInput}
+            />
+          )}
         </aside>
       </div>
     </CmsShell>
