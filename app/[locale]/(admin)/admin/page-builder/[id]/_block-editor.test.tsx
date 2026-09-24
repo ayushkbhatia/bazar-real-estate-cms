@@ -3,7 +3,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { newBlockInstance } from "@/lib/page-builder/catalogue";
 import { heroMedia } from "@/lib/page-builder/blocks/openers";
 import { faq } from "@/lib/page-builder/blocks/content";
-import { ctaBand } from "@/lib/page-builder/blocks/conversion";
+import { ctaBand, formBand } from "@/lib/page-builder/blocks/conversion";
+import { buildFormPreviews } from "@/lib/page-builder/form-preview";
+import { FORM_DEFS, defaultForm } from "@/lib/forms";
 import type { BlockInstance } from "@/lib/page-builder/types";
 import { BlockEditor } from "./_block-editor";
 
@@ -178,5 +180,79 @@ describe("BlockEditor", () => {
     fireEvent.click(screen.getByText(faq.label));
     expect(rows()).toHaveLength(1);
     expect(screen.getByLabelText(`Move ${faq.label} up`)).toBeInTheDocument();
+  });
+});
+
+describe("BlockEditor — form picker preview", () => {
+  const forms = FORM_DEFS.map((d) => defaultForm(d.key)!);
+  const previews = buildFormPreviews(forms);
+  const seeds = {
+    forms: {
+      options: FORM_DEFS.map((d) => ({
+        name: d.name,
+        href: d.path,
+        slug: d.key,
+      })),
+      current: [],
+    },
+  };
+
+  function setupBand(values: Record<string, unknown>, formPreviews = previews) {
+    const block = newBlockInstance(formBand);
+    Object.assign(block.values, values);
+    render(
+      <BlockEditor
+        pageId="page-1"
+        initial={[block]}
+        media={[]}
+        seeds={seeds}
+        hasDraft={false}
+        isPublished={false}
+        formPreviews={formPreviews}
+      />,
+    );
+    fireEvent.click(screen.getByLabelText("Expand"));
+  }
+
+  it("sketches the chosen form's questions under the picker", () => {
+    const form = forms.find((f) => f.key === "contact_enquiry")!;
+    setupBand({ form_key: form.key });
+    const preview = screen.getByTestId("form-mini-preview");
+    expect(preview).toHaveAccessibleName(`Preview of ${form.def.name}`);
+    for (const field of form.fields.filter((x) => x.enabled)) {
+      expect(preview.textContent).toContain(field.label);
+    }
+    expect(preview.textContent).toContain(form.copy.submit_label);
+  });
+
+  it("follows the picker when a different form is chosen", () => {
+    setupBand({ form_key: "contact_enquiry" });
+    const other = forms.find((f) => f.key === "rent_hero_enquiry")!;
+    const picker = screen
+      .getAllByRole("combobox")
+      .find((el) => (el as HTMLSelectElement).value === "contact_enquiry")!;
+    fireEvent.change(picker, {
+      target: { value: other.key },
+    });
+    expect(screen.getByTestId("form-mini-preview")).toHaveAccessibleName(
+      `Preview of ${other.def.name}`,
+    );
+    // The branching brief says which questions depend on an earlier answer.
+    expect(screen.getAllByText(/^Shown when /).length).toBeGreaterThan(0);
+  });
+
+  it("warns when the chosen form is switched off in Forms", () => {
+    const off = { ...forms.find((f) => f.key === "contact_enquiry")!, enabled: false };
+    setupBand(
+      { form_key: off.key },
+      { ...previews, [off.key]: buildFormPreviews([off])[off.key] },
+    );
+    expect(screen.getByText(/switched off in Forms/)).toBeInTheDocument();
+  });
+
+  it("asks for a choice when no form is picked", () => {
+    setupBand({ form_key: null });
+    expect(screen.queryByTestId("form-mini-preview")).not.toBeInTheDocument();
+    expect(screen.getByText(/Choose a form to see its questions/)).toBeInTheDocument();
   });
 });
