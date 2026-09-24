@@ -84,7 +84,7 @@ export async function updateSession(
       const url = request.nextUrl.clone();
       url.pathname = "/admin/login";
       // Path AND query: a deep link into the CMS carries state there —
-      // `?locale=ar` picks the Arabic half of an email, `?view=outreach` picks
+      // `?language=ar` picks the Arabic half of an email, `?view=outreach` picks
       // a tab — and dropping it silently lands the editor somewhere else after
       // they sign in.
       url.searchParams.set("redirect", `${pathname}${request.nextUrl.search}`);

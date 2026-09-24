@@ -66,16 +66,16 @@ describe("pickPostSignInPath", () => {
 describe("the query survives the sign-in bounce", () => {
   /**
    * The proxy round-trips path AND query, because a CMS deep link carries
-   * state there — `?locale=ar` is which language of an email you were editing.
+   * state there — `?language=ar` is which language of an email you were editing.
    * Landing back on the English one after signing in is a silent wrong answer.
    */
   it("keeps a query string on the requested path", () => {
     expect(
       pickPostSignInPath({
         isStaff: true,
-        requested: "/admin/content-assets/emails/enquiry_ack?locale=ar",
+        requested: "/admin/content-assets/emails/enquiry_ack?language=ar",
       }),
-    ).toBe("/admin/content-assets/emails/enquiry_ack?locale=ar");
+    ).toBe("/admin/content-assets/emails/enquiry_ack?language=ar");
   });
 
   it("still recognises an /admin destination that carries one", () => {

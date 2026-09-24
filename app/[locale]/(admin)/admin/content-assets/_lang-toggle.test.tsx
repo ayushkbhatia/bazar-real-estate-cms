@@ -1,7 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { join, sep } from "node:path";
+import {
+  NEXT_INTERCEPTION_MARKER_PREFIX,
+  NEXT_QUERY_PARAM_PREFIX,
+} from "next/dist/lib/constants";
+import { LEGACY_LANG_PARAM } from "@/lib/legacy-redirects";
+import { SETLANG_PARAM } from "@/lib/i18n/routing";
 import { LangToggle, LANG_PARAM, langFrom, withLang } from "./_lang-toggle";
 
 describe("withLang", () => {
@@ -161,5 +167,62 @@ describe("every stateful editor is keyed on the language", () => {
         `Without it the editor survives the language switch with the other ` +
         `language's wording in its fields — and saves it into that column.`,
     ).toEqual([]);
+  });
+});
+
+/**
+ * The name has to survive Vercel, and nothing local can show whether it does.
+ *
+ * On Vercel, Next runs in minimal mode, and `filterInternalQuery`
+ * (next/dist/server/server-utils.js) deletes every query key that shares a
+ * name with a route parameter — scrubbing what its own router injected, with
+ * no way to tell a visitor's key from its own. The root segment is
+ * `app/[locale]`, so `?locale=ar` was deleted before any page read it, and the
+ * toggle rendered English in production while passing every test here: `next
+ * dev` and `next start` never enter minimal mode.
+ *
+ * So the check is structural. It reads every dynamic segment off disk rather
+ * than listing them, and takes the other reserved names from where they are
+ * defined, so a future `app/.../[language]/` folder or a renamed proxy
+ * parameter fails here instead of in the CMS.
+ */
+describe("the language parameter survives Vercel", () => {
+  const APP_MARKER = `${sep}app${sep}`;
+  const APP = import.meta.dirname.slice(
+    0,
+    import.meta.dirname.lastIndexOf(APP_MARKER) + APP_MARKER.length - 1,
+  );
+
+  function segmentNames(dir: string, out = new Set<string>()): Set<string> {
+    for (const entry of readdirSync(dir)) {
+      const full = join(dir, entry);
+      if (!statSync(full).isDirectory()) continue;
+      // [x], [...x], [[...x]] — the name inside is the route parameter.
+      const m = entry.match(/^\[{1,2}(?:\.\.\.)?([^\]]+)\]{1,2}$/);
+      if (m) out.add(m[1]!);
+      segmentNames(full, out);
+    }
+    return out;
+  }
+
+  it("is not the name of any route segment", () => {
+    const names = segmentNames(APP);
+    // Non-vacuity: the walk must find the segment that caused the bug.
+    expect(names.has("locale")).toBe(true);
+    expect(
+      [...names].filter((n) => n === LANG_PARAM),
+      `\`?${LANG_PARAM}=\` shares a name with a route segment, and on Vercel ` +
+        `Next deletes it from the query before the page reads it.`,
+    ).toEqual([]);
+  });
+
+  it("is none of the names the proxy strips or consumes", () => {
+    expect(LANG_PARAM).not.toBe(LEGACY_LANG_PARAM);
+    expect(LANG_PARAM).not.toBe(SETLANG_PARAM);
+  });
+
+  it("does not look like one of Next's own routing parameters", () => {
+    expect(LANG_PARAM.startsWith(NEXT_QUERY_PARAM_PREFIX)).toBe(false);
+    expect(LANG_PARAM.startsWith(NEXT_INTERCEPTION_MARKER_PREFIX)).toBe(false);
   });
 });
