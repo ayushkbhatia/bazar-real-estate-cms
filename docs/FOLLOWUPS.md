@@ -31,6 +31,22 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [cms] A field's `help` never shows when the field has a `max`.
+  `FieldLabel` (`app/[locale]/(admin)/admin/_fields/field-editor.tsx`) draws
+  the character counter OR the help, never both, and nearly every text field
+  sets `max`. So the per-field token hints on Cards → Listing enquiry card
+  ("Use {reference} where…") have never been visible; the only token guidance
+  an editor sees is the line above the form. Done looks like: help under the
+  label, counter beside it. Shared by every CMS editor, so check a few for
+  crowding.
+
+- [cms] The unknown-token save check covers listing copy and Cards only.
+  `lib/master-pages/tokens.ts` refuses a `{token}` a page cannot fill, wired
+  into `saveCard` and `savePropertyPageCopy`. The project-page copy screen,
+  the developer-page copy screen and each project's own document still accept
+  anything, and render a typo as typed. Done looks like: the same call in
+  their save actions, against `DEVELOPMENT_TOKENS` / `{name}`.
+
 - [salesforce] Relisting keeps a new URL.
   The sync keys a website listing on the CRM's `Property_Listing__c.Id`. When
   the CRM team relists a property as a NEW listing record (the usual move

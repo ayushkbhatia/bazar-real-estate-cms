@@ -45,7 +45,17 @@ function renderCard(
     <AgentCard
       enquiryForm={defaultForm("property_enquiry")!}
       copy={{ ...COPY, ...copy }}
-      dialogCopy={{ title: "Enquire about Sample Listing", note: "Reference {reference}" }}
+      dialogCopy={{
+        title: "Enquire about Sample Listing",
+        note: "Reference {reference}",
+        tokens: {
+          reference: "BAZ-AD-00001",
+          title: "Sample Listing",
+          area: "Al Reem Island",
+          advisor: "Sample Advisor",
+          type: "apartment",
+        },
+      }}
       advisor={{ ...BASE, ...advisor }}
       propertyId="prop-1"
       propertyReference="BAZ-AD-00001"

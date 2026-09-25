@@ -164,15 +164,18 @@ export function AgentCard({
         propertyReference={propertyReference}
         advisorName={advisor.display_name}
       >
+        {/* `min-h-9`, not `h-9`: the label is CMS copy and takes tokens, and
+            "Enquire about {title}" runs to two lines on a long title — which
+            a fixed height clipped against the border. */}
         <button
           type="button"
-          className={`w-full inline-flex items-center justify-center gap-1.5 h-9 rounded-md text-[12.5px] transition-colors ${
+          className={`w-full inline-flex items-center justify-center gap-1.5 min-h-9 px-3 py-1.5 rounded-md text-[12.5px] leading-snug text-center transition-colors ${
             directActions > 0
               ? "mt-2 border border-bz-border bg-bz-bg text-bz-ink-2 hover:border-bz-border-strong"
               : "mt-5 bg-bz-accent text-bz-accent-fg font-medium hover:bg-bz-accent-hover"
           }`}
         >
-          <Send size={13} strokeWidth={1.7} />
+          <Send size={13} strokeWidth={1.7} className="shrink-0" />
           {copy.enquire}
         </button>
       </PropertyEnquiryDialog>

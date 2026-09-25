@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import type { ResolvedForm } from "@/lib/forms/types";
 import { isolateForLocale } from "@/lib/i18n/bidi";
+import type { PropertyTokens } from "@/lib/master-pages/property-page";
 import { FormRenderer } from "../../../_components/forms/form-renderer";
 import { TokenText } from "./token-text";
 
@@ -32,11 +33,15 @@ import { TokenText } from "./token-text";
  * Resolved by the page, because a client component cannot read the document —
  * the same arrangement the shortlist drawer's copy uses. `title` arrives with
  * its tokens filled; `note` arrives as a template so the reference can keep
- * its `.mono` span.
+ * its `.mono` span, with `tokens` — every one, filled and isolated by the
+ * page — for the rest. The client's note reads "…about {title} in {area}.",
+ * and with only `{reference}` and `{advisor}` to hand the dialog drew both
+ * braces as typed.
  */
 export type EnquiryDialogCopy = {
   title: string;
   note: string;
+  tokens: PropertyTokens;
 };
 
 export function PropertyEnquiryDialog({
@@ -72,6 +77,7 @@ export function PropertyEnquiryDialog({
             <TokenText
               template={copy.note}
               tokens={{
+                ...copy.tokens,
                 reference: (
                   <span className="mono whitespace-nowrap">
                     {propertyReference}
