@@ -16,6 +16,8 @@ const h = vi.hoisted(() => ({
   download: null as unknown as (ref: { kind: string }) => Promise<unknown>,
   heartbeats: [] as { job: string; ok: boolean; detail?: string | null }[],
   issues: [] as string[],
+  patches: [] as { path: string; body: Record<string, unknown> }[],
+  patchFails: false,
 }));
 
 vi.mock("@/lib/env", () => ({
@@ -28,7 +30,22 @@ vi.mock("@/lib/env", () => ({
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: () => h.db.client() }));
 vi.mock("@/lib/salesforce/client", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/salesforce/client")>();
-  return { ...actual, salesforceOrgHost: () => h.org };
+  return {
+    ...actual,
+    salesforceOrgHost: () => h.org,
+    salesforceRequest: async (path: string, init: { method: string; body?: Record<string, unknown> }) => {
+      if (init.method !== "PATCH") throw new Error(`unexpected ${init.method} ${path}`);
+      if (h.patchFails) {
+        throw new actual.SalesforceError("insufficient access rights on object id", {
+          status: 400,
+          errorCode: "INSUFFICIENT_ACCESS_OR_READONLY",
+          retryable: false,
+        });
+      }
+      h.patches.push({ path, body: init.body ?? {} });
+      return null;
+    },
+  };
 });
 vi.mock("./fetch", () => ({
   fetchPublishedListings: async () => ({ records: h.sweep, hiddenFields: [] }),
@@ -51,7 +68,7 @@ vi.mock("next/cache", () => ({ revalidatePath: () => undefined }));
 vi.mock("@/lib/i18n/revalidate", () => ({ revalidateLocalised: () => undefined }));
 vi.mock("@/lib/i18n/mt/translate", () => ({ hashSource: (t: string) => `h${t.length}` }));
 
-const { runListingSync } = await import("./sync");
+const { runListingSync, writeBackDelta, writeBackFor } = await import("./sync");
 const { imageKey, toSnapshot } = await import("./snapshot");
 
 const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0x10, 0x4a, 0x46, 0x49, 0x46, 0, 1, 1, 0, 0]);
@@ -98,6 +115,8 @@ beforeEach(() => {
   h.download = async () => ({ ok: true, bytes: JPEG, sniffed: { mime: "image/jpeg", ext: "jpg" } });
   h.heartbeats = [];
   h.issues = [];
+  h.patches = [];
+  h.patchFails = false;
   revalidated.length = 0;
 });
 
@@ -339,5 +358,128 @@ describe("held listings", () => {
     expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("draft");
     await run();
     expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("published");
+  });
+});
+
+describe("writeBackFor — what the CRM team sees", () => {
+  const url = "https://www.bazarrealestate.ae/p/villa-baz-ad-01234";
+  const theirs = { code: "no_permit_expiry" as const, fix: "salesforce" as const, message: "Permit_Expiry_Date_c__c on the Property is blank." };
+  const ours = { code: "unmapped_location" as const, fix: "website" as const, message: '"Sobha City" does not match an area.' };
+
+  it("publishes with the URL and clears the error on success", () => {
+    expect(writeBackFor("live", [], url)).toEqual({ Website_Status__c: "Published", Website_URL__c: url, Website_Error__c: null });
+  });
+
+  it("deactivates only for what the CRM team can fix", () => {
+    expect(writeBackFor("held", [theirs, ours], null)).toEqual({
+      Website_Status__c: "Deactivated",
+      Website_URL__c: null,
+      Website_Error__c: theirs.message,
+    });
+    // Waiting on us: stays in the published set, says why, goes live when done.
+    const waiting = writeBackFor("held", [ours], null)!;
+    expect(waiting).not.toHaveProperty("Website_Status__c");
+    expect(waiting.Website_Error__c).toBe(`Waiting on the Bazar website team: ${ours.message}`);
+    expect(writeBackFor("awaiting_approval", [], null)).not.toHaveProperty("Website_Status__c");
+  });
+
+  it("says nothing for a sandbox or a listing the CRM already withdrew", () => {
+    expect(writeBackFor("mirror_only", [theirs], null)).toBeNull();
+    expect(writeBackFor("withdrawn", [], null)).toBeNull();
+  });
+
+  it("sends only what would change, and leaves Republished alone", () => {
+    const want = writeBackFor("live", [], url)!;
+    expect(writeBackDelta(want, { websiteStatus: "Republished", websiteUrl: url, websiteError: null })).toEqual({});
+    expect(writeBackDelta(want, { websiteStatus: "Published", websiteUrl: null, websiteError: "old" })).toEqual({
+      Website_URL__c: url,
+      Website_Error__c: null,
+    });
+  });
+});
+
+describe("write-back in a run", () => {
+  function setWriteBack(on: boolean) {
+    h.db.rows("salesforce_listing_sync")[0].write_back = on;
+  }
+
+  it("writes nothing until an admin turns it on", async () => {
+    setAutoPublish(h.db, true);
+    await run();
+    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("published");
+    expect(h.patches).toEqual([]);
+  });
+
+  it("tells Salesforce a live listing is published, where, and then stops repeating itself", async () => {
+    setAutoPublish(h.db, true);
+    setWriteBack(true);
+    const s = await run();
+    expect(s.writtenBack).toBe(1);
+    const p = property(h.db, COMPLETE_SALE.Id)!;
+    expect(h.patches).toEqual([
+      {
+        path: `sobjects/Property_Listing__c/${COMPLETE_SALE.Id}`,
+        // Already Published in Salesforce, and no error to clear: only the
+        // URL is news.
+        body: {
+          Website_URL__c: expect.stringMatching(new RegExp(`/p/4br-villa-on-yas-island-${String(p.reference).toLowerCase()}$`)),
+        },
+      },
+    ]);
+    // Next sweep reads our values back; nothing to send.
+    h.sweep = [{ ...COMPLETE_SALE, Website_URL__c: h.patches[0].body.Website_URL__c as string, Website_Error__c: null }];
+    h.patches = [];
+    await run();
+    expect(h.patches).toEqual([]);
+  });
+
+  it("deactivates a listing only the CRM team can fix, with the reason", async () => {
+    setWriteBack(true);
+    h.sweep = [{ ...COMPLETE_SALE, Property__r: { ...COMPLETE_SALE.Property__r, Permit_Expiry_Date_c__c: null } }];
+    await run();
+    // No Website_URL__c: it was never live, so there is none to clear.
+    expect(h.patches[0].body).toEqual({
+      Website_Status__c: "Deactivated",
+      Website_Error__c: "Permit_Expiry_Date_c__c on the Property is blank.",
+    });
+  });
+
+  it("keeps a listing waiting on the website in the published set", async () => {
+    setWriteBack(true);
+    setAutoPublish(h.db, true);
+    h.sweep = [RENT_UNMAPPED];
+    await run();
+    expect(h.patches).toHaveLength(1);
+    expect(h.patches[0].body).not.toHaveProperty("Website_Status__c");
+    expect(String(h.patches[0].body.Website_Error__c)).toMatch(/^Waiting on the Bazar website team: "Sobha City, Abu Dhabi"/);
+  });
+
+  it("never writes to a sandbox", async () => {
+    h.org = "bazarrealestate--sand.sandbox.my.salesforce.com";
+    setWriteBack(true);
+    await run();
+    expect(h.patches).toEqual([]);
+  });
+
+  it("keeps the reasons when a listing it deactivated leaves the published set", async () => {
+    setWriteBack(true);
+    h.sweep = [{ ...COMPLETE_SALE, Property__r: { ...COMPLETE_SALE.Property__r, Permit_Expiry_Date_c__c: null } }];
+    await run();
+    h.sweep = [];
+    h.absences.set(COMPLETE_SALE.Id, { kind: "unpublished", reason: 'Website_Status__c is "Deactivated" in Salesforce', status: "Deactivated" });
+    await run();
+    const m = mirror(h.db, COMPLETE_SALE.Id)!;
+    expect(m.state).toBe("withdrawn");
+    expect((m.holds as { code: string }[]).map((x) => x.code)).toEqual(["no_permit_expiry"]);
+  });
+
+  it("records a refused write-back on the listing and carries on", async () => {
+    setWriteBack(true);
+    setAutoPublish(h.db, true);
+    h.patchFails = true;
+    const s = await run();
+    expect(s.ok).toBe(false);
+    expect(property(h.db, COMPLETE_SALE.Id)?.status).toBe("published");
+    expect(String(mirror(h.db, COMPLETE_SALE.Id)?.last_error)).toContain("INSUFFICIENT_ACCESS_OR_READONLY");
   });
 });

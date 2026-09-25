@@ -179,6 +179,9 @@ export default async function SalesforceListingsPage() {
                 <span className="text-[10px] mono px-2 py-0.5 rounded uppercase tracking-wider bg-bz-bg border border-bz-border text-bz-ink-2">
                   {settings.autoPublish ? "auto-publish on" : "approval required"}
                 </span>
+                <span className="text-[10px] mono px-2 py-0.5 rounded uppercase tracking-wider bg-bz-bg border border-bz-border text-bz-ink-2">
+                  {settings.writeBack ? "writes back to Salesforce" : "read only"}
+                </span>
               </div>
               <div className="text-[11.5px] text-bz-muted">
                 Last run {ago(hb?.last_run_at ?? settings.lastRunAt, now)}
@@ -193,7 +196,11 @@ export default async function SalesforceListingsPage() {
             </div>
             {isAdmin ? (
               <div className="flex flex-wrap items-center gap-2">
-                <SettingsSwitches paused={settings.paused} autoPublish={settings.autoPublish} />
+                <SettingsSwitches
+                  paused={settings.paused}
+                  autoPublish={settings.autoPublish}
+                  writeBack={settings.writeBack}
+                />
                 <SyncNowButton />
               </div>
             ) : null}
@@ -300,7 +307,7 @@ export default async function SalesforceListingsPage() {
                       {r.state === "withdrawn" && r.withdrawnReason ? (
                         <p className="mt-2 text-[12px] text-bz-ink-2">{r.withdrawnReason}.</p>
                       ) : null}
-                      {r.holds.length > 0 && r.state !== "withdrawn" ? (
+                      {r.holds.length > 0 ? (
                         <ul className="mt-2.5 flex flex-col gap-1">
                           {r.holds.map((h, i) => (
                             <li key={`${h.code}-${i}`} className="text-[12.5px] text-bz-ink leading-snug">

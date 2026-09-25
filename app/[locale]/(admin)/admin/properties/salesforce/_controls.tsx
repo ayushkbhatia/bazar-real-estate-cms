@@ -38,9 +38,11 @@ export function SyncNowButton() {
 export function SettingsSwitches({
   paused,
   autoPublish,
+  writeBack,
 }: {
   paused: boolean;
   autoPublish: boolean;
+  writeBack: boolean;
 }) {
   const [pending, start] = useTransition();
   return (
@@ -74,6 +76,24 @@ export function SettingsSwitches({
         }}
       >
         {autoPublish ? "Turn off auto-publish" : "Turn on auto-publish"}
+      </button>
+      <button
+        type="button"
+        disabled={pending}
+        className={BUTTON}
+        onClick={() => {
+          if (
+            !writeBack &&
+            !window.confirm(
+              "Turn on write-back? Every listing's website status is written to Salesforce, and a listing held for something the CRM team must fix is set to Deactivated there until they fix it and publish it again.",
+            )
+          ) {
+            return;
+          }
+          start(async () => report(await updateListingSyncSettings({ writeBack: !writeBack })));
+        }}
+      >
+        {writeBack ? "Turn off write-back" : "Turn on write-back"}
       </button>
     </div>
   );

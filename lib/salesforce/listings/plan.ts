@@ -29,6 +29,7 @@ export type HoldCode =
   | "listing_inactive"
   | "property_unavailable"
   | "listing_expired"
+  | "permit_expired"
   | "no_title"
   | "no_offering"
   | "no_price"
@@ -213,6 +214,27 @@ const BAYUT_TYPES: Record<string, TypeMapping> = {
   "bulk units": null,
 };
 
+/**
+ * `Property_Type__c` — added in v1.2 of the guide as the website's type field,
+ * a restricted picklist with villas, townhouses and commercial types in it.
+ * Read first; the two older fields are fallbacks for records nobody has
+ * re-typed. "Other" has no honest equivalent and holds the listing.
+ */
+const WEBSITE_TYPES: Record<string, TypeMapping> = {
+  apartment: { type: "apartment" },
+  villa: { type: "villa" },
+  townhouse: { type: "townhouse" },
+  penthouse: { type: "penthouse" },
+  land: { type: "land" },
+  plot: { type: "land" },
+  office: { type: "office", segment: "commercial" },
+  retail: { type: "retail", segment: "commercial" },
+  showroom: { type: "retail", segment: "commercial" },
+  warehouse: { type: "commercial", segment: "commercial" },
+  "full building": { type: "building" },
+  other: null,
+};
+
 /** `PropertyType__c` — the CRM's own list, used when Bayut's is blank. It has
  *  no villa at all; the sandbox files a villa as "Duplex" here and "Villa" in
  *  the Bayut field, which is why Bayut's is read first. */
@@ -259,6 +281,8 @@ const FURNISHINGS: Record<string, PropertyFurnishing> = {
   unfurnished: "unfurnished",
   "partly furnished": "semi",
   "semi furnished": "semi",
+  // v1.2 renamed the picklist value, without the space.
+  semifurnished: "semi",
   "fully furnished": "fully",
   furnished: "fully",
 };
@@ -476,6 +500,10 @@ export function mapAmenities(
 }
 
 function typeOf(s: ListingSnapshot): { mapping: TypeMapping | undefined; source: string | null } {
+  if (s.websiteType) {
+    const m = WEBSITE_TYPES[normKey(s.websiteType)];
+    if (m !== undefined) return { mapping: m, source: s.websiteType };
+  }
   if (s.bayutType) {
     const m = BAYUT_TYPES[normKey(s.bayutType)];
     if (m !== undefined) return { mapping: m, source: s.bayutType };
@@ -563,6 +591,22 @@ function isPastDate(isoDate: string, now: Date): boolean {
   const expiry = new Date(y, m - 1, d).getTime();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
   return expiry < today;
+}
+
+/**
+ * The CRM's location as one string, most specific part first, without
+ * repeats: "The Canopies, Dubai Hills Estate, Dubai". Snapshots from before
+ * v1.2 have only `location`, and still work.
+ */
+export function locationText(s: Pick<ListingSnapshot, "location" | "community" | "subCommunity">): string | null {
+  const parts: string[] = [];
+  for (const v of [s.subCommunity, s.community, s.location]) {
+    if (!v) continue;
+    for (const piece of v.split(",").map((x) => x.trim()).filter(Boolean)) {
+      if (!parts.some((p) => normKey(p) === normKey(piece))) parts.push(piece);
+    }
+  }
+  return parts.length ? parts.join(", ") : null;
 }
 
 // ── the plan ────────────────────────────────────────────────────────────
@@ -660,7 +704,7 @@ export function planListing(s: ListingSnapshot, lookups: Lookups, now: Date): Li
     holds.push({
       code: "no_type",
       fix: "salesforce",
-      message: "Property_Type_Bayut_Picklist__c and PropertyType__c are both blank.",
+      message: "Property_Type__c on the Property is blank.",
     });
   }
 
@@ -684,20 +728,26 @@ export function planListing(s: ListingSnapshot, lookups: Lookups, now: Date): Li
     notes.push({ code: "no_size", message: "PropertySizeSqft__c is blank, so no size is shown." });
   }
 
-  // Where.
+  // Where. Sub-community, community, then area: most specific first, which
+  // is the order resolveLocation tries the comma-separated parts in.
   let place: ResolvedArea = { area_id: null, sub_community_id: null, building_id: null };
-  if (!s.location) {
-    holds.push({ code: "no_location", fix: "salesforce", message: "Location__c on the Property is blank." });
+  const where = locationText(s);
+  if (!where) {
+    holds.push({
+      code: "no_location",
+      fix: "salesforce",
+      message: "Community__c, Sub_Community__c and Location__c on the Property are all blank.",
+    });
   } else {
-    const resolved = resolveLocation(s.location, s.emirate, lookups);
+    const resolved = resolveLocation(where, s.emirate, lookups);
     if (resolved && resolved.area_id) {
       place = resolved;
     } else {
-      unresolved.location = s.location;
+      unresolved.location = where;
       holds.push({
         code: "unmapped_location",
         fix: "website",
-        message: `"${s.location}" does not match an area on the website. Choose one on the Salesforce listings screen; every listing with this location follows.`,
+        message: `"${where}" does not match an area on the website. Choose one on the Salesforce listings screen; every listing with this location follows.`,
       });
     }
   }
@@ -740,11 +790,17 @@ export function planListing(s: ListingSnapshot, lookups: Lookups, now: Date): Li
   if (!s.permitNumber) {
     holds.push({ code: "no_permit_number", fix: "salesforce", message: "RERAPermitNumber__c on the Property is blank." });
   }
-  if (!s.expiresOn) {
+  if (!s.permitExpiresOn) {
     holds.push({
       code: "no_permit_expiry",
       fix: "salesforce",
-      message: "Expired_Date__c on the listing is blank. The website needs it as the permit's expiry date.",
+      message: "Permit_Expiry_Date_c__c on the Property is blank.",
+    });
+  } else if (isPastDate(s.permitExpiresOn, now)) {
+    holds.push({
+      code: "permit_expired",
+      fix: "salesforce",
+      message: `The advertising permit expired on ${s.permitExpiresOn} (Permit_Expiry_Date_c__c).`,
     });
   }
 
@@ -788,7 +844,7 @@ export function planListing(s: ListingSnapshot, lookups: Lookups, now: Date): Li
           developer_id: developerId,
           amenities,
           listing_permit_no: s.permitNumber,
-          listing_permit_expires_at: s.expiresOn,
+          listing_permit_expires_at: s.permitExpiresOn,
           ...(s.titleAr ? { title_ar: s.titleAr.slice(0, 160) } : {}),
           ...(s.descriptionAr ? { description_ar: plainTextToHtml(s.descriptionAr) } : {}),
           ...(agentId ? { assigned_agent_id: agentId } : {}),

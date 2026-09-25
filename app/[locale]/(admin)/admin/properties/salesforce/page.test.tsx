@@ -18,7 +18,7 @@ vi.mock("@/lib/salesforce/client", () => ({
 }));
 vi.mock("@/lib/queries/salesforce-listings", () => ({
   listSalesforceListings: async () => h.rows,
-  getListingSyncSettings: async () => ({ paused: false, autoPublish: false, lastRunAt: null, lastSummary: {} }),
+  getListingSyncSettings: async () => ({ paused: false, autoPublish: false, writeBack: false, lastRunAt: null, lastSummary: {} }),
   getMappingOptions: async () => ({
     areas: [{ id: "00000000-0000-4000-8000-000000000006", label: "Al Reem Island" }],
     developers: [],

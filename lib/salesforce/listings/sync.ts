@@ -2,13 +2,15 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database, Json } from "@/db/types";
-import { isSalesforceConfigured } from "@/lib/env";
+import { env, isSalesforceConfigured } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   isSandboxOrgHost,
   salesforceOrgHost,
+  salesforceRequest,
   SalesforceError,
 } from "@/lib/salesforce/client";
+import { isLiveWebsiteStatus } from "./fields";
 import { revalidatePath } from "next/cache";
 import { revalidateLocalised } from "@/lib/i18n/revalidate";
 import { recordHeartbeat, reportError, reportIssue } from "@/lib/observability";
@@ -114,6 +116,7 @@ export type SyncSummary = {
   invisible: number;
   imagesCopied: number;
   imagesFailed: number;
+  writtenBack: number;
   hiddenFields: string[];
   errors: string[];
 };
@@ -135,6 +138,7 @@ function emptySummary(): SyncSummary {
     invisible: 0,
     imagesCopied: 0,
     imagesFailed: 0,
+    writtenBack: 0,
     hiddenFields: [],
     errors: [],
   };
@@ -162,6 +166,8 @@ type Ctx = {
   /** Whether this run may call Salesforce (false when re-applying from stored
    *  snapshots without credentials). */
   canFetch: boolean;
+  /** An admin has switched write-back on (0137). */
+  writeBack: boolean;
 };
 
 // ── loading ─────────────────────────────────────────────────────────────
@@ -720,7 +726,9 @@ async function contentPhase(ctx: Ctx, snapshot: ListingSnapshot, seen: boolean):
 
 // ── phase two: status ───────────────────────────────────────────────────
 
-async function statusPhase(ctx: Ctx, planned: Planned[]): Promise<void> {
+type Decision = { p: Planned; state: ListingState; holds: Hold[] };
+
+async function statusPhase(ctx: Ctx, planned: Planned[]): Promise<Decision[]> {
   // The flags, fresh. See "Two phases" above.
   const ids = planned.map((p) => p.snapshot.listingId);
   const flags = new Map<string, { approved_at: string | null; hidden_at: string | null }>();
@@ -734,6 +742,7 @@ async function statusPhase(ctx: Ctx, planned: Planned[]): Promise<void> {
   }
 
   const rows: Database["public"]["Tables"]["salesforce_listings"]["Insert"][] = [];
+  const decisions: Decision[] = [];
   const nowIso = ctx.now.toISOString();
 
   for (const p of planned) {
@@ -820,6 +829,7 @@ async function statusPhase(ctx: Ctx, planned: Planned[]): Promise<void> {
     else if (state === "mirror_only") ctx.summary.mirrorOnly += 1;
     else if (state === "awaiting_approval") ctx.summary.awaitingApproval += 1;
 
+    decisions.push({ p, state, holds });
     rows.push({
       sf_listing_id: id,
       org_host: ctx.orgHost,
@@ -853,9 +863,121 @@ async function statusPhase(ctx: Ctx, planned: Planned[]): Promise<void> {
       .upsert(rows.slice(i, i + 100), { onConflict: "sf_listing_id" });
     if (error) throw new Error(`mirror write failed: ${error.message}`);
   }
+  return decisions;
 }
 
-async function withdraw(ctx: Ctx, row: MirrorRow, reason: string): Promise<void> {
+// ── phase three: tell Salesforce ────────────────────────────────────────
+
+export type WriteBack = {
+  Website_Status__c?: "Published" | "Deactivated";
+  Website_URL__c?: string | null;
+  Website_Error__c?: string | null;
+};
+
+const WEBSITE_ERROR_MAX = 32_000;
+
+/**
+ * What the CRM team should see on the listing, per guide v1.2 step 5.
+ *
+ * Their contract: Published with the URL on success; Deactivated with the
+ * reason on failure, which takes the listing out of the published set until
+ * the CRM team fixes it and publishes it again. Only a failure THEY can fix
+ * deactivates. A listing waiting on us — a location nobody has mapped, an
+ * admin's approval, photos still copying — keeps its status, so it stays in
+ * the sweep and goes live the moment we are done; the error field says what
+ * it is waiting for. Null means say nothing: a sandbox, or a listing the CRM
+ * itself has already withdrawn.
+ */
+export function writeBackFor(state: ListingState, holds: readonly Hold[], liveUrl: string | null): WriteBack | null {
+  switch (state) {
+    case "live":
+      return { Website_Status__c: "Published", Website_URL__c: liveUrl, Website_Error__c: null };
+    case "hidden":
+      return {
+        Website_Status__c: "Deactivated",
+        Website_URL__c: null,
+        Website_Error__c: "Taken off the website by the Bazar team. Speak to them before publishing it again.",
+      };
+    case "awaiting_approval":
+      return {
+        Website_URL__c: null,
+        Website_Error__c: "Complete. Waiting for the Bazar team to approve its first appearance on the website.",
+      };
+    case "held": {
+      const theirs = holds.filter((h) => h.fix === "salesforce");
+      if (theirs.length) {
+        return {
+          Website_Status__c: "Deactivated",
+          Website_URL__c: null,
+          Website_Error__c: theirs.map((h) => h.message).join("\n").slice(0, WEBSITE_ERROR_MAX),
+        };
+      }
+      const lines = holds.map((h) => (h.fix === "wait" ? `In progress: ${h.message}` : `Waiting on the Bazar website team: ${h.message}`));
+      return { Website_URL__c: null, Website_Error__c: lines.join("\n").slice(0, WEBSITE_ERROR_MAX) || null };
+    }
+    default:
+      return null;
+  }
+}
+
+/** Only the fields that would change. Republished already means live, so it
+ *  is not "corrected" to Published. */
+export function writeBackDelta(
+  want: WriteBack,
+  current: { websiteStatus: string | null; websiteUrl: string | null; websiteError: string | null },
+): WriteBack {
+  const delta: WriteBack = {};
+  if (want.Website_Status__c !== undefined) {
+    const same =
+      want.Website_Status__c === "Published"
+        ? isLiveWebsiteStatus(current.websiteStatus)
+        : current.websiteStatus === want.Website_Status__c;
+    if (!same) delta.Website_Status__c = want.Website_Status__c;
+  }
+  if (want.Website_URL__c !== undefined && (want.Website_URL__c ?? null) !== (current.websiteUrl ?? null)) {
+    delta.Website_URL__c = want.Website_URL__c;
+  }
+  if (
+    want.Website_Error__c !== undefined &&
+    (want.Website_Error__c ?? "").trim() !== (current.websiteError ?? "").trim()
+  ) {
+    delta.Website_Error__c = want.Website_Error__c;
+  }
+  return delta;
+}
+
+function siteOrigin(): string {
+  return (env.NEXT_PUBLIC_SITE_URL ?? "https://www.bazarrealestate.ae").replace(/\/+$/, "");
+}
+
+async function writeBackPhase(ctx: Ctx, decisions: Decision[]): Promise<void> {
+  if (ctx.sandbox || !ctx.writeBack || !ctx.canFetch) return;
+  for (const { p, state, holds } of decisions) {
+    const property = p.property;
+    const liveUrl = state === "live" && property ? `${siteOrigin()}${propertyUrl(property)}` : null;
+    const want = writeBackFor(state, holds, liveUrl);
+    if (!want) continue;
+    const delta = writeBackDelta(want, p.snapshot);
+    if (Object.keys(delta).length === 0) continue;
+    try {
+      await salesforceRequest(`sobjects/Property_Listing__c/${p.snapshot.listingId}`, {
+        method: "PATCH",
+        body: delta,
+      });
+      ctx.summary.writtenBack += 1;
+    } catch (err) {
+      const message =
+        err instanceof SalesforceError && err.errorCode ? `${err.errorCode}: ${err.message}` : err instanceof Error ? err.message : String(err);
+      ctx.summary.errors.push(`write-back ${p.snapshot.listingName ?? p.snapshot.listingId}: ${message}`);
+      await ctx.admin
+        .from("salesforce_listings")
+        .update({ last_error: `Could not write the website status back to Salesforce: ${message}` })
+        .eq("sf_listing_id", p.snapshot.listingId);
+    }
+  }
+}
+
+async function withdraw(ctx: Ctx, row: MirrorRow, reason: string, status: string | null = null): Promise<void> {
   const property = ctx.properties.get(row.sf_listing_id);
   if (property && property.status === "published") {
     const { error } = await ctx.admin.from("properties").update({ status: "off_market" }).eq("id", property.id);
@@ -876,7 +998,9 @@ async function withdraw(ctx: Ctx, row: MirrorRow, reason: string): Promise<void>
       state: "withdrawn",
       withdrawn_at: row.withdrawn_at ?? ctx.now.toISOString(),
       withdrawn_reason: reason,
-      holds: [],
+      // Deactivated is what write-back sets for a listing the CRM team has to
+      // fix. Its reasons are exactly what the admin screen should still show.
+      ...(status === "Deactivated" ? {} : { holds: [] }),
       last_synced_at: ctx.now.toISOString(),
       last_error: null,
     })
@@ -903,6 +1027,7 @@ function describe(s: SyncSummary): string {
     s.unpublished ? `taken down ${s.unpublished}` : null,
     s.withdrawn ? `withdrawn ${s.withdrawn}` : null,
     s.imagesCopied ? `photos ${s.imagesCopied}` : null,
+    s.writtenBack ? `written back ${s.writtenBack}` : null,
     s.invisible ? `INVISIBLE ${s.invisible}` : null,
   ].filter(Boolean);
   return `${s.sandbox ? "[sandbox, mirror only] " : ""}${parts.join(", ")}`;
@@ -932,7 +1057,7 @@ export async function runListingSync(opts: RunOptions): Promise<SyncSummary> {
 
   const { data: settings } = await admin
     .from("salesforce_listing_sync")
-    .select("paused, auto_publish")
+    .select("paused, auto_publish, write_back")
     .eq("id", 1)
     .maybeSingle();
   if (settings?.paused && !reapply) {
@@ -974,6 +1099,7 @@ export async function runListingSync(opts: RunOptions): Promise<SyncSummary> {
       orgHost: effectiveOrg,
       sandbox: summary.sandbox,
       autoPublish: !!settings?.auto_publish,
+      writeBack: !!settings?.write_back,
       lookups: await loadLookups(admin),
       ...state,
       imageDownloads: 0,
@@ -1024,7 +1150,7 @@ export async function runListingSync(opts: RunOptions): Promise<SyncSummary> {
               .eq("sf_listing_id", m.sf_listing_id);
             continue;
           }
-          await withdraw(ctx, m, a.reason);
+          await withdraw(ctx, m, a.reason, a.kind === "unpublished" ? a.status : null);
         }
         if (summary.invisible > 0) {
           await reportIssue("Salesforce listings no longer visible to the integration user", {
@@ -1048,7 +1174,8 @@ export async function runListingSync(opts: RunOptions): Promise<SyncSummary> {
           .eq("sf_listing_id", snapshot.listingId);
       }
     }
-    await statusPhase(ctx, planned);
+    const decisions = await statusPhase(ctx, planned);
+    await writeBackPhase(ctx, decisions);
 
     const revalidate = opts.revalidate ?? defaultRevalidate;
     if (ctx.dirtyUrls.size || ctx.listsDirty) {

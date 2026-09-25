@@ -129,23 +129,25 @@ export async function getSalesforceListingForProperty(
 export type ListingSyncSettings = {
   paused: boolean;
   autoPublish: boolean;
+  writeBack: boolean;
   lastRunAt: string | null;
   lastSummary: Record<string, unknown>;
 };
 
 export async function getListingSyncSettings(): Promise<ListingSyncSettings> {
   const admin = createAdminClient();
-  const empty = { paused: false, autoPublish: false, lastRunAt: null, lastSummary: {} };
+  const empty = { paused: false, autoPublish: false, writeBack: false, lastRunAt: null, lastSummary: {} };
   if (!admin) return empty;
   const { data } = await admin
     .from("salesforce_listing_sync")
-    .select("paused, auto_publish, last_run_at, last_summary")
+    .select("paused, auto_publish, write_back, last_run_at, last_summary")
     .eq("id", 1)
     .maybeSingle();
   if (!data) return empty;
   return {
     paused: data.paused,
     autoPublish: data.auto_publish,
+    writeBack: data.write_back,
     lastRunAt: data.last_run_at,
     lastSummary: (data.last_summary as Record<string, unknown>) ?? {},
   };

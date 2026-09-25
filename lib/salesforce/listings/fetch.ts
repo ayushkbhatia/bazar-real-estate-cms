@@ -5,6 +5,7 @@ import {
   PROPERTY_FIELDS,
   REQUIRED_LISTING_FIELDS,
   deletedSoql,
+  isLiveWebsiteStatus,
   statusSoql,
   sweepSoql,
   type FieldVisibility,
@@ -97,8 +98,10 @@ export async function fetchPublishedListings(): Promise<Sweep> {
 }
 
 export type Absence =
-  /** Salesforce shows the record, not published: withdraw. */
-  | { kind: "unpublished"; reason: string }
+  /** Salesforce shows the record, not published: withdraw. `status` is the
+   *  value it holds — Deactivated is what the website itself writes when a
+   *  listing cannot be published, and the reasons are worth keeping. */
+  | { kind: "unpublished"; reason: string; status: string | null }
   /** In the recycle bin: withdraw. */
   | { kind: "deleted"; reason: string }
   /** Published after all — it appeared between the sweep and this check. */
@@ -126,13 +129,14 @@ export async function explainAbsences(ids: readonly string[]): Promise<Map<strin
     if (!soql) continue;
     const seen = await queryAllPages<{ Id: string; Website_Status__c?: string | null; Listing_Status__c?: string | null }>(soql, "query");
     for (const r of seen) {
-      if (r.Website_Status__c === "Published") {
+      if (isLiveWebsiteStatus(r.Website_Status__c)) {
         out.set(r.Id, { kind: "still_published" });
       } else {
         const status = r.Website_Status__c ? `"${r.Website_Status__c}"` : "blank";
         out.set(r.Id, {
           kind: "unpublished",
           reason: `Website_Status__c is ${status} in Salesforce`,
+          status: r.Website_Status__c ?? null,
         });
       }
     }

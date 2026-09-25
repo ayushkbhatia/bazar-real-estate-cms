@@ -14,7 +14,7 @@ import type { SfListingRecord, SfPropertyRecord, SfUser } from "./fields";
  * `v` is the snapshot's own schema version. Bump it when the shape changes;
  * every stored hash then differs and each listing is re-applied once.
  */
-export const SNAPSHOT_VERSION = 1;
+export const SNAPSHOT_VERSION = 2;
 
 export type ImageRef =
   /** A Salesforce File version — `068…`, downloaded through the REST API. */
@@ -33,6 +33,10 @@ export type ListingSnapshot = {
   reference: string | null;
   portalListingId: string | null;
   websiteStatus: string | null;
+  /** What the website last wrote back (guide v1.2, step 5) — read so a
+   *  write-back is only sent when it would change something. */
+  websiteUrl: string | null;
+  websiteError: string | null;
   listingStatus: string | null;
   propertyStatus: string | null;
   /** Listing `Sale_Rent__c`, else the property's `OfferingType__c`, else
@@ -42,16 +46,23 @@ export type ListingSnapshot = {
   propertyPrice: number | null;
   yearlyRent: number | null;
   rentFrequency: string | null;
-  /** `Expired_Date__c`, YYYY-MM-DD. */
+  /** `Expired_Date__c`, YYYY-MM-DD — when the LISTING ends. */
   expiresOn: string | null;
+  /** `Permit_Expiry_Date_c__c` — when the advertising PERMIT ends. */
+  permitExpiresOn: string | null;
   publishedOn: string | null;
   title: string | null;
   titleAr: string | null;
   description: string | null;
   descriptionAr: string | null;
+  /** `Location__c` — the guide calls it "Area". */
   location: string | null;
+  community: string | null;
+  subCommunity: string | null;
   emirate: string | null;
   category: string | null;
+  /** `Property_Type__c` — the website-shaped type field added in v1.2. */
+  websiteType: string | null;
   crmType: string | null;
   bayutType: string | null;
   projectStatus: string | null;
@@ -218,6 +229,21 @@ export function imagesInUrlList(raw: string | null, field: string): ImageRef[] {
     .filter((r): r is ImageRef => r !== null);
 }
 
+/**
+ * A field that is rich text in the schema but may hold a bare URL.
+ *
+ * `Cover_Page_Image__c` and `Floor_Plans__c` are rich-text fields, and v1.2
+ * of the guide shows them holding plain URLs — which the sandbox now does.
+ * Either form is read: `<img>` tags when there are any, otherwise the text as
+ * a URL list.
+ */
+export function imagesInField(raw: string | null, field: string): ImageRef[] {
+  if (!raw) return [];
+  const fromHtml = imagesInRichText(raw, field);
+  if (fromHtml.length) return fromHtml;
+  return imagesInUrlList(raw.replace(/<[^>]*>/g, " "), field);
+}
+
 export function imageKey(ref: ImageRef, propertyId: string | null): string {
   switch (ref.kind) {
     case "cv":
@@ -272,7 +298,7 @@ export function toSnapshot(rec: SfListingRecord): ListingSnapshot {
   const propertyId = text(p.Id) ?? text(rec.Property__c);
 
   const cover =
-    imagesInRichText(text(p.Cover_Page_Image__c), "Cover_Page_Image__c")[0] ??
+    imagesInField(text(p.Cover_Page_Image__c), "Cover_Page_Image__c")[0] ??
     imagesInUrlList(text(p.Main_Image_URL__c), "Main_Image_URL__c")[0] ??
     null;
   const coverKey = cover ? new Set([imageKey(cover, propertyId)]) : new Set<string>();
@@ -284,7 +310,7 @@ export function toSnapshot(rec: SfListingRecord): ListingSnapshot {
     propertyId,
     coverKey,
   );
-  const floorPlan = imagesInRichText(text(p.Floor_Plans__c), "Floor_Plans__c")[0] ?? null;
+  const floorPlan = imagesInField(text(p.Floor_Plans__c), "Floor_Plans__c")[0] ?? null;
   const coords = parseCoordinates(p.Latitude__c, p.Longitude__c);
 
   return {
@@ -296,6 +322,8 @@ export function toSnapshot(rec: SfListingRecord): ListingSnapshot {
     reference: text(p.Reference__c),
     portalListingId: text(p.Listing_ID__c),
     websiteStatus: text(rec.Website_Status__c),
+    websiteUrl: text(rec.Website_URL__c),
+    websiteError: text(rec.Website_Error__c),
     listingStatus: text(rec.Listing_Status__c),
     propertyStatus: text(p.Property_Status__c),
     offering:
@@ -307,14 +335,18 @@ export function toSnapshot(rec: SfListingRecord): ListingSnapshot {
     yearlyRent: amount(p.Yearly__c),
     rentFrequency: text(p.Rent_Frequency__c),
     expiresOn: isoDate(rec.Expired_Date__c),
+    permitExpiresOn: isoDate(p.Permit_Expiry_Date_c__c),
     publishedOn: isoDate(rec.Website_Published_Date__c) ?? isoDate(rec.Published_Date__c),
     title: text(p.Title__c),
     titleAr: text(p.Title_Arabic__c),
     description: text(p.Description__c),
     descriptionAr: text(p.Description_Arabic__c),
     location: text(p.Location__c),
+    community: text(p.Community__c),
+    subCommunity: text(p.Sub_Community__c),
     emirate: text(p.Emirate__c),
     category: text(p.Category__c),
+    websiteType: text(p.Property_Type__c),
     crmType: text(p.PropertyType__c),
     bayutType: text(p.Property_Type_Bayut_Picklist__c),
     projectStatus: text(p.ProjectStatus__c),
@@ -363,7 +395,18 @@ export function hashOf(value: unknown): string {
 /** The CRM's own modification stamp changes when fields we never read change
  *  (an inquiry counter ticking up), so it stays out of the content hash. */
 export function snapshotHash(s: ListingSnapshot): string {
-  const { lastModifiedAt: _ignored, ...content } = s;
-  void _ignored;
+  // Also out: the three website fields, which are our own write-back read
+  // back. Hashing them would make every write look like a CRM change.
+  const {
+    lastModifiedAt: _stamp,
+    websiteStatus: _status,
+    websiteUrl: _url,
+    websiteError: _error,
+    ...content
+  } = s;
+  void _stamp;
+  void _status;
+  void _url;
+  void _error;
   return hashOf(content);
 }
