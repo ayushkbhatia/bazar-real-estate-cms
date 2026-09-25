@@ -223,7 +223,7 @@ before wiring anything up.
 | `Name__c` | string | 255 | no | as assumed |
 | `Email__c` | email | **80** | no | we assumed 255 |
 | `Phone__c` | phone | **40** | no | we assumed 255 |
-| `Country_Code__c` | **picklist** | — | no | 206 values, `+7` absent |
+| `Country_Code__c` | **picklist** | — | no | 206 values at first; `+7` added 25 Sept (207) |
 | `Lead_Source__c` | picklist | — | no | the nine documented values |
 | `Inquiry_Type__c` | picklist | — | no | Buy / Sell / Rent |
 | `Property_Reference__c` | string | 255 | yes | |
@@ -233,12 +233,11 @@ before wiring anything up.
 No undocumented required field exists, so the documented set is sufficient.
 
 **`Country_Code__c` is a restricted picklist.** Neither document said so. A
-code outside its 206 values fails the whole record. `+7` — Russia and
-Kazakhstan — is missing, although every neighbour (`+994`, `+995`, `+996`,
-`+998`) is present, so it reads as an omission. Until it is added, those
-leads are refused locally with a reason rather than sent with a wrong code:
-the lead stays visible in the CMS and replays with one UPDATE once the value
-exists.
+code outside its values fails the whole record, so a code the list does not
+hold is refused locally with a reason rather than sent. `+7` — Russia and
+Kazakhstan — was missing from the first 206 values although every neighbour
+was present; Levarus added it on 25 Sept in both orgs, and it is in
+`SALESFORCE_COUNTRY_CODES` since.
 
 **The integration user cannot delete.** `DELETE` returns
 `INSUFFICIENT_ACCESS_OR_READONLY`, which is correct — an integration should
@@ -426,7 +425,7 @@ Checked 25 Sept, after v1.2 of the listings guide:
 |---|---|---|
 | Token (Run As user) | ✅ | ✅ — fixed |
 | `Lead__c` create | ✅ | ✅ |
-| `Country_Code__c` has `+7` | ✅ (207 values) | ❌ (206) |
+| `Country_Code__c` has `+7` | ✅ (207 values) | ✅ (207, added 25 Sept) |
 | `Property_Listing__c`, `Listing__c` visible | ✅ | ❌ — the integration user sees only `Lead__c`; a listing query answers `sObject type 'Property_Listing__c' is not supported` |
 | Write-back fields editable | ✅ (proven with a no-op PATCH) | ❌ (objects not visible) |
 
@@ -448,21 +447,21 @@ v1.2 (25 Sept) answered L1, L3–L8: a complete published sandbox listing
 website `Property_Type__c`, the amenity picklist cleaned (bar "Location URL"),
 AED confirmed, and write-back fields. Still open:
 
-- **P1. Production listing objects.** Deploy `Property_Listing__c`,
-  `Listing__c` and their fields to production, and give the Run As user read
-  on both, edit on the three `Website_*` fields, and access to the listings'
-  Files. Today it can see only `Lead__c`.
-- **P2. `+7` in production.** Added to `Country_Code__c` in the sandbox only.
-- **P3. Rotate the sandbox secret.** v1.2 still carries the original one; it
-  has now been in five documents.
-- **P4. Their sample query selects `Project__c`**, which does not exist in
-  the sandbox — run as written it fails with `INVALID_FIELD`. Ours does not
-  read it.
-- **P5. What does `Republished` mean?** We treat it as live.
-- **P6. `LST-00002`'s data disagrees with itself**: `Emirate__c` Abu Dhabi
-  but Dubai Hills Estate; `Property_Type__c` Apartment but "4BR Villa" in the
-  title and Villa in the Bayut field. Worth fixing before anyone judges the
-  website by it.
+- **P1. Production listing objects — still failing.** Levarus reported the
+  access done on 25 Sept. Rechecked the same day with a fresh token: the
+  production Run As user, `leadcreation@bazar.com` (`005i1000000iydBAAQ`),
+  still sees only `Lead__c`; `SELECT COUNT() FROM Property_Listing__c`
+  answers `INVALID_TYPE`. The same username in the sandbox sees four
+  listings. Either the permission set went to another user, or the objects
+  are not deployed to production.
+- ~~P2. `+7` in production.~~ **Done** 25 Sept, and allowed in our code.
+- **P3. Rotate the sandbox secret.** Still the original one; five documents.
+- ~~P4. `Project__c`.~~ **Answered**: it exists; our user lacks field access,
+  which is fine — we do not read it.
+- ~~P5. `Republished`.~~ **Answered**: a listing published again after expiry
+  or deactivation. Live, as we treat it.
+- ~~P6.~~ **Answered**: `LST-00002` is sandbox test data only. "Location URL"
+  is gone from the amenity picklist.
 
 ### Leads — website to Salesforce
 
