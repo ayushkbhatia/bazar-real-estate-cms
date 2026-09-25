@@ -412,6 +412,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
       "enquiry",
       leadAdvisor ? "dialog_note" : "dialog_note_no_advisor",
     ),
+    tokens: copy.tokens,
   };
 
   const advisorNoteCopy = property.short_description ?? property.description;
@@ -785,6 +786,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               <TokenText
                 template={copy.template("enquiry", "heading")}
                 tokens={{
+                  // Every token, so `{title}` or `{area}` typed in the CMS is
+                  // filled here as it is everywhere else on the page.
+                  ...copy.tokens,
                   // `whitespace-nowrap`: the Arabic sentence is longer, and
                   // the reference otherwise breaks at its hyphen — `BAZ-`
                   // on one line, `AD-09790` on the next.

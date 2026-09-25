@@ -3,6 +3,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { FSI, PDI, stripIsolates } from "@/lib/i18n/bidi";
+import { PROPERTY_TOKENS } from "@/lib/master-pages/property-page";
 import { subPageSlug } from "@/lib/master-pages/subpages";
 import { getPropertyPageCopy, propertyPageCopySlug } from "./property-page";
 
@@ -138,6 +139,22 @@ describe("the listing page's shared wording", () => {
     expect(copy.template("enquiry", "dialog_note")).toBe(
       "Reference {reference} · goes straight to {advisor}, the advisor on this listing.",
     );
+  });
+
+  it("hands the templates drawn as elements every token, filled as `text` fills them", async () => {
+    // The enquiry heading and dialog note are drawn with `TokenText`, which
+    // used to be handed `{reference}` alone — so the client's "Ask anything
+    // about {title}." rendered its braces on every listing.
+    const en = await getPropertyPageCopy(EN, "en");
+    expect(Object.keys(en.tokens).sort()).toEqual(
+      Object.keys(PROPERTY_TOKENS).sort(),
+    );
+    expect(en.tokens).toEqual(EN);
+
+    const ar = await getPropertyPageCopy(AR, "ar");
+    for (const [key, value] of Object.entries(AR)) {
+      expect(ar.tokens[key as keyof typeof AR]).toBe(`${FSI}${value}${PDI}`);
+    }
   });
 
   it("answers blank rather than throwing for a field it does not declare", async () => {

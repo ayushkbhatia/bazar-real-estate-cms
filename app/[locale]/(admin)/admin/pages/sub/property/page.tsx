@@ -82,9 +82,11 @@ export default async function PropertyPageCopyEditor() {
             <span className="mono">{PROPERTY_TOKENS.advisor}</span> or{" "}
             <span className="mono">{PROPERTY_TOKENS.type}</span> where the
             listing&apos;s own reference, title, area, advisor or property type
-            belong, and they are filled in per page. Type the Arabic under each
-            English field — anything left blank falls back to the English
-            rather than leaving a hole.
+            belong, and they are filled in per page — in any field, English or
+            Arabic. Type the Arabic under each English field: an Arabic box
+            left blank shows the Arabic the site shipped with, not a
+            translation of your new English, and a question you added shows
+            its English.
           </p>
         </div>
 

@@ -1,4 +1,5 @@
 import { Fragment, type ReactNode } from "react";
+import type { PropertyTokens } from "@/lib/master-pages/property-page";
 
 /**
  * A CMS template drawn with some of its `{token}`s as elements.
@@ -10,6 +11,13 @@ import { Fragment, type ReactNode } from "react";
  * inside an Arabic sentence it reads `BAZ-AD-09790` rather than
  * `09790-BAZ-AD`. Flattening the template to a string would lose both.
  *
+ * `tokens` must name EVERY listing token, not only the ones drawn as
+ * elements. The editor offers all five in every field, and this component
+ * used to be handed `{ reference }` alone — so when the client wrote
+ * "Ask anything about {title}." the braces went live on every listing. Spread
+ * `copy.tokens` and override the ones that need an element; the type makes a
+ * call site that forgets one fail to compile.
+ *
  * Same rule as `fillTokens` for anything unrecognised: a token with no entry
  * is left visible, so a typo in the CMS shows up as itself instead of silently
  * deleting a word.
@@ -19,7 +27,7 @@ export function TokenText({
   tokens,
 }: {
   template: string;
-  tokens: Record<string, ReactNode>;
+  tokens: Record<keyof PropertyTokens, ReactNode>;
 }) {
   return (
     <>
@@ -27,7 +35,12 @@ export function TokenText({
         const name = /^\{(\w+)\}$/.exec(part)?.[1];
         return (
           <Fragment key={i}>
-            {name !== undefined && name in tokens ? tokens[name] : part}
+            {/* Own keys only: `in` also matched `{constructor}`, and drawing
+                that function as a child crashed the page. */}
+            {name !== undefined &&
+            Object.prototype.hasOwnProperty.call(tokens, name)
+              ? tokens[name as keyof PropertyTokens]
+              : part}
           </Fragment>
         );
       })}

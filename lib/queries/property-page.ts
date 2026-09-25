@@ -108,7 +108,11 @@ export type PropertyFaqItem = { q: string; a: string };
  * which `property-page.test.ts` rules out for every call the page makes.
  *
  * `template` is the same lookup with the tokens left in, for the two places
- * that draw the reference in its own `.mono` span rather than as text.
+ * that draw the reference in its own `.mono` span rather than as text. They
+ * must fill every OTHER token from `tokens`: an editor may type any of the
+ * five into any field — the Cards screen and the Property pages screen both
+ * say so — and a template drawn with only `{reference}` supplied put
+ * "Ask anything about {title}." on every listing.
  */
 export type PropertyPageCopy = {
   text: (
@@ -117,6 +121,8 @@ export type PropertyPageCopy = {
     overrides?: Partial<PropertyTokens>,
   ) => string;
   template: (sectionKey: string, field: string) => string;
+  /** Every token, filled and isolated exactly as `text` fills it. */
+  tokens: PropertyTokens;
   faq: PropertyFaqItem[];
 };
 
@@ -144,14 +150,14 @@ export async function getPropertyPageCopy(
    * render as `09790-BAZ-AD` inside Arabic — see `lib/i18n/bidi.ts`. Under
    * English the helper is the identity, so /en is byte-identical.
    */
-  const isolate = (values: Partial<PropertyTokens>) =>
+  const isolate = <T extends Partial<PropertyTokens>>(values: T) =>
     Object.fromEntries(
       Object.entries(values).map(([k, v]) => [
         k,
         isolateForLocale(v ?? "", locale),
       ]),
-    );
-  const filled = isolate(tokens);
+    ) as { [K in keyof T]: string };
+  const filled: PropertyTokens = isolate(tokens);
 
   const template = (sectionKey: string, field: string): string => {
     const values = stored.get(sectionKey);
@@ -164,6 +170,7 @@ export async function getPropertyPageCopy(
 
   return {
     template,
+    tokens: filled,
     text: (sectionKey, field, overrides) =>
       fillTokens(template(sectionKey, field), {
         ...filled,

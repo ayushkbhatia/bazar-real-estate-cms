@@ -21,6 +21,7 @@ import {
   type CardSourceKey,
 } from "@/lib/master-pages/cards";
 import { subPageSlug } from "@/lib/master-pages/subpages";
+import { unknownTokenIssues } from "@/lib/master-pages/tokens";
 import {
   cardSourceSlug,
   getCardContent,
@@ -143,12 +144,23 @@ export async function saveCard(
   const incoming = sections.find((s) => s.key === card.sectionKey);
   if (!incoming) return { status: "error", message: "Nothing to save." };
 
-  const result = validateSections(cardPageDef(card), [incoming]);
+  const def = cardPageDef(card);
+  const result = validateSections(def, [incoming]);
   if (!result.ok) {
     return {
       status: "invalid",
       message: "Fix the highlighted fields before saving.",
       issues: result.issues.map((i) => `${i.field}: ${i.message}`),
+    };
+  }
+  // The card promises these tokens in every field; anything else would go
+  // live as typed, braces and all, on every page the card is on.
+  const tokenIssues = unknownTokenIssues(def, result.sections, card.tokens);
+  if (tokenIssues.length > 0) {
+    return {
+      status: "invalid",
+      message: "A field uses a token this card doesn't fill in.",
+      issues: tokenIssues.map((i) => `${i.field}: ${i.message}`),
     };
   }
   return writeCardSection(card, result.sections[0], "page.card_update");

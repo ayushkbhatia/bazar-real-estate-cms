@@ -11,7 +11,11 @@ import {
   validateSections,
   type StoredSection,
 } from "@/lib/master-pages";
-import { propertyPageCopyDef } from "@/lib/master-pages/property-page";
+import {
+  PROPERTY_TOKENS,
+  propertyPageCopyDef,
+} from "@/lib/master-pages/property-page";
+import { unknownTokenIssues } from "@/lib/master-pages/tokens";
 import { propertyPageCopySlug } from "@/lib/queries/property-page";
 
 const PAGE_ROLES = ["admin", "editor", "marketing"] as const;
@@ -86,12 +90,29 @@ export async function savePropertyPageCopy(
     return { status: "error", message: "Supabase env vars are not set." };
   await requireRole(PAGE_ROLES);
 
-  const result = validateSections(propertyPageCopyDef(), sections);
+  const def = propertyPageCopyDef();
+  const result = validateSections(def, sections);
   if (!result.ok) {
     return {
       status: "invalid",
       message: "Fix the highlighted fields before saving.",
       issues: result.issues.map(
+        (i) => `${i.section} · ${i.field}: ${i.message}`,
+      ),
+    };
+  }
+  // A token no listing fills would go live as typed, braces and all, on
+  // every /p/<slug> page at once.
+  const tokenIssues = unknownTokenIssues(
+    def,
+    result.sections,
+    Object.values(PROPERTY_TOKENS),
+  );
+  if (tokenIssues.length > 0) {
+    return {
+      status: "invalid",
+      message: "A field uses a token listing pages don't fill in.",
+      issues: tokenIssues.map(
         (i) => `${i.section} · ${i.field}: ${i.message}`,
       ),
     };
