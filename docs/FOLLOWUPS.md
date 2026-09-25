@@ -61,11 +61,6 @@ quick grep can show "what's outstanding in my area."
   "English changed since this was translated" on Salesforce listings would
   close it.
 
-- [salesforce] Tell the CRM team, in Salesforce, why a listing is not live.
-  Held reasons are only on /admin/properties/salesforce. With update access on
-  `Website_Status__c` and two new fields (question L7 in docs/SALESFORCE.md),
-  the sync can write `Failed` + the reason, and the live URL, back.
-
 - [i18n] The /off-plan map explorer and its project rail still render their own
   chrome in English on `/ar`.
   Found while fixing the "Abu Dhabi locations" band, which was English top to

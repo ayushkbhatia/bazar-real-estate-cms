@@ -231,14 +231,16 @@ export async function syncSalesforceListingsNow(): Promise<ActionResult> {
 export async function updateListingSyncSettings(input: {
   paused?: unknown;
   autoPublish?: unknown;
+  writeBack?: unknown;
 }): Promise<ActionResult> {
   const { user } = await requireRole(ADMIN_ROLES);
-  const patch: { paused?: boolean; auto_publish?: boolean; updated_by: string } = {
+  const patch: { paused?: boolean; auto_publish?: boolean; write_back?: boolean; updated_by: string } = {
     updated_by: user.id,
   };
   if (typeof input.paused === "boolean") patch.paused = input.paused;
   if (typeof input.autoPublish === "boolean") patch.auto_publish = input.autoPublish;
-  if (patch.paused === undefined && patch.auto_publish === undefined) {
+  if (typeof input.writeBack === "boolean") patch.write_back = input.writeBack;
+  if (patch.paused === undefined && patch.auto_publish === undefined && patch.write_back === undefined) {
     return { status: "error", message: "Nothing to change." };
   }
   const admin = createAdminClient();
@@ -251,7 +253,7 @@ export async function updateListingSyncSettings(input: {
     target_kind: "salesforce_listing_sync",
     target_id: "settings",
     before: null,
-    after: { paused: patch.paused, auto_publish: patch.auto_publish },
+    after: { paused: patch.paused, auto_publish: patch.auto_publish, write_back: patch.write_back },
   });
   refresh();
   return {
@@ -261,8 +263,12 @@ export async function updateListingSyncSettings(input: {
         ? patch.paused
           ? "Paused. Nothing is fetched from Salesforce until you resume; approving, hiding and mapping here still apply."
           : "Resumed."
-        : patch.auto_publish
-          ? "Auto-publish is on: a listing that passes every check goes live without approval."
-          : "Auto-publish is off: new listings wait for approval.",
+        : patch.write_back !== undefined
+          ? patch.write_back
+            ? "Write-back is on: each listing's website status, URL and reasons are sent to Salesforce on the next sync."
+            : "Write-back is off: nothing is written to Salesforce."
+          : patch.auto_publish
+            ? "Auto-publish is on: a listing that passes every check goes live without approval."
+            : "Auto-publish is off: new listings wait for approval.",
   };
 }

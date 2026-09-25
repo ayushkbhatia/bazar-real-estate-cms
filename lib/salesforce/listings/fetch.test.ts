@@ -86,7 +86,7 @@ describe("explainAbsences — the evidence a withdrawal needs", () => {
       if (q.startsWith("query?")) {
         return page([
           { Id: ids[0], Website_Status__c: null },
-          { Id: ids[2], Website_Status__c: "Published" },
+          { Id: ids[2], Website_Status__c: "Republished" },
         ]);
       }
       if (q.startsWith("queryAll?")) {
@@ -97,7 +97,7 @@ describe("explainAbsences — the evidence a withdrawal needs", () => {
     });
 
     const why = await explainAbsences(ids);
-    expect(why.get(ids[0])).toEqual({ kind: "unpublished", reason: "Website_Status__c is blank in Salesforce" });
+    expect(why.get(ids[0])).toEqual({ kind: "unpublished", reason: "Website_Status__c is blank in Salesforce", status: null });
     expect(why.get(ids[1])).toEqual({ kind: "deleted", reason: "Deleted in Salesforce" });
     expect(why.get(ids[2])).toEqual({ kind: "still_published" });
     // Salesforce says nothing about the fourth. That is a permissions change

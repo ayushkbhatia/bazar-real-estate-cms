@@ -3251,6 +3251,7 @@ export type Database = {
           paused: boolean
           updated_at: string
           updated_by: string | null
+          write_back: boolean
         }
         Insert: {
           auto_publish?: boolean
@@ -3262,6 +3263,7 @@ export type Database = {
           paused?: boolean
           updated_at?: string
           updated_by?: string | null
+          write_back?: boolean
         }
         Update: {
           auto_publish?: boolean
@@ -3273,6 +3275,7 @@ export type Database = {
           paused?: boolean
           updated_at?: string
           updated_by?: string | null
+          write_back?: boolean
         }
         Relationships: []
       }

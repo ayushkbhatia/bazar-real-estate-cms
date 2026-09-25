@@ -90,6 +90,7 @@ export const RENT_UNMAPPED: SfListingRecord = {
     Rent_Frequency__c: "Yearly",
     Property_Status__c: "Available",
     RERAPermitNumber__c: "RERA-2026-1003",
+    Permit_Expiry_Date_c__c: "2026-12-01",
     Reference__c: "BZR-PROP-003",
     Listing_ID__c: "BYT-10003",
     Amenities__c: "Central A/C;Shared Pool;Covered Parking;Balcony",
@@ -120,6 +121,7 @@ export const EXPIRED_OFF_PLAN_VILLA: SfListingRecord = {
     Rooms__c: "5",
     Bathrooms__c: "6",
     RERAPermitNumber__c: "RERA-2026-1004",
+    Permit_Expiry_Date_c__c: "2026-12-01",
     Property_Status__c: "Reserved",
     Listing_Image_URLs__c:
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200,https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200",
@@ -160,6 +162,8 @@ export const COMPLETE_SALE: SfListingRecord = {
     Latitude__c: "24.4980",
     Longitude__c: "54.6050",
     RERAPermitNumber__c: "ADREC-2026-0042",
+    PermitType__c: "ADREC",
+    Permit_Expiry_Date_c__c: "2026-12-31",
     Reference__c: "BZR-PROP-002",
     Amenities__c: "Central A/C;Private Garden;Maids Room;Priya testing",
     Cover_Page_Image__c:

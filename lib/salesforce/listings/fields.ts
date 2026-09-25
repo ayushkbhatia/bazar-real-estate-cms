@@ -14,6 +14,13 @@
  * `Latitude__c`/`Longitude__c` are strings; `Listing_Image_URLs__c` arrives
  * comma-separated, not semicolon-separated; and the photos CRM users actually
  * upload live in the rich-text `Listing_Images__c`, which the guide omits.
+ *
+ * Version 1.2 of the guide (25 Sept) added the fields the website asked for:
+ * a real permit expiry (`Permit_Expiry_Date_c__c` — the doubled suffix is the
+ * org's, not a typo here), community and sub-community, a website-shaped
+ * `Property_Type__c`, and three write-back fields on the listing. It also
+ * dropped several of ours from its sample query — the Arabic, the uploaded
+ * photos, the agent — which still exist and are still read.
  */
 
 /** `Property_Listing__c` — the listing: the offer, its status and its agent. */
@@ -22,6 +29,8 @@ export const LISTING_FIELDS = [
   "Name",
   "LastModifiedDate",
   "Website_Status__c",
+  "Website_URL__c",
+  "Website_Error__c",
   "Listing_Status__c",
   "Sale_Rent__c",
   "Price__c",
@@ -45,8 +54,11 @@ export const PROPERTY_FIELDS = [
   "Description__c",
   "Description_Arabic__c",
   "Location__c",
+  "Community__c",
+  "Sub_Community__c",
   "Emirate__c",
   "Category__c",
+  "Property_Type__c",
   "PropertyType__c",
   "Property_Type_Bayut_Picklist__c",
   "OfferingType__c",
@@ -69,6 +81,7 @@ export const PROPERTY_FIELDS = [
   "Rent_Frequency__c",
   "Property_Status__c",
   "RERAPermitNumber__c",
+  "Permit_Expiry_Date_c__c",
   "PermitType__c",
   "Reference__c",
   "Listing_ID__c",
@@ -130,11 +143,25 @@ export function selectList(visible?: FieldVisibility): string {
   return [...listing, ...agent, ...property, ...propertyAgent].join(", ");
 }
 
-/** Every listing live on the website, per the CRM. Oldest change first is
- *  irrelevant here — the sweep is read whole — so the guide's ORDER BY is kept
- *  only to make pages deterministic. */
+/**
+ * The `Website_Status__c` values that mean "on the website".
+ *
+ * The guide filters on Published alone, but the picklist also has
+ * Republished, and a listing moved from one to the other must not read as
+ * withdrawn: absence from the sweep is half the evidence for taking a listing
+ * down. Deactivated and Deleted are the two that mean off.
+ */
+export const LIVE_WEBSITE_STATUSES = ["Published", "Republished"] as const;
+
+export function isLiveWebsiteStatus(v: string | null | undefined): boolean {
+  return !!v && (LIVE_WEBSITE_STATUSES as readonly string[]).includes(v);
+}
+
+/** Every listing live on the website, per the CRM, in a stable order so the
+ *  pages of a large sweep never overlap. */
 export function sweepSoql(visible?: FieldVisibility): string {
-  return `SELECT ${selectList(visible)} FROM Property_Listing__c WHERE Website_Status__c = 'Published' ORDER BY Id`;
+  const statuses = LIVE_WEBSITE_STATUSES.map((v) => `'${v}'`).join(", ");
+  return `SELECT ${selectList(visible)} FROM Property_Listing__c WHERE Website_Status__c IN (${statuses}) ORDER BY Id`;
 }
 
 /** Salesforce ids are 15 or 18 alphanumerics. Anything else never reaches a
@@ -175,8 +202,11 @@ export type SfPropertyRecord = {
   Description__c?: string | null;
   Description_Arabic__c?: string | null;
   Location__c?: string | null;
+  Community__c?: string | null;
+  Sub_Community__c?: string | null;
   Emirate__c?: string | null;
   Category__c?: string | null;
+  Property_Type__c?: string | null;
   PropertyType__c?: string | null;
   Property_Type_Bayut_Picklist__c?: string | null;
   OfferingType__c?: string | null;
@@ -199,6 +229,7 @@ export type SfPropertyRecord = {
   Rent_Frequency__c?: string | null;
   Property_Status__c?: string | null;
   RERAPermitNumber__c?: string | null;
+  Permit_Expiry_Date_c__c?: string | null;
   PermitType__c?: string | null;
   Reference__c?: string | null;
   Listing_ID__c?: string | null;
@@ -218,6 +249,8 @@ export type SfListingRecord = {
   Name?: string | null;
   LastModifiedDate?: string | null;
   Website_Status__c?: string | null;
+  Website_URL__c?: string | null;
+  Website_Error__c?: string | null;
   Listing_Status__c?: string | null;
   Sale_Rent__c?: string | null;
   Price__c?: number | null;

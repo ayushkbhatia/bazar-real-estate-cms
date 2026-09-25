@@ -66,6 +66,7 @@ describe("planListing — the four sandbox shapes", () => {
       [
         "no_developer",
         "no_location",
+        "no_permit_expiry",
         "no_permit_number",
         "no_sale_form",
         "no_title",
@@ -128,8 +129,47 @@ describe("planListing — lifecycle and price rules", () => {
 
   it("treats the expiry day itself as still valid", () => {
     // Same rule as the CMS publish gate: a permit is valid through its day.
-    const plan = planListing({ ...base, expiresOn: "2026-09-24" }, lookups(), NOW);
+    const plan = planListing({ ...base, expiresOn: "2026-09-24", permitExpiresOn: "2026-09-24" }, lookups(), NOW);
     expect(plan.holds).toEqual([]);
+  });
+
+  it("reads the permit's own expiry, not the listing's", () => {
+    // v1.2 added Permit_Expiry_Date_c__c. Expired_Date__c ends the listing;
+    // the permit field is what the publish gate and the permit cron check.
+    const plan = planListing({ ...base, expiresOn: "2027-06-30", permitExpiresOn: "2026-10-15" }, lookups(), NOW);
+    expect(plan.fields?.listing_permit_expires_at).toBe("2026-10-15");
+    expect(codes(planListing({ ...base, permitExpiresOn: "2026-09-01" }, lookups(), NOW).holds)).toEqual(["permit_expired"]);
+    const missing = planListing({ ...base, permitExpiresOn: null }, lookups(), NOW);
+    expect(missing.holds[0]).toMatchObject({ code: "no_permit_expiry", fix: "salesforce" });
+    expect(missing.holds[0].message).toContain("Permit_Expiry_Date_c__c");
+  });
+
+  it("reads the v1.2 website type first, and SemiFurnished as semi", () => {
+    // LST-00002 in the sandbox says Apartment here and Villa in the Bayut
+    // field. The field the guide names for the website wins.
+    expect(planListing({ ...base, websiteType: "Apartment" }, lookups(), NOW).fields?.type).toBe("apartment");
+    expect(planListing({ ...base, websiteType: "Full building" }, lookups(), NOW).fields?.type).toBe("building");
+    expect(planListing({ ...base, websiteType: "Warehouse", category: null }, lookups(), NOW).fields).toMatchObject({
+      type: "commercial",
+      segment: "commercial",
+    });
+    expect(codes(planListing({ ...base, websiteType: "Other" }, lookups(), NOW).holds)).toEqual(["unsupported_type"]);
+    expect(planListing({ ...base, furnishing: "SemiFurnished" }, lookups(), NOW).fields?.furnishing).toBe("semi");
+  });
+
+  it("finds the area through community and sub-community", () => {
+    const plan = planListing(
+      { ...base, location: "Abu Dhabi", community: "Saadiyat Island", subCommunity: "Saadiyat Lagoons" },
+      lookups(),
+      NOW,
+    );
+    expect(plan.fields).toMatchObject({ area_id: IDS.saadiyat, sub_community_id: IDS.lagoons });
+    const unmapped = planListing(
+      { ...base, location: "Dubai", community: "Dubai Hills Estate", subCommunity: "The Canopies", emirate: "Dubai" },
+      lookups(),
+      NOW,
+    );
+    expect(unmapped.unresolved.location).toBe("The Canopies, Dubai Hills Estate, Dubai");
   });
 
   it("shows yearly rent, and holds a monthly rent with no yearly figure", () => {

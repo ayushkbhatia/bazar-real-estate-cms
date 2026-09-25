@@ -15,8 +15,10 @@ comparing them, not assumed — so both directions share
 `SALESFORCE_INSTANCE_URL` / `SALESFORCE_CLIENT_ID` / `SALESFORCE_CLIENT_SECRET`
 and there is nothing new to configure.
 
-Both directions are blocked in production on the same Salesforce setting: see
-[Production is blocked on one Salesforce setting](#production-is-blocked-on-one-salesforce-setting).
+Production, as of 25 Sept: the Run As user is fixed, so **leads can go live**
+(`Lead__c` is createable). **Listings cannot yet** — the production
+integration user sees no listing objects at all; see
+[Production status](#production-status).
 
 Setup, env vars and triage queries: [INTEGRATIONS.md](INTEGRATIONS.md#salesforce).
 
@@ -354,16 +356,39 @@ sync's own writes, as the service role, do not.
 |---|---|
 | `Sale_Rent__c` (else `OfferingType__c`, else `Purpose__c`) | `mode`: `rent`, or `buy` / `off_plan` by completion |
 | `ProjectStatus__c` (else `Project_Type__c`) | `property_form`: Resale → `resale`, Primary ready → `ready_new`, any Off-plan → `off_plan` |
-| `Property_Type_Bayut_Picklist__c` (else `PropertyType__c`) | `type` + `segment`. No honest equivalent (Residential Floor, Villa Compound, Bulk Units, Full/Half Floor) → held |
+| `Property_Type__c` (v1.2), else `Property_Type_Bayut_Picklist__c`, else `PropertyType__c` | `type` + `segment`. No honest equivalent ("Other", Residential Floor, Villa Compound, Bulk Units, Full/Half Floor) → held |
 | `Category__c` | `segment` |
 | `Price__c` (sale; else `PropertyPrice__c`, noted) | `price_aed` |
 | Rent: `Price__c`/`Yearly__c`, by `Rent_Frequency__c` | yearly rent; a monthly rent with no `Yearly__c` is held, never multiplied |
-| `Location__c` + `Emirate__c` | area / sub-community by exact name or slug, most specific part first; ambiguous or another emirate → held for an admin to map |
+| `Sub_Community__c`, `Community__c`, `Location__c` (v1.2) + `Emirate__c` | area / sub-community by exact name or slug, most specific first; ambiguous or another emirate → held for an admin to map |
 | `Developer__c` | developer, ignoring "Properties", "Realty", "PJSC"…; else held for mapping |
 | `Assigned_Agent__r.Email` (else the property's `Agent_Name__r`) | advisor, by staff email; else noted for mapping |
-| `RERAPermitNumber__c`, `Expired_Date__c` | permit number and **expiry** (see question L3) |
+| `RERAPermitNumber__c`, `Permit_Expiry_Date_c__c` (v1.2) | permit number and expiry; missing or past → held. `Expired_Date__c` ends the *listing* and holds it when past |
+| `FurnishingType__c` | `Unfurnished` / `SemiFurnished` (v1.2's spelling) / `Fully Furnished` |
 | `Amenities__c` | the amenity taxonomy, through apostrophes and hyphens plus a small alias table; unmatched values are noted, never added |
-| `Cover_Page_Image__c` / `Main_Image_URL__c`, `Listing_Images__c` + `Listing_Image_URLs__c`, `Floor_Plans__c` | hero, gallery in the CRM's order, floor plan |
+| `Cover_Page_Image__c` / `Main_Image_URL__c`, `Listing_Images__c` + `Listing_Image_URLs__c`, `Floor_Plans__c` | hero, gallery in the CRM's order, floor plan. Cover and floor plan are rich-text fields that v1.2 fills with bare URLs; both forms are read |
+
+### Write-back (guide v1.2, step 5)
+
+The sync PATCHes `Website_Status__c`, `Website_URL__c` and `Website_Error__c`
+on each listing, so the CRM team sees in Salesforce what happened — **once an
+admin turns write-back on** (`salesforce_listing_sync.write_back`, 0137; off by
+default, because on a first production run every listing held for a missing
+field would be deactivated at once).
+
+| Website state | Written |
+|---|---|
+| live | `Published`, the listing's URL, error cleared |
+| held for something **Salesforce** must fix | `Deactivated`, the reasons — their contract: it leaves the published set until the CRM team fixes it and publishes it again |
+| held for something **we** must fix (a location to map), photos copying, awaiting approval | status untouched, so it stays in the sweep; the error field says what it is waiting for |
+| hidden by an editor | `Deactivated`, "taken off the website by the Bazar team" |
+| withdrawn by the CRM, or a sandbox | nothing |
+
+Only changed fields are sent, compared with what the sweep read back, so a
+steady catalogue costs no write calls. `Republished` counts as live
+everywhere — in the sweep, in withdrawal evidence, and it is never
+"corrected" to `Published`. A listing that leaves the set because we
+deactivated it keeps its reasons on the admin screen.
 
 ### Photos
 
@@ -393,24 +418,23 @@ gallery. Placeholder `example.com` URLs in the sandbox 404 and are reported.
   `Lead__c` with the CRM's own listing name (`LST-00003`) in
   `Property_Reference__c` and the website reference in the description.
 
-## Production is blocked on one Salesforce setting
+## Production status
 
-The production credentials (24 Sept doc) are real and distinct from sandbox,
-but they cannot mint a token:
+Checked 25 Sept, after v1.2 of the listings guide:
 
-```
-PRODUCTION  HTTP 400  invalid_grant  no client credentials user enabled
-SANDBOX     HTTP 200  OK
-```
+| | Sandbox | Production |
+|---|---|---|
+| Token (Run As user) | ✅ | ✅ — fixed |
+| `Lead__c` create | ✅ | ✅ |
+| `Country_Code__c` has `+7` | ✅ (207 values) | ❌ (206) |
+| `Property_Listing__c`, `Listing__c` visible | ✅ | ❌ — the integration user sees only `Lead__c`; a listing query answers `sObject type 'Property_Listing__c' is not supported` |
+| Write-back fields editable | ✅ (proven with a no-op PATCH) | ❌ (objects not visible) |
 
-Identical code against both, so this is not a request-shape problem. The
-production Connected App has no **Run As** user assigned for the client
-credentials flow — Setup → App Manager → the app → Manage → Edit Policies →
-Client Credentials Flow. Sandbox has one; production does not.
-
-Do **not** put the production credentials in Vercel until this is fixed:
-`invalid_grant` is classified non-retryable, so every queued lead would be
-marked `failed` on its first attempt and need replaying.
+So leads can go live now; listings wait for the objects, their fields and the
+integration user's access to be deployed to production. Setting the three
+`SALESFORCE_*` variables in Vercel turns both on; until the listing objects
+exist in production, the listing sync reports a failure on the health page
+every run, which is accurate.
 
 ## Open questions for Levarus
 
@@ -419,35 +443,26 @@ rest are outstanding, and two new ones have been added by that revision.
 
 ### Listings — Salesforce to website
 
-Questions 1–8 of 22 Sept are answered by the 24 Sept guide and by `describe`:
-the objects are `Property_Listing__c` and `Listing__c`, read with SOQL over
-REST; photos are Salesforce Files the integration user can download;
-withdrawal is `Website_Status__c` leaving `Published`, or deletion; Arabic
-exists in the CRM. Still open:
+v1.2 (25 Sept) answered L1, L3–L8: a complete published sandbox listing
+(`LST-00002`), `Permit_Expiry_Date_c__c`, ADREC in `PermitType__c`, a
+website `Property_Type__c`, the amenity picklist cleaned (bar "Location URL"),
+AED confirmed, and write-back fields. Still open:
 
-- **L1. Fill the published listing.** `LST-00000` is the only sandbox listing
-  marked Published and has no title, location, type, developer, permit or
-  listing price. We cannot test a real publish until one listing is complete.
-- **L2. The Run As user** on the production Connected App — the same fix the
-  lead push needs — plus read access for that user on both listing objects,
-  their files, and the fields in `lib/salesforce/listings/fields.ts`.
-- **L3. Permit expiry.** Our publish gate requires one; the CRM has no such
-  field. We read `Expired_Date__c` as the permit's expiry. Confirm, or add a
-  permit-expiry field.
-- **L4. Abu Dhabi permits.** `PermitType__c` offers RERA, DTCM and
-  "None (DIFC/JAFZA)" — all Dubai. Add ADREC, or confirm
-  `RERAPermitNumber__c` holds the Abu Dhabi permit number.
-- **L5. One type field.** `PropertyType__c` has no villa or townhouse; the
-  sandbox files a villa as "Duplex" there and "Villa" in the Bayut field. We
-  read the Bayut field first. Is that the field the team fills?
-- **L6. Clean the amenity picklist.** `Amenities__c` is unrestricted and
-  carries test values ("Priya testing", "TurfDbg…", "vh", "Location URL").
-- **L7. Write-back (optional).** Update access on two new fields —
-  `Website_Status__c` = `Failed` with a `Website_Error__c` reason, and a
-  `Website_URL__c` — would let the CRM team see *in Salesforce* why a listing
-  is not live and where it is. Today that is only on our admin screen.
-- **L8. Currency.** Amounts are read as AED. The org is single-currency
-  (no `CurrencyIsoCode`); confirm AED is its corporate currency.
+- **P1. Production listing objects.** Deploy `Property_Listing__c`,
+  `Listing__c` and their fields to production, and give the Run As user read
+  on both, edit on the three `Website_*` fields, and access to the listings'
+  Files. Today it can see only `Lead__c`.
+- **P2. `+7` in production.** Added to `Country_Code__c` in the sandbox only.
+- **P3. Rotate the sandbox secret.** v1.2 still carries the original one; it
+  has now been in five documents.
+- **P4. Their sample query selects `Project__c`**, which does not exist in
+  the sandbox — run as written it fails with `INVALID_FIELD`. Ours does not
+  read it.
+- **P5. What does `Republished` mean?** We treat it as live.
+- **P6. `LST-00002`'s data disagrees with itself**: `Emirate__c` Abu Dhabi
+  but Dubai Hills Estate; `Property_Type__c` Apartment but "4BR Villa" in the
+  title and Villa in the Bayut field. Worth fixing before anyone judges the
+  website by it.
 
 ### Leads — website to Salesforce
 
@@ -500,4 +515,5 @@ were visible, and why:
 | 3 | Listings in: sweep, mapper, drift correction, evidence-based withdrawal, sandbox mirror | **Built** |
 | 4 | Photos from Salesforce Files and URLs into the `media` bucket | **Built** |
 | 5 | Review queue: approval, hide/allow, mapping screen, editor guards | **Built** |
-| 6 | Production: Run As user (L2), then credentials in Vercel | Blocked on Levarus |
+| 5.5 | Guide v1.2: permit expiry, community, website type, write-back (off until an admin enables it) | **Built** |
+| 6 | Production: leads live (credentials in Vercel); listings after P1 | Leads ready; listings blocked on Levarus |

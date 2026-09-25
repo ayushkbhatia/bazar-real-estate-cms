@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   imageKey,
+  imagesInField,
   imagesInRichText,
   imagesInUrlList,
   parseCoordinates,
@@ -45,6 +46,11 @@ describe("fields", () => {
     expect(select).not.toContain("Assigned_Agent__r");
   });
 
+  it("sweeps Republished as well as Published", () => {
+    // A listing moved to Republished must not look withdrawn.
+    expect(sweepSoql()).toContain("WHERE Website_Status__c IN ('Published', 'Republished')");
+  });
+
   it("refuses anything that is not a Salesforce id before it reaches SOQL", () => {
     // Ids are interpolated into the query, so this is the injection guard.
     expect(statusSoql(["a03iy000000R7rpAAC", "x' OR Name != '"])).toBe(
@@ -82,6 +88,18 @@ describe("parsing the CRM's formats", () => {
     ).toEqual({ kind: "rta", field: "Floor_Plans__c", refId: "0EMiy0000000XyZ" });
     expect(parseImageAddress("data:image/png;base64,AAAA", "x")).toBeNull();
     expect(parseImageAddress("javascript:alert(1)", "x")).toBeNull();
+  });
+
+  it("reads a rich-text field holding a bare URL, as the v1.2 sandbox does", () => {
+    expect(imagesInField("https://example.com/properties/property-2-cover.jpg", "Cover_Page_Image__c")).toEqual([
+      { kind: "url", url: "https://example.com/properties/property-2-cover.jpg" },
+    ]);
+    expect(imagesInField('<p><img src="/sfc/servlet.shepherd/version/download/068iy0000002GlRAAU"></p>', "x")).toEqual([
+      { kind: "cv", id: "068iy0000002GlRAAU" },
+    ]);
+    expect(imagesInField("<p>https://a.test/plan.png</p>", "Floor_Plans__c")).toEqual([
+      { kind: "url", url: "https://a.test/plan.png" },
+    ]);
   });
 
   it("keeps rich-text photos in the order the CRM user placed them", () => {
@@ -161,6 +179,12 @@ describe("toSnapshot", () => {
 });
 
 describe("snapshotHash", () => {
+  it("ignores our own write-back when it is read back", () => {
+    const a = toSnapshot(COMPLETE_SALE);
+    const b = toSnapshot({ ...COMPLETE_SALE, Website_URL__c: "https://www.bazarrealestate.ae/p/x", Website_Error__c: "x" });
+    expect(snapshotHash(a)).toBe(snapshotHash(b));
+  });
+
   it("ignores the CRM's own modification stamp", () => {
     // An inquiry counter ticking up moves LastModifiedDate without changing
     // anything the website shows.
