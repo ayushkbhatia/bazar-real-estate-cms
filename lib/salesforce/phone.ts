@@ -28,15 +28,14 @@
  * code that is not on this list fails the whole record with
  * INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST.
  *
- * Note what is NOT here: **+7**. Russia and Kazakhstan are missing from the
- * org's list, though every one of their neighbours (+994, +995, +996, +998)
- * is present, so it reads as an omission rather than a decision. A Russian
- * buyer is a real segment for Abu Dhabi property, and until Levarus add it
- * those leads are refused locally rather than sent with a wrong code — see
- * `buildLeadPayload`.
+ * **+7** (Russia, Kazakhstan) was missing from the org's first 206 values,
+ * though every neighbour was there. Levarus added it on 25 Sept 2026 in both
+ * orgs, confirmed here by describe: 207 values. Until then those leads were
+ * refused locally rather than sent with a wrong code — see `buildLeadPayload`,
+ * which still refuses any code this list does not hold.
  */
 export const SALESFORCE_COUNTRY_CODES: ReadonlySet<string> = new Set([
-  "1", "20", "27", "30", "31", "32", "33", "34", "36", "39", "40", "41", "43", "44",
+  "1", "7", "20", "27", "30", "31", "32", "33", "34", "36", "39", "40", "41", "43", "44",
   "45", "46", "47", "48", "49", "51", "52", "53", "54", "55", "56", "57", "58", "60",
   "61", "62", "63", "64", "65", "66", "81", "82", "84", "86", "90", "91", "92", "93",
   "94", "95", "98", "211", "212", "213", "216", "218", "220", "221", "222", "223", "224", "225",

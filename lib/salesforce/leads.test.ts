@@ -140,7 +140,7 @@ describe("buildLeadPayload", () => {
   });
 
   it("only ever sends a country code the picklist accepts", () => {
-    // Country_Code__c is a restricted picklist of 206 values, which no doc
+    // Country_Code__c is a restricted picklist of 207 values, which no doc
     // mentioned. Anything outside it fails the whole record.
     const numbers = [
       "+971501234567", "0501234567", "+441234567890", "+12125551234",
@@ -156,11 +156,20 @@ describe("buildLeadPayload", () => {
     }
   });
 
-  it("refuses a Russian number rather than mislabelling it", () => {
-    // +7 is absent from the org's picklist though every neighbour is there.
+  it("sends a Russian number now the picklist has +7", () => {
+    // +7 was missing from the org's first 206 values; Levarus added it on
+    // 25 Sept in both orgs.
+    const payload = buildLeadPayload(row({ phone: "+79161234567" }));
+    expect(payload.Country_Code__c).toBe("+7");
+    expect(payload.Phone__c).toBe("9161234567");
+    expect(missingRequiredFields(payload)).not.toContain("Country_Code__c");
+  });
+
+  it("still refuses a code the picklist does not hold, rather than mislabelling it", () => {
     // Blocking keeps the lead visible and recoverable in the CMS; sending a
     // wrong code would put bad data in the CRM and look like success.
-    const payload = buildLeadPayload(row({ phone: "+79161234567" }));
+    // +999 is unassigned: no picklist holds it.
+    const payload = buildLeadPayload(row({ phone: "+99955512345" }));
     expect("Country_Code__c" in payload).toBe(false);
     expect(missingRequiredFields(payload)).toContain("Country_Code__c");
     // The digits are not thrown away.
