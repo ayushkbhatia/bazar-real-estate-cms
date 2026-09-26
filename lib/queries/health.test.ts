@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { neverRunIsMeaningful, isStale, staleAfterMinutes } from "./health";
+import {
+  neverRunIsMeaningful,
+  isStale,
+  parseDigestRecipients,
+  staleAfterMinutes,
+} from "./health";
 
 const NOW = new Date("2026-09-24T07:00:00Z");
 const ago = (mins: number) =>
@@ -53,5 +58,25 @@ describe("isStale", () => {
 
   it("gives a daily job six hours of slack", () => {
     expect(staleAfterMinutes("meilisearch-sync")).toBe(1800);
+  });
+});
+
+describe("parseDigestRecipients", () => {
+  it("is no override when unset or blank", () => {
+    expect(parseDigestRecipients(undefined)).toEqual([]);
+    expect(parseDigestRecipients("")).toEqual([]);
+    expect(parseDigestRecipients(" , ")).toEqual([]);
+  });
+
+  it("splits, trims, lower-cases and de-duplicates", () => {
+    expect(
+      parseDigestRecipients(" A@example.com, b@example.com ;a@example.com\nc@example.org"),
+    ).toEqual(["a@example.com", "b@example.com", "c@example.org"]);
+  });
+
+  it("drops anything not shaped like an address", () => {
+    expect(parseDigestRecipients("nobody, a@example.com, x@y")).toEqual([
+      "a@example.com",
+    ]);
   });
 });

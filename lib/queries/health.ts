@@ -86,6 +86,24 @@ export function neverRunIsMeaningful(
   return ageMinutes >= (EXPECTED_INTERVAL_MINUTES[job] ?? 60);
 }
 
+/**
+ * The digest's recipient override, parsed from `HEALTH_DIGEST_RECIPIENTS`.
+ *
+ * Comma- or whitespace-separated. Anything that is not shaped like an address
+ * is dropped rather than thrown on, and the result is lower-cased and
+ * de-duplicated. An empty result means "no override": the digest falls back
+ * to every active admin, so a blank or mistyped variable never silences it.
+ */
+export function parseDigestRecipients(raw: string | undefined | null): string[] {
+  if (!raw) return [];
+  const out = new Set<string>();
+  for (const part of raw.split(/[\s,;]+/)) {
+    const email = part.trim().toLowerCase();
+    if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) out.add(email);
+  }
+  return [...out];
+}
+
 /** Jobs that vercel.json schedules — so a job that has NEVER run is visible
  *  as an absence rather than simply missing from the table. */
 export const SCHEDULED_JOBS = Object.keys(EXPECTED_INTERVAL_MINUTES).sort();
