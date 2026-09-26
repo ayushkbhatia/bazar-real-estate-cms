@@ -30,6 +30,10 @@ const serverSchema = z.object({
   // Blocks real delivery. Unset it and nothing outside production sends —
   // see `isEmailDryRun` in lib/email.ts for why that is the default.
   EMAIL_DRY_RUN: z.string().optional(),
+  // Comma-separated. When set, the daily health digest goes to these
+  // addresses only instead of every active admin — see
+  // app/api/cron/health-digest/route.ts.
+  HEALTH_DIGEST_RECIPIENTS: z.string().optional(),
   // Upstash Redis credentials for per-IP rate limiting. Both optional —
   // when absent, lib/rate-limit no-ops so dev/test still work.
   UPSTASH_REDIS_REST_URL: z.string().url().optional(),
@@ -125,6 +129,7 @@ const serverEnv =
         RESEND_REPLY_TO: process.env.RESEND_REPLY_TO,
         CRON_SECRET: process.env.CRON_SECRET,
         EMAIL_DRY_RUN: process.env.EMAIL_DRY_RUN,
+        HEALTH_DIGEST_RECIPIENTS: process.env.HEALTH_DIGEST_RECIPIENTS,
         UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
         UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
         MEILISEARCH_HOST: process.env.MEILISEARCH_HOST,

@@ -32,6 +32,7 @@ import {
   isStale,
   staleAfterMinutes,
   neverRunIsMeaningful,
+  parseDigestRecipients,
   SCHEDULED_JOBS,
 } from "@/lib/queries/health";
 import type { Database } from "@/db/types";
@@ -171,7 +172,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ ok: true, sent: 0, quiet: true });
     }
 
-    const recipients = await adminEmails(admin);
+    // HEALTH_DIGEST_RECIPIENTS narrows the digest to the people on call.
+    // Unset (or unparseable), it goes to every active admin.
+    const override = parseDigestRecipients(env.HEALTH_DIGEST_RECIPIENTS);
+    const recipients =
+      override.length > 0 ? override : await adminEmails(admin);
     if (recipients.length === 0) {
       // Worth surfacing rather than shrugging: an org with no reachable admin
       // has no path for any of this to reach a person.
