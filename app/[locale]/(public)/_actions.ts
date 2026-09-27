@@ -11,7 +11,7 @@ import {
   normaliseEnquiryInput,
   type EnquiryInput,
 } from "@/lib/schemas/enquiry";
-import { sendEmail } from "@/lib/email";
+import { sendEnquiryAcknowledgement } from "@/lib/enquiry-acknowledgement";
 import { enquiryAcknowledgementEmail } from "@/lib/content-assets/system-emails";
 import {
   checkRateLimit,
@@ -204,7 +204,9 @@ export async function createEnquiry(
 
   revalidatePath("/admin/enquiries");
 
-  // Fire-and-forget auto-reply via Resend. No-op if RESEND_API_KEY is unset.
+  // The acknowledgement goes out now, and is stamped on the row when it does —
+  // that stamp is what keeps the minute sweep from sending it again. A send
+  // that fails or is skipped (no RESEND_API_KEY) leaves the sweep to retry.
   if (data.email) {
     let propertyReference: string | null = null;
     let propertyTitle: string | null = null;
@@ -231,7 +233,7 @@ export async function createEnquiry(
       // where it exists; otherwise this is the English email it always was.
       locale: data.locale,
     });
-    await sendEmail({
+    await sendEnquiryAcknowledgement(insertedId, {
       to: data.email,
       subject: tpl.subject,
       text: tpl.text,

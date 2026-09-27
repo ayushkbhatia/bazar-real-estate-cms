@@ -52,16 +52,36 @@ function normaliseRoute(srcRoute) {
     || "/";
 }
 
-/** srcRoute -> { revalidate } for everything the build prerendered. */
-function readPrerenderedRoutes() {
+/**
+ * Patterns whose pages come from content that can legitimately be empty.
+ *
+ * `/lp/[slug]` prerenders one page per PUBLISHED campaign landing page, and
+ * "none published" is an ordinary state for a campaign tool. With no params
+ * the build emits no concrete route for the pattern, which reads here exactly
+ * like a route that went dynamic — on 27 Sept 2026 that turned every branch
+ * red with no commit behind it. It isn't the same thing: Next still registers
+ * a zero-param ISR pattern in the manifest's `dynamicRoutes`, and a route that
+ * bailed out to dynamic rendering (or declares `revalidate = 0`) is missing
+ * from there as well. Checked against Next 16.2.6 with a probe build.
+ *
+ * A list rather than a rule for every pattern, because for the others an
+ * empty param list IS the regression: a `generateStaticParams` that quietly
+ * returns [] loses every prebuilt page, and this guard is what catches it.
+ */
+const MAY_PRERENDER_NOTHING = new Set(["/lp/[slug]"]);
+
+function readManifest() {
   if (!existsSync(MANIFEST)) {
     console.error(
       `No ${path.relative(REPO_ROOT, MANIFEST)}.\nRun \`npm run build\` first — this reads the build output.`,
     );
     process.exit(2);
   }
+  return JSON.parse(readFileSync(MANIFEST, "utf8"));
+}
 
-  const manifest = JSON.parse(readFileSync(MANIFEST, "utf8"));
+/** srcRoute -> { revalidate } for everything the build prerendered. */
+function readPrerenderedRoutes(manifest) {
   const bySrc = new Map();
 
   for (const [url, entry] of Object.entries(manifest.routes ?? {})) {
@@ -80,7 +100,12 @@ function readPrerenderedRoutes() {
   return out;
 }
 
-const current = readPrerenderedRoutes();
+const manifest = readManifest();
+const current = readPrerenderedRoutes(manifest);
+/** Dynamic patterns still registered for static generation, pages or not. */
+const registered = new Set(
+  Object.keys(manifest.dynamicRoutes ?? {}).map(normaliseRoute),
+);
 
 if (process.argv.includes("--write-baseline")) {
   writeFileSync(
@@ -120,10 +145,15 @@ const baseline = Object.fromEntries(
 
 const wentDynamic = [];
 const revalidateChanged = [];
+const nothingToBuild = [];
 
 for (const [route, expected] of Object.entries(baseline)) {
   const actual = current[route];
   if (!actual) {
+    if (MAY_PRERENDER_NOTHING.has(route) && registered.has(route)) {
+      nothingToBuild.push(route);
+      continue;
+    }
     wentDynamic.push(route);
     continue;
   }
@@ -138,9 +168,16 @@ if (added.length) {
   console.log(`New prerendered routes (fine, additive):\n  ${added.join("\n  ")}\n`);
 }
 
-if (!wentDynamic.length && !revalidateChanged.length) {
+if (nothingToBuild.length) {
   console.log(
-    `OK — all ${Object.keys(baseline).length} baseline routes still prerender at their expected interval.`,
+    `No content to prerender this build — still registered for static generation, so not a regression:\n  ${nothingToBuild.join("\n  ")}\n`,
+  );
+}
+
+if (!wentDynamic.length && !revalidateChanged.length) {
+  const checked = Object.keys(baseline).length - nothingToBuild.length;
+  console.log(
+    `OK — all ${checked} baseline routes with pages still prerender at their expected interval.`,
   );
   process.exit(0);
 }

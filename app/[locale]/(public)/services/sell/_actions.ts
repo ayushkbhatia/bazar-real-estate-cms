@@ -7,7 +7,7 @@ import { reportError } from "@/lib/observability";
 import { createClient } from "@supabase/supabase-js";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { sendEmail } from "@/lib/email";
+import { sendEnquiryAcknowledgement } from "@/lib/enquiry-acknowledgement";
 import { enquiryAcknowledgementEmail } from "@/lib/content-assets/system-emails";
 import {
   checkRateLimit,
@@ -235,7 +235,8 @@ export async function submitListingLead(
     ),
   });
 
-  // Fire-and-forget confirmation. No-op without RESEND_API_KEY.
+  // Stamped on the row when it goes out, so the minute sweep doesn't send it
+  // again; a send that fails or is skipped is left for the sweep to retry.
   const tpl = await enquiryAcknowledgementEmail({
     name: data.name,
     message: `${summary}\n\nYour reference is ${reference}.${
@@ -246,7 +247,7 @@ export async function submitListingLead(
     formKey: SELL_FORM_KEY,
     locale: data.locale ?? "en",
   });
-  await sendEmail({
+  await sendEnquiryAcknowledgement(row.id, {
     to: data.email,
     subject: tpl.subject,
     text: tpl.text,
