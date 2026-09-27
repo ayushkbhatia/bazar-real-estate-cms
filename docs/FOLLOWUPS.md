@@ -31,6 +31,19 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [off-plan] Two pages now list every published project: `/developments` and
+  `/off-plan/launches`.
+  `/off-plan/launches` was built as the destination of the New Projects rail's
+  "View every launch" link (which used to open the property search). The older
+  `/developments` index predates it — two-up big cards, English-only headline
+  and intro as JSX literals, no CMS document — and is still where the
+  launches band's "View all developments" button (`cta_href` in the live
+  off-plan master page row) and the home page's off-plan band point. Done
+  looks like one decision: either repoint those two CMS links at
+  `/off-plan/launches` and 308 `/developments` to it (keeping
+  `/developments/<slug>`), or give `/developments` a different job. Changing
+  the links is a CMS edit, not a deploy.
+
 - [infra] Every DOM spec fails locally under Node 26 — `window.localStorage`
   is undefined. Node 25+ ships its own `localStorage` global (empty without
   `--localstorage-file`), and jsdom's never replaces it, so

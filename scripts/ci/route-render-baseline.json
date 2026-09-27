@@ -145,6 +145,9 @@
     "/off-plan/[slug]": {
       "revalidate": 60
     },
+    "/off-plan/launches": {
+      "revalidate": 300
+    },
     "/opengraph-image": {
       "revalidate": false
     },

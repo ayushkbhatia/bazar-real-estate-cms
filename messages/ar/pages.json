@@ -88,6 +88,10 @@
     "interestHeading": "هل يثير اهتمامك مشروع جديد؟",
     "interestBody": "أخبرنا بالمشروع الذي لفت انتباهك — وسيوافيك أحد المستشارين بالوحدات المتاحة والمخططات وخطط السداد."
   },
+  "launches": {
+    "projects": "{count, plural, zero {لا مشاريع} one {مشروع واحد} two {مشروعان} few {# مشاريع} many {# مشروعًا} other {# مشروع}}",
+    "communities": "{count, plural, zero {لا مجتمعات} one {مجتمع واحد} two {مجتمعان} few {# مجتمعات} many {# مجتمعًا} other {# مجتمع}}"
+  },
   "property": {
     "noCoordinates": "لا توجد إحداثيات محددة لهذا العقار"
   },

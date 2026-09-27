@@ -59,7 +59,10 @@ const SECTIONS: { title: string; links: { label: string; href: string }[] }[] =
     },
     {
       title: "Off-plan projects",
-      links: [{ label: "All projects", href: "/developments" }],
+      links: [
+        { label: "All projects", href: "/developments" },
+        { label: "All launches", href: "/off-plan/launches" },
+      ],
     },
     {
       title: "Services",

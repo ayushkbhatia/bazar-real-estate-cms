@@ -136,6 +136,9 @@ const ROUTES = [
   "/buy",
   "/rent",
   "/off-plan",
+  // Two cards to a row at 390px — ~170px each, the narrowest cards on the
+  // site, so the one route most exposed to `narrowTracks` and to clipping.
+  "/off-plan/launches",
   "/commercial",
   "/buy/search",
   "/off-plan/search",
@@ -165,6 +168,9 @@ const ROUTES = [
   "/ar/buy/search",
   "/ar/areas",
   "/ar/contact",
+  // Arabic quarter names run about twice the length of "Q4 2029", inside
+  // those same ~170px cards.
+  "/ar/off-plan/launches",
 ];
 
 type Violations = {

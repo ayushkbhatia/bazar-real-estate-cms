@@ -88,6 +88,10 @@
     "interestHeading": "Interested in a new project?",
     "interestBody": "Tell us which launch caught your eye — an advisor will share availability, floor plans, and payment plans."
   },
+  "launches": {
+    "projects": "{count, plural, one {# project} other {# projects}}",
+    "communities": "{count, plural, one {# community} other {# communities}}"
+  },
   "property": {
     "noCoordinates": "No coordinates set on this listing"
   },
