@@ -56,7 +56,13 @@ const eslintConfig = defineConfig([
     // route's own page.tsx is exactly where the loading is supposed to happen.
     // (It also can't be excluded by glob — `[slug]` is a character class to
     // minimatch, so a path override naming it would never match.)
-    files: ["app/(public)/lp/**/_render.tsx", "lib/page-builder/adapters.ts"],
+    //
+    // The same is true of `[locale]`, which is why the route's segment is a
+    // `*` below. This used to read `app/(public)/lp/**`, and when the public
+    // tree moved under `app/[locale]/` it silently stopped matching anything:
+    // the renderer could import a query module with no error at all. Nothing
+    // failed, which is the whole problem with a guard nobody re-runs.
+    files: ["app/*/(public)/lp/**/_render.tsx", "lib/page-builder/adapters.ts"],
     rules: {
       "no-restricted-imports": [
         "error",
