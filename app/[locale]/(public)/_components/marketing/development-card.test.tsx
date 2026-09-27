@@ -97,6 +97,18 @@ describe("DevelopmentCard — one to a row on a phone (the default)", () => {
     expect(img).not.toHaveAttribute("data-fetch-priority");
   });
 
+  it("lets each value follow the page's direction and isolate its own", async () => {
+    // `:lang(ar) .mono` forces `direction: ltr`. Left to it, every value on
+    // /ar sat at the far edge from its label and a price read figure-last.
+    await mount();
+    for (const label of ["from", "bedrooms", "handoverLabel"]) {
+      const value = statOf(label).lastElementChild as HTMLElement;
+      expect(value.className).toContain("mono");
+      expect(value.style.direction, label).toBe("inherit");
+      expect(value.firstElementChild?.tagName, label).toBe("BDI");
+    }
+  });
+
   it("draws every label and the tagline, unclamped", async () => {
     await mount();
     for (const text of ["label new", "label exclusive", "label hot", "Apartments on Yas Island"]) {

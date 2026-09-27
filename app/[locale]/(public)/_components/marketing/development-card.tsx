@@ -179,7 +179,25 @@ export async function DevelopmentCard({
           }
         >
           <div className={s.factLabel}>{label}</div>
-          <div className={s.factValue}>{value}</div>
+          {/*
+            The value follows the page's direction, and isolates its own.
+
+            `.mono` is here for the face — it is what picks up the Arabic
+            numerals role from /admin/settings/typography — but under
+            `:lang(ar)` it also forces `direction: ltr`, which is right for a
+            bare reference code and wrong for these. Measured on /ar/off-plan:
+            every value sat at the opposite edge of its cell from its label,
+            and "2.2 مليون درهم" read in the wrong order, the figure last.
+            That rule is unlayered, so no utility can undo it; the inline
+            style can. `<bdi>` then gives each value the direction of its own
+            first strong letter — Arabic for a price in Arabic, Latin for an
+            English fallback like "Studios, 1 - 3" — without reordering its
+            neighbours. English is unchanged: the property only differs
+            where that rule applies.
+          */}
+          <div className={s.factValue} style={{ direction: "inherit" }}>
+            <bdi>{value}</bdi>
+          </div>
         </div>
       ))}
     </div>
