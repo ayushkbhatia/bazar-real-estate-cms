@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
-import { NodeSelection } from "@tiptap/pm/state";
+import { NodeSelection, TextSelection } from "@tiptap/pm/state";
 import {
   Bold,
   Italic,
@@ -325,7 +325,9 @@ export function ArticleEditor({
     }
     setLinkRequest({
       mode: "insert",
-      hasTextSelection: !selection.empty,
+      // Words, specifically. A selected image is a non-empty selection too,
+      // and "link the selected text" would put the link on its caption.
+      hasTextSelection: selection instanceof TextSelection && !selection.empty,
       initial: null,
     });
   }

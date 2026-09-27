@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Editor } from "@tiptap/core";
-import { NodeSelection, TextSelection } from "@tiptap/pm/state";
+import { AllSelection, NodeSelection, TextSelection } from "@tiptap/pm/state";
 import { articleExtensions } from "./article-extensions";
 
 vi.mock("@/lib/env", () => ({
@@ -120,6 +120,17 @@ describe("InternalLink", () => {
     const sel = editor.state.selection;
     expect(sel).toBeInstanceOf(NodeSelection);
     expect((sel as NodeSelection).node.attrs.targetId).toBe(DEV);
+  });
+
+  it("goes at the end, not the top, with everything selected", () => {
+    const editor = editorWith("<p>a</p><p>b</p>");
+    editor.view.dispatch(
+      editor.state.tr.setSelection(new AllSelection(editor.state.doc)),
+    );
+    editor.commands.insertInternalLink(card);
+    const kinds: string[] = [];
+    editor.state.doc.forEach((node) => kinds.push(node.type.name));
+    expect(kinds.slice(0, 3)).toEqual(["paragraph", "paragraph", "internalLink"]);
   });
 
   it("allows the same record to be linked more than once", () => {

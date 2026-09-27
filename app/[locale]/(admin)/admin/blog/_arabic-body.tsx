@@ -139,9 +139,7 @@ export function ArabicArticleBody({
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded border border-[oklch(0.8_0.1_75)] bg-[oklch(0.97_0.03_85)] px-3 py-2 text-[12px] text-bz-ink-2">
           <Signpost size={13} strokeWidth={1.8} className="shrink-0" />
           <span className="min-w-0 flex-1">
-            The English links {missing} page{missing === 1 ? "" : "s"} the
-            Arabic body does not, so Arabic readers won&apos;t see{" "}
-            {missing === 1 ? "that card" : "those cards"}.
+            {`The English links ${missing} page${missing === 1 ? "" : "s"} the Arabic body does not, so Arabic readers won't see ${missing === 1 ? "that card" : "those cards"}.`}
           </span>
           <button
             type="button"

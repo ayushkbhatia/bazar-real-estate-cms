@@ -122,10 +122,24 @@ export function InternalLinkDialog({
   );
 }
 
-function matches(target: InternalLinkTarget, words: string[]): boolean {
-  if (words.length === 0) return true;
-  const haystack = `${target.name} ${target.detail}`.toLowerCase();
-  return words.every((w) => haystack.includes(w));
+/**
+ * How well a record answers the search, lower is better; null for no match.
+ *
+ * Matching looks at the detail line too, so a listing is found by its
+ * reference and a community by the area it sits in — which is also why a
+ * plain filter was not enough: "yas island" matched Yas Acres (a community
+ * *in* Yas Island) as well as Yas Island itself, and alphabetical order put
+ * the wrong one first, one Enter away from being inserted.
+ */
+function rank(target: InternalLinkTarget, query: string, words: string[]) {
+  const name = target.name.toLowerCase();
+  if (words.length === 0) return 3;
+  const haystack = `${name} ${target.detail.toLowerCase()}`;
+  if (!words.every((w) => haystack.includes(w))) return null;
+  if (name === query) return 0;
+  if (name.startsWith(query)) return 1;
+  if (words.every((w) => name.includes(w))) return 2;
+  return 3;
 }
 
 function PickerForm({
@@ -165,8 +179,15 @@ function PickerForm({
   }, [targets]);
 
   const visible = useMemo(() => {
-    const words = query.toLowerCase().split(/\s+/).filter(Boolean);
-    return targets.filter((t) => t.kind === kind && matches(t, words));
+    const q = query.trim().toLowerCase().replace(/\s+/g, " ");
+    const words = q.split(" ").filter(Boolean);
+    return targets
+      .filter((t) => t.kind === kind)
+      .map((t) => ({ t, score: rank(t, q, words) }))
+      .filter((r): r is { t: InternalLinkTarget; score: number } => r.score !== null)
+      // Stable, so records that answer equally well keep their A–Z order.
+      .sort((a, b) => a.score - b.score)
+      .map((r) => r.t);
   }, [targets, kind, query]);
 
   // The highlighted row: the one picked, while it is still in view; else the

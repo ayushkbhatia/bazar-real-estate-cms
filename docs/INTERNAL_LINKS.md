@@ -186,5 +186,6 @@ validate against the kind list.
 | `lib/article-body.test.tsx` | the three lookup answers, for blocks and for text links; site paths through the locale-aware `Link`; other sites untouched |
 | `lib/internal-links/resolve.fold.test.ts` | one query per kind; `null` vs `undefined`; every string folds to Arabic with no twin leak |
 | `lib/internal-links/mirror.test.ts` | Arabic placement, idempotence, never moving what is there |
+| `lib/internal-links/walker.test.ts` | the translation walker sends no block to the model and restores blocks and text-link records byte for byte |
 | `lib/internal-links/targets.test.ts` | picker rows |
 | `admin/blog/_internal-link-dialog.test.tsx` | the picker's modes, search, keyboard |

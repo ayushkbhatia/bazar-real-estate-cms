@@ -131,8 +131,10 @@ export const InternalLink = Node.create({
         ({ state, tr, dispatch }) => {
           const node = this.type.create(attrs);
           const { selection } = state;
-          let from = selection.from;
-          let to = selection.from;
+          // Between blocks (a gap cursor) `from` and `to` are the same place;
+          // for select-all, `to` is the end — after everything, not before.
+          let from = selection.to;
+          let to = selection.to;
 
           if (selection instanceof NodeSelection) {
             // A block is selected — another link, a figure: go after it.

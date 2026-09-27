@@ -239,7 +239,9 @@ export function InternalLinkCard({
           ) : null}
           {parts.summary ? (
             <span className="mt-1.5 line-clamp-2 text-[14px] leading-relaxed text-bz-ink-2">
-              {parts.summary}
+              {/* A sentence the record owns: English on /ar until its twin
+                  is written, so its punctuation must not follow the page. */}
+              <bdi>{parts.summary}</bdi>
             </span>
           ) : null}
           {parts.highlight ? (

@@ -52,7 +52,18 @@ export const InternalLinkEditorContext =
  */
 export const InternalLinkWithView = InternalLink.extend({
   addNodeView() {
-    return ReactNodeViewRenderer(InternalLinkView);
+    return ReactNodeViewRenderer(InternalLinkView, {
+      /*
+       * Without this, a block inserted directly ABOVE another left both
+       * wearing the selection ring. The view caches its position and only
+       * refreshes it when its own node changes; an insert above shifts the
+       * block below without changing it, so its stale position still matched
+       * the new selection. Tracking re-reads the position on every update —
+       * a re-render of each block per edit above it, which at a handful of
+       * blocks per article costs nothing.
+       */
+      trackNodeViewPosition: true,
+    });
   },
 });
 

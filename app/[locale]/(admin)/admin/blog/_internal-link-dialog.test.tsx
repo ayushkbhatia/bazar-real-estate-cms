@@ -8,6 +8,7 @@ import {
 
 const TARGETS: InternalLinkTarget[] = [
   { kind: "area", id: "a1", name: "Saadiyat Island", detail: "Area · Abu Dhabi", href: "/areas/saadiyat-island", thumb: null },
+  { kind: "area", id: "a3", name: "Yas Acres", detail: "Sub-community · Yas Island", href: "/areas/yas-acres", thumb: null },
   { kind: "area", id: "a2", name: "Yas Island", detail: "Area · Abu Dhabi", href: "/areas/yas-island", thumb: null },
   { kind: "development", id: "d1", name: "Saadiyat Lagoons", detail: "Aldar · Saadiyat Island", href: "/developments/saadiyat-lagoons", thumb: null },
   { kind: "property", id: "p1", name: "Sea-view villa", detail: "BAZ-AD-04891 · Saadiyat Island · AED 12.5M", href: "/p/sea-view-villa-baz-ad-04891", thumb: null },
@@ -40,12 +41,13 @@ describe("InternalLinkDialog", () => {
     open(insert);
     const tabs = screen.getAllByRole("tab");
     expect(tabs.map((t) => t.textContent)).toEqual([
-      "Areas2",
+      "Areas3",
       "Projects1",
       "Listings1",
     ]);
     expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual([
       "Saadiyat IslandArea · Abu Dhabi",
+      "Yas AcresSub-community · Yas Island",
       "Yas IslandArea · Abu Dhabi",
     ]);
   });
@@ -53,10 +55,24 @@ describe("InternalLinkDialog", () => {
   it("filters as you type, and Enter inserts the first match as a card", () => {
     const { onChoose } = open(insert);
     const search = screen.getByRole("combobox");
-    fireEvent.change(search, { target: { value: "yas" } });
+    fireEvent.change(search, { target: { value: "saad" } });
     expect(screen.getAllByRole("option")).toHaveLength(1);
     fireEvent.keyDown(search, { key: "Enter" });
-    expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[1], as: "card" });
+    expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[0], as: "card" });
+  });
+
+  it("puts the record NAMED what was typed ahead of one merely inside it", () => {
+    // Yas Acres matches "yas island" through its parent, and sorts first
+    // alphabetically — Enter must still insert Yas Island.
+    const { onChoose } = open(insert);
+    const search = screen.getByRole("combobox");
+    fireEvent.change(search, { target: { value: "  Yas   island " } });
+    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual([
+      "Yas IslandArea · Abu Dhabi",
+      "Yas AcresSub-community · Yas Island",
+    ]);
+    fireEvent.keyDown(search, { key: "Enter" });
+    expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[2], as: "card" });
   });
 
   it("finds a listing by its reference", () => {
@@ -74,6 +90,7 @@ describe("InternalLinkDialog", () => {
     fireEvent.keyDown(search, { key: "ArrowDown" });
     fireEvent.keyDown(search, { key: "Enter" });
     expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[1], as: "card" });
+    expect(TARGETS[1].name).toBe("Yas Acres");
   });
 
   it("says so when nothing matches", () => {
@@ -95,8 +112,8 @@ describe("InternalLinkDialog", () => {
 
   it("defaults to linking the words when words are selected", () => {
     const { onChoose } = open({ ...insert, hasTextSelection: true });
-    fireEvent.doubleClick(screen.getAllByRole("option")[1]);
-    expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[1], as: "text" });
+    fireEvent.doubleClick(screen.getAllByRole("option")[2]);
+    expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[2], as: "text" });
   });
 
   it("re-opens a block on its record and its variant", () => {
@@ -110,7 +127,7 @@ describe("InternalLinkDialog", () => {
       "Projects",
     );
     fireEvent.click(screen.getByRole("button", { name: "Save block" }));
-    expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[2], as: "compact" });
+    expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[3], as: "compact" });
   });
 
   it("edits a text link as a text link, and can remove it", () => {
@@ -126,7 +143,7 @@ describe("InternalLinkDialog", () => {
       .find((o) => o.getAttribute("aria-selected") === "true")!;
     expect(within(selected).getByText("Yas Island")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Update link" }));
-    expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[1], as: "text" });
+    expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[2], as: "text" });
     fireEvent.click(screen.getByRole("button", { name: "Remove link" }));
     expect(onUnlink).toHaveBeenCalled();
   });
