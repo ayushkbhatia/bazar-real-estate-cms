@@ -1,4 +1,5 @@
 import { emptyImage } from "@/lib/master-pages";
+import { PARTNER_BAND_DEFAULTS } from "@/lib/master-pages/sections/partner-band";
 import type { BlockDef } from "../types";
 
 /**
@@ -130,4 +131,39 @@ export const testimonials: BlockDef = {
   },
 };
 
-export const TRUST_BLOCKS = [aboutBazar, whyBand, testimonials];
+/**
+ * The banking and regulatory partners — `PartnerEcosystemSection`, the logo
+ * band on the home page and /about.
+ *
+ * Shared content, the way `testimonials` is: the logos are ONE list in the
+ * section library (`/admin/pages/sub/section/partners`), so fixing a logo there
+ * fixes it everywhere. The words around the band are this page's own, and
+ * start as the band's shipped wording (`PARTNER_BAND_DEFAULTS`), the same
+ * starting point the home page and /about each copy from.
+ */
+export const partners: BlockDef = {
+  key: "partners",
+  label: "Partner logos",
+  description:
+    "The banks and regulators Bazar works with, as a scrolling logo band. The logos are the shared set — edit them in Pages → Sub-pages → Sections.",
+  group: "trust",
+  singleton: true,
+  needs: ["partners"],
+  queryCost: 1,
+  dataNote:
+    "The logos come from the Partner ecosystem section library, so an edit there updates this page, the home page and /about at once.",
+  fields: [
+    { key: "eyebrow", label: "Eyebrow", kind: "text", max: 60, optional: true },
+    { key: "heading", label: "Heading", kind: "text", max: 120 },
+    { key: "body", label: "Sub-copy", kind: "textarea", max: 280, optional: true },
+    {
+      key: "cta_label",
+      label: "Button (links to /partners)",
+      kind: "text",
+      max: 40,
+    },
+  ],
+  defaults: { ...PARTNER_BAND_DEFAULTS },
+};
+
+export const TRUST_BLOCKS = [aboutBazar, whyBand, testimonials, partners];

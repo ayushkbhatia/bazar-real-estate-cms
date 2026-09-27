@@ -10,7 +10,12 @@
 import { getBlockDef, newBlockInstance } from "./catalogue";
 import type { BlockInstance } from "./types";
 
-export type PresetKey = "blank" | "off_plan_launch" | "area_campaign" | "lead_gen";
+export type PresetKey =
+  | "blank"
+  | "off_plan_launch"
+  | "project_launch"
+  | "area_campaign"
+  | "lead_gen";
 
 export type Preset = {
   key: PresetKey;
@@ -40,6 +45,21 @@ export const PRESETS: Preset[] = [
     ],
   },
   {
+    key: "project_launch",
+    label: "Project launch",
+    description:
+      "One project, told the way its own page tells it: the figures, the payment plan, the master plan, the floor plans and the map — then the form. Pick the project once and every section follows it.",
+    blocks: [
+      "hero_media",
+      "project_facts",
+      "project_payment_plan",
+      "project_master_plan",
+      "project_unit_plans",
+      "project_location",
+      "form_band",
+    ],
+  },
+  {
     key: "area_campaign",
     label: "Area campaign",
     description:
@@ -59,14 +79,35 @@ export function getPreset(key: string): Preset | null {
   return PRESETS.find((p) => p.key === key) ?? null;
 }
 
-/** Materialise a preset into block instances carrying their defaults. */
-export function presetBlocks(key: string): BlockInstance[] {
+/** Whether a preset holds any section that shows one project. */
+export function presetNeedsProject(key: string): boolean {
+  return (getPreset(key)?.blocks ?? []).some(
+    (k) => getBlockDef(k)?.pickRequired?.key === "development",
+  );
+}
+
+/**
+ * Materialise a preset into block instances carrying their defaults.
+ *
+ * `development`, when given, is written into every project section — the
+ * "pick the project once" half of the Project launch preset. Without it those
+ * sections start empty and the editor marks each one.
+ */
+export function presetBlocks(
+  key: string,
+  opts: { development?: string | null } = {},
+): BlockInstance[] {
   const preset = getPreset(key);
   if (!preset) return [];
   return preset.blocks.flatMap((blockKey) => {
     const def = getBlockDef(blockKey);
     // A preset naming a block that has since been removed loses that block
     // rather than failing the whole "new page" flow.
-    return def ? [newBlockInstance(def)] : [];
+    if (!def) return [];
+    const instance = newBlockInstance(def);
+    if (opts.development && def.pickRequired?.key === "development") {
+      instance.values = { ...instance.values, development: opts.development };
+    }
+    return [instance];
   });
 }

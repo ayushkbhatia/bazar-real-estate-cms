@@ -128,4 +128,110 @@ export const chips: BlockDef = {
   },
 };
 
-export const CONVERSION_BLOCKS = [formBand, ctaBand, chips];
+/**
+ * The home page's repayment calculator — `MortgageCalculatorSection`.
+ *
+ * No data and no form: four sliders and the arithmetic in `lib/mortgage.ts`,
+ * with its link through to the full tool. What an editor sets is the framing.
+ */
+export const mortgageCalculator: BlockDef = {
+  key: "mortgage_calculator",
+  label: "Mortgage calculator",
+  description:
+    "A dark band with four sliders — price, deposit, rate, term — and the monthly repayment they add up to. The one on the home page.",
+  group: "conversion",
+  singleton: true,
+  fields: [
+    { key: "eyebrow", label: "Eyebrow", kind: "text", max: 60, optional: true },
+    { key: "heading", label: "Heading", kind: "text", max: 120 },
+  ],
+  // The home page's own wording, so the two read the same.
+  defaults: {
+    eyebrow: "Mortgage calculator",
+    heading: "Estimate your monthly payments before making your move",
+  },
+};
+
+/**
+ * One advisor, face and number — `LeadAdvisorBanner`, the band that closes a
+ * project page.
+ *
+ * The person — name, title, photograph, phone, WhatsApp — comes from their
+ * team record, so a new photo or number reaches every campaign carrying them,
+ * and an advisor who leaves the team drops off the page rather than leaving a
+ * number that rings nobody. What the editor writes is what the card says
+ * around them.
+ */
+export const advisor: BlockDef = {
+  key: "advisor",
+  label: "Advisor card",
+  description:
+    "One advisor on a dark card — photo, name, title and a quote — with buttons to call them or message them on WhatsApp.",
+  group: "conversion",
+  needs: ["advisor"],
+  sharedQuery: "advisors",
+  pickRequired: { key: "agent", noun: "advisor" },
+  dataNote:
+    "The name, title, photo and numbers come from the advisor's team record (/admin/agents). In the buttons and the message, {advisor_first} becomes their first name and {advisor} their full name.",
+  fields: [
+    {
+      key: "agent",
+      label: "Advisor",
+      kind: "select",
+      optionsKey: "agents",
+      placeholder: "Choose an advisor",
+    },
+    { key: "heading", label: "Heading", kind: "text", max: 120, optional: true },
+    {
+      key: "intro",
+      label: "Standfirst",
+      kind: "textarea",
+      max: 400,
+      optional: true,
+    },
+    {
+      key: "eyebrow",
+      label: "Label above the name",
+      kind: "text",
+      max: 60,
+      optional: true,
+    },
+    {
+      key: "quote",
+      label: "Pull quote",
+      kind: "textarea",
+      max: 300,
+      optional: true,
+    },
+    { key: "call_label", label: "Call button", kind: "text", max: 60 },
+    { key: "visit_label", label: "WhatsApp button", kind: "text", max: 60 },
+    {
+      key: "visit_message",
+      label: "WhatsApp message",
+      kind: "textarea",
+      max: 300,
+      // Required: blank, the card would fall back to its project-page wording
+      // ("…book a site visit at <project>") with no project to name.
+      optional: false,
+    },
+  ],
+  // The project pages' advisor band, verbatim where it isn't about a project.
+  defaults: {
+    agent: null,
+    heading: "Speak With an Advisor",
+    intro: null,
+    eyebrow: "Need Assistance?",
+    quote: "We don't show twenty units. We show two — and we know why.",
+    call_label: "Call {advisor_first}",
+    visit_label: "Message on WhatsApp",
+    visit_message: "Hi {advisor_first}, I'd like to know more.",
+  },
+};
+
+export const CONVERSION_BLOCKS = [
+  formBand,
+  ctaBand,
+  chips,
+  mortgageCalculator,
+  advisor,
+];

@@ -27,11 +27,19 @@ import {
 import { listPropertiesByReference } from "@/lib/queries/featured-properties";
 import { listPublishedDevelopments } from "@/lib/queries/developments";
 import { getForms } from "@/lib/queries/forms";
-import { getTestimonials } from "@/lib/queries/content-sections";
+import { getPartners, getTestimonials } from "@/lib/queries/content-sections";
+import {
+  LANDING_MAX_PROJECTS,
+  listLandingProjects,
+  type LandingProject,
+} from "@/lib/queries/landing-projects";
+import { listAgents, type AgentProfile } from "@/lib/queries/agents";
 import { testimonialLimitOf } from "@/lib/master-pages/library";
 import type { ListingRow } from "@/lib/queries/properties";
 import type { ResolvedForm } from "@/lib/forms";
+import type { ResolvedPartner } from "@/lib/partners/directory-data";
 import type { Testimonial } from "@/lib/seeds/awards";
+import type { Locale } from "@/lib/i18n/locales";
 import type { ResolvedBlock } from "./types";
 
 type DevelopmentRow = Awaited<ReturnType<typeof listPublishedDevelopments>>[number];
@@ -50,6 +58,19 @@ export type LandingDataRequest = {
    * list is shared, so the largest slice covers every block that reads it.
    */
   testimonials: number | null;
+  /** Whether any block shows the shared partner logos. */
+  partners: boolean;
+  /**
+   * Every project a project section names, deduped. One read serves them
+   * all; the two flags below only widen what that read embeds.
+   */
+  projects: string[];
+  /** Some section prices units — embed each project's available inventory. */
+  projectUnits: boolean;
+  /** Some section draws layouts — embed each project's unit types and plans. */
+  projectUnitTypes: boolean;
+  /** Advisor slugs, deduped. Non-empty means one roster read. */
+  advisors: string[];
 };
 
 export type LandingData = {
@@ -58,6 +79,9 @@ export type LandingData = {
   developments: DevelopmentRow[];
   forms: Record<string, ResolvedForm>;
   testimonials: Testimonial[];
+  partners: ResolvedPartner[];
+  projectsBySlug: Map<string, LandingProject>;
+  advisorsBySlug: Map<string, AgentProfile>;
 };
 
 export const EMPTY_LANDING_DATA: LandingData = {
@@ -66,6 +90,9 @@ export const EMPTY_LANDING_DATA: LandingData = {
   developments: [],
   forms: {},
   testimonials: [],
+  partners: [],
+  projectsBySlug: new Map(),
+  advisorsBySlug: new Map(),
 };
 
 /**
@@ -87,8 +114,13 @@ export function collectDataRequest(
   const propertyRefs = new Set<string>();
   const queries = new Set<QueryKey>();
   const formKeys = new Set<string>();
+  const projects = new Set<string>();
+  const advisors = new Set<string>();
   let developments = false;
   let testimonials: number | null = null;
+  let partners = false;
+  let projectUnits = false;
+  let projectUnitTypes = false;
 
   for (const block of blocks) {
     if (!block.enabled || !block.def) continue;
@@ -101,6 +133,24 @@ export function collectDataRequest(
     }
 
     if (needs.includes("developments")) developments = true;
+
+    if (needs.includes("partners")) partners = true;
+
+    // A project section with no project picked asks for nothing — it renders
+    // nothing either, and the editor and the gate say so (content-gap.ts).
+    if (needs.includes("project")) {
+      const slug = str(values, "development");
+      if (slug) {
+        projects.add(slug);
+        if (needs.includes("project_units")) projectUnits = true;
+        if (needs.includes("project_unit_types")) projectUnitTypes = true;
+      }
+    }
+
+    if (needs.includes("advisor")) {
+      const slug = str(values, "agent");
+      if (slug) advisors.add(slug);
+    }
 
     if (needs.includes("testimonials")) {
       const want = testimonialLimitOf(str(values, "limit"));
@@ -127,6 +177,11 @@ export function collectDataRequest(
     developments,
     formKeys: [...formKeys],
     testimonials,
+    partners,
+    projects: [...projects].slice(0, LANDING_MAX_PROJECTS),
+    projectUnits,
+    projectUnitTypes,
+    advisors: [...advisors],
   };
 }
 
@@ -150,27 +205,55 @@ async function runQuery(key: QueryKey): Promise<ListingRow[]> {
  *
  * Each `?:` is load-bearing: a page with no live-inventory block must make
  * *zero* catalogue queries, not four empty ones.
+ *
+ * `locale` is the route's, passed down rather than read ambiently by the newer
+ * readers: an ambient read that falls through to `headers()` takes a
+ * prerendered route dynamic (lib/queries/areas-guide.ts records one that did).
+ * The older readers here still resolve it themselves, which they always have.
  */
 export async function resolveLandingData(
   request: LandingDataRequest,
+  locale?: Locale,
 ): Promise<LandingData> {
-  const [refRows, queryResults, developments, forms, testimonials] =
-    await Promise.all([
-      request.propertyRefs.length > 0
-        ? listPropertiesByReference(request.propertyRefs)
-        : Promise.resolve([] as ListingRow[]),
-      Promise.all(request.queries.map((key) => runQuery(key))),
-      request.developments
-        ? listPublishedDevelopments()
-        : Promise.resolve([] as DevelopmentRow[]),
-      request.formKeys.length > 0
-        ? getForms(request.formKeys)
-        : Promise.resolve({} as Record<string, ResolvedForm>),
-      request.testimonials !== null
-        ? getTestimonials(request.testimonials)
-        : Promise.resolve([] as Testimonial[]),
-    ]);
+  const [
+    refRows,
+    queryResults,
+    developments,
+    forms,
+    testimonials,
+    partners,
+    projects,
+    roster,
+  ] = await Promise.all([
+    request.propertyRefs.length > 0
+      ? listPropertiesByReference(request.propertyRefs)
+      : Promise.resolve([] as ListingRow[]),
+    Promise.all(request.queries.map((key) => runQuery(key))),
+    request.developments
+      ? listPublishedDevelopments()
+      : Promise.resolve([] as DevelopmentRow[]),
+    request.formKeys.length > 0
+      ? getForms(request.formKeys)
+      : Promise.resolve({} as Record<string, ResolvedForm>),
+    request.testimonials !== null
+      ? getTestimonials(request.testimonials)
+      : Promise.resolve([] as Testimonial[]),
+    request.partners
+      ? getPartners(locale)
+      : Promise.resolve([] as ResolvedPartner[]),
+    request.projects.length > 0
+      ? listLandingProjects(request.projects, {
+          units: request.projectUnits,
+          unitTypes: request.projectUnitTypes,
+          locale,
+        })
+      : Promise.resolve([] as LandingProject[]),
+    request.advisors.length > 0
+      ? listAgents(locale)
+      : Promise.resolve([] as AgentProfile[]),
+  ]);
 
+  const wanted = new Set(request.advisors);
   return {
     propertiesByRef: new Map(refRows.map((r) => [r.reference, r])),
     propertiesByQuery: new Map(
@@ -179,6 +262,13 @@ export async function resolveLandingData(
     developments,
     forms,
     testimonials,
+    partners,
+    projectsBySlug: new Map(projects.map((p) => [p.slug, p])),
+    // The roster is small and read whole; only the advisors a block named are
+    // kept, so nothing else about the team rides into the page.
+    advisorsBySlug: new Map(
+      roster.filter((a) => wanted.has(a.slug)).map((a) => [a.slug, a]),
+    ),
   };
 }
 
@@ -190,6 +280,6 @@ export async function resolveLandingData(
  * best without doubling the queries.
  */
 export const loadLandingData = cache(
-  async (blocks: ResolvedBlock[]): Promise<LandingData> =>
-    resolveLandingData(collectDataRequest(blocks)),
+  async (blocks: ResolvedBlock[], locale?: Locale): Promise<LandingData> =>
+    resolveLandingData(collectDataRequest(blocks), locale),
 );

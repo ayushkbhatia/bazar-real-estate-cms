@@ -21,6 +21,13 @@ const listPublishedDevelopments = vi.fn(async () => [{ slug: "one" }]);
 const getForms = vi.fn(async (keys: string[]) =>
   Object.fromEntries(keys.map((k) => [k, { key: k, enabled: true }])),
 );
+const getTestimonials = vi.fn(async () => []);
+const getPartners = vi.fn(async () => [{ slug: "adcb" }]);
+const listLandingProjects = vi.fn(
+  async (slugs: string[], _opts?: { units?: boolean; unitTypes?: boolean }) =>
+    slugs.map((slug) => ({ slug })),
+);
+const listAgents = vi.fn(async () => [{ slug: "mariam" }, { slug: "omar" }]);
 
 vi.mock("@/lib/queries/featured-properties", () => ({
   listPropertiesByReference: (refs: string[]) => listPropertiesByReference(refs),
@@ -35,6 +42,20 @@ vi.mock("@/lib/queries/developments", () => ({
 }));
 vi.mock("@/lib/queries/forms", () => ({
   getForms: (keys: string[]) => getForms(keys),
+}));
+vi.mock("@/lib/queries/content-sections", () => ({
+  getTestimonials: () => getTestimonials(),
+  getPartners: () => getPartners(),
+}));
+vi.mock("@/lib/queries/landing-projects", () => ({
+  LANDING_MAX_PROJECTS: 12,
+  listLandingProjects: (
+    slugs: string[],
+    opts?: { units?: boolean; unitTypes?: boolean },
+  ) => listLandingProjects(slugs, opts),
+}));
+vi.mock("@/lib/queries/agents", () => ({
+  listAgents: () => listAgents(),
 }));
 
 const { collectDataRequest, resolveLandingData, LANDING_MAX_REFS } = await import(
@@ -67,7 +88,11 @@ function calls() {
     listNewThisWeek.mock.calls.length +
     listPriceDrops.mock.calls.length +
     listPublishedDevelopments.mock.calls.length +
-    getForms.mock.calls.length
+    getForms.mock.calls.length +
+    getTestimonials.mock.calls.length +
+    getPartners.mock.calls.length +
+    listLandingProjects.mock.calls.length +
+    listAgents.mock.calls.length
   );
 }
 
@@ -122,6 +147,11 @@ describe("collectDataRequest", () => {
       developments: false,
       formKeys: [],
       testimonials: null,
+      partners: false,
+      projects: [],
+      projectUnits: false,
+      projectUnitTypes: false,
+      advisors: [],
     });
   });
 
@@ -144,6 +174,47 @@ describe("collectDataRequest", () => {
   it("asks for no reviews when no block shows them", () => {
     const request = collectDataRequest(resolve([inst("faq", { items: [] })]));
     expect(request.testimonials).toBeNull();
+  });
+
+  it("unions every project section's project into one list", () => {
+    const request = collectDataRequest(
+      resolve([
+        inst("project_facts", { development: "yas-riva" }),
+        inst("project_payment_plan", { development: "yas-riva" }),
+        inst("project_master_plan", { development: "sei-saadiyat" }),
+        inst("project_location", { development: "yas-riva" }),
+      ]),
+    );
+    expect(request.projects.sort()).toEqual(["sei-saadiyat", "yas-riva"]);
+    // The payment plan prices units; nothing here draws layouts.
+    expect(request.projectUnits).toBe(true);
+    expect(request.projectUnitTypes).toBe(false);
+  });
+
+  it("asks for nothing on a project section with no project picked", () => {
+    const request = collectDataRequest(
+      resolve([
+        inst("project_payment_plan", { development: null }),
+        inst("project_unit_plans", { development: "" }),
+      ]),
+    );
+    expect(request.projects).toEqual([]);
+    // No project means no embedded inventory either — the flags follow the
+    // sections that will actually render.
+    expect(request.projectUnits).toBe(false);
+    expect(request.projectUnitTypes).toBe(false);
+  });
+
+  it("dedups advisors and flags the shared partner list", () => {
+    const request = collectDataRequest(
+      resolve([
+        inst("advisor", { agent: "mariam" }),
+        inst("advisor", { agent: "mariam" }),
+        inst("partners", {}),
+      ]),
+    );
+    expect(request.advisors).toEqual(["mariam"]);
+    expect(request.partners).toBe(true);
   });
 
   it("dedups form keys across hero and lead band", () => {
@@ -204,11 +275,56 @@ describe("resolveLandingData", () => {
       inst("faq", { items: [] }),
       inst("rich_text", { body: "Copy." }),
       inst("cta_band", { title: "Go" }),
+      inst("mortgage_calculator", {}),
+      inst("value_grid", {}),
+      // A project section nobody has pointed at a project yet.
+      inst("project_payment_plan", { development: null }),
     ]);
     const data = await resolveLandingData(collectDataRequest(blocks));
     expect(calls()).toBe(0);
     expect(data.developments).toEqual([]);
     expect(data.propertiesByRef.size).toBe(0);
+  });
+
+  /**
+   * The project-section egress guard. A launch page is the one place an editor
+   * will put five sections about one record; if each fetched its project the
+   * page would read the same row five times on every revalidation.
+   */
+  it("makes exactly one projects call for every project section, across projects", async () => {
+    const blocks = resolve([
+      inst("project_facts", { development: "yas-riva" }),
+      inst("project_payment_plan", { development: "yas-riva" }),
+      inst("project_master_plan", { development: "yas-riva" }),
+      inst("project_unit_plans", { development: "yas-riva" }),
+      inst("project_location", { development: "yas-riva" }),
+      inst("project_payment_plan", { development: "sei-saadiyat" }),
+    ]);
+    const data = await resolveLandingData(collectDataRequest(blocks));
+    expect(listLandingProjects).toHaveBeenCalledTimes(1);
+    expect(calls()).toBe(1);
+    const [slugs, opts] = listLandingProjects.mock.calls[0]!;
+    expect([...slugs].sort()).toEqual(["sei-saadiyat", "yas-riva"]);
+    // Units and layouts ride along in the same call, not as two more.
+    expect(opts).toMatchObject({ units: true, unitTypes: true });
+    expect(data.projectsBySlug.get("yas-riva")).toEqual({ slug: "yas-riva" });
+  });
+
+  it("reads the roster once and keeps only the advisors a block named", async () => {
+    const blocks = resolve([
+      inst("advisor", { agent: "mariam" }),
+      inst("advisor", { agent: "mariam" }),
+    ]);
+    const data = await resolveLandingData(collectDataRequest(blocks));
+    expect(listAgents).toHaveBeenCalledTimes(1);
+    expect([...data.advisorsBySlug.keys()]).toEqual(["mariam"]);
+  });
+
+  it("reads the partner list once however many blocks show it", async () => {
+    const blocks = resolve([inst("partners", {}), inst("partners", {})]);
+    const data = await resolveLandingData(collectDataRequest(blocks));
+    expect(getPartners).toHaveBeenCalledTimes(1);
+    expect(data.partners).toEqual([{ slug: "adcb" }]);
   });
 
   it("stays inside the round-trip ceiling for a maximal page", async () => {

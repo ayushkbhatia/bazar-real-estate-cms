@@ -20,6 +20,17 @@ import { ServiceHero } from "../../services/_components/service-hero";
 import { OffPlanProjects } from "../../_components/home/off-plan-projects";
 import { WhoWeAre } from "../../_components/home/who-we-are";
 import { HomeTestimonials } from "../../_components/home/home-testimonials";
+import { MortgageCalculatorSection } from "../../_components/home/mortgage-calculator-section";
+import { PartnerEcosystemSection } from "../../_components/partner-ecosystem-section";
+import { ProjectFactsBand } from "../../_components/marketing/project-facts-band";
+import { ServiceValueGrid } from "../../services/_components/service-value-grid";
+import { AreaStatsBand } from "../../areas/[slug]/_components/area-bands";
+import { PaymentPlanSection } from "../../developments/[slug]/_payment-plan";
+import { MasterPlanFigure } from "../../developments/[slug]/_components/master-plan-figure";
+import { UnitFloorPlans } from "../../developments/[slug]/_components/unit-floor-plans";
+import { RendersGallery } from "../../developments/[slug]/_components/renders-gallery";
+import { LeadAdvisorBanner } from "../../developments/[slug]/_components/lead-advisor-banner";
+import { MapEmbed } from "../../p/[slug]/_components/map-embed";
 
 /**
  * Block key → component.
@@ -49,6 +60,17 @@ export const RENDERED_KEYS = [
   "about_bazar",
   "why_band",
   "testimonials",
+  "project_facts",
+  "project_payment_plan",
+  "project_master_plan",
+  "project_unit_plans",
+  "project_location",
+  "gallery",
+  "value_grid",
+  "stats_band",
+  "mortgage_calculator",
+  "advisor",
+  "partners",
 ] as const;
 
 /**
@@ -261,6 +283,106 @@ export function BlockNode({
           items={p.items}
         />
       );
+    }
+
+    case "partners":
+      return <PartnerEcosystemSection {...adapt.partnersProps(v, data)} />;
+
+    // ── project sections ──
+    // Each adapter answers null when the section has nothing to draw — no
+    // project picked, the project since unpublished, or the record without the
+    // one thing the section is about. Dropped whole, like an empty list.
+
+    case "project_facts": {
+      const p = adapt.projectFactsProps(v, data);
+      return p ? <ProjectFactsBand {...p} /> : null;
+    }
+
+    case "project_payment_plan": {
+      const p = adapt.projectPaymentPlanProps(v, data);
+      if (!p) return null;
+      return <PaymentPlanSection id={`payment-plan-${block.id}`} {...p} />;
+    }
+
+    case "project_master_plan": {
+      const p = adapt.projectMasterPlanProps(v, data);
+      if (!p) return null;
+      return (
+        <Band eyebrow={p.eyebrow} title={p.heading} sub={p.intro}>
+          <MasterPlanFigure
+            image={p.image}
+            placeholderLabel=""
+            pins={p.pins}
+            className="mt-0"
+          />
+        </Band>
+      );
+    }
+
+    case "project_unit_plans": {
+      const p = adapt.projectUnitPlansProps(v, data);
+      if (!p) return null;
+      return (
+        <UnitFloorPlans
+          {...p}
+          // "" rather than null: blank is the editor's choice, and null would
+          // bring back the component's own English fallback.
+          eyebrow={p.eyebrow ?? ""}
+          intro={p.intro ?? ""}
+        />
+      );
+    }
+
+    case "project_location": {
+      const p = adapt.projectLocationProps(v, data);
+      if (!p) return null;
+      return (
+        <Band eyebrow={p.eyebrow} title={p.heading} sub={p.intro}>
+          <MapEmbed
+            lat={p.lat}
+            lng={p.lng}
+            title={p.title}
+            className="w-full aspect-[4/3] md:aspect-[16/9] rounded-lg overflow-hidden border border-bz-border"
+          />
+        </Band>
+      );
+    }
+
+    // ── more content ──
+
+    case "gallery": {
+      const p = adapt.galleryProps(v);
+      if (p.interior.length === 0) return null;
+      return (
+        // The gallery carries its own side and bottom padding — on a project
+        // page it follows another band — so only the top is added here.
+        <section className="pt-12 md:pt-20">
+          <RendersGallery {...p} eyebrow={p.eyebrow ?? ""} />
+        </section>
+      );
+    }
+
+    case "value_grid": {
+      const p = adapt.valueGridProps(v);
+      if (p.items.length === 0) return null;
+      return (
+        <Band eyebrow={p.eyebrow} title={p.title} sub={p.sub}>
+          <ServiceValueGrid items={p.items} cols={p.cols} />
+        </Band>
+      );
+    }
+
+    case "stats_band":
+      // Renders nothing on its own when there are no figures.
+      return <AreaStatsBand {...adapt.statsBandProps(v)} />;
+
+    case "mortgage_calculator":
+      return <MortgageCalculatorSection {...adapt.mortgageCalculatorProps(v)} />;
+
+    case "advisor": {
+      const p = adapt.advisorProps(v, data);
+      // Its own anchor: a page may carry more than one advisor card.
+      return p ? <LeadAdvisorBanner id={`advisor-${block.id}`} {...p} /> : null;
     }
 
     default:

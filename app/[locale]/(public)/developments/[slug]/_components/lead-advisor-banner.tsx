@@ -39,7 +39,13 @@ export function LeadAdvisorBanner({
   callLabel,
   visitLabel,
   visitMessage,
+  id = "advisor",
 }: {
+  /**
+   * The section's anchor. The project page's strip jumps to `#advisor`; a
+   * landing page can carry two advisor cards, so it passes its own per card.
+   */
+  id?: string;
   agent: ProjectAdvisor;
   developmentName: string;
   /**
@@ -69,7 +75,7 @@ export function LeadAdvisorBanner({
     : null;
   const pullQuote = quote?.trim() || null;
   return (
-    <section id="advisor" className="px-4 md:px-12 py-16 scroll-mt-24">
+    <section id={id} className="px-4 md:px-12 py-16 scroll-mt-24">
       {heading || intro ? (
         <div className="mb-6">
           {heading ? (

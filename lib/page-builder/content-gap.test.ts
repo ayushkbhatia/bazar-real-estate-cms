@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { BLOCK_DEFS, getBlockDef, newBlockInstance } from "./catalogue";
 import { resolveDocument } from "./document";
-import { blockContentGap, contentGaps } from "./content-gap";
+import {
+  blockCatalogueGap,
+  blockContentGap,
+  contentGaps,
+} from "./content-gap";
 import { presetBlocks } from "./presets";
 import type { SectionValues } from "@/lib/master-pages";
 
@@ -50,6 +54,36 @@ describe("blockContentGap", () => {
     expect(blockContentGap(def, { source: "exclusive", picks: [] })).toBeNull();
   });
 
+  it("reports a project section with no project picked", () => {
+    const def = getBlockDef("project_payment_plan")!;
+    expect(blockContentGap(def, { ...def.defaults, development: null })).toMatch(
+      /No project is picked/,
+    );
+    expect(blockContentGap(def, { ...def.defaults, development: "  " })).toMatch(
+      /No project is picked/,
+    );
+    expect(
+      blockContentGap(def, { ...def.defaults, development: "yas-riva" }),
+    ).toBeNull();
+  });
+
+  /**
+   * A photo row is a row with a photo in it. The gallery drops a row still on
+   * its placeholder, so counting it would be the old failure again: a section
+   * the editor sees, the gate passes, and the page doesn't show.
+   */
+  it("counts a photo row only once a picture is chosen", () => {
+    const def = getBlockDef("gallery")!;
+    const row = (media_id: string | null) => ({
+      image: { media_id, alt: "Pool", label: null },
+      caption: "",
+    });
+    expect(blockContentGap(def, { first_images: [row(null)] })).toMatch(
+      /no photos yet/,
+    );
+    expect(blockContentGap(def, { first_images: [row("m-1")] })).toBeNull();
+  });
+
   it("says nothing about a block with no list requirement", () => {
     const def = getBlockDef("cta_band")!;
     expect(blockContentGap(def, def.defaults)).toBeNull();
@@ -89,7 +123,38 @@ describe("what the picker hands an editor", () => {
     const silent = BLOCK_DEFS.filter(
       (def) => blockContentGap(def, def.defaults) !== null,
     ).map((def) => def.key);
-    expect(silent.sort()).toEqual(["feature_scroll", "featured_properties"]);
+    expect(silent.sort()).toEqual(
+      [
+        // Rows only this campaign can supply.
+        "feature_scroll",
+        "featured_properties",
+        "gallery",
+        "stats_band",
+        // Views of one record: nothing to draw until the record is picked.
+        "advisor",
+        "project_facts",
+        "project_location",
+        "project_master_plan",
+        "project_payment_plan",
+        "project_unit_plans",
+      ].sort(),
+    );
+  });
+
+  /**
+   * The Project launch preset is the exception that proves the rule: created
+   * with a project it is visible end to end; created without one, every
+   * project section says so — the page is never silently half-built.
+   */
+  it("assembles a visible Project launch page once a project is chosen", () => {
+    const withProject = contentGaps(
+      resolveDocument(presetBlocks("project_launch", { development: "yas-riva" })),
+    );
+    expect(withProject).toEqual([]);
+
+    const without = contentGaps(resolveDocument(presetBlocks("project_launch")));
+    expect(without.length).toBeGreaterThan(0);
+    for (const gap of without) expect(gap.message).toMatch(/No project is picked/);
   });
 
   it("leaves no preset with an invisible section", () => {
@@ -114,3 +179,40 @@ describe("what the picker hands an editor", () => {
     }
   });
 });
+
+describe("blockCatalogueGap — advisory, never a blocker", () => {
+  const features = {
+    "yas-riva": ["payment_plan", "master_plan", "unit_types", "location"],
+    "al-naseem": ["master_plan", "unit_types", "location"],
+  } as const;
+
+  it("says when a picked project lacks what the section shows", () => {
+    const def = getBlockDef("project_payment_plan")!;
+    expect(
+      blockCatalogueGap(def, { development: "al-naseem" }, features),
+    ).toMatch(/no payment plan yet/);
+    expect(
+      blockCatalogueGap(def, { development: "yas-riva" }, features),
+    ).toBeNull();
+  });
+
+  it("stays quiet with no pick, an unknown project, or a section that needs nothing", () => {
+    const plan = getBlockDef("project_payment_plan")!;
+    expect(blockCatalogueGap(plan, { development: null }, features)).toBeNull();
+    expect(blockCatalogueGap(plan, { development: "gone" }, features)).toBeNull();
+    // Key facts draws from fields every published project must carry.
+    const facts = getBlockDef("project_facts")!;
+    expect(
+      blockCatalogueGap(facts, { development: "al-naseem" }, features),
+    ).toBeNull();
+  });
+
+  it("is not something the publish gate reads", () => {
+    // contentGaps is what the gate reads; a catalogue gap must not reach it.
+    const blocks = resolveDocument([
+      instance("project_payment_plan", { development: "al-naseem" }),
+    ]);
+    expect(contentGaps(blocks)).toEqual([]);
+  });
+});
+

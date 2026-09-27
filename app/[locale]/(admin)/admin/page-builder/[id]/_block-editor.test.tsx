@@ -1,13 +1,13 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { newBlockInstance } from "@/lib/page-builder/catalogue";
+import { getBlockDef, newBlockInstance } from "@/lib/page-builder/catalogue";
 import { heroMedia } from "@/lib/page-builder/blocks/openers";
 import { faq } from "@/lib/page-builder/blocks/content";
 import { ctaBand, formBand } from "@/lib/page-builder/blocks/conversion";
 import { buildFormPreviews } from "@/lib/page-builder/form-preview";
 import { FORM_DEFS, defaultForm } from "@/lib/forms";
 import type { BlockInstance } from "@/lib/page-builder/types";
-import { BlockEditor } from "./_block-editor";
+import { BlockEditor, inheritPick } from "./_block-editor";
 
 /**
  * The section list.
@@ -254,5 +254,96 @@ describe("BlockEditor — form picker preview", () => {
     setupBand({ form_key: null });
     expect(screen.queryByTestId("form-mini-preview")).not.toBeInTheDocument();
     expect(screen.getByText(/Choose a form to see its questions/)).toBeInTheDocument();
+  });
+});
+
+/**
+ * Project sections — the views of one record. A launch page puts four or five
+ * of them on one project, so the editor carries the project forward instead of
+ * asking for it four times, names it on each collapsed row, and says when the
+ * project lacks what a section shows.
+ */
+describe("project sections in the editor", () => {
+  const plan = getBlockDef("project_payment_plan")!;
+  const map = getBlockDef("project_master_plan")!;
+  const seeds = {
+    developments: {
+      options: [
+        {
+          name: "Yas Riva Reserve",
+          href: "/developments/yas-riva",
+          slug: "yas-riva",
+        },
+        { name: "Al Naseem", href: "/developments/al-naseem", slug: "al-naseem" },
+      ],
+      current: [],
+    },
+  };
+
+  function projectBlock(def: typeof plan, development: string | null) {
+    const b = newBlockInstance(def);
+    return { ...b, values: { ...b.values, development } };
+  }
+
+  it("starts a new project section on the project the page already shows", () => {
+    const existing = [
+      newBlockInstance(heroMedia),
+      projectBlock(plan, "yas-riva"),
+      newBlockInstance(faq),
+    ];
+    const next = inheritPick(newBlockInstance(map), map, existing);
+    expect(next.values.development).toBe("yas-riva");
+  });
+
+  it("takes the nearest project above, and leaves other blocks alone", () => {
+    const existing = [projectBlock(plan, "al-naseem"), projectBlock(map, "yas-riva")];
+    expect(inheritPick(newBlockInstance(plan), plan, existing).values.development).toBe(
+      "yas-riva",
+    );
+    // No pick to inherit on a block that isn't a view of a record.
+    const cta = newBlockInstance(ctaBand);
+    expect(inheritPick(cta, ctaBand, existing)).toBe(cta);
+  });
+
+  it("starts blank when nothing on the page names a project", () => {
+    const next = inheritPick(newBlockInstance(map), map, [projectBlock(plan, null)]);
+    expect(next.values.development).toBeNull();
+  });
+
+  it("names the project on the collapsed row", () => {
+    render(
+      <BlockEditor
+        pageId="page-1"
+        initial={[projectBlock(plan, "yas-riva")]}
+        media={[]}
+        seeds={seeds}
+        hasDraft={false}
+        isPublished={false}
+      />,
+    );
+    expect(screen.getByText(/^Yas Riva Reserve · Payment Plan$/)).toBeInTheDocument();
+  });
+
+  it("says when the picked project lacks what the section shows — without blocking", () => {
+    render(
+      <BlockEditor
+        pageId="page-1"
+        initial={[projectBlock(plan, "al-naseem")]}
+        media={[]}
+        seeds={seeds}
+        hasDraft={false}
+        isPublished={false}
+        projectFeatures={{ "al-naseem": ["master_plan", "location"] }}
+      />,
+    );
+    expect(screen.getByText(/has no payment plan yet/)).toBeInTheDocument();
+    // An advisory, not a gap: the header doesn't count it as a missing section.
+    expect(screen.queryByText(/won't appear until filled in/)).not.toBeInTheDocument();
+  });
+
+  it("marks a project section with no project picked", () => {
+    setup([projectBlock(plan, null)]);
+    expect(screen.getByText(/No project is picked/)).toBeInTheDocument();
+    expect(screen.getByText(/1 won't appear until filled in/)).toBeInTheDocument();
   });
 });

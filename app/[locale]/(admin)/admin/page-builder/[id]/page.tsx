@@ -18,6 +18,21 @@ import {
 } from "@/lib/page-builder";
 import { buildFormPreviews } from "@/lib/page-builder/form-preview";
 import type { MediaOption, Seeds } from "../../_fields/types";
+import {
+  agentSeedItem,
+  developmentSeedItem,
+  propertySeedItem,
+} from "../../_fields/record-seeds";
+import { listAgents } from "@/lib/queries/agents";
+import { listAllLandingProjects } from "@/lib/queries/landing-projects";
+import { projectFeaturesOf } from "@/lib/page-builder/content-gap";
+import {
+  PROJECT_FEATURE_LABELS,
+  type ProjectFeature,
+} from "@/lib/page-builder/types";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locales";
+
+const PROJECT_FEATURES = Object.keys(PROJECT_FEATURE_LABELS) as ProjectFeature[];
 import { LandingMetaCard } from "./_meta-card";
 import { getSearchPreviewChrome } from "@/lib/queries/search-appearance";
 import { BlockEditor } from "./_block-editor";
@@ -54,33 +69,62 @@ export default async function LandingEditorPage({ params }: PageProps) {
   if (!page) notFound();
 
   const supabase = await createSupabaseServerClient();
-  const [media, areas, developments, properties, forms, chrome] =
-    await Promise.all([
-      fetchMedia(),
-      listAreasWithCounts(),
-      listPublishedDevelopments(),
-      listPropertyOptions(),
-      listFormsForAdmin(supabase),
-      getSearchPreviewChrome(),
-    ]);
+  const [
+    media,
+    areas,
+    developments,
+    properties,
+    forms,
+    chrome,
+    agents,
+    projects,
+  ] = await Promise.all([
+    fetchMedia(),
+    listAreasWithCounts(),
+    listPublishedDevelopments(),
+    listPropertyOptions(),
+    listFormsForAdmin(supabase),
+    getSearchPreviewChrome(),
+    listAgents(DEFAULT_LOCALE),
+    // What each project can show — read with the same shaper the page uses,
+    // so "this project has no floor plans" here and the missing section there
+    // are one fact. /admin is English-only, hence the explicit locale.
+    listAllLandingProjects({ unitTypes: true, locale: DEFAULT_LOCALE }),
+  ]);
+
+  const projectFeatures: Record<string, ProjectFeature[]> = Object.fromEntries(
+    projects.map((p) => [p.slug, projectFeaturesOf(p)]),
+  );
 
   const areaSeed = areas.map((a) => ({
     name: a.name,
     href: `/areas/${a.slug}`,
     slug: a.slug,
   }));
-  const developmentSeed = developments.map((d) => ({
-    name: d.name,
-    href: `/developments/${d.slug}`,
-    slug: d.slug,
-  }));
-  // A listing is addressed by its reference, not a slug — `slug` is just the
-  // seed's stored-value field, so the reference rides in it.
-  const propertySeed = properties.map((p) => ({
-    name: p.areaName ? `${p.title} · ${p.areaName}` : p.title,
-    href: "#",
-    slug: p.reference,
-  }));
+  // Both carry a `detail` — photo, reference, facts, price — so their pickers
+  // render as the searchable record picker rather than a bare title list. A
+  // project also says what it lacks, so a project section isn't pointed at a
+  // project with nothing to show in it.
+  const developmentSeed = developments.map((d) => {
+    const item = developmentSeedItem(d);
+    const has = projectFeatures[d.slug];
+    const missing = has
+      ? PROJECT_FEATURES.filter((f) => !has.includes(f)).map(
+          (f) => `No ${PROJECT_FEATURE_LABELS[f]}`,
+        )
+      : [];
+    return missing.length > 0 && item.detail
+      ? {
+          ...item,
+          detail: {
+            ...item.detail,
+            facts: [...(item.detail.facts ?? []), ...missing],
+          },
+        }
+      : item;
+  });
+  const propertySeed = properties.map(propertySeedItem);
+  const agentSeed = agents.map(agentSeedItem);
   const formSeed = FORM_DEFS.map((f) => ({
     name: `${f.name} · ${f.surface}`,
     href: f.path,
@@ -98,6 +142,8 @@ export default async function LandingEditorPage({ params }: PageProps) {
       options: [...formSeed].sort((a, b) => a.name.localeCompare(b.name)),
       current: [],
     },
+    // Already in name order — `listAgents` sorts by display name.
+    agents: { options: agentSeed, current: [] },
   };
 
   // The form picker's sketch, drawn from the same resolved forms the landing
@@ -190,6 +236,7 @@ export default async function LandingEditorPage({ params }: PageProps) {
           hasDraft={page.hasDraft}
           isPublished={page.status === "published"}
           formPreviews={formPreviews}
+          projectFeatures={projectFeatures}
         />
 
         <LandingPublishCard

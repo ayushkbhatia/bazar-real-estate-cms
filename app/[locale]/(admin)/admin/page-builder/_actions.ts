@@ -80,6 +80,10 @@ export async function createLandingPage(
     title: typeof raw.title === "string" ? raw.title.trim() : raw.title,
     slug: typeof raw.slug === "string" ? raw.slug.trim().toLowerCase() : raw.slug,
     preset: typeof raw.preset === "string" ? raw.preset : undefined,
+    development:
+      typeof raw.development === "string" && raw.development.trim() !== ""
+        ? raw.development
+        : undefined,
   });
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
@@ -98,7 +102,9 @@ export async function createLandingPage(
   // A new page starts as a draft, so the starting layout lands in
   // `draft_blocks` and `blocks` stays the empty array it defaults to. First
   // publish is what makes the two agree.
-  const blocks = presetBlocks(parsed.data.preset ?? "blank");
+  const blocks = presetBlocks(parsed.data.preset ?? "blank", {
+    development: parsed.data.development,
+  });
 
   const { data, error } = await supabase
     .from("landing_pages")
@@ -134,6 +140,9 @@ export async function createLandingPage(
       slug: data.slug,
       preset: parsed.data.preset ?? "blank",
       blocks: blocks.length,
+      ...(parsed.data.development
+        ? { development: parsed.data.development }
+        : {}),
     },
   });
   revalidatePath("/admin/page-builder");

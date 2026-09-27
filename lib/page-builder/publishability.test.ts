@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { evaluateLandingPublishability } from "./publishability";
+import {
+  evaluateLandingPublishability,
+  landingQueryCost,
+} from "./publishability";
 import { resolveDocument } from "./document";
-import { newBlockInstance } from "./catalogue";
+import { getBlockDef, newBlockInstance } from "./catalogue";
+import { presetBlocks } from "./presets";
 import { heroMedia } from "./blocks/openers";
 import { faq } from "./blocks/content";
 import { ctaBand, formBand } from "./blocks/conversion";
@@ -206,6 +210,60 @@ describe("evaluateLandingPublishability", () => {
     }));
     const result = evaluate([make(heroMedia, { title: "Hero" }), ...rails]);
     expect(has(result.blockers, "catalogue queries")).toBe(false);
+  });
+
+  /**
+   * The shared-fetch rule. Five sections about one project are one read of
+   * that project, and the gate charges what the resolver spends — otherwise a
+   * perfectly cheap launch page would be refused with a number that isn't
+   * true.
+   */
+  it("charges every project section on the page one query between them", () => {
+    const project = (key: string, i: number) => ({
+      ...make(getBlockDef(key)!, { development: "yas-riva" }),
+      id: `${key}-${i}`,
+    });
+    const sections = [
+      "project_facts",
+      "project_payment_plan",
+      "project_master_plan",
+      "project_unit_plans",
+      "project_location",
+    ].map(project);
+    expect(landingQueryCost(resolveDocument(sections))).toBe(1);
+    // Two advisors share a roster read too; partners are charged per block,
+    // like testimonials.
+    expect(
+      landingQueryCost(
+        resolveDocument([
+          ...sections,
+          make(getBlockDef("advisor")!, { agent: "mariam" }),
+          { ...make(getBlockDef("advisor")!, { agent: "omar" }), id: "adv-2" },
+          make(getBlockDef("partners")!),
+        ]),
+      ),
+    ).toBe(3);
+  });
+
+  it("publishes a full project launch page inside the budget", () => {
+    const blocks = presetBlocks("project_launch", {
+      development: "yas-riva",
+    }).map((b) =>
+      b.type === "hero_media"
+        ? { ...b, values: { ...b.values, title: "Yas Riva Reserve" } }
+        : b,
+    );
+    const result = evaluate(blocks);
+    expect(result.blockers).toEqual([]);
+  });
+
+  it("refuses a project section with no project picked", () => {
+    const result = evaluate([
+      ...validPage(),
+      make(getBlockDef("project_master_plan")!),
+    ]);
+    expect(result.ok).toBe(false);
+    expect(has(result.blockers, "Master plan has nothing in it")).toBe(true);
   });
 
   it("never blocks on a missing hero photo", () => {

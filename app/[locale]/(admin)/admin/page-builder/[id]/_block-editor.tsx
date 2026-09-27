@@ -9,6 +9,7 @@ import {
   Copy,
   Eye,
   EyeOff,
+  Info,
   Save,
   Trash2,
   Undo2,
@@ -23,8 +24,15 @@ import {
   mintBlockId,
   newBlockInstance,
 } from "@/lib/page-builder/catalogue";
-import { blockContentGap } from "@/lib/page-builder/content-gap";
-import type { BlockDef, BlockInstance } from "@/lib/page-builder/types";
+import {
+  blockCatalogueGap,
+  blockContentGap,
+} from "@/lib/page-builder/content-gap";
+import type {
+  BlockDef,
+  BlockInstance,
+  ProjectFeature,
+} from "@/lib/page-builder/types";
 import type { FormPreview } from "@/lib/page-builder/form-preview";
 import { FieldEditor } from "../../_fields/field-editor";
 import type { MediaOption, Seeds } from "../../_fields/types";
@@ -54,6 +62,7 @@ export function BlockEditor({
   hasDraft,
   isPublished,
   formPreviews = {},
+  projectFeatures = {},
 }: {
   pageId: string;
   initial: BlockInstance[];
@@ -63,6 +72,11 @@ export function BlockEditor({
   isPublished: boolean;
   /** Keyed by form key — drawn under every form picker. */
   formPreviews?: Record<string, FormPreview>;
+  /**
+   * What each published project can show, keyed by slug — so a project
+   * section pointed at a project with no payment plan can say so on its row.
+   */
+  projectFeatures?: Readonly<Record<string, readonly ProjectFeature[]>>;
 }) {
   const router = useRouter();
   const [media, setMedia] = useState(initialMedia);
@@ -91,7 +105,7 @@ export function BlockEditor({
   }
 
   function add(def: BlockDef) {
-    const instance = newBlockInstance(def);
+    const instance = inheritPick(newBlockInstance(def), def, blocks);
     update([...blocks, instance]);
     setOpen(instance.id);
   }
@@ -229,6 +243,7 @@ export function BlockEditor({
               media={media}
               seeds={seeds}
               formPreviews={formPreviews}
+              projectFeatures={projectFeatures}
               onToggleExpand={() => setOpen(open === block.id ? null : block.id)}
               onToggleEnabled={() => patch(block.id, { enabled: !block.enabled })}
               onValues={(values) => patch(block.id, { values })}
@@ -254,6 +269,7 @@ function BlockRow({
   media,
   seeds,
   formPreviews,
+  projectFeatures,
   onToggleExpand,
   onToggleEnabled,
   onValues,
@@ -269,6 +285,7 @@ function BlockRow({
   media: MediaOption[];
   seeds: Seeds;
   formPreviews: Record<string, FormPreview>;
+  projectFeatures: Readonly<Record<string, readonly ProjectFeature[]>>;
   onToggleExpand: () => void;
   onToggleEnabled: () => void;
   onValues: (v: SectionValues) => void;
@@ -283,6 +300,16 @@ function BlockRow({
   // expander, because the whole failure is that an unopened section looks fine.
   const gap =
     def && block.enabled ? blockContentGap(def, block.values) : null;
+  // Softer: the pick is made, but the record lacks what this section shows.
+  // Advisory — the gate never refuses on it (see content-gap.ts).
+  const advisory =
+    def && block.enabled && !gap
+      ? blockCatalogueGap(def, block.values, projectFeatures)
+      : null;
+  // The record a view-of-one-record section shows, by name, so three project
+  // sections on one page read as "Yas Riva Reserve" rather than three
+  // identical headings.
+  const pickedName = def ? pickedRecordName(def, block.values, seeds) : null;
 
   // A block this build doesn't recognise. It is kept, not dropped — its copy
   // exists nowhere else — but there is no field editor to render for it, so the
@@ -324,7 +351,8 @@ function BlockRow({
         >
           <span className="text-[13.5px] font-medium">{def.label}</span>
           <span className="block text-[11.5px] text-bz-muted truncate">
-            {summarise(block.values) ?? def.description}
+            {[pickedName, summarise(block.values)].filter(Boolean).join(" · ") ||
+              def.description}
           </span>
         </button>
 
@@ -365,6 +393,11 @@ function BlockRow({
         <p className="mx-3 mb-2.5 rounded border border-[oklch(0.85_0.09_75)] bg-[oklch(0.97_0.03_85)] px-2.5 py-2 text-[11.5px] text-[oklch(0.42_0.09_60)] flex items-start gap-1.5">
           <AlertTriangle size={12} strokeWidth={1.8} className="mt-0.5 shrink-0" />
           {gap}
+        </p>
+      ) : advisory ? (
+        <p className="mx-3 mb-2.5 rounded bg-bz-surface-2 px-2.5 py-2 text-[11.5px] text-bz-muted flex items-start gap-1.5">
+          <Info size={12} strokeWidth={1.8} className="mt-0.5 shrink-0" />
+          {advisory}
         </p>
       ) : null}
 
@@ -498,6 +531,56 @@ function IconButton({
       {children}
     </button>
   );
+}
+
+/** The picked record's name, for a section that is a view of one record. */
+function pickedRecordName(
+  def: BlockDef,
+  values: SectionValues,
+  seeds: Seeds,
+): string | null {
+  const key = def.pickRequired?.key;
+  if (!key) return null;
+  const value = values[key];
+  if (typeof value !== "string" || value === "") return null;
+  const field = def.fields.find((f) => f.key === key);
+  const source =
+    field && isSelectField(field) && field.optionsKey
+      ? seeds[field.optionsKey]
+      : undefined;
+  return source?.options.find((o) => o.slug === value)?.name ?? value;
+}
+
+/**
+ * A new section that is a view of one record starts on the record the page
+ * already shows.
+ *
+ * A campaign page is almost always about one project: its payment plan, its
+ * master plan, its floor plans, its map. Asking for the project again on each
+ * of those is four chances to pick the wrong one of two similarly named
+ * launches, so the new section takes the pick from the nearest section above
+ * that has one. It is an ordinary value — change it and nothing else moves.
+ *
+ * Exported for its test.
+ */
+export function inheritPick(
+  instance: BlockInstance,
+  def: BlockDef,
+  existing: BlockInstance[],
+): BlockInstance {
+  const key = def.pickRequired?.key;
+  if (!key) return instance;
+  const current = instance.values[key];
+  if (typeof current === "string" && current !== "") return instance;
+  for (let i = existing.length - 1; i >= 0; i--) {
+    const other = existing[i]!;
+    if (getBlockDef(other.type)?.pickRequired?.key !== key) continue;
+    const value = other.values[key];
+    if (typeof value === "string" && value !== "") {
+      return { ...instance, values: { ...instance.values, [key]: value } };
+    }
+  }
+  return instance;
 }
 
 /** First bit of real copy in the block, so a collapsed row is identifiable. */

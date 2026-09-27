@@ -86,7 +86,7 @@ export default async function LandingPage({ params }: PageProps) {
   const blocks = resolveDocument(page.blocks, locale);
   // One media query for every picked image on the page, whatever the depth.
   await attachImageUrls(blocks);
-  const data = await loadLandingData(blocks);
+  const data = await loadLandingData(blocks, locale);
 
   return <LandingRenderer blocks={blocks} data={data} />;
 }

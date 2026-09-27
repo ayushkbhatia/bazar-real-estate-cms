@@ -3,6 +3,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseDeep } from "@/lib/i18n/localise";
+import type { Locale } from "@/lib/i18n/locales";
 import { mediaPublicUrl } from "@/lib/media";
 import {
   MAX_PLANS_SHOWN,
@@ -128,11 +129,26 @@ export async function listUnitTypesForPage(
     return [];
   }
 
+  return shapeUnitTypesForPage(data, await currentLocale());
+}
+
+/**
+ * The public shape, from raw `development_unit_types` rows with their `plans`
+ * embedded. Split out of `listUnitTypesForPage` so the page builder, which
+ * reads the same rows embedded under several projects at once, draws exactly
+ * what a project page draws: the same trim to four layouts, the same dropped
+ * empty types, the same trashed-media fallback.
+ */
+export function shapeUnitTypesForPage(
+  rows: unknown,
+  locale: Locale,
+): UnitTypeCard[] {
+  if (!Array.isArray(rows)) return [];
   // Folded on the raw rows, before the shape below builds explicit literals.
   // localiseDeep reaches the nested `plans` too, so a floor plan's twins are
   // resolved without this function knowing they exist.
-  const locale = await currentLocale();
-  return localiseDeep(data as unknown as RawType[], locale)
+  return localiseDeep(rows as RawType[], locale)
+    .filter((t) => t.enabled !== false)
     .sort(bySortOrder)
     .map((t) => ({
       id: t.id,

@@ -27,6 +27,13 @@ import type { CategoryTile } from "@/app/[locale]/(public)/_components/marketing
 import type { PropType } from "@/app/[locale]/(public)/_components/marketing/prop-type-grid";
 import type { FeatureRowItem } from "@/app/[locale]/(public)/_components/marketing/feature-rows";
 import type { CtaVariant } from "@/app/[locale]/(public)/_components/marketing/cta-band";
+import type { CalculatorUnit } from "@/app/[locale]/(public)/developments/[slug]/_payment-plan";
+import type { RenderTile } from "@/app/[locale]/(public)/developments/[slug]/_components/renders-gallery";
+import type { ProjectFactsBandProps } from "@/app/[locale]/(public)/_components/marketing/project-facts-band";
+import type { LandingProject } from "@/lib/queries/landing-projects";
+import type { ProjectAdvisor } from "@/lib/queries/development-content";
+import { handoverQuarter } from "@/lib/developments/handover";
+import { isolateAuto } from "@/lib/i18n/bidi";
 import type { LandingData } from "./data";
 
 type Item = Record<string, string | boolean | null | ImageValue>;
@@ -330,5 +337,307 @@ export function testimonialsProps(values: SectionValues, data: LandingData) {
     eyebrow: str(values, "eyebrow"),
     heading: str(values, "heading"),
     items: data.testimonials.slice(0, limit),
+  };
+}
+
+export function partnersProps(values: SectionValues, data: LandingData) {
+  return {
+    eyebrow: str(values, "eyebrow"),
+    heading: str(values, "heading"),
+    body: str(values, "body"),
+    ctaLabel: str(values, "cta_label"),
+    // Empty only when the loader could not run at all; the component then
+    // falls back to the catalogue that ships in code, as it does on /about.
+    partners: data.partners.length > 0 ? data.partners : undefined,
+  };
+}
+
+// ── project sections ─────────────────────────────────────────────────────
+//
+// Each returns null when there is nothing to draw — no project picked, the
+// project unpublished since, or the record missing the one thing the section
+// is about (a payment plan, a site plan, a map pin). The renderer drops the
+// block on null, so a heading never sits over an empty band.
+
+function projectOf(
+  values: SectionValues,
+  data: LandingData,
+): LandingProject | null {
+  const slug = str(values, "development");
+  return slug ? (data.projectsBySlug.get(slug) ?? null) : null;
+}
+
+/**
+ * The facts a project page lists in its overview, in its order. A key absent
+ * from this list is never rendered — it is the whitelist as well as the order,
+ * which is what stops a stray `facts` entry appearing unlabelled.
+ */
+export const PROJECT_FACT_KEYS = [
+  "architecture",
+  "landscape",
+  "total_area_ft2",
+  "lagoon_area_ft2",
+  "density",
+  "rera_escrow",
+  "service_charge_estimate",
+  "tenure",
+] as const;
+
+export function projectFactsProps(
+  values: SectionValues,
+  data: LandingData,
+): ProjectFactsBandProps | null {
+  const p = projectOf(values, data);
+  if (!p) return null;
+  const facts = PROJECT_FACT_KEYS.flatMap((key) => {
+    const value = p.facts[key];
+    return value ? [{ key, value }] : [];
+  });
+  return {
+    eyebrow: str(values, "eyebrow"),
+    heading: str(values, "heading") ?? p.name,
+    intro: str(values, "intro") ?? p.description ?? p.vision,
+    startingPrice: p.startingPrice,
+    bedrooms: p.bedroomsText,
+    totalUnits: p.totalUnits,
+    handover: handoverQuarter(p.handoverDate),
+    // "60/40 Payment Plan" → "60/40", the same cut the project hero makes: the
+    // ratio is the figure, and it reads the same in both languages.
+    paymentPlan: p.paymentPlan?.name.split(" ")[0] ?? null,
+    facts,
+  };
+}
+
+/**
+ * What the calculator can price: the units on sale, or — for the many projects
+ * that publish a plan but no inventory — the starting price, labelled as the
+ * floor rather than as a unit. The same rule the project page applies.
+ */
+export function calculatorUnitsFor(p: LandingProject): CalculatorUnit[] {
+  if (p.units.length > 0) {
+    return p.units.map((u) => ({
+      id: u.id,
+      price_aed: u.priceAed ?? p.startingPrice ?? 0,
+      unitType: u.unitType,
+      beds: u.beds,
+      builtUpFt2: u.builtUpFt2,
+      isStartingPrice: false,
+    }));
+  }
+  return p.startingPrice
+    ? [
+        {
+          id: "starting-price",
+          price_aed: p.startingPrice,
+          unitType: null,
+          beds: null,
+          builtUpFt2: null,
+          isStartingPrice: true,
+        },
+      ]
+    : [];
+}
+
+export function projectPaymentPlanProps(
+  values: SectionValues,
+  data: LandingData,
+) {
+  const p = projectOf(values, data);
+  if (!p?.paymentPlan) return null;
+  return {
+    plan: p.paymentPlan,
+    // Blank keeps the component's own "Payment plan · <plan name>", which is
+    // translated and names the plan — better than any fixed default.
+    eyebrow: str(values, "eyebrow"),
+    heading: str(values, "heading") ?? p.paymentPlan.name,
+    intro: str(values, "intro"),
+    developmentName: p.name,
+    units: calculatorUnitsFor(p),
+  };
+}
+
+export function projectMasterPlanProps(
+  values: SectionValues,
+  data: LandingData,
+) {
+  const p = projectOf(values, data);
+  if (!p?.masterplan) return null;
+  const heading = str(values, "heading");
+  return {
+    eyebrow: str(values, "eyebrow"),
+    heading,
+    intro: str(values, "intro"),
+    image: {
+      url: p.masterplan.url,
+      alt: p.masterplan.alt ?? [p.name, heading].filter(Boolean).join(" · "),
+    },
+    pins: p.masterPlanPins,
+  };
+}
+
+export function projectUnitPlansProps(
+  values: SectionValues,
+  data: LandingData,
+) {
+  const p = projectOf(values, data);
+  // No placeholder types here, unlike the project page: a campaign is not the
+  // place to show drawings that don't exist yet.
+  if (!p || p.unitTypes.length === 0) return null;
+  return {
+    types: p.unitTypes,
+    developmentName: p.name,
+    developmentSlug: p.slug,
+    gated: p.floorplanGated,
+    eyebrow: str(values, "eyebrow"),
+    heading: str(values, "heading"),
+    intro: str(values, "intro"),
+  };
+}
+
+export function projectLocationProps(
+  values: SectionValues,
+  data: LandingData,
+) {
+  const p = projectOf(values, data);
+  if (!p?.coords) return null;
+  return {
+    eyebrow: str(values, "eyebrow"),
+    heading: str(values, "heading"),
+    intro: str(values, "intro"),
+    lat: p.coords.lat,
+    lng: p.coords.lng,
+    title: p.name,
+  };
+}
+
+// ── advisor ──────────────────────────────────────────────────────────────
+
+const ARABIC_SCRIPT = /[؀-ۿ]/;
+
+/**
+ * `{advisor}` / `{advisor_first}` → the advisor's name.
+ *
+ * Isolated when the sentence around it is Arabic, so a Latin name does not
+ * drag the punctuation after it to the wrong side — the rule the project
+ * pages' own advisor band follows. Never isolated in the WhatsApp message:
+ * the marks are invisible on a page and pointless percent-encoded into the
+ * draft the visitor sends.
+ */
+function fillAdvisor(
+  template: string | null,
+  name: string,
+  first: string,
+  isolate: boolean,
+): string | null {
+  if (template === null) return null;
+  const wrap = (s: string) =>
+    isolate && ARABIC_SCRIPT.test(template) ? isolateAuto(s) : s;
+  return template
+    .replaceAll("{advisor_first}", wrap(first))
+    .replaceAll("{advisor}", wrap(name));
+}
+
+export function advisorProps(values: SectionValues, data: LandingData) {
+  const slug = str(values, "agent");
+  const a = slug ? data.advisorsBySlug.get(slug) : undefined;
+  // Not on the roster any more — suspended, left, or never publishable. There
+  // is no substitute for a person, so the card goes.
+  if (!a) return null;
+  const first = a.display_name.split(" ")[0] ?? a.display_name;
+  const fill = (key: string, isolate = true) =>
+    fillAdvisor(str(values, key), a.display_name, first, isolate);
+  const agent: ProjectAdvisor = {
+    user_id: a.user_id,
+    slug: a.slug,
+    display_name: a.display_name,
+    title: a.title,
+    brn: a.brn,
+    bio: a.bio,
+    photo_url: a.photo_url,
+    email: a.email,
+    phone: a.phone,
+    whatsapp: a.whatsapp,
+  };
+  return {
+    agent,
+    // Only the fallback message reads it, and the message is always set.
+    developmentName: "",
+    // "" rather than null for the two the component would otherwise fill with
+    // English of its own ("Lead advisor", a generic greeting).
+    eyebrow: fill("eyebrow") ?? "",
+    heading: fill("heading"),
+    intro: fill("intro"),
+    quote: fill("quote"),
+    callLabel: fill("call_label"),
+    visitLabel: fill("visit_label"),
+    visitMessage: fill("visit_message", false) ?? `${first}`,
+  };
+}
+
+// ── new content ──────────────────────────────────────────────────────────
+
+/** Photo rows that actually hold a photo; a blank row draws nothing. */
+function galleryTiles(values: SectionValues, key: string): RenderTile[] {
+  return list<Item>(values, key).flatMap((item) => {
+    const image = itemImage(item);
+    if (!image?.url) return [];
+    return [
+      {
+        url: image.url,
+        alt: image.alt ?? null,
+        caption: text(item, "caption") || null,
+      },
+    ];
+  });
+}
+
+export function galleryProps(values: SectionValues) {
+  const first = galleryTiles(values, "first_images");
+  // The second set sits beside the first; on its own it has nothing to sit
+  // beside, and the gate's "has photos" check reads the first set only.
+  const second = first.length > 0 ? galleryTiles(values, "second_images") : [];
+  return {
+    eyebrow: str(values, "eyebrow"),
+    heading: str(values, "heading"),
+    intro: str(values, "intro"),
+    interiorHeading: str(values, "first_heading"),
+    exteriorHeading: str(values, "second_heading"),
+    interior: first,
+    exterior: second,
+  };
+}
+
+export function valueGridProps(values: SectionValues) {
+  const raw = Number.parseInt(str(values, "cols") ?? "4", 10);
+  const cols: 2 | 3 | 4 = raw === 2 ? 2 : raw === 3 ? 3 : 4;
+  const items = list<Item>(values, "items")
+    .filter((item) => named(item, "name"))
+    .map((item) => ({ name: text(item, "name"), desc: text(item, "desc") }));
+  return {
+    eyebrow: str(values, "eyebrow"),
+    title: str(values, "title"),
+    sub: str(values, "sub"),
+    cols,
+    items,
+  };
+}
+
+export function statsBandProps(values: SectionValues) {
+  return {
+    heading: str(values, "heading"),
+    intro: str(values, "intro"),
+    stats: list<Item>(values, "stats")
+      .filter((item) => named(item, "value"))
+      .map((item) => ({ value: text(item, "value"), label: text(item, "label") })),
+    footnote: str(values, "footnote"),
+  };
+}
+
+export function mortgageCalculatorProps(values: SectionValues) {
+  return {
+    // `undefined`, not null: the component's own defaults are destructuring
+    // defaults, which a null would bypass and render blank.
+    eyebrow: str(values, "eyebrow") ?? undefined,
+    heading: str(values, "heading") ?? undefined,
   };
 }

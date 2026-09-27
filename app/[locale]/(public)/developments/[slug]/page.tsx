@@ -36,6 +36,7 @@ import { DevelopmentFaq } from "./_components/development-faq";
 import { DeveloperProjectsStrip } from "./_components/developer-projects-strip";
 import { NearbyDevelopments } from "./_components/nearby-developments";
 import { FeatureBlocks } from "./_components/feature-blocks";
+import { MasterPlanFigure } from "./_components/master-plan-figure";
 import { FloorplanGate } from "./_components/floorplan-gate";
 import { RendersGallery, type RenderTile } from "./_components/renders-gallery";
 import { UnitFloorPlans } from "./_components/unit-floor-plans";
@@ -486,40 +487,20 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             {sv("master-plan", "intro")}
           </p>
         ) : null}
-        <div className="relative mt-6 rounded-lg overflow-hidden aspect-[21/9] bg-bz-surface-2">
-          {masterplanMedia ? (
-            <Image
-              src={mediaPublicUrl(masterplanMedia.storage_key)}
-              alt={masterplanMedia.alt_text ?? `${development.name} masterplan`}
-              fill
-              sizes="100vw"
-              className="object-cover"
-            />
-          ) : (
-            <PlaceholderImage
-              label={`${development.slug} · masterplan`}
-              className="absolute inset-0 w-full h-full"
-            />
-          )}
-          {(development.master_plan.pins ?? []).map((pin) => (
-            <div
-              key={pin.key}
-              className="absolute"
-              style={{
-                left: `${pin.x}%`,
-                top: `${pin.y}%`,
-                transform: "translate(-50%, -50%)",
-              }}
-            >
-              <div className="w-9 h-9 rounded-full bg-bz-accent text-white flex items-center justify-center text-[15px] font-semibold serif shadow-[0_4px_12px_rgba(0,0,0,.3)]">
-                {pin.key}
-              </div>
-              <div className="absolute start-11 top-1.5 whitespace-nowrap bg-white/95 px-2.5 py-1 rounded text-[11px] font-medium text-bz-ink">
-                {pin.label}
-              </div>
-            </div>
-          ))}
-        </div>
+        <MasterPlanFigure
+          image={
+            masterplanMedia
+              ? {
+                  url: mediaPublicUrl(masterplanMedia.storage_key),
+                  alt:
+                    masterplanMedia.alt_text ??
+                    `${development.name} masterplan`,
+                }
+              : null
+          }
+          placeholderLabel={`${development.slug} · masterplan`}
+          pins={development.master_plan.pins ?? []}
+        />
       </section>
     ),
     "payment-plan": development.payment_plan ? (

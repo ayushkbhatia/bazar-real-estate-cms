@@ -10,9 +10,10 @@ The front end already contains ~40 designed, mobile-audited section components.
 The gap was never design — it was that none of them were reachable from a CMS
 surface a non-engineer could compose. So the catalogue is a **curation of
 existing sections**, not a design surface: every entry renders through a
-component already shipping on `/`, `/buy`, `/rent`, `/services/*` or
-`/developments/[slug]`. That is what makes "mobile-optimised out of the box" a
-structural property rather than a promise repeated per block.
+component already shipping on `/`, `/buy`, `/rent`, `/about`, `/services/*`,
+`/areas/[slug]` or `/developments/[slug]`. That is what makes
+"mobile-optimised out of the box" a structural property rather than a promise
+repeated per block.
 
 ## Where it sits among the content systems
 
@@ -53,6 +54,60 @@ and `Number.parseInt("all") || 3` silently meant three.
 If you add a second shared section, it goes in the library and follows this
 shape. Do not copy shared copy into `defaults`.
 
+`partners` is the second: the banking and regulatory logos from
+`/admin/pages/sub/section/partners`, read with the cached `getPartners` — the
+same list the home page and /about carry. Its words start as
+`PARTNER_BAND_DEFAULTS`, the band's shipped wording.
+
+## Project sections
+
+The `project` group is a project's own page, taken apart: **Key facts**
+(`ProjectFactsBand`), **Payment plan** (`PaymentPlanSection`, calculator and PDF
+included), **Master plan** (`MasterPlanFigure`, the site plan with its pins),
+**Floor plans** (`UnitFloorPlans`, with the project's own layout gate) and
+**Location map** (`MapEmbed`). Each block names a project (`values.development`)
+and draws *that project's* section through the component
+`/developments/[slug]` uses, so a campaign never retypes a payment schedule
+that then drifts from the record. What the editor owns is the framing —
+eyebrow, heading, standfirst — and those default to the wording every project
+page publishes (`lib/master-pages/development-page.ts`).
+
+Four rules hold them together:
+
+- **One read for all of them.** `lib/queries/landing-projects.ts` reads every
+  project the page names in one PostgREST call, embedding the unit inventory
+  and the unit types only when a section on the page draws them. The blocks
+  declare `sharedQuery: "projects"`, and the gate charges a shared query
+  **once per page** — five project sections cost one query, which is what the
+  resolver spends. `queryCost` stays per block for list-shaped inventory.
+- **No pick, no section.** `pickRequired` is the single-record twin of
+  `rowsRequired`: a project section with no project draws nothing, and the
+  editor row and the gate both say so. The advisor card uses it too.
+- **Missing data is advisory.** A picked project with no payment plan (or site
+  plan, layouts, map pin) renders nothing for that section — a catalogue
+  state, like an unpublished pick, so the gate never refuses on it. The editor
+  says so on the row (`blockCatalogueGap`), from `projectFeaturesOf`, which
+  applies the same tests the adapters do; `project-sections.test.ts` holds the
+  two to each other.
+- **Pick the project once.** A new project section starts on the project the
+  page already shows (`inheritPick`), and the **Project launch** preset asks
+  for the project at creation and writes it into every project section.
+
+The master plan figure was lifted out of the project page rather than copied,
+so the two cannot drift; the project page's own band around it is unchanged.
+
+## Record pickers in the editor
+
+A select whose `optionsKey` seeds carry a `detail` renders as `RecordPicker`
+(`_fields/record-picker.tsx`) instead of a native `<select>`: photo, the mono
+reference line, the facts that tell two records apart (beds, baths, size), the
+price, and a sale/rent chip — with a search box that matches every word of the
+query against all of it, and a list that refuses the same listing twice. The
+seeds are built by `_fields/record-seeds.ts`, shared with the home page's
+featured-row editor. It exists because a title is not an identifier here:
+three live listings are called "Yas Riva Reserve", all on Yas Island. Seeds
+without a `detail` (forms, areas) keep the plain select.
+
 ## Files
 
 ```
@@ -60,18 +115,24 @@ lib/page-builder/
   types.ts            BlockDef · BlockInstance · ResolvedBlock · budgets · slug rules
   catalogue.ts        BLOCK_DEFS · getBlockDef · newBlockInstance · mintBlockId
   blocks/             the block definitions, grouped as the picker shows them
-  presets.ts          3 starting layouts (+ Blank)
+                      (project.ts: the five project sections)
+  presets.ts          4 starting layouts (+ Blank)
   document.ts         parse · resolve · validate — and the data-loss rules
   data.ts             collectDataRequest (pure) · resolveLandingData (batched)
   adapters.ts         values → component props, one pure fn per block
   publishability.ts   evaluateLandingPublishability — pure, 11 blockers
-  content-gap.ts      which sections would render nothing — editor + gate
+                      · landingQueryCost
+  content-gap.ts      which sections would render nothing — editor + gate;
+                      what a picked project lacks — editor only
 
 lib/queries/landing-pages.ts     public + admin reads
+lib/queries/landing-projects.ts  every project section's data, one read
 lib/schemas/landing-page.ts      metadata zod + slug rules
 
 app/[locale]/(admin)/admin/_fields/       FieldEditor / ImagePicker / UploadButton
                                  (extracted from the master-page editor; shared)
+                                 · RecordPicker + record-seeds (listing,
+                                 project and advisor pickers)
 app/[locale]/(admin)/admin/page-builder/  list · new · editor · preview · actions
 app/[locale]/(public)/lp/[slug]/          ISR route + the renderer switch
 
@@ -114,6 +175,11 @@ Ceiling: **≤ 8 round-trips for any page**, asserted in `data.test.ts`. An esli
 `no-restricted-imports` rule stops `_render.tsx` and `adapters.ts` importing
 query modules, `next/headers` or the cookie-aware Supabase client at all.
 
+That rule's glob names the route as `app/*/(public)/lp/**`. It used to read
+`app/(public)/lp/**`, and when the public tree moved under `app/[locale]/` it
+matched nothing — the renderer could import a query module with no error. A
+`[locale]` in a glob is a character class, so the segment has to be a `*`.
+
 ### 3. Saving is not publishing
 
 `saveLandingBlocks` writes `draft_blocks` and never `blocks`. Everywhere else in
@@ -146,8 +212,10 @@ Every media reference must be the `ImageValue` shape `{media_id, alt, label}` �
   section's runaway grid track can't make the page scroll sideways.
 - `next/image` always `fill` + explicit `sizes` — `media_assets.width/height`
   are never written by any upload path.
-- Four new components exist (`feature-rows`, `prose-band`, `cta-band`,
-  `image-band`); everything else was already audited.
+- Five new components exist (`feature-rows`, `prose-band`, `cta-band`,
+  `image-band`, `project-facts-band`), and one was lifted out of the project
+  page rather than written (`master-plan-figure`); everything else was
+  already audited.
 
 ### 6. A block must be visible the moment it is added
 
@@ -181,8 +249,13 @@ went off-market, which is the same rule pick resolution already follows.
 3. Add a case in `app/[locale]/(public)/lp/[slug]/_render.tsx` **and** its key to
    `RENDERED_KEYS`. `catalogue.test.ts` fails if the two disagree.
 4. If it needs data, declare `needs` + `queryCost` and teach `data.ts` how to
-   fetch it — in the batch, never in the component.
-5. `render.test.tsx` picks it up automatically and asserts it produces DOM.
+   fetch it — in the batch, never in the component. If it reads a fetch other
+   blocks share (a project, an advisor), declare `sharedQuery` instead of
+   `queryCost`.
+5. If it is a view of one record, declare `pickRequired` — and have the
+   adapter return null when the pick doesn't resolve.
+6. Add its key to the newest `KNOWN_TYPES_V*` list in `catalogue.test.ts`.
+7. `render.test.tsx` picks it up automatically and asserts it produces DOM.
 
 ## The publish gate
 
@@ -193,6 +266,10 @@ Title · slug valid and unreserved · at least one renderable section · no
 unavailable sections · required copy filled · exactly one H1 · alt text on every
 picked photo · every form still live in `/admin/forms` · every link resolvable ·
 within the query budget · no section that would render nothing.
+
+The budget is `landingQueryCost`: each block's `queryCost`, plus one for each
+distinct `sharedQuery` on the page. A full Project launch page — five project
+sections — costs one.
 
 Two advisory-only checks (hero present, search visibility decided) and two
 deliberate non-checks: **contrast** is unreachable because every colour is a
@@ -210,8 +287,11 @@ resolve — the same rule `lib/master-pages/index.ts:253` states.
 | `publishability.test.ts` | one case per blocker |
 | `content-gap.test.ts` | **the visibility guard** — no preset assembles an invisible section, and an emptied list is reported |
 | `adapters.test.ts` | untouched defaults produce the component's own behaviour |
-| `render.test.tsx` | every block produces DOM; each preset has exactly one H1 |
-| `_block-editor.test.tsx` | reorder, duplicate, hide, unknown-block card, 44px targets |
+| `project-sections.test.ts` | project/advisor adapters; the editor's "project has no …" note and the missing section are one fact |
+| `render.test.tsx` | every block produces DOM; each preset has exactly one H1; `pickRequired` blocks draw nothing unpicked |
+| `_block-editor.test.tsx` | reorder, duplicate, hide, unknown-block card, 44px targets, inherited project picks |
+| `_fields/record-picker.test.tsx` | the listing picker shows what tells same-titled listings apart, searches it, refuses duplicates |
+| `lib/queries/landing-projects.test.ts` | one select, embeds only on request, Arabic folds — except the payment plan, which must not |
 | `lib/queries/landing-pages.test.ts` | public select never names `draft_blocks`; every action names a role constant |
 
 E2E (`e2e/page-builder.spec.ts`) names **no slug** — a campaign page is designed

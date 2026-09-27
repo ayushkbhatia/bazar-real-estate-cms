@@ -31,6 +31,23 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [infra] Every DOM spec fails locally under Node 26 — `window.localStorage`
+  is undefined. Node 25+ ships its own `localStorage` global (empty without
+  `--localstorage-file`), and jsdom's never replaces it, so
+  `PreferencesProvider` (`lib/preferences/provider.tsx`, `readClientPrefs`)
+  throws on the first render of anything under it. CI pins Node 20 and is
+  unaffected; the same run under `/usr/local/bin/node` (v24) passes. Likely
+  most of the "~52–60 environmental failures" seen locally. Done looks like:
+  an `.nvmrc`/`engines` pin, or `--no-experimental-webstorage` in the vitest
+  pool's `execArgv`, or a guard in `readClientPrefs`.
+
+- [developments] The units table's "Reserve" button does nothing.
+  `app/[locale]/(public)/developments/[slug]/_units-table.tsx` renders a
+  primary button per available unit with no handler and no link — a dead CTA
+  on every project page with inventory (none today; 0 unit rows in prod). It
+  is also why the table is not a Page Builder section. Done looks like: it
+  opens the project's interest dialog with the unit named, or it goes.
+
 - [cms] A field's `help` never shows when the field has a `max`.
   `FieldLabel` (`app/[locale]/(admin)/admin/_fields/field-editor.tsx`) draws
   the character counter OR the help, never both, and nearly every text field
