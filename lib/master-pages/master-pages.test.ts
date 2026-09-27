@@ -26,6 +26,7 @@ describe("registry", () => {
       "rent",
       "commercial",
       "off-plan",
+      "launches",
       "areas",
       "developers",
       "partners",

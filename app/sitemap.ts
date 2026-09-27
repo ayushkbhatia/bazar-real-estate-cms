@@ -24,6 +24,8 @@ const STATIC_ROUTES: {
   { path: "/buy", changeFrequency: "hourly", priority: 0.9 },
   { path: "/rent", changeFrequency: "hourly", priority: 0.8 },
   { path: "/off-plan", changeFrequency: "weekly", priority: 0.7 },
+  // Every published project in one grid — the rail's "view every launch".
+  { path: "/off-plan/launches", changeFrequency: "weekly", priority: 0.7 },
   { path: "/commercial", changeFrequency: "weekly", priority: 0.6 },
   { path: "/developments", changeFrequency: "weekly", priority: 0.7 },
   { path: "/buy/ready", changeFrequency: "weekly", priority: 0.7 },

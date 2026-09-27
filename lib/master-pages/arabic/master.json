@@ -2589,6 +2589,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:46:01.783Z"
   },
+  "All Launches · Off-plan Projects in Abu Dhabi": {
+    "ar": "جميع المشاريع على الخارطة في أبوظبي",
+    "by": "human",
+    "at": "2026-09-27T00:00:00.000Z"
+  },
   "All developers": {
     "ar": "جميع المطورين",
     "by": "machine",
@@ -6010,6 +6015,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:50:29.646Z"
+  },
+  "Every off-plan project published in Abu Dhabi, on one page — compare starting prices, bedroom mixes and handover dates, then open a project for its payment plan.": {
+    "ar": "جميع المشاريع على الخارطة المطروحة في أبوظبي في صفحة واحدة — قارن الأسعار الابتدائية وتوزيع غرف النوم ومواعيد التسليم، ثم استعرض أي مشروع للاطلاع على خطة السداد.",
+    "by": "human",
+    "at": "2026-09-27T00:00:00.000Z"
   },
   "Every other broker pitched me the buildings their developer was paying them most for. Bazar walked me through five projects, told me which two were worth my attention, and rejected the other three on principle. I trust them now.": {
     "ar": "كل وسيط آخر كان يعرض عليّ المباني التي يدفع مطوّرها أعلى عمولة. أما بازار فاستعرض معي خمسة مشاريع، وأخبرني أيّ مشروعين يستحقان اهتمامي، ورفض الثلاثة الباقية من حيث المبدأ. أثق بهم الآن.",

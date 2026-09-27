@@ -65,6 +65,13 @@ export const MASTER_PAGE_SEO_DEFAULTS: Record<
     description:
       "Explore the latest off-plan developments across Abu Dhabi's top communities — from waterfront apartments to branded residences.",
   },
+  // New with its page, so there was no route literal to carry over. The
+  // Arabic of both halves is in lib/master-pages/arabic/master.json, by hand.
+  launches: {
+    title: "All Launches · Off-plan Projects in Abu Dhabi",
+    description:
+      "Every off-plan project published in Abu Dhabi, on one page — compare starting prices, bedroom mixes and handover dates, then open a project for its payment plan.",
+  },
   areas: {
     title: "Areas in Abu Dhabi",
     description:

@@ -35,6 +35,7 @@ import { SERVICES_PAGE } from "./sections/services";
 import { INSIGHTS_PAGE } from "./sections/insights";
 import { ABOUT_PAGE } from "./sections/about";
 import { AGENTS_PAGE } from "./sections/agents";
+import { LAUNCHES_PAGE } from "./sections/launches";
 import { PARTNER_BAND_DEFAULTS } from "./sections/partner-band";
 import { CONTACT_PAGE } from "./sections/contact";
 import { SELL_PAGE } from "./sections/sell";
@@ -1665,6 +1666,8 @@ export const MASTER_PAGES: MasterPageDef[] = [
   RENT,
   COMMERCIAL,
   OFF_PLAN,
+  // Beside New projects, whose rail links to it.
+  LAUNCHES_PAGE,
   AREAS,
   DEVELOPERS_PAGE,
   PARTNERS_PAGE,

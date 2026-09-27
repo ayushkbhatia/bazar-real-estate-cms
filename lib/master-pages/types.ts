@@ -281,6 +281,9 @@ export type MasterPageKey =
   | "rent"
   | "commercial"
   | "off-plan"
+  // Every published project in one grid, under New projects — see
+  // lib/master-pages/sections/launches.ts.
+  | "launches"
   | "areas"
   | "developers"
   // Its sibling index, and the last public marketing page that was still

@@ -6511,5 +6511,19 @@
     "sourceHash": "63597cd0cf8b",
     "reviewed": false,
     "note": "Aqar (property) rather than a word for 'listing', which reads as a catalogue entry in Arabic."
+  },
+  "pages.launches.projects": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "d607422698f9",
+    "reviewed": false,
+    "note": "Written with the page. All six plural categories, the counted noun agreeing with each: مشروعان / مجتمعان for two, the plural for 3–10, the accusative singular for 11–99."
+  },
+  "pages.launches.communities": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "f3d88006c79c",
+    "reviewed": false,
+    "note": "Written with the page. All six plural categories, the counted noun agreeing with each: مشروعان / مجتمعان for two, the plural for 3–10, the accusative singular for 11–99."
   }
 }

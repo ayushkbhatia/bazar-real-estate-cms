@@ -33,6 +33,7 @@ import {
   statPairs,
   str,
 } from "@/lib/master-pages";
+import { LAUNCHES_PATH } from "@/lib/master-pages/sections/launches";
 import { OffplanMapExplorer } from "../_components/off-plan/offplan-map-explorer";
 import { ProjectInterestForm } from "../_components/off-plan/project-interest-form";
 import { masterPageMetadata } from "@/lib/queries/search-appearance";
@@ -228,7 +229,10 @@ export default async function NewProjectsPage({
           body={str(mapCopy, "body")}
           allLabel={str(mapCopy, "all_label") ?? ""}
           allCount={groups.reduce((n, g) => n + g.count, 0)}
-          allViewAllHref="/off-plan/search"
+          // The rail holds projects, so its "view every launch" opens every
+          // project — not the property search, which lists units. An area's
+          // own link below still narrows that search to the area.
+          allViewAllHref={LAUNCHES_PATH}
           allViewAllLabel={str(mapCopy, "all_cta_label")}
           groups={groups.map((g) => ({
             slug: g.slug,
