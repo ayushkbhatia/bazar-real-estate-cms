@@ -197,10 +197,12 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   if (!development) notFound();
   const handover = handoverQuarter(development.handover_date);
 
-  // The two hero lead forms. Fields, copy and button come from /admin/forms.
+  // The two hero lead forms, and the gate in front of the floor plans when
+  // the project gates them. Fields, copy and button come from /admin/forms.
   const leadForms = await getForms([
     "development_interest",
     "development_brochure",
+    "development_floorplan",
   ]);
 
   const [
@@ -350,6 +352,14 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
   const masterplanMedia = development.masterplan;
 
   const legacyFloorPlans = floorPlans.filter((fp) => fp.unit_type_id === null);
+  // The form the floor-plan gate asks, when this project gates its plans.
+  // Switched off in /admin/forms, the plans show openly — a lock with nothing
+  // to press would be a dead end, not a gate.
+  const floorplanForm = leadForms.development_floorplan ?? null;
+  const floorplanGate =
+    meta?.floorplan_gated === true && floorplanForm?.enabled
+      ? floorplanForm
+      : null;
 
   // A project with no unit-type records still gets the section, built from the
   // bedroom range it publishes. Migration 0081 seeds real, editable rows for
@@ -571,19 +581,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
             </p>
           ) : null}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
-            {legacyFloorPlans.map((fp) =>
-              meta?.floorplan_gated ? (
-                // T2-B: gated when `development.meta.floorplan_gated === true`.
-                // Renders a blurred preview behind a lead modal; the request
-                // funnels through the valuation-lead endpoint until we want
-                // separate conversion telemetry for floor-plan requests.
-                <FloorplanGate
-                  key={fp.id}
-                  developmentName={development.name}
-                  developmentSlug={development.slug}
-                  plan={fp}
-                />
-              ) : (
+            {legacyFloorPlans.map((fp) => {
+              const card = (
                 <div
                   key={fp.id}
                   className="rounded-lg border border-bz-border bg-bz-surface p-4"
@@ -613,8 +612,24 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
                     </div>
                   </div>
                 </div>
-              ),
-            )}
+              );
+              // Gated, the card waits behind the `development_floorplan`
+              // form: a blurred preview until the visitor leaves their
+              // details, then this same card.
+              return floorplanGate ? (
+                <FloorplanGate
+                  key={fp.id}
+                  form={floorplanGate}
+                  developmentId={development.id}
+                  developmentName={development.name}
+                  plan={fp}
+                >
+                  {card}
+                </FloorplanGate>
+              ) : (
+                card
+              );
+            })}
           </div>
         </section>
       ) : null,
@@ -662,8 +677,9 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
         <UnitFloorPlans
           types={unitTypeCards}
           developmentName={development.name}
-          developmentSlug={development.slug}
+          developmentId={development.id}
           gated={meta?.floorplan_gated === true}
+          floorplanForm={floorplanForm}
           eyebrow={
             sv("unit-plans", "eyebrow") ?? shared("unit-plans", "eyebrow")
           }

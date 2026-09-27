@@ -19,6 +19,7 @@ import {
   usePreferences,
 } from "@/lib/preferences";
 import type { AreaLabels, Preferences } from "@/lib/preferences";
+import type { ResolvedForm } from "@/lib/forms/types";
 
 /**
  * Units and their layouts — the row of unit-type buttons above the map.
@@ -65,17 +66,24 @@ const WARM_BUDGET = 16;
 export function UnitFloorPlans({
   types,
   developmentName,
-  developmentSlug,
+  developmentId,
   gated,
+  floorplanForm,
   heading,
   intro,
   eyebrow,
 }: {
   types: UnitTypeCard[];
   developmentName: string;
-  developmentSlug: string;
+  developmentId: string;
   /** `development.meta.floorplan_gated` — blurs plans behind a lead form. */
   gated: boolean;
+  /**
+   * The `development_floorplan` form that gate asks. Switched off, or not
+   * loaded, the plans show openly: blurring a drawing behind a form that
+   * isn't there would leave nothing to press.
+   */
+  floorplanForm: ResolvedForm | null;
   heading: string | null;
   intro: string | null;
   eyebrow: string | null;
@@ -113,6 +121,7 @@ export function UnitFloorPlans({
 
   const active = types.find((t) => t.id === activeId) ?? types[0]!;
   const summary = summaryLine(active, prefs);
+  const gateForm = gated && floorplanForm?.enabled ? floorplanForm : null;
   const openType = lightbox ? types.find((t) => t.id === lightbox.typeId) : null;
   const openPlans = openType ? lightboxPlans(openType, prefs) : [];
 
@@ -190,34 +199,11 @@ export function UnitFloorPlans({
                 never orphans a single card on its own row at 2-up. */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {type.plans.map((plan) => {
-                if (gated) {
-                  return (
-                    <FloorplanGate
-                      key={plan.id}
-                      developmentName={developmentName}
-                      developmentSlug={developmentSlug}
-                      plan={{
-                        id: plan.id,
-                        label: plan.label,
-                        area_ft2: plan.area_ft2,
-                        // The gate builds its own URL from the storage key so
-                        // it can blur the real drawing behind the lock.
-                        media: plan.image_key
-                          ? {
-                              storage_key: plan.image_key,
-                              filename: plan.label,
-                              alt_text: plan.image_alt,
-                            }
-                          : null,
-                      }}
-                    />
-                  );
-                }
                 const imageUrl = plan.image_url;
                 const reach = () =>
                   imageUrl &&
                   setHiRes((h) => (h.includes(imageUrl) ? h : [...h, imageUrl]));
-                return (
+                const card = (
                   <article
                     key={plan.id}
                     className="rounded-lg border border-bz-border bg-bz-surface p-4 flex flex-col"
@@ -266,6 +252,34 @@ export function UnitFloorPlans({
                       </p>
                     ) : null}
                   </article>
+                );
+                if (!gateForm) return card;
+                // Unlocked, the gate hands back this same card — lightbox and
+                // all — rather than a lesser copy of it.
+                return (
+                  <FloorplanGate
+                    key={plan.id}
+                    form={gateForm}
+                    developmentId={developmentId}
+                    developmentName={developmentName}
+                    layoutName={`${type.label} · ${plan.label}`}
+                    plan={{
+                      id: plan.id,
+                      label: plan.label,
+                      area_ft2: plan.area_ft2,
+                      // The gate builds its own URL from the storage key so
+                      // it can blur the real drawing behind the lock.
+                      media: plan.image_key
+                        ? {
+                            storage_key: plan.image_key,
+                            filename: plan.label,
+                            alt_text: plan.image_alt,
+                          }
+                        : null,
+                    }}
+                  >
+                    {card}
+                  </FloorplanGate>
                 );
               })}
             </div>

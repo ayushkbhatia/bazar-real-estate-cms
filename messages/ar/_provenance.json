@@ -6525,5 +6525,19 @@
     "sourceHash": "f3d88006c79c",
     "reviewed": false,
     "note": "Written with the page. All six plural categories, the counted noun agreeing with each: مشروعان / مجتمعان for two, the plural for 3–10, the accusative singular for 11–99."
+  },
+  "development.floorplanGate.request": {
+    "by": "hand",
+    "model": "claude-opus-5-5",
+    "sourceHash": "504b47a3623b",
+    "reviewed": false,
+    "note": "Corrected outside the pipeline, by Claude in the PR that added it: MT used التخطيط / الخطة — planning, a scheme. The site calls a floor plan المخطط, as the form's own title does (اطّلع على هذا المخطط)."
+  },
+  "development.floorplanGate.view": {
+    "by": "hand",
+    "model": "claude-opus-5-5",
+    "sourceHash": "4f83cff0b887",
+    "reviewed": false,
+    "note": "Corrected outside the pipeline, by Claude in the PR that added it: MT used التخطيط / الخطة — planning, a scheme. The site calls a floor plan المخطط, as the form's own title does (اطّلع على هذا المخطط)."
   }
 }

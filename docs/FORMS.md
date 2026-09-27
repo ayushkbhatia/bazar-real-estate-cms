@@ -163,6 +163,12 @@ which do the same job for the development and property dialogs. It also lands
 in `form_submissions.data._scenario`, labelled, so Responses is as complete as
 the inbox.
 
+The floor-plan gate uses the same channel for the layout the visitor pressed
+"Request layout" on — the form asks nothing about the drawing, the page knows
+which one it was. `FormDef.scenarioLabel` names it ("Layout requested") in
+Responses, the notification email and the enquiry page, where the mortgage
+form's is the calculator's scenario.
+
 Two things it is deliberately not:
 
 - **Not a pre-filled message box.** A prefill is frozen when the form mounts.
@@ -286,8 +292,10 @@ steps genuinely can't be expressed by the shared renderer yet, but nothing about
 that stops it asking the manager what the questions are called.
 
 Today: `labels` is the sell wizard; `copy` is the valuation gate, the newsletter
-box and the floor-plan gate. Moving those three across is a component change
-each — see `docs/FOLLOWUPS.md`.
+box and the floor-plan gate. The first two draw their own inputs, and moving
+either across is a component change. The floor-plan gate already draws through
+`FormRenderer` and stays `copy` only to keep its field list fixed — name, email
+and phone, exactly what Salesforce needs — so moving it is a one-word change.
 
 ### How a `labels` form reaches its component
 

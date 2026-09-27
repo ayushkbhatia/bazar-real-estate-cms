@@ -675,24 +675,43 @@ export const FORM_DEFS: FormDef[] = [
     surface: "Project page",
     path: "/developments",
     description:
-      "The gate in front of an individual floor plan. Shorter than the brochure gate on purpose — email and name only.",
+      "The gate in front of a project's floor plans, on projects set to gate them. Files a lead against the project, then opens every layout on the page. Switched off, those projects show their plans openly.",
     group: "sub",
     handler: "enquiry",
+    /*
+     * `copy`, although the gate draws its inputs with `FormRenderer`.
+     *
+     * The field list is fixed rather than handed to the manager: name, email
+     * and phone are exactly what Salesforce needs, and a gate in front of a
+     * drawing earns its keep by staying short. Moving it to `full` is a
+     * one-word change once someone wants to add a question.
+     */
     control: "copy",
     variant: "compact",
     enquirySource: "brochure",
+    alsoOn: ["Campaign pages"],
+    // `{scenario}` is the layout the visitor pressed "Request layout" on,
+    // supplied by the gate — the brief has to say which drawing they want.
+    briefPrefix: "Floor plan request — {project}: {scenario|layout not named}.",
+    scenarioLabel: "Layout requested",
     copy: copy({
       title: "See this floor plan",
-      subtitle: "Leave an email and the plan opens right here.",
+      subtitle: "Leave your details and the plan opens right here.",
       submit_label: "Show me the plan",
       pending_label: "Unlocking…",
       success_title: "Unlocked.",
-      success_body: "The plan is below, and a copy is on its way to your inbox.",
+      success_body:
+        "The plan is below, and the advisor for {project} will be in touch shortly.",
       consent_note: null,
     }),
     fields: [
-      email({ required: true, locked: true }),
       fullName({ label: "Your name", placeholder: null }),
+      email({ required: true, locked: true }),
+      phone({
+        label: "Phone number",
+        placeholder: "+971 50 123 4567",
+        required: true,
+      }),
     ],
   },
   {

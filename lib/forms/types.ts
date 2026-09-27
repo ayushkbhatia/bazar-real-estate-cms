@@ -506,6 +506,13 @@ export type FormDef = {
    * visitor-facing — nobody reads it but the desk.
    */
   briefPrefix?: string;
+  /**
+   * What the page-supplied `{scenario}` is called in Responses and in the
+   * notification email. It is not a field, so nothing else names it: the
+   * mortgage desk's is the calculator's "Scenario" (the default), the
+   * floor-plan gate's is the layout the visitor asked for.
+   */
+  scenarioLabel?: string;
   /** Extra surfaces the same form appears on, listed in the manager. */
   alsoOn?: string[];
   copy: FormCopy;

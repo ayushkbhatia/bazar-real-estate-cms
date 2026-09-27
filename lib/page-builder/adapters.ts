@@ -486,8 +486,11 @@ export function projectUnitPlansProps(
   return {
     types: p.unitTypes,
     developmentName: p.name,
-    developmentSlug: p.slug,
+    developmentId: p.id,
     gated: p.floorplanGated,
+    // Read by `resolveLandingData` once a project on the page turns out to
+    // gate its layouts, so it asks the same form here as on its own page.
+    floorplanForm: data.forms.development_floorplan ?? null,
     eyebrow: str(values, "eyebrow"),
     heading: str(values, "heading"),
     intro: str(values, "intro"),

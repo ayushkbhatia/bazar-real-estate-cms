@@ -308,6 +308,40 @@ describe("resolveLandingData", () => {
     // Units and layouts ride along in the same call, not as two more.
     expect(opts).toMatchObject({ units: true, unitTypes: true });
     expect(data.projectsBySlug.get("yas-riva")).toEqual({ slug: "yas-riva" });
+    // Nothing here gates its layouts, so the floor-plan form is not read.
+    expect(getForms).not.toHaveBeenCalled();
+  });
+
+  /**
+   * Which projects gate their layouts is only known once they are read, so
+   * the form they gate with is a second read — made only when one does, and
+   * only when the page draws layouts at all.
+   */
+  it("reads the floor-plan form once a drawn project turns out to gate", async () => {
+    listLandingProjects.mockResolvedValueOnce([
+      { slug: "yas-riva", floorplanGated: true } as never,
+    ]);
+    const data = await resolveLandingData(
+      collectDataRequest(
+        resolve([inst("project_unit_plans", { development: "yas-riva" })]),
+      ),
+    );
+    expect(getForms).toHaveBeenCalledTimes(1);
+    expect(getForms).toHaveBeenCalledWith(["development_floorplan"]);
+    expect(data.forms.development_floorplan).toBeDefined();
+    expect(calls()).toBe(2);
+  });
+
+  it("leaves the floor-plan form alone on a page that draws no layouts", async () => {
+    listLandingProjects.mockResolvedValueOnce([
+      { slug: "yas-riva", floorplanGated: true } as never,
+    ]);
+    await resolveLandingData(
+      collectDataRequest(
+        resolve([inst("project_payment_plan", { development: "yas-riva" })]),
+      ),
+    );
+    expect(getForms).not.toHaveBeenCalled();
   });
 
   it("reads the roster once and keeps only the advisors a block named", async () => {

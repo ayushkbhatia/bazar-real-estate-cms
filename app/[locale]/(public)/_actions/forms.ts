@@ -56,7 +56,8 @@ export type FormSubmitContext = {
   locale?: string | null;
   /**
    * The state of the tool the form sits under, in the visitor's own units —
-   * the mortgage calculator's price, deposit, term, rate and monthly today.
+   * the mortgage calculator's price, deposit, term, rate and monthly today;
+   * on the floor-plan gate, the layout the visitor asked to see.
    *
    * It reaches the brief as `{scenario}` rather than as a pre-filled message
    * box because the two have different lifetimes: a prefill is frozen when the
@@ -165,7 +166,8 @@ export async function submitForm(
   // shape `_labels` already uses, and the same shape the table already reads.
   if (scenario) {
     data._scenario = scenario;
-    (data._labels as Record<string, string>)._scenario = "Scenario";
+    (data._labels as Record<string, string>)._scenario =
+      form.def.scenarioLabel ?? "Scenario";
   }
 
   switch (form.def.handler) {

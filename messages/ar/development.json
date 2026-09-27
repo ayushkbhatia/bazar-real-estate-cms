@@ -97,5 +97,9 @@
     "totalUnits": "إجمالي الوحدات",
     "handover": "التسليم",
     "paymentPlan": "خطة السداد"
+  },
+  "floorplanGate": {
+    "request": "طلب المخطط",
+    "view": "عرض المخطط"
   }
 }

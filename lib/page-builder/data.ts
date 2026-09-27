@@ -253,6 +253,19 @@ export async function resolveLandingData(
       : Promise.resolve([] as AgentProfile[]),
   ]);
 
+  // A project that gates its layouts draws them behind the floor-plan form,
+  // and which projects do is only known now. Read after the fact rather than
+  // requested up front, so a launch page whose project does not gate still
+  // costs one read — and when a form block already loaded the forms, this one
+  // comes out of the same `cache()`d loader.
+  const gatesLayouts =
+    request.projectUnitTypes &&
+    !forms.development_floorplan &&
+    projects.some((p) => p.floorplanGated);
+  const floorplanForm = gatesLayouts
+    ? await getForms(["development_floorplan"])
+    : {};
+
   const wanted = new Set(request.advisors);
   return {
     propertiesByRef: new Map(refRows.map((r) => [r.reference, r])),
@@ -260,7 +273,7 @@ export async function resolveLandingData(
       request.queries.map((key, i) => [key, queryResults[i] ?? []]),
     ),
     developments,
-    forms,
+    forms: { ...forms, ...floorplanForm },
     testimonials,
     partners,
     projectsBySlug: new Map(projects.map((p) => [p.slug, p])),

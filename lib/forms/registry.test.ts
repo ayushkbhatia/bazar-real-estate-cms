@@ -63,6 +63,25 @@ describe("form registry", () => {
     }
   });
 
+  it("asks every enquiry form for both contact fields the CRM requires", () => {
+    // `enquirySchema` refuses an enquiry without an email AND a phone, because
+    // Salesforce refuses the lead. A form filed through the `enquiry` handler
+    // without both boxes can never succeed — which is how the floor-plan gate
+    // shipped, asking for an email and a name. Locked, so an editor cannot
+    // delete one and break the form the same way.
+    const missing: string[] = [];
+    for (const def of FORM_DEFS) {
+      if (def.handler !== "enquiry") continue;
+      for (const mapping of ["email", "phone"] as const) {
+        const field = def.fields.find((f) => f.mapping === mapping);
+        if (!field?.enabled || !field.locked) {
+          missing.push(`${def.key} has no locked ${mapping} field`);
+        }
+      }
+    }
+    expect(missing, missing.join("\n")).toEqual([]);
+  });
+
   it("round-trips every form through the save schema", () => {
     // What the editor sends back on a no-op save has to be valid, or the very
     // first save of an untouched form would fail.

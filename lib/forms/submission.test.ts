@@ -125,6 +125,31 @@ describe("buildFormBrief", () => {
     expect(brief).toBe("Mortgage pre-approval request.");
   });
 
+  it("names the project and the layout on a floor-plan request", () => {
+    // The gate asks nothing about the drawing — the page says which one was
+    // pressed — so without the scenario the advisor would read only "Unlock a
+    // floor plan" and have to guess which of a project's layouts to send.
+    const form = defaultForm("development_floorplan")!;
+    const values = {
+      name: "Amira Saleh",
+      email: "amira@example.com",
+      phone: "+971 50 123 4567",
+    };
+    const lead = extractLead(form, values);
+    expect(
+      buildFormBrief(form, lead, values, {
+        project: "The Artery Residences",
+        scenario: "1 Bedroom · Type 2",
+      }),
+    ).toBe("Floor plan request — The Artery Residences: 1 Bedroom · Type 2.");
+    expect(
+      buildFormBrief(form, lead, values, {
+        project: "The Artery Residences",
+        scenario: null,
+      }),
+    ).toBe("Floor plan request — The Artery Residences: layout not named.");
+  });
+
   it("falls back to the wording an unanswered dropdown needs", () => {
     const form = defaultForm("offplan_project_interest")!;
     const values = { note: "", project: "", timeline: "now" };
