@@ -25,6 +25,7 @@ beforeAll(() => {
 
 function listing(over: Partial<PropertyOption>): PropertyOption {
   return {
+    id: "44444444-0000-0000-0000-000000000001",
     reference: "BAZ-AD-08128",
     slug: "yas-riva-reserve",
     title: "Yas Riva Reserve",

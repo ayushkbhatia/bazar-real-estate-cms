@@ -1,9 +1,9 @@
 "use client";
 
 import { useId, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import {
   Building2,
+  Check,
   ExternalLink,
   House,
   MapPin,
@@ -25,7 +25,8 @@ import type {
   InternalLinkKind,
   InternalLinkVariant,
 } from "@/lib/internal-links/model";
-import type { InternalLinkTarget } from "@/lib/internal-links/types";
+import { OptionBody, filterRecordOptions } from "../_fields/record-picker";
+import type { InternalLinkTarget } from "./_link-targets";
 
 /** How the pick lands in the article: a block of either variant, or the selected words. */
 export type InternalLinkAs = InternalLinkVariant | "text";
@@ -66,12 +67,6 @@ export const KIND_META: Record<
 const KINDS: InternalLinkKind[] = ["area", "development", "property"];
 
 /**
- * The tab the picker last closed on. A writer linking three listings in a row
- * should not have to re-pick "Listings" three times; it resets on reload.
- */
-let lastKind: InternalLinkKind = "area";
-
-/**
  * The internal-link picker: choose an area, project or listing, and how it
  * should appear.
  *
@@ -83,6 +78,7 @@ let lastKind: InternalLinkKind = "area";
 export function InternalLinkDialog({
   request,
   targets,
+  defaultKind = "area",
   onClose,
   onChoose,
   onUnlink,
@@ -90,6 +86,11 @@ export function InternalLinkDialog({
   /** `null` while closed. */
   request: InternalLinkRequest | null;
   targets: InternalLinkTarget[];
+  /**
+   * The tab a new link opens on — the kind the editor inserted last, so a
+   * writer linking three listings in a row picks "Listings" once.
+   */
+  defaultKind?: InternalLinkKind;
   onClose: () => void;
   onChoose: (choice: InternalLinkChoice) => void;
   /** Offered when editing a text link: remove the link, keep the words. */
@@ -112,6 +113,7 @@ export function InternalLinkDialog({
           <PickerForm
             request={request}
             targets={targets}
+            defaultKind={defaultKind}
             onClose={onClose}
             onChoose={onChoose}
             onUnlink={onUnlink}
@@ -123,34 +125,50 @@ export function InternalLinkDialog({
 }
 
 /**
- * How well a record answers the search, lower is better; null for no match.
+ * The records that answer the search, best first.
  *
- * Matching looks at the detail line too, so a listing is found by its
- * reference and a community by the area it sits in — which is also why a
- * plain filter was not enough: "yas island" matched Yas Acres (a community
- * *in* Yas Island) as well as Yas Island itself, and alphabetical order put
- * the wrong one first, one Enter away from being inserted.
+ * Which records match is the shared pickers' rule (`filterRecordOptions`):
+ * every word must appear somewhere in the record — name, reference, facts,
+ * price — with numbers matched as whole figures, so "5 bed" does not find
+ * "6,555 ft²". What this adds is ORDER. Matching reads the detail line too,
+ * so "yas island" matches Yas Acres (a community *in* Yas Island) as well as
+ * Yas Island itself, and alphabetical order put the wrong one first — one
+ * Enter away from being inserted. A record named what was typed comes first,
+ * then one whose name starts with it, then one whose name holds every word;
+ * ties keep their A–Z order.
  */
-function rank(target: InternalLinkTarget, query: string, words: string[]) {
-  const name = target.name.toLowerCase();
-  if (words.length === 0) return 3;
-  const haystack = `${name} ${target.detail.toLowerCase()}`;
-  if (!words.every((w) => haystack.includes(w))) return null;
-  if (name === query) return 0;
-  if (name.startsWith(query)) return 1;
-  if (words.every((w) => name.includes(w))) return 2;
-  return 3;
+function search(
+  pool: InternalLinkTarget[],
+  query: string,
+): InternalLinkTarget[] {
+  const q = query.trim().toLowerCase().replace(/\s+/g, " ");
+  const matched = filterRecordOptions(pool, q) as InternalLinkTarget[];
+  if (!q) return matched;
+  const words = q.split(" ");
+  const score = (t: InternalLinkTarget) => {
+    const name = t.name.toLowerCase();
+    if (name === q) return 0;
+    if (name.startsWith(q)) return 1;
+    if (words.every((w) => name.includes(w))) return 2;
+    return 3;
+  };
+  return matched
+    .map((t) => ({ t, s: score(t) }))
+    .sort((a, b) => a.s - b.s)
+    .map((r) => r.t);
 }
 
 function PickerForm({
   request,
   targets,
+  defaultKind,
   onClose,
   onChoose,
   onUnlink,
 }: {
   request: InternalLinkRequest;
   targets: InternalLinkTarget[];
+  defaultKind: InternalLinkKind;
   onClose: () => void;
   onChoose: (choice: InternalLinkChoice) => void;
   onUnlink: () => void;
@@ -158,7 +176,7 @@ function PickerForm({
   const listId = useId();
   const listRef = useRef<HTMLDivElement>(null);
   const [kind, setKind] = useState<InternalLinkKind>(
-    request.initial?.kind ?? lastKind,
+    request.initial?.kind ?? defaultKind,
   );
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(
@@ -178,17 +196,10 @@ function PickerForm({
     return out;
   }, [targets]);
 
-  const visible = useMemo(() => {
-    const q = query.trim().toLowerCase().replace(/\s+/g, " ");
-    const words = q.split(" ").filter(Boolean);
-    return targets
-      .filter((t) => t.kind === kind)
-      .map((t) => ({ t, score: rank(t, q, words) }))
-      .filter((r): r is { t: InternalLinkTarget; score: number } => r.score !== null)
-      // Stable, so records that answer equally well keep their A–Z order.
-      .sort((a, b) => a.score - b.score)
-      .map((r) => r.t);
-  }, [targets, kind, query]);
+  const visible = useMemo(
+    () => search(targets.filter((t) => t.kind === kind), query),
+    [targets, kind, query],
+  );
 
   // The highlighted row: the one picked, while it is still in view; else the
   // first match, so "type, Enter" inserts the obvious result.
@@ -234,9 +245,6 @@ function PickerForm({
 
   function submit(target: InternalLinkTarget | null = active) {
     if (!target) return;
-    // Only an insert moves the default: re-pointing one old block is not a
-    // sign of what the writer is linking next.
-    if (request.mode === "insert") lastKind = target.kind;
     onChoose({ target, as: effectiveAs });
   }
 
@@ -373,38 +381,22 @@ function PickerForm({
                 onClick={() => setSelectedId(t.id)}
                 onDoubleClick={() => submit(t)}
                 className={cn(
-                  "flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5",
-                  isActive
-                    ? "bg-bz-navy text-bz-bg"
-                    : "text-bz-ink hover:bg-bz-surface-2",
+                  "flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5",
+                  isActive ? "bg-bz-surface-2" : "hover:bg-bz-surface-2/60",
                 )}
               >
-                <span className="relative size-10 shrink-0 overflow-hidden rounded bg-bz-surface-2">
-                  {t.thumb ? (
-                    <Image
-                      src={t.thumb}
-                      alt=""
-                      fill
-                      sizes="40px"
-                      className="object-cover"
-                    />
-                  ) : (
-                    <span aria-hidden className="bz-img absolute inset-0" />
-                  )}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[13px] font-medium">
-                    {t.name}
-                  </span>
-                  <span
-                    className={cn(
-                      "block truncate text-[11.5px]",
-                      isActive ? "text-bz-bg/75" : "text-bz-muted",
-                    )}
-                  >
-                    {t.detail}
-                  </span>
-                </span>
+                {/* The same row the page builder's listing picker draws —
+                    photo, reference, facts, price — so a listing reads the
+                    same wherever an editor picks one. */}
+                <OptionBody item={t} />
+                {isActive ? (
+                  <Check
+                    size={14}
+                    strokeWidth={2}
+                    aria-hidden
+                    className="shrink-0 text-bz-teal"
+                  />
+                ) : null}
               </div>
             );
           })

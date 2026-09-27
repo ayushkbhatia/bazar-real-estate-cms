@@ -127,11 +127,18 @@ the visitor's currency and unit.
   → insert a block. The ordinary **Link** button, on an internal link, opens
   the picker too, so retyping a URL can never silently orphan the record.
 - **`_internal-link-dialog.tsx`** — the picker. Areas / Projects / Listings
-  tabs with counts; type to filter (a listing matches on its reference);
-  ↑/↓ to move, Enter or a double-click to insert. Only published records are
-  listed (`lib/internal-links/targets.ts` applies the same filters as the
-  public lookup), so a block can never be pointed at something whose card
-  would draw nothing.
+  tabs with counts; type to filter; ↑/↓ to move, Enter or a double-click to
+  insert. It speaks the shared picker vocabulary from `admin/_fields`: rows
+  are `OptionBody` and matching is `filterRecordOptions` — the same photo,
+  reference, facts and price the page builder's listing picker shows, and the
+  same search ("5 bed", a reference, "13.3m"), because three live listings
+  share a title and only those tell them apart. On top of that it ranks a
+  record *named* what was typed first ("yas island" → Yas Island, not the
+  community inside it).
+- **`_link-targets.ts`** — the options, built with the shared shapers
+  (`developmentSeedItem`, `propertySeedItem`) plus the record id a link
+  stores. Only published records — the same readers the public pages use — so
+  a block can never be pointed at something whose card would draw nothing.
 - **`_internal-link-view.tsx`** — the block as the editor draws it: which
   record, which variant (with a Card/Compact toggle), edit, remove, and a drag
   grip to move it. A block whose record is no longer published says so in
@@ -169,8 +176,9 @@ Say, advisors (`/agents/<slug>`):
 1. `INTERNAL_LINK_KINDS` in `lib/internal-links/model.ts`.
 2. A loader and a shaper in `resolve.ts` (plus its fold proof), and a variant
    of `ResolvedInternalLink` in `types.ts`.
-3. A target mapper in `targets.ts`, and a tab in `KIND_META`
-   (`_internal-link-dialog.tsx`).
+3. Picker options in `admin/blog/_link-targets.ts` (a shaper in
+   `admin/_fields/record-seeds.ts` if other pickers want the kind too), and a
+   tab in `KIND_META` (`_internal-link-dialog.tsx`).
 4. A branch in `useCardParts` (`internal-link-card.tsx`) and any catalogue keys
    it needs, with Arabic and `_provenance.json` entries.
 
@@ -187,5 +195,5 @@ validate against the kind list.
 | `lib/internal-links/resolve.fold.test.ts` | one query per kind; `null` vs `undefined`; every string folds to Arabic with no twin leak |
 | `lib/internal-links/mirror.test.ts` | Arabic placement, idempotence, never moving what is there |
 | `lib/internal-links/walker.test.ts` | the translation walker sends no block to the model and restores blocks and text-link records byte for byte |
-| `lib/internal-links/targets.test.ts` | picker rows |
-| `admin/blog/_internal-link-dialog.test.tsx` | the picker's modes, search, keyboard |
+| `admin/blog/_link-targets.test.ts` | picker options are the shared pickers' shapes plus the id |
+| `admin/blog/_internal-link-dialog.test.tsx` | the picker's modes, ranking, keyboard, and same-titled listings told apart |

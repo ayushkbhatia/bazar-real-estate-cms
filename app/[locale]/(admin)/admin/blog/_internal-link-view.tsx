@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext } from "react";
-import Image from "next/image";
 import {
   NodeViewWrapper,
   ReactNodeViewRenderer,
@@ -20,11 +19,12 @@ import {
   type InternalLinkKind,
   type InternalLinkVariant,
 } from "@/lib/internal-links/model";
-import type { InternalLinkTarget } from "@/lib/internal-links/types";
+import type { InternalLinkTarget } from "./_link-targets";
 import {
   InternalLink,
   type InternalLinkAttributes,
 } from "@/lib/tiptap/internal-link";
+import { OptionBody } from "../_fields/record-picker";
 import { KIND_META } from "./_internal-link-dialog";
 
 /**
@@ -132,44 +132,24 @@ function InternalLinkView({
           </div>
         ) : null}
 
-        <div className="relative size-12 shrink-0 overflow-hidden rounded bg-bz-surface-2">
-          {target?.thumb ? (
-            <Image
-              src={target.thumb}
-              alt=""
-              fill
-              sizes="48px"
-              className="object-cover"
-            />
-          ) : (
-            <span aria-hidden className="bz-img absolute inset-0" />
-          )}
-        </div>
-
         <div className="min-w-0 flex-1">
-          <div className="text-[10.5px] uppercase tracking-wider text-bz-muted">
+          <div className="mb-1 text-[10.5px] uppercase tracking-wider text-bz-muted">
             {meta?.label ?? "Link"} · {VARIANT_LABEL[attrs.variant] ?? "Card"}
           </div>
-          <div className="truncate text-[14px] font-medium leading-snug text-bz-ink">
-            {target?.name ?? attrs.label ?? "Unknown record"}
-          </div>
           {target ? (
-            <a
-              href={target.href}
-              target="_blank"
-              rel="noreferrer"
-              className="mono inline-flex max-w-full items-center gap-1 truncate text-[11px] text-bz-teal no-underline hover:text-bz-navy"
-            >
-              <span className="truncate">{target.detail || target.href}</span>
-              <ExternalLink size={10} className="pointer-events-none shrink-0" />
-            </a>
+            <OptionBody item={target} />
           ) : (
-            <div className="flex items-center gap-1 text-[11.5px] text-[oklch(0.45_0.1_60)]">
-              <TriangleAlert size={12} className="shrink-0" />
-              <span className="truncate">
-                Not live — this {meta?.noun ?? "record"} is unpublished, so the
-                block is hidden on the site.
-              </span>
+            <div className="min-w-0">
+              <div className="truncate text-[13px] font-medium leading-snug text-bz-ink">
+                {attrs.label ?? "Unknown record"}
+              </div>
+              <div className="flex items-center gap-1 text-[11.5px] text-[oklch(0.45_0.1_60)]">
+                <TriangleAlert size={12} className="shrink-0" />
+                <span className="truncate">
+                  Not live — this {meta?.noun ?? "record"} is unpublished, so
+                  the block is hidden on the site.
+                </span>
+              </div>
             </div>
           )}
         </div>
@@ -198,6 +178,18 @@ function InternalLinkView({
                 </button>
               ))}
             </div>
+            {target ? (
+              <a
+                href={target.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Open the page this links to"
+                title="Open the page this links to"
+                className="flex size-7 items-center justify-center rounded text-bz-ink-2 no-underline hover:bg-bz-surface-2 hover:text-bz-ink"
+              >
+                <ExternalLink size={13} strokeWidth={1.8} className="pointer-events-none" />
+              </a>
+            ) : null}
             <button
               type="button"
               onClick={edit}

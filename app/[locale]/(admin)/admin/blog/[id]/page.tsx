@@ -7,7 +7,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { articleUrl } from "@/lib/queries/articles";
 import { listArticleCategories } from "@/lib/queries/article-categories";
 import { mediaPublicUrl } from "@/lib/media";
-import { listInternalLinkTargets } from "@/lib/internal-links/targets";
+import { listInternalLinkTargets } from "../_link-targets";
 import type { BlogMediaOption } from "../_image-insert-dialog";
 import { type ArticleEditInput } from "@/lib/schemas/article";
 import { ArticleEditForm } from "./_form";

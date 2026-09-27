@@ -6,7 +6,7 @@ import { ChevronRight, Signpost } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { countMissingBlocks, mirrorBlocks } from "@/lib/internal-links/mirror";
-import type { InternalLinkTarget } from "@/lib/internal-links/types";
+import type { InternalLinkTarget } from "./_link-targets";
 import type { BlogMediaOption } from "./_image-insert-dialog";
 
 /**

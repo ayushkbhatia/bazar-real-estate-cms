@@ -112,9 +112,11 @@ lib/
                            #   up live at render — one query per kind — so a
                            #   rename still links, a repriced listing shows
                            #   today's price and an unpublished one vanishes
-                           #   instead of 404-ing. Also the blog editor's picker
-                           #   rows and the English→Arabic block copy. The
-                           #   TipTap node is lib/tiptap/internal-link.ts.
+                           #   instead of 404-ing. Also the English→Arabic
+                           #   block copy. The TipTap node is
+                           #   lib/tiptap/internal-link.ts; the picker lives in
+                           #   admin/blog and reuses admin/_fields' record
+                           #   picker vocabulary.
                            #   See docs/INTERNAL_LINKS.md.
   content-assets/          # Content Assets: the token vocabulary and its
                            #   scoping rules, plus the SYSTEM email registry —

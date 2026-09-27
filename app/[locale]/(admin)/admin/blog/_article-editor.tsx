@@ -24,8 +24,9 @@ import type { InternalLinkAttributes } from "@/lib/tiptap/internal-link";
 import {
   isInternalLinkKind,
   linkKey,
+  type InternalLinkKind,
 } from "@/lib/internal-links/model";
-import type { InternalLinkTarget } from "@/lib/internal-links/types";
+import type { InternalLinkTarget } from "./_link-targets";
 import {
   ImageInsertDialog,
   type BlogMediaOption,
@@ -260,6 +261,8 @@ export function ArticleEditor({
   const [linkRequest, setLinkRequest] = useState<InternalLinkRequest | null>(
     null,
   );
+  // The picker opens a new link on the kind inserted last.
+  const [lastKind, setLastKind] = useState<InternalLinkKind>("area");
 
   const linkApi = useMemo<InternalLinkEditorApi>(() => {
     const byKey = new Map(linkTargets.map((t) => [linkKey(t.kind, t.id), t]));
@@ -336,6 +339,9 @@ export function ArticleEditor({
     const request = linkRequest;
     setLinkRequest(null);
     if (!editor || !request) return;
+    // Only an insert moves the default: re-pointing one old block says
+    // nothing about what the writer links next.
+    if (request.mode === "insert") setLastKind(target.kind);
     if (as === "text") {
       editor
         .chain()
@@ -375,6 +381,7 @@ export function ArticleEditor({
       <InternalLinkDialog
         request={linkRequest}
         targets={linkTargets}
+        defaultKind={lastKind}
         onClose={() => {
           setLinkRequest(null);
           editor?.commands.focus();

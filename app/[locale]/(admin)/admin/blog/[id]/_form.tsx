@@ -19,7 +19,7 @@ import { ImagePicker } from "../../_fields/image-picker";
 import { ArabicTwin } from "../../_fields/arabic-twin";
 import { ArabicArticleBody } from "../_arabic-body";
 import type { BlogMediaOption } from "../_image-insert-dialog";
-import type { InternalLinkTarget } from "@/lib/internal-links/types";
+import type { InternalLinkTarget } from "../_link-targets";
 import { publishArticle, updateArticle } from "./_actions";
 import { PUBLISH_INTENT } from "./_intent";
 

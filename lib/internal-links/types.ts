@@ -1,5 +1,5 @@
 import type { Database } from "@/db/types";
-import type { InternalLinkKind, InternalLinkRef } from "./model";
+import type { InternalLinkRef } from "./model";
 
 type Enums = Database["public"]["Enums"];
 
@@ -68,16 +68,4 @@ export type ResolvedInternalLink =
  */
 export type InternalLinkLookup = {
   get(ref: InternalLinkRef): ResolvedInternalLink | null | undefined;
-};
-
-/** What the blog editor's picker offers: every record a link can point at. */
-export type InternalLinkTarget = {
-  kind: InternalLinkKind;
-  id: string;
-  name: string;
-  /** Second line in the picker: where it is, who built it, what it costs. */
-  detail: string;
-  /** Public path today. */
-  href: string;
-  thumb: string | null;
 };

@@ -1,18 +1,51 @@
 import { describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import type { InternalLinkTarget } from "@/lib/internal-links/types";
+import type { InternalLinkTarget } from "./_link-targets";
 import {
   InternalLinkDialog,
   type InternalLinkRequest,
 } from "./_internal-link-dialog";
 
+function area(id: string, name: string, sub: string, slug: string): InternalLinkTarget {
+  const href = `/areas/${slug}`;
+  return { kind: "area", id, name, href, slug, detail: { sub, href } };
+}
+
 const TARGETS: InternalLinkTarget[] = [
-  { kind: "area", id: "a1", name: "Saadiyat Island", detail: "Area · Abu Dhabi", href: "/areas/saadiyat-island", thumb: null },
-  { kind: "area", id: "a3", name: "Yas Acres", detail: "Sub-community · Yas Island", href: "/areas/yas-acres", thumb: null },
-  { kind: "area", id: "a2", name: "Yas Island", detail: "Area · Abu Dhabi", href: "/areas/yas-island", thumb: null },
-  { kind: "development", id: "d1", name: "Saadiyat Lagoons", detail: "Aldar · Saadiyat Island", href: "/developments/saadiyat-lagoons", thumb: null },
-  { kind: "property", id: "p1", name: "Sea-view villa", detail: "BAZ-AD-04891 · Saadiyat Island · AED 12.5M", href: "/p/sea-view-villa-baz-ad-04891", thumb: null },
+  area("a1", "Saadiyat Island", "Area · Abu Dhabi", "saadiyat-island"),
+  area("a3", "Yas Acres", "Community · Yas Island", "yas-acres"),
+  area("a2", "Yas Island", "Area · Abu Dhabi", "yas-island"),
+  {
+    kind: "development",
+    id: "d1",
+    name: "Saadiyat Lagoons",
+    href: "/developments/saadiyat-lagoons",
+    slug: "saadiyat-lagoons",
+    detail: { code: "Aldar", sub: "Saadiyat Island", facts: ["Handover Q4 2027"], price: "From AED 5.2M" },
+  },
+  {
+    kind: "property",
+    id: "p1",
+    name: "Sea-view villa",
+    href: "/p/sea-view-villa-baz-ad-04891",
+    slug: "BAZ-AD-04891",
+    detail: { code: "BAZ-AD-04891", sub: "Villa · Saadiyat Island", facts: ["5 bed", "6 bath", "6,200 ft²"], price: "AED 12.5M", badge: "For sale" },
+  },
+  {
+    kind: "property",
+    id: "p2",
+    name: "Sea-view villa",
+    href: "/p/sea-view-villa-baz-ad-05555",
+    slug: "BAZ-AD-05555",
+    detail: { code: "BAZ-AD-05555", sub: "Villa · Saadiyat Island", facts: ["6 bed", "7 bath", "6,555 ft²"], price: "AED 14.5M", badge: "For sale" },
+  },
 ];
+
+/** Each row's record name — the first line OptionBody draws. */
+const names = () =>
+  screen
+    .getAllByRole("option")
+    .map((o) => o.querySelector(".truncate")?.textContent);
 
 function open(request: InternalLinkRequest) {
   const onChoose = vi.fn();
@@ -43,13 +76,9 @@ describe("InternalLinkDialog", () => {
     expect(tabs.map((t) => t.textContent)).toEqual([
       "Areas3",
       "Projects1",
-      "Listings1",
+      "Listings2",
     ]);
-    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual([
-      "Saadiyat IslandArea · Abu Dhabi",
-      "Yas AcresSub-community · Yas Island",
-      "Yas IslandArea · Abu Dhabi",
-    ]);
+    expect(names()).toEqual(["Saadiyat Island", "Yas Acres", "Yas Island"]);
   });
 
   it("filters as you type, and Enter inserts the first match as a card", () => {
@@ -67,10 +96,7 @@ describe("InternalLinkDialog", () => {
     const { onChoose } = open(insert);
     const search = screen.getByRole("combobox");
     fireEvent.change(search, { target: { value: "  Yas   island " } });
-    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual([
-      "Yas IslandArea · Abu Dhabi",
-      "Yas AcresSub-community · Yas Island",
-    ]);
+    expect(names()).toEqual(["Yas Island", "Yas Acres"]);
     fireEvent.keyDown(search, { key: "Enter" });
     expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[2], as: "card" });
   });
@@ -81,7 +107,19 @@ describe("InternalLinkDialog", () => {
     fireEvent.change(screen.getByRole("combobox"), {
       target: { value: "baz-ad-048" },
     });
-    expect(screen.getByRole("option").textContent).toContain("Sea-view villa");
+    expect(screen.getByRole("option").textContent).toContain("BAZ-AD-04891");
+  });
+
+  it("tells same-titled listings apart by their facts, as the shared pickers do", () => {
+    // Both are "Sea-view villa". "5 bed" is a whole figure, so it must not
+    // find the other one through "6,555 ft²".
+    const { onChoose } = open(insert);
+    fireEvent.click(screen.getByRole("tab", { name: /Listings/ }));
+    const search = screen.getByRole("combobox");
+    fireEvent.change(search, { target: { value: "5 bed" } });
+    expect(screen.getAllByRole("option")).toHaveLength(1);
+    fireEvent.keyDown(search, { key: "Enter" });
+    expect(onChoose).toHaveBeenCalledWith({ target: TARGETS[4], as: "card" });
   });
 
   it("moves the highlight with the arrow keys", () => {

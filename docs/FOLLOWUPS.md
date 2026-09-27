@@ -657,7 +657,7 @@ shows the trail.)
   means list fields writing to `area_guides`, not to the section document.
 
 - [blog] Internal-link picker loads the whole catalogue into the browser.
-  `lib/internal-links/targets.ts` sends every published area, project and
+  `admin/blog/_link-targets.ts` sends every published area, project and
   listing to the blog editor (~130 rows today) and the picker searches them
   client-side. Paginated, so nothing truncates — but past a few thousand
   listings the Listings tab wants a server-side search (an action taking the
