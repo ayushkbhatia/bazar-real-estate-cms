@@ -21,8 +21,9 @@ test("/about renders with title set", async ({ page }) => {
 test("/agents renders with title set and lists advisors", async ({ page }) => {
   const response = await page.goto("/agents");
   expect(response?.status()).toBe(200);
-  // `title` is a literal in the route's own `metadata` export, not a CMS
-  // field, so it stays asserted by value — see the note at the top.
+  // The title is CMS-owned now (Pages & blocks → Agents → Search appearance),
+  // like /about's above, and falls back to "Our team" while nobody has set
+  // one. Asserted loosely for the same reason.
   await expect(page).toHaveTitle(/our team/i);
 
   const heading = page.getByRole("heading", { level: 1 }).first();

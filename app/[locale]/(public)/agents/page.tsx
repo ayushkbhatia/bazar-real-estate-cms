@@ -1,5 +1,5 @@
-import type { Locale } from "@/lib/i18n/locales";
-import { getTranslations } from "next-intl/server";
+import { asLocale, type Locale } from "@/lib/i18n/locales";
+import { setRequestLocale } from "next-intl/server";
 import Image from "next/image";
 import Link from "@/components/i18n/link";
 import type { Metadata } from "next";
@@ -7,19 +7,41 @@ import { MessageCircle } from "lucide-react";
 import { Eyebrow } from "@/components/brand/eyebrow";
 import { PlaceholderImage } from "@/components/brand/placeholder-image";
 import { listAgents, type AgentProfile } from "@/lib/queries/agents";
-import { DESK_INTRO, DESK_LABEL, groupByDesk } from "@/lib/agents/desk";
+import { getMasterPageContent } from "@/lib/queries/master-pages";
+import { masterPageMetadata } from "@/lib/queries/search-appearance";
+import { agentTokens } from "@/lib/queries/agent-page";
+import { str } from "@/lib/master-pages";
+import { fillTokens } from "@/lib/master-pages/agent-page";
+import { isolateForLocale } from "@/lib/i18n/bidi";
+import { DESK_ORDER, groupByDesk, type Desk } from "@/lib/agents/desk";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 // T1.5 quick win: WhatsApp deep-link on every advisor card. The number is
 // the advisor's own `staff.whatsapp`; it used to be matched out of the seed
 // roster on slug, so a real advisor got a fictional one's number and an
 // advisor who wasn't a seed got no button at all.
-function whatsappFor(agent: AgentProfile): string | null {
-  return buildWhatsAppLink(
-    agent.whatsapp,
-    `Hi ${agent.display_name}, found you on bazar.ae`,
-  );
+//
+// The message is the CMS's (Pages & blocks → Agents → Advisor cards), with
+// `{name}` / `{first_name}` filled per advisor. A name can arrive in the other
+// script, so it is isolated under Arabic like every token the profile pages
+// fill; under English that is the identity.
+function whatsappFor(
+  agent: AgentProfile,
+  template: string | null,
+  locale: Locale,
+): string | null {
+  const tokens = agentTokens(agent.display_name);
+  const message = template
+    ? fillTokens(template, {
+        name: isolateForLocale(tokens.name, locale),
+        first_name: isolateForLocale(tokens.first_name, locale),
+      })
+    : null;
+  return buildWhatsAppLink(agent.whatsapp, message);
 }
+
+const isDesk = (key: string): key is Desk =>
+  (DESK_ORDER as string[]).includes(key);
 
 /**
  * Slot width of one portrait in the desk grid.
@@ -43,42 +65,80 @@ const PORTRAIT_SIZES =
   "(min-width: 640px) calc((100vw - 64px) / 2), " +
   "calc(100vw - 32px)";
 
-export const metadata: Metadata = {
-  title: "Our team",
-  description:
-    "Twelve senior advisors across buy, sell, rent, off-plan, and investment desks in Abu Dhabi.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  // Title and description are CMS-owned: Pages & blocks → Agents → Search
+  // appearance. Unedited, they fall back to the strings that used to be this
+  // route's literal `export const metadata`, now in MASTER_PAGE_SEO_DEFAULTS.
+  return masterPageMetadata("agents", asLocale((await params).locale), {
+    alternates: { canonical: "/agents" },
+  });
+}
+
+/*
+ * The page reads the CMS now, so it takes the interval every sibling master
+ * page carries. Saves still revalidate on demand; this is what heals a build
+ * that could not reach the database and baked the shipped copy.
+ */
+export const revalidate = 300;
 
 export default async function AgentsIndexPage({ params }: { params: Promise<{ locale: Locale }> }) {
   /*
-   * Locale from `params`, never ambient. An ambient `getTranslations` reads
-   * `getLocale()`, which falls through to `headers()` and takes the route off
-   * prerendering — check:routes caught all five of these at once.
+   * Locale from `params`, never ambient. An ambient read falls through to
+   * `headers()` and takes the route off prerendering — check:routes caught
+   * all five of these at once. Set before anything else awaits, for the
+   * reason `partners/page.tsx` gives.
    */
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "editorial" });
-  const agents = await listAgents(locale);
+  const locale = asLocale((await params).locale);
+  setRequestLocale(locale);
+  // Two sources, one round: the page's own words from
+  // /admin/pages/master/agents, the advisors from their team records.
+  const [content, agents] = await Promise.all([
+    getMasterPageContent("agents", locale),
+    listAgents(locale),
+  ]);
+  const v = (key: string) => content.section(key)?.values ?? {};
+  const heroV = v("hero");
+  const whatsappTemplate = str(v("cards"), "whatsapp_message");
   // T3-A: group by desk so the team page reads as an org chart rather than
-  // a flat grid. Order: Leadership → Buy-side → Off-plan → Lettings.
-  const grouped = groupByDesk(agents);
+  // a flat grid. Which desk an advisor sits on is derived from their title;
+  // the order the desks render in, and whether one renders at all, is the
+  // editor's — the switched-on desk sections, in document order. A desk with
+  // nobody on it drops out whatever its switch says.
+  const byDesk = new Map(groupByDesk(agents));
+  const grouped = content.order
+    .filter(isDesk)
+    .flatMap((desk) => {
+      const deskAgents = byDesk.get(desk);
+      return deskAgents ? [[desk, deskAgents] as const] : [];
+    });
 
   return (
     <div className="bg-bz-bg">
       <section className="px-4 md:px-12 pt-12 md:pt-20 pb-14 max-w-[1200px]">
-        <Eyebrow>{t("eyebrow.ourTeam")}</Eyebrow>
+        {str(heroV, "eyebrow") ? (
+          <Eyebrow>{str(heroV, "eyebrow")}</Eyebrow>
+        ) : null}
         <h1
           className="serif text-[40px] md:text-[80px] mt-3 font-normal leading-[0.98]"
           style={{ letterSpacing: "-0.03em" }}
         >
-          Twelve advisors.
-          <br />
-          By design.
+          {str(heroV, "title")}
+          {str(heroV, "title_second") ? (
+            <>
+              <br />
+              {str(heroV, "title_second")}
+            </>
+          ) : null}
         </h1>
-        <p className="mt-8 text-[17px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-          Bazar caps senior advisor headcount. Each advisor owns the
-          relationship end-to-end — no junior handoffs, no fee-shares. When you
-          engage Bazar, you engage a person.
-        </p>
+        {str(heroV, "sub") ? (
+          <p className="mt-8 text-[17px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+            {str(heroV, "sub")}
+          </p>
+        ) : null}
       </section>
 
       {grouped.map(([desk, deskAgents]) => (
@@ -87,14 +147,18 @@ export default async function AgentsIndexPage({ params }: { params: Promise<{ lo
           className="px-4 md:px-12 pb-20 max-w-[1280px] border-t border-bz-border"
         >
           <div className="pt-14 mb-10">
-            <Eyebrow>{DESK_LABEL[desk]}</Eyebrow>
-            <p className="mt-3 text-[15px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-              {DESK_INTRO[desk]}
-            </p>
+            {str(v(desk), "eyebrow") ? (
+              <Eyebrow>{str(v(desk), "eyebrow")}</Eyebrow>
+            ) : null}
+            {str(v(desk), "body") ? (
+              <p className="mt-3 text-[15px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+                {str(v(desk), "body")}
+              </p>
+            ) : null}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 gap-y-12">
             {deskAgents.map((a) => {
-              const wa = whatsappFor(a);
+              const wa = whatsappFor(a, whatsappTemplate, locale);
               return (
                 <div key={a.user_id} className="relative group">
                   <Link href={`/agents/${a.slug}`} className="block">

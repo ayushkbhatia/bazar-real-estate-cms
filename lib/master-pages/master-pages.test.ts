@@ -32,6 +32,7 @@ describe("registry", () => {
       "services",
       "insights",
       "about",
+      "agents",
       "contact",
       "sell",
       "manage",

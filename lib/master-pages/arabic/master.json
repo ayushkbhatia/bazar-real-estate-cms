@@ -11829,6 +11829,11 @@
     "model": "claude-opus-5",
     "at": "2026-08-16T12:32:10.244Z"
   },
+  "Our team": {
+    "ar": "فريقنا",
+    "by": "human",
+    "at": "2026-09-27T00:00:00.000Z"
+  },
   "Our team helps tenants find the right rental with clarity and confidence.": {
     "ar": "يساعد فريقنا المستأجرين في العثور على العقار المناسب للإيجار بوضوح وثقة.",
     "by": "machine",
@@ -16231,6 +16236,11 @@
     "by": "machine",
     "model": "claude-opus-5",
     "at": "2026-08-16T12:44:34.154Z"
+  },
+  "Twelve senior advisors across buy, sell, rent, off-plan, and investment desks in Abu Dhabi.": {
+    "ar": "اثنا عشر من كبار المستشارين في مكاتب الشراء والبيع والإيجار والمشاريع على الخارطة والاستثمار في أبوظبي.",
+    "by": "human",
+    "at": "2026-09-27T00:00:00.000Z"
   },
   "Twelve years working the Saadiyat curve, from the first Mamsha handovers through Nudra and Hidd Al Saadiyat. Mariam is the advisor families ask for when the deal needs to close quietly.": {
     "ar": "اثنا عشر عامًا في العمل على منحنى السعديات، من أول تسليمات ممشى مرورًا بنودرة وحد السعديات. مريم هي المستشارة التي يطلبها الأسر عندما يحتاج الصفقة إلى الإغلاق بهدوء.",

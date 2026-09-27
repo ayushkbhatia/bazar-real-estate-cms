@@ -1,6 +1,5 @@
 {
   "eyebrow": {
-    "activeListings": "Active listings",
     "advisorCommentary": "Advisor commentary",
     "areas": "Areas",
     "articles": "Articles",
@@ -8,12 +7,8 @@
     "category": "Category",
     "developer": "Developer",
     "developments": "Developments",
-    "languages": "Languages",
-    "ourTeam": "Our team",
-    "specialties": "Specialties",
     "talkToAuthor": "Talk to the author",
     "trend": "Trend",
-    "whatClientsSay": "What clients say",
     "whatsSelling": "What's selling · DLD recorded"
   },
   "article": {
@@ -25,11 +20,6 @@
     "breadcrumb": "Breadcrumb",
     "readMinutes": "{count, plural, one {{minutes} min read} other {{minutes} min read}}",
     "readMinutesShort": "{count, plural, one {{minutes} min} other {{minutes} min}}"
-  },
-  "agent": {
-    "advisor": "Advisor",
-    "worksFullCycle": "{name} works the full advisory cycle end to end.",
-    "mailGreeting": "Hi {name}, I'd like to talk about a Bazar engagement."
   },
   "report": {
     "closedTransactions": "{count, plural, one {# closed {type} transaction on DLD record in {quarter}.} other {# closed {type} transactions on DLD record in {quarter}.}}",

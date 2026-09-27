@@ -77,7 +77,6 @@ const REMAINING: Readonly<Record<string, number>> = {
   "app/[locale]/(public)/_components/off-plan/offplan-map-explorer.tsx": 1,
   "app/[locale]/(public)/_components/trust-strip.tsx": 2,
   "app/[locale]/(public)/about/page.tsx": 1,
-  "app/[locale]/(public)/agents/page.tsx": 2,
   "app/[locale]/(public)/areas/[slug]/opengraph-image.tsx": 2,
   "app/[locale]/(public)/concierge/page.tsx": 2,
   "app/[locale]/(public)/data-deleted/page.tsx": 4,
@@ -110,7 +109,7 @@ const REMAINING: Readonly<Record<string, number>> = {
 };
 
 /** What the ratchet held when it landed. Lowering it is the point. */
-const TOTAL_CEILING = 100;
+const TOTAL_CEILING = 98;
 
 /**
  * Three shapes, matching the three ways a literal reaches a reader.

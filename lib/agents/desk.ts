@@ -16,6 +16,12 @@
 
 export type Desk = "leadership" | "buy-side" | "off-plan" | "lettings";
 
+/*
+ * The shipped heading and intro of each desk. Not read by /agents directly any
+ * more: they are the English defaults of the desk sections on the /agents
+ * master page (`lib/master-pages/sections/agents.ts`), where an editor changes
+ * them and their Arabic sits beside them.
+ */
 export const DESK_LABEL: Record<Desk, string> = {
   leadership: "Leadership",
   "buy-side": "Buy-side advisors",

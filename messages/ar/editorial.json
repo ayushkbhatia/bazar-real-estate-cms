@@ -1,6 +1,5 @@
 {
   "eyebrow": {
-    "activeListings": "المعروضات النشطة",
     "advisorCommentary": "المشورة من الخبير",
     "areas": "المناطق",
     "articles": "البحث عن الأخبار",
@@ -8,12 +7,8 @@
     "category": "القسم",
     "developer": "مطور عقاري",
     "developments": "المشاريع العقارية",
-    "languages": "اللغات",
-    "ourTeam": "فريقنا",
-    "specialties": "المجالات المتخصصة",
     "talkToAuthor": "تحدث إلى المُعلِن",
     "trend": "التغير",
-    "whatClientsSay": "آراء العملاء",
     "whatsSelling": "ما يُباع فعلاً · مسجّل لدى دائرة الأراضي والأملاك"
   },
   "article": {
@@ -25,11 +20,6 @@
     "breadcrumb": "مسار التنقل",
     "readMinutes": "{count, plural, zero {{minutes} دقيقة قراءة} one {دقيقة قراءة} two {دقيقتا قراءة} few {{minutes} دقائق قراءة} many {{minutes} دقيقة قراءة} other {{minutes} دقيقة قراءة}}",
     "readMinutesShort": "{count, plural, zero {{minutes} دقيقة} one {دقيقة} two {دقيقتان} few {{minutes} دقائق} many {{minutes} دقيقة} other {{minutes} دقيقة}}"
-  },
-  "agent": {
-    "advisor": "المستشار",
-    "worksFullCycle": "يغطي {name} دورة الاستشارة كاملةً من البداية إلى النهاية.",
-    "mailGreeting": "مرحباً {name}، أودّ التحدث بشأن تعاون مع بازار."
   },
   "report": {
     "closedTransactions": "{count, plural, zero {# صفقة {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.} one {صفقة {type} مغلقة واحدة في سجلات دائرة الأراضي والأملاك في {quarter}.} two {# صفقتان {type} مغلقتان في سجلات دائرة الأراضي والأملاك في {quarter}.} few {# صفقات {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.} many {# صفقة {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.} other {# صفقة {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.}}",

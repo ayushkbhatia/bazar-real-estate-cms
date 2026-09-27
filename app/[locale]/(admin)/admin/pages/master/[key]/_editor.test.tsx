@@ -11,7 +11,11 @@ import {
   type MasterPageDef,
   type SectionDef,
 } from "@/lib/master-pages";
-import { areaPageDef, developmentPageDef } from "@/lib/master-pages/subpages";
+import {
+  agentPageDef,
+  areaPageDef,
+  developmentPageDef,
+} from "@/lib/master-pages/subpages";
 import {
   LIBRARY_SECTIONS,
   librarySectionPageDef,
@@ -29,6 +33,11 @@ import {
   PROPERTY_PAGE_COPY_SECTIONS,
   propertyPageCopyDef,
 } from "@/lib/master-pages/property-page";
+import {
+  AGENT_PAGE_COPY_SECTIONS,
+  agentPageCopyDef,
+  agentPageCopyDefault,
+} from "@/lib/master-pages/agent-page";
 import { arKey, isTranslatable } from "@/lib/master-pages/twins";
 import { MasterPageEditor } from "./_editor";
 
@@ -218,6 +227,10 @@ describe("sub-pages", () => {
     [
       "area",
       areaPageDef({ name: "Saadiyat Island", slug: "saadiyat-island" }) as MasterPageDef,
+    ],
+    [
+      "agent",
+      agentPageDef({ name: "Bazar Real Estate", slug: "bazar-advisor" }) as MasterPageDef,
     ],
   ];
 
@@ -610,6 +623,46 @@ describe("property page copy", () => {
   it("offers no switch to turn a band off", () => {
     mount(def);
     expect(screen.queryAllByLabelText(/^Reorder /)).toHaveLength(0);
+  });
+});
+
+/**
+ * The advisor profiles — one shared document behind every `/agents/<slug>`,
+ * and one per advisor over it, reached through Pages → Sub-pages → Agents.
+ */
+describe("advisor profile copy", () => {
+  const def = agentPageCopyDef() as MasterPageDef;
+
+  it("draws every declared field, in every band", () => {
+    const sections = mount(def);
+    expect(sections).toHaveLength(AGENT_PAGE_COPY_SECTIONS.length);
+    const found = rows();
+    expect(found).toHaveLength(sections.length);
+    sections.forEach((section, i) => {
+      const panel = openPanel(found[i]);
+      for (const field of section.def.fields) expectField(panel, field);
+      closePanel(found[i]);
+    });
+  });
+
+  it("shows an advisor's empty boxes pre-filled with the shared wording", () => {
+    // The per-advisor document ships every override blank. What an editor
+    // sees in each box is what the page publishes — the shared wording — as a
+    // placeholder, so typing nothing still stores nothing.
+    const own = agentPageDef({
+      name: "Bazar Real Estate",
+      slug: "bazar-advisor",
+    }) as MasterPageDef;
+    const sections = mount(own);
+    const found = rows();
+    const cta = sections.findIndex((s) => s.key === "cta");
+    const panel = openPanel(found[cta]!);
+    const box = within(panel).getByPlaceholderText(
+      agentPageCopyDefault("cta", "heading")!,
+    );
+    expect((box as HTMLInputElement).value).toBe("");
+    // Tokens stay tokens: the editor has no advisor to substitute.
+    expect(agentPageCopyDefault("cta", "heading")).toContain("{first_name}");
   });
 });
 
