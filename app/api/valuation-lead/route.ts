@@ -18,6 +18,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendEmail } from "@/lib/email";
+import { sendEnquiryAcknowledgement } from "@/lib/enquiry-acknowledgement";
 import {
   valuationCodeEmail,
   valuationReportRequestedEmail,
@@ -153,6 +154,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Enqueue an enquiry row so the assigned advisor picks it up.
+    let enquiryId: string | null = null;
     try {
       const supabase = createAdminClient();
       if (!supabase) {
@@ -178,6 +180,7 @@ export async function POST(req: NextRequest) {
         })
         .select("id")
         .maybeSingle();
+      enquiryId = enquiryRow?.id ?? null;
 
       // The report gate collects its details behind an emailed code, so it
       // never goes through `submitForm`. Logging here keeps /admin/forms →
@@ -186,7 +189,7 @@ export async function POST(req: NextRequest) {
       await captureFormSubmission({
         formKey: "valuation_report_gate",
         sourcePath: "/tools/valuation",
-        enquiryId: enquiryRow?.id ?? null,
+        enquiryId,
         data: withLabels(
           {
             email: data.email,
@@ -211,14 +214,18 @@ export async function POST(req: NextRequest) {
       console.warn("[valuation-lead] enqueue failed", err);
     }
 
-    // Send the confirmation email
+    // This confirmation is the lead's acknowledgement — the minute sweep never
+    // sends a valuation lead the generic one — so it is stamped on the row the
+    // same way the other intakes' are. Sent even when the row wasn't written.
     const confirmation = await valuationReportRequestedEmail(data.locale ?? "en");
-    await sendEmail({
+    const email = {
       to: data.email,
       subject: confirmation.subject,
       text: confirmation.text,
       html: confirmation.html,
-    });
+    };
+    if (enquiryId) await sendEnquiryAcknowledgement(enquiryId, email);
+    else await sendEmail(email);
 
     return NextResponse.json({ ok: true });
   } catch (err) {

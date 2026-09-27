@@ -1,18 +1,24 @@
 /**
- * Sprint 10 — enquiry-auto-reply cron.
+ * enquiry-auto-reply — the fallback acknowledgement sweep.
  *
- * Runs every minute (vercel.json). Sweeps enquiries created in the
- * last 5 minutes that haven't received an auto-acknowledgement and
- * sends the customer-facing enquiry-received email.
+ * Runs every minute (vercel.json). A lead is acknowledged by the intake action
+ * that wrote it — `createEnquiry`, `submitServiceLead`, `submitListingLead` —
+ * which sends the email inline and stamps `ack_sent_at` when it goes out
+ * (lib/enquiry-acknowledgement.ts). This route sends the same email to any
+ * lead still without that stamp: the ones whose inline send failed or was
+ * skipped. It is the fallback, not a second sender, so it:
  *
- * Sprint 11 introduces a Supabase Edge Function triggered on enquiries
- * INSERT for sub-minute latency; this cron is the fallback sweep so
- * acks never go unsent.
+ *   · leaves a new lead alone for GRACE_MS, so the inline send has finished
+ *     and stamped before the sweep looks. A tick landing between the insert
+ *     and the stamp would otherwise send it again;
+ *   · looks back WINDOW_MS, so a lead nobody could mail is retried for a few
+ *     minutes and then left to the desk;
+ *   · never acknowledges a valuation lead. /api/valuation-lead confirms those
+ *     with an email of its own, stamped the same way; this one on top would be
+ *     a second email and the wrong one, and is no stand-in if that one fails.
  *
- * The `auto_reply_sent_at` column on `public.enquiries` lands once
- * Sprint 10 migration applies; until then this route falls back to
- * checking `created_at` window + a small in-memory dedup window
- * surfaced via 'X-Already-Sent' header.
+ * The pg_net → Edge Function path from 0030 would be a third sender, which is
+ * why it stays undeployed.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
@@ -22,6 +28,11 @@ import { env, isSupabaseConfigured } from "@/lib/env";
 import { sendEmail } from "@/lib/email";
 import { enquiryAcknowledgementEmail } from "@/lib/content-assets/system-emails";
 import type { Database } from "@/db/types";
+
+/** How far back the sweep looks for an unacknowledged lead. */
+const WINDOW_MS = 5 * 60 * 1000;
+/** How long a new lead is left to its intake's own send. That takes seconds. */
+const GRACE_MS = 60 * 1000;
 
 function adminClient() {
   if (!env.NEXT_PUBLIC_SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -53,16 +64,16 @@ export async function GET(req: NextRequest) {
 
   try {
     const supabase = adminClient();
-    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-    // ack_sent_at lands in migration 0027 — until applied, fall back to
-    // a 5-minute window only (best-effort dedupe).
+    const now = Date.now();
     const { data: rows, error } = await supabase
       .from("enquiries")
       .select(
         "id, name, email, brief_raw, source, form_key, locale, property_id, created_at, properties(reference, title)",
       )
-      .gte("created_at", fiveMinAgo)
+      .gte("created_at", new Date(now - WINDOW_MS).toISOString())
+      .lte("created_at", new Date(now - GRACE_MS).toISOString())
       .is("ack_sent_at", null)
+      .neq("source", "valuation")
       // Spam filed within the acknowledgement window shouldn't get an
       // auto-reply on its way out.
       .is("archived_at", null);

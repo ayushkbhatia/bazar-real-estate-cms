@@ -834,16 +834,16 @@ shows the trail.)
      the account owner. Note the domain is `bazarrealestate.com`, NOT `bazar.ae`
      — if the site later moves to bazar.ae, that domain needs verifying too.
 
-- [email] Three crons stamp their "already handled" marker before the send, so
+- [email] Two crons stamp their "already handled" marker before the send, so
   a failed email is never retried and the row is excluded forever.
-  `enquiry-auto-reply/route.ts:56,64` also scans a fixed 5-minute window, so any
-  enquiry not mailed within 5 minutes is abandoned; `app/[locale]/(public)/_actions.ts:159`
-  doesn't stamp `ack_sent_at` at all on the inline path, which double-sends the
-  ack when the inline send succeeds. `enquiry-escalation/route.ts:116` stamps
-  `escalated_at` before the mail loop and discards the `sendEmail` result at
-  `:151`. `permit-expiry/route.ts:109` gates its 7-day dedup on an audit insert
-  written regardless of send outcome. Each wants: stamp only when at least one
-  send returned ok, and widen the scan window with an attempt counter.
+  `enquiry-escalation/route.ts:116` stamps `escalated_at` before the mail loop
+  and discards the `sendEmail` result at `:151`. `permit-expiry/route.ts:109`
+  gates its 7-day dedup on an audit insert written regardless of send outcome.
+  Each wants: stamp only when at least one send returned ok. Separately,
+  `enquiry-auto-reply` looks back a fixed 5 minutes, so a lead whose inline
+  send and every retry in that span fail is abandoned. Widening it wants an
+  attempt counter too — a longer window alone retries a dead address every
+  minute for as long as the window is.
 
 - [email] `lib/saved-search-alerts.ts:138,149` builds property CTAs from
   `propertyUrl()` (`lib/queries/property-utils.ts:14`), which is site-relative —
@@ -929,15 +929,20 @@ shows the trail.)
   The route was bounded to MAX_PER_RUN and its admin-email lookup hoisted out
   of the per-row loop (23 Sept) — both reviewed, neither executed, because
   running it locally against the production database would reassign real leads
-  and send real mail. None of the seven cron routes has a spec. Worth a
-  harness that fakes the Supabase chain, given they now actually run.
+  and send real mail. Only enquiry-auto-reply has a spec; its in-memory
+  PostgREST fake (`app/api/cron/enquiry-auto-reply/route.test.ts`) is the
+  harness the rest want, given they now actually run.
 
 - [cron] The enquiry auto-reply has a second, also-dead path.
   The pg_net trigger (0030) posts to a Supabase Edge Function that has never
   been deployed (`list_edge_functions` is empty), and `app_settings` is empty
   so `functions_base_url()` returns NULL and the trigger deliberately no-ops.
   Deploying the function and setting that row would restore acknowledgements
-  independently of Vercel.
+  independently of Vercel — but not as written. It fires on INSERT, before the
+  intake's inline send has stamped `ack_sent_at`, so every lead would be
+  acknowledged twice again, and a valuation lead would get the generic email
+  the sweep now deliberately skips. The inline send is the primary path; this
+  would be a third sender.
 
 - [valuation] dld_comparables is empty and no longer refreshed.
   The weekly import cron was removed as unused. /tools/valuation and
