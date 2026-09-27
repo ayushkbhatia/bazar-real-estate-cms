@@ -80,6 +80,10 @@ Four rules hold them together:
   declare `sharedQuery: "projects"`, and the gate charges a shared query
   **once per page** — five project sections cost one query, which is what the
   resolver spends. `queryCost` stays per block for list-shaped inventory.
+  The one follow-up read: when a project whose layouts the page draws turns
+  out to gate them, the `development_floorplan` form is read after the
+  projects — only then, since whether a project gates is only known once it
+  has been read.
 - **No pick, no section.** `pickRequired` is the single-record twin of
   `rowsRequired`: a project section with no project draws nothing, and the
   editor row and the gate both say so. The advisor card uses it too.

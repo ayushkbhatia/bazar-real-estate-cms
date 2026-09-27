@@ -97,5 +97,9 @@
     "totalUnits": "Total units",
     "handover": "Handover",
     "paymentPlan": "Payment plan"
+  },
+  "floorplanGate": {
+    "request": "Request layout",
+    "view": "See the plan"
   }
 }

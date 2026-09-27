@@ -5,6 +5,7 @@ import { EMPTY_LANDING_DATA, type LandingData } from "./data";
 import { getBlockDef } from "./catalogue";
 import { blockCatalogueGap, projectFeaturesOf } from "./content-gap";
 import { FSI, PDI } from "@/lib/i18n/bidi";
+import { defaultForm } from "@/lib/forms";
 import type { LandingProject } from "@/lib/queries/landing-projects";
 import type { AgentProfile } from "@/lib/queries/agents";
 import type { ProjectFeature } from "./types";
@@ -184,11 +185,25 @@ describe("the editor's advisory note and the section agree", () => {
   }
 
   it("keeps the project's own layout gate", () => {
+    const floorplan = defaultForm("development_floorplan")!;
+    const p = adapt.projectUnitPlansProps(
+      values("project_unit_plans", { development: "yas-riva" }),
+      data(project(), { forms: { development_floorplan: floorplan } }),
+    )!;
+    expect(p.gated).toBe(true);
+    // The same form the project page asks, filed against the same project.
+    expect(p.floorplanForm).toBe(floorplan);
+    expect(p.developmentId).toBe("dev-1");
+  });
+
+  it("hands over no gate form when the page did not load one", () => {
     const p = adapt.projectUnitPlansProps(
       values("project_unit_plans", { development: "yas-riva" }),
       data(project()),
     )!;
-    expect(p.gated).toBe(true);
+    // `UnitFloorPlans` then shows the plans openly rather than behind a lock
+    // with nothing to press.
+    expect(p.floorplanForm).toBeNull();
   });
 
   it("names the site plan after the project when it has no alt text", () => {

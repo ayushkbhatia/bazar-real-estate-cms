@@ -239,8 +239,29 @@ describe("readAnswers — bespoke handlers and context", () => {
       fields: form.fields,
     });
     expect(read.scenario).toBe("Price AED 3,000,000 · 20% down · 25 years · 4.2%");
+    // Unlabelled: the card reads it as the calculator's.
+    expect(read.scenarioLabel).toBeNull();
     expect(read.answers.map((a) => a.key)).toEqual(["stage"]);
     expect(read.answers[0]!.value).toBe("Comparing banks");
+  });
+
+  it("lifts a floor-plan request's layout out, named as the form names it", () => {
+    const form = def("development_floorplan");
+    const read = readAnswers({
+      data: {
+        name: "Layla",
+        email: "l@example.com",
+        phone: "+971 50 000 0000",
+        _scenario: "1 Bedroom · Type 2",
+      },
+      labels: { _scenario: "Layout requested" },
+      def: form,
+      fields: form.fields,
+    });
+    expect(read.scenario).toBe("1 Bedroom · Type 2");
+    expect(read.scenarioLabel).toBe("Layout requested");
+    // Name, email and phone are the lead card's, so nothing else is left.
+    expect(read.answers).toEqual([]);
   });
 
   it("names the project a development answer points at", () => {

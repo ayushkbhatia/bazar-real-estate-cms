@@ -223,7 +223,10 @@ function AnswerList({ answers }: { answers: ReadAnswers }) {
         {answers.scenario ? (
           <div className="mt-4 rounded-md border border-bz-border bg-bz-surface-2 px-3.5 py-3">
             <div className="text-[11.5px] text-bz-muted">
-              The calculator as it stood when they pressed send
+              {/* The page's context, named by the form that sent it — the
+                  floor-plan gate's is the layout they asked for. */}
+              {answers.scenarioLabel ??
+                "The calculator as it stood when they pressed send"}
             </div>
             <p className="mt-1 text-[13px] text-bz-ink leading-relaxed whitespace-pre-line">
               {answers.scenario}

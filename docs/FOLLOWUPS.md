@@ -914,13 +914,6 @@ shows the trail.)
   for the whole 14-day window. Not exploitable today, but worth scoping to
   `new.raw_user_meta_data->>'bazar_staff_invite' = 'true'` in a NEW migration.
 
-- [developments] The floor-plan gate is the same stub the brochure gate was.
-  `_components/floorplan-gate.tsx` still collects an email, waits, and toasts —
-  no enquiry, no record, nothing sent. It wants the same treatment the brochure
-  gate just got: name + phone + email, a real enquiry carrying development_id,
-  and the plan opening rather than being promised by email. Left out to keep this
-  change reviewable.
-
 - [developments] No brochure means the button still appears.
   With no PDF set, the form captures the lead and says an advisor will send it —
   deliberately, so the lead isn't lost. Nobody is notified specifically that a
