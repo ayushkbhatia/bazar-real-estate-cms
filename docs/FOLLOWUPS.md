@@ -31,6 +31,21 @@ quick grep can show "what's outstanding in my area."
 
 ## Open
 
+- [ci] What the Vercel wait in CI cannot prevent.
+  `scripts/ci/wait-for-vercel.mjs` holds CI's one build while Vercel is
+  building, but three overlaps are left: a merge that lands while a pull
+  request's build is already prerendering; a pull request's E2E and Lighthouse
+  traffic running under a merge's Vercel build (on 2026-09-26 the E2E suite
+  alone averaged ~1,500 requests a minute, peaking at 2,560 — a build's rate,
+  though at one page in flight rather than 24); and several held builds
+  released by the same wait together. The lever left is Vercel's own burst.
+  Its 8-core build machine prerenders with 7 workers × 8 pages each
+  (`experimental.staticGenerationMaxConcurrency`, default 8), and even alone
+  that ran PostgREST at p95 1.9–4.7s origin time on 2026-09-27 (edge logs at
+  11:57Z, 12:01Z and 12:11Z). Lowering it for the Vercel build trades some
+  deploy time for headroom — measure a lone deploy's p95 before and after. The
+  structural fix is a database for CI that is not production's.
+
 - [off-plan] Two pages now list every published project: `/developments` and
   `/off-plan/launches`.
   `/off-plan/launches` was built as the destination of the New Projects rail's

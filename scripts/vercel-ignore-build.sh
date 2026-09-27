@@ -29,6 +29,10 @@
 #
 # or redeploy that commit by hand from the Vercel dashboard, which ignores this
 # script entirely.
+#
+# CI no longer builds four times a push, either: it builds once per run, and
+# holds that build while Vercel is building `main` or the commit under test —
+# an opted-in preview included (scripts/ci/wait-for-vercel.mjs).
 
 set -uo pipefail
 
