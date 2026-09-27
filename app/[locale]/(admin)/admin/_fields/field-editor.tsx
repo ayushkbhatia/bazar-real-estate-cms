@@ -15,6 +15,7 @@ import {
   type ImageValue,
   type ItemValue,
   type SectionValues,
+  type SeedKey,
   type SimpleFieldDef,
   arKey,
   isTranslatable,
@@ -22,7 +23,17 @@ import {
 import { ArabicTwin } from "./arabic-twin";
 import { ArabicImageTwin } from "./arabic-image-twin";
 import { UploadButton, VideoUploadButton } from "./upload-button";
+import { RecordPicker } from "./record-picker";
 import { fieldCls, type MediaOption, type Seeds } from "./types";
+
+/** What one option of a record picker is called, for its search box. */
+const RECORD_NOUNS: Partial<Record<SeedKey, string>> = {
+  properties: "listing",
+  developments: "project",
+  agents: "advisor",
+  areas: "area",
+  forms: "form",
+};
 
 /**
  * The field editor, generated from a `FieldDef`.
@@ -133,6 +144,15 @@ export function FieldEditor({
                   media={media}
                   onMediaAdded={onMediaAdded}
                   seeds={seeds}
+                  taken={
+                    isSelectField(sub) && sub.optionsKey
+                      ? items.flatMap((other, j) =>
+                          j !== i && typeof other[sub.key] === "string"
+                            ? [other[sub.key] as string]
+                            : [],
+                        )
+                      : undefined
+                  }
                   onChange={(v) => {
                     const next = items.slice();
                     next[i] = { ...item, [sub.key]: v };
@@ -205,6 +225,7 @@ export function ScalarField({
   seeds,
   arValue,
   onArChange,
+  taken,
 }: {
   field: Exclude<FieldDef, { kind: "list" }>;
   value: ItemValue | undefined;
@@ -212,6 +233,11 @@ export function ScalarField({
   media: MediaOption[];
   onMediaAdded: (m: MediaOption) => void;
   seeds: Seeds;
+  /**
+   * For a record pick inside a list: what the list's other rows already hold,
+   * so the picker can refuse a duplicate. Absent everywhere else.
+   */
+  taken?: readonly string[];
   /**
    * The Arabic twin's value and setter. Optional, so a caller with no
    * bilingual document is unaffected.
@@ -235,6 +261,27 @@ export function ScalarField({
       field.options?.map((o) => ({ value: o.value, label: o.label })) ??
       (fromRecords ?? []).map((o) => ({ value: o.slug, label: o.name }));
     const picked = typeof value === "string" ? value : "";
+    // Records that carry more than a name — a listing's photo, reference and
+    // price — get the searchable picker; a name is all a native option can
+    // show, and for listings the name alone is ambiguous.
+    if (fromRecords?.some((o) => o.detail)) {
+      return (
+        <div className="flex flex-col gap-1.5">
+          <FieldLabel label={field.label} help={field.help} />
+          <RecordPicker
+            options={fromRecords}
+            value={picked}
+            onChange={(v) => onChange(v)}
+            label={field.label}
+            placeholder={field.placeholder}
+            taken={taken}
+            noun={
+              field.optionsKey ? (RECORD_NOUNS[field.optionsKey] ?? "record") : "record"
+            }
+          />
+        </div>
+      );
+    }
     const missing =
       fromRecords !== null &&
       picked !== "" &&

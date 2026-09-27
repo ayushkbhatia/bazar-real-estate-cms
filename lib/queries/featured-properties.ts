@@ -1,5 +1,6 @@
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { isSupabaseConfigured } from "@/lib/env";
+import { mediaPublicUrl } from "@/lib/media";
 import { currentLocale } from "@/lib/i18n/current";
 import { localiseRow } from "@/lib/i18n/localise";
 import { type Locale } from "@/lib/i18n/locales";
@@ -109,13 +110,50 @@ export async function listPropertiesByReference(
     .filter((r): r is ListingRow => r !== undefined);
 }
 
+/**
+ * One listing as the pickers offer it.
+ *
+ * A title alone is not enough to pick by. Three live listings are called "Yas
+ * Riva Reserve", all on Yas Island, and the reference that tells them apart
+ * was the value stored, never something shown — so an editor chose between
+ * identical lines and found out which one they had got in the preview. The
+ * facts below are what an advisor would say to tell two listings apart: what
+ * it is, how big, what it costs, sale or rent, and what it looks like.
+ */
 export type PropertyOption = {
   reference: string;
+  /**
+   * The URL slug — not unique on its own (those three share one), which is
+   * why the listing URL carries the reference too; see `propertyUrl`.
+   */
+  slug: string;
   title: string;
   areaName: string | null;
+  mode: string | null;
+  type: string | null;
+  beds: number | null;
+  baths: number | null;
+  builtUpFt2: number | null;
+  priceAed: number | null;
+  /** The hero photograph's public URL, for the thumbnail. */
+  heroUrl: string | null;
 };
 
-/** Published listings offered by the featured-properties picker. */
+type OptionRow = {
+  reference: string;
+  slug: string;
+  title: string;
+  mode: string | null;
+  type: string | null;
+  beds: number | null;
+  baths: number | null;
+  built_up_ft2: number | null;
+  price_aed: number | string | null;
+  areas: { name: string } | null;
+  property_media: { role: string; media: { storage_key: string } | null }[] | null;
+};
+
+/** Published listings offered by the listing pickers, newest first. */
 export async function listPropertyOptions(
   limit = 200,
 ): Promise<PropertyOption[]> {
@@ -123,24 +161,38 @@ export async function listPropertyOptions(
   const supabase = createSupabasePublicClient();
   const { data, error } = await supabase
     .from("properties")
-    .select("reference, title, areas:area_id(name)")
+    .select(
+      "reference, slug, title, mode, type, beds, baths, built_up_ft2, price_aed, areas:area_id(name), property_media(role, media:media_assets(storage_key))",
+    )
     .eq("status", "published")
     .is("deleted_at", null)
+    // Only the hero joins through. Filtering the embedded rows rather than the
+    // parents keeps every listing — one with no hero still gets a line, just
+    // no thumbnail — and saves shipping every gallery row for 200 listings to
+    // draw one 40px square each.
+    .eq("property_media.role", "hero")
     .order("published_at", { ascending: false })
     .limit(limit);
   if (error || !data) {
     if (error) console.error("[listPropertyOptions]", error);
     return [];
   }
-  return (
-    data as unknown as {
-      reference: string;
-      title: string;
-      areas: { name: string } | null;
-    }[]
-  ).map((r) => ({
-    reference: r.reference,
-    title: r.title,
-    areaName: r.areas?.name ?? null,
-  }));
+  return (data as unknown as OptionRow[]).map((r) => {
+    const hero = (r.property_media ?? []).find(
+      (m) => m.role === "hero" && m.media,
+    );
+    return {
+      reference: r.reference,
+      slug: r.slug,
+      title: r.title,
+      areaName: r.areas?.name ?? null,
+      mode: r.mode ?? null,
+      type: r.type ?? null,
+      beds: r.beds ?? null,
+      baths: r.baths ?? null,
+      builtUpFt2: r.built_up_ft2 ?? null,
+      priceAed: r.price_aed != null ? Number(r.price_aed) : null,
+      heroUrl: hero?.media ? mediaPublicUrl(hero.media.storage_key) : null,
+    };
+  });
 }

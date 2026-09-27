@@ -31,6 +31,10 @@ import {
 } from "@/lib/queries/search-appearance";
 import { saveMasterPageSeo } from "./_actions";
 import type { MediaOption, Seeds } from "../../../_fields/types";
+import {
+  developmentSeedItem,
+  propertySeedItem,
+} from "../../../_fields/record-seeds";
 
 export const dynamic = "force-dynamic";
 
@@ -90,17 +94,10 @@ export default async function MasterPageEditorPage({ params }: PageProps) {
     href: `/areas/${a.slug}`,
     slug: a.slug,
   }));
-  const developmentSeed = developments.map((d) => ({
-    name: d.name,
-    href: `/developments/${d.slug}`,
-    slug: d.slug,
-  }));
-
-  const propertySeed = properties.map((p) => ({
-    name: p.areaName ? `${p.title} · ${p.areaName}` : p.title,
-    href: "#",
-    slug: p.reference,
-  }));
+  // Both carry a `detail` — photo, reference, facts, price — so their pickers
+  // render as the searchable record picker rather than a bare title list.
+  const developmentSeed = developments.map(developmentSeedItem);
+  const propertySeed = properties.map(propertySeedItem);
 
   // The areas index leads with a curated marquee order, not the raw area
   // order the home page uses — so "load what's on the page" has to follow
