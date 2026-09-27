@@ -17,9 +17,30 @@ env:
   SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
   NEXT_PUBLIC_SITE_URL: https://www.bazarrealestate.ae
 
+# One build per run, and never while Vercel is building.
+#
+# Every job used to build the app for itself — this one, E2E (inside
+# Playwright's webServer) and both Lighthouse runs — so a run was four full
+# prerenders of ~1,030 pages, all reading the ONE Supabase project production
+# serves from, and a merge added Vercel's production build on top. PostgREST's
+# connection pool cannot serve that many at once. On 2026-09-27 it cost #553
+# its production deploy (the numbers are in scripts/ci/wait-for-vercel.mjs);
+# builds in runs that overlapped took 5 to 13 minutes instead of 2 or 3, and
+# twice that day E2E's webServer, which built the app too, ran out its 420s
+# budget before running a test.
+#
+# Now `build` is the only job that prerenders. It waits until Vercel is not
+# building, builds once, and hands `.next` to every job that needs a server;
+# they only start it.
+#
+#   lint-test                         no database
+#   build ──┬── routes                reads the build's prerender manifest
+#           ├── e2e                   next start + Playwright
+#           ├── lighthouse            next start + lhci
+#           └── lighthouse-mobile     next start + lhci
 jobs:
-  lint-test-build:
-    name: Lint, typecheck, unit, build
+  lint-test:
+    name: Lint, typecheck, unit
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -50,23 +71,104 @@ jobs:
       - name: Unit tests (vitest)
         run: npm run test:run
 
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    # Up to 20 of these can be the wait below.
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      # The wait step reads Vercel's commit statuses.
+      statuses: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      # After Install, so the install overlaps Vercel's build rather than
+      # queueing behind it. `main` is what production deploys, so a pull
+      # request never prerenders while a merge is deploying; the second ref is
+      # this run's own commit — its production build on a push, an opted-in
+      # [preview] on a pull request. Fails open: it cannot fail the job, and
+      # it stops waiting after 20 minutes.
+      - name: Wait until Vercel is not building
+        run: node scripts/ci/wait-for-vercel.mjs main "$HEAD_SHA"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
       - name: Build
         run: npm run build
 
-      # G-1. Reads .next/prerender-manifest.json and fails if a route that used
-      # to prerender now renders on demand. It has to run after Build, in the
-      # same job, because it reads that job's build output.
-      #
-      # This guard has existed since P0 and has never run in CI — it was a
-      # script somebody had to remember. It caught /sitemap.xml going dynamic
-      # during the areas fold (#363) only because the fold's author ran it by
-      # hand. The message-wave sweep touches ~270 files under [locale], where a
-      # missing setRequestLocale is invisible in review and in every other gate.
+      # A tarball, not the directory: `.next/node_modules` holds Turbopack's
+      # symlinks into node_modules (`postcss-<hash> -> ../../node_modules/postcss`),
+      # which an artifact zip would follow or flatten. Every job that unpacks
+      # this has run `npm ci` at the same path, so the links resolve there.
+      # `.next/cache` is the compiler's cache; `next start` does not need it.
+      - name: Package the build
+        run: tar -I 'zstd -T0' -cf next-build.tar.zst --exclude=.next/cache .next
+
+      - name: Upload the build
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: next-build.tar.zst
+          # Already compressed.
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
+          # Re-running this job replaces the artifact instead of failing on it.
+          overwrite: true
+
+      - name: Upload the prerender manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: prerender-manifest
+          path: .next/prerender-manifest.json
+          retention-days: 1
+          if-no-files-found: error
+          overwrite: true
+
+  # G-1. Reads .next/prerender-manifest.json and fails if a route that used to
+  # prerender now renders on demand. Its own job, reading the build's manifest,
+  # so a route that drifts reddens this check alone and cannot stop E2E or
+  # Lighthouse from running. Drift here is often content rather than code: the
+  # live CMS decides how many pages a pattern has.
+  #
+  # This guard has existed since P0 and had never run in CI — it was a script
+  # somebody had to remember. It caught /sitemap.xml going dynamic during the
+  # areas fold (#363) only because the fold's author ran it by hand. The
+  # message-wave sweep touches ~270 files under [locale], where a missing
+  # setRequestLocale is invisible in review and in every other gate.
+  routes:
+    name: Prerendered routes unchanged
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: prerender-manifest
+          path: .next
+
       - name: Prerendered routes unchanged
         run: npm run check:routes
 
   e2e:
     name: E2E (Playwright)
+    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -110,6 +212,14 @@ jobs:
             | sudo xargs -0 -r rm -v -f || true
           npx playwright install --with-deps chromium
 
+      - name: Download the build
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+
+      - name: Unpack the build
+        run: tar -I zstd -xf next-build.tar.zst && rm next-build.tar.zst
+
       - name: Run Playwright
         run: npm run test:e2e
         env:
@@ -117,6 +227,9 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           NEXT_PUBLIC_SITE_URL: https://www.bazarrealestate.ae
+          # Serve the `build` job's `.next` rather than building again — see
+          # webServer in playwright.config.ts.
+          PW_PREBUILT: "1"
 
       - name: Upload Playwright report on failure
         if: failure()
@@ -128,6 +241,7 @@ jobs:
 
   lighthouse:
     name: Lighthouse CI
+    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -141,13 +255,13 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Build
-        run: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_SITE_URL: https://www.bazarrealestate.ae
+      - name: Download the build
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+
+      - name: Unpack the build
+        run: tar -I zstd -xf next-build.tar.zst && rm next-build.tar.zst
 
       # The detail-page audit target has to be resolved, not hard-coded: the
       # catalogue is editor-owned, and naming a listing means the job 404s the
@@ -202,6 +316,7 @@ jobs:
   # (There is no `preset: "mobile"`; passing one fails the run outright.)
   lighthouse-mobile:
     name: Lighthouse CI (mobile)
+    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -215,13 +330,13 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Build
-        run: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_SITE_URL: https://www.bazarrealestate.ae
+      - name: Download the build
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
+
+      - name: Unpack the build
+        run: tar -I zstd -xf next-build.tar.zst && rm next-build.tar.zst
 
       # Same editor-owned-catalogue problem as the desktop job: the detail page
       # has to be resolved, never named. The property detail template is the

@@ -61,8 +61,8 @@ Four choices in the stack diverge from the original brief. Don't try to "fix" th
 | Regenerate Supabase types | `npm run db:types` |
 | Seed local DB | `npm run db:seed` |
 
-CI gate (run all six before requesting review — this is the full
-`lint-test-build` job, in its order):
+CI gate (run all six before requesting review — these are CI's `lint-test`,
+`build` and `routes` jobs, in their order):
 
 ```
 bash scripts/check-migrations.sh && npm run lint && npm run typecheck && npm run test:run && npm run build && npm run check:routes
@@ -314,7 +314,13 @@ All env vars are loaded via `lib/env.ts` (zod-validated). Don't read `process.en
 ## Deploy flow
 
 - `main` branch auto-deploys to production: https://www.bazarrealestate.ae
-- Pull requests get preview deployments.
+- Pull requests get a preview deployment only when a commit message contains
+  `[preview]` (`scripts/vercel-ignore-build.sh`).
+- CI builds once per run, in its `build` job, and E2E, both Lighthouse jobs and
+  `check:routes` use that build. Before prerendering, `build` waits while Vercel
+  is building `main` or the commit under test (`scripts/ci/wait-for-vercel.mjs`):
+  every build reads the one Supabase project production serves from, and
+  overlapping them is what failed #553's deploy.
 - Once env vars are set in Vercel for production + preview, Supabase + Sentry + PostHog will activate automatically.
 
 ## Project status

@@ -3,6 +3,18 @@ import { defineConfig, devices } from "@playwright/test";
 const PORT = 3100;
 
 /**
+ * Serve the `.next` that is already there instead of building one.
+ *
+ * CI builds once, in its `build` job, and hands that build to this job as an
+ * artifact of the same run: a fourth prerender here would be one more pass
+ * over the production database for no new information (see the header of
+ * .github/workflows/ci.yml). So CI sets this. Locally the default still
+ * builds, for the reason under `reuseExistingServer` below: a `.next` of
+ * unknown age tests the wrong code.
+ */
+const PREBUILT = !!process.env.PW_PREBUILT;
+
+/**
  * iPhone 13 minus `defaultBrowserType`.
  *
  * The descriptor names WebKit, but CI installs Chromium only
@@ -75,7 +87,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `npm run build && npm run start -- --port ${PORT}`,
+    command: PREBUILT
+      ? `npm run start -- --port ${PORT}`
+      : `npm run build && npm run start -- --port ${PORT}`,
     url: `http://127.0.0.1:${PORT}`,
     /*
      * Reuse a running server only when you opt in explicitly.
@@ -120,8 +134,12 @@ export default defineConfig({
      *
      * 420s is roughly 3x the observed CI build, so it absorbs runner variance
      * and still fails in a sensible time if the server genuinely hangs.
+     *
+     * With PW_PREBUILT there is no build in the command, only `next start`,
+     * which is ready in seconds. Two minutes is still generous, and a server
+     * that has not answered by then is hung rather than slow.
      */
-    timeout: 420_000,
+    timeout: PREBUILT ? 120_000 : 420_000,
     stdout: "ignore",
     stderr: "pipe",
   },

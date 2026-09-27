@@ -11,8 +11,9 @@
 module.exports = {
   ci: {
     collect: {
-      // Lighthouse needs a long-lived server. Build is done in a separate
-      // step; this command only starts the already-built app.
+      // Lighthouse needs a long-lived server. CI builds once, in the
+      // workflow's `build` job, and hands the result to this job; this
+      // command only starts it. Locally, `npm run build` first.
       startServerCommand: "npm run start -- --port 3100",
       startServerReadyPattern: "Ready in",
       // The property detail page is the heaviest template we have, so it is
