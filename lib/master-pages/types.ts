@@ -174,7 +174,13 @@ export type ListFieldDef = {
   seedKey?: SeedKey;
 };
 
-export type SeedKey = "areas" | "developments" | "properties" | "forms";
+export type SeedKey =
+  | "areas"
+  | "developments"
+  | "properties"
+  | "forms"
+  /** Publishable advisors — the Page Builder's advisor card picks one. */
+  | "agents";
 
 export type FieldDef =
   | SimpleFieldDef

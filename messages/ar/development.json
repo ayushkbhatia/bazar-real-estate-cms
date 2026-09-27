@@ -90,5 +90,12 @@
   },
   "developer": {
     "founded": "تأسّست عام {year}"
+  },
+  "figures": {
+    "startingPrice": "السعر يبدأ من",
+    "bedrooms": "غرف النوم",
+    "totalUnits": "إجمالي الوحدات",
+    "handover": "التسليم",
+    "paymentPlan": "خطة السداد"
   }
 }

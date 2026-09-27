@@ -24,6 +24,7 @@ import type { FieldDef, SectionValues } from "@/lib/master-pages";
 export type BlockGroup =
   | "opener"
   | "listings"
+  | "project"
   | "content"
   | "conversion"
   | "trust";
@@ -39,6 +40,12 @@ export const BLOCK_GROUPS: { key: BlockGroup; label: string; blurb: string }[] =
       key: "listings",
       label: "Live inventory",
       blurb: "Properties and projects pulled from the catalogue.",
+    },
+    {
+      key: "project",
+      label: "Project sections",
+      blurb:
+        "The sections of a project's own page — payment plan, master plan, floor plans, map. Pick the project and they stay in step with its record.",
     },
     {
       key: "content",
@@ -80,7 +87,39 @@ export type BlockNeed =
    * the whole point of that section is that there is one list, so two
    * testimonial blocks on one page still collapse to a single fetch.
    */
-  | "testimonials";
+  | "testimonials"
+  /**
+   * The shared partner list from the section library — the same logos the
+   * home page and /about carry. Same shape as `testimonials`: no per-block
+   * input, one fetch however many blocks read it.
+   */
+  | "partners"
+  /**
+   * `values.development` — one project's own record: its payment plan, site
+   * plan, figures and map pin. Every project section on the page is served by
+   * ONE read, whichever projects they name — see lib/queries/landing-projects.
+   */
+  | "project"
+  /** The project's available units, which the payment-plan calculator prices. */
+  | "project_units"
+  /** The project's unit types and their floor plans. */
+  | "project_unit_types"
+  /** `values.agent` — an advisor's public profile, by slug. */
+  | "advisor";
+
+/**
+ * A fetch several blocks share, charged to the page's query budget ONCE.
+ *
+ * `queryCost` charges per block, and for list-shaped live inventory that is
+ * the point: the cap is on how much of the page is inventory. It is the wrong
+ * model for sections that are views of one record. A project launch page
+ * wants the payment plan, the master plan, the floor plans and the map —
+ * four sections, one read of one row — and charging four would refuse a
+ * perfectly cheap page while telling the editor it "would run four catalogue
+ * queries", which is not true. So those blocks name the batched fetch they
+ * read from, and the gate counts distinct names.
+ */
+export type SharedQuery = "projects" | "advisors";
 
 export type BlockDef = {
   /**
@@ -104,6 +143,12 @@ export type BlockDef = {
    * resolver is what actually collapses them.
    */
   queryCost?: number;
+  /**
+   * The batched fetch this block reads from, when it shares one with other
+   * blocks. Charged once per page however many blocks name it — see
+   * `SharedQuery`. Use this or `queryCost`, not both.
+   */
+  sharedQuery?: SharedQuery;
   /** At most one per page. Hidden in the picker once the page has one. */
   singleton?: boolean;
   /** May lead the page. The gate requires the first enabled block to be one. */
@@ -134,6 +179,29 @@ export type BlockDef = {
     /** Only when another field holds this value — `source: "picked"`. */
     onlyWhen?: { key: string; value: string };
   };
+  /**
+   * The record this block is a view of — a project, an advisor.
+   *
+   * The single-record counterpart of `rowsRequired`: a project section with no
+   * project picked has nothing to draw, so it renders nothing, and the editor
+   * row and the publish gate both say so from this one declaration. It covers
+   * the blank the editor left and nothing else — a picked project that has no
+   * payment plan is a catalogue state, reported in the editor (see `requires`)
+   * but never a reason to refuse a publish.
+   */
+  pickRequired?: {
+    /** The select field holding the pick. */
+    key: string;
+    /** What one is called, for the message: "project". */
+    noun: string;
+    /**
+     * What the picked record must carry for this section to draw anything.
+     * Advisory only: the editor can say "this project has no master plan
+     * yet", but the gate never refuses on it, because the record can gain or
+     * lose it after the page is live.
+     */
+    requires?: ProjectFeature;
+  };
   /** Out of the picker, still resolves and renders. The rename escape hatch. */
   deprecated?: boolean;
   /**
@@ -143,6 +211,24 @@ export type BlockDef = {
    */
   version?: number;
   migrate?: (values: SectionValues, fromVersion: number) => SectionValues;
+};
+
+/**
+ * What a project record may or may not have yet, as the project sections see
+ * it. The editor is told which a picked project lacks — before the preview
+ * shows an empty space where the section should be.
+ */
+export type ProjectFeature =
+  | "payment_plan"
+  | "master_plan"
+  | "unit_types"
+  | "location";
+
+export const PROJECT_FEATURE_LABELS: Record<ProjectFeature, string> = {
+  payment_plan: "payment plan",
+  master_plan: "master plan image",
+  unit_types: "floor plans",
+  location: "map location",
 };
 
 /**

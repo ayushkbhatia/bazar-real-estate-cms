@@ -90,5 +90,12 @@
   },
   "developer": {
     "founded": "Founded {year}"
+  },
+  "figures": {
+    "startingPrice": "Starting price",
+    "bedrooms": "Bedrooms",
+    "totalUnits": "Total units",
+    "handover": "Handover",
+    "paymentPlan": "Payment plan"
   }
 }

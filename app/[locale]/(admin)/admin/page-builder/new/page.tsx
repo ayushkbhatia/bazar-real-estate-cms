@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
+import { listPublishedDevelopments } from "@/lib/queries/developments";
+import { developmentSeedItem } from "../../_fields/record-seeds";
 import { NewLandingForm } from "./_form";
 
 export const dynamic = "force-dynamic";
 
-export default function NewLandingPage() {
+export default async function NewLandingPage() {
+  // For the Project launch preset, which asks for its project up front and
+  // writes it into every project section it creates.
+  const projects = (await listPublishedDevelopments())
+    .map(developmentSeedItem)
+    .sort((a, b) => a.name.localeCompare(b.name));
   return (
     <CmsShell
       title="New landing page"
@@ -25,7 +32,7 @@ export default function NewLandingPage() {
         >
           <ChevronRight size={13} className="rotate-180" /> All landing pages
         </Link>
-        <NewLandingForm />
+        <NewLandingForm projects={projects} />
       </div>
     </CmsShell>
   );

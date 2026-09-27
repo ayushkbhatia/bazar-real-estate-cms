@@ -29,6 +29,18 @@ export const landingCreateSchema = z.object({
   title: z.string().trim().min(3, "At least 3 characters.").max(160, "Too long."),
   slug: slugField,
   preset: z.string().trim().max(40).optional(),
+  /**
+   * The project a project-led preset is about, by slug. Written into every
+   * project section the preset creates; not checked against the catalogue,
+   * for the reason no record pick is — it can be unpublished after the fact,
+   * and a section that can't resolve its project simply doesn't render.
+   */
+  development: z
+    .string()
+    .trim()
+    .max(200)
+    .regex(/^[a-z0-9-]+$/, "Not a project.")
+    .optional(),
 });
 
 export const landingMetaSchema = z.object({

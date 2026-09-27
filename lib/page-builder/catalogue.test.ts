@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { isListField, isSelectField } from "@/lib/master-pages";
 import { RENDERED_KEYS } from "@/app/[locale]/(public)/lp/[slug]/_render";
 import { BLOCK_DEFS, getBlockDef, pickableBlocks } from "./catalogue";
-import { PRESETS } from "./presets";
+import { PRESETS, presetBlocks, presetNeedsProject } from "./presets";
 import { BLOCK_GROUPS } from "./types";
 
 /**
@@ -41,9 +41,24 @@ const KNOWN_TYPES_V1 = [
  */
 const KNOWN_TYPES_V2 = ["testimonials"] as const;
 
+/** The project sections and the second catalogue round, added together. */
+const KNOWN_TYPES_V3 = [
+  "project_facts",
+  "project_payment_plan",
+  "project_master_plan",
+  "project_unit_plans",
+  "project_location",
+  "gallery",
+  "value_grid",
+  "stats_band",
+  "mortgage_calculator",
+  "advisor",
+  "partners",
+] as const;
+
 describe("block catalogue", () => {
   it("keeps every published key", () => {
-    for (const key of [...KNOWN_TYPES_V1, ...KNOWN_TYPES_V2]) {
+    for (const key of [...KNOWN_TYPES_V1, ...KNOWN_TYPES_V2, ...KNOWN_TYPES_V3]) {
       expect(getBlockDef(key), `block "${key}" was renamed or removed`).not.toBeNull();
     }
   });
@@ -127,12 +142,76 @@ describe("block catalogue", () => {
     }
   });
 
+  it("only shares a query from blocks that declare what they need", () => {
+    for (const def of BLOCK_DEFS) {
+      if (!def.sharedQuery) continue;
+      expect(def.needs?.length ?? 0, `${def.key} shares a query but needs nothing`)
+        .toBeGreaterThan(0);
+      // One model per block: charged per block, or once per page — not both,
+      // or the shared fetch is billed twice.
+      expect(def.queryCost ?? 0, `${def.key} declares both queryCost and sharedQuery`)
+        .toBe(0);
+    }
+  });
+
+  /**
+   * `pickRequired` names the field the editor, the gate and the renderer all
+   * read. If it points at anything but a record select, the "no project is
+   * picked" warning can never clear.
+   */
+  it("points every pickRequired at a record select on the same block", () => {
+    for (const def of BLOCK_DEFS) {
+      if (!def.pickRequired) continue;
+      const field = def.fields.find((f) => f.key === def.pickRequired!.key);
+      expect(field, `${def.key}.pickRequired names a missing field`).toBeDefined();
+      expect(isSelectField(field!), `${def.key}.${field!.key} is not a select`).toBe(true);
+      expect(
+        (field as { optionsKey?: string }).optionsKey,
+        `${def.key}.${field!.key} picks from no records`,
+      ).toBeTruthy();
+      // The pick starts blank: which record is the editor's call, never a
+      // default's.
+      expect(def.defaults[def.pickRequired.key]).toBeNull();
+    }
+  });
+
+  it("gives every project section the one project field inheritPick reads", () => {
+    for (const def of BLOCK_DEFS.filter((d) => d.group === "project")) {
+      expect(def.pickRequired?.key, def.key).toBe("development");
+      expect(def.needs, def.key).toContain("project");
+      expect(def.sharedQuery, def.key).toBe("projects");
+    }
+  });
+
   it("only offers non-deprecated blocks in the picker", () => {
     for (const def of pickableBlocks()) expect(def.deprecated).not.toBe(true);
   });
 });
 
 describe("presets", () => {
+  it("writes a chosen project into every project section, and nowhere else", () => {
+    const blocks = presetBlocks("project_launch", { development: "yas-riva" });
+    const project = blocks.filter((b) => getBlockDef(b.type)?.group === "project");
+    expect(project.length).toBeGreaterThan(0);
+    for (const b of project) expect(b.values.development).toBe("yas-riva");
+    for (const b of blocks.filter((b) => getBlockDef(b.type)?.group !== "project")) {
+      expect(b.values.development, b.type).toBeUndefined();
+    }
+  });
+
+  it("leaves project sections blank when no project was chosen", () => {
+    for (const b of presetBlocks("project_launch")) {
+      if (getBlockDef(b.type)?.group !== "project") continue;
+      expect(b.values.development).toBeNull();
+    }
+  });
+
+  it("knows which presets ask for a project", () => {
+    expect(presetNeedsProject("project_launch")).toBe(true);
+    expect(presetNeedsProject("lead_gen")).toBe(false);
+    expect(presetNeedsProject("blank")).toBe(false);
+  });
+
   it("only names blocks that exist", () => {
     for (const preset of PRESETS) {
       for (const key of preset.blocks) {

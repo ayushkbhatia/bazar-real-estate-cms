@@ -178,7 +178,7 @@ export function evaluateLandingPublishability(
 
   // 10 — query budget. Turns an expensive page into a pre-publish error rather
   // than a line on the Supabase bill.
-  const cost = renderable.reduce((sum, b) => sum + (b.def?.queryCost ?? 0), 0);
+  const cost = landingQueryCost(renderable);
   add(
     "Within the data budget",
     cost <= LANDING_QUERY_BUDGET,
@@ -217,6 +217,26 @@ export function evaluateLandingPublishability(
   });
 
   return { ok: blockers.length === 0, blockers, checks };
+}
+
+/**
+ * Catalogue queries this page charges against LANDING_QUERY_BUDGET.
+ *
+ * Two kinds of charge, summed. `queryCost` is per block — a live-inventory
+ * rail costs its query however many rails share the fetch, because that cap is
+ * on how much of the page is inventory. `sharedQuery` is per page — every
+ * project section reads the one projects fetch, so the first costs one and the
+ * rest are free, which is exactly what `resolveLandingData` spends.
+ */
+export function landingQueryCost(blocks: ResolvedBlock[]): number {
+  const shared = new Set<string>();
+  let perBlock = 0;
+  for (const b of blocks) {
+    if (!b.def) continue;
+    perBlock += b.def.queryCost ?? 0;
+    if (b.def.sharedQuery) shared.add(b.def.sharedQuery);
+  }
+  return perBlock + shared.size;
 }
 
 // ── walkers ──────────────────────────────────────────────────────────────

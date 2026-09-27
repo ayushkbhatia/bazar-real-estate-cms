@@ -5,13 +5,14 @@ import { Check } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { fieldCls } from "../../_fields/types";
-import { PRESETS } from "@/lib/page-builder/presets";
+import { fieldCls, type SeedItem } from "../../_fields/types";
+import { RecordPicker } from "../../_fields/record-picker";
+import { PRESETS, presetNeedsProject } from "@/lib/page-builder/presets";
 import { getBlockDef } from "@/lib/page-builder/catalogue";
 import { slugifyTitle } from "@/lib/schemas/landing-page";
 import { createLandingPage } from "../_actions";
 
-export function NewLandingForm() {
+export function NewLandingForm({ projects = [] }: { projects?: SeedItem[] }) {
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   // Until someone types in the URL box it tracks the title. After that it
@@ -19,10 +20,12 @@ export function NewLandingForm() {
   // rewritten when they fix a typo in the title.
   const [slugTouched, setSlugTouched] = useState(false);
   const [preset, setPreset] = useState("off_plan_launch");
+  const [development, setDevelopment] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, startTransition] = useTransition();
 
   const effectiveSlug = slugTouched ? slug : slugifyTitle(title);
+  const needsProject = presetNeedsProject(preset);
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,6 +36,8 @@ export function NewLandingForm() {
         title,
         slug: effectiveSlug,
         preset,
+        // Only for a preset that has project sections to put it in.
+        development: needsProject ? development : "",
       });
       if (result.status === "invalid") {
         setErrors(result.fieldErrors ?? {});
@@ -148,6 +153,25 @@ export function NewLandingForm() {
             );
           })}
         </ul>
+        {needsProject && projects.length > 0 ? (
+          <div className="flex flex-col gap-1.5 rounded-lg border border-bz-border bg-bz-surface-2 p-3">
+            <span className="text-[11.5px] font-medium text-bz-ink-2">
+              Which project is this page about?
+            </span>
+            <RecordPicker
+              options={projects}
+              value={development}
+              onChange={(v) => setDevelopment(v ?? "")}
+              label="Project"
+              placeholder="Choose a project"
+              noun="project"
+            />
+            <p className="text-[10.5px] text-bz-muted-2">
+              Every project section in this layout starts on it — you can still
+              change any of them afterwards. Leave it empty to choose later.
+            </p>
+          </div>
+        ) : null}
       </section>
 
       <div className="flex items-center gap-3">

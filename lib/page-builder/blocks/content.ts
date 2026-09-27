@@ -346,6 +346,194 @@ export const imageBand: BlockDef = {
   },
 };
 
+/** One photo in a gallery set. */
+const galleryPhoto = [
+  { key: "image", label: "Photo", kind: "image" as const },
+  {
+    key: "caption",
+    label: "Caption",
+    kind: "text" as const,
+    max: 120,
+    optional: true,
+  },
+];
+
+/**
+ * Photo mosaic — `RendersGallery`, the "Project images" band from the project
+ * pages: a lead photo with squares packed beside it, in one set or two side by
+ * side.
+ *
+ * The photos are picked here rather than read from a project, because a
+ * campaign's imagery is usually its own — lifestyle shots, a show apartment —
+ * and the media library already holds every project render to choose from.
+ */
+export const gallery: BlockDef = {
+  key: "gallery",
+  label: "Photo gallery",
+  description:
+    "A mosaic of photos — a lead image with squares beside it — in one set, or two side by side such as interiors and exteriors.",
+  group: "content",
+  fields: [
+    { key: "eyebrow", label: "Eyebrow", kind: "text", max: 60, optional: true },
+    { key: "heading", label: "Heading", kind: "text", max: 120 },
+    { key: "intro", label: "Intro", kind: "textarea", max: 400, optional: true },
+    { key: "first_heading", label: "First set — heading", kind: "text", max: 60 },
+    {
+      key: "first_images",
+      label: "First set — photos",
+      kind: "list",
+      itemLabel: "photo",
+      max: 9,
+      help: "The first photo leads the set",
+      fields: galleryPhoto,
+    },
+    {
+      key: "second_heading",
+      label: "Second set — heading",
+      kind: "text",
+      max: 60,
+      optional: true,
+    },
+    {
+      key: "second_images",
+      label: "Second set — photos",
+      kind: "list",
+      itemLabel: "photo",
+      max: 9,
+      help: "Optional. Sits beside the first set on desktop, below it on a phone",
+      fields: galleryPhoto,
+    },
+  ],
+  // Photos can only be campaign-specific, and a photo row with no picture
+  // chosen draws nothing — so the first set has to hold at least one real one.
+  rowsRequired: { key: "first_images", itemKey: "image" },
+  defaults: {
+    eyebrow: "Explore the Project",
+    heading: "Project Images",
+    intro: null,
+    first_heading: "Exterior Renders",
+    first_images: [],
+    second_heading: "Interior Renders",
+    second_images: [],
+  },
+};
+
+/**
+ * Text-only cards — `ServiceValueGrid`. What an offer covers, who it is for.
+ *
+ * The image-led `prop_types` grid is the wrong tool for six or eight points
+ * that have no photograph each; this is the grid /services/consultation uses
+ * for exactly that.
+ */
+export const valueGrid: BlockDef = {
+  key: "value_grid",
+  label: "Value cards",
+  description:
+    "Text-only cards — a title and a line of copy each — for what an offer covers or who it is for. Two to four across on desktop.",
+  group: "content",
+  fields: [
+    { key: "eyebrow", label: "Eyebrow", kind: "text", max: 60, optional: true },
+    { key: "title", label: "Heading", kind: "text", max: 120, optional: true },
+    { key: "sub", label: "Sub-copy", kind: "textarea", max: 280, optional: true },
+    {
+      key: "cols",
+      label: "Cards per row on desktop",
+      kind: "select",
+      options: [
+        { value: "2", label: "Two" },
+        { value: "3", label: "Three" },
+        { value: "4", label: "Four" },
+      ],
+      help: "Always one per row on a phone, two on a tablet",
+    },
+    {
+      key: "items",
+      label: "Cards",
+      kind: "list",
+      itemLabel: "card",
+      max: 12,
+      fields: [
+        { key: "name", label: "Title", kind: "text", max: 80 },
+        { key: "desc", label: "Copy", kind: "textarea", max: 300 },
+      ],
+    },
+  ],
+  rowsRequired: { key: "items", itemKey: "name" },
+  defaults: {
+    eyebrow: "Who is it for?",
+    title: "Guidance for Every Property Journey",
+    sub: null,
+    cols: "4",
+    // The four audiences /services/consultation carries, verbatim.
+    items: [
+      {
+        name: "First-Time Buyers",
+        desc: "Understand the market and buying process before making your first property decision.",
+      },
+      {
+        name: "Homebuyers",
+        desc: "Find a property that fits your lifestyle, family and location requirements.",
+      },
+      {
+        name: "Property Investors",
+        desc: "Compare opportunities based on your objectives and preferred investment strategy.",
+      },
+      {
+        name: "Property Owners",
+        desc: "Understand your options before selling or making your next property move.",
+      },
+    ],
+  },
+};
+
+/**
+ * Headline figures with a source line — `AreaStatsBand`, the market-statistics
+ * band from the area guides.
+ *
+ * Light, where `why_band` is a dark closing statement. The figures are typed,
+ * not computed: market indices come from third parties on their own cadence,
+ * so the footnote is where the editor says whose number it is and when.
+ */
+export const statsBand: BlockDef = {
+  key: "stats_band",
+  label: "Figures band",
+  description:
+    "A row of headline figures with a source line underneath — market data, yields, a launch in numbers.",
+  group: "content",
+  fields: [
+    { key: "heading", label: "Heading", kind: "text", max: 120, optional: true },
+    { key: "intro", label: "Intro", kind: "textarea", max: 400, optional: true },
+    {
+      key: "stats",
+      label: "Figures",
+      kind: "list",
+      itemLabel: "figure",
+      max: 8,
+      help: "Three or six sit three across; any other count, four",
+      fields: [
+        { key: "value", label: "Figure", kind: "text", max: 24 },
+        { key: "label", label: "Label", kind: "text", max: 60 },
+      ],
+    },
+    {
+      key: "footnote",
+      label: "Source line",
+      kind: "text",
+      max: 240,
+      optional: true,
+      placeholder: "Source: DLD transactions, Q3 2026",
+    },
+  ],
+  // The figures are the campaign's own claims; no default could be true.
+  rowsRequired: { key: "stats", itemKey: "value" },
+  defaults: {
+    heading: "The market in numbers",
+    intro: null,
+    stats: [],
+    footnote: null,
+  },
+};
+
 export const CONTENT_BLOCKS = [
   featureScroll,
   tiles,
@@ -354,4 +542,7 @@ export const CONTENT_BLOCKS = [
   faq,
   richText,
   imageBand,
+  gallery,
+  valueGrid,
+  statsBand,
 ];

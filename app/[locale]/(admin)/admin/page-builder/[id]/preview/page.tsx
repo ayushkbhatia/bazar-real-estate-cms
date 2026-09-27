@@ -49,7 +49,7 @@ export default async function LandingPreviewPage({
   const locale: Locale = isEnabledLocale(lang) ? lang : DEFAULT_LOCALE;
   const blocks = resolveDocument(page.draft, locale);
   await attachImageUrls(blocks);
-  const data = await loadLandingData(blocks);
+  const data = await loadLandingData(blocks, locale);
   const unknown = unknownBlockCount(blocks);
 
   return (

@@ -16,6 +16,7 @@
 import type { BlockDef, BlockGroup, BlockInstance } from "./types";
 import { OPENER_BLOCKS } from "./blocks/openers";
 import { LISTING_BLOCKS } from "./blocks/listings";
+import { PROJECT_BLOCKS } from "./blocks/project";
 import { CONTENT_BLOCKS } from "./blocks/content";
 import { CONVERSION_BLOCKS } from "./blocks/conversion";
 import { TRUST_BLOCKS } from "./blocks/trust";
@@ -23,6 +24,7 @@ import { TRUST_BLOCKS } from "./blocks/trust";
 export const BLOCK_DEFS: BlockDef[] = [
   ...OPENER_BLOCKS,
   ...LISTING_BLOCKS,
+  ...PROJECT_BLOCKS,
   ...CONTENT_BLOCKS,
   ...CONVERSION_BLOCKS,
   ...TRUST_BLOCKS,

@@ -12,6 +12,8 @@ import {
 } from "@/app/[locale]/(public)/lp/[slug]/_render";
 import type { BlockDef } from "./types";
 import type { ListingRow } from "@/lib/queries/properties";
+import type { LandingProject } from "@/lib/queries/landing-projects";
+import type { AgentProfile } from "@/lib/queries/agents";
 import type { SectionValues } from "@/lib/master-pages";
 
 /**
@@ -94,6 +96,80 @@ function listing(reference: string): ListingRow {
   } as unknown as ListingRow;
 }
 
+/** A project with everything a project section can show. */
+const PROJECT: LandingProject = {
+  id: "dev-1",
+  slug: "yas-riva-reserve",
+  name: "Yas Riva Reserve",
+  tagline: null,
+  description: "Waterfront villas on Yas.",
+  vision: null,
+  developerName: "Aldar",
+  areaName: "Yas Island",
+  startingPrice: 7_900_000,
+  bedroomsText: "4 - 6",
+  totalUnits: 292,
+  handoverDate: "2030-08-30",
+  facts: { tenure: "Freehold" },
+  paymentPlan: {
+    name: "50/50 Payment Plan",
+    milestones: [
+      { percent: 10, label: "Down payment", timing: "On booking" },
+      { percent: 40, label: "During construction", timing: "" },
+      { percent: 50, label: "On handover", timing: "" },
+    ],
+  },
+  masterPlanPins: [{ key: "A", x: 20, y: 30, label: "Clubhouse" }],
+  masterplan: { url: "https://example.test/masterplan.jpg", alt: "Site plan" },
+  hero: null,
+  coords: { lat: 24.49, lng: 54.6 },
+  floorplanGated: false,
+  units: [],
+  unitTypes: [
+    {
+      id: "t-1",
+      label: "4 Bedroom Villa",
+      beds: 4,
+      blurb: null,
+      size_from_ft2: 5000,
+      size_to_ft2: 5600,
+      price_from_aed: 7_900_000,
+      plans: [
+        {
+          id: "p-1",
+          label: "Type A",
+          description: null,
+          beds: 4,
+          baths: 5,
+          area_ft2: 5200,
+          image_url: "https://example.test/type-a.png",
+          image_alt: "Type A layout",
+          image_key: "plans/type-a.png",
+        },
+      ],
+      placeholder: false,
+    },
+  ],
+};
+
+const ADVISOR = {
+  user_id: "u-1",
+  slug: "mariam",
+  display_name: "Mariam Haddad",
+  title: "Senior advisor",
+  brn: "12345",
+  photo_url: null,
+  bio: null,
+  specialties: [],
+  languages: ["English", "Arabic"],
+  role: "agent",
+  status: "active",
+  joined_at: null,
+  email: null,
+  phone: "+971 50 000 0000",
+  whatsapp: "+971500000000",
+} as unknown as AgentProfile;
+
 const DATA: LandingData = {
   ...EMPTY_LANDING_DATA,
   propertiesByRef: new Map([["REF-1", listing("REF-1")]]),
@@ -113,6 +189,8 @@ const DATA: LandingData = {
       context: "Off-market resale, 2025",
     },
   ],
+  projectsBySlug: new Map([[PROJECT.slug, PROJECT]]),
+  advisorsBySlug: new Map([[ADVISOR.slug, ADVISOR]]),
 };
 
 /**
@@ -157,6 +235,27 @@ const FILLED: Record<string, SectionValues> = {
   chips: { items: [{ label: "Saadiyat", href: "/areas/saadiyat-island" }] },
   about_bazar: { stats: [{ value: "20+", label: "Years" }] },
   why_band: { stats: [{ value: "20+", label: "Years" }] },
+  project_facts: { development: PROJECT.slug },
+  project_payment_plan: { development: PROJECT.slug },
+  project_master_plan: { development: PROJECT.slug },
+  project_unit_plans: { development: PROJECT.slug },
+  project_location: { development: PROJECT.slug },
+  gallery: {
+    first_images: [
+      {
+        // `attachImageUrls` puts the url on the value before render.
+        image: {
+          media_id: "m-1",
+          alt: "The pool deck",
+          label: null,
+          url: "https://example.test/pool.jpg",
+        },
+        caption: "The pool deck",
+      },
+    ],
+  },
+  stats_band: { stats: [{ value: "7.2%", label: "Gross yield" }] },
+  advisor: { agent: ADVISOR.slug },
 };
 
 function filled(def: BlockDef) {
@@ -233,6 +332,36 @@ describe("blocks with nothing to show", () => {
   });
 
   /**
+   * The single-record twin of the spec above. `pickRequired` is what the
+   * editor and the gate read to say "no project is picked"; a block that
+   * declares it must draw nothing without the pick — and nothing when the
+   * pick no longer resolves, which is the unpublished-since case.
+   */
+  it("declare pickRequired for exactly the records that gate rendering", () => {
+    const picked = BLOCK_DEFS.filter((d) => d.pickRequired);
+    expect(picked.length).toBeGreaterThan(0);
+    for (const def of picked) {
+      for (const value of [null, "no-such-record"]) {
+        const instance = newBlockInstance(def);
+        const [block] = resolveDocument([
+          {
+            ...instance,
+            values: { ...instance.values, [def.pickRequired!.key]: value },
+          },
+        ]);
+        const { container, unmount } = render(
+          <BlockNode block={block} data={DATA} />,
+        );
+        expect(
+          container.innerHTML.trim(),
+          `${def.key} still renders with ${def.pickRequired!.key} = ${String(value)}`,
+        ).toBe("");
+        unmount();
+      }
+    }
+  });
+
+  /**
    * The other half of the same fact: a block with no `rowsRequired` must be
    * visible the moment it is added. That is what failed in production — a
    * `lead_gen` page published with four sections and two of them missing.
@@ -240,6 +369,9 @@ describe("blocks with nothing to show", () => {
   it("renders every other block straight from its defaults", () => {
     for (const def of BLOCK_DEFS) {
       if (def.rowsRequired) continue;
+      // A view of one record draws nothing until the record is picked — the
+      // editor and the gate report that (see the pickRequired spec below).
+      if (def.pickRequired) continue;
       // Both of these draw from live records rather than from the document, so
       // "empty" is a catalogue state and the gate deliberately says nothing.
       if (def.key === "featured_developments" || def.key === "testimonials") continue;
