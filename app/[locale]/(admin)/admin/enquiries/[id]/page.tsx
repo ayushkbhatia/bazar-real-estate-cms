@@ -5,32 +5,72 @@ import {
   Archive,
   ChevronRight,
   ExternalLink,
+  Languages,
   Mail,
   Phone,
-  Calendar,
 } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Eyebrow } from "@/components/brand/eyebrow";
-import { getEnquiryById } from "@/lib/queries/enquiries";
-import { propertyUrl } from "@/lib/queries/property-utils";
+import {
+  getEnquiryById,
+  listEnquirySubmissions,
+  listRelatedEnquiries,
+} from "@/lib/queries/enquiries";
+import { getFormForAdmin } from "@/lib/queries/forms";
+import { formatPriceAED, propertyUrl } from "@/lib/queries/property-utils";
 import { currentStaffRow } from "@/lib/queries/staff";
 import { getStaffRole } from "@/lib/auth";
+import { env, isSalesforceConfigured } from "@/lib/env";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { LiveDot } from "@/lib/realtime/live-dot";
 import { PresencePile } from "@/lib/realtime/presence-pile";
 import { EscalationBanner } from "./_escalation-banner";
 import { cn } from "@/lib/utils";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { describeSourcePage, enquiryOrigin, humanise } from "@/lib/enquiries/origin";
+import { readAnswers } from "@/lib/enquiries/answers";
+import { leadFacts } from "@/lib/enquiries/profile";
 import { markConversationRead, sendEnquiryTouch } from "../_actions";
 import { StatusPipeline, TemperatureToggle } from "./_pipeline";
 import { AssignToMeButton } from "./_assign-button";
 import { NotesEditor } from "./_notes";
 import { EnquiryComposer, type ComposerAsset } from "./_composer";
+import { SubmissionCard } from "./_submission";
+import { RelatedEnquiries } from "./_history";
+import { FollowThrough, type CrmSync } from "./_follow-through";
 import { ArchiveEnquiryButton } from "../_archive-button";
 import { listPublishedAssets } from "@/lib/queries/content-assets";
 import { getAdvisorByUserId } from "@/lib/queries/property-advisor";
 import type { TokenContext } from "@/lib/content-assets/tokens";
 
 export const dynamic = "force-dynamic";
+
+/** The Forms Manager's own gate — see `FORM_ROLES` in admin/forms/page.tsx. */
+const FORM_EDIT_ROLES = new Set(["admin", "editor", "marketing"]);
+
+/** How many of the same person's other enquiries the history card lists. */
+const HISTORY_SHOWN = 8;
+
+const LISTING_STATUS: Record<string, string> = {
+  draft: "a draft",
+  in_review: "in review",
+  off_market: "off market",
+  archived: "archived",
+};
+
+const LISTING_MODE: Record<string, string> = {
+  buy: "For sale",
+  rent: "For rent",
+  off_plan: "Off-plan",
+  commercial: "Commercial",
+};
+
+const PROJECT_STATUS: Record<string, string> = {
+  pre_launch: "Pre-launch",
+  on_sale: "On sale",
+  sold_out: "Sold out",
+  handed_over: "Handed over",
+};
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -47,6 +87,27 @@ function formatDateTime(iso: string): string {
 // the React Compiler doesn't flag it as impure.
 function serverNow(): number {
   return Date.now();
+}
+
+/** "For sale · AED 2.4M · 3 bed · 4 bath" — what the advisor would quote. */
+function listingSummary(p: {
+  mode: string;
+  price_aed: number;
+  beds: number;
+  baths: number;
+  type: string;
+}): string {
+  const parts = [
+    LISTING_MODE[p.mode] ?? humanise(p.mode),
+    p.price_aed > 0 ? formatPriceAED(p.price_aed) : null,
+    p.beds > 0
+      ? `${p.beds} bed`
+      : p.type === "apartment" || p.type === "hotel_apartment"
+        ? "Studio"
+        : humanise(p.type),
+    p.baths > 0 ? `${p.baths} bath` : null,
+  ];
+  return parts.filter(Boolean).join(" · ");
 }
 
 /**
@@ -76,17 +137,29 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
   // `[]` on failure and `currentStaffRow` returns null, so neither rejects. A
   // rejection here would turn a missing enquiry into a 500 instead of the
   // 404 below.
-  const [enquiry, me, role, emailAssets, whatsappAssets] = await Promise.all([
-    getEnquiryById(id),
-    currentStaffRow(),
-    getStaffRole(),
-    listPublishedAssets("email"),
-    listPublishedAssets("whatsapp"),
-  ]);
+  //
+  // The submission log is keyed on the enquiry id, which the URL already
+  // carries, so it joins the first wave too. It resolves to `[]` on any
+  // failure — losing the answers must not cost the page.
+  const [enquiry, me, role, emailAssets, whatsappAssets, submissions] =
+    await Promise.all([
+      getEnquiryById(id),
+      currentStaffRow(),
+      getStaffRole(),
+      listPublishedAssets("email"),
+      listPublishedAssets("whatsapp"),
+      listEnquirySubmissions(id),
+    ]);
   if (!enquiry) notFound();
   const isArchived = enquiry.archived_at !== null;
   const canArchive = role === "admin";
   const now = serverNow();
+
+  // The row's own key where it has one; the log's for rows older than 0128 and
+  // for the valuation gate, which files its lead without one.
+  const submission = submissions[0] ?? null;
+  const formKey = enquiry.form_key ?? submission?.form_key ?? null;
+  const origin = enquiryOrigin(formKey, enquiry.source);
 
   // Best-effort mark-read on each staff view. Failures shouldn't block
   // page render — but they shouldn't disappear silently either.
@@ -126,8 +199,92 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
   // `staff.public_phone`, not a seed matched on slug — that put a fictional
   // advisor's number into `{advisor_phone}` in every outreach message an
   // advisor composed from this screen.
-  const advisorPhone = enquiry.assigned_agent_id
-    ? ((await getAdvisorByUserId(enquiry.assigned_agent_id))?.phone ?? null)
+  //
+  // Second wave, all three independent of each other: they need the enquiry
+  // (the advisor, the contact details, the form key) and nothing else. The
+  // form is read as it stands today for its option labels and its order; the
+  // registry copy stands in if the read fails.
+  const [advisorPhone, related, liveForm] = await Promise.all([
+    enquiry.assigned_agent_id
+      ? getAdvisorByUserId(enquiry.assigned_agent_id).then(
+          (a) => a?.phone ?? null,
+        )
+      : Promise.resolve(null),
+    listRelatedEnquiries({
+      excludeId: enquiry.id,
+      email: enquiry.email,
+      phone: enquiry.phone,
+      // The archive is admin-only to read; it must not leak in through here.
+      includeArchived: canArchive,
+      // One past what the card shows, so "8+" is only said when it's true.
+      limit: HISTORY_SHOWN + 1,
+    }),
+    origin.def && submission
+      ? createSupabaseServerClient()
+          .then((supabase) => getFormForAdmin(supabase, origin.def!.key))
+          .catch(() => null)
+      : Promise.resolve(null),
+  ]);
+
+  const answers = submission
+    ? readAnswers({
+        data: submission.data,
+        labels: submission.labels,
+        def: origin.def,
+        fields: liveForm?.form.fields ?? null,
+        records: {
+          development:
+            enquiry.development_id && enquiry.developments
+              ? { id: enquiry.development_id, name: enquiry.developments.name }
+              : null,
+          property:
+            enquiry.property_id && enquiry.properties
+              ? {
+                  id: enquiry.property_id,
+                  label: `${enquiry.properties.reference} · ${enquiry.properties.title}`,
+                }
+              : null,
+        },
+      })
+    : null;
+
+  const sourcePage = describeSourcePage(submission?.source_path, {
+    property:
+      enquiry.property_id && enquiry.properties
+        ? {
+            id: enquiry.property_id,
+            reference: enquiry.properties.reference,
+            title: enquiry.properties.title,
+          }
+        : null,
+    development: enquiry.developments,
+  });
+
+  const facts = leadFacts({
+    source: enquiry.source,
+    formKey,
+    def: origin.def,
+    inferred: enquiry.inferred_constraints,
+    budgetMin: enquiry.budget_min,
+    budgetMax: enquiry.budget_max,
+    timeline: enquiry.timeline,
+    preApproved: enquiry.pre_approved,
+    locale: enquiry.locale,
+    propertyMode: enquiry.properties?.mode ?? null,
+  });
+
+  // Only meaningful once the integration is connected: until then every lead
+  // reads "queued" for a sync that isn't running.
+  const crm: CrmSync | null = isSalesforceConfigured
+    ? {
+        state: enquiry.crm_sync_state,
+        syncedAt: enquiry.crm_synced_at,
+        error: enquiry.crm_last_error,
+        url:
+          enquiry.crm_external_id && env.SALESFORCE_INSTANCE_URL
+            ? `${env.SALESFORCE_INSTANCE_URL.replace(/\/+$/, "")}/${enquiry.crm_external_id}`
+            : null,
+      }
     : null;
 
   const tokenContext: TokenContext = {
@@ -260,6 +417,15 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
             </div>
           </div>
 
+          {/* What they sent — form, page, answers */}
+          <SubmissionCard
+            origin={origin}
+            page={sourcePage}
+            facts={facts}
+            answers={answers}
+            canEditForms={role !== null && FORM_EDIT_ROLES.has(role)}
+          />
+
           {/* Conversation */}
           <div className="bg-bz-surface border border-bz-border rounded-lg p-5">
             <Eyebrow>Conversation</Eyebrow>
@@ -323,16 +489,22 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Right context column */}
-        <aside className="flex flex-col gap-4 sticky top-6 self-start">
+        {/* Right context column. Scrolls on its own once it outgrows the
+            viewport — sticky alone left the notes editor at the bottom
+            unreachable until the conversation ran out. */}
+        <aside className="flex flex-col gap-4 self-start lg:sticky lg:top-6 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto">
           <div className="bg-bz-surface border border-bz-border rounded-lg p-5">
             <Eyebrow>Lead</Eyebrow>
             <div className="mt-3 flex flex-col gap-2.5 text-[13px]">
               <div>
                 <div className="font-medium">{enquiry.name}</div>
-                <div className="text-[11.5px] text-bz-muted capitalize">
-                  via {enquiry.source.replace(/_/g, " ")}
-                </div>
+                {related ? (
+                  <div className="text-[11.5px] text-bz-muted">
+                    {related.length === 0
+                      ? "First enquiry from them"
+                      : `Returning — ${related.length > HISTORY_SHOWN ? `${HISTORY_SHOWN}+` : related.length} other ${related.length === 1 ? "enquiry" : "enquiries"}`}
+                  </div>
+                ) : null}
               </div>
               {enquiry.email ? (
                 <a
@@ -376,37 +548,44 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                   })()}
                 </div>
               ) : null}
-              {enquiry.timeline ? (
-                <div className="inline-flex items-center gap-1.5 text-bz-muted">
-                  <Calendar size={13} strokeWidth={1.8} />
-                  Timeline:{" "}
-                  <span className="text-bz-ink-2 capitalize">
-                    {enquiry.timeline.replace(/_/g, " ")}
-                  </span>
-                </div>
-              ) : null}
-              {enquiry.budget_min || enquiry.budget_max ? (
-                <div className="text-[12px] text-bz-muted">
-                  Budget:{" "}
-                  <span className="text-bz-ink-2">
-                    {enquiry.budget_min
-                      ? `AED ${(enquiry.budget_min / 1_000_000).toFixed(1)}M`
-                      : "0"}
-                    {" – "}
-                    {enquiry.budget_max
-                      ? `AED ${(enquiry.budget_max / 1_000_000).toFixed(1)}M`
-                      : "∞"}
-                  </span>
+              {/* Timeline and budget moved to the at-a-glance strip on the
+                  submission card, where every form's version of them reads
+                  the same. Language stays here: it decides how to reply. */}
+              {enquiry.locale === "ar" ? (
+                <div className="inline-flex items-center gap-1.5 text-bz-ink-2">
+                  <Languages size={13} strokeWidth={1.8} />
+                  Wrote to us from the Arabic site
                 </div>
               ) : null}
             </div>
           </div>
+
+          {related && related.length > 0 ? (
+            <RelatedEnquiries
+              rows={related.slice(0, HISTORY_SHOWN)}
+              currentName={enquiry.name}
+            />
+          ) : null}
 
           {enquiry.developments ? (
             <div className="bg-bz-surface border border-bz-border rounded-lg p-5">
               <Eyebrow>Came from this development</Eyebrow>
               <div className="mt-3 text-[13px]">
                 <div className="text-bz-ink">{enquiry.developments.name}</div>
+                <div
+                  className={cn(
+                    "mt-1 text-[12px]",
+                    enquiry.developments.status === "sold_out"
+                      ? "text-bz-danger"
+                      : "text-bz-ink-2",
+                  )}
+                >
+                  {PROJECT_STATUS[enquiry.developments.status] ??
+                    humanise(enquiry.developments.status)}
+                  {enquiry.developments.starting_price
+                    ? ` · from ${formatPriceAED(enquiry.developments.starting_price)}`
+                    : ""}
+                </div>
                 <div className="mt-2 flex flex-col gap-1.5">
                   <Link
                     href={`/developments/${enquiry.developments.slug}`}
@@ -437,20 +616,45 @@ export default async function EnquiryDetailPage({ params }: PageProps) {
                 <div className="text-bz-ink mt-0.5">
                   {enquiry.properties.title}
                 </div>
-                <Link
-                  href={propertyUrl({
-                    slug: enquiry.properties.slug,
-                    reference: enquiry.properties.reference,
-                  })}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-2 inline-flex items-center gap-1.5 text-[12px] text-bz-muted hover:text-bz-ink"
-                >
-                  View on site <ExternalLink size={11} />
-                </Link>
+                <div className="mt-1 text-[12px] text-bz-ink-2">
+                  {listingSummary(enquiry.properties)}
+                </div>
+                {enquiry.properties.status !== "published" ? (
+                  // The first thing to know before quoting a listing back to
+                  // someone is whether it's still there to quote.
+                  <div className="mt-1.5 text-[12px] font-medium text-bz-danger">
+                    No longer live — it&apos;s{" "}
+                    {LISTING_STATUS[enquiry.properties.status] ??
+                      humanise(enquiry.properties.status).toLowerCase()}
+                    .
+                  </div>
+                ) : null}
+                <div className="mt-2 flex flex-col gap-1.5">
+                  <Link
+                    href={propertyUrl({
+                      slug: enquiry.properties.slug,
+                      reference: enquiry.properties.reference,
+                    })}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-[12px] text-bz-muted hover:text-bz-ink"
+                  >
+                    View on site <ExternalLink size={11} />
+                  </Link>
+                  {enquiry.property_id ? (
+                    <Link
+                      href={`/admin/properties/${enquiry.property_id}`}
+                      className="inline-flex items-center gap-1.5 text-[12px] text-bz-muted hover:text-bz-ink"
+                    >
+                      Open listing <ChevronRight size={11} />
+                    </Link>
+                  ) : null}
+                </div>
               </div>
             </div>
           ) : null}
+
+          <FollowThrough crm={crm} ackSentAt={enquiry.ack_sent_at} />
 
           <div className="bg-bz-surface border border-bz-border rounded-lg p-5">
             <Eyebrow>Internal notes</Eyebrow>

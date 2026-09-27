@@ -48,6 +48,18 @@ quick grep can show "what's outstanding in my area."
   is also why the table is not a Page Builder section. Done looks like: it
   opens the project's interest dialog with the unit named, or it goes.
 
+- [enquiries] Capture how a lead reached the page, not just which page.
+  The enquiry page now shows the form and the exact page a lead was sent
+  from (`form_submissions.source_path`), but nothing records the campaign or
+  referrer that brought them there — no `utm_*`, no `document.referrer`, no
+  first-touch landing page. For a site running paid campaigns into `/lp/*`
+  that is the question marketing will ask next. Done looks like: first-touch
+  UTM + referrer kept client-side for the session (consent-gated like
+  PostHog — it is analytics), passed through `FormSubmitContext` into
+  `form_submissions.data` as an `_attribution` entry (the shape `_scenario`
+  already uses), and shown on the enquiry's "Came in through" card. Check
+  whether Salesforce `Lead__c` has a source/campaign field worth filling.
+
 - [cms] A field's `help` never shows when the field has a `max`.
   `FieldLabel` (`app/[locale]/(admin)/admin/_fields/field-editor.tsx`) draws
   the character counter OR the help, never both, and nearly every text field

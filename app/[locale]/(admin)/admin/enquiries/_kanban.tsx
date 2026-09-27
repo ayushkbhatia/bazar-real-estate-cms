@@ -239,11 +239,17 @@ function KanbanCardPresentation({
         {row.brief_raw}
       </p>
       <div className="flex flex-wrap gap-2 text-[10.5px] text-bz-muted mt-1">
-        <span className="capitalize">via {row.source.replace(/_/g, " ")}</span>
+        {/* The page, with the form's name on hover — a card has room for one. */}
+        <span title={row.origin.form ?? undefined}>{row.origin.surface}</span>
         {row.properties ? (
           <span className="mono">{row.properties.reference}</span>
         ) : null}
         {row.developments ? <span>{row.developments.name}</span> : null}
+        {row.locale === "ar" ? (
+          <span title="Sent from the Arabic site" className="text-bz-ink-2">
+            Arabic
+          </span>
+        ) : null}
         {row.unread_count > 0 ? (
           <span className="inline-flex items-center h-[16px] px-1.5 rounded-full bg-bz-ink text-bz-bg text-[9.5px] font-semibold">
             {row.unread_count}
