@@ -162,6 +162,61 @@ describe("sanitizeArticleHtml", () => {
     });
   });
 
+  describe("internal links", () => {
+    const ID = "33333333-0000-0000-0000-000000000008";
+    const BLOCK = `<div data-internal-link="development" data-id="${ID}" data-variant="compact" data-label="Saadiyat Lagoons"></div>`;
+
+    it("keeps a link block exactly as the editor writes it", () => {
+      // The attributes are the block's whole content. Lose one and the next
+      // save turns the card into nothing.
+      expect(sanitizeArticleHtml(BLOCK)).toBe(BLOCK);
+    });
+
+    it("normalises a block's attributes rather than trusting them", () => {
+      const out = sanitizeArticleHtml(
+        `<div data-internal-link="area" data-id="${ID.toUpperCase()}" data-variant="huge" data-label="  Yas   Island " onclick="x()"></div>`,
+      );
+      expect(out).toBe(
+        `<div data-internal-link="area" data-id="${ID}" data-variant="card" data-label="Yas Island"></div>`,
+      );
+    });
+
+    it("drops a block whose target cannot be read", () => {
+      for (const bad of [
+        `<div data-internal-link="agent" data-id="${ID}"></div>`,
+        `<div data-internal-link="area" data-id="not-an-id"></div>`,
+        `<div data-internal-link="area"></div>`,
+      ]) {
+        expect(sanitizeArticleHtml(`<p>a</p>${bad}<p>b</p>`)).toBe(
+          "<p>a</p><p>b</p>",
+        );
+      }
+    });
+
+    it("keeps the text of a stray div but none of its attributes", () => {
+      const out = sanitizeArticleHtml('<div class="x" style="y">Kept</div>');
+      expect(out).toBe("<div>Kept</div>");
+    });
+
+    it("keeps a text link's record pair", () => {
+      const html = `<p><a href="/areas/yas-island" data-link-kind="area" data-link-id="${ID}">Yas</a></p>`;
+      expect(sanitizeArticleHtml(html)).toBe(html);
+    });
+
+    it("drops half a pair rather than guess at it", () => {
+      const out = sanitizeArticleHtml(
+        '<p><a href="/areas/yas-island" data-link-kind="area" data-link-id="nope">Yas</a></p>',
+      );
+      expect(out).toBe('<p><a href="/areas/yas-island">Yas</a></p>');
+    });
+
+    it("is idempotent over blocks and text links", () => {
+      const input = `<p><a href="/p/x" data-link-kind="property" data-link-id="${ID}">x</a></p>${BLOCK}`;
+      const once = sanitizeArticleHtml(input);
+      expect(sanitizeArticleHtml(once)).toBe(once);
+    });
+  });
+
   it("is idempotent, so save-path and render-path passes agree", () => {
     // Both paths sanitise. If a second pass differed from the first, stored
     // HTML and rendered HTML would drift apart.

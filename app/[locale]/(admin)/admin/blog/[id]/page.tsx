@@ -7,6 +7,7 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { articleUrl } from "@/lib/queries/articles";
 import { listArticleCategories } from "@/lib/queries/article-categories";
 import { mediaPublicUrl } from "@/lib/media";
+import { listInternalLinkTargets } from "@/lib/internal-links/targets";
 import type { BlogMediaOption } from "../_image-insert-dialog";
 import { type ArticleEditInput } from "@/lib/schemas/article";
 import { ArticleEditForm } from "./_form";
@@ -59,10 +60,17 @@ async function fetchMedia(): Promise<BlogMediaOption[]> {
 
 export default async function ArticleEditPage({ params }: PageProps) {
   const { id } = await params;
-  const [article, categories, media] = await Promise.all([
+  const [article, categories, media, linkTargets] = await Promise.all([
     fetchArticle(id),
     listArticleCategories(),
     fetchMedia(),
+    // A failed read leaves the picker empty rather than taking the editor
+    // down — the article is still editable, and blocks already in the body
+    // still save, they just show as "not live" until the page reloads.
+    listInternalLinkTargets().catch((error) => {
+      console.error("[admin/blog] internal-link targets", error);
+      return [];
+    }),
   ]);
   if (!article) notFound();
 
@@ -122,6 +130,7 @@ export default async function ArticleEditPage({ params }: PageProps) {
             initial={initial}
             categories={categories}
             media={media}
+            linkTargets={linkTargets}
           />
         </div>
         <aside className="sticky top-6">

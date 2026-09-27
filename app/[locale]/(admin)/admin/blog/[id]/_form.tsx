@@ -19,6 +19,7 @@ import { ImagePicker } from "../../_fields/image-picker";
 import { ArabicTwin } from "../../_fields/arabic-twin";
 import { ArabicArticleBody } from "../_arabic-body";
 import type { BlogMediaOption } from "../_image-insert-dialog";
+import type { InternalLinkTarget } from "@/lib/internal-links/types";
 import { publishArticle, updateArticle } from "./_actions";
 import { PUBLISH_INTENT } from "./_intent";
 
@@ -57,6 +58,8 @@ export type ArticleEditFormProps = {
   initial: ArticleEditInput;
   categories: ArticleCategoryRow[];
   media: BlogMediaOption[];
+  /** Published areas, projects and listings, for the internal-link picker. */
+  linkTargets: InternalLinkTarget[];
 };
 
 export function ArticleEditForm({
@@ -64,6 +67,7 @@ export function ArticleEditForm({
   initial,
   categories,
   media: initialMedia,
+  linkTargets,
 }: ArticleEditFormProps) {
   const router = useRouter();
   // Uploads land in the library, so the freshly uploaded asset has to appear
@@ -221,16 +225,23 @@ export function ArticleEditForm({
           onChange={setBodyHtml}
           media={media}
           onMediaUploaded={(m) => setMedia((cur) => [m, ...cur])}
+          linkTargets={linkTargets}
         />
         <span className="text-[11.5px] text-bz-muted">
           Heading 2, heading 3, bold, italic, lists, links, blockquotes, and
-          images. We&apos;ll auto-derive reading time on save.
+          images. <strong className="font-medium text-bz-ink-2">Internal
+          link</strong> places a card for an area, project or listing after the
+          paragraph you are in — or, with words selected, links the words.
+          Add as many as the piece needs. We&apos;ll auto-derive reading time
+          on save.
         </span>
         <ArabicArticleBody
           value={bodyHtmlAr}
           onChange={setBodyHtmlAr}
           media={media}
           onMediaUploaded={(m) => setMedia((cur) => [m, ...cur])}
+          linkTargets={linkTargets}
+          englishHtml={bodyHtml}
         />
       </div>
 

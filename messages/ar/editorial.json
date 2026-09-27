@@ -25,5 +25,13 @@
     "closedTransactions": "{count, plural, zero {# صفقة {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.} one {صفقة {type} مغلقة واحدة في سجلات دائرة الأراضي والأملاك في {quarter}.} two {# صفقتان {type} مغلقتان في سجلات دائرة الأراضي والأملاك في {quarter}.} few {# صفقات {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.} many {# صفقة {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.} other {# صفقة {type} مغلقة في سجلات دائرة الأراضي والأملاك في {quarter}.}}",
     "noTransactions": "لم تُسجَّل بعد أي صفقات {type} مكتملة في {area} خلال هذا الربع."
   },
+  "internalLink": {
+    "areaEyebrow": "دليل المجتمع",
+    "areaHomes": "{count, plural, zero {# منزل للبيع} one {منزل واحد للبيع} two {منزلان للبيع} few {# منازل للبيع} many {# منزلاً للبيع} other {# منزل للبيع}}",
+    "areaCta": "اقرأ الدليل",
+    "projectEyebrow": "مشروع",
+    "projectCta": "اطّلع على المشروع",
+    "listingCta": "اطّلع على العقار"
+  },
   "fallbackArea": "الإمارات العربية المتحدة"
 }

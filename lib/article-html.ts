@@ -1,6 +1,12 @@
 import sanitizeHtml from "sanitize-html";
 import { env } from "@/lib/env";
 import { MEDIA_BUCKET, mediaPublicUrl } from "@/lib/media";
+import {
+  ANCHOR_ATTR,
+  BLOCK_ATTR,
+  readAnchorRef,
+  readBlockAttrs,
+} from "@/lib/internal-links/model";
 
 /**
  * Article bodies are authored as HTML in the Tiptap editor and rendered on the
@@ -22,6 +28,7 @@ import { MEDIA_BUCKET, mediaPublicUrl } from "@/lib/media";
  *     pre, code, strong, em, s, hr, br
  *   - Link: a
  *   - FigureImage (lib/tiptap/figure-image.ts): figure, img, figcaption
+ *   - InternalLink (lib/tiptap/internal-link.ts): div, as a link block only
  *   - Legacy seeded bodies (migration 0050, scripts/seed-demo-content):
  *     h4 and the table family
  */
@@ -49,6 +56,7 @@ const ALLOWED_TAGS = [
   "figure",
   "img",
   "figcaption",
+  "div",
   "table",
   "thead",
   "tbody",
@@ -63,7 +71,9 @@ const ALLOWED_TAGS = [
  * back as a bare, uneditable block the next time someone opened the editor.
  */
 const ALLOWED_ATTRIBUTES: sanitizeHtml.IOptions["allowedAttributes"] = {
-  a: ["href", "target", "rel"],
+  // The internal-link pair is what makes a text link survive a rename; strip
+  // it and the link silently reverts to the URL it had when it was written.
+  a: ["href", "target", "rel", ANCHOR_ATTR.kind, ANCHOR_ATTR.id],
   img: [
     "src",
     "data-media-key",
@@ -74,6 +84,8 @@ const ALLOWED_ATTRIBUTES: sanitizeHtml.IOptions["allowedAttributes"] = {
     "decoding",
   ],
   figure: ["data-figure-image"],
+  // A link block is an empty `<div>` whose attributes ARE its content.
+  div: [BLOCK_ATTR.kind, BLOCK_ATTR.id, BLOCK_ATTR.variant, BLOCK_ATTR.label],
   td: ["colspan", "rowspan"],
   th: ["colspan", "rowspan"],
 };
@@ -123,6 +135,34 @@ const OPTIONS: sanitizeHtml.IOptions = {
     a: (tagName, attribs) => {
       const out: Record<string, string> = { ...attribs };
       if (out.target === "_blank") out.rel = "noopener noreferrer";
+      // The pair is kept whole or not at all — a kind without a readable id
+      // (or the reverse) points at nothing, and the renderer would have to
+      // guess which half to believe.
+      const ref = readAnchorRef(out);
+      delete out[ANCHOR_ATTR.kind];
+      delete out[ANCHOR_ATTR.id];
+      if (ref) {
+        out[ANCHOR_ATTR.kind] = ref.kind;
+        out[ANCHOR_ATTR.id] = ref.id;
+      }
+      return { tagName, attribs: out };
+    },
+    /*
+     * The only `<div>` the editor writes is a link block, so the attributes
+     * are rebuilt from the validated read rather than passed through: an
+     * unknown variant becomes the default, the id is lowercased, the label is
+     * trimmed and capped. Anything that is not a readable block loses every
+     * attribute and is judged by `exclusiveFilter` below.
+     */
+    div: (tagName, attribs) => {
+      const block = readBlockAttrs(attribs);
+      if (!block) return { tagName, attribs: {} };
+      const out: Record<string, string> = {
+        [BLOCK_ATTR.kind]: block.kind,
+        [BLOCK_ATTR.id]: block.id,
+        [BLOCK_ATTR.variant]: block.variant,
+      };
+      if (block.label) out[BLOCK_ATTR.label] = block.label;
       return { tagName, attribs: out };
     },
     img: (tagName, attribs) => {
@@ -152,8 +192,17 @@ const OPTIONS: sanitizeHtml.IOptions = {
       return { tagName, attribs: out };
     },
   },
-  exclusiveFilter: (frame) =>
-    frame.tag === "img" && !allowedImageSrc(frame.attribs.src ?? ""),
+  exclusiveFilter: (frame) => {
+    if (frame.tag === "img") return !allowedImageSrc(frame.attribs.src ?? "");
+    // An empty `<div>` that is not a link block — a block whose target could
+    // not be read, or markup pasted in by a direct write — would render as an
+    // invisible element that still takes a paragraph's worth of margin. A
+    // `<div>` with text in it keeps the text.
+    if (frame.tag === "div") {
+      return !frame.attribs[BLOCK_ATTR.kind] && !frame.text.trim();
+    }
+    return false;
+  },
 };
 
 /**
