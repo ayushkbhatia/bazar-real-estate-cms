@@ -25,5 +25,13 @@
     "closedTransactions": "{count, plural, one {# closed {type} transaction on DLD record in {quarter}.} other {# closed {type} transactions on DLD record in {quarter}.}}",
     "noTransactions": "No closed {type} transactions surfaced for {area} in this quarter yet."
   },
+  "internalLink": {
+    "areaEyebrow": "Community guide",
+    "areaHomes": "{count, plural, one {# home for sale} other {# homes for sale}}",
+    "areaCta": "Read the guide",
+    "projectEyebrow": "Project",
+    "projectCta": "View the project",
+    "listingCta": "View the listing"
+  },
   "fallbackArea": "United Arab Emirates"
 }

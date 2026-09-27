@@ -656,6 +656,32 @@ shows the trail.)
   dossier still read from the seed module and `area_guides`. Exposing those
   means list fields writing to `area_guides`, not to the section document.
 
+- [blog] Internal-link picker loads the whole catalogue into the browser.
+  `admin/blog/_link-targets.ts` sends every published area, project and
+  listing to the blog editor (~130 rows today) and the picker searches them
+  client-side. Paginated, so nothing truncates — but past a few thousand
+  listings the Listings tab wants a server-side search (an action taking the
+  query) instead of a payload. See docs/INTERNAL_LINKS.md.
+
+- [blog] Internal links only go one way.
+  An area, project or listing page cannot show "featured in these articles",
+  and the property/development editors do not warn that unpublishing a record
+  will take its card out of N articles. Both are a scan of
+  `articles.body_html` for `data-id="<uuid>"` / `data-link-id="<uuid>"` — the
+  same shape `lib/queries/media-usage.ts` uses for images.
+
+- [blog] No analytics on internal-link cards.
+  Worth a PostHog `article_internal_link_clicked` (kind, variant, article
+  slug) to learn which cards earn their space. The card is a server component;
+  the capture needs a small client wrapper around its `Link`.
+
+- [blog] Chart and pull-quote embeds were never built.
+  The Sprint 7f stub that toasted "activates with Sprint 9" for chart, listing
+  card and pull quote (`admin/blog/[id]/_components/embed-blocks.tsx`, never
+  mounted) was deleted when internal links shipped the listing card. Pull
+  quotes are the existing blockquote; a chart block would need its own node
+  and a renderer, like lib/tiptap/internal-link.ts.
+
 - [blog] Trashed posts have no purge and no countdown.
   `/admin/blog?view=trash` keeps posts indefinitely until an admin deletes them
   for good. Same gap as the media library's trash — either add a cron that

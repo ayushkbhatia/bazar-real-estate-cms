@@ -121,6 +121,12 @@ export async function listPropertiesByReference(
  * it is, how big, what it costs, sale or rent, and what it looks like.
  */
 export type PropertyOption = {
+  /**
+   * The row id. The listing pickers store the reference, but an article's
+   * internal link stores the id (lib/internal-links/model.ts), so the blog
+   * editor's picker needs it to say which record a block points at.
+   */
+  id: string;
   reference: string;
   /**
    * The URL slug — not unique on its own (those three share one), which is
@@ -140,6 +146,7 @@ export type PropertyOption = {
 };
 
 type OptionRow = {
+  id: string;
   reference: string;
   slug: string;
   title: string;
@@ -162,7 +169,7 @@ export async function listPropertyOptions(
   const { data, error } = await supabase
     .from("properties")
     .select(
-      "reference, slug, title, mode, type, beds, baths, built_up_ft2, price_aed, areas:area_id(name), property_media(role, media:media_assets(storage_key))",
+      "id, reference, slug, title, mode, type, beds, baths, built_up_ft2, price_aed, areas:area_id(name), property_media(role, media:media_assets(storage_key))",
     )
     .eq("status", "published")
     .is("deleted_at", null)
@@ -182,6 +189,7 @@ export async function listPropertyOptions(
       (m) => m.role === "hero" && m.media,
     );
     return {
+      id: r.id,
       reference: r.reference,
       slug: r.slug,
       title: r.title,

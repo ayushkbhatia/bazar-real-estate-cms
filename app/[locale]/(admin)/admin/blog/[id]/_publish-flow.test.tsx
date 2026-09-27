@@ -58,6 +58,7 @@ function renderScreen(status: "draft" | "published" = "draft") {
         initial={INITIAL}
         categories={CATEGORIES}
         media={[]}
+        linkTargets={[]}
       />
       <ArticlePublishCard
         articleId="a1"

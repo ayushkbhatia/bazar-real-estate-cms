@@ -343,8 +343,11 @@ export function RecordPicker({
   );
 }
 
-/** The photo and the lines — shared by the trigger and every row. */
-function OptionBody({ item }: { item: SeedItem }) {
+/**
+ * The photo and the lines — shared by the trigger, every row, and the blog
+ * editor's internal-link picker, so a listing reads the same in all of them.
+ */
+export function OptionBody({ item }: { item: SeedItem }) {
   const d = item.detail;
   const facts = d?.facts ?? [];
   return (

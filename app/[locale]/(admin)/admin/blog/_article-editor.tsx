@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Link from "@tiptap/extension-link";
+import { NodeSelection, TextSelection } from "@tiptap/pm/state";
 import {
   Bold,
   Italic,
@@ -15,15 +14,46 @@ import {
   Link as LinkIcon,
   Image as ImageIcon,
   Minus,
+  Signpost,
   Undo2,
   Redo2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { FigureImage } from "@/lib/tiptap/figure-image";
+import { articleExtensions } from "@/lib/tiptap/article-extensions";
+import type { InternalLinkAttributes } from "@/lib/tiptap/internal-link";
+import {
+  isInternalLinkKind,
+  linkKey,
+  type InternalLinkKind,
+} from "@/lib/internal-links/model";
+import type { InternalLinkTarget } from "./_link-targets";
 import {
   ImageInsertDialog,
   type BlogMediaOption,
 } from "./_image-insert-dialog";
+import {
+  InternalLinkDialog,
+  type InternalLinkChoice,
+  type InternalLinkRequest,
+} from "./_internal-link-dialog";
+import {
+  InternalLinkEditorContext,
+  InternalLinkWithView,
+  type InternalLinkEditorApi,
+} from "./_internal-link-view";
+
+/** The picker, opened on an existing block. */
+function editBlockRequest(
+  pos: number,
+  attrs: InternalLinkAttributes,
+): InternalLinkRequest {
+  return {
+    mode: "edit-block",
+    hasTextSelection: false,
+    pos,
+    initial: { kind: attrs.kind, id: attrs.targetId, as: attrs.variant },
+  };
+}
 
 type ArticleEditorProps = {
   /** Initial HTML — should be the persisted value from the DB. */
@@ -34,6 +64,11 @@ type ArticleEditorProps = {
   media: BlogMediaOption[];
   /** Bubbles a fresh upload up so the picker lists it without a refresh. */
   onMediaUploaded: (m: BlogMediaOption) => void;
+  /**
+   * Every published area, project and listing, for the internal-link picker
+   * and for naming the records the body's link blocks point at.
+   */
+  linkTargets: InternalLinkTarget[];
   /**
    * Writing direction for the content area. The Arabic body passes "rtl" so
    * the caret starts on the right and paragraphs align correctly while typing
@@ -81,14 +116,26 @@ function ToolbarBtn({
 function Toolbar({
   editor,
   onInsertImage,
+  onInternalLink,
 }: {
   editor: Editor | null;
   onInsertImage: () => void;
+  onInternalLink: () => void;
 }) {
   if (!editor) return null;
 
+  const internalLinkActive =
+    editor.isActive("internalLink") ||
+    (editor.isActive("link") && Boolean(editor.getAttributes("link").linkKind));
+
   function setLink() {
     if (!editor) return;
+    // A link to one of our own records is edited through the picker, so it
+    // keeps pointing at the record rather than at whatever URL gets typed.
+    if (editor.isActive("link") && editor.getAttributes("link").linkKind) {
+      onInternalLink();
+      return;
+    }
     const prev = editor.getAttributes("link").href as string | undefined;
     const url = window.prompt("Link URL", prev ?? "https://");
     if (url === null) return;
@@ -96,12 +143,7 @@ function Toolbar({
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
       return;
     }
-    editor
-      .chain()
-      .focus()
-      .extendMarkRange("link")
-      .setLink({ href: url })
-      .run();
+    editor.chain().focus().extendMarkRange("link").setExternalLink(url).run();
   }
 
   return (
@@ -166,6 +208,14 @@ function Toolbar({
         <LinkIcon size={13} strokeWidth={1.8} />
       </ToolbarBtn>
       <ToolbarBtn
+        ariaLabel="Internal link — an area, project or listing"
+        active={internalLinkActive}
+        onClick={onInternalLink}
+      >
+        <Signpost size={13} strokeWidth={1.8} />
+        <span className="hidden sm:inline">Internal link</span>
+      </ToolbarBtn>
+      <ToolbarBtn
         ariaLabel="Insert image"
         active={editor.isActive("figureImage")}
         onClick={onInsertImage}
@@ -203,27 +253,40 @@ export function ArticleEditor({
   onChange,
   media,
   onMediaUploaded,
+  linkTargets,
   dir = "ltr",
   lang,
 }: ArticleEditorProps) {
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [linkRequest, setLinkRequest] = useState<InternalLinkRequest | null>(
+    null,
+  );
+  // The picker opens a new link on the kind inserted last.
+  const [lastKind, setLastKind] = useState<InternalLinkKind>("area");
+
+  const linkApi = useMemo<InternalLinkEditorApi>(() => {
+    const byKey = new Map(linkTargets.map((t) => [linkKey(t.kind, t.id), t]));
+    return {
+      lookup: (kind, id) => byKey.get(linkKey(kind, id)) ?? null,
+      edit: (pos, attrs) => setLinkRequest(editBlockRequest(pos, attrs)),
+    };
+  }, [linkTargets]);
+
+  // Built once. The editor only reads its extensions at creation, and a fresh
+  // array on every render made `useEditor` push new options into it each time.
+  const [extensions] = useState(() =>
+    articleExtensions({ internalLink: InternalLinkWithView }),
+  );
+
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: { levels: [2, 3] },
-      }),
-      Link.configure({
-        openOnClick: false,
-        autolink: true,
-        HTMLAttributes: { rel: "noopener noreferrer" },
-      }),
-      FigureImage,
-    ],
+    extensions,
     content: defaultValue || "<p></p>",
     editorProps: {
       attributes: {
+        // Internal text links get a dashed underline, so an editor can tell
+        // them from links to other sites at a glance.
         class:
-          "tiptap min-h-[420px] px-5 py-4 text-[15.5px] leading-[1.65] focus:outline-none",
+          "tiptap min-h-[420px] px-5 py-4 text-[15.5px] leading-[1.65] focus:outline-none [&_a[data-link-kind]]:decoration-dashed",
         dir,
         ...(lang ? { lang } : {}),
       },
@@ -234,10 +297,101 @@ export function ArticleEditor({
     immediatelyRender: false,
   });
 
+  /**
+   * What the toolbar button means depends on where the cursor is: on a block,
+   * edit it; inside an internal text link, re-point it; over selected words,
+   * offer to link them; anywhere else, insert a block.
+   */
+  function openInternalLink() {
+    if (!editor) return;
+    const { selection } = editor.state;
+    if (
+      selection instanceof NodeSelection &&
+      selection.node.type.name === "internalLink"
+    ) {
+      setLinkRequest(
+        editBlockRequest(
+          selection.from,
+          selection.node.attrs as InternalLinkAttributes,
+        ),
+      );
+      return;
+    }
+    const link = editor.getAttributes("link");
+    if (editor.isActive("link") && isInternalLinkKind(link.linkKind)) {
+      setLinkRequest({
+        mode: "edit-text",
+        hasTextSelection: true,
+        initial: { kind: link.linkKind, id: link.linkId ?? null, as: "text" },
+      });
+      return;
+    }
+    setLinkRequest({
+      mode: "insert",
+      // Words, specifically. A selected image is a non-empty selection too,
+      // and "link the selected text" would put the link on its caption.
+      hasTextSelection: selection instanceof TextSelection && !selection.empty,
+      initial: null,
+    });
+  }
+
+  function applyInternalLink({ target, as }: InternalLinkChoice) {
+    const request = linkRequest;
+    setLinkRequest(null);
+    if (!editor || !request) return;
+    // Only an insert moves the default: re-pointing one old block says
+    // nothing about what the writer links next.
+    if (request.mode === "insert") setLastKind(target.kind);
+    if (as === "text") {
+      editor
+        .chain()
+        .focus()
+        .extendMarkRange("link")
+        .setInternalTextLink({
+          href: target.href,
+          kind: target.kind,
+          id: target.id,
+        })
+        .run();
+      return;
+    }
+    const attrs = {
+      kind: target.kind,
+      targetId: target.id,
+      variant: as,
+      label: target.name,
+    };
+    if (request.mode === "edit-block" && request.pos !== undefined) {
+      editor.chain().focus().updateInternalLink(request.pos, attrs).run();
+    } else {
+      editor.chain().focus().insertInternalLink(attrs).run();
+    }
+  }
+
   return (
     <div className="border border-bz-border rounded bg-bz-bg overflow-hidden">
-      <Toolbar editor={editor} onInsertImage={() => setPickerOpen(true)} />
-      <EditorContent editor={editor} />
+      <Toolbar
+        editor={editor}
+        onInsertImage={() => setPickerOpen(true)}
+        onInternalLink={openInternalLink}
+      />
+      <InternalLinkEditorContext.Provider value={linkApi}>
+        <EditorContent editor={editor} />
+      </InternalLinkEditorContext.Provider>
+      <InternalLinkDialog
+        request={linkRequest}
+        targets={linkTargets}
+        defaultKind={lastKind}
+        onClose={() => {
+          setLinkRequest(null);
+          editor?.commands.focus();
+        }}
+        onChoose={applyInternalLink}
+        onUnlink={() => {
+          setLinkRequest(null);
+          editor?.chain().focus().extendMarkRange("link").unsetLink().run();
+        }}
+      />
       <ImageInsertDialog
         open={pickerOpen}
         onOpenChange={setPickerOpen}

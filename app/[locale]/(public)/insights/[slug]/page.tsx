@@ -17,7 +17,8 @@ import {
   getRelatedArticles,
 } from "@/lib/queries/articles";
 import { categoryToUrlSlug } from "@/lib/schemas/article";
-import { renderArticleBody } from "@/lib/article-body";
+import { articleBodyLinkRefs, renderArticleBody } from "@/lib/article-body";
+import { resolveInternalLinks } from "@/lib/internal-links/resolve";
 import { mediaPublicUrl } from "@/lib/media";
 import { articleJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env, isSupabaseConfigured } from "@/lib/env";
@@ -25,6 +26,7 @@ import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { ChevronRight } from "lucide-react";
 import { formatPublishedDate } from "@/lib/i18n/dates";
 import { readTime } from "@/lib/i18n/read-time";
+import { InternalLinkCard } from "./_components/internal-link-card";
 
 export const revalidate = 300;
 
@@ -112,7 +114,14 @@ export default async function ArticleDetailPage({ params }: PageProps) {
   const article = await getPublishedArticleBySlug(slug);
   if (!article) notFound();
 
-  const related = await getRelatedArticles(article.id, article.category, 3);
+  // The body's links to areas, projects and listings, looked up in one pass
+  // (at most one query per kind) beside the related-articles read. On /ar the
+  // body is the Arabic one when it exists, so the refs come from whichever
+  // body is actually about to be drawn.
+  const [related, links] = await Promise.all([
+    getRelatedArticles(article.id, article.category, 3),
+    resolveInternalLinks(articleBodyLinkRefs(article.body_html), locale),
+  ]);
 
   const categoryLabel = article.category_label;
   const heroSrc = article.hero
@@ -261,7 +270,12 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           of them has in common with the browser.
         */}
         <div className="bz-prose text-[17.5px] leading-[1.7] text-bz-ink">
-          {renderArticleBody(article.body_html)}
+          {renderArticleBody(article.body_html, {
+            lookup: links,
+            renderBlock: (link, variant) => (
+              <InternalLinkCard link={link} variant={variant} />
+            ),
+          })}
         </div>
       </div>
 

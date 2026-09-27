@@ -6469,5 +6469,47 @@
     "sourceHash": "32f435adeb20",
     "reviewed": false,
     "note": "Card-eyebrow short form of readMinutes — same numeral agreement, without the قراءة."
+  },
+  "editorial.internalLink.areaEyebrow": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "0fdcaac91dae",
+    "reviewed": false,
+    "note": "Same wording as area.hero.guide, which heads the page this card links to."
+  },
+  "editorial.internalLink.areaHomes": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "7a6715d9edaa",
+    "reviewed": false,
+    "note": "Same six-form plural as area.cards.homesForSale — the /areas grid prints the same count."
+  },
+  "editorial.internalLink.areaCta": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "83b3b277abbf",
+    "reviewed": false,
+    "note": "Imperative, matching the other card calls to action on the site."
+  },
+  "editorial.internalLink.projectEyebrow": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "985959785319",
+    "reviewed": false,
+    "note": "Bare noun: the developer's name follows it after a separator."
+  },
+  "editorial.internalLink.projectCta": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "3f4250c87682",
+    "reviewed": false,
+    "note": "Same verb as the listing card below, so the cards read as a set."
+  },
+  "editorial.internalLink.listingCta": {
+    "by": "hand",
+    "model": null,
+    "sourceHash": "63597cd0cf8b",
+    "reviewed": false,
+    "note": "Aqar (property) rather than a word for 'listing', which reads as a catalogue entry in Arabic."
   }
 }

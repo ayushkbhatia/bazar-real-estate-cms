@@ -61,6 +61,7 @@ describe("ArticleEditForm cover image", () => {
         initial={INITIAL}
         categories={CATEGORIES}
         media={MEDIA}
+        linkTargets={[]}
       />,
     );
     expect(screen.getByText(/cover image/i)).toBeInTheDocument();
@@ -73,6 +74,7 @@ describe("ArticleEditForm cover image", () => {
         initial={INITIAL}
         categories={CATEGORIES}
         media={MEDIA}
+        linkTargets={[]}
       />,
     );
     expect(
@@ -90,6 +92,7 @@ describe("ArticleEditForm cover image", () => {
         initial={{ ...INITIAL, hero_image_id: "img-2" }}
         categories={CATEGORIES}
         media={MEDIA}
+        linkTargets={[]}
       />,
     );
     // The category control is also a combobox, so pick the one carrying the
@@ -116,6 +119,7 @@ describe("ArticleEditForm cover image", () => {
         initial={INITIAL}
         categories={CATEGORIES}
         media={MEDIA}
+        linkTargets={[]}
       />,
     );
     expect(screen.getByText(/cover image/i)).toBeInTheDocument();
