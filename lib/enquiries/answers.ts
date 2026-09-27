@@ -60,8 +60,17 @@ export type ReadAnswers = {
    * is trustworthy about what was shown — see `recordsOnlyAsked`.
    */
   skipped: string[];
-  /** The mortgage calculator's numbers at the moment they pressed send. */
+  /**
+   * What the page supplied at the moment they pressed send — the mortgage
+   * calculator's numbers, or the layout a floor-plan request was for.
+   */
   scenario: string | null;
+  /**
+   * What the form calls that — `FormDef.scenarioLabel`. Null is the mortgage
+   * calculator, which predates the label and is still the only form without
+   * one.
+   */
+  scenarioLabel: string | null;
 };
 
 const CONTACT_MAPPINGS: ReadonlySet<FormFieldMapping> = new Set([
@@ -127,6 +136,7 @@ export function readAnswers(input: {
     consented: null,
     skipped: [],
     scenario: null,
+    scenarioLabel: def?.scenarioLabel ?? null,
   };
 
   const keys = Object.keys(data)

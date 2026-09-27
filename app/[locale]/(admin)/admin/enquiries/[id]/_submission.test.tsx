@@ -128,6 +128,35 @@ describe("SubmissionCard", () => {
     ).toBeTruthy();
   });
 
+  it("names a floor-plan request's layout for what it is, not as the calculator", () => {
+    const def = getFormDef("development_floorplan")!;
+    const answers = readAnswers({
+      data: {
+        name: "Layla",
+        email: "l@example.com",
+        phone: "+971 50 000 0000",
+        _scenario: "1 Bedroom · Type 2",
+      },
+      labels: { _scenario: "Layout requested" },
+      def,
+      fields: def.fields,
+    });
+    render(
+      <SubmissionCard
+        origin={enquiryOrigin("development_floorplan", "brochure")}
+        page={describeSourcePage("/developments/saadiyat-lagoons", {
+          development: { slug: "saadiyat-lagoons", name: "Saadiyat Lagoons" },
+        })}
+        facts={[]}
+        answers={answers}
+        canEditForms
+      />,
+    );
+    expect(screen.getByText("Layout requested")).toBeTruthy();
+    expect(screen.getByText("1 Bedroom · Type 2")).toBeTruthy();
+    expect(screen.queryByText(/The calculator as it stood/)).toBeNull();
+  });
+
   it("is honest when the answers weren't logged or the page wasn't recorded", () => {
     render(
       <SubmissionCard
