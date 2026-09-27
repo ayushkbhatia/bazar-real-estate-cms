@@ -40,9 +40,28 @@ quick grep can show "what's outstanding in my area."
   label, counter beside it. Shared by every CMS editor, so check a few for
   crowding.
 
-- [cms] The unknown-token save check covers listing copy and Cards only.
+- [agents] `/agents` still says "Twelve advisors" — one advisor is live.
+  The headline ("Twelve advisors. / By design."), the meta description
+  ("Twelve senior advisors across…") and the WhatsApp message on each card
+  ("Hi {name}, found you on bazar.ae" — the old domain) shipped verbatim when
+  the page moved into Pages & blocks, because correcting them is copy, not
+  plumbing. All three are now the client's to change without a deploy:
+  Pages & blocks → Agents (the page, and its Search appearance card). Done
+  looks like: the client has decided what the page should claim.
+
+- [agents] Five English strings left on `/ar/agents/<slug>`.
+  The review author fallback "Bazar client", the listing card's location
+  fallback "United Arab Emirates", the JSON-LD breadcrumb names ("Home",
+  "Our team"), the "Advisor not found" title, and — on `/agents` — the
+  WhatsApp badge's aria-label "Message {name} on WhatsApp". None of them is in
+  the profile's copy document (`lib/master-pages/agent-page.ts`); the first
+  two render only when data is missing. Done looks like: catalogue keys for
+  the interface strings, a copy-document field for "Bazar client".
+
+- [cms] The unknown-token save check covers listing copy, Cards and advisor pages only.
   `lib/master-pages/tokens.ts` refuses a `{token}` a page cannot fill, wired
-  into `saveCard` and `savePropertyPageCopy`. The project-page copy screen,
+  into `saveCard`, `savePropertyPageCopy`, the advisor profile copy, each
+  advisor's own page and the `/agents` master page. The project-page copy screen,
   the developer-page copy screen and each project's own document still accept
   anything, and render a typo as typed. Done looks like: the same call in
   their save actions, against `DEVELOPMENT_TOKENS` / `{name}`.
@@ -1683,11 +1702,13 @@ surface reads the seed roster any more. These are the loose ends:
   CMS rules plus the fallback agent. Left alone here because removing it
   changes lead routing, which deserves its own change.
 
-- **Four advisor-profile fields have no column to come from.** Years in
-  market, lifetime closed, closed QTD and the pull quote were all seed-only,
-  and `/agents/<slug>` no longer shows them — the stats strip is down to BRN.
+- **Three advisor-profile fields have no column to come from.** Years in
+  market, lifetime closed and closed QTD were all seed-only, and
+  `/agents/<slug>` no longer shows them — the stats strip is down to BRN.
   Either add the columns and the editor fields, or accept the shorter page as
-  the design. Same question for the "Areas" column that went with them.
+  the design. Same question for the "Areas" column that went with them. (The
+  pull quote, the fourth, has a home now: one shared wording in Pages &
+  blocks → Sub-pages → Agents → Page copy, overridable per advisor.)
 
 - **`lib/seeds/agents.ts` itself is nearly dead.** After this change only
   `lead-routing.ts` imports it, for the inert `areas` above. Deleting the file

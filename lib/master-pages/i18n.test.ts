@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { MASTER_PAGES } from "./pages";
-import { AREA_SECTIONS, DEVELOPMENT_SECTIONS } from "./subpages";
+import {
+  AGENT_SECTIONS,
+  AREA_SECTIONS,
+  DEVELOPMENT_SECTIONS,
+} from "./subpages";
 import { LIBRARY_SECTIONS } from "./library";
 import { SEARCH_HEADERS } from "./search-headers";
 import { DEVELOPER_PAGE_SECTION } from "./developer-page";
 import { DEVELOPMENT_PAGE_COPY_SECTIONS } from "./development-page";
 import { PROPERTY_PAGE_COPY_SECTIONS } from "./property-page";
+import { AGENT_PAGE_COPY_SECTIONS } from "./agent-page";
 import { HEADER_CTA_SECTION } from "./header-cta";
 import { BLOCK_DEFS } from "@/lib/page-builder/catalogue";
 import { mergeValues, validateFieldValues } from "./index";
@@ -42,6 +47,10 @@ function allSectionDefs(): { origin: string; def: SectionDef }[] {
   for (const section of AREA_SECTIONS) {
     out.push({ origin: "subpage:area", def: section });
   }
+  // One advisor's own profile document — overrides of the shared copy below.
+  for (const section of AGENT_SECTIONS) {
+    out.push({ origin: "subpage:agent", def: section });
+  }
   // The section library — content owned by the site rather than by a page.
   // Same document shape, same twins, so the same five assertions apply.
   for (const entry of LIBRARY_SECTIONS) {
@@ -67,6 +76,11 @@ function allSectionDefs(): { origin: string; def: SectionDef }[] {
   // override, and the FAQ band carries a list whose items hold twins too.
   for (const section of PROPERTY_PAGE_COPY_SECTIONS) {
     out.push({ origin: "property-page:copy", def: section });
+  }
+  // The same, for every /agents/<slug> profile — what each advisor's own
+  // document overrides.
+  for (const section of AGENT_PAGE_COPY_SECTIONS) {
+    out.push({ origin: "agent-page:copy", def: section });
   }
   // The header's call-to-action button — site chrome rather than a page, but
   // the same document shape and the same hand-declared Arabic, so the same

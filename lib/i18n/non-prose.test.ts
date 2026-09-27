@@ -4,6 +4,7 @@
 import { describe, it, expect } from "vitest";
 import { MASTER_PAGES } from "@/lib/master-pages/pages";
 import {
+  AGENT_SECTIONS,
   AREA_SECTIONS,
   DEVELOPMENT_SECTIONS,
 } from "@/lib/master-pages/subpages";
@@ -13,6 +14,7 @@ import { SEARCH_HEADERS } from "@/lib/master-pages/search-headers";
 import { DEVELOPMENT_PAGE_COPY_SECTIONS } from "@/lib/master-pages/development-page";
 import { DEVELOPER_PAGE_SECTION } from "@/lib/master-pages/developer-page";
 import { PROPERTY_PAGE_COPY_SECTIONS } from "@/lib/master-pages/property-page";
+import { AGENT_PAGE_COPY_SECTIONS } from "@/lib/master-pages/agent-page";
 import { isTranslatable } from "@/lib/master-pages/twins";
 import type { FieldDef, ListFieldDef, SectionDef } from "@/lib/master-pages/types";
 import { nonProseReason } from "./prose";
@@ -98,6 +100,12 @@ function everySlot(): Slot[] {
   }
   for (const s of PROPERTY_PAGE_COPY_SECTIONS) {
     out.push(...collect(`property-page·${s.key}`, s.fields, s.defaults));
+  }
+  for (const s of AGENT_PAGE_COPY_SECTIONS) {
+    out.push(...collect(`agent-page·${s.key}`, s.fields, s.defaults));
+  }
+  for (const s of AGENT_SECTIONS as SectionDef[]) {
+    out.push(...collect(`agent·${s.key}`, s.fields, s.defaults));
   }
   return out;
 }

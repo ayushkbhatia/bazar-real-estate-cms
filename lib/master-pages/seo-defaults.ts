@@ -96,6 +96,11 @@ export const MASTER_PAGE_SEO_DEFAULTS: Record<
     description:
       "A trusted name in UAE real estate since 2005 — over 20 years of trust, transparency, and proven market experience across Abu Dhabi and the wider UAE.",
   },
+  agents: {
+    title: "Our team",
+    description:
+      "Twelve senior advisors across buy, sell, rent, off-plan, and investment desks in Abu Dhabi.",
+  },
   contact: {
     title: "Contact Bazar Real Estate",
     description:

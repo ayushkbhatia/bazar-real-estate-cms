@@ -953,12 +953,6 @@
     "sourceHash": "6c57ed1a13bb",
     "reviewed": false
   },
-  "editorial.eyebrow.specialties": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "89440c3f3b75",
-    "reviewed": false
-  },
   "editorial.eyebrow.talkToAuthor": {
     "by": "machine",
     "model": "claude-opus-5",
@@ -1007,22 +1001,10 @@
     "sourceHash": "9d705ef61898",
     "reviewed": false
   },
-  "editorial.eyebrow.activeListings": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "353ee8b85a32",
-    "reviewed": false
-  },
   "editorial.eyebrow.areas": {
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "2d36715a6cc6",
-    "reviewed": false
-  },
-  "editorial.eyebrow.ourTeam": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "cb7511f9c87d",
     "reviewed": false
   },
   "editorial.fallbackArea": {
@@ -1036,20 +1018,6 @@
     "model": "claude-opus-5",
     "sourceHash": "c9d12df5605c",
     "reviewed": false
-  },
-  "editorial.agent.worksFullCycle": {
-    "by": "hand",
-    "model": null,
-    "sourceHash": "7108c48a41c3",
-    "reviewed": false,
-    "note": "MT returned nothing twice. A short sentence whose only content word is a masked proper noun leaves almost nothing to translate."
-  },
-  "editorial.agent.mailGreeting": {
-    "by": "hand",
-    "model": null,
-    "sourceHash": "dc3389df8b2e",
-    "reviewed": false,
-    "note": "MT returned nothing. Same shape — a greeting built almost entirely around a masked name."
   },
   "tools.mortgage.eyebrow": {
     "by": "machine",
@@ -1669,28 +1637,10 @@
     "sourceHash": "dd64913c8b91",
     "reviewed": false
   },
-  "editorial.eyebrow.languages": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "318655cea4bd",
-    "reviewed": false
-  },
-  "editorial.eyebrow.whatClientsSay": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "aaef1116b6a2",
-    "reviewed": false
-  },
   "editorial.article.save": {
     "by": "machine",
     "model": "claude-opus-5",
     "sourceHash": "1509f561f241",
-    "reviewed": false
-  },
-  "editorial.agent.advisor": {
-    "by": "machine",
-    "model": "claude-opus-5",
-    "sourceHash": "28da8c1f9ede",
     "reviewed": false
   },
   "tools.mortgage.intro": {

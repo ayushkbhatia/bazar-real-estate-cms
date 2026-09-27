@@ -2,6 +2,7 @@ import {
   DEVELOPMENT_PAGE_ADMIN_PATH,
   developmentPageCopyDefault,
 } from "./development-page";
+import { AGENT_PAGE_ADMIN_PATH, agentPageCopyDefault } from "./agent-page";
 import type {
   FieldDef,
   MasterPageDef,
@@ -30,7 +31,8 @@ export type SubPageKind =
   | "developer"
   | "property"
   | "section"
-  | "search";
+  | "search"
+  | "agent";
 
 /**
  * Sub-page kinds, rendered as blocks on the Pages index the same way master
@@ -124,6 +126,23 @@ export const SUBPAGE_KINDS: SubPageKindDef[] = [
     description:
       "One page per listing. The headings, enquiry wording and shared questions every listing carries, in both languages.",
     itemLabel: "listing page",
+  },
+  {
+    /*
+     * One profile per published advisor. Unlike `property`, each one has a
+     * document of its own — which bands show, and any wording that should
+     * differ for that advisor — over one shared document holding the wording
+     * they all start from (`lib/master-pages/agent-page.ts`). The advisor's
+     * name, portrait and contact details are their team record, in Agents &
+     * team.
+     */
+    kind: "agent",
+    label: "Agents",
+    publicPath: "/agents",
+    adminPath: "/admin/pages/sub/agent",
+    description:
+      "One profile per advisor, built from a shared template — the wording every profile carries, and what each advisor's own page shows.",
+    itemLabel: "advisor page",
   },
 ];
 
@@ -1094,5 +1113,163 @@ export function areaPageDef(record: {
     path: `/areas/${record.slug}`,
     description: `Community guide for ${record.name}.`,
     sections: AREA_SECTIONS,
+  };
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// Agents — advisor profile pages under /agents/<slug>
+// ────────────────────────────────────────────────────────────────────────
+
+/**
+ * An override field on one advisor's page: optional, and showing the wording
+ * every profile shares greyed in the empty box — the same arrangement the
+ * project pages use (`sharedCopyField` above), backed by
+ * `lib/master-pages/agent-page.ts` instead.
+ *
+ * The placeholder is the shared wording VERBATIM, tokens and all — an editor
+ * sees `Working with {first_name}.` rather than their advisor's name, for the
+ * reason `sharedCopyField` gives.
+ */
+function agentOverride(
+  sectionKey: string,
+  field: string,
+  label: string,
+  kind: "text" | "textarea" = "text",
+): SimpleFieldDef {
+  const shipped = agentPageCopyDefault(sectionKey, field);
+  const arabic = agentPageCopyDefault(sectionKey, `${field}_ar`);
+  const help =
+    shipped === null
+      ? "Blank keeps the built-in wording."
+      : `Blank keeps the wording every advisor profile shares — “${shipped}”. ` +
+        `Change it for all of them at ${AGENT_PAGE_ADMIN_PATH}.`;
+  const extra = {
+    ...(shipped === null ? {} : { placeholder: shipped }),
+    ...(arabic === null ? {} : { placeholderAr: arabic }),
+  };
+  return kind === "textarea"
+    ? optionalBody(field, label, help, { max: 300, ...extra })
+    : optionalText(field, label, help, { max: 160, ...extra });
+}
+
+function agentSection(
+  key: string,
+  label: string,
+  description: string,
+  fields: SimpleFieldDef[],
+  extra: Partial<SectionDef> = {},
+): SectionDef {
+  return {
+    key,
+    label,
+    description,
+    fields,
+    // Every copy field ships null: they are overrides, and the shared document
+    // is what renders until someone types here.
+    defaults: Object.fromEntries(fields.map((f) => [f.key, null])),
+    ...extra,
+  };
+}
+
+/**
+ * The bands of one advisor's profile, in the order they render.
+ *
+ * The hero is locked — the page is built around it. Everything under it can
+ * be switched off for this advisor alone, or moved; a band whose data is
+ * missing (no BRN, no reviews) drops out on its own whatever its switch says.
+ */
+export const AGENT_SECTIONS: SectionDef[] = [
+  agentSection(
+    "hero",
+    "Profile header",
+    "Portrait, name, title, bio, pull quote and the contact buttons.",
+    [
+      agentOverride("hero", "quote", "Pull quote", "textarea"),
+      agentOverride("hero", "whatsapp_message", "WhatsApp message", "textarea"),
+    ],
+    {
+      locked: true,
+      dataNote:
+        "The portrait, name, title, bio and the phone, email and WhatsApp number behind the buttons are this advisor's team record. The button labels are shared by every profile, in Page copy.",
+      dataLink: { label: "Agents & team", href: "/admin/agents" },
+    },
+  ),
+  agentSection(
+    "credentials",
+    "Licence number",
+    "The strip carrying the advisor's BRN.",
+    [],
+    {
+      dataNote:
+        "The number is the BRN on this advisor's team record, and the strip only appears while there is one.",
+    },
+  ),
+  agentSection(
+    "expertise",
+    "Specialties & languages",
+    "The two columns listing what the advisor covers and speaks.",
+    [
+      agentOverride("expertise", "specialties_eyebrow", "Specialties heading"),
+      agentOverride("expertise", "languages_eyebrow", "Languages heading"),
+    ],
+    {
+      dataNote:
+        "The specialties and languages themselves are on this advisor's team record.",
+    },
+  ),
+  agentSection(
+    "reviews",
+    "Client reviews",
+    "Approved reviews filed against this advisor.",
+    [
+      agentOverride("reviews", "eyebrow", "Eyebrow"),
+      agentOverride("reviews", "heading", "Heading"),
+    ],
+    {
+      dataNote:
+        "The reviews are the approved ones filed against this advisor. The band only appears once there is at least one.",
+    },
+  ),
+  agentSection(
+    "listings",
+    "Active listings",
+    "The advisor's six newest published listings.",
+    [
+      agentOverride("listings", "eyebrow", "Eyebrow"),
+      agentOverride("listings", "heading", "Heading"),
+      agentOverride("listings", "empty", "No-listings message", "textarea"),
+    ],
+    {
+      dataNote:
+        "The cards are the listings assigned to this advisor on each property's record.",
+      dataLink: { label: "Properties", href: "/admin/properties" },
+    },
+  ),
+  agentSection(
+    "cta",
+    "Closing band",
+    "The accent band at the foot of the profile, with its button to the contact page.",
+    [
+      agentOverride("cta", "eyebrow", "Eyebrow"),
+      agentOverride("cta", "heading", "Heading"),
+      agentOverride("cta", "cta_label", "Button"),
+    ],
+  ),
+];
+
+/**
+ * One advisor's page presented as a `MasterPageDef`, so it goes through
+ * `resolveSections` / `validateSections` like every other sub-page.
+ */
+export function agentPageDef(record: {
+  name: string;
+  slug: string;
+}): MasterPageDef {
+  return {
+    key: "agent" as unknown as MasterPageDef["key"],
+    label: record.name,
+    path: `/agents/${record.slug}`,
+    description: `Advisor profile for ${record.name}.`,
+    sections: AGENT_SECTIONS,
   };
 }

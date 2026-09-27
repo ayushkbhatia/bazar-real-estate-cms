@@ -1,6 +1,7 @@
-import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
+import { DEFAULT_LOCALE, asLocale, type Locale } from "@/lib/i18n/locales";
 import { localeDateTag } from "@/lib/i18n/dates";
-import { getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
+import * as React from "react";
 import { getCardLabelResolver } from "@/lib/queries/card-labels";
 import Image from "next/image";
 import Link from "@/components/i18n/link";
@@ -17,6 +18,8 @@ import { propertyUrl } from "@/lib/queries/properties";
 import { mediaPublicUrl } from "@/lib/media";
 import { realEstateAgentJsonLd, breadcrumbListJsonLd } from "@/lib/jsonld";
 import { env } from "@/lib/env";
+import { getAgentPageContent } from "@/lib/queries/subpages";
+import { agentTokens, getAgentPageCopy } from "@/lib/queries/agent-page";
 import { ListingCardPriced } from "../../_components/listing-card-priced";
 
 export async function generateStaticParams() {
@@ -39,27 +42,26 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string; locale: Locale }>;
 }): Promise<Metadata> {
-  const { slug, locale } = await params;
+  const { slug, locale: raw } = await params;
+  const locale = asLocale(raw);
   const agent = await getAgentBySlug(slug, locale);
   if (!agent) return { title: "Advisor not found" };
+  // The fallback after the dash is the shared profile copy's, so an advisor
+  // with no title reads the same in the tab as above their name.
+  const copy = await getAgentPageCopy(agentTokens(agent.display_name), locale);
   return {
-    title: `${agent.display_name} — ${agent.title ?? "Advisor"}`,
+    title: `${agent.display_name} — ${agent.title ?? copy("hero", "title_fallback")}`,
     description: agent.bio ?? undefined,
   };
 }
 
-/**
- * A display first name.
- *
- * `split(" ")[0]` was inlined at six sites in this file. It is wrong often
- * enough in this market to be worth naming: Arabic names routinely carry
- * `بن` and `عبد` compounds, so the first whitespace-delimited token is
- * frequently a particle rather than a name. One place to fix it when someone
- * decides what the right rule is, instead of six.
+/*
+ * The profile reads the CMS now — the shared copy and this advisor's own
+ * document — so it takes the interval its sibling profile pages carry
+ * (/developers/[slug]). Saves still revalidate on demand; this is what heals a
+ * build that could not reach the database and baked the shipped copy.
  */
-function firstName(full: string): string {
-  return full.trim().split(/\s+/)[0] ?? full;
-}
+export const revalidate = 300;
 
 export default async function AgentProfilePage({
   params,
@@ -67,21 +69,36 @@ export default async function AgentProfilePage({
   params: Promise<{ slug: string; locale: Locale }>;
 }) {
   /*
-   * Locale from `params`, never ambient. An ambient `getTranslations` reads
-   * `getLocale()`, which falls through to `headers()` and takes the route off
-   * prerendering — check:routes caught all five of these at once.
+   * Locale from `params`, never ambient. An ambient read falls through to
+   * `headers()` and takes the route off prerendering — check:routes caught
+   * five of these at once.
    */
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "editorial" });
-  // `t` is this page's editorial namespace; `ta` is the shared `pages` bag.
-  const ta = await getTranslations({ locale, namespace: "pages.agent" });
+  const { slug, locale: raw } = await params;
+  const locale = asLocale(raw);
+  setRequestLocale(locale);
   // Bound once, asked per row. The words are the client's now — see
   // lib/card-labels.ts — so the two catalogue strings this used to inline are
   // gone rather than moved.
   const cardLabels = await getCardLabelResolver(locale);
-  const { slug } = await params;
   const agent = await getAgentBySlug(slug, locale);
   if (!agent) notFound();
+
+  /*
+   * Every word on this page that is not the advisor's own comes from two
+   * documents: the copy every profile shares (Pages & blocks → Sub-pages →
+   * Agents → Page copy) and this advisor's own, which can override any of it
+   * and decides which bands show. `copy` resolves a field through both, then
+   * the shipped wording, with `{name}` / `{first_name}` filled.
+   */
+  const page = await getAgentPageContent(
+    { user_id: agent.user_id, name: agent.display_name, slug: agent.slug },
+    locale,
+  );
+  const copy = await getAgentPageCopy(
+    agentTokens(agent.display_name),
+    locale,
+    page.sections,
+  );
 
   // Reviews + active listings — both keyed on the agent's user_id. Skip
   // for seed-only agents (no DB id) so the section degrades cleanly.
@@ -106,19 +123,17 @@ export default async function AgentProfilePage({
    * The stats strip's years-in-market and closed figures have no column to
    * come from at all, so they stay as the em-dashes an unmatched slug already
    * produced; closed-QTD joins them rather than claiming a confident zero.
-   * The pull quote likewise has no column — the translated line that was
-   * already the no-seed default is now the only one.
+   * The pull quote has no column either, and does not need one: it is copy,
+   * shared by every profile and overridable per advisor in Pages & blocks.
    */
   const phone = agent.phone;
   const email = agent.email;
   const whatsapp = agent.whatsapp;
-  const pullQuote = t("agent.worksFullCycle", {
-    name: firstName(agent.display_name),
-  });
+  const pullQuote = copy("hero", "quote");
 
   const waUrl = whatsapp
     ? `https://wa.me/${whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(
-        t("agent.mailGreeting", { name: firstName(agent.display_name) }),
+        copy("hero", "whatsapp_message"),
       )}`
     : null;
 
@@ -140,131 +155,44 @@ export default async function AgentProfilePage({
     { name: agent.display_name, url: `${siteBase}/agents/${agent.slug}` },
   ]);
 
-  return (
-    <div className="bg-bz-bg">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(agentLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsLd) }}
-      />
-      {/* Crumb */}
-      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
-        <Link
-          href="/agents"
-          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
-        >
-          <ArrowLeft size={13} strokeWidth={1.8} />
-          {ta("ourTeam")}
-        </Link>
-      </div>
+  /*
+   * The bands under the header, keyed by their section in the advisor's
+   * document. The header is locked and always first; the rest render in that
+   * document's order, and only while switched on — then each still drops out
+   * on its own when there is nothing to put in it (no BRN, no reviews).
+   */
+  const bands: Record<string, React.ReactNode> = {
+    /* Stats strip.
 
-      {/* Hero */}
-      <section className="px-4 md:px-12 pt-8 pb-14 max-w-[1280px]">
-        <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-8 md:gap-16 items-start">
-          {/* The one image on this page that must not be lazy: `grid-cols-1`
-              below md puts the portrait first and full-bleed, which makes it
-              the LCP element on a phone. The slot is the fixed 360px track
-              from md up, and the section's content width (viewport minus the
-              two 16px gutters) below it — not 100vw, which would still hand
-              a 390px phone the same crop as a 1440px laptop. */}
-          {agent.photo_url ? (
-            <div className="relative w-full aspect-[4/5] rounded-md overflow-hidden">
-              <Image
-                src={agent.photo_url}
-                alt={agent.display_name}
-                fill
-                priority
-                sizes="(min-width: 768px) 360px, calc(100vw - 32px)"
-                className="object-cover"
-              />
-            </div>
-          ) : (
-            <PlaceholderImage
-              label={agent.slug}
-              className="w-full aspect-[4/5] rounded-md"
-            />
-          )}
-          <div>
-            <Eyebrow>{agent.title ?? t("agent.advisor")}</Eyebrow>
-            <h1
-              className="serif text-[32px] md:text-[56px] mt-3 font-normal leading-[1.02] max-w-[16ch]"
-              style={{ letterSpacing: "-0.025em" }}
-            >
-              {agent.display_name}
-            </h1>
-            {agent.bio ? (
-              <p className="mt-6 text-[16px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
-                {agent.bio}
-              </p>
-            ) : null}
-            <blockquote
-              className="serif italic text-[20px] mt-8 ps-5 border-s-2 border-bz-accent text-bz-ink leading-relaxed max-w-[56ch]"
-              style={{ letterSpacing: "-0.005em" }}
-            >
-              &ldquo;{pullQuote}&rdquo;
-            </blockquote>
-
-            {/* Contact actions */}
-            <div className="mt-8 flex flex-wrap gap-3">
-              {phone ? (
-                <Button asChild>
-                  <a href={`tel:${phone.replace(/\s/g, "")}`}>
-                    <Phone size={14} strokeWidth={1.7} />
-                    Call
-                  </a>
-                </Button>
-              ) : null}
-              {waUrl ? (
-                <Button asChild variant="outline">
-                  <a href={waUrl} target="_blank" rel="noopener noreferrer">
-                    <MessageCircle size={14} strokeWidth={1.7} />
-                    {ta("whatsapp")}
-                  </a>
-                </Button>
-              ) : null}
-              {email ? (
-                <Button asChild variant="ghost">
-                  <a href={`mailto:${email}`}>
-                    <Mail size={14} strokeWidth={1.7} />
-                    {ta("email")}
-                  </a>
-                </Button>
-              ) : null}
-            </div>
+       Years-in-market, lifetime-closed and closed-QTD used to be read from the
+       matching `SEED_AGENTS` entry — invented figures for invented advisors —
+       and `staff` has no column for any of them, so there is nothing to put in
+       those three tiles. Only the BRN, which is a real column, remains; the
+       strip renders at all only when it is set. */
+    credentials: agent.brn ? (
+      <section
+        key="credentials"
+        className="border-y border-bz-border bg-bz-surface"
+      >
+        <div className="px-4 md:px-12 py-10 max-w-[1280px]">
+          <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
+            BRN
           </div>
+          <div className="mono text-[20px] mt-2 text-bz-ink">{agent.brn}</div>
         </div>
       </section>
+    ) : null,
 
-      {/* Stats strip.
+    /* Specialties + languages.
 
-          Years-in-market, lifetime-closed and closed-QTD used to be read from
-          the matching `SEED_AGENTS` entry — invented figures for invented
-          advisors — and `staff` has no column for any of them, so there is
-          nothing to put in those three tiles. Only the BRN, which is a real
-          column, remains; the strip renders at all only when it is set. */}
-      {agent.brn ? (
-        <section className="border-y border-bz-border bg-bz-surface">
-          <div className="px-4 md:px-12 py-10 max-w-[1280px]">
-            <div className="text-[11.5px] uppercase tracking-wider text-bz-muted">
-              BRN
-            </div>
-            <div className="mono text-[20px] mt-2 text-bz-ink">{agent.brn}</div>
-          </div>
-        </section>
-      ) : null}
-
-      {/* Specialties + languages.
-
-          The "Areas" column is gone with the seed join that fed it: coverage
-          was `SEED_AGENTS[slug].areas`, which is empty for anyone who isn't a
-          seed, and `staff` has no column for it. */}
-      <section className="px-4 md:px-12 py-16 max-w-[1280px]">
+       The "Areas" column is gone with the seed join that fed it: coverage was
+       `SEED_AGENTS[slug].areas`, which is empty for anyone who isn't a seed,
+       and `staff` has no column for it. */
+    expertise: (
+      <section key="expertise" className="px-4 md:px-12 py-16 max-w-[1280px]">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
           <div>
-            <Eyebrow>{t("eyebrow.specialties")}</Eyebrow>
+            <Eyebrow>{copy("expertise", "specialties_eyebrow")}</Eyebrow>
             <ul className="mt-4 flex flex-col gap-2">
               {agent.specialties.map((s) => (
                 <li key={s} className="text-[14px] text-bz-ink">
@@ -274,7 +202,7 @@ export default async function AgentProfilePage({
             </ul>
           </div>
           <div>
-            <Eyebrow>{t("eyebrow.languages")}</Eyebrow>
+            <Eyebrow>{copy("expertise", "languages_eyebrow")}</Eyebrow>
             <ul className="mt-4 flex flex-col gap-2">
               {agent.languages.map((l) => (
                 <li key={l} className="text-[14px] text-bz-ink">
@@ -285,17 +213,18 @@ export default async function AgentProfilePage({
           </div>
         </div>
       </section>
+    ),
 
-      {/* Reviews */}
-      {reviews.length > 0 ? (
-        <section className="border-t border-bz-border">
+    reviews:
+      reviews.length > 0 ? (
+        <section key="reviews" className="border-t border-bz-border">
           <div className="px-4 md:px-12 py-16 max-w-[1280px]">
-            <Eyebrow>{t("eyebrow.whatClientsSay")}</Eyebrow>
+            <Eyebrow>{copy("reviews", "eyebrow")}</Eyebrow>
             <h2
               className="serif text-[32px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.015em" }}
             >
-              Working with {agent.display_name.split(" ")[0]}.
+              {copy("reviews", "heading")}
             </h2>
             <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {reviews.map((r) => (
@@ -340,22 +269,24 @@ export default async function AgentProfilePage({
             </div>
           </div>
         </section>
-      ) : null}
+      ) : null,
 
-      {/* Active listings */}
-      <section className="border-t border-bz-border bg-bz-surface">
+    listings: (
+      <section
+        key="listings"
+        className="border-t border-bz-border bg-bz-surface"
+      >
         <div className="px-4 md:px-12 py-16 max-w-[1280px]">
-          <Eyebrow>{t("eyebrow.activeListings")}</Eyebrow>
+          <Eyebrow>{copy("listings", "eyebrow")}</Eyebrow>
           <h2
             className="serif text-[32px] mt-2 leading-tight"
             style={{ letterSpacing: "-0.015em" }}
           >
-            What {agent.display_name.split(" ")[0]} is bringing to market.
+            {copy("listings", "heading")}
           </h2>
           {activeListings.length === 0 ? (
             <div className="mt-8 py-12 text-center text-[14px] text-bz-muted border border-dashed border-bz-border rounded-md">
-              No public listings on the desk this week. Open a brief to discuss
-              what {agent.display_name.split(" ")[0]} is working on off-market.
+              {copy("listings", "empty")}
             </div>
           ) : (
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -390,26 +321,129 @@ export default async function AgentProfilePage({
           )}
         </div>
       </section>
+    ),
 
-      {/* CTA */}
-      <section className="px-4 md:px-12 py-16 max-w-[1280px]">
+    cta: (
+      <section key="cta" className="px-4 md:px-12 py-16 max-w-[1280px]">
         <div className="bg-bz-accent text-bz-accent-fg rounded-lg p-6 md:p-10 grid grid-cols-1 md:grid-cols-[1fr_auto] gap-8 items-center">
           <div>
             <Eyebrow className="text-bz-accent-fg/70">
-              {ta("getInTouch")}
+              {copy("cta", "eyebrow")}
             </Eyebrow>
             <h3
               className="serif text-[28px] mt-2 leading-tight"
               style={{ letterSpacing: "-0.012em" }}
             >
-              Work with {agent.display_name.split(" ")[0]}.
+              {copy("cta", "heading")}
             </h3>
           </div>
           <Button asChild size="lg" variant="secondary">
-            <Link href="/contact">{ta("sendABrief")}</Link>
+            <Link href="/contact">{copy("cta", "cta_label")}</Link>
           </Button>
         </div>
       </section>
+    ),
+  };
+
+  return (
+    <div className="bg-bz-bg">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(agentLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsLd) }}
+      />
+      {/* Crumb */}
+      <div className="px-4 md:px-12 pt-10 max-w-[1280px]">
+        <Link
+          href="/agents"
+          className="inline-flex items-center gap-1.5 text-[12.5px] text-bz-teal hover:text-bz-navy transition-colors"
+        >
+          <ArrowLeft size={13} strokeWidth={1.8} />
+          {copy("hero", "back_label")}
+        </Link>
+      </div>
+
+      {/* Hero */}
+      <section className="px-4 md:px-12 pt-8 pb-14 max-w-[1280px]">
+        <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-8 md:gap-16 items-start">
+          {/* The one image on this page that must not be lazy: `grid-cols-1`
+              below md puts the portrait first and full-bleed, which makes it
+              the LCP element on a phone. The slot is the fixed 360px track
+              from md up, and the section's content width (viewport minus the
+              two 16px gutters) below it — not 100vw, which would still hand
+              a 390px phone the same crop as a 1440px laptop. */}
+          {agent.photo_url ? (
+            <div className="relative w-full aspect-[4/5] rounded-md overflow-hidden">
+              <Image
+                src={agent.photo_url}
+                alt={agent.display_name}
+                fill
+                priority
+                sizes="(min-width: 768px) 360px, calc(100vw - 32px)"
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <PlaceholderImage
+              label={agent.slug}
+              className="w-full aspect-[4/5] rounded-md"
+            />
+          )}
+          <div>
+            <Eyebrow>{agent.title ?? copy("hero", "title_fallback")}</Eyebrow>
+            <h1
+              className="serif text-[32px] md:text-[56px] mt-3 font-normal leading-[1.02] max-w-[16ch]"
+              style={{ letterSpacing: "-0.025em" }}
+            >
+              {agent.display_name}
+            </h1>
+            {agent.bio ? (
+              <p className="mt-6 text-[16px] text-bz-ink-2 leading-relaxed max-w-[60ch]">
+                {agent.bio}
+              </p>
+            ) : null}
+            <blockquote
+              className="serif italic text-[20px] mt-8 ps-5 border-s-2 border-bz-accent text-bz-ink leading-relaxed max-w-[56ch]"
+              style={{ letterSpacing: "-0.005em" }}
+            >
+              &ldquo;{pullQuote}&rdquo;
+            </blockquote>
+
+            {/* Contact actions */}
+            <div className="mt-8 flex flex-wrap gap-3">
+              {phone ? (
+                <Button asChild>
+                  <a href={`tel:${phone.replace(/\s/g, "")}`}>
+                    <Phone size={14} strokeWidth={1.7} />
+                    {copy("hero", "call_label")}
+                  </a>
+                </Button>
+              ) : null}
+              {waUrl ? (
+                <Button asChild variant="outline">
+                  <a href={waUrl} target="_blank" rel="noopener noreferrer">
+                    <MessageCircle size={14} strokeWidth={1.7} />
+                    {copy("hero", "whatsapp_label")}
+                  </a>
+                </Button>
+              ) : null}
+              {email ? (
+                <Button asChild variant="ghost">
+                  <a href={`mailto:${email}`}>
+                    <Mail size={14} strokeWidth={1.7} />
+                    {copy("hero", "email_label")}
+                  </a>
+                </Button>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {page.order.filter((key) => key !== "hero").map((key) => bands[key] ?? null)}
     </div>
   );
 }

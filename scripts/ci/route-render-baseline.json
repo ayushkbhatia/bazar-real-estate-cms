@@ -14,10 +14,10 @@
       "revalidate": 300
     },
     "/agents": {
-      "revalidate": false
+      "revalidate": 300
     },
     "/agents/[slug]": {
-      "revalidate": false
+      "revalidate": 300
     },
     "/areas": {
       "revalidate": 300

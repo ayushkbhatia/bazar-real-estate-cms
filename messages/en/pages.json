@@ -1,14 +1,4 @@
 {
-  "agent": {
-    "ourTeam": "Our team",
-    "whatsapp": "WhatsApp",
-    "email": "Email",
-    "yearsInMarket": "Years in market",
-    "closedLifetime": "Closed lifetime",
-    "closedQtd": "Closed QTD",
-    "getInTouch": "Get in touch",
-    "sendABrief": "Send a brief"
-  },
   "area": {
     "medianApt": "Median apt /",
     "medianVilla": "Median villa /",

@@ -34,6 +34,7 @@ import { LEGAL_PRIVACY_PAGE } from "./sections/legal-privacy";
 import { SERVICES_PAGE } from "./sections/services";
 import { INSIGHTS_PAGE } from "./sections/insights";
 import { ABOUT_PAGE } from "./sections/about";
+import { AGENTS_PAGE } from "./sections/agents";
 import { PARTNER_BAND_DEFAULTS } from "./sections/partner-band";
 import { CONTACT_PAGE } from "./sections/contact";
 import { SELL_PAGE } from "./sections/sell";
@@ -1670,6 +1671,8 @@ export const MASTER_PAGES: MasterPageDef[] = [
   SERVICES_PAGE,
   INSIGHTS_PAGE,
   ABOUT_PAGE,
+  // Beside /about, which is where the team sits in the site's own story.
+  AGENTS_PAGE,
   CONTACT_PAGE,
   SELL_PAGE,
   PROPERTY_MANAGEMENT_PAGE,

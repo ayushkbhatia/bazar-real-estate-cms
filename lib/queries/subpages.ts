@@ -11,6 +11,7 @@ import {
   type ResolvedSection,
 } from "@/lib/master-pages";
 import {
+  agentPageDef,
   areaPageDef,
   developmentPageDef,
   subPageSlug,
@@ -130,6 +131,49 @@ export async function getAreaPageContent(
     console.error(`[subpages] failed to load area "${record.slug}"`, error);
     return build(resolveSections(def, null, fold), true);
   }
+}
+
+/**
+ * Section document for one advisor's profile — which bands show, and any
+ * wording that differs from the shared profile copy. Same contract as the
+ * development and area variants.
+ *
+ * Keyed by the advisor's `user_id`, not their slug. A slug is editable on the
+ * team record, and a document filed under the old one would be orphaned by the
+ * rename — the advisor's page silently reverting to the shared defaults with
+ * nothing to say why. The user id never changes.
+ */
+export async function getAgentPageContent(
+  record: { user_id: string; name: string; slug: string },
+  /** Pass "bilingual" from an editor; omit on a public page. */
+  locale?: Locale | "bilingual",
+): Promise<SubPageContent> {
+  const fold = locale ?? (await currentLocale());
+  const def = agentPageDef(record);
+  if (!isSupabaseConfigured) return build(resolveSections(def, null, fold), true);
+
+  try {
+    const supabase = createSupabasePublicClient();
+    const { data, error } = await supabase
+      .from("pages")
+      .select("blocks")
+      .eq("slug", agentPageSlug(record.user_id))
+      .maybeSingle();
+    if (error || !data) return build(resolveSections(def, null, fold), true);
+
+    const stored = parseStoredSections(data.blocks);
+    // No media fields in an advisor's document — the portrait is the team
+    // record's — so `attachImageUrls` has nothing to resolve.
+    return build(resolveSections(def, stored, fold), stored === null);
+  } catch (error) {
+    console.error(`[subpages] failed to load advisor "${record.slug}"`, error);
+    return build(resolveSections(def, null, fold), true);
+  }
+}
+
+/** The `pages.slug` one advisor's document lives at. */
+export function agentPageSlug(userId: string): string {
+  return subPageSlug("agent", userId);
 }
 
 export type AreaSubPageRow = {
@@ -264,22 +308,31 @@ export async function countSubPagesByKind(): Promise<
   const search = SEARCH_HEADERS.length;
   if (!isSupabaseConfigured) return { section: sections, search };
   const supabase = createSupabasePublicClient();
-  const [developments, areas, developers, listings] = await Promise.all([
-    supabase.from("developments").select("id", { count: "exact", head: true }),
-    supabase.from("areas").select("id", { count: "exact", head: true }),
-    supabase.from("developers").select("id", { count: "exact", head: true }),
-    // Published and live only — the pages that actually exist at /p/<slug>.
-    supabase
-      .from("properties")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "published")
-      .is("deleted_at", null),
-  ]);
+  const [developments, areas, developers, listings, advisors] =
+    await Promise.all([
+      supabase.from("developments").select("id", { count: "exact", head: true }),
+      supabase.from("areas").select("id", { count: "exact", head: true }),
+      supabase.from("developers").select("id", { count: "exact", head: true }),
+      // Published and live only — the pages that actually exist at /p/<slug>.
+      supabase
+        .from("properties")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "published")
+        .is("deleted_at", null),
+      // Likewise the profiles that exist at /agents/<slug>: the predicate
+      // `staff_public_agents` (0036) publishes on, and `listAgents` reads.
+      supabase
+        .from("staff")
+        .select("user_id", { count: "exact", head: true })
+        .eq("role", "agent")
+        .eq("status", "active"),
+    ]);
   return {
     development: developments.count ?? 0,
     area: areas.count ?? 0,
     developer: developers.count ?? 0,
     property: listings.count ?? 0,
+    agent: advisors.count ?? 0,
     section: sections,
     search,
   };

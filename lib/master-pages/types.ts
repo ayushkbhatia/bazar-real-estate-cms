@@ -283,6 +283,9 @@ export type MasterPageKey =
   | "services"
   | "insights"
   | "about"
+  // The team index. Every word on it was a literal in `agents/page.tsx` —
+  // see lib/master-pages/sections/agents.ts.
+  | "agents"
   | "contact"
   | "sell"
   | "manage"

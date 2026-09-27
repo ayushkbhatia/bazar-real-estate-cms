@@ -1,14 +1,4 @@
 {
-  "agent": {
-    "ourTeam": "فريقنا",
-    "whatsapp": "واتساب",
-    "email": "البريد الإلكتروني",
-    "yearsInMarket": "سنوات في السوق",
-    "closedLifetime": "إجمالي الصفقات المنجزة",
-    "closedQtd": "الصفقات المنجزة هذا الربع",
-    "getInTouch": "تواصل معنا",
-    "sendABrief": "أرسل طلبك"
-  },
   "area": {
     "medianApt": "متوسط سعر الشقة /",
     "medianVilla": "متوسط سعر الفيلا /",
