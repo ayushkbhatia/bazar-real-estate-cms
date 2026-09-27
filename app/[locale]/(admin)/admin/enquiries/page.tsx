@@ -2,12 +2,13 @@ import Link from "next/link";
 import { Archive, ChevronRight, KanbanSquare, ListTree } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { LiveDot } from "@/lib/realtime/live-dot";
-import { listEnquiries, type EnquiryListRow } from "@/lib/queries/enquiries";
+import { listEnquiries } from "@/lib/queries/enquiries";
 import { getStaffRole } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/db/types";
 import { KanbanBoard } from "./_kanban";
 import { ArchiveEnquiryButton } from "./_archive-button";
+import { STATUS_LABELS, STATUS_STYLES } from "./_status";
 
 export const dynamic = "force-dynamic";
 
@@ -26,28 +27,6 @@ const SCOPES = [
   { value: "mine", label: "Mine" },
   { value: "unassigned", label: "Unassigned" },
 ] as const;
-
-const STATUS_LABELS: Record<
-  Database["public"]["Enums"]["enquiry_status"],
-  string
-> = {
-  new: "New",
-  qualified: "Qualified",
-  offer: "Offer",
-  closed_won: "Won",
-  closed_lost: "Lost",
-};
-
-const STATUS_STYLES: Record<
-  Database["public"]["Enums"]["enquiry_status"],
-  string
-> = {
-  new: "bg-[oklch(0.96_0.05_240)] text-[oklch(0.45_0.1_240)]",
-  qualified: "bg-bz-accent-soft text-bz-accent",
-  offer: "bg-bz-surface-2 text-bz-ink-2",
-  closed_won: "bg-[oklch(0.94_0.04_145)] text-[oklch(0.35_0.08_145)]",
-  closed_lost: "bg-[oklch(0.96_0.04_28)] text-[oklch(0.45_0.13_28)]",
-};
 
 const TEMPERATURE_STYLES: Record<
   Database["public"]["Enums"]["enquiry_temperature"],
@@ -69,10 +48,6 @@ function relative(iso: string | null): string {
   const d = Math.floor(h / 24);
   if (d < 30) return `${d}d`;
   return `${Math.floor(d / 30)}mo`;
-}
-
-function summariseSource(s: EnquiryListRow["source"]): string {
-  return s.replace(/_/g, " ");
 }
 
 function ScopeTabs({
@@ -248,6 +223,14 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
                             {row.unread_count} unread
                           </span>
                         ) : null}
+                        {row.locale === "ar" ? (
+                          <span
+                            title="Sent from the Arabic site"
+                            className="inline-flex items-center h-[20px] px-1.5 rounded border border-bz-border text-[10.5px] text-bz-ink-2"
+                          >
+                            Arabic
+                          </span>
+                        ) : null}
                       </div>
                       <p className="text-[13px] text-bz-ink-2 mt-2 line-clamp-2 leading-snug">
                         {row.brief_raw}
@@ -269,8 +252,13 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
                             {row.developments.name}
                           </span>
                         ) : null}
-                        <span className="capitalize">
-                          via {summariseSource(row.source)}
+                        {/* Which box on which page — `source` alone files
+                            half the public forms as "contact page". */}
+                        <span>
+                          <span className="text-bz-ink-2">
+                            {row.origin.surface}
+                          </span>
+                          {row.origin.form ? ` · ${row.origin.form}` : null}
                         </span>
                         {row.staff ? (
                           <span>assigned to {row.staff.display_name}</span>
