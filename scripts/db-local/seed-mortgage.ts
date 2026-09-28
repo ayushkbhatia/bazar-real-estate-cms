@@ -171,6 +171,12 @@ const BANKS = {
   ADCB: { id: randomUUID(), name: "Abu Dhabi Commercial Bank", color: "oklch(0.45 0.09 25)" },
   MSQ: { id: randomUUID(), name: "Mashreq", color: "oklch(0.45 0.08 320)" },
 };
+/** As the activity log names a bank: "Mashreq", but "FAB" (bankLabel, 0149). */
+function bankLabelOf(code: string): string {
+  const name = BANKS[code as keyof typeof BANKS].name;
+  return name.includes(" ") ? code : name;
+}
+
 insert(
   "public.mortgage_partner_banks",
   Object.entries(BANKS).map(([code, bank], i) => ({
@@ -464,14 +470,29 @@ for (const seed of PRE_APPROVALS) {
         fixed_years: offer ? 3 : null,
         valid_until: offer ? new Date(NOW.getTime() + 60 * DAY_MS).toISOString().slice(0, 10) : null,
       });
-      if (offer && code === "FAB") {
-        fileRow(null, null, `FAB-pre-approval-${seed.ref}.pdf`, 0.3 * MB, 2, "application/pdf", respondedAt ?? NOW, undefined, submissionId);
+      // A pre-approval is recorded with its letter (0149), so each offer has one.
+      const letter = offer ? `${code}-pre-approval-${seed.ref}.pdf` : null;
+      if (letter) {
+        fileRow(null, null, letter, 0.3 * MB, 2, "application/pdf", respondedAt ?? NOW, undefined, submissionId);
       }
       if (offer && respondedAt) {
-        event(requestId, respondedAt, "bank.response_recorded", "staff", owner.id, { bank: code, status: "pre_approved" });
+        event(requestId, respondedAt, "bank.response_recorded", "staff", owner.id, {
+          bank: code,
+          label: bankLabelOf(code),
+          status: "pre_approved",
+          amount: offer.amount,
+          rate: offer.rate,
+          rate_type: "fixed",
+          fixed_years: 3,
+          letter,
+        });
       }
     }
-    event(requestId, sentAt, "bank.package_sent", "staff", owner.id, { banks: Object.keys(BANKS), documents: kinds.length });
+    event(requestId, sentAt, "bank.package_sent", "staff", owner.id, {
+      banks: Object.keys(BANKS),
+      labels: Object.keys(BANKS).map(bankLabelOf),
+      documents: kinds.length,
+    });
     event(requestId, sentAt, "status.changed", "staff", owner.id, { from: "in_review", to: "with_banks", event: "sent_to_banks" });
   }
 }

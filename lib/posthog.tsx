@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { env, isSupabaseConfigured } from "@/lib/env";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locales";
 import { useConsent } from "@/app/_consent/consent-provider";
+import { redactSecureLinkPaths } from "@/lib/secure-link-redaction";
 
 /**
  * Initialises PostHog only after the user has granted analytics consent.
@@ -27,15 +28,13 @@ import { useConsent } from "@/app/_consent/consent-provider";
  * converting?" would have no answer. It ships before Arabic does because the
  * data is not backfillable: events captured without the property never get it.
  */
-/** `/mortgages/r/<token>` → `/mortgages/r/[token]` in every URL-ish property an event carries. */
+/** A secure link's token → `[token]` in every URL-ish property an event carries (`lib/secure-link-redaction.ts`). */
 export function redactSecureLinks<E extends { properties?: Record<string, unknown>; $set_once?: Record<string, unknown> } | null>(event: E): E {
   if (!event) return event;
   const scrub = (bag: Record<string, unknown> | undefined) => {
     if (!bag) return;
     for (const [key, value] of Object.entries(bag)) {
-      if (typeof value === "string" && value.includes("/mortgages/r/")) {
-        bag[key] = value.replace(/\/mortgages\/r\/[^/?#\s]+/g, "/mortgages/r/[token]");
-      }
+      if (typeof value === "string") bag[key] = redactSecureLinkPaths(value);
     }
   };
   scrub(event.properties);

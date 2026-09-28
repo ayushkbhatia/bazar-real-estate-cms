@@ -133,12 +133,27 @@ export async function setStatementPeriod(
   });
   if (error) return refused(error, "mortgage.cms.period");
 
-  // The coverage check follows: ticked when every required month is covered.
+  const checkError = await syncCoverageCheck(s.supabase, parsed.data);
+  if (checkError) return refused(checkError, "mortgage.cms.period");
+  refresh(parsed.data.reference, parsed.data.kind);
+  return { ok: true };
+}
+
+/**
+ * The coverage check follows the files' months: ticked when every required
+ * month is covered. Saved when a period changes, and again just before a
+ * statement is accepted — the applicant sets the months as they upload, and
+ * nothing else writes the check for those.
+ */
+async function syncCoverageCheck(
+  db: SupabaseClient,
+  doc: { reference: string; documentId: string; kind: DocKind },
+): Promise<{ code?: string; message: string } | null> {
   const [{ data: files }, { data: request }] = await Promise.all([
-    s.supabase.from("mortgage_files").select("period_from, period_to").eq("document_id", parsed.data.documentId).eq("state", "active"),
-    s.supabase.from("mortgage_requests").select("submitted_at").eq("reference", parsed.data.reference).single(),
+    db.from("mortgage_files").select("period_from, period_to").eq("document_id", doc.documentId).eq("state", "active"),
+    db.from("mortgage_requests").select("submitted_at").eq("reference", doc.reference).single(),
   ]);
-  const required = requiredStatementMonths(parsed.data.kind, (request as { submitted_at: string }).submitted_at);
+  const required = requiredStatementMonths(doc.kind, (request as { submitted_at: string }).submitted_at);
   const covered = coverage(
     required,
     ((files ?? []) as { period_from: string | null; period_to: string | null }[]).map((f) => ({
@@ -146,14 +161,12 @@ export async function setStatementPeriod(
       to: f.period_to ? monthOf(f.period_to) : null,
     })),
   );
-  const { error: checkError } = await s.supabase.rpc("mortgage_set_check", {
-    p_document_id: parsed.data.documentId,
+  const { error } = await db.rpc("mortgage_set_check", {
+    p_document_id: doc.documentId,
     p_key: COMPUTED_CHECK,
     p_value: covered.complete,
   });
-  if (checkError) return refused(checkError, "mortgage.cms.period");
-  refresh(parsed.data.reference, parsed.data.kind);
-  return { ok: true };
+  return error;
 }
 
 export async function acceptDocument(input: z.input<typeof docTarget>): Promise<MortgageActionResult> {
@@ -168,6 +181,10 @@ export async function acceptDocument(input: z.input<typeof docTarget>): Promise<
     const recorded = ((data as { recorded: Record<string, unknown> | null } | null)?.recorded ?? {}) as Record<string, unknown>;
     const missing = list.recorded.filter((f) => recorded[f.key] === undefined || recorded[f.key] === null || recorded[f.key] === "");
     if (missing.length) return { ok: false, code: "invalid", message: t("c3.fieldsNeeded"), fields: missing.map((f) => f.key) };
+  }
+  if (isStatement(parsed.data.kind)) {
+    const checkError = await syncCoverageCheck(s.supabase, parsed.data);
+    if (checkError) return refused(checkError, "mortgage.cms.accept");
   }
   const { error } = await s.supabase.rpc("mortgage_accept_document", {
     p_document_id: parsed.data.documentId,

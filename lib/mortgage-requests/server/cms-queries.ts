@@ -17,6 +17,7 @@ import {
 } from "../cms-format";
 import { cmsT } from "../cms-strings";
 import { isConsentVersion, PENDING_COMPLIANCE } from "../consent";
+import { isDeclineReason, type DeclineReason } from "../decline";
 import { DOCUMENT_SETS, type DocKind } from "../documents";
 import { formatDayTime, formatMobile, formatTime } from "../format";
 import {
@@ -393,6 +394,16 @@ export type RequestFile = {
   activity: ActivityLine[];
   consultation: ConsultationView | null;
   invite: { sentAt: string; expires: string } | null;
+  /** Once decided: what, why (a decline, D19), by whom and when, and the message the applicant got. */
+  decision: {
+    kind: "pre_approved" | "declined";
+    /** The status it was decided from: a decline can come before the banks (D19). */
+    from: RequestStatus | null;
+    reason: DeclineReason | null;
+    message: string | null;
+    decidedAt: string;
+    decidedBy: TeamMember | null;
+  } | null;
   team: TeamMember[];
   me: { id: string; role: TeamRole };
   can: { act: boolean; reassign: boolean; claim: boolean };
@@ -415,6 +426,11 @@ type RequestDbRow = SlaFields & {
   first_contact_at: string | null;
   closed_at: string | null;
   updated_at: string;
+  decision: "pre_approved" | "declined" | null;
+  decline_reason: string | null;
+  decision_message: string | null;
+  decided_at: string | null;
+  decided_by: string | null;
 };
 
 const ENTRY_KEY: Record<string, string> = {
@@ -444,7 +460,7 @@ export async function getRequestFile(
   const { data: found, error } = await db
     .from("mortgage_requests")
     .select(
-      "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, entry_point, owner_staff_id, submitted_at, first_contact_at, closed_at, updated_at, sla_started_at, sla_due_at, sla_paused_at, sla_remaining_seconds, sla_stopped_at",
+      "id, reference, service, status, full_name, date_of_birth, mobile_e164, email, residency, employment_type, entry_point, owner_staff_id, submitted_at, first_contact_at, closed_at, updated_at, sla_started_at, sla_due_at, sla_paused_at, sla_remaining_seconds, sla_stopped_at, decision, decline_reason, decision_message, decided_at, decided_by",
     )
     .eq("reference", reference)
     .maybeSingle();
@@ -651,6 +667,19 @@ export async function getRequestFile(
         }
       : null,
     invite: lastInvite && inviteExpires ? { sentAt: lastInvite.created_at, expires: formatDayMonth(inviteExpires) } : null,
+    decision:
+      r.decision && r.decided_at
+        ? {
+            kind: r.decision,
+            from:
+              (eventRows.findLast((e) => e.type === "status.changed" && e.data.to === r.decision)?.data.from as RequestStatus | undefined) ??
+              null,
+            reason: isDeclineReason(r.decline_reason) ? r.decline_reason : null,
+            message: r.decision_message,
+            decidedAt: r.decided_at,
+            decidedBy: person(r.decided_by),
+          }
+        : null,
     team,
     me: ctx.me,
     can: {

@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useId, useState, useTransition, type KeyboardEvent, type ReactNode } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Calendar, Check, Send } from "lucide-react";
+import { Ban, Calendar, Check, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Glyph } from "@/components/mortgage/glyphs";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,9 @@ import {
 } from "@/components/ui/dialog";
 import { cmsT } from "@/lib/mortgage-requests/cms-strings";
 import type { ActivityLine } from "@/lib/mortgage-requests/activity";
+import { declineMessage, declineReasonLabel, declineReasonsFor, type DeclineReason } from "@/lib/mortgage-requests/decline";
 import type { DocKind } from "@/lib/mortgage-requests/documents";
+import type { MortgageStatus } from "@/lib/mortgage-requests/state";
 import type { TeamMember } from "@/lib/mortgage-requests/server/cms-queries";
 import type { Slot } from "@/lib/mortgage-requests/slots";
 import { buildWhatsAppLink } from "@/lib/whatsapp";
@@ -31,6 +34,7 @@ import {
   sendPreapprovalInvite,
   type MortgageActionResult,
 } from "../_actions";
+import { acceptApplicationAndSend, declineApplication } from "../_decision-actions";
 import { cancelReupload } from "../_review-actions";
 import { ActivityList, Card, roleLabel } from "./ui";
 
@@ -44,7 +48,7 @@ export type Target = { requestId: string; reference: string; updatedAt: string }
  * foundations ask for), and re-reads the page, so the new status, owner or
  * `updated_at` is what the next action sends.
  */
-function useAction() {
+export function useAction() {
   const router = useRouter();
   const [pending, start] = useTransition();
   const run = (action: () => Promise<MortgageActionResult>, done?: (r: MortgageActionResult) => void) =>
@@ -82,7 +86,7 @@ const LINK = "text-[12px] text-bz-accent hover:underline disabled:cursor-not-all
  * Why an action is off, as a tooltip (CMS-13). A disabled button takes no
  * pointer events, so the reason sits on a wrapper.
  */
-function Reason({ why, children }: { why: string | null; children: ReactNode }) {
+export function Reason({ why, children }: { why: string | null; children: ReactNode }) {
   if (!why) return <>{children}</>;
   return (
     <span title={why} className="inline-flex cursor-not-allowed">
@@ -676,7 +680,6 @@ export function ActivityCard({ items }: { items: readonly ActivityLine[] }) {
 
 // ── C2 · the review loop (Phase 5) ───────────────────────────────
 
-/** Take back an open re-upload request (C4 "cancelReupload"; the UI isn't designed). */
 /**
  * Cancel a re-upload request (not designed). Asked first: the applicant's link
  * stops working and the clock starts again, so a stray click would cost them.
@@ -789,12 +792,223 @@ export function RequestDocumentsButton({
   );
 }
 
+/** The decline's draft: the reason, the message it prefills (the adviser's own words stay once edited), and WhatsApp. */
+export function useDeclineDraft(firstName: string, myFirstName: string) {
+  const [reason, setReason] = useState<DeclineReason | null>(null);
+  const [message, setMessage] = useState("");
+  const [prefilled, setPrefilled] = useState("");
+  const [whatsapp, setWhatsapp] = useState(true);
+  const choose = (next: DeclineReason) => {
+    const draft = declineMessage(next, { applicantFirstName: firstName, adviserFirstName: myFirstName });
+    if (message === "" || message === prefilled) setMessage(draft);
+    setPrefilled(draft);
+    setReason(next);
+  };
+  // "Other" has no words of its own: the adviser says why before it can go.
+  const unexplained = reason === "other" && message === prefilled;
+  const ready = !!reason && message.trim().length > 0 && !unexplained;
+  return { reason, message, setMessage, whatsapp, setWhatsapp, choose, unexplained, ready };
+}
+
+/** The decline's fields (C2's dialog, C5's Decline tab): reason chips, then the message and how it goes. */
+export function DeclineFields({
+  draft,
+  reasons,
+  firstName,
+  pending,
+}: {
+  draft: ReturnType<typeof useDeclineDraft>;
+  reasons: readonly DeclineReason[];
+  firstName: string;
+  pending: boolean;
+}) {
+  const fieldId = useId();
+  return (
+    <>
+      <div>
+        <div className="text-[12px] font-medium text-bz-ink-2">{t("decline.reasonLabel")}</div>
+        <div role="radiogroup" aria-label={t("decline.reasonLabel")} className="mt-2 flex flex-wrap gap-1.5">
+          {reasons.map((value) => {
+            const on = draft.reason === value;
+            return (
+              <button
+                key={value}
+                type="button"
+                role="radio"
+                aria-checked={on}
+                disabled={pending}
+                onClick={() => draft.choose(value)}
+                className={cn(
+                  "inline-flex h-7 items-center gap-1.5 rounded-full border px-2.5 text-[12px]",
+                  on ? "border-transparent bg-bz-ink text-bz-bg" : "border-bz-border bg-bz-surface text-bz-ink hover:border-bz-border-strong",
+                )}
+              >
+                {on ? <Check size={11} strokeWidth={2.6} aria-hidden /> : null}
+                {declineReasonLabel(value)}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      {draft.reason ? (
+        <div>
+          <label htmlFor={fieldId} className="text-[12px] font-medium text-bz-ink-2">
+            {t("decline.messageLabel", { firstName })}
+          </label>
+          <textarea
+            id={fieldId}
+            rows={10}
+            value={draft.message}
+            disabled={pending}
+            onChange={(e) => draft.setMessage(e.target.value)}
+            aria-describedby={draft.unexplained ? `${fieldId}-hint` : undefined}
+            className="mt-1.5 w-full resize-y rounded-md border border-bz-border bg-bz-surface px-3 py-2 text-[12.5px] leading-[1.55] outline-none focus-visible:border-bz-accent"
+          />
+          {draft.unexplained ? (
+            <p id={`${fieldId}-hint`} className="mt-1 text-[11.5px] text-[oklch(0.48_0.16_28)]">
+              {t("decline.otherHint")}
+            </p>
+          ) : null}
+          <div className="mt-2.5 flex flex-wrap items-center gap-4 text-[12.5px]">
+            <span className="text-bz-muted">{t("common.sendBy")}</span>
+            <label className="flex items-center gap-2 text-bz-muted">
+              <input type="checkbox" checked disabled className="size-4 accent-bz-ink" />
+              {t("common.email")}
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={draft.whatsapp}
+                disabled={pending}
+                onChange={(e) => draft.setWhatsapp(e.target.checked)}
+                className="size-4 accent-bz-ink"
+              />
+              {t("common.whatsapp")}
+            </label>
+          </div>
+          {draft.whatsapp ? <p className="mt-1.5 text-[11.5px] text-bz-muted">{t("c4.whatsappPending")}</p> : null}
+        </div>
+      ) : null}
+    </>
+  );
+}
+
 /**
- * "Accept application": on at 4 of 4 accepted with consent on file (PLAN
- * Phase 5). Choosing the banks and sending is Phase 6, so for now it says so.
+ * Decline (D19; not designed): a reason, then the message the applicant will
+ * read, prefilled from the reason and edited here, and the channels. Email
+ * always goes. C5's Decline tab hosts the same fields.
  */
-export function AcceptApplicationButton({ enabled, why }: { enabled: boolean; why: string }) {
+export function DeclineButton({
+  target,
+  status,
+  firstName,
+  myFirstName,
+  elapsed,
+  awaiting,
+  canAct,
+}: {
+  target: Target;
+  status: MortgageStatus;
+  firstName: string;
+  myFirstName: string;
+  /** The clock's elapsed time, "8h 41m" (slaStatus), or null with no clock. */
+  elapsed: string | null;
+  /** A re-upload is out: declining cancels it. */
+  awaiting: boolean;
+  canAct: boolean;
+}) {
+  const { pending, run } = useAction();
   const [open, setOpen] = useState(false);
+  const draft = useDeclineDraft(firstName, myFirstName);
+
+  return (
+    <>
+      <Reason why={canAct ? null : t("common.notOwner")}>
+        <Button variant="destructive" className="text-[13px]" disabled={!canAct} onClick={() => setOpen(true)}>
+          <Ban strokeWidth={1.6} />
+          {t("c2.action.decline")}
+        </Button>
+      </Reason>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[560px]">
+          <DialogHeader>
+            <DialogTitle>{t("decline.title", { firstName })}</DialogTitle>
+            <DialogDescription>{t("decline.lede", { firstName })}</DialogDescription>
+          </DialogHeader>
+          <DeclineFields draft={draft} reasons={declineReasonsFor(status)} firstName={firstName} pending={pending} />
+          <p className="rounded-lg bg-bz-surface-2 px-3 py-2.5 text-[11.5px] leading-[1.5] text-bz-ink-2">
+            {elapsed ? t("decline.note", { elapsed }) : t("decline.noteNoClock")}
+            {awaiting ? <> {t("decline.noteAwaiting")}</> : null}
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              className="bg-destructive text-white hover:bg-destructive/90"
+              disabled={!draft.ready || pending}
+              onClick={() =>
+                run(
+                  () =>
+                    declineApplication({
+                      ...target,
+                      reason: draft.reason!,
+                      message: draft.message,
+                      channels: draft.whatsapp ? ["email", "whatsapp"] : ["email"],
+                      firstName,
+                    }),
+                  (r) => r.ok && setOpen(false),
+                )
+              }
+            >
+              {t("decline.cta", { firstName })}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+export type SendableBank = { id: string; code: string; name: string; color: string | null; inboxes: string[]; sendable: boolean };
+
+/**
+ * "Accept application" (C2; the bank step isn't designed): choose the banks —
+ * every bank that can take a package, ticked — and send each its own secure
+ * package. Enabled at 4 of 4 accepted with consent on file (PLAN Phase 5).
+ */
+export function AcceptApplicationButton({
+  enabled,
+  why,
+  target,
+  firstName,
+  documents,
+  expires,
+  consentGiven,
+  banks,
+  canManageBanks,
+}: {
+  enabled: boolean;
+  why: string;
+  target: Target;
+  firstName: string;
+  documents: number;
+  /** When the package links would stop working, as the lede says it. */
+  expires: string;
+  consentGiven: string | null;
+  banks: readonly SendableBank[];
+  canManageBanks: boolean;
+}) {
+  const { pending, run } = useAction();
+  const [open, setOpen] = useState(false);
+  const [chosen, setChosen] = useState<ReadonlySet<string>>(() => new Set(banks.filter((b) => b.sendable).map((b) => b.id)));
+  const toggle = (id: string) =>
+    setChosen((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   return (
     <>
       <Reason why={enabled ? null : why}>
@@ -809,16 +1023,77 @@ export function AcceptApplicationButton({ enabled, why }: { enabled: boolean; wh
         </span>
       )}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[420px]">
+        <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle>{t("c2.action.acceptApplication")}</DialogTitle>
-            <DialogDescription>{t("common.soonBanks")}</DialogDescription>
+            <DialogTitle>{t("c2.send.title", { firstName })}</DialogTitle>
+            <DialogDescription>{t("c2.send.lede", { count: documents, expires })}</DialogDescription>
           </DialogHeader>
+          {banks.length === 0 ? (
+            <p className="text-[13px] text-bz-muted">
+              {t("c2.send.none")}{" "}
+              {canManageBanks ? (
+                <Link href="/admin/mortgages/banks" className="text-bz-accent hover:underline">
+                  {t("c2.send.addBanks")}
+                </Link>
+              ) : null}
+            </p>
+          ) : (
+            <fieldset>
+              <legend className="text-[12px] font-medium text-bz-ink-2">{t("c2.send.banks")}</legend>
+              <ul className="mt-2 divide-y divide-bz-border rounded-lg border border-bz-border">
+                {banks.map((bank) => (
+                  <li key={bank.id}>
+                    <label className={cn("flex items-center gap-3 px-3 py-2.5", bank.sendable ? "cursor-pointer" : "opacity-60")}>
+                      <input
+                        type="checkbox"
+                        className="size-4 accent-bz-ink"
+                        checked={bank.sendable && chosen.has(bank.id)}
+                        disabled={!bank.sendable || pending}
+                        onChange={() => toggle(bank.id)}
+                      />
+                      <BankMark code={bank.code} color={bank.color} size={28} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-[13px] font-medium">{bank.name}</span>
+                        <span className="mono block truncate text-[11px] text-bz-muted">
+                          {bank.inboxes.length ? bank.inboxes.join(", ") : t("c2.send.noInbox")}
+                        </span>
+                      </span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </fieldset>
+          )}
+          {consentGiven ? <p className="text-[11.5px] text-bz-muted">{t("c2.send.consent", { given: consentGiven })}</p> : null}
           <DialogFooter>
-            <Button onClick={() => setOpen(false)}>{t("common.done")}</Button>
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              disabled={pending || chosen.size === 0}
+              onClick={() =>
+                run(() => acceptApplicationAndSend({ ...target, bankIds: [...chosen] }), (r) => r.ok && setOpen(false))
+              }
+            >
+              <Send strokeWidth={1.6} />
+              {t("c2.send.cta", { count: chosen.size })}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+/** A bank's mark (C5): its code in white on its colour. */
+export function BankMark({ code, color, size = 38 }: { code: string; color: string | null; size?: number }) {
+  return (
+    <span
+      aria-hidden
+      className="mono grid shrink-0 place-items-center font-semibold text-white"
+      style={{ width: size, height: size, borderRadius: Math.round(size * 0.21), background: color ?? "var(--bz-ink-2)", fontSize: size >= 36 ? 10.5 : 9 }}
+    >
+      {code}
+    </span>
   );
 }

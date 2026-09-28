@@ -2,12 +2,12 @@
  * System emails — every email the site sends on its own, and which of them
  * the client can rewrite.
  *
- * Twenty-seven emails fire without an advisor writing them: acknowledgements,
- * confirmations, one-time codes, nurture follow-ups, and the notices the team
- * itself receives. Each has a built-in version in lib/email-templates.ts (or
- * lib/newsletter-templates.ts) and a row in `content_assets` carrying the
- * matching `system_key` (migrations 0117 and 0127; 0135, 0142, 0144 and 0146
- * added more).
+ * Thirty-one emails fire without an advisor writing them: acknowledgements,
+ * confirmations, one-time codes, nurture follow-ups, the packages partner
+ * banks receive, and the notices the team itself receives. Each has a built-in
+ * version in lib/email-templates.ts (or lib/newsletter-templates.ts) and a row
+ * in `content_assets` carrying the matching `system_key` (migrations 0117 and
+ * 0127; 0135, 0142, 0144, 0146, 0148 and 0150 added more).
  *
  * THE RULE, in one line: a PUBLISHED system row replaces the built-in email;
  * anything else — draft, missing, unreadable — and the built-in one sends.
@@ -34,6 +34,10 @@ export const SYSTEM_ASSET_KEYS = [
   "mortgage_preapproval_invite",
   "mortgage_reupload_request",
   "mortgage_code",
+  "mortgage_bank_package",
+  "mortgage_bank_reminder",
+  "mortgage_decision_pre_approved",
+  "mortgage_decision_declined",
   "valuation_request_ack",
   "valuation_code",
   "valuation_report_requested",
@@ -254,6 +258,94 @@ export const SYSTEM_ASSETS: Record<SystemAssetKey, SystemAssetDef> = {
       "site_url",
     ],
     required: ["verification_code"],
+  },
+  // Partner banks (0150). To a bank's package inbox, so nothing about the
+  // applicant is in scope — no name, date of birth or salary: the reference,
+  // the adviser, and an expiring, logged link to what the bank needs. Filed
+  // with the emails that leave Bazar, since the gallery's other group is the
+  // team's own. English in practice; the Arabic twin is kept, as the team
+  // alerts keep theirs.
+  mortgage_bank_package: {
+    key: "mortgage_bank_package",
+    slug: "system-mortgage-bank-package",
+    label: "Package to a partner bank",
+    audience: "client",
+    trigger:
+      "Sent to a partner bank's package inbox when an adviser sends a Fast Pre-Approval file to the banks from the CMS: the reference, how many documents, and an expiring link to a structured summary and the documents, where every open and download is recorded. It names nothing about the applicant — no name, date of birth or salary — because the details are behind the link. Wording is a provisional draft pending design (D29).",
+    recipient: "The partner bank's package inbox",
+    builtIn: "lib/email-templates.ts · mortgageBankPackageTemplate",
+    tokens: [
+      "mortgage_bank",
+      "mortgage_reference",
+      "mortgage_adviser",
+      "mortgage_document_count",
+      "mortgage_package_url",
+      "mortgage_link_expires",
+      "site_url",
+    ],
+    required: ["mortgage_reference", "mortgage_package_url"],
+  },
+  mortgage_bank_reminder: {
+    key: "mortgage_bank_reminder",
+    slug: "system-mortgage-bank-reminder",
+    label: "Reminder to a partner bank",
+    audience: "client",
+    trigger:
+      "Sent to a partner bank's package inbox when an adviser sends a reminder about a Fast Pre-Approval the bank has not answered: the day the package went, and a fresh link to it, because the first link is not kept. Nothing about the applicant. Wording is a provisional draft pending design (D29).",
+    recipient: "The partner bank's package inbox",
+    builtIn: "lib/email-templates.ts · mortgageBankReminderTemplate",
+    tokens: [
+      "mortgage_bank",
+      "mortgage_reference",
+      "mortgage_adviser",
+      "mortgage_package_sent",
+      "mortgage_package_url",
+      "mortgage_link_expires",
+      "site_url",
+    ],
+    required: ["mortgage_reference", "mortgage_package_url"],
+  },
+  // The decision (0148, 0150). Each is the adviser's own message, quoted as
+  // the re-upload request quotes one, so neither can go without it. Their
+  // scope holds nothing of the applicant but their first name — not even the
+  // full name — and they share one subject, which never says what the message
+  // does: a phone shows the subject on its lock screen.
+  mortgage_decision_pre_approved: {
+    key: "mortgage_decision_pre_approved",
+    slug: "system-mortgage-decision-pre-approved",
+    label: "Pre-approval confirmed",
+    audience: "client",
+    trigger:
+      "Sent to a Fast Pre-Approval applicant when an adviser confirms their pre-approval in the CMS: the adviser's own message, quoted as they wrote it, the bank whose pre-approval letter the send path attaches, and how to reach them. The subject is the same as a declined application's, so a phone's lock screen tells neither apart, and nothing about the applicant goes in beyond their first name. Wording is a provisional draft pending design (D29).",
+    recipient: "The applicant whose application was pre-approved",
+    builtIn: "lib/email-templates.ts · mortgageDecisionPreApprovedTemplate",
+    tokens: [
+      "lead_first_name",
+      "mortgage_reference",
+      "mortgage_adviser",
+      "mortgage_adviser_message",
+      "mortgage_bank",
+      "site_url",
+    ],
+    required: ["mortgage_adviser_message"],
+  },
+  mortgage_decision_declined: {
+    key: "mortgage_decision_declined",
+    slug: "system-mortgage-decision-declined",
+    label: "Fast Pre-Approval declined",
+    audience: "client",
+    trigger:
+      "Sent to a Fast Pre-Approval applicant when an adviser declines their application in the CMS: the adviser's own message, quoted as they wrote it, and how to reach them. The subject line never says the application was declined, because a phone shows it on its lock screen, and nothing about the applicant goes in beyond their first name. Wording is a provisional draft pending design (D29).",
+    recipient: "The applicant whose application was declined",
+    builtIn: "lib/email-templates.ts · mortgageDecisionDeclinedTemplate",
+    tokens: [
+      "lead_first_name",
+      "mortgage_reference",
+      "mortgage_adviser",
+      "mortgage_adviser_message",
+      "site_url",
+    ],
+    required: ["mortgage_adviser_message"],
   },
   valuation_request_ack: {
     key: "valuation_request_ack",

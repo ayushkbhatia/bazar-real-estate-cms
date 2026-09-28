@@ -15,6 +15,7 @@
 
 import { cmsT } from "./cms-strings";
 import { formatActivityTime, formatBookedAt, formatCallDuration, formatDayMonth, firstNameOf } from "./cms-format";
+import { declineReasonLabel, isDeclineReason } from "./decline";
 import { formatMobile } from "./format";
 import type { DocKind } from "./documents";
 
@@ -94,7 +95,26 @@ const QUIET_TRANSITIONS = new Set([
   "reupload_requested",
   "reupload_fulfilled",
   "reupload_cancelled",
+  // The decision's own line says it (D19), and so do sending and pre-approving (Phase 6).
+  "declined",
+  "sent_to_banks",
+  "pre_approved",
 ]);
+
+/** "AED 2,150,000". */
+function aed(value: unknown): string | null {
+  return typeof value === "number" && Number.isFinite(value) ? `AED ${Math.round(value).toLocaleString("en-US")}` : null;
+}
+
+/** A bank as the event named it: its label, else its code (events from before 0149). */
+function bankOf(data: Record<string, unknown>): string {
+  return str(data.label) ?? str(data.bank) ?? "";
+}
+
+/** "FAB, ADCB and Mashreq". */
+function listOf(items: readonly string[]): string {
+  return new Intl.ListFormat("en-GB", { type: "conjunction" }).format(items);
+}
 
 export const REASON_KEY: Record<string, string> = {
   unreadable: "c4.reason.unreadable",
@@ -143,9 +163,42 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
       return { ...base, text: t("activity.assigned.title", { owner }), sub: t("activity.assigned.roundRobin") };
     }
     case "document.viewed":
+      if (e.data.kind === "bank_letter") return { ...base, text: t("activity.openedLetter", { actor }) };
       return { ...base, text: t("activity.opened", { actor, document: docLabel(e.data.kind) }) };
     case "document.downloaded":
+      if (e.actor_kind === "bank") return { ...base, text: t("activity.bankDownloaded", { bank: bankOf(e.data), document: docLabel(e.data.kind) }) };
+      if (e.data.kind === "bank_letter") return { ...base, text: t("activity.downloadedLetter", { actor }) };
       return { ...base, text: t("activity.downloaded", { actor, document: docLabel(e.data.kind) }) };
+    case "bank.package_sent": {
+      const banks = Array.isArray(e.data.labels) ? e.data.labels : Array.isArray(e.data.banks) ? e.data.banks : [];
+      return {
+        ...base,
+        text: t("activity.packageSent.title", { banks: listOf(banks.map(String)) }),
+        sub: typeof e.data.documents === "number" ? t("activity.packageSent.sub", { count: e.data.documents }) : undefined,
+        tone: "accent",
+      };
+    }
+    case "bank.package_opened":
+      return { ...base, text: t("activity.packageOpened", { bank: bankOf(e.data) }) };
+    case "bank.reminder_sent":
+      return { ...base, text: t("activity.bankReminder", { bank: bankOf(e.data) }) };
+    case "bank.response_recorded": {
+      if (e.data.status === "declined") return { ...base, text: t("activity.bankDeclined", { bank: bankOf(e.data) }), tone: "danger" };
+      const amount = aed(e.data.amount);
+      return {
+        ...base,
+        text: amount ? t("activity.bankPreApproved.title", { bank: bankOf(e.data), amount }) : t("status.preApproved") + ` · ${bankOf(e.data)}`,
+        sub: str(e.data.letter) ? t("activity.bankPreApproved.sub", { fileName: str(e.data.letter)! }) : undefined,
+        tone: "success",
+      };
+    }
+    case "decision.pre_approved":
+      return {
+        ...base,
+        text: t("activity.preApproved.title", { actor }),
+        sub: aed(e.data.amount) ? t("activity.preApproved.sub", { bank: bankOf(e.data), amount: aed(e.data.amount)! }) : undefined,
+        tone: "success",
+      };
     case "document.accepted":
       return { ...base, text: t("activity.accepted", { actor, document: docLabel(e.data.kind) }), tone: "success" };
     case "consultation.booked": {
@@ -186,6 +239,13 @@ export function describeEvent(e: EventInput, ctx: ActivityContext): ActivityLine
         strong: true,
         sub: typeof e.data.files === "number" ? t("activity.reuploadFiles", { count: e.data.files }) : undefined,
         tone: "accent",
+      };
+    case "decision.declined":
+      return {
+        ...base,
+        text: t("activity.declined", { actor }),
+        sub: isDeclineReason(e.data.reason) ? declineReasonLabel(e.data.reason) : undefined,
+        tone: "danger",
       };
     case "link.locked":
       return { ...base, text: t("activity.linkLocked"), tone: "danger" };

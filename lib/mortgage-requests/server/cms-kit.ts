@@ -62,10 +62,11 @@ export function refused(error: { code?: string; message: string }, source: strin
   }
 }
 
-/** The queue, and a request's file and one of its documents, when named. */
+/** The queue, and a request's file, its decision and one of its documents, when named. */
 export function refreshMortgagePaths(reference?: string, documentKind?: string) {
   revalidatePath("/admin/mortgages");
   if (reference) revalidatePath(`/admin/mortgages/${reference}`);
+  if (reference) revalidatePath(`/admin/mortgages/${reference}/decision`);
   if (reference && documentKind) revalidatePath(`/admin/mortgages/${reference}/documents/${documentKind}`);
 }
 
@@ -87,7 +88,7 @@ export async function sendLinkEmail(
   admin: SupabaseClient,
   input: {
     requestId: string;
-    kind: "preapproval_invite" | "reupload_request";
+    kind: "preapproval_invite" | "reupload_request" | "bank_package" | "bank_reminder";
     dedupe: string;
     to: string;
     replyTo?: string | null;

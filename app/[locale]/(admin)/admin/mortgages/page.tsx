@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Settings } from "lucide-react";
+import { Landmark, Settings } from "lucide-react";
 import { CmsShell } from "@/components/brand/cms-shell";
 import { Button } from "@/components/ui/button";
 import { reportError } from "@/lib/observability";
@@ -23,7 +23,7 @@ export default async function MortgageQueuePage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const { user, role, supabase } = await requireMortgageRole();
+  const { user, role, staff, supabase } = await requireMortgageRole();
   const params = parseQueueParams(await searchParams);
 
   let result: QueueResult | null = null;
@@ -45,14 +45,24 @@ export default async function MortgageQueuePage({
           : cmsT("nav.group")
       }
       secondary={
-        role === "head" ? (
-          <Button asChild variant="outline" size="default" className="text-[13px]">
-            <Link href="/admin/mortgages/settings">
-              <Settings strokeWidth={1.6} />
-              {cmsT("settings.link")}
-            </Link>
-          </Button>
-        ) : null
+        <>
+          {role === "head" || staff.role === "admin" ? (
+            <Button asChild variant="outline" size="default" className="text-[13px]">
+              <Link href="/admin/mortgages/banks">
+                <Landmark strokeWidth={1.6} />
+                {cmsT("banks.link")}
+              </Link>
+            </Button>
+          ) : null}
+          {role === "head" ? (
+            <Button asChild variant="outline" size="default" className="text-[13px]">
+              <Link href="/admin/mortgages/settings">
+                <Settings strokeWidth={1.6} />
+                {cmsT("settings.link")}
+              </Link>
+            </Button>
+          ) : null}
+        </>
       }
     >
       <QueueView initial={result} params={params} team={team} />

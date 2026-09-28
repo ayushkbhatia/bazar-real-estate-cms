@@ -22,7 +22,7 @@
  */
 
 import { randomUUID } from "node:crypto";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { DOCUMENT_SETS } from "./documents";
 import { dubaiInstant } from "./dubai-time";
@@ -47,7 +47,7 @@ import {
   type TransitionContext,
   type TransitionEvent,
 } from "./state";
-import { client, createTestStaff, localStack, psql, type LocalStack, type TestStaff } from "./testing/local-stack";
+import { client, createTestStaff, localStack, psql, retireTestStaff, type LocalStack, type TestStaff } from "./testing/local-stack";
 
 type Row = {
   id: string;
@@ -94,6 +94,12 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
       .single();
     if (bankError) throw new Error(bankError.message);
     bankId = bank.id;
+  });
+
+  // Its submissions keep the bank: switch it off, so the local list the CMS offers stays the seeded three.
+  afterAll(async () => {
+    if (bankId) await service.from("mortgage_partner_banks").update({ active: false }).eq("id", bankId);
+    await retireTestStaff(service);
   });
 
   // ── Helpers ─────────────────────────────────────────────────

@@ -33,6 +33,10 @@ const ALLOWED: [MortgageService, MortgageStatus, TransitionEvent, ActorKind, Tra
   ["pre_approval", "awaiting_applicant", "reupload_cancelled", "staff", { outstandingReuploads: 0 }, "in_review", "resume"],
   ["pre_approval", "in_review", "sent_to_banks", "staff", READY_FOR_BANKS, "with_banks", null],
   ["pre_approval", "with_banks", "pre_approved", "staff", {}, "pre_approved", "stop"],
+  // D19: declining before the banks, as well as after.
+  ["pre_approval", "new", "declined", "staff", {}, "declined", "stop"],
+  ["pre_approval", "in_review", "declined", "staff", {}, "declined", "stop"],
+  ["pre_approval", "awaiting_applicant", "declined", "staff", {}, "declined", "stop"],
   ["pre_approval", "with_banks", "declined", "staff", {}, "declined", "stop"],
   ["consultancy", "new", "contact_logged", "staff", {}, "contacted", null],
   ["consultancy", "contacted", "contact_logged", "staff", {}, "contacted", null],
@@ -64,8 +68,11 @@ describe("illegal transitions", () => {
     ["pre_approval", "in_review", "pre_approved", "staff"],
     ["consultancy", "new", "consultation_booked", "staff"],
     ["consultancy", "contacted", "consultation_held", "staff"],
-    // Declining before banks is an open question (SPEC §9 #8), so not allowed yet.
-    ["pre_approval", "in_review", "declined", "staff"],
+    // A decision is final, and only the team makes it.
+    ["pre_approval", "declined", "declined", "staff"],
+    ["pre_approval", "pre_approved", "declined", "staff"],
+    ["pre_approval", "in_review", "declined", "system"],
+    ["consultancy", "contacted", "declined", "staff"],
     // Nothing moves a closed request.
     ["pre_approval", "pre_approved", "reupload_requested", "staff"],
     ["pre_approval", "declined", "sent_to_banks", "staff", READY_FOR_BANKS],

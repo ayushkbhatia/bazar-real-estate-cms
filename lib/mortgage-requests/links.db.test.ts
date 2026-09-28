@@ -51,7 +51,7 @@ import { supabaseStorage } from "./server/storage";
 import { submitBodySchema, submitRequest } from "./server/submit";
 import { hashToken, newToken } from "./server/tokens";
 import { buildPdf, jpegBytes } from "./testing/fixtures";
-import { client, createTestStaff, localStack, type LocalStack, type TestStaff } from "./testing/local-stack";
+import { client, createTestStaff, localStack, retireTestStaff, type LocalStack, type TestStaff } from "./testing/local-stack";
 
 const stack = localStack();
 if (!stack) console.warn("mortgage review and link tests skipped: start the local stack with `npm run db:local:reset`");
@@ -95,8 +95,9 @@ describe.skipIf(!stack)("mortgage review and secure links (local Supabase)", () 
     ]);
   }, 60_000);
 
-  afterAll(() => {
+  afterAll(async () => {
     sent.length = 0;
+    await retireTestStaff(service);
   });
 
   // ── Helpers ─────────────────────────────────────────────────

@@ -507,7 +507,8 @@ function ReviewPanel({
   const isStatement = STATEMENTS.includes(kind);
   const cov = data.coverage;
 
-  const allTicked = list.checks.every((c) => checks[c.key] === true);
+  // Statements' coverage check is drawn from the months, and saved from them as the document is accepted.
+  const allTicked = list.checks.every((c) => (isStatement && cov && c.key === "covers_period" ? cov.complete : checks[c.key] === true));
   const fieldsIn = list.recorded.every((f) => recorded[f.key] !== undefined && recorded[f.key] !== "");
   const canAccept = reviewable && allTicked && fieldsIn && data.doc.files.some((f) => !f.scanning);
 

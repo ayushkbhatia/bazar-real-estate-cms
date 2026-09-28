@@ -5,6 +5,18 @@ import { env, isResendConfigured } from "@/lib/env";
 const DEFAULT_FROM = "Bazar Real Estate <onboarding@resend.dev>";
 const DEFAULT_REPLY_TO = "hello@bazar.ae";
 
+/** A file sent with a message. */
+export type EmailAttachment = {
+  filename: string;
+  /**
+   * Text or bytes. A string is sent as its UTF-8 encoding, which is right for
+   * a calendar invite (.ics) and wrong for anything binary; a PDF — a bank's
+   * pre-approval letter — goes as a Uint8Array, byte for byte.
+   */
+  content: string | Uint8Array;
+  contentType?: string;
+};
+
 export type SendEmailInput = {
   to: string;
   subject: string;
@@ -15,7 +27,7 @@ export type SendEmailInput = {
   /** Override the reply-to (defaults to RESEND_REPLY_TO or hello@bazar.ae). */
   replyTo?: string;
   /** Files sent with the message, e.g. a generated PDF. */
-  attachments?: { filename: string; content: string; contentType?: string }[];
+  attachments?: EmailAttachment[];
 };
 
 export type SendEmailResult =
@@ -137,7 +149,12 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
         ? {
             attachments: input.attachments.map((a) => ({
               filename: a.filename,
-              content: Buffer.from(a.content, "utf8"),
+              // Bytes are copied as they are: through a string, a PDF's
+              // binary would come out as mangled UTF-8.
+              content:
+                typeof a.content === "string"
+                  ? Buffer.from(a.content, "utf8")
+                  : Buffer.from(a.content),
               ...(a.contentType ? { contentType: a.contentType } : {}),
             })),
           }

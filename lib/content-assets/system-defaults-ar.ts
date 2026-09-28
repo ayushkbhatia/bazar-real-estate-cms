@@ -1,3 +1,4 @@
+import { isolateLtr } from "@/lib/i18n/bidi";
 import type { SystemAssetKey } from "./system";
 import type { SystemEmailDefault } from "./system-defaults";
 
@@ -16,6 +17,13 @@ import type { SystemEmailDefault } from "./system-defaults";
  * Sentence order follows the English so the two can be read side by side, and
  * the tone is the formal register the site's Arabic already uses.
  */
+
+/**
+ * The mortgage team's number, a Latin run inside an Arabic sentence, so it is
+ * isolated left to right: bare, its "+" and its groups reorder (lib/i18n/bidi).
+ */
+const MORTGAGE_TEAM_PHONE = isolateLtr("+971 2 632 2223");
+
 export const SYSTEM_EMAIL_DEFAULTS_AR: Record<SystemAssetKey, SystemEmailDefault> = {
   enquiry_auto_reply: {
     subject: "وصلنا طلبك",
@@ -119,6 +127,57 @@ export const SYSTEM_EMAIL_DEFAULTS_AR: Record<SystemAssetKey, SystemEmailDefault
       "<h2>{{verification_code}}</h2>",
       "<p>تنتهي صلاحيته خلال {{mortgage_code_expires_in}}.</p>",
       "<p>إن لم تطلبه، يمكنك تجاهل هذه الرسالة — لا يمكن لأحد فتح طلبك من دون هذا الرمز.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  // Partner banks (0150). Their send paths pass no language, so these go in
+  // English; the Arabic is here because every system email has one, as the
+  // team alerts' is. A bank is addressed in the plural, and the application
+  // "reaches you from" the adviser, so no verb agrees with the adviser.
+  mortgage_bank_package: {
+    subject: "ملف طلب الموافقة المبدئية السريعة {{mortgage_reference}} من بازار",
+    body: [
+      "<p>تحية طيبة إلى فريق {{mortgage_bank}}،</p>",
+      "<p>وصلكم من {{mortgage_adviser}}، من فريق التمويل العقاري في بازار، طلب للموافقة المبدئية السريعة: ملخص منظّم و{{mortgage_document_count}}.</p>",
+      '<a data-email-button="" href="{{mortgage_package_url}}">فتح الملف</a>',
+      "<p>يعمل الرابط حتى <strong>{{mortgage_link_expires}}</strong>. ويُسجَّل كل فتح وكل تنزيل.</p>",
+      "<p>للتواصل مع {{mortgage_adviser}}، يكفي الرد على هذه الرسالة.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  mortgage_bank_reminder: {
+    subject: "تذكير: ملف طلب الموافقة المبدئية السريعة {{mortgage_reference}}",
+    body: [
+      "<p>تحية طيبة إلى فريق {{mortgage_bank}}،</p>",
+      "<p>نذكّركم بطلب الموافقة المبدئية السريعة {{mortgage_reference}} الذي وصلكم من {{mortgage_adviser}} في {{mortgage_package_sent}}. ونتطلع إلى ردّكم.</p>",
+      "<p>إليكم رابطاً جديداً يعمل حتى <strong>{{mortgage_link_expires}}</strong>.</p>",
+      '<a data-email-button="" href="{{mortgage_package_url}}">فتح الملف</a>',
+      "<p>يُسجَّل كل فتح وكل تنزيل.</p>",
+      "<p>للتواصل مع {{mortgage_adviser}}، يكفي الرد على هذه الرسالة.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  // The decision (0148, 0150). No verb agrees with the adviser: a message
+  // "reaches you from" them. Both outcomes share one subject, "an update",
+  // so a lock screen tells neither apart.
+  mortgage_decision_pre_approved: {
+    subject: "تحديث بشأن طلبك للموافقة المبدئية السريعة — {{mortgage_reference}}",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>وصلتك رسالة من {{mortgage_adviser}}، من فريق التمويل العقاري في بازار، بخصوص طلبك للموافقة المبدئية السريعة {{mortgage_reference}}.</p>",
+      "<p>{{mortgage_adviser_message}}</p>",
+      "<p>مرفق بهذه الرسالة خطاب موافقتك المبدئية الصادر عن {{mortgage_bank}}.</p>",
+      `<p>يمكنك الرد على هذه الرسالة للتواصل مع {{mortgage_adviser}} مباشرةً، أو الاتصال بفريق التمويل العقاري على ${MORTGAGE_TEAM_PHONE}.</p>`,
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  mortgage_decision_declined: {
+    subject: "تحديث بشأن طلبك للموافقة المبدئية السريعة — {{mortgage_reference}}",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>وصلتك رسالة من {{mortgage_adviser}}، من فريق التمويل العقاري في بازار، بخصوص طلبك للموافقة المبدئية السريعة {{mortgage_reference}}.</p>",
+      "<p>{{mortgage_adviser_message}}</p>",
+      `<p>يمكنك الرد على هذه الرسالة للتواصل مع {{mortgage_adviser}} مباشرةً، أو الاتصال بفريق التمويل العقاري على ${MORTGAGE_TEAM_PHONE}.</p>`,
       "<p>— فريق التمويل العقاري في بازار</p>",
     ].join(""),
   },

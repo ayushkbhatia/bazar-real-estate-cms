@@ -16,7 +16,7 @@
  *     role gets 403 — and every open is logged before a byte is read.
  */
 
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { MB, type DocKind } from "./documents";
 import { clockDueFrom, slaPolicy } from "./sla";
@@ -36,7 +36,7 @@ import { devScanner, eicarTestBytes } from "./server/scan";
 import { MORTGAGE_BUCKET, supabaseStorage, type MortgageStorage } from "./server/storage";
 import { sha256Hex } from "./server/verify";
 import { buildPdf, jpegBytes, pngBytes } from "./testing/fixtures";
-import { client, createTestStaff, localStack, type LocalStack, type TestStaff } from "./testing/local-stack";
+import { client, createTestStaff, localStack, retireTestStaff, type LocalStack, type TestStaff } from "./testing/local-stack";
 
 const stack = localStack();
 if (!stack) console.warn("mortgage storage tests skipped: start the local stack with `npm run db:local:reset`");
@@ -55,6 +55,8 @@ describe.skipIf(!stack)("mortgage uploads and document access (local Supabase)",
     storage = supabaseStorage(service);
     deps = { db: service, storage, scanner: devScanner };
   });
+
+  afterAll(() => retireTestStaff(service));
 
   const newDraft = (d: DraftDeps = deps) => createDraft(d, { ip: "203.0.113.9" });
 

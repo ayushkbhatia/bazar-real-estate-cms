@@ -230,7 +230,9 @@ already non-localised. Additions:
 | `GET /api/mortgage/drafts/:id/files/:fileId` | Poll a file that is still `pending` a scan (§1.8). Returns `{ status }` only |
 | `replaces` on presign | Replace keeps the old file until the new one is clean (frontend §7.2); the server retires it then (0141) |
 | `fileIds` on submit | The files the applicant sees; anything else in the draft is retired before the attach, so nothing is attached unseen |
-| `GET /api/mortgage/packages/:token` | The expiring, logged bank-package link (Phase 6) |
+| `M/mortgages/p/:token` (a page, not a route handler) | A bank's package: the expiring, logged link in its email (Phase 6). Opening it writes `bank.package_opened` before anything renders |
+| `GET /api/mortgage/packages/:token/files/:fileId` | One of the package's accepted files, as an attachment, logged as the bank first (Phase 6) |
+| `POST /api/admin/mortgages/letters`, `…/letters/:fileId/complete` | A bank's pre-approval letter (C5's Record response): its row through the adviser's session, then checked like an applicant's PDF and scanned (Phase 6) |
 | `POST /api/webhooks/whatsapp` | Inbound replies (C6 "replied on WhatsApp") and delivery status, once D1 lands |
 
 - The draft token is 256-bit random, stored hashed, and sent as
@@ -248,7 +250,7 @@ app/[locale]/(admin)/admin/mortgages/page.tsx                          C1
 app/[locale]/(admin)/admin/mortgages/[reference]/page.tsx              C2 or C6, by service
 app/[locale]/(admin)/admin/mortgages/[reference]/documents/[kind]/page.tsx   C3 / C4
 app/[locale]/(admin)/admin/mortgages/[reference]/decision/page.tsx     C5
-app/[locale]/(admin)/admin/mortgages/banks/page.tsx                    partner banks (not designed; CMS table pattern; head + admin)
+app/[locale]/(admin)/admin/mortgages/banks/page.tsx                    partner banks (not designed; read by the team, changed by the Head or an admin on the team)
 app/[locale]/(admin)/admin/mortgages/settings/page.tsx                 flag, assignment mode, adviser hours (not designed; proposal)
 app/[locale]/(admin)/admin/mortgages/_components/, _actions.ts
 app/api/admin/mortgages/files/[fileId]/route.ts                        logged file stream (SPEC path moved under /api)
@@ -327,7 +329,8 @@ in project memory.
 |---|---|---|
 | `request.submitted` | Owner assignment inside the submit function; emails and team alerts go to the outbox | — |
 | `file.scan` | **Inline on `…/complete`** when the scanner answers in time. `/api/cron/mortgage-worker` retries `scan_status = pending` (built in Phase 2) | every 5 minutes; every minute once the outbox joins it |
-| `reupload.requested`, `reupload.fulfilled`, `bank.package`, `decision.sent`, `consultation.booked` | Outbox rows written in the same database function as the change; first send attempted inline, retries in `mortgage-worker` | every minute |
+| `reupload.requested`, `reupload.fulfilled`, `decision.sent`, `consultation.booked` | Outbox rows written in the same database function as the change; first send attempted inline, retries in `mortgage-worker` | every minute |
+| `bank.package`, `bank.reminder` | Sent by the action itself, never queued: each email carries a package token that exists nowhere else. The outbox row is the record; a failed send is fixed with a reminder, which issues a fresh link (Phase 6) | — |
 | `sla.tick` | **Inside `mortgage-worker`** (`L/server/sla-tick.ts`, built in Phase 4), idempotent through `sla_*_notified_at` and `mortgage_flag_sla()`. One cron instead of two, so the alerts it queues go out in the same run | every 5 minutes, with the worker |
 | Drafts lifecycle rule | `mortgage-worker` too: expired unclaimed drafts, their objects and rows (built in Phase 2). A secure link's uploads live in a draft that expires with the link (Phase 5), so the same sweep clears what was never sent; cancelling a request expires its draft at once | with the worker |
 | `retention.purge` | `/api/cron/mortgage-retention` | daily |
@@ -355,7 +358,7 @@ Proposed keys:
 
 | Audience | Keys |
 |---|---|
-| Applicant | `mortgage_consultancy_received`, `mortgage_preapproval_received`, `mortgage_reupload_request`, `mortgage_preapproval_invite`, `mortgage_consultation_booked` (with `.ics`), `mortgage_decision_approved` (with the letter), `mortgage_decision_declined`, `mortgage_code` (only if D5 falls back to email) |
+| Applicant | `mortgage_consultancy_received`, `mortgage_preapproval_received`, `mortgage_reupload_request`, `mortgage_preapproval_invite`, `mortgage_consultation_booked` (with `.ics`), `mortgage_decision_pre_approved` (with the letter), `mortgage_decision_declined`, `mortgage_code` (only if D5 falls back to email) |
 | Team | `mortgage_team_new_request`, `mortgage_team_at_risk`, `mortgage_team_breached`, `mortgage_team_reupload_received` |
 | Banks | `mortgage_bank_package`, `mortgage_bank_reminder` |
 
@@ -365,8 +368,8 @@ Proposed keys:
   retried by the mortgage-worker cron. Phase 4 adds the team's kinds to it.
 - The existing `mortgage_enquiry_ack` stays until the calculator's old form is
   retired (D25).
-- `lib/email.ts:136-143` converts attachments from UTF-8 strings. The letter
-  PDF needs binary support; the `.ics` is text and works today.
+- `lib/email.ts` sends a string attachment as UTF-8 (the `.ics`) and bytes
+  as they are (the letter PDF, Phase 6: `EmailAttachment`).
 
 **WhatsApp (D1).** A new `lib/whatsapp-cloud.ts` (Graph API template sends,
 plus a check for the 24-hour customer-service window from the last inbound
@@ -656,7 +659,7 @@ Paths abbreviated: `M/` = `app/[locale]/(mortgage)/`, `A/` =
 | **3** Website W1–W7 (built) | `0141_mortgage_submit.sql`, `0142_mortgage_system_emails.sql`; `M/**` (layout, pages, `_steps`, `_components`); `L/{details,format,consent,copy-status}.ts`; `L/client/*`; `L/server/{submit,notify}.ts`; `app/api/mortgage/requests/route.ts`; `lib/queries/mortgage-flow.ts`; `lib/i18n/english-only.ts`; `messages/{en,ar}/mortgage.json`; `e2e/mortgage-apply.spec.ts` + `playwright.mortgage.config.ts` (local/staging only) | `lib/i18n/namespaces.ts`; the four guard globs; `proxy.ts`, `lib/i18n/{routing,locale-redirects}.ts`; `lib/content-assets/*`; `lib/email-templates.ts`; `L/server/drafts.ts` (`replaces`); the mortgage-worker cron (outbox); entry points (home band, `/p/[slug]`, `/tools/mortgage`); `app/globals.css` (two Arabic heading sizes) |
 | **4** CMS C1, C2, C6 (built) | `0143_mortgage_cms.sql`, `0144_mortgage_cms_emails.sql`; `A/{layout,page,[reference]/page,settings/page}.tsx`, `A/_components/{ui,queue-view,file-actions,settings-form}.tsx`, `A/_actions.ts`; `L/{cms-strings,cms-format,queue,slots,ics,activity}.ts`; `L/server/{cms-auth,cms-queries,settings,sla-tick}.ts`; `components/mortgage/glyphs.tsx` (moved from `M/_components`); `L/cms.test.ts`, `L/cms.db.test.ts`; `e2e/mortgage-cms.spec.ts`. No WhatsApp (D1 hasn't landed): those rows are recorded as skipped | `components/brand/cms-shell.tsx` (G1); `(admin)/layout.tsx` + `admin-session.tsx` (`mortgage` in the session); `L/server/{notify,submit}.ts`; the mortgage-worker cron (the SLA tick); `lib/notifications.ts` (three bell kinds); `lib/content-assets/*` + `lib/email-templates.ts` (five emails); `L/consent.ts`; the local seed. Not `lib/auth.ts`: the role is asked of `mortgage_role()`, so the admin area never depends on the new column |
 | **5** Review loop C3, C4, W8 (built) | `0145_mortgage_review.sql`, `0146_mortgage_review_emails.sql`; `A/[reference]/documents/[kind]/page.tsx`, `A/_components/{document-review,file-stage,file-cache}.tsx`, `A/_review-actions.ts`; `M/mortgages/r/[token]/**` (page, code gate, link states, W8, the invite landing), `M/mortgages/apply/layout.tsx`; `app/api/mortgage/links/**`; `L/coverage.ts`; `L/server/{links,link-http,review,cms-kit}.ts`; `L/client/link-api.ts`; `L/review.test.ts`, `L/links.db.test.ts`; `e2e/mortgage-review.spec.ts`; `scripts/db-local/seed-mortgage-files.ts` | `0141` (an invite's owner is pinned at creation); `M/layout.tsx` (flag gate moved); `M/_components/{documents,use-documents}.ts(x)`; `M/mortgages/apply/_steps/received.tsx` (W7 reused by the invite); `A/[reference]/page.tsx`, `A/_components/file-actions.tsx`, `A/_actions.ts`; `L/server/{drafts,submit,notify,errors,cms-queries}.ts`; `L/{activity,cms-strings,copy-status}.ts`; `L/client/{api,analytics}.ts`; `lib/posthog.tsx` (secure-link paths redacted); `lib/notifications.ts` (a bell kind); `lib/content-assets/*` + `lib/email-templates.ts` (three emails); `messages/{en,ar}/mortgage.json`; `L/testing/fixtures.ts`; the local seed and `reset.sh` |
-| **6** Banks & decision C5 | `A/banks/page.tsx`; `A/[reference]/decision/page.tsx`; `app/api/mortgage/packages/[token]/route.ts` | `lib/email.ts` (binary attachments) |
+| **6** Banks & decision C5 (built) | `0149_mortgage_banks_decision.sql`, `0150_mortgage_bank_emails.sql`; `A/banks/page.tsx`, `A/[reference]/decision/page.tsx`, `A/_components/{decision-view,banks-view}.tsx`, `A/_banks-actions.ts`; `M/mortgages/p/[token]/page.tsx`; `app/api/mortgage/packages/[token]/files/[fileId]/route.ts`; `app/api/admin/mortgages/letters/**`; `L/pre-approval.ts`; `L/server/{banks,letters,decision}.ts`; `L/pre-approval.test.ts`, `L/banks.db.test.ts`; `e2e/mortgage-decision.spec.ts`. **Built ahead (D19, 29 Sep):** the decline — `0147_mortgage_decline.sql` (reasons, `mortgage_decline()`, `mortgage_transition()` redefined to decline from any open status), `0148_mortgage_decline_email.sql`, `L/decline.ts`, `A/_decision-actions.ts`, C2's Decline dialog and Decision card, the outbox's `decision_declined`, `L/decline.test.ts`, `L/decline.db.test.ts`, `e2e/mortgage-decline.spec.ts`. C5's Decline tab reuses the dialog's form | `lib/email.ts` (binary attachments); `L/state.ts` (the decline moves); `A/[reference]/page.tsx` + `A/_components/file-actions.tsx` (the bank step, "Open decision"); `A/_decision-actions.ts`; `A/page.tsx` (the Partner banks link); `A/_review-actions.ts` + `document-review.tsx` (statements' coverage check saved at Accept); `L/{activity,cms-strings}.ts`; `L/server/{notify,cms-kit,errors}.ts`; `lib/content-assets/*` + `lib/email-templates.ts` (three emails); `L/testing/local-stack.ts` (`retireTestStaff`); the local seed (every offer has a letter) |
 | **7** Hardening | `docs/mortgage/SECURITY-REVIEW.md`, `RUNBOOK.md`; `app/api/cron/mortgage-retention`; DSR migration | `lib/queries/dsr-subject.ts`; `lib/dsr.ts`; `instrumentation*.ts`; the e2e a11y and mobile-geometry route lists |
 
 **Indicative schedule,** using PLAN's sizes, starting Tue 29 Sep, on UAE

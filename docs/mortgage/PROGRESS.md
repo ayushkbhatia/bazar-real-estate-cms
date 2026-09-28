@@ -661,3 +661,183 @@ The undesigned parts are built on the defaults under "Defaults built in Phase
 - D16: who the team is. D29: the three new emails are drafts.
 - Design: the defaults for FE-2, W8's other kinds and CMS-2, 3, 5 and 17
   (DECISIONS.md).
+
+## D19 — Declining a Fast Pre-Approval (ahead of Phase 6) · 29 Sep 2026
+
+Ayush left D19 to us: "Come up with the decline reasons and decline message
+yourself and program it in." The answer is in DECISIONS.md (D19, and
+"Defaults built for D19"); the build is the decline half of C5's decision,
+reached from C2 because a file can now be declined before it goes to the
+banks.
+
+**Built**
+- **`0147_mortgage_decline.sql`:**
+  - the reasons (`mortgage_decline_reason`, eight) and
+    `mortgage_requests.decline_reason`, set only with a declined decision;
+  - `mortgage_transition()` redefined from 0139: `declined` from New, In
+    review, Awaiting applicant and With banks; a file declined while paused
+    keeps the working time frozen at the pause, which is what `slaStatus()`
+    reads (the pause's shape constraint holds); the reason rides in with the
+    message. The guard now keeps the decision's message and reason to the
+    function too;
+  - `mortgage_decline()`, through the adviser's session (owner or Head): an
+    open Fast Pre-Approval only; a message and email required; "no bank made
+    an offer" only with the banks; cancels an open re-upload (its link
+    revoked, its unsent uploads expired, the document back to review);
+    withdraws the banks still deciding; writes `decision.declined`; queues
+    the applicant's email (and WhatsApp, recorded until D1).
+- **`0148_mortgage_decline_email.sql`** (a subagent): the applicant's email,
+  `mortgage_decision_declined`, a Content Assets draft with an Arabic machine
+  draft. The subject never says "declined" (it shows on a lock screen: "An
+  update on your Fast Pre-Approval application — {reference}"); the body
+  quotes the adviser's message as written, and replies go to whoever decided.
+- **Domain:** `L/decline.ts` (the reasons, their labels, the template);
+  `state.ts` mirrors the new moves; `activity.ts` words the decline and keeps
+  its status change quiet; `cms-queries.ts` carries the decision to C2.
+- **CMS:** `A/_decision-actions.ts` (`declineApplication`, email after the
+  answer); C2's "Decline" dialog and, once decided, the Decision card;
+  `notify.ts` delivers `decision_declined` with replies to whoever decided.
+
+**Verified**
+- **Unit:** `L/decline.test.ts` (9): a label per reason; "no bank made an
+  offer" only once the banks were asked; declinable exactly where the state
+  machine allows; the message's parts, words of its own for every reason but
+  "Other", no signature without a name; the activity line. `state.test.ts`
+  covers the new moves.
+- **Database:** `L/decline.db.test.ts` (8): from New, In review, Awaiting
+  applicant (the re-upload cancelled, its link revoked, the clock stopped
+  with the time left at the pause) and With banks (the banks withdrawn); only
+  the owner or the Head, only a Fast Pre-Approval, once, on a fresh page; a
+  reason, a message (not just blank lines) and email; the reason and message
+  kept to the function; the enum matches `decline.ts`.
+- **End to end:** `e2e/mortgage-decline.spec.ts`: C2's dialog, "Other" held
+  until the adviser writes, the Decision card, C1's Closed tab.
+
+**Deviations**
+- A decline is reached from C2 as well as C5, because a file can be declined
+  before it goes to the banks (D19).
+
+## Phase 6 — Partner banks and the decision: C5 · 29 Sep 2026
+
+Ayush: "go ahead with Phase 6". Nothing about the banks is designed except
+C5 itself, so the bank list, the bank step after "Accept application",
+"Record response", the package the bank opens and the emails are built on
+the defaults under "Defaults built in Phase 6" in DECISIONS.md (D3, CMS-2,
+CMS-6), every string in `PENDING_CMS_COPY`.
+
+**Built**
+- **`0149_mortgage_banks_decision.sql`:** three outbox kinds; the banks'
+  constraints and `mortgage_bank_label()`; and, through the adviser's own
+  session:
+  - `mortgage_save_bank` (the Head or an admin);
+  - `mortgage_send_to_banks`: one submission per chosen bank with its own
+    expiring package link (the hash only), the file to With banks through
+    the transition (every document accepted, consent on file), and
+    `bank.package_sent` naming the banks as the designs do;
+  - `mortgage_bank_reminder`: a fresh link, one per ten minutes;
+  - `mortgage_letter_presign` and `mortgage_record_bank_response`: an offer
+    needs its figures, a validity from today and a clean letter; a decline
+    needs neither; a new letter replaces the old;
+  - `mortgage_pre_approve`: a pre-approved lead offer still in date, with its
+    letter, and consent on file; the banks still deciding withdrawn; the
+    clock stopped; `decision.pre_approved`; the email and WhatsApp queued.
+- **`0150_mortgage_bank_emails.sql`** (a subagent): the bank package, the
+  reminder and the pre-approval, as Content Assets drafts with Arabic
+  machine drafts. `lib/email.ts` sends bytes as they are, so the letter goes
+  as a PDF.
+- **Server (`L/server/`):** `banks.ts` (the list, package links, the package
+  page's lookup, state and view, the logged download), `letters.ts` (the
+  letter's row, then the same checks as an applicant's PDF and the scan),
+  `decision.ts` (C5's data: each bank's response, the 25-year payment from
+  `payments.ts`, the tiles, the pricing basis). `notify.ts` delivers the
+  pre-approval with the letter read from the private bucket as it's sent.
+- **Domain:** `L/pre-approval.ts` (the message the adviser starts from);
+  `activity.ts` words the bank steps and keeps their status changes quiet.
+- **CMS (`A/`):** C5 at `[reference]/decision` — the tiles, the banks with
+  the lead radio, "Record response", "Edit" and "Send a reminder", the
+  pricing line, the activity, and the decision card (lead offer, rate,
+  validity, the letter, the message, Send by, Confirm, and the Decline tab
+  with C2's form); read-only once decided; anything not with the banks is
+  sent back to C2. C2's "Accept application" now chooses the banks and
+  sends, and a file with the banks shows "Open decision". The partner banks
+  page at `/admin/mortgages/banks`, linked from C1 for the Head and admins.
+- **API:** `/api/admin/mortgages/letters` (presign through the session) and
+  `…/:fileId/complete`; `/api/mortgage/packages/:token/files/:fileId` (rate
+  limited, logged as the bank first, no-store).
+- **Website (`M/mortgages/p/[token]`):** the bank's package page. Opening it
+  is logged before anything renders; no referrer, not indexed.
+- **Local:** every seeded offer has a letter; each DB test file now switches
+  off the banks it made and takes its staff off the team when it's done.
+
+**Verified**
+- **Unit:** `L/pre-approval.test.ts` (5) reproduces the design's sample
+  message word for word, mentions no other bank when only one pre-approved,
+  says a variable rate plainly, prices the design's offers over 25 years and
+  formats C5's money, rates, dates and days;
+  `cms.test.ts` words the bank activity lines (and a bank named before 0149
+  by its code); `lib/secure-link-redaction.test.ts` keeps tokens out of
+  analytics. The full suite: 4,638 pass.
+- **Database:** `L/banks.db.test.ts` (10): sending (every document accepted,
+  consent, the owner or the Head, a bank that can take it, a fresh page);
+  the package (accepted documents only; a download logged as the bank before
+  its bytes are read; expired says so; withdrawn shows nothing); the reminder
+  (the old link dies, the new one opens, ten minutes between); responses
+  (the figures, the letter, a replacement letter, a decline); pre-approving
+  (the clock stops, the other bank is withdrawn, the email carries the
+  letter's exact bytes, WhatsApp is recorded as skipped; refused for a lead
+  that isn't pre-approved or has expired, without consent, for someone else,
+  twice or on a stale page); the bank list (the Head or an admin); the label
+  matches the database's. All 101 database tests pass (7 files). Removing
+  the attachment makes the pre-approval test fail.
+- **End to end:** `e2e/mortgage-decision.spec.ts` takes Priya from In review
+  to Pre-approved: her last two documents accepted in C3, the file sent to
+  FAB, ADCB and Mashreq, two offers recorded with their letters uploaded,
+  AED 11,337 a month for FAB, the lead switched and back, Confirm, C2
+  decided, the email handed to the mailer (a dry run locally) and WhatsApp
+  skipped, Mashreq withdrawn, C5 read-only and C1's Closed tab. It makes its
+  own Priya each run. With the other specs, all 10 pass, in either order.
+- **In the browser** (local stack, 1440 and 375): C5 against the PNG on
+  Arjun (BZM-26-0398, whose seeded banks carry the PNG's figures), the lead
+  switch, Record response with a real upload, the Decline tab, Confirm to
+  C2 and C1's Closed tab; the package page and a logged download; the banks
+  page and adding a bank (with its audit row).
+- **Done when:** Priya's file runs end to end in the spec, the applicant's
+  email is built with the letter attached and handed to the mailer,
+  WhatsApp is recorded as skipped, and C1 shows the file under Closed.
+
+**Found and fixed**
+- C3 drew statements' "Covers the last N months" from the months but only
+  saved it when the reviewer changed a period, so statements whose months
+  came from the upload showed every box ticked and couldn't be accepted.
+  Accept now saves it from the files' months first, and the button counts it
+  as the box shows it.
+- The database tests left their banks active and their staff on the team:
+  after a few runs the send dialog ticked 30 banks (past the 20 a file can
+  go to), and each new request alerted 30 people, filling the outbox's batch
+  before a test's own email. Each file now tidies up after itself.
+- C5 listed the banks in the order the packages went; it now follows the
+  team's order of banks, as the design does.
+- Staff opening a bank's letter read "opened bank_letter" in the activity.
+- Secure links' tokens could reach analytics: Phase 5 redacted
+  `/mortgages/r/<token>` for PostHog only, and Vercel Analytics recorded
+  every path whole. `lib/secure-link-redaction.ts` now swaps the token for
+  `[token]` in applicant links and bank packages, for both.
+
+**Deviations**
+- "Record response" is a dialog, not the side panel C5's README proposes:
+  the other undesigned CMS steps are dialogs too.
+- The seeded ADCB offer has a letter (the PNG's activity shows none): an
+  offer can't be recorded without one.
+- The pre-approval email's subject is the decline's, so the two can't be told
+  apart on a lock screen.
+- Priya's C5 figures in the PNG are on Arjun in the seed; Priya is in review,
+  as C2's PNG has her. The pricing line reads Arjun's salary (AED 41,000).
+
+**Open**
+- **Not applied to production:** `0138`–`0150`. Apply them at the batch
+  merge; the flag stays `off`, and the bank list starts empty.
+- D3: confirm the link approach with at least one bank; the Head enters the
+  banks and their inboxes.
+- D29: the three new emails are drafts. D1: WhatsApp is recorded as skipped.
+- D6: with no scanner configured in production, a letter waits unusable
+  (fail closed), like the applicant's files.

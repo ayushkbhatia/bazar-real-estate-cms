@@ -313,7 +313,6 @@ describe("activity lines (00-foundations §11)", () => {
     expect([reassign?.text, reassign?.sub]).toEqual(["Reassigned to Rashid", "by Yasmin"]);
     expect([booked?.text, booked?.sub]).toEqual(["Rashid booked Wed 23 Sep · 10:00", "Phone call with Rashid Khan"]);
     expect([invite?.text, invite?.sub]).toEqual(["Rashid sent a pre-approval link", "Expires 29 Sep"]);
-    expect(describeEvent(event("status.changed", { to: "with_banks", event: "sent_to_banks" }), ctx)?.text).toBe("Moved to With banks");
   });
 
   it("words the Phase 5 review: the re-upload says itself, so its status changes stay quiet", () => {
@@ -335,6 +334,36 @@ describe("activity lines (00-foundations §11)", () => {
     ]);
     for (const quiet of ["reupload_requested", "reupload_fulfilled", "reupload_cancelled"]) {
       expect(describeEvent(event("status.changed", { to: "in_review", event: quiet }), ctx)).toBeNull();
+    }
+  });
+
+  it("words the Phase 6 bank steps, naming each bank as the team does", () => {
+    const bank = (type: string, data: Record<string, unknown>) => ({ ...event(type, data, null), actor_kind: "bank" as const });
+    const lines = [
+      describeEvent(event("bank.package_sent", { banks: ["FAB", "ADCB", "MSQ"], labels: ["FAB", "ADCB", "Mashreq"], documents: 4 }, RASHID), ctx),
+      describeEvent(bank("bank.package_opened", { bank: "MSQ", label: "Mashreq" }), ctx),
+      describeEvent(bank("document.downloaded", { bank: "FAB", label: "FAB", kind: "passport" }), ctx),
+      describeEvent(event("bank.reminder_sent", { bank: "ADCB", label: "ADCB" }, RASHID), ctx),
+      describeEvent(event("bank.response_recorded", { bank: "FAB", label: "FAB", status: "pre_approved", amount: 2150000, letter: "FAB-letter.pdf" }, RASHID), ctx),
+      describeEvent(event("bank.response_recorded", { bank: "ADCB", label: "ADCB", status: "declined" }, RASHID), ctx),
+      describeEvent(event("decision.pre_approved", { bank: "FAB", label: "FAB", amount: 2150000 }, RASHID), ctx),
+      // Before 0149 an event carried the code alone.
+      describeEvent(bank("bank.package_opened", { bank: "ENBD" }), ctx),
+      describeEvent(event("document.viewed", { file_id: "f", kind: "bank_letter" }), ctx),
+    ];
+    expect(lines.map((l) => [l?.text, l?.sub ?? null])).toEqual([
+      ["Package sent to FAB, ADCB and Mashreq", "4 documents · structured summary"],
+      ["Mashreq opened the package", null],
+      ["FAB downloaded Passport copy", null],
+      ["Reminder sent to ADCB", null],
+      ["FAB pre-approved up to AED 2,150,000", "Letter attached · FAB-letter.pdf"],
+      ["ADCB declined", null],
+      ["Rashid sent the pre-approval", "FAB · up to AED 2,150,000"],
+      ["ENBD opened the package", null],
+      ["Yasmin opened a bank's letter", null],
+    ]);
+    for (const quiet of ["sent_to_banks", "pre_approved", "declined"]) {
+      expect(describeEvent(event("status.changed", { to: "with_banks", event: quiet }), ctx)).toBeNull();
     }
   });
 });

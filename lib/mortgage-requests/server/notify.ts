@@ -3,6 +3,8 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   mortgageConsultancyReceivedEmail,
   mortgageConsultationBookedEmail,
+  mortgageDecisionDeclinedEmail,
+  mortgageDecisionPreApprovedEmail,
   mortgagePreapprovalReceivedEmail,
   mortgageTeamAtRiskEmail,
   mortgageTeamBreachedEmail,
@@ -20,6 +22,7 @@ import { formatDayTime } from "../format";
 import { consultationIcs } from "../ics";
 import { formatDuration, slaStatus, type SlaFields } from "../sla";
 import { loadMortgageSettings } from "./settings";
+import { supabaseStorage, type MortgageStorage } from "./storage";
 
 /**
  * The notification outbox (`mortgage_notifications`, 0141): sending what the
@@ -54,6 +57,8 @@ export type NotifyDeps = {
   now?: () => Date;
   /** A team member's sign-in address. Defaults to Supabase Auth's admin API. */
   staffEmail?: (userId: string) => Promise<string | null>;
+  /** The private bucket, for the pre-approval's letter. Defaults to Supabase Storage through `db`. */
+  storage?: MortgageStorage;
 };
 
 type Claimed = {
@@ -129,6 +134,18 @@ async function deliver(deps: NotifyDeps, row: Claimed): Promise<Outcome> {
       if (row.channel !== "email") return { status: "skipped", reason: `no ${row.channel} for ${row.kind}` };
       const email = await consultationBookedEmail(deps, row.request_id, row.dedupe);
       if (!email) return { status: "skipped", reason: "consultation no longer booked" };
+      return sendTo(deps, email);
+    }
+    case "decision_pre_approved": {
+      if (row.channel !== "email") return { status: "skipped", reason: `no ${row.channel} for ${row.kind}` };
+      const email = await preApprovedEmail(deps, row.request_id);
+      if (!email) return { status: "skipped", reason: "request not pre-approved" };
+      return sendTo(deps, email);
+    }
+    case "decision_declined": {
+      if (row.channel !== "email") return { status: "skipped", reason: `no ${row.channel} for ${row.kind}` };
+      const email = await declinedEmail(deps, row.request_id);
+      if (!email) return { status: "skipped", reason: "request not declined" };
       return sendTo(deps, email);
     }
     default:
@@ -338,6 +355,104 @@ async function consultationBookedEmail(deps: NotifyDeps, requestId: string, cons
     ...rendered,
     attachments: [{ filename: "bazar-consultation.ics", content: ics, contentType: "text/calendar; charset=utf-8; method=PUBLISH" }],
   };
+}
+
+/**
+ * The pre-approval (C5): the adviser's message, with the lead bank's letter
+ * attached — read from the private bucket at the moment it's sent, never
+ * copied anywhere else. Null for a request that isn't pre-approved; an error
+ * (retried by the worker) when the letter can't be read.
+ */
+async function preApprovedEmail(deps: NotifyDeps, requestId: string): Promise<Addressed | null> {
+  const { data, error } = await deps.db
+    .from("mortgage_requests")
+    .select("reference, full_name, email, locale, status, decision_message, decided_by, lead_bank_submission_id")
+    .eq("id", requestId)
+    .maybeSingle();
+  if (error) throw new Error(`request read failed: ${error.message}`);
+  const r = data as {
+    reference: string;
+    full_name: string;
+    email: string;
+    locale: string;
+    status: string;
+    decision_message: string | null;
+    decided_by: string | null;
+    lead_bank_submission_id: string | null;
+  } | null;
+  if (!r || r.status !== "pre_approved" || !r.decision_message || !r.lead_bank_submission_id) return null;
+
+  const [{ data: submission }, { data: letter }] = await Promise.all([
+    deps.db.from("mortgage_bank_submissions").select("bank:mortgage_partner_banks(name)").eq("id", r.lead_bank_submission_id).single(),
+    deps.db
+      .from("mortgage_files")
+      .select("storage_key, original_name")
+      .eq("bank_submission_id", r.lead_bank_submission_id)
+      .eq("state", "active")
+      .eq("scan_status", "clean")
+      .order("uploaded_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+  const bankName = (submission as { bank: { name: string } | null } | null)?.bank?.name ?? "";
+  const file = letter as { storage_key: string; original_name: string } | null;
+  if (!file) throw new Error("the lead bank's letter isn't there");
+  const bytes = await (deps.storage ?? supabaseStorage(deps.db)).read(file.storage_key);
+  if (!bytes) throw new Error("the lead bank's letter couldn't be read");
+
+  const decider = r.decided_by;
+  const [adviserName, adviserEmail] = decider
+    ? await Promise.all([
+        staffName(deps.db, decider),
+        (deps.staffEmail ?? ((id) => defaultStaffEmail(deps.db, id)))(decider).catch(() => null),
+      ])
+    : [null, null];
+  const rendered = await mortgageDecisionPreApprovedEmail(
+    { name: r.full_name, reference: r.reference, adviserName: adviserName ?? "", message: r.decision_message, bankName },
+    r.locale === "ar" ? "ar" : "en",
+  );
+  return {
+    to: r.email,
+    ...(adviserEmail ? { replyTo: adviserEmail } : {}),
+    ...rendered,
+    attachments: [{ filename: file.original_name, content: bytes, contentType: "application/pdf" }],
+  };
+}
+
+/**
+ * The decline (D19): the adviser's own message, as the request keeps it, with
+ * replies going to whoever decided. Null for a request that isn't declined.
+ */
+async function declinedEmail(deps: NotifyDeps, requestId: string): Promise<Addressed | null> {
+  const { data, error } = await deps.db
+    .from("mortgage_requests")
+    .select("reference, full_name, email, locale, status, decision_message, decided_by")
+    .eq("id", requestId)
+    .maybeSingle();
+  if (error) throw new Error(`request read failed: ${error.message}`);
+  const r = data as {
+    reference: string;
+    full_name: string;
+    email: string;
+    locale: string;
+    status: string;
+    decision_message: string | null;
+    decided_by: string | null;
+  } | null;
+  if (!r || r.status !== "declined" || !r.decision_message) return null;
+
+  const decider = r.decided_by;
+  const [adviserName, adviserEmail] = decider
+    ? await Promise.all([
+        staffName(deps.db, decider),
+        (deps.staffEmail ?? ((id) => defaultStaffEmail(deps.db, id)))(decider).catch(() => null),
+      ])
+    : [null, null];
+  const rendered = await mortgageDecisionDeclinedEmail(
+    { name: r.full_name, reference: r.reference, adviserName: adviserName ?? "", message: r.decision_message },
+    r.locale === "ar" ? "ar" : "en",
+  );
+  return { to: r.email, ...(adviserEmail ? { replyTo: adviserEmail } : {}), ...rendered };
 }
 
 type RequestForEmail = {

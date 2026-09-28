@@ -133,6 +133,63 @@ export const SYSTEM_EMAIL_DEFAULTS: Record<SystemAssetKey, SystemEmailDefault> =
       "<p>— The Bazar mortgage team</p>",
     ].join(""),
   },
+  // Partner banks (0150). Provisional too (D29). A bank email holds the
+  // reference and nothing else about the applicant; the details are behind
+  // the link. The greeting reads right when the bank's name falls back ("the
+  // team at the bank"), and the reminder is worded so a missing adviser's name
+  // reads right too.
+  mortgage_bank_package: {
+    subject: "Fast Pre-Approval package {{mortgage_reference}} from Bazar",
+    body: [
+      "<p>Hello to the team at {{mortgage_bank}},</p>",
+      "<p>{{mortgage_adviser}} from Bazar's mortgage team has shared a Fast Pre-Approval application with you: a structured summary and {{mortgage_document_count}}.</p>",
+      '<a data-email-button="" href="{{mortgage_package_url}}">Open the package</a>',
+      "<p>The link works until <strong>{{mortgage_link_expires}}</strong>. Every open and download is recorded.</p>",
+      "<p>Reply to this email to reach {{mortgage_adviser}}.</p>",
+      "<p>— The Bazar mortgage team</p>",
+    ].join(""),
+  },
+  mortgage_bank_reminder: {
+    subject: "Reminder: Fast Pre-Approval package {{mortgage_reference}}",
+    body: [
+      "<p>Hello to the team at {{mortgage_bank}},</p>",
+      "<p>A reminder that {{mortgage_adviser}} shared Fast Pre-Approval application {{mortgage_reference}} with you on {{mortgage_package_sent}}. We'd be grateful for your response.</p>",
+      "<p>Here's a fresh link, working until <strong>{{mortgage_link_expires}}</strong>.</p>",
+      '<a data-email-button="" href="{{mortgage_package_url}}">Open the package</a>',
+      "<p>Every open and download is recorded.</p>",
+      "<p>Reply to this email to reach {{mortgage_adviser}}.</p>",
+      "<p>— The Bazar mortgage team</p>",
+    ].join(""),
+  },
+  // The pre-approval (0150). The decline's subject, word for word, so a lock
+  // screen tells the two outcomes apart by neither. The send path attaches the
+  // bank's letter; the wording only says it is there.
+  mortgage_decision_pre_approved: {
+    subject: "An update on your Fast Pre-Approval application — {{mortgage_reference}}",
+    body: [
+      "<p>Hello {{lead_first_name}},</p>",
+      "<p>{{mortgage_adviser}} from Bazar's mortgage team has written about your Fast Pre-Approval application {{mortgage_reference}}.</p>",
+      "<p>{{mortgage_adviser_message}}</p>",
+      "<p>Your pre-approval letter from {{mortgage_bank}} is attached.</p>",
+      "<p>You can reply to this email to reach {{mortgage_adviser}} directly, or call the mortgage team on +971 2 632 2223.</p>",
+      "<p>— The Bazar mortgage team</p>",
+    ].join(""),
+  },
+  // The decline (0148). Provisional too (D29). The subject is "an update",
+  // never the outcome, because a phone prints it on its lock screen; the news
+  // is the adviser's own message, the same panel the re-upload request quotes.
+  // Tokens cannot branch, so with no name for the adviser the opening line
+  // names the team twice; the built-in says it once.
+  mortgage_decision_declined: {
+    subject: "An update on your Fast Pre-Approval application — {{mortgage_reference}}",
+    body: [
+      "<p>Hello {{lead_first_name}},</p>",
+      "<p>{{mortgage_adviser}} from Bazar's mortgage team has written about your Fast Pre-Approval application {{mortgage_reference}}.</p>",
+      "<p>{{mortgage_adviser_message}}</p>",
+      "<p>You can reply to this email to reach {{mortgage_adviser}} directly, or call the mortgage team on +971 2 632 2223.</p>",
+      "<p>— The Bazar mortgage team</p>",
+    ].join(""),
+  },
   valuation_request_ack: {
     subject: "Your Bazar valuation is in review",
     body: [

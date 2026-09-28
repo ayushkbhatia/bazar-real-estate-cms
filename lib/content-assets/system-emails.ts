@@ -16,10 +16,16 @@ import {
   consultationLength,
   minuteCount,
   mortgageAdviserMessageBlock,
+  mortgageBankPackageTemplate,
+  mortgageBankReminderTemplate,
   mortgageCodeTemplate,
   mortgageConsultancyReceivedTemplate,
   mortgageConsultationBookedTemplate,
   mortgageConsultationFormatName,
+  mortgageDay,
+  mortgageDecisionDeclinedTemplate,
+  mortgageDecisionPreApprovedTemplate,
+  mortgageDocumentCount,
   mortgageDocumentsBlock,
   mortgageFileCount,
   mortgagePreapprovalInviteTemplate,
@@ -271,6 +277,58 @@ export type MortgageReuploadRequestOpts = {
 /** The one-time code that opens a secure link. */
 export type MortgageCodeOpts = { name: string; code: string; minutes: number };
 
+/** An adviser's decline of a Fast Pre-Approval, in their own words (C5, D19). */
+export type MortgageDecisionDeclinedOpts = {
+  /** Applicant's full name; only the first name reaches the body. */
+  name: string;
+  reference: string;
+  /** Who declined it; blank reads as Bazar's mortgage team. */
+  adviserName: string;
+  /**
+   * The adviser's message, plain text: prefilled from the reason in the CMS
+   * and edited before it goes (lib/mortgage-requests/decline.ts).
+   */
+  message: string;
+};
+
+/** An adviser's confirmation of a Fast Pre-Approval, in their own words (C5). */
+export type MortgageDecisionPreApprovedOpts = MortgageDecisionDeclinedOpts & {
+  /** The bank whose pre-approval letter the send path attaches. */
+  bankName: string;
+};
+
+/**
+ * A partner bank's package (C2's Accept application → With banks). Nothing
+ * about the applicant: the reference is all a bank email holds, and the
+ * details are behind the link.
+ */
+export type MortgageBankPackageOpts = {
+  /** "First Abu Dhabi Bank". */
+  bankName: string;
+  reference: string;
+  /** Who sent it; blank reads as Bazar's mortgage team. */
+  adviserName: string;
+  /** Absolute package link, https://…/mortgages/p/<token>. */
+  link: string;
+  /** ISO instant the link expires. */
+  expiresAt: string;
+  /** How many documents the package holds. */
+  documentCount: number;
+};
+
+/** A reminder to a bank that hasn't answered, with a fresh link (C5). */
+export type MortgageBankReminderOpts = {
+  bankName: string;
+  reference: string;
+  adviserName: string;
+  /** The fresh link: the first is stored only as its hash. */
+  link: string;
+  /** ISO instant the fresh link expires. */
+  expiresAt: string;
+  /** ISO instant the package first went to this bank. */
+  sentAt: string;
+};
+
 type MortgageTeamReuploadReceivedOpts = MortgageTeamAlertOpts & {
   /** The document's display name, in English like the rest of the alert. */
   documentName: string;
@@ -462,6 +520,105 @@ const BINDINGS = {
     }),
     builtin: (o, brand) => mortgageCodeTemplate(o, brand),
     sample: { name: "Karim Haddad", code: "730528", minutes: 10 },
+  }),
+  // The bank emails fill no lead token: a bank is never told who applied.
+  mortgage_bank_package: bind<MortgageBankPackageOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        mortgage_bank: o.bankName,
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        mortgage_document_count: mortgageDocumentCount(o.documentCount, locale),
+        mortgage_package_url: o.link,
+        mortgage_link_expires: formatDayTime(o.expiresAt, locale),
+        site_url: site(),
+      },
+    }),
+    builtin: (o, brand) => mortgageBankPackageTemplate(o, brand),
+    // Priya's file, sent to FAB on Wednesday 23 Sep at 11:30 in Dubai with
+    // her four documents; package links last 7 days.
+    sample: {
+      bankName: "First Abu Dhabi Bank",
+      reference: "BZM-26-0412",
+      adviserName: "Yasmin Abdalla",
+      link: `${site()}/mortgages/p/sample-token`,
+      expiresAt: "2026-09-30T07:30:00Z",
+      documentCount: 4,
+    },
+  }),
+  mortgage_bank_reminder: bind<MortgageBankReminderOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        mortgage_bank: o.bankName,
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        mortgage_package_sent: mortgageDay(o.sentAt, locale),
+        mortgage_package_url: o.link,
+        mortgage_link_expires: formatDayTime(o.expiresAt, locale),
+        site_url: site(),
+      },
+    }),
+    builtin: (o, brand) => mortgageBankReminderTemplate(o, brand),
+    // FAB hasn't answered the package above by Friday 25 Sep at 10:00, so
+    // Yasmin sends a reminder with a fresh link, good for another 7 days.
+    sample: {
+      bankName: "First Abu Dhabi Bank",
+      reference: "BZM-26-0412",
+      adviserName: "Yasmin Abdalla",
+      link: `${site()}/mortgages/p/sample-token`,
+      expiresAt: "2026-10-02T06:00:00Z",
+      sentAt: "2026-09-23T07:30:00Z",
+    },
+  }),
+  mortgage_decision_pre_approved: bind<MortgageDecisionPreApprovedOpts>({
+    // No `lead_name`, as for the decline.
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        mortgage_bank: o.bankName,
+        site_url: site(),
+      },
+      blocks: {
+        mortgage_adviser_message: mortgageAdviserMessageBlock(o.message, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageDecisionPreApprovedTemplate(o, brand),
+    // C5's example: Priya pre-approved by FAB, the lead offer, and ADCB too.
+    sample: {
+      name: "Priya Raman",
+      reference: "BZM-26-0412",
+      adviserName: "Yasmin Abdalla",
+      bankName: "First Abu Dhabi Bank",
+      message:
+        "Good news, Priya: you're pre-approved. First Abu Dhabi Bank has pre-approved you for up to AED 2,150,000 at 3.99% fixed for 3 years, valid until 21 November 2026. ADCB has also pre-approved you for up to AED 2,000,000.\n\nI'll call you tomorrow morning to talk through both. Yasmin",
+    },
+  }),
+  mortgage_decision_declined: bind<MortgageDecisionDeclinedOpts>({
+    // No `lead_name`: this email holds nothing of the applicant but their
+    // first name, so its scope has no full name to fill.
+    context: (o, locale = "en") => ({
+      values: {
+        lead_first_name: firstName(o.name),
+        mortgage_reference: o.reference,
+        mortgage_adviser: o.adviserName,
+        site_url: site(),
+      },
+      blocks: {
+        mortgage_adviser_message: mortgageAdviserMessageBlock(o.message, locale),
+      },
+    }),
+    builtin: (o, brand) => mortgageDecisionDeclinedTemplate(o, brand),
+    // The confirmation's Priya, declined on debt burden: the CMS's prefilled
+    // message for that reason, signed by Yasmin, its paragraphs kept.
+    sample: {
+      name: "Priya Raman",
+      reference: "BZM-26-0412",
+      adviserName: "Yasmin Abdalla",
+      message:
+        "Priya, thank you for applying for Fast Pre-Approval with Bazar. I've been through your application carefully, and I'm sorry to say we're not able to secure a pre-approval for you at the moment.\n\nUAE Central Bank rules cap your total monthly repayments, including the new mortgage, at half of your monthly income. With your current loan and card repayments, a mortgage would take you over that limit.\n\nPaying down or closing a loan or credit card can bring you back within it, and we can then look at your application again.\n\nIf you'd like to talk it through, just reply to this email.\n\nYasmin",
+    },
   }),
   valuation_request_ack: bind<ValuationAckOpts>({
     context: (o, locale = "en") => ({
@@ -946,6 +1103,49 @@ export function mortgageCodeEmail(
   return send("mortgage_code", opts, locale);
 }
 
+/**
+ * A declined Fast Pre-Approval: the adviser's message quoted as they wrote
+ * it, and how to reach them. The subject never says it was declined.
+ */
+export function mortgageDecisionDeclinedEmail(
+  opts: MortgageDecisionDeclinedOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_decision_declined", opts, locale);
+}
+
+/**
+ * A confirmed Fast Pre-Approval: the adviser's message quoted as they wrote
+ * it, the bank whose letter the caller attaches, and how to reach them. Its
+ * subject is the decline's, word for word.
+ */
+export function mortgageDecisionPreApprovedEmail(
+  opts: MortgageDecisionPreApprovedOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_decision_pre_approved", opts, locale);
+}
+
+// The partner banks' emails. Nothing about the applicant goes to a bank, and
+// they send in English: a bank's language is not recorded, so the send path
+// passes none.
+
+/** A Fast Pre-Approval package: the reference and an expiring, logged link. */
+export function mortgageBankPackageEmail(
+  opts: MortgageBankPackageOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_bank_package", opts, locale);
+}
+
+/** A reminder to a bank that hasn't answered, with a fresh link. */
+export function mortgageBankReminderEmail(
+  opts: MortgageBankReminderOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_bank_reminder", opts, locale);
+}
+
 export function valuationAcknowledgementEmail(
   opts: ValuationAckOpts,
   locale: EmailLocale = "en",
@@ -1138,7 +1338,7 @@ export async function previewSystemEmail(
 
 /**
  * Every system email as it sends today, from rows already read. The gallery
- * shows all twenty-seven at once; resolving each through the database would be
+ * shows all thirty-one at once; resolving each through the database would be
  * thirty-odd queries for one page, so it reads the rows and the design once
  * and renders here.
  */

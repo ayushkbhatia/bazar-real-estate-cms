@@ -36,6 +36,8 @@ export type MortgageErrorCode =
   | "code_expired"
   | "code_cooldown"
   | "code_failed"
+  // Staff actions answered over HTTP (a bank's letter, Phase 6)
+  | "conflict"
   | "internal";
 
 export class MortgageApiError extends Error {

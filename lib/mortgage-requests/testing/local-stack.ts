@@ -59,6 +59,21 @@ export function psql(sql: string): string {
 
 export type TestStaff = { id: string; client: SupabaseClient };
 
+// The staff this test file made (vitest gives each file its own copy of this module).
+const madeHere = new Set<string>();
+
+/**
+ * Take this file's test staff off the mortgage team once it's done. Every new
+ * request alerts each member of the team, so a stack that has run the tests
+ * many times would otherwise alert dozens, and the outbox's batch would fill
+ * with alerts before a test's own email.
+ */
+export async function retireTestStaff(service: SupabaseClient): Promise<void> {
+  if (!madeHere.size) return;
+  await service.from("staff").update({ mortgage_role: null }).in("user_id", [...madeHere]);
+  madeHere.clear();
+}
+
 /**
  * A signed-in staff member on the local stack: an auth user, a staff row with
  * this role and mortgage role, and a client carrying their session — so RLS and
@@ -84,6 +99,7 @@ export async function createTestStaff(
     mortgage_role: mortgageRole,
   });
   if (staffError) throw new Error(staffError.message);
+  madeHere.add(id);
   const { data: session, error: signInError } = await client(stack, stack.anonKey).auth.signInWithPassword({
     email,
     password,

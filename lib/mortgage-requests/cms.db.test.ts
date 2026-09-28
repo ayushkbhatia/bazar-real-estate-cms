@@ -28,7 +28,7 @@ import { hashToken, newToken } from "./server/tokens";
 import { deliverNotifications } from "./server/notify";
 import { loadMortgageSettings } from "./server/settings";
 import { slaTick } from "./server/sla-tick";
-import { client, createTestStaff, localStack, type LocalStack, type TestStaff } from "./testing/local-stack";
+import { client, createTestStaff, localStack, retireTestStaff, type LocalStack, type TestStaff } from "./testing/local-stack";
 
 const stack = localStack();
 if (!stack) console.warn("mortgage CMS tests skipped: start the local stack with `npm run db:local:reset`");
@@ -72,6 +72,7 @@ describe.skipIf(!stack)("mortgage CMS (local Supabase)", () => {
 
   afterAll(async () => {
     await service.from("mortgage_settings").update({ assignment_mode: assignmentBefore }).eq("id", 1);
+    await retireTestStaff(service);
   });
 
   // ── Helpers ─────────────────────────────────────────────────

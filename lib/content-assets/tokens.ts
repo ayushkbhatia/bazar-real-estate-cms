@@ -89,6 +89,10 @@ export type TokenName =
   | "mortgage_document"
   | "mortgage_files"
   | "mortgage_code_expires_in"
+  | "mortgage_bank"
+  | "mortgage_document_count"
+  | "mortgage_package_sent"
+  | "mortgage_package_url"
   // Block tokens: a whole pre-built panel, not a word. See `kind`.
   | "valuation_range_panel"
   | "valuation_report_panel"
@@ -689,6 +693,48 @@ export const TOKENS: readonly TokenDef[] = [
     fallback: "a few minutes",
     scope: "system",
     kind: "text",
+  },
+  // Partner banks and the pre-approval (0150). The bank's name is data, like
+  // a reference: never translated. The count and the day are the code's own
+  // words, written in the language being drawn. A bank email names no
+  // applicant, so none of these describes one.
+  {
+    name: "mortgage_bank",
+    label: "Partner bank's name",
+    sample: "First Abu Dhabi Bank",
+    fallbackAr: "البنك",
+    fallback: "the bank",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_document_count",
+    label: "How many documents the package holds (4 documents)",
+    sample: "4 documents",
+    sampleAr: "4 مستندات",
+    fallbackAr: "مستنداته",
+    fallback: "its documents",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    // Asia/Dubai, as every mortgage time is printed; a day, not a time.
+    name: "mortgage_package_sent",
+    label: "The day the package went to the bank",
+    sample: "Wed 23 Sep",
+    sampleAr: "الأربعاء، 23 سبتمبر",
+    fallbackAr: "تاريخ سابق",
+    fallback: "an earlier date",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_package_url",
+    label: "Secure link to the package (for the bank)",
+    sample: "https://www.bazarrealestate.ae/mortgages/p/9f2c…",
+    fallback: "https://www.bazarrealestate.ae",
+    scope: "system",
+    kind: "url",
   },
   {
     name: "valuation_range_panel",

@@ -122,7 +122,7 @@ function sendToBanks(_from: MortgageStatus, ctx: TransitionContext): TransitionO
   return { to: "with_banks", clock: null };
 }
 
-/** Must match the table in `mortgage_transition()`, migration 0139. */
+/** Must match the table in `mortgage_transition()`: migration 0139, redefined in 0147 (D19). */
 export const TRANSITIONS: readonly Rule[] = [
   // Fast Pre-Approval
   { service: "pre_approval", from: ["new"], event: "first_document_opened", actor: "system", outcome: to("in_review") },
@@ -133,7 +133,8 @@ export const TRANSITIONS: readonly Rule[] = [
   { service: "pre_approval", from: ["awaiting_applicant"], event: "reupload_cancelled", actor: "staff", outcome: leaveAwaiting },
   { service: "pre_approval", from: ["in_review"], event: "sent_to_banks", actor: "staff", outcome: sendToBanks },
   { service: "pre_approval", from: ["with_banks"], event: "pre_approved", actor: "staff", outcome: to("pre_approved", "stop") },
-  { service: "pre_approval", from: ["with_banks"], event: "declined", actor: "staff", outcome: to("declined", "stop") },
+  // D19: a file can be declined before the banks as well as after; it's an answer, so the clock stops.
+  { service: "pre_approval", from: ["new", "in_review", "awaiting_applicant", "with_banks"], event: "declined", actor: "staff", outcome: to("declined", "stop") },
   // Mortgage Consultancy
   { service: "consultancy", from: ["new"], event: "contact_logged", actor: "staff", outcome: to("contacted") },
   // Later attempts are logged without moving the request.
