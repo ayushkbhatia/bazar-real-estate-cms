@@ -13,9 +13,11 @@ import {
   type PaymentPlan,
 } from "@/lib/schemas/development";
 import {
+  shapeUnitTypePrices,
   shapeUnitTypesForPage,
   type UnitTypeCard,
 } from "./development-unit-plans";
+import type { PricedUnitType } from "@/lib/developments/calculator-options";
 
 /**
  * Projects as the Page Builder's project sections read them.
@@ -84,6 +86,11 @@ export type LandingProject = {
   units: LandingProjectUnit[];
   /** Enabled types with layouts. Empty unless `unitTypes` was asked for. */
   unitTypes: UnitTypeCard[];
+  /**
+   * Enabled types an editor has priced, layouts or not — the calculator's
+   * options beside `units`. Empty unless `units` was asked for.
+   */
+  unitTypePrices: PricedUnitType[];
 };
 
 const BASE_FIELDS =
@@ -93,7 +100,10 @@ const BASE_FIELDS =
   "developers:developer_id(name, name_ar), areas:area_id(name, name_ar)";
 
 const UNIT_FIELDS =
-  "units:development_units(id, unit_type, unit_type_ar, beds, built_up_ft2, price_aed, status, sort_order)";
+  "units:development_units(id, unit_type, unit_type_ar, beds, built_up_ft2, price_aed, status, sort_order), " +
+  // The calculator's other options. Aliased so it can sit beside a full
+  // `unit_types` embed: this one is a few columns, no layouts, no media.
+  "unit_prices:development_unit_types(id, label, label_ar, beds, size_from_ft2, price_from_aed, enabled, sort_order)";
 
 const UNIT_TYPE_FIELDS =
   "unit_types:development_unit_types(id, label, label_ar, beds, blurb, blurb_ar, size_from_ft2, size_to_ft2, price_from_aed, enabled, sort_order, " +
@@ -206,6 +216,7 @@ export function shapeLandingProject(
     floorplanGated: meta?.floorplan_gated === true,
     units,
     unitTypes: shapeUnitTypesForPage(row.unit_types, locale),
+    unitTypePrices: shapeUnitTypePrices(row.unit_prices, locale),
   };
 }
 
@@ -226,7 +237,11 @@ async function readProjects(
     if (slugs) query = query.in("slug", slugs);
     // Filters on the EMBEDDED rows, not the projects: a project with nothing
     // on sale still comes back, with an empty inventory.
-    if (opts.units) query = query.eq("units.status", "available");
+    if (opts.units) {
+      query = query
+        .eq("units.status", "available")
+        .eq("unit_prices.enabled", true);
+    }
     if (opts.unitTypes) query = query.eq("unit_types.enabled", true);
 
     const { data, error } = await query;

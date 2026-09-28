@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createSupabasePublicClient } from "@/lib/supabase/public";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
@@ -5,6 +6,7 @@ import { currentLocale } from "@/lib/i18n/current";
 import { localiseDeep } from "@/lib/i18n/localise";
 import type { Locale } from "@/lib/i18n/locales";
 import { mediaPublicUrl } from "@/lib/media";
+import type { PricedUnitType } from "@/lib/developments/calculator-options";
 import {
   MAX_PLANS_SHOWN,
   seedUnitTypes,
@@ -115,21 +117,60 @@ const bySortOrder = (a: { sort_order: number }, b: { sort_order: number }) =>
 export async function listUnitTypesForPage(
   developmentId: string,
 ): Promise<UnitTypeCard[]> {
-  if (!isSupabaseConfigured) return [];
-  const supabase = createSupabasePublicClient();
-  const { data, error } = await supabase
-    .from("development_unit_types")
-    .select(SELECT_FIELDS)
-    .eq("development_id", developmentId)
-    .eq("enabled", true)
-    .order("sort_order", { ascending: true });
+  const rows = await readEnabledUnitTypes(developmentId);
+  return rows ? shapeUnitTypesForPage(rows, await currentLocale()) : [];
+}
 
-  if (error || !data) {
-    if (error) console.error("[listUnitTypesForPage]", error);
-    return [];
-  }
+/**
+ * The priced unit types, for the payment-plan calculator. Read from the same
+ * `cache()`d rows as `listUnitTypesForPage`, so a page asking for both costs
+ * one query — but without that function's "has layouts" filter: a type an
+ * editor has priced is a price a visitor can plan against, whether or not its
+ * floor plans are uploaded yet.
+ */
+export async function listUnitTypePrices(
+  developmentId: string,
+): Promise<PricedUnitType[]> {
+  const rows = await readEnabledUnitTypes(developmentId);
+  return rows ? shapeUnitTypePrices(rows, await currentLocale()) : [];
+}
 
-  return shapeUnitTypesForPage(data, await currentLocale());
+const readEnabledUnitTypes = cache(
+  async (developmentId: string): Promise<unknown[] | null> => {
+    if (!isSupabaseConfigured) return null;
+    const supabase = createSupabasePublicClient();
+    const { data, error } = await supabase
+      .from("development_unit_types")
+      .select(SELECT_FIELDS)
+      .eq("development_id", developmentId)
+      .eq("enabled", true)
+      .order("sort_order", { ascending: true });
+
+    if (error || !data) {
+      if (error) console.error("[listUnitTypesForPage]", error);
+      return null;
+    }
+    return data;
+  },
+);
+
+/** Pure: raw `development_unit_types` rows → the calculator's priced types. */
+export function shapeUnitTypePrices(
+  rows: unknown,
+  locale: Locale,
+): PricedUnitType[] {
+  if (!Array.isArray(rows)) return [];
+  return localiseDeep(rows as RawType[], locale)
+    .filter((t) => t.enabled !== false && t.price_from_aed != null)
+    .sort(bySortOrder)
+    .map((t) => ({
+      id: t.id,
+      label: t.label,
+      beds: t.beds,
+      sizeFromFt2: t.size_from_ft2,
+      priceFromAed: Number(t.price_from_aed),
+    }))
+    .filter((t) => Number.isFinite(t.priceFromAed) && t.priceFromAed > 0);
 }
 
 /**

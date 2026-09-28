@@ -26,6 +26,11 @@ describe("landingProjectSelect", () => {
     expect(landingProjectSelect({ units: true })).toContain(
       "units:development_units(",
     );
+    // The calculator's priced types come with the inventory — prices only.
+    expect(landingProjectSelect({ units: true })).toContain(
+      "unit_prices:development_unit_types(",
+    );
+    expect(landingProjectSelect({ units: true })).not.toContain("floor_plans");
     expect(landingProjectSelect({ unitTypes: true })).toContain(
       "plans:floor_plans(",
     );
@@ -87,6 +92,11 @@ const ROW = {
     { id: "u3", unit_type: "Villa", beds: 6, built_up_ft2: 7000, price_aed: 1, status: "sold", sort_order: 0 },
   ],
   unit_types: [],
+  unit_prices: [
+    // Priced but no layouts yet: the calculator still offers it.
+    { id: "t4", label: "4 Bedroom", label_ar: "أربع غرف نوم", beds: 4, size_from_ft2: 4800, price_from_aed: "8200000", enabled: true, sort_order: 1 },
+    { id: "t5", label: "5 Bedroom", beds: 5, size_from_ft2: null, price_from_aed: null, enabled: true, sort_order: 0 },
+  ],
 };
 
 const shape = (locale: Locale) =>
@@ -103,6 +113,21 @@ const read = (locale: Locale) => {
 };
 
 describe("shapeLandingProject", () => {
+  it("prices every priced unit type, layouts or not, and folds its label", async () => {
+    const en = shape("en" as Locale);
+    // A type with no layouts still has a price to plan against.
+    expect(en.unitTypePrices).toEqual([
+      { id: "t4", label: "4 Bedroom", beds: 4, sizeFromFt2: 4800, priceFromAed: 8_200_000 },
+    ]);
+    await expectFolds({
+      read,
+      pick: (p) => p.unitTypePrices[0]?.label,
+      english: "4 Bedroom",
+      arabic: "أربع غرف نوم",
+      what: "development_unit_types.label (calculator)",
+    });
+  });
+
   it("folds the project's name, and the joined developer and area", async () => {
     await expectFolds({
       read,

@@ -32,7 +32,14 @@
     "pricingFor": "التسعير لـ",
     "customPdf": "خطة مخصّصة بصيغة PDF",
     "preparing": "جارٍ التحضير…",
-    "eyebrow": "خطة الدفع · {plan}"
+    "eyebrow": "خطة الدفع · {plan}",
+    "startingPrice": "سعر البداية · {price}",
+    "fromPrice": "ابتداءً من {price}",
+    "beds": "{beds} غرف نوم",
+    "groupUnitTypes": "أنواع الوحدات",
+    "groupUnits": "الوحدات المتاحة",
+    "pickPrice": "اختر سعرًا لحساب الخطة",
+    "noPricing": "لم تُنشر الأسعار بعد"
   },
   "units": {
     "type": "النوع",

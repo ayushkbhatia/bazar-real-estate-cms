@@ -27,7 +27,8 @@ import {
 } from "@/lib/queries/developments";
 import { quarterLabel } from "@/lib/schemas/development";
 import { handoverQuarter, quarterArgs } from "@/lib/developments/handover";
-import { PaymentPlanSection, type CalculatorUnit } from "./_payment-plan";
+import { PaymentPlanSection } from "./_payment-plan";
+import { calculatorOptions } from "@/lib/developments/calculator-options";
 import { UnitsTable } from "./_units-table";
 import { LeadAdvisorBanner } from "./_components/lead-advisor-banner";
 import { BrochureGate } from "./_components/brochure-gate";
@@ -41,6 +42,7 @@ import { FloorplanGate } from "./_components/floorplan-gate";
 import { RendersGallery, type RenderTile } from "./_components/renders-gallery";
 import { UnitFloorPlans } from "./_components/unit-floor-plans";
 import {
+  listUnitTypePrices,
   listUnitTypesForPage,
   placeholderUnitTypes,
 } from "@/lib/queries/development-unit-plans";
@@ -210,6 +212,7 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     units,
     floorPlans,
     unitTypes,
+    unitTypePrices,
     media,
     meta,
     siblingsByDeveloper,
@@ -222,6 +225,8 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
     listDevelopmentUnits(development.id),
     listFloorPlans(development.id),
     listUnitTypesForPage(development.id),
+    // Same cached read as the line above — no second query.
+    listUnitTypePrices(development.id),
     listDevelopmentMedia(development.id),
     getDevelopmentMeta(development.id),
     development.developer_id
@@ -372,34 +377,21 @@ export default async function DevelopmentDetailPage({ params }: PageProps) {
       : placeholderUnitTypes(development.bedrooms_text);
 
   const availableUnits = units.filter((u) => u.status === "available");
-  // Most projects carry a payment plan but no unit inventory, and the
-  // calculator priced entirely off units showed "—" in every figure for them.
-  // The starting price is the number those projects publish, so it stands in
-  // as a single pricing option — labelled as the floor, not as a unit.
-  // Raw fields, not a finished label: the dropdown text carries an area unit
+  // The calculator opens on the starting price — the figure the hero quotes —
+  // and offers every priced unit type and every unit on sale beside it.
+  // Raw fields, not finished labels: the dropdown text carries an area unit
   // and a price, and only the client knows which the visitor wants.
-  const calculatorUnits: CalculatorUnit[] =
-    availableUnits.length > 0
-      ? availableUnits.map((u) => ({
-          id: u.id,
-          price_aed: u.price_aed ?? development.starting_price ?? 0,
-          unitType: u.unit_type,
-          beds: u.beds,
-          builtUpFt2: u.built_up_ft2,
-          isStartingPrice: false,
-        }))
-      : development.starting_price
-        ? [
-            {
-              id: "starting-price",
-              price_aed: development.starting_price,
-              unitType: null,
-              beds: null,
-              builtUpFt2: null,
-              isStartingPrice: true,
-            },
-          ]
-        : [];
+  const calculatorUnits = calculatorOptions({
+    startingPrice: development.starting_price,
+    unitTypes: unitTypePrices,
+    units: availableUnits.map((u) => ({
+      id: u.id,
+      unitType: u.unit_type,
+      beds: u.beds,
+      builtUpFt2: u.built_up_ft2,
+      priceAed: u.price_aed,
+    })),
+  });
 
   const overviewBody = sv("overview", "intro") ?? development.vision;
 
