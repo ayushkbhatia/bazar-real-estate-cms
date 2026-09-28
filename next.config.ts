@@ -38,6 +38,10 @@ const nextConfig: NextConfig = {
    * the routes that matter finish in well under a second each.
    */
   staticPageGenerationTimeout: 180,
+  // pdf.js checks uploaded mortgage documents on the server
+  // (lib/mortgage-requests/server/verify.ts) and loads its worker module at
+  // runtime; left unbundled, Node resolves it the way the tests do.
+  serverExternalPackages: ["pdfjs-dist"],
   images: {
     remotePatterns: supabaseHost
       ? [

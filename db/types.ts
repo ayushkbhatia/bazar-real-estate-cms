@@ -4860,6 +4860,15 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
       mortgage_allocate_reference: { Args: { p_at?: string }; Returns: string }
+      mortgage_attach_draft: {
+        Args: {
+          p_at?: string
+          p_draft_id: string
+          p_request_id: string
+          p_require_complete?: boolean
+        }
+        Returns: string[]
+      }
       mortgage_caller: { Args: never; Returns: string }
       mortgage_create_request: {
         Args: {

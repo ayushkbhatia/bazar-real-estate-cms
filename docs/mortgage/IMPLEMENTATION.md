@@ -260,9 +260,8 @@ app/api/admin/mortgages/files/[fileId]/route.ts                        logged fi
 
 ### 1.7 File storage
 
-One adapter, `lib/mortgage-requests/server/storage.ts`:
-`presignUpload(key, { contentType, size })`, `head(key)`, `read(key)` and
-`remove(keys)`.
+One adapter, `lib/mortgage-requests/server/storage.ts` (built in Phase 2):
+`presignUpload(key, contentType)`, `read(key)` and `remove(keys)`.
 
 **Default (D4 = Tokyo acceptable): Supabase Storage**
 
@@ -279,14 +278,20 @@ One adapter, `lib/mortgage-requests/server/storage.ts`:
   - by the bucket cap;
   - on complete, against the stored object's real size.
 
-  An object that breaks its kind's rule is deleted and the file row marked
-  `removed` with `too_large` or `total_exceeded`.
+  An object that breaks a rule is deleted and its row marked `removed`. The
+  API answers with the code (`too_large`, `total_exceeded`, `bad_type`,
+  `encrypted_pdf`, `unreadable`); rows keep `scan_status` for `infected`
+  and `failed`. The bucket cap refusing an oversize upload is covered by a test.
+- **CORS can't be limited here.** Supabase Storage accepts the signed PUT from
+  any origin; the single-use signed token, valid for 2 hours, is the control.
+  S3 (below) could add a CORS rule.
 - Keys are flat: `f/{fileId}`. No draft, request or reference goes in the path,
   so no PII is in keys, and nothing moves on submit. Drafts are purged by
   database state (expired and unclaimed), not by prefix.
 - Reads never hand a signed URL to the browser. The file route streams through
   the service role after the role check and the event insert, with
-  `Cache-Control: no-store`, `X-Content-Type-Options: nosniff` and
+  `Cache-Control: no-store, private`, `X-Content-Type-Options: nosniff`,
+  `Content-Security-Policy: default-src 'none'; sandbox` and
   `Content-Disposition` `inline` (view) or `attachment` (download).
 
 **If D4 requires UAE residency: AWS S3 in `me-central-1`**
@@ -297,8 +302,8 @@ One adapter, `lib/mortgage-requests/server/storage.ts`:
   Tokyo unless D4 says otherwise.
 
 The private `documents` bucket left over from the Deal Room (`0012`, policies
-dropped in `0069`) is not reused. Check that it's empty and drop it in Phase 2
-(needs G2 for the live check).
+dropped in `0069`) is not reused. Dropping it waits for G2, so that someone
+checks it's empty in production first.
 
 ### 1.8 Background jobs
 
@@ -311,10 +316,10 @@ in project memory.
 | SPEC job | Here | Schedule |
 |---|---|---|
 | `request.submitted` | Owner assignment inside the submit function; emails and team alerts go to the outbox | — |
-| `file.scan` | **Inline on `…/complete`** when the scanner answers in time. `/api/cron/mortgage-worker` retries `scan_status = pending` | every minute |
+| `file.scan` | **Inline on `…/complete`** when the scanner answers in time. `/api/cron/mortgage-worker` retries `scan_status = pending` (built in Phase 2) | every 5 minutes; every minute once the outbox joins it |
 | `reupload.requested`, `reupload.fulfilled`, `bank.package`, `decision.sent`, `consultation.booked` | Outbox rows written in the same database function as the change; first send attempted inline, retries in `mortgage-worker` | every minute |
 | `sla.tick` | `/api/cron/mortgage-sla-tick`, idempotent through `sla_*_notified_at` | every 5 minutes |
-| Drafts lifecycle rule | `/api/cron/mortgage-housekeeping`: expired unclaimed drafts (objects + rows), expired links | hourly |
+| Drafts lifecycle rule | `mortgage-worker` too: expired unclaimed drafts, their objects and rows (built in Phase 2). Expired links join it in Phase 5 | with the worker |
 | `retention.purge` | `/api/cron/mortgage-retention` | daily |
 
 Each new cron needs:
@@ -626,7 +631,7 @@ Paths abbreviated: `M/` = `app/[locale]/(mortgage)/`, `A/` =
 | Phase | Creates | Changes |
 |---|---|---|
 | **1** Data model & domain (built) | `0138`, `0139`; `L/{documents,checklists,state,sla,reference,payments,dubai-time}.ts` + tests; `L/database.db.test.ts`, `L/testing/local-stack.ts`; `scripts/db-local/{reset.sh,seed-mortgage.ts,supabase/config.toml}`; `vitest.db.config.ts` | `db/types.ts` (mortgage parts spliced from the local schema); `lib/i18n/domains.ts`; `vitest.config.ts`; `package.json` scripts |
-| **2** Storage | Bucket migration (or S3 setup); `L/server/{storage,verify,scan}.ts`; `app/api/mortgage/drafts/**`; `app/api/admin/mortgages/files/[fileId]/route.ts`; `app/api/cron/mortgage-{worker,housekeeping}`; `lib/turnstile.ts`; integration tests | `vercel.json`; `lib/queries/health.ts`; `lib/env.ts` (G3); `.env.example`; `package.json` (`pdfjs-dist`) |
+| **2** Storage (built) | `0140_mortgage_storage.sql` (bucket + `mortgage_attach_draft`); `L/server/{errors,tokens,storage,verify,scan,drafts,files,deps,http}.ts` + tests; `app/api/mortgage/drafts/**`; `app/api/admin/mortgages/files/[fileId]/route.ts`; `app/api/cron/mortgage-worker`; `lib/turnstile.ts`; `L/storage.db.test.ts`, `L/testing/fixtures.ts` | `vercel.json`; `lib/queries/health.ts`; `lib/env.ts` (G3); `.env.example`; `next.config.ts` (`serverExternalPackages`); `package.json` (`pdfjs-dist` ~5.6, the newest line that runs on CI's Node 20) |
 | **3** Website W1–W7 | `M/**` (layouts, pages, `_components`); `L/client/*`; `app/api/mortgage/requests/route.ts`; `messages/{en,ar}/mortgage.json`; system-email migration + templates; `e2e/mortgage-*.spec.ts` (staging-gated) | `lib/i18n/namespaces.ts`; the four guard globs; `proxy.ts`; `lib/content-assets/*`; `lib/email-templates.ts`; entry points (home band, property page, calculator defaults) |
 | **4** CMS C1, C2, C6 | `lib/auth.ts` (`requireMortgageRole`); `L/slots.ts`; `A/{layout,page,[reference]/page,settings/page}.tsx`, `A/_components`, `A/_actions.ts`; `L/server/{queries,actions,notify}.ts`; `L/cms-strings.ts`; `app/api/cron/mortgage-sla-tick`; `.ics` builder; `lib/whatsapp-cloud.ts` + webhook (if D1 has landed) | `components/brand/cms-shell.tsx` (G1); `(admin)/layout.tsx` (nav count); `vercel.json`; `lib/queries/health.ts` |
 | **5** Review loop C3, C4, W8 | `A/[reference]/documents/[kind]/page.tsx` + viewer; `M/mortgages/r/[token]/page.tsx` + invite landing; `app/api/mortgage/links/**`; `L/server/{links,otp}.ts` | `L/server/notify.ts` |

@@ -23,7 +23,7 @@
 
 import { randomUUID } from "node:crypto";
 import { beforeAll, describe, expect, it } from "vitest";
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { DOCUMENT_SETS } from "./documents";
 import { dubaiInstant } from "./dubai-time";
 import { parseReference } from "./reference";
@@ -47,7 +47,7 @@ import {
   type TransitionContext,
   type TransitionEvent,
 } from "./state";
-import { client, localStack, psql, type LocalStack } from "./testing/local-stack";
+import { client, createTestStaff, localStack, psql, type LocalStack, type TestStaff } from "./testing/local-stack";
 
 type Row = {
   id: string;
@@ -483,36 +483,11 @@ describe.skipIf(!stack)("mortgage database (local Supabase)", () => {
   // ── Who sees and does what (SPEC §7) ────────────────────────
 
   describe("who sees and does what", () => {
-    type Person = { id: string; client: SupabaseClient };
+    type Person = TestStaff;
     const people: Record<"head" | "adviserA" | "adviserB" | "admin" | "agent", Person> = {} as never;
     let anon: SupabaseClient;
-
-    async function person(role: "support" | "admin" | "agent", mortgageRole: "head" | "adviser" | null): Promise<Person> {
-      const email = `staff-${randomUUID().slice(0, 8)}@example.com`;
-      const password = randomUUID();
-      const { data: created, error } = await service.auth.admin.createUser({ email, password, email_confirm: true });
-      if (error) throw new Error(error.message);
-      const id = created.user!.id;
-      const { error: staffError } = await service.from("staff").insert({
-        user_id: id,
-        display_name: `Test ${role} ${mortgageRole ?? ""}`.trim(),
-        slug: `test-${id.slice(0, 8)}`,
-        role,
-        status: "active",
-        mortgage_role: mortgageRole,
-      });
-      if (staffError) throw new Error(staffError.message);
-      const signIn = client(local, local.anonKey);
-      const { data: session, error: signInError } = await signIn.auth.signInWithPassword({ email, password });
-      if (signInError) throw new Error(signInError.message);
-      return {
-        id,
-        client: createClient(local.apiUrl, local.anonKey, {
-          auth: { persistSession: false, autoRefreshToken: false },
-          global: { headers: { Authorization: `Bearer ${session.session!.access_token}` } },
-        }),
-      };
-    }
+    const person = (role: "support" | "admin" | "agent", mortgageRole: "head" | "adviser" | null) =>
+      createTestStaff(local, service, role, mortgageRole);
 
     beforeAll(async () => {
       people.head = await person("support", "head");

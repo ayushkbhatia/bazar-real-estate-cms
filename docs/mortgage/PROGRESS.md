@@ -126,3 +126,102 @@ Decisions taken first:
 - D26: the `mortgage_inquiries` row count (needs G2).
 - The secure-link token hashing in the seed (sha256) is a placeholder until Phase 5 settles the scheme.
 - Phase 2 next: private storage, uploads, completion checks and the logged file route. It needs D4, D6 and D14.
+
+---
+
+## Phase 2 — Secure document storage · 28 Sep 2026
+
+Decisions first:
+
+- D11a: keep 24 working hours, and the copy says so. Design rewords W1, W5–W7 before Phase 3 ships them.
+- G3: `lib/env.ts` may be edited for this epic.
+
+Outside choices still open, built around:
+
+- D4 (region): Supabase Storage now, behind an adapter that S3 can replace.
+- D6 (scanner): ClamAV `clamd` adapter, plus a dev stand-in.
+- D14 (accounts): Turnstile and Upstash are wired but unset.
+
+**Built**
+- **`0140_mortgage_storage.sql`:**
+  - private bucket `mortgage-files` (40 MiB cap, PDF/JPEG/PNG only) with **no storage policies**, so only the service role can touch it;
+  - `mortgage_attach_draft()`, which moves a draft's files onto a request's documents by kind. It refuses while any file is unscanned or unclean (`files_not_ready`) or a document has no file (`documents_incomplete`), and marks files of kinds the request doesn't need as removed and returns them.
+- **Public API**, SPEC §4.2 plus one addition:
+
+  | Endpoint | Does |
+  |---|---|
+  | `POST /api/mortgage/drafts` | Turnstile, 10 per hour per IP |
+  | `POST …/drafts/:id/files` | Presign: the rules on the declared size and type, counting files still uploading |
+  | `POST …/files/:fileId/complete` | Real type from magic bytes; real size and totals; password-protected PDF (pdf.js); page count; SHA-256; malware scan |
+  | `GET …/files/:fileId` | Status, for polling while a scan finishes (the addition) |
+  | `DELETE …/files/:fileId` | Remove a file |
+
+  - Draft tokens are 256-bit, stored hashed, sent as Bearer.
+  - A wrong token and a missing draft get the same 404.
+  - All of it sits behind the `mortgage_requests` flag: off gives 404, staff means signed-in staff only.
+- **`GET /api/admin/mortgages/files/:fileId[?download=1]`:**
+  - mortgage team only: anyone else, admins included, gets 403 (D10);
+  - writes `document.viewed` / `document.downloaded` **through the caller's own session** before any byte is read, so the database re-checks their role;
+  - serves only files that are on a request and clean;
+  - headers: no-store, nosniff, CSP sandbox;
+  - the owner's first open moves New → In review.
+- **`/api/cron/mortgage-worker`** every 5 minutes: retries scans, and purges expired unclaimed drafts with their objects (Supabase Storage has no lifecycle rules).
+- **Scanners:**
+  - `clamdScanner` (ClamAV INSTREAM over TCP);
+  - `devScanner`: flags only EICAR, local/preview/staging only, refused on the production deployment;
+  - no scanner in production means files stay pending and can't be opened, so launch can't happen without D6.
+- **Config:**
+  - `lib/env.ts`: `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY`, `MORTGAGE_SCANNER`, `MORTGAGE_CLAMD_HOST`/`PORT`, `VERCEL_ENV`, documented in `.env.example`;
+  - `pdfjs-dist` ~5.6: 5.7 and 6.x need Node 22.13, and CI runs Node 20;
+  - `serverExternalPackages: ["pdfjs-dist"]`.
+
+**Verified**
+- **Unit:** 28 new tests. They cover:
+  - sniffing;
+  - pdf.js on hand-built PDFs (plain, user-password, owner-only), which pypdf independently confirms are valid;
+  - the clamd protocol against a fake daemon (clean, found, error, hung);
+  - tokens, Turnstile, and which scanner runs.
+- **Database:** 22 new tests in `storage.db.test.ts`, against the local stack's real storage. They cover:
+  - uploads through signed URLs;
+  - every refusal (oversize, wrong type, disguised type, too many, over the total, password-protected, infected);
+  - the bucket's 40 MB cap against a small declared size;
+  - scan-later via the worker;
+  - cancel freeing the total;
+  - token isolation;
+  - expiry and purge;
+  - attach;
+  - staff access: 403 for an admin and an agent, 401 signed out, no bytes if the log write fails, and the log written before every read.
+- **Mutation-tested:** each of these was broken on purpose and a test went red:
+  - reading before logging;
+  - letting staff without a mortgage role through;
+  - skipping the encrypted-PDF and size re-checks;
+  - attaching unscanned files;
+  - opening the bucket to signed-in users.
+
+  The first run exposed a weak ordering test (it only checked the last read), since fixed.
+- **Runtime:** the real route handlers on `next dev` against the local stack.
+  - Curl ran the whole draft flow, plus `encrypted_pdf`, `too_large`, 404 and the flag being off.
+  - In the browser, Yasmin (Head of mortgages) signed in and opened a document: 200, and her open was logged as hers through the cookie session, which moved the request to In review.
+  - Mariam (admin, no mortgage role) got 403, and nothing was logged.
+- **Gate:**
+  - `npm run test:run`: 333 files, 4,396 tests;
+  - typecheck;
+  - lint: 0 errors;
+  - `db:check`;
+  - `npm run build`: the six new routes compile as dynamic;
+  - `check:routes`: 78 baseline routes unchanged.
+
+**Deviations from SPEC and PLAN**
+- The file stream is at `/api/admin/…`.
+- There is no bucket lifecycle rule (the worker purges), and no bucket CORS rule (Supabase Storage allows none; the signed token is the control).
+- Scans run inline, and the worker retries.
+- One worker cron runs every 5 minutes rather than a separate hourly housekeeping job.
+- The integration tests run against the local Supabase stack's own storage rather than a separate S3 emulator.
+
+**Open**
+- `0138`–`0140` are **not applied to production**. Apply them at the batch merge.
+- D4, D6, D14 still need answers. Staging needs `MORTGAGE_SCANNER=dev` and Cloudflare's Turnstile test keys until then.
+- The leftover `documents` bucket should be dropped once G2 lets someone check it's empty in production.
+- **Found on the way:**
+  - Two production deploys of `main` (13:55, ~2h before this entry) failed on a Supabase 522 during prerender. The site still serves the previous deployment, so `main`'s latest commits aren't live. A redeploy is the fix. Not done from here.
+  - The valuation OTP's weaknesses (`lib/otp.ts`) are still to fix when Phase 5 builds link codes.

@@ -56,3 +56,44 @@ export function psql(sql: string): string {
     { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
   );
 }
+
+export type TestStaff = { id: string; client: SupabaseClient };
+
+/**
+ * A signed-in staff member on the local stack: an auth user, a staff row with
+ * this role and mortgage role, and a client carrying their session — so RLS and
+ * the functions' role checks run exactly as they would for a real login.
+ */
+export async function createTestStaff(
+  stack: LocalStack,
+  service: SupabaseClient,
+  role: "support" | "admin" | "agent",
+  mortgageRole: "head" | "adviser" | null,
+): Promise<TestStaff> {
+  const email = `staff-${crypto.randomUUID().slice(0, 8)}@example.com`;
+  const password = crypto.randomUUID();
+  const { data: created, error } = await service.auth.admin.createUser({ email, password, email_confirm: true });
+  if (error) throw new Error(error.message);
+  const id = created.user!.id;
+  const { error: staffError } = await service.from("staff").insert({
+    user_id: id,
+    display_name: `Test ${role} ${mortgageRole ?? ""}`.trim(),
+    slug: `test-${id.slice(0, 8)}`,
+    role,
+    status: "active",
+    mortgage_role: mortgageRole,
+  });
+  if (staffError) throw new Error(staffError.message);
+  const { data: session, error: signInError } = await client(stack, stack.anonKey).auth.signInWithPassword({
+    email,
+    password,
+  });
+  if (signInError) throw new Error(signInError.message);
+  return {
+    id,
+    client: createClient(stack.apiUrl, stack.anonKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      global: { headers: { Authorization: `Bearer ${session.session!.access_token}` } },
+    }),
+  };
+}
