@@ -40,6 +40,31 @@ export const SYSTEM_EMAIL_DEFAULTS_AR: Record<SystemAssetKey, SystemEmailDefault
       "<p>— فريق التمويل العقاري في بازار</p>",
     ].join(""),
   },
+  // Figures in Western digits, as the dates these sentences carry are
+  // printed (lib/i18n/dates.ts pins `nu-latn`) — "٢٤" beside "14:14" in one
+  // sentence would read as two systems.
+  mortgage_consultancy_received: {
+    subject: "وصلنا طلبك — {{mortgage_reference}}",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>شكراً لطلبك استشارة في التمويل العقاري من بازار. استلمنا طلبك في {{mortgage_submitted}}.</p>",
+      "<p>رقمك المرجعي هو <strong>{{mortgage_reference}}</strong>.</p>",
+      "<p>سيتواصل معك أحد أعضاء فريق التمويل العقاري لدينا قريباً.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
+  mortgage_preapproval_received: {
+    subject: "طلبك للموافقة المبدئية السريعة — {{mortgage_reference}}",
+    body: [
+      "<p>مرحباً {{lead_first_name}}،</p>",
+      "<p>شكراً لتقديم طلب الموافقة المبدئية السريعة مع بازار. وصلت بياناتك ومستنداتك إلى فريق التمويل العقاري لدينا.</p>",
+      "<p>رقمك المرجعي هو <strong>{{mortgage_reference}}</strong>.</p>",
+      "<p>سنتواصل معك بحلول <strong>{{mortgage_due}}</strong> — أي بعد 24 ساعة عمل من تقديم طلبك.</p>",
+      "<p>{{mortgage_documents}}</p>",
+      "<p>إن احتجنا إلى أي شيء آخر، سنراسلك عبر واتساب برابط آمن. لن تحتاج إلى البدء من جديد.</p>",
+      "<p>— فريق التمويل العقاري في بازار</p>",
+    ].join(""),
+  },
   valuation_request_ack: {
     subject: "تقييم عقارك قيد المراجعة",
     body: [

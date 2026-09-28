@@ -73,6 +73,9 @@ export type TokenName =
   | "form_surface"
   | "source_path"
   | "responses_url"
+  | "mortgage_reference"
+  | "mortgage_submitted"
+  | "mortgage_due"
   // Block tokens: a whole pre-built panel, not a word. See `kind`.
   | "valuation_range_panel"
   | "valuation_report_panel"
@@ -80,7 +83,8 @@ export type TokenName =
   | "health_errors"
   | "health_jobs"
   | "health_url"
-  | "form_answers";
+  | "form_answers"
+  | "mortgage_documents";
 
 /**
  * `shared` tokens describe a lead and are offered in every asset. `system`
@@ -495,6 +499,42 @@ export const TOKENS: readonly TokenDef[] = [
     scope: "system",
     kind: "url",
   },
+  // The mortgage flow's confirmations. Times are Asia/Dubai, printed by
+  // lib/mortgage-requests/format.ts exactly as the confirmation page prints
+  // them, so the email and the screen the applicant just left agree. The
+  // fallbacks are a net for a value the send path always has.
+  {
+    name: "mortgage_reference",
+    label: "Mortgage request reference",
+    sample: "BZM-26-0412",
+    fallbackAr: "الرقم الظاهر في صفحة التأكيد",
+    fallback: "the one on your confirmation page",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    name: "mortgage_submitted",
+    label: "When the applicant submitted",
+    sample: "Tue 22 Sep, 09:47",
+    sampleAr: "الثلاثاء، 22 سبتمبر، 09:47",
+    fallbackAr: "يوم إرساله",
+    fallback: "the day you sent it",
+    scope: "system",
+    kind: "text",
+  },
+  {
+    // The promise runs on WORKING hours (docs/mortgage/DECISIONS.md D11), so
+    // this is rarely 24 clock hours after submission: a Tuesday 10:14
+    // application is due Thursday 14:14. Copy around it says "working hours".
+    name: "mortgage_due",
+    label: "When we'll contact them by (24 working hours)",
+    sample: "Thu 24 Sep, 14:14",
+    sampleAr: "الخميس، 24 سبتمبر، 14:14",
+    fallbackAr: "الموعد الظاهر في صفحة التأكيد",
+    fallback: "the time on your confirmation page",
+    scope: "system",
+    kind: "text",
+  },
   {
     name: "valuation_range_panel",
     label: "Instant range panel",
@@ -555,6 +595,15 @@ export const TOKENS: readonly TokenDef[] = [
     label: "Table of answers",
     sample: "Name: Amira Haddad\nEmail: amira@example.com",
     sampleAr: "الاسم: أميرة حداد\nالبريد: amira@example.com",
+    fallback: "",
+    scope: "system",
+    kind: "block",
+  },
+  {
+    name: "mortgage_documents",
+    label: "Documents received panel",
+    sample: "· Emirates ID — 2 files\n· Passport copy — 1 file",
+    sampleAr: "· الهوية الإماراتية — ملفان\n· نسخة جواز السفر — ملف واحد",
     fallback: "",
     scope: "system",
     kind: "block",

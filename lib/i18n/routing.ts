@@ -1,4 +1,5 @@
 import { DEFAULT_LOCALE, LOCALES, type Locale } from "./locales";
+import { isEnglishOnlyPath } from "./english-only";
 import { isNonLocalisedPath } from "./non-localised";
 
 /**
@@ -85,9 +86,10 @@ export function internalPath(pathname: string): string {
  *     refuses to rewrite (`lib/i18n/non-localised.ts`). A prefixed `/ar/api/…`
  *     is a 404, and on a form POST that reads as the feature being broken
  *     rather than the link being wrong.
- *   - **The CMS.** English-only, permanently (ADR-0007), and the proxy
- *     redirects `/ar/admin` back to `/admin`. Prefixing it would mean every
- *     admin link taken from an Arabic public page costs a redirect.
+ *   - **An English-only path.** The CMS, permanently (ADR-0007), and the
+ *     mortgage flow for now (lib/i18n/english-only.ts); the proxy redirects
+ *     `/ar/admin` back to `/admin`. Prefixing one would mean every such link
+ *     taken from an Arabic public page costs a redirect.
  *   - **A file.** A last segment containing a dot is a static asset served
  *     from `public/`, and the proxy matcher deliberately does not see it, so
  *     `/ar/brochure.pdf` is a 404 rather than a redirect.
@@ -107,7 +109,7 @@ export function localiseHref(href: string, locale: Locale): string {
 
   if (localeFromPathname(pathname)) return href;
   if (isNonLocalisedPath(pathname)) return href;
-  if (pathname === "/admin" || pathname.startsWith("/admin/")) return href;
+  if (isEnglishOnlyPath(pathname)) return href;
   if (hasFileExtension(pathname)) return href;
 
   return `${withLocalePrefix(pathname, locale)}${tail}`;

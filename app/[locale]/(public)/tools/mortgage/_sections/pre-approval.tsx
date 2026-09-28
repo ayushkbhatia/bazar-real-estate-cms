@@ -29,6 +29,12 @@ export type PreApprovalCopy = {
   whatsappCtaLabel: string | null;
   fallbackCtaLabel: string | null;
   jumpCtaLabel: string | null;
+  /**
+   * The mortgage application flow, once it's open (docs/mortgage, SPEC §4.1
+   * "Mortgage calculator · Start pre-approval"). When set, the band's main
+   * button goes there, under the "Start pre-approval" label.
+   */
+  flowHref?: string | null;
 };
 
 type Props = {
@@ -172,7 +178,14 @@ export function PreApprovalSection({
               </Button>
             ) : null}
 
-            {formInHero && showRecap ? (
+            {copy.flowHref ? (
+              <Button asChild data-testid="pre-approval-cta">
+                <Link href={copy.flowHref}>
+                  {copy.fallbackCtaLabel}
+                  <ArrowRight size={14} strokeWidth={1.6} />
+                </Link>
+              </Button>
+            ) : formInHero && showRecap ? (
               // Same-page anchor, so a plain <a>: next/link would treat "#…"
               // as a route push.
               <Button asChild data-testid="pre-approval-cta">

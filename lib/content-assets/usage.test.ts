@@ -102,6 +102,7 @@ describe("emailSurfaces", () => {
           const segments = route.replace(/^\//, "");
           const candidates = [
             `${app}/[locale]/(public)/${segments}/page.tsx`,
+            `${app}/[locale]/(mortgage)/${segments}/page.tsx`,
             `${app}/[locale]/(admin)/${segments}/page.tsx`,
             `${app}/${segments}/page.tsx`,
           ];

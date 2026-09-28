@@ -13,6 +13,9 @@ import {
   formatAedShort,
   formSubmissionTemplate,
   listingReferencesBlock,
+  mortgageConsultancyReceivedTemplate,
+  mortgageDocumentsBlock,
+  mortgagePreapprovalReceivedTemplate,
   permitExpiryWarningTemplate,
   staffInvitationTemplate,
   staffPasswordResetTemplate,
@@ -33,6 +36,8 @@ import {
 import type { EmailBrand } from "./email-brand";
 import type { EmailContext } from "./email-html";
 import { getFormDef } from "@/lib/forms/registry";
+import type { DocKind } from "@/lib/mortgage-requests/documents";
+import { formatDayTime } from "@/lib/mortgage-requests/format";
 import { FORM_REPLY_SAMPLE, FORM_REPLY_SAMPLE_AR } from "./form-replies";
 import {
   readEmailBrand,
@@ -148,7 +153,43 @@ type DigestOpts = Parameters<typeof bulkReassignDigestTemplate>[0];
 type HealthDigestOpts = Parameters<typeof healthDigestTemplate>[0];
 type FormOpts = Parameters<typeof formSubmissionTemplate>[0];
 
+/** One document a Fast Pre-Approval applicant sent, and how many files. */
+export type MortgageDocumentLine = { kind: DocKind; files: number };
+
+/** What the mortgage flow's submit hands both confirmations. */
+export type MortgageReceivedOpts = {
+  /** The applicant's full name. Only the first name reaches the body. */
+  name: string;
+  /** "BZM-26-0415". */
+  reference: string;
+  /** ISO instant. */
+  submittedAt: string;
+};
+
+export type MortgagePreapprovalReceivedOpts = MortgageReceivedOpts & {
+  /** ISO instant: when the team has promised to contact them by (sla.ts). */
+  dueAt: string;
+  /** In the order given, which is the order the upload step asked for them. */
+  documents: MortgageDocumentLine[];
+};
+
 const site = () => emailSiteUrl();
+
+/**
+ * The values both mortgage confirmations share. Times go through the flow's
+ * own formatter — "Thu 24 Sep, 14:14", Asia/Dubai — so the email says what
+ * the confirmation page said. The recipient's language picks the Arabic
+ * form, the same way it picks the panels'.
+ */
+function mortgageValues(o: MortgageReceivedOpts, locale: EmailLocale) {
+  return {
+    lead_first_name: firstName(o.name),
+    lead_name: o.name,
+    mortgage_reference: o.reference,
+    mortgage_submitted: formatDayTime(o.submittedAt, locale),
+    site_url: site(),
+  };
+}
 
 const SAMPLE_ENQUIRY: EnquiryOpts = {
   name: "Amira Haddad",
@@ -173,6 +214,38 @@ const BINDINGS = {
         "Mortgage pre-approval request.\nProperty price: AED 2,400,000\nDeposit: AED 480,000 (20%)\nTerm: 25 years at 4.49%\nEstimated monthly: AED 10,670",
       propertyReference: null,
       propertyTitle: null,
+    },
+  }),
+  mortgage_consultancy_received: bind<MortgageReceivedOpts>({
+    context: (o, locale = "en") => ({ values: mortgageValues(o, locale) }),
+    builtin: (o, brand) => mortgageConsultancyReceivedTemplate(o, brand),
+    sample: {
+      name: "Ahmed Al Suwaidi",
+      reference: "BZM-26-0415",
+      submittedAt: "2026-09-22T05:47:00Z",
+    },
+  }),
+  mortgage_preapproval_received: bind<MortgagePreapprovalReceivedOpts>({
+    context: (o, locale = "en") => ({
+      values: {
+        ...mortgageValues(o, locale),
+        mortgage_due: formatDayTime(o.dueAt, locale),
+      },
+      blocks: { mortgage_documents: mortgageDocumentsBlock(o.documents, locale) },
+    }),
+    builtin: (o, brand) => mortgagePreapprovalReceivedTemplate(o, brand),
+    sample: {
+      name: "Priya Raman",
+      reference: "BZM-26-0412",
+      // A Tuesday 10:14 application; 24 working hours later is Thursday 14:14.
+      submittedAt: "2026-09-22T06:14:00Z",
+      dueAt: "2026-09-24T10:14:00Z",
+      documents: [
+        { kind: "emirates_id", files: 2 },
+        { kind: "passport", files: 1 },
+        { kind: "salary_certificate", files: 1 },
+        { kind: "bank_statements_3m", files: 3 },
+      ],
     },
   }),
   valuation_request_ack: bind<ValuationAckOpts>({
@@ -529,6 +602,29 @@ export async function enquiryAcknowledgementEmail(
   return binding.builtin(rest, brand);
 }
 
+/**
+ * The applicant's confirmation of a Mortgage Consultancy request. `locale` is
+ * the language they applied in; the flow is English-only until its Arabic is
+ * approved (docs/mortgage/DECISIONS.md D12), so today that is "en".
+ */
+export function mortgageConsultancyReceivedEmail(
+  opts: MortgageReceivedOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_consultancy_received", opts, locale);
+}
+
+/**
+ * The applicant's confirmation of a Fast Pre-Approval application: their
+ * reference, the time the team will contact them by and what they sent.
+ */
+export function mortgagePreapprovalReceivedEmail(
+  opts: MortgagePreapprovalReceivedOpts,
+  locale: EmailLocale = "en",
+): Promise<RenderedEmail> {
+  return send("mortgage_preapproval_received", opts, locale);
+}
+
 export function valuationAcknowledgementEmail(
   opts: ValuationAckOpts,
   locale: EmailLocale = "en",
@@ -690,7 +786,7 @@ export async function previewSystemEmail(
 
 /**
  * Every system email as it sends today, from rows already read. The gallery
- * shows all seventeen at once; resolving each through the database would be
+ * shows all nineteen at once; resolving each through the database would be
  * thirty-odd queries for one page, so it reads the rows and the design once
  * and renders here.
  */

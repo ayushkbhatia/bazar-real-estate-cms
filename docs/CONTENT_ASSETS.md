@@ -6,7 +6,7 @@ Five tabs, each with an **EN | العربية** toggle where wording is edited:
 
 | Tab | Route | What it is |
 |---|---|---|
-| **Site emails** (default) | `/admin/content-assets` | Every email the site sends on its own — 18 of them — each drawn as it actually arrives, rewritable in a rich-text editor |
+| **Site emails** (default) | `/admin/content-assets` | Every email the site sends on its own — 20 of them — each drawn as it actually arrives, rewritable in a rich-text editor |
 | **Form replies** | `/admin/content-assets/replies` | Every public form, the email its visitor receives, and which reply answers which form |
 | **Outreach** | `?view=outreach` | Email and WhatsApp copy an advisor sends by hand from the enquiry composer |
 | **Email design** | `/admin/content-assets/design` | The logo, colours and footer every email is wrapped in |
@@ -19,7 +19,7 @@ Five tabs, each with an **EN | العربية** toggle where wording is edited:
 | | **Outreach** | **Site emails** |
 |---|---|---|
 | Who sends it | an advisor, by hand | the site, with nobody watching |
-| Where it is used | the enquiry composer | seventeen send paths (below) |
+| Where it is used | the enquiry composer | nineteen send paths (below) |
 | Channels | email + WhatsApp | email only |
 | Body is | plain text, the **middle** of a message — `staffReplyTemplate` adds greeting and signature | rich text (HTML), the **whole** message; only the brand header and footer are added |
 | Draft means | it does not appear in the composer | Bazar's built-in wording sends |
@@ -164,15 +164,15 @@ and the `sampleAr` the preview uses.
 
 **The built-in templates are English.** An Arabic lead whose email has no
 Arabic — and no published row at all — gets the English built-in. Arabic
-built-ins would mean a second copy of seventeen templates in code; the Arabic
+built-ins would mean a second copy of nineteen templates in code; the Arabic
 first draft in the rows (below) is the answer instead.
 
 ### The Arabic first draft
 
 `lib/content-assets/system-defaults-ar.ts` holds an Arabic draft of all
-seventeen system emails, and migration 0129 writes it into the rows **only
+nineteen system emails, and migrations 0129 and 0142 write it into the rows **only
 where nobody had written one**. A machine first draft the client edits, per
-ADR-0008 — the alternative was seventeen empty Arabic tabs. Every row stays a
+ADR-0008 — the alternative was nineteen empty Arabic tabs. Every row stays a
 draft, so this changed nothing that sends. `arabic.test.ts` checks each draft
 is Arabic, uses exactly the tokens its English uses, and appears in the
 migration verbatim.
@@ -222,7 +222,7 @@ route around them:
 - the system rows **cannot be deleted or trashed** — a trigger refuses;
 - their `slug`, `kind` and `system_key` **cannot change**;
 - a system row **must have a subject**, and `system_key` is one of the
-  seventeen known values;
+  nineteen known values;
 - `body_format = 'html'` only on system rows — outreach stays plain text.
 
 ### Reading past RLS
@@ -379,6 +379,13 @@ braces left over.
 - **0117** — Settings → Templates, which wrote `{subject, body}` overrides into
   `site_settings.email_templates` that nothing read, was replaced by four
   `system_key` rows. The column is left in place, unread.
+- **0142** — the mortgage flow's two confirmations, `mortgage_consultancy_received`
+  and `mortgage_preapproval_received`, sent to the applicant on submit: the
+  reference (`{{mortgage_reference}}`, required), and for Fast Pre-Approval the
+  contact-by time (`{{mortgage_due}}`, 24 *working* hours, required) and the
+  `{{mortgage_documents}}` panel. Seeded as drafts in both languages; the
+  wording is provisional until the mortgage copy is designed (D29 in
+  docs/mortgage/DECISIONS.md).
 - **0129** — Arabic: `subject_ar`/`body_ar` on every asset, an Arabic first
   draft of all seventeen system emails, `valuation_requests.locale`, RTL
   rendering, and the EN/AR toggle across the four screens.

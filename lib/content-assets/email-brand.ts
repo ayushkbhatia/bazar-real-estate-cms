@@ -7,7 +7,7 @@ import { z } from "zod";
  * 0127) and applied to ALL of them: the built-in templates in
  * lib/email-templates.ts as much as a rewritten system email. A logo that only
  * appeared once someone had also rewritten the wording would be a logo on two
- * emails out of eighteen.
+ * emails out of twenty.
  *
  * OVERRIDES, NOT A COPY. The column holds only what an editor changed; every
  * key is optional and `{}` resolves to `DEFAULT_EMAIL_BRAND`, which is the look

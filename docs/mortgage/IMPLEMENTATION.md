@@ -183,17 +183,21 @@ to **AED 11,337**, matching SPEC §3 and C5.
 ```
 app/[locale]/(mortgage)/layout.tsx                    flag gate, noindex, flow shell
 app/[locale]/(mortgage)/_components/                  FlowLayout, FlowStepper, ServiceCard, DocumentUploadRow, …
-app/[locale]/(mortgage)/mortgages/apply/layout.tsx    wizard store provider, step guards
 app/[locale]/(mortgage)/mortgages/apply/page.tsx               W1
 app/[locale]/(mortgage)/mortgages/apply/details/page.tsx       W2
 app/[locale]/(mortgage)/mortgages/apply/review/page.tsx        W3
 app/[locale]/(mortgage)/mortgages/apply/documents/page.tsx     W5 / W6
 app/[locale]/(mortgage)/mortgages/apply/received/page.tsx      W4 / W7
+app/[locale]/(mortgage)/mortgages/apply/gallery/page.tsx       W6's designed state from fixtures (dev, or staff)
+app/[locale]/(mortgage)/mortgages/apply/_steps/                each step's client component
 app/[locale]/(mortgage)/mortgages/r/[token]/page.tsx           W8 + invite landing (server-rendered)
 ```
 
 - The root `app/[locale]/layout.tsx` still supplies html/body, fonts, consent and
   analytics. The group adds only the flow shell.
+- Built in Phase 3 without an `apply/layout.tsx`: the wizard state is a
+  sessionStorage store (`lib/mortgage-requests/client/apply-store.ts`), and each
+  page runs its own guard (`useGuardedState`).
 - Every page is `force-dynamic`, because it reads the flag and the session.
   Force-dynamic routes never enter the `check:routes` baseline.
 - **Guards to extend to the new group**, so the flow gets the same protection
@@ -220,6 +224,8 @@ already non-localised. Additions:
 | Path | Why |
 |---|---|
 | `GET /api/mortgage/drafts/:id/files/:fileId` | Poll a file that is still `pending` a scan (§1.8). Returns `{ status }` only |
+| `replaces` on presign | Replace keeps the old file until the new one is clean (frontend §7.2); the server retires it then (0141) |
+| `fileIds` on submit | The files the applicant sees; anything else in the draft is retired before the attach, so nothing is attached unseen |
 | `GET /api/mortgage/packages/:token` | The expiring, logged bank-package link (Phase 6) |
 | `POST /api/webhooks/whatsapp` | Inbound replies (C6 "replied on WhatsApp") and delivery status, once D1 lands |
 
@@ -350,6 +356,9 @@ Proposed keys:
 | Banks | `mortgage_bank_package`, `mortgage_bank_reminder` |
 
 - None of their copy is designed. SPEC §6 only summarises them (D29).
+- Built in Phase 3: the two applicant confirmations (0142), sent through the
+  `mortgage_notifications` outbox (0141) right after the submit's response and
+  retried by the mortgage-worker cron. Phase 4 adds the team's kinds to it.
 - The existing `mortgage_enquiry_ack` stays until the calculator's old form is
   retired (D25).
 - `lib/email.ts:136-143` converts attachments from UTF-8 strings. The letter
@@ -407,6 +416,12 @@ Entry points (SPEC §4.1):
 
 Master-page copy is editable, so the live rows may already differ from the code
 defaults. Check the live values at launch rather than trusting the seed.
+
+Built in Phase 3: the home band, the calculator's two buttons (an editor's own
+advisor link still wins; the old form stops drawing) and the listing button all
+ask `mortgage_flow_public()` through `lib/queries/mortgage-flow.ts`, with the
+cookie-free client, so no page leaves prerendering. A flipped flag reaches
+them at their next revalidation.
 
 ### 1.11 Strings and i18n
 
@@ -632,7 +647,7 @@ Paths abbreviated: `M/` = `app/[locale]/(mortgage)/`, `A/` =
 |---|---|---|
 | **1** Data model & domain (built) | `0138`, `0139`; `L/{documents,checklists,state,sla,reference,payments,dubai-time}.ts` + tests; `L/database.db.test.ts`, `L/testing/local-stack.ts`; `scripts/db-local/{reset.sh,seed-mortgage.ts,supabase/config.toml}`; `vitest.db.config.ts` | `db/types.ts` (mortgage parts spliced from the local schema); `lib/i18n/domains.ts`; `vitest.config.ts`; `package.json` scripts |
 | **2** Storage (built) | `0140_mortgage_storage.sql` (bucket + `mortgage_attach_draft`); `L/server/{errors,tokens,storage,verify,scan,drafts,files,deps,http}.ts` + tests; `app/api/mortgage/drafts/**`; `app/api/admin/mortgages/files/[fileId]/route.ts`; `app/api/cron/mortgage-worker`; `lib/turnstile.ts`; `L/storage.db.test.ts`, `L/testing/fixtures.ts` | `vercel.json`; `lib/queries/health.ts`; `lib/env.ts` (G3); `.env.example`; `next.config.ts` (`serverExternalPackages`); `package.json` (`pdfjs-dist` ~5.6, the newest line that runs on CI's Node 20) |
-| **3** Website W1–W7 | `M/**` (layouts, pages, `_components`); `L/client/*`; `app/api/mortgage/requests/route.ts`; `messages/{en,ar}/mortgage.json`; system-email migration + templates; `e2e/mortgage-*.spec.ts` (staging-gated) | `lib/i18n/namespaces.ts`; the four guard globs; `proxy.ts`; `lib/content-assets/*`; `lib/email-templates.ts`; entry points (home band, property page, calculator defaults) |
+| **3** Website W1–W7 (built) | `0141_mortgage_submit.sql`, `0142_mortgage_system_emails.sql`; `M/**` (layout, pages, `_steps`, `_components`); `L/{details,format,consent,copy-status}.ts`; `L/client/*`; `L/server/{submit,notify}.ts`; `app/api/mortgage/requests/route.ts`; `lib/queries/mortgage-flow.ts`; `lib/i18n/english-only.ts`; `messages/{en,ar}/mortgage.json`; `e2e/mortgage-apply.spec.ts` + `playwright.mortgage.config.ts` (local/staging only) | `lib/i18n/namespaces.ts`; the four guard globs; `proxy.ts`, `lib/i18n/{routing,locale-redirects}.ts`; `lib/content-assets/*`; `lib/email-templates.ts`; `L/server/drafts.ts` (`replaces`); the mortgage-worker cron (outbox); entry points (home band, `/p/[slug]`, `/tools/mortgage`); `app/globals.css` (two Arabic heading sizes) |
 | **4** CMS C1, C2, C6 | `lib/auth.ts` (`requireMortgageRole`); `L/slots.ts`; `A/{layout,page,[reference]/page,settings/page}.tsx`, `A/_components`, `A/_actions.ts`; `L/server/{queries,actions,notify}.ts`; `L/cms-strings.ts`; `app/api/cron/mortgage-sla-tick`; `.ics` builder; `lib/whatsapp-cloud.ts` + webhook (if D1 has landed) | `components/brand/cms-shell.tsx` (G1); `(admin)/layout.tsx` (nav count); `vercel.json`; `lib/queries/health.ts` |
 | **5** Review loop C3, C4, W8 | `A/[reference]/documents/[kind]/page.tsx` + viewer; `M/mortgages/r/[token]/page.tsx` + invite landing; `app/api/mortgage/links/**`; `L/server/{links,otp}.ts` | `L/server/notify.ts` |
 | **6** Banks & decision C5 | `A/banks/page.tsx`; `A/[reference]/decision/page.tsx`; `app/api/mortgage/packages/[token]/route.ts` | `lib/email.ts` (binary attachments) |

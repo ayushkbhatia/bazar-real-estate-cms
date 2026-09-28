@@ -225,3 +225,197 @@ Outside choices still open, built around:
 - **Found on the way:**
   - Two production deploys of `main` (13:55, ~2h before this entry) failed on a Supabase 522 during prerender. The site still serves the previous deployment, so `main`'s latest commits aren't live. A redeploy is the fix. Not done from here.
   - The valuation OTP's weaknesses (`lib/otp.ts`) are still to fix when Phase 5 builds link codes.
+
+---
+
+## Phase 3 — Website intake W1–W7 · 28 Sep 2026
+
+Built on the defaults the user accepted ("go ahead with Phase 3 on your
+defaults"):
+
+- **D12:** the Arabic catalogue is a machine first draft; the flow serves
+  English only, and `/ar/mortgages/*` redirects to English.
+- **D13:** no lead in Enquiries or Salesforce.
+- **D23:** W2's LTV figures are settings (`mortgage_settings.ltv_national_pct` /
+  `ltv_expat_pct`, 85/80).
+- **D24:** non-residents aren't offered, as designed.
+- **D25:** the calculator's old pre-approval form stops drawing while the flag
+  is `public`.
+- **D27:** the permit number and phone numbers as designed, flagged.
+- **D28:** "licence" everywhere, so the row reads "Business trade licence".
+- **D11a:** the designed "24 hours" wording ships flagged until design rewords
+  it. The emails, which weren't designed, already say "24 working hours".
+- **FE-3:** nothing is selected without a `service` parameter.
+- **FE-5:** the Emirates ID offers "Add more files" for its second side, and
+  "Replace" once both are in, which is W6's state.
+- **FE-1, FE-9, D29:** undesigned copy is written and flagged; the responsive
+  layouts are the READMEs' proposals.
+- **FE-4:** switching employment type drops the documents the new set doesn't
+  need, with no warning (none designed); the server retires them.
+- **FE-13:** Exit has no confirmation and returns to the page the applicant
+  came from, or `/`.
+- **FE-14:** each screen keeps its designed chip order.
+
+**Built**
+- **`0141_mortgage_submit.sql`:**
+  - `mortgage_create_request()` gains `p_draft_id` and `p_locale`, and attaches
+    the draft's files in the same transaction. A refused attach (a file still
+    scanning, a document with no file, an expired draft) rolls back the
+    request, reference, consent and email;
+  - `mortgage_notifications`, the outbox, and `mortgage_claim_notifications()`:
+    `for update skip locked`, an abandoned claim taken back after 10 minutes,
+    no more tries after 5;
+  - the two LTV settings;
+  - `mortgage_flow_public()`: the one bit visitors may read;
+  - `mortgage_files.replaces`, so Replace keeps the old file until the new one
+    is clean.
+- **`0142_mortgage_system_emails.sql`** (a subagent, following
+  docs/CONTENT_ASSETS.md): `mortgage_consultancy_received` and
+  `mortgage_preapproval_received` as Content Assets system emails, with
+  built-in templates, English and Arabic starting wording, tokens
+  (`mortgage_reference`, `mortgage_due`, `mortgage_submitted`, the
+  `mortgage_documents` panel), and a gallery sample each. Seeded as drafts,
+  so the built-ins send.
+- **Server:**
+  - `L/server/submit.ts` and `POST /api/mortgage/requests`: flag, 10 per hour
+    per IP, Turnstile, `Idempotency-Key`, and the draft token as Bearer. A
+    repeated key answers with the request it already made (200), even though
+    its draft is now claimed;
+  - the consent's text is looked up by version (`L/consent.ts`), never taken
+    from the request;
+  - the submit sends `fileIds`, the files the applicant sees. Anything else in
+    the draft is retired before the attach;
+  - `L/server/notify.ts` sends the outbox right after the response (`after()`),
+    and the mortgage-worker cron retries it (1, 2, 4, 8 minutes). Rows and
+    events carry the kind and a reason with any address scrubbed out;
+  - presign accepts `replaces`.
+- **Domain:**
+  - `L/details.ts`: W2's rules, used by the browser and as the server's zod
+    schema, with rule codes rather than messages;
+  - `L/format.ts`: English dates built from fixed names, because ICU's en-GB
+    prints "Sept";
+  - `L/copy-status.ts`: every string that isn't final, and the gap that closes
+    it.
+- **Client (`L/client/`):**
+  - `api.ts`;
+  - `apply-state.ts` (pure: entry links, guards) and `apply-store.ts`
+    (sessionStorage and the hook);
+  - `upload-queue.ts`, framework-free: three uploads at once, client checks
+    that count files still uploading, Replace, cancel, and removal that waits
+    for the server;
+  - `turnstile.ts` (loaded on first use);
+  - `analytics.ts`: an allow-list per event, gated on the consent cookie
+    before the SDK loads.
+- **UI:**
+  - `app/[locale]/(mortgage)/`, its own group: a shell with no marketplace
+    chrome, the flag gate, noindex, and the `mortgage` namespace mounted by
+    `RouteMessages`;
+  - W1–W7 at `/mortgages/apply{,/details,/review,/documents,/received}`;
+  - components in `_components/`: the design's own glyphs, and the state tones
+    scoped in `mortgage.css`;
+  - `/mortgages/apply/gallery` renders W6's designed state from fixtures, off
+    the production deployment unless the visitor is staff.
+- **i18n:**
+  - `messages/{en,ar}/mortgage.json`, 210 keys, merged from the handoff's
+    strings, with Arabic provenance recorded;
+  - `mortgage` in `NAMESPACES` and `ROUTE_NAMESPACES`;
+  - the four guards (G-13, G-14, G-19, bare links) now scan the group;
+  - `lib/i18n/english-only.ts` keeps the proxy, `localiseHref` and the redirect
+    twins in agreement, so an Arabic-preferring visitor can't loop.
+- **Entry points** (`lib/queries/mortgage-flow.ts`):
+  - the home band's "Get pre-approval today";
+  - the calculator's "Start pre-approval" and "Talk to advisor" (an editor's
+    own link still wins);
+  - a new "Get mortgage pre-approval" on sale listings.
+
+  Each shows only while the flag is `public`. The megamenu row is a content
+  edit at launch.
+
+**Verified**
+- **Unit:**
+  - `npm run test:run`: 340 files, 4,478 tests;
+  - new tests cover formatting, details, the upload queue (19), the store and
+    guards, the copy registry, the English-only routing and the emails (15).
+- **Database:** 16 new tests in `submit.db.test.ts` (59 in total), against the
+  local stack. They cover:
+  - an atomic create-and-attach, with the reference counter unchanged after a
+    refusal;
+  - idempotent retries;
+  - unlisted files retired;
+  - Replace kept and retired;
+  - the outbox: once, backoff, give-up, one claim among six racing,
+    abandoned-claim recovery;
+  - what anon can see.
+- **Mutation-tested:** each of these was broken on purpose and a test went red:
+  - skipping the unlisted-file retirement;
+  - never retiring replaced files;
+  - leaving the address in a provider error;
+  - storing any other consent text;
+  - dropping the old file at once on Replace;
+  - not counting files from the same pick against the total;
+  - leaving a failed upload pending on the server;
+  - the guard forgetting a submit;
+  - the create function without its attach;
+  - a claim that ignores status.
+
+  The first run exposed a missing test: a total broken within one multi-file
+  pick. It is added.
+- **End to end:** `e2e/mortgage-apply.spec.ts`, run against the local stack
+  with `playwright.mortgage.config.ts`. All 4 pass:
+  - Path A (consultancy), including reload, Back and a fresh tab;
+  - Path B (salaried);
+  - Path C (business owner), with the oversize licence and "Choose another
+    file";
+  - W2's validation.
+- **Runtime:**
+  - BZM-26-0583 (consultancy) and BZM-26-0584 (pre-approval) were submitted in
+    the browser: 7 files attached, the locked PDF retired, consent with IP and
+    user agent, and the due time = 24 working hours. The dry-run email was
+    logged as `notification.skipped`;
+  - flag off: every route and API returns 404, and the entry points revert;
+  - `/ar/mortgages/apply?…`: 307 to English, keeping the query.
+- **Visual:**
+  - 1440px full-page captures compared with the PNGs: page heights within
+    3–11px, and W6 matches row for row;
+  - 390px: no horizontal overflow on any screen. The stepper now names only
+    the current step on a phone.
+- **Gate:** migrations, lint, typecheck, `test:run`, `build` (the flow's routes
+  compile dynamic; `/tools/mortgage` still prerenders) and `check:routes` (78
+  baseline routes unchanged).
+
+**Deviations from the handoffs and PLAN**
+- There is no `apply/layout.tsx`: each page runs its own guard
+  (`useGuardedState`).
+- After a submit, every step redirects to the confirmation. The handoff says
+  W1, but the step that submitted would then race the navigation and win; the
+  confirmation is also the better place for Back to land.
+- "2 of 4 ready · 1 file needs attention" is two messages joined with " · ":
+  the catalogue forbids a plural inside a sentence.
+- The confirmation emails go through an outbox and `after()`, not a queue
+  service.
+- `fileIds` and `replaces` are additions to SPEC §4.2's contract.
+- The Turnstile widget isn't hidden: with a "Managed" key it may need a click.
+- A gallery route stands in for Storybook (IMPLEMENTATION §1.14).
+- `app/globals.css` gained two Arabic heading overrides (25px, and 54px at
+  `md`), which the RTL scale guard requires for any public display size.
+
+**Open**
+- **Not applied to production:** `0138`–`0142`. Apply them at the batch
+  merge; the flag stays `off`.
+- **Blocks launch:**
+  - D6: with no scanner in production, uploads never become ready;
+  - D14: without `TURNSTILE_SECRET_KEY`, production answers 503 to drafts and
+    submits;
+  - D11a, D2, D17, D27, D29 and FE-1 copy (all in `copy-status.ts`).
+- **Found on the way:**
+  - on a dry run or with no key, `lib/email.ts` logs each recipient, for every
+    email on the site (Phase 7);
+  - PostHog's pageview autocapture will record W8's token URL, so Phase 5 must
+    sanitise it.
+- **Next phases:**
+  - Phase 4 adds the team's notifications to the outbox (the `kind` check
+    widens);
+  - Phase 7 adds W1 to the a11y, mobile-geometry and Lighthouse lists;
+  - staging (D8): until it exists, the e2e specs run locally only.
+- **Local stack state:** the flag is `off`. BZM-26-0583/0584 and the DB tests'
+  requests remain; `npm run db:local:reset` clears them.

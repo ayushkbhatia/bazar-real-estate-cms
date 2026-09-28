@@ -3187,6 +3187,59 @@ export type Database = {
           },
         ]
       }
+      mortgage_notifications: {
+        Row: {
+          attempts: number
+          channel: string
+          claimed_at: string | null
+          created_at: string
+          id: string
+          kind: string
+          last_error: string | null
+          next_attempt_at: string
+          provider_id: string | null
+          request_id: string
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          attempts?: number
+          channel?: string
+          claimed_at?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          last_error?: string | null
+          next_attempt_at?: string
+          provider_id?: string | null
+          request_id: string
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          attempts?: number
+          channel?: string
+          claimed_at?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          last_error?: string | null
+          next_attempt_at?: string
+          provider_id?: string | null
+          request_id?: string
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mortgage_notifications_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "mortgage_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mortgage_partner_banks: {
         Row: {
           active: boolean
@@ -3466,6 +3519,8 @@ export type Database = {
           flag: Database["public"]["Enums"]["mortgage_flag"]
           id: number
           link_expiry_days: number
+          ltv_expat_pct: number
+          ltv_national_pct: number
           retention_months: number | null
           round_robin_last_staff_id: string | null
           sla_budget_minutes: number
@@ -3481,6 +3536,8 @@ export type Database = {
           flag?: Database["public"]["Enums"]["mortgage_flag"]
           id?: number
           link_expiry_days?: number
+          ltv_expat_pct?: number
+          ltv_national_pct?: number
           retention_months?: number | null
           round_robin_last_staff_id?: string | null
           sla_budget_minutes?: number
@@ -3496,6 +3553,8 @@ export type Database = {
           flag?: Database["public"]["Enums"]["mortgage_flag"]
           id?: number
           link_expiry_days?: number
+          ltv_expat_pct?: number
+          ltv_national_pct?: number
           retention_months?: number | null
           round_robin_last_staff_id?: string | null
           sla_budget_minutes?: number
@@ -4870,17 +4929,42 @@ export type Database = {
         Returns: string[]
       }
       mortgage_caller: { Args: never; Returns: string }
+      mortgage_claim_notifications: {
+        Args: { p_at?: string; p_limit?: number; p_request_id?: string }
+        Returns: {
+          attempts: number
+          channel: string
+          claimed_at: string | null
+          created_at: string
+          id: string
+          kind: string
+          last_error: string | null
+          next_attempt_at: string
+          provider_id: string | null
+          request_id: string
+          sent_at: string | null
+          status: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "mortgage_notifications"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       mortgage_create_request: {
         Args: {
           p_at?: string
           p_consent_text?: string
           p_consent_version?: string
           p_date_of_birth: string
+          p_draft_id?: string
           p_email: string
           p_employment_type: Database["public"]["Enums"]["mortgage_employment"]
           p_entry_point?: Database["public"]["Enums"]["mortgage_entry_point"]
           p_full_name: string
           p_ip?: unknown
+          p_locale?: string
           p_mobile_e164: string
           p_parent_request_id?: string
           p_property_ref?: string
@@ -4935,6 +5019,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      mortgage_flow_public: { Args: never; Returns: boolean }
       mortgage_log_event: {
         Args: {
           p_actor_id?: string

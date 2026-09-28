@@ -38,7 +38,15 @@ import type { SectionCopy } from "./section-copy";
 export function MortgageCalculatorSection({
   eyebrow = "Mortgage calculator",
   heading = "Estimate your monthly payments before making your move",
-}: SectionCopy = {}) {
+  preApprovalHref,
+}: SectionCopy & {
+  /**
+   * The mortgage application flow's entry link, when the flow is open to the
+   * public (docs/mortgage, SPEC §4.1: "Home · Get pre-approval today").
+   * Without it the button goes to the full calculator, as it always has.
+   */
+  preApprovalHref?: string;
+} = {}) {
   // `common`, not `tools`: `tools` is route-scoped to /tools and /concierge
   // (see ROUTE_NAMESPACES) and this teaser renders on the home page, where
   // that bag is never mounted. Seven keys on an already-global namespace is
@@ -146,7 +154,7 @@ export function MortgageCalculatorSection({
           </div>
           <div className="mt-auto flex flex-col gap-2.5 pt-6 md:pt-7">
             <Link
-              href="/tools/mortgage"
+              href={preApprovalHref ?? "/tools/mortgage"}
               className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-white px-4 text-[13.5px] font-medium text-bz-ink transition-colors hover:bg-white/90"
             >
               <Check size={16} /> {t("getPreApproval")}

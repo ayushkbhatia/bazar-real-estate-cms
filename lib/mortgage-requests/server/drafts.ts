@@ -65,10 +65,12 @@ export type FileRow = {
   sha256: string | null;
   scan_status: "pending" | "clean" | "infected" | "failed";
   uploaded_at: string;
+  /** Files this one replaces, retired once it is clean (0141). */
+  replaces: string[] | null;
 };
 
-const FILE_COLUMNS =
-  "id, draft_id, document_id, bank_submission_id, kind, state, storage_key, original_name, mime, size_bytes, page_count, sha256, scan_status, uploaded_at";
+export const FILE_COLUMNS =
+  "id, draft_id, document_id, bank_submission_id, kind, state, storage_key, original_name, mime, size_bytes, page_count, sha256, scan_status, uploaded_at, replaces";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const nowOf = (deps: DraftDeps) => deps.now?.() ?? new Date();
@@ -175,6 +177,12 @@ export type PresignInput = {
   name: string;
   size: number;
   mime: string;
+  /**
+   * Ready files of the same kind this upload replaces (W5/W6 "Replace"). They
+   * aren't counted against the kind's limits, and they're retired when this
+   * file comes out of its scan clean — so a failed replace keeps the old file.
+   */
+  replaces?: readonly string[];
 };
 
 export async function presignFile(
@@ -198,7 +206,16 @@ export async function presignFile(
   if (live.length >= MAX_LIVE_FILES_PER_DRAFT) {
     throw new MortgageApiError(422, "too_many_files", undefined, { limit: MAX_LIVE_FILES_PER_DRAFT });
   }
-  const sameKind = live.filter((f) => f.kind === kind).map((f) => ({ sizeBytes: Number(f.size_bytes) }));
+  const replaces = [...new Set(input.replaces ?? [])];
+  for (const id of replaces) {
+    const old = live.find((f) => f.id === id);
+    if (!old || old.kind !== kind || old.state !== "active") {
+      throw new MortgageApiError(422, "invalid", "replaces must name ready files of the same document", {}, "replaces");
+    }
+  }
+  const sameKind = live
+    .filter((f) => f.kind === kind && !replaces.includes(f.id))
+    .map((f) => ({ sizeBytes: Number(f.size_bytes) }));
   const error = checkFile(kind, { sizeBytes: input.size, mime: declared ?? "" }, sameKind);
   if (error) throw ruleError(error);
 
@@ -217,6 +234,7 @@ export async function presignFile(
     scan_status: "pending",
     upload_round: 0,
     uploaded_at: nowOf(deps).toISOString(),
+    replaces: replaces.length > 0 ? replaces : null,
   });
   if (insertError) throw new Error(`file insert failed: ${insertError.message}`);
   return { fileId: id, uploadUrl: upload.url, headers: upload.headers };
@@ -241,9 +259,32 @@ export function statusOf(file: Pick<FileRow, "state" | "scan_status" | "size_byt
   return { status: "removed" };
 }
 
+/**
+ * A clean replacement retires the files it replaces (Replace on W5/W6). Only
+ * draft files still active are touched: anything already attached to a
+ * request is out of a draft's reach.
+ */
+async function retireReplaced(deps: DraftDeps, file: FileRow): Promise<void> {
+  if (!file.draft_id || !file.replaces?.length) return;
+  const { data, error } = await deps.db
+    .from("mortgage_files")
+    .select(FILE_COLUMNS)
+    .in("id", file.replaces)
+    .eq("draft_id", file.draft_id)
+    .is("document_id", null)
+    .eq("state", "active");
+  if (error) throw new Error(`file read failed: ${error.message}`);
+  await retireFiles(deps, data as FileRow[]);
+}
+
+/** Delete these files' objects and mark them removed. */
+export async function retireFiles(deps: Pick<DraftDeps, "db" | "storage">, files: readonly FileRow[]): Promise<void> {
+  for (const file of files) await discard(deps, file);
+}
+
 /** Delete a file's object and mark its row removed, keeping the row as the record. */
 async function discard(
-  deps: DraftDeps,
+  deps: Pick<DraftDeps, "db" | "storage">,
   file: FileRow,
   scanStatus?: "infected" | "failed",
 ): Promise<void> {
@@ -304,6 +345,7 @@ async function scanAndRecord(deps: DraftDeps, file: FileRow, bytes: Uint8Array):
       .eq("id", file.id)
       .eq("scan_status", "pending");
     if (error) throw new Error(`file update failed: ${error.message}`);
+    await retireReplaced(deps, file);
     return { status: "ready", sizeBytes: Number(file.size_bytes), pageCount: file.page_count };
   }
   await discard(deps, file, verdict);
@@ -324,7 +366,7 @@ export async function completeFile(
   if (!bytes) throw new MortgageApiError(409, "upload_missing");
 
   const others = (await liveFiles(deps, draft.id))
-    .filter((f) => f.kind === file.kind && f.id !== file.id)
+    .filter((f) => f.kind === file.kind && f.id !== file.id && !(file.replaces ?? []).includes(f.id))
     .map((f) => ({ sizeBytes: Number(f.size_bytes) }));
   const checked = await checkStoredBytes(file.kind, bytes, others);
   if (!checked.ok) {

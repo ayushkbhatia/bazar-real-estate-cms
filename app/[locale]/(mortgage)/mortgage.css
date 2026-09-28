@@ -1,0 +1,33 @@
+/*
+ * The mortgage flow's state tones (docs/mortgage/frontend/00-foundations §3,
+ * "State tones. These aren't tokens yet"). Scoped to the flow's root rather
+ * than added to globals.css: nothing else on the site shows an upload row, and
+ * the shared stylesheet stays out of this epic's diff. Brand colours come from
+ * the site's live tokens (--bz-*), so the navy/teal recolour applies here too.
+ */
+.mrq {
+  --mrq-success-bg: oklch(0.94 0.04 145);
+  --mrq-success-fg: oklch(0.35 0.08 145);
+  --mrq-success-glyph: oklch(0.4 0.09 145);
+  --mrq-success-tick: oklch(0.5 0.12 145);
+  --mrq-danger-bg: oklch(0.96 0.04 28);
+  --mrq-danger-fg: oklch(0.45 0.13 28);
+  --mrq-danger-glyph: oklch(0.5 0.15 28);
+  --mrq-danger-row-bg: oklch(0.985 0.01 28);
+  --mrq-danger-row-border: oklch(0.86 0.07 28);
+  --mrq-badge-done: oklch(0.55 0.12 145);
+  --mrq-badge-error: oklch(0.55 0.18 28);
+  --mrq-thumb-line: oklch(0.86 0.006 85);
+}
+
+/* The design's focus ring for cards and tiles: on the card, not the hidden input. */
+.mrq .mrq-focus-within:has(input:focus-visible) {
+  outline: 2px solid var(--bz-ink);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mrq .mrq-progress > * {
+    transition: none !important;
+  }
+}

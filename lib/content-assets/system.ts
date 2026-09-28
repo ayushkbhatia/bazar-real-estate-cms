@@ -2,11 +2,12 @@
  * System emails — every email the site sends on its own, and which of them
  * the client can rewrite.
  *
- * Seventeen emails fire without an advisor writing them: acknowledgements,
+ * Nineteen emails fire without an advisor writing them: acknowledgements,
  * confirmations, one-time codes, nurture follow-ups, and the notices the team
  * itself receives. Each has a built-in version in lib/email-templates.ts (or
  * lib/newsletter-templates.ts) and a row in `content_assets` carrying the
- * matching `system_key` (migrations 0117 and 0127).
+ * matching `system_key` (migrations 0117 and 0127; 0135 and 0142 added
+ * more).
  *
  * THE RULE, in one line: a PUBLISHED system row replaces the built-in email;
  * anything else — draft, missing, unreadable — and the built-in one sends.
@@ -27,6 +28,8 @@ import type { TokenName } from "./tokens";
 export const SYSTEM_ASSET_KEYS = [
   "enquiry_auto_reply",
   "mortgage_enquiry_ack",
+  "mortgage_consultancy_received",
+  "mortgage_preapproval_received",
   "valuation_request_ack",
   "valuation_code",
   "valuation_report_requested",
@@ -121,6 +124,44 @@ export const SYSTEM_ASSETS: Record<SystemAssetKey, SystemAssetDef> = {
     ],
     required: [],
     fallsBackTo: "enquiry_auto_reply",
+  },
+  mortgage_consultancy_received: {
+    key: "mortgage_consultancy_received",
+    slug: "system-mortgage-consultancy-received",
+    label: "Mortgage Consultancy confirmation",
+    audience: "client",
+    trigger:
+      "Sent to the applicant the moment they submit a Mortgage Consultancy request in the mortgage application flow, with their reference. Wording is a provisional draft pending design (D29).",
+    recipient: "The applicant who asked for a consultation",
+    builtIn: "lib/email-templates.ts · mortgageConsultancyReceivedTemplate",
+    tokens: [
+      "lead_first_name",
+      "lead_name",
+      "mortgage_reference",
+      "mortgage_submitted",
+      "site_url",
+    ],
+    required: ["mortgage_reference"],
+  },
+  mortgage_preapproval_received: {
+    key: "mortgage_preapproval_received",
+    slug: "system-mortgage-preapproval-received",
+    label: "Fast Pre-Approval confirmation",
+    audience: "client",
+    trigger:
+      "Sent to the applicant the moment they submit a Fast Pre-Approval application, with their reference, the time the mortgage team will contact them by (24 working hours) and the documents received. Wording is a provisional draft pending design (D29).",
+    recipient: "The applicant who applied for pre-approval",
+    builtIn: "lib/email-templates.ts · mortgagePreapprovalReceivedTemplate",
+    tokens: [
+      "lead_first_name",
+      "lead_name",
+      "mortgage_reference",
+      "mortgage_submitted",
+      "mortgage_due",
+      "mortgage_documents",
+      "site_url",
+    ],
+    required: ["mortgage_reference", "mortgage_due"],
   },
   valuation_request_ack: {
     key: "valuation_request_ack",

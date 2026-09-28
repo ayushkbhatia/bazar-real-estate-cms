@@ -18,6 +18,8 @@ import {
 } from "@/lib/content-assets/email-brand";
 import type { EmailLocale } from "@/lib/content-assets/tokens";
 import { isolateForLocale } from "@/lib/i18n/bidi";
+import type { DocKind } from "@/lib/mortgage-requests/documents";
+import { formatDayTime } from "@/lib/mortgage-requests/format";
 
 type Rendered = { subject: string; text: string; html: string };
 
@@ -196,6 +198,7 @@ export type EmailBlock = { html: string; text: string };
 
 const dirOf = (locale: EmailLocale) => (locale === "ar" ? "rtl" : "ltr");
 const startOf = (locale: EmailLocale) => (locale === "ar" ? "right" : "left");
+const endOf = (locale: EmailLocale) => (locale === "ar" ? "left" : "right");
 
 /**
  * The few words the PANELS supply themselves.
@@ -217,6 +220,7 @@ function panelWords(locale: EmailLocale) {
       references: "المراجع:",
       andMore: (n: number) => `…و${n} أخرى`,
       noAnswers: "(لا إجابات)",
+      documentsReceived: "المستندات المستلمة",
     };
   }
   return {
@@ -228,6 +232,7 @@ function panelWords(locale: EmailLocale) {
     references: "References:",
     andMore: (n: number) => `…and ${n} more`,
     noAnswers: "(no answers)",
+    documentsReceived: "Documents received",
   };
 }
 
@@ -346,6 +351,107 @@ export function formAnswersBlock(
     text: rows
       .map(([label, value]) => `${iso(label, locale)}: ${iso(value, locale)}`)
       .join("\n"),
+  };
+}
+
+/**
+ * The documents a Fast Pre-Approval applicant uploads, named as the upload
+ * step names them (docs/mortgage/SPEC.md §2.2). English verbatim from the
+ * designs, except "licence" in the UAE spelling (D28). The Arabic is a
+ * machine first draft (ADR-0008), like the rest of the emails' Arabic.
+ */
+const MORTGAGE_DOCUMENT_NAMES: Record<EmailLocale, Record<DocKind, string>> = {
+  en: {
+    emirates_id: "Emirates ID",
+    passport: "Passport copy",
+    salary_certificate: "Salary certificate",
+    bank_statements_3m: "Last 3 months' bank statements",
+    trade_license: "Business trade licence",
+    bank_statements_12m: "Last 1 year's bank statements",
+  },
+  ar: {
+    emirates_id: "الهوية الإماراتية",
+    passport: "نسخة جواز السفر",
+    salary_certificate: "شهادة الراتب",
+    bank_statements_3m: "كشوف الحساب البنكية لآخر 3 أشهر",
+    trade_license: "الرخصة التجارية",
+    bank_statements_12m: "كشوف الحساب البنكية لآخر سنة",
+  },
+};
+
+type PluralForms = Partial<Record<Intl.LDMLPluralRule, (n: number) => string>> & {
+  other: (n: number) => string;
+};
+
+/**
+ * "1 file", "3 files" — and in Arabic every form the language has: ملف واحد
+ * (1), ملفان (2), 3 ملفات (3–10), 11 ملفاً (11–99), 100 ملف. Which form a
+ * number takes is CLDR's rule, read from Intl.PluralRules rather than written
+ * here, so a count of 11 cannot come out in the 3–10 form.
+ */
+const FILE_COUNT: Record<EmailLocale, PluralForms> = {
+  en: { one: (n) => `${n} file`, other: (n) => `${n} files` },
+  ar: {
+    zero: (n) => `${n} ملف`,
+    one: () => "ملف واحد",
+    two: () => "ملفان",
+    few: (n) => `${n} ملفات`,
+    many: (n) => `${n} ملفاً`,
+    other: (n) => `${n} ملف`,
+  },
+};
+
+const PLURAL_RULES: Record<EmailLocale, Intl.PluralRules> = {
+  en: new Intl.PluralRules("en"),
+  ar: new Intl.PluralRules("ar"),
+};
+
+function fileCount(n: number, locale: EmailLocale): string {
+  const forms = FILE_COUNT[locale];
+  return (forms[PLURAL_RULES[locale].select(n)] ?? forms.other)(n);
+}
+
+/**
+ * The "Documents received" list the confirmation page (W7) shows, as a
+ * panel: each document the applicant sent and how many files it came in, in
+ * the order given — the order the upload step asked for them.
+ *
+ * The names and counts are the code's own words, not the applicant's, so
+ * nothing here is isolated: an Arabic count ("3 ملفات") already reads right
+ * to left in an RTL cell. The eyebrow drops its tracking in Arabic, where
+ * letter-spacing pulls joined letters apart.
+ */
+export function mortgageDocumentsBlock(
+  documents: readonly { kind: DocKind; files: number }[],
+  locale: EmailLocale = "en",
+): EmailBlock {
+  if (documents.length === 0) return { html: "", text: "" };
+  const t = panelWords(locale);
+  const rows = documents.map((d) => ({
+    name: MORTGAGE_DOCUMENT_NAMES[locale][d.kind],
+    count: fileCount(d.files, locale),
+  }));
+  const eyebrow =
+    locale === "ar"
+      ? "font-size:12px"
+      : "font-size:11px;letter-spacing:0.12em;text-transform:uppercase";
+  return {
+    html: `<div dir="${dirOf(locale)}" style="margin:24px 0;padding:18px 22px;background:#fff;border:1px solid #E5E5DF;border-radius:8px;text-align:${startOf(locale)}">
+      <div style="${eyebrow};color:#99896e">${t.documentsReceived}</div>
+      <table role="presentation" dir="${dirOf(locale)}" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top:10px">
+        ${rows
+          .map(
+            (r) => `<tr>
+          <td style="padding:8px 0;border-top:1px solid #F0F0EA;font-size:14px;color:#32312d;text-align:${startOf(locale)}">${escape(r.name)}</td>
+          <td style="padding:8px 0;padding-${startOf(locale)}:12px;border-top:1px solid #F0F0EA;font-size:12px;color:#99896e;white-space:nowrap;text-align:${endOf(locale)}">${escape(r.count)}</td>
+        </tr>`,
+          )
+          .join("")}
+      </table>
+    </div>`,
+    text:
+      `${t.documentsReceived}:\n` +
+      rows.map((r) => `  · ${r.name} — ${r.count}`).join("\n"),
   };
 }
 
@@ -968,6 +1074,109 @@ export function bulkReassignDigestTemplate(
     <p><strong>${opts.count} ${opts.count === 1 ? "listing was" : "listings were"}</strong> just assigned to you in the Bazar CMS.</p>
     ${refs.html}
     <p style="margin-top:22px">${button(url, "Open my queue", brand)}</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+// ── Mortgage flow ─────────────────────────────────────────────────────
+//
+// The applicant's confirmations (docs/mortgage/SPEC.md §6), sent the moment a
+// request is submitted. Provisional wording — the copy for every mortgage
+// email is an open design decision (docs/mortgage/DECISIONS.md D29) — so they
+// say what the confirmation pages (W4, W7) already say, and no more. Times are
+// Asia/Dubai, printed by the function the pages use, so the email and the
+// screen the applicant just left agree to the minute.
+//
+// The body names the applicant by first name and nothing else about them: no
+// date of birth, mobile or email address. An inbox is not the place for them.
+
+/** "Priya Raman" → "Priya". Blank greets "there", as `{{lead_first_name}}` does. */
+function applicantFirstName(name: string): string {
+  return name.trim().split(/\s+/)[0] || "there";
+}
+
+/** Mortgage Consultancy submitted (W3 → W4). */
+export function mortgageConsultancyReceivedTemplate(
+  opts: {
+    name: string;
+    reference: string;
+    /** ISO instant. */
+    submittedAt: string;
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const firstName = applicantFirstName(opts.name);
+  const received = formatDayTime(opts.submittedAt, "en");
+  const subject = `We've received your request — ${opts.reference}`;
+
+  const text =
+    `Hello ${firstName},\n\n` +
+    `Thank you for requesting a mortgage consultation with Bazar. We received your request on ${received}.\n\n` +
+    `Your reference is ${opts.reference}.\n\n` +
+    `A member of our mortgage team will contact you shortly.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello ${escape(firstName)},</p>
+    <p>Thank you for requesting a mortgage consultation with Bazar. We received your request on ${escape(received)}.</p>
+    <p>Your reference is <strong>${escape(opts.reference)}</strong>.</p>
+    <p>A member of our mortgage team will contact you shortly.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
+  `,
+    brand,
+  );
+
+  return { subject, text, html };
+}
+
+/**
+ * Fast Pre-Approval submitted (W5/W6 → W7).
+ *
+ * `dueAt` comes from the server, which has it from the SLA module: the
+ * promise is 24 WORKING hours (D11), so the due time is usually days after
+ * submission, and the copy says "working hours" rather than let "24 hours"
+ * read as a clock the team is not keeping (D11a).
+ */
+export function mortgagePreapprovalReceivedTemplate(
+  opts: {
+    name: string;
+    reference: string;
+    /** ISO instant. */
+    submittedAt: string;
+    /** ISO instant: when the team has promised to contact them by. */
+    dueAt: string;
+    /** In the order the upload step asked for them. */
+    documents: readonly { kind: DocKind; files: number }[];
+  },
+  brand: EmailBrand = DEFAULT_EMAIL_BRAND,
+): Rendered {
+  const firstName = applicantFirstName(opts.name);
+  const due = formatDayTime(opts.dueAt, "en");
+  const documents = mortgageDocumentsBlock(opts.documents);
+  const subject = `Your Fast Pre-Approval application — ${opts.reference}`;
+
+  const text =
+    `Hello ${firstName},\n\n` +
+    `Thank you for applying for Fast Pre-Approval with Bazar. Your details and documents have reached our mortgage team.\n\n` +
+    `Your reference is ${opts.reference}.\n\n` +
+    `We'll contact you by ${due} — 24 working hours from when you submitted.\n\n` +
+    (documents.text ? `${documents.text}\n\n` : "") +
+    `If we need anything else, we'll message you on WhatsApp with a secure link. You won't need to start again.\n\n` +
+    `— The Bazar mortgage team\n${siteUrl()}\n`;
+
+  const html = shell(
+    `
+    <p>Hello ${escape(firstName)},</p>
+    <p>Thank you for applying for Fast Pre-Approval with Bazar. Your details and documents have reached our mortgage team.</p>
+    <p>Your reference is <strong>${escape(opts.reference)}</strong>.</p>
+    <p>We'll contact you by <strong>${escape(due)}</strong> — 24 working hours from when you submitted.</p>
+    ${documents.html}
+    <p>If we need anything else, we'll message you on WhatsApp with a secure link. You won't need to start again.</p>
+    <p style="margin-top:24px;color:#5a5a55">— The Bazar mortgage team</p>
   `,
     brand,
   );

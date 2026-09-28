@@ -13,6 +13,8 @@ const Body = z.object({
   name: z.string().min(1).max(500),
   size: z.number().int().positive(),
   mime: z.string().max(100),
+  /** Ready files of the same document this one replaces ("Replace" on W5/W6). */
+  replaces: z.array(z.string().max(40)).max(2).optional(),
 });
 
 /** POST …/drafts/:draftId/files — check a file against its kind's rules and presign its upload. */

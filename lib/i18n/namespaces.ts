@@ -57,6 +57,12 @@ export const NAMESPACES = [
    * kilobytes to all 78 prerendered routes to do it.
    */
   "pages",
+  /*
+   * The mortgage application flow (W1–W8, docs/mortgage). Route-scoped below:
+   * the flow is client-heavy, so its strings do cross — but only on its own
+   * routes, which have their own shell and no marketplace chrome.
+   */
+  "mortgage",
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];
@@ -158,6 +164,12 @@ export const ROUTE_NAMESPACES = {
    * these routes are Client Components and W5b converts them next.
    */
   guides: ["app/[locale]/(public)/guides/"],
+  /*
+   * ~210 keys of wizard copy, upload states and errors, read on the six
+   * routes of the mortgage flow and nowhere else. Its own route group, with
+   * its own layout mounting the bag — see app/[locale]/(mortgage)/layout.tsx.
+   */
+  mortgage: ["app/[locale]/(mortgage)/"],
 } as const satisfies Partial<Record<Namespace, readonly string[]>>;
 
 export type RouteNamespace = keyof typeof ROUTE_NAMESPACES;

@@ -44,6 +44,33 @@ export const SYSTEM_EMAIL_DEFAULTS: Record<SystemAssetKey, SystemEmailDefault> =
       "<p>— The Bazar mortgage desk</p>",
     ].join(""),
   },
+  // The mortgage flow's two confirmations. Provisional wording: the copy for
+  // every mortgage email is still to be designed (docs/mortgage/DECISIONS.md
+  // D29). The sentences the website already says — W4's "A member of our
+  // mortgage team…", W7's WhatsApp line — are kept word for word, and the
+  // promise is "working hours" because that is what the clock counts (D11a).
+  mortgage_consultancy_received: {
+    subject: "We've received your request — {{mortgage_reference}}",
+    body: [
+      "<p>Hello {{lead_first_name}},</p>",
+      "<p>Thank you for requesting a mortgage consultation with Bazar. We received your request on {{mortgage_submitted}}.</p>",
+      "<p>Your reference is <strong>{{mortgage_reference}}</strong>.</p>",
+      "<p>A member of our mortgage team will contact you shortly.</p>",
+      "<p>— The Bazar mortgage team</p>",
+    ].join(""),
+  },
+  mortgage_preapproval_received: {
+    subject: "Your Fast Pre-Approval application — {{mortgage_reference}}",
+    body: [
+      "<p>Hello {{lead_first_name}},</p>",
+      "<p>Thank you for applying for Fast Pre-Approval with Bazar. Your details and documents have reached our mortgage team.</p>",
+      "<p>Your reference is <strong>{{mortgage_reference}}</strong>.</p>",
+      "<p>We'll contact you by <strong>{{mortgage_due}}</strong> — 24 working hours from when you submitted.</p>",
+      "<p>{{mortgage_documents}}</p>",
+      "<p>If we need anything else, we'll message you on WhatsApp with a secure link. You won't need to start again.</p>",
+      "<p>— The Bazar mortgage team</p>",
+    ].join(""),
+  },
   valuation_request_ack: {
     subject: "Your Bazar valuation is in review",
     body: [

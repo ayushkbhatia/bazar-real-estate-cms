@@ -898,7 +898,7 @@ export const DOMAINS: Domain[] = [
     excluded:
       "Dead table — nothing writes it. The save-scenario button still carries an unwired 'Sprint 9 wires this' comment.",
   },
-  // The mortgage module (docs/mortgage, migration 0138). Applicants' financial
+  // The mortgage module (docs/mortgage, migrations 0138 and 0141). Applicants' financial
   // data and the mortgage team's working state: RLS gives visitors nothing, and
   // the website's copy for these screens lives in the message catalogue.
   ...[
@@ -912,6 +912,7 @@ export const DOMAINS: Domain[] = [
     "mortgage_events",
     "mortgage_files",
     "mortgage_holidays",
+    "mortgage_notifications",
     "mortgage_partner_banks",
     "mortgage_reference_counters",
     "mortgage_requests",

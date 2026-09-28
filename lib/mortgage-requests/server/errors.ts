@@ -26,6 +26,9 @@ export type MortgageErrorCode =
   | "infected"
   | "scan_failed"
   | "not_scanned"
+  // Submitting (POST /api/mortgage/requests)
+  | "files_not_ready"
+  | "documents_incomplete"
   | "internal";
 
 export class MortgageApiError extends Error {

@@ -121,6 +121,23 @@ const STATIC_SURFACES: Record<SystemAssetKey | PreviewOnlyEmailKey, EmailSurface
     },
   ],
   mortgage_enquiry_ack: [],
+  // No page link yet. The flow lives in app/[locale]/(mortgage)/, a route
+  // group usage.test.ts's route check does not look in: add
+  // `path: "/mortgages/apply"` together with that group as a candidate.
+  mortgage_consultancy_received: [
+    {
+      label: "Mortgage application · Mortgage Consultancy",
+      path: "/mortgages/apply/review",
+      note: "Sent when an applicant submits a consultancy request in the mortgage application flow.",
+    },
+  ],
+  mortgage_preapproval_received: [
+    {
+      label: "Mortgage application · Fast Pre-Approval",
+      path: "/mortgages/apply/documents",
+      note: "Sent when an applicant submits a Fast Pre-Approval application with their documents.",
+    },
+  ],
   valuation_request_ack: [
     { label: "Valuation tool", path: "/tools/valuation", adminPath: "/admin/valuations" },
   ],
