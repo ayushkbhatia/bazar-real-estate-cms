@@ -21,10 +21,12 @@ test("/about renders with title set", async ({ page }) => {
 test("/agents renders with title set and lists advisors", async ({ page }) => {
   const response = await page.goto("/agents");
   expect(response?.status()).toBe(200);
-  // The title is CMS-owned now (Pages & blocks → Agents → Search appearance),
-  // like /about's above, and falls back to "Our team" while nobody has set
-  // one. Asserted loosely for the same reason.
-  await expect(page).toHaveTitle(/our team/i);
+  // The title is CMS-owned now (Pages & blocks → Agents → Search appearance)
+  // and the client has set one: "Real Estate Agents in Abu Dhabi | Bazar Real
+  // Estate", where the unedited fallback is "Our team · Bazar". Asserting
+  // either wording reddens main on a copy edit, so assert only the brand
+  // both carry.
+  await expect(page).toHaveTitle(/bazar/i);
 
   const heading = page.getByRole("heading", { level: 1 }).first();
   await expect(heading).toBeVisible();
